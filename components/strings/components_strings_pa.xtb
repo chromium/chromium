@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">ਸੱਦੇ ਵਾਲਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="1413809658975081374">ਪਰਦੇਦਾਰੀ ਗੜਬੜ</translation>
 <translation id="1414134146594747368">ਪ੍ਰੀ-ਸਕੂਲ</translation>
-<translation id="141826476809826269">ਐਕਸਟ੍ਰੈਕਟ ਕੀਤੀ ਲਿਖਤ ਦਾ ਸਮਾਪਨ</translation>
 <translation id="1418611192881166179">Chrome ਵੱਲੋਂ ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵੇਲੇ, ਸਾਈਟਾਂ ਕੁਝ ਸਮੇਂ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਵਰਤ ਸਕਦੀਆਂ ਹਨ, ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਉਨ੍ਹਾਂ ਨੂੰ ਬੰਦ ਨਹੀਂ ਕਰਦੇ।</translation>
 <translation id="1419305130220238697">'Chrome ਵਿੱਚ ਡਾਊਨਲੋਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ' ਬਟਨ, Chrome ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="1422930527989633628">ਸਾਈਟ ਨਜ਼ਦੀਕੀ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
@@ -1199,6 +1198,7 @@
 <translation id="3324687287337751929">4 x 6 ਇੰਚ</translation>
 <translation id="3324983252691184275">ਸੂਹਾ</translation>
 <translation id="3325027355611702542">ਕੈਂਪਰ ਅਤੇ RV</translation>
+<translation id="3325568918769906282">ਘਟਦੇ ਕ੍ਰਮ ਵਿੱਚ</translation>
 <translation id="3329013043687509092">ਸੰਤ੍ਰਿਪਤੀ</translation>
 <translation id="3333762389743153920">ਆਭਾਸੀ ਕਾਰਡ ਲਈ ਯੋਗ ਨਹੀਂ</translation>
 <translation id="3336044043987989409">ਆਪਣੇ ਨਿੱਜੀ ਨੈੱਟਵਰਕ 'ਤੇ ਡੀਵਾਈਸਾਂ ਜਾਂ ਸਰਵਰਾਂ ਨਾਲ ਕਨੈਕਸ਼ਨ ਨੂੰ ਆਗਿਆ ਦੇਣ ਲਈ 'ਰੀਲੋਡ ਕਰੋ' ਬਟਨ ਦਬਾਓ।</translation>
@@ -2245,6 +2245,7 @@
 <translation id="5371425731340848620">ਕਾਰਡ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"ਤੁਹਾਡੀ ਘੜੀ ਪਿੱਛੇ ਹੈ" ਜਾਂ "ਤੁਹਾਡੀ ਘੜੀ ਅੱਗੇ ਹੈ" ਜਾਂ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">ਵਧਦੇ ਕ੍ਰਮ ਵਿੱਚ</translation>
 <translation id="5383478552402031184">ਫਰਸ਼ ਲਗਾਉਣਾ</translation>
 <translation id="5385857628869214740">ਹਾਸਰਸ</translation>
 <translation id="5385966243497224160">ਗੈਰ-HTTPS URL ਦੀ ਪੂਰਵ-ਝਲਕ ਨਹੀਂ ਦਿਖਾਈ ਜਾ ਸਕਦੀ</translation>
@@ -3065,7 +3066,6 @@
 <translation id="6978121630131642226">ਖੋਜ ਇੰਜਣ</translation>
 <translation id="6978236010531171013">ਫਿਰ ਵੀ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">ਐਕਸਟ੍ਰੈਕਟ ਕੀਤੀ ਲਿਖਤ ਦੀ ਸ਼ੁਰੂਆਤ</translation>
 <translation id="6979440798594660689">ਮਿਊਟ ਕਰੋ (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="6987806006823772670">ਐਨਵਲੋਪ (ਕੋਟੇਡ)</translation>
 <translation id="6989763994942163495">ਉੱਨਤ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ...</translation>
@@ -3480,6 +3480,7 @@
 <translation id="7719791801330803993">ਫ਼ੋਟੋ ਅਤੇ ਵੀਡੀਓ ਸਾਫ਼ਟਵੇਅਰ</translation>
 <translation id="772128550427553158">CVC ਤੁਹਾਡੇ ਕਾਰਡ ਦੇ ਅਗਲੇ ਪਾਸੇ ਮੌਜੂਦ ਹੁੰਦਾ ਹੈ।</translation>
 <translation id="7724603315864178912">ਕੱਟੋ</translation>
+<translation id="7730057435797792985">ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
 <translation id="7734285854693414638">Google Forms ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵਾਂ ਫ਼ਾਰਮ ਬਣਾਓ</translation>
 <translation id="773466115871691567">ਪੰਨਿਆਂ ਦਾ ਅਨੁਵਾਦ ਹਮੇਸ਼ਾਂ <ph name="SOURCE_LANGUAGE" /> ਭਾਸ਼ਾ ਵਿੱਚ ਕਰੋ</translation>
 <translation id="7736959720849233795">ਲਿੰਕ ਪਤਾ ਕਾਪੀ ਕਰੋ</translation>

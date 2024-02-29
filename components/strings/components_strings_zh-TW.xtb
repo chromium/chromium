@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Envelope Invite</translation>
 <translation id="1413809658975081374">隱私權設定發生錯誤</translation>
 <translation id="1414134146594747368">幼稚園</translation>
-<translation id="141826476809826269">擷取的文字內容結尾</translation>
 <translation id="1418611192881166179">Chrome 更新這項功能時，網站可能會暫時使用第三方 Cookie，除非你在設定中封鎖這類 Cookie。</translation>
 <translation id="1419305130220238697">「管理 Chrome 下載內容」按鈕，啟動後即可管理在 Chrome 中下載的檔案</translation>
 <translation id="1422930527989633628">可以要求搜尋附近的藍牙裝置</translation>
@@ -1199,6 +1198,7 @@
 <translation id="3324687287337751929">4 x 6 吋</translation>
 <translation id="3324983252691184275">深紅色</translation>
 <translation id="3325027355611702542">露營車與休旅車</translation>
+<translation id="3325568918769906282">依遞減順序排列</translation>
 <translation id="3329013043687509092">飽和度</translation>
 <translation id="3333762389743153920">不符合虛擬卡片設定資格</translation>
 <translation id="3336044043987989409">請按下重新載入按鈕，允許連線到私人網路上的裝置或伺服器。</translation>
@@ -1319,6 +1319,7 @@
 <translation id="3542628208405253498">卡片圖片</translation>
 <translation id="3542768452570884558">在新視窗中開啟連結</translation>
 <translation id="3547746132308051926">20 x 24 吋</translation>
+<translation id="3552155506104542239">警告：這項政策與 <ph name="POLICY_NAME" /> 相衝突，對 Android 應用程式沒有任何作用。否則，這項政策會正常運作。</translation>
 <translation id="3552297013052089404">Sans Serif 字型</translation>
 <translation id="3558573058928565255">白天</translation>
 <translation id="355995771319966853">復原自動填入</translation>
@@ -1776,6 +1777,7 @@
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4390472908992056574">邊裙</translation>
 <translation id="4397059608630092079">使用自動填入功能時一律驗證</translation>
+<translation id="4397978002248035985">開啟彈出式視窗，將你導向至銀行網站進行驗證</translation>
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4406896451731180161">搜尋結果</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> 個 Cookie</translation>
@@ -2199,6 +2201,7 @@
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">文件屬性</translation>
 <translation id="528468243742722775">結束</translation>
+<translation id="5285468538058987167">透過嚴格客戶驗證 (SCA)</translation>
 <translation id="5285570108065881030">顯示所有已儲存的密碼</translation>
 <translation id="5287456746628258573">這個網站的安全性設定過舊，因此你傳送給這個網站的的資訊 (例如密碼或信用卡號碼) 可能會外洩。</translation>
 <translation id="5288108484102287882">政策值驗證作業出現警告訊息</translation>
@@ -2245,6 +2248,8 @@
 <translation id="5371425731340848620">更新信用卡</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">「你的時鐘時間過慢」、「你的時鐘時間過快」或 「&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;」</translation>
+<translation id="5380953781541843508">依遞增順序排列</translation>
+<translation id="5381318171304904246">如果繼續進行，系統就會將你導向銀行網站。驗證後會自動返回，以完成購買程序。</translation>
 <translation id="5383478552402031184">地板修護</translation>
 <translation id="5385857628869214740">幽默趣味</translation>
 <translation id="5385966243497224160">無法預覽非 HTTPS 網址</translation>
@@ -3066,7 +3071,6 @@
 <translation id="6978121630131642226">搜尋引擎</translation>
 <translation id="6978236010531171013">一律分享</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
-<translation id="6979332652936434520">擷取的文字內容開頭</translation>
 <translation id="6979440798594660689">靜音 (預設)</translation>
 <translation id="6987806006823772670">信封 (塗布紙)</translation>
 <translation id="6989763994942163495">顯示進階設定...</translation>
@@ -3092,6 +3096,7 @@
 <translation id="7030164307377592766">修改填入付款方式的設定</translation>
 <translation id="7030436163253143341">憑證無效</translation>
 <translation id="7031646650991750659">你安裝的 Google Play 應用程式</translation>
+<translation id="7035705295266423040">銀行想要驗證你的身分</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可管理 Google 帳戶隱私權設定</translation>
 <translation id="7043552168914147882">隔頁紙</translation>
 <translation id="7044081119134178347">這次允許使用相機</translation>
@@ -3481,6 +3486,7 @@
 <translation id="7719791801330803993">相片與影片軟體</translation>
 <translation id="772128550427553158">信用卡驗證碼位於卡片正面。</translation>
 <translation id="7724603315864178912">剪下</translation>
+<translation id="7730057435797792985">排序</translation>
 <translation id="7734285854693414638">在 Google 表單中快速建立新表單</translation>
 <translation id="773466115871691567">一律翻譯<ph name="SOURCE_LANGUAGE" />網頁</translation>
 <translation id="7736959720849233795">複製連結網址</translation>

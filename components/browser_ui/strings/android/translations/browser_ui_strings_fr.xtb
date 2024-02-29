@@ -367,6 +367,7 @@
 <translation id="702275896380648118">Ce site détermine ce que vous aimez, puis suggère des annonces à d'autres sites. Il obtient aussi vos thèmes publicitaires par l'intermédiaire de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}other{# éléments sélectionnés}}</translation>
+<translation id="708014373017851679"><ph name="APP_NAME" /> est obsolète. Veuillez mettre à jour l'appli.</translation>
 <translation id="7087918508125750058">Nombre d'éléments sélectionnés : <ph name="ITEM_COUNT" />. Options disponibles dans la partie supérieure de l'écran</translation>
 <translation id="7141896414559753902">Bloquer l'affichage de fenêtres pop-up et les redirections par les sites (recommandé)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> Ko</translation>

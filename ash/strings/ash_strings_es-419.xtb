@@ -358,6 +358,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2484513351006226581">Presiona <ph name="KEYBOARD_SHORTCUT" /> para cambiar la configuración del teclado.</translation>
 <translation id="2486214324139475545">Vista previa de <ph name="DESK_NAME" />. Escritorio activo.</translation>
 <translation id="2487915095798731898">Unirse</translation>
+<translation id="2499445554382787206">Menú del perfil del escritorio. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Teclas especiales</translation>
 <translation id="2504454902900101003">Descartar la configuración de la visualización de las fotos, el contenido multimedia y las notificaciones recientes de tu teléfono</translation>
 <translation id="2509468283778169019">BLOQ MAYÚS está activado.</translation>
@@ -605,6 +606,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3509391053705095206">No podemos encontrar tu teléfono. Verifica si está activado el Bluetooth del teléfono.</translation>
 <translation id="3510164367642747937">Resaltar el cursor del mouse</translation>
 <translation id="3513798432020909783">Cuenta administrada por <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Última actualización de las tareas: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Actualiza el dispositivo en el transcurso de 1 minuto}other{Actualiza el dispositivo en el transcurso de # minutos}}</translation>
 <translation id="3522979239100719575">Se están buscando perfiles disponibles. Este proceso puede demorar unos minutos.</translation>
 <translation id="3526440770046466733">Abrir el vínculo en una pestaña nueva y permanecer en la pestaña actual</translation>
@@ -1145,6 +1147,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5536723544185013515">Apps recientes, navega con las flechas hacia la izquierda o la derecha para acceder a todas las apps recientes</translation>
 <translation id="553675580533261935">Salir de la sesión</translation>
 <translation id="5537725057119320332">Transmitir</translation>
+<translation id="554017492391497564">No se pudo marcar como completada.</translation>
 <translation id="5546397813406633847">Recuperar usuario</translation>
 <translation id="554893713779400387">Activar o desactivar el dictado</translation>
 <translation id="5550417424894892620">Suelta los archivos en el escritorio para agregarlos a <ph name="HOLDING_SPACE_TITLE" />. No puedes agregar archivos al escritorio.</translation>
@@ -1339,6 +1342,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Batería baja. Se activó el Ahorro de batería.</translation>
 <translation id="6247728804802644171">Abrir notificaciones</translation>
+<translation id="6249795363855770621">No se pudo marcar como completada. Vuelve a intentarlo cuando estés en línea.</translation>
 <translation id="6254629735336163724">Se bloqueó en posición horizontal</translation>
 <translation id="6259254695169772643">Usa tu pluma stylus para realizar una selección</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Activando...</translation>
@@ -1499,6 +1503,7 @@ Nueva instalación</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6912841030378044227">Enfocar la barra de direcciones</translation>
 <translation id="6912901278692845878">Recorrido rápido</translation>
+<translation id="6917259695595127329">Última actualización de las tareas: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">No se reconoció tu tarjeta inteligente. Vuelve a intentarlo.</translation>
 <translation id="692135145298539227">eliminar</translation>
 <translation id="6929081673585394903">Mostrar controles</translation>

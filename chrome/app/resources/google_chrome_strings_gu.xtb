@@ -33,6 +33,7 @@
 <translation id="1516530951338665275">જોડાણ કરવાનું ચાલુ રાખવા માટે, Google Chromeને બ્લૂટૂથના ઍક્સેસની 
  જરૂર છે. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOSને વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બનાવવામાં આવ્યું છે.</translation>
+<translation id="155168855724261758">તમારું Chrome કસ્ટમાઇઝ કરો</translation>
 <translation id="1553358976309200471">Chrome અપડેટ કરો</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> આ Chrome પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. આને લીધે <ph name="USER_EMAIL_ADDRESS" /> માટે નવી Chrome પ્રોફાઇલ બનશે</translation>
 <translation id="1587223624401073077">Google Chrome તમારા કૅમેરાનો ઉપયોગ કરી રહ્યું છે.</translation>
@@ -72,6 +73,7 @@
 <translation id="2121284319307530122">&amp;Chrome અપડેટ કરવા માટે, ફરીથી લૉન્ચ કરો</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />વર્તમાન સેટિંગ<ph name="END_LINK" />ની જાણ કરીને Chromeને બહેતર બનાવવામાં સહાય કરો</translation>
 <translation id="2126108037660393668">ડાઉનલોડ કરેલી ફાઇલની ચકાસણી નિષ્ફળ થઈ.</translation>
+<translation id="2128411189117340671">Chrome પ્રોફાઇલ મેનેજ કરો</translation>
 <translation id="2130870084309816036">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકતા નથી. જો તમે કોઈ ફાયરવૉલનો ઉપયોગ કરતા હો, તો કૃપા કરીને <ph name="PRODUCT_EXE_NAME" />ને વ્હાઇટલિસ્ટમાં શામેલ કરો.</translation>
 <translation id="2131230230468101642">તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે, અમે 4 અઠવાડિયા કરતાં જૂની હોય એવી તમારી રુચિઓને ઑટોમૅટિક રીતે ડિલીટ કરીએ છીએ. તમે જેમ જેમ બ્રાઉઝ કરતા રહો છો, તેમ તેમ તમારી રુચિનો વિષય ફરી સૂચિમાં દેખાઈ શકે છે. અથવા તમે તમારી રુચિના એવા વિષયો કાઢી નાખી શકો છો કે જેમને તમે Chromeની સૂચિમાં શામેલ કરવા માગતા નથી.</translation>
 <translation id="2139300032719313227">ChromeOS ફરી શરૂ કરો</translation>
@@ -425,6 +427,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7917876797003313048">તમે તમારા સાઇન ઇન કરેલા હોય એવા Google એકાઉન્ટ મેનેજ કરી શકો છો. તમારા Google એકાઉન્ટનો ઉપયોગ Chrome બ્રાઉઝર, Play Store, Gmail અને વધુ માટે થાય છે. જો તમે કોઈ બીજા, જેમકે તમારા કુટુંબના સભ્ય માટે એકાઉન્ટ ઉમેરવા માંગતા હો, તો તેના બદલે નવી વ્યક્તિને તમારા <ph name="DEVICE_TYPE" />માં ઉમેરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું કારણ કે આ ફાઇલ છેતરામણી છે અને તે તમારા ડિવાઇસમાં અનપેક્ષિત ફેરફારો કરે તેમ બની શકે છે</translation>
 <translation id="7951272445806340501">અપડેટ લાગુ કરવા માટે ChromeOS Flexને ફરી શરૂ કરવાની જરૂર છે.</translation>
+<translation id="7959172989483770734">Chrome પ્રોફાઇલ મેનેજ કરો</translation>
 <translation id="7962368738413920945">સાઇટ કદાચ તમારી અપેક્ષા મુજબ કામ કરશે, પરંતુ તમે Chromeની બધી વિન્ડો બંધ કરી દો તે પછી, તે તમારો ડેટા સાચવશે નહીં</translation>
 <translation id="7962410387636238736">આ કમ્પ્યુટર હવેથી Google Chrome અપડેટ મેળવી શકશે નહીં કારણકે Windows XP અને Windows Vista હવે સમર્થિત રહ્યાં નથી</translation>
 <translation id="8005666035647241369">આ ડિવાઇસ પર Google પાસવર્ડ મેનેજરમાં સાચવો</translation>
@@ -432,6 +435,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8009904340233602924">એકાઉન્ટ વગર Chromeનો ઉપયોગ કરો</translation>
 <translation id="8013993649590906847">જો છબીમાં ઉપયોગી વર્ણન ન હોય, તો Chrome તમને વર્ણન પૂરું પાડવાનો પ્રયાસ કરશે. વર્ણન બનાવવા માટે, Googleને છબીઓ મોકલવામાં આવે છે.</translation>
 <translation id="8019103195866286235">આ એક્સ્ટેન્શનને તેના ડેવલપર દ્વારા અનપબ્લિશ કરવામાં આવ્યું હતું અને તે અસુરક્ષિત હોઈ શકે છે. તેને Chromeમાંથી કાઢી નાખો જેથી હવેથી તે તમારી વ્યક્તિગત માહિતી સહિત તમે મુલાકાત લો તે સાઇટ પરનો તમારો ડેટા જોઈ કે બદલી શકે નહીં.</translation>
+<translation id="8031641407207794385">તમારું Chrome કસ્ટમાઇઝ કરો</translation>
 <translation id="80471789339884597">ઇન્સ્ટૉલ કરવા બદલ આભાર. તમારે <ph name="BUNDLE_NAME" />નો ઉપયોગ કરતા પહેલાં તમારા બધા બ્રાઉઝર ફરી શરૂ કરવા આવશ્યક છે.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">અન્ય Chrome પ્રોફાઇલ</translation>

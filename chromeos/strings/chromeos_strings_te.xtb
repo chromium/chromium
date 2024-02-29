@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954818433534793392">బిల్డింగ్</translation>
 <translation id="1962550982027027473">ఆటోమేటిక్ సెట్టింగ్ APN అవసరం</translation>
+<translation id="1967860190218310525">కొత్త APNను క్రియేట్ చేయండి</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google ప్రొఫైల్ ఫోటో</translation>
 <translation id="1979103255016296513">పాస్‌వర్డ్‌ మార్చాల్సిన గడువు ముగిసింది</translation>
@@ -473,7 +474,6 @@
 <translation id="4046123991198612571">తర్వాత ట్రాక్</translation>
 <translation id="404928562651467259">హెచ్చరిక</translation>
 <translation id="4054683689023980771">ఇమేజ్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
-<translation id="4060260348856573701">కొత్త APN</translation>
 <translation id="4063039537646912479">లేత నీలం</translation>
 <translation id="4093865285251893588">ప్రొఫైల్ ఇమేజ్</translation>
 <translation id="409427325554347132">టెస్ట్ వివరాలను సేవ్ చేయండి</translation>
@@ -981,6 +981,7 @@
 <translation id="7144954474087165241">పగోడా</translation>
 <translation id="714876143603641390">LAN కనెక్టివిటీ</translation>
 <translation id="7154020516215182599">మీ ఫీడ్‌బ్యాక్‌ను షేర్ చేయండి లేదా మీ సమస్యను వివరించండి. అవసరమైతే, మీ సమస్య ఎలా ఏర్పడింది అనే దానిని దశల వారిగా చేర్చండి.</translation>
+<translation id="7155037718620478619">మరిన్ని APNలను కనుగొనండి</translation>
 <translation id="7155171745945906037">కెమెరా లేదా ఫైల్‌లో ఉన్న ఫోటో</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">ప్రొఫైల్ ఫోటో</translation>

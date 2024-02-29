@@ -231,7 +231,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1410941016594047814">Envelope Invite</translation>
 <translation id="1413809658975081374">Erro de privacidade</translation>
 <translation id="1414134146594747368">Pré-escola</translation>
-<translation id="141826476809826269">Fim do texto extraído</translation>
 <translation id="1418611192881166179">Enquanto o Chrome estiver a atualizar esta funcionalidade, os sites podem usar temporariamente cookies de terceiros, a menos que os bloqueie nas definições.</translation>
 <translation id="1419305130220238697">Botão Gerir transferências no Chrome; ative para gerir os ficheiros que transferiu no Chrome</translation>
 <translation id="1422930527989633628">Pode solicitar a deteção de dispositivos Bluetooth próximos</translation>
@@ -1322,6 +1321,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3542628208405253498">Imagem do cartão</translation>
 <translation id="3542768452570884558">Abrir link numa nova janela</translation>
 <translation id="3547746132308051926">20 x 24 pol.</translation>
+<translation id="3552155506104542239">Aviso: esta política está em conflito com a <ph name="POLICY_NAME" /> e não tem efeito nas apps Android. Caso contrário, esta política está a funcionar conforme previsto.</translation>
 <translation id="3552297013052089404">Tipo de letra Sans Serif</translation>
 <translation id="3558573058928565255">Dia e hora</translation>
 <translation id="355995771319966853">Anular preenchimento automático</translation>
@@ -1779,6 +1779,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">Borda</translation>
 <translation id="4397059608630092079">Validar sempre quando usar o preenchimento automático</translation>
+<translation id="4397978002248035985">Abre um pop-up para validar no Website do banco</translation>
 <translation id="4406883609789734330">Legendas instantâneas</translation>
 <translation id="4406896451731180161">resultados da pesquisa</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
@@ -2202,6 +2203,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Propriedades do documento</translation>
 <translation id="528468243742722775">Sair</translation>
+<translation id="5285468538058987167">Através da autenticação forte do cliente (AFC)</translation>
 <translation id="5285570108065881030">Mostrar todas as palavras-passe guardadas</translation>
 <translation id="5287456746628258573">Este site utiliza uma configuração de segurança desatualizada, que pode expor as suas informações (por exemplo, palavras-passe ou números de cartões de crédito) quando são enviados para este site.</translation>
 <translation id="5288108484102287882">A validação dos valores da política gerou avisos.</translation>
@@ -3070,7 +3072,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6978121630131642226">Motores de pesquisa</translation>
 <translation id="6978236010531171013">Partilhar mesmo assim</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Início do texto extraído</translation>
 <translation id="6979440798594660689">Desativar som (predefinição)</translation>
 <translation id="6987806006823772670">Envelope (revestido)</translation>
 <translation id="6989763994942163495">Mostrar definições avançadas...</translation>

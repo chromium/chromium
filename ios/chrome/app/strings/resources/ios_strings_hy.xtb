@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">Որոնել համացանցում</translation>
 <translation id="2252749852083403809">Պահվում է Drive-ում <ph name="USER_EMAIL" /> օգտատիրոջ համար։</translation>
 <translation id="2256933947031277845">Ձեր կազմակերպությունում հնարավոր է մուտք գործել միայն որոշակի հաշիվներ։</translation>
+<translation id="2257594476751932246">Անհատականացված նորություններ</translation>
 <translation id="2258326562203545455">{count,plural, =1{Դուք կարող եք էջանիշը պահել ձեր Google հաշվում ({email})։}one{Դուք կարող եք էջանիշը պահել ձեր Google հաշվում ({email})։}other{Դուք կարող եք էջանիշները պահել ձեր Google հաշվում ({email})։}}</translation>
 <translation id="225943865679747347">Սխալի կոդ` <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Ավելացնել հաշիվ</translation>

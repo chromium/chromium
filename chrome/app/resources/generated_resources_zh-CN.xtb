@@ -968,6 +968,7 @@
 <translation id="1723824996674794290">打开新的窗口(&amp;N)</translation>
 <translation id="1724801751621173132">输入法</translation>
 <translation id="1725562816265788801">标签页滚动</translation>
+<translation id="1725585416709851618">请尝试在“设置”中启用 Google 云端硬盘，然后选择“重试”，或者选择“在基本编辑器中打开”以便使用有限的查看和编辑选项。</translation>
 <translation id="1726503915437308071">斜体</translation>
 <translation id="1729533290416704613">它还能够控制您通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="1730666151302379551">忘记了旧密码</translation>
@@ -1635,7 +1636,7 @@
 <translation id="2224444042887712269">此设置属于<ph name="OWNER_EMAIL" />。</translation>
 <translation id="2224551243087462610">修改文件夹名</translation>
 <translation id="2225927550500503913">虚拟卡已开启</translation>
-<translation id="2226826835915474236">无效的快捷字词</translation>
+<translation id="2226826835915474236">未使用的快捷字词</translation>
 <translation id="2226907662744526012">一旦用户输入 PIN 码便自动解锁</translation>
 <translation id="2227179592712503583">移除推荐内容</translation>
 <translation id="2229161054156947610">剩余时间超过 1 小时</translation>
@@ -1808,7 +1809,6 @@
 <translation id="2343747224442182863">聚焦此标签页</translation>
 <translation id="2344032937402519675">无法连接到服务器。请检查您的网络连接状况，然后重试。如果问题仍然存在，请尝试重启 Chromebook。</translation>
 <translation id="234559068082989648">2022 年 12 月之后，多款旧版 Chrome 应用将无法开启。请联系您的管理员以更新到新版本或移除此应用。</translation>
-<translation id="2347930112185157300">移动网络提供商已锁定</translation>
 <translation id="2348176352564285430">应用：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - 收到了权限请求，按 Ctrl + 前进键即可回复</translation>
 <translation id="234889437187286781">加载数据时出错</translation>
@@ -1973,7 +1973,6 @@
 <translation id="2462332841984057083">已经在设置 Steam 了。请等待设置完成。</translation>
 <translation id="2462724976360937186">证书授权中心密钥 ID</translation>
 <translation id="2462752602710430187">已添加<ph name="PRINTER_NAME" /></translation>
-<translation id="2464046291463112461">禁止外部配件访问和共享内存 (RAM)</translation>
 <translation id="2467755475704469005">未检测到任何设备。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">触控板滚屏加速</translation>
 <translation id="2468205691404969808">使用 Cookie 记住您的偏好设置（即使您不访问这些网页）</translation>
@@ -2275,6 +2274,7 @@
 <translation id="2701330563083355633">共享自 <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">登录，<ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">网络 MAC 地址</translation>
+<translation id="2702720509009999256">请检查您的互联网连接情况并选择“重试”，或者选择“在基本编辑器中打开”以便使用有限的查看和编辑选项。</translation>
 <translation id="2702801445560668637">阅读清单</translation>
 <translation id="270414148003105978">移动网络</translation>
 <translation id="2704184184447774363">Microsoft 文档签名</translation>
@@ -3576,6 +3576,7 @@
 <translation id="3719245268140483218">设备事件</translation>
 <translation id="3719310907809321183">已填充<ph name="CARD_IDENTIFIER" />。</translation>
 <translation id="3719826155360621982">主页</translation>
+<translation id="3720543739123045680">其他标签页与此标签页共享进程，这可能会导致开发者工具出现意外体验。</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">您与 Google</translation>
 <translation id="3722108462506185496">启动虚拟机服务时出错。请重试。</translation>
@@ -3720,7 +3721,7 @@
 <translation id="3817524650114746564">打开您计算机的代理设置</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：ChromeOS 的崩溃时间、使用的功能、通常占用的内存量，等等。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您随时可在 Chrome 设备的设置中开始或停止发送这些报告。如果您是网域管理员，可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" /></translation>
-<translation id="3818662907126913619">如要通过您在“<ph name="DOMAIN" />”中的个人资料使用设备，贵组织需要获取该设备的相关信息。
+<translation id="3818662907126913619">如要通过您在 <ph name="DOMAIN" /> 中的个人资料使用设备，贵组织需要获取该设备的相关信息。
 
 这可能包括与已安装的软件、文件、您的浏览器和设备的操作系统相关的信息。</translation>
 <translation id="3819164369574292143">放大屏幕上的各项内容。使用搜索键 + Ctrl + M 可开启和关闭放大镜。使用 Ctrl + Alt + 箭头键可在放大后的屏幕上四处移动。</translation>
@@ -5026,6 +5027,7 @@
 <translation id="484462545196658690">自动</translation>
 <translation id="4846628405149428620">选择要让此网站将所做更改保存到何处</translation>
 <translation id="4846680374085650406">您目前所采用的是管理员的建议设置。</translation>
+<translation id="4847242508757499006">请选择“重试”，或者选择“在基本编辑器中打开”以便使用有限的查看和编辑选项。</translation>
 <translation id="4848191975108266266">Google 助理“Ok Google”</translation>
 <translation id="4849286518551984791">协调世界时 (UTC/GMT)</translation>
 <translation id="4849517651082200438">不安装</translation>
@@ -6019,6 +6021,7 @@
 <translation id="5636012309446422">从 <ph name="PRIMARY_EMAIL" /> 中移除“<ph name="DEVICE" />”？</translation>
 <translation id="5636996382092289526">要使用“<ph name="NETWORK_ID" />”，您可能需要先<ph name="LINK_START" />访问该网络的登录页面<ph name="LINK_END" />，该页面会在几秒钟后自动打开。如果未打开，就表示该网络无法使用。</translation>
 <translation id="5637476008227280525">移动数据开关</translation>
+<translation id="5638170200695981015">请选择“在基本编辑器中打开”，以便使用有限的查看和编辑选项。</translation>
 <translation id="563821631542362636">允许网站保存数据</translation>
 <translation id="5638309510554459422">在 <ph name="BEGIN_LINK" />Chrome 应用商店<ph name="END_LINK" />中查找扩展程序和主题背景</translation>
 <translation id="5639549361331209298">重新加载此网页，按下可查看更多选项</translation>
@@ -6770,6 +6773,7 @@
 <translation id="6235208551686043831">设备的摄像头已开启。请将摄像头对准您的 eSIM 卡二维码。</translation>
 <translation id="6237297174664969437">您可随时在 Chrome 设置中选择要同步的浏览器数据。对于通过 Chrome 浏览器安装的 Web 应用，您可以在<ph name="LINK_BEGIN" />设备设置<ph name="LINK_END" />中控制这些应用的同步情况。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="6237474966939441970">触控笔记事应用</translation>
+<translation id="6237481151388361546">请更改互联网连接并选择“重试”，或者选择“在基本编辑器中打开”以便使用有限的查看和编辑选项。</translation>
 <translation id="623755660902014047">朗读模式</translation>
 <translation id="6238767809035845642">从其他设备分享的文字</translation>
 <translation id="6238923052227198598">始终将最新记事显示在锁定屏幕上</translation>
@@ -9311,6 +9315,7 @@
 <translation id="8200772114523450471">继续</translation>
 <translation id="8200789660596905522">请确保在您的“<ph name="DEVICE_NAME" />”上接受投屏请求。</translation>
 <translation id="8202160505685531999">请重新输入密码，以便更新您的<ph name="DEVICE_TYPE" />资料。</translation>
+<translation id="8202827109322349110">在基本编辑器中打开</translation>
 <translation id="8203152941016626022">“附近分享”功能的设备名称</translation>
 <translation id="8203732864715032075">向您发送通知，并默认记住这台计算机以便在您收到短信时向其发送通知。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">点击鼠标右键</translation>

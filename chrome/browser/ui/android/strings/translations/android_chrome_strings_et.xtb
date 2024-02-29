@@ -604,6 +604,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="426652736638196239">IBAN salvestatakse ainult sellesse seadmesse</translation>
 <translation id="4269820728363426813">Kopeeri lingi aadress</translation>
 <translation id="4277529130885813215">Kasuta teist seadet</translation>
+<translation id="4282440837784183472">Teie organisatsioon <ph name="MANAGED_DOMAIN" /> haldab kontot, millele sisse logite, ja Chrome'i kasutamist. Teie administraator saab teatud funktsioone seadistada või piirata.</translation>
 <translation id="4285846616383034558">Küpsised, vahemälu ja muud saidiandmed</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Androidi seadetes ekraaniluku sisselülitamine<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Uus inkognito vaheleht</translation>
@@ -639,7 +640,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Järjehoidja salvestati kausta „<ph name="FOLDER_NAME" />“. See salvestatakse ainult sellesse seadmesse.}other{Järjehoidjad salvestati kausta „<ph name="FOLDER_NAME" />“. Need salvestatakse ainult sellesse seadmesse.}}</translation>
 <translation id="4484496141267039529">Ühendus puudub. Proovige hiljem uuesti.</translation>
 <translation id="4487967297491345095">Kõik Chrome'i rakenduse andmed kustutatakse jäädavalt. See hõlmab kõiki faile, seadeid, kontosid, andmebaase jms.</translation>
-<translation id="4491323382106587961">Valige konto. Praegu on valitud <ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">Administraator on paroolide salvestamise sisse lülitanud</translation>
 <translation id="4508528996305412043">Voo kaardimenüü on avatud</translation>
 <translation id="4509501256689523862">Sirvimisel kuvatavate reklaamide isikupärastamine oleneb sellest seadest, <ph name="BEGIN_LINK_1" />reklaamiteemadest<ph name="END_LINK_1" />, teie <ph name="BEGIN_LINK_2" />küpsisefailide seadetest<ph name="END_LINK_2" /> ja sellest, kas kuvatud sait isikupärastab reklaame.</translation>
@@ -1168,6 +1168,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7037830628447527439">Logige Chrome’i oma Google’i kontoga sisse</translation>
 <translation id="7054588988317389591">Kas saada piltide kirjeldusi?</translation>
 <translation id="7055152154916055070">Ümbersuunamine blokeeriti:</translation>
+<translation id="7057969023583258980">Ava Chrome'i täielik ajalugu</translation>
 <translation id="7063006564040364415">Sünkroonimisserveriga ei saanud ühendust.</translation>
 <translation id="7071521146534760487">Konto haldamine</translation>
 <translation id="707155805709242880">Valige allpool, mis sünkroonida</translation>

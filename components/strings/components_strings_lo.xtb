@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Envelope Invite</translation>
 <translation id="1413809658975081374">ຄວາມເປັນສ່ວນຕົວຂັດຂ້ອງ</translation>
 <translation id="1414134146594747368">ໂຮງຮຽນອະນຸບານ</translation>
-<translation id="141826476809826269">ສິ້ນສຸດຂໍ້ຄວາມທີ່ສະກັດມາແລ້ວ</translation>
 <translation id="1418611192881166179">ໃນຂະນະທີ່ Chrome ກໍາລັງອັບເດດຄຸນສົມບັດນີ້, ເວັບໄຊສາມາດໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມຊົ່ວຄາວໄດ້ ເວັ້ນເສຍແຕ່ທ່ານບລັອກພວກມັນໃນການຕັ້ງຄ່າ.</translation>
 <translation id="1419305130220238697">ປຸ່ມຈັດການການດາວໂຫຼດໃນ Chrome, ເປີດນຳໃຊ້ເພື່ອຈັດການໄຟລ໌ທີ່ທ່ານໄດ້ດາວໂຫຼດໃນ Chrome</translation>
 <translation id="1422930527989633628">ສາມາດຂໍຄົ້ນພົບອຸປະກອນ Bluetooth ທີ່ຢູ່ໃກ້ຄຽງ</translation>
@@ -1780,6 +1779,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4397059608630092079">ຢັ້ງຢືນຕະຫຼອດເວລາເມື່ອໃຊ້ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
+<translation id="4397978002248035985">ເປີດປັອບອັບເພື່ອຢັ້ງຢືນຢູ່ເວັບໄຊຂອງທະນາຄານຂອງທ່ານ</translation>
 <translation id="4406883609789734330">ຄຳບັນຍາຍສົດ</translation>
 <translation id="4406896451731180161">ຜົນ​ການ​ຄົ້ນ​ຫາ</translation>
 <translation id="4408413947728134509">ຄຸກກີ້ <ph name="NUM_COOKIES" /></translation>
@@ -2203,6 +2203,7 @@
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ຄຸນລັກສະນະຂອງເອກະສານ</translation>
 <translation id="528468243742722775">ສິ້ນສຸດ</translation>
+<translation id="5285468538058987167">ຜ່ານການພິສູດຢືນຢັນລູກຄ້າໃນລະດັບຍາກ (SCA)</translation>
 <translation id="5285570108065881030">ສະແດງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ທັງໝົດ</translation>
 <translation id="5287456746628258573">ເວັບໄຊນີ້ໃຊ້ການກຳນົດຄ່າຄວາມປອດໄພທີ່ເກົ່າແລ້ວ, ເຊິ່ງອາດຈະເຮັດໃຫ້ຂໍ້ມູນຂອງທ່ານມີຄວາມສ່ຽງ (ຕົວຢ່າງ: ລະຫັດຜ່ານ ຫຼື ເລກບັດເຄຣດິດ) ເມື່ອມັນຖືກສົ່ງໃຫ້ເວັບໄຊນີ້.</translation>
 <translation id="5288108484102287882">ການກວດຮັບຮອງຄ່ານະໂຍບາຍໄດ້ເກີດຄຳເຕືອນ</translation>
@@ -2250,6 +2251,7 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"ໂມງຂອງທ່ານຊ້າກວ່າ" ຫຼື "ໂມງຂອງທ່ານໄວກວ່າ" ຫຼື "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5380953781541843508">ຕາມລຳດັບຈາກນ້ອຍຫາໃຫຍ່</translation>
+<translation id="5381318171304904246">ເມື່ອທ່ານສືບຕໍ່ ທ່ານຈະຖືກພາໄປຫາເວັບໄຊຂອງທະນາຄານຂອງທ່ານ. ຫຼັງຈາກທ່ານຢັ້ງຢືນແລ້ວ, ທ່ານຈະຖືກພາກັບຄືນມາໂດຍອັດຕະໂນມັດເພື່ອສຳເລັດການສັ່ງຊື້ຂອງທ່ານ.</translation>
 <translation id="5383478552402031184">ບໍລິການສ້ອມແປງພື້ນເຮືອນທີ່ຖືກນ້ຳສ້າງຄວາມເສຍຫາຍ</translation>
 <translation id="5385857628869214740">ເລື່ອງຕະຫລົກ</translation>
 <translation id="5385966243497224160">ບໍ່ສາມາດສະແດງຕົວຢ່າງ URL ທີ່ບໍ່ແມ່ນ HTTPS ໄດ້</translation>
@@ -3071,7 +3073,6 @@
 <translation id="6978121630131642226">ເຄື່ອງ​ຈັກ​ຄົ້ນ​ຫາ</translation>
 <translation id="6978236010531171013">ຢືນຢັນການແບ່ງປັນ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">ເລີ່ມຂໍ້ຄວາມທີ່ສະກັດມາແລ້ວ</translation>
 <translation id="6979440798594660689">ປິດສຽງ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="6987806006823772670">ຊອງ (ເຄືອບ)</translation>
 <translation id="6989763994942163495">ສະ​ແດງການຕັ້ງຄ່າຂັ້ນສູງ...</translation>
@@ -3097,6 +3098,7 @@
 <translation id="7030164307377592766">ແກ້ໄຂການຕັ້ງຄ່າສຳລັບການຕື່ມຂໍ້ມູນວິທີການຈ່າຍເງິນ</translation>
 <translation id="7030436163253143341">ໃບຮັບຮອງບໍ່ຖືກຕ້ອງ</translation>
 <translation id="7031646650991750659">ແອັບ Google Play ໃດທີ່ທ່ານຕິດຕັ້ງແລ້ວ</translation>
+<translation id="7035705295266423040">ທະນາຄານຕ້ອງການຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການການຕັ້ງຄ່າຄວາມເປັນສ່ວນຕົວບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="7043552168914147882">ແຖບສະຕັອກ</translation>
 <translation id="7044081119134178347">ຂະນະນີ້ອະນຸຍາດກ້ອງຖ່າຍຮູບແລ້ວ</translation>

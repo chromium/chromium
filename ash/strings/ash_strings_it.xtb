@@ -166,7 +166,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1607312127821884567">Chiudi la configurazione della visualizzazione di app dello smartphone</translation>
 <translation id="1610778689852195798">"Annulla"</translation>
 <translation id="1611993646327628135">On</translation>
-<translation id="1620510694547887537">Fotocamera</translation>
+<translation id="1620510694547887537">Videocamera</translation>
 <translation id="1632985212731562677">È possibile disattivare Switch Access in Impostazioni &gt; Accessibilità.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivi</translation>
 <translation id="1639239467298939599">Caricamento</translation>
@@ -358,6 +358,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2484513351006226581">Premi <ph name="KEYBOARD_SHORTCUT" /> per cambiare il layout della tastiera.</translation>
 <translation id="2486214324139475545">Anteprima di <ph name="DESK_NAME" />. Scrivania attiva.</translation>
 <translation id="2487915095798731898">Partecipa</translation>
+<translation id="2499445554382787206">Menu profilo scrivania. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tasti permanenti</translation>
 <translation id="2504454902900101003">Chiudi la configurazione della visualizzazione di notifiche, contenuti multimediali e foto recenti dello smartphone</translation>
 <translation id="2509468283778169019">BLOC MAIUSC è attivo</translation>
@@ -605,6 +606,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3509391053705095206">Impossibile trovare il telefono. Assicurati che il Bluetooth del telefono sia attivo.</translation>
 <translation id="3510164367642747937">Evidenzia il puntatore del mouse</translation>
 <translation id="3513798432020909783">Account gestito da <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Ultimo aggiornamento attività: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Aggiorna il dispositivo entro 1 minuto}other{Aggiorna il dispositivo entro # minuti}}</translation>
 <translation id="3522979239100719575">È in corso la ricerca dei profili disponibili. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="3526440770046466733">Apri il link in una nuova scheda e rimani nella scheda corrente</translation>
@@ -1141,6 +1143,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5536723544185013515">App recenti: usa i tasti Freccia destra o Freccia sinistra per accedere a tutte le app recenti</translation>
 <translation id="553675580533261935">Uscita dalla sessione</translation>
 <translation id="5537725057119320332">Trasmetti</translation>
+<translation id="554017492391497564">Impossibile contrassegnare come completata.</translation>
 <translation id="5546397813406633847">Recupera utente</translation>
 <translation id="554893713779400387">Attiva/disattiva la dettatura</translation>
 <translation id="5550417424894892620">Rilascia i file sul desktop per aggiungerli a <ph name="HOLDING_SPACE_TITLE" />. Non puoi aggiungere file al desktop.</translation>
@@ -1335,6 +1338,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Batteria in esaurimento. Risparmio energetico attivato.</translation>
 <translation id="6247728804802644171">Apri le notifiche</translation>
+<translation id="6249795363855770621">Impossibile contrassegnare come completata. Riprova quando sei online.</translation>
 <translation id="6254629735336163724">Bloccata in orizzontale</translation>
 <translation id="6259254695169772643">Usa lo stilo per selezionare</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: attivazione in corso...</translation>
@@ -1495,6 +1499,7 @@ Nuova installazione</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6912841030378044227">Imposta lo stato attivo sulla barra degli indirizzi</translation>
 <translation id="6912901278692845878">Tour rapido</translation>
+<translation id="6917259695595127329">Ultimo aggiornamento attività: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Impossibile riconoscere la smart card. Riprova.</translation>
 <translation id="692135145298539227">elimina</translation>
 <translation id="6929081673585394903">Mostra controlli</translation>

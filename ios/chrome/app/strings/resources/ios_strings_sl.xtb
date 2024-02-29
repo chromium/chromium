@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">Spletno iskanje</translation>
 <translation id="2252749852083403809">Shranjevanje v Drive za <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">Organizacija dovoli prijavo samo z nekaterimi računi.</translation>
+<translation id="2257594476751932246">Novice po meri</translation>
 <translation id="2258326562203545455">{count,plural, =1{Zaznamek lahko shranite v računu Google, {email}.}one{Zaznamke lahko shranite v računu Google, {email}.}two{Zaznamke lahko shranite v računu Google, {email}.}few{Zaznamke lahko shranite v računu Google, {email}.}other{Zaznamke lahko shranite v računu Google, {email}.}}</translation>
 <translation id="225943865679747347">Koda napake: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj račun</translation>

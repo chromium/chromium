@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">Ստեղնաշարի դասավորությունը փոխելու համար սեղմեք <ph name="KEYBOARD_SHORTCUT" />։</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" />-ի նախադիտում։ Աշխատասեղանն ակտիվ է։</translation>
 <translation id="2487915095798731898">Միանալ</translation>
+<translation id="2499445554382787206">Աշխատասեղանի պրոֆիլի ընտրացանկ։ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Կպչուն ստեղներ</translation>
 <translation id="2504454902900101003">Բաց թողնել հեռախոսի վերջին լուսանկարների մեդիաֆայլերի և ծանուցումների դիտման կարգավորումը</translation>
 <translation id="2509468283778169019">CAPS LOCK-ը միացված է</translation>
@@ -445,7 +446,7 @@
 <translation id="2872353916818027657">Փոխատեղել հիմնական մոնիտորը</translation>
 <translation id="2872961005593481000">Անջատել</translation>
 <translation id="2876338922445400217">Էկրանային խոշորացույց</translation>
-<translation id="2878884018241093801">Վերջին տարրեր չկան</translation>
+<translation id="2878884018241093801">Այստեղ դեռ ոչինչ չկա</translation>
 <translation id="2885950158625301909">Իմանալ ավելին</translation>
 <translation id="2891209721153296020">«Չեղարկել ընտրությունը»</translation>
 <translation id="2894949423239620203">Մալուխը կարող է ազդել աշխատանքի արդյունավետության վրա</translation>
@@ -605,6 +606,7 @@
 <translation id="3509391053705095206">Չհաջողվեց գտնել ձեր հեռախոսը։ Համոզվեք, որ հեռախոսի Bluetooth-ը միացված է։</translation>
 <translation id="3510164367642747937">Ընդգծել մկնիկի նշորդը</translation>
 <translation id="3513798432020909783">Հաշվի կառավարիչ՝ <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Առաջադրանքները վերջին անգամ թարմացվել են՝ <ph name="DATE" />, <ph name="TIME" />։</translation>
 <translation id="352245152354538528">{0,plural, =1{Թարմացրեք սարքը 1 րոպեի ընթացքում}one{Թարմացրեք սարքը # րոպեի ընթացքում}other{Թարմացրեք սարքը # րոպեի ընթացքում}}</translation>
 <translation id="3522979239100719575">Հասանելի պրոֆիլների որոնում։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="3526440770046466733">Բացել հղումը նոր ներդիրում և մնալ ընթացիկ ներդիրում</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5536723544185013515">Վերջերս օգտագործված հավելվածներ․ ձախ կամ աջ սլաքների ստեղների օգնությամբ կարող եք բացել վերջերս օգտագործված հավելվածների ցանկը</translation>
 <translation id="553675580533261935">Ելք աշխատաշրջանից</translation>
 <translation id="5537725057119320332">Cast</translation>
+<translation id="554017492391497564">Չհաջողվեց նշել որպես կատարված։</translation>
 <translation id="5546397813406633847">Վերականգնել օգտատիրոջը</translation>
 <translation id="554893713779400387">Միացնել/անջատել ձայնային ներածումը</translation>
 <translation id="5550417424894892620">Քաշեք ձեր ֆայլերը աշխատասեղանի վրա՝ «<ph name="HOLDING_SPACE_TITLE" />» պանակում ավելացնելու համար։ Դուք չեք կարող ֆայլեր ավելացնել աշխատասեղանին։</translation>
@@ -1338,6 +1341,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Մարտկոցի լիցքը քիչ է։ Մարտկոցի տնտեսումը միացել է։</translation>
 <translation id="6247728804802644171">Բացել ծանուցումները</translation>
+<translation id="6249795363855770621">Չհաջողվեց նշել որպես կատարված։ Միացեք ինտերնետին և նորից փորձեք։</translation>
 <translation id="6254629735336163724">Միայն հորիզոնական</translation>
 <translation id="6259254695169772643">Ընտրելու համար օգտագործեք ստիլուսը</translation>
 <translation id="6267036997247669271"><ph name="NAME" />` ակտիվացում…</translation>
@@ -1498,6 +1502,7 @@
 <translation id="6896758677409633944">Պատճենել</translation>
 <translation id="6912841030378044227">Անցնել հասցեագոտուն</translation>
 <translation id="6912901278692845878">Հակիրճ տեսաուղեցույց</translation>
+<translation id="6917259695595127329">Առաջադրանքները վերջին անգամ թարմացվել են՝ <ph name="TIME" />։</translation>
 <translation id="6919251195245069855">Չհաջողվեց ճանաչել ձեր խելացի քարտը: Նորից փորձեք։</translation>
 <translation id="692135145298539227">ջնջել</translation>
 <translation id="6929081673585394903">Ցույց տալ կառավարման տարրերը</translation>

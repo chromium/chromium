@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Envelope Invite</translation>
 <translation id="1413809658975081374">ข้อผิดพลาดเกี่ยวกับความเป็นส่วนตัว</translation>
 <translation id="1414134146594747368">โรงเรียนอนุบาล</translation>
-<translation id="141826476809826269">สิ้นสุดข้อความที่ดึงมา</translation>
 <translation id="1418611192881166179">ในระหว่างที่ Chrome กำลังอัปเดตฟีเจอร์นี้ เว็บไซต์จะใช้คุกกี้ของบุคคลที่สามได้ชั่วคราว เว้นแต่คุณจะบล็อกคุกกี้ของบุคคลที่สามในการตั้งค่า</translation>
 <translation id="1419305130220238697">ปุ่มจัดการการดาวน์โหลดใน Chrome เปิดใช้งานเพื่อจัดการไฟล์ที่คุณดาวน์โหลดใน Chrome</translation>
 <translation id="1422930527989633628">สามารถขอทำการค้นหาอุปกรณ์บลูทูธใกล้เคียงได้</translation>
@@ -1321,6 +1320,7 @@
 <translation id="3542628208405253498">รูปบัตร</translation>
 <translation id="3542768452570884558">เปิดลิงก์ในหน้าต่างใหม่</translation>
 <translation id="3547746132308051926">20 x 24 นิ้ว</translation>
+<translation id="3552155506104542239">คำเตือน: นโยบายนี้ขัดแย้งกับ <ph name="POLICY_NAME" /> และจะไม่มีผลกับแอป Android หากมิเช่นนั้น นโยบายนี้จะทำงานตามที่ตั้งใจไว้</translation>
 <translation id="3552297013052089404">แบบอักษร Sans Serif</translation>
 <translation id="3558573058928565255">ตอนกลางวัน</translation>
 <translation id="355995771319966853">ยกเลิกการป้อนข้อความอัตโนมัติ</translation>
@@ -1778,6 +1778,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4397059608630092079">ยืนยันเสมอเมื่อใช้การป้อนข้อความอัตโนมัติ</translation>
+<translation id="4397978002248035985">เปิดป๊อปอัปเพื่อยืนยันในเว็บไซต์ของธนาคาร</translation>
 <translation id="4406883609789734330">คำบรรยายสด</translation>
 <translation id="4406896451731180161">ผลการค้นหา</translation>
 <translation id="4408413947728134509">คุกกี้ <ph name="NUM_COOKIES" /></translation>
@@ -2201,6 +2202,7 @@
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">คุณสมบัติของเอกสาร</translation>
 <translation id="528468243742722775">สิ้นสุด</translation>
+<translation id="5285468538058987167">ผ่านทางการยืนยันตัวตนลูกค้าแบบขั้นสูง (SCA)</translation>
 <translation id="5285570108065881030">แสดงรหัสผ่านที่บันทึกไว้ทั้งหมด</translation>
 <translation id="5287456746628258573">เว็บไซต์นี้ใช้การกำหนดค่าความปลอดภัยที่ล้าสมัย ซึ่งอาจทำให้ข้อมูลของคุณรั่วไหลเมื่อส่งไปยังเว็บไซต์นี้ (เช่น รหัสผ่านหรือหมายเลขบัตรเครดิต)</translation>
 <translation id="5288108484102287882">มีคำเตือนจากการตรวจสอบความถูกต้องของค่านโยบาย</translation>
@@ -2248,6 +2250,7 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"นาฬิกาของคุณช้ากว่าปัจจุบัน" หรือ "นาฬิกาของคุณเร็วกว่าปัจจุบัน" หรือ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5380953781541843508">ตามลำดับจากน้อยไปมาก</translation>
+<translation id="5381318171304904246">เมื่อคุณดำเนินการต่อ ระบบจะนำคุณไปยังเว็บไซต์ของธนาคาร หลังจากยืนยันแล้ว ระบบจะนำคุณกลับมาโดยอัตโนมัติเพื่อทำการซื้อให้เสร็จสิ้น</translation>
 <translation id="5383478552402031184">การปูพื้น</translation>
 <translation id="5385857628869214740">อารมณ์ขัน</translation>
 <translation id="5385966243497224160">แสดงตัวอย่าง URL ที่ไม่ใช่ HTTPS ไม่ได้</translation>
@@ -3069,7 +3072,6 @@
 <translation id="6978121630131642226">เครื่องมือค้นหา</translation>
 <translation id="6978236010531171013">แชร์เลย</translation>
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
-<translation id="6979332652936434520">เริ่มข้อความที่ดึงมา</translation>
 <translation id="6979440798594660689">ปิดเสียง (ค่าเริ่มต้น)</translation>
 <translation id="6987806006823772670">ซอง (เคลือบ)</translation>
 <translation id="6989763994942163495">แสดงการตั้งค่าขั้นสูง...</translation>
@@ -3095,6 +3097,7 @@
 <translation id="7030164307377592766">แก้ไขการตั้งค่าสำหรับการกรอกวิธีการชำระเงิน</translation>
 <translation id="7030436163253143341">ใบรับรองไม่ถูกต้อง</translation>
 <translation id="7031646650991750659">แอปจาก Google Play ที่คุณติดตั้ง</translation>
+<translation id="7035705295266423040">ธนาคารต้องการยืนยันตัวตนของคุณ</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการการตั้งค่าความเป็นส่วนตัวของบัญชี Google</translation>
 <translation id="7043552168914147882">แท็บสต็อก</translation>
 <translation id="7044081119134178347">อนุญาตให้ใช้กล้องในครั้งนี้</translation>

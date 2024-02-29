@@ -231,7 +231,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1410941016594047814">Umschlag Invite</translation>
 <translation id="1413809658975081374">Datenschutzfehler</translation>
 <translation id="1414134146594747368">Vorschule</translation>
-<translation id="141826476809826269">Ende des extrahierten Textes</translation>
 <translation id="1418611192881166179">Während Chrome diese Funktion aktualisiert, können Websites vorübergehend Drittanbieter-Cookies verwenden, sofern du diese nicht in den Einstellungen blockierst.</translation>
 <translation id="1419305130220238697">Schaltfläche „Downloads in Chrome verwalten“ – aktivieren, um in Chrome heruntergeladene Dateien zu verwalten</translation>
 <translation id="1422930527989633628">Darf nachfragen, wenn sie nach Bluetooth-Geräten in der Nähe suchen möchte</translation>
@@ -1201,6 +1200,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3324687287337751929">4 × 6 Zoll</translation>
 <translation id="3324983252691184275">Purpur</translation>
 <translation id="3325027355611702542">Wohnwagen und Wohnmobile</translation>
+<translation id="3325568918769906282">in absteigender Reihenfolge</translation>
 <translation id="3329013043687509092">Sättigung</translation>
 <translation id="3333762389743153920">Virtuelle Karte wird nicht unterstützt</translation>
 <translation id="3336044043987989409">Klicke auf die Schaltfläche zum Aktualisieren, um die Verbindung zu Geräten oder Servern in deinem privaten Netzwerk zuzulassen.</translation>
@@ -1320,6 +1320,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3542628208405253498">Bild der Karte</translation>
 <translation id="3542768452570884558">Link in neuem Fenster öffnen</translation>
 <translation id="3547746132308051926">20 × 24 Zoll</translation>
+<translation id="3552155506104542239">Warnung: Diese Richtlinie steht mit der Richtlinie „<ph name="POLICY_NAME" />“ im Konflikt und hat deshalb keine Auswirkungen auf Android-Apps. Ansonsten funktioniert diese Richtlinie ordnungsgemäß.</translation>
 <translation id="3552297013052089404">Schriftart Sans-Serif</translation>
 <translation id="3558573058928565255">Tageszeit</translation>
 <translation id="355995771319966853">Autofill rückgängig machen</translation>
@@ -2245,6 +2246,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5371425731340848620">Karte aktualisieren</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Deine Uhr geht nach", "Deine Uhr geht vor" oder "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">in aufsteigender Reihenfolge</translation>
 <translation id="5383478552402031184">Bodenbeläge</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">Vorschau von URL ohne HTTPS nicht möglich</translation>
@@ -3066,7 +3068,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6978121630131642226">Suchmaschinen</translation>
 <translation id="6978236010531171013">Trotzdem freigeben</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Beginn des extrahierten Textes</translation>
 <translation id="6979440798594660689">Stummschalten (Standard)</translation>
 <translation id="6987806006823772670">Umschlag (beschichtet)</translation>
 <translation id="6989763994942163495">Erweiterte Einstellungen anzeigen</translation>
@@ -3481,6 +3482,7 @@ Weitere Details:
 <translation id="7719791801330803993">Foto- und Videosoftware</translation>
 <translation id="772128550427553158">Der CVC befindet sich auf der Vorderseite deiner Karte.</translation>
 <translation id="7724603315864178912">Ausschneiden</translation>
+<translation id="7730057435797792985">Sortieren</translation>
 <translation id="7734285854693414638">Schnell ein neues Formular in Google Formulare erstellen</translation>
 <translation id="773466115871691567">Seiten auf <ph name="SOURCE_LANGUAGE" /> immer übersetzen</translation>
 <translation id="7736959720849233795">Linkadresse kopieren</translation>

@@ -1829,7 +1829,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2343747224442182863">Aseta tämä välilehti aktiiviseksi</translation>
 <translation id="2344032937402519675">Palvelimeen ei saatu yhteyttä. Tarkista verkkoyhteys ja yritä uudelleen. Jos ongelma ei ratkea, kokeile käynnistää Chromebook uudelleen.</translation>
 <translation id="234559068082989648">Chrome-sovellusten vanhoja versioita ei voi avata joulukuun 2022 jälkeen. Ota yhteyttä järjestelmänvalvojaan ja pyydä häntä päivittämään tai poistamaan sovellus.</translation>
-<translation id="2347930112185157300">Mobiilioperaattorin palvelu on lukittu</translation>
 <translation id="2348176352564285430">Sovellus: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Lupaa pyydetty, vastaa painamalla Ctrl + seuraava</translation>
 <translation id="234889437187286781">Dataa ladattaessa tapahtui virhe</translation>
@@ -1994,7 +1993,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2462332841984057083">Steamin käyttöönotto on jo aloitettu. Odota, että käyttöönotto on valmis.</translation>
 <translation id="2462724976360937186">Varmenteen myöntäjän avaimen tunnus</translation>
 <translation id="2462752602710430187">Lisättiin <ph name="PRINTER_NAME" /></translation>
-<translation id="2464046291463112461">Estä ulkoisia lisälaitteita käyttämästä ja jakamasta muistia (RAM)</translation>
 <translation id="2467755475704469005">Ei havaittuja laitteita. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Kosketuslevyn vierityksen nopeuttaminen</translation>
 <translation id="2468205691404969808">Käyttää evästeitä asetustesi muistamiseen, vaikka et kävisi kyseisillä sivuilla</translation>

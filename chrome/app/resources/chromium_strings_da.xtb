@@ -150,6 +150,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="3702352323269013324">Få flere oplysninger om personlig tilpasning af annoncer i Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Din administrator anmoder om, at du genstarter Chromium for at anvende denne opdatering}=1{Din administrator anmoder om, at du genstarter Chromium for at anvende denne opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator anmoder om, at du genstarter Chromium for at anvende denne opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator anmoder om, at du genstarter Chromium for at anvende denne opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="3713809861844741608">Åbn linket på en ny Chromium-&amp;fane</translation>
+<translation id="3788675262216168505">Administrer Chromium-profiler</translation>
 <translation id="378917192836375108">Med Chromium kan du klikke på et telefonnummer på nettet og ringe op til det via Skype!</translation>
 <translation id="3790262771324122253">Få flere oplysninger om, hvorfor Chromium blokerer visse downloads</translation>
 <translation id="379589255253486813">Chromium giver dig besked, hvis der er noget, du skal gennemgå</translation>
@@ -434,6 +435,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8555465886620020932">Tjenestefejl: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium kan tjekke dine adgangskoder, når du er logget ind med din Google-konto</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Forfatterne bag Chromium. Alle rettigheder forbeholdes.</translation>
+<translation id="858822505990366713">Tilpas Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Websites kan gemme oplysninger med Chromium om dine interesser. Hvis du f.eks. besøger et website for at købe sko til et maraton, kan websitet muligvis definere, at din interesse er at løbe maraton. Hvis du derefter besøger et andet website for at tilmelde dig et løb, kan det website vise dig en annonce for løbesko baseret på dine interesser.</translation>
 <translation id="8619360774459241877">Starter Chromium...</translation>
 <translation id="8621669128220841554">Installationen mislykkedes på grund af en uspecificeret fejl. Download Chromium igen.</translation>
@@ -451,8 +453,10 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8907580949721785412">Chromium forsøger at vise adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="8931379085695076764">Chromium kan estimere dine interesser baseret på din browserhistorik de seneste få uger. Disse oplysninger forbliver på din enhed.</translation>
 <translation id="8941642502866065432">Chromium kunne ikke opdateres</translation>
+<translation id="895999862145835951">Tilpas Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise-logo</translation>
 <translation id="8986207147630327271">Du er ved at føje en arbejdsprofil til denne browser, og du giver kun din administrator kontrol over arbejdsprofilen.</translation>
+<translation id="8988036198400390003">Administrer Chromium-profiler</translation>
 <translation id="9019929317751753759">For at gøre Chromium mere sikker har vi deaktiveret følgende udvidelser, som ikke er anført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og muligvis er blevet tilføjet, uden at du vidste det.</translation>
 <translation id="9022552996538154597">Log ind på Chromium</translation>
 <translation id="907832235989677238">Log ind på Chromium. Hvis du kun vil logge ind på en konto én gang, kan du <ph name="GUEST_LINK_BEGIN" />bruge enheden som gæst<ph name="GUEST_LINK_END" />.</translation>

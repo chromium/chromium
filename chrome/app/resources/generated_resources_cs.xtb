@@ -1817,7 +1817,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2343747224442182863">Vybrat tuto kartu</translation>
 <translation id="2344032937402519675">K serveru se nelze připojit. Zkontrolujte připojení k síti a zkuste to znovu. Pokud potíže přetrvávají, zkuste Chromebook restartovat.</translation>
 <translation id="234559068082989648">Staré verze aplikací pro Chrome se po prosinci 2022 neotevřou. Požádejte administrátora o aktualizaci na novou verzi, nebo tuto aplikaci odstraňte.</translation>
-<translation id="2347930112185157300">Mobilní operátor je uzamčen</translation>
 <translation id="2348176352564285430">Aplikace: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Odpovězte na žádost o oprávnění stisknutím kláves Ctrl + Vpřed</translation>
 <translation id="234889437187286781">Při načítání dat došlo k chybě</translation>
@@ -1982,7 +1981,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2462332841984057083">Steam se již nastavuje. Počkejte na dokončení nastavení.</translation>
 <translation id="2462724976360937186">ID klíče certifikační autority</translation>
 <translation id="2462752602710430187">Byla přidána tiskárna <ph name="PRINTER_NAME" /></translation>
-<translation id="2464046291463112461">Blokovat externímu příslušenství přístup k paměti RAM a její sdílení</translation>
 <translation id="2467755475704469005">Nebylo zjištěno žádné zařízení. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Zrychlení posouvání touchpadem</translation>
 <translation id="2468205691404969808">Používá soubory cookie k uložení vašeho nastavení i v případě, že stránky nenavštívíte</translation>
@@ -2612,6 +2610,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2935654492420446828">Školní účet přidáte později</translation>
 <translation id="2936851848721175671">Záloha a obnovení</translation>
 <translation id="2938981087412273365">Nemá povoleno číst a měnit tento web</translation>
+<translation id="2939005221756255562">Povolit oznámení v oznamovacím centru. Otevřít <ph name="BEGIN_LINK" />Nastavení systému<ph name="END_LINK" />.</translation>
 <translation id="2939908794993783865">Další neaktivní weby</translation>
 <translation id="2939938020978911855">Zobrazit dostupná zařízení Bluetooth</translation>
 <translation id="2941112035454246133">Nízká</translation>

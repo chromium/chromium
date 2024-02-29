@@ -43,6 +43,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
 <translation id="4159784952369912983">જાંબલી</translation>
 <translation id="4212246570487010370">બ્રાઉઝ કરવાનું ચાલુ રાખો</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને મોટું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને મોટું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને મોટું કરો.}}</translation>
 <translation id="427987768447457592">ટૅબનું નવું ગ્રૂપ</translation>
 <translation id="4648718555153979859">તમારા ટૅબ અહીં એકસાથે ગ્રૂપ કરવામાં આવ્યા છે</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ)}one{(<ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ)}other{(<ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ)}}</translation>
@@ -56,6 +57,7 @@
 <translation id="5082793167783849073">ગ્રૂપ બનાવીને ઝડપથી પેજની સરખામણી કરો. શરૂ કરવા માટે, લિંકને સ્પર્શ કરી રાખો.</translation>
 <translation id="5161254044473106830">શીર્ષક જરૂરી</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{તમે તાજેતરમાં ઉપયોગમાં ન લીધું હોય તેવું <ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવો છો}one{તમે તાજેતરમાં ઉપયોગમાં ન લીધું હોય તેવું <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવો છો}other{તમે તાજેતરમાં ઉપયોગમાં ન લીધા હોય તેવા <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવો છો}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને બંધ કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને બંધ કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને બંધ કરો.}}</translation>
 <translation id="5339733443032484186">તમારું છેલ્લું ટૅબ</translation>
 <translation id="5400836586163650660">ગ્રે</translation>
 <translation id="5490235265819901748">ટૅબ ગ્રૂપ મોટું કરો</translation>
@@ -84,6 +86,7 @@
 <translation id="6856809498882026482">એક કરતાં વધુ પસંદગી કરવાનો મોડ છુપાવો</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ટૅબ શેર કરો}one{ટૅબ શેર કરો}other{ટૅબ શેર કરો}}</translation>
 <translation id="7129458170538955174">આ સ્ટોર વિશેની માહિતી અડધી સ્ક્રીન પર ખુલી છે</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ગ્રૂપ બંધ કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ગ્રૂપ બંધ કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ગ્રૂપ બંધ કરો.}}</translation>
 <translation id="7204204600596740190">એક કરતાં વધુ પસંદગી કરવાનો મોડ</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> પસંદ કરેલો છે</translation>
 <translation id="7326879924029668159">પરત કરવાની પૉલિસી અને બીજું ઘણું બધું જુઓ</translation>
@@ -107,6 +110,7 @@
 <translation id="8714939927607906138">ઓછી કિંમત</translation>
 <translation id="8730999928494395583">આ ડિવાઇસમાંથી આ છૂપા ટૅબમાંની તમારી પ્રવૃત્તિ કાઢી નાખવામાં આવશે</translation>
 <translation id="8820741577754260431">તમારી ટૅબ પર કિંમતમાં ઘટાડા વિશેની માહિતી જુઓ</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને મોટું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને મોટું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને મોટું કરો.}}</translation>
 <translation id="9090098097337832354">આ સ્ટોર વિશેની માહિતી બતાવવાની બંધ કરી છે</translation>
 <translation id="9150694013019234766">સ્ક્રીનના નીચેના ભાગમાં, તમારા ટૅબ ગ્રૂપમાં એકથી વધુ ટૅબની વચ્ચે સ્વિચ કરો</translation>
 <translation id="9169594135889675189">ગ્રૂપમાં નવું ટૅબ ઉમેરો</translation>

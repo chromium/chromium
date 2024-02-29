@@ -231,7 +231,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1410941016594047814">Koevert Uitnodiging</translation>
 <translation id="1413809658975081374">Privaatheidsfout</translation>
 <translation id="1414134146594747368">Voorskool</translation>
-<translation id="141826476809826269">Einde van teksuittreksel</translation>
 <translation id="1418611192881166179">Terwyl Chrome hierdie kenmerk opdateer, kan werwe derdepartywebkoekies tydelik gebruik tensy jy dit in instellings blokkeer.</translation>
 <translation id="1419305130220238697">Knoppie om aflaaie in Chrome te bestuur; aktiveer om lêers te bestuur wat jy in Chrome afgelaai het</translation>
 <translation id="1422930527989633628">Kan vra om Bluetooth-toestelle in die omtrek te ontdek</translation>
@@ -1321,6 +1320,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3542628208405253498">Kaartprent</translation>
 <translation id="3542768452570884558">Maak skakel in nuwe venster oop</translation>
 <translation id="3547746132308051926">20x24 dm.</translation>
+<translation id="3552155506104542239">Waarskuwing: Hierdie beleid bots met die <ph name="POLICY_NAME" /> en sal geen uitwerking op Android-apps hê nie. Andersins werk hierdie beleid soos dit moet.</translation>
 <translation id="3552297013052089404">Sans Serif-lettertipe</translation>
 <translation id="3558573058928565255">Dag</translation>
 <translation id="355995771319966853">Ontdoen Outovul</translation>
@@ -3068,7 +3068,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6978121630131642226">Soekenjins</translation>
 <translation id="6978236010531171013">Deel in elk geval</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Begin van teksuittreksel</translation>
 <translation id="6979440798594660689">Demp (verstek)</translation>
 <translation id="6987806006823772670">Koevert (bestryk)</translation>
 <translation id="6989763994942163495">Wys gevorderde instellings …</translation>

@@ -231,7 +231,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1410941016594047814">Invite-konvolutt</translation>
 <translation id="1413809658975081374">Personvernfeil</translation>
 <translation id="1414134146594747368">Førskole</translation>
-<translation id="141826476809826269">Slutten av teksten som er hentet ut</translation>
 <translation id="1418611192881166179">Mens Chrome oppdaterer denne funksjonen, kan nettsteder midlertidig bruke informasjonskapsler fra tredjeparter med mindre du blokkerer dem i innstillingene.</translation>
 <translation id="1419305130220238697">Knappen «Administrer nedlastinger i Chrome» – aktiver for å administrere filer du har lastet ned i Chrome</translation>
 <translation id="1422930527989633628">Kan be om å få oppdage Bluetooth-enheter i nærheten</translation>
@@ -1780,6 +1779,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">Rand</translation>
 <translation id="4397059608630092079">Bekreft alltid når autofyll brukes</translation>
+<translation id="4397978002248035985">Åpner et forgrunnsvindu for bekreftelse på bankens nettsted</translation>
 <translation id="4406883609789734330">Direkteteksting</translation>
 <translation id="4406896451731180161">søkeresultater</translation>
 <translation id="4408413947728134509">Informasjonskapsler <ph name="NUM_COOKIES" /></translation>
@@ -2065,7 +2065,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4989809363548539747">Dette programtillegget støttes ikke</translation>
 <translation id="4990241977441916452">A2-konvolutt</translation>
 <translation id="4992066212339426712">Slå på lyden</translation>
-<translation id="4994348767896109801">Hvorvidt en annonse du ser, er personlig tilpasset, kan avhenge av flere ting, inkludert denne innstillingen, <ph name="BEGIN_LINK_1" />annonseemner<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />innstillingene dine for informasjonskapsler<ph name="END_LINK_2" /> og hvorvidt nettstedet du ser på, viser personlig tilpassede annonser. Finn ut hvordan du <ph name="BEGIN_LINK_3" />administrerer annonsepersonvernet ditt<ph name="END_LINK_3" />.</translation>
+<translation id="4994348767896109801">Hvorvidt en annonse du ser, er personlig tilpasset, kan avhenge av flere ting, inkludert denne innstillingen, <ph name="BEGIN_LINK_1" />annonseemner<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />innstillingene dine for informasjonskapsler<ph name="END_LINK_2" /> og hvorvidt nettstedet du ser på, viser personlig tilpassede annonser. Finn ut mer om hvordan du <ph name="BEGIN_LINK_3" />administrerer annonsepersonvernet ditt<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Endret:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere nettstedsøk og standard søkemotor</translation>
 <translation id="4998950033665438990">Ensidig</translation>
@@ -2203,6 +2203,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumentegenskaper</translation>
 <translation id="528468243742722775">Avslutt</translation>
+<translation id="5285468538058987167">Via sterk kundeautentisering (SCA)</translation>
 <translation id="5285570108065881030">Vis alle lagrede passord</translation>
 <translation id="5287456746628258573">Dette nettstedet bruker en utdatert sikkerhetskonfigurasjon, som betyr at informasjonen din (for eksempel passord eller kredittkortnumre) kan bli avslørt når den sendes til dette nettstedet.</translation>
 <translation id="5288108484102287882">Det har oppstått advarsler under validering av regelverdier</translation>
@@ -3071,7 +3072,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6978121630131642226">Søkemotorer</translation>
 <translation id="6978236010531171013">Del likevel</translation>
 <translation id="6979158407327259162">Google Disk</translation>
-<translation id="6979332652936434520">Begynnelsen av teksten som er hentet ut</translation>
 <translation id="6979440798594660689">Kutt lyden (standard)</translation>
 <translation id="6987806006823772670">Konvolutt (belagt)</translation>
 <translation id="6989763994942163495">Vis avanserte innstillinger</translation>
@@ -3408,7 +3408,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7600965453749440009">Oversett aldri <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Du pleier å ha en sikker tilkobling til dette nettstedet, men Chrome kunne ikke bruke en sikker tilkobling denne gangen. Det kan hende at angripere prøver å tyvlytte på eller modifisere nettverkstilkoblingen din. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Angripere på nettstedet du prøver å besøke, kan muligens installere skadelig programvare som stjeler eller sletter ting som passord, bilder, meldinger eller kredittkortnumre.</translation>
-<translation id="7608583484192556132">Hvorvidt en annonse du ser, er personlig tilpasset, kan avhenge av flere ting, inkludert denne innstillingen, <ph name="BEGIN_LINK_1" />annonser foreslått av nettsteder<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />innstillingene dine for informasjonskapsler<ph name="END_LINK_2" /> og hvorvidt nettstedet du ser på, viser personlig tilpassede annonser. Finn ut hvordan du <ph name="BEGIN_LINK_3" />administrerer annonsepersonvernet ditt<ph name="END_LINK_3" />.</translation>
+<translation id="7608583484192556132">Hvorvidt en annonse du ser, er personlig tilpasset, kan avhenge av flere ting, inkludert denne innstillingen, <ph name="BEGIN_LINK_1" />annonser foreslått av nettsteder<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />innstillingene dine for informasjonskapsler<ph name="END_LINK_2" /> og hvorvidt nettstedet du ser på, viser personlig tilpassede annonser. Finn ut mer om hvordan du <ph name="BEGIN_LINK_3" />administrerer annonsepersonvernet ditt<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Verdien er utenfor rekkevidden <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Utløpsdato: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å se og administrere passord i Chrome-innstillingene</translation>

@@ -1816,7 +1816,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2343747224442182863">Focalizează această filă</translation>
 <translation id="2344032937402519675">Nu s-a putut conecta la server. Verifică starea conexiunii la rețea și încearcă din nou. Dacă ai în continuare probleme, repornește Chromebookul.</translation>
 <translation id="234559068082989648">Versiunile vechi ale aplicațiilor Chrome nu se vor mai deschide începând din decembrie 2022. Contactează administratorul pentru a actualiza la o versiune nouă sau pentru a elimina aplicația.</translation>
-<translation id="2347930112185157300">Serviciile acestui furnizor de rețea mobilă sunt blocate</translation>
 <translation id="2348176352564285430">Aplicație: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Permisiune necesară, apasă Ctrl + tasta Înainte pentru a răspunde</translation>
 <translation id="234889437187286781">Eroare la încărcarea datelor</translation>
@@ -1981,7 +1980,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2462332841984057083">Steam se configurează deja. Așteaptă să se finalizeze configurarea.</translation>
 <translation id="2462724976360937186">ID-ul cheii autorității de certificare</translation>
 <translation id="2462752602710430187">S-a adăugat <ph name="PRINTER_NAME" /></translation>
-<translation id="2464046291463112461">Blochează accesul și permiterea accesului la memorie (RAM) de la accesoriile externe</translation>
 <translation id="2467755475704469005">Nu s-a detectat niciun dispozitiv. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Accelerarea derulării pe touchpad</translation>
 <translation id="2468205691404969808">Folosește cookie-uri pentru a-ți reține preferințele, chiar dacă nu accesezi paginile respective</translation>

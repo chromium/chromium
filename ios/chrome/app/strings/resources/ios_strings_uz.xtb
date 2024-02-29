@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">Veb qidiruv</translation>
 <translation id="2252749852083403809">Drive omboriga (<ph name="USER_EMAIL" />) saqlanmoqda.</translation>
 <translation id="2256933947031277845">Tashkilotingiz faqat ayrim hisoblardan kirishga ruxsat beradi.</translation>
+<translation id="2257594476751932246">Sizga moslashtirilgan yangiliklar</translation>
 <translation id="2258326562203545455">{count,plural, =1{Bukmarkni Google hisobingizga ({email}) saqlashingiz mumkin.}other{Bukmarklarni Google hisobingizga ({email}) saqlashingiz mumkin.}}</translation>
 <translation id="225943865679747347">Xatolik kodi: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Hisob kiritish</translation>

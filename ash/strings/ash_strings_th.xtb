@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">กด <ph name="KEYBOARD_SHORTCUT" /> เพื่อสลับรูปแบบแป้นพิมพ์</translation>
 <translation id="2486214324139475545">ตัวอย่าง <ph name="DESK_NAME" /> เดสก์ที่ใช้งานอยู่</translation>
 <translation id="2487915095798731898">เข้าร่วม</translation>
+<translation id="2499445554382787206">เมนูโปรไฟล์เดสก์ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">คีย์ติดหนึบ</translation>
 <translation id="2504454902900101003">ปิดการตั้งค่าการดูรูปภาพ สื่อ และการแจ้งเตือนล่าสุดของโทรศัพท์</translation>
 <translation id="2509468283778169019">Caps Lock เปิดอยู่</translation>
@@ -605,6 +606,7 @@
 <translation id="3509391053705095206">ไม่พบโทรศัพท์ ตรวจสอบว่าบลูทูธของโทรศัพท์เปิดอยู่</translation>
 <translation id="3510164367642747937">ไฮไลต์เคอร์เซอร์เมาส์</translation>
 <translation id="3513798432020909783">บัญชีที่จัดการโดย <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">อัปเดตงานล่าสุด: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{อัปเดตอุปกรณ์ภายใน 1 นาที}other{อัปเดตอุปกรณ์ภายใน # นาที}}</translation>
 <translation id="3522979239100719575">กำลังหาโปรไฟล์ที่พร้อมใช้งาน การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="3526440770046466733">เปิดลิงก์ในแท็บใหม่และอยู่ในแท็บปัจจุบันต่อ</translation>
@@ -1139,6 +1141,7 @@
 <translation id="5536723544185013515">แอปล่าสุด ใช้แป้นลูกศรซ้ายหรือขวาเพื่อเข้าถึงแอปล่าสุดทั้งหมด</translation>
 <translation id="553675580533261935">กำลังออกจากเซสชัน</translation>
 <translation id="5537725057119320332">แคสต์</translation>
+<translation id="554017492391497564">ทำเครื่องหมายว่าเสร็จสมบูรณ์ไม่ได้</translation>
 <translation id="5546397813406633847">กู้คืนผู้ใช้</translation>
 <translation id="554893713779400387">สลับการเขียนตามคำบอก</translation>
 <translation id="5550417424894892620">วางไฟล์บนเดสก์ท็อปเพื่อเพิ่มลงใน <ph name="HOLDING_SPACE_TITLE" /> คุณจะเพิ่มไฟล์ไปยังเดสก์ท็อปไม่ได้</translation>
@@ -1333,6 +1336,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">แบตเตอรี่เหลือน้อย เปิดโหมดประหยัดแบตเตอรี่แล้ว</translation>
 <translation id="6247728804802644171">เปิดการแจ้งเตือน</translation>
+<translation id="6249795363855770621">ทำเครื่องหมายว่าเสร็จสมบูรณ์ไม่ได้ โปรดลองอีกครั้งเมื่อออนไลน์</translation>
 <translation id="6254629735336163724">ล็อกไว้ที่แนวนอนแล้ว</translation>
 <translation id="6259254695169772643">ใช้สไตลัสเพื่อเลือก</translation>
 <translation id="6267036997247669271"><ph name="NAME" /> กำลังเปิดใช้งาน...</translation>
@@ -1493,6 +1497,7 @@
 <translation id="6896758677409633944">คัดลอก</translation>
 <translation id="6912841030378044227">โฟกัสแถบที่อยู่</translation>
 <translation id="6912901278692845878">การแนะนำสั้นๆ</translation>
+<translation id="6917259695595127329">อัปเดตงานล่าสุด: <ph name="TIME" /></translation>
 <translation id="6919251195245069855">ไม่พบสมาร์ทการ์ดของคุณ ลองใหม่</translation>
 <translation id="692135145298539227">นำออก</translation>
 <translation id="6929081673585394903">แสดงการควบคุม</translation>

@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Invite 信封</translation>
 <translation id="1413809658975081374">隐私设置错误</translation>
 <translation id="1414134146594747368">学龄前教育</translation>
-<translation id="141826476809826269">已提取文本的末尾</translation>
 <translation id="1418611192881166179">当 Chrome 更新此功能时，网站可暂时使用第三方 Cookie，除非您在设置中屏蔽第三方 Cookie。</translation>
 <translation id="1419305130220238697">“管理 Chrome 中的下载内容”按钮，激活它即可管理您已在 Chrome 中下载的文件</translation>
 <translation id="1422930527989633628">可以询问能否发现附近的蓝牙设备</translation>
@@ -1775,6 +1774,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">帽檐式</translation>
 <translation id="4397059608630092079">使用自动填充时，一律进行验证</translation>
+<translation id="4397978002248035985">打开在银行网站上进行验证的弹出式窗口</translation>
 <translation id="4406883609789734330">实时字幕</translation>
 <translation id="4406896451731180161">搜索结果</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" />Cookie</translation>
@@ -2198,6 +2198,7 @@
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">文档属性</translation>
 <translation id="528468243742722775">结束</translation>
+<translation id="5285468538058987167">通过增强型客户身份验证 (SCA)</translation>
 <translation id="5285570108065881030">显示所有已保存的密码</translation>
 <translation id="5287456746628258573">此网站使用的安全性配置已过期，这可能会导致您的信息（例如密码或信用卡卡号）在发送至此网站时出现泄露。</translation>
 <translation id="5288108484102287882">政策值验证引发了警告</translation>
@@ -3064,7 +3065,6 @@
 <translation id="6978121630131642226">搜索引擎</translation>
 <translation id="6978236010531171013">仍然共享</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
-<translation id="6979332652936434520">已提取文本的开头</translation>
 <translation id="6979440798594660689">静音（默认）</translation>
 <translation id="6987806006823772670">信封（涂布纸）</translation>
 <translation id="6989763994942163495">显示高级设置...</translation>

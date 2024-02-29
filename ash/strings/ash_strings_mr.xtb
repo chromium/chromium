@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">कीबोर्डचा लेआउट स्विच करण्यासाठी <ph name="KEYBOARD_SHORTCUT" /> प्रेस करा.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> चे पूर्वावलोकन करा. अ‍ॅक्टिव्ह डेस्क.</translation>
 <translation id="2487915095798731898">सामील व्हा</translation>
+<translation id="2499445554382787206">डेस्‍क प्रोफाइल मेनू. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">स्टिकी की</translation>
 <translation id="2504454902900101003">तुमच्या फोनमधील अलीकडील फोटो, मीडिया आणि सूचना पाहण्याचे सेट करणे डिसमिस करा</translation>
 <translation id="2509468283778169019">CAPS LOCK सुरू आहे</translation>
@@ -605,6 +606,7 @@
 <translation id="3509391053705095206">तुमचा फोन शोधू शकत नाही. तुमच्या फोनचे ब्लूटूथ सुरू असल्याची खात्री करा.</translation>
 <translation id="3510164367642747937">माउसचा कर्सर हायलाइट करा</translation>
 <translation id="3513798432020909783">खाते <ph name="MANAGER_EMAIL" /> ने व्‍यवस्‍थापित केले आहे</translation>
+<translation id="3517037892157925473">टास्क शेवटच्या अपडेट केल्या आहेत: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{डिव्हाइस एका मिनिटाच्या आत अपडेट करा}other{डिव्हाइस # मिनिटांच्या आत अपडेट करा}}</translation>
 <translation id="3522979239100719575">उपलब्ध प्रोफाइल शोधत आहे. यासाठी काही मिनिटे लागू शकतात.</translation>
 <translation id="3526440770046466733">नवीन टॅबमध्ये लिंक उघडा आणि सध्याच्या टॅबमध्ये रहा</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5536723544185013515">अलीकडील ॲप्स, अलीकडील सर्व ॲप्स ॲक्सेस करण्यासाठी लेफ्ट किंवा राइट ॲरो की वापरून नेव्हिगेट करा</translation>
 <translation id="553675580533261935">सेशनमधून बाहेर पडत आहे</translation>
 <translation id="5537725057119320332">कास्ट करा</translation>
+<translation id="554017492391497564">पूर्ण झाले म्हणून मार्क करता आले नाही.</translation>
 <translation id="5546397813406633847">वापरकर्ता रिकव्‍हर करा</translation>
 <translation id="554893713779400387">डिक्टेशन टॉगल करा</translation>
 <translation id="5550417424894892620">फाइल <ph name="HOLDING_SPACE_TITLE" /> मध्ये जोडण्यासाठी त्या डेस्कटॉपवर ड्रॉप करा. तुम्ही डेस्कटॉपवर फाइल जोडू शकत नाही.</translation>
@@ -1338,6 +1341,7 @@
 <translation id="6237231532760393653">१X</translation>
 <translation id="62380141479352646">बॅटरी कमी आहे. बॅटरी सेव्हर सुरू केले आहे.</translation>
 <translation id="6247728804802644171">सूचना उघडा</translation>
+<translation id="6249795363855770621">पूर्ण झाले म्हणून मार्क करता आले नाही. ऑनलाइन असताना पुन्हा प्रयत्न करा.</translation>
 <translation id="6254629735336163724">आडव्या दिशेने लॉक केले</translation>
 <translation id="6259254695169772643">निवडण्यासाठी तुमचे स्टायलस वापरा</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: सक्रिय करत आहे...</translation>
@@ -1498,6 +1502,7 @@
 <translation id="6896758677409633944">कॉपी करा</translation>
 <translation id="6912841030378044227">ॲड्रेस बारवर फोकस करा</translation>
 <translation id="6912901278692845878">झटपट फेरफटका</translation>
+<translation id="6917259695595127329">टास्क शेवटच्या अपडेट केल्या आहेत: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">तुमचे स्मार्ट कार्ड ओळखू शकलो नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="692135145298539227">हटवा</translation>
 <translation id="6929081673585394903">नियंत्रणे दाखवा</translation>

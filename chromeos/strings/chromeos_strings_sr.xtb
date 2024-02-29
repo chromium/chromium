@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">Помоћник</translation>
 <translation id="1954818433534793392">Зграда</translation>
 <translation id="1962550982027027473">Подразумевани назив приступне тачке је обавезан</translation>
+<translation id="1967860190218310525">Направите нов назив приступне тачке</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Слика Google профила</translation>
 <translation id="1979103255016296513">Рок за промену лозинке је истекао</translation>
@@ -473,7 +474,6 @@
 <translation id="4046123991198612571">Следећа песма</translation>
 <translation id="404928562651467259">УПОЗОРЕЊЕ</translation>
 <translation id="4054683689023980771">Преузима се слика</translation>
-<translation id="4060260348856573701">Нови назив приступне тачке</translation>
 <translation id="4063039537646912479">светлоплав(а)</translation>
 <translation id="4093865285251893588">Слика профила</translation>
 <translation id="409427325554347132">Сачувај детаље теста</translation>
@@ -981,6 +981,7 @@
 <translation id="7144954474087165241">Пагода</translation>
 <translation id="714876143603641390">Повезивање LAN-а</translation>
 <translation id="7154020516215182599">Пошаљите повратне информације или опишите проблем. Ако је то могуће, уврстите кораке за изазивање истог проблема.</translation>
+<translation id="7155037718620478619">Откријте још назива приступне тачке</translation>
 <translation id="7155171745945906037">Постојећа фотографија из камере или датотеке</translation>
 <translation id="7162487448488904999">Галерија</translation>
 <translation id="7170236477717446850">Слика профила</translation>

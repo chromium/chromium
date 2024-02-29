@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954818433534793392">အဆောက်အအုံ</translation>
 <translation id="1962550982027027473">မူရင်း APN လိုအပ်သည်</translation>
+<translation id="1967860190218310525">APN အသစ် ပြုလုပ်ရန်</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google ပရိုဖိုင်ဓာတ်ပုံ</translation>
 <translation id="1979103255016296513">စကားဝှက်ပြောင်းလဲမှု သက်တမ်းကုန်သွားပါပြီ</translation>
@@ -473,7 +474,6 @@
 <translation id="4046123991198612571">နောက်တစ်ပုဒ်</translation>
 <translation id="404928562651467259">သတိပေးချက်</translation>
 <translation id="4054683689023980771">ပုံကို ဒေါင်းလုဒ်လုပ်နေသည်</translation>
-<translation id="4060260348856573701">APN အသစ်</translation>
 <translation id="4063039537646912479">အပြာဖျော့</translation>
 <translation id="4093865285251893588">ပရိုဖိုင်ပုံ</translation>
 <translation id="409427325554347132">စာသားအသေးစိတ် သိမ်းရန်</translation>
@@ -981,6 +981,7 @@
 <translation id="7144954474087165241">ဘုရားစေတီ</translation>
 <translation id="714876143603641390">Lan ချိတ်ဆက်မှု</translation>
 <translation id="7154020516215182599">သင့်အကြံပြုချက်ကို မျှဝေပါ (သို့) သင့်ပြဿနာကို ဖော်ပြပါ။ သင့်ပြဿနာ ပြန်လည်ဖော်ထုတ်ရန် လုပ်ဆောင်မှုအဆင့်များကို ဖြစ်နိုင်ပါက ထည့်သွင်းပါ။</translation>
+<translation id="7155037718620478619">နောက်ထပ် APN များ ရှာရန်</translation>
 <translation id="7155171745945906037">ကင်မရာ သို့မဟုတ် ဖိုင်မှ လက်ရှိပုံ</translation>
 <translation id="7162487448488904999">ပြခန်း</translation>
 <translation id="7170236477717446850">ပရိုဖိုင် ပုံ</translation>

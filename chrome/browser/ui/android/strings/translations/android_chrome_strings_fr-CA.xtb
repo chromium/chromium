@@ -602,6 +602,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="426652736638196239">Ce IBAN sera enregistré sur cet appareil uniquement</translation>
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
 <translation id="4277529130885813215">Utiliser un autre appareil</translation>
+<translation id="4282440837784183472">Votre organisation, <ph name="MANAGED_DOMAIN" />, gère le compte auquel vous êtes connecté et la façon dont Chrome peut être utilisé. Votre administrateur peut configurer ou restreindre certaines fonctionnalités.</translation>
 <translation id="4285846616383034558">Témoins, cache et autres données relatives aux sites</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activez le verrouillage d'écran dans les paramètres Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nouvel onglet navig. privée</translation>
@@ -637,7 +638,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Favori enregistré dans « <ph name="FOLDER_NAME" /> ». Il n'est enregistré que sur cet appareil.}one{Favori enregistré dans « <ph name="FOLDER_NAME" /> ». Il n'est enregistré que sur cet appareil.}other{Favoris enregistrés dans « <ph name="FOLDER_NAME" /> ». Ils ne sont enregistrés que sur cet appareil.}}</translation>
 <translation id="4484496141267039529">Aucune connexion. Réessayez plus tard.</translation>
 <translation id="4487967297491345095">Toutes les données des applications de Chrome seront supprimées de façon définitive. Cela comprend tous les fichiers, les paramètres, les comptes, les bases de données, etc.</translation>
-<translation id="4491323382106587961">Sélectionnez un compte. Actuellement sélectionné : <ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">L'enregistrement des mots de passe est activé par votre administrateur</translation>
 <translation id="4508528996305412043">Le menu de la carte du flux est ouvert</translation>
 <translation id="4509501256689523862">Lorsque vous naviguez, la personnalisation d’une annonce dépend de ce paramètre, du <ph name="BEGIN_LINK_1" />sujet des annonces<ph name="END_LINK_1" />, des <ph name="BEGIN_LINK_2" />paramètres de vos témoins<ph name="END_LINK_2" />, et du fait que le site que vous consultez personnalise les annonces</translation>
@@ -1165,6 +1165,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7037830628447527439">Connectez-vous à Chrome au moyen de votre compte Google</translation>
 <translation id="7054588988317389591">Obtenir les descriptions d'images?</translation>
 <translation id="7055152154916055070">Redirection bloquée :</translation>
+<translation id="7057969023583258980">Ouvrir l'historique complet de Chrome</translation>
 <translation id="7063006564040364415">Échec de connexion au serveur de synchronisation.</translation>
 <translation id="7071521146534760487">Gérer le compte</translation>
 <translation id="707155805709242880">Choisissez les éléments à synchroniser ci-dessous</translation>

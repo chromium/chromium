@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">צריך להקיש על <ph name="KEYBOARD_SHORTCUT" /> כדי להחליף פריסת מקלדת.</translation>
 <translation id="2486214324139475545">תצוגה מקדימה של <ph name="DESK_NAME" />. שולחן העבודה הווירטואלי פעיל.</translation>
 <translation id="2487915095798731898">הצטרפות</translation>
+<translation id="2499445554382787206">תפריט הפרופיל של שולחן העבודה הווירטואלי. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">מקשים דביקים</translation>
 <translation id="2504454902900101003">ביטול ההגדרה של הצגת התמונות, המדיה וההתראות שבטלפון מהזמן האחרון</translation>
 <translation id="2509468283778169019">‏CAPS LOCK מופעל</translation>
@@ -605,6 +606,7 @@
 <translation id="3509391053705095206">‏לא הצלחנו למצוא את הטלפון. צריך לוודא שה-Bluetooth שלו מופעל.</translation>
 <translation id="3510164367642747937">הדגשה של סמן העכבר</translation>
 <translation id="3513798432020909783">החשבון מנוהל על-ידי <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">העדכון האחרון של המשימות: <ph name="TIME" />,‏ <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{עליך לעדכן את המכשיר בתוך דקה אחת}one{עליך לעדכן את המכשיר בתוך # דקות}two{עליך לעדכן את המכשיר בתוך # דקות}other{עליך לעדכן את המכשיר בתוך # דקות}}</translation>
 <translation id="3522979239100719575">מתבצע חיפוש של פרופילים זמינים. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="3526440770046466733">פתיחת הקישור בכרטיסייה חדשה והמשך הגלישה בכרטיסייה הנוכחית</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5536723544185013515">האפליקציות האחרונות, מנווטים לכל האפליקציות האחרונות באמצעות החץ שמאלה או החץ ימינה</translation>
 <translation id="553675580533261935">יציאה מההפעלה</translation>
 <translation id="5537725057119320332">העברה</translation>
+<translation id="554017492391497564">לא ניתן לסמן כ'הושלמה'.</translation>
 <translation id="5546397813406633847">שחזור הגישה למשתמש</translation>
 <translation id="554893713779400387">הפעלת הכתבה או הפסקתה</translation>
 <translation id="5550417424894892620">כדי להוסיף קבצים לתיקייה <ph name="HOLDING_SPACE_TITLE" />, משחררים אותם בשולחן העבודה. לא ניתן להוסיף קבצים לשולחן העבודה.</translation>
@@ -1338,6 +1341,7 @@
 <translation id="6237231532760393653">‎1X‎</translation>
 <translation id="62380141479352646">הסוללה חלשה. התכונה 'חיסכון בסוללה' הופעלה.</translation>
 <translation id="6247728804802644171">פתיחת ההתראות</translation>
+<translation id="6249795363855770621">לא ניתן לסמן כ'הושלמה'. אפשר לנסות שוב כשיהיה חיבור לאינטרנט.</translation>
 <translation id="6254629735336163724">נעול במצב אופקי</translation>
 <translation id="6259254695169772643">כדי לבחור יש להשתמש בסטיילוס</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: בהפעלה...</translation>
@@ -1498,6 +1502,7 @@
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6912841030378044227">התמקדות בסרגל הכתובות</translation>
 <translation id="6912901278692845878">סיור קצר</translation>
+<translation id="6917259695595127329">העדכון האחרון של המשימות: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">לא ניתן היה לזהות את הכרטיס החכם שלך. יש לנסות שוב.</translation>
 <translation id="692135145298539227">מחק</translation>
 <translation id="6929081673585394903">הצגת הפקדים</translation>

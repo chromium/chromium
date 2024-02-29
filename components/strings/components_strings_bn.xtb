@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">এনভেলপ ইনভাইট</translation>
 <translation id="1413809658975081374">গোপনীয়তা ত্রুটি</translation>
 <translation id="1414134146594747368">প্রি-স্কুল</translation>
-<translation id="141826476809826269">এক্সট্র্যাক্ট করা টেক্সটের শেষ অংশ</translation>
 <translation id="1418611192881166179">Chrome এই ফিচার আপডেট করার সময়, আপনি সেটিংসে থার্ড-পার্টি কুকি ব্লক না করা পর্যন্ত সাইট তা অস্থায়ীভাবে ব্যবহার করতে পারে।</translation>
 <translation id="1419305130220238697">'Chrome-এ ডাউনলোড ম্যানেজ করুন' বোতাম, Chrome-এ আপনার ডাউনলোড করা ফাইল ম্যানেজ করতে এটি চালু করুন</translation>
 <translation id="1422930527989633628">কাছাকাছি ব্লুটুথ ডিভাইস আছে কিনা তা খুঁজে দেখার জন্য জিজ্ঞাসা করতে পারে</translation>
@@ -1322,6 +1321,7 @@
 <translation id="3542628208405253498">কার্ডের ছবি</translation>
 <translation id="3542768452570884558">নতুন উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="3547746132308051926">২০ x ২৪ ইঞ্চি</translation>
+<translation id="3552155506104542239">সতর্কতা: এই নীতি <ph name="POLICY_NAME" />-এর বিরোধী এবং Android অ্যাপের উপর কোনও প্রভাব ফেলবে না। তবে, এই নীতি প্রত্যাশা অনুযআয়ী কাজ করছে।</translation>
 <translation id="3552297013052089404">Sans-Serif ফন্ট</translation>
 <translation id="3558573058928565255">দিনের সময়</translation>
 <translation id="355995771319966853">অটোফিল আগের অবস্থায় ফিরিয়ে আনুন</translation>
@@ -1869,6 +1869,7 @@
 <translation id="46128681529823442">ফুটবলের সরঞ্জাম</translation>
 <translation id="4619564267100705184">নিজের পরিচয় যাচাই করুন</translation>
 <translation id="4622292761762557753">তবুও ট্রান্সফার করুন</translation>
+<translation id="4622647778991854660">বিজ্ঞপ্তি কেন্দ্রে বিজ্ঞপ্তি চালু করুন। <ph name="LINK" /> খুলুন।</translation>
 <translation id="4627675673814409125">এই নীতিটি Chrome প্রোফাইল লেভেলে সেট করা যাবে না এবং এড়িয়ে যাওয়া হবে।</translation>
 <translation id="4628678854894591460">হলিডের জন্য অফার</translation>
 <translation id="4628948037717959914">ফটো</translation>
@@ -3067,7 +3068,6 @@
 <translation id="6978121630131642226">সার্চ ইঞ্জিনসমূহ</translation>
 <translation id="6978236010531171013">তবুও শেয়ার করুন</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">এক্সট্র্যাক্ট করা টেক্সটের শুরুর অংশ</translation>
 <translation id="6979440798594660689">মিউট (ডিফল্ট)</translation>
 <translation id="6987806006823772670">এনভেলপ (কোটেড)</translation>
 <translation id="6989763994942163495">উন্নত সেটিংস দেখান ...</translation>
@@ -3199,6 +3199,7 @@
 <translation id="7234112195906418665">ভ্রমণ ও পরিবহন</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% সম্পূর্ণ হয়েছে | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">উপহার ও বিশেষ ইভেন্টের আইটেম</translation>
+<translation id="7237454422623102448">সিস্টেম সেটিংস</translation>
 <translation id="7237492777898608035">এই সাইটের জন্য এই মেসেজটি আবার দেখাবেন না</translation>
 <translation id="7240120331469437312">সার্টিফিকেট বিষয় বিকল্প নাম</translation>
 <translation id="7241863998525879494">এর ফলে কী হতে পারে</translation>

@@ -640,7 +640,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Penanda halaman disimpan pada "<ph name="FOLDER_NAME" />" dan hanya disimpan pada peranti ini.}other{Penanda halaman disimpan pada "<ph name="FOLDER_NAME" />" dan hanya disimpan pada peranti ini.}}</translation>
 <translation id="4484496141267039529">Tiada sambungan. Cuba lagi nanti.</translation>
 <translation id="4487967297491345095">Semua data apl Chrome akan dipadamkan selama-lamanya. Ini termasuk semua fail, tetapan, akaun, pangkalan data dan sebagainya.</translation>
-<translation id="4491323382106587961">Pilih akaun. <ph name="EMAIL" /> dipilih pada masa ini.</translation>
 <translation id="4494806687727322324">Penyimpanan kata laluan dihidupkan oleh pentadbir anda</translation>
 <translation id="4508528996305412043">Menu kad suapan dibuka</translation>
 <translation id="4509501256689523862">Semasa anda menyemak imbas, sama ada iklan yang anda lihat diperibadikan bergantung pada tetapan ini, <ph name="BEGIN_LINK_1" />topik Iklan<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />tetapan kuki<ph name="END_LINK_2" />anda, dan jika laman yang anda lihat ialah iklan diperibadikan</translation>
@@ -1359,6 +1358,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7947953824732555851">Terima dan log masuk</translation>
 <translation id="7951102827450076904">Sentiasa buka PDF yang dimuat turun</translation>
 <translation id="7957413488482743710">Kad maya menyembunyikan kad sebenar anda untuk melindungi anda daripada kemungkinan penipuan. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang kad maya<ph name="END_LINK1" /></translation>
+<translation id="7959485987650214982">Tab pada peranti ini</translation>
 <translation id="7960972236129063347">Butang kembali cerapan halaman</translation>
 <translation id="7961926449547174351">Anda telah melumpuhkan akses Storan, sila pergi ke Tetapan untuk mendayakan akses itu.</translation>
 <translation id="7963646190083259054">Vendor:</translation>

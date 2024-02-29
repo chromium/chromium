@@ -31,6 +31,7 @@
 <translation id="1516530951338665275">Google Chrome necessita accedir al Bluetooth per continuar 
  amb la vinculació. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure addicional<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="155168855724261758">Personalitza el teu Chrome</translation>
 <translation id="1553358976309200471">Actualitza Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ja té la sessió iniciada en aquest perfil de Chrome. Es crearà un perfil de Chrome nou per a <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome està utilitzant la càmera.</translation>
@@ -68,6 +69,7 @@
 <translation id="2121284319307530122">Reinicia per actualitzar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa de la <ph name="BEGIN_LINK" />configuració actual<ph name="END_LINK" /> per ajudar-nos a millorar Chrome</translation>
 <translation id="2126108037660393668">La verificació del fitxer baixat ha fallat.</translation>
+<translation id="2128411189117340671">Gestiona els perfils de Chrome</translation>
 <translation id="2130870084309816036">No es pot connectar a Internet. Si fas servir un tallafoc, afegeix <ph name="PRODUCT_EXE_NAME" /> a la llista d'accés permès.</translation>
 <translation id="2131230230468101642">Amb la finalitat de protegir la teva privadesa, suprimim automàticament els interessos que tenen més de 4 setmanes. A mesura que continuïs navegant, és possible que torni a aparèixer un interès a la llista. També pots suprimir els interessos que no vulguis que Chrome tingui en compte.</translation>
 <translation id="2139300032719313227">Reinicia Chrome OS</translation>
@@ -417,6 +419,7 @@
 <translation id="7917876797003313048">Pots gestionar els Comptes de Google en què tens la sessió iniciada. Els Comptes de Google s'utilitzen per al navegador Chrome, Play Store, Gmail i més. Si vols afegir un compte per a algú altre, com ara un membre de la família, afegeix una persona nova al teu dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome ha bloquejat aquesta baixada perquè el fitxer és enganyós i és possible que faci canvis inesperats al dispositiu</translation>
 <translation id="7951272445806340501">Cal reiniciar ChromeOS Flex per aplicar l'actualització.</translation>
+<translation id="7959172989483770734">Gestiona els perfils de Chrome</translation>
 <translation id="7962368738413920945">És probable que els llocs web funcionin de la manera prevista, però no et recordaran després de tancar totes les finestres de Chrome</translation>
 <translation id="7962410387636238736">Aquest ordinador ja no rebrà més actualitzacions de Google Chrome perquè Windows XP i Windows Vista ja no són compatibles</translation>
 <translation id="8005666035647241369">Ves al gestor de contrasenyes de Google en aquest dispositiu</translation>
@@ -424,6 +427,7 @@
 <translation id="8009904340233602924">Fes servir Chrome sense cap compte</translation>
 <translation id="8013993649590906847">Si una imatge no té una descripció útil, Chrome provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google.</translation>
 <translation id="8019103195866286235">El desenvolupador ha anul·lat la publicació d'aquesta extensió, cosa que podria fer-la poc segura. Suprimeix-la de Chrome perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la teva informació personal.</translation>
+<translation id="8031641407207794385">Personalitza el teu Chrome</translation>
 <translation id="80471789339884597">T'agraïm la instal·lació. Has de reiniciar tots els navegadors abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Altres perfils de Chrome</translation>

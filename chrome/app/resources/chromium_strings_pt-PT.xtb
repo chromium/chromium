@@ -150,6 +150,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="3702352323269013324">Saiba mais acerca da personalização de anúncios no Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{O seu administrador solicita-lhe que reinicie o Chromium para aplicar esta atualização.}=1{O seu administrador solicita-lhe que reinicie o Chromium para aplicar esta atualização. Não é possível reabrir a sua janela de navegação anónima.}other{O seu administrador solicita-lhe que reinicie o Chromium para aplicar esta atualização. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
 <translation id="3713809861844741608">Abrir link num novo &amp;separador do Chromium</translation>
+<translation id="3788675262216168505">Gerir perfis do Chromium</translation>
 <translation id="378917192836375108">O Chromium permite-lhe clicar num número de telefone na Web e fazer a chamada com o Skype!</translation>
 <translation id="3790262771324122253">Saiba por que motivo o Chromium bloqueia algumas transferências</translation>
 <translation id="379589255253486813">O Chromium indica-lhe se algo precisar da sua revisão</translation>
@@ -434,6 +435,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8555465886620020932">Erro no serviço: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">O Chromium pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>
+<translation id="858822505990366713">Personalizar Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Como usamos estes dados:<ph name="END_BOLD" /> os sites podem armazenar informações no Chromium sobre os seus interesses. Por exemplo, se visitar um site para comprar ténis para uma maratona, o site pode definir "correr maratonas" como o seu interesse. Posteriormente, se visitar um site diferente para se inscrever numa corrida, esse site pode mostrar-lhe um anúncio de ténis de corrida com base nos seus interesses.</translation>
 <translation id="8619360774459241877">A iniciar o Chromium…</translation>
 <translation id="8621669128220841554">A instalação falhou devido a um erro não especificado. Descarregue novamente o Chromium .</translation>
@@ -451,8 +453,10 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8907580949721785412">O Chromium está a tentar mostrar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="8931379085695076764">O Chromium pode estimar os seus interesses com base no seu histórico de navegação das últimas semanas. Estas informações ficam no seu dispositivo.</translation>
 <translation id="8941642502866065432">Não é possível atualizar o Chromium.</translation>
+<translation id="895999862145835951">Personalizar Chromium</translation>
 <translation id="897581876605952338">Logótipo do Chromium Enterprise</translation>
 <translation id="8986207147630327271">Está a adicionar um perfil de trabalho a este navegador e a conceder ao seu administrador controlo apenas sobre o perfil de trabalho.</translation>
+<translation id="8988036198400390003">Gerir perfis do Chromium</translation>
 <translation id="9019929317751753759">Para tornar o Chromium mais seguro, desativámos a seguinte extensão, que não está listada na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, e é possível que tenha sido adicionada sem o seu conhecimento.</translation>
 <translation id="9022552996538154597">Iniciar sessão no Chromium</translation>
 <translation id="907832235989677238">Inicie sessão no Chromium. Se quiser iniciar sessão numa conta apenas uma vez, pode <ph name="GUEST_LINK_BEGIN" />usar o dispositivo como convidado<ph name="GUEST_LINK_END" />.</translation>

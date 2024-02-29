@@ -150,6 +150,7 @@
 <translation id="3702352323269013324">Més informació sobre la personalització d'anuncis a Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{L'administrador et demana que reiniciïs Chromium per aplicar aquesta actualització}=1{L'administrador et demana que reiniciïs Chromium per aplicar aquesta actualització. La finestra d'incògnit no es tornarà a obrir.}other{L'administrador et demana que reiniciïs Chromium per aplicar aquesta actualització. Les # finestres d'incògnit no es tornaran a obrir.}}</translation>
 <translation id="3713809861844741608">Obre l'enllaç en una pes&amp;tanya nova a Chromium</translation>
+<translation id="3788675262216168505">Gestiona els perfils de Chromium</translation>
 <translation id="378917192836375108">Chromium us permet fer clic en un número de telèfon al web i trucar-hi amb Skype!</translation>
 <translation id="3790262771324122253">Descobreix per què Chromium bloqueja algunes baixades</translation>
 <translation id="379589255253486813">Chromium t'avisarà si hi ha res que hagis de revisar</translation>
@@ -434,6 +435,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8555465886620020932">Error de servei: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Els autors de Chromium. Tots els drets reservats.</translation>
+<translation id="858822505990366713">Personalitza el teu Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Com utilitzem aquestes dades<ph name="END_BOLD" />: els llocs web poden emmagatzemar informació a Chromium sobre els teus interessos. Per exemple, si visites un lloc web per comprar sabatilles per a una marató, és possible que el lloc web defineixi que t'interessa córrer maratons. Més endavant, si visites un altre lloc web per inscriure't a una cursa, aquest altre lloc web et pot mostrar un anunci de sabatilles de curses basant-se en els teus interessos.</translation>
 <translation id="8619360774459241877">S'està iniciant Chromium...</translation>
 <translation id="8621669128220841554">La instal·lació ha fallat a causa d'un error no especificat. Torneu a baixar Chromium.</translation>
@@ -451,8 +453,10 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8907580949721785412">Chromium està provant de mostrar contrasenyes. Escriviu la vostra contrasenya de Windows per permetre-ho.</translation>
 <translation id="8931379085695076764">Chromium pot estimar els teus interessos basant-se en l'historial de navegació de les darreres setmanes. Aquesta informació es queda al teu telèfon.</translation>
 <translation id="8941642502866065432">Chromium no es pot actualitzar</translation>
+<translation id="895999862145835951">Personalitza el teu Chromium</translation>
 <translation id="897581876605952338">Logotip de Chromium Enterprise</translation>
 <translation id="8986207147630327271">Estàs afegint un perfil de treball a aquest navegador i donant control al teu administrador únicament sobre el perfil de treball.</translation>
+<translation id="8988036198400390003">Gestiona els perfils de Chromium</translation>
 <translation id="9019929317751753759">Per tal que Chromium sigui més segur, hem desactivat algunes de les extensions que no figuren a <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i que és possible que s'hagin afegit sense que ho sapigueu.</translation>
 <translation id="9022552996538154597">Inicia la sessió a Chromium</translation>
 <translation id="907832235989677238">Inicia la sessió a Chromium. Si vols iniciar la sessió en un compte només una vegada, pots <ph name="GUEST_LINK_BEGIN" />utilitzar el dispositiu com a convidat<ph name="GUEST_LINK_END" />.</translation>

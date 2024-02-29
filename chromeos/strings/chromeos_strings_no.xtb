@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954818433534793392">bygning</translation>
 <translation id="1962550982027027473">Et standard APN kreves</translation>
+<translation id="1967860190218310525">Opprett nytt APN</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google-profilbilde</translation>
 <translation id="1979103255016296513">Det er på høy tid å endre passordet</translation>
@@ -473,7 +474,6 @@
 <translation id="4046123991198612571">Neste spor</translation>
 <translation id="404928562651467259">ADVARSEL</translation>
 <translation id="4054683689023980771">Laster ned bildet</translation>
-<translation id="4060260348856573701">Nytt APN</translation>
 <translation id="4063039537646912479">lyseblå</translation>
 <translation id="4093865285251893588">Profilbilde</translation>
 <translation id="409427325554347132">Lagre testdetaljer</translation>
@@ -981,6 +981,7 @@
 <translation id="7144954474087165241">pagode</translation>
 <translation id="714876143603641390">LAN-tilkobling</translation>
 <translation id="7154020516215182599">Del tilbakemeldingen eller beskriv problemet. Ta med en fremgangsmåte for å gjenskape problemet om mulig.</translation>
+<translation id="7155037718620478619">Oppdag flere APN</translation>
 <translation id="7155171745945906037">Eksisterende bilde fra kamera eller fil</translation>
 <translation id="7162487448488904999">Galleri</translation>
 <translation id="7170236477717446850">Profilbilde</translation>

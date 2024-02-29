@@ -31,6 +31,7 @@
 <translation id="1516530951338665275">Google Chrome skal have adgang til Bluetooth for at fortsætte 
  parringen. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS er lavet ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="155168855724261758">Tilpas Chrome</translation>
 <translation id="1553358976309200471">Opdater Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> er allerede logget ind på denne Chrome-profil. Denne handling vil oprette en ny Chrome-profil til <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome bruger dit kamera.</translation>
@@ -68,6 +69,7 @@
 <translation id="2121284319307530122">Genstart og opdater &amp;Chrome</translation>
 <translation id="2123055963409958220">Vær med til at gøre Chrome bedre ved at rapportere de <ph name="BEGIN_LINK" />aktuelle indstillinger<ph name="END_LINK" />.</translation>
 <translation id="2126108037660393668">Verificering af den downloadede fil mislykkedes.</translation>
+<translation id="2128411189117340671">Administrer Chrome-profiler</translation>
 <translation id="2130870084309816036">Der kunne ikke oprettes forbindelse til internettet. Hvis du bruger en firewall, skal du føje <ph name="PRODUCT_EXE_NAME" /> til tilladelseslisten.</translation>
 <translation id="2131230230468101642">Vi sletter automatisk de interesser, der er ældre end 4 uger, for at beskytte dit privatliv. Mens du surfer, kan en interesse vises på listen igen. Du kan også fjerne interesser, som du ikke vil have, at Chrome skal tage med i betragtning.</translation>
 <translation id="2139300032719313227">Genstart ChromeOS</translation>
@@ -417,6 +419,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7917876797003313048">Du kan administrere de Google-konti, du er logget ind på. Dine Google-konti bruges i Chrome-browseren, Play Butik, Gmail m.m. Hvis du vil tilføje en konto, der tilhører en anden, f.eks. et familiemedlem, skal du føje en ny person til din <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome har blokeret denne download, fordi filen er vildledende og kan foretage uventede ændringer på din enhed</translation>
 <translation id="7951272445806340501">ChromeOS Flex skal genstartes, før opdateringen kan anvendes.</translation>
+<translation id="7959172989483770734">Administrer Chrome-profiler</translation>
 <translation id="7962368738413920945">Websites fungerer sandsynligvis som forventet, men de husker dig ikke, når du har lukket alle Chrome-vinduer</translation>
 <translation id="7962410387636238736">Denne computer modtager ikke længere Google Chrome-opdateringer, da Windows XP og Windows Vista ikke længere understøttes.</translation>
 <translation id="8005666035647241369">I Google Adgangskodeadministrator på denne enhed</translation>
@@ -424,6 +427,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8009904340233602924">Brug Chrome uden en konto</translation>
 <translation id="8013993649590906847">Hvis et billede ikke har en brugbar beskrivelse, forsøger Chrome at angive en for dig. Billederne sendes til Google, så der kan oprettes beskrivelser.</translation>
 <translation id="8019103195866286235">Udgivelsen af denne udvidelse blev fjernet af dens udvikler og er muligvis ikke sikker. Fjern den fra Chrome, så den ikke længere kan se og ændre dine data på de websites, du besøger, herunder dine personlige oplysninger.</translation>
+<translation id="8031641407207794385">Tilpas Chrome</translation>
 <translation id="80471789339884597">Tak for installationen. Du skal genstarte alle dine browsere, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Andre Chrome-profiler</translation>

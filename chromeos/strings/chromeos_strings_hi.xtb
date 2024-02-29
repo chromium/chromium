@@ -179,6 +179,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954818433534793392">इमारत</translation>
 <translation id="1962550982027027473">डिफ़ॉल्ट एपीएन चालू करना ज़रूरी है</translation>
+<translation id="1967860190218310525">नया एपीएन बनाएं</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google खाते पर प्रोफ़ाइल फ़ोटो</translation>
 <translation id="1979103255016296513">पासवर्ड बदलने का समय निकल चुका है</translation>
@@ -326,6 +327,7 @@
 <translation id="3031560714565892478">डिवाइस एक वीडियो कैमरा है.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">एंडपॉइंट</translation>
+<translation id="3060579846059757016">आउटलाइन</translation>
 <translation id="3069085583900247081">टेस्ट असफल रहा</translation>
 <translation id="3078740164268491126">टेबल</translation>
 <translation id="3083667275341675831">कनेक्टिविटी डाइग्नोस्टिक्स</translation>
@@ -468,7 +470,6 @@
 <translation id="4046123991198612571">अगला ट्रैक</translation>
 <translation id="404928562651467259">चेतावनी</translation>
 <translation id="4054683689023980771">इमेज डाउनलोड हो रही है</translation>
-<translation id="4060260348856573701">नया एपीएन</translation>
 <translation id="4063039537646912479">हल्के नीले</translation>
 <translation id="4093865285251893588">प्रोफ़ाइल फ़ोटो</translation>
 <translation id="409427325554347132">जांच की जानकारी सेव करें</translation>
@@ -967,6 +968,7 @@
 <translation id="7144954474087165241">पगोडा</translation>
 <translation id="714876143603641390">LAN कनेक्टिविटी</translation>
 <translation id="7154020516215182599">सुझाव, शिकायत या राय शेयर करें या अपनी समस्या के बारे में बताएं. अगर हो सके, तो अपनी समस्या के बारे में सिलसिलेवार तरीके से बताएं.</translation>
+<translation id="7155037718620478619">ज़्यादा एपीएन खोजें</translation>
 <translation id="7155171745945906037">कैमरा या फ़ाइल से मौजूदा फ़ोटो</translation>
 <translation id="7162487448488904999">गैलरी</translation>
 <translation id="7170236477717446850">प्रोफ़ाइल फ़ोटो</translation>

@@ -358,6 +358,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2484513351006226581">Pritisnite <ph name="KEYBOARD_SHORTCUT" />, če želite preklopiti postavitev tipkovnice</translation>
 <translation id="2486214324139475545">Predogled namizja »<ph name="DESK_NAME" />«. Aktivno namizje.</translation>
 <translation id="2487915095798731898">Pridruži se</translation>
+<translation id="2499445554382787206">Meni profila namizja. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Zaklepanje tipk</translation>
 <translation id="2504454902900101003">Opustitev nastavitve nedavnih fotografij, predstavnosti in obvestil telefona</translation>
 <translation id="2509468283778169019">Tipka CAPS LOCK je vklopljena</translation>
@@ -605,6 +606,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3509391053705095206">Telefona ni mogoče najti. Bluetooth v telefonu mora biti vklopljen.</translation>
 <translation id="3510164367642747937">Označitev miškinega kazalca</translation>
 <translation id="3513798432020909783">Račun upravlja <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Opravila so bila nazadnje posodobljena: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Napravo posodobite v eni minuti}one{Napravo posodobite v # minuti}two{Napravo posodobite v # minutah}few{Napravo posodobite v # minutah}other{Napravo posodobite v # minutah}}</translation>
 <translation id="3522979239100719575">Iskanje razpoložljivih profilov. To lahko traja nekaj minut.</translation>
 <translation id="3526440770046466733">Odpiranje povezave na novem zavihku in zadržanje na trenutnem zavihku</translation>
@@ -1144,6 +1146,7 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="5536723544185013515">Nedavne aplikacije; s puščico levo ali desno dostopate do vseh nedavnih aplikacij</translation>
 <translation id="553675580533261935">Odjava iz seje</translation>
 <translation id="5537725057119320332">Predvajanje</translation>
+<translation id="554017492391497564">Ni bilo mogoče označiti kot dokončano.</translation>
 <translation id="5546397813406633847">Obnovi uporabnika</translation>
 <translation id="554893713779400387">Preklop narekovanja</translation>
 <translation id="5550417424894892620">Če želite datoteke dodati na mesto <ph name="HOLDING_SPACE_TITLE" />, jih spustite na namizje. Datotek ni mogoče dodati na namizje.</translation>
@@ -1338,6 +1341,7 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="6237231532760393653">1x</translation>
 <translation id="62380141479352646">Baterija je skoraj izpraznjena. Varčevanje z energijo baterije je vklopljeno.</translation>
 <translation id="6247728804802644171">Odpiranje obvestil</translation>
+<translation id="6249795363855770621">Ni bilo mogoče označiti kot dokončano. Poskusite znova z vzpostavljeno povezavo.</translation>
 <translation id="6254629735336163724">Zaklenjeno na ležeče</translation>
 <translation id="6259254695169772643">Uporabite pisalo za izbiranje</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktiviranje ...</translation>
@@ -1498,6 +1502,7 @@ Nova namestitev</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6912841030378044227">Preklop na naslovno vrstico</translation>
 <translation id="6912901278692845878">Hitra predstavitev</translation>
+<translation id="6917259695595127329">Opravila so bila nazadnje posodobljena: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Pametne kartice ni bilo mogoče prepoznati. Poskusite znova.</translation>
 <translation id="692135145298539227">izbriši</translation>
 <translation id="6929081673585394903">Prikaz kontrolnikov</translation>

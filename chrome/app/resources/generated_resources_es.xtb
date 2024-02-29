@@ -1816,7 +1816,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2343747224442182863">Destacar esta pestaña</translation>
 <translation id="2344032937402519675">No se ha podido conectar con el servidor. Revisa tu conexión de red e inténtalo de nuevo. Si sigues teniendo problemas, prueba a reiniciar tu Chromebook.</translation>
 <translation id="234559068082989648">Las versiones antiguas de las aplicaciones de Chrome no se abrirán después de diciembre del 2022. Ponte en contacto con tu administrador para que actualice esta aplicación a una versión nueva o para que la quite.</translation>
-<translation id="2347930112185157300">El proveedor de servicios de Internet está bloqueado</translation>
 <translation id="2348176352564285430">Aplicación: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" />: permiso solicitado, pulsa Ctrl + Adelante para responder</translation>
 <translation id="234889437187286781">Error al cargar los datos</translation>
@@ -1981,7 +1980,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2462332841984057083">Ya se está configurando Steam. Espera a que se complete la configuración.</translation>
 <translation id="2462724976360937186">ID de clave de la entidad emisora de certificados</translation>
 <translation id="2462752602710430187">Se ha añadido la impresora <ph name="PRINTER_NAME" /></translation>
-<translation id="2464046291463112461">Impedir que los accesorios externos accedan a la memoria (RAM) y la compartan</translation>
 <translation id="2467755475704469005">Ningún dispositivo detectado. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Aceleración de desplazamiento del panel táctil</translation>
 <translation id="2468205691404969808">Usa cookies para recordar tus preferencias, incluso si no visitas esas páginas</translation>
@@ -2611,6 +2609,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2935654492420446828">Añade una cuenta de centro educativo más tarde</translation>
 <translation id="2936851848721175671">Copia de seguridad y restauración</translation>
 <translation id="2938981087412273365">Permiso no concedido para leer y modificar este sitio</translation>
+<translation id="2939005221756255562">Habilita las notificaciones en el Centro de notificaciones. Abre <ph name="BEGIN_LINK" />Ajustes del sistema<ph name="END_LINK" />.</translation>
 <translation id="2939908794993783865">Más sitios inactivos</translation>
 <translation id="2939938020978911855">Mostrar dispositivos Bluetooth disponibles</translation>
 <translation id="2941112035454246133">Baja</translation>

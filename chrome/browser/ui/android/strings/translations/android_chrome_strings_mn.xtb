@@ -116,6 +116,7 @@
 <translation id="1558391695376153246">Нууцлалтай табуудыг хаах</translation>
 <translation id="1568636008098739136">Энэ хуудсыг сонсоно уу. Энэ товчлолыг засахын тулд хүрээд удаан дарна уу.</translation>
 <translation id="1571304935088121812">Хэрэглэгчийн нэрийг хуулах</translation>
+<translation id="1584648915421894279">Одоогоор энэ төхөөрөмжид хадгалсан нууц үгнүүдийг Chrome-н сувгуудад ашиглах боломжгүй. Chrome 125-аас хойш Chrome болон <ph name="CHROME_CHANNEL" />-д зориулж таны төхөөрөмжид хадгалсан нууц үгнүүдийг нэгтгэх бөгөөд хоёр аппын аль алинд нь ашиглах боломжтой болно.</translation>
 <translation id="1592864538817356322">Стандарт хамгаалалт:</translation>
 <translation id="1594635596540195766">Доорх жагсаалтад санал болгосон <ph name="SUGGESTIONS_COUNT" /> зүйл байна.</translation>
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" />-г <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р ашиглаарай</translation>
@@ -328,6 +329,7 @@
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google Бүртгэл<ph name="END_LINK" />-дээ хадгалсан нууц үгнүүдийг харах болон удирдах</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">Түр санх ойн контентуудыг нуусан</translation>
+<translation id="2834884592945939112">Тохиргоо, Google Бүртгэлийн алдаа</translation>
 <translation id="2838367486340230368">Нууцлалын хөтчийн тайлбарыг тал хэмжээгээр нээсэн</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" />-г дагахаа больсон</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> нууцлалтай табыг хаана}other{<ph name="TAB_COUNT_MANY" /> нууцлалтай табыг хаана}}</translation>
@@ -638,7 +640,6 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Хавчуургыг "<ph name="FOLDER_NAME" />"-д хадгалсан. Үүнийг зөвхөн энэ төхөөрөмжид хадгалсан.}other{Хавчуургуудыг "<ph name="FOLDER_NAME" />"-д хадгалсан. Үүнийг зөвхөн энэ төхөөрөмжид хадгалсан.}}</translation>
 <translation id="4484496141267039529">Холболт алга. Дараа дахин оролдоно уу.</translation>
 <translation id="4487967297491345095">Chrome-н бүх аппын өгөгдлийг бүрмөсөн устгана. Үүнд бүх файл, тохиргоо, бүртгэл, өгөгдлийн сан орно.</translation>
-<translation id="4491323382106587961">Бүртгэл сонгоно уу. Одоогоор <ph name="EMAIL" />-г сонгосон.</translation>
 <translation id="4494806687727322324">Нууц үг хадгалахыг танай администратор асаасан</translation>
 <translation id="4508528996305412043">Сувгийн картын цэсийг нээсэн байна</translation>
 <translation id="4509501256689523862">Таныг үзэх явцад таны харж буй зарыг хувийн болгосон эсэх нь энэ тохиргоо, <ph name="BEGIN_LINK_1" />Зарын сэдэв<ph name="END_LINK_1" />, таны <ph name="BEGIN_LINK_2" />күүкиний тохиргоо<ph name="END_LINK_2" /> болон таны үзэж буй сайт зарыг хувийн болгосон эсэхээс хамаарна</translation>
@@ -664,6 +665,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4583164079174244168">{MINUTES,plural, =1{# минутын өмнө}other{# минутын өмнө}}</translation>
 <translation id="4587589328781138893">Сайт</translation>
 <translation id="4594952190837476234">Энэ офлайн хуудсыг <ph name="CREATION_TIME" />-с харуулж байгаа бөгөөд онлайн хувилбараас өөр байж болзошгүй.</translation>
+<translation id="4595805675102978678">Google Бүртгэлийн алдаа</translation>
 <translation id="4601095002996233687">Сэжигтэй татаж авсан файлд хийх нарийвчилсан скан.</translation>
 <translation id="4609429330876432068">Таны Chrome-н хадгалсан нууц үгнүүдийн жагсаалт болон <ph name="CHROME_CHANNEL" />-г нэгтгэсэн. Та хоёр аппад хоёуланд нь хадгалсан бүх нууц үгээ автоматаар бөглөх боломжтой хэвээр байна.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />-г нээх</translation>
@@ -1356,6 +1358,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7947953824732555851">Хүлээн зөвшөөрсний дараагаар нэвтрэх</translation>
 <translation id="7951102827450076904">Татсан PDF-үүдийг үргэлж нээх</translation>
 <translation id="7957413488482743710">Виртуал карт нь таныг болзошгүй залилангаас хамгаалахад туслахын тулд таны жинхэнэ картыг нуудаг. <ph name="BEGIN_LINK1" />Виртуал картын талаар нэмэлт мэдээлэл авах<ph name="END_LINK1" /></translation>
+<translation id="7959485987650214982">Энэ төхөөрөмж дээрх табууд</translation>
 <translation id="7960972236129063347">Хуудасны статистик руу буцах товчлуур</translation>
 <translation id="7961926449547174351">Та хадгалах сангийн хандалтыг идэвхгүй болгосон байна, идэвхжүүлэхийн тулд Тохиргоо руу очно уу</translation>
 <translation id="7963646190083259054">Бэлтгэн нийлүүлэгч:</translation>

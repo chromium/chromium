@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">ଏନଭେଲପ ଇନଭାଇଟ</translation>
 <translation id="1413809658975081374">ଗୋପନୀୟତା ତ୍ରୁଟି</translation>
 <translation id="1414134146594747368">ପ୍ରିସ୍କୁଲ</translation>
-<translation id="141826476809826269">ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଇଥିବା ଟେକ୍ସଟର ଶେଷ</translation>
 <translation id="1418611192881166179">Chrome ଏହି ଫିଚରକୁ ଅପଡେଟ କରିବା ସମୟରେ ଆପଣ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ସେଟିଂସରେ ବନ୍ଦ ନକରିବା ପର୍ଯ୍ୟନ୍ତ ସାଇଟଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଭାବେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବ।</translation>
 <translation id="1419305130220238697">'Chromeରେ ଡାଉନଲୋଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ' ବଟନ, Chromeରେ ଆପଣ ଡାଉନଲୋଡ କରିଥିବା ଫାଇଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="1422930527989633628">ଆଖପାଖର ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକୁ ଖୋଜି ପାଇବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
@@ -1866,6 +1865,7 @@
 <translation id="46128681529823442">ସକର ଇକ୍ୟୁପମେଣ୍ଟ</translation>
 <translation id="4619564267100705184">ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4622292761762557753">ଯେ କୌଣସି ମତେ ଟ୍ରାନ୍ସଫର କରନ୍ତୁ</translation>
+<translation id="4622647778991854660">ବିଜ୍ଞପ୍ତି କେନ୍ଦ୍ରରେ ବିଜ୍ଞପ୍ତିକୁ ସକ୍ଷମ କରନ୍ତୁ। <ph name="LINK" /> ଖୋଲନ୍ତୁ।</translation>
 <translation id="4627675673814409125">ଏହି ନୀତିକୁ Chrome ପ୍ରୋଫାଇଲ ଲେଭେଲରେ ସେଟ କରାଯାଇପାରିବ ନାହିଁ ଏବଂ ଏହାକୁ ଅଣଦେଖା କରାଯିବ।</translation>
 <translation id="4628678854894591460">ଛୁଟି ଅଫର</translation>
 <translation id="4628948037717959914">ଫଟୋ</translation>
@@ -3065,7 +3065,6 @@
 <translation id="6978121630131642226">ସର୍ଚ୍ଚ ଇଞ୍ଜିନଗୁଡ଼ିକ</translation>
 <translation id="6978236010531171013">ଯେ କୌଣସି ମତେ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଇଥିବା ଟେକ୍ସଟର ଆରମ୍ଭ</translation>
 <translation id="6979440798594660689">ମ୍ୟୁଟ୍‌ (ଡିଫଲ୍ଟ)</translation>
 <translation id="6987806006823772670">ଏନଭେଲପ (କୋଟେଡ)</translation>
 <translation id="6989763994942163495">ଉନ୍ନତ ସେଟିଂସ୍‌ ଦେଖାନ୍ତୁ...</translation>
@@ -3197,6 +3196,7 @@
 <translation id="7234112195906418665">ଟ୍ରାଭେଲ ଓ ପରିବହନ</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">ଗିଫ୍ଟ ଏବଂ ବିଶେଷ ଇଭେଣ୍ଟ ଆଇଟମ</translation>
+<translation id="7237454422623102448">ସିଷ୍ଟମ ସେଟିଂସ</translation>
 <translation id="7237492777898608035">ଏହି ସାଇଟରେ ପୁଣି ଏହି ମେସେଜକୁ ଦେଖାନ୍ତୁ ନାହିଁ</translation>
 <translation id="7240120331469437312">ସାର୍ଟିଫିକେଟ୍ ବିଷୟ ବିକଳ୍ପ ନାମ</translation>
 <translation id="7241863998525879494">କଣ ଆଶା କରାଯିବ</translation>

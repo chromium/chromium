@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Канверт Invite</translation>
 <translation id="1413809658975081374">Памылка прыватнасці</translation>
 <translation id="1414134146594747368">Дашкольнае навучанне</translation>
-<translation id="141826476809826269">Канец вынятага тэксту</translation>
 <translation id="1418611192881166179">Пакуль гэта функцыя ў Chrome абнаўляецца, сайтам часова дазваляецца выкарыстоўваць староннія файлы cookie, калі вы не забароніце іх выкарыстанне ў наладах.</translation>
 <translation id="1419305130220238697">Кнопка "Кіраваць спампоўкамі ў Chrome". Каб кіраваць файламі, якія вы спампавалі ў браўзеры Chrome, націсніце яе.</translation>
 <translation id="1422930527989633628">Сайт можа запытваць дазвол выяўляць прылады з Bluetooth паблізу</translation>
@@ -1199,6 +1198,7 @@
 <translation id="3324687287337751929">4 x 6 цаляў</translation>
 <translation id="3324983252691184275">Цёмна-чырвоны</translation>
 <translation id="3325027355611702542">Жылыя аўтафургоны і іншыя транспартныя сродкі для адпачынку</translation>
+<translation id="3325568918769906282">па ўбыванні</translation>
 <translation id="3329013043687509092">Насычанасць</translation>
 <translation id="3333762389743153920">Нумар не падыходзіць для віртуальнай карткі</translation>
 <translation id="3336044043987989409">Каб дазволіць падключэнне да прылад або сервераў у вашай прыватнай сетцы, націсніце кнопку абнаўлення старонкі.</translation>
@@ -1866,6 +1866,7 @@
 <translation id="46128681529823442">Рыштунак для футбола</translation>
 <translation id="4619564267100705184">Пацвердзіць маю асобу</translation>
 <translation id="4622292761762557753">Усё роўна перанесці</translation>
+<translation id="4622647778991854660">Уключыце апавяшчэнні ў Цэнтры апавяшчэнняў. Адкрыйце <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Гэту палітыку нельга задаць на ўзроўні профілю Chrome, таму яна будзе ігнаравацца.</translation>
 <translation id="4628678854894591460">Турыстычныя прапановы</translation>
 <translation id="4628948037717959914">Фота</translation>
@@ -2244,6 +2245,7 @@
 <translation id="5371425731340848620">Абнавіць картку</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Ваш гадзіннік спазняецца", або "Ваш гадзіннік спяшаецца", або "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">па ўзрастанні</translation>
 <translation id="5383478552402031184">Матэрыял для падлог</translation>
 <translation id="5385857628869214740">Гумар</translation>
 <translation id="5385966243497224160">Для URL-адрасоў, якія не выкарыстоўваюць пратакол HTTPS, перадпрагляд не падтрымліваецца</translation>
@@ -3063,7 +3065,6 @@
 <translation id="6978121630131642226">Пошукавыя сістэмы</translation>
 <translation id="6978236010531171013">Усё роўна абагуліць</translation>
 <translation id="6979158407327259162">Google Дыск</translation>
-<translation id="6979332652936434520">Пачатак вынятага тэксту</translation>
 <translation id="6979440798594660689">Выключыць (стандартна)</translation>
 <translation id="6987806006823772670">Канверт з матэрыялу з пакрыццём</translation>
 <translation id="6989763994942163495">Паказаць пашыраныя налады...</translation>
@@ -3195,6 +3196,7 @@
 <translation id="7234112195906418665">Турызм і паездкі</translation>
 <translation id="7236417832106250253">Завершана <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Падарункі і тавары для ўрачыстых падзей</translation>
+<translation id="7237454422623102448">сістэмныя налады</translation>
 <translation id="7237492777898608035">Больш не паказваць гэта паведамленне для дадзенага сайта</translation>
 <translation id="7240120331469437312">Альтэрнатыўнае імя суб'екта сертыфіката</translation>
 <translation id="7241863998525879494">Што далей</translation>
@@ -3478,6 +3480,7 @@
 <translation id="7719791801330803993">Праграмнае забеспячэнне для працы з фота і відэа</translation>
 <translation id="772128550427553158">Код CVC размешчаны на пярэднім баку карты.</translation>
 <translation id="7724603315864178912">Выразаць</translation>
+<translation id="7730057435797792985">Сартаваць</translation>
 <translation id="7734285854693414638">Хутка стварыць новую форму ў Формах Google</translation>
 <translation id="773466115871691567">Заўсёды перакладаць старонкі на наступнай мове: <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7736959720849233795">Скапіраваць адрас спасылкі</translation>

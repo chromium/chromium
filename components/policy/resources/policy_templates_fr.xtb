@@ -15,6 +15,7 @@
 <translation id="1004590217607585595">Paramètres de gestion de l'application Web</translation>
 <translation id="1006218396155867129">Désactiver le transfert de fichiers vers et depuis l'hôte à distance pour les utilisateurs connectés à distance</translation>
 <translation id="1007149936182752368">Désactiver la modification des favoris</translation>
+<translation id="1009336698423963085">Autoriser le plein écran automatique sur ces sites</translation>
 <translation id="1010151305531217567">Définir le bouton droit de la souris comme bouton principal</translation>
 <translation id="1011266755572744012">Indique le nombre maximal de feuilles que l'utilisateur est autorisé à imprimer par tâche d'impression.
 
@@ -87,11 +88,6 @@ Si cette règle est activée ou n'est pas configurée, la fonctionnalité de cor
 Si elle est désactivée, la fonctionnalité de correction automatique est désactivée pour le clavier physique.</translation>
 <translation id="1038725366103635282">Autoriser la détection des partages avec NetBIOS</translation>
 <translation id="1040446814317236570">Activer la suppression des URL via PAC (pour "https://")</translation>
-<translation id="1041719059374171202">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à exécuter JavaScript.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="1043965859599437362">Cette règle permet de remplacer la liste des ensembles que le navigateur utilise pour les fonctionnalités liées aux ensembles internes.
 
 Chaque ensemble figurant dans la liste des ensembles internes du navigateur doit respecter les exigences liées aux ensembles internes.
@@ -270,11 +266,6 @@ Si vous activez cette règle, les utilisateurs peuvent utiliser le matériel sur
 <translation id="1202216683470826356">Afficher les fiches sur la page Nouvel onglet</translation>
 <translation id="1204263402976895730">Imprimantes d'entreprise activées</translation>
 <translation id="1207301487141109411">Empêcher la sélection de l'avatar de l'utilisateur à partir du système de fichiers local, de l'appareil photo et du profil Google</translation>
-<translation id="1209065772997672966">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à ouvrir les fenêtres pop-up.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="1209096923317019235">Affecte les applis en tant que gestionnaires par défaut pour les extensions de fichier spécifiées</translation>
 <translation id="120937472976628837">Transmettre des infos sur le ventilateur</translation>
 <translation id="1212233008927724662">Désactiver le chargement différé du WebUI de connexion.</translation>
@@ -520,13 +511,6 @@ Pour en savoir plus, veuillez consulter https://support.google.com/chrome/a/?p=e
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2) : cette valeur a été abandonnée dans la version M121. Dans M121 et les versions ultérieures, les valeurs seront traitées comme EnabledUnderThreshold.
       </translation>
 <translation id="1434300053894025056">Désactiver le correcteur orthographique</translation>
-<translation id="1434743866147056474">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à afficher des images.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_IMAGE_SETTING_ENABLED_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
-
-       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.
-
-       Notez que cette règle était auparavant activée par erreur pour Android. Toutefois, cette fonctionnalité n'a jamais été parfaitement compatible avec Android.</translation>
 <translation id="1435493974546396517">Contrôle comment <ph name="PRODUCT_NAME" /> propose l'option "Imprimer en tant qu'image" sur <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" /> lors de l'impression de PDF.
 
       Lors de l'impression de PDF sur <ph name="MS_WIN_NAME" /> ou <ph name="MAC_OS_NAME" />, les tâches d'impression doivent parfois être rastérisées sous forme d'image pour obtenir le rendu souhaité sur certaines imprimantes.
@@ -811,6 +795,13 @@ Si cette règle n'est pas configurée, les utilisateurs peuvent ajouter des exce
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="1675391557079742340">Activer l'annonce de l'encodage du contenu <ph name="ZSTANDARD_SHORTNAME" /> dans l'en-tête Accept-Encoding</translation>
+<translation id="1676025520543198552">Cette règle étant obsolète, veuillez utiliser la règle <ph name="GLS_POLICY_NAME" /> à la place. <ph name="PRODUCT_OS_NAME" /> dispose désormais d'un bouton système d'activation/de désactivation de la localisation qui régit l'environnement <ph name="PRODUCT_OS_NAME" />. Le bouton d'activation/de désactivation de la localisation <ph name="PRODUCT_OS_NAME" /> est désactivé et reflète l'état de la localisation <ph name="PRODUCT_OS_NAME" />.
+
+Configurer <ph name="GLS_ENABLED" /> active les services de localisation Google lors de la configuration initiale, sauf si la règle <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> est définie sur <ph name="BLOCK_GEOLOCATION_SETTING" />. Si la règle est définie sur <ph name="GLS_DISABLED" /> ou n'est pas configurée, les services de localisation restent désactivés pendant la configuration.
+
+Si elle est définie sur <ph name="BR_UNDER_USER_CONTROL" />, les utilisateurs sont invités à préciser s'ils souhaitent ou non utiliser ces services. S'ils les activent, les applis <ph name="PRODUCT_OS_NAME" /> utilisent ces services pour rechercher la position de l'appareil et envoyer des données de localisation anonymes à Google.
+
+Les utilisateurs peuvent activer ou désactiver les services de localisation Google après la configuration initiale.</translation>
 <translation id="1678137412645922426">Contrôle l'utilisation de <ph name="AES_KL_NAME" /> pour le chiffrement du stockage de l'utilisateur si celui-ci est compatible</translation>
 <translation id="1682063842123336408">Permet de spécifier l'espace disque libre requis (en Go) pour installer <ph name="PLUGIN_VM_NAME" />.
 
@@ -890,11 +881,6 @@ Cette règle constitue une solution temporaire au cas où des entreprises rencon
       Remarque : La valeur de cette règle doit être comprise entre 0 et 100 %.</translation>
 <translation id="1733092875104864334">Ne pas autoriser la collecte des journaux texte WebRTC à partir des services Google</translation>
 <translation id="1733768596873041559">Rediriger vers l'IdP SAML par défaut (pour les versions antérieures à <ph name="PRODUCT_NAME" /> 99, la confirmation de l'utilisateur est requise)</translation>
-<translation id="1733939382419067578">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à afficher des notifications.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Sinon, le paramètre défini par l'utilisateur s'applique.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="173503685261877709">Cette règle permet de remplacer la liste des ensembles que le navigateur utilise pour les fonctionnalités liées aux Ensembles de sites Web associés.
 
 Cette règle remplace la règle <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
@@ -1067,6 +1053,9 @@ La disponibilité des extensions est toujours contrôlée par d'autres règles.<
 <translation id="1858775210076906272">Configuration Kerberos préremplie</translation>
 <translation id="1861206724856734193">Définit la liste des règles de prévention des fuites de données.</translation>
 <translation id="1862267110714201519">Désactiver la fonctionnalité Fenêtre fantôme.</translation>
+<translation id="1865129144973895592">Cette règle permet de réactiver temporairement un ensemble d'événements de plate-forme obsolète et supprimé appelé "Événements de mutation".
+Si cette règle est activée, les événements de mutation continuent de se déclencher, même s'ils ont été désactivés par défaut pour les utilisateurs Web standards. Si elle est désactivée ou n'est pas configurée, il est possible que ces événements ne soient pas déclenchés.
+Cette règle est une solution temporaire et sera supprimée dans M135.</translation>
 <translation id="1865417998205858223">Autorisations de clés</translation>
 <translation id="1865867000796030567">Si cette règle est activée, la valeur de la clé du fichier manifeste <ph name="REQUIRED_PLATFORM_VERSION" /> de l'application kiosque lancée automatiquement sans délai est utilisée comme préfixe de la version cible pour la mise à jour automatique.
 
@@ -1660,11 +1649,6 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, ce bouton n'est pas affiché.</translation>
 <translation id="2294382669900758280">La lecture vidéo dans les applications Android n'est pas prise en compte même si cette règle est définie sur "<ph name="TRUE" />".</translation>
-<translation id="2297792368307475351">Permet de dresser la liste des formats d'URL pour lesquels les sites sont empêchés d'utiliser l'autorisation d'accès au presse-papiers. Cette règle n'affecte pas la totalité des opérations dont la provenance correspond à ces formats. Par exemple, il restera possible d'utiliser le raccourci clavier pour coller, cette opération n'étant pas contrôlée par la permission d'utiliser le presse-papiers.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_CLIPBOARD_SETTING" /> s'applique pour tous les sites, à condition qu'elle soit définie. Sinon, le paramètre défini par l'utilisateur s'applique.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="2299220924812062390">Indiquer une liste de plug-ins activés</translation>
 <translation id="2299815818824242485">Ne pas autoriser la recherche de protection supérieure via proxy</translation>
 <translation id="2303795211377219696">Activer la saisie automatique pour les cartes de crédit</translation>
@@ -1757,6 +1741,7 @@ Si la règle est désactivée, elle empêche les utilisateurs ou les variantes d
 <translation id="2373014700224092497">Autoriser les utilisateurs à ajouter des comptes Kerberos</translation>
 <translation id="2376134474855349829">Désactiver le clavier à l'écran sur l'écran de connexion et autoriser l'utilisateur à l'activer temporairement</translation>
 <translation id="2376151922689284770">Nom à afficher dans l'interface utilisateur du programme d'installation (par exemple, VM Happy). Si cette règle n'est pas configurée, un nom de remplacement s'affiche, lequel peut être dérivé de la première entrée (par ordre d'affichage) dans la règle BruschettaVMConfiguration ou être, à défaut, un nom générique.</translation>
+<translation id="2377109572344699022">Contrôler l'utilisation de l'API Direct Sockets</translation>
 <translation id="2382672620906337383">La fonction JavaScript setTimeout() ne sera limitée que si le seuil d'imbrication est supérieur.</translation>
 <translation id="2384233438419344179">Si cette règle est activée, les éléments de page Web qui ne font pas partie du domaine indiqué dans la barre d'adresse du navigateur ne peuvent pas placer de cookies. Si cette règle est désactivée, ces éléments sont autorisés à placer des cookies, et les utilisateurs ne peuvent pas modifier ce paramètre.
 
@@ -1939,6 +1924,7 @@ Si cette règle n'est pas configurée, la valeur par défaut est <ph name="POLIC
 <translation id="2521581787935130926">Afficher le raccourci des applications dans la barre de favoris</translation>
 <translation id="2522304491589804974">Configurer la liste d'autorisation concernant l'installation des extensions</translation>
 <translation id="2523511232831599126">Activer les raccourcis d'accessibilité sur l'écran de connexion</translation>
+<translation id="252742292004421898">Autoriser l'API Direct Sockets sur ces sites</translation>
 <translation id="2529880111512635313">Configurer la liste des applications et des extensions dont l'installation est forcée</translation>
 <translation id="253135976343875019">Délai d'inactivité avant l'affichage d'un avertissement (en cas de connexion secteur)</translation>
 <translation id="2535370400681639351">Si cette règle est activée, les requêtes d'authentification gnubby sont envoyées par un proxy via une connexion hôte à distance.
@@ -2110,6 +2096,15 @@ Le système n'interroge les enregistrements AAAA que si un hôte IPv6 global pe
 <translation id="2673363037046384711">L'utilisateur final peut activer ou désactiver le mode Haute efficacité.</translation>
 <translation id="2673968385134502798">Jeux</translation>
 <translation id="2678503605767349615">Certificats clients requis au niveau de l'appareil</translation>
+<translation id="2679980446318031955">Pour des raisons de sécurité, l'API Web <ph name="REQUEST_FULLSCREEN_API_NAME" /> nécessite un geste préalable de l'utilisateur ("activation temporaire"). Sinon, une erreur se produit. Les paramètres personnels des utilisateurs peuvent autoriser certaines origines à appeler cette API sans geste préalable de l'utilisateur, comme décrit sur <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
+
+Cette règle remplace les paramètres personnels des utilisateurs et permet aux origines correspondantes d'appeler l'API sans geste préalable de l'utilisateur.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
+
+Les origines correspondant à la fois aux formats de règle bloqués et autorisés seront bloquées.
+Les origines non spécifiées par la règle ni par les paramètres utilisateur nécessitent un geste préalable de l'utilisateur pour appeler cette API.</translation>
 <translation id="268134026533587276">Écran de verrouillage de l'économiseur d'écran de l'utilisateur activé.</translation>
 <translation id="268577405881275241">Activer la fonctionnalité de proxy pour la compression de données</translation>
 <translation id="268695908564263739">Cette règle active ou désactive le mode Haute efficacité. Avec ce paramètre, les onglets sont supprimés en arrière-plan après un certain temps afin de récupérer de la mémoire.
@@ -2245,6 +2240,7 @@ Si cette règle est désactivée, les utilisateurs ne peuvent pas ajouter de com
 Définir "command_line" empêche le chargement de l'extension à partir de la ligne de commande.</translation>
 <translation id="2780840673734667062">Ne pas permettre la connexion avec d'autres comptes Google</translation>
 <translation id="2784880732336446591">Effacer les données de navigation en fin de session</translation>
+<translation id="2786117913267907931">Ne pas autoriser les origines à utiliser Direct Sockets</translation>
 <translation id="2787173078141616821">Transmettre des informations sur l'état d'Android</translation>
 <translation id="2787774054174244402">Si vous définissez cette règle sur "True", les utilisateurs ne peuvent pas modifier les fichiers stockés sur les périphériques de stockage externes.
 
@@ -2504,6 +2500,7 @@ Les utilisateurs ne peuvent pas ignorer les paramètres sélectionnés par l'adm
 Remarque : cette règle rend obsolète la règle <ph name="ARC_GLS_POLICY_NAME" />.
 De plus, lorsque cette règle est configurée, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> n'a plus d'incidence sur la préférence de localisation <ph name="ANDROID_NAME" /> sur ChromeOS.</translation>
 <translation id="3010907817113180883">Fréquence de collecte de la pulsation d'activité de l'appareil en millisecondes.</translation>
+<translation id="3016585641676676461">Bloquer le plein écran automatique sur ces sites</translation>
 <translation id="3017578958356048910">La visionneuse de PDF peut annoter les PDF</translation>
 <translation id="3020623128585817424">Désactiver le contrôle du navigateur par défaut au démarrage</translation>
 <translation id="3020953534071988875">La configuration de cette règle autorise/interdit l'authentification ambiante pour les profils Invité et de navigation privée dans <ph name="PRODUCT_NAME" />.
@@ -2649,6 +2646,8 @@ Cette règle est provisoire et sera supprimée prochainement.</translation>
       Si un site correspond à un format d'URL dans cette règle, les règles suivantes sont ignorées : <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.</translation>
+<translation id="3112501357749061018">Liste des certificats TLS qui devraient être approuvés par <ph name="PRODUCT_NAME" /> pour l'authentification du serveur, avec des contraintes ajoutées en dehors du certificat. Si aucune contrainte d'un certain type n'est présente, n'importe quel nom de ce type est autorisé.
+Les certificats doivent être encodés en base64. Vous devez spécifier au moins une contrainte pour chaque certificat.</translation>
 <translation id="3118552207903834734">Autoriser l'utilisateur à configurer le nom d'hôte de son appareil</translation>
 <translation id="3122082892722698079">Contrôler l'utilisation des exceptions liées au contenu non sécurisé</translation>
 <translation id="3125472566440502628">Désactiver Sélectionner pour écouter</translation>
@@ -2763,22 +2762,10 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 
           La valeur de la règle doit être indiquée en millisecondes.</translation>
 <translation id="3198385910521788907">Ne pas afficher l'écran de détection de présence humaine lors de la connexion</translation>
-<translation id="3205649498518960697">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à afficher du contenu mixte (contenu HTTP affiché sur des sites HTTPS) blocable (actif), et pour lesquels la mise à niveau du contenu mixte blocable de manière facultative est désactivée.
-
-          Si cette règle n'est pas configurée, le contenu mixte blocable est bloqué, et le contenu mixte blocable de manière facultative est mis à niveau. Les utilisateurs peuvent définir des exceptions autorisant l'affichage de ce contenu sur des sites spécifiques.
-
-          Pour en savoir plus sur les formats d'URL valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="3205825995289802549">Agrandir la première fenêtre du navigateur à la première exécution</translation>
 <translation id="320607884987562184">Si cette règle est définie sur "1", les sites Web peuvent exécuter JavaScript. Si cette règle est définie sur "2", les sites ne sont pas autorisés à exécuter ce langage.
 
 Si cette règle n'est pas configurée, les sites peuvent exécuter JavaScript. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
-<translation id="3206959584699016689">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à accéder aux capteurs (de mouvement et de lumière, par exemple).
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
-
-      Si un même format d'URL est spécifié à la fois dans cette règle et dans la règle <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, cette dernière est prioritaire et l'accès aux capteurs de mouvement ou de lumière est bloqué.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="3207821022126246451">WebRTC utilisera TCP sur l'interface publique et utilisera UDP uniquement s'il est compatible avec un proxy configuré.</translation>
 <translation id="3207873329349672535">Cette règle détermine si l'utilisateur se verra proposer ou non une option dans le menu <ph name="PRODUCT_NAME" />, qui lui permet de caster du contenu sur des appareils Cast ne figurant pas dans la liste du menu <ph name="PRODUCT_NAME" />, en utilisant soit le code d'accès ou le code QR affiché sur l'écran de l'appareil Cast.
       Par défaut, l'utilisateur doit ressaisir le code d'accès ou rescanner le code QR pour lancer une nouvelle session de diffusion. Toutefois, si la valeur de la règle <ph name="ACCESS_CODE_CAST_DEVICE_DURATION_POLICY_NAME" /> n'est pas nulle (sachant qu'elle l'est par défaut), l'appareil Cast reste alors dans la liste des appareils Cast disponibles tant que la durée d'affichage définie n'est pas écoulée.
@@ -2874,6 +2861,7 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
 <translation id="3284094172359247914">Contrôler l'utilisation de l'API WebUSB</translation>
 <translation id="3286159327013237833">Activer les clics automatiques sur l'écran de connexion</translation>
 <translation id="3288595667065905535">Version disponible</translation>
+<translation id="3291940794983537008">Paramètres des fonctionnalités d'IA générative des outils de développement</translation>
 <translation id="3294430356898755483">Cette règle permet aux administrateurs de configurer une liste d'imprimantes pour leurs utilisateurs. La sélection de l'imprimante est effectuée la première fois que l'utilisateur lance une impression.
 
       Vous pouvez utiliser cette règle pour effectuer les opérations suivantes :
@@ -2912,6 +2900,7 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 
       Si cette règle n'est pas configurée, les utilisateurs peuvent alors choisir l'image pour l'arrière-plan de l'écran de connexion et leur bureau.</translation>
 <translation id="3315324240256767419">Activer la fonctionnalité Fenêtre fantôme.</translation>
+<translation id="3321099611644751329">Certificats TLS qui devraient être approuvés par <ph name="PRODUCT_NAME" /> pour l'authentification du serveur avec des contraintes</translation>
 <translation id="3323819750604111729">Activer l'importation des favoris à la première exécution</translation>
 <translation id="332771718998993005">Détermine le nom de la destination <ph name="PRODUCT_NAME" />.
 
@@ -3337,6 +3326,7 @@ Si cette règle n'est pas configurée, aucun rapport de données de télémétri
           Cette règle est temporaire et devrait être supprimée dans <ph name="PRODUCT_NAME" /> 107. Néanmoins, cette échéance peut être repoussée si des entreprises le requièrent.
           </translation>
 <translation id="3678069907945250643">Autoriser l'accès à Google Photos depuis l'appli de personnalisation</translation>
+<translation id="3680529017993214255">Active les fonctionnalités et envoie des données à Google afin d'entraîner les modèles d'IA</translation>
 <translation id="3685979383016152590">Cette règle permet de désigner la règle d'accès qui s'applique à la configuration groupée des imprimantes, en déterminant les imprimantes soumises à la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> qui sont accessibles aux utilisateurs.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valeur  0) utilise <ph name="PRINTERS_BULK_BLOCKLIST" /> pour limiter l'accès aux imprimantes spécifiées
@@ -3805,11 +3795,6 @@ Jusqu'à Chrome 114, cette règle exigeait que la règle <ph name="SYNC_DISABLE
       Si <ph name="PRODUCT_NAME" /> ne se ferme pas correctement, par exemple si le navigateur ou l'OS plante, les données de navigation seront supprimées lors du prochain chargement du profil.</translation>
 <translation id="4056910949759281379">Désactiver le protocole SPDY</translation>
 <translation id="4057442294431066708">Cette règle contrôle l'option de raccourci sélectionnée pour remapper les événements avec F11/F12 dans la sous-page des touches de remappage. Ces paramètres ne s'appliquent qu'aux claviers ChromeOS et sont désactivés par défaut lorsque la règle n'est pas configurée.</translation>
-<translation id="4061107397839125009">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à afficher des notifications.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Sinon, le paramètre défini par l'utilisateur s'applique.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="4061590579642538878">Transmettre les informations liées aux rapports d'erreur.</translation>
 <translation id="4062646759141042418">Activer <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> pour une liste d'URL.
 
@@ -4163,11 +4148,6 @@ Si elle est désactivée, les utilisateurs ne peuvent pas suivre leurs colis dan
       Seuls les noms d'hôte sans extension sont autorisés dans cette règle. Elle ne s'applique qu'aux entrées préchargées HSTS "statiques" (par exemple, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). Elle n'empêche pas les mises à niveau HSTS pour les serveurs qui ont demandé "dynamiquement" des mises à niveau HSTS à l'aide d'un en-tête de réponse <ph name="HSTS_HEADER_NAME" />.
 
       Les noms d'hôte fournis doivent être indiqués sous forme canonique : tous les noms de domaine internationalisés (IDN) doivent être convertis dans leur format d'étiquette A, et toutes les lettres ASCII doivent être en minuscules. Cette règle ne s'applique qu'aux noms d'hôte sans extension spécifiques indiqués. Elle ne s'applique pas à leurs sous-domaines.</translation>
-<translation id="4387922553629365459">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à ouvrir les fenêtres pop-up.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="4389073105055031853">Autoriser les utilisateurs à gérer tous les certificats</translation>
 <translation id="4389091865841123886">Configurer l'attestation à distance avec le mécanisme TPM</translation>
 <translation id="4389113579547582722">Autoriser l'affichage de la promo concernant la note sur l'App Store</translation>
@@ -4195,15 +4175,6 @@ Cette fonctionnalité a été supprimée dans M112.</translation>
 Si cette règle est désactivée, les fichiers PDF sont ouverts, sauf si les utilisateurs ont désactivé le plug-in PDF.
 
 Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dans <ph name="PRODUCT_NAME" />. Si cette règle n'est pas configurée, les utilisateurs peuvent choisir d'ouvrir le PDF en externe ou non.</translation>
-<translation id="4413453659814156568">Permet de lister les formats d'URL pour lesquels les sites sont autorisés à exécuter JavaScript avec le compilateur JIT (Just In Time) activé.
-
-          Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.
-
-          Les exceptions aux règles liées au JIT pour JavaScript ne seront appliquées qu'à un niveau de site (eTLD+1). Une règle qui n'est définie que pour subdomain.site.com ne s'appliquera pas correctement à site.com ni à subdomain.site.com, car tous les deux se résolvent sur le même eTLD+1 (site.com) pour lequel il n'y a aucune règle. Dans ce cas, la règle doit être définie sur site.com pour s'appliquer correctement à la fois à site.com et à subdomain.site.com.
-
-          Cette règle s'applique frame par frame et ne repose pas que sur l'URL d'origine de premier niveau. Par exemple, si site-one.com est spécifié dans la règle <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />, mais qu'il charge un frame contenant site-two.com, alors le JIT pour JavaScript sera activé pour site-one.com, mais site-two.com utilisera la règle <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (si elle est configurée) ou le JIT pour JavaScript sera activé par défaut.
-
-          Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> s'applique au site (si elle est configurée). Sinon, le JIT pour JavaScript est activé pour le site.</translation>
 <translation id="4415603335307944578">Si cette règle est définie sur "True" ou n'est pas configurée, le navigateur affiche la page de bienvenue à chaque premier lancement suivant une mise à jour de l'OS.
 
       Si cette règle est définie sur "False", le navigateur n'affiche pas la page de bienvenue à chaque premier lancement suivant une mise à jour de l'OS.</translation>
@@ -4372,6 +4343,17 @@ Elle n'a aucun effet si elle est activée, laissée vide ou n'est pas définie.<
 
       Si cette règle n'est pas configurée, l'utilisateur peut désactiver n'importe quel plug-in installé sur le système.</translation>
 <translation id="4549695018986780856">Manifest V2 est activé</translation>
+<translation id="4552929684628662264">L'API Direct Sockets permet de communiquer avec des points de terminaison arbitraires via TCP et UDP.
+Pour en savoir plus, veuillez consulter https://github.com/WICG/direct-sockets.
+
+Cette règle permet de dresser la liste des formats d'URL indiquant les sites non autorisés à utiliser Direct Sockets.
+Il peut s'agir d'applications Chrome, d'applications Web isolées ou de kiosques Web. L'API n'est jamais disponible sur le Web ouvert.
+
+Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie.
+
+Les formats d'URL ne doivent pas entrer en conflit avec ceux de la règle <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est indiqué dans les deux règles.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="4554651132977135445">Mode de traitement du bouclage pour les règles relatives aux utilisateurs</translation>
 <translation id="4554991346503872538">Ne jamais proposer de traduction</translation>
 <translation id="4555850956567117258">Activer l'attestation à distance pour l'utilisateur</translation>
@@ -4644,6 +4626,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas définie, l'audio mono est désactivé au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
+<translation id="4757563299858487173">Désactiver les fonctionnalités</translation>
 <translation id="4767059955897420757">Si cette règle n'est pas définie ou qu'elle est définie sur "Activée", la promo concernant l'extension du fournisseur d'informations d'identification peut être présentée à l'utilisateur.
 Si cette règle est désactivée, l'utilisateur ne voit pas cette promo.</translation>
 <translation id="4768446404233019970">Activer les suites de chiffrement 3DES dans TLS</translation>
@@ -4710,6 +4693,7 @@ Si cette règle est définie sur "False", c'est le comportement par défaut qui 
        Si la règle n'est pas définie ou si elle est définie sur une liste vide, ces avertissements peuvent s'afficher sur n'importe quel site consulté par l'utilisateur.
 
        Un nom d'hôte peut être autorisé dans le cadre d'une correspondance d'hôte exacte ou de toute correspondance de domaine. Par exemple, les avertissements peuvent être supprimés pour l'URL "https://foo.example.com/bar" si la liste inclut "foo.example.com" ou "example.com".</translation>
+<translation id="4852900976354340846">Paramètres Direct Sockets</translation>
 <translation id="485419696366295465">Contrôle les règles liées au sous-système <ph name="BOREALIS_NAME" />.</translation>
 <translation id="4855636880814771207">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent alors activer ou désactiver le Bluetooth.
 
@@ -4842,11 +4826,6 @@ La désactivation du décodage vidéo avec accélération matérielle n'est pas 
 <translation id="4970046075219007744">Autoriser les applications Web à demander aux utilisateurs l'accès à ces types de fichiers via l'API File Handling</translation>
 <translation id="4970855112942626932">Désactiver la connexion au navigateur</translation>
 <translation id="4974091268178043378">Mode couleur de Chrome OS</translation>
-<translation id="4977702914571821981">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à afficher du contenu mixte (contenu HTTP affiché sur des sites HTTPS) blocable (actif), et pour lesquels le contenu mixte blocable de manière facultative (passif) est mis à niveau.
-
-          Si cette règle n'est pas configurée, le contenu mixte blocable est bloqué, et le contenu mixte blocable de manière facultative est mis à niveau. Les utilisateurs peuvent définir des exceptions autorisant l'affichage de ce contenu sur des sites spécifiques.
-
-          Pour en savoir plus sur les formats d'URL valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="4978533099939732984">Toujours afficher les avertissements de type "espace disque insuffisant"</translation>
 <translation id="4979714585847741269">Si cette règle est activée, une appli Web kiosque peut ouvrir une autre fenêtre de navigateur pouvant être placée sur le même écran ou sur un autre. Pour ouvrir une nouvelle fenêtre, l'appli Web doit appeler la fonction JavaScript <ph name="OPEN_NEW_WINDOW_JS" />.
 
@@ -5298,6 +5277,7 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
       Le nettoyage n'a lieu que lorsqu'il est strictement nécessaire, mais il a un impact sur le délai de connexion.
       Si la règle est définie sur "False" (valeur par défaut), le délai de connexion n'est pas affecté.</translation>
 <translation id="5371152055157582429">Les utilisateurs peuvent personnaliser l'arrière-plan de la page "Nouvel onglet"</translation>
+<translation id="5372698090378600633">Bloquer l'API Direct Sockets sur ces sites</translation>
 <translation id="5377606826822211923">Contrôler l'accès par l'utilisateur aux applications Android provenant de sources non approuvées</translation>
 <translation id="537786648513450280">Contrôler l'accès de l'appareil aux applications Android provenant de sources non approuvées</translation>
 <translation id="5378885577701865339">Désactiver la fonctionnalité de presse-papiers partagé</translation>
@@ -5315,13 +5295,6 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
 
           C'est aux administrateurs de configurer les règles sur toutes les plates-formes qui les intéressent. Il est recommandé de définir cette règle sur une même valeur pour toutes les plates-formes.</translation>
 <translation id="5389708774452952523">Autoriser l'exécution du processus audio avec une priorité supérieure à la normale sous Windows</translation>
-<translation id="5389798680516458665">Permet de dresser la liste des formats d'URL pour lesquels les sites peuvent afficher des images.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.
-
-      Notez que cette règle était auparavant activée par erreur pour Android. Toutefois, cette fonctionnalité n'a jamais été parfaitement compatible avec Android.</translation>
 <translation id="5390083518957894426">Permettre la réauthentification en ligne sur l'écran de verrouillage des utilisateurs via SAML</translation>
 <translation id="5391388690191341203">Compte local de l'appareil avec connexion automatique</translation>
 <translation id="5391867362692016532">Permet de dresser la liste des formats d'URL pour lesquels les applis Web ne sont pas autorisées à demander aux utilisateurs l'accès à certains types de fichiers.
@@ -5355,6 +5328,15 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
 <translation id="5420245232720940848">Désactive la tunnellisation PCIe pour les périphériques Thunderbolt/USB4, ce qui limitera leur capacité</translation>
 <translation id="5420673997623782432">Bloquer l'accès à la géolocalisation du système pour tous les clients</translation>
 <translation id="5420774177427557782">Détermine si les VM utilisant cette configuration peuvent être installées et exécutées (<ph name="INSTALL_ALLOWED" />), exécutées mais pas installées (<ph name="RUN_ALLOWED" />) ou ne peuvent pas être exécutées (<ph name="BLOCKED" />). Notez que pour installer une VM, la clé installer_image_x86_64 doit également être définie. Si vous supprimez complètement une configuration, elle est implicitement définie sur <ph name="BLOCKED" />, ce qui empêche les VM de s'exécuter sans règle.</translation>
+<translation id="5421670928124029853">Ces fonctionnalités des outils de développement de <ph name="PRODUCT_NAME" /> utilisent des modèles d'IA générative pour fournir des informations de débogage supplémentaires. Pour utiliser ces fonctionnalités, <ph name="PRODUCT_NAME" /> doit collecter des données telles que les messages d'erreur, les traces de la pile, les extraits de code et les requêtes réseau, puis les envoyer à un serveur de Google qui exécute un modèle d'IA générative. Le corps de la réponse ou les en-têtes d'authentification et de cookies dans les requêtes réseau ne sont pas inclus dans les données envoyées au serveur.
+
+0 = Activer la fonctionnalité pour les utilisateurs et envoyer des données pertinentes à Google afin d'entraîner ou d'améliorer les modèles d'IA. "0" est la valeur par défaut.
+
+2 = Désactiver la fonctionnalité.
+
+Les fonctionnalités d'IA générative des outils de développement incluent les suivantes :
+
+- Console Insights : décrit les messages de la console et propose des suggestions pour corriger les erreurs dans la console.</translation>
 <translation id="5422643441807528365">Clé de licence <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="5423197884968724595">Nom de la restriction Android WebView :</translation>
 <translation id="5424147596523390018">Autoriser tous les modes de couleur</translation>
@@ -5799,13 +5781,6 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> le sera également.
       Si cette règle n'est pas configurée, le facteur de scaling par défaut est utilisé.
 
       Remarque : Le facteur de scaling doit être de 100 % ou plus.</translation>
-<translation id="5738892881453299672">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à accéder aux capteurs (de mouvement et de lumière, par exemple).
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
-
-      Si un même format d'URL est spécifié à la fois dans cette règle et dans la règle <ph name="SENSORS_ALLOWED_FOR_URLS_POLICY_NAME" />, la première prévaut, et l'accès aux capteurs de mouvement ou de lumière est bloqué.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="5740636973289452345">Activer les rapports sur les informations liées aux extensions et plug-ins</translation>
 <translation id="5746149754419996562">Active la présence de widgets Glanceables sur <ph name="PRODUCT_OS_NAME" />. Plus précisément, les widgets accessibles via le chip de date sur l'étagère.
 Lorsque cette règle est activée, les Glanceables le sont aussi sur <ph name="PRODUCT_OS_NAME" />.
@@ -6000,6 +5975,7 @@ Si ces deux règles ne sont pas configurées, toutes les authentifications des s
       Si cette règle est désactivée, l'utilisation du protocole QUIC n'est pas autorisée.</translation>
 <translation id="5916855682471300200">Prioriser les règles de cloud liées à la machine par rapport à celles liées à la plate-forme</translation>
 <translation id="5917425424971710623">Ne pas signaler d'informations sur les événements de détection et réponse étendues (XDR)</translation>
+<translation id="592036544845479336">Réactiver les événements de mutation obsolètes/supprimés</translation>
 <translation id="5921713479449475707">Autoriser les téléchargements de mise à jour automatique via HTTP</translation>
 <translation id="5927903236543424081">Obliger l'utilisateur à se connecter avant d'utiliser le navigateur</translation>
 <translation id="5928633129285224981">Détermine si <ph name="PRODUCT_NAME" /> propose l'option "Imprimer en tant qu'image" par défaut lors de l'impression de documents PDF.
@@ -6519,6 +6495,15 @@ Si cette règle n'est pas configurée ou qu'elle est définie sur <ph name="ALLO
 AVERTISSEMENT : Faites attention quand vous modifiez ce paramètre, car cela pourrait affecter d'autres règles liées à la géolocalisation (<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />, par exemple). Plus précisément, si cette règle est définie sur <ph name="DISALLOW" />, les options <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> et <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> de la règle <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> ne fonctionneront pas correctement et n'utiliseront que la résolution de localisation basée sur <ph name="IP" /> sur l'écran de connexion (<ph name="LOG_IN" />).</translation>
 <translation id="6338982178236723271">Transmettre les informations système</translation>
 <translation id="6339355882150329269">Ne pas considérer l'utilisateur comme inactif pendant la lecture de la vidéo</translation>
+<translation id="634949984530753985">Pour des raisons de sécurité, l'API Web <ph name="REQUEST_FULLSCREEN_API_NAME" /> nécessite un geste préalable de l'utilisateur ("activation temporaire"). Sinon, une erreur se produit. Les paramètres personnels des utilisateurs peuvent autoriser certaines origines à appeler cette API sans geste préalable de l'utilisateur, comme décrit sur <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
+
+Cette règle remplace les paramètres personnels des utilisateurs et empêche les origines correspondantes d'appeler l'API sans geste préalable de l'utilisateur.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
+
+Les origines correspondant à la fois aux formats de règle bloqués et autorisés seront bloquées.
+Les origines non spécifiées par la règle ni par les paramètres utilisateur nécessitent un geste préalable de l'utilisateur pour appeler cette API.</translation>
 <translation id="6352714113109004581">Permet de dresser la liste des formats d'URL pour lesquels les sites peuvent demander aux utilisateurs de leur accorder l'accès à un appareil HID.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.
@@ -6857,6 +6842,7 @@ Remarque : Le cache est vidé à la suite d'un redémarrage et d'une déconnexi
 <translation id="6583249367505445969">Désactiver la barre de favoris</translation>
 <translation id="6584122839583172231">Les paramètres F12 utilisent le raccourci qui contient les touches de modification Ctrl et Maj</translation>
 <translation id="6584541828182430328">Désactiver l'affichage de l'alerte plein écran</translation>
+<translation id="658537215958747575">Autoriser les origines éligibles à utiliser Direct Sockets</translation>
 <translation id="6588634282328239769">Afficher l'URL complète</translation>
 <translation id="6589049539706330510">Activer la prise en charge</translation>
 <translation id="6593025196187527239">Si cette règle est définie sur "True" ou n'est pas définie, les utilisateurs peuvent utiliser ARC, sauf si celui-ci est désactivé par un autre moyen. Si elle est définie sur "False", les utilisateurs non affiliés ne peuvent pas utiliser ARC.
@@ -7203,6 +7189,17 @@ Si la règle est définie sur "false" ou si elle n'est pas configurée, cette di
 <translation id="685769593149966548">Appliquer le mode restreint strict sur YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou version ultérieure</translation>
 <translation id="6866755486434471318">Autorise <ph name="PEPPER_NAME" /> à utiliser des images partagées pour le décodage vidéo.</translation>
+<translation id="6870288354334274313">L'API Direct Sockets permet de communiquer avec des points de terminaison arbitraires via TCP et UDP.
+Pour en savoir plus, veuillez consulter https://github.com/WICG/direct-sockets.
+
+Cette règle permet de dresser la liste des formats d'URL indiquant les sites autorisés à utiliser l'API Direct Sockets.
+Il peut s'agir d'applications Chrome, d'applications Web isolées ou de kiosques Web. L'API n'est jamais disponible sur le Web ouvert.
+
+Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie.
+
+Les formats d'URL ne doivent pas entrer en conflit avec ceux de la règle <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est indiqué dans les deux règles.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="6878757724611298427">Autoriser les utilisateurs à se servir d'applis Android sur des appareils non affiliés</translation>
 <translation id="6881397131210596522">Si cette règle est définie sur "2", cela empêche automatiquement les sites d'utiliser l'API WebPrinting.
 
@@ -7218,6 +7215,7 @@ Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès a
 
       Si cette règle n'est pas configurée, aucune restriction qu'elle impose n'est appliquée à l'ensemble des applications que les utilisateurs peuvent activer sur l'écran de verrouillage.</translation>
 <translation id="6882028194958060206">Appliquer le paramètre de contenu Flash à tous les contenus (obsolète)</translation>
+<translation id="6882345904422482308">(Avertissement : Cette dépendance sera bientôt supprimée, veuillez commencer à utiliser la règle <ph name="GLS_POLICY_NAME" /> à la place). Si cette règle est définie sur <ph name="BLOCK_GEOLOCATION_SETTING" />, les applications Android ne peuvent pas accéder aux informations de localisation. Si vous attribuez toute autre valeur pour cette règle, ou que vous ne la définissez pas, l'utilisateur doit donner son accord lorsqu'une application Android veut accéder aux informations de localisation.</translation>
 <translation id="6883050310557769428">Détermine si le SSO flottant est activé et contrôle la liste de blocage des domaines de cookie et ses exceptions.</translation>
 <translation id="6889123056995503704">L'utilisateur détermine le comportement de retour à une version antérieure</translation>
 <translation id="6889617338886728275">Permet de lister les formats d'URL des sites qui accordent automatiquement l'autorisation de gestion des fenêtres. Cela étend la capacité des sites à voir les informations concernant les écrans de l'appareil, ainsi qu'à utiliser ces informations pour ouvrir et positionner des fenêtres, ou demander le passage en plein écran sur certains écrans.
@@ -8000,6 +7998,7 @@ Si cette règle est définie sur "True", le téléchargement des charges utiles 
 <translation id="7515953732107149296">Cette règle a été supprimée dans la version M53 après la suppression de RC4 dans <ph name="PRODUCT_NAME" />.
 
       Si cette règle n'est pas configurée ou si elle est définie sur "False", les suites de chiffrement RC4 dans TLS ne seront pas activées. Sinon, il est possible de la définir sur "true" afin de conserver la compatibilité avec un serveur obsolète. Il s'agit d'une solution provisoire et il est conseillé de reconfigurer le serveur.</translation>
+<translation id="751615601677744094">Désactivée : comportement normal pour les événements de mutation, soit un non-déclenchement de ces événements après la date de suppression.</translation>
 <translation id="7519218194072744342">URL du gestionnaire de protocoles.</translation>
 <translation id="7519251620064708155">Autoriser la génération de clé sur ces sites</translation>
 <translation id="7521864460386999758">Empêcher l'injection de code tiers dans Chrome</translation>
@@ -8288,6 +8287,7 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.</translation>
 <translation id="77675082813227181">La page de test des règles est bloquée</translation>
+<translation id="7769289607378631288">Activée : les événements de mutation sont temporairement réactivés.</translation>
 <translation id="7771298620150437359">Configurer les langues préférées et leur ordre</translation>
 <translation id="7773790010815041731">Les applis Chrome sont obsolètes sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name="LINUX_OS_NAME" />.
       Si cette règle est activée, <ph name="PRODUCT_NAME" /> permettra toujours aux applis Chrome de s'exécuter sur ces plates-formes jusqu'en juin 2022, date à laquelle elles ne seront plus compatibles sur aucune plate-forme.
@@ -8309,12 +8309,6 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
 <translation id="7781452670568828399">Modifier la configuration <ph name="PRODUCT_OS_NAME" /> recommandée.</translation>
 <translation id="7784062550705119230">Si <ph name="PRINTERS_ALLOWLIST" /> est sélectionné pour la règle <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, la définition de <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> indique les imprimantes accessibles aux utilisateurs. Seules les imprimantes dont les ID correspondent aux valeurs définies dans cette règle sont proposées aux utilisateurs. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" /></translation>
 <translation id="7788511847830146438">Par profil</translation>
-<translation id="7788632499792081231">Permet de dresser la liste des formats d'URL pour lesquels les sites peuvent solliciter l'autorisation d'accès au presse-papiers. Cette règle n'affecte pas la totalité des opérations dont la provenance correspond à ces formats. Par exemple, il restera possible d'utiliser le raccourci clavier pour coller, cette opération n'étant pas contrôlée par la permission d'utiliser le presse-papiers.
-
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_CLIPBOARD_SETTING" /> s'applique pour tous les sites, à condition qu'elle soit définie. Sinon, le paramètre défini par l'utilisateur s'applique.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="7790221177424764797">Permet de déterminer si les instructions de la règle "SiteList" d'<ph name="IE_PRODUCT_NAME" /> doivent être ou non chargées.
 
 Si cette règle est définie sur "True", <ph name="PRODUCT_NAME" /> lit la règle <ph name="IEEM_SITELIST_POLICY" /> d'<ph name="IE_PRODUCT_NAME" /> pour obtenir l'URL de la liste des sites. <ph name="PRODUCT_NAME" /> télécharge ensuite la liste en question à partir de cette URL, puis applique les instructions comme si elles avaient été configurées avec la règle <ph name="BROWSER_SWITCHER_URL_LIST_POLICY_NAME" />.
@@ -8379,6 +8373,15 @@ Remarque : <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" /> 
 <translation id="7850846808758624237">Si cette règle est activée, la page d'accueil configurée dans le précédent navigateur par défaut sera importée lors de la première exécution. Si cette règle est désactivée ou qu'elle n'est pas configurée, la page d'accueil n'est pas importée lors de la première exécution.
 
       Les utilisateurs peuvent ouvrir une boîte de dialogue d'importation. La case correspondant à la page d'accueil sera cochée ou non selon la configuration de cette règle.</translation>
+<translation id="7852952453329293282">L'API Direct Sockets permet de communiquer avec des points de terminaison arbitraires via TCP et UDP.
+Pour en savoir plus, veuillez consulter https://github.com/WICG/direct-sockets.
+
+Si cette règle est définie sur "1", les origines éligibles peuvent utiliser Direct Sockets.
+Il s'agit entre autres d'applications Chrome, d'applications Web isolées ou de kiosques Web. L'API n'est jamais disponible sur le Web ouvert.
+
+Si cette règle est définie sur "2", les origines ne peuvent pas utiliser Direct Sockets.
+
+Si cette règle n'est pas configurée, Direct Sockets peut être utilisée.</translation>
 <translation id="7853140303943875314">Activer l'annulation de la connexion automatique</translation>
 <translation id="7854187834842629068">Désactiver la dictée sur l'écran de connexion</translation>
 <translation id="7863947545897944083">Permet d'activer la fonctionnalité d'accessibilité de contraste élevé sur l'écran de connexion.
@@ -9176,17 +9179,6 @@ Le rollback vers <ph name="PRODUCT_OS_NAME" /> 106 ou version antérieure n'est
       Elle remplace <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> et les préférences de l'utilisateur.</translation>
 <translation id="8528951285051082869">N'autoriser aucune appli Web à accéder à certains types de fichiers via l'API File Handling</translation>
 <translation id="8533145294731270627">Bloquer les téléchargements malveillants et les types de fichiers dangereux.</translation>
-<translation id="8543103455510904459">Permet de lister les formats d'URL pour lesquels les sites ne sont pas autorisés à exécuter JavaScript avec le compilateur JIT (Just In Time) activé.
-
-          Si le JIT pour JavaScript est désactivé, <ph name="PRODUCT_NAME" /> peut afficher le contenu Web plus lentement et aussi désactiver des parties de JavaScript, y compris WebAssembly. Cette désactivation peut également permettre à <ph name="PRODUCT_NAME" /> d'afficher le contenu Web dans une configuration plus sûre.
-
-          Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.
-
-          Les exceptions aux règles liées au JIT pour JavaScript ne seront appliquées qu'à un niveau de site (eTLD+1). Une règle qui n'est définie que pour subdomain.site.com ne s'appliquera pas correctement à site.com ni à subdomain.site.com, car tous les deux se résolvent sur le même eTLD+1 (site.com) pour lequel il n'y a aucune règle. Dans ce cas, la règle doit être définie sur site.com pour s'appliquer correctement à la fois à site.com et à subdomain.site.com.
-
-          Cette règle s'applique frame par frame et ne repose pas que sur l'URL d'origine de premier niveau. Par exemple, si site-one.com est spécifié dans la règle <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />, mais qu'il charge un frame contenant site-two.com, alors le JIT pour JavaScript sera désactivé pour site-one.com, mais site-two.com utilisera la règle <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (si elle est configurée) ou le JIT pour JavaScript sera activé par défaut.
-
-          Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> s'applique au site (si elle est configurée). Sinon, le JIT pour JavaScript est activé pour le site.</translation>
 <translation id="8543108307976719751">Empêcher les connexions d'accès à distance à cet ordinateur</translation>
 <translation id="8543639085146778837">Autoriser la collecte des journaux texte WebRTC à partir des services Google</translation>
 <translation id="8543975123557636331">Activer la sortie audio</translation>
@@ -9524,11 +9516,6 @@ Cette règle ne s'applique pas si le clavier virtuel est désactivé (par exempl
 <translation id="8827366480126575426">Protocole du gestionnaire de protocoles.</translation>
 <translation id="8827417642396462482">Autorise les autres types de requêtes DNS</translation>
 <translation id="8830717323204407209">Permet aux utilisateurs de voir la promo concernant l'extension du fournisseur d'informations d'identification</translation>
-<translation id="8831911834413504983">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à exécuter JavaScript.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="8832829916385857156">Fiches affichées sur la page Nouvel onglet si du contenu est disponible</translation>
 <translation id="8833109046074170275">Authentification via le flux GAIA par défaut</translation>
 <translation id="8834641112681661892">Cette règle permet de spécifier, en millisecondes, le délai maximal entre la réception du rejet d'une règle et la récupération de la nouvelle règle auprès du service de gestion de l'appareil. Les valeurs valides sont comprises entre 1 000 (1 seconde) et 300 000 (5 minutes). Toute valeur en dehors de cette plage sera remplacée par la valeur minimale ou maximale la plus proche autorisée.

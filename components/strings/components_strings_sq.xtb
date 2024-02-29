@@ -231,7 +231,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1410941016594047814">Zarf ftese</translation>
 <translation id="1413809658975081374">Gabim i privatësisë</translation>
 <translation id="1414134146594747368">Parashkollorë</translation>
-<translation id="141826476809826269">Fundi i tekstit të nxjerrë</translation>
 <translation id="1418611192881166179">Ndërkohë që Chrome po përditëson këtë veçori, sajtet mund të përdorin përkohësisht kukit e një pale të tretë, përveçse nëse ti i bllokon ato te cilësimet.</translation>
 <translation id="1419305130220238697">Butoni "Menaxho shkarkimet në Chrome". Aktivizoje për të menaxhuar skedarët që ke shkarkuar në Chrome</translation>
 <translation id="1422930527989633628">Mund të kërkojë të zbulojë pajisjet me Bluetooth në afërsi</translation>
@@ -1321,6 +1320,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3542628208405253498">Imazhi i kartës</translation>
 <translation id="3542768452570884558">Hape lidhjen në një dritare të re</translation>
 <translation id="3547746132308051926">20 x 24 inç</translation>
+<translation id="3552155506104542239">Paralajmërim: Kjo politikë është në konflikt me <ph name="POLICY_NAME" /> dhe nuk do të ketë asnjë efekt në aplikacionet për Android. Në rast të kundërt, kjo politikë funksionon siç pritet.</translation>
 <translation id="3552297013052089404">Fonti sans-serif</translation>
 <translation id="3558573058928565255">Dita dhe ora</translation>
 <translation id="355995771319966853">Zhbëje plotësimin automatik</translation>
@@ -1868,6 +1868,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="46128681529823442">Pajisja për futboll</translation>
 <translation id="4619564267100705184">Verifiko që je ti</translation>
 <translation id="4622292761762557753">Transfero gjithsesi</translation>
+<translation id="4622647778991854660">Aktivizo njoftimet në "Qendrën e njoftimeve". Hap <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Kjo politikë nuk mund të caktohet në nivelin e profilit të Chrome dhe do të shpërfillet.</translation>
 <translation id="4628678854894591460">Oferta për pushime</translation>
 <translation id="4628948037717959914">Fotografia</translation>
@@ -3066,7 +3067,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6978121630131642226">Motorët e kërkimit</translation>
 <translation id="6978236010531171013">Ndaj gjithsesi</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
-<translation id="6979332652936434520">Fillimi i tekstit të nxjerrë</translation>
 <translation id="6979440798594660689">Heshtje (e parazgjedhur)</translation>
 <translation id="6987806006823772670">Zarf (i veshur)</translation>
 <translation id="6989763994942163495">Trego cilësimet e përparuara...</translation>
@@ -3198,6 +3198,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7234112195906418665">Udhëtimi dhe transporti</translation>
 <translation id="7236417832106250253">Përfunduar: <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Dhurata dhe artikuj për ngjarje të veçanta</translation>
+<translation id="7237454422623102448">Cilësimet e sistemit</translation>
 <translation id="7237492777898608035">Mos e shfaq më këtë mesazh për këtë sajt</translation>
 <translation id="7240120331469437312">Emri alternativ i subjektit të certifikatës</translation>
 <translation id="7241863998525879494">Çfarë mund të presësh</translation>

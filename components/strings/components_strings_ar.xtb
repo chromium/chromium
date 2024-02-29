@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">ظرف دعوة</translation>
 <translation id="1413809658975081374">خطأ في الخصوصية</translation>
 <translation id="1414134146594747368">رياض أطفال</translation>
-<translation id="141826476809826269">نهاية النص المُستخرَج</translation>
 <translation id="1418611192881166179">‏يمكن للمواقع الإلكترونية، أثناء تحديث Chrome لهذه الميزة، أن تستخدم بشكل مؤقت ملفات تعريف الارتباط التابعة لجهات خارجية ما لم تحظر هذه الملفات من خلال الإعدادات.</translation>
 <translation id="1419305130220238697">‏زر إدارة عمليات التنزيل في Chrome: انقر على هذا الزر لإدارة الملفات التي تم تنزيلها في Chrome.</translation>
 <translation id="1422930527989633628">السماح للموقع الإلكتروني بالعثور على الأجهزة المجاورة التي تتضمّن بلوتوث</translation>
@@ -1202,6 +1201,7 @@
 <translation id="3324687287337751929">4 × 6 بوصة</translation>
 <translation id="3324983252691184275">قرمزي</translation>
 <translation id="3325027355611702542">مركبات تخييم واستجمام</translation>
+<translation id="3325568918769906282">تنازلي</translation>
 <translation id="3329013043687509092">تشبع اللون</translation>
 <translation id="3333762389743153920">هذه البطاقة غير مؤهَّلة للاستخدام كبطاقة افتراضية</translation>
 <translation id="3336044043987989409">اضغط على زر إعادة التحميل للسماح بالاتصال بالأجهزة أو الخوادم على شبكتك الخاصة.</translation>
@@ -1782,6 +1782,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">حافّة</translation>
 <translation id="4397059608630092079">التحقُّق دائمًا من بيانات طرق الدفع عند استخدام ميزة الملء التلقائي</translation>
+<translation id="4397978002248035985">يفتح هذا الخيار نافذة منبثقة لإثبات الهوية على الموقع الإلكتروني للمصرف الذي تتعامل معه.</translation>
 <translation id="4406883609789734330">النسخ النصي التلقائي</translation>
 <translation id="4406896451731180161">نتائج البحث</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> من ملفات تعريف الارتباط</translation>
@@ -2207,6 +2208,7 @@
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">خصائص المستند</translation>
 <translation id="528468243742722775">‏مفتاح End</translation>
+<translation id="5285468538058987167">‏من خلال المصادقة القوية للعملاء (SCA)</translation>
 <translation id="5285570108065881030">عرض جميع كلمات المرور المحفوظة</translation>
 <translation id="5287456746628258573">يستخدم هذا الموقع الإلكتروني ضبط الأمان القديم الذي قد يكشف عن معلوماتك (مثل كلمات المرور أو أرقام بطاقة الائتمان) عند إرسالها إلى هذا الموقع الإلكتروني.</translation>
 <translation id="5288108484102287882">لقد أدى التحقُّق من قيم السياسة إلى ظهور تحذيرات.</translation>
@@ -2253,6 +2255,7 @@
 <translation id="5371425731340848620">تحديث البطاقة</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">‏""توقيت ساعتك متأخِّر" أو "توقيت ساعتك متقدِّم" أو "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">تصاعدي</translation>
 <translation id="5383478552402031184">أرضيّات</translation>
 <translation id="5385857628869214740">طرائف</translation>
 <translation id="5385966243497224160">‏لا يمكن معاينة عنوان URL لا يستخدم HTTPS</translation>
@@ -3074,7 +3077,6 @@
 <translation id="6978121630131642226">محرّكات البحث</translation>
 <translation id="6978236010531171013">المشاركة على أي حال</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">بداية النص المُستخرَج</translation>
 <translation id="6979440798594660689">كتم الصوت (تلقائي)</translation>
 <translation id="6987806006823772670">ظرف (مطلي)</translation>
 <translation id="6989763994942163495">عرض الإعدادات المتقدمة...</translation>
@@ -3489,6 +3491,7 @@
 <translation id="7719791801330803993">برامج صور وفيديو</translation>
 <translation id="772128550427553158">‏يظهر رمز التحقق من البطاقة (CVC) في الجزء الأمامي من بطاقتك.</translation>
 <translation id="7724603315864178912">قص</translation>
+<translation id="7730057435797792985">ترتيب</translation>
 <translation id="7734285854693414638">‏إنشاء نموذج جديد في "نماذج Google" بسرعة</translation>
 <translation id="773466115871691567">ترجمة الصفحات باللغة <ph name="SOURCE_LANGUAGE" /> دائمًا</translation>
 <translation id="7736959720849233795">نسخ عنوان الرابط</translation>

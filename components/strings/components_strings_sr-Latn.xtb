@@ -231,7 +231,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1410941016594047814">Koverta Invite</translation>
 <translation id="1413809658975081374">Greška u vezi sa privatnošću</translation>
 <translation id="1414134146594747368">Predškolski uzrast</translation>
-<translation id="141826476809826269">Kraj izdvojenog teksta</translation>
 <translation id="1418611192881166179">Dok Chrome ažurira ovu funkciju, sajtovi mogu privremeno da koriste kolačiće treće strane ako ih ne blokirate u podešavanjima.</translation>
 <translation id="1419305130220238697">Dugme Upravljaj preuzimanjima u Chrome-u, aktivirajte ga da biste upravljali fajlovima koje ste preuzeli u Chrome-u</translation>
 <translation id="1422930527989633628">Može da traži da otkriva Bluetooth uređaje u blizini</translation>
@@ -1780,6 +1779,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">Obod</translation>
 <translation id="4397059608630092079">Uvek verifikuj pri korišćenju automatskog popunjavanja</translation>
+<translation id="4397978002248035985">Otvara iskačući prozor za verifikaciju na veb-sajtu banke</translation>
 <translation id="4406883609789734330">Titl uživo</translation>
 <translation id="4406896451731180161">rezultati pretrage</translation>
 <translation id="4408413947728134509">Kolačići (<ph name="NUM_COOKIES" />)</translation>
@@ -2203,6 +2203,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Svojstva dokumenta</translation>
 <translation id="528468243742722775">Završi</translation>
+<translation id="5285468538058987167">Preko jake potvrde identiteta klijenta (SCA)</translation>
 <translation id="5285570108065881030">Prikaži sve sačuvane lozinke</translation>
 <translation id="5287456746628258573">Ovaj sajt koristi zastarelu bezbednosnu konfiguraciju, koja može da otkrije vaše informacije (na primer, lozinke ili brojeve kreditnih kartica) kada se šalju na njega.</translation>
 <translation id="5288108484102287882">Validacija vrednosti smernica je aktivirala upozorenja</translation>
@@ -3070,7 +3071,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6978121630131642226">Pretraživači</translation>
 <translation id="6978236010531171013">Ipak deli</translation>
 <translation id="6979158407327259162">Google disk</translation>
-<translation id="6979332652936434520">Početak izdvojenog teksta</translation>
 <translation id="6979440798594660689">Isključen (podrazumevano)</translation>
 <translation id="6987806006823772670">Koverta (obložena)</translation>
 <translation id="6989763994942163495">Prikaži napredna podešavanja...</translation>

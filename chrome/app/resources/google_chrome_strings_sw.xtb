@@ -33,6 +33,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1516530951338665275">Google Chrome inahitaji ruhusa ya kufikia Bluetooth ili iendelee 
  kuoanisha. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Mfumo wa Uendeshaji wa Chrome umewezeshwa na <ph name="BEGIN_LINK_CROS_OSS" />programu huria<ph name="END_LINK_CROS_OSS" /> za ziada.</translation>
+<translation id="155168855724261758">Weka Mapendeleo Kwenye Chrome Yako</translation>
 <translation id="1553358976309200471">Sasisha Chrome</translation>
 <translation id="1583073672411044740">Tayari <ph name="EXISTING_USER" /> ameingia katika akaunti kwenye wasifu huu wa Chrome. Hatua hii itafungua wasifu mpya wa <ph name="USER_EMAIL_ADDRESS" /> kwenye Chrome</translation>
 <translation id="1587223624401073077">Google Chrome inatumia kamera yako.</translation>
@@ -72,6 +73,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2121284319307530122">Fungua tena ili Usasishe &amp;Chrome</translation>
 <translation id="2123055963409958220">Saidia kuboresha Chrome kwa kuripoti kuhusu <ph name="BEGIN_LINK" />mipangilio ya sasa<ph name="END_LINK" /></translation>
 <translation id="2126108037660393668">Faili iliyopakuliwa imeshindwa kuthibitishwa.</translation>
+<translation id="2128411189117340671">Dhibiti wasifu wa Chrome</translation>
 <translation id="2130870084309816036">Imeshindwa kuunganisha kwenye Intaneti. Iwapo unatumia kinga mtandao, tafadhali weka <ph name="PRODUCT_EXE_NAME" /> kwenye orodha ya vilivyoruhusiwa.</translation>
 <translation id="2131230230468101642">Ili kulinda faragha yako, tunafuta kiotomatiki mambo yanayokuvutia ambayo yapo kwenye orodha kwa zaidi ya wiki nne. Kadiri unavyoendelea kuvinjari, jambo linalokuvutia linaweza kuonekana tena kwenye orodha. Au unaweza kuondoa mambo yanayokuvutia ambayo usingependa Chrome iyazingatie.</translation>
 <translation id="2139300032719313227">Zima kisha uwashe Mfumo wa Uendeshaji wa Chrome</translation>
@@ -425,6 +427,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="7917876797003313048">Unaweza kudhibiti Akaunti zako za Google ulizotumia kuingia katika tovuti na programu. Akaunti zako za Google hutumiwa kwenye kivinjari cha Chrome, Duka la Google Play, Gmail na kwingineko. Iwapo ungependa kuweka akaunti ya mtu mwingine, kama vile mwanafamilia, ongeza mtu mpya kwenye <ph name="DEVICE_TYPE" /> yako badala yake. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome imezuiaa upakuaji huu kwa sababu faili inapotosha na huenda ikafanya mabadiliko yasiyotarajiwa kwenye kifaa chako</translation>
 <translation id="7951272445806340501">ChromeOS Flex inahitaji kuzimwa na kuwashwa tena ili itekeleze usasishaji.</translation>
+<translation id="7959172989483770734">Dhibiti Wasifu wa Chrome</translation>
 <translation id="7962368738413920945">Huenda tovuti zikafanya kazi kama unavyotarajia lakini hazitakumbuka taarifa zako baada ya kufunga madirisha yote ya Chrome</translation>
 <translation id="7962410387636238736">Kompyuta hii haitapokea tena masasisho ya Google Chrome kwa sababu Windows XP na Windows Vista hazitumiki tena</translation>
 <translation id="8005666035647241369">Kwenye Kidhibiti cha Manenosiri cha Google katika kifaa hiki</translation>
@@ -432,6 +435,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="8009904340233602924">Tumia Chrome bila akaunti</translation>
 <translation id="8013993649590906847">Ikiwa picha haina ufafanuzi muhimu, Chrome itajaribu kukuwekea. Ili kuweka ufafanuzi, tutatuma picha kwa Google.</translation>
 <translation id="8019103195866286235">Uchapishaji wa kiendelezi hiki ulibatilishwa na msanidi programu na huenda kisiwe salama. Kiondoe kwenye Chrome ili kisiweze tena kuona na kubadilisha data yako kwenye tovuti unazotembelea, ikiwa ni pamoja na taarifa zako binafsi.</translation>
+<translation id="8031641407207794385">Weka mapendeleo kwenye Chrome yako</translation>
 <translation id="80471789339884597">Asante kwa kusakinisha. Ni lazima uzime kisha uwashe tena vivinjari vyako kabla ya kutumia <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Arifa ya ChromeOS Flex</translation>
 <translation id="8077579734294125741">Wasifu Mwingine Kwenye Chrome</translation>

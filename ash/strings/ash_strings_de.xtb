@@ -358,6 +358,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2484513351006226581">Drücke <ph name="KEYBOARD_SHORTCUT" />, um das Tastaturlayout zu ändern.</translation>
 <translation id="2486214324139475545">Vorschau für <ph name="DESK_NAME" />. Aktiver Desktop.</translation>
 <translation id="2487915095798731898">Teilnehmen</translation>
+<translation id="2499445554382787206">Menü „Desktop-Profil“. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Sticky Keys</translation>
 <translation id="2504454902900101003">Anzeige der letzten Fotos, Medien und Benachrichtigungen auf deinem Smartphone nicht einrichten</translation>
 <translation id="2509468283778169019">Feststelltaste aktiviert</translation>
@@ -605,6 +606,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3509391053705095206">Dein Smartphone wurde nicht gefunden. Ist auf dem Smartphone wirklich Bluetooth aktiviert?</translation>
 <translation id="3510164367642747937">Cursor hervorheben</translation>
 <translation id="3513798432020909783">Konto verwaltet von <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Aufgaben zuletzt aktualisiert: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Gerät innerhalb von 1 Minute neu starten}other{Gerät innerhalb von # Minuten neu starten}}</translation>
 <translation id="3522979239100719575">Es wird nach verfügbaren Profilen gesucht. Das kann einige Minuten dauern.</translation>
 <translation id="3526440770046466733">Link auf neuem Tab öffnen und auf aktuellem Tab bleiben</translation>
@@ -1144,6 +1146,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="5536723544185013515">Zuletzt verwendete Apps – du kannst über den Links- oder Rechtspfeil alle kürzlich verwendeten Apps aufrufen</translation>
 <translation id="553675580533261935">Sitzung wird beendet</translation>
 <translation id="5537725057119320332">Streamen</translation>
+<translation id="554017492391497564">Aufgabe konnte nicht als erledigt markiert werden.</translation>
 <translation id="5546397813406633847">Nutzer wiederherstellen</translation>
 <translation id="554893713779400387">Diktierfunktion ein-/ausschalten</translation>
 <translation id="5550417424894892620">Lege Dateien auf dem Desktop ab, um sie zu <ph name="HOLDING_SPACE_TITLE" /> hinzuzufügen. Du kannst Dateien nicht dem Desktop hinzufügen.</translation>
@@ -1338,6 +1341,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Niedriger Akkustand. Der Energiesparmodus ist aktiviert.</translation>
 <translation id="6247728804802644171">Benachrichtigungen öffnen</translation>
+<translation id="6249795363855770621">Aufgabe konnte nicht als erledigt markiert werden. Versuch es noch einmal, wenn du wieder online bist.</translation>
 <translation id="6254629735336163724">Horizontale Ausrichtung aktiv</translation>
 <translation id="6259254695169772643">Verwende den Eingabestift, um deine Auswahl zu treffen</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Wird aktiviert...</translation>
@@ -1498,6 +1502,7 @@ Neuinstallation</translation>
 <translation id="6896758677409633944">Kopieren</translation>
 <translation id="6912841030378044227">Fokus auf Adressleiste</translation>
 <translation id="6912901278692845878">Kurze Einführung</translation>
+<translation id="6917259695595127329">Aufgaben zuletzt aktualisiert: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Deine Smartcard wurde nicht erkannt. Bitte versuche es noch einmal.</translation>
 <translation id="692135145298539227">löschen</translation>
 <translation id="6929081673585394903">Steuerelemente einblenden</translation>

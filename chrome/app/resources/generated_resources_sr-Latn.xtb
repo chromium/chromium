@@ -972,6 +972,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1723824996674794290">&amp;Novi prozor</translation>
 <translation id="1724801751621173132">Režim unosa</translation>
 <translation id="1725562816265788801">Pomeranje kartica</translation>
+<translation id="1725585416709851618">Probajte da omogućite Google disk u Podešavanjima i odaberite Probaj ponovo ili odaberite Otvori u osnovnom uređivaču da biste koristili opcije ograničenog prikaza i izmena.</translation>
 <translation id="1726503915437308071">Font u kurzivu</translation>
 <translation id="1729533290416704613">Kontroliše i stranicu koja se prikazuje kada pretražujete iz omniboksa.</translation>
 <translation id="1730666151302379551">Zaboravljena stara lozinka</translation>
@@ -1813,7 +1814,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2343747224442182863">Stavi ovu karticu u fokus</translation>
 <translation id="2344032937402519675">Povezivanje sa serverom nije uspelo. Proverite mrežnu vezu i probajte ponovo. Ako i dalje imate problema, probajte ponovo da pokrenete Chromebook.</translation>
 <translation id="234559068082989648">Nećete moći da otvorite stare verzije Chrome aplikacija posle decembra 2022. Obratite se administratoru da biste ažurirali ovu aplikaciju na novu verziju ili je uklonili.</translation>
-<translation id="2347930112185157300">Usluga ovog mobilnog provajdera je zaključana</translation>
 <translation id="2348176352564285430">Aplikacija: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Zatražena je dozvola. Pritisnite Ctrl + Forward da biste odgovorili</translation>
 <translation id="234889437187286781">Greška pri učitavanju podataka</translation>
@@ -1978,7 +1978,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2462332841984057083">Steam se već podešava. Sačekajte da se podešavanje završi.</translation>
 <translation id="2462724976360937186">ID ključa autoriteta za izdavanje sertifikata</translation>
 <translation id="2462752602710430187">Dodato je: <ph name="PRINTER_NAME" /></translation>
-<translation id="2464046291463112461">Sprečite spoljnu dodatnu opremu da pristupa memoriji i da je deli sa njom (RAM)</translation>
 <translation id="2467755475704469005">Nije otkriven nijedan uređaj. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Ubrzanje pomeranja tačpedom</translation>
 <translation id="2468205691404969808">Koristi kolačiće da bi se zapamtila podešavanja, čak i kada ne posećujete te stranice</translation>
@@ -2281,6 +2280,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2701330563083355633">Deljeno sa: <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Prijavite se, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">MAC adresa mreže</translation>
+<translation id="2702720509009999256">Proverite internet vezu i izaberite Probaj ponovo ili odaberite Otvori u osnovnom uređivaču da biste koristili opcije ograničenog prikaza i izmena.</translation>
 <translation id="2702801445560668637">Lista za čitanje</translation>
 <translation id="270414148003105978">Mobilne mreže</translation>
 <translation id="2704184184447774363">Microsoft potpisivanje dokumenata</translation>
@@ -3583,6 +3583,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3719245268140483218">Događaj na uređaju</translation>
 <translation id="3719310907809321183">Uneli ste <ph name="CARD_IDENTIFIER" />.</translation>
 <translation id="3719826155360621982">Početna stranica</translation>
+<translation id="3720543739123045680">Druge kartice dele proces sa ovom karticom, što može da dovede do neočekivanog doživljaja alatki za programere.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Vi i Google</translation>
 <translation id="3722108462506185496">Greška pri pokretanju usluge virtuelne mašine. Probajte ponovo.</translation>
@@ -5034,6 +5035,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="484462545196658690">Automatski</translation>
 <translation id="4846628405149428620">Izaberite gde ovaj sajt može da čuva izmene</translation>
 <translation id="4846680374085650406">Poštujete preporuku administratora za ovo podešavanje.</translation>
+<translation id="4847242508757499006">Odaberite Probaj ponovo ili odaberite Otvori u osnovnom uređivaču da biste koristili opcije ograničenog prikaza i izmena.</translation>
 <translation id="4848191975108266266">Komanda „Hej Google“ za Google pomoćnik</translation>
 <translation id="4849286518551984791">Koordinisano univerzalno vreme (UTC/GMT)</translation>
 <translation id="4849517651082200438">Ne instaliraj</translation>
@@ -6029,6 +6031,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5636012309446422">Želite da uklonite uređaj <ph name="DEVICE" /> sa <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Da biste koristili <ph name="NETWORK_ID" />, možda ćete prvo morati da <ph name="LINK_START" />posetite stranicu za prijavljivanje na mrežu<ph name="LINK_END" />, koja će se automatski otvoriti za nekoliko sekundi. Ako se to ne desi, mreža ne može da se koristi.</translation>
 <translation id="5637476008227280525">Omogući mobilne podatke</translation>
+<translation id="5638170200695981015">Odaberite Otvori u osnovnom uređivaču da biste koristili opcije ograničenog prikaza i izmena.</translation>
 <translation id="563821631542362636">Dozvoli sajtu da čuva podatke</translation>
 <translation id="5638309510554459422">Pronađite dodatke i teme u <ph name="BEGIN_LINK" />Chrome veb-prodavnici<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Ponovo učitajte ovu stranicu, zadržite da biste videli više opcija</translation>
@@ -6781,6 +6784,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6235208551686043831">Kamera uređaja je uključena. Postavite eSIM QR kôd ispred kamere.</translation>
 <translation id="6237297174664969437">Uvek možete da odaberete podatke pregledanja koje ćete sinhronizovati u podešavanjima. U <ph name="LINK_BEGIN" />podešavanjima uređaja<ph name="LINK_END" /> možete da kontrolišete sinhronizaciju za veb-aplikacije instalirane iz Chrome pregledača. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
 <translation id="6237474966939441970">Aplikacija za pravljenje beležaka pomoću pisaljke</translation>
+<translation id="6237481151388361546">Promenite internet vezu i odaberite Probaj ponovo ili odaberite Otvori u osnovnom uređivaču da biste koristili opcije ograničenog prikaza i izmena.</translation>
 <translation id="623755660902014047">Režim čitanja</translation>
 <translation id="6238767809035845642">Tekst koji se deli sa drugog uređaja</translation>
 <translation id="6238923052227198598">Zadrži najnoviju belešku na zaključanom ekranu</translation>
@@ -9326,6 +9330,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8200789660596905522">Obavezno prihvatite zahtev za prebacivanje na uređaju <ph name="DEVICE_NAME" />.</translation>
 <translation id="8202160505685531999">Unesite ponovo lozinku da biste ažurirali profil za <ph name="DEVICE_TYPE" />.</translation>
+<translation id="8202827109322349110">Otvori u osnovnom uređivaču</translation>
 <translation id="8203152941016626022">Naziv uređaja za Deljenje u blizini</translation>
 <translation id="8203732864715032075">Šalje vam obaveštenja i podrazumevano je podešavanje za pamćenje SMS-ova na ovom računaru. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Desni klik</translation>

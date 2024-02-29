@@ -150,6 +150,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="3702352323269013324">Uzziniet vairāk par reklāmu personalizēšanu pārlūkā Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Lai lietotu šo atjauninājumu, administrators lūdz restartēt pārlūku Chromium.}=1{Lai lietotu šo atjauninājumu, administrators lūdz restartēt pārlūku Chromium. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Lai lietotu šo atjauninājumu, administrators lūdz restartēt pārlūku Chromium. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Lai lietotu šo atjauninājumu, administrators lūdz restartēt pārlūku Chromium. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Lai lietotu šo atjauninājumu, administrators lūdz restartēt pārlūku Chromium. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
 <translation id="3713809861844741608">Atvērt saiti jaunā Chromium &amp;cilnē</translation>
+<translation id="3788675262216168505">Pārvaldīt Chromium profilus</translation>
 <translation id="378917192836375108">Chromium ļauj jums noklikšķināt uz tālruņa numura un zvanīt uz to pakalpojumā Skype!</translation>
 <translation id="3790262771324122253">Uzziniet, kāpēc Chromium bloķē noteiktas lejupielādes</translation>
 <translation id="379589255253486813">Ja kaut kas būs jāpārskata, saņemsiet Chromium paziņojumu</translation>
@@ -431,6 +432,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8555465886620020932">Pakalpojuma kļūda: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
 <translation id="8586442755830160949">Autortiesības <ph name="YEAR" /> Chromium autori. Visas tiesības paturētas.</translation>
+<translation id="858822505990366713">Pielāgot pārlūku Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Kā mēs izmantojam šos datus:<ph name="END_BOLD" /> vietnes pārlūkā Chromium var glabāt informāciju par jūsu interesēm. Piemēram, ja apmeklējat kādu vietni, lai iegādātos apavus maratona skriešanai, vietne var noteikt, ka interesējaties par maratonu skriešanu. Ja vēlāk apmeklēsiet citu vietni, lai reģistrētos sacensībām, šajā vietnē var tikt rādīta skriešanas apavu reklāma, pamatojoties uz jūsu interesēm.</translation>
 <translation id="8619360774459241877">Notiek Chromium palaišana...</translation>
 <translation id="8621669128220841554">Instalēšana neizdevās nenoteiktas kļūdas dēļ. Lejupielādējiet pārlūku Chromium vēlreiz.</translation>
@@ -448,8 +450,10 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8907580949721785412">Chromium mēģina rādīt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="8931379085695076764">Chromium var aptuveni noteikt jūsu intereses, balstoties uz jūsu pēdējo nedēļu pārlūkošanas vēsturi. Šī informācija tiek glabāta jūsu ierīcē.</translation>
 <translation id="8941642502866065432">Nevar atjaunināt Chromium</translation>
+<translation id="895999862145835951">Pielāgot pārlūku Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise logotips</translation>
 <translation id="8986207147630327271">Jūs pievienosiet šai pārlūkprogrammai darba profilu un piešķirsiet administratoram kontroli tikai pār darba profilu.</translation>
+<translation id="8988036198400390003">Pārvaldīt Chromium profilus</translation>
 <translation id="9019929317751753759">Lai uzlabotu Chromium drošību, mēs atspējojām tālāk norādīto paplašinājumu, kas nav norādīts vietnē <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> un, iespējams, tika pievienots, jums nezinot.</translation>
 <translation id="9022552996538154597">Pierakstieties pārlūkā Chromium</translation>
 <translation id="907832235989677238">Pierakstieties pārlūkā Chromium. Ja vēlaties pierakstīties kontā tikai vienreiz, varat <ph name="GUEST_LINK_BEGIN" />izmantot ierīci viesa režīmā<ph name="GUEST_LINK_END" />.</translation>

@@ -116,6 +116,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="1558391695376153246">Inkognitó lapok bezárása</translation>
 <translation id="1568636008098739136">Oldal meghallgatása. A gyorsparancs szerkesztéséhez tartsa lenyomva.</translation>
 <translation id="1571304935088121812">Felhasználónév másolása</translation>
+<translation id="1584648915421894279">Az eszközre mentett jelszavak jelenleg nem használhatók a Chrome-csatornákban. A Chrome 125-ös verziója után az eszközre mentett Chrome- és <ph name="CHROME_CHANNEL" />-jelszavakat a rendszer összevonja, és ezek a jelszavak mindkét alkalmazásban használhatók lesznek.</translation>
 <translation id="1592864538817356322">Normál védelem:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> javasolt elem az alábbi listában.</translation>
 <translation id="1598163867407640634">Használja a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyet a következővel: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -328,6 +329,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="281504910091592009">Mentett jelszavait megtekintheti és kezelheti <ph name="BEGIN_LINK" />Google-fiókjában<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">A hírcsatornakártya menüje félmagasságban van megnyitva</translation>
 <translation id="2830783625999891985">A vágólap tartalma elrejtve</translation>
+<translation id="2834884592945939112">Beállítások, hiba a Google-fiókkal</translation>
 <translation id="2838367486340230368">Az adatvédelmi útmutató magyarázata félmagasságban van megnyitva</translation>
 <translation id="2839327205551510876">Felhagyott a(z) <ph name="SITE_NAME" /> követésével.</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognitó lap lesz bezárva}other{<ph name="TAB_COUNT_MANY" /> inkognitó lap lesz bezárva}}</translation>
@@ -638,7 +640,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Könyvjelző mentve ide: „<ph name="FOLDER_NAME" />”. Csak erre az eszközre lesz mentve.}other{Könyvjelzők mentve ide: „<ph name="FOLDER_NAME" />”. Csak erre az eszközre lesznek mentve.}}</translation>
 <translation id="4484496141267039529">Nincs kapcsolat. Próbálja újra később.</translation>
 <translation id="4487967297491345095">A Chrome összes alkalmazásadata véglegesen törlődik, beleértve a fájlokat, beállításokat, fiókokat, adatbázisokat stb.</translation>
-<translation id="4491323382106587961">Válasszon egy fiókot. Jelenleg kiválasztva: <ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">A rendszergazda bekapcsolta a jelszavak mentését</translation>
 <translation id="4508528996305412043">A hírcsatornakártya menüje meg van nyitva</translation>
 <translation id="4509501256689523862">Az, hogy böngészés közben a megjelenő hirdetések személyre vannak-e szabva, ettől a beállítástól, a <ph name="BEGIN_LINK_1" />hirdetési témaköröktől<ph name="END_LINK_1" />, a <ph name="BEGIN_LINK_2" />cookie-beállításaitól<ph name="END_LINK_2" /> és attól függ, hogy a felkeresett webhely személyre szabja-e a hirdetéseket.</translation>
@@ -664,6 +665,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4583164079174244168">{MINUTES,plural, =1{# perce}other{# perce}}</translation>
 <translation id="4587589328781138893">Webhelyek</translation>
 <translation id="4594952190837476234">Az offline oldal létrehozási ideje: <ph name="CREATION_TIME" />. Az oldal eltérhet az online változattól.</translation>
+<translation id="4595805675102978678">Hiba a Google-fiókkal</translation>
 <translation id="4601095002996233687">Mélyreható vizsgálatok a gyanús letöltött tartalmak ellenőrzéséhez.</translation>
 <translation id="4609429330876432068">A Chrome-hoz és a <ph name="CHROME_CHANNEL" /> verzióhoz mentett jelszavainak listáit a rendszer egyesítette. Az összes mentett jelszavát továbbra is kitöltheti automatikusan mindkét alkalmazásban.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> megnyitása</translation>
@@ -1356,6 +1358,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7947953824732555851">Elfogadás és bejelentkezés</translation>
 <translation id="7951102827450076904">Mindig nyissa meg a letöltött PDF-fájlokat</translation>
 <translation id="7957413488482743710">A virtuális kártya elrejti tényleges kártyáját, így segíthet az esetleges csalások elleni védekezésben. <ph name="BEGIN_LINK1" />További információ a virtuális kártyákról<ph name="END_LINK1" />.</translation>
+<translation id="7959485987650214982">Lapok ezen az eszközön</translation>
 <translation id="7960972236129063347">Oldalstatisztikák vissza gombja</translation>
 <translation id="7961926449547174351">Letiltotta a tárhelyhez való hozzáférést. A Beállítások menüpontban ismét engedélyezheti.</translation>
 <translation id="7963646190083259054">Szolgáltató:</translation>

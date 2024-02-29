@@ -116,6 +116,7 @@
 <translation id="1558391695376153246">シークレット タブを閉じる</translation>
 <translation id="1568636008098739136">このページを読み上げます。このショートカットを編集するには、長押ししてください。</translation>
 <translation id="1571304935088121812">ユーザー名をコピー</translation>
+<translation id="1584648915421894279">現在のところ、このデバイスに保存されているパスワードを別の Chrome チャンネルで使用することはできません。Chrome 125 以降では、デバイスに保存されている Chrome と <ph name="CHROME_CHANNEL" /> のパスワードが統合され、両方のアプリで使用できます。</translation>
 <translation id="1592864538817356322">標準保護機能:</translation>
 <translation id="1594635596540195766">下のリストに <ph name="SUGGESTIONS_COUNT" /> 件の候補があります。</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> を使用して <ph name="SITE_ETLD_PLUS_ONE" /> を利用</translation>
@@ -329,6 +330,7 @@
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />での保存パスワードの表示と管理</translation>
 <translation id="2827278682606527653">フィードカード メニューが画面の下半分に開いています</translation>
 <translation id="2830783625999891985">クリップボードの内容は非表示になっています</translation>
+<translation id="2834884592945939112">設定、Google アカウントのエラー</translation>
 <translation id="2838367486340230368">プライバシー ガイドの説明が画面の下半分に表示されています</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> のフォローを解除しました</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個のシークレット タブが閉じられます}other{<ph name="TAB_COUNT_MANY" /> 個のシークレット タブが閉じられます}}</translation>
@@ -638,7 +640,6 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{ブックマークを「<ph name="FOLDER_NAME" />」に保存しました。このデバイスにのみ保存されます。}other{ブックマークを「<ph name="FOLDER_NAME" />」に保存しました。このデバイスにのみ保存されます。}}</translation>
 <translation id="4484496141267039529">ネットワークに接続されていないため、しばらくしてからもう一度お試しください。</translation>
 <translation id="4487967297491345095">Chrome のすべてのアプリデータを完全に削除します。削除されるデータには、すべてのファイル、設定、アカウント、データベースなどが含まれます。</translation>
-<translation id="4491323382106587961">アカウントを選択してください。<ph name="EMAIL" /> が現在選択されています。</translation>
 <translation id="4494806687727322324">パスワードの保存は管理者によって有効にされています</translation>
 <translation id="4508528996305412043">フィードカード メニューが開いています</translation>
 <translation id="4509501256689523862">ウェブサイト閲覧中に表示される広告がパーソナライズされるかどうかは、こちらの設定、<ph name="BEGIN_LINK_1" />広告のトピック<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie の設定状況<ph name="END_LINK_2" />、閲覧しているウェブサイトが広告をパーソナライズしているかどうかによって決まります。</translation>
@@ -664,6 +665,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# 分前}other{# 分前}}</translation>
 <translation id="4587589328781138893">ウェブサイト</translation>
 <translation id="4594952190837476234">このオフライン ページは <ph name="CREATION_TIME" /> 時点のものであり、オンライン版とは異なる可能性があります。</translation>
+<translation id="4595805675102978678">Google アカウントのエラー</translation>
 <translation id="4601095002996233687">不審なダウンロードを詳しくスキャンします。</translation>
 <translation id="4609429330876432068">Chrome と <ph name="CHROME_CHANNEL" /> の保存済みパスワードのリストを統合しました。どちらのアプリでも、保存されているすべてのパスワードを引き続き自動入力できます。</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> を起動</translation>

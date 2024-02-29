@@ -152,6 +152,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="3702352323269013324">Kom meer te wete oor personalisering in Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Jou administrateur vra dat jy Chromium herbegin om hierdie opdatering toe te pas}=1{Jou administrateur vra dat jy Chromium herbegin om hierdie opdatering toe te pas. Jou incognitovenster sal nie weer oopgemaak word nie.}other{Jou administrateur vra dat jy Chromium herbegin om hierdie opdatering toe te pas. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="3713809861844741608">Maak skakel in 'n nuwe Chromium-oortjie oop</translation>
+<translation id="3788675262216168505">Bestuur Chromium-profiele</translation>
 <translation id="378917192836375108">Met Chromium kan jy 'n telefoonnommer op die web klik en dit met Skype bel!</translation>
 <translation id="3790262771324122253">Vind uit hoekom Chromium sommige aflaaie blokkeer</translation>
 <translation id="379589255253486813">Chromium sal jou laat weet as jy enigiets moet hersien</translation>
@@ -436,6 +437,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8555465886620020932">Diensfout: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium kan jou wagwoorde nagaan as jy met jou Google-rekening aanmeld</translation>
 <translation id="8586442755830160949">Kopiereg <ph name="YEAR" /> Die Chromium-outeurs. Alle regte voorbehou.</translation>
+<translation id="858822505990366713">Pasmaak jou Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Hoe ons hierdie data gebruik:<ph name="END_BOLD" /> Werwe kan inligting oor jou belangstellings in Chromium stoor. As jy byvoorbeeld ’n werf besoek om skoene vir ’n marathon te koop, kan die werf jou belangstelling definieer as iemand wat marathons hardloop. As jy later ’n ander werf besoek om vir ’n wedloop te registreer, kan daardie werf vir jou ’n advertensie vir drafskoene op grond van jou belangstellings wys.</translation>
 <translation id="8619360774459241877">Begin tans Chromium …</translation>
 <translation id="8621669128220841554">Kon weens 'n ongespesifiseerde fout nie installeer nie. Laai Chromium asseblief weer af.</translation>
@@ -453,8 +455,10 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8907580949721785412">Chromium probeer tans om wagwoorde te wys. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="8931379085695076764">Chromium kan jou belangstellings op grond van jou blaaigeskiedenis die afgelope paar weke skat. Hierdie inligting bly op jou toestel.</translation>
 <translation id="8941642502866065432">Kan nie Chromium opdateer nie</translation>
+<translation id="895999862145835951">Pasmaak jou Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise-logo</translation>
 <translation id="8986207147630327271">Jy voeg tans 'n werkprofiel by hierdie blaaier en gee jou administrateur beheer oor net jou werkprofiel.</translation>
+<translation id="8988036198400390003">Bestuur Chromium-profiele</translation>
 <translation id="9019929317751753759">Om Chromium veiliger te maak, het ons die volgende uitbreiding, wat nie in die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> gelys word nie en wat dalk sonder jou medewete bygevoeg is, gedeaktiveer.</translation>
 <translation id="9022552996538154597">Meld by Chromium aan</translation>
 <translation id="907832235989677238">Meld by Chromium aan. As jy ’n rekening net een keer wil aanmeld, kan jy <ph name="GUEST_LINK_BEGIN" />die toestel as gas gebruik<ph name="GUEST_LINK_END" />.</translation>

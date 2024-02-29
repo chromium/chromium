@@ -638,7 +638,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Bókamerki vistað í „<ph name="FOLDER_NAME" />“. Aðeins vistað í þessu tæki.}one{Bókamerki vistuð í „<ph name="FOLDER_NAME" />“. Aðeins vistað í þessu tæki.}other{Bókamerki vistuð í „<ph name="FOLDER_NAME" />“. Aðeins vistað í þessu tæki.}}</translation>
 <translation id="4484496141267039529">Engin tenging. Reyndu aftur síðar.</translation>
 <translation id="4487967297491345095">Öllum forritsgögnum Chrome verður eytt fyrir fullt og allt. Þar með taldar eru allar skrár, stillingar, reikningar, gagnagrunnar o.s.frv.</translation>
-<translation id="4491323382106587961">Veldu reikning. <ph name="EMAIL" /> er valinn.</translation>
 <translation id="4494806687727322324">Stjórnandinn þinn hefur kveikt á vistun á aðgangsorðum</translation>
 <translation id="4508528996305412043">Kortavalmynd straums er opin</translation>
 <translation id="4509501256689523862">Hvort auglýsing sem birtist þér þegar þú skoðar vefsvæði er sérsniðin eða ekki veltur á þessari stillingu, <ph name="BEGIN_LINK_1" />viðfangsefni auglýsinga<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />fótsporastillingum<ph name="END_LINK_2" /> og hvort að vefsvæðið sem þú ert að skoða sérsníði auglýsingar</translation>

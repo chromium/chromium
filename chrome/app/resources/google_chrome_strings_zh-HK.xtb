@@ -32,6 +32,7 @@
 <translation id="1507198376417198979">自訂您的新 Chrome 設定檔</translation>
 <translation id="1516530951338665275">Google Chrome 需要藍牙存取權才能繼續配對。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS 得以面世，全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />。</translation>
+<translation id="155168855724261758">自訂 Chrome</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" />已登入此 Chrome 設定檔。此操作將為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chrome 設定檔</translation>
 <translation id="1587223624401073077">Google Chrome 正在使用您的相機。</translation>
@@ -71,6 +72,7 @@
 <translation id="2121284319307530122">重新啟動以更新 &amp;Chrome</translation>
 <translation id="2123055963409958220">只要報告<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，就能助我們一臂之力，讓 Chrome 更臻完美</translation>
 <translation id="2126108037660393668">已下載的檔案驗證失敗。</translation>
+<translation id="2128411189117340671">管理 Chrome 設定檔</translation>
 <translation id="2130870084309816036">無法連線至互聯網。如果你使用防火牆，請將 <ph name="PRODUCT_EXE_NAME" /> 加入許可名單。</translation>
 <translation id="2131230230468101642">為保障您的私隱，我們會自動刪除超過 4 星期的興趣。按瀏覽內容而定，某個主題可能會再次在您的興趣清單中顯示。您亦可移除不希望 Chrome 列在興趣喜好清單中的項目。</translation>
 <translation id="2139300032719313227">重新啟動 Chrome OS</translation>
@@ -424,6 +426,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7917876797003313048">您可管理已登入的 Google 帳戶。Google 帳戶可用於 Chrome 瀏覽器、Play 商店和 Gmail 等服務。如要新增其他人 (例如家庭成員) 的帳戶，請改為將使用者新增至您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">由於此檔案是欺詐檔案，可能會對裝置造成非預期的變更，因此 Chrome 已禁止下載</translation>
 <translation id="7951272445806340501">ChromeOS Flex 必須重新啟動，才能套用更新。</translation>
+<translation id="7959172989483770734">管理 Chrome 設定檔</translation>
 <translation id="7962368738413920945">網站可能會正常運作，但不會在所有 Chrome 視窗關閉後記住與您有關的資料</translation>
 <translation id="7962410387636238736">由於 Google Chrome 將停止支援 Windows XP 和 Windows Vista，因此這部電腦不會再收到 Google Chrome 更新。</translation>
 <translation id="8005666035647241369">儲存至此裝置的「Google 密碼管理工具」</translation>
@@ -431,6 +434,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8009904340233602924">在不登入帳戶的情況下使用 Chrome</translation>
 <translation id="8013993649590906847">如果圖片並無有用的說明，Chrome 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。</translation>
 <translation id="8019103195866286235">此擴充程式已由開發人員取消發佈，且可能不安全。請從 Chrome 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
+<translation id="8031641407207794385">自訂 Chrome</translation>
 <translation id="80471789339884597">多謝安裝。您必須先重新啟動所有瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">其他 Chrome 設定檔</translation>

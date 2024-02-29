@@ -638,7 +638,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{"<ph name="FOLDER_NAME" />" karpetan gorde da laster-marka. Gailu honetan soilik dago gordeta.}other{"<ph name="FOLDER_NAME" />" karpetan gorde dira laster-markak. Gailu honetan soilik daude gordeta.}}</translation>
 <translation id="4484496141267039529">Ez dago konexiorik. Saiatu berriro geroago.</translation>
 <translation id="4487967297491345095">Betiko ezabatuko dira Chrome aplikazioko datu guztiak, besteak beste, fitxategiak, ezarpenak, kontuak eta datu-baseak.</translation>
-<translation id="4491323382106587961">Aukeratu kontu bat. Orain <ph name="EMAIL" /> dago hautatuta.</translation>
 <translation id="4494806687727322324">Administratzaileak aktibatu egin du pasahitzak gordetzeko eginbidea</translation>
 <translation id="4508528996305412043">Jarioko txartelaren menua irekita dago</translation>
 <translation id="4509501256689523862">Arakatzen duzunean, hainbat faktorek zehazten dute ikusten dituzun iragarkiak pertsonalizatuta dauden ala ez: ezarpen hau, <ph name="BEGIN_LINK_1" />Iragarkien gaiak<ph name="END_LINK_1" /> ezarpena, <ph name="BEGIN_LINK_2" />cookieen ezarpenak<ph name="END_LINK_2" /> eta ikusten dituzun webguneek iragarkiak pertsonalizatzen dituzten ala ez</translation>
@@ -1166,6 +1165,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7037830628447527439">Hasi saioa Chrome-n Google-ko kontuarekin</translation>
 <translation id="7054588988317389591">Irudi-deskribapenak lortu nahi dituzu?</translation>
 <translation id="7055152154916055070">Birbideratze hau blokeatu da:</translation>
+<translation id="7057969023583258980">Ireki Chrome-ko historia osoa</translation>
 <translation id="7063006564040364415">Ezin izan da sinkronizazio-zerbitzarira konektatu</translation>
 <translation id="7071521146534760487">Kudeatu kontua</translation>
 <translation id="707155805709242880">Behean, aukeratu zer sinkronizatu nahi duzun</translation>

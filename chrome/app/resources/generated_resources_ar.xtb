@@ -976,6 +976,7 @@
 <translation id="1723824996674794290">نافذة &amp;جديدة</translation>
 <translation id="1724801751621173132">وضع الإدخال</translation>
 <translation id="1725562816265788801">الانتقال بين علامات التبويب</translation>
+<translation id="1725585416709851618">‏حاوِل تفعيل خدمة Google Drive من خلال "الإعدادات" واختَر "إعادة المحاولة" أو "الفتح في المحرِّر الأساسي" لاستخدام خيارات العرض والتعديل المحدودة.</translation>
 <translation id="1726503915437308071">خط مائل</translation>
 <translation id="1729533290416704613">كما أنها تتحكم في الصفحة التي تظهر عند إجراء بحث من المربع متعدد الاستخدامات.</translation>
 <translation id="1730666151302379551">نسيت كلمة المرور القديمة</translation>
@@ -1820,7 +1821,6 @@
 <translation id="2343747224442182863">التركيز على علامة التبويب هذه</translation>
 <translation id="2344032937402519675">‏تعذَّر الاتصال بالخادم. يُرجى التحقُّق من اتصال الشبكة ثم إعادة المحاولة. إذا كنت لا تزال تواجه مشكلة، يُرجى إعادة تشغيل جهاز Chromebook.</translation>
 <translation id="234559068082989648">‏لن تفتح الإصدارات القديمة من "تطبيقات Chrome" بعد كانون الأول (ديسمبر) 2022. يمكنك التواصل مع المشرف للتحديث إلى إصدار جديد من هذا التطبيق أو إزالته.</translation>
-<translation id="2347930112185157300">مزوّد شبكة الجوّال مُقفَل.</translation>
 <translation id="2348176352564285430">التطبيق: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593">‏<ph name="WINDOW_TITLE" /> - تم طلب الإذن، اضغط على Ctrl + السهم المتجه للأمام للاستجابة للطلب</translation>
 <translation id="234889437187286781">حدث خطأ أثناء تحميل البيانات.</translation>
@@ -1985,7 +1985,6 @@
 <translation id="2462332841984057083">‏تجري الآن عملية إعداد تطبيق Steam. يُرجى الانتظار إلى أن تكتمل العملية.</translation>
 <translation id="2462724976360937186">معرّف مفتاح المرجع المصدق</translation>
 <translation id="2462752602710430187">تمت إضافة <ph name="PRINTER_NAME" /></translation>
-<translation id="2464046291463112461">حظر وصول الملحقات الخارجية إلى الذاكرة (ذاكرة الوصول العشوائي) ومشاركتها</translation>
 <translation id="2467755475704469005">لم يتم العثور على أي جهاز. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">تسريع التمرير عبر لوحة اللمس</translation>
 <translation id="2468205691404969808">يتم استخدام ملفات تعريف الارتباط لتذكّر اهتماماتك حتى لو لم تزُر تلك الصفحات.</translation>
@@ -2288,6 +2287,7 @@
 <translation id="2701330563083355633">تمت المشاركة من <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">تسجيل الدخول، <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">‏عنوان MAC للشبكة</translation>
+<translation id="2702720509009999256">تحقَّق من اتصالك بالإنترنت واختَر "إعادة المحاولة" أو اختَر "الفتح في المحرِّر الأساسي" لاستخدام خيارات العرض والتعديل المحدودة.</translation>
 <translation id="2702801445560668637">قائمة القراءة</translation>
 <translation id="270414148003105978">شبكات الجوّال</translation>
 <translation id="2704184184447774363">‏توقيع المستند لـ Microsoft</translation>
@@ -2615,6 +2615,7 @@
 <translation id="2935654492420446828">إضافة حساب مؤسسة تعليمية لاحقًا</translation>
 <translation id="2936851848721175671">النسخ الاحتياطي والاستعادة</translation>
 <translation id="2938981087412273365">هذه الإضافة غير مسموح لها بقراءة محتوى هذا الموقع الإلكتروني وتغييره.</translation>
+<translation id="2939005221756255562">‏يؤدي هذا الخيار إلى تفعيل الإشعارات في "مركز الإشعارات" (Notification Center). افتح <ph name="BEGIN_LINK" />إعدادات النظام (System Settings)<ph name="END_LINK" />.</translation>
 <translation id="2939908794993783865">المزيد من المواقع الإلكترونية غير النشطة</translation>
 <translation id="2939938020978911855">عرض أجهزة بلوتوث المُتاحة</translation>
 <translation id="2941112035454246133">منخفضة</translation>
@@ -3589,6 +3590,7 @@
 <translation id="3719245268140483218">حدث الجهاز</translation>
 <translation id="3719310907809321183">تم ملء نموذج بطاقة الائتمان <ph name="CARD_IDENTIFIER" />.</translation>
 <translation id="3719826155360621982">الصفحة الرئيسية</translation>
+<translation id="3720543739123045680">هناك عملية مشتركة تجري في علامة التبويب هذه وعلامات تبويب أخرى، ما قد يؤدي إلى ظهور أخطاء غير متوقَّعة عند استخدام "أدوات مطوري البرامج".</translation>
 <translation id="372062398998492895">‏إعدادات طابعات CUPS</translation>
 <translation id="3721119614952978349">‏أنت وGoogle</translation>
 <translation id="3722108462506185496">حدث خطأ أثناء بدء تشغيل خدمة الآلة الافتراضية. يُرجى إعادة المحاولة.</translation>
@@ -5038,6 +5040,7 @@
 <translation id="484462545196658690">تلقائي</translation>
 <translation id="4846628405149428620">اختيار المكان الذي سيحفظ فيه هذا الموقع الإلكتروني التغييرات</translation>
 <translation id="4846680374085650406">أنت تتبع توصية المشرف لهذا الإعداد.</translation>
+<translation id="4847242508757499006">اختَر "إعادة المحاولة" أو "الفتح في المحرِّر الأساسي" لاستخدام خيارات العرض والتعديل المحدودة.</translation>
 <translation id="4848191975108266266">‏ميزة "OK Google" في "مساعد Google"</translation>
 <translation id="4849286518551984791">‏التوقيت العالمي المنسق (UTC/GMT)</translation>
 <translation id="4849517651082200438">عدم التثبيت</translation>
@@ -6033,6 +6036,7 @@
 <translation id="5636012309446422">هل تريد إزالة <ph name="DEVICE" /> من حساب <ph name="PRIMARY_EMAIL" />؟</translation>
 <translation id="5636996382092289526">لاستخدام <ph name="NETWORK_ID" /> ربما تحتاج أولاً إلى <ph name="LINK_START" />الانتقال إلى صفحة تسجيل الدخول إلى الشبكة<ph name="LINK_END" />، والتي سيتم فتحها تلقائيًا خلال بضع ثوانٍ. إذا لم يحدث ذلك، فلن يمكن استخدام الشبكة.</translation>
 <translation id="5637476008227280525">تفعيل بيانات الجوّال</translation>
+<translation id="5638170200695981015">اختَر "الفتح في المحرِّر الأساسي" لاستخدام خيارات العرض والتعديل المحدودة.</translation>
 <translation id="563821631542362636">السماح للموقع الإلكتروني بحفظ البيانات</translation>
 <translation id="5638309510554459422">‏يمكنك العثور على الإضافات والمظاهر في <ph name="BEGIN_LINK" />سوق Chrome الإلكتروني<ph name="END_LINK" />.</translation>
 <translation id="5639549361331209298">إعادة تحميل هذه الصفحة، انتظر لمشاهدة المزيد من الخيارات</translation>
@@ -6785,6 +6789,7 @@
 <translation id="6235208551686043831">‏تم تشغيل كاميرا الجهاز. يُرجى وضع رمز الاستجابة السريعة لشريحة eSIM أمام الكاميرا.</translation>
 <translation id="6237297174664969437">‏في إعدادات Chrome، يمكنك متى شئت اختيار بيانات المتصفِّح التي تريد مزامنتها. في <ph name="LINK_BEGIN" />إعدادات الجهاز<ph name="LINK_END" />، يمكنك التحكّم في مزامنة تطبيقات الويب المثبَّتة من خلال متصفّح Chrome. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
 <translation id="6237474966939441970">تطبيق تدوين الملاحظات باستخدام قلم الشاشة</translation>
+<translation id="6237481151388361546">اتصِل بشبكة إنترنت أخرى واختَر "إعادة المحاولة" أو "الفتح في المحرِّر الأساسي" لاستخدام خيارات العرض والتعديل المحدودة.</translation>
 <translation id="623755660902014047">وضع القراءة</translation>
 <translation id="6238767809035845642">‏النص الذي تمت مشاركته من Other Device (جهاز آخر)</translation>
 <translation id="6238923052227198598">إبقاء آخر ملاحظة على شاشة القفل</translation>
@@ -9334,6 +9339,7 @@
 <translation id="8200772114523450471">استئناف</translation>
 <translation id="8200789660596905522">يجب قبول طلب البث على جهاز "<ph name="DEVICE_NAME" />"</translation>
 <translation id="8202160505685531999">يُرجى إعادة إدخال كلمة المرور لتحديث ملف <ph name="DEVICE_TYPE" /> الشخصي.</translation>
+<translation id="8202827109322349110">الفتح في المحرّر الأساسي</translation>
 <translation id="8203152941016626022">اسم الجهاز الذي يستخدم ميزة "المشاركة عن قرب"</translation>
 <translation id="8203732864715032075">تُرسِل إليك الإشعارات وتتذكر جهاز الكمبيوتر هذا لميزة "الرسائل". <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">النقر بالزر الأيمن</translation>

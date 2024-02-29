@@ -116,6 +116,7 @@
 <translation id="1558391695376153246">Закрыць укладкі інкогніта</translation>
 <translation id="1568636008098739136">Агучыць гэту старонку. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
 <translation id="1571304935088121812">Капіраваць імя карыстальніка</translation>
+<translation id="1584648915421894279">Пакуль што паролі, захаваныя на гэтай прыладзе, нельга выкарыстоўваць ва ўсіх каналах Chrome. Пасля Chrome 125 паролі, захаваныя на прыладзе для Chrome і <ph name="CHROME_CHANNEL" />, будуць аб'яднаны, і іх можна будзе выкарыстоўваць у абедзвюх праграмах.</translation>
 <translation id="1592864538817356322">Стандартная абарона:</translation>
 <translation id="1594635596540195766">У размешчаным ніжэй спісе наступная колькасць прапанаваных элементаў: <ph name="SUGGESTIONS_COUNT" />.</translation>
 <translation id="1598163867407640634">Выкарыстоўвайце вэб-сайт <ph name="SITE_ETLD_PLUS_ONE" /> праз сэрвіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
@@ -328,6 +329,7 @@
 <translation id="281504910091592009">Праглядайце захаваныя паролі і кіруйце імі праз <ph name="BEGIN_LINK" />Уліковы запіс Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Меню карткі стужкі адкрыта на палову вышыні</translation>
 <translation id="2830783625999891985">Змесціва буфера абмену схавана</translation>
+<translation id="2834884592945939112">Налады, памылка Уліковага запісу Google</translation>
 <translation id="2838367486340230368">Тлумачэнні адносна дапаможніка па прыватнасці разгорнуты на палову экрана</translation>
 <translation id="2839327205551510876">Вы адпісаліся ад сайта "<ph name="SITE_NAME" />"</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка ў рэжыме інкогніта будзе закрыта}one{<ph name="TAB_COUNT_MANY" /> укладка ў рэжыме інкогніта будзе закрыта}few{<ph name="TAB_COUNT_MANY" /> укладкі ў рэжыме інкогніта будуць закрыты}many{<ph name="TAB_COUNT_MANY" /> укладак у рэжыме інкогніта будуць закрыты}other{<ph name="TAB_COUNT_MANY" /> укладкі ў рэжыме інкогніта будуць закрыты}}</translation>
@@ -602,6 +604,7 @@
 <translation id="426652736638196239">Нумар IBAN будзе захаваны толькі на гэтай прыладзе</translation>
 <translation id="4269820728363426813">Капіраваць спасылку</translation>
 <translation id="4277529130885813215">Скарыстаць іншую прыладу</translation>
+<translation id="4282440837784183472">Ваша арганізацыя, <ph name="MANAGED_DOMAIN" />, кіруе ўліковым запісам, у які вы ўваходзіце, а таксама тым, як дазволена выкарыстоўваць Chrome. Адміністратар можа наладжваць пэўныя функцыі, а таксама абмяжоўваць да іх доступ.</translation>
 <translation id="4285846616383034558">Файлы cookie, кэш і іншыя даныя сайтаў</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Уключыць блакіроўку экрана ў наладах Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Новая ўкладка інкогніта</translation>
@@ -637,7 +640,6 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Закладка захавана ў папцы "<ph name="FOLDER_NAME" />" толькі на гэтай прыладзе.}one{Закладкі захаваны ў папцы "<ph name="FOLDER_NAME" />" толькі на гэтай прыладзе.}few{Закладкі захаваны ў папцы "<ph name="FOLDER_NAME" />" толькі на гэтай прыладзе.}many{Закладкі захаваны ў папцы "<ph name="FOLDER_NAME" />" толькі на гэтай прыладзе.}other{Закладкі захаваны ў папцы "<ph name="FOLDER_NAME" />" толькі на гэтай прыладзе.}}</translation>
 <translation id="4484496141267039529">Няма падключэння. Паўтарыце спробу пазней.</translation>
 <translation id="4487967297491345095">Усе даныя праграмы Chrome будуць назаўсёды выдалены. Гэта датычыцца ўсіх файлаў, налад, уліковых запісаў, баз даных і г. д.</translation>
-<translation id="4491323382106587961">Выберыце ўліковы запіс. Зараз выбраны: <ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">Адміністратар уключыў магчымасць захоўваць паролі</translation>
 <translation id="4508528996305412043">Меню карткі стужкі адкрыта</translation>
 <translation id="4509501256689523862">Ці будзе ажыццяўляцца персаналізацыя рэкламы, якая вам паказваецца, залежыць ад гэтай налады, <ph name="BEGIN_LINK_1" />тэм рэкламы<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />налад файлаў cookie<ph name="END_LINK_2" />, а таксама ад таго, ці персаналізуе рэкламу сам сайт, які вы наведваеце</translation>
@@ -663,6 +665,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{1 хвіліну таму}one{# хвіліну таму}few{# хвіліны таму}many{# хвілін таму}other{# хвіліны таму}}</translation>
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4594952190837476234">Гэта пазасеткавая старонка створана <ph name="CREATION_TIME" /> і можа адрознівацца ад сваёй інтэрнэт-версіі.</translation>
+<translation id="4595805675102978678">Памылка Уліковага запісу Google</translation>
 <translation id="4601095002996233687">Выконвае дэталёвую праверку падазроных спамповак.</translation>
 <translation id="4609429330876432068">Вашы спісы захаваных пароляў для Chrome і версіі "<ph name="CHROME_CHANNEL" />" былі аб'яднаны. Вы і далей можаце выкарыстоўваць аўтазапаўненне для ўсіх захаваных пароляў у абедзвюх праграмах.</translation>
 <translation id="4616150815774728855">Адкрыць <ph name="WEBAPK_NAME" /></translation>
@@ -1165,6 +1168,7 @@
 <translation id="7037830628447527439">Увайдзіце ў Chrome праз свой Уліковы запіс Google</translation>
 <translation id="7054588988317389591">Атрымліваць апісанні відарысаў?</translation>
 <translation id="7055152154916055070">Перанакіраванне заблакіравана:</translation>
+<translation id="7057969023583258980">Адкрыць усю гісторыю Chrome</translation>
 <translation id="7063006564040364415">Не ўдалося падключыцца да сервера сінхранізацыі.</translation>
 <translation id="7071521146534760487">Кіраваць уліковым запісам</translation>
 <translation id="707155805709242880">Выберыце, што сінхранізаваць</translation>

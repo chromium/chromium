@@ -635,9 +635,9 @@
 <translation id="4461614516424362539">Wanneer jy 'n ander toestel met 'n QR-kode koppel, sal dit hierdie foon as 'n sekuriteitsleutel kan gebruik. As jy dit verwyder, sal jy 'n QR-kode moet skandeer om dit weer te koppel.</translation>
 <translation id="4478161224666880173">Jy kan jou <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-rekening op hierdie werf gebruik. Meld aan by <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> om voort te gaan.</translation>
 <translation id="4479972344484327217">Installeer tans <ph name="MODULE" /> vir Chrome …</translation>
+<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Boekmerk is in “<ph name="FOLDER_NAME" />” gestoor. Dit is net op hierdie toestel gestoor.}other{Boekmerke is in “<ph name="FOLDER_NAME" />” gestoor. Dit is net op hierdie toestel gestoor.}}</translation>
 <translation id="4484496141267039529">Geen verbinding nie. Probeer later weer.</translation>
 <translation id="4487967297491345095">Al Chrome se programdata sal permanent uitgevee word. Dit sluit in alle lêers, instellings, rekeninge, databasisse, ens.</translation>
-<translation id="4491323382106587961">Kies ’n rekening. <ph name="EMAIL" /> is tans gekies.</translation>
 <translation id="4494806687727322324">Die stoor van wagwoorde is deur jou administrateur aangeskakel</translation>
 <translation id="4508528996305412043">Stroomkaartkieslys is oop</translation>
 <translation id="4509501256689523862">Terwyl jy blaai, sal hierdie instelling, <ph name="BEGIN_LINK_1" />Advertensie-onderwerpe<ph name="END_LINK_1" />, jou <ph name="BEGIN_LINK_2" />webkoekie-instellings<ph name="END_LINK_2" />, en óf die werf wat jy tans bekyk advertensies personaliseer, bepaal of ’n advertensie wat jy sien, gepersonaliseer word</translation>
@@ -855,6 +855,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="557018954714092179">Skep nuwe vouer</translation>
 <translation id="5578795271662203820">Deursoek <ph name="SEARCH_ENGINE" /> vir hierdie prent</translation>
 <translation id="5581519193887989363">Jy kan altyd in <ph name="BEGIN_LINK1" />instellings<ph name="END_LINK1" /> kies wat om te sinkroniseer.</translation>
+<translation id="558429399979870715">Koppel Chrome en ander Google-dienste as jy wil hê hulle moet data met mekaar deel</translation>
 <translation id="5590372121997663538">Onthou hierdie rekenaar</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
 <translation id="5599455543593328020">Incognitomodus</translation>
@@ -884,6 +885,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="571930967925877633">Jou boekmerke, geskiedenis en ander Chrome-data sal nie meer met jou Google-rekening gesinkroniseer word nie</translation>
 <translation id="572328651809341494">Onlangse oortjies</translation>
 <translation id="5726692708398506830">Maak alles op die bladsy groter</translation>
+<translation id="5728072125198221967">Gekoppelde Google-dienste</translation>
 <translation id="5744751019568455640">Hier is die stemme wat jy kan kies om jou webblaaie te lees. As jy van hierdie stem hou en wil hê ek moet dit aanhou gebruik, tik net op die stemnaam.</translation>
 <translation id="5748802427693696783">Het na standaardoortjies oorgeskakel</translation>
 <translation id="5749068826913805084">Chrome het bergingtoegang nodig om lêers af te laai.</translation>
@@ -1167,6 +1169,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7063006564040364415">Kon nie aan die sinkroniseringbediener koppel nie.</translation>
 <translation id="7071521146534760487">Bestuur rekening</translation>
 <translation id="707155805709242880">Kies hieronder wat om te sinkroniseer</translation>
+<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Boekmerk is in “<ph name="FOLDER_NAME" />” in jou rekening, <ph name="ACCOUNT_EMAIL" />, gestoor.}other{Boekmerke is in “<ph name="FOLDER_NAME" />” in jou rekening, <ph name="ACCOUNT_EMAIL" />, gestoor.}}</translation>
 <translation id="7077143737582773186">SD-kaart</translation>
 <translation id="7080806333218412752">Stuur URL'e na Veiligblaai toe om hulle na te gaan. Stuur ook 'n klein voorbeeld van bladsye, aflaaie, uitbreidingaktiwiteit en stelselinligting om te help om nuwe bedreigings te ontdek. Koppel hierdie data tydelik aan jou Google-rekening wanneer jy aangemeld is om jou oral in Google-programme te beskerm.</translation>
 <translation id="7085332316435785646">Kies of jy Chrome-geskiedenis wil insluit vir meer gepersonaliseerde ervarings in Google-dienste</translation>
@@ -1434,6 +1437,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8310344678080805313">Standaardoortjies</translation>
 <translation id="831192587911042850">Voeg die huidige webwerf by die lys webwerwe wat jy tans volg.</translation>
 <translation id="8333340769932050274">Jy kan onderwerpe blokkeer wat jy nie wil hê met werwe gedeel moet word nie. Chrome vee ook jou onderwerpe wat ouer as 4 weke is, outomaties uit. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
+<translation id="8336984817750547763">Sluit Chrome-geskiedenis in as jy dit by die Web- en Appaktiwiteit in jou Google-rekening wil voeg.</translation>
 <translation id="834313815369870491">Moet nooit werwe vertaal nie</translation>
 <translation id="8348430946834215779">Gebruik HTTPS waar moontlik en word gewaarsku voordat werwe laai wat dit nie steun nie</translation>
 <translation id="8354977102499939946">Soek vinnig met jou stem. Gaan na Instellings om hierdie kortpad te wysig.</translation>
@@ -1579,6 +1583,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="9081543426177426948">Werwe wat jy besoek word nie in Incognito gestoor nie</translation>
 <translation id="9086302186042011942">Sinkroniseer tans</translation>
 <translation id="9086455579313502267">Kon nie by netwerk ingaan nie</translation>
+<translation id="909756639352028172">Sluit Web- en Appaktiwiteit en gekoppelde Google-dienste by Chrome in om die mees gepersonaliseerde ervaring te kry</translation>
 <translation id="9099220545925418560">Gegrond op jou blaaigeskiedenis. Hierdie instelling is af.</translation>
 <translation id="9100610230175265781">Wagwoordfrase word vereis</translation>
 <translation id="9101137867221042551">Bestuur</translation>

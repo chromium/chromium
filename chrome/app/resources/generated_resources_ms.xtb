@@ -984,6 +984,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1723824996674794290">&amp;Tetingkap baharu</translation>
 <translation id="1724801751621173132">Mod input</translation>
 <translation id="1725562816265788801">Penatalan Tab</translation>
+<translation id="1725585416709851618">Cuba dayakan Google Drive dalam Tetapan dan pilih "Cuba lagi" atau pilih "Buka dalam editor asas" untuk menggunakan pilihan paparan dan pengeditan terhad.</translation>
 <translation id="1726503915437308071">Fon huruf condong</translation>
 <translation id="1729533290416704613">Sambungan turut mengawal halaman yang ditunjukkan apabila anda membuat carian dari Kotak Omni.</translation>
 <translation id="1730666151302379551">Terlupa kata laluan lama</translation>
@@ -1830,7 +1831,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2343747224442182863">Fokus pada Tab Ini</translation>
 <translation id="2344032937402519675">Tidak dapat menyambung kepada pelayan. Semak sambungan rangkaian anda, kemudian cuba lagi. Jika anda masih menghadapi masalah, cuba mulakan semula Chromebook anda.</translation>
 <translation id="234559068082989648">Versi lama Apl Chrome tidak akan dibuka selepas Disember 2022. Hubungi pentadbir anda untuk mengemas kini kepada versi baharu atau mengalih keluar apl ini.</translation>
-<translation id="2347930112185157300">Penyedia rangkaian mudah alih dikunci</translation>
 <translation id="2348176352564285430">Apl: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Kebenaran diminta, tekan Ctrl + Maju untuk memberikan respons</translation>
 <translation id="234889437187286781">Ralat semasa memuatkan data</translation>
@@ -1995,7 +1995,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2462332841984057083">Steam telah disediakan. Tunggu persediaan selesai.</translation>
 <translation id="2462724976360937186">ID Kekunci Pihak Berkuasa Pensijilan</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> ditambahkan</translation>
-<translation id="2464046291463112461">Sekat aksesori luaran daripada mengakses dan berkongsi memori (RAM)</translation>
 <translation id="2467755475704469005">Tiada peranti dikesan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Pemecutan penatalan pad sentuh</translation>
 <translation id="2468205691404969808">Menggunakan kuki untuk mengingati pilihan anda, walaupun anda tidak melawati halaman tersebut</translation>
@@ -2298,6 +2297,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2701330563083355633">Dikongsi daripada <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Log masuk, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">Alamat MAC Rangkaian</translation>
+<translation id="2702720509009999256">Semak sambungan Internet anda dan pilih "Cuba lagi" atau pilih "Buka dalam editor asas" untuk menggunakan pilihan paparan dan pengeditan terhad.</translation>
 <translation id="2702801445560668637">Senarai Bacaan</translation>
 <translation id="270414148003105978">Rangkaian mudah alih</translation>
 <translation id="2704184184447774363">Menandatangani Dokumen Microsoft</translation>
@@ -3600,6 +3600,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3719245268140483218">Peristiwa Peranti</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> diisi.</translation>
 <translation id="3719826155360621982">Halaman utama</translation>
+<translation id="3720543739123045680">Tab lain berkongsi proses dengan tab ini, yang mungkin menghasilkan pengalaman Alatan Pembangun yang tidak dijangka.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Anda dan Google</translation>
 <translation id="3722108462506185496">Ralat semasa memulakan perkhidmatan mesin maya. Sila cuba lagi.</translation>
@@ -5052,6 +5053,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4846628405149428620">Pilih tempat laman ini boleh menyimpan perubahan</translation>
 <translation id="4846680374085650406">Anda sedang mengikut cadangan pentadbir untuk tetapan ini.</translation>
+<translation id="4847242508757499006">Pilih "Cuba lagi" atau pilih "Buka dalam editor asas" untuk menggunakan pilihan paparan dan pengeditan terhad.</translation>
 <translation id="4848191975108266266">"Ok Google" Google Assistant</translation>
 <translation id="4849286518551984791">Waktu Universal Selaras (UTC/GMT)</translation>
 <translation id="4849517651082200438">Jangan Pasang</translation>
@@ -6047,6 +6049,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5636012309446422">Alih keluar <ph name="DEVICE" /> daripada <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Untuk menggunakan <ph name="NETWORK_ID" /> anda mungkin perlu <ph name="LINK_START" />melawat halaman log masuk rangkaian<ph name="LINK_END" /> terlebih dahulu, yang akan terbuka secara automatik dalam beberapa saat. Jika ini tidak berlaku, rangkaian tersebut tidak boleh digunakan.</translation>
 <translation id="5637476008227280525">Data mudah alih didayakan</translation>
+<translation id="5638170200695981015">Pilih "Buka dalam editor asas" untuk menggunakan pilihan paparan dan pengeditan terhad.</translation>
 <translation id="563821631542362636">Membenarkan laman menyimpan data</translation>
 <translation id="5638309510554459422">Cari sambungan dan tema di <ph name="BEGIN_LINK" />Gedung Web Chrome<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Muat semula halaman ini, tahan untuk melihat lagi pilihan</translation>
@@ -6799,6 +6802,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6235208551686043831">Kamera peranti telah dihidupkan. Sila letakkan Kod QR eSIM anda di hadapan kamera.</translation>
 <translation id="6237297174664969437">Anda boleh memilih data penyemak imbas yang mahu disegerakkan dalam tetapan Chrome pada bila-bila masa. Dalam <ph name="LINK_BEGIN" />tetapan peranti<ph name="LINK_END" />, anda boleh mengawal penyegerakkan untuk apl web yang dipasang daripada penyemak imbas Chrome. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="6237474966939441970">Apl pengambilan nota stilus</translation>
+<translation id="6237481151388361546">Ubah sambungan Internet anda dan pilih "Cuba lagi" atau pilih "Buka dalam editor asas" untuk menggunakan pilihan paparan dan pengeditan terhad.</translation>
 <translation id="623755660902014047">Mod membaca</translation>
 <translation id="6238767809035845642">Teks yang dikongsi daripada Peranti Lain</translation>
 <translation id="6238923052227198598">Simpan nota terkini pada skrin kunci</translation>
@@ -9340,6 +9344,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8200772114523450471">Sambung semula</translation>
 <translation id="8200789660596905522">Pastikan anda menerima permintaan Penghantaran pada <ph name="DEVICE_NAME" /> anda.</translation>
 <translation id="8202160505685531999">Sila masukkan semula kata laluan untuk mengemaskinikan profil <ph name="DEVICE_TYPE" /> anda.</translation>
+<translation id="8202827109322349110">Buka dalam editor asas</translation>
 <translation id="8203152941016626022">Nama peranti Kongsi Berdekatan</translation>
 <translation id="8203732864715032075">Hantar pemberitahuan kepada anda dan tetapkan mengingati komputer ini untuk Messages sebagai pilihan lalai. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Klik kanan</translation>

@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">Асистент</translation>
 <translation id="1954818433534793392">сграда</translation>
 <translation id="1962550982027027473">Изисква се стандартно име на точката за достъп (APN)</translation>
+<translation id="1967860190218310525">Създаване на APN</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Снимка на потребителския профил в Google</translation>
 <translation id="1979103255016296513">Срокът за промяна на паролата е изтекъл</translation>
@@ -330,6 +331,7 @@
 <translation id="3031560714565892478">Устройството е видеокамера.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Крайна точка</translation>
+<translation id="3060579846059757016">Отправни точки</translation>
 <translation id="3069085583900247081">Тестването не бе успешно</translation>
 <translation id="3078740164268491126">таблица</translation>
 <translation id="3083667275341675831">Диагностика на свързаността</translation>
@@ -472,7 +474,6 @@
 <translation id="4046123991198612571">Следващ запис</translation>
 <translation id="404928562651467259">ПРЕДУПРЕЖДЕНИЕ</translation>
 <translation id="4054683689023980771">Изображението се изтегля</translation>
-<translation id="4060260348856573701">Ново име на точка за достъп (APN)</translation>
 <translation id="4063039537646912479">светлосиньо</translation>
 <translation id="4093865285251893588">Изображение на потребителския профил</translation>
 <translation id="409427325554347132">Запазване на подробностите за теста</translation>
@@ -980,6 +981,7 @@
 <translation id="7144954474087165241">пагода</translation>
 <translation id="714876143603641390">Връзка с LAN</translation>
 <translation id="7154020516215182599">Споделете отзиви или опишете проблема си. Ако е възможно, включете стъпките за възпроизвеждане на проблема.</translation>
+<translation id="7155037718620478619">Откриване на още APN</translation>
 <translation id="7155171745945906037">Съществуваща снимка от камерата или от файл</translation>
 <translation id="7162487448488904999">Галерия</translation>
 <translation id="7170236477717446850">Снимка на потребителския профил</translation>

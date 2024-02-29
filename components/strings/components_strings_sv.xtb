@@ -231,7 +231,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1410941016594047814">Invite-kuvert</translation>
 <translation id="1413809658975081374">Integritetsfel</translation>
 <translation id="1414134146594747368">Förskola</translation>
-<translation id="141826476809826269">Slutet på extraherad text</translation>
 <translation id="1418611192881166179">Medan Chrome uppdaterar den här funktionen kan webbplatser tillfälligt använda tredjepartscookies om du inte blockerar dem i inställningarna.</translation>
 <translation id="1419305130220238697">Knappen Hantera nedladdningar i Chrome: aktivera om du vill hantera filer du har laddat ned i Chrome</translation>
 <translation id="1422930527989633628">Får begära tillstånd att söka efter Bluetooth-enheter i närheten</translation>
@@ -1321,6 +1320,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3542628208405253498">Kortbild</translation>
 <translation id="3542768452570884558">Öppna länk i nytt fönster</translation>
 <translation id="3547746132308051926">20 x 24 tum</translation>
+<translation id="3552155506104542239">Varning! Principen står i konflikt med <ph name="POLICY_NAME" /> och har ingen effekt på Android-appar. I annat fall fungerar den här principen som avsett.</translation>
 <translation id="3552297013052089404">Sans serif-teckensnitt</translation>
 <translation id="3558573058928565255">dagtid</translation>
 <translation id="355995771319966853">Ångra autofyll</translation>
@@ -3068,7 +3068,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6978121630131642226">Sökmotorer</translation>
 <translation id="6978236010531171013">Dela ändå</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Början på extraherad text</translation>
 <translation id="6979440798594660689">Ljud av (standard)</translation>
 <translation id="6987806006823772670">Kuvert (gummerat)</translation>
 <translation id="6989763994942163495">Visa avancerade inställningar ...</translation>

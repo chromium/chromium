@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">پاکت دعوت‌نامه</translation>
 <translation id="1413809658975081374">خطای حریم خصوصی</translation>
 <translation id="1414134146594747368">پیش‌دبستانی</translation>
-<translation id="141826476809826269">پایان نوشتار استخراج‌شده</translation>
 <translation id="1418611192881166179">‏وقتی Chrome درحال به‌روزرسانی این ویژگی است، سایت‌ها می‌توانند موقتاً از کوکی‌های شخص ثالث استفاده کنند، مگر اینکه آن‌ها را در تنظیمات مسدود کنید.</translation>
 <translation id="1419305130220238697">‏دکمه «مدیریت بارگیری‌ها در Chrome»؛ برای مدیریت فایل‌هایی که در Chrome بارگیری کرده‌اید، آن را فعال کنید</translation>
 <translation id="1422930527989633628">می‌تواند برای پیدا کردن دستگاه‌های بلوتوث اطراف درخواست دهد</translation>
@@ -1201,6 +1200,7 @@
 <translation id="3324687287337751929">۶ × ۴ اینچ</translation>
 <translation id="3324983252691184275">زرشکی</translation>
 <translation id="3325027355611702542">کاروان و وسایل نقلیه تفریحی</translation>
+<translation id="3325568918769906282">به‌ترتیب نزولی</translation>
 <translation id="3329013043687509092">اشباع رنگ</translation>
 <translation id="3333762389743153920">برای کارت مجازی واجدشرایط نیست</translation>
 <translation id="3336044043987989409">دکمه بار کردن مجدد را فشار دهید تا اتصال به دستگاه‌ها یا سرورهای شبکه خصوصی خود را مجاز کنید.</translation>
@@ -2248,6 +2248,7 @@
 <translation id="5371425731340848620">به‌روزرسانی کارت</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">‏«ساعتتان عقب است» یا «ساعتتان جلو است» یا «&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;»</translation>
+<translation id="5380953781541843508">به‌ترتیب صعودی</translation>
 <translation id="5383478552402031184">کف‌پوش</translation>
 <translation id="5385857628869214740">شوخی</translation>
 <translation id="5385966243497224160">‏نمی‌توان نشانی وب غیرHTTPS را پیش‌دید کرد</translation>
@@ -3069,7 +3070,6 @@
 <translation id="6978121630131642226">موتورهای جستجو</translation>
 <translation id="6978236010531171013">درهرصورت هم‌رسانی شود</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">شروع نوشتار استخراج‌شده</translation>
 <translation id="6979440798594660689">بی‌صدا (پیش‌فرض)</translation>
 <translation id="6987806006823772670">پاکت (روکش‌دار)</translation>
 <translation id="6989763994942163495">نمایش تنظیمات پیشرفته ...</translation>
@@ -3484,6 +3484,7 @@
 <translation id="7719791801330803993">نرم‌افزار عکس و ویدیو</translation>
 <translation id="772128550427553158">‏کد تأیید کارت (CVC) روی کارتتان است.</translation>
 <translation id="7724603315864178912">برش</translation>
+<translation id="7730057435797792985">مرتب کردن</translation>
 <translation id="7734285854693414638">‏ایجاد سریع فرم جدید در «فرم‌نگار Google»</translation>
 <translation id="773466115871691567">صفحه‌های <ph name="SOURCE_LANGUAGE" /> همیشه ترجمه شوند</translation>
 <translation id="7736959720849233795">کپی کردن نشانی پیوند</translation>

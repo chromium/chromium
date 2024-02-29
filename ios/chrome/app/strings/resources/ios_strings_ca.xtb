@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">Cerca web</translation>
 <translation id="2252749852083403809">S'està desant a Drive per a <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">La teva organització només et permet iniciar la sessió amb determinats comptes.</translation>
+<translation id="2257594476751932246">Notícies personalitzades</translation>
 <translation id="2258326562203545455">{count,plural, =1{Pots desar l'adreça d'interès al teu Compte de Google ({email}).}other{Pots desar les adreces d'interès al teu Compte de Google ({email}).}}</translation>
 <translation id="225943865679747347">Codi d'error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Afegeix un compte</translation>

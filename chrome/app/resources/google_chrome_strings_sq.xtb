@@ -32,6 +32,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1507198376417198979">Personalizo profilin tënd të ri të Chrome</translation>
 <translation id="1516530951338665275">Google Chrome i nevojitet leje te Bluetooth-i për të vazhduar me çiftimin. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS mundësohet nga<ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="155168855724261758">Personalizo Chrome</translation>
 <translation id="1553358976309200471">Përditëso Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> është i identifikuar tashmë në këtë profil të Chrome. Kjo do të krijojë një profil të ri të Chrome për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome po përdor kamerën tënde.</translation>
@@ -71,6 +72,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2121284319307530122">Nise përsëri për të përditësuar &amp;Chrome</translation>
 <translation id="2123055963409958220">Ndihmo në përmirësimin e Chrome duke raportuar <ph name="BEGIN_LINK" />cilësimet aktuale<ph name="END_LINK" /></translation>
 <translation id="2126108037660393668">Skedari i shkarkuar nuk u verifikua.</translation>
+<translation id="2128411189117340671">Menaxho profilet e Chrome</translation>
 <translation id="2130870084309816036">Lidhja me internetin nuk mund të kryhej. Nëse përdor një mur mbrojtës, lejo <ph name="PRODUCT_EXE_NAME" /> në listën e lejimeve.</translation>
 <translation id="2131230230468101642">Për të mbrojtur privatësinë tënde, ne fshijmë automatikisht interesat e tua që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një interes mund të shfaqet përsëri në listë. Ndryshe, mund të heqësh interesat që nuk dëshiron që Chrome të marrë parasysh.</translation>
 <translation id="2139300032719313227">Rinis ChromeOS</translation>
@@ -424,6 +426,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="7917876797003313048">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar. "Llogaritë e tua të Google" përdoren për shfletuesin Chrome, Play Store, Gmail etj. Nëse do të shtosh një llogari për dikë tjetër, si p.sh. anëtar të familjes, shto më mirë një person të ri te <ph name="DEVICE_TYPE" /> yt. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome e bllokoi këtë shkarkim sepse skedari është mashtrues dhe mund të bëjë ndryshime të papritura në pajisjen tënde</translation>
 <translation id="7951272445806340501">Chrome OS Flex ka nevojë të riniset për të zbatuar përditësimin.</translation>
+<translation id="7959172989483770734">Menaxho profilet e Chrome</translation>
 <translation id="7962368738413920945">Sajtet ndoshta do të funksionojnë siç pritet, por nuk do të të kujtojnë pasi t'i mbyllësh të gjitha dritaret e Chrome</translation>
 <translation id="7962410387636238736">Ky kompjuter nuk do të marrë më përditësime të Google Chrome sepse Windows XP dhe Windows Vista nuk mbështeten më</translation>
 <translation id="8005666035647241369">Te "Menaxheri i fjalëkalimeve të Google" në këtë pajisje</translation>
@@ -431,6 +434,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8009904340233602924">Përdor Chrome pa pasur llogari</translation>
 <translation id="8013993649590906847">Nëse një imazh nuk ka një përshkrim të dobishëm, Chrome do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google.</translation>
 <translation id="8019103195866286235">Publikimi i kësaj shtese është anuluar nga zhvilluesi i saj dhe ajo mund të mos jetë e sigurt. Hiqe atë nga Chrome që të mos arrijë të shikojë dhe të ndryshojë më të dhënat e tua në sajtin që viziton ti, duke përfshirë informacionet e tua personale.</translation>
+<translation id="8031641407207794385">Personalizo Chrome</translation>
 <translation id="80471789339884597">Faleminderit që e instalove. Duhet të rinisësh të gjithë shfletuesit e tu përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8077579734294125741">Profilet e tjera të Chrome</translation>

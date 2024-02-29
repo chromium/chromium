@@ -30,6 +30,7 @@
 <translation id="1507198376417198979">Yeni Chrome profilinizi özelleştirin</translation>
 <translation id="1516530951338665275">Google Chrome'un eşlemeye devam edebilmesi için Bluetooth'a erişmesi gerekiyor. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS, ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
+<translation id="155168855724261758">Chrome'unuzu özelleştirin</translation>
 <translation id="1553358976309200471">Chrome'u güncelle</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> kullanıcısının oturumu halihazırda bu Chrome profilinde açık. Bu işlem, <ph name="USER_EMAIL_ADDRESS" /> için yeni bir Chrome profili oluşturacak</translation>
 <translation id="1587223624401073077">Google Chrome kameranızı kullanıyor.</translation>
@@ -67,6 +68,7 @@
 <translation id="2121284319307530122">&amp;Chrome'u Güncellemek İçin Yeniden Başlat</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Mevcut ayarlarınızı<ph name="END_LINK" /> bildirerek Chrome'u daha iyi hale getirmemize yardımcı olun</translation>
 <translation id="2126108037660393668">İndirilen dosya doğrulanamadı.</translation>
+<translation id="2128411189117340671">Chrome profillerini yönetin</translation>
 <translation id="2130870084309816036">İnternete bağlanılamıyor. Güvenlik duvarı kullanıyorsanız <ph name="PRODUCT_EXE_NAME" /> dosyasını izin verilenler listesine ekleyin.</translation>
 <translation id="2131230230468101642">Gizliliğinizi korumak için 4 haftadan eski ilgi alanlarınızı otomatik olarak sileriz. Siz internette gezindikçe ilgi alanları tekrar listede görünmeye başlayabilir. Dilerseniz Chrome'un dikkate almasını istemediğiniz ilgi alanlarını kaldırabilirsiniz.</translation>
 <translation id="2139300032719313227">ChromeOS'i yeniden başlat</translation>
@@ -418,6 +420,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="7917876797003313048">Oturum açılmış Google Hesaplarınızı yönetebilirsiniz. Google Hesaplarınız; Chrome tarayıcı, Play Store, Gmail ve daha başka yerlerde kullanılır. Aile üyesi gibi başka bir kullanıcı için hesap eklemek isterseniz bunun yerine <ph name="DEVICE_TYPE" /> cihazınıza yeni bir kişi ekleyin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Dosya yanıltıcı olduğu ve cihazınızda beklenmeyen değişiklikler yapabileceği için Chrome bu indirme işlemini engelledi</translation>
 <translation id="7951272445806340501">Güncellemenin uygulanması için ChromeOS Flex yeniden başlatılmalıdır.</translation>
+<translation id="7959172989483770734">Chrome Profillerini Yönetin</translation>
 <translation id="7962368738413920945">Siteler muhtemelen beklediğiniz gibi çalışır ancak tüm Chrome pencereleri kapatıldıktan sonra sizi hatırlamaz</translation>
 <translation id="7962410387636238736">Windows XP ve Windows Vista artık desteklenmediğinden, bu bilgisayar bundan böyle Google Chrome güncellemelerini almayacaktır</translation>
 <translation id="8005666035647241369">Bu cihazdaki Google Şifre Yöneticisi'ne</translation>
@@ -425,6 +428,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8009904340233602924">Chrome'u hesap olmadan kullan</translation>
 <translation id="8013993649590906847">Bir resmin işe yarar bir açıklaması yoksa, Chrome sizin için bir açıklama sağlamaya çalışır. Açıklama oluşturmak için resimler Google'a gönderilir.</translation>
 <translation id="8019103195866286235">Bu uzantı, geliştiricisi tarafından yayından kaldırıldığı için güvenli olmayabilir. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chrome'dan kaldırın.</translation>
+<translation id="8031641407207794385">Chrome'unuzu özelleştirin</translation>
 <translation id="80471789339884597">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce tüm tarayıcılarınızı yeniden başlatmanız gerekir.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Diğer Chrome Profilleri</translation>

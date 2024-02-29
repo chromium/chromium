@@ -88,11 +88,6 @@ Si se habilita esta política o no se le asigna ningún valor, se permitirá la 
 Si se inhabilita esta política, no se permitirá la función de autocorrección en el teclado físico.</translation>
 <translation id="1038725366103635282">Permitir la detección de sistemas de archivos compartidos de NetBIOS</translation>
 <translation id="1040446814317236570">Habilitar eliminación de URL PAC (para https://)</translation>
-<translation id="1041719059374171202">Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios no pueden ejecutar JavaScript.
-
-      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="1043965859599437362">Esta política permite anular la lista de conjuntos que el navegador usa con las funciones de conjuntos propios.
 
 Cada conjunto de la lista de conjuntos propios del navegador debe cumplir los requisitos de un conjunto propio.
@@ -271,11 +266,6 @@ Si se habilita esta política, se permitirá que los usuarios usen el hardware e
 <translation id="1202216683470826356">Mostrar tarjetas en la página Nueva pestaña</translation>
 <translation id="1204263402976895730">Impresoras de empresa habilitadas</translation>
 <translation id="1207301487141109411">Impedir que se seleccione el avatar del usuario desde el sistema de archivos local, la cámara o el perfil de Google.</translation>
-<translation id="1209065772997672966">Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifiquen los sitios que pueden abrir ventanas emergentes.
-
-      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="1209096923317019235">Asigna aplicaciones como controladores predeterminados de extensiones de archivo especificadas</translation>
 <translation id="120937472976628837">Enviar información sobre ventiladores</translation>
 <translation id="1212233008927724662">Inhabilita la carga en diferido de la WebUI de inicio de sesión.</translation>
@@ -521,13 +511,6 @@ Para obtener más información, consulta esta página: https://support.google.co
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): este valor no está disponible desde la versión M121. A partir de la versión M121, los valores se tratarán como EnabledBelowThreshold.
       </translation>
 <translation id="1434300053894025056">Inhabilitar corrector ortográfico</translation>
-<translation id="1434743866147056474">Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios no pueden mostrar imágenes.
-
-      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_IMAGE_SETTING_ENABLED_POLICY_NAME" /> se aplicará a todos los sitios web, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
-
-       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.
-
-       Ten en cuenta que esta política se habilitó anteriormente en Android por error, pero la función nunca ha sido totalmente compatible con Android.</translation>
 <translation id="1435493974546396517">Controla cómo <ph name="PRODUCT_NAME" /> permite la opción Imprimir como imagen en <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" /> al imprimir PDFs.
 
       Al imprimir un PDF en <ph name="MS_WIN_NAME" /> o <ph name="MAC_OS_NAME" />, a veces es necesario rasterizar trabajos de impresión a una imagen para que determinadas impresoras los impriman con el aspecto correcto.
@@ -896,11 +879,6 @@ Esta política es una solución temporal en caso de que las empresas experimente
       Nota: Los valores que se asignen a esta política deben ser porcentajes de 0 a 100.</translation>
 <translation id="1733092875104864334">No permitir que se recojan registros de texto WebRTC de los servicios de Google</translation>
 <translation id="1733768596873041559">Redirigir al proveedor de identidades SAML de forma predeterminada (se necesita la confirmación del usuario en versiones anteriores a <ph name="PRODUCT_NAME" /> 99)</translation>
-<translation id="1733939382419067578">Si se establece la política, podrás definir una lista de patrones de URL donde se especifique qué sitios pueden mostrar notificaciones.
-
-      Si no se establece la política, <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no, se aplicará la configuración personal del usuario.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Esta política no acepta el valor <ph name="WILDCARD_VALUE" />.</translation>
 <translation id="173503685261877709">Esta política proporciona una forma de anular la lista de conjuntos que el navegador utiliza para las funciones de conjuntos de sitios web relacionados.
 
 Esta política anula la política <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
@@ -1670,11 +1648,6 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Si se le asigna el valor "Falso" o no se le asigna ninguno, no se mostrará ese botón.</translation>
 <translation id="2294382669900758280">La reproducción de vídeo en las aplicaciones para Android no se tiene en cuenta, aunque se haya asignado el valor <ph name="TRUE" /> a esta política.</translation>
-<translation id="2297792368307475351">Si se establece esta política, te permitirá definir una lista de patrones de URL para especificar los sitios que no podrán usar el permiso de portapapeles de sitios. Esto no incluye todas las operaciones de portapapeles que se realicen en orígenes que coincidan con esos patrones. Por ejemplo, los usuarios seguirán pudiendo pegar mediante combinaciones de teclas, ya que esta acción está fuera del ámbito del permiso de portapapeles de sitios.
-
-      Si no se establece esta política, <ph name="DEFAULT_CLIPBOARD_SETTING" /> se aplicará a todos los sitios si se ha definido. Si no, se aplicará la configuración personal del usuario.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Esta política no acepta el valor <ph name="WILDCARD_VALUE" />.</translation>
 <translation id="2299220924812062390">Especificar una lista de complementos habilitados</translation>
 <translation id="2299815818824242485">No permitir consultas de mayor protección mediante proxy</translation>
 <translation id="2303795211377219696">Habilitar la función Autocompletar para tarjetas de crédito</translation>
@@ -2790,22 +2763,10 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
           El valor de esta política debe especificarse en milisegundos.</translation>
 <translation id="3198385910521788907">No mostrar la pantalla del detector de presencia humana durante el inicio de sesión</translation>
-<translation id="3205649498518960697">Permite crear una lista de patrones de URL donde se especifique qué sitios pueden mostrar contenido mixto (es decir, contenido HTTP en sitios HTTPS) bloqueable (es decir, activo), y para qué contenido mixto opcionalmente bloqueable se inhabilitarán las actualizaciones.
-
-          Si no se establece esta política, el contenido mixto bloqueable se bloqueará y el contenido mixto opcionalmente bloqueable se actualizará, y los usuarios podrán establecer excepciones para permitir este contenido en sitios concretos.
-
-          Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="3205825995289802549">Maximizar la primera ventana del navegador en la primera ejecución</translation>
 <translation id="320607884987562184">Si se asigna el valor 1 a esta política, los sitios web podrán ejecutar JavaScript. Si se le asigna el valor 2, no se permitirá el uso de JavaScript.
 
 Si no se establece, podrá ejecutarse JavaScript, pero los usuarios podrán cambiar esta opción.</translation>
-<translation id="3206959584699016689">Si estableces esta política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que pueden acceder a los sensores, como los de luz o movimiento.
-
-      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
-
-      Si se incluye el mismo patrón de URL en esta política y en la política <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, tendrá preferencia esta última y se bloqueará el acceso a los sensores de luz o de movimiento.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="3207821022126246451">WebRTC usará TCP en la interfaz pública y solo usará UDP si lo admite un proxy configurado.</translation>
 <translation id="3207873329349672535">Esta política controla si al usuario se le ofrecerá una opción en el menú de <ph name="PRODUCT_NAME" /> que le permita enviar contenido a dispositivos de emisión que no aparezcan en el menú de <ph name="PRODUCT_NAME" /> mediante un código de acceso o un código QR que aparezca en la pantalla del dispositivo de emisión.
       De forma predeterminada, el usuario debe volver a introducir el código de acceso o escanear el código QR para poder iniciar otra sesión de envío. Sin embargo, si a la política <ph name="ACCESS_CODE_CAST_DEVICE_DURATION_POLICY_NAME" /> se le ha asignado un valor diferente a cero (el predeterminado es cero), el dispositivo de emisión permanecerá en la lista de dispositivos de emisión disponibles hasta que termine el periodo de tiempo especificado.
@@ -3845,11 +3806,6 @@ Hasta Chrome 114, esta política requería que se asignara el valor true a la po
 <translation id="4057442294431066708">Esta política controla la opción de combinación de teclas seleccionada para reasignar eventos
 a F11/F12 en la subpágina de reasignación de teclas. Estos ajustes solo se aplican a los teclados de ChromeOS
 y están inhabilitados de forma predeterminada si no se define la política.</translation>
-<translation id="4061107397839125009">Si se establece la política, podrás definir una lista de patrones de URL donde se especifique qué sitios no pueden mostrar notificaciones.
-
-      Si no se establece la política, <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no, se aplicará la configuración personal del usuario.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Esta política no acepta el valor <ph name="WILDCARD_VALUE" />.</translation>
 <translation id="4061590579642538878">Proporcionar información de informes sobre fallos</translation>
 <translation id="4062646759141042418">Habilita <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> en una lista de URLs.
 
@@ -4203,11 +4159,6 @@ Si esta política se inhabilita, los usuarios no podrán hacer el seguimiento de
       En esta política, solo se permiten nombres de host de una sola etiqueta. Esta política solo se aplica a entradas estáticas precargadas por HSTS (por ejemplo, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). Esta política no evita las actualizaciones de HSTS en el caso de los servidores que hayan solicitado dinámicamente actualizaciones de HSTS usando un encabezado de respuesta <ph name="HSTS_HEADER_NAME" />.
 
       Los nombres de host especificados deben canonicalizarse, es decir, cada IDN debe convertirse a su formato de etiqueta A, y todas las letras ASCII deben ser minúsculas. Esta política solo se aplica a los nombres de host de una sola etiqueta incluidos en la lista, no a sus subdominios.</translation>
-<translation id="4387922553629365459">Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifiquen los sitios que no pueden abrir ventanas emergentes.
-
-      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="4389073105055031853">Permitir que los usuarios gestionen todos los certificados</translation>
 <translation id="4389091865841123886">Permite configurar la confirmación remota con el mecanismo de TPM.</translation>
 <translation id="4389113579547582722">Permitir que se muestre la promoción de valoraciones del App Store</translation>
@@ -4235,15 +4186,6 @@ Se eliminó en la versión M112.</translation>
 Si se inhabilita, se abrirán los archivos PDF, a menos que los usuarios desactiven el complemento de PDF.
 
 Si se define esta política, los usuarios no podrán modificarla en <ph name="PRODUCT_NAME" />. Si no se define, los usuarios podrán elegir si se abren o no los PDFs de forma externa.</translation>
-<translation id="4413453659814156568">Te permite definir una lista con patrones de URL de sitios donde se especifique qué sitios pueden ejecutar JavaScript con un compilador en tiempo de ejecución (JIT) habilitado.
-
-          Para obtener información detallada sobre los patrones de URL de sitios válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.
-
-          Las excepciones de la política de uso de JavaScript con JIT solo se implementarán obligatoriamente en una granularidad de sitios (eTLD+1). Por ejemplo, si se establece esta política únicamente para subdominio.sitio.com, no se aplicará correctamente a sitio.com ni a subdominio.sitio.com, ya que ambas URLs pertenecen al mismo nivel eTLD+1 (sitio.com), para el que no se ha definido ninguna política. En ese caso, deberás establecer la política para sitio.com si quieres que se aplique correctamente tanto a sitio.com como a subdominio.sitio.com.
-
-          Esta política se aplica marco a marco y no basándose únicamente en la URL de origen de nivel superior. Por ejemplo, si se ha incluido sitio-uno.com en la política <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />, pero sitio-uno.com carga un marco que contiene sitio-dos.com, se habilitará el uso de JavaScript con JIT en sitio-uno.com, pero a sitio-dos.com se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, si se ha definido. Si no se ha definido esta política, se habilitará de forma predeterminada el uso de JavaScript con JIT.
-
-          Si no se establece esta política para un sitio, se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, si se ha definido. Si no se ha definido esta política, se habilitará el uso de JavaScript con JIT en ese sitio.</translation>
 <translation id="4415603335307944578">Si se asigna el valor "True" a esta política o no se configura, el navegador volverá a mostrar la página de bienvenida la primera vez que inicies el navegador después de actualizar el SO.
 
       Si se le asigna el valor "False", el navegador no volverá a mostrar la página de bienvenida la primera vez que inicies el navegador después de actualizar el SO.</translation>
@@ -4899,11 +4841,6 @@ No se recomienda inhabilitar la decodificación de vídeo acelerada por hardware
 <translation id="4970046075219007744">Permite que las aplicaciones web soliciten al usuario que les conceda acceso a ciertos tipos de archivo a través de la API File Handling</translation>
 <translation id="4970855112942626932">Inhabilitar inicio de sesión en el navegador</translation>
 <translation id="4974091268178043378">Modo de color de Chrome OS</translation>
-<translation id="4977702914571821981">Permite crear una lista de patrones de URL donde se especifique qué sitios no pueden mostrar contenido mixto (es decir, contenido HTTP en sitios HTTPS) bloqueable (es decir, activo), y qué contenido mixto opcionalmente bloqueable (es decir, pasivo) se actualizará.
-
-          Si no se establece esta política, el contenido mixto bloqueable se bloqueará y el contenido mixto opcionalmente bloqueable se actualizará, y los usuarios podrán establecer excepciones para permitir este contenido en sitios concretos.
-
-          Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="4978533099939732984">Mostrar siempre las advertencias de poco espacio en disco</translation>
 <translation id="4979714585847741269">Si se habilita esta política, una aplicación web de kiosco podrá abrir otra ventana del navegador, que se podrá colocar en la misma pantalla o en otra. Para abrir una ventana nueva, la aplicación web deberá llamar a la función de JavaScript <ph name="OPEN_NEW_WINDOW_JS" />.
 
@@ -5375,13 +5312,6 @@ A partir de la versión 92 de <ph name="PRODUCT_NAME" />, también se admite est
 
           Los administradores se encargan de establecer políticas para todas las plataformas que consideren relevantes. Se recomienda definir un valor para esta política en todas las plataformas.</translation>
 <translation id="5389708774452952523">Permite ejecutar el proceso de audio con una prioridad superior a la normal en Windows</translation>
-<translation id="5389798680516458665">Si asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios podrán mostrar imágenes.
-
-      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> se aplicará a todos los sitios web, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.
-
-      Ten en cuenta que esta política se habilitó anteriormente en Android por error, pero la función nunca ha sido totalmente compatible con Android.</translation>
 <translation id="5390083518957894426">Habilita la reautenticación online en la pantalla de bloqueo para usuarios de SAML</translation>
 <translation id="5391388690191341203">Cuenta local del dispositivo para el inicio de sesión automático</translation>
 <translation id="5391867362692016532">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique qué aplicaciones web no pueden pedir a los usuarios que les concedan acceso a ciertos tipos de archivo.
@@ -5867,13 +5797,6 @@ Si se inhabilita esta política, se desactivará <ph name="PRODUCT_NAME" />.</tr
       Si no se establece esta política, se usará el factor de escala predeterminado.
 
       Nota: El factor de escala debe ser igual o superior a 100 %.</translation>
-<translation id="5738892881453299672">Si estableces esta política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que no pueden acceder a los sensores, como los de luz o movimiento.
-
-      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
-
-      Si se incluye el mismo patrón de URL en esta política y en la política <ph name="SENSORS_ALLOWED_FOR_URLS_POLICY_NAME" />, tendrá preferencia esta política y se bloqueará el acceso a los sensores de luz o de movimiento.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="5740636973289452345">Habilitar informes de datos sobre extensiones y complementos</translation>
 <translation id="5746149754419996562">Habilita la presencia de widgets Glanceables en <ph name="PRODUCT_OS_NAME" />. Concretamente, esto afecta a los widgets a los que se puede acceder mediante el chip de fecha de la estantería.
 Si se habilita esta política, se habilitarán los widgets Glanceables en <ph name="PRODUCT_OS_NAME" />.
@@ -6172,6 +6095,8 @@ Las solicitudes de instalación de extensiones se crean cuando los usuarios inte
 
 En el caso de <ph name="PRODUCT_NAME" />, esta política solo es efectiva si el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
+<translation id="6020795917180493154">A partir de la versión M119, si se le asigna el valor false a esta política o no se define, WebSQL se inhabilitará, pero se podrá habilitar mediante la marca de Chrome "web-sql-access". Si se le asigna el valor true, se habilitará el acceso a WebSQL.
+Esta política está obsoleta a partir de la versión M124.</translation>
 <translation id="6022948604095165524">Acción al iniciar</translation>
 <translation id="602318745029752898">Permitir las voces de conversión de texto a voz de red mejorada en Enunciar selección</translation>
 <translation id="6026722971789064331">Controlar el uso de la API File System para escritura</translation>
@@ -8426,12 +8351,6 @@ Si no se establece esta política, el navegador seleccionará el renderizador de
 <translation id="7781452670568828399">Cambiar la configuración recomendada de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7784062550705119230">Si se utiliza <ph name="PRINTERS_ALLOWLIST" /> para la política <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, al establecer la política <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, esta especifica qué impresoras pueden utilizar los usuarios. Solo las impresoras cuyos ID coincidan con los valores incluidos en la política estarán disponibles para los usuarios. Los ID deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en la política <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7788511847830146438">Por perfil</translation>
-<translation id="7788632499792081231">Si se establece esta política, te permitirá definir una lista de patrones de URL para especificar los sitios que podrán usar el permiso de portapapeles de sitios. Esto no incluye todas las operaciones de portapapeles que se realicen en orígenes que coincidan con esos patrones. Por ejemplo, los usuarios seguirán pudiendo pegar mediante combinaciones de teclas, ya que esta acción está fuera del ámbito del permiso de portapapeles de sitios.
-
-
-      Si no se establece esta política, <ph name="DEFAULT_CLIPBOARD_SETTING" /> se aplicará a todos los sitios si se ha definido. Si no, se aplicará la configuración personal del usuario.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Esta política no acepta el valor <ph name="WILDCARD_VALUE" />.</translation>
 <translation id="7790221177424764797">Esta política controla si se cargarán las reglas de la política SiteList de <ph name="IE_PRODUCT_NAME" />.
 
 Si se le asigna el valor true a esta política, <ph name="PRODUCT_NAME" /> usará la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" /> para obtener la URL de la lista de sitios. Después, <ph name="PRODUCT_NAME" /> descargará la lista de sitios de esa URL y aplicará las reglas como si se hubieran configurado con la política <ph name="BROWSER_SWITCHER_URL_LIST_POLICY_NAME" />.
@@ -9312,17 +9231,6 @@ No se puede restaurar la versión 106 de <ph name="PRODUCT_OS_NAME" /> ni versio
       Esta política anula las políticas <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> y <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />, así como las preferencias del usuario.</translation>
 <translation id="8528951285051082869">No permitir que ninguna aplicación web acceda a ciertos tipos de archivo a través de la API File Handling</translation>
 <translation id="8533145294731270627">Bloquea las descargas maliciosas y los tipos de archivos peligrosos.</translation>
-<translation id="8543103455510904459">Te permite definir una lista con patrones de URL de sitios donde se especifique qué sitios no pueden ejecutar JavaScript con un compilador en tiempo de ejecución (JIT) habilitado.
-
-          Si se inhabilita el uso de JavaScript con JIT, es posible que <ph name="PRODUCT_NAME" /> renderice contenido web de forma más lenta y que también se inhabiliten algunas partes de JavaScript, como WebAssembly. Al inhabilitarse el uso de JavaScript con JIT, es posible que <ph name="PRODUCT_NAME" /> renderice contenido web con una configuración más segura.
-
-          Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.
-
-          Las excepciones de la política de uso de JavaScript con JIT solo se implementarán obligatoriamente en una granularidad de sitios (eTLD+1). Por ejemplo, si se establece esta política únicamente para subdominio.sitio.com, no se aplicará correctamente a sitio.com ni a subdominio.sitio.com, ya que ambas URLs pertenecen al mismo nivel eTLD+1 (sitio.com), para el que no se ha definido ninguna política. En ese caso, deberás establecer la política para sitio.com si quieres que se aplique correctamente tanto a sitio.com como a subdominio.sitio.com.
-
-          Esta política se aplica marco a marco y no basándose únicamente en la URL de origen de nivel superior. Por ejemplo, si se ha incluido sitio-uno.com en la política <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />, pero sitio-uno.com carga un marco que contiene sitio-dos.com, se inhabilitará el uso de JavaScript con JIT en sitio-uno.com, pero a sitio-dos.com se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, si se ha definido. Si no se ha definido esta política, se habilitará de forma predeterminada el uso de JavaScript con JIT.
-
-          Si no se establece esta política para un sitio, se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, si se ha definido. Si no se ha definido esta política, se habilitará el uso de JavaScript con JIT en ese sitio.</translation>
 <translation id="8543108307976719751">Impedir conexiones de acceso remoto a este equipo</translation>
 <translation id="8543639085146778837">Permitir que se recojan registros de texto WebRTC de los servicios de Google</translation>
 <translation id="8543975123557636331">Habilitar la salida de audio</translation>
@@ -9660,11 +9568,6 @@ Esta política no se aplica si se ha inhabilitado el teclado virtual (por ejempl
 <translation id="8827366480126575426">El protocolo del controlador de protocolos.</translation>
 <translation id="8827417642396462482">Permitir tipos de consultas de DNS adicionales</translation>
 <translation id="8830717323204407209">Permite que se muestre la promoción de extensión de proveedor de credenciales a los usuarios</translation>
-<translation id="8831911834413504983">Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios pueden ejecutar JavaScript.
-
-      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="8832829916385857156">La página Nueva pestaña mostrará tarjetas si hay contenido disponible</translation>
 <translation id="8833109046074170275">Autenticación a través del flujo de GAIA predeterminado</translation>
 <translation id="8834641112681661892">Si se asigna un valor a esta política, se especificará el retraso máximo (en milisegundos) entre la recepción de la invalidación de una política y la obtención de la nueva política desde el servicio de gestión del dispositivo. Los valores válidos están comprendidos entre 1000 (1 segundo) y 300.000 (5 minutos). Cualquier valor fuera de este intervalo se redondeará al límite correspondiente.

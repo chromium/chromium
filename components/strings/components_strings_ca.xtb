@@ -231,7 +231,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1410941016594047814">Sobre Invite</translation>
 <translation id="1413809658975081374">Error de privadesa</translation>
 <translation id="1414134146594747368">Llar d'infants</translation>
-<translation id="141826476809826269">Fi del text extret</translation>
 <translation id="1418611192881166179">Mentre Chrome està actualitzant aquesta funció, els llocs web poden utilitzar temporalment galetes de tercers, tret que les bloquegis a la configuració.</translation>
 <translation id="1419305130220238697">Botó Gestiona les baixades a Chrome: activa'l per gestionar els fitxers que has baixat a Chrome</translation>
 <translation id="1422930527989633628">Pot demanar permís per descobrir dispositius Bluetooth propers</translation>
@@ -1322,6 +1321,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3542628208405253498">Imatge de la targeta</translation>
 <translation id="3542768452570884558">Obre l'enllaç en una finestra nova</translation>
 <translation id="3547746132308051926">20 x 24 polzades</translation>
+<translation id="3552155506104542239">Advertiment: aquesta política entra en conflicte amb <ph name="POLICY_NAME" /> i no tindrà efecte en les aplicacions d'Android. Si no és així, la política funciona de la manera prevista.</translation>
 <translation id="3552297013052089404">Tipus de lletra Sans Serif</translation>
 <translation id="3558573058928565255">Durant el dia</translation>
 <translation id="355995771319966853">Desfés l'emplenament automàtic</translation>
@@ -3070,7 +3070,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6978121630131642226">Motors de cerca</translation>
 <translation id="6978236010531171013">Comparteix igualment</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Inici del text extret</translation>
 <translation id="6979440798594660689">Silencia (opció predeterminada)</translation>
 <translation id="6987806006823772670">Sobre (estucat)</translation>
 <translation id="6989763994942163495">Mostra la configuració avançada...</translation>

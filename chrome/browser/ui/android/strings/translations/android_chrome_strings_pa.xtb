@@ -116,6 +116,7 @@
 <translation id="1558391695376153246">ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="1568636008098739136">ਇਸ ਪੰਨੇ ਨੂੰ ਸੁਣੋ। ਇਸ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖੋ।</translation>
 <translation id="1571304935088121812">ਵਰਤੋਂਕਾਰ ਨਾਮ ਕਾਪੀ ਕਰੋ</translation>
+<translation id="1584648915421894279">ਫ਼ਿਲਹਾਲ, ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਸਾਰੇ Chrome ਚੈਨਲਾਂ 'ਤੇ ਨਹੀਂ ਵਰਤਿਆ ਜਾ ਸਕਦਾ। Chrome 125 ਤੋਂ ਬਾਅਦ, Chrome ਅਤੇ <ph name="CHROME_CHANNEL" /> ਦੇ ਲਈ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਮਿਲਾ ਦਿੱਤਾ ਜਾਵੇਗਾ ਅਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਦੋਵਾਂ ਐਪਾਂ ਵਿੱਚ ਵਰਤਿਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="1592864538817356322">ਮਿਆਰੀ ਸੁਰੱਖਿਆ:</translation>
 <translation id="1594635596540195766">ਹੇਠਾਂ ਦਿੱਤੀ ਸੂਚੀ ਵਿੱਚ <ph name="SUGGESTIONS_COUNT" /> ਸੁਝਾਈਆਂ ਗਈਆਂ ਆਈਟਮਾਂ।</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਨਾਲ <ph name="SITE_ETLD_PLUS_ONE" /> ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
@@ -328,6 +329,7 @@
 <translation id="281504910091592009">ਆਪਣੇ <ph name="BEGIN_LINK" />Google ਖਾਤੇ<ph name="END_LINK" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਦੇਖੋ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2827278682606527653">ਫ਼ੀਡ ਕਾਰਡ ਮੀਨੂ ਅੱਧਾ ਖੁੱਲ੍ਹਾ ਹੈ</translation>
 <translation id="2830783625999891985">ਕਲਿੱਪਬੋਰਡ ਦੀਆਂ ਸਮੱਗਰੀਆਂ ਲੁਕਾਈਆਂ ਗਈਆਂ</translation>
+<translation id="2834884592945939112">ਸੈਟਿੰਗਾਂ, Google ਖਾਤੇ ਸੰਬੰਧੀ ਗੜਬੜ</translation>
 <translation id="2838367486340230368">ਪਰਦੇਦਾਰੀ ਗਾਈਡ ਵਿਆਖਿਆ ਨੂੰ ਅੱਧੀ ਸਕ੍ਰੀਨ 'ਤੇ ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> ਦਾ ਅਨੁਸਰਣ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਨੂੰ ਬੰਦ ਕੀਤਾ ਜਾਵੇਗਾ}one{<ph name="TAB_COUNT_MANY" /> ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਨੂੰ ਬੰਦ ਕੀਤਾ ਜਾਵੇਗਾ}other{<ph name="TAB_COUNT_MANY" /> ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕੀਤਾ ਜਾਵੇਗਾ}}</translation>
@@ -638,7 +640,6 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{ਬੁੱਕਮਾਰਕ ਨੂੰ "<ph name="FOLDER_NAME" />" ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ। ਇਸਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।}one{ਬੁੱਕਮਾਰਕ ਨੂੰ "<ph name="FOLDER_NAME" />" ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ। ਇਸਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।}other{ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ "<ph name="FOLDER_NAME" />" ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ। ਇਨ੍ਹਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।}}</translation>
 <translation id="4484496141267039529">ਕੋਈ ਕਨੈਕਸ਼ਨ ਨਹੀਂ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4487967297491345095">Chrome ਦਾ ਸਾਰਾ ਐਪ ਡਾਟਾ ਸਥਾਈ ਤੌਰ 'ਤੇ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਇਸ ਵਿੱਚ ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ, ਸੈਟਿੰਗਾਂ, ਖਾਤੇ, ਡਾਟਾਬੇਸ ਆਦਿ ਸ਼ਾਮਲ ਹਨ।</translation>
-<translation id="4491323382106587961">ਕੋਈ ਖਾਤਾ ਚੁਣੋ। ਫ਼ਿਲਹਾਲ <ph name="EMAIL" /> ਚੁਣੀ ਗਈ।</translation>
 <translation id="4494806687727322324">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਚਾਲੂ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="4508528996305412043">ਫ਼ੀਡ ਕਾਰਡ ਮੀਨੂ ਖੁੱਲ੍ਹਾ ਹੈ</translation>
 <translation id="4509501256689523862">ਜਦੋਂ ਤੁਸੀਂ ਬ੍ਰਾਊਜ਼ ਕਰਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਨੂੰ ਦਿਸਣ ਵਾਲੇ ਵਿਗਿਆਪਨ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਇਆ ਗਿਆ ਹੈ ਜਾਂ ਨਹੀਂ, ਇਸ ਸੈਟਿੰਗ, <ph name="BEGIN_LINK_1" />ਵਿਗਿਆਪਨ ਵਿਸ਼ਿਆਂ<ph name="END_LINK_1" />, ਤੁਹਾਡੀਆਂ <ph name="BEGIN_LINK_2" />ਕੁਕੀ ਸੈਟਿੰਗਾਂ<ph name="END_LINK_2" /> ਅਤੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀ ਜਾਣ ਵਾਲੀ ਸਾਈਟ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਂਦੀ ਹੈ ਜਾਂ ਨਹੀਂ, ਇਸ 'ਤੇ ਨਿਰਭਰ ਕਰਦਾ ਹੈ</translation>
@@ -664,6 +665,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# ਮਿੰਟ ਪਹਿਲਾਂ}one{# ਮਿੰਟ ਪਹਿਲਾਂ}other{# ਮਿੰਟ ਪਹਿਲਾਂ}}</translation>
 <translation id="4587589328781138893">ਸਾਈਟਾਂ</translation>
 <translation id="4594952190837476234">ਇਹ ਆਫ਼ਲਾਈਨ ਪੰਨਾ <ph name="CREATION_TIME" /> ਦਾ ਹੈ ਅਤੇ ਆਨਲਾਈਨ ਵਰਜਨ ਤੋਂ ਵੱਖਰਾ ਹੋ ਸਕਦਾ ਹੈ।</translation>
+<translation id="4595805675102978678">Google ਖਾਤੇ ਸੰਬੰਧੀ ਗੜਬੜ</translation>
 <translation id="4601095002996233687">ਸ਼ੱਕੀ ਡਾਊਨਲੋਡਾਂ ਦੀ ਗਹਿਰਾਈ ਨਾਲ ਸਕੈਨਿੰਗ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="4609429330876432068">Chrome ਅਤੇ <ph name="CHROME_CHANNEL" /> ਲਈ ਤੁਹਾਡੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਦੀਆਂ ਸੂਚੀਆਂ ਨੂੰ ਮਿਲਾ ਦਿੱਤਾ ਗਿਆ ਸੀ। ਤੁਸੀਂ ਹਾਲੇ ਵੀ ਦੋਵਾਂ ਐਪਾਂ 'ਤੇ ਆਪਣੇ ਸਾਰੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਆਟੋਫਿਲ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ਖੋਲ੍ਹੋ</translation>
@@ -1166,6 +1168,7 @@
 <translation id="7037830628447527439">ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="7054588988317389591">ਕੀ ਚਿੱਤਰ ਵਰਣਨ ਪ੍ਰਾਪਤ ਕਰਨੇ ਹਨ?</translation>
 <translation id="7055152154916055070">ਇਸ ਰੀਡਾਇਰੈਕਟ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ:</translation>
+<translation id="7057969023583258980">ਪੂਰਾ Chrome ਇਤਿਹਾਸ ਖੋਲ੍ਹੋ</translation>
 <translation id="7063006564040364415">ਸਿੰਕ ਸਰਵਰ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕਰ ਸਕਿਆ।</translation>
 <translation id="7071521146534760487">ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="707155805709242880">ਚੁਣੋ ਕਿ ਹੇਠਾਂ ਦਿੱਤੇ ਡਾਟੇ ਵਿੱਚੋਂ ਕਿਸ ਦਾ ਸਿੰਕ ਕਰਨਾ ਹੈ</translation>

@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">Асистент</translation>
 <translation id="1954818433534793392">Будинок</translation>
 <translation id="1962550982027027473">Укажіть точку доступу за умовчанням</translation>
+<translation id="1967860190218310525">Створити нову точку доступу (APN)</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Фотографія профілю Google</translation>
 <translation id="1979103255016296513">Час для зміни пароля минув</translation>
@@ -473,7 +474,6 @@
 <translation id="4046123991198612571">Наступна композиція</translation>
 <translation id="404928562651467259">ЗАСТЕРЕЖЕННЯ</translation>
 <translation id="4054683689023980771">Завантаження зображення</translation>
-<translation id="4060260348856573701">Нове ім’я точки доступу (APN)</translation>
 <translation id="4063039537646912479">світло-синій</translation>
 <translation id="4093865285251893588">Зображення профілю</translation>
 <translation id="409427325554347132">Зберегти дані перевірки</translation>
@@ -981,6 +981,7 @@
 <translation id="7144954474087165241">Пагода</translation>
 <translation id="714876143603641390">З'єднання LAN</translation>
 <translation id="7154020516215182599">Залиште відгук або опишіть проблему. За можливості перелічіть дії, після яких виникає ця проблема.</translation>
+<translation id="7155037718620478619">Показати інші точки доступу (APN)</translation>
 <translation id="7155171745945906037">Наявні фотографії з камери або файлу</translation>
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7170236477717446850">Зображення профілю</translation>

@@ -367,6 +367,7 @@
 <translation id="702275896380648118">Ky sajt përcakton gjërat që të pëlqejnë dhe më pas sugjeron reklama për sajtet e tjera. Ky sajt merr po ashtu temat e tua të reklamave nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="7053983685419859001">Bllokoje</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 i zgjedhur}other{# të zgjedhur}}</translation>
+<translation id="708014373017851679"><ph name="APP_NAME" /> nuk është përditësuar. Përditëso aplikacionin.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> të zgjedhura. Opsionet ofrohen pranë kreut të ekranit</translation>
 <translation id="7141896414559753902">Blloko që sajtet të shfaqin dritare kërcyese dhe ridrejtime (rekomandohet)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

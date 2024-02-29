@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">કીબોર્ડ લેઆઉટ સ્વિચ કરવા માટે <ph name="KEYBOARD_SHORTCUT" />ને દબાવો.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" />નો પ્રીવ્યૂ કરો. સક્રિય ડેસ્ક.</translation>
 <translation id="2487915095798731898">જોડાઓ</translation>
+<translation id="2499445554382787206">ડેસ્ક પ્રોફાઇલનું મેનૂ. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">સ્ટિકી કી</translation>
 <translation id="2504454902900101003">તમારા ફોનના તાજેતરના ફોટા, મીડિયા અને નોટિફિકેશન જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા છોડી દો</translation>
 <translation id="2509468283778169019">CAPS LOCK ચાલુ છે</translation>
@@ -605,6 +606,7 @@
 <translation id="3509391053705095206">ફોન શોધી શકતા નથી. ખાતરી કરો કે તમારા ફોનનું બ્લૂટૂથ ચાલુ છે.</translation>
 <translation id="3510164367642747937">માઉસ કર્સરને હાઇલાઇટ કરો</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
+<translation id="3517037892157925473">છેલ્લે કાર્યો અપડેટ કર્યાનો સમય: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{1 મિનિટની અંદર ડિવાઇસ અપડેટ કરો}one{# મિનિટની અંદર ડિવાઇસ અપડેટ કરો}other{# મિનિટની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="3522979239100719575">ઉપલબ્ધ પ્રોફાઇલ શોધી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="3526440770046466733">લિંકને નવા ટૅબમાં ખોલો અને વર્તમાન ટૅબમાં રહો</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5536723544185013515">તાજેતરની ઍપ, તાજેતરની બધી ઍપ ઍક્સેસ કરવા માટે ડાબી કે જમણી ઍરો કી વડે નૅવિગેટ કરો</translation>
 <translation id="553675580533261935">સત્રથી બહાર નીકળી રહ્યાં છે</translation>
 <translation id="5537725057119320332">કાસ્ટ કરો</translation>
+<translation id="554017492391497564">પૂર્ણ તરીકે માર્ક કરી શક્યા નથી.</translation>
 <translation id="5546397813406633847">વપરાશકર્તાને રિકવર કરો</translation>
 <translation id="554893713779400387">શ્રુતલેખન ટૉગલ કરો</translation>
 <translation id="5550417424894892620">ફાઇલોને <ph name="HOLDING_SPACE_TITLE" />માં ઉમેરવા માટે તેને ડેસ્કટૉપ પર ડ્રૉપ કરો. તમે ડેસ્કટૉપ પર ફાઇલો ઉમેરી શકતા નથી.</translation>
@@ -1338,6 +1341,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">ઓછી બૅટરી. બૅટરી સેવર ચાલુ કર્યું.</translation>
 <translation id="6247728804802644171">નોટિફિકેશન ખોલો</translation>
+<translation id="6249795363855770621">પૂર્ણ તરીકે માર્ક કરી શક્યા નથી. જ્યારે ઑનલાઇન થાઓ, ત્યારે ફરી પ્રયાસ કરો.</translation>
 <translation id="6254629735336163724">આડા પર લૉક કરેલું છે</translation>
 <translation id="6259254695169772643">પસંદ કરવા માટે તમારા સ્ટાઇલસનો ઉપયોગ કરો</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: સક્રિય કરી રહ્યું છે...</translation>
@@ -1498,6 +1502,7 @@
 <translation id="6896758677409633944">કૉપિ કરો</translation>
 <translation id="6912841030378044227">ઍડ્રેસ બાર પર ફોકસ કરો</translation>
 <translation id="6912901278692845878">ઝડપી ટુર</translation>
+<translation id="6917259695595127329">છેલ્લે કાર્યો અપડેટ કર્યાનો સમય: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">તમારું સ્માર્ટ કાર્ડ ઓળખી શક્યાં નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="692135145298539227">કાઢી નાખો</translation>
 <translation id="6929081673585394903">નિયંત્રણો બતાવો</translation>

@@ -134,7 +134,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="1696555181932908973">Je kunt andere manieren proberen om door te gaan op <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Instellingen voor donker thema wijzigen?</translation>
 <translation id="1702907158640575240">Beheerde browser</translation>
-<translation id="1710099199314114079">Tabbladen schakelen of sluiten</translation>
+<translation id="1710099199314114079">Tabbladen wisselen of sluiten</translation>
 <translation id="1718835860248848330">Afgelopen uur</translation>
 <translation id="1724977129262658800">Ontgrendel om je wachtwoord te bewerken</translation>
 <translation id="1726477445370128854">Je kunt sneller browsen en zoeken als Chrome pagina's vooraf laadt waarvan Chrome denkt dat je ze misschien gaat bezoeken</translation>
@@ -635,9 +635,9 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="4461614516424362539">Als je een ander apparaat koppelt via een QR-code, kan het apparaat deze telefoon gebruiken als beveiligingssleutel. Als je het verwijdert, moet je een QR-code scannen om het opnieuw te koppelen.</translation>
 <translation id="4478161224666880173">Je kunt je <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-account gebruiken op deze site. Als je wilt doorgaan, log je in op <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> installeren voor Chrome…</translation>
+<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Bookmark opgeslagen in <ph name="FOLDER_NAME" />. Deze wordt alleen opgeslagen op dit apparaat.}other{Bookmarks opgeslagen in <ph name="FOLDER_NAME" />. Deze worden alleen opgeslagen op dit apparaat.}}</translation>
 <translation id="4484496141267039529">Geen verbinding. Probeer het later opnieuw.</translation>
 <translation id="4487967297491345095">Alle app-gegevens voor Chrome worden definitief verwijderd. Dit omvat alle bestanden, instellingen, accounts, databases, enzovoort.</translation>
-<translation id="4491323382106587961">Kies een account. Op dit moment geselecteerd: <ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">Wachtwoord opslaan is aangezet door je beheerder</translation>
 <translation id="4508528996305412043">Feedkaartmenu is geopend</translation>
 <translation id="4509501256689523862">Of een advertentie wordt gepersonaliseerd terwijl je browst, is afhankelijk van deze instelling, <ph name="BEGIN_LINK_1" />advertentieonderwerpen<ph name="END_LINK_1" />, je <ph name="BEGIN_LINK_2" />cookie-instellingen<ph name="END_LINK_2" /> en of de site die je bekijkt advertenties personaliseert.</translation>
@@ -855,6 +855,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="557018954714092179">Nieuwe map maken</translation>
 <translation id="5578795271662203820">Zoeken op <ph name="SEARCH_ENGINE" /> naar afbeelding</translation>
 <translation id="5581519193887989363">Je kunt altijd in de <ph name="BEGIN_LINK1" />instellingen<ph name="END_LINK1" /> bepalen wat je wilt synchroniseren.</translation>
+<translation id="558429399979870715">Koppel Chrome en andere Google-services als je wilt dat ze gegevens met elkaar delen</translation>
 <translation id="5590372121997663538">Deze computer onthouden</translation>
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="5599455543593328020">Incognitomodus</translation>
@@ -884,6 +885,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="571930967925877633">Je bookmarks, geschiedenis en andere Chrome-gegevens worden niet meer gesynchroniseerd met je Google-account</translation>
 <translation id="572328651809341494">Recente tabbladen</translation>
 <translation id="5726692708398506830">Alles op de pagina vergroten</translation>
+<translation id="5728072125198221967">Gekoppelde Google-services</translation>
 <translation id="5744751019568455640">Dit zijn de stemmen die je kunt kiezen om webpagina's voor te lezen. Als je deze stem leuk vindt en wilt dat ik deze blijf gebruiken, tik je op de naam van de stem.</translation>
 <translation id="5748802427693696783">Overgeschakeld naar standaardtabbladen</translation>
 <translation id="5749068826913805084">Chrome heeft toegang tot de opslag nodig om deze bestanden te kunnen downloaden.</translation>
@@ -1167,6 +1169,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7063006564040364415">Kan geen verbinding maken met synchronisatieserver.</translation>
 <translation id="7071521146534760487">Account beheren</translation>
 <translation id="707155805709242880">Kies hieronder wat je wilt synchroniseren</translation>
+<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Bookmark opgeslagen in <ph name="FOLDER_NAME" /> in je account <ph name="ACCOUNT_EMAIL" />.}other{Bookmarks opgeslagen in <ph name="FOLDER_NAME" /> in je account <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD-kaart</translation>
 <translation id="7080806333218412752">Stuurt URL's naar Safe Browsing om deze te checken. Stuurt ook een klein gedeelte pagina's, downloads, extensie-activiteit en systeeminformatie om nieuwe dreigingen te kunnen detecteren. Koppelt deze gegevens tijdelijk aan je Google-account als je bent ingelogd om je te beschermen binnen de Google-apps.</translation>
 <translation id="7085332316435785646">Kies of je de Chrome-geschiedenis wilt opnemen voor meer gepersonaliseerde functies in Google-services</translation>
@@ -1352,6 +1355,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7947953824732555851">Accepteren en inloggen</translation>
 <translation id="7951102827450076904">Gedownloade pdf's altijd openen</translation>
 <translation id="7957413488482743710">Een virtuele kaart verbergt je werkelijke kaart om je te beschermen tegen potentiële fraude. <ph name="BEGIN_LINK1" />Meer informatie over virtuele kaarten<ph name="END_LINK1" /></translation>
+<translation id="7959485987650214982">Tabbladen op dit apparaat</translation>
 <translation id="7960972236129063347">Terugknop voor pagina-inzichten</translation>
 <translation id="7961926449547174351">Je hebt Opslagtoegang uitgezet. Ga naar Instellingen om deze aan te zetten.</translation>
 <translation id="7963646190083259054">Leverancier:</translation>
@@ -1434,6 +1438,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8310344678080805313">Standaardtabbladen</translation>
 <translation id="831192587911042850">Hiermee voeg je de huidige website toe aan de lijst met websites die je volgt.</translation>
 <translation id="8333340769932050274">Je kunt onderwerpen blokkeren die je niet wilt delen met sites. Chrome verwijdert ook automatisch onderwerpen die ouder zijn dan 4 weken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="8336984817750547763">Neem de Chrome-geschiedenis op als je deze wilt toevoegen aan Web- en app-activiteit in je Google-account</translation>
 <translation id="834313815369870491">Sites nooit vertalen</translation>
 <translation id="8348430946834215779">Gebruik waar mogelijk HTTPS en krijg een waarschuwing voordat er sites worden geladen die dit niet ondersteunen</translation>
 <translation id="8354977102499939946">Zoek snel met je stem. Je kunt deze snelkoppeling bewerken via Instellingen.</translation>
@@ -1579,6 +1584,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="9081543426177426948">Sites die je bezoekt, worden niet opgeslagen in de incognitomodus</translation>
 <translation id="9086302186042011942">Synchroniseren</translation>
 <translation id="9086455579313502267">Geen toegang tot het netwerk</translation>
+<translation id="909756639352028172">Voor de meest gepersonaliseerde functionaliteit neem je Chrome op in Web- en app-activiteit en gekoppelde Google-services</translation>
 <translation id="9099220545925418560">Gebaseerd op je browsegeschiedenis. Deze instelling staat uit.</translation>
 <translation id="9100610230175265781">Wachtwoordzin vereist</translation>
 <translation id="9101137867221042551">Beheer</translation>

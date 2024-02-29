@@ -231,7 +231,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1410941016594047814">Kuverta za vabilo</translation>
 <translation id="1413809658975081374">Napaka zasebnosti</translation>
 <translation id="1414134146594747368">Predšolska vzgoja</translation>
-<translation id="141826476809826269">Konec pridobljenega besedila</translation>
 <translation id="1418611192881166179">Medtem ko Chrome posodablja to funkcijo, lahko spletna mesta začasno uporabljajo piškotke tretjih oseb, razen če jih blokirate v nastavitvah.</translation>
 <translation id="1419305130220238697">Gumb za upravljanje prenosov v Chromu, aktivirajte, če želite upravljati datoteke, ki ste jih prenesli v Chromu</translation>
 <translation id="1422930527989633628">Lahko zahteva odkrivanje naprav Bluetooth v bližini.</translation>
@@ -1322,6 +1321,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3542628208405253498">Slika na kartici</translation>
 <translation id="3542768452570884558">Odpri povezavo v novem oknu</translation>
 <translation id="3547746132308051926">20 x 24 palcev</translation>
+<translation id="3552155506104542239">Opozorilo: Ta pravilnik je v sporu s pravilnikom <ph name="POLICY_NAME" /> in ne bo vplival na aplikacije za Android. Ta pravilnik drugače deluje, kot je predvideno.</translation>
 <translation id="3552297013052089404">Neserifna pisava</translation>
 <translation id="3558573058928565255">Dnevni čas</translation>
 <translation id="355995771319966853">Razveljavi samodejno izpolnjevanje</translation>
@@ -1869,6 +1869,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="46128681529823442">Nogometna oprema</translation>
 <translation id="4619564267100705184">Potrditev identitete</translation>
 <translation id="4622292761762557753">Vseeno prenesi</translation>
+<translation id="4622647778991854660">Omogočite obvestila v središču za obvestila. Odprite »<ph name="LINK" />«.</translation>
 <translation id="4627675673814409125">Tega pravilnika ni mogoče nastaviti na ravni profila v Chromu in bo prezrt.</translation>
 <translation id="4628678854894591460">Počitniške ponudbe</translation>
 <translation id="4628948037717959914">Fotografija</translation>
@@ -3069,7 +3070,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6978121630131642226">Iskalniki</translation>
 <translation id="6978236010531171013">Vseeno deli</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Začetek pridobljenega besedila</translation>
 <translation id="6979440798594660689">Izklop zvoka (privzeto)</translation>
 <translation id="6987806006823772670">Envelope (Coated)</translation>
 <translation id="6989763994942163495">Prikaži dodatne nastavitve ...</translation>
@@ -3201,6 +3201,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7234112195906418665">Potovanja in potniški promet</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % dokončano | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Darila in izdelki za posebne priložnosti</translation>
+<translation id="7237454422623102448">Sistemske nastavitve</translation>
 <translation id="7237492777898608035">Tega sporočila ne kaži več za to spletno mesto</translation>
 <translation id="7240120331469437312">Nadomestno ime subjekta potrdila</translation>
 <translation id="7241863998525879494">Kaj lahko pričakujete</translation>

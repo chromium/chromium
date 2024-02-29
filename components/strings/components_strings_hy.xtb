@@ -235,7 +235,6 @@
 <translation id="1410941016594047814">Envelope Invite</translation>
 <translation id="1413809658975081374">Գաղտնիության սխալ</translation>
 <translation id="1414134146594747368">Նախադպրոցական կրթություն</translation>
-<translation id="141826476809826269">Արտահանվող տեքստի ավարտ</translation>
 <translation id="1418611192881166179">Քանի դեռ Chrome-ը թարմացնում է այս գործառույթը, կայքերը կարող են ժամանակավորապես օգտագործել երրորդ կողմի քուքիներ, մինչև որ չարգելափակեք դրանք կարգավորումներում։</translation>
 <translation id="1419305130220238697">«Կառավարել ներբեռնումները Chrome-ում» կոճակ․ ակտիվացրեք՝ Chrome-ում ձեր ներբեռնած ֆայլերը կառավարելու համար</translation>
 <translation id="1422930527989633628">Կարող է հայցել մոտակա Bluetooth սարքերը հայտնաբերելու թույլտվություն</translation>
@@ -1327,6 +1326,7 @@
 <translation id="3542628208405253498">Քարտի պատկեր</translation>
 <translation id="3542768452570884558">Բացել հղումը նոր պատուհանում</translation>
 <translation id="3547746132308051926">20 x 24 դյույմ</translation>
+<translation id="3552155506104542239">Նախազգուշացում. այս կանոնը հակասում է <ph name="POLICY_NAME" /> կանոնին և կիրառելի չէ Android-ի համար հավելվածների համար։ Այլ դեպքերում այս կանոնը պատշաճ կերպով աշխատում է։</translation>
 <translation id="3552297013052089404">Sans-serif տառատեսակ</translation>
 <translation id="3558573058928565255">Ցերեկ</translation>
 <translation id="355995771319966853">Հետարկել ինքնալրացումը</translation>
@@ -1876,6 +1876,7 @@
 <translation id="46128681529823442">Ֆուտբոլի պարագաներ</translation>
 <translation id="4619564267100705184">Հաստատեք ձեր ինքնությունը</translation>
 <translation id="4622292761762557753">Միևնույն է տեղափոխել</translation>
+<translation id="4622647778991854660">Միացնել ծանուցումները Ծանուցումների կենտրոնում։ Բացել <ph name="LINK" />։</translation>
 <translation id="4627675673814409125">Այս կանոնը չի կարող սահմանվել Chrome-ի պրոֆիլի մակարդակում, և այն կանտեսվի։</translation>
 <translation id="4628678854894591460">Արձակուրդային առաջարկներ</translation>
 <translation id="4628948037717959914">Լուսանկար</translation>
@@ -3078,7 +3079,6 @@
 <translation id="6978121630131642226">Որոնման համակարգեր</translation>
 <translation id="6978236010531171013">Կիսվել</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Արտահանվող տեքստի սկիզբ</translation>
 <translation id="6979440798594660689">Անձայն (կանխադրված)</translation>
 <translation id="6987806006823772670">Ծրար (կավճապատ)</translation>
 <translation id="6989763994942163495">Ցույց տալ լրացուցիչ կարգավորումները…</translation>
@@ -3210,6 +3210,7 @@
 <translation id="7234112195906418665">Ուղևորություններ և փոխադրումներ</translation>
 <translation id="7236417832106250253">Կատարված է <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Նվերներ և հատուկ միջոցառումների իրեր</translation>
+<translation id="7237454422623102448">Համակարգի կարգավորումները</translation>
 <translation id="7237492777898608035">Այլևս ցույց չտալ այս հաղորդագրությունն այս կայքի համար</translation>
 <translation id="7240120331469437312">Վկայագրի սուբյեկտի այլընտրանքային անունը</translation>
 <translation id="7241863998525879494">Ինչ ակնկալել</translation>

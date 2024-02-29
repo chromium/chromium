@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">Padėjėjas</translation>
 <translation id="1954818433534793392">pastatas</translation>
 <translation id="1962550982027027473">Būtinas numatytasis APN</translation>
+<translation id="1967860190218310525">Sukurti naują APN</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">„Google“ profilio nuotrauka</translation>
 <translation id="1979103255016296513">Vėluojama pakeisti slaptažodį</translation>
@@ -473,7 +474,6 @@
 <translation id="4046123991198612571">Kitas takelis</translation>
 <translation id="404928562651467259">ĮSPĖJIMAS</translation>
 <translation id="4054683689023980771">Atsisiunčiamas vaizdas</translation>
-<translation id="4060260348856573701">Naujas APN</translation>
 <translation id="4063039537646912479">šviesiai mėlynos spalvos</translation>
 <translation id="4093865285251893588">Profilio nuotrauka</translation>
 <translation id="409427325554347132">Išsaugoti išsamią testo informaciją</translation>
@@ -981,6 +981,7 @@
 <translation id="7144954474087165241">pagoda</translation>
 <translation id="714876143603641390">LAN ryšys</translation>
 <translation id="7154020516215182599">Pateikite atsiliepimą arba aprašykite problemą. Jei įmanoma, įtraukite problemos atkūrimo veiksmus.</translation>
+<translation id="7155037718620478619">Atrasti daugiau APN</translation>
 <translation id="7155171745945906037">Esama nuotrauka iš fotoaparato arba failo</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7170236477717446850">Profilio nuotrauka</translation>

@@ -32,6 +32,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1516530951338665275">Google Chrome a besoin d'accéder au Bluetooth pour continuer 
  l'association. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="155168855724261758">Personnaliser Chrome</translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
 <translation id="1583073672411044740">L'utilisateur <ph name="EXISTING_USER" /> est déjà connecté à ce profil Chrome. Cela va créer un profil Chrome pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Votre webcam est en cours d'utilisation dans Google Chrome.</translation>
@@ -71,6 +72,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2121284319307530122">Relancer et mettre à jour &amp;Chrome</translation>
 <translation id="2123055963409958220">Aidez-nous à améliorer Chrome en nous signalant vos <ph name="BEGIN_LINK" />paramètres actuels<ph name="END_LINK" /></translation>
 <translation id="2126108037660393668">Échec de validation du fichier téléchargé.</translation>
+<translation id="2128411189117340671">Gérer les profils Chrome</translation>
 <translation id="2130870084309816036">Impossible de se connecter à Internet. Si vous utilisez un pare-feu, veuillez ajouter <ph name="PRODUCT_EXE_NAME" /> à la liste d'autorisation.</translation>
 <translation id="2131230230468101642">Pour protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt s'ils datent de plus de quatre semaines. Au fil de votre navigation, un centre d'intérêt peut réapparaître dans la liste. Vous pouvez aussi supprimer des centres d'intérêt si vous ne souhaitez pas que Chrome les prenne en compte.</translation>
 <translation id="2139300032719313227">Redémarrer Chrome OS</translation>
@@ -424,6 +426,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="7917876797003313048">Vous pouvez gérer les comptes Google auxquels vous êtes connecté. Ils vous permettent d'accéder au navigateur Chrome, au Play Store, à Gmail, etc. Pour ajouter le compte d'une autre personne, comme un membre de votre famille, ajoutez un nouvel utilisateur à votre <ph name="DEVICE_TYPE" /> à la place. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome a bloqué ce téléchargement, car le fichier est trompeur et risque d'apporter des modifications inattendues à votre appareil</translation>
 <translation id="7951272445806340501">Redémarrez ChromeOS Flex pour appliquer la mise à jour.</translation>
+<translation id="7959172989483770734">Gérer les profils Chrome</translation>
 <translation id="7962368738413920945">Les sites fonctionneront probablement comme prévu, mais ne se souviendront pas de vous une fois que vous aurez fermé toutes les fenêtres Chrome</translation>
 <translation id="7962410387636238736">Cet ordinateur ne recevra plus les mises à jour de Google Chrome, car la compatibilité n'est plus assurée sur Windows XP et Windows Vista</translation>
 <translation id="8005666035647241369">Dans le Gestionnaire de mots de passe Google sur cet appareil</translation>
@@ -431,6 +434,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8009904340233602924">Utiliser Chrome sans compte</translation>
 <translation id="8013993649590906847">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour nous permettre de créer des descriptions, les images sont envoyées à Google.</translation>
 <translation id="8019103195866286235">Cette extension peut présenter des risques, car son développeur a annulé sa publication. Supprimez-la de Chrome pour qu'elle ne puisse plus voir ni modifier vos données (y compris vos informations personnelles) sur les sites que vous consultez.</translation>
+<translation id="8031641407207794385">Personnaliser Chrome</translation>
 <translation id="80471789339884597">Merci d'avoir installé notre produit. Vous devez redémarrer tous vos navigateurs avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Autres profils Chrome</translation>

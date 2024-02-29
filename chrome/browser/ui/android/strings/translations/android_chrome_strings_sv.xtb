@@ -636,9 +636,9 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="4461614516424362539">När en annan enhet har länkats med QR-kod kan den enheten använda telefonen som säkerhetsnyckel. Om du tar bort länken måste du skanna en QR-kod om du vill länka enheten igen.</translation>
 <translation id="4478161224666880173">Du kan använda ditt <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-konto på den här webbplatsen. Logga in på <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> om du vill fortsätta.</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> installeras i Chrome …</translation>
+<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Bokmärket har sparats i <ph name="FOLDER_NAME" />. Det är bara sparat på den här enheten.}other{Bokmärkena har sparats i <ph name="FOLDER_NAME" />. De är bara sparade på den här enheten.}}</translation>
 <translation id="4484496141267039529">Ingen anslutning. Försök igen senare.</translation>
 <translation id="4487967297491345095">All appdata i Chrome raderas permanent. Detta omfattar alla filer, inställningar, konton, databaser osv.</translation>
-<translation id="4491323382106587961">Välj ett konto. <ph name="EMAIL" /> är markerad just nu.</translation>
 <translation id="4494806687727322324">Funktionen för att spara lösenord har aktiverats av administratören</translation>
 <translation id="4508528996305412043">Menyn med flödeskort är öppen</translation>
 <translation id="4509501256689523862">Huruvida annonser som visas när du surfar anpassas eller inte beror på den här inställningen, <ph name="BEGIN_LINK_1" />annonsämnen<ph name="END_LINK_1" />, dina <ph name="BEGIN_LINK_2" />cookieinställningar<ph name="END_LINK_2" /> och om webbplatsen du besöker anpassar annonser.</translation>
@@ -856,6 +856,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="557018954714092179">Skapa ny mapp</translation>
 <translation id="5578795271662203820">Sök på <ph name="SEARCH_ENGINE" /> efter denna bild</translation>
 <translation id="5581519193887989363">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK1" />inställningarna<ph name="END_LINK1" />.</translation>
+<translation id="558429399979870715">Länka Chrome och andra tjänster från Google om du vill att de ska dela data med varandra</translation>
 <translation id="5590372121997663538">Kom ihåg den här datorn</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5599455543593328020">Inkognitoläge</translation>
@@ -885,6 +886,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="571930967925877633">Bokmärken, historik och annan data i Chrome synkroniseras inte längre med ditt Google-konto</translation>
 <translation id="572328651809341494">Senaste flikarna</translation>
 <translation id="5726692708398506830">Gör allt på sidan större</translation>
+<translation id="5728072125198221967">Länkade Google-tjänster</translation>
 <translation id="5744751019568455640">Du kan välja en av de här rösterna till att läsa upp dina webbsidor. Om du gillar den här rösten och vill att jag ska fortsätta använda den kan du trycka på röstens namn.</translation>
 <translation id="5748802427693696783">Bytte till standardflikar</translation>
 <translation id="5749068826913805084">Chrome måste ha åtkomst till lagringsutrymmet om det ska gå att ladda ned filer.</translation>
@@ -1164,9 +1166,11 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7037830628447527439">Logga in i Chrome med ditt Google-konto</translation>
 <translation id="7054588988317389591">Vill du få bildbeskrivningar?</translation>
 <translation id="7055152154916055070">Omdirigeringen blockerades:</translation>
+<translation id="7057969023583258980">Öppna hela Chrome-historiken</translation>
 <translation id="7063006564040364415">Det gick inte att ansluta till synkroniseringsservern.</translation>
 <translation id="7071521146534760487">Hantera konto</translation>
 <translation id="707155805709242880">Välj vad som ska synkroniseras nedan</translation>
+<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Bokmärket har sparats i <ph name="FOLDER_NAME" /> i ditt konto, <ph name="ACCOUNT_EMAIL" />.}other{Bokmärkena har sparats i <ph name="FOLDER_NAME" /> i ditt konto, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD-kort</translation>
 <translation id="7080806333218412752">Webbadresser skickas till Säker webbsökning för kontroll. Ett litet urval av sidor, nedladdning, tilläggsaktivitet och systeminformation skickas även för att upptäcka nya hot. Denna data länkas tillfälligt till Google-kontot när du loggar in för att skydda dig i Googles appar.</translation>
 <translation id="7085332316435785646">Välj om du vill inkludera Chrome-historiken och få en mer anpassad upplevelse i Googles tjänster</translation>
@@ -1434,6 +1438,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8310344678080805313">Standardflikar</translation>
 <translation id="831192587911042850">Lägger till den aktuella webbplatsen i listan med webbplatser du följer.</translation>
 <translation id="8333340769932050274">Du kan blockera ämnen som du inte vill dela med webbplatser. I Chrome raderas även ämnen som är äldre än fyra veckor automatiskt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="8336984817750547763">Inkludera Chrome-historik om du vill lägga till den i webb- och appaktiviteten i Google-kontot</translation>
 <translation id="834313815369870491">Översätt aldrig webbplatser</translation>
 <translation id="8348430946834215779">Använd HTTPS när det är möjligt och få en varning innan webbplatser som saknar stöd för HTTPS läses in</translation>
 <translation id="8354977102499939946">Gör en röstsökning snabbt. Öppna inställningarna om du vill ändra genvägen.</translation>
@@ -1579,6 +1584,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="9081543426177426948">Webbplatser du besöker sparas inte i inkognitoläget</translation>
 <translation id="9086302186042011942">Synkroniserar</translation>
 <translation id="9086455579313502267">Det går inte att ansluta till nätverket</translation>
+<translation id="909756639352028172">Få en så anpassad upplevelse som möjligt genom att inkludera Chrome i webb- och appaktiviteten och dina länkade Google-tjänster</translation>
 <translation id="9099220545925418560">Baserat på din webbhistorik. Inställningen är inaktiverad.</translation>
 <translation id="9100610230175265781">Lösenfras krävs</translation>
 <translation id="9101137867221042551">Hantering</translation>

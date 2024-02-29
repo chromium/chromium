@@ -124,7 +124,7 @@
 <translation id="1605658421715042784">Copia immagine</translation>
 <translation id="1608337082864370066">Cerca l'immagine copiata</translation>
 <translation id="1612730193129642006">Mostra griglia schede</translation>
-<translation id="1620510694547887537">Fotocamera</translation>
+<translation id="1620510694547887537">Videocamera</translation>
 <translation id="1622717322707146952">Seleziona l'opzione "Aggiungi a Google Calendar" o "Aggiungi a Calendario Apple".</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> password riutilizzate</translation>
 <translation id="1641113438599504367">Navigazione sicura</translation>
@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">Ricerca Google</translation>
 <translation id="2252749852083403809">Salvataggio in Drive per <ph name="USER_EMAIL" /> in corso…</translation>
 <translation id="2256933947031277845">La tua organizzazione ti consente di accedere solo con determinati account.</translation>
+<translation id="2257594476751932246">Notizie personalizzate</translation>
 <translation id="2258326562203545455">{count,plural, =1{Puoi salvare il preferito nel tuo Account Google {email}.}other{Puoi salvare i preferiti nel tuo Account Google {email}.}}</translation>
 <translation id="225943865679747347">Codice di errore: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Aggiungi account</translation>

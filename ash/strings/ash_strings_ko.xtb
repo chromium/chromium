@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">키보드 레이아웃을 전환하려면 <ph name="KEYBOARD_SHORTCUT" />을(를) 누르세요.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> 미리보기입니다. 활성 데스크입니다.</translation>
 <translation id="2487915095798731898">가입</translation>
+<translation id="2499445554382787206">데스크 프로필 메뉴. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">고정키</translation>
 <translation id="2504454902900101003">휴대전화의 최근 사진, 미디어, 알림 보기 설정 닫기</translation>
 <translation id="2509468283778169019">CAPS LOCK이 켜져 있습니다.</translation>
@@ -605,6 +606,7 @@
 <translation id="3509391053705095206">휴대전화를 찾을 수 없습니다. 휴대전화에서 블루투스가 켜져 있는지 확인하세요.</translation>
 <translation id="3510164367642747937">마우스 커서 강조표시</translation>
 <translation id="3513798432020909783">계정 관리자: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">할 일 목록 최종 업데이트: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{1분 이내에 기기 업데이트}other{#분 이내에 기기 업데이트}}</translation>
 <translation id="3522979239100719575">사용 가능한 프로필을 찾는 중입니다. 몇 분 정도 소요될 수 있습니다</translation>
 <translation id="3526440770046466733">새 탭에서 링크 열기 및 현재 탭 유지</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5536723544185013515">최근 앱, 왼쪽 또는 오른쪽 화살표 키로 이동하여 최근 사용한 모든 앱에 액세스</translation>
 <translation id="553675580533261935">세션 종료</translation>
 <translation id="5537725057119320332">전송</translation>
+<translation id="554017492391497564">완료로 표시할 수 없습니다.</translation>
 <translation id="5546397813406633847">사용자 복구</translation>
 <translation id="554893713779400387">음성기록 전환</translation>
 <translation id="5550417424894892620">파일을 바탕화면에 드롭하여 <ph name="HOLDING_SPACE_TITLE" />에 추가세요. 바탕화면에는 파일을 추가할 수 없습니다.</translation>
@@ -1338,6 +1341,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">배터리가 부족합니다. 절전 모드가 사용 설정되었습니다.</translation>
 <translation id="6247728804802644171">알림 열기</translation>
+<translation id="6249795363855770621">완료로 표시할 수 없습니다. 온라인 상태일 때 다시 시도해 보세요.</translation>
 <translation id="6254629735336163724">가로로 잠김</translation>
 <translation id="6259254695169772643">스타일러스로 선택하세요.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: 활성화 중...</translation>
@@ -1498,6 +1502,7 @@
 <translation id="6896758677409633944">복사</translation>
 <translation id="6912841030378044227">주소 표시줄로 포커스 이동</translation>
 <translation id="6912901278692845878">빠르게 둘러보기</translation>
+<translation id="6917259695595127329">할 일 목록 최종 업데이트: <ph name="TIME" /></translation>
 <translation id="6919251195245069855">스마트 카드를 인식할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="692135145298539227">삭제</translation>
 <translation id="6929081673585394903">컨트롤 표시</translation>

@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954818433534793392">gusali</translation>
 <translation id="1962550982027027473">Kinakailangan ng default na APN</translation>
+<translation id="1967860190218310525">Gumawa ng bagong APN</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Larawan sa profile sa Google</translation>
 <translation id="1979103255016296513">Overdue na ang pagpapalit ng password</translation>
@@ -473,7 +474,6 @@
 <translation id="4046123991198612571">Susunod na track</translation>
 <translation id="404928562651467259">BABALA</translation>
 <translation id="4054683689023980771">Dina-download ang larawan</translation>
-<translation id="4060260348856573701">Bagong APN</translation>
 <translation id="4063039537646912479">light blue</translation>
 <translation id="4093865285251893588">Larawan sa profile</translation>
 <translation id="409427325554347132">I-save ang mga detalye ng pagsubok</translation>
@@ -981,6 +981,7 @@
 <translation id="7144954474087165241">pagoda</translation>
 <translation id="714876143603641390">Pagkakonekta sa Lan</translation>
 <translation id="7154020516215182599">Ibahagi ang iyong feedback o ilarawan ang isyu mo. Kung posible, magsama ng mga hakbang para gawan ng kopya ang iyong isyu.</translation>
+<translation id="7155037718620478619">Tumuklas pa ng mga APN</translation>
 <translation id="7155171745945906037">Kasalukuyang larawan mula sa camera o file</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">Larawan sa profile</translation>

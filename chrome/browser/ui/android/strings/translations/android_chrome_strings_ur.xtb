@@ -116,6 +116,7 @@
 <translation id="1558391695376153246">پوشیدگی ٹیبز بند کریں</translation>
 <translation id="1568636008098739136">اس صفحے کو سنیں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ٹچ کریں اور دبائے رکھیں۔</translation>
 <translation id="1571304935088121812">صارف نام کاپی کریں</translation>
+<translation id="1584648915421894279">‏ابھی، اس آلے پر محفوظ کردہ پاس ورڈز کو Chrome چینلز پر استعمال نہیں کیا جا سکتا۔ Chrome 125 کے بعد، آپ کے آلے پر Chrome اور <ph name="CHROME_CHANNEL" /> کے لیے محفوظ کردہ پاس ورڈز کو ضم کر دیا جائے گا اور انہیں دونوں ایپس میں استعمال کیا جا سکتا ہے۔</translation>
 <translation id="1592864538817356322">معیاری تحفظ:</translation>
 <translation id="1594635596540195766">مندرجہ ذیل کی فہرست میں تجویز کردہ <ph name="SUGGESTIONS_COUNT" /> آئٹمز۔</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> کا استعمال کریں</translation>
@@ -328,6 +329,7 @@
 <translation id="281504910091592009">‏اپنے <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> میں محفوظ کردہ پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
 <translation id="2827278682606527653">نصف اونچائی پر فیڈ کارڈ مینیو</translation>
 <translation id="2830783625999891985">کلپ بورڈ کے مواد پوشیدہ ہو گئے</translation>
+<translation id="2834884592945939112">‏ترتیبات، Google اکاؤنٹ میں خرابی</translation>
 <translation id="2838367486340230368">رازداری کی گائیڈ کی وضاحت سے متعلق معلومات آدھی اونچائی پر کھلی ہوئی ہے</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> کی پیروی ختم کی گئی</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> پوشیدگی ٹیب کو بند کر دیا جائے گا}other{<ph name="TAB_COUNT_MANY" /> پوشیدگی ٹیبز کو بند کر دیا جائے گا}}</translation>
@@ -638,7 +640,6 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{بُک مارک "<ph name="FOLDER_NAME" />" میں محفوظ کیا گیا۔ یہ صرف اس آلہ میں محفوظ ہے۔}other{بُک مارکس "<ph name="FOLDER_NAME" />" میں محفوظ کئے گئے۔ یہ صرف اس آلہ میں محفوظ ہے۔}}</translation>
 <translation id="4484496141267039529">کوئی کنکشن نہیں ہے۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="4487967297491345095">‏Chrome کا سبھی ایپ ڈیٹا مستقل طور پر حذف کر دیا جائے گا۔ اس میں سبھی فائلیں، ترتیبات، اکاؤنٹس، ڈیٹا بیسز وغیرہ شامل ہیں۔</translation>
-<translation id="4491323382106587961">ایک اکاؤنٹ منتخب کریں۔ فی الحال منتخب کردہ <ph name="EMAIL" /> ہے۔</translation>
 <translation id="4494806687727322324">آپ کے منتظم نے پاس ورڈ محفوظ کرنے کی سہولت کو آن کر دیا ہے</translation>
 <translation id="4508528996305412043">فیڈ کارڈ مینیو کھلا ہوا ہے</translation>
 <translation id="4509501256689523862">براؤز کرتے وقت، آپ جو اشتہار دیکھتے ہیں وہ ذاتی نوعیت کے ہیں یا نہیں اس کا انحصار اس ترتیب پر ہوتا ہے، <ph name="BEGIN_LINK_1" />اشتہار کے عنوانات<ph name="END_LINK_1" /> آپ کی<ph name="BEGIN_LINK_2" /> کوکی کی ترتیبات<ph name="END_LINK_2" /> اور آیا آپ جو سائٹ دیکھ رہے ہیں وہ اشتہارات کو ذاتی بناتی ہے یا نہیں۔</translation>
@@ -664,6 +665,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# منٹ پہلے}other{# منٹ پہلے}}</translation>
 <translation id="4587589328781138893">سائٹیں</translation>
 <translation id="4594952190837476234">یہ آف لائن صفحہ <ph name="CREATION_TIME" /> کا ہے اور آن لائن ورژن سے مختلف ہو سکتا ہے۔</translation>
+<translation id="4595805675102978678">‏Google اکاؤنٹ میں خرابی</translation>
 <translation id="4601095002996233687">مشتبہ ڈاؤن لوڈز کے لیے گہرائی سے اسکینز کرتا ہے۔</translation>
 <translation id="4609429330876432068">‏Chrome اور <ph name="CHROME_CHANNEL" /> کے لیے آپ کے محفوظ کردہ پاس ورڈز کی فہرستیں ضم کر دی گئیں۔ آپ اب بھی دونوں ایپس پر اپنے تمام محفوظ کردہ پاس ورڈز کو آٹو فل کر سکتے ہیں۔</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> کو کھولیں</translation>
@@ -1166,6 +1168,7 @@
 <translation id="7037830628447527439">‏اپنے Google اکاؤنٹ سے Chrome میں سائن ان کریں</translation>
 <translation id="7054588988317389591">تصویری تفصیلات حاصل کریں؟</translation>
 <translation id="7055152154916055070">ری ڈائریکٹ مسدود کیا گیا:</translation>
+<translation id="7057969023583258980">‏Chrome کی مکمل سرگزشت کھولیں</translation>
 <translation id="7063006564040364415">مطابقت پذیری سرور سے منسلک نہیں کیا جا سکا۔</translation>
 <translation id="7071521146534760487">اکاؤنٹ کا نظم کریں</translation>
 <translation id="707155805709242880">ذیل میں منتخب کریں کہ کس چیز کی مطابقت پذیری کرنی ہے</translation>
@@ -1355,6 +1358,7 @@
 <translation id="7947953824732555851">قبول و سائن ان کریں</translation>
 <translation id="7951102827450076904">‏ہمیشہ ڈاؤن لوڈ کردہ PDFs کھولیں</translation>
 <translation id="7957413488482743710">ورچوئل کارڈ آپ کے اصل کارڈ کو چھپاتا ہے تاکہ آپ کی ممکنہ دھوکہ دہی سے حفاظت کرنے میں مدد کر سکے۔ <ph name="BEGIN_LINK1" />ورچوئل کارڈز کے بارے میں مزید جانیں<ph name="END_LINK1" /></translation>
+<translation id="7959485987650214982">اس آلہ پر ٹیبز</translation>
 <translation id="7960972236129063347">صفحے کی بصیرتوں کا پیچھے جانے کا بٹن</translation>
 <translation id="7961926449547174351">آپ نے اسٹوریج تک رسائی کو غیر فعال کر دیا ہے، براہ کرم اسے فعال کرنے کے لیے ترتیبات پر جائیں۔</translation>
 <translation id="7963646190083259054">وینڈر:</translation>

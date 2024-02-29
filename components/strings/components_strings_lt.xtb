@@ -231,7 +231,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1410941016594047814">Kvietimo vokas</translation>
 <translation id="1413809658975081374">Privatumo klaida</translation>
 <translation id="1414134146594747368">Parengiamoji mokykla</translation>
-<translation id="141826476809826269">Išskirto teksto pabaiga</translation>
 <translation id="1418611192881166179">Kol „Chrome“ atnaujina šią funkciją, svetainės gali laikinai naudoti trečiųjų šalių slapukus, nebent juos užblokuosite nustatymuose.</translation>
 <translation id="1419305130220238697">Mygtukas „Tvarkyti atsisiuntimus naršyklėje „Chrome“; suaktyvinkite, kad galėtumėte tvarkyti failus, kuriuos atsisiuntėte naršyklėje „Chrome“</translation>
 <translation id="1422930527989633628">Gali būti prašoma atrasti netoliese esančius „Bluetooth“ įrenginius</translation>
@@ -1780,6 +1779,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">Kraštas</translation>
 <translation id="4397059608630092079">Visada patvirtinti, kai naudojamas automatinis pildymas</translation>
+<translation id="4397978002248035985">Banko svetainėje atidaromas iššokantysis langas, kuriame reikia patvirtinti</translation>
 <translation id="4406883609789734330">Subtitrai realiuoju laiku</translation>
 <translation id="4406896451731180161">paieškos rezultatai</translation>
 <translation id="4408413947728134509">Slapukai <ph name="NUM_COOKIES" /></translation>
@@ -2203,6 +2203,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumento ypatybės</translation>
 <translation id="528468243742722775">Baigti</translation>
+<translation id="5285468538058987167">Naudojant griežtą kliento autentiškumo patvirtinimą (angl. „Strong Customer Authentication“, SCA)</translation>
 <translation id="5285570108065881030">Rodyti visus išsaugotus slaptažodžius</translation>
 <translation id="5287456746628258573">Šioje svetainėje naudojama pasenusi saugos konfigūracija, todėl gali būti atskleista į šią svetainę siunčiama informacija (pvz., slaptažodžiai ar kredito kortelių numeriai).</translation>
 <translation id="5288108484102287882">Patvirtinant politikos vertes pateikta įspėjimų</translation>
@@ -3070,7 +3071,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6978121630131642226">Paieškos sistemos</translation>
 <translation id="6978236010531171013">Vis tiek bendrinti</translation>
 <translation id="6979158407327259162">„Google“ diskas</translation>
-<translation id="6979332652936434520">Išskirto teksto pradžia</translation>
 <translation id="6979440798594660689">Nutildyti (numatytasis)</translation>
 <translation id="6987806006823772670">Vokas (dengtas)</translation>
 <translation id="6989763994942163495">Rodyti išplėstinius nustatymus...</translation>

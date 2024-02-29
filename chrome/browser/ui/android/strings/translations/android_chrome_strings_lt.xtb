@@ -638,7 +638,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Žymė išsaugota aplanke „<ph name="FOLDER_NAME" />“. Ji išsaugoma tik šiame įrenginyje.}one{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Jos išsaugomos tik šiame įrenginyje.}few{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Jos išsaugomos tik šiame įrenginyje.}many{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Jos išsaugomos tik šiame įrenginyje.}other{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Jos išsaugomos tik šiame įrenginyje.}}</translation>
 <translation id="4484496141267039529">Nėra ryšio. Vėliau bandykite dar kartą.</translation>
 <translation id="4487967297491345095">Visi „Chrome“ duomenys bus ištrinti visam laikui. Tai apima visus failus, nustatymus, paskyras, duomenų bazes ir kt.</translation>
-<translation id="4491323382106587961">Pasirinkite paskyrą. Šiuo metu pasirinkta: <ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">Administratorius įjungė slaptažodžių išsaugojimo funkciją</translation>
 <translation id="4508528996305412043">Sklaidos kanalo kortelės meniu atidarytas</translation>
 <translation id="4509501256689523862">Tai, ar naršant rodomi suasmeninti skelbimai, priklauso nuo šio nustatymo, <ph name="BEGIN_LINK_1" />skelbimų temų<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />slapukų nustatymų<ph name="END_LINK_2" /> ir nuo to, ar svetainė, kurioje lankotės, teikia suasmenintus skelbimus</translation>
@@ -1356,6 +1355,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7947953824732555851">Sutikti ir prisij.</translation>
 <translation id="7951102827450076904">Visada atidaryti atsisiųstus PDF failus</translation>
 <translation id="7957413488482743710">Virtualioji kortelė slepia tikrąją kortelę, kad padėtų apsaugoti jus nuo galimų apgaulių. <ph name="BEGIN_LINK1" />Sužinokite daugiau apie virtualiąsias korteles<ph name="END_LINK1" /></translation>
+<translation id="7959485987650214982">Skirtukai šiame įrenginyje</translation>
 <translation id="7960972236129063347">Puslapio įžvalgų mygtukas „Atgal“</translation>
 <translation id="7961926449547174351">Išjungėte prieigą prie saugyklos. Eikite į „Nustatymų“ skiltį ir ją įgalinkite.</translation>
 <translation id="7963646190083259054">Paslaugos teikėjas:</translation>

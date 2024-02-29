@@ -152,6 +152,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="3702352323269013324">Meer informatie over advertentiepersonalisatie in Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Je beheerder vraagt je Chromium opnieuw te starten om deze update uit te voeren.}=1{Je beheerder vraagt je Chromium opnieuw te starten om deze update uit te voeren. Je incognitovenster kan niet opnieuw worden geopend.}other{Je beheerder vraagt je Chromium opnieuw te starten om deze update uit te voeren. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
 <translation id="3713809861844741608">Link openen op een nieuw Chromium-&amp;tabblad</translation>
+<translation id="3788675262216168505">Chromium-profielen beheren</translation>
 <translation id="378917192836375108">Met Chromium kun je klikken op een telefoonnummer op internet om dit via Skype te bellen!</translation>
 <translation id="3790262771324122253">Meer informatie over waarom Chromium bepaalde downloads blokkeert</translation>
 <translation id="379589255253486813">Chromium laat het je weten als je iets moet controleren</translation>
@@ -435,6 +436,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8555465886620020932">Servicefout: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium kan je wachtwoorden checken als je inlogt met je Google-account</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> De auteurs van Chromium. Alle rechten voorbehouden.</translation>
+<translation id="858822505990366713">Je Chromium aanpassen</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Sites kunnen informatie over je interesses in Chromium opslaan. Als je bijvoorbeeld een site bezoekt om schoenen voor een marathon te kopen, kan de site je interesse definiëren als 'deelname aan marathons'. Als je later een andere site bezoekt om je aan te melden voor een race, kan die site je een advertentie voor hardloopschoenen laten zien op basis van je interesses.</translation>
 <translation id="8619360774459241877">Chromium starten…</translation>
 <translation id="8621669128220841554">De installatie is mislukt wegens een onbekende fout. Download Chromium opnieuw.</translation>
@@ -452,8 +454,10 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8907580949721785412">Chromium probeert wachtwoorden te bekijken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="8931379085695076764">Chromium kan een schatting van je interesses maken op basis van je browsegeschiedenis van de afgelopen weken. Deze informatie blijft op je apparaat staan.</translation>
 <translation id="8941642502866065432">Kan Chromium niet updaten</translation>
+<translation id="895999862145835951">Je Chromium aanpassen</translation>
 <translation id="897581876605952338">Chromium Enterprise-logo</translation>
 <translation id="8986207147630327271">Je voegt een werkprofiel toe aan deze browser en geeft je beheerder alleen de controle over het werkprofiel.</translation>
+<translation id="8988036198400390003">Chromium-profielen beheren</translation>
 <translation id="9019929317751753759">We hebben de volgende extensie uitgezet die niet wordt vermeld in de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> en mogelijk zonder je medeweten is toegevoegd. We doen dit om Chromium veiliger te maken.</translation>
 <translation id="9022552996538154597">Inloggen bij Chromium</translation>
 <translation id="907832235989677238">Log in bij Chromium. Als je eenmalig wilt inloggen op een account, kun je <ph name="GUEST_LINK_BEGIN" />het apparaat gebruiken als gast<ph name="GUEST_LINK_END" />.</translation>

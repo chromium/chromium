@@ -15,6 +15,7 @@
 <translation id="1004590217607585595">Impostazioni di gestione delle app web</translation>
 <translation id="1006218396155867129">Non consente agli utenti che accedono da remoto di trasferire i file da e verso l'host remoto</translation>
 <translation id="1007149936182752368">Disabilita la modifica dei preferiti</translation>
+<translation id="1009336698423963085">Consenti schermo intero automatico su questi siti</translation>
 <translation id="1010151305531217567">Imposta il pulsante destro come pulsante principale del mouse</translation>
 <translation id="1011266755572744012">Specifica il numero massimo di fogli che l'utente può utilizzare per un singolo processo di stampa.
 
@@ -87,11 +88,6 @@ Se questo criterio viene attivato o se non viene configurato, la funzionalità d
 Se viene disattivato, la funzionalità di correzione automatica sulla tastiera fisica non sarà consentita.</translation>
 <translation id="1038725366103635282">Consenti il rilevamento condivisioni NetBIOS</translation>
 <translation id="1040446814317236570">Attiva la rimozione per gli URL PAC (https://)</translation>
-<translation id="1041719059374171202">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che non possono eseguire JavaScript.
-
-      Se il criterio non viene configurato, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="1043965859599437362">Questo criterio fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi proprietari.
 
 Ogni insieme nell'elenco di insiemi proprietari del browser deve soddisfare i requisiti di un insieme proprietario.
@@ -271,11 +267,6 @@ Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hard
 <translation id="1202216683470826356">Mostra schede nella pagina Nuova scheda</translation>
 <translation id="1204263402976895730">Stampanti aziendali attive</translation>
 <translation id="1207301487141109411">Impedisci la selezione degli avatar degli utenti da file system locale, fotocamera e profilo Google</translation>
-<translation id="1209065772997672966">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che possono aprire popup.
-
-      Se il criterio non viene configurato, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="1209096923317019235">Assegna le app come gestori predefiniti per le estensioni dei file specificate</translation>
 <translation id="120937472976628837">Segnala informazioni sulla ventola</translation>
 <translation id="1212233008927724662">Disattiva il caricamento lento di WebUI di accesso.</translation>
@@ -524,13 +515,6 @@ https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): questo valore è obsoleto a partire dalla versione M121. A partire dalla versione M121, i valori verranno trattati come EnabledBelowThreshold.
       </translation>
 <translation id="1434300053894025056">Disattiva controllo ortografico</translation>
-<translation id="1434743866147056474">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che non possono mostrare immagini.
-
-      Se il criterio non viene configurato, <ph name="DEFAULT_IMAGE_SETTING_ENABLED_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.
-
-       Tieni presente che in precedenza questo criterio è stato erroneamente abilitato su Android, ma questa funzionalità non è mai stata completamente supportata su Android.</translation>
 <translation id="1435493974546396517">Consente di stabilire in che modo <ph name="PRODUCT_NAME" /> mette a disposizione l'opzione Stampa come immagine su <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" /> per la stampa di PDF.
 
       Quando viene stampato un file PDF su <ph name="MS_WIN_NAME" /> o <ph name="MAC_OS_NAME" />, a volte per alcune stampanti è necessario rasterizzare i processi di stampa in un'immagine per poter ottenere un output corretto.
@@ -809,6 +793,13 @@ Se questo criterio non viene configurato, gli utenti potranno aggiungere eccezio
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="1675391557079742340">Attiva la codifica dei contenuti <ph name="ZSTANDARD_SHORTNAME" /> per la pubblicità nell'intestazione Accept-Encoding</translation>
+<translation id="1676025520543198552">Questo criterio è deprecato. Usa il criterio <ph name="GLS_POLICY_NAME" />. Ora in <ph name="PRODUCT_OS_NAME" /> è disponibile l'opzione di attivazione/disattivazione della posizione del sistema, che regola l'ambiente di <ph name="PRODUCT_OS_NAME" />. L'opzione di attivazione/disattivazione della posizione di <ph name="PRODUCT_OS_NAME" /> è disattivata e riflette lo stato della posizione di <ph name="PRODUCT_OS_NAME" />.
+
+A meno che il criterio <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> sia impostato su <ph name="BLOCK_GEOLOCATION_SETTING" />, l'impostazione <ph name="GLS_ENABLED" /> attiva i Servizi di geolocalizzazione di Google durante la configurazione iniziale. Se il criterio è impostato su <ph name="GLS_DISABLED" /> o se non è configurato, i servizi di geolocalizzazione rimangono disattivati durante la configurazione.
+
+Se il criterio è impostato su <ph name="BR_UNDER_USER_CONTROL" />, agli utenti viene chiesto se utilizzare o meno i Servizi di geolocalizzazione di Google. Se vengono attivati, le app <ph name="PRODUCT_OS_NAME" /> utilizzano i servizi per cercare la posizione del dispositivo e inviare dati anonimi sulla posizione a Google.
+
+Dopo la configurazione iniziale, gli utenti possono attivare o disattivare i Servizi di geolocalizzazione di Google.</translation>
 <translation id="1678137412645922426">Controlla l'uso di <ph name="AES_KL_NAME" /> per la crittografia dello spazio di archiviazione degli utenti, se è supportata</translation>
 <translation id="1682063842123336408">Spazio libero su disco (in GB) necessario per installare <ph name="PLUGIN_VM_NAME" />.
 
@@ -902,11 +893,6 @@ criterio era la versione 121. È stato rimosso nella versione 122.</translation>
       Nota: i valori del criterio devono essere specificati in percentuali da 0 a 100.</translation>
 <translation id="1733092875104864334">Non consentire la raccolta di log di testo WebRTC dai servizi Google</translation>
 <translation id="1733768596873041559">Reindirizza all'IdP SAML per impostazione predefinita (prima della versione 99 di <ph name="PRODUCT_NAME" /> è necessaria la conferma dell'utente)</translation>
-<translation id="1733939382419067578">La configurazione del criterio consente di impostare un elenco di pattern URL che specificano i siti che possono mostrare notifiche.
-
-      Se il criterio non viene configurato, <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="173503685261877709">Questo criterio fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi di siti web correlati.
 
 Questo criterio esegue l'override di<ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
@@ -1080,6 +1066,9 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="1858775210076906272">Configurazione precompilata Kerberos</translation>
 <translation id="1861206724856734193">Consente di configurare un elenco di regole per la prevenzione della fuga di dati.</translation>
 <translation id="1862267110714201519">Disattiva la funzionalità di finestre nascoste.</translation>
+<translation id="1865129144973895592">Questo criterio consente di riattivare temporaneamente un insieme di eventi della piattaforma deprecato e rimosso chiamato eventi Mutazione.
+Se questo criterio viene attivato, gli eventi Mutazione continueranno a essere attivati, anche se sono stati disattivati per impostazione predefinita per i normali utenti web. Se questo criterio viene disattivato o se non viene configurato, questi eventi potrebbero non essere attivati.
+Questo criterio è una soluzione alternativa temporanea e verrà rimosso nella versione M135.</translation>
 <translation id="1865417998205858223">Autorizzazioni chiave</translation>
 <translation id="1865867000796030567">Se il criterio viene impostato su Attivato, il valore della chiave manifest <ph name="REQUIRED_PLATFORM_VERSION" /> dell'app kiosk con avvio automatico senza ritardo viene utilizzato come prefisso di versione di destinazione con aggiornamento automatico.
 
@@ -1672,11 +1661,6 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
 
       Se il criterio è impostato su False o se non viene configurato, non viene visualizzato alcun pulsante.</translation>
 <translation id="2294382669900758280">Il video riprodotto nelle app Android non viene considerato, anche se la norma viene impostata su <ph name="TRUE" />.</translation>
-<translation id="2297792368307475351">La configurazione del criterio consente di impostare un elenco di pattern URL che specificano i siti che non possono usare l'autorizzazione di accesso dei siti agli appunti. Tutte le operazioni relative agli appunti nelle origini corrispondenti ai pattern non sono incluse. Ad esempio, gli utenti potranno ancora incollare usando scorciatoie da tastiera perché questa operazione non è controllata dall'autorizzazione di accesso dei siti agli appunti.
-
-      Se il criterio non viene configurato, <ph name="DEFAULT_CLIPBOARD_SETTING" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="2299220924812062390">Consente di specificare un elenco dei plug-in attivati</translation>
 <translation id="2299815818824242485">Non consentire ricerche inviate tramite proxy con una protezione maggiore</translation>
 <translation id="2303795211377219696">Attiva la Compilazione automatica per le carte di credito</translation>
@@ -1769,6 +1753,7 @@ Se il criterio viene impostato su disabled, gli utenti o le varianti <ph name="P
 <translation id="2373014700224092497">Consenti agli utenti di aggiungere account Kerberos</translation>
 <translation id="2376134474855349829">Disattiva la tastiera sullo schermo nella schermata di accesso e consenti all'utente di attivarla temporaneamente</translation>
 <translation id="2376151922689284770">Nome da mostrare nell'interfaccia utente del programma di installazione, ad esempio Happy VM. Se lo schema non viene configurato, verrà mostrato un nome di riserva, recuperato dalla prima voce (in ordine di visualizzazione) nel criterio BruschettaVMConfiguration, oppure un nome generico se non esiste un nome di riserva.</translation>
+<translation id="2377109572344699022">Controlla l'utilizzo dell'API Direct Sockets</translation>
 <translation id="2382672620906337383">Il valore JavaScript setTimeout() non verrà bloccato finché non viene raggiunta una soglia di nidificazione superiore.</translation>
 <translation id="2384233438419344179">Se il criterio è impostato su Attivato, gli elementi della pagina web che non provengono dal dominio presente nella barra degli indirizzi del browser non possono impostare i cookie. Se il criterio è impostato su Disattivato, tali elementi possono impostare i cookie e gli utenti non possono modificare l'impostazione.
 
@@ -1951,6 +1936,7 @@ Se il criterio non viene configurato, <ph name="POLICY_VALUE_VISIBLE" /> è la s
 <translation id="2521581787935130926">Mostra la scorciatoia per le app nella barra dei Preferiti</translation>
 <translation id="2522304491589804974">Configura la lista consentita per l'installazione delle estensioni</translation>
 <translation id="2523511232831599126">Attiva le scorciatoie di accessibilità nella schermata di accesso</translation>
+<translation id="252742292004421898">Consenti l'API Direct Sockets su questi siti</translation>
 <translation id="2529880111512635313">Configura l'elenco di estensioni e app con installazione imposta</translation>
 <translation id="253135976343875019">Ritardo avviso inattività in caso di utilizzo di CA</translation>
 <translation id="2535370400681639351">Se il criterio viene impostato su Attivato, le richieste di autenticazione Gnubby verranno trasferite al proxy tramite una connessione host remota.
@@ -2122,6 +2108,23 @@ Il sistema eseguirà una query sui record AAAA soltanto quando può essere conne
 <translation id="2673363037046384711">L'utente finale può attivare o disattivare la modalità ad alta efficienza.</translation>
 <translation id="2673968385134502798">Giochi</translation>
 <translation id="2678503605767349615">Certificati client a livello di dispositivo richiesti</translation>
+<translation id="2679980446318031955">Per motivi di sicurezza,
+l'API web <ph name="REQUEST_FULLSCREEN_API_NAME" />
+richiede che l'utente abbia eseguito un gesto precedentemente ("attivazione temporanea") o la chiamata all'API
+non andrà a buon fine. Le impostazioni personali degli utenti potrebbero consentire a determinate origini di chiamare
+questa API senza che l'utente abbia eseguito un gesto precedentemente, come descritto nella sezione
+<ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
+
+Questo criterio sostituisce le impostazioni personali degli utenti e consente alle origini corrispondenti di
+chiamare l'API senza che l'utente abbia eseguito un gesto precedentemente.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina
+https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
+
+Le origini che corrispondono a pattern di criteri sia bloccati sia consentiti verranno bloccate.
+Le origini non specificate dal criterio o dalle impostazioni utente richiederanno che l'utente abbia eseguito un gesto
+precedentemente per chiamare questa API.</translation>
 <translation id="268134026533587276">Schermata di blocco salvaschermo attivata.</translation>
 <translation id="268577405881275241">Attiva la funzione proxy di compressione dei dati</translation>
 <translation id="268695908564263739">Questo criterio attiva o disattiva l'impostazione della modalità ad alta efficienza. Questa impostazione fa sì che le schede vengano chiuse dopo un certo periodo di tempo in background per recuperare memoria.
@@ -2257,6 +2260,7 @@ Se questo criterio viene disattivato, gli utenti non possono aggiungere account 
 L'impostazione del valore "command_line" impedirà il caricamento delle estensioni dalla riga di comando.</translation>
 <translation id="2780840673734667062">Disattiva l'accesso con Account Google aggiuntivi</translation>
 <translation id="2784880732336446591">Cancella dati di navigazione all'uscita</translation>
+<translation id="2786117913267907931">Non consentire alle origini di usare Direct Sockets.</translation>
 <translation id="2787173078141616821">Segnala informazioni sullo stato di Android</translation>
 <translation id="2787774054174244402">L'impostazione del criterio su True impedisce agli utenti di scrivere su dispositivi di archiviazione esterni.
 
@@ -2523,6 +2527,7 @@ Gli utenti non possono eseguire l'override della selezione dell'amministratore. 
 Nota: questo criterio comporta il ritiro del criterio <ph name="ARC_GLS_POLICY_NAME" />.
 Inoltre, se questo criterio viene configurato, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> non influirà più sulla preferenza di posizione <ph name="ANDROID_NAME" /> su ChromeOS.</translation>
 <translation id="3010907817113180883">Frequenza del rilevamento dell'heartbeat dell'attività del dispositivo in millisecondi.</translation>
+<translation id="3016585641676676461">Blocca lo schermo intero automatico su questi siti</translation>
 <translation id="3017578958356048910">Il visualizzatore PDF può aggiungere annotazioni nei PDF</translation>
 <translation id="3020623128585817424">Disattiva il controllo del browser predefinito all'avvio</translation>
 <translation id="3020953534071988875">Se configuri questo criterio, l'autenticazione ambientale verrà attivata o disattivata per i profili Ospite e in modalità in incognito in <ph name="PRODUCT_NAME" />.
@@ -2669,6 +2674,8 @@ Questo criterio è stato pensato per essere temporaneo e verrà rimosso in futur
       Se un sito corrisponde a un pattern URL in questo criterio, i seguenti criteri non saranno presi in considerazione: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.</translation>
+<translation id="3112501357749061018">Un elenco di certificati TLS che <ph name="PRODUCT_NAME" /> deve considerare attendibili per l'autenticazione del server, con vincoli aggiunti al di fuori del certificato. Se non è presente alcun vincolo di un determinato tipo, è consentito qualsiasi nome di quel tipo.
+I certificati devono essere codificati in base64. È necessario specificare almeno un vincolo per ogni certificato.</translation>
 <translation id="3118552207903834734">Consente a un utente di configurare il nome host del suo dispositivo</translation>
 <translation id="3122082892722698079">Controlla l'utilizzo delle eccezioni per i contenuti non sicuri</translation>
 <translation id="3125472566440502628">Disattiva Seleziona per ascoltare</translation>
@@ -2781,22 +2788,10 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
 
           Il valore del criterio deve essere specificato in millisecondi.</translation>
 <translation id="3198385910521788907">Non visualizzare la schermata del sensore della presenza di persone durante l'accesso</translation>
-<translation id="3205649498518960697">Consente di impostare un elenco di pattern URL che specificano i siti autorizzati a visualizzare contenuti misti (ossia contenuti HTTP su siti HTTPS) bloccabili (ossia attivi) e per i quali gli aggiornamenti dei contenuti misti bloccabili facoltativi verranno disattivati.
-
-          Se questo criterio non viene impostato, i contenuti misti bloccabili verranno bloccati e quelli bloccabili facoltativi verranno aggiornati; inoltre, gli utenti potranno configurare eccezioni per consentire i contenuti misti per siti specifici.
-
-          Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="3205825995289802549">Ingrandisci la prima finestra del browser alla prima esecuzione</translation>
 <translation id="320607884987562184">Se il criterio viene impostato su 1, i siti web possono eseguire JavaScript. Se il criterio viene impostato su 2, JavaScript viene negato.
 
 Se non viene configurato, JavaScript è consentito, ma gli utenti possono modificare l'impostazione.</translation>
-<translation id="3206959584699016689">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che possono accedere ai sensori, come i sensori di movimento e di luce.
-
-      Se il criterio non viene configurato, <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      Se lo stesso pattern URL esiste sia in questo criterio sia nel criterio <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, quest'ultimo ha la priorità e l'accesso ai sensori di movimento o di luce verrà bloccato.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="3207821022126246451">WebRTC utilizzerà TCP nell'interfaccia pubblica e utilizzerà UDP solo se un proxy configurato lo supporta.</translation>
 <translation id="3207873329349672535">Questo criterio controlla se all'utente verrà presentata un'opzione, all'interno del menu di <ph name="PRODUCT_NAME" />, che gli consente di trasmettere contenuti ai dispositivi di trasmissione che non vengono visualizzati nel menu di <ph name="PRODUCT_NAME" />, usando il codice di accesso o il codice QR visualizzati sullo schermo dei dispositivi di trasmissione.
       Per impostazione predefinita, un utente deve reinserire il codice di accesso o riscansionare il codice QR per iniziare una sessione di trasmissione successiva, ma se il criterio <ph name="ACCESS_CODE_CAST_DEVICE_DURATION_POLICY_NAME" /> è stato impostato su un valore diverso da 0 (il valore predefinito è 0), il dispositivo di trasmissione rimarrà nell'elenco dei dispositivi di trasmissione disponibili fino alla scadenza del periodo di tempo specificato.
@@ -2892,6 +2887,7 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="3284094172359247914">Controlla l'utilizzo dell'API WebUSB</translation>
 <translation id="3286159327013237833">Attiva i clic automatici nella schermata di accesso</translation>
 <translation id="3288595667065905535">Canale di rilascio</translation>
+<translation id="3291940794983537008">Impostazioni per le funzionalità di IA generativa di DevTools</translation>
 <translation id="3294430356898755483">La configurazione del criterio consente agli amministratori di impostare un elenco di stampanti per i loro utenti. La selezione della stampante viene effettuata la prima volta che gli utenti provano a stampare.
 
       Se viene usato il criterio:
@@ -2934,6 +2930,7 @@ Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le ist
 
       Se il criterio non viene impostato, gli utenti possono scegliere l'immagine da usare come sfondo del desktop e della schermata di accesso.</translation>
 <translation id="3315324240256767419">Attiva la funzionalità di finestre nascoste.</translation>
+<translation id="3321099611644751329">Certificati TLS che <ph name="PRODUCT_NAME" /> deve considerare attendibili per l'autenticazione del server con vincoli</translation>
 <translation id="3323819750604111729">Abilita l'importazione dei preferiti alla prima esecuzione</translation>
 <translation id="332771718998993005">Consente di stabilire il nome pubblicizzato come destinazione di <ph name="PRODUCT_NAME" />.
 
@@ -3359,6 +3356,7 @@ Se il criterio non viene configurato, i dati di telemetria dei siti web non verr
           Si tratta di un criterio temporaneo di cui è prevista la rimozione in <ph name="PRODUCT_NAME" /> 107. Questo termine ultimo potrebbe essere esteso nel caso in cui le aziende dovessero averne bisogno.
           </translation>
 <translation id="3678069907945250643">Consenti l'accesso a Google Foto dall'app di personalizzazione</translation>
+<translation id="3680529017993214255">Attiva le funzionalità e invia dati per contribuire ad addestrare i modelli di IA</translation>
 <translation id="3685979383016152590">La configurazione del criterio consente di determinare quale criterio di accesso applicare per la configurazione collettiva delle stampanti, al fine di stabilire quali stampanti del criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> mettere a disposizione degli utenti.
 
       * Per l'opzione <ph name="PRINTERS_BLOCKLIST" /> (valore 0) viene usato il valore <ph name="PRINTERS_BULK_BLOCKLIST" /> per limitare l'accesso alle stampanti specificate.
@@ -3829,11 +3827,6 @@ Fino a Chrome 114, questo criterio richiedeva l'impostazione del criterio <ph na
 <translation id="4057442294431066708">Questo criterio consente di stabilire l'opzione della scorciatoia selezionata per la rimappatura degli eventi a
 F11/F12 nella pagina secondaria per rimappare i tasti. Queste impostazioni si applicano solo alle
 tastiere di ChromeOS e sono disattivate per impostazione predefinita se il criterio non viene configurato.</translation>
-<translation id="4061107397839125009">La configurazione del criterio consente di impostare un elenco di pattern URL che specificano i siti che non possono mostrare notifiche.
-
-      Se il criterio non viene configurato, <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="4061590579642538878">Segnala informazioni relative ai report sugli arresti anomali.</translation>
 <translation id="4062646759141042418">Attiva <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL.
 
@@ -4198,11 +4191,6 @@ Se viene disattivato, gli utenti non possono monitorare i loro pacchetti su <ph 
       In questo criterio sono consentiti soltanto i nomi host con etichetta singola e questo criterio si applica soltanto alle voci HSTS precaricate "statiche" (ad esempio <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). Questo criterio non impedisce gli upgrade HSTS per i server che hanno richiesto "in modo dinamico" tali upgrade usando un'intestazione della risposta <ph name="HSTS_HEADER_NAME" />.
 
       I nomi host indicati devono essere canonicalizzati: ogni IDN deve essere convertito nel relativo formato A-label e tutte le lettere ASCII devono essere minuscole. Questo criterio viene applicato soltanto ai nomi host con etichetta singola specificati e non ai relativi sottodomini.</translation>
-<translation id="4387922553629365459">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che non possono aprire popup.
-
-      Se il criterio non viene configurato, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="4389073105055031853">Consenti agli utenti di gestire tutti i certificati</translation>
 <translation id="4389091865841123886">Configura l'attestazione da remoto con meccanismo TPM.</translation>
 <translation id="4389113579547582722">Consenti la visualizzazione della promozione di valutazione dell'App Store</translation>
@@ -4227,15 +4215,6 @@ Questo criterio è stato rimosso nella versione M112.</translation>
 Se il criterio viene impostato su Disattivato, i file PDF vengono aperti con il plug-in di PDF, a meno che disattivato dagli utenti.
 
 Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene impostato, gli utenti possono scegliere se aprire o meno i file PDF esternamente.</translation>
-<translation id="4413453659814156568">Consente di configurare un elenco di pattern URL che specificano i siti autorizzati a eseguire JavaScript con il compilatore JIT (Just In Time) attivato.
-
-          Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.
-
-          Le eccezioni relative ai criteri di JIT di JavaScript verranno applicate soltanto sito per sito (eTLD+1). Un criterio impostato soltanto per sottodominio.sito.com non verrà applicato correttamente a sito.com o a sottodominio.sito.com, perché entrambi sono equivalenti allo stesso dominio eTLD+1 (sito.com) per il quale non esiste alcun criterio. In questo caso, il criterio deve essere impostato per sito.com per essere applicato correttamente sia a sito.com sia a sottodominio.sito.com.
-
-          Questo criterio viene applicato frame per frame e non si basa esclusivamente sull'URL di origine di primo livello, quindi, ad esempio, se sito-uno.com è presente nell'elenco del criterio <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />, ma tale sito carica un frame che contiene sito-due.com, sito-uno.com avrà attivato JIT di JavaScript, ma sito-due.com utilizzerà il criterio di <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, se configurato, o JIT di JavaScript sarà attivato per impostazione predefinita.
-
-          Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti JIT di JavaScript viene attivato per il sito.</translation>
 <translation id="4415603335307944578">Se questa norma è impostata su true o non è configurata, il browser mostrerà di nuovo la pagina di benvenuto al primo avvio successivo a un upgrade del sistema operativo.
 
       Se la norma è impostata su false, il browser non mostrerà di nuovo la pagina di benvenuto in occasione del primo avvio successivo a un upgrade del sistema operativo.</translation>
@@ -4405,6 +4384,17 @@ Questo criterio non ha effetto se viene attivato, lasciato vuoto o se non viene 
 
       Se il criterio non è impostato, l'utente può disattivare qualsiasi plug-in installato sul sistema.</translation>
 <translation id="4549695018986780856">Manifest v2 abilitato</translation>
+<translation id="4552929684628662264">L'API Direct Sockets consente la comunicazione con endpoint arbitrari che utilizzano TCP e UDP.
+Per informazioni dettagliate, visita la pagina https://github.com/WICG/direct-sockets.
+
+La configurazione del criterio consente di elencare i pattern URL che specificano i siti per cui è bloccato l'utilizzo di DirectSockets.
+Potrebbero essere inclusi app di Chrome, app web isolate e kiosk web; l'API non è mai disponibile sul web aperto.
+
+Se il criterio non viene configurato, <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato.
+
+I pattern URL non devono essere in conflitto con <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />. Nessun criterio ha la precedenza se un URL presenta corrispondenze con entrambi.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="4554651132977135445">Modalità di elaborazione loopback dei criteri relativi agli utenti</translation>
 <translation id="4554991346503872538">Non offrire mai la traduzione</translation>
 <translation id="4555850956567117258">Attivazione dell'attestazione da remoto per l'utente</translation>
@@ -4675,6 +4665,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente l'audio in formato mono è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
+<translation id="4757563299858487173">Disattiva le funzionalità</translation>
 <translation id="4767059955897420757">Se il criterio non viene configurato o se viene attivato, all'utente potrebbe essere mostrata la promozione dell'estensione fornitore di credenziali.
 Se viene disattivato, all'utente non viene mostrata la promozione dell'estensione fornitore di credenziali.</translation>
 <translation id="4768446404233019970">Attiva le suite di crittografia 3DES in TLS</translation>
@@ -4741,6 +4732,7 @@ Se il criterio viene impostato su False, verrà utilizzato il comportamento pred
        Se il criterio non viene impostato o se viene impostato su un elenco vuoto, gli avvisi potrebbero essere visualizzati su qualunque sito visitato dall'utente.
 
        Un nome host può essere consentito nel caso di una completa corrispondenza del nome host o di una corrispondenza con un qualsiasi dominio. Ad esempio, gli avvisi per un URL come "https://foo.example.com/bar" potrebbero essere eliminati se l'elenco include "foo.example.com" o "example.com".</translation>
+<translation id="4852900976354340846">Impostazioni relative a Direct Sockets</translation>
 <translation id="485419696366295465">Consente di gestire i criteri relativi al sottosistema <ph name="BOREALIS_NAME" />.</translation>
 <translation id="4855636880814771207">Se il criterio viene attivato o se non viene configurato, gli utenti possono attivare o disattivare il Bluetooth.
 
@@ -4880,11 +4872,6 @@ La disattivazione della decodifica video con accelerazione hardware non è consi
 <translation id="4970046075219007744">Consenti alle app web di richiedere all'utente l'accesso ai tipi di file tramite l'API File Handling</translation>
 <translation id="4970855112942626932">Disattiva accesso al browser</translation>
 <translation id="4974091268178043378">Modalità colore di ChromeOS</translation>
-<translation id="4977702914571821981">Consente di impostare un elenco di pattern URL che specifica i siti non autorizzati a mostrare contenuti misti (ossia contenuti HTTP su siti HTTPS) bloccabili (ossia attivi) e per i quali i contenuti misti bloccabili facoltativi (ossia passivi) verranno aggiornati.
-
-          Se questo criterio non viene impostato, i contenuti misti bloccabili verranno bloccati e quelli bloccabili facoltativi verranno aggiornati, ma gli utenti potranno configurare eccezioni per consentire i contenuti misti per siti specifici.
-
-          Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="4978533099939732984">Mostra sempre gli avvisi relativi allo spazio su disco in esaurimento</translation>
 <translation id="4979714585847741269">Se il criterio viene impostato su Attivato, un'app web kiosk può aprire un'altra finestra del browser che può essere posizionata sulla stessa schermata o su un'altra. Per aprire una nuova finestra, l'app web deve chiamare la funzione JavaScript di <ph name="OPEN_NEW_WINDOW_JS" />.
 
@@ -5335,6 +5322,7 @@ A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è su
       La pulizia verrà eseguita solo se strettamente necessario, ma avrà comunque un impatto sull'ora di accesso.
       Se il criterio viene impostato su falso (impostazione predefinita), non ci saranno ripercussioni sull'ora di accesso.</translation>
 <translation id="5371152055157582429">Gli utenti possono personalizzare lo sfondo della pagina Nuova scheda</translation>
+<translation id="5372698090378600633">Blocca l'API Direct Sockets su questi siti</translation>
 <translation id="5377606826822211923">Controlla l'utilizzo delle app Android di fonti non attendibili per l'utente</translation>
 <translation id="537786648513450280">Controlla l'utilizzo delle app Android di fonti non attendibili per il dispositivo</translation>
 <translation id="5378885577701865339">Disattiva la funzionalità Appunti condivisi</translation>
@@ -5352,13 +5340,6 @@ A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è su
 
           Spetta agli amministratori scegliere se impostare i criteri su tutte le piattaforme a cui sono interessati. Consigliamo di impostare questo criterio su un valore unico per tutte le piattaforme.</translation>
 <translation id="5389708774452952523">Consenti l'esecuzione del processo audio con priorità sopra la norma su Windows</translation>
-<translation id="5389798680516458665">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che possono mostrare immagini.
-
-      Se il criterio non viene configurato, <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.
-
-      Tieni presente che in precedenza questo criterio è stato erroneamente abilitato su Android, ma questa funzionalità non è mai stata completamente supportata su Android.</translation>
 <translation id="5390083518957894426">Consenti la riautenticazione online nella schermata di blocco per gli utenti SAML</translation>
 <translation id="5391388690191341203">Account locale del dispositivo per l'accesso automatico</translation>
 <translation id="5391867362692016532">La configurazione del criterio consente di elencare i pattern URL che specificano quali app web possono chiedere agli utenti l'autorizzazione ad accedere a determinati tipi di file.
@@ -5396,6 +5377,15 @@ le scorciatoie basate sul tasto Ricerca saranno quelle predefinite.</translation
 <translation id="5420245232720940848">Viene disattivato il tunneling PCIe per i dispositivi periferici Thunderbolt/USB4, limitando così le capacità dei dispositivi</translation>
 <translation id="5420673997623782432">Blocca l'accesso alla geolocalizzazione del sistema per tutti i client</translation>
 <translation id="5420774177427557782">Consente di stabilire se le VM che utilizzano questa configurazione possono essere installate ed eseguite (<ph name="INSTALL_ALLOWED" />), eseguite ma non installate (<ph name="RUN_ALLOWED" />) o se non possono essere eseguite (<ph name="BLOCKED" />). Tieni presente che per installare una VM è necessario impostare anche la chiave installer_image_x86_64. Se una configurazione viene rimossa completamente, viene impostato in modo implicito il valore <ph name="BLOCKED" />, che impedisce l'esecuzione delle VM senza un criterio.</translation>
+<translation id="5421670928124029853">Queste funzionalità nei DevTools di <ph name="PRODUCT_NAME" /> utilizzano modelli di IA generativa per fornire ulteriori informazioni di debug. Per utilizzare queste funzionalità, <ph name="PRODUCT_NAME" /> deve raccogliere dati come messaggi di errore, analisi dello stack, snippet di codice e richieste di rete e inviarli a un server di proprietà di Google, che esegue un modello di IA generativa. Il corpo della risposta o le intestazioni dei cookie e dell'autenticazione nelle richieste di rete non sono inclusi nei dati inviati al server.
+
+0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di IA. 0 è il valore predefinito.
+
+2 = Disattiva la funzionalità.
+
+Le funzionalità di IA generativa di DevTools includono:
+
+- Approfondimenti sulla console: spiega i messaggi della console e offre suggerimenti su come correggere gli errori.</translation>
 <translation id="5422643441807528365">Codice licenza <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="5423197884968724595">Nome della limitazione di Android WebView:</translation>
 <translation id="5424147596523390018">Consenti tutte le modalità a colori</translation>
@@ -5827,13 +5817,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> viene disattivato.<
       Se il criterio non viene configurato, viene usato un fattore di regolazione predefinito.
 
       Nota: il fattore di regolazione minimo deve essere 100%.</translation>
-<translation id="5738892881453299672">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che non possono accedere ai sensori, come i sensori di movimento e di luce.
-
-      Se il criterio non viene configurato, <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      Se lo stesso pattern URL esiste sia in questo criterio sia nel criterio <ph name="SENSORS_ALLOWED_FOR_URLS_POLICY_NAME" />, questo criterio ha la priorità e l'accesso ai sensori di movimento o di luce verrà bloccato.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="5740636973289452345">Attiva la generazione di report sulle informazioni relative a estensioni e plug-in</translation>
 <translation id="5746149754419996562">Consente la presenza di widget Glanceables su <ph name="PRODUCT_OS_NAME" />. In particolare, i widget accessibili tramite il chip di data nella barra delle app.
 Se questo criterio viene attivato, i Glanceables sono attivati su <ph name="PRODUCT_OS_NAME" />.
@@ -6032,6 +6015,7 @@ gli utenti non potranno modificarlo o eseguirne l'override.</translation>
       Se viene impostato su Disattivato, non è consentito utilizzare il protocollo QUIC.</translation>
 <translation id="5916855682471300200">I criteri relativi al cloud in ambito computer hanno la precedenza sui criteri relativi al computer della piattaforma</translation>
 <translation id="5917425424971710623">Non segnalare informazioni su eventi di rilevamento e risposta estesi (XDR)</translation>
+<translation id="592036544845479336">Riattiva eventi Mutazione deprecati/rimossi</translation>
 <translation id="5921713479449475707">Permetti download di aggiornamento automatico tramite HTTP</translation>
 <translation id="5927903236543424081">Obbliga gli utenti ad accedere prima di utilizzare il browser</translation>
 <translation id="5928633129285224981">Controlla se <ph name="PRODUCT_NAME" /> rende l'opzione Stampa come immagine da impostare per impostazione predefinita per la stampa di un PDF.
@@ -6577,6 +6561,23 @@ non funzioneranno correttamente e nella schermata di <ph name="LOG_IN" />
 verrà usata soltanto la risoluzione della posizione basata sull'<ph name="IP" />.</translation>
 <translation id="6338982178236723271">Segnala informazioni sul sistema</translation>
 <translation id="6339355882150329269">Non considerare l'utente come inattivo quando il video viene riprodotto</translation>
+<translation id="634949984530753985">Per motivi di sicurezza,
+l'API web <ph name="REQUEST_FULLSCREEN_API_NAME" />
+richiede che l'utente abbia eseguito un gesto precedentemente ("attivazione temporanea") o la chiamata all'API
+non andrà a buon fine. Le impostazioni personali degli utenti potrebbero consentire a determinate origini di chiamare
+questa API senza che l'utente abbia eseguito un gesto precedentemente, come descritto nella sezione
+<ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
+
+Questo criterio sostituisce le impostazioni personali degli utenti e impedisce alle origini corrispondenti
+di chiamare l'API senza che l'utente abbia eseguito un gesto precedentemente.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina
+https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
+
+Le origini che corrispondono a pattern di criteri sia bloccati sia consentiti verranno bloccate.
+Le origini non specificate dal criterio o dalle impostazioni utente richiederanno che l'utente abbia eseguito un gesto
+precedentemente per chiamare questa API.</translation>
 <translation id="6352714113109004581">Se il criterio viene configurato, puoi elencare i pattern URL che specificano i siti che possono chiedere agli utenti l'autorizzazione di accesso a un dispositivo HID.
 
       Se il criterio non viene configurato, <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, vengono applicate le impostazioni personali degli utenti.
@@ -6927,6 +6928,7 @@ Nota: se il dispositivo viene riavviato o se l'utente esce, la cache viene svuot
 <translation id="6583249367505445969">Disattiva barra dei Preferiti</translation>
 <translation id="6584122839583172231">Le impostazioni di F12 usano la scorciatoia che contiene i tasti di modifica Ctrl e Maiusc</translation>
 <translation id="6584541828182430328">Disattiva avviso schermo intero</translation>
+<translation id="658537215958747575">Consenti a origini idonee di utilizzare Direct Sockets</translation>
 <translation id="6588634282328239769">Visualizza l'URL completo</translation>
 <translation id="6589049539706330510">Attiva il supporto</translation>
 <translation id="6593025196187527239">Se il criterio viene impostato su True o se non viene configurato, gli utenti possono utilizzare ARC, a meno che ARC sia stato disattivato in altri modi. Se il criterio è impostato su False, gli utenti non affiliati non possono utilizzare ARC.
@@ -7278,6 +7280,17 @@ Se viene impostato su False o se non viene configurato, il layout non è disponi
 <translation id="685769593149966548">Applica la modalità Restrizione massima per YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
 <translation id="6866755486434471318">Consenti a <ph name="PEPPER_NAME" /> di usare immagini condivise per la decodifica video.</translation>
+<translation id="6870288354334274313">L'API Direct Sockets consente la comunicazione con endpoint arbitrari che utilizzano TCP e UDP.
+Per informazioni dettagliate, visita la pagina https://github.com/WICG/direct-sockets.
+
+Questo criterio consente di elencare i pattern URL che specificano i siti autorizzati a utilizzare l'API Direct Sockets.
+Potrebbero essere inclusi app di Chrome, app web isolate e kiosk web; l'API non è mai disponibile sul web aperto.
+
+Se il criterio non viene configurato, <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato.
+
+I pattern URL non devono essere in conflitto con <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />. Nessun criterio ha la precedenza se un URL presenta corrispondenze con entrambi.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="6878757724611298427">Consenti agli utenti di utilizzare app per Android su dispositivi non affiliati</translation>
 <translation id="6881397131210596522">Se il criterio viene impostato su 2, ai siti verrà automaticamente impedito di utilizzare l'API WebPrinting.
 
@@ -7293,6 +7306,7 @@ Se non viene configurato, i siti web possono richiedere l'accesso alle stampanti
 
       Se il criterio non viene configurato, non vengono applicate limitazioni imposte da tale criterio al gruppo di app che gli utenti possono attivare nella schermata di blocco.</translation>
 <translation id="6882028194958060206">Applica l'impostazione dei contenuti Flash a tutti i contenuti (deprecato)</translation>
+<translation id="6882345904422482308">(Avviso! A breve questa dipendenza verrà eliminata, inizia a usare invece il criterio <ph name="GLS_POLICY_NAME" />. Se questo criterio viene impostato su <ph name="BLOCK_GEOLOCATION_SETTING" />, le app per Android non possono accedere ai dati sulla posizione. Se imposti il criterio su qualsiasi altro valore o se lo lasci non selezionato, all'utente verrà chiesto il consenso quando un'app Android richiede l'accesso ai dati sulla posizione.</translation>
 <translation id="6883050310557769428">Consente di verificare che il servizio SSO mobile sia attivo e di controllare la lista bloccata di domini dei cookie e le relative eccezioni.</translation>
 <translation id="6889123056995503704">Gli utenti decidono il comportamento del downgrade del canale</translation>
 <translation id="6889617338886728275">Consente di impostare un elenco di pattern URL per i siti che specifica i siti a cui l'autorizzazione per la gestione delle finestre viene automaticamente concessa. Ciò estenderà la capacità dei siti di vedere le informazioni sulle schermate del dispositivo e di utilizzare quelle informazioni per aprire e posizionare finestre oppure per richiedere lo schermo intero su schermate specifiche.
@@ -8077,6 +8091,7 @@ Se questo criterio viene impostato su true, <ph name="PRODUCT_OS_NAME" /> tenter
 <translation id="7515953732107149296">Questo criterio è stato rimosso da M53 dopo la rimozione di RC4 da <ph name="PRODUCT_NAME" />.
 
       Se il criterio non viene configurato o se viene impostato su False, le suite di crittografia RC4 in TLS non verranno attivate. In caso contrario, potrebbe essere impostato su True per mantenere la compatibilità con un server obsoleto. Si tratta di una misura temporanea ed è necessario riconfigurare il server.</translation>
+<translation id="751615601677744094">Disattivato: comportamento normale per gli eventi Mutazione, il che significa che non verranno attivati dopo la data di rimozione.</translation>
 <translation id="7519218194072744342">L'URL del gestore di protocollo.</translation>
 <translation id="7519251620064708155">Consenti la generazione di chiavi su questi siti</translation>
 <translation id="7521864460386999758">Impedisci l'inserimento di codici di terze parti in Chrome</translation>
@@ -8364,6 +8379,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.</translation>
 <translation id="77675082813227181">La pagina di test dei criteri è bloccata</translation>
+<translation id="7769289607378631288">Attivato: riattiva temporaneamente gli eventi Mutazione.</translation>
 <translation id="7771298620150437359">Configura i contenuti e l'ordine delle lingue preferite</translation>
 <translation id="7773790010815041731">Le app di Chrome sono state ritirate su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="LINUX_OS_NAME" />.
       Se questo criterio viene attivato, <ph name="PRODUCT_NAME" /> continuerà a consentire l'esecuzione delle app di Chrome su queste piattaforme fino alla data ultima del ritiro del supporto di queste app su tutte le piattaforme, vale a dire giugno 2022.
@@ -8385,12 +8401,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7781452670568828399">Modifica la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata.</translation>
 <translation id="7784062550705119230">Se per il criterio <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, la configurazione del criterio <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7788511847830146438">Per profilo</translation>
-<translation id="7788632499792081231">La configurazione del criterio consente di impostare un elenco di pattern URL che specificano i siti che possono usare l'autorizzazione di accesso dei siti agli appunti. Tutte le operazioni relative agli appunti nelle origini corrispondenti ai pattern non sono incluse. Ad esempio, gli utenti potranno ancora incollare usando scorciatoie da tastiera perché questa operazione non è controllata dall'autorizzazione di accesso dei siti agli appunti.
-
-
-      Se il criterio non viene configurato, <ph name="DEFAULT_CLIPBOARD_SETTING" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="7790221177424764797">Questo criterio consente di stabilire se caricare o meno le regole del criterio SiteList di <ph name="IE_PRODUCT_NAME" />.
 
 Se questo criterio viene impostato su true, <ph name="PRODUCT_NAME" /> legge il criterio <ph name="IEEM_SITELIST_POLICY" /> di <ph name="IE_PRODUCT_NAME" /> per recuperare l'URL dell'elenco dei siti. Dopodiché, <ph name="PRODUCT_NAME" /> scarica l'elenco dei siti da questo URL e applica le regole come se fossero state configurate con il criterio <ph name="BROWSER_SWITCHER_URL_LIST_POLICY_NAME" />.
@@ -8455,6 +8465,15 @@ Nota: se specificato, <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY
 <translation id="7850846808758624237">Se il criterio viene impostato su Attivato, la home page del precedente browser predefinito verrà importata alla prima esecuzione. Se il criterio viene impostato su Disattivato o se non viene configurato, la home page non verrà importata alla prima esecuzione.
 
       Gli utenti possono attivare una finestra di dialogo per l'importazione e la casella di controllo della home page verrà selezionata o deselezionata in modo che corrisponda al valore del criterio.</translation>
+<translation id="7852952453329293282">L'API Direct Sockets consente la comunicazione con endpoint arbitrari che utilizzano TCP e UDP.
+Per informazioni dettagliate, visita la pagina https://github.com/WICG/direct-sockets.
+
+Se il criterio viene impostato su 1, le origini idonee possono usare Direct Sockets.
+Sono inclusi app di Chrome, app web isolate e kiosk web; l'API non è mai disponibile sul web aperto.
+
+Se il criterio viene impostato su 2, le origini non possono usare Direct Sockets.
+
+Se non viene configurato, è consentito usare Direct Sockets.</translation>
 <translation id="7853140303943875314">Attiva l'esclusione dell'accesso automatico</translation>
 <translation id="7854187834842629068">Disattiva la dettatura nella schermata di accesso</translation>
 <translation id="7863947545897944083">Consente di attivare la funzione di accessibilità ad alto contrasto nella schermata di accesso.
@@ -9251,17 +9270,6 @@ Il rollback alla versione 106 o precedente di <ph name="PRODUCT_OS_NAME" /> non 
       Questo criterio esegue l'override di <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> e delle preferenze dell'utente.</translation>
 <translation id="8528951285051082869">Non consentire ad alcuna app web di accedere a determinati tipi di file tramite l'API File Handling</translation>
 <translation id="8533145294731270627">Blocca download dannosi e tipi di file pericolosi.</translation>
-<translation id="8543103455510904459">Consente di impostare un elenco di pattern URL che specificano i siti non autorizzati a eseguire JavaScript con il compilatore JIT (Just In Time) attivato.
-
-          Se JIT di JavaScript viene disattivato, <ph name="PRODUCT_NAME" /> potrebbe visualizzare i contenuti web più lentamente e disattivare inoltre alcune parti di JavaScript, incluso WebAssembly. Se JIT di JavaScript viene disattivato, <ph name="PRODUCT_NAME" /> potrebbe essere in grado di visualizzare contenuti web in una configurazione più sicura.
-
-          Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.
-
-          Le eccezioni relative ai criteri di JIT di JavaScript verranno applicate soltanto sito per sito (eTLD+1). Un criterio impostato soltanto per sottodominio.sito.com non verrà applicato correttamente a sito.com o a sottodominio.sito.com, perché entrambi sono equivalenti allo stesso dominio eTLD+1 (sito.com) per il quale non esiste alcun criterio. In questo caso, il criterio deve essere impostato per sito.com per essere applicato correttamente sia a sito.com sia a sottodominio.sito.com.
-
-          Questo criterio viene applicato frame per frame e non si basa esclusivamente sull'URL di origine di primo livello, quindi, ad esempio, se sito-uno.com è presente nell'elenco del criterio <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />, ma tale sito carica un frame che contiene sito-due.com, sito-uno.com avrà disattivato JIT di JavaScript, ma sito-due.com utilizzerà il criterio di <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, se configurato, o JIT di JavaScript sarà attivato per impostazione predefinita.
-
-          Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti JIT di JavaScript viene attivato per il sito.</translation>
 <translation id="8543108307976719751">Impedisci le connessioni di accesso remoto a questo computer</translation>
 <translation id="8543639085146778837">Consenti la raccolta di log di testo WebRTC dai servizi Google</translation>
 <translation id="8543975123557636331">Attiva l'output audio</translation>
@@ -9606,11 +9614,6 @@ Questo criterio non si applica se la tastiera virtuale viene disattivata (ad ese
 <translation id="8827366480126575426">Il protocollo del gestore di protocollo.</translation>
 <translation id="8827417642396462482">Sono consentiti tipi di query DNS aggiuntivi</translation>
 <translation id="8830717323204407209">Consente agli utenti di visualizzare la promozione dell'estensione fornitore di credenziali</translation>
-<translation id="8831911834413504983">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che possono eseguire JavaScript.
-
-      Se il criterio non viene configurato, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="8832829916385857156">La pagina Nuova scheda mostra le schede se sono disponibili contenuti</translation>
 <translation id="8833109046074170275">Autenticazione tramite il flusso GAIA predefinito</translation>
 <translation id="8834641112681661892">L'impostazione del criterio specifica il ritardo massimo in millisecondi tra la ricezione dell'invalidamento di un criterio e il recupero del nuovo criterio da parte del servizio di gestione dei dispositivi. I valori validi di questo criterio sono compresi tra 1000 (1 secondo) e 300.000 (5 minuti). I valori che non rientrano in questo intervallo verranno bloccati al relativo limite.

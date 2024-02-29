@@ -43,6 +43,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> sekme birbiriyle ilgili görünüyor. Bunlar gruplandırılsın mı?</translation>
 <translation id="4159784952369912983">Mor</translation>
 <translation id="4212246570487010370">Göz atmaya devam edin</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu genişlet.}other{<ph name="TABS_COUNT_MANY" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu genişlet.}}</translation>
 <translation id="427987768447457592">Yeni sekme grubu</translation>
 <translation id="4648718555153979859">Sekmeleriniz burada gruplandırılır</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> yorum)}other{(<ph name="REVIEWS_COUNT_MANY" /> yorum)}}</translation>
@@ -56,6 +57,7 @@
 <translation id="5082793167783849073">Grup oluşturarak sayfaları hızlıca karşılaştırın. Başlamak için bir bağlantıya dokunup basılı tutun.</translation>
 <translation id="5161254044473106830">Başlık gerekiyor</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Yakın zamanda kullanmadığınız <ph name="TABS_COUNT_ONE" /> sekme var}other{Yakın zamanda kullanmadığınız <ph name="TABS_COUNT_MANY" /> sekme var}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli sekme grubunu kapat.}other{<ph name="TABS_COUNT_MANY" /> sekmeli sekme grubunu kapat.}}</translation>
 <translation id="5339733443032484186">Son sekmeniz</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5490235265819901748">Sekme grubu genişletildi</translation>
@@ -84,6 +86,7 @@
 <translation id="6856809498882026482">Çoklu seçim modunu gizle</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Sekmeyi paylaş}other{Sekmeleri paylaş}}</translation>
 <translation id="7129458170538955174">Bu mağazayla ilgili bilgiler ekranın yarısına kadar açıldı</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli <ph name="TITLE_OF_GROUP" /> grubunu kapat.}other{<ph name="TABS_COUNT_MANY" /> sekmeli <ph name="TITLE_OF_GROUP" /> grubunu kapat.}}</translation>
 <translation id="7204204600596740190">Çoklu seçim modu</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> seçili</translation>
 <translation id="7326879924029668159">İade politikasını ve daha fazlasını görün</translation>
@@ -107,6 +110,7 @@
 <translation id="8714939927607906138">Daha düşük fiyat</translation>
 <translation id="8730999928494395583">Bu gizli sekmelerdeki etkinliğiniz bu cihazdan silinecektir</translation>
 <translation id="8820741577754260431">Sekmelerinizde fiyat düşüşlerini görün</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli sekme grubunu genişlet.}other{<ph name="TABS_COUNT_MANY" /> sekmeli sekme grubunu genişlet.}}</translation>
 <translation id="9090098097337832354">Bu mağazayla ilgili bilgiler kapatıldı</translation>
 <translation id="9150694013019234766">Ekranın altına yakın bir yerde bulunan sekme grubunuzdaki sekmeler arasında geçiş yapın</translation>
 <translation id="9169594135889675189">Gruba yeni sekme ekler</translation>

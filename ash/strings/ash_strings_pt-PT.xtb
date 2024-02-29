@@ -358,6 +358,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2484513351006226581">Prima <ph name="KEYBOARD_SHORTCUT" /> para mudar o esquema do teclado.</translation>
 <translation id="2486214324139475545">Pré-visualização de <ph name="DESK_NAME" />. Espaço de trabalho ativo.</translation>
 <translation id="2487915095798731898">Aderir</translation>
+<translation id="2499445554382787206">Menu do perfil do espaço de trabalho. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Teclas aderentes</translation>
 <translation id="2504454902900101003">Ignorar configuração da visualização das fotos, dos conteúdos multimédia e das notificações do telemóvel</translation>
 <translation id="2509468283778169019">CAPS LOCK está ativado</translation>
@@ -605,6 +606,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3509391053705095206">Não é possível encontrar o telemóvel. Certifique-se de que o Bluetooth do telemóvel está ativado.</translation>
 <translation id="3510164367642747937">Realçar cursor do rato</translation>
 <translation id="3513798432020909783">Conta gerida por <ph name="MANAGER_EMAIL" />.</translation>
+<translation id="3517037892157925473">Última atualização das tarefas: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Atualize o dispositivo dentro de 1 minuto}other{Atualize o dispositivo dentro de # minutos}}</translation>
 <translation id="3522979239100719575">A procurar perfis disponíveis. Esta ação pode demorar alguns minutos.</translation>
 <translation id="3526440770046466733">Abrir o link num novo separador e permanecer no separador atual</translation>
@@ -1144,6 +1146,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5536723544185013515">Apps recentes, navegue com as teclas de seta para a esquerda ou direita para aceder a todas as apps recentes</translation>
 <translation id="553675580533261935">A sair da sessão…</translation>
 <translation id="5537725057119320332">Transmitir</translation>
+<translation id="554017492391497564">Não foi possível marcá-la como concluída.</translation>
 <translation id="5546397813406633847">Recuperar utilizador</translation>
 <translation id="554893713779400387">Ativar/desativar o ditado</translation>
 <translation id="5550417424894892620">Largue os ficheiros no ambiente de trabalho para os adicionar a <ph name="HOLDING_SPACE_TITLE" />. Não pode adicionar ficheiros ao ambiente de trabalho.</translation>
@@ -1338,6 +1341,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Bateria fraca. Poupança de bateria ativada,</translation>
 <translation id="6247728804802644171">Abrir as notificações</translation>
+<translation id="6249795363855770621">Não foi possível marcá-la como concluída. Tente novamente quando estiver online.</translation>
 <translation id="6254629735336163724">Bloqueado na horizontal</translation>
 <translation id="6259254695169772643">Utilize a caneta stylus para selecionar.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: a ativar...</translation>
@@ -1498,6 +1502,7 @@ Nova instalação</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6912841030378044227">Focar na barra de endereço</translation>
 <translation id="6912901278692845878">Apresentação rápida</translation>
+<translation id="6917259695595127329">Última atualização das tarefas: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer o seu cartão inteligente. Tente novamente.</translation>
 <translation id="692135145298539227">eliminar, delete</translation>
 <translation id="6929081673585394903">Mostrar controlos</translation>

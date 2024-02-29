@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Invite хатқалтасы</translation>
 <translation id="1413809658975081374">Құпиялық қатесі</translation>
 <translation id="1414134146594747368">Балабақша</translation>
-<translation id="141826476809826269">Шығарып алынған мәтін соңы</translation>
 <translation id="1418611192881166179">Chrome бұл функцияны жаңартқан кезде, үшінші тарап cookie файлдарын параметрлерде блоктамасаңыз, сайттар оларды уақытша қолдана алады.</translation>
 <translation id="1419305130220238697">"Chrome браузерінде жүктеп алынған файлдарды басқару" түймесі, Chrome браузерінде жүктеп алған файлдарды басқару үшін белсендіріңіз</translation>
 <translation id="1422930527989633628">Маңайдағы Bluetooth құрылғыларын анықтауды сұрай алады</translation>
@@ -1200,6 +1199,7 @@
 <translation id="3324687287337751929">4 x 6 дюйм</translation>
 <translation id="3324983252691184275">Қызыл күрең</translation>
 <translation id="3325027355611702542">Жылжымалы үйлер және тұрғын автофургондар</translation>
+<translation id="3325568918769906282">кему ретімен</translation>
 <translation id="3329013043687509092">Қанықтық</translation>
 <translation id="3333762389743153920">Виртуалдық карта үшін жарамсыз</translation>
 <translation id="3336044043987989409">Жеке желіңіздегі құрылғыларға немесе серверлерге қосылуға рұқсат беру үшін "Қайта жүктеу" түймесін басыңыз.</translation>
@@ -1320,6 +1320,7 @@
 <translation id="3542628208405253498">Карта суреті</translation>
 <translation id="3542768452570884558">Сілтемені жаңа терезеде ашу</translation>
 <translation id="3547746132308051926">20 x 24 дюйм</translation>
+<translation id="3552155506104542239">Ескерту: бұл саясат <ph name="POLICY_NAME" /> саясатына қайшы. Ол Android қолданбаларына әсер етпейді. Бұл мәселені есептемегенде, саясат ойдағыдай жұмыс істеп тұр.</translation>
 <translation id="3552297013052089404">Sans-serif қарпі</translation>
 <translation id="3558573058928565255">Күн, уақыт</translation>
 <translation id="355995771319966853">Автотолтыруды қайтару</translation>
@@ -2246,6 +2247,7 @@
 <translation id="5371425731340848620">Картаны жаңарту</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Сағатыңыз артта", "Сағатыңыз алда" немесе "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">өсу ретімен</translation>
 <translation id="5383478552402031184">Еден төсеу қызметтері</translation>
 <translation id="5385857628869214740">Әзіл</translation>
 <translation id="5385966243497224160">HTTPS емес URL мекенжайын алдын ала көру мүмкін емес</translation>
@@ -3067,7 +3069,6 @@
 <translation id="6978121630131642226">Іздеу жүйелері</translation>
 <translation id="6978236010531171013">Бәрібір бөлісу</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Шығарып алынған мәтін басы</translation>
 <translation id="6979440798594660689">Дыбысын өшіру (әдепкі)</translation>
 <translation id="6987806006823772670">Хатқалта (жылтыратылған)</translation>
 <translation id="6989763994942163495">Кеңейтілген параметрлерді көрсету…</translation>
@@ -3482,6 +3483,7 @@
 <translation id="7719791801330803993">Фотосурет пен бейне бағдарламалық құралы</translation>
 <translation id="772128550427553158">CVC картаңыздың алдыңғы жағында орналасқан.</translation>
 <translation id="7724603315864178912">Қиып алу</translation>
+<translation id="7730057435797792985">Сұрыптау</translation>
 <translation id="7734285854693414638">Google Forms-да жылдам жаңа үлгі жасау</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> тіліндегі беттер әрқашан аударылсын</translation>
 <translation id="7736959720849233795">Сілтеме мекенжайын көшіру</translation>

@@ -43,6 +43,7 @@
 <translation id="4133493477912226187">Šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>
 <translation id="4159784952369912983">Violets</translation>
 <translation id="4212246570487010370">Turpiniet pārlūkošanu</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Izvērst ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_ONE" /> cilne.}zero{Izvērst ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Izvērst ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Izvērst ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="427987768447457592">Jauna ciļņu grupa</translation>
 <translation id="4648718555153979859">Jūsu cilnes šeit ir grupētas kopā</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> atsauksme)}zero{(<ph name="REVIEWS_COUNT_MANY" /> atsauksmju)}one{(<ph name="REVIEWS_COUNT_MANY" /> atsauksme)}other{(<ph name="REVIEWS_COUNT_MANY" /> atsauksmes)}}</translation>
@@ -56,6 +57,7 @@
 <translation id="5082793167783849073">Ātri salīdziniet lapas, izveidojot grupu. Lai sāktu, pieskarieties un turiet saiti.</translation>
 <translation id="5161254044473106830">Jānorāda nosaukums</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Jums ir <ph name="TABS_COUNT_ONE" /> cilne, ko pēdējā laikā neesat izmantojis.}zero{Jums ir <ph name="TABS_COUNT_MANY" /> cilnes, ko pēdējā laikā neesat izmantojis.}one{Jums ir <ph name="TABS_COUNT_MANY" /> cilne, ko pēdējā laikā neesat izmantojis.}other{Jums ir <ph name="TABS_COUNT_MANY" /> cilnes, ko pēdējā laikā neesat izmantojis.}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_ONE" /> cilne.}zero{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="5339733443032484186">Jūsu pēdējā izmantotā cilne</translation>
 <translation id="5400836586163650660">Pelēka</translation>
 <translation id="5490235265819901748">Ciļņu grupa ir izvērsta</translation>
@@ -84,6 +86,7 @@
 <translation id="6856809498882026482">Paslēpt vairākatlases režīmu</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Kopīgot cilni}zero{Kopīgot cilnes}one{Kopīgot cilnes}other{Kopīgot cilnes}}</translation>
 <translation id="7129458170538955174">Informācija par šo veikalu ir atvērta pusekrāna augstumā</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Aizvērt ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_ONE" /> cilne.}zero{Aizvērt ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Aizvērt ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Aizvērt ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="7204204600596740190">Vairākatlases režīms</translation>
 <translation id="731648547091221002">Atlasīta: <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Skatiet atgriešanas politiku un citu informāciju.</translation>
@@ -107,6 +110,7 @@
 <translation id="8714939927607906138">Zemāka cena</translation>
 <translation id="8730999928494395583">Jūsu darbības šajās inkognito cilnēs tiks noņemtas no šīs ierīces</translation>
 <translation id="8820741577754260431">Skatiet cenu kritumu savās cilnēs.</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_ONE" /> cilne.}zero{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="9090098097337832354">Informācija par šo veikalu ir aizvērta</translation>
 <translation id="9150694013019234766">Pārslēdziet cilnes savā ciļņu grupā ekrāna apakšdaļā.</translation>
 <translation id="9169594135889675189">Pievienot grupai jaunu cilni</translation>

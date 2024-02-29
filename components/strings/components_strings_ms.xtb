@@ -231,7 +231,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1410941016594047814">Sampul Undangan</translation>
 <translation id="1413809658975081374">Ralat privasi</translation>
 <translation id="1414134146594747368">Prasekolah</translation>
-<translation id="141826476809826269">Penghujung teks yang diekstrak</translation>
 <translation id="1418611192881166179">Sementara Chrome mengemaskinikan ciri ini, laman boleh menggunakan kuki pihak ketiga untuk sementara waktu melainkan anda menyekat ciri tersebut dalam tetapan.</translation>
 <translation id="1419305130220238697">Butang urus muat turun dalam Chrome, aktifkan untuk mengurus fail yang telah anda muat turun dalam Chrome</translation>
 <translation id="1422930527989633628">Boleh meminta untuk menemukan peranti Bluetooth berdekatan</translation>
@@ -1781,6 +1780,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">Bertepi</translation>
 <translation id="4397059608630092079">Sentiasa Buat Pengesahan Apabila Menggunakan Autolengkap</translation>
+<translation id="4397978002248035985">Membuka tetingkap timbul untuk membuat pengesahan pada laman web bank anda</translation>
 <translation id="4406883609789734330">Sari Kata Langsung</translation>
 <translation id="4406896451731180161">hasil carian</translation>
 <translation id="4408413947728134509">Kuki <ph name="NUM_COOKIES" /></translation>
@@ -2204,6 +2204,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Sifat dokumen</translation>
 <translation id="528468243742722775">End</translation>
+<translation id="5285468538058987167">Melalui Pengesahan Pelanggan yang Kukuh (SCA)</translation>
 <translation id="5285570108065881030">Tunjukkan semua kata laluan yang disimpan</translation>
 <translation id="5287456746628258573">Tapak ini menggunakan konfigurasi keselamatan yang sudah lapuk, yang mungkin mendedahkan maklumat anda (contohnya, kata laluan atau nombor kad kredit) apabila dihantar ke tapak ini.</translation>
 <translation id="5288108484102287882">Pengesahan nilai dasar telah menimbulkan amaran</translation>
@@ -3072,7 +3073,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6978121630131642226">Enjin Carian</translation>
 <translation id="6978236010531171013">Kongsi juga</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Permulaan teks yang diekstrak</translation>
 <translation id="6979440798594660689">Redam (lalai)</translation>
 <translation id="6987806006823772670">Sampul (Bersalut)</translation>
 <translation id="6989763994942163495">Paparkan tetapan lanjutan...</translation>

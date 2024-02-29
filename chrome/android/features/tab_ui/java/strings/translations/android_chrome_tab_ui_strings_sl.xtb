@@ -43,6 +43,7 @@
 <translation id="4133493477912226187">Videti je, da je toliko zavihkov sorodnih: <ph name="NUMBER_OF_TABS" />. Jih želite uvrstiti v skupino?</translation>
 <translation id="4159784952369912983">Vijolična</translation>
 <translation id="4212246570487010370">Nadaljevanje brskanja</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Razširitev <ph name="TITLE_OF_GROUP" /> skupine zavihkov z <ph name="TABS_COUNT_ONE" /> zavihkom.}one{Zapiranje <ph name="TITLE_OF_GROUP" /> skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkom.}two{Zapiranje <ph name="TITLE_OF_GROUP" /> skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkoma.}few{Zapiranje <ph name="TITLE_OF_GROUP" /> skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}other{Zapiranje <ph name="TITLE_OF_GROUP" /> skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}}</translation>
 <translation id="427987768447457592">Nova skupina zavihkov</translation>
 <translation id="4648718555153979859">Zavihki so združeni tukaj</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> mnenje)}one{(<ph name="REVIEWS_COUNT_MANY" /> mnenje)}two{(<ph name="REVIEWS_COUNT_MANY" /> mnenji)}few{(<ph name="REVIEWS_COUNT_MANY" /> mnenja)}other{(<ph name="REVIEWS_COUNT_MANY" /> mnenj)}}</translation>
@@ -56,6 +57,7 @@
 <translation id="5082793167783849073">Hitro primerjate strani tako, da ustvarite skupino. Če želite začeti, se dotaknite povezave in jo pridržite.</translation>
 <translation id="5161254044473106830">Naslov je obvezen</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Imate <ph name="TABS_COUNT_ONE" /> zavihek, ki ga nedavno niste uporabljali}one{Imate <ph name="TABS_COUNT_MANY" /> zavihek, ki jih nedavno niste uporabljali}two{Imate <ph name="TABS_COUNT_MANY" /> zavihka, ki ju nedavno niste uporabljali}few{Imate <ph name="TABS_COUNT_MANY" /> zavihke, ki jih nedavno niste uporabljali}other{Imate <ph name="TABS_COUNT_MANY" /> zavihkov, ki jih nedavno niste uporabljali}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Zapiranje skupine zavihkov z <ph name="TABS_COUNT_ONE" /> zavihkom.}one{Zapiranje skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkom.}two{Zapiranje skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkoma.}few{Zapiranje skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}other{Zapiranje skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}}</translation>
 <translation id="5339733443032484186">Zadnji zavihek</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="5490235265819901748">Skupina zavihkov je razširjena</translation>
@@ -84,6 +86,7 @@
 <translation id="6856809498882026482">Skrij način z več izbirami</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Deli zavihek}one{Deli zavihke}two{Deli zavihke}few{Deli zavihke}other{Deli zavihke}}</translation>
 <translation id="7129458170538955174">Informacije o tej trgovini, odprte pri polovični višini.</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Zapiranje <ph name="TITLE_OF_GROUP" /> skupine zavihkov z <ph name="TABS_COUNT_ONE" /> zavihkom.}one{Zapiranje <ph name="TITLE_OF_GROUP" /> skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkom.}two{Zapiranje <ph name="TITLE_OF_GROUP" /> skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkoma.}few{Zapiranje <ph name="TITLE_OF_GROUP" /> skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}other{Zapiranje <ph name="TITLE_OF_GROUP" /> skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}}</translation>
 <translation id="7204204600596740190">Način z več izbirami</translation>
 <translation id="731648547091221002">Izbrano: <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Oglejte si pravilnik o vračilih in drugo.</translation>
@@ -107,6 +110,7 @@
 <translation id="8714939927607906138">Nižja cena</translation>
 <translation id="8730999928494395583">Vaša dejavnost na teh anonimnih zavihkih bo odstranjena iz te naprave</translation>
 <translation id="8820741577754260431">Oglejte si znižanja cen na zavihkih.</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Razširitev skupine zavihkov z <ph name="TABS_COUNT_ONE" /> zavihkom.}one{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkom.}two{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkoma.}few{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}other{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}}</translation>
 <translation id="9090098097337832354">Informacije o tej trgovini so zaprte.</translation>
 <translation id="9150694013019234766">Preklapljanje med zavihki v skupini zavihkov pri dnu zaslona</translation>
 <translation id="9169594135889675189">Skupini dodaj nov zavihek</translation>

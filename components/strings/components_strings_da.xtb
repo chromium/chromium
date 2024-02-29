@@ -231,7 +231,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1410941016594047814">Konvolut Invitation</translation>
 <translation id="1413809658975081374">Fejl i forbindelse med privatlivbeskyttelse</translation>
 <translation id="1414134146594747368">Børnehave</translation>
-<translation id="141826476809826269">Slut på udtrukket tekst</translation>
 <translation id="1418611192881166179">Mens Chrome opdaterer denne funktion, kan websites midlertidigt anvende tredjepartscookies, medmindre du har blokeret dem i indstillingerne.</translation>
 <translation id="1419305130220238697">Knappen Administrer downloads i Chrome, aktivér for at administrere de filer, du har downloadet i Chrome</translation>
 <translation id="1422930527989633628">Websitet kan anmode om tilladelse til at søge efter Bluetooth-enheder i nærheden</translation>
@@ -1321,6 +1320,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3542628208405253498">Kortbillede</translation>
 <translation id="3542768452570884558">Åbn link i nyt vindue</translation>
 <translation id="3547746132308051926">20 x 24 tommer</translation>
+<translation id="3552155506104542239">Advarsel! Denne politik er i konflikt med <ph name="POLICY_NAME" /> og har ingen indflydelse på Android-apps. Ud over dette fungerer denne politik efter hensigten.</translation>
 <translation id="3552297013052089404">Sans Serif-skrifttype</translation>
 <translation id="3558573058928565255">Dagtimer</translation>
 <translation id="355995771319966853">Fortryd Autofyld</translation>
@@ -3067,7 +3067,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6978121630131642226">Søgemaskiner</translation>
 <translation id="6978236010531171013">Del alligevel</translation>
 <translation id="6979158407327259162">Google Drev</translation>
-<translation id="6979332652936434520">Start på udtrukket tekst</translation>
 <translation id="6979440798594660689">Slå lyden fra (standard)</translation>
 <translation id="6987806006823772670">Kuvert (bestrøget)</translation>
 <translation id="6989763994942163495">Vis avancerede indstillinger...</translation>

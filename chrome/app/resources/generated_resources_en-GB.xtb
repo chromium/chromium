@@ -984,6 +984,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1723824996674794290">&amp;New window</translation>
 <translation id="1724801751621173132">Input mode</translation>
 <translation id="1725562816265788801">Tab scrolling</translation>
+<translation id="1725585416709851618">Try enabling Google Drive in Settings and choose 'Try again', or choose 'Open in basic editor' to use limited view and editing options.</translation>
 <translation id="1726503915437308071">Italic font</translation>
 <translation id="1729533290416704613">It also controls what page is shown when you search from the Omnibox.</translation>
 <translation id="1730666151302379551">Forgot old password</translation>
@@ -1830,7 +1831,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2343747224442182863">Focus This Tab</translation>
 <translation id="2344032937402519675">Couldn’t connect with the server. Check your network connection and try again. If you're still having trouble, try restarting your Chromebook.</translation>
 <translation id="234559068082989648">Old versions of Chrome Apps won't open after December 2022. Contact your administrator to update to a new version or remove this app.</translation>
-<translation id="2347930112185157300">Mobile network provider is locked</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Permission requested, press Ctrl + Forward to respond</translation>
 <translation id="234889437187286781">Error loading data</translation>
@@ -1995,7 +1995,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2462332841984057083">Steam is already being set up. Wait for setup to complete.</translation>
 <translation id="2462724976360937186">Certification Authority Key ID</translation>
 <translation id="2462752602710430187">Added <ph name="PRINTER_NAME" /></translation>
-<translation id="2464046291463112461">Block external accessories from accessing and sharing memory (RAM)</translation>
 <translation id="2467755475704469005">No device detected. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Touchpad scroll acceleration</translation>
 <translation id="2468205691404969808">Uses cookies to remember your preferences, even if you don’t visit those pages</translation>
@@ -2298,6 +2297,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2701330563083355633">Shared from <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Sign in, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">Network MAC Address</translation>
+<translation id="2702720509009999256">Check your Internet connection and choose 'Try again', or choose 'Open in basic editor' to use limited view and editing options.</translation>
 <translation id="2702801445560668637">Reading List</translation>
 <translation id="270414148003105978">Mobile networks</translation>
 <translation id="2704184184447774363">Microsoft Document Signing</translation>
@@ -2625,6 +2625,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2935654492420446828">Add a school account later</translation>
 <translation id="2936851848721175671">Backup &amp; restore</translation>
 <translation id="2938981087412273365">Not allowed to read and change this site</translation>
+<translation id="2939005221756255562">Enable notifications in the Notification Centre. Open <ph name="BEGIN_LINK" />System Settings<ph name="END_LINK" />.</translation>
 <translation id="2939908794993783865">Additional inactive sites</translation>
 <translation id="2939938020978911855">Show available Bluetooth devices</translation>
 <translation id="2941112035454246133">Low</translation>
@@ -3599,6 +3600,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3719245268140483218">Device Event</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> filled.</translation>
 <translation id="3719826155360621982">Homepage</translation>
+<translation id="3720543739123045680">Other tabs share a process with this tab, which may result in an unexpected DevTools experience.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">You and Google</translation>
 <translation id="3722108462506185496">Error starting the virtual machine service. Please try again.</translation>
@@ -4537,7 +4539,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4430369329743628066">Bookmark added</translation>
 <translation id="4430422687972614133">Turn on virtual card</translation>
 <translation id="4432621511648257259">Password incorrect</translation>
-<translation id="4434611816075088065">Nothing else needs your attention right now</translation>
+<translation id="4434611816075088065">Nothing else needs your attention at the moment</translation>
 <translation id="443475966875174318">Update or remove incompatible applications</translation>
 <translation id="4437947179446780764">Add custom DNS service provider</translation>
 <translation id="4438043733494739848">Transparent</translation>
@@ -5051,6 +5053,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4846628405149428620">Select where this site can save changes</translation>
 <translation id="4846680374085650406">You are following the administrator's recommendation for this setting.</translation>
+<translation id="4847242508757499006">Choose 'Try again' or choose 'Open in basic editor' to use limited view and editing options.</translation>
 <translation id="4848191975108266266">Google Assistant "Ok Google"</translation>
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Don't Install</translation>
@@ -6046,6 +6049,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5636012309446422">Remove <ph name="DEVICE" /> from <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">To use <ph name="NETWORK_ID" /> you may first need to <ph name="LINK_START" />visit the network's sign-in page<ph name="LINK_END" />, which will open automatically in a few seconds. If it doesn't happen, the network can't be used.</translation>
 <translation id="5637476008227280525">Mobile data enable</translation>
+<translation id="5638170200695981015">Choose 'Open in basic editor' to use limited view and editing options.</translation>
 <translation id="563821631542362636">Allow site to save data</translation>
 <translation id="5638309510554459422">Find extensions and themes in the <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Reload this page, hold to see more options</translation>
@@ -6798,6 +6802,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6235208551686043831">Device camera has turned on. Please place your eSIM QR code in front of the camera.</translation>
 <translation id="6237297174664969437">You can always choose what browser data to sync in Chrome settings. In <ph name="LINK_BEGIN" />device settings<ph name="LINK_END" />, you can control sync for web apps installed from Chrome browser. Google may personalise Search and other services based on your history.</translation>
 <translation id="6237474966939441970">Stylus note-taking app</translation>
+<translation id="6237481151388361546">Change your Internet connection and choose 'Try again', or choose 'Open in basic editor' to use limited view and editing options.</translation>
 <translation id="623755660902014047">Reading mode</translation>
 <translation id="6238767809035845642">Text shared from other device</translation>
 <translation id="6238923052227198598">Keep latest note on lock screen</translation>
@@ -9339,6 +9344,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8200789660596905522">Make sure that you accept the cast request on your <ph name="DEVICE_NAME" /></translation>
 <translation id="8202160505685531999">Please re-enter your password to update your <ph name="DEVICE_TYPE" /> profile.</translation>
+<translation id="8202827109322349110">Open in basic editor</translation>
 <translation id="8203152941016626022">Nearby Share device name</translation>
 <translation id="8203732864715032075">Send you notifications and default to remembering this computer for Messages. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Right click</translation>

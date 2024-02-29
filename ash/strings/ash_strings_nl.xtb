@@ -358,6 +358,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2484513351006226581">Druk op <ph name="KEYBOARD_SHORTCUT" /> om van toetsenbordindeling te wisselen.</translation>
 <translation id="2486214324139475545">Voorbeeld van <ph name="DESK_NAME" />. Actief bureau.</translation>
 <translation id="2487915095798731898">Deelnemen</translation>
+<translation id="2499445554382787206">Menu voor bureauprofiel. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Plaktoetsen</translation>
 <translation id="2504454902900101003">Instellen van de weergave van recente foto's, media en meldingen van je telefoon sluiten</translation>
 <translation id="2509468283778169019">CAPS LOCK staat aan</translation>
@@ -605,6 +606,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3509391053705095206">Kan je telefoon niet vinden. Zorg dat bluetooth aanstaat op je telefoon.</translation>
 <translation id="3510164367642747937">Muisaanwijzer markeren</translation>
 <translation id="3513798432020909783">Account wordt beheerd door <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Taken laatst geüpdatet: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Apparaat binnen 1 minuut updaten}other{Apparaat binnen # minuten updaten}}</translation>
 <translation id="3522979239100719575">Zoeken naar beschikbare profielen. Dit kan een paar minuten duren.</translation>
 <translation id="3526440770046466733">Link openen in een nieuw tabblad en op het huidige tabblad blijven</translation>
@@ -1144,6 +1146,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5536723544185013515">Recente apps, navigeer met de pijl-links of -rechts voor toegang tot alle recente apps</translation>
 <translation id="553675580533261935">Sessie sluiten</translation>
 <translation id="5537725057119320332">Cast</translation>
+<translation id="554017492391497564">Kan niet markeren als afgerond.</translation>
 <translation id="5546397813406633847">Gebruiker herstellen</translation>
 <translation id="554893713779400387">Dicteren aan/uit</translation>
 <translation id="5550417424894892620">Zet bestanden op het bureaublad neer om ze toe te voegen aan <ph name="HOLDING_SPACE_TITLE" />. Je kunt geen bestanden toevoegen aan het bureaublad.</translation>
@@ -1338,6 +1341,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Batterij bijna leeg. Batterijbesparing staat aan.</translation>
 <translation id="6247728804802644171">Meldingen openen</translation>
+<translation id="6249795363855770621">Kan niet markeren als afgerond. Probeer het opnieuw als je online bent.</translation>
 <translation id="6254629735336163724">Vergrendeld in horizontale stand</translation>
 <translation id="6259254695169772643">Gebruik je stylus om te selecteren</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: activeren...</translation>
@@ -1498,6 +1502,7 @@ Nieuwe installatie</translation>
 <translation id="6896758677409633944">Kopiëren</translation>
 <translation id="6912841030378044227">Focus op adresbalk</translation>
 <translation id="6912901278692845878">Korte rondleiding</translation>
+<translation id="6917259695595127329">Taken laatst geüpdatet: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
 <translation id="692135145298539227">verwijderen</translation>
 <translation id="6929081673585394903">Bedieningselementen tonen</translation>

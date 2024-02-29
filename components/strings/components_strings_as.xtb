@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">এনভেল’প আমন্ত্ৰণ</translation>
 <translation id="1413809658975081374">গোপনীয়তাৰ ক্ষেত্রত কিবা আসোঁৱাহ হৈছে</translation>
 <translation id="1414134146594747368">প্ৰাক-প্ৰাথমিক স্কুল</translation>
-<translation id="141826476809826269">আহৰণ কৰা পাঠৰ শেষ</translation>
 <translation id="1418611192881166179">Chromeএ এই সুবিধাটো আপডে’ট কৰি থকাৰ সময়ত, ছাইটসমূহে তৃতীয় পক্ষৰ কুকিসমূহ সাময়িকভাৱে ব্যৱহাৰ কৰিব পাৰে যদিহে আপুনি ছেটিঙত সেইসমূহ অৱৰোধ নকৰে।</translation>
 <translation id="1419305130220238697">Chromeত ডাউনল’ড পৰিচালনা কৰাৰ বুটাম, আপুনি Chromeত জৰিয়তে ডাউনল’ড কৰা ফাইল পৰিচালনা কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="1422930527989633628">নিকটৱৰ্তী ডিভাইচ ব্লুটুথ ডিভাইচসমূহ বিচাৰিবলৈ অনুমতি বিচাৰিব পাৰে</translation>
@@ -1199,6 +1198,7 @@
 <translation id="3324687287337751929">৪ x ৬ ইঞ্চি</translation>
 <translation id="3324983252691184275">ক্ৰিমছন</translation>
 <translation id="3325027355611702542">কেম্পাৰ আৰু RV</translation>
+<translation id="3325568918769906282">অধঃক্ৰমত</translation>
 <translation id="3329013043687509092">সংপৃক্তি</translation>
 <translation id="3333762389743153920">ভাৰ্চুৱেল কাৰ্ডখনৰ বাবে যোগ্য নহয়</translation>
 <translation id="3336044043987989409">আপোনাৰ ব্যক্তিগত নেটৱৰ্কত ডিভাইচ বা ছাৰ্ভাৰসমূহৰ সৈতে সংযোগৰ অনুমতি দিবলৈ পুনৰ ল’ড কৰক বুটামটো টিপক।</translation>
@@ -2244,6 +2244,7 @@
 <translation id="5371425731340848620">কাৰ্ড আপডে’ট কৰক</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"আপোনাৰ ঘড়ী লেহেমীয়াকৈ চলি আছে" বা "আপোনাৰ ঘড়ী খৰকৈ চলি আছে " বা "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">ঊৰ্ধ্বক্ৰমত</translation>
 <translation id="5383478552402031184">ফ্ল’ৰিং</translation>
 <translation id="5385857628869214740">ব্যংগ কৌতুক</translation>
 <translation id="5385966243497224160">অনা-HTTPS URL পূৰ্বদৰ্শন কৰিব নোৱাৰি</translation>
@@ -3064,7 +3065,6 @@
 <translation id="6978121630131642226">সন্ধান ইঞ্জিনসমূহ</translation>
 <translation id="6978236010531171013">তথাপি শ্বেয়াৰ কৰক</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">আহৰণ কৰা পাঠৰ আৰম্ভণি</translation>
 <translation id="6979440798594660689">মিউট (ডিফ'ল্ট)</translation>
 <translation id="6987806006823772670">এনভেল’প (ক’টেড)</translation>
 <translation id="6989763994942163495">উন্নত ছেটিংসমূহ দেখুৱাওক...</translation>
@@ -3479,6 +3479,7 @@
 <translation id="7719791801330803993">ফট’ আৰু ভিডিঅ’ৰ ছফ্টৱেৰ</translation>
 <translation id="772128550427553158">CVC আপোনাৰ কাৰ্ডৰ সন্মুখ ভাগত থাকে।</translation>
 <translation id="7724603315864178912">কাট কৰক</translation>
+<translation id="7730057435797792985">সজাওক</translation>
 <translation id="7734285854693414638">Google Formsত ক্ষিপ্ৰভাৱে এখন নতুন ফ’ৰ্ম সৃষ্টি কৰক</translation>
 <translation id="773466115871691567">সদায় পৃষ্ঠাসমূহ <ph name="SOURCE_LANGUAGE" />লৈ অনুবাদ কৰক</translation>
 <translation id="7736959720849233795">লিংকটোৰ ঠিকনাটো প্ৰতিলিপি কৰক</translation>

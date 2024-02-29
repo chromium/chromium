@@ -602,6 +602,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="426652736638196239">O IBAN vai ser salvo apenas neste dispositivo</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
 <translation id="4277529130885813215">Usar outro dispositivo</translation>
+<translation id="4282440837784183472">Sua organização, <ph name="MANAGED_DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chrome pode ser usado. Seu administrador pode configurar ou restringir determinados recursos.</translation>
 <translation id="4285846616383034558">Cookies, cache e outros dados do site</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Ativar o bloqueio de tela nas configurações do Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nova guia anônima</translation>
@@ -637,7 +638,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Favorito salvo em "<ph name="FOLDER_NAME" />". Ele fica salvo apenas neste dispositivo.}one{Favorito salvo em "<ph name="FOLDER_NAME" />". Ele fica salvo apenas neste dispositivo.}other{Favoritos salvos em "<ph name="FOLDER_NAME" />". Eles ficam salvos apenas neste dispositivo.}}</translation>
 <translation id="4484496141267039529">Sem conexão. Tente novamente mais tarde.</translation>
 <translation id="4487967297491345095">Todos os dados de app Chrome serão excluídos permanentemente. Isso inclui todos os arquivos, configurações, contas, bancos de dados etc.</translation>
-<translation id="4491323382106587961">Escolha uma conta. Seleção atual: <ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">O salvamento de senhas foi ativado pelo administrador</translation>
 <translation id="4508528996305412043">O menu do card do feed está aberto</translation>
 <translation id="4509501256689523862">Enquanto você navega, a personalização de um anúncio depende desta configuração, dos <ph name="BEGIN_LINK_1" />tópicos de anúncios<ph name="END_LINK_1" />, das <ph name="BEGIN_LINK_2" />configurações de cookies<ph name="END_LINK_2" /> e se o site aberto personaliza os anúncios</translation>
@@ -1166,6 +1166,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7037830628447527439">Faça login no Chrome com sua Conta do Google</translation>
 <translation id="7054588988317389591">Ver descrições de imagens?</translation>
 <translation id="7055152154916055070">Redirecionamento bloqueado:</translation>
+<translation id="7057969023583258980">Abrir o histórico completo do Chrome</translation>
 <translation id="7063006564040364415">Não foi possível conectar ao servidor de sincronização.</translation>
 <translation id="7071521146534760487">Gerenciar conta</translation>
 <translation id="707155805709242880">Escolha o que será sincronizado abaixo</translation>

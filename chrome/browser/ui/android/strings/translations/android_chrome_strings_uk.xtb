@@ -116,6 +116,7 @@
 <translation id="1558391695376153246">Закрити анонімні вкладки</translation>
 <translation id="1568636008098739136">Прослухати цю сторінку. Щоб змінити функцію кнопки, натисніть і утримуйте її.</translation>
 <translation id="1571304935088121812">Копіювати ім’я користувача</translation>
+<translation id="1584648915421894279">Зараз паролі, збережені на цьому пристрої, не можна використовувати в каналах Chrome. Після виходу версії 125 ваші збережені паролі для Chrome та <ph name="CHROME_CHANNEL" /> буде об’єднано, і їх можна буде використовувати в обох додатках.</translation>
 <translation id="1592864538817356322">Стандартний захист:</translation>
 <translation id="1594635596540195766">У списку нижче запропоновано стільки пропозицій: <ph name="SUGGESTIONS_COUNT" />.</translation>
 <translation id="1598163867407640634">Використовуйте сайт <ph name="SITE_ETLD_PLUS_ONE" />, увійшовши в обліковий запис <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -328,6 +329,7 @@
 <translation id="281504910091592009">Переглядайте збережені паролі й керуйте ними в <ph name="BEGIN_LINK" />обліковому записі Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Меню картки зі стрічки відкрито на половину висоти</translation>
 <translation id="2830783625999891985">Вміст буфера обміну сховано</translation>
+<translation id="2834884592945939112">Налаштування. Помилка облікового запису Google.</translation>
 <translation id="2838367486340230368">Пояснення про посібник щодо конфіденційності відкрито на половину висоти</translation>
 <translation id="2839327205551510876">Підписку на сайт "<ph name="SITE_NAME" />" скасовано</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> анонімну вкладку буде закрито}one{<ph name="TAB_COUNT_MANY" /> анонімну вкладку буде закрито}few{<ph name="TAB_COUNT_MANY" /> анонімні вкладки буде закрито}many{<ph name="TAB_COUNT_MANY" /> анонімних вкладок буде закрито}other{<ph name="TAB_COUNT_MANY" /> анонімної вкладки буде закрито}}</translation>
@@ -638,7 +640,6 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Закладку збережено в папці "<ph name="FOLDER_NAME" />" (тільки на цьому пристрої).}one{Закладки збережено в папці "<ph name="FOLDER_NAME" />" (тільки на цьому пристрої).}few{Закладки збережено в папці "<ph name="FOLDER_NAME" />" (тільки на цьому пристрої).}many{Закладки збережено в папці "<ph name="FOLDER_NAME" />" (тільки на цьому пристрої).}other{Закладки збережено в папці "<ph name="FOLDER_NAME" />" (тільки на цьому пристрої).}}</translation>
 <translation id="4484496141267039529">Немає з’єднання. Повторіть спробу пізніше.</translation>
 <translation id="4487967297491345095">Усі дані Chrome буде видалено назавжди. Це стосується всіх файлів, налаштувань, облікових записів, баз даних тощо.</translation>
-<translation id="4491323382106587961">Виберіть обліковий запис. Зараз вибрано: <ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">Адміністратор увімкнув можливість зберігати паролі</translation>
 <translation id="4508528996305412043">Відкрито меню картки зі стрічки</translation>
 <translation id="4509501256689523862">Персоналізація реклами залежить від цього параметра, <ph name="BEGIN_LINK_1" />тем оголошень<ph name="END_LINK_1" /> і <ph name="BEGIN_LINK_2" />налаштування файлів cookie<ph name="END_LINK_2" />, а також від налаштувань персоналізації, визначених сайтом, який ви переглядаєте</translation>
@@ -664,6 +665,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# хвилину тому}one{# хвилину тому}few{# хвилини тому}many{# хвилин тому}other{# хвилини тому}}</translation>
 <translation id="4587589328781138893">Сайти</translation>
 <translation id="4594952190837476234">Цю сторінку створено <ph name="CREATION_TIME" />. Вона може відрізнятися від онлайн-версії.</translation>
+<translation id="4595805675102978678">Помилка облікового запису Google</translation>
 <translation id="4601095002996233687">Ретельна перевірка підозрілих завантажень.</translation>
 <translation id="4609429330876432068">Ваші списки збережених паролів для Chrome і <ph name="CHROME_CHANNEL" /> було об’єднано. Ви можете автоматично вводити всі збережені паролі в обох додатках.</translation>
 <translation id="4616150815774728855">Відкрити файл <ph name="WEBAPK_NAME" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="7037830628447527439">Увійдіть у Chrome через обліковий запис Google</translation>
 <translation id="7054588988317389591">Отримувати описи зображень?</translation>
 <translation id="7055152154916055070">Переадресацію заблоковано:</translation>
+<translation id="7057969023583258980">Відкрити повну історію Chrome</translation>
 <translation id="7063006564040364415">Не вдалося з’єднатись із сервером синхронізації.</translation>
 <translation id="7071521146534760487">Керувати обліковим записом</translation>
 <translation id="707155805709242880">Нижче виберіть, що потрібно синхронізувати</translation>
@@ -1355,6 +1358,7 @@
 <translation id="7947953824732555851">Прийняти й увійти</translation>
 <translation id="7951102827450076904">Завжди відкривати завантажені файли PDF</translation>
 <translation id="7957413488482743710">Для захисту від потенційного шахрайства замість справжньої картки можна використовувати віртуальну. <ph name="BEGIN_LINK1" />Докладніше про віртуальні картки<ph name="END_LINK1" /></translation>
+<translation id="7959485987650214982">Вкладки на цьому пристрої</translation>
 <translation id="7960972236129063347">Кнопка "Назад" на сторінці зі статистикою</translation>
 <translation id="7961926449547174351">Ви вимкнули доступ до пам'яті. Відкрийте налаштування, щоб увімкнути його.</translation>
 <translation id="7963646190083259054">Постачальник:</translation>

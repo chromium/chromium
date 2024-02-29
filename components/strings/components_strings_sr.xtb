@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Коверта Invite</translation>
 <translation id="1413809658975081374">Грешка у вези са приватношћу</translation>
 <translation id="1414134146594747368">Предшколски узраст</translation>
-<translation id="141826476809826269">Крај издвојеног текста</translation>
 <translation id="1418611192881166179">Док Chrome ажурира ову функцију, сајтови могу привремено да користе колачиће треће стране ако их не блокирате у подешавањима.</translation>
 <translation id="1419305130220238697">Дугме Управљај преузимањима у Chrome-у, активирајте га да бисте управљали фајловима које сте преузели у Chrome-у</translation>
 <translation id="1422930527989633628">Може да тражи да открива Bluetooth уређаје у близини</translation>
@@ -1780,6 +1779,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">Обод</translation>
 <translation id="4397059608630092079">Увек верификуј при коришћењу аутоматског попуњавања</translation>
+<translation id="4397978002248035985">Отвара искачући прозор за верификацију на веб-сајту банке</translation>
 <translation id="4406883609789734330">Титл уживо</translation>
 <translation id="4406896451731180161">резултати претраге</translation>
 <translation id="4408413947728134509">Колачићи (<ph name="NUM_COOKIES" />)</translation>
@@ -2203,6 +2203,7 @@
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Својства документа</translation>
 <translation id="528468243742722775">Заврши</translation>
+<translation id="5285468538058987167">Преко јаке потврде идентитета клијента (SCA)</translation>
 <translation id="5285570108065881030">Прикажи све сачуване лозинке</translation>
 <translation id="5287456746628258573">Овај сајт користи застарелу безбедносну конфигурацију, која може да открије ваше информације (на пример, лозинке или бројеве кредитних картица) када се шаљу на њега.</translation>
 <translation id="5288108484102287882">Валидација вредности смерница је активирала упозорења</translation>
@@ -3070,7 +3071,6 @@
 <translation id="6978121630131642226">Претраживачи</translation>
 <translation id="6978236010531171013">Ипак дели</translation>
 <translation id="6979158407327259162">Google диск</translation>
-<translation id="6979332652936434520">Почетак издвојеног текста</translation>
 <translation id="6979440798594660689">Искључен (подразумевано)</translation>
 <translation id="6987806006823772670">Коверта (обложена)</translation>
 <translation id="6989763994942163495">Прикажи напредна подешавања...</translation>

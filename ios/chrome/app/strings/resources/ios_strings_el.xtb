@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">Αναζήτηση στον Ιστό</translation>
 <translation id="2252749852083403809">Αποθηκεύεται στο Drive για τον λογαριασμό <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">Ο οργανισμός σας επιτρέπει να συνδέεστε μόνο με ορισμένους λογαριασμούς.</translation>
+<translation id="2257594476751932246">Εξατομικευμένες ειδήσεις</translation>
 <translation id="2258326562203545455">{count,plural, =1{Μπορείτε να αποθηκεύσετε τον σελιδοδείκτη σας στον Λογαριασμό σας Google, {email}.}other{Μπορείτε να αποθηκεύσετε τους σελιδοδείκτες σας στον Λογαριασμό σας Google, {email}.}}</translation>
 <translation id="225943865679747347">Κωδικός σφάλματος: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Προσθήκη λογαριασμού</translation>

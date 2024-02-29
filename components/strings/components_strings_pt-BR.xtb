@@ -231,7 +231,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1410941016594047814">Envelope de convite</translation>
 <translation id="1413809658975081374">Erro de privacidade</translation>
 <translation id="1414134146594747368">Pré-escola</translation>
-<translation id="141826476809826269">Fim do texto extraído</translation>
 <translation id="1418611192881166179">Enquanto o Chrome atualiza esse recurso, os sites podem usar cookies de terceiros temporariamente, a menos que você os bloqueie nas configurações.</translation>
 <translation id="1419305130220238697">Botão "Gerenciar downloads no Chrome". Ative para gerenciar os arquivos baixados no Chrome</translation>
 <translation id="1422930527989633628">Pode pedir para descobrir dispositivos Bluetooth por perto</translation>
@@ -1869,6 +1868,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="46128681529823442">Equipamento para futebol</translation>
 <translation id="4619564267100705184">Confirmar sua identidade</translation>
 <translation id="4622292761762557753">Transferir mesmo assim</translation>
+<translation id="4622647778991854660">Ative as notificações na Central de notificações. Abra as <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Não é possível definir essa política no nível de perfil do Chrome. Ela será ignorada.</translation>
 <translation id="4628678854894591460">Ofertas de férias</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -3069,7 +3069,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6978121630131642226">Mecanismos de pesquisa</translation>
 <translation id="6978236010531171013">Compartilhar mesmo assim</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Início do texto extraído</translation>
 <translation id="6979440798594660689">Desativar som (padrão)</translation>
 <translation id="6987806006823772670">Envelope (revestido)</translation>
 <translation id="6989763994942163495">Mostrar configurações avançadas...</translation>
@@ -3201,6 +3200,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7234112195906418665">Viagem e transporte</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% concluído | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Presentes e itens para eventos especiais</translation>
+<translation id="7237454422623102448">Configurações do sistema</translation>
 <translation id="7237492777898608035">Não mostrar esta mensagem novamente neste site</translation>
 <translation id="7240120331469437312">Nome alternativo do requerente do certificado</translation>
 <translation id="7241863998525879494">O que esperar</translation>

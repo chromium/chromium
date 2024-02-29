@@ -148,6 +148,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="3702352323269013324">Chromiumda reklamani moslashtirish haqida batafsil</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="3713809861844741608">Havolani yangi Chromium oynasida ochish</translation>
+<translation id="3788675262216168505">Chromium profillarini boshqaring</translation>
 <translation id="378917192836375108">Chromium‘da har qanday telefon raqami ustiga bosib Skype orqali qo‘ng‘iroq qilish mumkin!</translation>
 <translation id="3790262771324122253">Chromium ayrim yuklanmalarni nega bloklashi haqida</translation>
 <translation id="379589255253486813">Chromium biror sozlamaga diqqat qilish kerak boʻlganda sizga xabar qiladi.</translation>
@@ -432,6 +433,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8555465886620020932">Xizmat xatosi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Google hisobingizga kirsangiz, Chromium parollaringizni tekshira oladi</translation>
 <translation id="8586442755830160949">© The Chromium Authors, <ph name="YEAR" />. Barcha huquqlar himoyalangan.</translation>
+<translation id="858822505990366713">Chromium brauzerini sozlang</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Bu axborotdan qanday foydalanamiz:<ph name="END_BOLD" /> Chromium orqali saytlar qiziqishlaringiz haqidagi axborotni saqlashi mumkin. Misol uchun marafonda yugurish uchun poyabzal sotib olish saytini ochsangiz, sayt marafonda yugurishni qiziqishingiz deb aniqlashi mumkin. Keyin yugurish uchun boshqa saytga kirganingizda sayt qiziqishingiz asosida yugurish uchun poyabzal reklamasini chiqarishi mumkin.</translation>
 <translation id="8619360774459241877">Chromium ishga tushmoqda...</translation>
 <translation id="8621669128220841554">O‘rnatish vaqtida kutilmagan xatolik yuz berdi. Chromium‘ni qaytadan yuklab oling.</translation>
@@ -449,8 +451,10 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8907580949721785412">Chromium parollarni ko‘rsatishga urinmoqda. Ruxsat berish uchun Windows platformasidagi parolingizni kiriting.</translation>
 <translation id="8931379085695076764">Chromium oxirgi bir nechta haftada siz ochgan sahifalar tarixi asosida qiziqishlaringiz taxmin qilishi mumkin. Bu maʼlumotlar qurilmangizda qoladi.</translation>
 <translation id="8941642502866065432">Chromiumni yangilab bo‘lmadi</translation>
+<translation id="895999862145835951">Chromium brauzerini sozlang</translation>
 <translation id="897581876605952338">Chromium Enterprise logotipi</translation>
 <translation id="8986207147630327271">Bu brauzerga ish profilini kiritish bilan siz administratorga ish profili orqali barcha boshqaruv ruxsatlarini berasiz.</translation>
+<translation id="8988036198400390003">Chromium profillarini boshqaring</translation>
 <translation id="9019929317751753759">Ma’lumotlaringiz xavfsizligini ta’minlash maqsadida ayrim kengaytmalarni o‘chirib qo‘ydik, chunki <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />da ular haqida hech qanday ma’lumot yo‘q (ya’ni, ular sizning ruxsatingizsiz o‘rnatilgan bo‘lishi mumkin).</translation>
 <translation id="9022552996538154597">Chromium‘ga kirish</translation>
 <translation id="907832235989677238">Chromium hisobiga kirish Agar bu hisob boshqa ishlatilmasa, <ph name="GUEST_LINK_BEGIN" />qurilmadan mehmon rejimida foydalanish<ph name="GUEST_LINK_END" /> mumkin.</translation>

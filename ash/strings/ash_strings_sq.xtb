@@ -358,6 +358,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2484513351006226581">Shtyp <ph name="KEYBOARD_SHORTCUT" /> për të ndryshuar planin e tastierës.</translation>
 <translation id="2486214324139475545">Pamja paraprake e "<ph name="DESK_NAME" />". Tavolina e punës aktive.</translation>
 <translation id="2487915095798731898">Bashkohu</translation>
+<translation id="2499445554382787206">Menyja e profilit të tavolinës së punës. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tastet e përhershme</translation>
 <translation id="2504454902900101003">Hiq konfigurimin e shikimit të njoftimeve, medias dhe fotografive më të fundit të telefonit tënd</translation>
 <translation id="2509468283778169019">KYÇJA E KAPITALEVE është aktive</translation>
@@ -605,6 +606,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3509391053705095206">Telefoni yt nuk mund të gjendet. Sigurohu që të jetë aktivizuar Bluetooth-i i telefonit tënd.</translation>
 <translation id="3510164367642747937">Thekso kursorin e miut</translation>
 <translation id="3513798432020909783">Llogaria menaxhohet nga <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Përditësimi i fundit i detyrave: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Përditëso pajisjen brenda 1 minute}other{Përditëso pajisjen brenda # minutash}}</translation>
 <translation id="3522979239100719575">Po kërkon për profilet e disponueshme. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="3526440770046466733">Hape lidhjen në një skedë të re dhe qëndro në skedën aktuale</translation>
@@ -1144,6 +1146,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="5536723544185013515">Aplikacionet e fundit; navigo me tastet e shigjetës majtas ose djathtas për të pasur qasje te të gjitha aplikacionet e fundit</translation>
 <translation id="553675580533261935">Po del nga seanca</translation>
 <translation id="5537725057119320332">Transmeto</translation>
+<translation id="554017492391497564">Nuk mund të shënohej si e përfunduar.</translation>
 <translation id="5546397813406633847">Rikupero përdoruesin</translation>
 <translation id="554893713779400387">Ndërro diktimin</translation>
 <translation id="5550417424894892620">Lëshoji skedarët në desktop për t'i shtuar te "<ph name="HOLDING_SPACE_TITLE" />". Nuk mund të shtosh skedarë te desktopi.</translation>
@@ -1338,6 +1341,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Bateria në nivel të ulët. "Kursyesi i baterisë" u aktivizua.</translation>
 <translation id="6247728804802644171">Hap njoftimet</translation>
+<translation id="6249795363855770621">Nuk mund të shënohej si e përfunduar. Provo përsëri kur të jesh online.</translation>
 <translation id="6254629735336163724">Kyçur horizontalisht</translation>
 <translation id="6259254695169772643">Përdor lapsin për të zgjedhur</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Po aktivizohet...</translation>
@@ -1498,6 +1502,7 @@ Instalim i ri</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6912841030378044227">Fokusohu te shiriti i adresave</translation>
 <translation id="6912901278692845878">Turneu i shpejtë</translation>
+<translation id="6917259695595127329">Përditësimi i fundit i detyrave: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Karta smart nuk mund të njihej. Provo përsëri.</translation>
 <translation id="692135145298539227">fshi</translation>
 <translation id="6929081673585394903">Shfaq kontrollet</translation>

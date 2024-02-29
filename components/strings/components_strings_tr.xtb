@@ -231,7 +231,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1410941016594047814">Zarf Invite</translation>
 <translation id="1413809658975081374">Gizlilik hatası</translation>
 <translation id="1414134146594747368">Okul öncesi</translation>
-<translation id="141826476809826269">Çıkarılan metnin sonu</translation>
 <translation id="1418611192881166179">Chrome bu özelliği güncellerken siteler, ayarlarda engellemediğiniz sürece üçüncü taraf çerezlerini geçici olarak kullanabilir.</translation>
 <translation id="1419305130220238697">Chrome'da indirilenleri yönet düğmesi, Chrome'da indirdiğiniz dosyaları yönetmek için etkinleştirin</translation>
 <translation id="1422930527989633628">Yakındaki Bluetooth cihazları bulmak isteyebilir</translation>
@@ -1321,6 +1320,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3542628208405253498">Kart resmi</translation>
 <translation id="3542768452570884558">Bağlantıyı Yeni Pencerede Aç</translation>
 <translation id="3547746132308051926">20 x 24 inç</translation>
+<translation id="3552155506104542239">Uyarı: Bu politika <ph name="POLICY_NAME" /> ile çakıştığından Android uygulamalarını etkilemeyecektir. Bunun dışında politika beklendiği şekilde çalışmaktadır.</translation>
 <translation id="3552297013052089404">Sans-Serif Yazı Tipi</translation>
 <translation id="3558573058928565255">Gündüz</translation>
 <translation id="355995771319966853">Otomatik Doldurmayı Geri Al</translation>
@@ -1868,6 +1868,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="46128681529823442">Futbol Gereçleri</translation>
 <translation id="4619564267100705184">Kimliğinizi doğrulayın</translation>
 <translation id="4622292761762557753">Yine de aktar</translation>
+<translation id="4622647778991854660">Bildirim Merkezi'nden bildirimleri etkinleştirin. <ph name="LINK" /> sayfasını aç</translation>
 <translation id="4627675673814409125">Bu politika, Chrome profili düzeyinde ayarlanamaz ve yoksayılır.</translation>
 <translation id="4628678854894591460">Tatil Teklifleri</translation>
 <translation id="4628948037717959914">Fotoğraf</translation>
@@ -3067,7 +3068,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6978121630131642226">Arama Motorları</translation>
 <translation id="6978236010531171013">Yine de paylaş</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Çıkarılan metnin başı</translation>
 <translation id="6979440798594660689">Sesi kapat (varsayılan)</translation>
 <translation id="6987806006823772670">Zarf (Kaplanmış)</translation>
 <translation id="6989763994942163495">Gelişmiş ayarları göster...</translation>
@@ -3199,6 +3199,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7234112195906418665">Seyahat ve Ulaşım</translation>
 <translation id="7236417832106250253">%<ph name="PROGRESS_PERCENT" /> tamamlandı | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Hediyeler ve Özel Günler İçin Ürünler</translation>
+<translation id="7237454422623102448">Sistem Ayarları</translation>
 <translation id="7237492777898608035">Bu site için bu mesajı bir daha gösterme</translation>
 <translation id="7240120331469437312">Sertifika Konusu Diğer Adı</translation>
 <translation id="7241863998525879494">Güncellemenin sağlayacakları</translation>

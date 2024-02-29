@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">Búsqueda web de Google</translation>
 <translation id="2252749852083403809">Guardando en Drive para <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">Tu organización te permite acceder solo con determinadas cuentas.</translation>
+<translation id="2257594476751932246">Noticias personalizadas</translation>
 <translation id="2258326562203545455">{count,plural, =1{Puedes guardar el favorito en tu Cuenta de Google, {email}.}other{Puedes guardar los favoritos en tu Cuenta de Google, {email}.}}</translation>
 <translation id="225943865679747347">Código de error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Agregar cuenta</translation>
@@ -912,7 +913,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5702108177581350218">Si compartes una copia de tu nombre de usuario y contraseña, el miembro de tu familia podrá completarlos con el Administrador de contraseñas de Google.</translation>
 <translation id="5704908597376970822">No se puede acceder.</translation>
 <translation id="5706552126692816153">Activo hace 1 día</translation>
-<translation id="5718049162805123412">Debes cambiarlas ahora.</translation>
+<translation id="5718049162805123412">Debes cambiarlas ahora</translation>
 <translation id="5724941645893276623">Para navegar en la Web de manera privada, agrega una pestaña nueva.</translation>
 <translation id="5728700505257787410">Se produjo un error al acceder a tu cuenta.</translation>
 <translation id="5737974891429562743">Los detalles de acceso de la cuenta están desactualizados. Actualízalos para comenzar la sincronización.</translation>

@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">Meklēt tīmeklī</translation>
 <translation id="2252749852083403809">Tiek saglabāts konta <ph name="USER_EMAIL" /> diskā.</translation>
 <translation id="2256933947031277845">Jūsu organizācija ir atļāvusi pierakstīšanos tikai ar noteiktiem kontiem.</translation>
+<translation id="2257594476751932246">Personalizētas ziņas</translation>
 <translation id="2258326562203545455">{count,plural, =1{Varat saglabāt grāmatzīmi savā Google kontā ({email}).}zero{Varat saglabāt grāmatzīmes savā Google kontā ({email}).}one{Varat saglabāt grāmatzīmes savā Google kontā ({email}).}other{Varat saglabāt grāmatzīmes savā Google kontā ({email}).}}</translation>
 <translation id="225943865679747347">Kļūdas kods: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Pievienot kontu</translation>

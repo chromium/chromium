@@ -367,6 +367,7 @@
 <translation id="702275896380648118">Dette website foretager en vurdering af, hvad du kan lide, og foreslår derefter annoncer til andre websites. Dette website indhenter også dine annonceemner fra Chrome med henblik på at vise dig mere relevante annoncer.</translation>
 <translation id="7053983685419859001">Bloker</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 er valgt}one{# er valgt}other{# er valgt}}</translation>
+<translation id="708014373017851679">"<ph name="APP_NAME" />" er forældet. Opdater appen.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> er markeret. De tilgængelige valgmuligheder er øverst på skærmen</translation>
 <translation id="7141896414559753902">Bloker visning af pop up-vinduer på websites og omdirigeringer (anbefales)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">ຜູ້ຊ່ວຍ</translation>
 <translation id="1954818433534793392">ຕຶກອາຄານ</translation>
 <translation id="1962550982027027473">ຈຳເປັນຕ້ອງມີ APN ຕາມຄ່າເລີ່ມຕົ້ນ</translation>
+<translation id="1967860190218310525">ສ້າງ APN ໃໝ່</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">ຮູບໂປຣໄຟລ໌ Google</translation>
 <translation id="1979103255016296513">ກາຍກຳນົດປ່ຽນລະຫັດຜ່ານແລ້ວ</translation>
@@ -473,7 +474,6 @@
 <translation id="4046123991198612571">ເພງຕໍ່ໄປ</translation>
 <translation id="404928562651467259">ຄໍາເຕືອນ</translation>
 <translation id="4054683689023980771">ກຳລັງດາວໂຫຼດຮູບ</translation>
-<translation id="4060260348856573701">ເພີ່ມ APN ໃໝ່</translation>
 <translation id="4063039537646912479">ຟ້າອ່ອນ</translation>
 <translation id="4093865285251893588">ຮູບໂປຣໄຟລ໌</translation>
 <translation id="409427325554347132">ບັນທຶກລາຍລະອຽດຜົນທົດສອບ</translation>
@@ -982,6 +982,7 @@
 <translation id="7144954474087165241">ພະທາດ</translation>
 <translation id="714876143603641390">ການເຊື່ອມຕໍ່ LAN</translation>
 <translation id="7154020516215182599">ແບ່ງປັນຄຳຕິຊົມ ຫຼື ອະທິບາຍບັນຫາຂອງທ່ານ. ຫາກເປັນໄປໄດ້, ໃຫ້ຮວມຂັ້ນຕອນໃນການເຮັດໃຫ້ເກີດບັນຫາຂອງທ່ານຄືນໃໝ່.</translation>
+<translation id="7155037718620478619">ຄົ້ນພົບ APN ເພີ່ມເຕີມ</translation>
 <translation id="7155171745945906037">ຮູບຖ່າຍທີ່ມີຢູ່ຈາກກ້ອງຖ່າຍຮູບ ຫຼື ໄຟລ໌</translation>
 <translation id="7162487448488904999">ຄັງຮູບ</translation>
 <translation id="7170236477717446850">ຮູບໂປຣໄຟລ໌</translation>

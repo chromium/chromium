@@ -638,7 +638,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Əlfəcin "<ph name="FOLDER_NAME" />" qovluğunda yadda saxlandı. Yalnız bu cihazda yadda saxlanır.}other{Əlfəcinlər "<ph name="FOLDER_NAME" />" qovluğunda yadda saxlandı. Yalnız bu cihazda yadda saxlanır.}}</translation>
 <translation id="4484496141267039529">Bağlantı yoxdur. Sonra cəhd edin.</translation>
 <translation id="4487967297491345095">Bütün Chrome tətbiq datası həmişəlik silinəcək. Bura fayllar, ayarlar, hesablar, data bazası və s. daxildir.</translation>
-<translation id="4491323382106587961">Hesab seçin. Seçilib: <ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">Parolun yadda saxlanılması administratorunuz tərəfindən aktiv edildi</translation>
 <translation id="4508528996305412043">Təchizat kartı menyusu açıqdır</translation>
 <translation id="4509501256689523862">Baxış keçirdiyiniz zaman gördüyünüz reklamın fərdiləşdirilmiş olub-olmaması bu ayardan, <ph name="BEGIN_LINK_1" />Reklam mövzularından<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />kuki ayarlarınızdan<ph name="END_LINK_2" /> və baxdığınız saytın reklamları fərdiləşdirib-fərdiləşdirməməsindən asılıdır</translation>

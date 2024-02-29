@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Конверт Чакыруу</translation>
 <translation id="1413809658975081374">Купуялык катасы</translation>
 <translation id="1414134146594747368">Мектепке чейинки</translation>
-<translation id="141826476809826269">Чыгарылган тексттин аягы</translation>
 <translation id="1418611192881166179">Параметрлерден үчүнчү тараптын cookie файлдарын бөгөттөбөсөңүз, Chrome'до бул функция жаңыртылып жатканда сайттар аларды убактылуу колдоно алышат.</translation>
 <translation id="1419305130220238697">"Chrome'до жүктөлүп алынгандарды башкаруу" баскычы, Chrome'до жүктөлүп алынган файлдарды башкаруу үчүн иштетиңиз</translation>
 <translation id="1422930527989633628">Жакын жердеги Bluetooth түзмөктөрүн табууга уруксат сурай алат</translation>
@@ -1201,6 +1200,7 @@
 <translation id="3324687287337751929">4 x 6 дюйм</translation>
 <translation id="3324983252691184275">Кочкул кызыл</translation>
 <translation id="3325027355611702542">Кемперлер жана үй фургондору</translation>
+<translation id="3325568918769906282">азаюу тартибинде</translation>
 <translation id="3329013043687509092">Каныктыруу</translation>
 <translation id="3333762389743153920">Виртуалдык карта үчүн жарамдуу эмес</translation>
 <translation id="3336044043987989409">Түзмөктөр жана серверлер менен жеке тармак аркылуу байланышуу үчүн "Кайра жүктөө" баскычын басыңыз.</translation>
@@ -1868,6 +1868,7 @@
 <translation id="46128681529823442">Футболдук жабдуулар</translation>
 <translation id="4619564267100705184">Өзүңүз экениңизди ырастаңыз</translation>
 <translation id="4622292761762557753">Баары бир өткөрүлсүн</translation>
+<translation id="4622647778991854660">Билдирмелер борборунда билдирмелерди иштетиңиз. <ph name="LINK" /> барагын ачуу.</translation>
 <translation id="4627675673814409125">Бул эреже Chrome профилинин деңгээлинде туураланбайт жана четке кагылат.</translation>
 <translation id="4628678854894591460">Өргүү сунуштары</translation>
 <translation id="4628948037717959914">Сүрөт</translation>
@@ -2246,6 +2247,7 @@
 <translation id="5371425731340848620">Картаны жаңыртуу</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Саатыңыз артта" же "Саатыңыз алдыда" же "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">өсүү тартибинде</translation>
 <translation id="5383478552402031184">Пол төшөө кызматы</translation>
 <translation id="5385857628869214740">Шакаба</translation>
 <translation id="5385966243497224160">HTTPS эмес URL дареги алдын ала көрүлбөйт</translation>
@@ -3067,7 +3069,6 @@
 <translation id="6978121630131642226">Издөө каражаттары</translation>
 <translation id="6978236010531171013">Баары бир бөлүшүү</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Чыгарылган тексттин башталышы</translation>
 <translation id="6979440798594660689">Үнсүз (демейки)</translation>
 <translation id="6987806006823772670">Конверт (капталган)</translation>
 <translation id="6989763994942163495">Өркүндөтүлгөн параметрлерди көрсөтүү…</translation>
@@ -3199,6 +3200,7 @@
 <translation id="7234112195906418665">Саякат жана транспорт</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% аткарылды | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Белектер жана өзгөчө иш-чараларга арналган нерселер</translation>
+<translation id="7237454422623102448">Тутум параметрлери</translation>
 <translation id="7237492777898608035">Бул билдирүү ушул сайтта экинчи көрсөтүлбөсүн</translation>
 <translation id="7240120331469437312">Тастыктама темасынын кошумча аталышы</translation>
 <translation id="7241863998525879494">Кандай өзгөрүү болот</translation>
@@ -3481,6 +3483,7 @@
 <translation id="7719791801330803993">Фото жана видео программасы</translation>
 <translation id="772128550427553158">CVC картаңыздын маңдайында жайгашкан.</translation>
 <translation id="7724603315864178912">Кесүү</translation>
+<translation id="7730057435797792985">Иреттөө</translation>
 <translation id="7734285854693414638">Google Формаларда жаңы форманы тез түзүү</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> тилиндеги барактар дайыма которулсун</translation>
 <translation id="7736959720849233795">Шилтеменин дарегин көчүрүү</translation>

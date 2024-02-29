@@ -983,6 +983,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1723824996674794290">&amp;Jendela baru</translation>
 <translation id="1724801751621173132">Mode input</translation>
 <translation id="1725562816265788801">Scrolling Tab</translation>
+<translation id="1725585416709851618">Coba aktifkan Google Drive di Setelan dan pilih "Coba lagi", atau pilih "Buka di editor dasar" untuk menggunakan opsi pengeditan dan tampilan terbatas.</translation>
 <translation id="1726503915437308071">Font miring</translation>
 <translation id="1729533290416704613">Juga mengontrol halaman apa yang ditampilkan saat Anda menelusuri dari Omnibox.</translation>
 <translation id="1730666151302379551">Lupa sandi lama</translation>
@@ -1826,7 +1827,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2343747224442182863">Fokuskan Tab Ini</translation>
 <translation id="2344032937402519675">Tidak dapat terhubung dengan server. Periksa koneksi jaringan Anda, lalu coba lagi. Jika Anda masih mengalami masalah, coba mulai ulang Chromebook.</translation>
 <translation id="234559068082989648">Aplikasi Chrome versi lama tidak dapat dibuka setelah Desember 2022. Hubungi administrator untuk mengupdate ke versi baru atau hapus aplikasi ini.</translation>
-<translation id="2347930112185157300">Penyedia jaringan seluler terkunci</translation>
 <translation id="2348176352564285430">Aplikasi: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Izin diminta, tekan Ctrl + Forward untuk merespons</translation>
 <translation id="234889437187286781">Terjadi error saat memuat data</translation>
@@ -1991,7 +1991,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2462332841984057083">Steam sedang disiapkan. Tunggu hingga penyiapan selesai.</translation>
 <translation id="2462724976360937186">ID Kunci Otoritas Sertifikasi</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> ditambahkan</translation>
-<translation id="2464046291463112461">Blokir aksesori eksternal agar tidak mengakses dan membagikan memori (RAM)</translation>
 <translation id="2467755475704469005">Tidak ada perangkat terdeteksi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Akselerasi scroll touchpad</translation>
 <translation id="2468205691404969808">Menggunakan cookie untuk mengingat preferensi, meski Anda tidak membuka halaman tersebut</translation>
@@ -2294,6 +2293,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2701330563083355633">Dibagikan dari <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Login, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">Alamat MAC Jaringan</translation>
+<translation id="2702720509009999256">Periksa koneksi internet Anda, lalu pilih "Coba lagi", atau pilih "Buka di editor dasar" untuk menggunakan opsi pengeditan dan tampilan terbatas.</translation>
 <translation id="2702801445560668637">Daftar Bacaan</translation>
 <translation id="270414148003105978">Jaringan seluler</translation>
 <translation id="2704184184447774363">Microsoft Document Signing</translation>
@@ -2620,6 +2620,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2935654492420446828">Tambahkan akun sekolah nanti</translation>
 <translation id="2936851848721175671">Pencadangan &amp; pemulihan</translation>
 <translation id="2938981087412273365">Tidak diizinkan membaca &amp; mengubah situs ini</translation>
+<translation id="2939005221756255562">Aktifkan notifikasi di Pusat Notifikasi. Buka <ph name="BEGIN_LINK" />Setelan Sistem<ph name="END_LINK" />.</translation>
 <translation id="2939908794993783865">Situs tidak aktif tambahan</translation>
 <translation id="2939938020978911855">Tampilkan perangkat Bluetooth yang tersedia</translation>
 <translation id="2941112035454246133">Rendah</translation>
@@ -3593,6 +3594,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3719245268140483218">Peristiwa Perangkat</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> telah diisi.</translation>
 <translation id="3719826155360621982">Beranda</translation>
+<translation id="3720543739123045680">Tab lain berbagi proses dengan tab ini, yang dapat mengakibatkan pengalaman DevTools yang tidak terduga.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Anda dan Google</translation>
 <translation id="3722108462506185496">Error saat memulai layanan mesin virtual. Harap coba lagi nanti.</translation>
@@ -5044,6 +5046,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="484462545196658690">Otomatis</translation>
 <translation id="4846628405149428620">Pilih tempat situs ini dapat menyimpan perubahan</translation>
 <translation id="4846680374085650406">Anda mengikuti saran administrator untuk setelan ini.</translation>
+<translation id="4847242508757499006">Pilih "Coba lagi", atau pilih "Buka di editor dasar" untuk menggunakan opsi pengeditan dan tampilan terbatas.</translation>
 <translation id="4848191975108266266">"Ok Google" Asisten Google</translation>
 <translation id="4849286518551984791">Waktu Universal Terkoordinasi (UTC/GMT)</translation>
 <translation id="4849517651082200438">Jangan Dipasang</translation>
@@ -6038,6 +6041,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5636012309446422">Hapus <ph name="DEVICE" /> dari <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Untuk menggunakan <ph name="NETWORK_ID" />, pertama Anda harus <ph name="LINK_START" />mengunjungi halaman proses masuk jaringan<ph name="LINK_END" />, yang akan otomatis terbuka dalam beberapa detik. Jika hal itu tidak terjadi, jaringan tidak akan dapat digunakan.</translation>
 <translation id="5637476008227280525">Data seluler aktif</translation>
+<translation id="5638170200695981015">Pilih "Buka di editor dasar" untuk menggunakan opsi pengeditan dan tampilan terbatas.</translation>
 <translation id="563821631542362636">Izinkan situs menyimpan data</translation>
 <translation id="5638309510554459422">Temukan ekstensi dan tema di <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Muat ulang halaman ini, tahan untuk melihat opsi lainnya</translation>
@@ -6790,6 +6794,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6235208551686043831">Kamera perangkat telah diaktifkan. Letakkan Kode QR eSIM Anda di depan kamera.</translation>
 <translation id="6237297174664969437">Anda dapat memilih jenis data browser yang akan disinkronkan di setelan Chrome kapan saja. Di <ph name="LINK_BEGIN" />setelan perangkat<ph name="LINK_END" />, Anda dapat mengontrol sinkronisasi untuk aplikasi web yang diinstal dari browser Chrome. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="6237474966939441970">Aplikasi mencatat dengan stilus</translation>
+<translation id="6237481151388361546">Ubah koneksi internet Anda, lalu pilih "Coba lagi", atau pilih "Buka di editor dasar" untuk menggunakan opsi pengeditan dan tampilan terbatas.</translation>
 <translation id="623755660902014047">Mode baca</translation>
 <translation id="6238767809035845642">Teks yang dibagikan dari Perangkat Lain</translation>
 <translation id="6238923052227198598">Tampilkan catatan terbaru di layar kunci</translation>
@@ -9327,6 +9332,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8200772114523450471">Lanjutkan</translation>
 <translation id="8200789660596905522">Pastikan Anda menerima permintaan Transmisi di <ph name="DEVICE_NAME" />.</translation>
 <translation id="8202160505685531999">Masukkan kembali sandi untuk memperbarui profil <ph name="DEVICE_TYPE" /> Anda.</translation>
+<translation id="8202827109322349110">Buka di editor dasar</translation>
 <translation id="8203152941016626022">Nama perangkat Berbagi Langsung</translation>
 <translation id="8203732864715032075">Mengirim notifikasi dan secara default mengingat komputer ini untuk Message. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Klik kanan</translation>

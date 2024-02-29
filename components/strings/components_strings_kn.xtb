@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">ಎನ್ವಲಪ್ ಇನ್ವೈಟ್</translation>
 <translation id="1413809658975081374">ಗೌಪ್ಯತೆ ದೋಷ</translation>
 <translation id="1414134146594747368">ಪ್ರೀ-ಸ್ಕೂಲ್</translation>
-<translation id="141826476809826269">ಹೊರತೆಗೆಯಲಾದ ಪಠ್ಯದ ಅಂತ್ಯ</translation>
 <translation id="1418611192881166179">Chrome ಈ ಫೀಚರ್‌ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌‌ ಮಾಡುವಾಗ, ನೀವು ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕಿಗಳನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿರ್ಬಂಧಿಸದ ಹೊರತು ಸೈಟ್‌ಗಳು ತಾತ್ಕಾಲಿಕವಾಗಿ ಅವುಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="1419305130220238697">Chrome ನಲ್ಲಿ ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಬಟನ್‌, ನೀವು Chrome ನಲ್ಲಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿರುವ ಫೈಲ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="1422930527989633628">ಸಮೀಪದಲ್ಲಿರುವ ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಅನ್ವೇಷಿಸಲು ಕೇಳಬಹುದು</translation>
@@ -1199,6 +1198,7 @@
 <translation id="3324687287337751929">4 x 6 ಇಂಚು</translation>
 <translation id="3324983252691184275">ಕಡುಗೆಂಪು</translation>
 <translation id="3325027355611702542">ಕ್ಯಾಂಪರ್ಸ್ ಮತ್ತು RV ಗಳು</translation>
+<translation id="3325568918769906282">ಇಳಿಕೆ ಕ್ರಮದಲ್ಲಿ</translation>
 <translation id="3329013043687509092">ಸ್ಯಾಚುರೇಶನ್</translation>
 <translation id="3333762389743153920">ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗೆ ಅರ್ಹವಾಗಿಲ್ಲ</translation>
 <translation id="3336044043987989409">ನಿಮ್ಮ ಖಾಸಗಿ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿರುವ ಸಾಧನಗಳು ಅಥವಾ ಸರ್ವರ್‌ಗಳಿಗೆ ಕನೆಕ್ಷನ್ ಅನ್ನು ಅನುಮತಿಸಲು ಪುನಃ ಲೋಡ್ ಮಾಡಿ ಬಟನ್ ಅನ್ನು ಒತ್ತಿ.</translation>
@@ -2245,6 +2245,7 @@
 <translation id="5371425731340848620">ಕಾರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"ನಿಮ್ಮ ಗಡಿಯಾರ ಹಿಂದಿದೆ" ಅಥವಾ "ನಿಮ್ಮ ಗಡಿಯಾರ ಮುಂದಿದೆ" ಅಥವಾ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">ಏರಿಕೆ ಕ್ರಮದಲ್ಲಿ</translation>
 <translation id="5383478552402031184">ಫ್ಲೋರಿಂಗ್</translation>
 <translation id="5385857628869214740">ಹಾಸ್ಯ</translation>
 <translation id="5385966243497224160">HTTPS ಅಲ್ಲದ URL ಅನ್ನು ಪೂರ್ವವೀಕ್ಷಣೆ ಮಾಡಲಾಗುವುದಿಲ್ಲ</translation>
@@ -3066,7 +3067,6 @@
 <translation id="6978121630131642226">ಹುಡುಕಾಟ ಇಂಜಿನ್‌ಗಳು</translation>
 <translation id="6978236010531171013">ಹೇಗಾದರೂ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">ಹೊರತೆಗೆಯಲಾದ ಪಠ್ಯದ ಪ್ರಾರಂಭ</translation>
 <translation id="6979440798594660689">ಮ್ಯೂಟ್ (ಡಿಫಾಲ್ಟ್)</translation>
 <translation id="6987806006823772670">ಎನ್ವಲಪ್ (ಲೇಪಿತ)</translation>
 <translation id="6989763994942163495">ಸುಧಾರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸು...</translation>
@@ -3480,6 +3480,7 @@
 <translation id="7719791801330803993">ಫೋಟೋ ಮತ್ತು ವೀಡಿಯೊ ಸಾಫ್ಟ್‌ವೇರ್</translation>
 <translation id="772128550427553158">CVC ನಿಮ್ಮ ಕಾರ್ಡ್‌ನ ಮುಂಭಾಗದಲ್ಲಿರುತ್ತದೆ.</translation>
 <translation id="7724603315864178912">ಕತ್ತರಿಸು</translation>
+<translation id="7730057435797792985">ವಿಂಗಡಿಸಿ</translation>
 <translation id="7734285854693414638">Google Forms ನಲ್ಲಿ ಹೊಸ ಫಾರ್ಮ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಿ</translation>
 <translation id="773466115871691567">ಯಾವಾಗಲು <ph name="SOURCE_LANGUAGE" /> ನಲ್ಲಿನ ಪುಟಗಳನ್ನು ಅನುವಾದ ಮಾಡಿ</translation>
 <translation id="7736959720849233795">ಲಿಂಕ್ ವಿಳಾಸವನ್ನು ನಕಲಿಸಿ</translation>

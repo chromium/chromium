@@ -231,7 +231,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1410941016594047814">Envelop Invite</translation>
 <translation id="1413809658975081374">Privacyfout</translation>
 <translation id="1414134146594747368">Peuterschool</translation>
-<translation id="141826476809826269">Einde van geëxtraheerde tekst</translation>
 <translation id="1418611192881166179">Terwijl Chrome deze functie updatet, kunnen sites tijdelijk cookies van derden gebruiken, tenzij je deze blokkeert in de instellingen.</translation>
 <translation id="1419305130220238697">Knop Downloads in Chrome beheren. Activeer deze om bestanden te beheren die je hebt gedownload in Chrome.</translation>
 <translation id="1422930527989633628">Kan vragen of deze site bluetooth-apparaten in de buurt mag vinden</translation>
@@ -1317,6 +1316,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3542628208405253498">Kaartafbeelding</translation>
 <translation id="3542768452570884558">Link openen in nieuw venster</translation>
 <translation id="3547746132308051926">20 x 24 inch</translation>
+<translation id="3552155506104542239">Waarschuwing: Dit beleid is in strijd met <ph name="POLICY_NAME" /> en heeft geen invloed op Android-apps. Verder werkt dit beleid zoals bedoeld.</translation>
 <translation id="3552297013052089404">Sans-serif-lettertype</translation>
 <translation id="3558573058928565255">Tijd van de dag</translation>
 <translation id="355995771319966853">Automatisch invullen ongedaan maken</translation>
@@ -1773,6 +1773,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4397059608630092079">Altijd laten verifiëren bij gebruik van automatisch invullen</translation>
+<translation id="4397978002248035985">Er wordt een pop-up geopend voor verificatie op de website van je bank</translation>
 <translation id="4406883609789734330">Live ondertiteling</translation>
 <translation id="4406896451731180161">zoekresultaten</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> cookies</translation>
@@ -2196,6 +2197,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Documenteigenschappen</translation>
 <translation id="528468243742722775">Beëindigen</translation>
+<translation id="5285468538058987167">Via sterke klantverificatie (SCA)</translation>
 <translation id="5285570108065881030">Alle opgeslagen wachtwoorden bekijken</translation>
 <translation id="5287456746628258573">Deze site gebruikt een verouderde beveiligingsconfiguratie, waardoor je gegevens (zoals wachtwoorden of creditcardnummers) openbaar kunnen worden gemaakt als ze naar deze site worden gestuurd.</translation>
 <translation id="5288108484102287882">Tijdens de validatie van de beleidswaarden zijn er waarschuwingen geconstateerd</translation>
@@ -3062,7 +3064,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6978121630131642226">Zoekmachines</translation>
 <translation id="6978236010531171013">Toch delen</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Begin van geëxtraheerde tekst</translation>
 <translation id="6979440798594660689">Geluid uitzetten (standaard)</translation>
 <translation id="6987806006823772670">Envelop (gecoat)</translation>
 <translation id="6989763994942163495">Geavanceerde instellingen bekijken...</translation>

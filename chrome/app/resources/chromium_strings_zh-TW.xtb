@@ -150,6 +150,7 @@
 <translation id="3702352323269013324">前往 Chromium 進一步瞭解廣告個人化</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{系統管理員要求你重新啟動 Chromium，以套用這項更新}=1{系統管理員要求你重新啟動 Chromium，以套用這項更新。你的無痕視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chromium，以套用這項更新。你的 # 個無痕視窗不會重新開啟。}}</translation>
 <translation id="3713809861844741608">在新的 Chromium 分頁中開啟連結(&amp;T)</translation>
+<translation id="3788675262216168505">管理 Chromium 設定檔</translation>
 <translation id="378917192836375108">透過 Chromium，你只要按一下網路上的電話號碼，即可用 Skype 打電話！</translation>
 <translation id="3790262771324122253">瞭解 Chromium 封鎖某些下載內容的原因</translation>
 <translation id="379589255253486813">如有任何需要檢查的事項，Chromium 會通知你</translation>
@@ -434,6 +435,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8555465886620020932">服務錯誤：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8568283329061645092">如果你使用 Google 帳戶登入，Chromium 可以檢查你的密碼</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
+<translation id="858822505990366713">自訂 Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Google 如何使用這些資料：<ph name="END_BOLD" />網站可以將你的興趣喜好相關資訊儲存在 Chromium 中。舉例來說，如果你造訪某個網站想購買適合馬拉松活動的慢跑鞋，網站可能會判斷你的興趣是跑馬拉松。在此之後，如果你造訪另一個網站報名參加比賽，該網站就可以根據你的興趣喜好向你顯示慢跑鞋的廣告。</translation>
 <translation id="8619360774459241877">正在啟動 Chromium…</translation>
 <translation id="8621669128220841554">不明錯誤導致安裝失敗，請重新下載 Chromium。</translation>
@@ -451,8 +453,10 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8907580949721785412">Chromium 現在會嘗試顯示密碼。如果你同意的話，請輸入你的 Windows 密碼。</translation>
 <translation id="8931379085695076764">Chromium 可以根據過去幾週的瀏覽記錄，推測你的興趣喜好。這項資訊會儲存在你的裝置上。</translation>
 <translation id="8941642502866065432">無法更新 Chromium</translation>
+<translation id="895999862145835951">自訂 Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise 標誌</translation>
 <translation id="8986207147630327271">你即將在這個瀏覽器中新增工作資料夾，並僅將工作資料夾的控制權授予管理員。</translation>
+<translation id="8988036198400390003">管理 Chromium 設定檔</translation>
 <translation id="9019929317751753759">為了讓 Chromium 的安全性更有保障，我們停用了以下這個未列在「<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />」中的擴充功能 (它可能是在您不知情的情況下加入瀏覽器)。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
 <translation id="907832235989677238">登入 Chromium。如果你只想登入帳戶一次，可以<ph name="GUEST_LINK_BEGIN" />透過訪客的身分使用這部裝置<ph name="GUEST_LINK_END" />。</translation>

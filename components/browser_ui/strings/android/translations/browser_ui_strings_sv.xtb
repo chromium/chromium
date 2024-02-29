@@ -367,6 +367,7 @@
 <translation id="702275896380648118">Den här webbplatsen avgör vad du gillar och föreslår sedan annonser till andra webbplatser. Webbplatsen hämtar dessutom dina annonsämnen från Chrome för att visa mer relevanta annonser för dig.</translation>
 <translation id="7053983685419859001">Blockera</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 har valts}other{# har valts}}</translation>
+<translation id="708014373017851679"><ph name="APP_NAME" /> är inaktuell. Uppdatera appen.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> har valts. Alternativ finns högt upp på skärmen</translation>
 <translation id="7141896414559753902">Blockera webbplatser från att visa popup-fönster (rekommenderas)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

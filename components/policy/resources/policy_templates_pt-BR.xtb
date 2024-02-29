@@ -88,11 +88,6 @@ Se esta política for ativada ou deixada sem definição, será possível usar o
 Se esta política for desativada, o recurso de correção automática no teclado físico será bloqueado.</translation>
 <translation id="1038725366103635282">Permitir a detecção de compartilhamento do NetBIOS</translation>
 <translation id="1040446814317236570">Ativar a retirada de URL PAC (para https://)</translation>
-<translation id="1041719059374171202">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica sites que não podem executar JavaScript.
-
-      Se a política não tiver definição, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="1043965859599437362">Esta política oferece uma maneira de substituir a lista de conjuntos que o navegador usa para recursos de conjunto primário.
 
 Cada item na lista do navegador precisa atender aos requisitos de um conjunto primário.
@@ -278,11 +273,6 @@ Se a política for ativada, os usuários poderão usar o hardware de dispositivo
 <translation id="1202216683470826356">Exibir cards na página Nova guia</translation>
 <translation id="1204263402976895730">Impressoras empresariais ativadas</translation>
 <translation id="1207301487141109411">Impedir que o avatar do usuário seja selecionado de imagens no sistema de arquivos local, na câmera e no perfil do Google</translation>
-<translation id="1209065772997672966">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que podem abrir pop-ups.
-
-      Se a política não tiver definição, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês).  <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="1209096923317019235">Atribui apps como gerenciadores padrão para as extensões de arquivo especificadas</translation>
 <translation id="120937472976628837">Enviar informações sobre o ventilador</translation>
 <translation id="1212233008927724662">Desativar o carregamento de Lazy Login WebUI.</translation>
@@ -533,13 +523,6 @@ https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): esse valor foi descontinuado na versão M121. Na versão M121 e mais recentes, os valores serão tratados como EnabledBelowThreshold.
       </translation>
 <translation id="1434300053894025056">Desativar verificação ortográfica</translation>
-<translation id="1434743866147056474">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem exibir imagens.
-
-      Se a política não tiver definição, <ph name="DEFAULT_IMAGE_SETTING_ENABLED_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.
-
-       Esta política já foi ativada no Android por engano, mas a funcionalidade nunca foi totalmente compatível com ele.</translation>
 <translation id="1435493974546396517">Controla como o <ph name="PRODUCT_NAME" /> exibe a opção "Imprimir como imagem" no <ph name="MS_WIN_NAME" /> e no <ph name="MAC_OS_NAME" /> durante a impressão de PDFs.
 
       Ao imprimir um PDF no <ph name="MS_WIN_NAME" /> ou no <ph name="MAC_OS_NAME" />, pode ser necessário rasterizar trabalhos de impressão para imagens de modo a garantir que algumas impressoras tenham o resultado correto.
@@ -924,11 +907,6 @@ política foi a 121. O suporte foi removido na versão 122.</translation>
       Observação: os valores da política precisam ser especificados em porcentagens de 0 a 100.</translation>
 <translation id="1733092875104864334">Não permitir a coleta de registros de textos WebRTC em Serviços do Google</translation>
 <translation id="1733768596873041559">Redirecionar para o IdP SAML por padrão. Confirmação do usuário necessária nas versões do <ph name="PRODUCT_NAME" /> anteriores à 99</translation>
-<translation id="1733939382419067578">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que podem exibir notificações.
-
-      Se a política for deixada sem definição, <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="173503685261877709">Esta política oferece uma maneira de substituir a lista de conjuntos que o navegador usa para recursos de conjuntos de sites relacionados.
 
 Esta política substitui a política <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
@@ -1710,11 +1688,6 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 
       Se ela for definida como falsa ou não for definida, nenhum botão será exibido.</translation>
 <translation id="2294382669900758280">A reprodução de vídeos em apps Android não é levada em consideração, mesmo se esta política estiver definida como <ph name="TRUE" />.</translation>
-<translation id="2297792368307475351">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem usar a permissão do site para a área de transferência. Essa ação não inclui todas as operações da área de transferência ou origens que correspondem aos padrões. Por exemplo, os usuários ainda poderão colar usando atalhos do teclado, porque essa opção não é controlada pela permissão do site para a área de transferência.
-
-      Se a política for deixada sem definição, a<ph name="DEFAULT_CLIPBOARD_SETTING" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="2299220924812062390">Especifica uma lista de plug-ins ativados</translation>
 <translation id="2299815818824242485">Não permitir pesquisas por proxy com maior proteção</translation>
 <translation id="2303795211377219696">Ativar o preenchimento automático para cartões de crédito</translation>
@@ -2198,6 +2171,23 @@ O sistema só consulta registros AAAA quando está acessível a um host IPv6 glo
 <translation id="2673363037046384711">O usuário final pode ativar ou desativar o modo de alta eficiência.</translation>
 <translation id="2673968385134502798">Jogos</translation>
 <translation id="2678503605767349615">Certificados do cliente em todo o dispositivo obrigatórios</translation>
+<translation id="2679980446318031955">Por motivos de segurança, a
+API <ph name="REQUEST_FULLSCREEN_API_NAME" /> da Web
+exige que um gesto anterior do usuário ("ativação temporária") seja chamado. Caso contrário,
+ela vai falhar. As configurações pessoais dos usuários podem permitir que determinadas origens chamem
+essa API sem um gesto anterior do usuário, conforme descrito em
+<ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
+
+Esta política substitui as configurações pessoais dos usuários e permite que origens correspondentes
+chamem a API sem um gesto anterior do usuário.
+
+Para saber mais sobre padrões de URL válidos, consulte
+https://chromeenterprise.google/intl/pt_br/policies/url-patterns/.
+Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
+
+As origens que corresponderem aos padrões de política bloqueados e permitidos ao mesmo tempo serão bloqueadas.
+Origens não especificadas por políticas ou configurações dos usuários exigem um gesto anterior
+do usuário para chamar a API.</translation>
 <translation id="268134026533587276">O protetor da tela de bloqueio do usuário está ativado.</translation>
 <translation id="268577405881275241">Ativar o recurso de proxy de compactação de dados</translation>
 <translation id="268695908564263739">Esta política ativa ou desativa a configuração do modo de alta eficiência. Com essa configuração, as guias são descartadas após um determinado período em segundo plano para recuperar memória.
@@ -2862,22 +2852,10 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 
           O valor da política precisa ser especificado em milissegundos.</translation>
 <translation id="3198385910521788907">Não mostra a tela do sensor de presença humana durante o login</translation>
-<translation id="3205649498518960697">Permite a definição de uma lista de padrões de URL que especifica sites sem permissão para exibir conteúdo misto ativo (bloqueável), ou seja, conteúdo HTTP em sites HTTPS, e em que o conteúdo misto passivo (opcionalmente bloqueável) será desativado.
-
-          Se esta política não for definida, o conteúdo misto ativo será bloqueado e o conteúdo misto passivo ganhará um upgrade. Além disso, o usuário poderá definir exceções para dar permissão a sites específicos.
-
-          Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="3205825995289802549">Maximizar a primeira janela do navegador na primeira execução</translation>
 <translation id="320607884987562184">Se a política for definida como 1, os sites poderão executar o JavaScript. Se for definida como 2, o JavaScript não será executado.
 
 Se ela não for definida, o JavaScript será executado, mas os usuários poderão mudar essa configuração.</translation>
-<translation id="3206959584699016689">Se a política for definida, será possível configurar uma lista de padrões de URL que especifique os sites que podem acessar sensores de luz e movimento.
-
-      Se a política não tiver definição, <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Se o mesmo padrão de URL existir nesta política e na política <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, a segunda terá prioridade e o acesso a sensores de luz e movimento será bloqueado.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="3207821022126246451">O WebRTC usará o TCP na interface pública e usará o UDP apenas se ele for compatível com um proxy configurado.</translation>
 <translation id="3207873329349672535">Esta política controla se haverá uma opção disponível ao usuário no menu do <ph name="PRODUCT_NAME" />, que permita a transmissão em dispositivos que não são exibidos no menu do <ph name="PRODUCT_NAME" />, usando o código de acesso ou QR exibido na tela desses aparelhos.
       Por padrão, um usuário precisa inserir o código de acesso ou fazer a leitura do QR code novamente para iniciar a próxima sessão de transmissão, mas se a política <ph name="ACCESS_CODE_CAST_DEVICE_DURATION_POLICY_NAME" /> for definida com um valor diferente de zero (que é o padrão), o dispositivo de transmissão permanecerá na lista de aparelhos disponíveis até que o período especificado tenha expirado.
@@ -3937,11 +3915,6 @@ Até o Chrome 114, esta política exigia que a <ph name="SYNC_DISABLED_POLICY_NA
 <translation id="4057442294431066708">Esta política controla a opção de atalho selecionada para remapear eventos para
 F11/F12 na subpágina de remapeamento de teclas. Essas configurações se aplicam apenas a
 teclados ChromeOS e serão desativadas por padrão se a política não for definida.</translation>
-<translation id="4061107397839125009">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem exibir notificações.
-
-      Se a política for deixada sem definição, <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês).  O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="4061590579642538878">Enviar informações sobre relatórios de erros.</translation>
 <translation id="4062646759141042418">Ativar o <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para uma lista de URLs.
 
@@ -4320,11 +4293,6 @@ Quando ela é desativada, os usuários não podem rastrear as encomendas no <ph 
       Apenas nomes de host de etiqueta única são permitidos nesta política, e ela se aplica somente a entradas HSTS pré-carregadas "estáticas" (por exemplo, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). A política não impede upgrades HSTS para servidores que fazem solicitações de upgrade HSTS "dinamicamente" usando um cabeçalho de resposta <ph name="HSTS_HEADER_NAME" />.
 
       Os nomes de host fornecidos precisam ser canonizados. Todos os IDNs precisam ser convertidos para o formato de etiqueta A, e todas as letras ASCII precisam ser minúsculas. Essa política se aplica exclusivamente aos nomes do host de etiqueta única específicos, e não aos subdomínios desses nomes.</translation>
-<translation id="4387922553629365459">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem abrir pop-ups.
-
-      Se a política não tiver definição, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="4389073105055031853">Permitir que os usuários gerenciem todos os certificados</translation>
 <translation id="4389091865841123886">Configurar a declaração remota com mecanismo TPM</translation>
 <translation id="4389113579547582722">Permitir que a promoção de avaliação na App Store seja mostrada</translation>
@@ -4352,15 +4320,6 @@ A remoção foi feita na versão M112.</translation>
 Se ela for desativada, os arquivos PDF serão abertos no plug-in, a menos que ele seja desativado pelos usuários.
 
 Se você definir a política, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />. Se ela não for definida, os usuários poderão escolher se os PDFs serão ou não abertos externamente.</translation>
-<translation id="4413453659814156568">Permite definir uma lista de padrões de URL que especificam sites com permissão para executar o JavaScript com o compilador JIT (Just In Time) ativado.
-
-          Para acessar informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.
-
-          As exceções da política de JIT do JavaScript serão aplicadas apenas na granularidade de um site (eTLD+1). Uma política definida apenas para subdomain.site.com não será corretamente aplicada para site.com ou subdomain.site.com, já que ambos são direcionados para o mesmo eTLD+1 (site.com), que não possui política. Nesse caso, a política precisa ser definida em site.com para que seja corretamente aplicada para site.com e subdomain.site.com.
-
-          Esta política é aplicada frame a frame e não tem base exclusiva no URL de origem de nível superior. Por exemplo, se site-one.com estiver listado na política <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />, mas carregar um frame com site-two.com, site-one.com terá um JIT do JavaScript ativado, mas site-two.com usará a política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, se definida, ou terá como padrão um JIT do JavaScript ativado.
-
-          Se esta política não for definida para um site, a política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> será aplicada, se definida. Do contrário, um JIT do JavaScript será ativado.</translation>
 <translation id="4415603335307944578">Se esta política for definida como verdadeira ou não for configurada, o navegador mostrará novamente a página de recepção na primeira execução após um upgrade do SO.
 
       Se esta política for definida como falsa, o navegador não mostrará novamente a página de recepção na primeira execução após um upgrade do SO.</translation>
@@ -5045,11 +5004,6 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 <translation id="4970046075219007744">Permitir que apps da Web solicitem acesso a tipos de arquivos usando a API File Handling</translation>
 <translation id="4970855112942626932">Desativar login no navegador</translation>
 <translation id="4974091268178043378">Modo de cor do ChromeOS</translation>
-<translation id="4977702914571821981">Permite que você defina uma lista de padrões de URL que especificam sites sem permissão para exibir conteúdo misto ativo (bloqueável), ou seja, conteúdo HTTP em sites HTTPS, e em que será feito o upgrade de conteúdo misto passivo (opcionalmente bloqueável).
-
-          Se esta política não for definida, o conteúdo misto ativo será bloqueado e o conteúdo misto passivo ganhará um upgrade, mas o usuário poderá definir exceções para dar permissão a sites específicos.
-
-          Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="4978533099939732984">Sempre mostrar alertas de pouco espaço em disco</translation>
 <translation id="4979714585847741269">Se a política for ativada, apps da Web de quiosque vão poder abrir outra janela de navegador, que pode ser colocada na mesma tela ou em uma tela diferente. Para abrir uma nova janela, o app da Web precisa chamar a função JavaScript <ph name="OPEN_NEW_WINDOW_JS" />.
 
@@ -5531,13 +5485,6 @@ Na versão 92 e mais recentes do <ph name="PRODUCT_NAME" />, esta política tamb
 
           Cabe aos administradores definir políticas em todas as plataformas que sejam relevantes. É recomendado definir um único valor para esta política em todas as plataformas.</translation>
 <translation id="5389708774452952523">Permitir que o processo de áudio seja executado com prioridade acima do normal no Windows</translation>
-<translation id="5389798680516458665">Se a política for definida, você poderá fazer uma lista de padrões de URL que especificam sites que podem exibir imagens.
-
-      Se a política não tiver definição, <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.
-
-      Esta política já foi ativada no Android por engano, mas a funcionalidade nunca foi totalmente compatível com ele.</translation>
 <translation id="5390083518957894426">Permite a reautenticação on-line na tela de bloqueio para usuários do SAML</translation>
 <translation id="5391388690191341203">Conta local do dispositivo para login automático</translation>
 <translation id="5391867362692016532">Se a política for definida, será possível configurar uma lista de padrões de URL especificando quais apps da Web não podem pedir para os usuários concederem acesso a tipos de arquivos.
@@ -6024,13 +5971,6 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> será 
       Se a política não for definida, um fator de cálculo padrão será usado.
 
       Observação: o fator de cálculo precisa ser de 100% ou mais.</translation>
-<translation id="5738892881453299672">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem acessar sensores de luz e movimento.
-
-      Se a política não tiver definição, <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Se o mesmo padrão de URL existir nesta política e na <ph name="SENSORS_ALLOWED_FOR_URLS_POLICY_NAME" />, esta política terá prioridade e o acesso a sensores de luz e movimento será bloqueado.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="5740636973289452345">Ativar relatórios sobre informações de extensões e plug-ins</translation>
 <translation id="5746149754419996562">Ativa a presença de widgets Glanceables no <ph name="PRODUCT_OS_NAME" />. Mais especificamente, os widgets acessíveis pelo ícone de data na estante.
 Quando esta política está ativada, os Glanceables são ativados no <ph name="PRODUCT_OS_NAME" />.
@@ -6802,6 +6742,23 @@ vão falhar e usar, na tela de <ph name="LOG_IN" />, apenas a
 resolução de localização baseada no <ph name="IP" />.</translation>
 <translation id="6338982178236723271">Enviar informações do sistema</translation>
 <translation id="6339355882150329269">Não considerar o usuário como inativo durante a reprodução de vídeos</translation>
+<translation id="634949984530753985">Por motivos de segurança, a
+API <ph name="REQUEST_FULLSCREEN_API_NAME" /> da Web
+exige que um gesto anterior do usuário ("ativação temporária") seja chamado. Caso contrário,
+ela vai falhar. As configurações pessoais dos usuários podem permitir que determinadas origens chamem
+essa API sem um gesto anterior do usuário, conforme descrito em
+<ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
+
+Esta política substitui as configurações pessoais dos usuários e impede que origens correspondentes
+chamem a API sem um gesto anterior do usuário.
+
+Para saber mais sobre padrões de URL válidos, consulte
+https://chromeenterprise.google/intl/pt_br/policies/url-patterns/.
+Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
+
+As origens que corresponderem aos padrões de política bloqueados e permitidos ao mesmo tempo serão bloqueadas.
+Origens não especificadas por políticas ou configurações dos usuários exigem um gesto anterior
+do usuário para chamar a API.</translation>
 <translation id="6352714113109004581">Se a política for definida, é possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que o usuário conceda permissão de acesso ao dispositivo HID.
 
       Se esta política for deixada sem definição, a <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> vai ser aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários vão ser aplicadas.
@@ -8655,12 +8612,6 @@ Quando ela for deixada sem definição, o renderizador de PDF será escolhido pe
 <translation id="7781452670568828399">Mudar a configuração recomendada do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7784062550705119230">Se <ph name="PRINTERS_ALLOWLIST" /> for escolhida para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> especificará quais impressoras os usuários podem usar. Apenas as impressoras com IDs correspondentes aos valores desta política estão disponíveis para os usuários. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7788511847830146438">Por perfil</translation>
-<translation id="7788632499792081231">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que podem usar a permissão do site para a área de transferência. Essa ação não inclui todas as operações da área de transferência ou origens que correspondem aos padrões. Por exemplo, os usuários ainda poderão colar usando atalhos do teclado, porque essa opção não é controlada pela permissão do site para a área de transferência.
-
-
-      Se a política for deixada sem definição, a<ph name="DEFAULT_CLIPBOARD_SETTING" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="7790221177424764797">Esta política controla o carregamento das regras da política SiteList do <ph name="IE_PRODUCT_NAME" />.
 
 Quando ela é definida como verdadeira, o <ph name="PRODUCT_NAME" /> lê a política <ph name="IEEM_SITELIST_POLICY" /> do <ph name="IE_PRODUCT_NAME" /> para acessar o URL da lista de sites. Depois disso, o download da lista de sites desse URL é realizado no <ph name="PRODUCT_NAME" />, e as regras são aplicadas como se tivessem sido configuradas com a política <ph name="BROWSER_SWITCHER_URL_LIST_POLICY_NAME" />.
@@ -9558,17 +9509,6 @@ Não há suporte à reversão para o <ph name="PRODUCT_OS_NAME" /> 106 ou versã
       Esta política substitui <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> e as preferências do usuário.</translation>
 <translation id="8528951285051082869">Não permitir que nenhum app da Web acesse tipos de arquivo pela API File Handling</translation>
 <translation id="8533145294731270627">Bloquear downloads maliciosos e tipos de arquivo perigosos.</translation>
-<translation id="8543103455510904459">Permite definir uma lista de padrões de URL que especificam sites sem permissão para executar o JavaScript com o compilador JIT (Just In Time) ativado.
-
-          Se você desativar o JIT do JavaScript, o <ph name="PRODUCT_NAME" /> poderá renderizar conteúdo da Web mais lentamente, e partes do próprio JavaScript poderão ser desativadas, incluindo o WebAssembly. Se você desativar o JIT do JavaScript, o <ph name="PRODUCT_NAME" /> poderá renderizar conteúdo da Web com uma configuração mais segura.
-
-          Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.
-
-          As exceções da política de JIT do JavaScript serão aplicadas apenas na granularidade de um site (eTLD+1). Uma política definida apenas para subdomain.site.com não será corretamente aplicada para site.com ou subdomain.site.com, já que ambos são direcionados para o mesmo eTLD+1 (site.com), que não possui política. Nesse caso, a política precisa ser definida em site.com para que seja corretamente aplicada para site.com e subdomain.site.com.
-
-          Esta política é aplicada frame a frame e não tem base exclusiva no URL de origem de nível superior. Por exemplo, se site-one.com estiver listado na política <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />, mas carregar um frame com site-two.com, site-one.com terá um JIT do JavaScript desativado, mas site-two.com usará a política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, se definida, ou terá como padrão um JIT do JavaScript ativado.
-
-          Se esta política não for definida para um site, a política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> será aplicada, se definida. Do contrário, um JIT do JavaScript será ativado.</translation>
 <translation id="8543108307976719751">Impedir conexões de acesso remoto a esta máquina</translation>
 <translation id="8543639085146778837">Permitir a coleta de registros de textos WebRTC em Serviços do Google</translation>
 <translation id="8543975123557636331">Ativar saída de áudio</translation>
@@ -9916,11 +9856,6 @@ Esta política não se aplica se o teclado virtual estiver desativado, por exemp
 <translation id="8827366480126575426">O protocolo do gerenciador de protocolos.</translation>
 <translation id="8827417642396462482">Permitir mais tipos de consulta DNS</translation>
 <translation id="8830717323204407209">Permite que os usuários confiram a promoção da extensão do provedor de credenciais</translation>
-<translation id="8831911834413504983">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica sites que podem executar JavaScript.
-
-      Se a política não tiver definição, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="8832829916385857156">A página Nova guia exibirá cards se houver conteúdo disponível</translation>
 <translation id="8833109046074170275">Autenticação por fluxo GAIA padrão</translation>
 <translation id="8834641112681661892">A definição da política especifica o atraso máximo em milissegundos entre o recebimento de uma invalidação de política e a busca de uma nova política pelo serviço de gerenciamento do dispositivo. O intervalo de valores válidos é de 1.000 (1 segundo) até 300.000 (5 minutos). Valores fora desse intervalo serão ajustados para o respectivo limite.

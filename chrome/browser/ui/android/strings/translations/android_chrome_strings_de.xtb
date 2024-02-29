@@ -116,6 +116,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="1558391695376153246">Inkognitotabs schließen</translation>
 <translation id="1568636008098739136">Diese Seite anhören. Zum Ändern Schaltfläche gedrückt halten.</translation>
 <translation id="1571304935088121812">Nutzernamen kopieren</translation>
+<translation id="1584648915421894279">Derzeit können auf diesem Gerät gespeicherte Passwörter nicht für alle Chrome-Release-Versionen verwendet werden. Nach Chrome 125 werden die für Chrome und <ph name="CHROME_CHANNEL" /> auf deinem Gerät gespeicherten Passwörter zusammengeführt und können in beiden Apps verwendet werden.</translation>
 <translation id="1592864538817356322">Standardschutz</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> vorgeschlagene Elemente in der folgenden Liste.</translation>
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> verwenden</translation>
@@ -328,6 +329,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="281504910091592009">Gespeicherte Passwörter in meinem <ph name="BEGIN_LINK" />Google-Konto<ph name="END_LINK" /> ansehen und verwalten</translation>
 <translation id="2827278682606527653">Feedkartenmenü halb geöffnet</translation>
 <translation id="2830783625999891985">Inhalte der Zwischenablage werden nicht angezeigt</translation>
+<translation id="2834884592945939112">Einstellungen, Google-Kontofehler</translation>
 <translation id="2838367486340230368">Erläuterungen zum Datenschutz-Leitfaden sind halb geöffnet</translation>
 <translation id="2839327205551510876">Du folgst <ph name="SITE_NAME" /> nicht mehr</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> Inkognitotab wird geschlossen}other{<ph name="TAB_COUNT_MANY" /> Inkognitotabs werden geschlossen}}</translation>
@@ -635,9 +637,9 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="4461614516424362539">Wenn du ein weiteres Gerät per QR-Code verknüpfst, kann es dieses Smartphone als Sicherheitsschlüssel verwenden. Wenn du es entfernst, musst du noch einmal einen QR-Code scannen, um es wieder zu verknüpfen.</translation>
 <translation id="4478161224666880173">Du kannst dein <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-Konto auf dieser Website verwenden. Melde dich in <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> an, um fortzufahren.</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> für Chrome wird installiert…</translation>
+<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Lesezeichen wurde in „<ph name="FOLDER_NAME" />“ gespeichert. Es wird nur auf diesem Gerät gespeichert.}other{Lesezeichen wurden in „<ph name="FOLDER_NAME" />“ gespeichert. Sie werden nur auf diesem Gerät gespeichert.}}</translation>
 <translation id="4484496141267039529">Keine Verbindung. Versuche es später noch einmal.</translation>
 <translation id="4487967297491345095">Alle App-Daten in Chrome werden dauerhaft gelöscht. Hierzu gehören alle Dateien, Einstellungen, Konten, Datenbanken.</translation>
-<translation id="4491323382106587961">Wähle ein Konto aus. Aktuell ausgewählt: <ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">Das Speichern von Passwörtern wurde von deinem Administrator aktiviert</translation>
 <translation id="4508528996305412043">Feedkartenmenü ist geöffnet</translation>
 <translation id="4509501256689523862">Ob du beim Surfen personalisierte Werbung siehst, hängt von dieser Einstellung, <ph name="BEGIN_LINK_1" />den Werbethemen<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />deinen Cookie-Einstellungen<ph name="END_LINK_2" /> und davon ab, ob die besuchte Website Werbung personalisiert</translation>
@@ -663,6 +665,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4583164079174244168">{MINUTES,plural, =1{vor # Minute}other{vor # Minuten}}</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4594952190837476234">Diese Offlineseite ist vom <ph name="CREATION_TIME" /> und unterscheidet sich gegebenenfalls von der Onlineversion.</translation>
+<translation id="4595805675102978678">Google-Kontofehler</translation>
 <translation id="4601095002996233687">Umfangreiche Scans für verdächtige Downloads.</translation>
 <translation id="4609429330876432068">Deine Listen mit gespeicherten Passwörtern für Chrome und <ph name="CHROME_CHANNEL" /> wurden zusammengeführt. Du kannst weiterhin alle deine gespeicherten Passwörter in beiden Apps automatisch ausfüllen lassen.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> öffnen</translation>
@@ -855,6 +858,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="557018954714092179">Neuen Ordner erstellen</translation>
 <translation id="5578795271662203820">In <ph name="SEARCH_ENGINE" /> nach dem Bild suchen</translation>
 <translation id="5581519193887989363">Du kannst in den <ph name="BEGIN_LINK1" />Einstellungen<ph name="END_LINK1" /> auswählen, was du synchronisieren möchtest.</translation>
+<translation id="558429399979870715">Du kannst Chrome und andere Google-Dienste verknüpfen, wenn du möchtest, dass sie Daten untereinander austauschen</translation>
 <translation id="5590372121997663538">Diesen Computer merken</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5599455543593328020">Inkognitomodus</translation>
@@ -884,6 +888,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="571930967925877633">Deine Lesezeichen, der Verlauf und andere Chrome-Daten werden nicht mehr mit deinem Google-Konto synchronisiert</translation>
 <translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>
 <translation id="5726692708398506830">Gesamten Seiteninhalt vergrößern</translation>
+<translation id="5728072125198221967">Verknüpfte Google-Dienste</translation>
 <translation id="5744751019568455640">Hier kannst du die Stimme auswählen, mit der deine Webseiten vorgelesen werden. Wenn dir diese Stimme gefällt und du möchtest, dass ich sie weiterhin verwende, tippe einfach auf den Namen der Stimme.</translation>
 <translation id="5748802427693696783">Zu Standard-Tabs gewechselt</translation>
 <translation id="5749068826913805084">Chrome benötigt Speicherzugriff, um Dateien herunterladen zu können.</translation>
@@ -1167,6 +1172,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7063006564040364415">Verbindung zum Synchronisierungsserver konnte nicht hergestellt werden.</translation>
 <translation id="7071521146534760487">Konto verwalten</translation>
 <translation id="707155805709242880">Wähle unten aus, was synchronisiert werden soll</translation>
+<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Lesezeichen wurde unter „<ph name="FOLDER_NAME" />“ in deinem Konto <ph name="ACCOUNT_EMAIL" /> gespeichert.}other{Lesezeichen wurden unter „<ph name="FOLDER_NAME" />“ in deinem Konto <ph name="ACCOUNT_EMAIL" /> gespeichert.}}</translation>
 <translation id="7077143737582773186">SD-Karte</translation>
 <translation id="7080806333218412752">Sendet URLs an Safe Browsing, um sie zu prüfen. Sendet außerdem eine kleine Auswahl von Seiten, Downloads, Erweiterungsaktivitäten und Systeminformationen, um die Erkennung neuer Bedrohungen zu verbessern. Verknüpft diese Daten vorübergehend mit deinem Google-Konto, sofern du angemeldet bist, um dich in Google-Apps zu schützen.</translation>
 <translation id="7085332316435785646">Wähle, ob der Chrome-Verlauf dafür verwendet werden soll, die Google-Dienste stärker für dich zu personalisieren</translation>
@@ -1434,6 +1440,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8310344678080805313">Standard-Tabs</translation>
 <translation id="831192587911042850">Fügt die aktuell geöffnete Website der Liste mit Websites hinzu, denen du folgst.</translation>
 <translation id="8333340769932050274">Du kannst Themen blockieren, die nicht mit Websites geteilt werden sollen. Themen, die älter als 4 Wochen sind, werden von Chrome automatisch gelöscht. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="8336984817750547763">Du kannst den Chrome-Verlauf miteinschließen, wenn du ihn den Web- &amp; App-Aktivitäten in deinem Google-Konto hinzufügen möchtest</translation>
 <translation id="834313815369870491">Websites nie übersetzen</translation>
 <translation id="8348430946834215779">Nach Möglichkeit HTTPS verwenden und warnen, bevor Websites geladen werden, die das Protokoll nicht unterstützen</translation>
 <translation id="8354977102499939946">Schnelle Sprachsuche verwenden. Wenn du diese Verknüpfung bearbeiten möchtest, rufe die Einstellungen auf.</translation>
@@ -1579,6 +1586,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="9081543426177426948">Besuchte Websites werden im Inkognitomodus nicht gespeichert</translation>
 <translation id="9086302186042011942">Synchronisierung läuft...</translation>
 <translation id="9086455579313502267">Kein Zugriff auf das Netzwerk</translation>
+<translation id="909756639352028172">Wenn du die Personalisierung optimal nutzen möchtest, nimm Chrome in die Web- &amp; App-Aktivitäten und verknüpften Google-Dienste auf</translation>
 <translation id="9099220545925418560">Basierend auf deinem Browserverlauf. Diese Einstellung ist deaktiviert.</translation>
 <translation id="9100610230175265781">Passphrase erforderlich</translation>
 <translation id="9101137867221042551">Verwaltung</translation>

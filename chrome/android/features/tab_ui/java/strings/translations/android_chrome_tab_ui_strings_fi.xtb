@@ -43,6 +43,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> välilehteä vaikuttaa liittyvän toisiinsa. Lisätäänkö ne ryhmäksi?</translation>
 <translation id="4159784952369912983">Violetti</translation>
 <translation id="4212246570487010370">Jatka selaamista</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Laajenna välilehtiryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Laajenna välilehtiryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="427987768447457592">Uusi välilehtiryhmä</translation>
 <translation id="4648718555153979859">Välilehtesi on koottu tänne</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> arvostelu)}other{(<ph name="REVIEWS_COUNT_MANY" /> arvostelua)}}</translation>
@@ -56,6 +57,7 @@
 <translation id="5082793167783849073">Luo ryhmä vertaillaksesi sivuja nopeasti. Aloita koskettamalla linkkiä pitkään.</translation>
 <translation id="5161254044473106830">Nimike vaaditaan</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Sinulla on <ph name="TABS_COUNT_ONE" /> välilehti, jota et ole käyttänyt viime aikoina}other{Sinulla on <ph name="TABS_COUNT_MANY" /> välilehteä, joita et ole käyttänyt viime aikoina}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="5339733443032484186">Viimeisin välilehti</translation>
 <translation id="5400836586163650660">Harmaa</translation>
 <translation id="5490235265819901748">Välilehtiryhmä laajennettu</translation>
@@ -84,6 +86,7 @@
 <translation id="6856809498882026482">Piilota monivalintatila</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Jaa välilehti}other{Jaa välilehdet}}</translation>
 <translation id="7129458170538955174">"Tietoja tästä kaupasta" avattu puolen näytön kokoisena</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Sulje ryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Sulje ryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="7204204600596740190">Monivalintatila</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" />, valittu</translation>
 <translation id="7326879924029668159">Katso palautuskäytäntö ja muita</translation>
@@ -107,6 +110,7 @@
 <translation id="8714939927607906138">Edullisempi hinta</translation>
 <translation id="8730999928494395583">Toimintasi näillä incognito-välilehdillä poistetaan laitteelta</translation>
 <translation id="8820741577754260431">Katso hinnanalennukset välilehdiltä</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Laajenna välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Laajenna välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="9090098097337832354">"Tietoja tästä kaupasta" suljettu</translation>
 <translation id="9150694013019234766">Vaihda välilehteä välilehtiryhmässä näytön alalaidassa</translation>
 <translation id="9169594135889675189">Luo ryhmään uusi välilehti</translation>

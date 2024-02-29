@@ -640,7 +640,6 @@ Ukuze ushintshel lawa masethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-C
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Ibhukhimakhi ilondolozwe kokuthi "<ph name="FOLDER_NAME" />". Ilondolozwe kuphela kule divayisi.}one{Amabhukhimakhi alondolozwe kokuthi "<ph name="FOLDER_NAME" />". Alondolozwe kuphela kule divayisi.}other{Amabhukhimakhi alondolozwe kokuthi "<ph name="FOLDER_NAME" />". Alondolozwe kuphela kule divayisi.}}</translation>
 <translation id="4484496141267039529">Akukho ukuxhumana. Zama futhi emuva kwesikhathi.</translation>
 <translation id="4487967297491345095">Yonke idatha yohlelo lokusebenza le-Chrome izosuswa ngunaphakade. Lokhu kufaka phakathi onke amafayela, izilungiselelo, ama-akhawunti, isizindalwazi, njll.</translation>
-<translation id="4491323382106587961">Khetha i-akhawunti. Njengamanje kukhethwe <ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">Ukulondolozwa kwephasiwedi kuvulwe ngumlawuli wakho</translation>
 <translation id="4508528996305412043">Imenyu yekhadi lokuphakelayo ivuliwe</translation>
 <translation id="4509501256689523862">Njengoba ubhrawuza, ukuthi isikhangiso osibonayo siqondansiwe nomuntu siqu kuncike kule sethingi, <ph name="BEGIN_LINK_1" />Izihloko zesikhangiso<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />amasethingi akho ekhukhi<ph name="END_LINK_2" />, futhi uma isayithi olibukayo lenza izikhangiso ziqondaniswe nomuntu siqu</translation>
@@ -1169,6 +1168,7 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="7037830628447527439">Ngena ngemvume ku-Chrome nge-Google Account yakho.</translation>
 <translation id="7054588988317389591">Thola incazelo yesithombe?</translation>
 <translation id="7055152154916055070">Ukuqondiswa kabusha kuvinjiwe:</translation>
+<translation id="7057969023583258980">Vula umlando we-Chrome ogcwele</translation>
 <translation id="7063006564040364415">Ayikwazanga ukuxhumeka kuseva yokuvumelanisa.</translation>
 <translation id="7071521146534760487">Phatha i-akhawunti</translation>
 <translation id="707155805709242880">Khetha lokho ongakavumelanisa ngezansi</translation>

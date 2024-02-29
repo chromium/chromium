@@ -30,6 +30,7 @@
 <translation id="1507198376417198979">ปรับแต่งโปรไฟล์ Chrome ใหม่</translation>
 <translation id="1516530951338665275">Google Chrome ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อจับคู่ต่อ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />อื่นเพิ่มเติม</translation>
+<translation id="155168855724261758">ปรับแต่ง Chrome</translation>
 <translation id="1553358976309200471">อัปเดต Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้โปรไฟล์ Chrome นี้แล้ว การดำเนินการนี้จะสร้างโปรไฟล์ Chrome ใหม่สำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome ใช้กล้องของคุณอยู่</translation>
@@ -67,6 +68,7 @@
 <translation id="2121284319307530122">เปิดอีกครั้งเพื่ออัปเดต Chrome</translation>
 <translation id="2123055963409958220">ช่วยให้ Chrome ดียิ่งขึ้นด้วยการรายงาน<ph name="BEGIN_LINK" />การตั้งค่าปัจจุบัน<ph name="END_LINK" /></translation>
 <translation id="2126108037660393668">ไฟล์ที่ดาวน์โหลดไม่ผ่านการยืนยัน</translation>
+<translation id="2128411189117340671">จัดการโปรไฟล์ Chrome</translation>
 <translation id="2130870084309816036">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ หากคุณใช้ไฟร์วอลล์ โปรดเพิ่ม <ph name="PRODUCT_EXE_NAME" /> ในรายการที่อนุญาต</translation>
 <translation id="2131230230468101642">เราลบความสนใจที่เก่ากว่า 4 สัปดาห์โดยอัตโนมัติเพื่อปกป้องความเป็นส่วนตัวของคุณ ความสนใจอาจกลับมาปรากฏในรายการอีกเมื่อคุณท่องเว็บต่อ หรือคุณจะนำความสนใจที่ไม่ต้องการให้ Chrome พิจารณาออกก็ได้</translation>
 <translation id="2139300032719313227">รีสตาร์ท Chrome OS</translation>
@@ -416,6 +418,7 @@
 <translation id="7917876797003313048">คุณจัดการบัญชี Google ที่ลงชื่อเข้าใช้ได้ บัญชี Google ใช้สำหรับเบราว์เซอร์ Chrome, Play Store, Gmail และอื่นๆ หากต้องการเพิ่มบัญชีให้คนอื่น เช่น สมาชิกในครอบครัว ให้เพิ่มบุคคลใหม่ลงใน <ph name="DEVICE_TYPE" /> แทน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์มีการหลอกลวงและอาจทำการเปลี่ยนแปลงที่ไม่คาดคิดกับอุปกรณ์</translation>
 <translation id="7951272445806340501">Chrome OS Flex ต้องรีสตาร์ทเพื่อใช้การอัปเดต</translation>
+<translation id="7959172989483770734">จัดการโปรไฟล์ Chrome</translation>
 <translation id="7962368738413920945">เว็บไซต์อาจทำงานได้ตามที่ต้องการแต่จะไม่จดจำคุณหลังจากที่ปิดหน้าต่าง Chrome ทั้งหมด</translation>
 <translation id="7962410387636238736">คอมพิวเตอร์เครื่องนี้จะไม่ได้รับการอัปเดต Google Chrome อีกต่อไปเพราะระบบไม่รองรับ Windows XP และ Windows Vista แล้ว</translation>
 <translation id="8005666035647241369">ที่เครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้</translation>
@@ -423,6 +426,7 @@
 <translation id="8009904340233602924">ใช้ Chrome โดยไม่มีบัญชี</translation>
 <translation id="8013993649590906847">หากรูปภาพไม่มีคำอธิบายที่เป็นประโยชน์ Chrome จะพยายามใส่คำอธิบายให้คุณ รูปภาพจะส่งมายัง Google เพื่อสร้างคำอธิบาย</translation>
 <translation id="8019103195866286235">นักพัฒนาซอฟต์แวร์เลิกเผยแพร่ส่วนขยายนี้แล้วและอาจไม่ปลอดภัย นำส่วนขยายดังกล่าวออกจาก Chrome เพื่อไม่ให้ดูและเปลี่ยนแปลงข้อมูลของคุณในเว็บไซต์ที่เข้าชม รวมถึงข้อมูลส่วนบุคคลได้อีกต่อไป</translation>
+<translation id="8031641407207794385">ปรับแต่ง Chrome</translation>
 <translation id="80471789339884597">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ทั้งหมดก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8077579734294125741">โปรไฟล์ Chrome อื่นๆ</translation>

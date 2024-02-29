@@ -33,6 +33,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1516530951338665275">Google Chrome het Bluetooth-toegang nodig om voort te gaan met 
  saambinding. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome-bedryfstelsel word deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" /> moontlik gemaak.</translation>
+<translation id="155168855724261758">Pasmaak jou Chrome</translation>
 <translation id="1553358976309200471">Dateer Chrome op</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> is reeds by hierdie Chrome-profiel aangemeld. Dit sal 'n nuwe Chrome-profiel vir <ph name="USER_EMAIL_ADDRESS" /> skep</translation>
 <translation id="1587223624401073077">Google Chrome gebruik tans jou kamera.</translation>
@@ -72,6 +73,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2121284319307530122">Begin weer om &amp;Chrome op te dateer</translation>
 <translation id="2123055963409958220">Help om Chrome te verbeter deur die <ph name="BEGIN_LINK" />huidige instellings<ph name="END_LINK" /> aan te gee</translation>
 <translation id="2126108037660393668">Die afgelaaide lêer kon nie geverifieer word nie.</translation>
+<translation id="2128411189117340671">Bestuur Chrome-profiele</translation>
 <translation id="2130870084309816036">Kon nie aan die internet koppel nie. As jy ’n brandmuur gebruik, moet jy <ph name="PRODUCT_EXE_NAME" /> asseblief op die toelaatlys plaas.</translation>
 <translation id="2131230230468101642">Ons vee outomaties jou belangstellings uit wat ouer as 4 weke is om jou privaatheid te beskerm. Terwyl jy aanhou blaai, kan ’n belangstelling weer op die lys verskyn. Of jy kan belangstellings wat jy wil hê Chrome moenie oorweeg nie, verwyder.</translation>
 <translation id="2139300032719313227">Herbegin Chrome-bedryfstelsel</translation>
@@ -425,6 +427,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="7917876797003313048">Jy kan jou aangemelde Google-rekeninge bestuur. Jou Google-rekeninge word gebruik vir Chrome-blaaier, Play Winkel, Gmail en meer. As jy 'n rekening vir iemand anders, soos 'n gesinslid, wil byvoeg, kan jy 'n nuwe persoon eerder by jou <ph name="DEVICE_TYPE" /> voeg. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome het hierdie aflaai geblokkeer omdat die lêer misleidend is en onverwagte veranderinge aan jou toestel kan maak</translation>
 <translation id="7951272445806340501">Chrome OS Flex moet herbegin word om die opdatering toe te pas.</translation>
+<translation id="7959172989483770734">Bestuur Chrome-profiele</translation>
 <translation id="7962368738413920945">Werwe sal waarskynlik werk soos jy verwag, maar sal jou nie onthou nadat jy alle Chrome-vensters toegemaak het nie</translation>
 <translation id="7962410387636238736">Hierdie rekenaar sal nie meer Google Chrome-opdaterings ontvang nie omdat Windows XP en Windows Vista nie meer gesteun word nie</translation>
 <translation id="8005666035647241369">Na Google Wagwoordbestuurder op hierdie toestel</translation>
@@ -432,6 +435,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="8009904340233602924">Gebruik Chrome sonder 'n rekening</translation>
 <translation id="8013993649590906847">As 'n prent nie 'n nuttige beskrywing het nie, sal Chrome probeer om een vir jou te verskaf. Prente word na Google toe gestuur om beskrywings te skep.</translation>
 <translation id="8019103195866286235">Die ontwikkelaar van hierdie uitbreiding het dit gedepubliseer, en dit kan onveilig wees. Verwyder dit uit Chrome sodat dit nie meer jou data, insluitend jou persoonlike inligting, op werwe wat jy besoek kan sien en verander nie.</translation>
+<translation id="8031641407207794385">Pasmaak jou Chrome</translation>
 <translation id="80471789339884597">Dankie dat jy geïnstalleer het. Jy moet al jou blaaiers herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8077579734294125741">Ander Chrome-profiele</translation>

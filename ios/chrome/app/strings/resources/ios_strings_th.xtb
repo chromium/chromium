@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">ค้นเว็บ</translation>
 <translation id="2252749852083403809">กำลังบันทึกในไดรฟ์สำหรับ <ph name="USER_EMAIL" /></translation>
 <translation id="2256933947031277845">องค์กรอนุญาตให้คุณลงชื่อเข้าใช้ด้วยบัญชีบางบัญชีเท่านั้น</translation>
+<translation id="2257594476751932246">ข่าวที่คัดสรรมาให้ผู้ใช้โดยเฉพาะ</translation>
 <translation id="2258326562203545455">{count,plural, =1{คุณบันทึกบุ๊กมาร์กไว้ในบัญชี Google {email} ได้}other{คุณบันทึกบุ๊กมาร์กไว้ในบัญชี Google {email} ได้}}</translation>
 <translation id="225943865679747347">รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">เพิ่มบัญชี</translation>
@@ -1102,7 +1103,7 @@
 <translation id="6596481460663245319">ค้นหารูปภาพด้วย Google</translation>
 <translation id="6598875554591387303">จัดเรียงตามผู้เผยแพร่เนื้อหา</translation>
 <translation id="6601302169302852717">บันทึกรูปภาพสำหรับ <ph name="USER_EMAIL" /> ไว้ใน Google Photos แล้ว</translation>
-<translation id="6603393121510733479">องค์กรปิดการเรียกดูแบบส่วนตัวไว้
+<translation id="6603393121510733479">องค์กรปิดการท่องเว็บแบบส่วนตัวไว้
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">กำลังดำเนินการตรวจสอบความปลอดภัย…</translation>
 <translation id="6609890790934458793">ระบบจะลบรหัสผ่านสําหรับ <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> และ <ph name="THIRD_WEBSITE" /> โดยระบบจะไม่ลบบัญชีของคุณ</translation>
@@ -1187,7 +1188,7 @@
 <translation id="6989674195860388998">เปลี่ยนในการตั้งค่า…</translation>
 <translation id="6998989275928107238">ถึง</translation>
 <translation id="699954956411469731">การแจ้งเตือนในอุปกรณ์เคลื่อนที่</translation>
-<translation id="7004032350256606903">องค์กรกำหนดให้คุณเรียกดูแบบส่วนตัว
+<translation id="7004032350256606903">องค์กรกำหนดให้คุณท่องเว็บแบบส่วนตัว
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">แท็บล่าสุด</translation>
 <translation id="7006788746334555276">การตั้งค่าเนื้อหา</translation>
@@ -1535,7 +1536,7 @@
 <translation id="8787968206789828143">ค้นหาในเว็บ</translation>
 <translation id="8792626944327216835">ไมโครโฟน</translation>
 <translation id="8803639129939845298">ปลอดภัย</translation>
-<translation id="8806823403540278281">องค์กรกำหนดให้คุณเรียกดูแบบส่วนตัว ระบบจะไม่บันทึกแท็บในโหมดไม่ระบุตัวตน
+<translation id="8806823403540278281">องค์กรกำหนดให้คุณท่องเว็บแบบส่วนตัว ระบบจะไม่บันทึกแท็บในโหมดไม่ระบุตัวตน
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">มุมมองเริ่มต้นของเว็บไซต์</translation>
 <translation id="881195471495802652">อัปโหลดไฟล์นี้ไม่ได้</translation>

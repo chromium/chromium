@@ -43,6 +43,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper?</translation>
 <translation id="4159784952369912983">Mauve</translation>
 <translation id="4212246570487010370">Continuer la navigation</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="427987768447457592">Nouveau groupe d'onglets</translation>
 <translation id="4648718555153979859">Vos onglets sont regroupés ici</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avis)}one{(<ph name="REVIEWS_COUNT_MANY" /> avis)}other{(<ph name="REVIEWS_COUNT_MANY" /> avis)}}</translation>
@@ -56,6 +57,7 @@
 <translation id="5082793167783849073">Comparez rapidement des pages en créant un groupe. Pour commencer, maintenez le doigt sur un lien.</translation>
 <translation id="5161254044473106830">Titre requis</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Vous avez <ph name="TABS_COUNT_ONE" /> onglet que vous n'avez pas utilisé récemment}one{Vous avez <ph name="TABS_COUNT_MANY" /> onglet que vous n'avez pas utilisé récemment}other{Vous avez <ph name="TABS_COUNT_MANY" /> onglets que vous n'avez pas utilisés récemment}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Fermer le groupe d'onglets qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Fermer le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Fermer le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="5339733443032484186">Votre dernier onglet</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5490235265819901748">Groupe d'onglets développé</translation>
@@ -84,6 +86,7 @@
 <translation id="6856809498882026482">Quitter le mode de sélection multiple</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Partager un onglet}one{Partager un onglet}other{Partager des onglets}}</translation>
 <translation id="7129458170538955174">Les renseignements à propos de ce magasin sont ouverts à mi-hauteur</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Fermer le groupe <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Fermer le groupe <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Fermer le groupe <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="7204204600596740190">Mode de sélection multiple</translation>
 <translation id="731648547091221002">Couleur sélectionnée : <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Consultez la politique de retour et plus</translation>
@@ -107,6 +110,7 @@
 <translation id="8714939927607906138">Prix inférieur</translation>
 <translation id="8730999928494395583">Votre activité dans ces onglets de navigation privée sera retirée de cet appareil</translation>
 <translation id="8820741577754260431">Faites le suivi des baisses de prix dans vos onglets</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="9090098097337832354">Les renseignements à propos de ce magasin sont fermés</translation>
 <translation id="9150694013019234766">Basculez entre les onglets dans votre groupe d'onglets, près du bas de l'écran</translation>
 <translation id="9169594135889675189">Ajouter un onglet au groupe</translation>

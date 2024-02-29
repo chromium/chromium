@@ -28,7 +28,7 @@
 <translation id="1547123415014299762">Sono consentiti i cookie di terze parti</translation>
 <translation id="1568470248891039841">I siti visitati possono incorporare contenuti di altri siti, ad esempio immagini, annunci e testo. Questi altri siti possono chiedere l'autorizzazione a usare le informazioni su di te che hanno salvato durante la tua navigazione dei siti. <ph name="BEGIN_LINK" />Scopri di più sui contenuti incorporati<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Nuove azioni disponibili vicino alla parte superiore dello schermo</translation>
-<translation id="1620510694547887537">Fotocamera</translation>
+<translation id="1620510694547887537">Videocamera</translation>
 <translation id="1633720957382884102">Siti correlati</translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="1647582022260550163">Vuoi reimpostare le autorizzazioni e cancellare cookie e dati dei siti?</translation>
@@ -367,6 +367,7 @@
 <translation id="702275896380648118">Questo sito stabilisce i tuoi interessi per poi suggerire annunci ad altri siti. Questo sito riceve anche gli argomenti degli annunci da Chrome per mostrarti annunci più pertinenti.</translation>
 <translation id="7053983685419859001">Blocca</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 elemento selezionato}other{# elementi selezionati}}</translation>
+<translation id="708014373017851679">L'app "<ph name="APP_NAME" />" è obsoleta. Aggiorna l'app.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> elementi selezionati. Opzioni disponibili nella parte superiore dello schermo</translation>
 <translation id="7141896414559753902">Impedisci ai siti di mostrare popup e reindirizzamenti (opzione consigliata)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

@@ -87,11 +87,6 @@ Jika kebijakan ini disetel ke Aktif atau tidak disetel, fitur koreksi otomatis a
 Jika kebijakan ini disetel ke Nonaktif, fitur koreksi otomatis tidak akan diizinkan di keyboard fisik.</translation>
 <translation id="1038725366103635282">Izinkan deteksi berbagi file NetBIOS</translation>
 <translation id="1040446814317236570">Aktifkan penyembunyian URL PAC (untuk https://)</translation>
-<translation id="1041719059374171202">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang tidak dapat menjalankan JavaScript.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="1043965859599437362">Kebijakan ini memberikan cara untuk mengganti daftar set yang digunakan browser untuk fitur Set Pihak Pertama.
 
 Setiap set dalam daftar Set Pihak Pertama browser harus memenuhi persyaratan Set Pihak Pertama.
@@ -281,11 +276,6 @@ Jika kebijakan disetel ke Aktif, pengguna akan dapat menggunakan hardware di per
 <translation id="1202216683470826356">Tampilkan kartu di Halaman Tab Baru</translation>
 <translation id="1204263402976895730">Mengaktifkan printer perusahaan</translation>
 <translation id="1207301487141109411">Cegah pemilihan avatar pengguna dari sistem file lokal, kamera, dan profil Google</translation>
-<translation id="1209065772997672966">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang dapat membuka pop-up.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="1209096923317019235">Menetapkan aplikasi sebagai pengendali default untuk ekstensi file yang ditentukan</translation>
 <translation id="120937472976628837">Melaporkan info kipas</translation>
 <translation id="1212233008927724662">Nonaktifkan pemuatan WebUI Login Lambat.</translation>
@@ -536,13 +526,6 @@ https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): Nilai ini tidak digunakan lagi mulai M121. Mulai M121 dan seterusnya, nilai akan      diperlakukan sebagai EnabledBelowThreshold.
       </translation>
 <translation id="1434300053894025056">Nonaktifkan periksa ejaan</translation>
-<translation id="1434743866147056474">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang tidak dapat menampilkan gambar.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_IMAGE_SETTING_ENABLED_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.
-
-       Perlu diperhatikan bahwa sebelumnya kebijakan ini keliru diaktifkan di Android, tetapi fungsi ini belum pernah sepenuhnya didukung di Android.</translation>
 <translation id="1435493974546396517">Mengontrol cara <ph name="PRODUCT_NAME" /> menyediakan opsi Cetak sebagai gambar di <ph name="MS_WIN_NAME" /> dan <ph name="MAC_OS_NAME" /> saat mencetak PDF.
 
       Saat mencetak PDF di <ph name="MS_WIN_NAME" /> atau <ph name="MAC_OS_NAME" />, terkadang tugas pencetakan perlu diraster ke gambar untuk printer tertentu agar mendapatkan output yang terlihat benar.
@@ -920,11 +903,6 @@ untuk kebijakan ini adalah versi 121. Kebijakan tersebut dihapus di versi 122.</
       Catatan: Nilai kebijakan harus ditentukan dalam persen dari 0 sampai 100.</translation>
 <translation id="1733092875104864334">Jangan izinkan pengumpulan log teks WebRTC dari Layanan Google</translation>
 <translation id="1733768596873041559">Alihkan ke IdP SAML secara default (sebelum <ph name="PRODUCT_NAME" /> 99, perlu konfirmasi pengguna)</translation>
-<translation id="1733939382419067578">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang dapat menampilkan notifikasi.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="173503685261877709">Kebijakan ini memberikan cara untuk mengganti daftar set yang digunakan browser untuk fitur Set Situs Terkait.
 
 Kebijakan ini menggantikan kebijakan <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
@@ -1702,11 +1680,6 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 
       Jika kebijakan ditetapkan ke Salah (False) atau tidak ditetapkan, tombol tidak akan muncul.</translation>
 <translation id="2294382669900758280">Pemutaran video di aplikasi Android tidak dipertimbangkan, meski kebijakan ini disetel ke <ph name="TRUE" />.</translation>
-<translation id="2297792368307475351">Jika kebijakan disetel, Anda dapat menetapkan daftar pola URL yang menentukan situs yang tidak dapat menggunakan izin situs papan klip. Ini tidak termasuk semua operasi papan klip pada asal yang cocok dengan pola. Misalnya, pengguna masih dapat menempelkan dengan pintasan keyboard karena tindakan ini tidak dibatasi oleh izin situs papan klip.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_CLIPBOARD_SETTING" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="2299220924812062390">Tentukan daftar plugin yang diaktifkan</translation>
 <translation id="2299815818824242485">Jangan izinkan pemeriksaan lewat proxy dengan perlindungan yang lebih tinggi</translation>
 <translation id="2303795211377219696">Mengaktifkan IsiOtomatis untuk kartu kredit</translation>
@@ -1862,6 +1835,7 @@ Jika kebijakan ini ditetapkan, pengguna tidak dapat mengganti nilainya.
 Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan tetapi dapat dikontrol oleh pengguna.</translation>
 <translation id="2413899611035194909">Tampilkan opsi aksesibilitas di menu area notifikasi layar login</translation>
 <translation id="2415715982424988916">Jelajahi (didukung sejak versi 91)</translation>
+<translation id="2419114151067000328">Fitur spesifikasi produk tidak akan tersedia untuk pengguna.</translation>
 <translation id="2420958105721932612">Menentukan bagaimana aplikasi diinstal. AVAILABLE: Aplikasi tidak otomatis diinstal, tetapi pengguna dapat menginstalnya. Ini adalah setelan default jika kebijakan ini tidak ditentukan. FORCE_INSTALLED: Aplikasi otomatis diinstal dan pengguna tidak dapat meng-uninstalnya. BLOCKED: Aplikasi diblokir dan tidak dapat diinstal. Jika aplikasi diinstal berdasarkan kebijakan sebelumnya, aplikasi akan di-uninstal.</translation>
 <translation id="2421400544595297401">Jangan izinkan pengguna yang tidak terafiliasi menggunakan aplikasi Android</translation>
 <translation id="2421677964966613267">Kebijakan ini tidak digunakan lagi di M88, Flash tidak lagi didukung oleh Chrome. Jika kebijakan disetel, Anda akan dapat menetapkan daftar pola URL yang menentukan situs yang tidak dapat menjalankan plugin <ph name="FLASH_PLUGIN_NAME" />.
@@ -2868,22 +2842,10 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 
           Nilai kebijakan harus ditentukan dalam milidetik.</translation>
 <translation id="3198385910521788907">Jangan tampilkan layar deteksi kehadiran manusia selama login</translation>
-<translation id="3205649498518960697">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang diizinkan untuk menampilkan konten campuran (yaitu, konten HTTP di situs HTTPS) yang dapat diblokir (aktif). Daftar tersebut juga dapat menentukan situs yang upgrade konten campurannya yang dapat diblokir secara opsional akan dinonaktifkan.
-
-          Jika kebijakan ini tidak disetel, konten campuran yang dapat diblokir akan diblokir dan konten campuran yang dapat diblokir secara opsional akan diupgrade, serta pengguna akan diizinkan untuk menyetel pengecualian guna mengizinkan konten tersebut untuk situs tertentu.
-
-          Untuk informasi selengkapnya tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="3205825995289802549">Maksimalkan jendela browser pertama di percobaan pertama</translation>
 <translation id="320607884987562184">Jika kebijakan disetel ke 1, situs akan dapat menjalankan JavaScript. Jika kebijakan disetel ke 2, situs tidak akan dapat menjalankan JavaScript.
 
 Jika kebijakan tidak disetel, JavaScript akan diizinkan, tetapi pengguna dapat mengubah setelan ini.</translation>
-<translation id="3206959584699016689">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang dapat mengakses sensor seperti sensor gerakan dan cahaya.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Jika pola URL yang sama ada di kebijakan ini dan kebijakan <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, kebijakan yang kedua akan diprioritaskan dan akses ke sensor gerakan dan cahaya akan diblokir.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="3207821022126246451">WebRTC akan menggunakan TCP pada antarmuka yang ditampilkan kepada publik, dan hanya akan menggunakan UDP jika didukung oleh proxy yang dikonfigurasi.</translation>
 <translation id="3207873329349672535">Kebijakan ini mengontrol apakah pengguna akan diberi opsi, dalam menu <ph name="PRODUCT_NAME" /> yang memungkinkan mereka melakukan transmisi ke perangkat transmisi yang tidak muncul di menu <ph name="PRODUCT_NAME" />, menggunakan kode akses atau kode QR yang ditampilkan di layar perangkat transmisi.
       Secara default, pengguna harus memasukkan ulang kode akses atau memindai ulang kode QR untuk memulai sesi transmisi selanjutnya, tetapi jika kebijakan <ph name="ACCESS_CODE_CAST_DEVICE_DURATION_POLICY_NAME" /> telah disetel ke nilai bukan nol (nilai default adalah nol), perangkat transmisi akan tetap berada di daftar perangkat transmisi yang tersedia hingga periode waktu yang telah ditentukan berakhir.
@@ -3407,6 +3369,7 @@ Perlu diingat untuk tidak selalu mengaktifkan kebijakan ini, terutama dalam depl
 <translation id="3606571057705314194">Pemilih profil dinonaktifkan saat browser dimulai</translation>
 <translation id="3608206578291537084">Aktifkan Pipeline Pelaporan Terenkripsi</translation>
 <translation id="3608281460204780443">Tampilkan ikon Chrome Web Store di peluncur <ph name="PRODUCT_OS_NAME" /> dan di halaman tab baru</translation>
+<translation id="361046511337768385">Izinkan pengaktifan fitur spesifikasi produk</translation>
 <translation id="3616490235694929053">Kebijakan ini mengontrol apakah layar setelan ukuran tampilan akan ditampilkan kepada pengguna selama login pertama.
       Jika kebijakan disetel ke salah (false), layar setelan ukuran tampilan tidak akan ditampilkan.
       Jika disetel ke benar (true), layar setelan ukuran tampilan akan ditampilkan.</translation>
@@ -3946,11 +3909,6 @@ Hingga Chrome 114, kebijakan ini mewajibkan kebijakan <ph name="SYNC_DISABLED_PO
 <translation id="4057442294431066708">Kebijakan ini mengontrol opsi pintasan yang dipilih untuk memetakan ulang peristiwa ke
 F11/F12 di subhalaman pemetaan ulang tombol. Setelan ini hanya berlaku untuk
 keyboard ChromeOS dan dinonaktifkan secara default jika kebijakan tidak disetel.</translation>
-<translation id="4061107397839125009">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang tidak dapat menampilkan notifikasi.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="4061590579642538878">Laporkan informasi tentang laporan kerusakan.</translation>
 <translation id="4062646759141042418">Mengaktifkan <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> untuk daftar URL.
 
@@ -4327,11 +4285,6 @@ Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat melacak paket mere
       Hanya nama host berlabel tunggal yang diizinkan di kebijakan ini, dan kebijakan ini hanya berlaku pada entri HSTS yang dipramuat "statis" (contohnya, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). Kebijakan ini tidak mencegah upgrade HSTS untuk server yang memiliki upgrade HSTS yang diminta "secara dinamis" menggunakan header respons <ph name="HSTS_HEADER_NAME" />.
 
       Nama host yang diberikan harus dikanonikalisasi: Semua IDN harus dikonversi ke format berlabel A, dan semua huruf ASCII harus berupa huruf kecil. Kebijakan ini hanya berlaku untuk nama host berlabel tunggal spesifik yang telah ditentukan, bukan subdomain dari nama host tersebut.</translation>
-<translation id="4387922553629365459">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang tidak dapat membuka pop-up.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="4389073105055031853">Izinkan pengguna mengelola semua sertifikat</translation>
 <translation id="4389091865841123886">Mengonfigurasi pengesahan jarak jauh dengan mekanisme TPM.</translation>
 <translation id="4389113579547582722">Izinkan pop-up Rating App Store ditampilkan</translation>
@@ -4359,15 +4312,6 @@ Hal ini dihapus di M112.</translation>
 Jika kebijakan disetel ke Nonaktif, file PDF akan dibuka kecuali jika pengguna menonaktifkan plugin PDF.
 
 Jika Anda menyetel kebijakan, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika kebijakan tidak disetel, pengguna dapat memilih apakah akan membuka PDF secara eksternal atau tidak.</translation>
-<translation id="4413453659814156568">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang diizinkan untuk menjalankan JavaScript dengan compiler JIT (Just In Time) yang diaktifkan.
-
-          Untuk informasi selengkapnya tentang pola URL situs yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.
-
-          Pengecualian kebijakan JIT JavaScript hanya akan diterapkan pada perincian situs (eTLD+1). Kebijakan yang disetel hanya untuk subdomain.site.com tidak akan diterapkan dengan benar ke site.com atau subdomain.site.com karena keduanya me-resolve ke eTLD+1 (site.com) yang sama yang tidak memiliki kebijakan. Dalam hal ini, kebijakan harus disetel di site.com agar dapat diterapkan dengan benar untuk site.com dan subdomain.site.com.
-
-          Kebijakan ini berlaku secara bingkai demi bingkai dan tidak berdasarkan URL asal tingkat atas saja. Dengan demikian, misalnya, jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> tetapi site-one.com memuat bingkai yang berisi site-two.com, site-one.com akan mengaktifkan JIT JavaScript tetapi site-two.com akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, jika disetel, atau secara default mengaktifkan JIT JavaScript.
-
-          Tidak menyetel kebijakan ini untuk suatu situs akan membuat kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> berlaku untuk situs tersebut, jika disetel, atau JIT JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="4415603335307944578">Jika kebijakan ini ditetapkan ke True atau tidak dikonfigurasi, browser akan menampilkan kembali halaman sambutan saat diluncurkan pertama kali setelah upgrade OS.
 
       Jika kebijakan ini ditetapkan ke False, browser tidak akan menampilkan kembali halaman sambutan saat diluncurkan pertama kali setelah upgrade OS.</translation>
@@ -5041,11 +4985,6 @@ Penonaktifan decoding video dengan akselerasi hardware tidak disarankan karena a
 <translation id="4970046075219007744">Izinkan aplikasi web meminta pengguna memberikan akses ke berbagai jenis file melalui File Handling API</translation>
 <translation id="4970855112942626932">Nonaktifkan login browser</translation>
 <translation id="4974091268178043378">Mode warna ChromeOS</translation>
-<translation id="4977702914571821981">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang tidak diizinkan untuk menampilkan konten campuran (konten HTTP di situs HTTPS) yang dapat diblokir (aktif). Daftar tersebut juga dapat menentukan situs yang konten campurannya yang dapat diblokir secara opsional (pasif) akan diupgrade.
-
-          Jika kebijakan ini tidak disetel, konten campuran yang dapat diblokir akan diblokir dan konten campuran yang dapat diblokir secara opsional akan diupgrade, tetapi pengguna akan diizinkan untuk menyetel pengecualian guna mengizinkan konten tersebut untuk situs tertentu.
-
-          Untuk informasi selengkapnya tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="4978533099939732984">Selalu tampilkan peringatan ruang penyimpanan hampir penuh</translation>
 <translation id="4979714585847741269">Jika kebijakan disetel ke Aktif, Aplikasi Web Kios dapat membuka jendela browser lain yang dapat ditempatkan di layar yang sama atau di layar yang berbeda. Untuk membuka jendela baru, Aplikasi Web harus memanggil fungsi JavaScript <ph name="OPEN_NEW_WINDOW_JS" />.
 
@@ -5487,6 +5426,7 @@ Jika kebijakan ini tidak disetel, tidak akan ada pengecualian untuk <ph name="UR
 
 Mulai <ph name="PRODUCT_NAME" /> versi 92, kebijakan ini juga didukung dalam mode headless.</translation>
 <translation id="5362531528507578966">Mengganti mode pencetakan grafis latar belakang default.</translation>
+<translation id="5363412016871318326">Fitur spesifikasi produk akan tersedia untuk pengguna.</translation>
 <translation id="5365476955714838841">Parameter command line untuk browser alternatif.</translation>
 <translation id="5365946944967967336">Tampilkan tombol Layar Utama di toolbar</translation>
 <translation id="5366977351895725771">Jika disetel ke false, pembuatan pengguna yang dilindungi oleh pengguna ini akan dinonaktifkan. Pengguna diawasi mana pun yang sudah ada akan tetap tersedia.
@@ -5528,13 +5468,6 @@ Mulai <ph name="PRODUCT_NAME" /> versi 92, kebijakan ini juga didukung dalam mod
 
           Penetapan kebijakan di semua platform yang diinginkan bergantung pada admin. Sebaiknya tetapkan kebijakan ini ke satu nilai di semua platform.</translation>
 <translation id="5389708774452952523">Mengizinkan proses audio berjalan dengan prioritas di atas normal di Windows</translation>
-<translation id="5389798680516458665">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang diizinkan untuk menampilkan gambar.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.
-
-      Perlu diperhatikan bahwa sebelumnya kebijakan ini keliru diaktifkan di Android, tetapi fungsi ini belum pernah sepenuhnya didukung di Android.</translation>
 <translation id="5390083518957894426">Mengaktifkan autentikasi ulang online di layar kunci untuk pengguna SAML</translation>
 <translation id="5391388690191341203">Akun lokal perangkat untuk login otomatis</translation>
 <translation id="5391867362692016532">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan aplikasi web mana yang tidak dapat meminta akses ke berbagai jenis file.
@@ -6014,13 +5947,6 @@ Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan dinonaktifka
       Jika kebijakan tidak disetel, faktor penskalaan default akan digunakan.
 
       Catatan: Faktor penskalaan harus 100% atau lebih.</translation>
-<translation id="5738892881453299672">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang tidak dapat mengakses sensor seperti sensor gerakan dan cahaya.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Jika pola URL yang sama ada di kebijakan ini dan kebijakan <ph name="SENSORS_ALLOWED_FOR_URLS_POLICY_NAME" />, kebijakan ini akan diprioritaskan dan akses ke sensor gerakan dan cahaya akan diblokir.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="5740636973289452345">Aktifkan pelaporan informasi plugin dan ekstensi</translation>
 <translation id="5746149754419996562">Mengaktifkan kehadiran widget Sekilas Info pada <ph name="PRODUCT_OS_NAME" />. Secara khusus, widget dapat diakses melalui chip tanggal di rak.
 Jika kebijakan ini disetel ke aktif, widget Sekilas Info akan diaktifkan di <ph name="PRODUCT_OS_NAME" />.
@@ -6327,6 +6253,8 @@ Permintaan penginstalan ekstensi akan dibuat saat pengguna mencoba menginstal ek
 
 Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> untuk <ph name="PRODUCT_NAME" />.
 Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="6020795917180493154">Mulai M119, jika kebijakan ini disetel ke salah (false) atau tidak disetel, WebSQL akan dinonaktifkan, tetapi dapat diaktifkan melalui tanda Chrome "web-sql-access". Jika kebijakan disetel ke benar (true), akses WebSQL akan diaktifkan.
+Kebijakan ini tidak digunakan lagi mulai M124.</translation>
 <translation id="6022948604095165524">Tindakan saat permulaan</translation>
 <translation id="602318745029752898">Mengizinkan suara text-to-speech enhanced network di fitur Klik untuk Diucapkan</translation>
 <translation id="6026722971789064331">Mengontrol penggunaan File System API untuk menulis</translation>
@@ -7287,6 +7215,10 @@ Jika kebijakan ini disetel ke Benar (True) atau tidak disetel, pengguna akan dap
 
 Jika kebijakan ini disetel ke Salah (False), penerusan port ke penampung Crostini akan dinonaktifkan.</translation>
 <translation id="6677291257287862684">Aktifkan tombol lekat di layar login</translation>
+<translation id="668153983584136017">Kebijakan ini tidak digunakan lagi karena algoritma GREASE yang diperbarui telah diaktifkan secara default sejak M103.
+Jika disetel ke aktif, fitur Pembaruan GREASE Petunjuk Klien Agen Pengguna akan memperbarui algoritme GREASE Agen Pengguna ke spesifikasi terbaru.
+      Spesifikasi terbaru dapat menyebabkan error pada beberapa situs yang membatasi karakter yang mungkin dimuat oleh permintaan. Lihat spesifikasi untuk informasi selengkapnya: https://wicg.github.io/ua-client-hints/#grease
+     Kebijakan ini akan dihapus dalam rilis mendatang.</translation>
 <translation id="6682305153467826752">Aktifkan pelaporan informasi identifikasi mesin</translation>
 <translation id="6685903773201985073">Mengaktifkan autentikasi pasif di sesi tamu dan reguler.</translation>
 <translation id="6687291630099400188">Jangan tampilkan informasi sistem di layar login</translation>
@@ -8652,12 +8584,6 @@ Jika kebijakan ini tidak disetel, perender PDF akan dipilih oleh browser.</trans
 <translation id="7781452670568828399">Ubah konfigurasi <ph name="PRODUCT_OS_NAME" /> yang direkomendasikan.</translation>
 <translation id="7784062550705119230">Jika <ph name="PRINTERS_ALLOWLIST" /> dipilih untuk <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> akan menentukan printer yang dapat digunakan oleh pengguna. Hanya printer dengan ID yang cocok dengan nilai dalam kebijakan ini yang akan tersedia bagi pengguna. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="DEVICE_PRINTERS_POLICY_NAME" /></translation>
 <translation id="7788511847830146438">Per Profil</translation>
-<translation id="7788632499792081231">Jika kebijakan disetel, Anda dapat menetapkan daftar pola URL yang menentukan situs yang dapat menggunakan izin situs papan klip. Ini tidak termasuk semua operasi papan klip pada asal yang cocok dengan pola. Misalnya, pengguna masih dapat menempelkan dengan pintasan keyboard karena tindakan ini tidak dibatasi oleh izin situs papan klip.
-
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_CLIPBOARD_SETTING" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="7790221177424764797">Kebijakan ini akan mengontrol apakah aturan dari kebijakan SiteList <ph name="IE_PRODUCT_NAME" /> dimuat atau tidak.
 
 Jika kebijakan ini disetel ke benar (true), <ph name="PRODUCT_NAME" /> akan membaca <ph name="IEEM_SITELIST_POLICY" /> <ph name="IE_PRODUCT_NAME" /> untuk mendapatkan URL daftar situs. <ph name="PRODUCT_NAME" /> kemudian mendownload daftar situs dari URL tersebut, dan menerapkan aturan seolah-olah aturan tersebut dikonfigurasikan dengan kebijakan <ph name="BROWSER_SWITCHER_URL_LIST_POLICY_NAME" />.
@@ -9007,6 +8933,9 @@ Peringatan: Sebaiknya tetap aktifkan update otomatis sehingga pengguna menerima 
 <translation id="8102854005031553638">Penampil PDF menggunakan perender AGG.</translation>
 <translation id="8102913158860568230">Setelan streaming media default</translation>
 <translation id="8104962233214241919">Memilih sertifikat klien untuk situs ini secara otomatis</translation>
+<translation id="810509972572344398">Jika kebijakan ini disetel ke Aktif atau tidak disetel, spesifikasi produk akan tersedia untuk pengguna.
+
+Jika kebijakan ini disetel ke Nonaktif, spesifikasi produk tidak akan tersedia.</translation>
 <translation id="8109762054721090517">Template untuk <ph name="IPP_ATTRIBUTE" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /></translation>
 <translation id="8111331908123507719">Mengonfigurasi waktu dalam detik saat perangkat akan menunggu tidak ada aktivitas sebelum menampilkan screensaver untuk layar kunci.
 
@@ -9538,17 +9467,6 @@ Rollback ke <ph name="PRODUCT_OS_NAME" /> versi 106 atau yang lebih lama tidak d
       Kebijakan ini menggantikan <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />, dan preferensi pengguna.</translation>
 <translation id="8528951285051082869">Jangan izinkan aplikasi web apa pun mengakses berbagai jenis file melalui File Handling API</translation>
 <translation id="8533145294731270627">Blokir download dan jenis file berbahaya.</translation>
-<translation id="8543103455510904459">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang tidak diizinkan untuk menjalankan JavaScript dengan compiler JIT (Just In Time) yang diaktifkan.
-
-          Jika JIT JavaScript dinonaktifkan, <ph name="PRODUCT_NAME" /> dapat merender konten web dengan lebih lambat, serta dapat menonaktifkan bagian JavaScript termasuk WebAssembly. Jika JIT JavaScript dinonaktifkan, <ph name="PRODUCT_NAME" /> dapat merender konten web dalam konfigurasi yang lebih aman.
-
-          Untuk informasi selengkapnya tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.
-
-          Pengecualian kebijakan JIT JavaScript hanya akan diterapkan pada perincian situs (eTLD+1). Kebijakan yang disetel hanya untuk subdomain.site.com tidak akan diterapkan dengan benar ke site.com atau subdomain.site.com karena keduanya me-resolve ke eTLD+1 (site.com) yang sama yang tidak memiliki kebijakan. Dalam hal ini, kebijakan harus disetel di site.com agar dapat diterapkan dengan benar untuk site.com dan subdomain.site.com.
-
-          Kebijakan ini berlaku secara bingkai demi bingkai dan tidak berdasarkan URL asal tingkat atas saja. Dengan demikian, misalnya, jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> tetapi site-one.com memuat bingkai yang berisi site-two.com, site-one.com akan menonaktifkan JIT JavaScript tetapi site-two.com akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, jika disetel, atau secara default mengaktifkan JIT JavaScript.
-
-          Tidak menyetel kebijakan ini untuk suatu situs akan membuat kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> berlaku untuk situs tersebut, jika disetel, atau JIT JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="8543108307976719751">Cegah koneksi akses jarak jauh ke perangkat ini</translation>
 <translation id="8543639085146778837">Izinkan pengumpulan log teks WebRTC dari Layanan Google</translation>
 <translation id="8543975123557636331">Aktifkan output audio</translation>
@@ -9898,11 +9816,6 @@ Kebijakan ini tidak berlaku jika keyboard virtual dinonaktifkan (mis. menggunaka
 <translation id="8827366480126575426">Protokol untuk pengendali protokol.</translation>
 <translation id="8827417642396462482">Izinkan jenis kueri DNS tambahan</translation>
 <translation id="8830717323204407209">Memungkinkan pengguna melihat promo Ekstensi Penyedia Kredensial</translation>
-<translation id="8831911834413504983">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang dapat menjalankan JavaScript.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="8832829916385857156">Halaman Tab Baru akan menampilkan kartu jika konten tersedia</translation>
 <translation id="8833109046074170275">Autentikasi melalui alur GAIA default</translation>
 <translation id="8834641112681661892">Jika kebijakan disetel, penundaan maksimum dalam milidetik akan ditentukan antara menerima invalidasi kebijakan dan mengambil kebijakan baru dari layanan pengelolaan perangkat. Nilai yang valid berkisar dari 1.000 (1 detik) hingga 300.000 (5 menit). Nilai di luar rentang ini akan dikunci ke masing-masing batas.

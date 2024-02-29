@@ -33,6 +33,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1516530951338665275">Google Chrome behöver åtkomst för Bluetooth för att fortsätta 
  parkoppla. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS fungerar tack vare <ph name="BEGIN_LINK_CROS_OSS" />ytterligare program med öppen källkod<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="155168855724261758">Anpassa Chrome</translation>
 <translation id="1553358976309200471">Uppdatera Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> är redan inloggad på den här Chrome-profilen. En ny Chrome-profil skapas för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome använder din kamera.</translation>
@@ -72,6 +73,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2121284319307530122">Starta om för att uppdatera &amp;Chrome</translation>
 <translation id="2123055963409958220">Hjälp oss att förbättra Chrome genom att rapportera <ph name="BEGIN_LINK" />dina aktuella inställningar<ph name="END_LINK" /></translation>
 <translation id="2126108037660393668">Den nedladdade filen gick inte att verifiera.</translation>
+<translation id="2128411189117340671">Hantera Chrome-profiler</translation>
 <translation id="2130870084309816036">Det går inte att ansluta till internet. Om du använder en brandvägg lägger du till <ph name="PRODUCT_EXE_NAME" /> på godkännandelistan.</translation>
 <translation id="2131230230468101642">För att skydda din integritet raderar vi automatiskt intressen som är äldre än fyra veckor. Medan du surfar kan ett intresse dyka upp på listan igen. Du kan också ta bort intressen som du inte vill att Chrome ska inkludera.</translation>
 <translation id="2139300032719313227">Starta om ChromeOS</translation>
@@ -425,6 +427,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="7917876797003313048">Du kan hantera dina inloggade Google-konton. Dina Google-konton används för webbläsaren Chrome, Play Butik, Gmail med mera. Om du vill lägga till ett konto åt någon annan, till exempel en familjemedlem, lägger du till en ny person på <ph name="DEVICE_TYPE" /> i stället. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Den här nedladdningen blockerades av Chrome eftersom filen är bedräglig och kan göra oväntade ändringar på enheten</translation>
 <translation id="7951272445806340501">ChromeOS Flex måste startas om för att uppdateringen ska börja gälla.</translation>
+<translation id="7959172989483770734">Hantera Chrome-profiler</translation>
 <translation id="7962368738413920945">Webbplatser fortsätter förmodligen att fungera som förväntat men de kommer inte ihåg dig efter att du stänger alla Chrome-fönster</translation>
 <translation id="7962410387636238736">Den här datorn får inte längre uppdateringar för Google Chrome eftersom Windows XP och Windows Vista inte längre stöds.</translation>
 <translation id="8005666035647241369">I Google Lösenordshantering på den här enheten</translation>
@@ -432,6 +435,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8009904340233602924">Använd Chrome utan konto</translation>
 <translation id="8013993649590906847">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chrome. Bilderna skickas till Google så att beskrivningen kan genereras.</translation>
 <translation id="8019103195866286235">Det här tillägget har tagits bort av utvecklaren och kan vara osäkert. Ta bort det från Chrome så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
+<translation id="8031641407207794385">Anpassa Chrome</translation>
 <translation id="80471789339884597">Tack för att du installerat programmet. Du måste starta om alla webbläsare innan du använder <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Andra Chrome-profiler</translation>

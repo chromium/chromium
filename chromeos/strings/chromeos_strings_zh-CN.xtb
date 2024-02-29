@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">智能助理</translation>
 <translation id="1954818433534793392">建筑</translation>
 <translation id="1962550982027027473">必须提供默认 APN</translation>
+<translation id="1967860190218310525">创建新的 APN</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google 个人资料照片</translation>
 <translation id="1979103255016296513">密码更改期限已过</translation>
@@ -473,7 +474,6 @@
 <translation id="4046123991198612571">下一曲</translation>
 <translation id="404928562651467259">警告</translation>
 <translation id="4054683689023980771">正在下载图片</translation>
-<translation id="4060260348856573701">新建 APN</translation>
 <translation id="4063039537646912479">浅蓝色</translation>
 <translation id="4093865285251893588">个人资料图片</translation>
 <translation id="409427325554347132">保存测试详细信息</translation>
@@ -981,6 +981,7 @@
 <translation id="7144954474087165241">佛塔</translation>
 <translation id="714876143603641390">LAN 连接性</translation>
 <translation id="7154020516215182599">分享您的反馈或描述您的问题。如果可能的话，请附上重现问题的步骤。</translation>
+<translation id="7155037718620478619">发现更多 APN</translation>
 <translation id="7155171745945906037">相机或文件中的现有照片</translation>
 <translation id="7162487448488904999">媒体库</translation>
 <translation id="7170236477717446850">个人资料照片</translation>

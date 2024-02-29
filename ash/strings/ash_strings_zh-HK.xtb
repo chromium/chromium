@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">按下 <ph name="KEYBOARD_SHORTCUT" /> 鍵可切換鍵盤配置。</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> 預覽。用緊嘅桌面。</translation>
 <translation id="2487915095798731898">加入</translation>
+<translation id="2499445554382787206">桌面設定檔選單：<ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">相黏鍵</translation>
 <translation id="2504454902900101003">取消設定睇手機最近的相、媒體同通知</translation>
 <translation id="2509468283778169019">大寫鍵已啟用</translation>
@@ -605,6 +606,7 @@
 <translation id="3509391053705095206">找不到手機。請確保手機的藍牙功能已開啟。</translation>
 <translation id="3510164367642747937">突顯滑鼠遊標</translation>
 <translation id="3513798432020909783">帳戶由 <ph name="MANAGER_EMAIL" /> 管理</translation>
+<translation id="3517037892157925473">工作上次更新時間：<ph name="DATE" /> <ph name="TIME" />。</translation>
 <translation id="352245152354538528">{0,plural, =1{請在 1 分鐘內更新裝置}other{請在 # 分鐘內更新裝置}}</translation>
 <translation id="3522979239100719575">正在尋找可用的個人檔案。請稍候片刻。</translation>
 <translation id="3526440770046466733">在新分頁中開啟連結並停留在目前的分頁中</translation>
@@ -1143,6 +1145,7 @@
 <translation id="5536723544185013515">最近用嘅應用程式，用向左或者向右箭咀導覽就可以存取所有最近用嘅應用程式</translation>
 <translation id="553675580533261935">正在結束工作階段</translation>
 <translation id="5537725057119320332">投放</translation>
+<translation id="554017492391497564">無法標示為完成。</translation>
 <translation id="5546397813406633847">復原使用者密碼</translation>
 <translation id="554893713779400387">切換語音輸入</translation>
 <translation id="5550417424894892620">拖曳至桌面的檔案會新增至「<ph name="HOLDING_SPACE_TITLE" />」，你無法將檔案新增至桌面。</translation>
@@ -1337,6 +1340,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">電量不足，已開啟「慳電模式」。</translation>
 <translation id="6247728804802644171">開啟通知</translation>
+<translation id="6249795363855770621">無法標示為完成，請連上網路後再試一次。</translation>
 <translation id="6254629735336163724">已鎖定為水平</translation>
 <translation id="6259254695169772643">使用觸控筆選擇</translation>
 <translation id="6267036997247669271"><ph name="NAME" />：正在啟用…</translation>
@@ -1496,6 +1500,7 @@
 <translation id="6896758677409633944">複製</translation>
 <translation id="6912841030378044227">聚焦在網址列</translation>
 <translation id="6912901278692845878">快速導覽</translation>
+<translation id="6917259695595127329">工作上次更新時間：<ph name="TIME" />。</translation>
 <translation id="6919251195245069855">無法辨識智能卡，請再試一次。</translation>
 <translation id="692135145298539227">刪除</translation>
 <translation id="6929081673585394903">顯示控制項</translation>

@@ -1801,7 +1801,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2343747224442182863">Ustaw tę kartę jako aktywną</translation>
 <translation id="2344032937402519675">Nie udało się połączyć z serwerem. Sprawdź połączenie internetowe i spróbuj jeszcze raz. Jeśli problem nadal występuje, uruchom ponownie Chromebooka.</translation>
 <translation id="234559068082989648">Z końcem grudnia 2022 r. stare wersje aplikacji Chrome przestaną działać. Skontaktuj się z administratorem, aby zaktualizować tę aplikację do nowej wersji lub ją usunąć.</translation>
-<translation id="2347930112185157300">Operator sieci komórkowej jest zablokowany</translation>
 <translation id="2348176352564285430">Aplikacja: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – zgłoszono prośbę o uprawnienia. Aby odpowiedzieć, naciśnij Ctrl + Dalej.</translation>
 <translation id="234889437187286781">Błąd podczas ładowania danych</translation>
@@ -1966,7 +1965,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2462332841984057083">Aplikacja Steam jest już konfigurowana. Poczekaj na zakończenie tego procesu.</translation>
 <translation id="2462724976360937186">Identyfikator klucza urzędu certyfikacji</translation>
 <translation id="2462752602710430187">Dodano: <ph name="PRINTER_NAME" /></translation>
-<translation id="2464046291463112461">Nie zezwalaj akcesoriom zewnętrznym na dostęp do pamięci RAM i jej udostępnianie</translation>
 <translation id="2467755475704469005">Nie wykryto urządzeń. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Przyspieszenie przewijania na touchpadzie</translation>
 <translation id="2468205691404969808">Zapisuje Twoje ustawienia w plikach cookie, nawet jeśli nie odwiedzasz tych stron</translation>

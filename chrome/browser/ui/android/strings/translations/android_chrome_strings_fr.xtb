@@ -602,6 +602,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="426652736638196239">Cet IBAN sera enregistré sur cet appareil uniquement</translation>
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
 <translation id="4277529130885813215">Utiliser un autre appareil</translation>
+<translation id="4282440837784183472">Votre organisation (<ph name="MANAGED_DOMAIN" />) gère le compte auquel vous vous connectez et la manière dont Chrome peut être utilisé. Votre administrateur peut configurer ou limiter certaines fonctionnalités.</translation>
 <translation id="4285846616383034558">Cookies, cache et autres données des sites</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activez le verrouillage de l'écran dans les paramètres Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nouvel onglet nav. privée</translation>
@@ -634,9 +635,9 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="4461614516424362539">Lorsque vous associez un autre appareil avec un code QR, celui-ci peut utiliser ce téléphone comme clé de sécurité. Si vous le supprimez, vous devrez scanner à nouveau un code QR pour l'associer.</translation>
 <translation id="4478161224666880173">Vous pouvez utiliser votre compte <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sur ce site. Pour continuer, connectez-vous à <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Installation du module <ph name="MODULE" /> pour Chrome…</translation>
+<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Favori enregistré dans "<ph name="FOLDER_NAME" />". Il n'est enregistré que sur cet appareil.}one{Favori enregistré dans "<ph name="FOLDER_NAME" />". Il n'est enregistré que sur cet appareil.}other{Favoris enregistrés dans "<ph name="FOLDER_NAME" />". Ils ne sont enregistrés que sur cet appareil.}}</translation>
 <translation id="4484496141267039529">Aucune connexion. Réessayez plus tard.</translation>
 <translation id="4487967297491345095">Toutes les données de l'application Chrome seront supprimées de façon définitive, y compris les fichiers, paramètres, comptes, bases de données, etc.</translation>
-<translation id="4491323382106587961">Sélectionnez un compte. Actuellement sélectionné : <ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">Votre administrateur a activé l'enregistrement des mots de passe</translation>
 <translation id="4508528996305412043">Le menu de la carte de flux est ouvert</translation>
 <translation id="4509501256689523862">Le fait que vous voyiez ou non des annonces personnalisées lorsque vous naviguez sur Internet dépend de ce paramètre, des <ph name="BEGIN_LINK_1" />thèmes des annonces<ph name="END_LINK_1" />, de vos <ph name="BEGIN_LINK_2" />paramètres relatifs aux cookies<ph name="END_LINK_2" /> et du comportement du site que vous consultez en matière de personnalisation</translation>
@@ -854,6 +855,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="557018954714092179">Créer un dossier</translation>
 <translation id="5578795271662203820">Rechercher l'image sur <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Vous avez toujours la possibilité de sélectionner les éléments à synchroniser dans les <ph name="BEGIN_LINK1" />paramètres<ph name="END_LINK1" />.</translation>
+<translation id="558429399979870715">Associez Chrome et d'autres services Google si vous souhaitez qu'ils partagent des données entre eux</translation>
 <translation id="5590372121997663538">Mémoriser cet ordinateur</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="5599455543593328020">Mode Navigation privée</translation>
@@ -883,6 +885,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="571930967925877633">Vos favoris, votre historique et d'autres données Chrome ne seront plus synchronisés avec votre compte Google</translation>
 <translation id="572328651809341494">Onglets récents</translation>
 <translation id="5726692708398506830">Agrandir tous les éléments de la page</translation>
+<translation id="5728072125198221967">Services Google associés</translation>
 <translation id="5744751019568455640">Voici les voix que je peux utiliser pour lire le contenu de vos pages Web. Si cette voix vous plaît et que vous voulez que je continue de l'utiliser, appuyez sur son nom.</translation>
 <translation id="5748802427693696783">Onglets standards sélectionnés</translation>
 <translation id="5749068826913805084">Pour télécharger des fichiers, Chrome a besoin d'accéder à l'espace de stockage.</translation>
@@ -1162,9 +1165,11 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7037830628447527439">Se connecter à Chrome avec votre compte Google</translation>
 <translation id="7054588988317389591">Obtenir les descriptions d'images ?</translation>
 <translation id="7055152154916055070">Redirection bloquée :</translation>
+<translation id="7057969023583258980">Ouvrir tout l'historique Chrome</translation>
 <translation id="7063006564040364415">Impossible de se connecter au serveur de synchronisation.</translation>
 <translation id="7071521146534760487">Gérer le compte</translation>
 <translation id="707155805709242880">Choisissez les éléments à synchroniser ci-dessous</translation>
+<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Favori enregistré dans "<ph name="FOLDER_NAME" />" sur votre compte <ph name="ACCOUNT_EMAIL" />.}one{Favori enregistré dans "<ph name="FOLDER_NAME" />" sur votre compte <ph name="ACCOUNT_EMAIL" />.}other{Favoris enregistrés dans "<ph name="FOLDER_NAME" />" sur votre compte <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">Carte SD</translation>
 <translation id="7080806333218412752">Il envoie des URL à la navigation sécurisée pour les vérifier. Il transmet également un petit échantillon de pages, de téléchargements, d'informations système et de l'activité des extensions afin d'identifier de nouvelles menaces. De même, pour vous protéger dans l'ensemble des applications Google, il associe temporairement ces données à votre compte Google lorsque vous êtes connecté.</translation>
 <translation id="7085332316435785646">Choisissez d'inclure l'historique Chrome pour une expérience plus personnalisée dans les services Google</translation>
@@ -1432,6 +1437,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8310344678080805313">Onglets standards</translation>
 <translation id="831192587911042850">Ajouter le site Web actuel à la liste des sites Web que vous suivez.</translation>
 <translation id="8333340769932050274">Vous pouvez bloquer les thèmes que vous ne souhaitez pas partager avec des sites. De plus, Chrome supprime automatiquement les thèmes datant de plus de quatre semaines. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="8336984817750547763">Incluez l'historique Chrome si vous souhaitez l'ajouter à l'activité sur le Web et les applications de votre compte Google</translation>
 <translation id="834313815369870491">Ne jamais traduire les sites</translation>
 <translation id="8348430946834215779">Utilisez HTTPS autant que possible et recevez un avertissement avant de charger des sites qui ne le prennent pas en charge</translation>
 <translation id="8354977102499939946">Rechercher rapidement par commande vocale. Pour modifier ce raccourci, accédez aux paramètres.</translation>
@@ -1577,6 +1583,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="9081543426177426948">Les sites que vous visitez ne sont pas enregistrés en navigation privée</translation>
 <translation id="9086302186042011942">Synchronisation en cours</translation>
 <translation id="9086455579313502267">Impossible d'accéder au réseau.</translation>
+<translation id="909756639352028172">Pour bénéficier de l'expérience la plus personnalisée, ajoutez Chrome à l'activité sur le Web et les applications, ainsi qu'aux services Google associés</translation>
 <translation id="9099220545925418560">D'après votre historique de navigation. Ce paramètre est désactivé.</translation>
 <translation id="9100610230175265781">Veuillez saisir la phrase secrète.</translation>
 <translation id="9101137867221042551">Gestion</translation>

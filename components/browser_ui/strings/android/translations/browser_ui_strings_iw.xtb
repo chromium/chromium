@@ -368,6 +368,7 @@
 <translation id="702275896380648118">‏האתר הזה מזהה אילו דברים אהבת ולאחר מכן מציע מודעות לאתרים אחרים. האתר הזה גם מקבל מידע על נושאי המודעות שלך מ-Chrome כדי להציג לך מודעות רלוונטיות יותר.</translation>
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{נבחר אחד}one{נבחרו #}two{נבחרו #}other{נבחרו #}}</translation>
+<translation id="708014373017851679">האפליקציה <ph name="APP_NAME" /> לא מעודכנת. צריך לעדכן את האפליקציה.</translation>
 <translation id="7087918508125750058">נבחרו <ph name="ITEM_COUNT" />. האפשרויות מוצגות בחלק העליון של המסך</translation>
 <translation id="7141896414559753902">חסימה של חלונות קופצים והפניות אוטומטיות באתרים (מומלץ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

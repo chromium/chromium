@@ -31,6 +31,7 @@
 <translation id="1516530951338665275">O Google Chrome necessita do acesso ao Bluetooth para continuar 
 a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">A criação do ChromeOS foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
+<translation id="155168855724261758">Personalizar o Chrome</translation>
 <translation id="1553358976309200471">Atualizar o Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> já tem sessão iniciada neste perfil do Chrome. Esta ação cria um novo perfil do Chrome para <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">O Google Chrome está a utilizar a câmara.</translation>
@@ -68,6 +69,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2121284319307530122">Reiniciar para atualizar o &amp;Chrome</translation>
 <translation id="2123055963409958220">Ajude a melhorar o Chrome ao comunicar as <ph name="BEGIN_LINK" />definições atuais<ph name="END_LINK" /></translation>
 <translation id="2126108037660393668">O ficheiro transferido falhou na validação.</translation>
+<translation id="2128411189117340671">Gerir perfis do Chrome</translation>
 <translation id="2130870084309816036">Não é possível estabelecer ligação à Internet. Se usar uma firewall, adicione <ph name="PRODUCT_EXE_NAME" /> à lista de autorizações.</translation>
 <translation id="2131230230468101642">Para proteger a sua privacidade, eliminamos automaticamente os seus interesses com mais de 4 semanas. Enquanto navega, um interesse pode aparecer novamente na lista. Em alternativa, pode remover os interesses que não quer que o Chrome considere.</translation>
 <translation id="2139300032719313227">Reinicie o ChromeOS</translation>
@@ -417,6 +419,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="7917876797003313048">Pode gerir as suas Contas Google com sessão iniciada. As suas Contas Google são utilizadas para o navegador Chrome, a Play Store, o Gmail e muito mais. Se pretender adicionar uma conta para outra pessoa, como um membro da família, adicione uma nova pessoa ao seu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">O Chrome bloqueou esta transferência porque o ficheiro é fraudulento e pode fazer alterações inesperadas ao seu dispositivo</translation>
 <translation id="7951272445806340501">É necessário reiniciar o ChromeOS Flex para aplicar a atualização.</translation>
+<translation id="7959172989483770734">Gerir perfis do Chrome</translation>
 <translation id="7962368738413920945">É provável que os sites funcionem como esperado, mas não se vão lembrar de si depois de fechar todas as janelas do Chrome</translation>
 <translation id="7962410387636238736">Este computador deixará de receber atualizações do Google Chrome, uma vez que o Windows XP e o Windows Vista já não são suportados.</translation>
 <translation id="8005666035647241369">No Gestor de Palavras-passe da Google neste dispositivo</translation>
@@ -424,6 +427,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8009904340233602924">Usar o Chrome sem uma conta</translation>
 <translation id="8013993649590906847">Se uma imagem não tiver uma descrição útil, o Chrome tenta fornecer uma. Para criar as descrições, são enviadas imagens para a Google.</translation>
 <translation id="8019103195866286235">A publicação desta extensão foi anulada pelo programador e pode não ser segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
+<translation id="8031641407207794385">Personalizar o Chrome</translation>
 <translation id="80471789339884597">Agradecemos a instalação. Tem de reiniciar todos os navegadores antes de usar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Outros perfis do Chrome</translation>

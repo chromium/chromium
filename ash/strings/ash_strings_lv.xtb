@@ -358,6 +358,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2484513351006226581">Nospiediet īsinājumtaustiņu <ph name="KEYBOARD_SHORTCUT" />, lai pārslēgtu tastatūras izkārtojumu.</translation>
 <translation id="2486214324139475545">Darbvietas <ph name="DESK_NAME" /> priekšskatījums. Aktīva darbvieta.</translation>
 <translation id="2487915095798731898">Pievienoties</translation>
+<translation id="2499445554382787206">Darbvietas profila izvēlne. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Taustiņu ķēde</translation>
 <translation id="2504454902900101003">Nerādīt iespēju iestatīt tālruņa jaunāko fotoattēlu, multivides satura un paziņojumu skatīšanu</translation>
 <translation id="2509468283778169019">Funkcija Caps Lock ir ieslēgta</translation>
@@ -605,6 +606,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3509391053705095206">Nevar atrast jūsu tālruni. Tālrunī ir jābūt ieslēgtam Bluetooth savienojumam.</translation>
 <translation id="3510164367642747937">Izcelt peles kursoru</translation>
 <translation id="3513798432020909783">Kontu pārvalda <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Uzdevumi pēdējoreiz atjaunināti: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Ierīce jāatjaunina 1 minūtes laikā}zero{Ierīce jāatjaunina # minūšu laikā}one{Ierīce jāatjaunina # minūtes laikā}other{Ierīce jāatjaunina # minūšu laikā}}</translation>
 <translation id="3522979239100719575">Notiek pieejamu profilu meklēšana… Tā var ilgt dažas minūtes.</translation>
 <translation id="3526440770046466733">Atvērt saiti jaunā cilnē, bet palikt pašreizējā cilnē</translation>
@@ -1144,6 +1146,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="5536723544185013515">Nesen izmantotās lietotnes: pārvietojieties, nospiežot kreiso vai labo bultiņu, lai piekļūtu visām nesen izmantotajām lietotnēm.</translation>
 <translation id="553675580533261935">Iziešana no sesijas</translation>
 <translation id="5537725057119320332">Apraidīt</translation>
+<translation id="554017492391497564">Nevarēja atzīmēt kā pabeigtu.</translation>
 <translation id="5546397813406633847">Lietotāja profila atkopšana</translation>
 <translation id="554893713779400387">Pārslēgt diktēšanas režīmu</translation>
 <translation id="5550417424894892620">Nometiet failus darbvirsmā, lai pievienotu tos šeit: <ph name="HOLDING_SPACE_TITLE" />. Jūs nevarat pievienot failus darbvirsmai.</translation>
@@ -1338,6 +1341,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Zems akumulatora uzlādes līmenis. Ieslēgts akumulatora enerģijas taupīšanas režīms.</translation>
 <translation id="6247728804802644171">Atvērt paziņojumus</translation>
+<translation id="6249795363855770621">Nevarēja atzīmēt kā pabeigtu. Mēģiniet vēlreiz, kad būsiet tiešsaistē.</translation>
 <translation id="6254629735336163724">Bloķēts horizontāli</translation>
 <translation id="6259254695169772643">Atlasīšanai izmantojiet skārienekrāna pildspalvu.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: notiek aktivizēšana...</translation>
@@ -1498,6 +1502,7 @@ Jauna instalācija</translation>
 <translation id="6896758677409633944">Kopēt</translation>
 <translation id="6912841030378044227">Izcelt adreses joslu</translation>
 <translation id="6912901278692845878">Īss ceļvedis</translation>
+<translation id="6917259695595127329">Uzdevumi pēdējoreiz atjaunināti: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Nevarēja atpazīt jūsu viedkarti. Mēģiniet vēlreiz.</translation>
 <translation id="692135145298539227">dzēst</translation>
 <translation id="6929081673585394903">Rādīt vadīklas</translation>

@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954818433534793392">gebouw</translation>
 <translation id="1962550982027027473">Een standaard APN is vereist</translation>
+<translation id="1967860190218310525">Nieuwe APN maken</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google-profielfoto</translation>
 <translation id="1979103255016296513">Wachtwoord moet dringend worden gewijzigd</translation>
@@ -330,6 +331,7 @@
 <translation id="3031560714565892478">Apparaat is een videocamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Eindpunt</translation>
+<translation id="3060579846059757016">Details</translation>
 <translation id="3069085583900247081">Test mislukt</translation>
 <translation id="3078740164268491126">tabel</translation>
 <translation id="3083667275341675831">Verbindingsdiagnose</translation>
@@ -472,7 +474,6 @@
 <translation id="4046123991198612571">Volgend nummer</translation>
 <translation id="404928562651467259">WAARSCHUWING</translation>
 <translation id="4054683689023980771">Afbeelding downloaden</translation>
-<translation id="4060260348856573701">Nieuwe APN</translation>
 <translation id="4063039537646912479">lichtblauw</translation>
 <translation id="4093865285251893588">Profielafbeelding</translation>
 <translation id="409427325554347132">Testgegevens opslaan</translation>
@@ -980,6 +981,7 @@
 <translation id="7144954474087165241">pagode</translation>
 <translation id="714876143603641390">LAN-connectiviteit</translation>
 <translation id="7154020516215182599">Deel je feedback of beschrijf je probleem. Voeg waar mogelijk stappen toe om het probleem te reproduceren.</translation>
+<translation id="7155037718620478619">Meer APN's ontdekken</translation>
 <translation id="7155171745945906037">Bestaande foto van camera of uit bestand</translation>
 <translation id="7162487448488904999">Galerij</translation>
 <translation id="7170236477717446850">Profielfoto</translation>

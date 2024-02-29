@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Урилгын дугтуй</translation>
 <translation id="1413809658975081374">Хувийн нууцлалын алдаа</translation>
 <translation id="1414134146594747368">Бэлтгэл сургууль</translation>
-<translation id="141826476809826269">Задалсан текстийн төгсгөл</translation>
 <translation id="1418611192881166179">Chrome энэ онцлогийг шинэчилж байхад та гуравдагч талын күүкинүүдийг тохиргоонд блоклоогүй бол сайтууд тэдгээрийг түр зуур ашиглах боломжтой.</translation>
 <translation id="1419305130220238697">Chrome-д татаж авсан файлуудыг удирдах товчлуур, Chrome-д татаж авсан файлуудаа удирдахын тулд идэвхжүүлнэ үү</translation>
 <translation id="1422930527989633628">Ойролцоох Bluetooth төхөөрөмжүүдийг илрүүлэхийг хүсэх боломжтой</translation>
@@ -1202,6 +1201,7 @@
 <translation id="3324687287337751929">4 x 6 инч</translation>
 <translation id="3324983252691184275">Улаан хүрэн</translation>
 <translation id="3325027355611702542">Аяллын чиргүүл болон аяллын зориулалттай автомашинууд</translation>
+<translation id="3325568918769906282">буурах дарааллаар</translation>
 <translation id="3329013043687509092">Өнгөний нэвчилт</translation>
 <translation id="3333762389743153920">Виртуал картын эрхгүй байна</translation>
 <translation id="3336044043987989409">Таны хувийн сүлжээний төхөөрөмж эсвэл серверүүдэд холбогдохыг зөвшөөрөхийн тулд дахин ачаалах товчийг дарна уу.</translation>
@@ -1780,6 +1780,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">Хүрээ</translation>
 <translation id="4397059608630092079">Автоматаар бөглөх хэсгийг ашиглаж байх үед үргэлж баталгаажуулах</translation>
+<translation id="4397978002248035985">Таны банкны вебсайт дээр баталгаажуулах попапыг нээнэ</translation>
 <translation id="4406883609789734330">Шууд тайлбар</translation>
 <translation id="4406896451731180161">Хайлтын үр дүн</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> күүки</translation>
@@ -2203,6 +2204,7 @@
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Документын төлөв байдал</translation>
 <translation id="528468243742722775">Төгсгөл</translation>
+<translation id="5285468538058987167">Сайн харилцагчийн баталгаажуулалтаар (SCA)</translation>
 <translation id="5285570108065881030">Бүх хадгалсан нууц үгийг харуулах</translation>
 <translation id="5287456746628258573">Энэ сайт нь аюулгүй байдлын хуучирсан тохируулгыг ашиглаж байгаа бөгөөд энэ нь таны мэдээллийг (жишээлбэл, нууц үг эсвэл кредит картын дугаар) уг сайт руу илгээх үед ил болгож болзошгүй.</translation>
 <translation id="5288108484102287882">Удирдамжийн утгыг баталгаажуулсан хэдий ч анхааруулга гарч ирлээ</translation>
@@ -2249,6 +2251,7 @@
 <translation id="5371425731340848620">Картыг шинэчлэх</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Таны цаг хоцорч байна" эсвэл "Таны цаг түрүүлж байна" эсвэл "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">өсөх дарааллаар</translation>
 <translation id="5383478552402031184">Шал тавих үйлчилгээ</translation>
 <translation id="5385857628869214740">Хошигнол</translation>
 <translation id="5385966243497224160">HTTPS бус URL-г урьдчилан үзэх боломжгүй</translation>
@@ -3069,7 +3072,6 @@
 <translation id="6978121630131642226">Хайлтын систем</translation>
 <translation id="6978236010531171013">Ямартай ч хуваалцах</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Задалсан текстийн эхлэл</translation>
 <translation id="6979440798594660689">Дууг хаах (өгөгдмөл)</translation>
 <translation id="6987806006823772670">Дугтуй (бүрсэн)</translation>
 <translation id="6989763994942163495">Нарийвчилсан тохиргоог харуулах ...</translation>
@@ -3484,6 +3486,7 @@
 <translation id="7719791801330803993">Зураг болон видеоны программ хангамж</translation>
 <translation id="772128550427553158">Карт баталгаажуулалтын код нь таны картын урд талд байрладаг.</translation>
 <translation id="7724603315864178912">Хайчлах</translation>
+<translation id="7730057435797792985">Эрэмбэлэх</translation>
 <translation id="7734285854693414638">Google Маягтад шинэ маягт шуурхай үүсгээрэй</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> хэл дээрх хуудсыг байнга орчуулна</translation>
 <translation id="7736959720849233795">Холбоосны хаягийг хуулах</translation>

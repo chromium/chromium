@@ -231,7 +231,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1410941016594047814">Envelope Invite</translation>
 <translation id="1413809658975081374">Error sa privacy</translation>
 <translation id="1414134146594747368">Preschool</translation>
-<translation id="141826476809826269">Dulo ng in-extract na text</translation>
 <translation id="1418611192881166179">Habang ina-update ng Chrome ang feature na ito, pansamantalang makakagamit ang mga site ng third-party na cookies maliban na lang kung iba-block mo ang mga ito sa mga setting.</translation>
 <translation id="1419305130220238697">Button na Pamahalaan ang mga download sa Chrome, i-activate para mapamahalaan ang mga file na na-download mo sa Chrome</translation>
 <translation id="1422930527989633628">Puwedeng hilinging tumuklas ng mga Bluetooth device na nasa malapit</translation>
@@ -1201,6 +1200,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Crimson</translation>
 <translation id="3325027355611702542">Mga Camper at RV</translation>
+<translation id="3325568918769906282">sa pababang ayos</translation>
 <translation id="3329013043687509092">Saturation</translation>
 <translation id="3333762389743153920">Hindi kwalipikado para sa virtual card</translation>
 <translation id="3336044043987989409">Pindutin ang button sa pag-reload para payagan ang koneksyon sa mga device o server sa iyong pribadong network.</translation>
@@ -1779,6 +1779,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4397059608630092079">Palaging Mag-verify Kapag Gumagamit ng Autofill</translation>
+<translation id="4397978002248035985">Magbubukas ng pop-up para mag-verify sa website ng iyong bangko</translation>
 <translation id="4406883609789734330">Instant Caption</translation>
 <translation id="4406896451731180161">mga resulta ng paghahanap</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
@@ -2202,6 +2203,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Mga katangian ng dokumento</translation>
 <translation id="528468243742722775">Tapusin</translation>
+<translation id="5285468538058987167">Sa pamamagitan ng Pinahusay na Pag-authenticate ng Customer (Strong Customer Authentication o SCA)</translation>
 <translation id="5285570108065881030">Ipakita ang lahat ng naka-save na password</translation>
 <translation id="5287456746628258573">Gumagamit ang site na ito ng lumang configuration sa seguridad, na posibleng maglantad ng iyong impormasyon (halimbawa, mga password o numero ng credit card) kapag ipinadala ito sa site na ito.</translation>
 <translation id="5288108484102287882">Na-validate ang mga value ng patakaran at nagkaroon ng mga babala</translation>
@@ -2248,6 +2250,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5371425731340848620">I-update ang card</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Nahuhuli ang iyong orasan" o "Nauuna ang iyong orasan" o "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">sa pataas na ayos</translation>
 <translation id="5383478552402031184">Pag-aayos ng Sahig</translation>
 <translation id="5385857628869214740">Katatawanan</translation>
 <translation id="5385966243497224160">Hindi ma-preview ang non-HTTPS URL</translation>
@@ -3069,7 +3072,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6978121630131642226">Mga Search Engine</translation>
 <translation id="6978236010531171013">Ibahagi pa rin</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Simula ng in-extract na text</translation>
 <translation id="6979440798594660689">I-mute (default)</translation>
 <translation id="6987806006823772670">Envelope (Coated)</translation>
 <translation id="6989763994942163495">Ipakita ang mga advanced na setting...</translation>
@@ -3484,6 +3486,7 @@ Mga karagdagang detalye:
 <translation id="7719791801330803993">Software para sa Larawan at Video</translation>
 <translation id="772128550427553158">Makikita ang CVC sa harap ng iyong card.</translation>
 <translation id="7724603315864178912">I-cut</translation>
+<translation id="7730057435797792985">Pagbukud-bukurin</translation>
 <translation id="7734285854693414638">Gumawa ng bagong form sa Google Forms nang mabilis</translation>
 <translation id="773466115871691567">Palaging isalin ang mga page sa <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7736959720849233795">Kopyahin ang Address ng Link</translation>

@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Плик Invite</translation>
 <translation id="1413809658975081374">Грешка во приватност</translation>
 <translation id="1414134146594747368">Забавиште</translation>
-<translation id="141826476809826269">Крај на извлечениот текст</translation>
 <translation id="1418611192881166179">Додека Chrome ја ажурира функцијава, сајтовите може привремено да користат колачиња од трети страни, освен ако ги блокирате во поставките.</translation>
 <translation id="1419305130220238697">Копче за управување со преземањата во Chrome, активирајте го за да управувате со датотеките што сте ги презеле во Chrome</translation>
 <translation id="1422930527989633628">Може да прашува за да открива уреди со Bluetooth во близина</translation>
@@ -1201,6 +1200,7 @@
 <translation id="3324687287337751929">4 x 6 инчи</translation>
 <translation id="3324983252691184275">Темноцрвена</translation>
 <translation id="3325027355611702542">Кампери и рекреативни возила</translation>
+<translation id="3325568918769906282">по опаѓачки редослед</translation>
 <translation id="3329013043687509092">Заситеност</translation>
 <translation id="3333762389743153920">Не е подобна за виртуелна картичка</translation>
 <translation id="3336044043987989409">Притиснете го копчето за повторно вчитување за да го дозволите поврзувањето на уредите или серверите во вашата приватна мрежа.</translation>
@@ -2248,6 +2248,7 @@
 <translation id="5371425731340848620">Ажурирајте ја картичката</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Вашиот часовник е поназад“ или „Вашиот часовник е понапред“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
+<translation id="5380953781541843508">по растечки редослед</translation>
 <translation id="5383478552402031184">Услуги за подови</translation>
 <translation id="5385857628869214740">Хумор</translation>
 <translation id="5385966243497224160">Не може да се прегледа URL-адреса што не е HTTPS</translation>
@@ -3069,7 +3070,6 @@
 <translation id="6978121630131642226">Пребарувачи</translation>
 <translation id="6978236010531171013">Сепак сподели</translation>
 <translation id="6979158407327259162">Google Диск</translation>
-<translation id="6979332652936434520">Почеток на извлечениот текст</translation>
 <translation id="6979440798594660689">Исклучи звук (стандардно)</translation>
 <translation id="6987806006823772670">Коверт (обложен)</translation>
 <translation id="6989763994942163495">Напредни поставки...</translation>
@@ -3484,6 +3484,7 @@
 <translation id="7719791801330803993">Фото и видеософтвер</translation>
 <translation id="772128550427553158">CVC се наоѓа на предната страна на картичката.</translation>
 <translation id="7724603315864178912">Исечи</translation>
+<translation id="7730057435797792985">Подредување</translation>
 <translation id="7734285854693414638">Набрзина создајте нов формулар во Google Forms</translation>
 <translation id="773466115871691567">Секогаш преведувај ги страниците на <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7736959720849233795">Копирај ја адресата на линкот</translation>

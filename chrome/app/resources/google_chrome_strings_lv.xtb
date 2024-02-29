@@ -30,6 +30,7 @@
 <translation id="1507198376417198979">Pielāgojiet savu jauno Chrome profilu.</translation>
 <translation id="1516530951338665275">Pārlūkam Google Chrome ir nepieciešama Bluetooth piekļuve, lai turpinātu savienošanu pārī. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="155168855724261758">Pielāgot pārlūku Chrome</translation>
 <translation id="1553358976309200471">Atjaunināt Chrome</translation>
 <translation id="1583073672411044740">Lietotājs <ph name="EXISTING_USER" /> jau ir pierakstījies šajā Chrome profilā. Tādējādi tiks izveidots jauns Chrome profils lietotājam <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Pārlūkā Google Chrome tiek izmantota kamera.</translation>
@@ -69,6 +70,7 @@
 <translation id="2121284319307530122">Atkārtoti palaist, lai atjauninātu &amp;Chrome</translation>
 <translation id="2123055963409958220">Palīdziet uzlabot pārlūku Chrome, ziņojot par <ph name="BEGIN_LINK" />pašreizējiem iestatījumiem<ph name="END_LINK" />.</translation>
 <translation id="2126108037660393668">Neizdevās verificēt lejupielādēto failu.</translation>
+<translation id="2128411189117340671">Pārvaldīt Chrome profilus</translation>
 <translation id="2130870084309816036">Nevar izveidot savienojumu ar internetu. Ja izmantojat ugunsmūri, lūdzu, pievienojiet failu <ph name="PRODUCT_EXE_NAME" /> atļaušanas sarakstam.</translation>
 <translation id="2131230230468101642">Lai aizsargātu jūsu konfidencialitāti, mēs automātiski dzēšam intereses, kas ir glabātas ilgāk par četrām nedēļām. Intereses var tikt atkārtoti pievienotas sarakstam, kad turpināsiet pārlūkošanu. Varat arī noņemt intereses, ja nevēlaties, lai Chrome tās apsvērtu.</translation>
 <translation id="2139300032719313227">Chrome OS restartēšana</translation>
@@ -420,6 +422,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7917876797003313048">Varat pārvaldīt Google kontus, kuros esat pierakstījies. Jūsu Google konti tiek izmantoti pārlūkā Chrome, Play veikalā, pakalpojumā Gmail un citur. Ja vēlaties pievienot kontu kādam citam, piemēram, ģimenes loceklim, pievienojiet jaunu personu savai <ph name="DEVICE_TYPE" /> ierīcei. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="7936702483636872823">Pārlūkā Chrome šī lejupielāde tika bloķēta, jo fails ir maldinošs un var veikt neparedzētas izmaiņas jūsu ierīcē.</translation>
 <translation id="7951272445806340501">Chrome OS Flex ir jārestartē, lai lietotu atjauninājumu.</translation>
+<translation id="7959172989483770734">Pārvaldīt Chrome profilus</translation>
 <translation id="7962368738413920945">Vietnes, visticamāk, darbosies pienācīgi, taču nesaglabās jūsu datus, kad aizvērsiet visus Chrome logus.</translation>
 <translation id="7962410387636238736">Šajā datorā vairs netiks saņemti Google Chrome atjauninājumi, jo operētājsistēmas Windows XP un Windows Vista vairs netiek atbalstītas.</translation>
 <translation id="8005666035647241369">Google paroļu pārvaldniekā šajā ierīcē</translation>
@@ -427,6 +430,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8009904340233602924">Izmantot pārlūku Chrome, nepierakstoties kontā</translation>
 <translation id="8013993649590906847">Ja attēlam nav vērtīga apraksta, pārlūks Chrome mēģinās jums tādu nodrošināt. Lai izveidotu aprakstus, attēli tiek nosūtīti uzņēmumam Google.</translation>
 <translation id="8019103195866286235">Šī paplašinājuma publicēšanu atcēla izstrādātājs, un paplašinājums, iespējams, nav drošs. Noņemiet to no pārlūka Chrome, lai tas jūsu apmeklētajās vietnēs vairs nevarētu skatīt un mainīt jūsu datus, tostarp jūsu personas informāciju.</translation>
+<translation id="8031641407207794385">Pielāgot pārlūku Chrome</translation>
 <translation id="80471789339884597">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē visas pārlūkprogrammas.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8077579734294125741">Citi Chrome profili</translation>

@@ -637,9 +637,9 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="4461614516424362539">Quando associa outro dispositivo com um código QR, esse dispositivo pode utilizar este telemóvel como chave de segurança. Se o remover, terá de ler um código QR para o associar novamente.</translation>
 <translation id="4478161224666880173">Pode usar a sua conta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> neste site. Para continuar, inicie sessão na conta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">A instalar o módulo <ph name="MODULE" /> para o Chrome…</translation>
+<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Marcador guardado em "<ph name="FOLDER_NAME" />". Só é guardado neste dispositivo.}other{Marcadores guardados em "<ph name="FOLDER_NAME" />". Só são guardados neste dispositivo.}}</translation>
 <translation id="4484496141267039529">Sem ligação. Tente mais tarde.</translation>
 <translation id="4487967297491345095">Todos os dados de apps do Chrome são eliminados permanentemente, incluindo todos os ficheiros, definições, contas, bases de dados, etc.</translation>
-<translation id="4491323382106587961">Selecione uma conta. Seleção atual: <ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">O seu administrador ativou a gravação de palavras-passe</translation>
 <translation id="4508528996305412043">O menu do cartão do feed está aberto.</translation>
 <translation id="4509501256689523862">À medida que navega, a personalização de um anúncio que lhe é mostrado depende da definição <ph name="BEGIN_LINK_1" />Tópicos do anúncio<ph name="END_LINK_1" />, das <ph name="BEGIN_LINK_2" />definições de cookies<ph name="END_LINK_2" /> e se o site que está a ver personaliza anúncios</translation>
@@ -858,6 +858,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="557018954714092179">Criar nova pasta</translation>
 <translation id="5578795271662203820">Pesquisar a imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Pode escolher o que quer sincronizar nas <ph name="BEGIN_LINK1" />definições<ph name="END_LINK1" />.</translation>
+<translation id="558429399979870715">Associe o Chrome e outros serviços Google se quiser que partilhem dados entre si</translation>
 <translation id="5590372121997663538">Memorizar este computador</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5599455543593328020">Modo de navegação anónima</translation>
@@ -887,6 +888,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="571930967925877633">Os marcadores, o histórico e outros dados do Chrome vão deixar de ser sincronizados com a sua Conta Google</translation>
 <translation id="572328651809341494">Separadores recentes</translation>
 <translation id="5726692708398506830">Aumentar o tamanho de todos os itens na página</translation>
+<translation id="5728072125198221967">Serviços Google associados</translation>
 <translation id="5744751019568455640">Veja as vozes que pode escolher para ouvir as páginas Web lidas em voz alta. Se gostar desta voz e quiser que continue a usá-la, basta tocar no nome da voz.</translation>
 <translation id="5748802427693696783">Mudado para separadores padrão</translation>
 <translation id="5749068826913805084">O Chrome necessita de acesso ao armazenamento para transferir ficheiros.</translation>
@@ -1170,6 +1172,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7063006564040364415">Não foi possível estabelecer ligação ao servidor de sincronização.</translation>
 <translation id="7071521146534760487">Gerir conta</translation>
 <translation id="707155805709242880">Escolha o que quer sincronizar abaixo.</translation>
+<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Marcador guardado em "<ph name="FOLDER_NAME" />" na sua conta, <ph name="ACCOUNT_EMAIL" />.}other{Marcadores guardados em "<ph name="FOLDER_NAME" />" na sua conta, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">Cartão SD</translation>
 <translation id="7080806333218412752">Envia URLs para a Navegação segura para os verificar. Envia também um pequeno exemplo de páginas, transferências, atividade de extensões e informações do sistema para ajudar a detetar novas ameaças. Associa temporariamente estes dados à sua Conta Google quando tiver sessão iniciada, para garantir a sua proteção nas apps Google.</translation>
 <translation id="7085332316435785646">Escolha se quer incluir o Histórico do Chrome para obter mais experiências personalizadas nos serviços Google</translation>
@@ -1355,6 +1358,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7947953824732555851">Aceitar e in. sessão</translation>
 <translation id="7951102827450076904">Abrir sempre os PDFs transferidos</translation>
 <translation id="7957413488482743710">Um cartão virtual oculta o seu cartão real como medida de proteção contra potenciais fraudes. <ph name="BEGIN_LINK1" />Saiba mais sobre cartões virtuais<ph name="END_LINK1" /></translation>
+<translation id="7959485987650214982">Separadores neste dispositivo</translation>
 <translation id="7960972236129063347">Botão anterior das estatísticas da página</translation>
 <translation id="7961926449547174351">Desativou o acesso ao armazenamento. Aceda às Definições para o ativar.</translation>
 <translation id="7963646190083259054">Fornecedor:</translation>
@@ -1437,6 +1441,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8310344678080805313">Separadores padrão</translation>
 <translation id="831192587911042850">Adiciona o Website atual à lista de Websites que está a seguir</translation>
 <translation id="8333340769932050274">Pode bloquear os tópicos que não quer partilhar com os sites. O Chrome também elimina automaticamente os tópicos com mais de 4 semanas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="8336984817750547763">Inclua o Histórico do Chrome se quiser adicioná-lo à Atividade da Web e de apps na sua Conta Google</translation>
 <translation id="834313815369870491">Nunca traduzir sites</translation>
 <translation id="8348430946834215779">Use HTTPS sempre que possível e receba um aviso antes de carregar sites que não suportam este protocolo</translation>
 <translation id="8354977102499939946">Pesquise com a sua voz rapidamente. Para editar este atalho, aceda às Definições.</translation>
@@ -1582,6 +1587,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="9081543426177426948">Os sites que visita não são guardados na Navegação anónima</translation>
 <translation id="9086302186042011942">A sincronizar</translation>
 <translation id="9086455579313502267">Não é possível aceder à rede</translation>
+<translation id="909756639352028172">Para ter a experiência mais personalizada, inclua o Chrome na Atividade da Web e de apps e nos serviços Google associados</translation>
 <translation id="9099220545925418560">Com base no seu histórico de navegação. Esta definição está desativada.</translation>
 <translation id="9100610230175265781">Frase de acesso obrigatória</translation>
 <translation id="9101137867221042551">Gestão</translation>

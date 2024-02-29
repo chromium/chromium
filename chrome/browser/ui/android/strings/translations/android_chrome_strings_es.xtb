@@ -116,6 +116,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
 <translation id="1568636008098739136">Escuchar esta página. Para editar esta combinación de teclas, mantenlas pulsadas.</translation>
 <translation id="1571304935088121812">Copiar nombre de usuario</translation>
+<translation id="1584648915421894279">En este momento, las contraseñas guardadas en este dispositivo no se pueden usar en todos los canales de Chrome. Después de la versión 125 de Chrome, las contraseñas guardadas en tu dispositivo para Chrome y <ph name="CHROME_CHANNEL" /> se combinarán y se podrán usar en ambas aplicaciones.</translation>
 <translation id="1592864538817356322">Protección estándar:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> elementos sugeridos en la lista siguiente.</translation>
 <translation id="1598163867407640634">Usa <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -328,6 +329,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="281504910091592009">Consulta y gestiona las contraseñas guardadas en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Menú de tarjeta de feed a media altura</translation>
 <translation id="2830783625999891985">Contenido del portapapeles ocultado</translation>
+<translation id="2834884592945939112">Configuración, error de cuenta de Google</translation>
 <translation id="2838367486340230368">Explicación de la guía de privacidad abierta a media altura</translation>
 <translation id="2839327205551510876">Has dejado de seguir a <ph name="SITE_NAME" /></translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{Se cerrará <ph name="TAB_COUNT_ONE" /> pestaña de Incógnito}other{Se cerrarán <ph name="TAB_COUNT_MANY" /> pestañas de incógnito}}</translation>
@@ -638,7 +640,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Marcador guardado en <ph name="FOLDER_NAME" />. Solo se guarda en este dispositivo.}other{Marcadores guardados en <ph name="FOLDER_NAME" />. Solo se guardan en este dispositivo.}}</translation>
 <translation id="4484496141267039529">No hay conexión. Inténtalo de nuevo más tarde.</translation>
 <translation id="4487967297491345095">Todos los datos de la aplicación Chrome se eliminarán de forma permanente. Esto incluye todos los archivos, ajustes, cuentas, bases de datos, etc.</translation>
-<translation id="4491323382106587961">Elige una cuenta. Opción seleccionada: <ph name="EMAIL" /></translation>
 <translation id="4494806687727322324">Tu administrador ha activado la función de guardar contraseñas</translation>
 <translation id="4508528996305412043">El menú de la tarjeta del feed está abierto</translation>
 <translation id="4509501256689523862">Al navegar, la personalización de los anuncios que ves dependerá de esta opción, de los <ph name="BEGIN_LINK_1" />temas de anuncios<ph name="END_LINK_1" />, de tu <ph name="BEGIN_LINK_2" />configuración de cookies<ph name="END_LINK_2" /> y de si el sitio que estás viendo ofrece anuncios personalizados</translation>
@@ -664,6 +665,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4583164079174244168">{MINUTES,plural, =1{Hace # minuto}other{Hace # minutos}}</translation>
 <translation id="4587589328781138893">Sitios web</translation>
 <translation id="4594952190837476234">Esta página sin conexión se creó el <ph name="CREATION_TIME" /> y puede ser distinta de la versión online.</translation>
+<translation id="4595805675102978678">Error de cuenta de Google</translation>
 <translation id="4601095002996233687">Análisis exhaustivos para detectar descargas sospechosas.</translation>
 <translation id="4609429330876432068">Tus listas de contraseñas guardadas en Chrome y <ph name="CHROME_CHANNEL" /> se han combinado. Puedes seguir autocompletando todas tus contraseñas guardadas en ambas aplicaciones.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>

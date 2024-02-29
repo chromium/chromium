@@ -638,7 +638,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Záložka bola uložená do priečinka <ph name="FOLDER_NAME" />. Je uložená iba v tomto zariadení.}few{Záložky boli uložené do priečinka <ph name="FOLDER_NAME" />. Sú uložené iba v tomto zariadení.}many{Bookmarks saved to "<ph name="FOLDER_NAME" />". It is only saved to this device.}other{Záložky boli uložené do priečinka <ph name="FOLDER_NAME" />. Sú uložené iba v tomto zariadení.}}</translation>
 <translation id="4484496141267039529">Žiadne pripojenie. Skúste to neskôr.</translation>
 <translation id="4487967297491345095">Všetky dáta aplikácií v Chrome budú natrvalo odstránené. Platí to aj pre všetky súbory, nastavenia, účty, databázy atď.</translation>
-<translation id="4491323382106587961">Vyberte účet. Momentálne je vybraný účet <ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">Ukladanie hesiel zapol váš správca</translation>
 <translation id="4508528996305412043">Ponuka karty feedu je otvorená</translation>
 <translation id="4509501256689523862">To, či je reklama zobrazená pri prehliadaní prispôsobená, závisí od <ph name="BEGIN_LINK_1" />tém reklamy<ph name="END_LINK_1" />, vašich <ph name="BEGIN_LINK_2" />nastavení súborov cookie<ph name="END_LINK_2" /> a od toho, či prehliadaný web prispôsobuje reklamy.</translation>
@@ -1166,6 +1165,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7037830628447527439">Prihláste sa do Chromu svojím účtom Google</translation>
 <translation id="7054588988317389591">Chcete získať popisy obrázkov?</translation>
 <translation id="7055152154916055070">Presmerovanie bolo zablokované:</translation>
+<translation id="7057969023583258980">Otvoriť celú históriu Chromu</translation>
 <translation id="7063006564040364415">Nepodarilo sa pripojiť k synchronizačnému serveru.</translation>
 <translation id="7071521146534760487">Spravovať účet</translation>
 <translation id="707155805709242880">Nižšie vyberte, čo sa má synchronizovať</translation>

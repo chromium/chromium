@@ -232,7 +232,6 @@
 <translation id="1410941016594047814">لفافہ دعوت نامہ</translation>
 <translation id="1413809658975081374">رازداری کی خرابی</translation>
 <translation id="1414134146594747368">پری اسکول</translation>
-<translation id="141826476809826269">نکالے گئے ٹیکسٹ کا اختتام</translation>
 <translation id="1418611192881166179">‏جب Chrome اس خصوصیت کو اپ ڈیٹ کر رہا ہو تو سائٹس عارضی طور پر فریق ثالث کوکیز استعمال کر سکتی ہیں جب تک کہ آپ انہیں ترتیبات میں مسدود نہ کر دیں۔</translation>
 <translation id="1419305130220238697">‏Chrome میں ڈاؤن لوڈز کا نظم کریں بٹن، Chrome میں ڈاؤن لوڈ کردہ اپنی فائلز کا نظم کرنے کے لیے فعال کریں</translation>
 <translation id="1422930527989633628">سائٹ قریبی بلوٹوتھ آلات کو دریافت کرنے کیلئے پوچھ سکتی ہے</translation>
@@ -1203,6 +1202,7 @@
 <translation id="3324687287337751929">‏‎4 x 6 انچ</translation>
 <translation id="3324983252691184275">قرمزی</translation>
 <translation id="3325027355611702542">‏کیمپرز اور RVs</translation>
+<translation id="3325568918769906282">نزولی ترتیب میں</translation>
 <translation id="3329013043687509092">سیرابی</translation>
 <translation id="3333762389743153920">کارڈ نمبر ورچوئل کارڈ کیلئے اہل نہیں ہے</translation>
 <translation id="3336044043987989409">اپنے نجی نیٹ ورک پر آلات یا سرورز سے کنکشن کی اجازت دینے کے لیے دوبارہ لوڈ کریں بٹن دبائیں۔</translation>
@@ -1781,6 +1781,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">کنارہ</translation>
 <translation id="4397059608630092079">آٹو فل استعمال کرتے وقت ہمیشہ توثیق کریں</translation>
+<translation id="4397978002248035985">آپ کے بینک کی ویب سائٹ پر تصدیق کرنے کے لیے ایک پاپ اپ کھولتا ہے</translation>
 <translation id="4406883609789734330">لائیو کیپشن</translation>
 <translation id="4406896451731180161">تلاش کے نتائج</translation>
 <translation id="4408413947728134509">کوکیز <ph name="NUM_COOKIES" /></translation>
@@ -2204,6 +2205,7 @@
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">دستاویز کی خصوصیات</translation>
 <translation id="528468243742722775">اختتام</translation>
+<translation id="5285468538058987167">‏کسٹمر کی مضبوط تصدیق (SCA) کے ذریعے</translation>
 <translation id="5285570108065881030">سبھی محفوظ پاسورڈز دکھائيں</translation>
 <translation id="5287456746628258573">یہ سائٹ پرانی سیکیورٹی کنفیگریشن کو استعمال کر رہی ہے جو اس سائٹ پر بھیجے جانے پر آپ کی معلومات (مثلاً، پاس ورڈز یا کریڈٹ کارڈ نمبرز) کو ظاہر کر سکتی ہے۔</translation>
 <translation id="5288108484102287882">پالیسی کی اقدار کی تصدیق نے واننگز ظاہر کی ہیں</translation>
@@ -2250,6 +2252,7 @@
 <translation id="5371425731340848620">کارڈ اپ ڈیٹ کریں</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">‏"آپ کی گھڑی پیچھے ہے" یا "آپ کی گھڑی آگے ہے" یا "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">صعودی ترتیب میں</translation>
 <translation id="5383478552402031184">فرش سازی</translation>
 <translation id="5385857628869214740">مزاح</translation>
 <translation id="5385966243497224160">‏غیر HTTPS URL کا پیش منظر نہیں دیکھ سکتے</translation>
@@ -3072,7 +3075,6 @@
 <translation id="6978121630131642226">سرچ انجن</translation>
 <translation id="6978236010531171013">بہر حال اشتراک کریں</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">نکالے گئے ٹیکسٹ کا آغاز</translation>
 <translation id="6979440798594660689">خاموش کریں (ڈیفالٹ)</translation>
 <translation id="6987806006823772670">لفافہ (کوٹیڈ)</translation>
 <translation id="6989763994942163495">جدید ترین ترتیبات دکھائیں…</translation>
@@ -3487,6 +3489,7 @@
 <translation id="7719791801330803993">تصویری اور ویڈیو سافٹ ویئر</translation>
 <translation id="772128550427553158">‏CVC آپ کے کارڈ کے سامنے کی طرف موجود ہے۔</translation>
 <translation id="7724603315864178912">کٹ کریں</translation>
+<translation id="7730057435797792985">ترتیب دیں</translation>
 <translation id="7734285854693414638">‏Google Forms میں تیزی سے ایک نیا فارم تخلیق کریں</translation>
 <translation id="773466115871691567">ہمیشہ <ph name="SOURCE_LANGUAGE" /> کے صفحات کا ترجمہ کریں</translation>
 <translation id="7736959720849233795">لنک کا پتہ کاپی کریں</translation>

@@ -367,6 +367,7 @@
 <translation id="702275896380648118">เว็บไซต์นี้จะระบุสิ่งที่คุณชื่นชอบแล้วแนะนําโฆษณาในเว็บไซต์อื่น เว็บไซต์นี้ยังรับหัวข้อโฆษณาของคุณจาก Chrome เพื่อแสดงโฆษณาที่เกี่ยวข้องมากขึ้นด้วย</translation>
 <translation id="7053983685419859001">บล็อก</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{เลือก 1 รายการ}other{เลือก # รายการ}}</translation>
+<translation id="708014373017851679">"<ph name="APP_NAME" />" เป็นเวอร์ชันเก่า โปรดอัปเดตแอป</translation>
 <translation id="7087918508125750058">เลือกไว้ <ph name="ITEM_COUNT" /> รายการ ตัวเลือกอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
 <translation id="7141896414559753902">บล็อกเว็บไซต์ไม่ให้แสดงป๊อปอัปและการเปลี่ยนเส้นทาง (แนะนำ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

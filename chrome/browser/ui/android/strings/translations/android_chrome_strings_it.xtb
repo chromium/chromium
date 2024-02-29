@@ -602,6 +602,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="426652736638196239">Questo IBAN verrà salvato soltanto su questo dispositivo</translation>
 <translation id="4269820728363426813">Copia indirizzo link</translation>
 <translation id="4277529130885813215">Usa un altro dispositivo</translation>
+<translation id="4282440837784183472">La tua organizzazione, <ph name="MANAGED_DOMAIN" />, gestisce l'account a cui stai accedendo e la modalità di utilizzo di Chrome. L'amministratore può configurare o limitare determinate funzionalità.</translation>
 <translation id="4285846616383034558">Cookie, cache e altri dati dei siti</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Attiva il blocco schermo nelle impostazioni di Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nuova scheda in incognito</translation>
@@ -634,9 +635,9 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="4461614516424362539">Quando colleghi un altro dispositivo con un codice QR, questo può usare il telefono come token di sicurezza. Se lo rimuovi, dovrai scansionare un codice QR per ricollegarlo.</translation>
 <translation id="4478161224666880173">Puoi usare il tuo account <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> su questo sito. Per continuare, accedi a <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Installazione di <ph name="MODULE" /> per Chrome…</translation>
+<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Preferito salvato in "<ph name="FOLDER_NAME" />". Viene salvato solo su questo dispositivo.}other{Preferiti salvati in "<ph name="FOLDER_NAME" />". Vengono salvati solo su questo dispositivo.}}</translation>
 <translation id="4484496141267039529">Nessuna connessione. Riprova più tardi.</translation>
 <translation id="4487967297491345095">Tutti i dati delle app di Chrome saranno eliminati definitivamente. Sono inclusi tutti i file, le impostazioni, gli account, i database e così via.</translation>
-<translation id="4491323382106587961">Scegli un account. Attualmente selezionato: <ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">Il salvataggio delle password è stato attivato dall'amministratore</translation>
 <translation id="4508528996305412043">Menu scheda feed aperto</translation>
 <translation id="4509501256689523862">Mentre navighi, l'eventuale visualizzazione di un annuncio personalizzato dipende da questa impostazione, dagli <ph name="BEGIN_LINK_1" />argomenti degli annunci<ph name="END_LINK_1" />, dalle <ph name="BEGIN_LINK_2" />impostazioni dei cookie<ph name="END_LINK_2" /> e dal fatto che il sito che stai visualizzando possa personalizzare gli annunci</translation>
@@ -854,6 +855,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="557018954714092179">Crea nuova cartella</translation>
 <translation id="5578795271662203820">Cerca questa immagine su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK1" />impostazioni<ph name="END_LINK1" />.</translation>
+<translation id="558429399979870715">Collega Chrome e altri servizi Google se vuoi che condividano dati tra loro</translation>
 <translation id="5590372121997663538">Ricorda questo computer</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5599455543593328020">Modalità di navigazione in incognito</translation>
@@ -883,6 +885,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="571930967925877633">I preferiti, la cronologia e altri dati di Chrome non verranno più sincronizzati con il tuo Account Google</translation>
 <translation id="572328651809341494">Schede recenti</translation>
 <translation id="5726692708398506830">Ingrandisci i contenuti della pagina</translation>
+<translation id="5728072125198221967">Servizi Google collegati</translation>
 <translation id="5744751019568455640">Ecco le voci che puoi scegliere per la lettura ad alta voce delle pagine web. Se ti piace questa voce e vuoi che continui a utilizzarla, tocca il suo nome.</translation>
 <translation id="5748802427693696783">Schede standard attivate</translation>
 <translation id="5749068826913805084">Chrome deve avere accesso allo spazio di archiviazione per poter scaricare file.</translation>
@@ -1162,9 +1165,11 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7037830628447527439">Accedi a Chrome con il tuo Account Google</translation>
 <translation id="7054588988317389591">Vuoi recuperare le descrizioni delle immagini?</translation>
 <translation id="7055152154916055070">Reindirizzamento bloccato:</translation>
+<translation id="7057969023583258980">Apri la cronologia completa di Chrome</translation>
 <translation id="7063006564040364415">Impossibile collegarsi al server di sincronizzazione.</translation>
 <translation id="7071521146534760487">Gestisci account</translation>
 <translation id="707155805709242880">Scegli qui sotto i dati da sincronizzare</translation>
+<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Preferito salvato nella cartella "<ph name="FOLDER_NAME" />" nel tuo account <ph name="ACCOUNT_EMAIL" />.}other{Preferiti salvati nella cartella "<ph name="FOLDER_NAME" />" nel tuo account <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">Scheda SD</translation>
 <translation id="7080806333218412752">Invia gli URL a Navigazione sicura per verificarli. Invia anche piccoli esempi di pagine, download, attività delle estensioni e informazioni di sistema per contribuire al rilevamento di nuove minacce. Quando hai effettuato l'accesso, collega temporaneamente questi dati al tuo Account Google per proteggerti nelle app Google.</translation>
 <translation id="7085332316435785646">Scegli se includere la cronologia di Chrome per esperienze ancora più personalizzate nei servizi Google</translation>
@@ -1432,6 +1437,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8310344678080805313">Schede standard</translation>
 <translation id="831192587911042850">Consente di aggiungere il sito web corrente all'elenco di siti web che segui.</translation>
 <translation id="8333340769932050274">Puoi bloccare gli argomenti che non vuoi condividere con i siti. Inoltre, Chrome elimina automaticamente gli argomenti più vecchi di 4 settimane. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
+<translation id="8336984817750547763">Includi la cronologia di Chrome se vuoi aggiungerla all'Attività web e app nel tuo Account Google</translation>
 <translation id="834313815369870491">Non tradurre mai i siti</translation>
 <translation id="8348430946834215779">Utilizza HTTPS quando possibile e ricevi un avviso prima di caricare i siti che non lo supportano</translation>
 <translation id="8354977102499939946">Cerca rapidamente con la tua voce. Per modificare questa scorciatoia, vai a Impostazioni.</translation>
@@ -1577,6 +1583,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="9081543426177426948">I siti che visiti non vengono salvati in modalità di navigazione in incognito</translation>
 <translation id="9086302186042011942">Sincronizzazione in corso</translation>
 <translation id="9086455579313502267">Impossibile accedere alla rete</translation>
+<translation id="909756639352028172">Per personalizzare al massimo la tua esperienza, includi Chrome in Attività web e app e nei servizi Google collegati</translation>
 <translation id="9099220545925418560">In base alla tua cronologia di navigazione. Questa impostazione non è attiva.</translation>
 <translation id="9100610230175265781">Passphrase obbligatoria</translation>
 <translation id="9101137867221042551">Gestione</translation>

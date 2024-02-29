@@ -231,7 +231,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1410941016594047814">Busta Invite</translation>
 <translation id="1413809658975081374">Errore di privacy</translation>
 <translation id="1414134146594747368">Scuole materne</translation>
-<translation id="141826476809826269">Fine del testo estratto</translation>
 <translation id="1418611192881166179">Durante l'aggiornamento di questa funzionalità in Chrome, i siti possono usare temporaneamente i cookie di terze parti, a meno che non li blocchi nelle impostazioni.</translation>
 <translation id="1419305130220238697">Pulsante Gestisci i download in Chrome, attiva per gestire i file che hai scaricato in Chrome</translation>
 <translation id="1422930527989633628">Può chiedere di rilevare i dispositivi Bluetooth nelle vicinanze</translation>
@@ -344,7 +343,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1615402009686901181">Il criterio dell'amministratore disattiva l'acquisizione schermo se sono visibili contenuti riservati</translation>
 <translation id="1617276713587758852">Crossover</translation>
 <translation id="1619007254056372606">Gestisci i dati dei siti sul dispositivo</translation>
-<translation id="1620510694547887537">Fotocamera</translation>
+<translation id="1620510694547887537">Videocamera</translation>
 <translation id="162285686621567578">Questo sito web è stato bloccato da uno dei tuoi genitori.</translation>
 <translation id="1622966923835127638">Finanza aziendale</translation>
 <translation id="1623104350909869708">Impedisci la creazione di altre finestre di dialogo in questa pagina</translation>
@@ -1318,6 +1317,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3542628208405253498">Immagine della carta</translation>
 <translation id="3542768452570884558">Apri link in un'altra finestra</translation>
 <translation id="3547746132308051926">20 x 24 in</translation>
+<translation id="3552155506104542239">Avviso: questo criterio è in conflitto con <ph name="POLICY_NAME" /> e non avrà alcun effetto sulle app per Android. In caso contrario, questo criterio funziona come previsto.</translation>
 <translation id="3552297013052089404">Carattere Sans Serif</translation>
 <translation id="3558573058928565255">Giorno e ora</translation>
 <translation id="355995771319966853">Annulla la compilazione automatica</translation>
@@ -1865,6 +1865,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="46128681529823442">Attrezzature e articoli per il calcio</translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="4622292761762557753">Trasferisci comunque</translation>
+<translation id="4622647778991854660">Abilita le notifiche nel Centro notifiche. Apri <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Questo criterio non può essere impostato a livello di profilo Chrome e verrà ignorato.</translation>
 <translation id="4628678854894591460">Offerte di pacchetti vacanza</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -3063,7 +3064,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6978121630131642226">Motori di ricerca</translation>
 <translation id="6978236010531171013">Condividi comunque</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Inizio del testo estratto</translation>
 <translation id="6979440798594660689">Disattivazione audio (impostazione predefinita)</translation>
 <translation id="6987806006823772670">Busta (patinata)</translation>
 <translation id="6989763994942163495">Mostra impostazioni avanzate...</translation>
@@ -3195,6 +3195,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7234112195906418665">Viaggi e trasporti</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% completato | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Regali e articoli per eventi speciali</translation>
+<translation id="7237454422623102448">Impostazioni di sistema</translation>
 <translation id="7237492777898608035">Non mostrare più questo messaggio per questo sito</translation>
 <translation id="7240120331469437312">Nome alternativo del soggetto del certificato</translation>
 <translation id="7241863998525879494">Obiettivi generali</translation>

@@ -231,7 +231,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1410941016594047814">Obálka Invite</translation>
 <translation id="1413809658975081374">Chyba ochrany soukromí</translation>
 <translation id="1414134146594747368">Mateřská školka</translation>
-<translation id="141826476809826269">Konec extrahovaného textu</translation>
 <translation id="1418611192881166179">Zatímco Chrome tuto funkci aktualizuje, mohou weby dočasně používat soubory cookie třetích stran, pokud je v nastavení nezablokujete.</translation>
 <translation id="1419305130220238697">Tlačítko správy stažených souborů v Chromu, aktivací můžete spravovat soubory, které jste v Chromu stáhli</translation>
 <translation id="1422930527989633628">Může žádat o objevování zařízení Bluetooth v okolí</translation>
@@ -1198,6 +1197,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3324687287337751929">4 × 6″</translation>
 <translation id="3324983252691184275">Karmínová</translation>
 <translation id="3325027355611702542">Kempinkové vozy a přívěsy</translation>
+<translation id="3325568918769906282">sestupně</translation>
 <translation id="3329013043687509092">Sytost</translation>
 <translation id="3333762389743153920">Není vhodné pro virtuální kartu</translation>
 <translation id="3336044043987989409">Pokud chcete povolit připojení k zařízením nebo serverům ve vaší privátní síti, stiskněte tlačítko k opětovnému načtení.</translation>
@@ -2244,6 +2244,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5371425731340848620">Aktualizace karty</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">Vaše hodiny se zpožďují, Vaše hodiny jdou napřed nebo &lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;</translation>
+<translation id="5380953781541843508">vzestupně</translation>
 <translation id="5383478552402031184">Podlahy</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">Náhled lze zobrazit pouze u adres protokolu HTTPS</translation>
@@ -3064,7 +3065,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6978121630131642226">Vyhledávače</translation>
 <translation id="6978236010531171013">Přesto sdílet</translation>
 <translation id="6979158407327259162">Disk Google</translation>
-<translation id="6979332652936434520">Začátek extrahovaného textu</translation>
 <translation id="6979440798594660689">Ztlumit (výchozí)</translation>
 <translation id="6987806006823772670">Obálka (potahovaná)</translation>
 <translation id="6989763994942163495">Zobrazit rozšířená nastavení...</translation>
@@ -3478,6 +3478,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7719791801330803993">Software pro fotografii a video</translation>
 <translation id="772128550427553158">Kód CVC je uveden na přední straně karty.</translation>
 <translation id="7724603315864178912">Vyjmout</translation>
+<translation id="7730057435797792985">Řazení</translation>
 <translation id="7734285854693414638">Rychle vytvořit nový formulář ve Formulářích Google</translation>
 <translation id="773466115871691567">Stránky v jazyce <ph name="SOURCE_LANGUAGE" /> vždy překládat</translation>
 <translation id="7736959720849233795">Zkopírovat adresu odkazu</translation>

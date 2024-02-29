@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Envelope Invite</translation>
 <translation id="1413809658975081374">गोपनीयता त्रुटी</translation>
 <translation id="1414134146594747368">प्रिस्कुल</translation>
-<translation id="141826476809826269">निकालिएको टेक्स्टको अन्तिम भाग</translation>
 <translation id="1418611192881166179">तपाईंले सेटिङमा गई तेस्रो पक्षीय कुकीहरू ब्लक गर्नुभएको छैन भने Chrome ले यो सुविधा अपडेट गरेका बेला साइटहरूले केही समयका लागि त्यस्ता कुकीहरू प्रयोग गर्न सक्छन्।</translation>
 <translation id="1419305130220238697">Chrome मा डाउनलोडहरू व्यवस्थापन गर्ने बटन, आफूले Chrome मा डाउनलोड गरेका फाइलहरू व्यवस्थापन गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="1422930527989633628">वरपर रहेका ब्लुटुथ चल्ने डिभाइसहरू पत्ता लगाउने अनुमति माग्न सक्छ</translation>
@@ -1198,6 +1197,7 @@
 <translation id="3324687287337751929">४ x ६ इन्च</translation>
 <translation id="3324983252691184275">गाढा रातो</translation>
 <translation id="3325027355611702542">क्याम्पर तथा RV हरू</translation>
+<translation id="3325568918769906282">घट्दो क्रममा</translation>
 <translation id="3329013043687509092">संतृप्तीकरण</translation>
 <translation id="3333762389743153920">भर्चुअल कार्डका रूपमा प्रयोग गर्न मिल्दैन</translation>
 <translation id="3336044043987989409">आफ्नो निजी नेटवर्कमा भएका डिभाइस वा सर्भरहरूमा कनेक्ट गर्ने अनुमति दिन "रिलोड गर्नुहोस्" बटन थिच्नुहोस्।</translation>
@@ -2246,6 +2246,7 @@
 <translation id="5371425731340848620">कार्ड अपडेट गर्नुहोस्</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"तपाईंको घडी ढिला छ" वा "तपाईंको घडी छिटो छ" अथवा "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">बढ्दो क्रममा</translation>
 <translation id="5383478552402031184">भुइँमा टायल लगाउने काम</translation>
 <translation id="5385857628869214740">हास्य</translation>
 <translation id="5385966243497224160">गैर HTTPS URL प्रिभ्यू गर्न सकिएन</translation>
@@ -3067,7 +3068,6 @@
 <translation id="6978121630131642226">खोज इन्जिनहरू</translation>
 <translation id="6978236010531171013">जे भए तापनि सेयर गर्नुहोस्</translation>
 <translation id="6979158407327259162">Google ड्राइभ</translation>
-<translation id="6979332652936434520">निकालिएको टेक्स्टको सुरुको भाग</translation>
 <translation id="6979440798594660689">म्युट गरियोस् (डिफल्ट)</translation>
 <translation id="6987806006823772670">इन्भलप (कोटेड)</translation>
 <translation id="6989763994942163495">उन्नत सेटिङ देखाउनुहोस्...</translation>
@@ -3482,6 +3482,7 @@
 <translation id="7719791801330803993">फोटो तथा भिडियो सफ्टवेयर</translation>
 <translation id="772128550427553158">CVC तपाईंको कार्डको अघिल्लो भागमा रहेको हुन्छ।</translation>
 <translation id="7724603315864178912">काट्नुहोस्</translation>
+<translation id="7730057435797792985">क्रमबद्ध गर्नुहोस्</translation>
 <translation id="7734285854693414638">Google Forms प्रयोग गरी तुरुन्तै नयाँ फाराम बनाउनुहोस्</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> मा रहेका पृष्ठहरूलाई सधैँ अनुवाद गर्नुहोस्‌</translation>
 <translation id="7736959720849233795">यो लिंक कपी गर्नुहोस्</translation>

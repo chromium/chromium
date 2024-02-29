@@ -31,6 +31,7 @@
 <translation id="1516530951338665275">অন্য ডিভাইসের সাথে কানেক্ট করার জন্য Google Chrome-কে ব্লুটুথের অ্যাক্সেস দিতে 
 হবে। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে ChromeOS তৈরি করা সম্ভব হয়েছে।</translation>
+<translation id="155168855724261758">আপনার Chrome কাস্টমাইজ করুন</translation>
 <translation id="1553358976309200471">Chrome আপডেট করুন</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> আগে থেকেই এই Chrome প্রোফাইলে সাইন-ইন করে আছেন। <ph name="USER_EMAIL_ADDRESS" />-এর জন্য এটি একটি নতুন Chrome প্রোফাইল তৈরি করবে</translation>
 <translation id="1587223624401073077">Google Chrome আপনার ক্যামেরা ব্যবহার করছে৷</translation>
@@ -70,6 +71,7 @@
 <translation id="2121284319307530122">&amp;Chrome আপডেট করতে আবার লঞ্চ করুন</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />বর্তমান সেটিংস<ph name="END_LINK" />-এর রিপোর্ট করে Chrome-কে আরও ভাল করে তুলতে সাহায্য করুন</translation>
 <translation id="2126108037660393668">ডাউনলোড করা ফাইলটি যাচাই করা যায়নি।</translation>
+<translation id="2128411189117340671">Chrome প্রোফাইল ম্যানেজ করুন</translation>
 <translation id="2130870084309816036">ইন্টারনেটের সাথে কানেক্ট করা যায়নি। আপনি ফায়ারওয়াল ব্যবহার করলে, <ph name="PRODUCT_EXE_NAME" />-কে সাদাতালিকাভুক্ত করুন।</translation>
 <translation id="2131230230468101642">আপনার গোপনীয়তা রক্ষা করতে, আমরা ৪ সপ্তাহের বেশি পুরনো আপনার আগ্রহগুলি অটোমেটিক মুছে ফেলি। আপনি ব্রাউজিং চালিয়ে যাওয়ার সাথে সাথে তালিকায় আবার আগ্রহগুলি দেখা যেতে পারে। অথবা, আপনি যে আগ্রহগুলি Chrome বিবেচনা করুক বলে চান না সেগুলি সরিয়ে দিতে পারেন।</translation>
 <translation id="2139300032719313227">ChromeOS রিস্টার্ট করুন</translation>
@@ -421,6 +423,7 @@
 <translation id="7917876797003313048">আপনার সাইন-ইন করা Google অ্যাকাউন্ট ম্যানেজ করতে পারবেন। Chrome ব্রাউজার, Play Store, Gmail এবং আরও অনেক কিছুর জন্য আপনার Google অ্যাকাউন্ট ব্যবহার করা হয়। পরিবারের সদস্যের মতো অন্য কারও অ্যাকাউন্ট যোগ করতে চাইলে, তার পরিবর্তে আপনার <ph name="DEVICE_TYPE" />-এ নতুন ব্যক্তিকে যোগ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">এই ফাইলটি প্রতারণামূলক এবং এটি ডিভাইসে অপ্রত্যাশিত পরিবর্তন করে দিতে পারে, তাই Chrome এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>
 <translation id="7951272445806340501">আপডেটটি প্রয়োগ করতে ChromeOS Flex আবার চালু করা প্রয়োজন।</translation>
+<translation id="7959172989483770734">Chrome প্রোফাইল ম্যানেজ করুন</translation>
 <translation id="7962368738413920945">সাইটগুলি সম্ভবত আপনার প্রত্যাশা অনুযায়ী কাজ করবে কিন্তু আপনি সমস্ত উইন্ডো বন্ধ করার পরে Chrome আপনাকে মনে রাখবে না</translation>
 <translation id="7962410387636238736">Windows XP ও Windows Vista আর সমর্থিত না হওয়ার জন্য এই কম্পিউটারে আর Google Chrome আপডেট পাবে না</translation>
 <translation id="8005666035647241369">এই ডিভাইসে Google পাসওয়ার্ড ম্যানেজারে</translation>
@@ -428,6 +431,7 @@
 <translation id="8009904340233602924">কোনও অ্যাকাউন্ট ছাড়াই Chrome ব্যবহার করুন</translation>
 <translation id="8013993649590906847">যদি ছবিতে প্রয়োজনীয় বিবরণ দেওয়া না থাকে, তাহলে Chrome আপনাকে একটি বিবরণ দেওয়ার চেষ্টা করবে। বিবরণ তৈরির জন্য, Google-এ ছবি পাঠানো হয়।</translation>
 <translation id="8019103195866286235">ডেভেলপার এই এক্সটেনশনটি প্রকাশনা থেকে সরিয়ে নিয়েছেন এবং এটি নিরাপদ নাও হতে পারে। Chrome থেকে এটি সরান যাতে আপনার ভিজিট করা সাইটের ডেটা এটি আর দেখতে না পায় এবং তা পরিবর্তন না করতে পারে, এর মধ্যে আপনার ব্যক্তিগত তথ্যও রয়েছে।</translation>
+<translation id="8031641407207794385">আপনার Chrome কাস্টমাইজ করুন</translation>
 <translation id="80471789339884597">ইনস্টল করার জন্য ধন্যবাদ। <ph name="BUNDLE_NAME" /> ব্যবহার করার আগে আপনাকে অবশ্যই সমস্ত ব্রাউজার রিস্টার্ট করতে হবে।</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">অন্যান্য Chrome প্রোফাইল</translation>

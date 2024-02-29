@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">কীবোর্ড লে-আউট পরিবর্তন করতে <ph name="KEYBOARD_SHORTCUT" /> টিপুন।</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" />-এর প্রিভিউ। ডেস্ক অ্যাক্টিভ আছে।</translation>
 <translation id="2487915095798731898">যোগদান করুন</translation>
+<translation id="2499445554382787206">ডেস্ক প্রোফাইল মেনু। <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">স্টিকি কীজ</translation>
 <translation id="2504454902900101003">আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া ও বিজ্ঞপ্তি দেখা সংক্রান্ত সেট-আপের পদ্ধতি বাতিল করুন</translation>
 <translation id="2509468283778169019">CAPS LOCK চালু</translation>
@@ -605,6 +606,7 @@
 <translation id="3509391053705095206">আপনার ফোন খুঁজে পাওয়া যায়নি। আপনার ফোনের ব্লুটুথ চালু আছে কিনা তা ভালভাবে দেখে নিন।</translation>
 <translation id="3510164367642747937">মাউস কার্সার হাইলাইট করুন</translation>
 <translation id="3513798432020909783">অ্যাকাউন্টটি <ph name="MANAGER_EMAIL" /> ম্যানেজ করছেন</translation>
+<translation id="3517037892157925473">টাস্ক শেষবার আপডেট করা হয়েছে: <ph name="TIME" />, <ph name="DATE" />।</translation>
 <translation id="352245152354538528">{0,plural, =1{১ মিনিটের মধ্যে ডিভাইস আপডেট করুন}one{# মিনিটের মধ্যে ডিভাইস আপডেট করুন}other{# মিনিটের মধ্যে ডিভাইস আপডেট করুন}}</translation>
 <translation id="3522979239100719575">উপলভ্য প্রোফাইল খুঁজে দেখা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="3526440770046466733">নতুন ট্যাবে লিঙ্ক খুলুন এবং বর্তমান ট্যাবে কাজ চালিয়ে যান</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5536723544185013515">সাম্প্রতিক অ্যাপ, সবকটি সাম্প্রতিক অ্যাপের মধ্যে নেভিগেট করার জন্য বাঁ অথবা ডানদিকের তীরচিহ্ন কী ব্যবহার করুন</translation>
 <translation id="553675580533261935">সেশন থেকে প্রস্থান করছে</translation>
 <translation id="5537725057119320332">কাস্ট করুন</translation>
+<translation id="554017492391497564">'সম্পূর্ণ হয়েছে' হিসেবে মার্ক করা যায়নি।</translation>
 <translation id="5546397813406633847">ব্যবহারকারীকে আগের অবস্থায় ফেরান</translation>
 <translation id="554893713779400387">ডিক্টেশন চালু বা বন্ধ করুন</translation>
 <translation id="5550417424894892620"><ph name="HOLDING_SPACE_TITLE" />-এ যোগ করার জন্য ডেস্কটপে ফাইলগুলি ড্রপ করুন। আপনি ডেস্কটপে ফাইল যোগ করতে পারবেন না।</translation>
@@ -1338,6 +1341,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">ব্যাটারির চার্জ কম আছে। 'ব্যাটারি সেভার' ফিচার চালু করা হয়েছে।</translation>
 <translation id="6247728804802644171">বিজ্ঞপ্তি খুলুন</translation>
+<translation id="6249795363855770621">'সম্পূর্ণ হয়েছে' হিসেবে মার্ক করা যায়নি। অনলাইন থাকাকালীন আবার চেষ্টা করে দেখুন।</translation>
 <translation id="6254629735336163724">স্ক্রিনটি ল্যান্ডস্কেপ মোডে লক করা আছে</translation>
 <translation id="6259254695169772643">বেছে নিতে স্টাইলাস ব্যবহার করুন</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: সক্রিয় করা হচ্ছে...</translation>
@@ -1498,6 +1502,7 @@
 <translation id="6896758677409633944">কপি</translation>
 <translation id="6912841030378044227">অ্যাড্রেস বারে ফোকাস করুন</translation>
 <translation id="6912901278692845878">দ্রুত ট্যুর</translation>
+<translation id="6917259695595127329">টাস্ক শেষবার আপডেট করা হয়েছে: <ph name="TIME" />।</translation>
 <translation id="6919251195245069855">আপনার স্মার্ট কার্ড শনাক্ত করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="692135145298539227">মুছুন</translation>
 <translation id="6929081673585394903">কন্ট্রোল দেখুন</translation>

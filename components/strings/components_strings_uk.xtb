@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Конверт Invite</translation>
 <translation id="1413809658975081374">Помилка через порушення конфіденційності</translation>
 <translation id="1414134146594747368">Дошкільна освіта</translation>
-<translation id="141826476809826269">Кінець видобутого тексту</translation>
 <translation id="1418611192881166179">Поки Chrome оновлює цю функцію, сайти можуть тимчасово використовувати сторонні файли cookie, якщо ви не заблокуєте їх у налаштуваннях.</translation>
 <translation id="1419305130220238697">Кнопка "Керувати завантаженнями в Chrome"; активуйте, щоб керувати завантаженими файлами в Chrome</translation>
 <translation id="1422930527989633628">Може просити дозвіл шукати пристрої з Bluetooth поблизу</translation>
@@ -1201,6 +1200,7 @@
 <translation id="3324687287337751929">4 x 6 дюйм.</translation>
 <translation id="3324983252691184275">Малиновий</translation>
 <translation id="3325027355611702542">Житлові автофургони й кемпери</translation>
+<translation id="3325568918769906282">у порядку спадання</translation>
 <translation id="3329013043687509092">Насиченість</translation>
 <translation id="3333762389743153920">Не підходить для віртуальної картки</translation>
 <translation id="3336044043987989409">Натисніть кнопку "Оновити", щоб дозволити з’єднання з пристроями або серверами у вашій приватній мережі.</translation>
@@ -1779,6 +1779,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">До полів</translation>
 <translation id="4397059608630092079">Завжди перевіряти під час використання автозаповнення</translation>
+<translation id="4397978002248035985">Відкриється спливаюче вікно для підтвердження на вебсайті банку</translation>
 <translation id="4406883609789734330">Живі субтитри</translation>
 <translation id="4406896451731180161">результати пошуку</translation>
 <translation id="4408413947728134509">Файли cookie: <ph name="NUM_COOKIES" /></translation>
@@ -2202,6 +2203,7 @@
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Властивості документа</translation>
 <translation id="528468243742722775">Завершити</translation>
+<translation id="5285468538058987167">Через строгу автентифікацію клієнтів (SCA)</translation>
 <translation id="5285570108065881030">Показати всі збережені паролі</translation>
 <translation id="5287456746628258573">На цьому сайті використовується недійсна конфігурація безпеки. Через це ваші дані (наприклад, паролі або номери кредитних карток) може бути розкрито, коли вони надсилається на цей сайт.</translation>
 <translation id="5288108484102287882">Під час перевірки значень правила виявлено застереження</translation>
@@ -2248,6 +2250,7 @@
 <translation id="5371425731340848620">Оновити картку</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Ваш годинник відстає", "Ваш годинник спішить" або "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">у порядку зростання</translation>
 <translation id="5383478552402031184">Покриття для підлоги</translation>
 <translation id="5385857628869214740">Гумор</translation>
 <translation id="5385966243497224160">Неможливо переглянути URL-адресу, яка не використовує протокол HTTPS</translation>
@@ -3069,7 +3072,6 @@
 <translation id="6978121630131642226">Пошукові системи</translation>
 <translation id="6978236010531171013">Усе одно поділитися</translation>
 <translation id="6979158407327259162">Диск Google</translation>
-<translation id="6979332652936434520">Початок видобутого тексту</translation>
 <translation id="6979440798594660689">Без звуку (за умовчанням)</translation>
 <translation id="6987806006823772670">Конверт (з покриттям)</translation>
 <translation id="6989763994942163495">Показати розширені налаштування...</translation>
@@ -3484,6 +3486,7 @@
 <translation id="7719791801330803993">Програмне забезпечення для обробки фото- й відео</translation>
 <translation id="772128550427553158">Код CVC вказано на лицевій стороні картки.</translation>
 <translation id="7724603315864178912">Вирізати</translation>
+<translation id="7730057435797792985">Сортувати</translation>
 <translation id="7734285854693414638">Швидко створюйте нові форми в Google Формах</translation>
 <translation id="773466115871691567">Завжди перекладати сторінки такою мовою: <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7736959720849233795">Копіювати адресу посилання</translation>

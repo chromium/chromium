@@ -367,6 +367,7 @@
 <translation id="702275896380648118">Este sitio determina lo que te gusta y, luego, sugiere anuncios a otros sitios. Este sitio también obtiene tus temas de anuncios de Chrome para mostrarte anuncios más relevantes.</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 seleccionado}other{# seleccionados}}</translation>
+<translation id="708014373017851679">"<ph name="APP_NAME" />" está desactualizada. Actualiza la app.</translation>
 <translation id="7087918508125750058">Elementos seleccionados: <ph name="ITEM_COUNT" />. Opciones disponibles cerca de la parte superior de la pantalla</translation>
 <translation id="7141896414559753902">Bloquea las ventanas emergentes y los redireccionamientos en los sitios (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

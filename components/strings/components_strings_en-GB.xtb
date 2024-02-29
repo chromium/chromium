@@ -231,7 +231,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1410941016594047814">Envelope Invite</translation>
 <translation id="1413809658975081374">Privacy error</translation>
 <translation id="1414134146594747368">Pre-school</translation>
-<translation id="141826476809826269">End of extracted text</translation>
 <translation id="1418611192881166179">While Chrome is updating this feature, sites can use third-party cookies temporarily unless you block them in settings.</translation>
 <translation id="1419305130220238697">Manage downloads in Chrome button, activate to manage files that you have downloaded in Chrome</translation>
 <translation id="1422930527989633628">Can ask to discover nearby Bluetooth devices</translation>
@@ -1201,6 +1200,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3324687287337751929">4 in x 6 in</translation>
 <translation id="3324983252691184275">Crimson</translation>
 <translation id="3325027355611702542">Campers and Motorhomes</translation>
+<translation id="3325568918769906282">in descending order</translation>
 <translation id="3329013043687509092">Saturation</translation>
 <translation id="3333762389743153920">Not eligible for virtual card</translation>
 <translation id="3336044043987989409">Press the reload button to allow connection to devices or servers on your private network.</translation>
@@ -1779,6 +1779,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4397059608630092079">Always Verify When Using Autofill</translation>
+<translation id="4397978002248035985">Opens a pop-up to verify on your bank's website</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">search results</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
@@ -2202,6 +2203,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Document properties</translation>
 <translation id="528468243742722775">End</translation>
+<translation id="5285468538058987167">Via strong customer authentication (SCA)</translation>
 <translation id="5285570108065881030">Show all saved passwords</translation>
 <translation id="5287456746628258573">This site uses an outdated security configuration, which may expose your information (for example, passwords or credit card numbers) when it is sent to this site.</translation>
 <translation id="5288108484102287882">Validation of policy values has raised warnings</translation>
@@ -2248,6 +2250,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5371425731340848620">Update card</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">'Your clock is behind' or 'Your clock is ahead' or "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">in ascending order</translation>
 <translation id="5383478552402031184">Flooring</translation>
 <translation id="5385857628869214740">Humour</translation>
 <translation id="5385966243497224160">Can't preview non-HTTPS URL</translation>
@@ -3069,7 +3072,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6978121630131642226">Search Engines</translation>
 <translation id="6978236010531171013">Share anyway</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Start of extracted text</translation>
 <translation id="6979440798594660689">Mute (default)</translation>
 <translation id="6987806006823772670">Envelope (coated)</translation>
 <translation id="6989763994942163495">+ Show advanced settings</translation>
@@ -3484,6 +3486,7 @@ Additional details:
 <translation id="7719791801330803993">Photo and Video Software</translation>
 <translation id="772128550427553158">The CVC is located on the front of your card.</translation>
 <translation id="7724603315864178912">Cut</translation>
+<translation id="7730057435797792985">Sort</translation>
 <translation id="7734285854693414638">Create a new form in Google Forms quickly</translation>
 <translation id="773466115871691567">Always translate pages in <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7736959720849233795">Copy link address</translation>

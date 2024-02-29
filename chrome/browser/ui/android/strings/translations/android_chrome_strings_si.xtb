@@ -602,6 +602,7 @@
 <translation id="426652736638196239">මෙම IBAN මෙම උපාංගයට පමණක් සුරැකෙනු ඇත</translation>
 <translation id="4269820728363426813">ලින්ක් ලිපිනය පිටපත් කරන්න</translation>
 <translation id="4277529130885813215">වෙනත් උපාංගයක් භාවිතා කරන්න</translation>
+<translation id="4282440837784183472">ඔබේ සංවිධානය, <ph name="MANAGED_DOMAIN" />, ඔබ පුරනය වන ගිණුම සහ Chrome භාවිතා කළ හැකි ආකාරය කළමනාකරණය කරයි. ඔබේ පරිපාලකයාට ඇතැම් විශේෂාංග පිහිටුවීමට හෝ සීමා කිරීමට හැක.</translation>
 <translation id="4285846616383034558">කුකීස්, කෑෂය, සහ අනෙකුත් අඩවි දත්ත</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android සැකසීම් තුළ තිර අගුල ක්‍රියාත්මක කරන්න<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">නව අප්‍රකට ටැබය</translation>
@@ -637,7 +638,6 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{පිටුසන "<ph name="FOLDER_NAME" />" වෙත සුරකින ලදි. එය මෙම උපාංගයට පමණක් සුරැකෙයි.}one{පිටුසන් "<ph name="FOLDER_NAME" />" වෙත සුරකින ලදි. එය මෙම උපාංගයට පමණක් සුරැකෙයි.}other{පිටුසන් "<ph name="FOLDER_NAME" />" වෙත සුරකින ලදි. එය මෙම උපාංගයට පමණක් සුරැකෙයි.}}</translation>
 <translation id="4484496141267039529">සම්බන්ධතාව නැත. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="4487967297491345095">Chrome හි සියලු යෙදුම් දත්ත ස්ථිරවම මකනු ඇත. මෙහි සියලු ගොනු, සැකසීම්, ගිණුම්, දත්ත සමුදායන්, ආදිය ඇතුළත් වේ.</translation>
-<translation id="4491323382106587961">ගිණුමක් තෝරන්න. දැනට <ph name="EMAIL" /> තෝරන ලදි.</translation>
 <translation id="4494806687727322324">මුරපද සුරැකීම ඔබේ පරිපාලක විසින් ක්‍රියාත්මක කර ඇත</translation>
 <translation id="4508528996305412043">සංග්‍රහ කාඩ්පත් මෙනුව විවෘත කර ඇත</translation>
 <translation id="4509501256689523862">ඔබ බ්‍රවුස් කරන විට, ඔබ දකින දැන්වීමක් පෞද්ගලීකරණය කර තිබේ ද යන්න මෙම සැකසීම, <ph name="BEGIN_LINK_1" />දැන්වීම් මාතෘකා<ph name="END_LINK_1" />, ඔබේ <ph name="BEGIN_LINK_2" />කුකී සැකසීම්<ph name="END_LINK_2" />, සහ ඔබ බලන අඩවිය දැන්වීම් පෞද්ගලීකරණය කරන්නේ දැයි මත රඳා පවතී</translation>
@@ -1165,6 +1165,7 @@
 <translation id="7037830628447527439">ඔබගේ Google ගිණුම සමගින් Chrome වෙත පුරන්න</translation>
 <translation id="7054588988317389591">රූප විස්තර ලබා ගන්නද?</translation>
 <translation id="7055152154916055070">හරවා යැවීම අවහිරයි:</translation>
+<translation id="7057969023583258980">පූර්ණ Chrome ඉතිහාසය විවෘත කරන්න</translation>
 <translation id="7063006564040364415">සමමු සර්වරයට සම්බන්ධ විය නොහැකි විය.</translation>
 <translation id="7071521146534760487">ගිණුම කළමනා කරන්න</translation>
 <translation id="707155805709242880">පහත කුමක් සම්මුහුර්ත කරන්නේදැයි තෝරන්න</translation>

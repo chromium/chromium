@@ -231,7 +231,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1410941016594047814">Sobre de invitación</translation>
 <translation id="1413809658975081374">Erro de privacidade</translation>
 <translation id="1414134146594747368">Preescolar</translation>
-<translation id="141826476809826269">Fin do texto extraído</translation>
 <translation id="1418611192881166179">Mentres Chrome actualiza esta función, os sitios poden usar temporalmente cookies de terceiros, a menos que as bloquees na configuración.</translation>
 <translation id="1419305130220238697">Botón para xestionar as descargas en Chrome. Actívao para xestionar os ficheiros que descargases en Chrome</translation>
 <translation id="1422930527989633628">Pode pedirche permiso para detectar dispositivos Bluetooth próximos</translation>
@@ -1201,6 +1200,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3324687287337751929">4 x 6 polgadas</translation>
 <translation id="3324983252691184275">Carmesí</translation>
 <translation id="3325027355611702542">Campistas e caravanas</translation>
+<translation id="3325568918769906282">en orde descendente</translation>
 <translation id="3329013043687509092">Saturación</translation>
 <translation id="3333762389743153920">Non apta para asociarlle unha tarxeta virtual</translation>
 <translation id="3336044043987989409">Preme o botón de volver cargar para permitir a conexión con dispositivos ou servidores da túa rede privada.</translation>
@@ -2248,6 +2248,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5371425731340848620">Actualizar tarxeta</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"O reloxo está atrasado", "O reloxo está adiantado" ou "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">en orde ascendente</translation>
 <translation id="5383478552402031184">Pavimentos</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">Os URL que non sexan HTTPS non se poden previsualizar</translation>
@@ -3069,7 +3070,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6978121630131642226">Motores de busca</translation>
 <translation id="6978236010531171013">Compartir de todos os modos</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Inicio do texto extraído</translation>
 <translation id="6979440798594660689">Silenciar (opción predeterminada)</translation>
 <translation id="6987806006823772670">Sobre (revestido)</translation>
 <translation id="6989763994942163495">Mostrar configuración avanzada...</translation>
@@ -3484,6 +3484,7 @@ Detalles adicionais:
 <translation id="7719791801330803993">Software de vídeo e fotografía</translation>
 <translation id="772128550427553158">O CVC está situado no anverso da tarxeta.</translation>
 <translation id="7724603315864178912">Cortar</translation>
+<translation id="7730057435797792985">Ordenar</translation>
 <translation id="7734285854693414638">Crear rapidamente un novo formulario en Formularios de Google</translation>
 <translation id="773466115871691567">Traducir sempre páxinas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7736959720849233795">Copiar enderezo da ligazón</translation>

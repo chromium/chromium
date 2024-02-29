@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954818433534793392">adeilad</translation>
 <translation id="1962550982027027473">Mae angen APN diofyn</translation>
+<translation id="1967860190218310525">Creu APN newydd</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Llun proffil Google</translation>
 <translation id="1979103255016296513">Rydych yn hwyr yn newid eich cyfrinair</translation>
@@ -473,7 +474,6 @@
 <translation id="4046123991198612571">Trac nesaf</translation>
 <translation id="404928562651467259">RHYBUDD</translation>
 <translation id="4054683689023980771">Wrthi'n lawrlwytho llun</translation>
-<translation id="4060260348856573701">APN newydd</translation>
 <translation id="4063039537646912479">glas golau</translation>
 <translation id="4093865285251893588">Llun proffil</translation>
 <translation id="409427325554347132">Cadw manylion y prawf</translation>
@@ -981,6 +981,7 @@
 <translation id="7144954474087165241">pagoda</translation>
 <translation id="714876143603641390">Cysylltedd LAN</translation>
 <translation id="7154020516215182599">Rhannwch eich adborth neu disgrifiwch eich problem. Os yn bosib, cynhwyswch gamau i atgynhyrchu'ch problem.</translation>
+<translation id="7155037718620478619">Darganfod mwy o APNs</translation>
 <translation id="7155171745945906037">Llun presennol o'r camera neu ffeil</translation>
 <translation id="7162487448488904999">Oriel</translation>
 <translation id="7170236477717446850">Llun proffil</translation>

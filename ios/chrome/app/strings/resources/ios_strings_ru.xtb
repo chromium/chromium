@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">Веб-поиск</translation>
 <translation id="2252749852083403809">Сохраняется на Диске пользователя <ph name="USER_EMAIL" />…</translation>
 <translation id="2256933947031277845">Согласно правилам, установленным организацией, выполнить вход можно только с одобренным аккаунтом.</translation>
+<translation id="2257594476751932246">Персональные новости</translation>
 <translation id="2258326562203545455">{count,plural, =1{Вы можете добавить закладку в аккаунт Google ({email}).}one{Вы можете добавить закладки в аккаунт Google ({email}).}few{Вы можете добавить закладки в аккаунт Google ({email}).}many{Вы можете добавить закладки в аккаунт Google ({email}).}other{Вы можете добавить закладки в аккаунт Google ({email}).}}</translation>
 <translation id="225943865679747347">Код ошибки: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Добавить аккаунт</translation>

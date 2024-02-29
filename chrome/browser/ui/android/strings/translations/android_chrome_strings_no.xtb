@@ -640,7 +640,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Bokmerket er lagret i «<ph name="FOLDER_NAME" />». Det er kun lagret på denne enheten.}other{Bokmerkene er lagret i «<ph name="FOLDER_NAME" />». De er kun lagret på denne enheten.}}</translation>
 <translation id="4484496141267039529">Ingen tilkobling. Prøv på nytt senere.</translation>
 <translation id="4487967297491345095">Alle appdataene for Chrome slettes permanent. Dette omfatter alle filer, innstillinger, kontoer, databaser osv.</translation>
-<translation id="4491323382106587961">Velg en konto. <ph name="EMAIL" /> er valgt for øyeblikket.</translation>
 <translation id="4494806687727322324">Administratoren din har slått på lagring av passord</translation>
 <translation id="4508528996305412043">Feedkortmenyen er åpnet</translation>
 <translation id="4509501256689523862">Om en annonse du ser har et personlig preg avhenger av denne innstillingen, <ph name="BEGIN_LINK_1" />Annonseemner<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />innstillingene for informasjonskapsler<ph name="END_LINK_2" /> og om nettstedet du ser på, viser personlig tilpassede annonser</translation>
@@ -1359,6 +1358,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7947953824732555851">Godta og logg på</translation>
 <translation id="7951102827450076904">Åpne alltid nedlastede PDF-filer</translation>
 <translation id="7957413488482743710">Et virtuelt kort skjuler det faktiske kortet ditt for å beskytte deg mot potensiell svindel. <ph name="BEGIN_LINK1" />Finn ut mer om virtuelle kort<ph name="END_LINK1" /></translation>
+<translation id="7959485987650214982">Faner på denne enheten</translation>
 <translation id="7960972236129063347">Tilbakeknapp for sidestatistikk</translation>
 <translation id="7961926449547174351">Du har slått av tilgang til Lagring. Gå til Innstillinger for å slå på tilgangen.</translation>
 <translation id="7963646190083259054">Leverandør:</translation>

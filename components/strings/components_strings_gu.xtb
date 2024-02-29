@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">એન્વલપ આમંત્રણ</translation>
 <translation id="1413809658975081374">ગોપનીયતા ભૂલ</translation>
 <translation id="1414134146594747368">પ્રીસ્કૂલ</translation>
-<translation id="141826476809826269">એક્સટ્રેક્ટ કરેલી ટેક્સ્ટ સમાપ્ત થઈ</translation>
 <translation id="1418611192881166179">જ્યારે Chrome આ સુવિધાને અપડેટ કરી રહ્યું છે, ત્યારે સાઇટ હંગામી રીતે ત્રીજા પક્ષની કુકીનો ઉપયોગ કરી શકે છે સિવાય કે તમે તેને સેટિંગમાં બ્લૉક કરો.</translation>
 <translation id="1419305130220238697">'Chromeમાં ડાઉનલોડ મેનેજ કરો' બટન, તમે Chromeમાં ડાઉનલોડ કરેલી ફાઇલો મેનેજ કરવા માટે સક્રિય કરો</translation>
 <translation id="1422930527989633628">નજીકના બ્લૂટૂથ ડિવાઇસને શોધવાનું પૂછી શકે છે</translation>
@@ -1321,6 +1320,7 @@
 <translation id="3542628208405253498">કાર્ડ પરની છબી</translation>
 <translation id="3542768452570884558">નવી વિન્ડોમાં લિંક ખોલો</translation>
 <translation id="3547746132308051926">20 x 24 ઇંચ</translation>
+<translation id="3552155506104542239">ચેતવણી: આ પૉલિસી <ph name="POLICY_NAME" /> સાથે વિરોધાભાસ ધરાવે છે અને Android ઍપ પર તેની કોઈ અસર થશે નહીં. નહિંતર, આ પૉલિસી હેતુ મુજબ કાર્ય કરી રહી છે.</translation>
 <translation id="3552297013052089404">Sans-Serif ફૉન્ટ</translation>
 <translation id="3558573058928565255">દિવસનો સમય</translation>
 <translation id="355995771319966853">ઑટોમૅટિક રીતે ભરવાની સુવિધાનો છેલ્લો ફેરફાર રદ કરો</translation>
@@ -1868,6 +1868,7 @@
 <translation id="46128681529823442">સૉકરનું સાધન</translation>
 <translation id="4619564267100705184">આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="4622292761762557753">તેમ છતાં ટ્રાન્સફર કરો</translation>
+<translation id="4622647778991854660">નોટિફિકેશન કેન્દ્રમાં નોટિફિકેશન ચાલુ કરો. <ph name="LINK" /> ખોલો.</translation>
 <translation id="4627675673814409125">Chrome પ્રોફાઇલના લેવલ પર આ પૉલિસી સેટ કરી શકાતી નથી અને તેને અવગણવામાં આવશે.</translation>
 <translation id="4628678854894591460">વેકેશન માટેની ઑફરો</translation>
 <translation id="4628948037717959914">ફોટો</translation>
@@ -3067,7 +3068,6 @@
 <translation id="6978121630131642226">શોધ એન્જિન</translation>
 <translation id="6978236010531171013">કોઈપણ રીતે શેર કરો</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">એક્સટ્રેક્ટ કરેલી ટેક્સ્ટની શરૂઆત</translation>
 <translation id="6979440798594660689">મ્યૂટ કરો (ડિફૉલ્ટ)</translation>
 <translation id="6987806006823772670">એન્વેલોપ (કોટેડ)</translation>
 <translation id="6989763994942163495">વિગતવાર સેટિંગ બતાવો...</translation>
@@ -3199,6 +3199,7 @@
 <translation id="7234112195906418665">મુસાફરી અને ટ્રાન્સ્પોર્ટેશન</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% પૂર્ણ થયું | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">ગિફ્ટ અને વિશિષ્ટ ઇવેન્ટની આઇટમ</translation>
+<translation id="7237454422623102448">સિસ્ટમ સેટિંગ</translation>
 <translation id="7237492777898608035">આ સાઇટમાં આ મેસેજ ફરીથી બતાવશો નહીં</translation>
 <translation id="7240120331469437312">પ્રમાણપત્ર વિષય વૈકલ્પિક નામ</translation>
 <translation id="7241863998525879494">શું અપેક્ષિત છે</translation>

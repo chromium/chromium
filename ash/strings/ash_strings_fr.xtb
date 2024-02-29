@@ -358,6 +358,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2484513351006226581">Appuyez sur <ph name="KEYBOARD_SHORTCUT" /> pour changer la disposition du clavier.</translation>
 <translation id="2486214324139475545">Aperçu du <ph name="DESK_NAME" />. Bureau actif.</translation>
 <translation id="2487915095798731898">Rejoindre</translation>
+<translation id="2499445554382787206">Menu du profil du bureau. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Touches rémanentes</translation>
 <translation id="2504454902900101003">Ignorer la configuration concernant l'affichage des photos, notifications et contenus multimédias récents de votre téléphone</translation>
 <translation id="2509468283778169019">Touche VERR MAJ activée</translation>
@@ -605,6 +606,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3509391053705095206">Impossible de trouver votre téléphone. Vérifiez que le Bluetooth y est activé.</translation>
 <translation id="3510164367642747937">Mettre le curseur de la souris en surbrillance</translation>
 <translation id="3513798432020909783">Compte géré par <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Dernière mise à jour des tâches : <ph name="DATE" />, <ph name="TIME" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Mettre à jour l'appareil d'ici 1 minute}one{Mettre à jour l'appareil d'ici # minute}other{Mettre à jour l'appareil d'ici # minutes}}</translation>
 <translation id="3522979239100719575">Recherche des profils disponibles… Cela peut prendre quelques minutes.</translation>
 <translation id="3526440770046466733">Ouvrir le lien dans un nouvel onglet et rester dans l'onglet actif</translation>
@@ -1144,6 +1146,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5536723544185013515">Applis récentes : utiliser les flèches vers la gauche ou vers la droite pour accéder à toutes les applis récentes</translation>
 <translation id="553675580533261935">Fermeture de la session</translation>
 <translation id="5537725057119320332">Caster</translation>
+<translation id="554017492391497564">Impossible de marquer la tâche comme terminée.</translation>
 <translation id="5546397813406633847">Récupérer le compte utilisateur</translation>
 <translation id="554893713779400387">Activer ou désactiver la dictée</translation>
 <translation id="5550417424894892620">Déposez des fichiers sur le bureau pour les ajouter à <ph name="HOLDING_SPACE_TITLE" />. Vous ne pouvez pas ajouter de fichiers sur le bureau.</translation>
@@ -1338,6 +1341,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Batterie faible. Économiseur de batterie activé.</translation>
 <translation id="6247728804802644171">Ouvrir les notifications</translation>
+<translation id="6249795363855770621">Impossible de marquer la tâche comme terminée. Réessayez une fois en ligne.</translation>
 <translation id="6254629735336163724">Verrouillée en position horizontale</translation>
 <translation id="6259254695169772643">Effectuez une sélection à l'aide de votre stylet</translation>
 <translation id="6267036997247669271"><ph name="NAME" /> : activation en cours…</translation>
@@ -1498,6 +1502,7 @@ Nouvelle installation</translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6912841030378044227">Placer le curseur sur la barre d'adresse</translation>
 <translation id="6912901278692845878">Visite rapide</translation>
+<translation id="6917259695595127329">Dernière mise à jour des tâches : <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Impossible de reconnaître votre carte à puce. Veuillez réessayer.</translation>
 <translation id="692135145298539227">supprimer</translation>
 <translation id="6929081673585394903">Afficher les commandes</translation>

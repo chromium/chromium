@@ -231,7 +231,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1410941016594047814">Enveloppe d'invitation</translation>
 <translation id="1413809658975081374">Erreur liée à la confidentialité</translation>
 <translation id="1414134146594747368">Centre préscolaire</translation>
-<translation id="141826476809826269">Fin du texte extrait</translation>
 <translation id="1418611192881166179">Pendant que Chrome met à jour cette fonctionnalité, les sites peuvent utiliser temporairement des cookies tiers, sauf si vous les bloquez dans les paramètres.</translation>
 <translation id="1419305130220238697">Bouton "Gérer les téléchargements dans Chrome" à activer pour gérer les fichiers que vous avez téléchargés dans Chrome</translation>
 <translation id="1422930527989633628">Peut demander à détecter les appareils Bluetooth à proximité</translation>
@@ -1321,6 +1320,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3542628208405253498">Image de la carte</translation>
 <translation id="3542768452570884558">Ouvrir le lien dans une nouvelle fenêtre</translation>
 <translation id="3547746132308051926">20 x 24 pouces</translation>
+<translation id="3552155506104542239">Avertissement : Cette règle est en conflit avec <ph name="POLICY_NAME" /> et n'aura aucune incidence sur les applis Android. En absence de conflit, cette règle fonctionne comme prévu.</translation>
 <translation id="3552297013052089404">Police Sans Serif</translation>
 <translation id="3558573058928565255">Dans la journée</translation>
 <translation id="355995771319966853">Annuler la saisie automatique</translation>
@@ -1868,6 +1868,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="46128681529823442">Équipement de football</translation>
 <translation id="4619564267100705184">Confirmer votre identité</translation>
 <translation id="4622292761762557753">Transférer quand même</translation>
+<translation id="4622647778991854660">Activer les notifications dans le centre de notifications. Ouvrir <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Cette règle sera ignorée, car elle ne peut pas être définie au niveau du profil Chrome.</translation>
 <translation id="4628678854894591460">Séjours touristiques</translation>
 <translation id="4628948037717959914">Photo</translation>
@@ -3067,7 +3068,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6978121630131642226">Moteurs de recherche</translation>
 <translation id="6978236010531171013">Partager quand même</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">Début du texte extrait</translation>
 <translation id="6979440798594660689">Coupé (par défaut)</translation>
 <translation id="6987806006823772670">Enveloppe (papier couché)</translation>
 <translation id="6989763994942163495">Afficher les paramètres avancés…</translation>
@@ -3200,6 +3200,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7234112195906418665">Voyages et transports</translation>
 <translation id="7236417832106250253">Progression : <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Cadeaux et articles pour événements spéciaux</translation>
+<translation id="7237454422623102448">Réglages système</translation>
 <translation id="7237492777898608035">Ne plus afficher ce message sur ce site</translation>
 <translation id="7240120331469437312">Autre nom de l'objet du certificat</translation>
 <translation id="7241863998525879494">Contenu de la mise à jour</translation>

@@ -31,6 +31,7 @@
 <translation id="1516530951338665275">Google Chrome necesita acceso a la conexión Bluetooth para continuar con la 
  vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS es posible gracias al <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
+<translation id="155168855724261758">Personalizar Chrome</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ya accedió a este perfil de Chrome. Se creará un nuevo perfil de Chrome para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome está usando tu cámara.</translation>
@@ -68,6 +69,7 @@
 <translation id="2121284319307530122">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa tu <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para ayudarnos a mejorar Chrome</translation>
 <translation id="2126108037660393668">Falló la verificación del archivo descargado.</translation>
+<translation id="2128411189117340671">Administrar perfiles de Chrome</translation>
 <translation id="2130870084309816036">No se puede conectar a Internet. Si usas un firewall, agrega <ph name="PRODUCT_EXE_NAME" /> a la lista de entidades permitidas.</translation>
 <translation id="2131230230468101642">Para proteger tu privacidad, quitamos los intereses automáticamente luego de 4 semanas. Es posible que, a medida que navegues, un interés vuelva a aparecer en la lista. O bien, puedes quitar los intereses que no quieres que Chrome tenga en cuenta.</translation>
 <translation id="2139300032719313227">Reiniciar ChromeOS</translation>
@@ -364,7 +366,7 @@
 Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web y apps. Puedes administrar tus Cuentas de Google en <ph name="SETTINGS_LINK_BEGIN" />Configuración<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7071827361006050863">Chrome borrará los datos de navegación pronto</translation>
 <translation id="7085332316435785646">Elige si quieres incluir el historial de Chrome para tener experiencias más personalizadas en los servicios de Google</translation>
-<translation id="7088681679121566888">Chrome está actualizado.</translation>
+<translation id="7088681679121566888">Chrome está actualizado</translation>
 <translation id="7098166902387133879">Google Chrome está usando tu micrófono.</translation>
 <translation id="7099479769133613710">Reiniciar para actualizar ChromeOS</translation>
 <translation id="7106741999175697885">Administrador de tareas - Google Chrome</translation>
@@ -417,6 +419,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7917876797003313048">Puedes administrar las Cuentas de Google a las que accediste. Tus Cuentas de Google se usan en el navegador Chrome, Play Store, Gmail y otros servicios. Si quieres agregar una cuenta de otra persona, como la de un miembro de la familia, agrega a una persona nueva a tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome bloqueó esta descarga porque el archivo es engañoso y puede realizar cambios inesperados en tu dispositivo</translation>
 <translation id="7951272445806340501">ChromeOS Flex debe reiniciarse para que se aplique la actualización.</translation>
+<translation id="7959172989483770734">Administrar perfiles de Chrome</translation>
 <translation id="7962368738413920945">Es probable que los sitios funcionen como esperas, pero no te recordarán cuando cierres todas las ventanas de Chrome.</translation>
 <translation id="7962410387636238736">Esta computadora dejará de recibir actualizaciones de Google Chrome porque Windows XP y Windows Vista ya no son compatibles</translation>
 <translation id="8005666035647241369">En el Administrador de contraseñas de Google en este dispositivo</translation>
@@ -424,6 +427,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8009904340233602924">Usar Chrome sin una cuenta</translation>
 <translation id="8013993649590906847">Si una imagen no tiene una descripción útil, Chrome intentará proporcionarte una. Para crear descripciones, se envían las imágenes a Google.</translation>
 <translation id="8019103195866286235">El desarrollador anuló la publicación de esta extensión y es posible que no sea segura. Quítala de Chrome para que ya no pueda ver ni cambiar tus datos en los sitios que visitas, incluida tu información personal.</translation>
+<translation id="8031641407207794385">Personalizar Chrome</translation>
 <translation id="80471789339884597">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar todos los navegadores antes de usarlo.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>

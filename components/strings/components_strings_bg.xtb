@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Плик за покана</translation>
 <translation id="1413809658975081374">Грешка, свързана в поверителността</translation>
 <translation id="1414134146594747368">Предучилище</translation>
-<translation id="141826476809826269">Край на извлечения текст</translation>
 <translation id="1418611192881166179">Докато Chrome актуализира тази функция, сайтовете могат временно да използват „бисквитки“ на трети страни, освен ако не ги блокирате от настройките.</translation>
 <translation id="1419305130220238697">Бутон „Управление на изтеглянията с Chrome“. Активирайте, за да управлявате файловете, които сте изтеглили с Chrome</translation>
 <translation id="1422930527989633628">Може да поиска разрешение да открива устройства с Bluetooth в близост</translation>
@@ -1201,6 +1200,7 @@
 <translation id="3324687287337751929">4 x 6 инча</translation>
 <translation id="3324983252691184275">пурпурно</translation>
 <translation id="3325027355611702542">Кемпери и каравани</translation>
+<translation id="3325568918769906282">в низходящ ред</translation>
 <translation id="3329013043687509092">Насищане</translation>
 <translation id="3333762389743153920">Не отговаря на условията за виртуална карта</translation>
 <translation id="3336044043987989409">Натиснете бутона за презареждане, за да разрешите връзката с устройствата или сървърите в частната си мрежа.</translation>
@@ -1321,6 +1321,7 @@
 <translation id="3542628208405253498">Изображение на картата</translation>
 <translation id="3542768452570884558">Отваряне на връзката в нов прозорец</translation>
 <translation id="3547746132308051926">20 x 24 инча</translation>
+<translation id="3552155506104542239">Предупреждение: Това правило е в конфликт с правилото <ph name="POLICY_NAME" /> и няма да има ефект върху приложенията за Android. Иначе то работи нормално.</translation>
 <translation id="3552297013052089404">Безсерифен шрифт</translation>
 <translation id="3558573058928565255">През деня</translation>
 <translation id="355995771319966853">Отмяна на автоматичното попълване</translation>
@@ -1778,6 +1779,7 @@
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4390472908992056574">Периферия</translation>
 <translation id="4397059608630092079">Потвърждаване при всяко използване на автоматичното попълване</translation>
+<translation id="4397978002248035985">Отваря изскачащ прозорец за потвърждаване в уебсайта на банката ви</translation>
 <translation id="4406883609789734330">Надписи на живо</translation>
 <translation id="4406896451731180161">резултата от търсенето</translation>
 <translation id="4408413947728134509">„Бисквитки“ <ph name="NUM_COOKIES" /></translation>
@@ -2201,6 +2203,7 @@
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Свойства на документа</translation>
 <translation id="528468243742722775">Край</translation>
+<translation id="5285468538058987167">Чрез задълбочено установяване на идентичността на клиента (SCA)</translation>
 <translation id="5285570108065881030">Показване на всички запазени пароли</translation>
 <translation id="5287456746628258573">Този сайт използва остаряла конфигурация за сигурност, която може да разкрие информацията ви (например пароли или номера на кредитни карти) при изпращането ѝ до него.</translation>
 <translation id="5288108484102287882">При проверката на стойностите на правилата възникнаха предупреждения</translation>
@@ -2247,6 +2250,7 @@
 <translation id="5371425731340848620">Актуализиране на картата</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Часовникът ви е назад“, „Часовникът ви е напред“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
+<translation id="5380953781541843508">във възходящ ред</translation>
 <translation id="5383478552402031184">Подови настилки</translation>
 <translation id="5385857628869214740">Хумор</translation>
 <translation id="5385966243497224160">Не може да се визуализира URL адрес без HTTPS</translation>
@@ -3068,7 +3072,6 @@
 <translation id="6978121630131642226">Търсещи машини</translation>
 <translation id="6978236010531171013">Споделяне въпреки това</translation>
 <translation id="6979158407327259162">Google Диск</translation>
-<translation id="6979332652936434520">Начало на извлечения текст</translation>
 <translation id="6979440798594660689">Заглушаване (стандартно)</translation>
 <translation id="6987806006823772670">Плик (с покритие)</translation>
 <translation id="6989763994942163495">Показване на разширените настройки...</translation>
@@ -3483,6 +3486,7 @@
 <translation id="7719791801330803993">Фотографски и видеософтуер</translation>
 <translation id="772128550427553158">Кодът за проверка се намира върху лицевата страна на картата ви.</translation>
 <translation id="7724603315864178912">Изрязване</translation>
+<translation id="7730057435797792985">Сортиране</translation>
 <translation id="7734285854693414638">Бързо създаване на формуляр в Google Формуляри</translation>
 <translation id="773466115871691567">Страниците на <ph name="SOURCE_LANGUAGE" /> да се превеждат винаги</translation>
 <translation id="7736959720849233795">Копиране на адреса на връзката</translation>

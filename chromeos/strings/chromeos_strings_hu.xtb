@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">Segéd</translation>
 <translation id="1954818433534793392">épület</translation>
 <translation id="1962550982027027473">Szükség van alapértelmezett APN-re</translation>
+<translation id="1967860190218310525">Új APN létrehozása</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google-profilfotó</translation>
 <translation id="1979103255016296513">Esedékes a jelszó frissítése</translation>
@@ -473,7 +474,6 @@
 <translation id="4046123991198612571">Következő szám</translation>
 <translation id="404928562651467259">FIGYELMEZTETÉS</translation>
 <translation id="4054683689023980771">Kép letöltése</translation>
-<translation id="4060260348856573701">Új APN</translation>
 <translation id="4063039537646912479">világoskék</translation>
 <translation id="4093865285251893588">Profilkép</translation>
 <translation id="409427325554347132">Tesztadatok mentése</translation>
@@ -981,6 +981,7 @@
 <translation id="7144954474087165241">pagoda</translation>
 <translation id="714876143603641390">LAN-csatlakozás</translation>
 <translation id="7154020516215182599">Írja le visszajelzését vagy problémáját. Ha lehetséges, küldje el a probléma előidézéséhez vezető lépéseket.</translation>
+<translation id="7155037718620478619">További APN-ek felfedezése</translation>
 <translation id="7155171745945906037">Meglévő fénykép a fényképezőgépről vagy fájlból</translation>
 <translation id="7162487448488904999">Galéria</translation>
 <translation id="7170236477717446850">Profilkép</translation>

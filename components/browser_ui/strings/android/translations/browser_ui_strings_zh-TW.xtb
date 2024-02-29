@@ -367,6 +367,7 @@
 <translation id="702275896380648118">這個網站會判斷你喜歡的內容，然後向其他網站建議廣告。這個網站也會從 Chrome 取得你的廣告主題，為你顯示更貼近需求的廣告。</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已選取 1 個項目}other{已選取 # 個項目}}</translation>
+<translation id="708014373017851679">「<ph name="APP_NAME" />」版本過舊，請更新應用程式。</translation>
 <translation id="7087918508125750058">已選取 <ph name="ITEM_COUNT" /> 個項目。選項位於畫面頂端</translation>
 <translation id="7141896414559753902">禁止網站顯示彈出式視窗及重新導向 (建議)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

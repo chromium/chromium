@@ -231,7 +231,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1410941016594047814">Koverta Invite</translation>
 <translation id="1413809658975081374">Greška u vezi s privatnošću</translation>
 <translation id="1414134146594747368">Predškolski uzrast</translation>
-<translation id="141826476809826269">Kraj izdvojenog teksta</translation>
 <translation id="1418611192881166179">Dok Chrome ažurira ovu funkciju, web lokacije mogu privremeno koristiti kolačiće trećih strana ako ih ne blokirate u postavkama.</translation>
 <translation id="1419305130220238697">Dugme Upravljaj preuzimanjima u Chromeu, aktivirajte da upravljate fajlovima koje ste preuzeli u Chromeu</translation>
 <translation id="1422930527989633628">Može tražiti da otkriva Bluetooth uređaje u blizini</translation>
@@ -1322,7 +1321,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3542628208405253498">Slika kartice</translation>
 <translation id="3542768452570884558">Otvori link u novom prozoru</translation>
 <translation id="3547746132308051926">20 x 24 in</translation>
-<translation id="3552155506104542239">Upozorenje: to je pravilo u sukobu s pravilom <ph name="POLICY_NAME" /> i neće imati utjecaja na Android aplikacije. U suprotnome, pravilo funkcionira kako je predviđeno.</translation>
+<translation id="3552155506104542239">Upozorenje: ova pravila su u suprotnosti s pravilima <ph name="POLICY_NAME" /> i neće uticati na Android aplikacije. U suprotnom, ova pravila funkcioniraju kako je predviđeno.</translation>
 <translation id="3552297013052089404">Font Sans-serif</translation>
 <translation id="3558573058928565255">Dan</translation>
 <translation id="355995771319966853">Poništi automatsko popunjavanje</translation>
@@ -1780,6 +1779,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">Rub</translation>
 <translation id="4397059608630092079">Uvijek potvrdi prilikom korištenja automatskog popunjavanja</translation>
+<translation id="4397978002248035985">Otvara skočni prozor za potvrdu na web-lokaciji vaše banke</translation>
 <translation id="4406883609789734330">Automatski titlovi</translation>
 <translation id="4406896451731180161">rezultati pretraživanja</translation>
 <translation id="4408413947728134509">Broj kolačića: <ph name="NUM_COOKIES" /></translation>
@@ -1870,7 +1870,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="46128681529823442">Oprema za fudbal</translation>
 <translation id="4619564267100705184">Potvrdite identitet</translation>
 <translation id="4622292761762557753">Ipak prenesi</translation>
-<translation id="4622647778991854660">Omogućite obavijesti u centru za obavijesti. Otvorite <ph name="LINK" />.</translation>
+<translation id="4622647778991854660">Omogućite obavještenja u Centru za obavještenja. Otvorite <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Nije moguće postaviti ovo pravilo na nivou Chrome profila i bit će zanemareno.</translation>
 <translation id="4628678854894591460">Ponude za odmor</translation>
 <translation id="4628948037717959914">Fotografija</translation>
@@ -2203,6 +2203,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Osobine dokumenta</translation>
 <translation id="528468243742722775">Prekid</translation>
+<translation id="5285468538058987167">Putem pouzdane autentifikacije korisnika (SCA)</translation>
 <translation id="5285570108065881030">Prikaži sve sačuvane lozinke</translation>
 <translation id="5287456746628258573">Ova web lokacija koristi zastarjelu konfiguraciju sigurnosti, zbog čega može doći do otkrivanja vaših informacija (naprimjer, lozinki ili brojeva kreditnih kartica) kada se šalju na ovu web lokaciju.</translation>
 <translation id="5288108484102287882">Potvrdom vrijednosti pravila aktivirana su upozorenja</translation>
@@ -3071,7 +3072,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6978121630131642226">Pretraživači</translation>
 <translation id="6978236010531171013">Svejedno dijeli</translation>
 <translation id="6979158407327259162">Google Disk</translation>
-<translation id="6979332652936434520">Početak izdvojenog teksta</translation>
 <translation id="6979440798594660689">Isključi zvuk (zadano)</translation>
 <translation id="6987806006823772670">Koverta (s premazom)</translation>
 <translation id="6989763994942163495">Prikaži napredne postavke...</translation>
@@ -3203,7 +3203,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7234112195906418665">Putovanja i prijevoz</translation>
 <translation id="7236417832106250253">Završeno <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Pokloni i artikli za posebne događaje</translation>
-<translation id="7237454422623102448">Postavke sustava</translation>
+<translation id="7237454422623102448">Postavke sistema</translation>
 <translation id="7237492777898608035">Ne prikazuj ponovo ovu poruku za ovu web lokaciju</translation>
 <translation id="7240120331469437312">Alternativni naziv subjekta potvrde</translation>
 <translation id="7241863998525879494">Šta možete očekivati</translation>

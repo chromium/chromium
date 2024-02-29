@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Envelope Invite</translation>
 <translation id="1413809658975081374">സ്വകാര്യ പിശക്</translation>
 <translation id="1414134146594747368">ബാലവാടി</translation>
-<translation id="141826476809826269">എക്‌സ്‌ട്രാക്റ്റ് ചെയ്‌ത ടെക്‌സ്‌റ്റിന്റെ അവസാനം</translation>
 <translation id="1418611192881166179">Chrome ഈ ഫീച്ചർ അപ്‌ഡേറ്റ് ചെയ്യുമ്പോൾ, സൈറ്റുകൾക്ക് മൂന്നാം-കക്ഷി കുക്കികൾ താൽക്കാലികമായി ഉപയോഗിക്കാനാകും, നിങ്ങൾ ക്രമീകരണത്തിൽ അവ ബ്ലോക്ക് ചെയ്‌തിട്ടില്ലെങ്കിലാണിത്.</translation>
 <translation id="1419305130220238697">'Chrome-ൽ ഡൗൺലോഡുകൾ മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome-ൽ നിങ്ങൾ ഡൗൺലോഡ് ചെയ്തിരിക്കുന്ന ഫയലുകൾ മാനേജ് ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="1422930527989633628">സമീപത്തുള്ള Bluetooth ഉപകരണങ്ങൾ കണ്ടെത്താൻ ആവശ്യപ്പെടുക</translation>
@@ -1200,6 +1199,7 @@
 <translation id="3324687287337751929">4 x 6 ഇഞ്ച്</translation>
 <translation id="3324983252691184275">ക്രിംസൺ</translation>
 <translation id="3325027355611702542">ക്യാമ്പറുകളും RV-കളും</translation>
+<translation id="3325568918769906282">അവരോഹണക്രമത്തിൽ</translation>
 <translation id="3329013043687509092">സാച്ചുറേഷൻ</translation>
 <translation id="3333762389743153920">വെർച്വൽ കാർഡിന് യോഗ്യമല്ല</translation>
 <translation id="3336044043987989409">നിങ്ങളുടെ സ്വകാര്യ നെറ്റ്‌വർക്കിലെ ഉപകരണങ്ങളിലേക്കോ സെർവറുകളിലേക്കോ കണക്ഷൻ അനുവദിക്കാൻ 'റീലോഡ് ചെയ്യുക' ബട്ടൺ അമർത്തുക.</translation>
@@ -2247,6 +2247,7 @@
 <translation id="5371425731340848620">കാർഡ് അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"നിങ്ങളുടെ സമയം പിന്നിലാണ്" അല്ലെങ്കിൽ "നിങ്ങളുടെ സമയം മുന്നിലാണ്" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">ആരോഹണക്രമത്തിൽ</translation>
 <translation id="5383478552402031184">ഫ്ലോറിംഗ്</translation>
 <translation id="5385857628869214740">ഹാസ്യം</translation>
 <translation id="5385966243497224160">HTTPS അല്ലാത്ത URL പ്രിവ്യൂ ചെയ്യാനാകില്ല</translation>
@@ -3068,7 +3069,6 @@
 <translation id="6978121630131642226">തിരയൽ യന്ത്രങ്ങൾ</translation>
 <translation id="6978236010531171013">എന്തായാലും പങ്കിടുക</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">എക്‌സ്‌ട്രാക്‌റ്റ് ചെയ്ത ടെക്സ്റ്റിന്റെ തുടക്കം</translation>
 <translation id="6979440798594660689">മ്യൂട്ട് ചെയ്യുക (ഡിഫോൾട്ട്)</translation>
 <translation id="6987806006823772670">എൻവലപ്പ് (കോട്ട് ചെയ്തത്)</translation>
 <translation id="6989763994942163495">വിപുലമായ ക്രമീകരണങ്ങൾ കാണിക്കുക...</translation>
@@ -3481,6 +3481,7 @@
 <translation id="7719791801330803993">ഫോട്ടോ, വീഡിയോ സോഫ്റ്റ്‌വെയർ</translation>
 <translation id="772128550427553158">CVC നിങ്ങളുടെ കാർഡിന്റെ മുൻവശത്താണുള്ളത്.</translation>
 <translation id="7724603315864178912">മുറിക്കുക</translation>
+<translation id="7730057435797792985">അടുക്കുക</translation>
 <translation id="7734285854693414638">Google Forms-ൽ പുതിയൊരു ഫേം വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> ഭാഷയിലുള്ള പേജുകൾ എപ്പോഴും വിവർത്തനം ചെയ്യുക</translation>
 <translation id="7736959720849233795">ലിങ്ക് വിലാസം പകർത്തുക</translation>

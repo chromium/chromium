@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">न्योते वाला लिफ़ाफ़ा</translation>
 <translation id="1413809658975081374">निजता गड़बड़ी</translation>
 <translation id="1414134146594747368">प्रीस्कूल</translation>
-<translation id="141826476809826269">निकाले गए टेक्स्ट का आखिरी हिस्सा</translation>
 <translation id="1418611192881166179">Chrome इस सुविधा को अपडेट कर रहा है. हालांकि, साइटें कुछ समय के लिए तीसरे पक्ष की कुकी का इस्तेमाल कर सकती हैं. ऐसा तब तक किया जा सकता है, जब तक कि उन्हें सेटिंग में ब्लॉक नहीं किया जाता.</translation>
 <translation id="1419305130220238697">'Chrome में डाउनलोड मैनेज करें' बटन, Chrome में डाउनलोड की गई फ़ाइलों को मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="1422930527989633628">साइट, आस-पास के ब्लूटूथ डिवाइसों को खोजने की अनुमति मांग सकती है</translation>
@@ -1322,6 +1321,7 @@
 <translation id="3542628208405253498">कार्ड की इमेज</translation>
 <translation id="3542768452570884558">लिंक को नई विंडो में खोलें</translation>
 <translation id="3547746132308051926">20 x 24 इंच</translation>
+<translation id="3552155506104542239">चेतावनी: यह नीति, <ph name="POLICY_NAME" /> से अलग है और इसका Android ऐप्लिकेशन पर कोई असर नहीं पड़ेगा. बाकी जगहों पर यह नीति उम्मीद के मुताबिक काम करती रहेगी.</translation>
 <translation id="3552297013052089404">Sans-serif फ़ॉन्ट</translation>
 <translation id="3558573058928565255">दिन के समय</translation>
 <translation id="355995771319966853">ऑटोमैटिक भरने की सुविधा को पहले जैसा करें</translation>
@@ -1779,6 +1779,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">ब्रिम</translation>
 <translation id="4397059608630092079">जानकारी ऑटोमैटिक भरने की सुविधा का इस्तेमाल करते समय, हमेशा पुष्टि करें</translation>
+<translation id="4397978002248035985">इससे आपकी स्क्रीन में बैंक की वेबसाइट पर पुष्टि करने के लिए पॉप-अप दिखता है</translation>
 <translation id="4406883609789734330">लाइव कैप्शन</translation>
 <translation id="4406896451731180161">खोज नतीजे</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> कुकी</translation>
@@ -2201,6 +2202,7 @@
 <translation id="5283044957620376778">बी1</translation>
 <translation id="5284295735376057059">दस्तावेज़ की जानकारी</translation>
 <translation id="528468243742722775">खत्म</translation>
+<translation id="5285468538058987167">स्ट्रॉन्ग कस्टमर ऑथेंटिकेशन (SCA) के ज़रिए</translation>
 <translation id="5285570108065881030">सेव किए गए सभी पासवर्ड दिखाएं</translation>
 <translation id="5287456746628258573">यह साइट एक पुराने सुरक्षा कॉन्फ़िगरेशन का इस्तेमाल करती है. इस वजह से, साइट पर भेजी जाने वाली आपकी जानकारी (उदाहरण के लिए, पासवर्ड या क्रेडिट कार्ड नंबर वगैरह) को कोई और देख सकता है.</translation>
 <translation id="5288108484102287882">नीति मानों की पुष्टि से चेतावनियां मिली हैं</translation>
@@ -3069,7 +3071,6 @@
 <translation id="6978121630131642226">सर्च इंजन</translation>
 <translation id="6978236010531171013">फिर भी शेयर करें</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">निकाले गए टेक्स्ट का शुरुआती हिस्सा</translation>
 <translation id="6979440798594660689">म्यूट करें (डिफ़ॉल्ट)</translation>
 <translation id="6987806006823772670">एन्वेलप (कोटेड)</translation>
 <translation id="6989763994942163495">अतिरिक्त सेटिंग दिखाएं...</translation>

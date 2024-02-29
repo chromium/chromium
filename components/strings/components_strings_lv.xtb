@@ -231,7 +231,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1410941016594047814">Aploksne Invite</translation>
 <translation id="1413809658975081374">Konfidencialitātes kļūda</translation>
 <translation id="1414134146594747368">Pirmsskola</translation>
-<translation id="141826476809826269">Iegūtā teksta beigas</translation>
 <translation id="1418611192881166179">Kamēr pārlūkā Chrome tiek atjaunināta šī funkcija, vietnes var īslaicīgi izmantot trešo pušu sīkfailus, ja vien iestatījumos neesat tos bloķējis.</translation>
 <translation id="1419305130220238697">Pārlūka Chrome poga “Pārvaldīt lejupielādes”. Aktivizējiet, lai pārvaldītu pārlūkā Chrome lejupielādētos failus.</translation>
 <translation id="1422930527989633628">Var pieprasīt atļauju noteikt tuvumā esošas Bluetooth ierīces</translation>
@@ -1321,6 +1320,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3542628208405253498">Kartes attēls</translation>
 <translation id="3542768452570884558">Atvērt saiti jaunā logā</translation>
 <translation id="3547746132308051926">20 x 24 collas</translation>
+<translation id="3552155506104542239">Brīdinājums! Šī politika ir pretrunā ar politiku <ph name="POLICY_NAME" /> un neietekmēs Android lietotnes. Citos gadījumos šī politika darbojas, kā paredzēts.</translation>
 <translation id="3552297013052089404">Sans Serif fonts</translation>
 <translation id="3558573058928565255">diena</translation>
 <translation id="355995771319966853">Atsaukt automātisko aizpildi</translation>
@@ -1867,6 +1867,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="46128681529823442">Futbola aprīkojums</translation>
 <translation id="4619564267100705184">Apstiprināt identitāti</translation>
 <translation id="4622292761762557753">Tomēr pārsūtīt</translation>
+<translation id="4622647778991854660">Paziņojumu centrā iespējojiet paziņojumus. Atveriet sadaļu “<ph name="LINK" />”.</translation>
 <translation id="4627675673814409125">Šo politiku nevar iestatīt Chrome profila līmenī, un tā tiks ignorēta.</translation>
 <translation id="4628678854894591460">Brīvdienu piedāvājumi</translation>
 <translation id="4628948037717959914">Fotoattēls</translation>
@@ -3066,7 +3067,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6978121630131642226">Meklētāji</translation>
 <translation id="6978236010531171013">Tomēr kopīgot</translation>
 <translation id="6979158407327259162">Google disks</translation>
-<translation id="6979332652936434520">Iegūtā teksta sākums</translation>
 <translation id="6979440798594660689">Izslēgt skaņu (noklusējums)</translation>
 <translation id="6987806006823772670">Aploksne (pārklāta)</translation>
 <translation id="6989763994942163495">Rādīt papildu iestatījumus...</translation>
@@ -3198,6 +3198,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7234112195906418665">Ceļojumi un transports</translation>
 <translation id="7236417832106250253">Pabeigtā daļa: <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Dāvanas un preces īpašiem gadījumiem</translation>
+<translation id="7237454422623102448">Sistēmas iestatījumi</translation>
 <translation id="7237492777898608035">Vairs nerādīt šo ziņojumu šajā vietnē</translation>
 <translation id="7240120331469437312">Sertifikāta subjekta cits nosaukums</translation>
 <translation id="7241863998525879494">Paredzamais iznākums</translation>

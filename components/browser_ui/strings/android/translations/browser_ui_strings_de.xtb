@@ -367,6 +367,7 @@
 <translation id="702275896380648118">Diese Website erhebt Informationen dazu, was dir gefällt, und schlägt dann anderen Websites Werbung vor. Außerdem ruft sie deine Anzeigenthemen von Chrome ab, damit sie dir relevantere Werbung anzeigen kann.</translation>
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ausgewählt}other{# ausgewählt}}</translation>
+<translation id="708014373017851679"><ph name="APP_NAME" /> ist veraltet. Bitte aktualisiere die App.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ausgewählt. Optionen sind oben auf dem Bildschirm verfügbar</translation>
 <translation id="7141896414559753902">Anzeige von Pop-ups und Weiterleitungen für Websites blockieren (empfohlen)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

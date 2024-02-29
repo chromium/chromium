@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">‏חיפוש Google</translation>
 <translation id="2252749852083403809">‏מתבצעת שמירה ב-Drive של <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">הארגון מאפשר לך להיכנס לדפדפן רק באמצעות חשבונות מסוימים.</translation>
+<translation id="2257594476751932246">חדשות מותאמות אישית</translation>
 <translation id="2258326562203545455">{count,plural, =1{‏אפשר לשמור את הסימנייה בחשבון Google עם הכתובת {email}.}one{‏אפשר לשמור את הסימניות בחשבון Google עם הכתובת {email}.}two{‏אפשר לשמור את הסימניות בחשבון Google עם הכתובת {email}.}other{‏אפשר לשמור את הסימניות בחשבון Google עם הכתובת {email}.}}</translation>
 <translation id="225943865679747347">קוד שגיאה: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">חשבון חדש</translation>
@@ -847,7 +848,7 @@
 <translation id="5339316356165661760">הפעלת הסנכרון</translation>
 <translation id="5343472494710226394">חדשות, ספורט ותוכן על סמך תחומי העניין שלך.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{לעקוב אחרי החבילה הזו?}one{לעקוב אחרי {COUNT} חבילות?}two{לעקוב אחרי {COUNT} חבילות?}other{לעקוב אחרי {COUNT} חבילות?}}</translation>
-<translation id="5348775987281903912">בלחיצה על לחצן השיתוף, אפשר לשתף כאן את הדף הזה.</translation>
+<translation id="5348775987281903912">אפשר ללחוץ על לחצן השיתוף כדי לשתף כאן את הדף הזה.</translation>
 <translation id="536067926684072644">הצגת הסימניות</translation>
 <translation id="5360976571138293719">‏הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים ניתן למצוא בדף <ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
 <translation id="5379352933722332597">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘. היא שמורה רק במכשיר הזה.}one{‫{count} סימניות נשמרו בתיקייה ’{title}‘. הן שמורות רק במכשיר הזה.}two{‫{count} סימניות נשמרו בתיקייה ’{title}‘. הן שמורות רק במכשיר הזה.}other{‫{count} סימניות נשמרו בתיקייה ’{title}‘. הן שמורות רק במכשיר הזה.}}</translation>

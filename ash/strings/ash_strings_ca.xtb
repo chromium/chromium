@@ -358,6 +358,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2484513351006226581">Prem <ph name="KEYBOARD_SHORTCUT" /> per canviar la disposició del teclat.</translation>
 <translation id="2486214324139475545">Previsualització de <ph name="DESK_NAME" />. Escriptori actiu.</translation>
 <translation id="2487915095798731898">Vull entrar-hi</translation>
+<translation id="2499445554382787206">Menú del perfil de l'escriptori. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tecles permanents</translation>
 <translation id="2504454902900101003">Ignora la configuració de visualització de les notificacions, dels fitxers multimèdia i de les fotos recents del telèfon</translation>
 <translation id="2509468283778169019">BLOQ MAJ està activat.</translation>
@@ -605,6 +606,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3509391053705095206">No es troba el telèfon. Comprova que el Bluetooth del telèfon estigui activat.</translation>
 <translation id="3510164367642747937">Ressalta el cursor del ratolí</translation>
 <translation id="3513798432020909783">Compte gestionat per <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Darrera actualització de les tasques: <ph name="DATE" /> a les <ph name="TIME" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Actualitza el dispositiu en 1 minut}other{Actualitza el dispositiu en # minuts}}</translation>
 <translation id="3522979239100719575">S'estan cercant perfils disponibles. Aquest procés pot tardar uns minuts.</translation>
 <translation id="3526440770046466733">Obre l'enllaç en una pestanya nova i continua a la pestanya actual</translation>
@@ -1144,6 +1146,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="5536723544185013515">Aplicacions recents, navega amb la fletxa esquerra o dreta per accedir a les aplicacions recents</translation>
 <translation id="553675580533261935">S'està tancant la sessió</translation>
 <translation id="5537725057119320332">Emet</translation>
+<translation id="554017492391497564">No s'ha pogut marcar com a completada.</translation>
 <translation id="5546397813406633847">Recupera l'usuari</translation>
 <translation id="554893713779400387">Activa o desactiva el dictat</translation>
 <translation id="5550417424894892620">Deixa anar fitxers a l'escriptori per afegir-los a <ph name="HOLDING_SPACE_TITLE" />. No pots afegir fitxers a l'escriptori.</translation>
@@ -1338,6 +1341,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Bateria baixa. Estalvi de bateria s'ha activat.</translation>
 <translation id="6247728804802644171">Obre les notificacions</translation>
+<translation id="6249795363855770621">No s'ha pogut marcar com a completada. Torna-ho a provar quan estiguis en línia.</translation>
 <translation id="6254629735336163724">Bloquejada en horitzontal</translation>
 <translation id="6259254695169772643">Fes servir el llapis òptic per seleccionar</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: s'està activant...</translation>
@@ -1498,6 +1502,7 @@ Instal·lació nova</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6912841030378044227">Posa el focus a la barra d'adreces</translation>
 <translation id="6912901278692845878">Visita guiada ràpida</translation>
+<translation id="6917259695595127329">Darrera actualització de les tasques: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">No s'ha reconegut la targeta intel·ligent. Torna-ho a provar.</translation>
 <translation id="692135145298539227">suprimeix</translation>
 <translation id="6929081673585394903">Mostra els controls</translation>

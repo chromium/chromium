@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">Туслах</translation>
 <translation id="1954818433534793392">барилга</translation>
 <translation id="1962550982027027473">Өгөгдмөл APN шаардлагатай</translation>
+<translation id="1967860190218310525">Шинэ APN үүсгэх</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google профайл зураг</translation>
 <translation id="1979103255016296513">Нууц үг солих хугацаа хэтэрсэн</translation>
@@ -473,7 +474,6 @@
 <translation id="4046123991198612571">Дараагийн бичлэг</translation>
 <translation id="404928562651467259">АНХААРУУЛГА</translation>
 <translation id="4054683689023980771">Зураг татаж байна</translation>
-<translation id="4060260348856573701">Шинэ APN</translation>
 <translation id="4063039537646912479">цайвар хөх</translation>
 <translation id="4093865285251893588">Профайлын зураг</translation>
 <translation id="409427325554347132">Туршилтын дэлгэрэнгүйг хадгалах</translation>
@@ -981,6 +981,7 @@
 <translation id="7144954474087165241">суварга</translation>
 <translation id="714876143603641390">Lan-н холболт</translation>
 <translation id="7154020516215182599">Санал хүсэлтээ хуваалц эсвэл асуудлаа тайлбарлана уу. Боломжтой бол асуудлаа дахин гаргах алхмуудыг оруулаарай.</translation>
+<translation id="7155037718620478619">Илүү олон APN-тай танилцах</translation>
 <translation id="7155171745945906037">Камер эсвэл файлд байгаа зураг</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">Профайлын зураг</translation>

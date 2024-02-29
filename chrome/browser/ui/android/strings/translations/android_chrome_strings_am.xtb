@@ -640,7 +640,6 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{ዕልባት «<ph name="FOLDER_NAME" />» ውስጥ ተቀምጧል። የተቀመጠው በዚህ መሣሪያ ላይ ብቻ ነው።}one{ዕልባት «<ph name="FOLDER_NAME" />» ውስጥ ተቀምጧል። የተቀመጠው በዚህ መሣሪያ ላይ ብቻ ነው።}other{ዕልባቶች «<ph name="FOLDER_NAME" />» ውስጥ ተቀምጠዋል። የተቀመጡት በዚህ መሣሪያ ላይ ብቻ ነው።}}</translation>
 <translation id="4484496141267039529">ምንም ግንኙነት የለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="4487967297491345095">ሁሉንም የChrome መተግበሪያ ውሂብ እስከመጨረሻው ይሰረዛል። ይሄ ሁሉንም ፋይሎች፣ ቅንብሮች፣ መለያዎች፣ የውሂብ ጎታዎች፣ ወዘተ. ያካትታል።</translation>
-<translation id="4491323382106587961">መለያ ይምረጡ። አሁን <ph name="EMAIL" /> ተመርጧል።</translation>
 <translation id="4494806687727322324">የይለፍ ቃል ማስቀመጥ በእርስዎ አስተዳዳሪ በርቷል</translation>
 <translation id="4508528996305412043">የምግብ ካርድ ምናሌ ተከፍቷል</translation>
 <translation id="4509501256689523862">በሚያስሱበት ጊዜ የሚያዩት ማስታወቂያ ግላዊነት የተላበሰ መሆን አለመሆኑ በዚህ ቅንብር <ph name="BEGIN_LINK_1" />የማስታወቂያ ርዕሶች<ph name="END_LINK_1" />፣ በእርስዎ <ph name="BEGIN_LINK_2" />የኩኪ ቅንብሮች<ph name="END_LINK_2" /> ላይ እና እየተመለከቱት ያለው ጣቢያ ማስታወቂያዎችን ግላዊነት የሚያላብስ ከሆነ ይወሰናል</translation>
@@ -1169,6 +1168,7 @@
 <translation id="7037830628447527439">በእርስዎ Google መለያ ወደ Chrome ይግቡ</translation>
 <translation id="7054588988317389591">የምስል መግለጫዎችን ያግኙ?</translation>
 <translation id="7055152154916055070">አቅጣጫ ማዞር ታግዷል፦</translation>
+<translation id="7057969023583258980">ሙሉ የChrome ታሪክን ይክፈቱ</translation>
 <translation id="7063006564040364415">ከማመሳሰያ አገልጋዩ ጋር መገናኘት አልተቻለም።</translation>
 <translation id="7071521146534760487">መለያን አቀናብር</translation>
 <translation id="707155805709242880">ከዚህ በታች ምን እንደሚመሳሰል ይምረጡ</translation>

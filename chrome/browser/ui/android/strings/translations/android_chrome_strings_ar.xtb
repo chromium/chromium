@@ -116,6 +116,7 @@
 <translation id="1558391695376153246">إغلاق علامات تبويب التصفح المتخفي</translation>
 <translation id="1568636008098739136">يمكن الاستماع إلى هذه الصفحة. لتعديل هذا الاختصار، انقر مع الاستمرار.</translation>
 <translation id="1571304935088121812">نسخ اسم المستخدم</translation>
+<translation id="1584648915421894279">‏في الوقت الحالي، لا يمكن استخدام كلمات المرور المحفوظة على هذا الجهاز في جميع قنوات Chrome. في إصدارات Chrome الأحدث من إصدار 125، سيتم دمج كلمات المرور المحفوظة على جهازك في Chrome و"<ph name="CHROME_CHANNEL" />" وستتمكّن من استخدامها في كلا التطبيقَين.</translation>
 <translation id="1592864538817356322">الحماية العادية:</translation>
 <translation id="1594635596540195766">تضم القائمة أدناه عناصر مُقترحة يبلغ عددها <ph name="SUGGESTIONS_COUNT" />.</translation>
 <translation id="1598163867407640634">استخدِم <ph name="SITE_ETLD_PLUS_ONE" /> مع <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -329,6 +330,7 @@
 <translation id="281504910091592009">‏بإمكانك عرض كلمات المرور المحفوظة وإدارتها في <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" />.</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">تم إخفاء محتوى الحافظة.</translation>
+<translation id="2834884592945939112">‏الإعدادات: خطأ في حساب Google</translation>
 <translation id="2838367486340230368">تم فتح شرح دليل الخصوصية في نصف الشاشة.</translation>
 <translation id="2839327205551510876">تم إلغاء متابعة <ph name="SITE_NAME" />.</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{سيتم إغلاق علامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />) في وضع التصفّح المتخفي.}zero{سيتم إغلاق <ph name="TAB_COUNT_MANY" /> علامة تبويب في وضع التصفّح المتخفي.}two{سيتم إغلاق علامتَي تبويب (<ph name="TAB_COUNT_MANY" />) في وضع التصفّح المتخفي.}few{سيتم إغلاق <ph name="TAB_COUNT_MANY" /> علامات تبويب في وضع التصفّح المتخفي.}many{سيتم إغلاق <ph name="TAB_COUNT_MANY" /> علامة تبويب في وضع التصفّح المتخفي.}other{سيتم إغلاق <ph name="TAB_COUNT_MANY" /> علامة تبويب في وضع التصفّح المتخفي.}}</translation>
@@ -640,7 +642,6 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{تم حفظ الإشارة المرجعية في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}zero{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}two{تم حفظ الإشارتَين المرجعيتَين في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}few{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}many{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}other{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}}</translation>
 <translation id="4484496141267039529">لا يتوفّر اتصال بالإنترنت. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="4487967297491345095">‏سيتم حذف جميع بيانات تطبيق Chrome نهائيًا. ويشمل ذلك جميع الملفات والإعدادات والحسابات وقواعد البيانات وما إلى ذلك.</translation>
-<translation id="4491323382106587961">اختَر حسابًا. الحساب الذي تم اختياره حاليًا هو ‏<ph name="EMAIL" />.</translation>
 <translation id="4494806687727322324">فعَّل المشرف ميزة "حفظ كلمات المرور".</translation>
 <translation id="4508528996305412043">قائمة بطاقة الخلاصة مفتوحة</translation>
 <translation id="4509501256689523862">إنّ ظهور إعلانات مخصّصة أو غير مخصّصة لك أثناء التصفّح يعتمد على هذا الإعداد و<ph name="BEGIN_LINK_1" />مواضيع الإعلانات<ph name="END_LINK_1" /> و<ph name="BEGIN_LINK_2" />إعدادات ملفات تعريف الارتباط<ph name="END_LINK_2" /> وما إذا كان الموقع الإلكتروني الذي تعرضه يخصِّص الإعلانات.</translation>
@@ -666,6 +667,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{قبل دقيقة واحدة (#)}zero{قبل # دقيقة}two{قبل دقيقتين (#)}few{قبل # دقائق}many{قبل # دقيقة}other{قبل # دقيقة}}</translation>
 <translation id="4587589328781138893">المواقع</translation>
 <translation id="4594952190837476234">تم إنشاء هذه الصفحة المتوفّرة بلا اتصال بالإنترنت في <ph name="CREATION_TIME" />، وقد تختلف عن النسخة المتوفِّرة على الإنترنت.</translation>
+<translation id="4595805675102978678">‏حدث خطأ في حساب Google</translation>
 <translation id="4601095002996233687">يفحص هذا الوضع عمليات التنزيل المريبة بشكل مفصَّل.</translation>
 <translation id="4609429330876432068">‏تم دمج قوائم كلمات المرور المحفوظة في Chrome مع "<ph name="CHROME_CHANNEL" />". وسيظل بإمكانك ملء جميع كلمات المرور المحفوظة تلقائيًا في كلا التطبيقين.</translation>
 <translation id="4616150815774728855">فتح <ph name="WEBAPK_NAME" /></translation>
@@ -1359,6 +1361,7 @@
 <translation id="7947953824732555851">قبول وتسجيل الدخول</translation>
 <translation id="7951102827450076904">‏الفتح التلقائي لملفات PDF التي يتم تنزيلها</translation>
 <translation id="7957413488482743710">تُخفي البطاقة الافتراضية بطاقتك الفعلية للمساعدة على حمايتك من عمليات الاحتيال المحتمَلة. <ph name="BEGIN_LINK1" />مزيد من المعلومات حول البطاقات الافتراضية<ph name="END_LINK1" /></translation>
+<translation id="7959485987650214982">علامات التبويب على هذا الجهاز</translation>
 <translation id="7960972236129063347">زر الرجوع في تقرير "إحصاءات الصفحة"</translation>
 <translation id="7961926449547174351">لقد أوقفت إذن الوصول إلى "مساحة التخزين". يُرجى الانتقال إلى "الإعدادات" لتفعيله.</translation>
 <translation id="7963646190083259054">المورّد:</translation>

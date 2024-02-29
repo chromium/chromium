@@ -152,6 +152,7 @@
 <translation id="3702352323269013324">Chromium의 광고 개인 최적화에 관해 자세히 알아보기</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{관리자가 이 업데이트를 적용하려면 사용자가 Chromium을 다시 시작하도록 설정했습니다.}=1{관리자가 이 업데이트를 적용하려면 사용자가 Chromium을 다시 시작하도록 설정했습니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자가 이 업데이트를 적용하려면 사용자가 Chromium을 다시 시작하도록 설정했습니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="3713809861844741608">새 Chromium 탭에서 링크 열기(&amp;T)</translation>
+<translation id="3788675262216168505">Chromium 프로필 관리</translation>
 <translation id="378917192836375108">Chromium을 사용하면 웹에서 전화번호를 클릭하여 Skype로 통화할 수 있습니다.</translation>
 <translation id="3790262771324122253">Chromium에서 일부 다운로드를 차단하는 이유 알아보기</translation>
 <translation id="379589255253486813">검토가 필요한 경우 Chromium에서 알려드립니다</translation>
@@ -436,6 +437,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8555465886620020932">서비스 오류(<ph name="SERVICE_ERROR" />)가 발생했습니다.</translation>
 <translation id="8568283329061645092">Google 계정으로 로그인하면 Chromium에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
+<translation id="858822505990366713">Chromium 맞춤설정</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Chromium의 데이터 사용 방식:<ph name="END_BOLD" /> 사이트에서는 Chromium에 내 관심분야에 관한 정보를 저장할 수 있습니다. 예를 들어 마라톤화를 구매하려고 사이트를 방문하면 사이트에서 내 관심분야를 마라톤으로 정의할 수 있습니다. 나중에 마라톤 대회에 등록하기 위해 다른 사이트에 방문하면 관심분야를 토대로 마라톤화 광고가 표시될 수 있습니다.</translation>
 <translation id="8619360774459241877">Chromium 실행 중...</translation>
 <translation id="8621669128220841554">알 수 없는 오류로 인해 설치에 실패했습니다. Chromium을 다시 다운로드하세요.</translation>
@@ -453,8 +455,10 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8907580949721785412">Chromium에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="8931379085695076764">Chromium은 지난 몇 주간의 방문 기록을 토대로 내 관심분야를 예측할 수 있습니다. 예측 정보는 기기 외부로 전송되지 않습니다.</translation>
 <translation id="8941642502866065432">Chromium을 업데이트하지 못함</translation>
+<translation id="895999862145835951">Chromium 맞춤설정</translation>
 <translation id="897581876605952338">Chromium Enterprise 로고</translation>
 <translation id="8986207147630327271">직장 프로필을 이 브라우저에 추가하고 직장 프로필 제어 권한을 관리자에게 부여합니다.</translation>
+<translation id="8988036198400390003">Chromium 프로필 관리</translation>
 <translation id="9019929317751753759">Google에서는 Chromium의 보안을 강화하기 위해 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않고 사용자가 모르게 추가되었을 수 있는 다음 확장 프로그램의 사용을 중지했습니다.</translation>
 <translation id="9022552996538154597">Chromium에 로그인</translation>
 <translation id="907832235989677238">Chromium에 로그인합니다. 계정에 한 번만 로그인하려면 <ph name="GUEST_LINK_BEGIN" />기기를 게스트로 사용<ph name="GUEST_LINK_END" />하면 됩니다.</translation>

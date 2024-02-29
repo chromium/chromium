@@ -117,6 +117,7 @@
 <translation id="1082214733466244292">Dein Administrator hat einige Funktionen für dieses Gerät blockiert</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> möchte deine Chrome-Einstellungen auf ihre ursprünglichen Standardwerte zurücksetzen. Hierdurch werden deine Startseite, die "Neuer Tab"-Seite und die Suchmaschine zurückgesetzt, deine Erweiterungen deaktiviert und sämtliche Tabs losgelöst. Außerdem werden sonstige temporäre und im Cache gespeicherte Daten wie Cookies, Inhalte und Websitedaten gelöscht.</translation>
 <translation id="1082725763867769612">Offlinedateien</translation>
+<translation id="1084026333130513768">Speichern, teilen und streamen</translation>
 <translation id="1084096383128641877">Durch das Entfernen dieses Passworts wird dein <ph name="DOMAIN" />-Konto nicht gelöscht. Ändere dein Passwort oder lösche dein <ph name="DOMAIN_LINK" />-Konto, um es vor anderen zu schützen.</translation>
 <translation id="1084288067399862432">Das gehackte Passwort wurde geändert.
 
@@ -1219,6 +1220,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1910721550319506122">Willkommen!</translation>
 <translation id="1910736334623230603">Eine Suche in mehreren Bildern ist nicht möglich. Füge ein Bild nach dem anderen hinzu.</translation>
 <translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> ist nur für automatisierte Tests vorgesehen. Verwende für deine normalen Surfaktivitäten eine Standardversion von Chrome, die automatisch aktualisiert wird.</translation>
+<translation id="1913749768968678106">Streamen, speichern und teilen</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">Auflegen</translation>
 <translation id="1915734383465415025">Geschäftsnummer</translation>
@@ -1320,6 +1322,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="197989455406964291">KDC unterstützt den Verschlüsselungstyp nicht</translation>
 <translation id="1981434377190976112">Alle deine Daten auf allen Websites lesen</translation>
 <translation id="1984417487208496350">Kein Schutz (nicht empfohlen)</translation>
+<translation id="1986836014090708999">Erweiterte Standorteinstellungen</translation>
 <translation id="1987317783729300807">Konten</translation>
 <translation id="1987574314042117472">Beliebte Apps auswählen und herunterladen</translation>
 <translation id="1988259784461813694">Voraussetzung</translation>
@@ -1588,6 +1591,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2182058453334755893">In die Zwischenablage kopiert</translation>
 <translation id="2182419606502127232">Meine Server-Logs senden.</translation>
 <translation id="2183570493397356669">Schaltfläche „Weiter“ deaktiviert</translation>
+<translation id="2184272387334793084">Melde dich an, um Passwörter und mehr auf allen Geräten abzurufen</translation>
 <translation id="2184515124301515068">Chrome die Entscheidung überlassen, wann Audioinhalte auf Websites abgespielt werden (empfohlen)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Von einem anderen Gerät geteilte Seite</translation>
@@ -1808,7 +1812,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2343747224442182863">Diesen Tab fokussieren</translation>
 <translation id="2344032937402519675">Keine Verbindung mit dem Server möglich. Prüfe deine Netzwerkverbindung und versuche es noch einmal. Falls weiterhin Probleme auftreten, versuche, dein Chromebook neu zu starten.</translation>
 <translation id="234559068082989648">Ältere Versionen von Chrome-Apps können nach Dezember 2022 nicht mehr geöffnet werden. Du kannst dich an deinen Administrator wenden, um ein Update auf eine neue Version durchzuführen, oder diese App entfernen.</translation>
-<translation id="2347930112185157300">Mobilfunkanbieter ist gesperrt</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Berechtigung angefordert. Drücke „Ctrl + Weiter“, um zu reagieren.</translation>
 <translation id="234889437187286781">Fehler beim Laden der Daten</translation>
@@ -1973,7 +1976,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2462332841984057083">Steam wird bereits eingerichtet. Bitte warte, bis die Einrichtung abgeschlossen ist.</translation>
 <translation id="2462724976360937186">Schlüssel-ID der Zertifizierungsstelle</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> hinzugefügt</translation>
-<translation id="2464046291463112461">Zugriff auf den Arbeitsspeicher (RAM) und dessen Freigabe durch externes Zubehör blockieren</translation>
 <translation id="2467755475704469005">Kein Gerät erkannt. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Scroll-Beschleunigung für Touchpad</translation>
 <translation id="2468205691404969808">Zum Speichern deiner Einstellungen werden Cookies verwendet, auch wenn du diese Seiten nicht besuchst</translation>
@@ -2550,6 +2552,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2893180576842394309">Anhand deines Verlaufs kann Google die Google Suche und andere Google-Dienste personalisieren</translation>
 <translation id="2893701697603065178">Verwaltete Entwicklungsumgebung</translation>
 <translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
+<translation id="2895730582088342039">Speichern, teilen und streamen</translation>
 <translation id="289695669188700754">Schlüssel-ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Diese benutzerdefinierte Einstellung wird entfernt, wenn du alle deine Inkognitofenster schließt</translation>
 <translation id="2897878306272793870">Möchtest du wirklich <ph name="TAB_COUNT" /> Tabs öffnen?</translation>
@@ -2602,6 +2605,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2935654492420446828">Konto einer Bildungseinrichtung später hinzufügen</translation>
 <translation id="2936851848721175671">Sicherung &amp; Wiederherstellung</translation>
 <translation id="2938981087412273365">Nicht zum Lesen und Ändern dieser Website berechtigt</translation>
+<translation id="2939005221756255562">Du kannst Benachrichtigungen im Benachrichtigungscenter aktivieren. Öffne dazu die <ph name="BEGIN_LINK" />Systemeinstellungen<ph name="END_LINK" />.</translation>
 <translation id="2939908794993783865">Zusätzliche inaktive Websites</translation>
 <translation id="2939938020978911855">Verfügbare Bluetooth-Geräte anzeigen</translation>
 <translation id="2941112035454246133">Niedrig</translation>
@@ -3181,6 +3185,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3420501302812554910">Interner Sicherheitsschlüssel muss zurückgesetzt werden</translation>
 <translation id="3421387094817716717">Öffentlicher Schlüssel für elliptische Kurven</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme oder einer Aufnahme deiner Stimme kann möglicherweise auf deine persönlichen Ergebnisse oder deinen Assistant zugreifen.</translation>
+<translation id="3421835120203732951">Neues Profil hinzufügen</translation>
 <translation id="3423111258700187173">In „<ph name="FOLDER_TITLE" />“ gefundene Ergebnisse</translation>
 <translation id="3423463006624419153">Auf deinem <ph name="PHONE_NAME_1" /> und deinem <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918"><ph name="PRODUCT_NAME" /> neu starten</translation>
@@ -4569,6 +4574,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4481448477173043917">Dein <ph name="DEVICE_TYPE" /> wurde unerwartet neu gestartet</translation>
 <translation id="4481467543947557978">Service Worker</translation>
 <translation id="4482990632723642375">Kürzlich geschlossener Tab</translation>
+<translation id="4486333480498805415">Standortgenauigkeit</translation>
 <translation id="4487489714832036847">Chromebooks verwenden Apps anstatt traditioneller Software. Es gibt Apps für Produktivität, Unterhaltung und vieles mehr.</translation>
 <translation id="4488257340342212116">Dürfen meine Kamera verwenden</translation>
 <translation id="4490086832405043258">Für dieses Profil Chrome OS-Proxy-Einstellungen verwenden.</translation>
@@ -5426,6 +5432,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> wurde blockiert</translation>
 <translation id="5163910114647549394">Tab wurde ans Ende der Tableiste verschoben</translation>
 <translation id="5164530241085602114">Benachrichtigungen für <ph name="SITE" /> nicht zulässig</translation>
+<translation id="5165989352025966137">Berechtigt, automatisch in den Vollbildmodus zu wechseln</translation>
 <translation id="516747639689914043">Hypertext Transfer Protocol (HTTP)</translation>
 <translation id="5170568018924773124">In Ordner zeigen</translation>
 <translation id="5171045022955879922">Suchen oder URL eingeben</translation>
@@ -8085,6 +8092,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7290242001003353852">Dieser Anmeldedienst wird von <ph name="SAML_DOMAIN" /> gehostet und greift auf deine Kamera zu.</translation>
 <translation id="7292067737327289208">Dein <ph name="BEGIN_LINK" />Browser wird von deiner Organisation verwaltet<ph name="END_LINK" />, dein <ph name="BEGIN_LINK" />Profil<ph name="END_LINK" /> von <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7295305918366078219">Nicht berechtigt, automatisch in den Vollbildmodus zu wechseln</translation>
 <translation id="7295614427631867477">Hinweis: Unter Android, bei Google Play und in zugehörigen Apps gelten eigene Richtlinien für die Erhebung und Nutzung von Daten.</translation>
 <translation id="7296503797589217366">Ordner „<ph name="FOLDER_TITLE" />“ auswählen</translation>
 <translation id="7297726121602187087">Dunkelgrün</translation>
@@ -8511,6 +8519,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7622768823216805500">Websites installieren normalerweise Zahlungs-Handler für Einkaufsfunktionen wie eine schnellere Bezahlung</translation>
 <translation id="7622966771025050155">Zum geteilten Tab wechseln</translation>
 <translation id="7624337243375417909">Feststelltaste aus</translation>
+<translation id="7625025537587898155">Neues Profil hinzufügen</translation>
 <translation id="7625568159987162309">Nach Websites sortierte Berechtigungen und gespeicherte Daten aufrufen</translation>
 <translation id="7625823789272218216">Neuer Tab links</translation>
 <translation id="7628201176665550262">Aktualisierungsrate</translation>
@@ -9189,6 +9198,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="810185532889603849">Personalisierte Farbe</translation>
 <translation id="8101987792947961127">Powerwash beim nächsten Neustart erforderlich</translation>
 <translation id="8102139037507939978">Personenidentifizierbare Informationen aus system_logs.txt entfernen.</translation>
+<translation id="8102344699913991108">Websites verwenden diese Einstellung, um eine immersive Vollbildnutzung unabhängig von Nutzergesten anzubieten</translation>
 <translation id="810362914482827094">Passkeys durchsuchen</translation>
 <translation id="8104088837833760645">eSIM-Profil herunterladen</translation>
 <translation id="8105273883928376822">Melde dich an, um fortzufahren.</translation>
@@ -9509,6 +9519,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8351630282875799764">Akku lädt nicht</translation>
 <translation id="8352287103893778223">Titel der Tabgruppe</translation>
 <translation id="835238322900896202">Bei der Deinstallation ist ein Fehler aufgetreten. Führe die Deinstallation über das Terminal durch.</translation>
+<translation id="8353420862507374944">Streamen, speichern und teilen</translation>
 <translation id="8353683614194668312">Berechtigungen:</translation>
 <translation id="8354034204605718473">Die PIN deines Kindes wurde hinzugefügt</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
@@ -9615,6 +9626,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8428271547607112339">Konto einer Bildungseinrichtung hinzufügen</translation>
 <translation id="84297032718407999">Du wirst in <ph name="LOGOUT_TIME_LEFT" /> abgemeldet</translation>
 <translation id="8431190899827883166">Fingertipps anzeigen</translation>
+<translation id="8432724317983466962">Für den Vollbildmodus ist standardmäßig eine Nutzergeste erforderlich</translation>
 <translation id="8433186206711564395">Netzwerkeinstellungen</translation>
 <translation id="8434480141477525001">NaCl-Debug-Port</translation>
 <translation id="8436054240208929121">Melde dich an und aktiviere die Synchronisierung, damit Chrome Tabgruppen vorschlagen kann und deine Tabs organisiert bleiben</translation>
@@ -9997,6 +10009,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8729133765463465108">Kamera verwenden, um QR-Code zu scannen</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8731029916209785242">Berechtigungen (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="873125854638499125">Standortgenauigkeit verbessern</translation>
 <translation id="8731268612289859741">Sicherheitscode</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> möchte: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Portnummer</translation>

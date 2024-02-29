@@ -358,6 +358,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2484513351006226581">Gusa <ph name="KEYBOARD_SHORTCUT" /> ili ubadilishe mpangilio wa kibodi.</translation>
 <translation id="2486214324139475545">Onyesho la kukagua <ph name="DESK_NAME" />. Eneokazi linalotumika.</translation>
 <translation id="2487915095798731898">Jiunge</translation>
+<translation id="2499445554382787206">Menyu ya wasifu wa eneokazi. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Vitufe vya kusalia kwa muda</translation>
 <translation id="2504454902900101003">Ondoa kidokezo cha kuweka mipangilio ya kuangalia picha, maudhui na arifa za hivi karibuni za simu yako</translation>
 <translation id="2509468283778169019">Caps Lock imewashwa.</translation>
@@ -605,6 +606,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3509391053705095206">Imeshindwa kupata simu yako. Hakikisha umewasha Bluetooth ya simu yako.</translation>
 <translation id="3510164367642747937">Angazia kiteuzi cha kipanya</translation>
 <translation id="3513798432020909783">Akaunti inasimamiwa na <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Majukumu yalisasishwa mara ya mwisho: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Sasisha kifaa ndani ya dakika moja}other{Sasisha kifaa ndani ya dakika #}}</translation>
 <translation id="3522979239100719575">Inatafuta wasifu unaopatikana. Huenda ikachukua dakika kadhaa.</translation>
 <translation id="3526440770046466733">Fungua kiungo katika kichupo kipya na kiweke katika kichupo cha sasa</translation>
@@ -1144,6 +1146,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="5536723544185013515">Programu ulizotumia hivi karibuni, sogeza kwa kutumia vishale vya kushoto au kulia ili ufikie programu zote ulizotumia hivi karibuni</translation>
 <translation id="553675580533261935">Unaondoka kwenye kipindi</translation>
 <translation id="5537725057119320332">Tuma</translation>
+<translation id="554017492391497564">Imeshindwa kutia alama kuwa limekamilika.</translation>
 <translation id="5546397813406633847">Rejesha mtumiaji</translation>
 <translation id="554893713779400387">Kuwasha au kuzima huduma ya matamshi</translation>
 <translation id="5550417424894892620">Dondosha faili kwenye eneokazi ili uziweke katika <ph name="HOLDING_SPACE_TITLE" />. Huwezi kuweka faili kwenye eneokazi.</translation>
@@ -1338,6 +1341,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Chaji ya betri imepungua. Kiokoa Betri kimewashwa.</translation>
 <translation id="6247728804802644171">Fungua arifa</translation>
+<translation id="6249795363855770621">Imeshindwa kutia alama kuwa limekamilika. Jaribu tena ukiwa mtandaoni.</translation>
 <translation id="6254629735336163724">Inatumia skrini ya mlalo pekee</translation>
 <translation id="6259254695169772643">Tumia stylus yako kuchagua</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Inaanza kutumia...</translation>
@@ -1498,6 +1502,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6896758677409633944">Nakili</translation>
 <translation id="6912841030378044227">Angazia kwenye sehemu ya anwani</translation>
 <translation id="6912901278692845878">Ziara ya haraka</translation>
+<translation id="6917259695595127329">Majukumu yalisasishwa mwisho: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Imeshindwa kutambua kadi yako mahiri. Jaribu tena.</translation>
 <translation id="692135145298539227">futa</translation>
 <translation id="6929081673585394903">Onyesha vidhibiti</translation>

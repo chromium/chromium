@@ -148,6 +148,7 @@
 <translation id="3702352323269013324">‏מידע נוסף על ההתאמה האישית של המודעות ב-Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה}=1{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה. החלון האנונימי לא ייפתח מחדש.}one{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה. # החלונות האנונימיים לא ייפתחו מחדש.}two{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה. # החלונות האנונימיים לא ייפתחו מחדש.}other{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה. # החלונות האנונימיים לא ייפתחו מחדש.}}</translation>
 <translation id="3713809861844741608">‏פתיחת הקישור ב&amp;כרטיסיית Chromium חדשה</translation>
+<translation id="3788675262216168505">‏ניהול הפרופילים ב-Chromium</translation>
 <translation id="378917192836375108">‏Chromium מאפשר לך ללחוץ על מספר טלפון באינטרנט ולהתקשר אליו באמצעות Skype!</translation>
 <translation id="3790262771324122253">‏למה הורדות מסוימות נחסמות ב-Chromium</translation>
 <translation id="379589255253486813">‏Chromium יעדכן אותך אם יש משהו שצריך לבדוק</translation>
@@ -432,6 +433,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8555465886620020932">שגיאה בשירות: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google</translation>
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
+<translation id="858822505990366713">‏התאמה אישית של Chromium</translation>
 <translation id="8608079656141766906">‏<ph name="BEGIN_BOLD" />איך אנחנו משתמשים בנתונים האלה:<ph name="END_BOLD" /> אתרים יכולים לשמור מידע ב-Chromium לגבי תחומי העניין שלך. לדוגמה, אם ביקרת באתר כדי לקנות נעליים למרתון, האתר עשוי להגדיר 'ריצת מרתון' כתחום עניין שלך. לאחר מכן, בביקור באתר שונה, למשל כדי להירשם למרוץ, יכול להיות שתוצג לך מודעה לנעלי ריצה על סמך תחומי העניין שלך.</translation>
 <translation id="8619360774459241877">‏הפעלת Chromium מתבצעת...</translation>
 <translation id="8621669128220841554">‏ההתקנה נכשלה בשל שגיאה לא מזוהה. יש להוריד שוב את Chromium.</translation>
@@ -449,8 +451,10 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8907580949721785412">‏Chromium מנסה להציג סיסמאות. יש להקליד את הסיסמה שלך ל-Windows כדי לאפשר זאת.</translation>
 <translation id="8931379085695076764">‏Chromium יכול להעריך מהם תחומי העניין שלך על סמך היסטוריית הגלישה שלך מהשבועות האחרונים. המידע הזה נשאר במכשיר שלך.</translation>
 <translation id="8941642502866065432">‏לא ניתן לעדכן את Chromium</translation>
+<translation id="895999862145835951">‏התאמה אישית של Chromium</translation>
 <translation id="897581876605952338">‏הלוגו של Chromium Enterprise</translation>
 <translation id="8986207147630327271">בחרת להוסיף פרופיל עבודה לדפדפן זה ולתת למנהל המערכת שליטה רק על פרופיל העבודה.</translation>
+<translation id="8988036198400390003">‏ניהול הפרופילים ב-Chromium</translation>
 <translation id="9019929317751753759">‏כדי לשפר את האבטחה של Chromium, השבתנו את התוסף הבא שאינו רשום ב-<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> וייתכן שנוסף ללא ידיעתך.</translation>
 <translation id="9022552996538154597">‏כניסה אל Chromium</translation>
 <translation id="907832235989677238">‏יש להיכנס אל Chromium. אם רוצים להיכנס לחשבון באופן חד-פעמי בלבד, אפשר <ph name="GUEST_LINK_BEGIN" />להשתמש במכשיר כאורח<ph name="GUEST_LINK_END" />.</translation>

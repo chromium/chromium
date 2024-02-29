@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Enveloppe Invite</translation>
 <translation id="1413809658975081374">Erreur dans les paramètres de confidentialité</translation>
 <translation id="1414134146594747368">Éducation préscolaire</translation>
-<translation id="141826476809826269">Extraction de texte terminée</translation>
 <translation id="1418611192881166179">Pendant que Chrome met à jour cette fonctionnalité, les sites peuvent temporairement utiliser des témoins tiers, sauf si vous les bloquez dans les paramètres.</translation>
 <translation id="1419305130220238697">Bouton Gérer les téléchargements dans Chrome, activez-le pour gérer les fichiers que vous avez téléchargés dans Chrome</translation>
 <translation id="1422930527989633628">Les sites peuvent demander à découvrir les appareils Bluetooth à proximité</translation>
@@ -1869,6 +1868,7 @@
 <translation id="46128681529823442">Équipement de soccer</translation>
 <translation id="4619564267100705184">Confirmer que c'est bien vous</translation>
 <translation id="4622292761762557753">Transférer quand même</translation>
+<translation id="4622647778991854660">Activez les notifications dans le centre de notification. Ouvrez les <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Cette politique ne peut pas être réglée au niveau du profil Chrome et elle sera ignorée.</translation>
 <translation id="4628678854894591460">Forfaits vacances</translation>
 <translation id="4628948037717959914">Photo</translation>
@@ -3068,7 +3068,6 @@
 <translation id="6978121630131642226">Moteurs de recherche</translation>
 <translation id="6978236010531171013">Partager quand même</translation>
 <translation id="6979158407327259162">Google Disque</translation>
-<translation id="6979332652936434520">Début de l'extraction de texte</translation>
 <translation id="6979440798594660689">Désactiver le son (par défaut)</translation>
 <translation id="6987806006823772670">Enveloppe (couchée)</translation>
 <translation id="6989763994942163495">Afficher les paramètres avancés...</translation>
@@ -3200,6 +3199,7 @@
 <translation id="7234112195906418665">Voyages et transports</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % effectué | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Cadeaux et articles pour événements spéciaux</translation>
+<translation id="7237454422623102448">paramètres système</translation>
 <translation id="7237492777898608035">Ne plus afficher ce message pour ce site</translation>
 <translation id="7240120331469437312">Autre nom de l'objet du certificat</translation>
 <translation id="7241863998525879494">À quoi vous attendre</translation>

@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">Invite 封筒</translation>
 <translation id="1413809658975081374">プライバシー エラー</translation>
 <translation id="1414134146594747368">保育園</translation>
-<translation id="141826476809826269">抽出されたテキストの末尾</translation>
 <translation id="1418611192881166179">Chrome でこの機能を更新している間は、サイトが一時的にサードパーティ Cookie を使用できます（ただし、ユーザーが設定でブロックしている場合を除きます）。</translation>
 <translation id="1419305130220238697">[Chrome でのダウンロードを管理] ボタンです。実行すると、Chrome でダウンロードしたファイルを管理できます</translation>
 <translation id="1422930527989633628">近くにある Bluetooth デバイスの検出を要求できる</translation>
@@ -1201,6 +1200,7 @@
 <translation id="3324687287337751929">4x6 インチ</translation>
 <translation id="3324983252691184275">クリムゾン</translation>
 <translation id="3325027355611702542">キャンピング カー、RV</translation>
+<translation id="3325568918769906282">降順</translation>
 <translation id="3329013043687509092">彩度</translation>
 <translation id="3333762389743153920">仮想カードは使用できません</translation>
 <translation id="3336044043987989409">プライベート ネットワーク上のデバイスまたはサーバーへの接続を許可するには、再読み込みボタンを押してください。</translation>
@@ -2247,6 +2247,7 @@
 <translation id="5371425731340848620">カードを更新</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">「時計が遅れています」、「時計が進んでいます」、「&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;」</translation>
+<translation id="5380953781541843508">昇順</translation>
 <translation id="5383478552402031184">フローリング</translation>
 <translation id="5385857628869214740">ユーモア</translation>
 <translation id="5385966243497224160">HTTPS 以外の URL はプレビューできません</translation>
@@ -3068,7 +3069,6 @@
 <translation id="6978121630131642226">検索エンジン</translation>
 <translation id="6978236010531171013">このまま共有</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
-<translation id="6979332652936434520">抽出されたテキストの先頭</translation>
 <translation id="6979440798594660689">ミュート（デフォルト）</translation>
 <translation id="6987806006823772670">封筒（コーティング）</translation>
 <translation id="6989763994942163495">詳細設定を表示...</translation>
@@ -3483,6 +3483,7 @@
 <translation id="7719791801330803993">写真、ビデオ ソフトウェア</translation>
 <translation id="772128550427553158">CVC はカードの表側に記載されています。</translation>
 <translation id="7724603315864178912">切り取り</translation>
+<translation id="7730057435797792985">並べ替え</translation>
 <translation id="7734285854693414638">Google フォームで新しいフォームをすばやく作成します</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" />のページを常に翻訳する</translation>
 <translation id="7736959720849233795">リンクのアドレスをコピー</translation>

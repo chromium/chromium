@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">एन्व्हलप इनव्हाइट</translation>
 <translation id="1413809658975081374">गोपनीयता एरर</translation>
 <translation id="1414134146594747368">बालवाडी</translation>
-<translation id="141826476809826269">काढलेल्या मजकुराचा शेवट</translation>
 <translation id="1418611192881166179">Chrome हे वैशिष्ट्य अपडेट करत असताना, तुम्ही सेटिंग्जमध्ये तृतीय पक्ष कुकी ब्लॉक करत नाही, तोपर्यंत साइट त्या तात्पुरत्या वापरू शकतात.</translation>
 <translation id="1419305130220238697">Chrome मधील डाउनलोड व्यवस्थापित करा बटण, तुम्ही Chrome मध्ये डाउनलोड केलेल्या फाइल व्यवस्थापित करण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="1422930527989633628">जवळपासचे ब्लूटूथ डिव्हाइस शोधण्याची विनंती करू शकते</translation>
@@ -1321,6 +1320,7 @@
 <translation id="3542628208405253498">कार्ड इमेज</translation>
 <translation id="3542768452570884558">नवीन विंडो मध्ये लिंक उघडा</translation>
 <translation id="3547746132308051926">२० x २४ इं</translation>
+<translation id="3552155506104542239">चेतावणी: हे धोरण <ph name="POLICY_NAME" /> सह विरोधाभासी आहे आणि Android ॲप्सवर त्याचा कोणताही परिणाम होणार नाही. अन्यथा, हे धोरण अपेक्षेप्रमाणे काम करत आहे.</translation>
 <translation id="3552297013052089404">Sans-Serif फॉंट</translation>
 <translation id="3558573058928565255">दिवसापर्यंत</translation>
 <translation id="355995771319966853">ऑटोफिल पहिल्यासारखे करा</translation>
@@ -3070,7 +3070,6 @@
 <translation id="6978121630131642226">शोध इंजिने</translation>
 <translation id="6978236010531171013">तरीही शेअर करा</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">काढलेल्या मजकुराची सुरुवात</translation>
 <translation id="6979440798594660689">निःशब्द करा (डीफॉल्ट)</translation>
 <translation id="6987806006823772670">एन्व्हलप (कोटेड)</translation>
 <translation id="6989763994942163495">प्रगत सेटिंग्ज दर्शवा...</translation>

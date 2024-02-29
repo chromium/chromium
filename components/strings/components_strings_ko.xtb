@@ -231,7 +231,6 @@
 <translation id="1410941016594047814">봉투 Invite</translation>
 <translation id="1413809658975081374">개인 정보 보호 오류</translation>
 <translation id="1414134146594747368">유치원</translation>
-<translation id="141826476809826269">추출된 텍스트의 끝</translation>
 <translation id="1418611192881166179">설정에서 차단하지 않으면 Chrome에서 이 기능을 업데이트하는 동안 사이트에서 서드 파티 쿠키를 일시적으로 사용할 수 있습니다.</translation>
 <translation id="1419305130220238697">Chrome 다운로드 관리 버튼, Chrome에서 다운로드한 파일을 관리하려면 활성화하세요.</translation>
 <translation id="1422930527989633628">주변 블루투스 기기를 조회하도록 요청할 수 있음</translation>
@@ -1201,6 +1200,7 @@
 <translation id="3324687287337751929">4x6인치</translation>
 <translation id="3324983252691184275">진홍색</translation>
 <translation id="3325027355611702542">캠핑카 및 레저용 차량</translation>
+<translation id="3325568918769906282">내림차순</translation>
 <translation id="3329013043687509092">채도</translation>
 <translation id="3333762389743153920">가상 카드로 사용할 수 없음</translation>
 <translation id="3336044043987989409">비공개 네트워크에 있는 기기나 서버에 연결을 허용하려면 새로고침 버튼을 누르세요.</translation>
@@ -1321,6 +1321,7 @@
 <translation id="3542628208405253498">카드 이미지</translation>
 <translation id="3542768452570884558">새 창에서 링크 열기</translation>
 <translation id="3547746132308051926">20x24인치</translation>
+<translation id="3552155506104542239">경고: 이 정책은 <ph name="POLICY_NAME" /> 정책과 충돌하므로 Android 앱에 영향을 미치지 않습니다. 충돌하지 않는 경우 이 정책이 정상적으로 작동합니다.</translation>
 <translation id="3552297013052089404">산세리프 글꼴</translation>
 <translation id="3558573058928565255">낮</translation>
 <translation id="355995771319966853">자동 완성 실행취소</translation>
@@ -1778,6 +1779,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4390472908992056574">브림</translation>
 <translation id="4397059608630092079">자동 완성 사용 시 항상 확인</translation>
+<translation id="4397978002248035985">은행 웹사이트에서 인증하라는 팝업이 열립니다.</translation>
 <translation id="4406883609789734330">실시간 자막</translation>
 <translation id="4406896451731180161">검색결과</translation>
 <translation id="4408413947728134509">쿠키 <ph name="NUM_COOKIES" />개</translation>
@@ -2201,6 +2203,7 @@
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">문서 속성</translation>
 <translation id="528468243742722775">종료</translation>
+<translation id="5285468538058987167">강력한 고객 인증(SCA)을 통해 인증</translation>
 <translation id="5285570108065881030">저장된 비밀번호 모두 표시</translation>
 <translation id="5287456746628258573">이 사이트에서는 오래된 보안 구성을 사용하므로 정보(예: 비밀번호나 신용카드 번호)를 이 사이트로 전송할 경우 정보가 유출될 수도 있습니다.</translation>
 <translation id="5288108484102287882">정책 값 유효성 검사 결과 경고가 발생했습니다.</translation>
@@ -2247,6 +2250,8 @@
 <translation id="5371425731340848620">카드 업데이트</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">'시간이 너무 먼 과거로 설정되어 있습니다.', '시간이 너무 먼 미래로 설정되어 있습니다.', 또는  '&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;'</translation>
+<translation id="5380953781541843508">오름차순</translation>
+<translation id="5381318171304904246">계속 진행하면 은행 웹사이트로 이동합니다. 확인이 완료되면 자동으로 구매를 완료하도록 되돌아갑니다.</translation>
 <translation id="5383478552402031184">바닥재</translation>
 <translation id="5385857628869214740">유머</translation>
 <translation id="5385966243497224160">HTTPS가 아닌 URL은 미리 볼 수 없음</translation>
@@ -3068,7 +3073,6 @@
 <translation id="6978121630131642226">검색엔진</translation>
 <translation id="6978236010531171013">무시하고 공유</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979332652936434520">추출된 텍스트의 시작</translation>
 <translation id="6979440798594660689">음소거(기본값)</translation>
 <translation id="6987806006823772670">봉투(코팅)</translation>
 <translation id="6989763994942163495">고급 설정 표시</translation>
@@ -3094,6 +3098,7 @@
 <translation id="7030164307377592766">결제 수단 입력 설정을 수정합니다.</translation>
 <translation id="7030436163253143341">인증서가 올바르지 않음</translation>
 <translation id="7031646650991750659">내가 설치한 Google Play 앱</translation>
+<translation id="7035705295266423040">은행에서 본인 인증을 요청합니다</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google 계정 개인 정보 보호 설정을 관리하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="7043552168914147882">탭 용지</translation>
 <translation id="7044081119134178347">현재 카메라 허용됨</translation>
@@ -3482,6 +3487,7 @@
 <translation id="7719791801330803993">사진 및 동영상 소프트웨어</translation>
 <translation id="772128550427553158">CVC는 카드 앞면에 있습니다.</translation>
 <translation id="7724603315864178912">잘라내기</translation>
+<translation id="7730057435797792985">정렬</translation>
 <translation id="7734285854693414638">Google Forms에서 빠르게 새 양식 만들기</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" />로 된 페이지를 항상 번역</translation>
 <translation id="7736959720849233795">링크 주소 복사</translation>
