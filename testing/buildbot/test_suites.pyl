@@ -7965,6 +7965,21 @@
       },
     },
 
+    'optimization_guide_desktop_gtests': {
+      'optimization_guide_gpu_gtests': {},
+      'optimization_guide_nogpu_gtests': {},
+    },
+
+    'optimization_guide_desktop_script_tests': {
+      'model_validation_tests': {
+        'variants': [
+          'MODEL_VALIDATION_BASE',
+          'MODEL_VALIDATION_TRUNK',
+        ],
+      },
+      'ondevice_stability_tests': {},
+    },
+
     'optimization_guide_linux_gtests': {
       'optimization_guide_gpu_gtests': {
         'variants': [
@@ -7995,21 +8010,6 @@
           'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
-    },
-
-    'optimization_guide_mac_gtests': {
-      'optimization_guide_gpu_gtests': {},
-      'optimization_guide_nogpu_gtests': {},
-    },
-
-    'optimization_guide_mac_script_tests': {
-      'model_validation_tests': {
-        'variants': [
-          'MODEL_VALIDATION_BASE',
-          'MODEL_VALIDATION_TRUNK',
-        ],
-      },
-      'ondevice_stability_tests': {},
     },
 
     'optimization_guide_win_gtests': {

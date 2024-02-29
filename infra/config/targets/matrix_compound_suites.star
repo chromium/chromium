@@ -1367,6 +1367,27 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
+    name = "optimization_guide_desktop_gtests",
+    basic_suites = {
+        "optimization_guide_nogpu_gtests": None,
+        "optimization_guide_gpu_gtests": None,
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "optimization_guide_desktop_script_tests",
+    basic_suites = {
+        "model_validation_tests": targets.legacy_matrix_config(
+            variants = [
+                "MODEL_VALIDATION_BASE",
+                "MODEL_VALIDATION_TRUNK",
+            ],
+        ),
+        "ondevice_stability_tests": None,
+    },
+)
+
+targets.legacy_matrix_compound_suite(
     name = "optimization_guide_linux_gtests",
     basic_suites = {
         "optimization_guide_nogpu_gtests": targets.legacy_matrix_config(
@@ -1402,27 +1423,6 @@ targets.legacy_matrix_compound_suite(
                 "NVIDIA_GEFORCE_GTX_1660",
             ],
         ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "optimization_guide_mac_gtests",
-    basic_suites = {
-        "optimization_guide_nogpu_gtests": None,
-        "optimization_guide_gpu_gtests": None,
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "optimization_guide_mac_script_tests",
-    basic_suites = {
-        "model_validation_tests": targets.legacy_matrix_config(
-            variants = [
-                "MODEL_VALIDATION_BASE",
-                "MODEL_VALIDATION_TRUNK",
-            ],
-        ),
-        "ondevice_stability_tests": None,
     },
 )
 
