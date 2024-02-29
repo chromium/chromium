@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_property_definition.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -70,6 +71,16 @@ void TestStyleSheet::AddCSSRules(const String& css_text, bool is_empty_sheet) {
 CSSStyleSheet* CreateStyleSheet(Document& document) {
   return CSSStyleSheet::CreateInline(
       document, NullURL(), TextPosition::MinimumPosition(), UTF8Encoding());
+}
+
+RuleSet* CreateRuleSet(Document& document, String text) {
+  DummyExceptionStateForTesting exception_state;
+  auto* init = CSSStyleSheetInit::Create();
+  auto* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(document.GetFrame());
+  auto* sheet = CSSStyleSheet::Create(document, init, exception_state);
+  sheet->replaceSync(text, exception_state);
+  return &sheet->Contents()->EnsureRuleSet(*media_query_evaluator);
 }
 
 PropertyRegistration* CreatePropertyRegistration(const String& name,

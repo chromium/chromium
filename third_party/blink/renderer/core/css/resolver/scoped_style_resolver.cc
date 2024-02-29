@@ -314,7 +314,8 @@ void ScopedStyleResolver::MatchPageRules(PageRuleCollector& collector) {
   // Currently, only @page rules in the document scope apply.
   DCHECK(scope_->RootNode().IsDocumentNode());
   for (auto [sheet, rule_set] : active_style_sheets_) {
-    collector.MatchPageRules(rule_set.Get(), GetCascadeLayerMap());
+    collector.MatchPageRules(rule_set.Get(), CascadeOrigin::kAuthor, scope_,
+                             GetCascadeLayerMap());
   }
 }
 

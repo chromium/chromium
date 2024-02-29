@@ -52,6 +52,7 @@ void MatchResult::AddMatchedProperties(
     const CSSPropertyValueSet* properties,
     CascadeOrigin origin,
     const AddMatchedPropertiesOptions& options) {
+  CHECK_NE(origin, CascadeOrigin::kNone);
   matched_properties_.Grow(matched_properties_.size() + 1);
   MatchedProperties& new_properties = matched_properties_.back();
   new_properties.properties = const_cast<CSSPropertyValueSet*>(properties);

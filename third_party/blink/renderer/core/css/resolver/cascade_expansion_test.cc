@@ -653,8 +653,9 @@ TEST_F(CascadeExpansionTest, MatchedPropertiesLimit) {
   auto* set = ParseDeclarationBlock("left:1px");
 
   MatchResult result;
+  result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   for (wtf_size_t i = 0; i < max + 3; ++i) {
-    result.AddMatchedProperties(set, CascadeOrigin::kNone);
+    result.AddMatchedProperties(set, CascadeOrigin::kAuthor);
   }
 
   ASSERT_EQ(max + 3u, result.GetMatchedProperties().size());
@@ -685,14 +686,15 @@ TEST_F(CascadeExpansionTest, MatchedDeclarationsLimit) {
   }
 
   MatchResult result;
+  result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(
       ImmutableCSSPropertyValueSet::Create(declarations.data(), max + 1,
                                            kHTMLStandardMode),
-      CascadeOrigin::kNone);
+      CascadeOrigin::kAuthor);
   result.AddMatchedProperties(
       ImmutableCSSPropertyValueSet::Create(declarations.data(), max + 2,
                                            kHTMLStandardMode),
-      CascadeOrigin::kNone);
+      CascadeOrigin::kAuthor);
 
   EXPECT_GT(ExpansionAt(result, 0).size(), 0u);
   EXPECT_EQ(ExpansionAt(result, 1).size(), 0u);

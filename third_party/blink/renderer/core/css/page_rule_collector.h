@@ -23,6 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PAGE_RULE_COLLECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PAGE_RULE_COLLECTOR_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -31,7 +32,7 @@ namespace blink {
 class CascadeLayerMap;
 class StyleRulePage;
 
-class PageRuleCollector {
+class CORE_EXPORT PageRuleCollector {
   STACK_ALLOCATED();
 
  public:
@@ -40,7 +41,12 @@ class PageRuleCollector {
                     const AtomicString& page_name,
                     MatchResult&);
 
-  void MatchPageRules(RuleSet* rules, const CascadeLayerMap* layer_map);
+  // TreeScope is required for CascadeOrigin::kAuthor,
+  // and ignored for other origins.
+  void MatchPageRules(RuleSet* rules,
+                      CascadeOrigin,
+                      TreeScope*,
+                      const CascadeLayerMap* layer_map);
   const MatchResult& MatchedResult() { return result_; }
 
  private:

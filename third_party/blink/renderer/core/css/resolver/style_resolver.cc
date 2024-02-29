@@ -1784,6 +1784,7 @@ const ComputedStyle* StyleResolver::StyleForPage(
 
   collector.MatchPageRules(
       CSSDefaultStyleSheets::Instance().DefaultPrintStyle(),
+      CascadeOrigin::kUserAgent, nullptr /* tree_scope */,
       nullptr /* layer_map */);
 
   if (ScopedStyleResolver* scoped_resolver =
@@ -3064,8 +3065,11 @@ const ComputedStyle* StyleResolver::StyleForFormattedText(
 
   // Use StyleCascade to apply inheritance in the correct order.
   STACK_UNINITIALIZED StyleCascade cascade(state);
-  cascade.MutableMatchResult().AddMatchedProperties(
-      css_property_value_set, CascadeOrigin::kNone, {.is_inline_style = true});
+  cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(
+      GetDocument());
+  cascade.MutableMatchResult().AddMatchedProperties(css_property_value_set,
+                                                    CascadeOrigin::kAuthor,
+                                                    {.is_inline_style = true});
   cascade.Apply();
 
   StyleAdjuster::AdjustComputedStyle(state, nullptr);

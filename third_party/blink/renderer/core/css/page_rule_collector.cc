@@ -66,6 +66,8 @@ PageRuleCollector::PageRuleCollector(const ComputedStyle* root_element_style,
       result_(match_result) {}
 
 void PageRuleCollector::MatchPageRules(RuleSet* rules,
+                                       CascadeOrigin origin,
+                                       TreeScope* tree_scope,
                                        const CascadeLayerMap* layer_map) {
   if (!rules) {
     return;
@@ -89,9 +91,13 @@ void PageRuleCollector::MatchPageRules(RuleSet* rules,
         return r1->Selector()->Specificity() < r2->Selector()->Specificity();
       });
 
+  if (origin == CascadeOrigin::kAuthor) {
+    CHECK(tree_scope);
+    result_.BeginAddingAuthorRulesForTreeScope(*tree_scope);
+  }
+
   for (unsigned i = 0; i < matched_page_rules.size(); i++) {
-    result_.AddMatchedProperties(&matched_page_rules[i]->Properties(),
-                                 CascadeOrigin::kNone);
+    result_.AddMatchedProperties(&matched_page_rules[i]->Properties(), origin);
   }
 }
 

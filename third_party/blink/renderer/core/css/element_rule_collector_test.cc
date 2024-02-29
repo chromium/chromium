@@ -78,7 +78,7 @@ class ElementRuleCollectorTest : public PageTestBase {
     MatchRequest request(rule_set, scope);
 
     collector.CollectMatchingRules(request);
-    collector.SortAndTransferMatchedRules(CascadeOrigin::kNone,
+    collector.SortAndTransferMatchedRules(CascadeOrigin::kAuthor,
                                           /*is_vtt_embedded_style=*/false,
                                           /*tracker=*/nullptr);
 

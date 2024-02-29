@@ -51,6 +51,7 @@ class TestStyleSheet {
 };
 
 CSSStyleSheet* CreateStyleSheet(Document& document);
+RuleSet* CreateRuleSet(Document& document, String text);
 
 // Create a PropertyRegistration with the given name. An initial value must
 // be provided when the syntax is not "*".
