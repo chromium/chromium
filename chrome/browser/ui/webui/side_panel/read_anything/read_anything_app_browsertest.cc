@@ -161,10 +161,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_ClearContainer) {
   ASSERT_TRUE(RunTest("update_content_clear_container.js"));
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_Selection) {
-  ASSERT_TRUE(RunTest("update_content_selection.js"));
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_Selection_Backwards) {
   ASSERT_TRUE(RunTest("update_content_selection_backwards.js"));
 }

@@ -20,6 +20,7 @@ build_webui_tests("build") {
     "app_font_change_test.ts",
     "test_color_updater_browser_proxy.ts",
     "read_aloud_links_toggled.ts",
+    "update_content_selection.ts",
   ]
 
   ts_definitions = [

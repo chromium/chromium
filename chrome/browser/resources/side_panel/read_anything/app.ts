@@ -527,11 +527,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.imageNodeIdsToFetch_.clear();
   }
 
-  updateSelection() {
+  getSelection(): any {
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
     const selection = shadowRoot.getSelection();
-    assert(selection);
+    return selection;
+  }
+
+  updateSelection() {
+    const selection = this.getSelection()!;
     selection.removeAllRanges();
 
     const range = new Range();
