@@ -6763,6 +6763,13 @@ static_library("browser") {
     ]
   }
 
+  if (is_win || is_android) {
+    sources += [
+      "metrics/chrome_metrics_service_crash_reporter.cc",
+      "metrics/chrome_metrics_service_crash_reporter.h",
+    ]
+  }
+
   if (is_linux) {
     sources += [
       "metrics/pressure/pressure_metrics.cc",
