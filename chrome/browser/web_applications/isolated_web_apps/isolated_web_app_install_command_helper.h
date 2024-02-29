@@ -24,7 +24,6 @@
 #include "url/gurl.h"
 
 class Profile;
-class PrefService;
 
 namespace content {
 class WebContents;
@@ -59,7 +58,7 @@ void CleanupLocationIfOwned(const base::FilePath& profile_dir,
 class IsolatedWebAppInstallCommandHelper {
  public:
   static std::unique_ptr<IsolatedWebAppResponseReaderFactory>
-  CreateDefaultResponseReaderFactory(const PrefService& prefs);
+  CreateDefaultResponseReaderFactory(Profile& profile);
 
   static std::unique_ptr<content::WebContents> CreateIsolatedWebAppWebContents(
       Profile& profile);

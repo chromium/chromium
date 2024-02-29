@@ -17,7 +17,7 @@ class SignedWebBundleId;
 class SignedWebBundleIntegrityBlock;
 }  // namespace web_package
 
-class PrefService;
+class Profile;
 
 namespace web_app {
 
@@ -47,7 +47,7 @@ namespace web_app {
 // Apps that were countersigned by a trusted distributor/store.
 class IsolatedWebAppTrustChecker {
  public:
-  explicit IsolatedWebAppTrustChecker(const PrefService& pref_service);
+  explicit IsolatedWebAppTrustChecker(Profile& profile);
 
   virtual ~IsolatedWebAppTrustChecker();
 
@@ -92,7 +92,7 @@ class IsolatedWebAppTrustChecker {
       const web_package::SignedWebBundleId& web_bundle_id) const;
 #endif
 
-  raw_ref<const PrefService> pref_service_;
+  raw_ref<Profile> profile_;
 
   base::WeakPtrFactory<IsolatedWebAppTrustChecker> weak_ptr_factory_{this};
 };

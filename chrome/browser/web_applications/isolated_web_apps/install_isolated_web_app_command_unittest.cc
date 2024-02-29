@@ -331,7 +331,7 @@ TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppId) {
   auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
       url_info, web_contents_manager().CreateDataRetriever(),
       IsolatedWebAppInstallCommandHelper::CreateDefaultResponseReaderFactory(
-          *profile()->GetPrefs()));
+          *profile()));
 
   auto command = std::make_unique<InstallIsolatedWebAppCommand>(
       url_info, CreateDevProxyLocation(), /*expected_version=*/std::nullopt,

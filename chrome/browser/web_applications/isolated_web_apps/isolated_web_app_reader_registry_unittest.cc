@@ -30,7 +30,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "chrome/common/url_constants.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -62,19 +61,11 @@ constexpr uint8_t kEd25519Signature[64] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0};
 
-// This class needs to be a IsolatedWebAppVaidator, but also must provide
-// a TestingPrefServiceSimple that outlives it. So rather than making
-// TestingPrefServiceSimple a member, make it the leftmost base class.
-class FakeIsolatedWebAppValidator : public TestingPrefServiceSimple,
-                                    public IsolatedWebAppValidator {
+class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
  public:
   explicit FakeIsolatedWebAppValidator(
       std::optional<std::string> integrity_block_error)
-      : IsolatedWebAppValidator(std::make_unique<IsolatedWebAppTrustChecker>(
-            // Disambiguate the constructor using the form that takes the
-            // already-initialized leftmost base class, rather than the copy
-            // constructor for the uninitialized rightmost base class.
-            *static_cast<TestingPrefServiceSimple*>(this))),
+      : IsolatedWebAppValidator(/*isolated_web_app_trust_checker=*/nullptr),
         integrity_block_error_(integrity_block_error) {}
 
   void ValidateIntegrityBlock(

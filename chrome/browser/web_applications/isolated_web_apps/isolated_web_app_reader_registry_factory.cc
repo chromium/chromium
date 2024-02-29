@@ -47,8 +47,7 @@ IsolatedWebAppReaderRegistryFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
 
   auto isolated_web_app_trust_checker =
-      std::make_unique<IsolatedWebAppTrustChecker>(
-          CHECK_DEREF(profile->GetPrefs()));
+      std::make_unique<IsolatedWebAppTrustChecker>(CHECK_DEREF(profile));
 
   auto validator = std::make_unique<IsolatedWebAppValidator>(
       std::move(isolated_web_app_trust_checker));

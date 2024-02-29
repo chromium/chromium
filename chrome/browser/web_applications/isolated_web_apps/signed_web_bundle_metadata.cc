@@ -48,7 +48,7 @@ class WebAppInstallInfoFetcher {
     helper_ = std::make_unique<IsolatedWebAppInstallCommandHelper>(
         url_info, provider->web_contents_manager().CreateDataRetriever(),
         IsolatedWebAppInstallCommandHelper::CreateDefaultResponseReaderFactory(
-            *profile->GetPrefs()));
+            *profile));
   }
 
   void FetchAndReply(WebAppInstalInfoCallback callback) {

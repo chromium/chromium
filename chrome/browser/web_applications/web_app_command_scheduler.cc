@@ -275,7 +275,7 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
           std::make_unique<IsolatedWebAppInstallCommandHelper>(
               url_info, provider_->web_contents_manager().CreateDataRetriever(),
               IsolatedWebAppInstallCommandHelper::
-                  CreateDefaultResponseReaderFactory(*profile_->GetPrefs()))),
+                  CreateDefaultResponseReaderFactory(*profile_))),
       call_location);
 }
 
@@ -297,7 +297,7 @@ void WebAppCommandScheduler::PrepareAndStoreIsolatedWebAppUpdate(
           std::make_unique<IsolatedWebAppInstallCommandHelper>(
               url_info, provider_->web_contents_manager().CreateDataRetriever(),
               IsolatedWebAppInstallCommandHelper::
-                  CreateDefaultResponseReaderFactory(*profile_->GetPrefs()))),
+                  CreateDefaultResponseReaderFactory(*profile_))),
       call_location);
 }
 
@@ -318,7 +318,7 @@ void WebAppCommandScheduler::ApplyPendingIsolatedWebAppUpdate(
           std::make_unique<IsolatedWebAppInstallCommandHelper>(
               url_info, provider_->web_contents_manager().CreateDataRetriever(),
               IsolatedWebAppInstallCommandHelper::
-                  CreateDefaultResponseReaderFactory(*profile_->GetPrefs()))),
+                  CreateDefaultResponseReaderFactory(*profile_))),
       call_location);
 }
 
