@@ -15209,26 +15209,6 @@
             ]
         }
     ],
-    "RevampedPasswordManagementBubble_IPH": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IPH_PasswordsManagementBubbleAfterSave",
-                        "IPH_PasswordsManagementBubbleDuringSignin"
-                    ]
-                }
-            ]
-        }
-    ],
     "RunTasksByBatches": [
         {
             "platforms": [

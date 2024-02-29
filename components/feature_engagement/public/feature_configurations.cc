@@ -132,7 +132,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->trigger =
-        EventConfig("password_saved", Comparator(LESS_THAN, 1), 180, 180);
+        EventConfig("password_saved", Comparator(LESS_THAN, 1), 360, 360);
     config->session_rate = Comparator(ANY, 0);
     config->availability = Comparator(ANY, 0);
     return config;
@@ -142,7 +142,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->trigger =
-        EventConfig("signin_flow_detected", Comparator(LESS_THAN, 1), 180, 180);
+        EventConfig("signin_flow_detected", Comparator(LESS_THAN, 1), 360, 360);
     config->session_rate = Comparator(ANY, 0);
     config->availability = Comparator(ANY, 0);
     return config;
