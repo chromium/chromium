@@ -35,6 +35,7 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/views_delegate.h"
 
