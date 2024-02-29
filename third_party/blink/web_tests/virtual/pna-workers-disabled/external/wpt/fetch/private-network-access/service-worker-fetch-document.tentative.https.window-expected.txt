@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] private to local: failed preflight.
+  assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
+[FAIL] private to local: success.
+  assert_equals: fetch error expected (undefined) undefined but got (string) "TypeError"
+[FAIL] public to local: failed preflight.
+  assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
+[FAIL] public to local: success.
+  assert_equals: fetch error expected (undefined) undefined but got (string) "TypeError"
+[FAIL] public to private: failed preflight.
+  assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
+[FAIL] public to private: success.
+  assert_equals: fetch error expected (undefined) undefined but got (string) "TypeError"
+Harness: the test ran to completion.
+
