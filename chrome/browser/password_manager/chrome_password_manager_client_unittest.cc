@@ -31,6 +31,8 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -45,6 +47,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "components/password_manager/core/browser/credential_cache.h"
@@ -55,10 +58,12 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/content_record_password_state.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -331,7 +336,8 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
  public:
   ChromePasswordManagerClientTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        local_state_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitAndEnableFeature(safe_browsing::kDelayedWarnings);
   }
   ~ChromePasswordManagerClientTest() override = default;
@@ -377,6 +383,7 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
   bool WasLoggingActivationMessageSent(bool* activation_flag);
 
   FakePasswordAutofillAgent fake_agent_;
+  ScopedTestingLocalState local_state_;
 
   bool metrics_enabled_ = false;
 
@@ -746,6 +753,117 @@ TEST_F(ChromePasswordManagerClientTest,
   EXPECT_FALSE(client->IsFillingEnabled(
       GURL("https://passwords.google.com/path?query=1")));
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Test that authentication is not possible if the `authenticator` is `nullptr`.
+TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthNoAuthenticator) {
+  EXPECT_FALSE(
+      GetClient()->CanUseBiometricAuthForFilling(/*authenticator=*/nullptr));
+}
+
+// Test that authentication is not possible if the device doesn't have
+// necessary hardware for biometric authentication.
+TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthNoBiometrics) {
+  device_reauth::MockDeviceAuthenticator authenticator;
+  // Both prefs are registered by the `PasswordManager`.
+  local_state_.Get()->SetBoolean(
+      password_manager::prefs::kHadBiometricsAvailable, false);
+  profile()->GetTestingPrefService()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+  EXPECT_FALSE(GetClient()->CanUseBiometricAuthForFilling(&authenticator));
+}
+
+// Test that authentication is not possible if the user didn't configure the
+// corresponding setting.
+TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthSettingDisabled) {
+  device_reauth::MockDeviceAuthenticator authenticator;
+  // Both prefs are registered by the `PasswordManager`.
+  local_state_.Get()->SetBoolean(
+      password_manager::prefs::kHadBiometricsAvailable, true);
+  profile()->GetTestingPrefService()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+  EXPECT_FALSE(GetClient()->CanUseBiometricAuthForFilling(&authenticator));
+}
+
+// Test that authentication is possible if both the biometric authentication
+// hardware is available and the user configured the corresponding setting.
+TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthSettingEnabled) {
+  device_reauth::MockDeviceAuthenticator authenticator;
+  // Both prefs are registered by the `PasswordManager`.
+  local_state_.Get()->SetBoolean(
+      password_manager::prefs::kHadBiometricsAvailable, true);
+  profile()->GetTestingPrefService()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+  EXPECT_TRUE(GetClient()->CanUseBiometricAuthForFilling(&authenticator));
+}
+
+#elif BUILDFLAG(IS_ANDROID)
+// Test that authentication is not possible if the `authenticator` is `nullptr`.
+TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroid) {
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Authentication is always available for automotive and the `authenticator`
+    // is always available.
+    device_reauth::MockDeviceAuthenticator authenticator;
+    EXPECT_TRUE(GetClient()->CanUseBiometricAuthForFilling(&authenticator));
+  } else {
+    EXPECT_FALSE(
+        GetClient()->CanUseBiometricAuthForFilling(/*authenticator=*/nullptr));
+  }
+}
+
+// Test that authentication is not possible if the `kBiometricTouchToFill`
+// feature is not enabled.
+TEST_F(ChromePasswordManagerClientTest,
+       CanUseBiometricAuthAndroidFeatureIsDisabled) {
+  // Authentication is always available for automotive.
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP();
+  }
+  device_reauth::MockDeviceAuthenticator authenticator;
+  ON_CALL(authenticator, CanAuthenticateWithBiometrics)
+      .WillByDefault(Return(true));
+  EXPECT_FALSE(GetClient()->CanUseBiometricAuthForFilling(&authenticator));
+}
+
+// Test that authentication is not possible if the
+// `CanAuthenticateWithBiometrics` returns `false` when `kBiometricTouchToFill`
+// is enabled.
+TEST_F(ChromePasswordManagerClientTest,
+       CanUseBiometricAuthAndroidAuthDisabled) {
+  // Authentication is always available for automotive.
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP();
+  }
+  base::test::ScopedFeatureList enabled_features(
+      password_manager::features::kBiometricTouchToFill);
+  device_reauth::MockDeviceAuthenticator authenticator;
+  ON_CALL(authenticator, CanAuthenticateWithBiometrics)
+      .WillByDefault(Return(false));
+  EXPECT_FALSE(GetClient()->CanUseBiometricAuthForFilling(&authenticator));
+}
+
+// Test that authentication is possible if the `CanAuthenticateWithBiometrics`
+// returns `true` when `kBiometricTouchToFill` is enabled.
+TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroidAuthEnabled) {
+  // Authentication is always available for automotive.
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP();
+  }
+  base::test::ScopedFeatureList enabled_features(
+      password_manager::features::kBiometricTouchToFill);
+  device_reauth::MockDeviceAuthenticator authenticator;
+  ON_CALL(authenticator, CanAuthenticateWithBiometrics)
+      .WillByDefault(Return(true));
+  EXPECT_TRUE(GetClient()->CanUseBiometricAuthForFilling(&authenticator));
+}
+
+#else
+// Test that authentication is not possible on other platforms.
+TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuth) {
+  device_reauth::MockDeviceAuthenticator authenticator;
+  EXPECT_FALSE(GetClient()->CanUseBiometricAuthForFilling(&authenticator));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 

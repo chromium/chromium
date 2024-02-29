@@ -42,6 +42,11 @@ bool PasswordManagerClient::ShowKeyboardReplacingSurface(
 }
 #endif
 
+bool PasswordManagerClient::CanUseBiometricAuthForFilling(
+    device_reauth::DeviceAuthenticator*) {
+  return false;
+}
+
 std::unique_ptr<device_reauth::DeviceAuthenticator>
 PasswordManagerClient::GetDeviceAuthenticator() {
   return nullptr;

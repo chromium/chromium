@@ -210,6 +210,9 @@ class PasswordManagerClient {
       bool is_webauthn_form);
 #endif
 
+  virtual bool CanUseBiometricAuthForFilling(
+      device_reauth::DeviceAuthenticator* authenticator);
+
   // Returns a pointer to a DeviceAuthenticator. Might be null if
   // BiometricAuthentication is not available for a given platform.
   virtual std::unique_ptr<device_reauth::DeviceAuthenticator>

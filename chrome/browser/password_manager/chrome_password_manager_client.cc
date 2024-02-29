@@ -466,6 +466,27 @@ bool ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
 }
 #endif
 
+bool ChromePasswordManagerClient::CanUseBiometricAuthForFilling(
+    device_reauth::DeviceAuthenticator* authenticator) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  if (!GetLocalStatePrefs() || !GetPrefs() || !authenticator) {
+    return false;
+  }
+  return GetPasswordFeatureManager()
+      ->IsBiometricAuthenticationBeforeFillingEnabled();
+#elif BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    CHECK(authenticator);
+    return true;
+  }
+  return authenticator && authenticator->CanAuthenticateWithBiometrics() &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kBiometricTouchToFill);
+#else
+  return false;
+#endif
+}
+
 std::unique_ptr<device_reauth::DeviceAuthenticator>
 ChromePasswordManagerClient::GetDeviceAuthenticator() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \

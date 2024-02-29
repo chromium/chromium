@@ -143,6 +143,7 @@ bool ShouldShowBiometricAuthenticationBeforeFillingPromo(
 #endif
 
 // Helper which checks if biometric authentication is available.
+// TODO(b/326735413): Remove this function.
 bool CanUseBiometricAuth(device_reauth::DeviceAuthenticator* authenticator,
                          password_manager::PasswordManagerClient* client);
 

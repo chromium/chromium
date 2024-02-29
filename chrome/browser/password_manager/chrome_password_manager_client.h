@@ -149,6 +149,8 @@ class ChromePasswordManagerClient
       bool is_webauthn_form) override;
 #endif
 
+  bool CanUseBiometricAuthForFilling(
+      device_reauth::DeviceAuthenticator* authenticator) override;
   // Returns a pointer to the DeviceAuthenticator which is created on demand.
   // This is currently only implemented for Android, Mac and Windows. On all
   // other platforms this will always be null.
