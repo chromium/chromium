@@ -1477,6 +1477,7 @@ _CONFIG = [
             'viz::RasterContextProvider',
             'viz::ReleaseCallback',
             'media::.+',
+            'libgav1::.+',
             'libyuv::.+',
         ]
     },

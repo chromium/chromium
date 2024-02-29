@@ -5,6 +5,7 @@
 import("//media/media_options.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 import("//third_party/libaom/options.gni")
+import("//third_party/libgav1/options.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -108,6 +109,8 @@ blink_modules_sources("webcodecs") {
   if (enable_libaom) {
     deps += [ "//third_party/libaom" ]
   }
+  assert(use_libgav1_parser)
+  deps += [ "//third_party/libgav1:libgav1_parser" ]
   if (media_use_libvpx) {
     deps += [ "//third_party/libvpx" ]
   }
