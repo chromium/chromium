@@ -300,6 +300,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Wallpaper search mood value changed."/>
   <int value="14" label="Wallpaper search color value changed."/>
   <int value="15" label="Wallpaper search inspiration theme selected."/>
+  <int value="16" label="Set classic Chrome theme clicked"/>
 </enum>
 
 <enum name="NTPCustomizedFeatures">
