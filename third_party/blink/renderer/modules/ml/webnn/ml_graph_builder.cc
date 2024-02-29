@@ -726,10 +726,8 @@ MLContext* MLGraphBuilder::GetContext() const {
 MLOperand* MLGraphBuilder::input(String name,
                                  const MLOperandDescriptor* desc,
                                  ExceptionState& exception_state) {
-  // If no dimensions, it represents a scalar. Set dimensions to empty.
-  Vector<uint32_t> dimensions = desc->getDimensionsOr({});
   auto input_operand = MLOperand::ValidateAndCreateInput(
-      this, desc->dataType().AsEnum(), std::move(dimensions), std::move(name));
+      this, desc->dataType().AsEnum(), desc->dimensions(), std::move(name));
   if (!input_operand.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       input_operand.error());
@@ -741,12 +739,8 @@ MLOperand* MLGraphBuilder::input(String name,
 MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
                                     NotShared<DOMArrayBufferView> buffer_view,
                                     ExceptionState& exception_state) {
-  String error_message;
-  // If no dimensions, it represents a scalar. Set dimensions to empty.
-  Vector<uint32_t> dimensions = desc->getDimensionsOr({});
   auto constant_operand = MLOperand::ValidateAndCreateConstant(
-      this, desc->dataType().AsEnum(), std::move(dimensions),
-      buffer_view.Get());
+      this, desc->dataType().AsEnum(), desc->dimensions(), buffer_view.Get());
   if (!constant_operand.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       constant_operand.error());

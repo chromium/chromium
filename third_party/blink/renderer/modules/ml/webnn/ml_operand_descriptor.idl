@@ -17,5 +17,5 @@ enum MLOperandDataType {
 
 dictionary MLOperandDescriptor {
   required MLOperandDataType dataType;
-  sequence<[EnforceRange] unsigned long> dimensions;
+  sequence<[EnforceRange] unsigned long> dimensions = [];
 };
