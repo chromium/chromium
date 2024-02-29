@@ -21,15 +21,19 @@ void ContentsLayoutManager::SetContentsResizingStrategy(
     return;
 
   strategy_.CopyFrom(strategy);
-  if (host_)
-    host_->InvalidateLayout();
+  InvalidateHost(true);
 }
 
-void ContentsLayoutManager::Layout(views::View* contents_container) {
-  DCHECK(host_ == contents_container);
+views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
+    const views::SizeBounds& size_bounds) const {
+  views::ProposedLayout layouts;
 
-  int height = contents_container->height();
-  int width = contents_container->width();
+  // If the |size_bounds| isn't bounded, the preferred size is being requested.
+  if (!size_bounds.is_fully_bounded()) {
+    return layouts;
+  }
+  int height = size_bounds.height().value();
+  int width = size_bounds.width().value();
 
   gfx::Size container_size(width, height);
   gfx::Rect new_devtools_bounds;
@@ -40,21 +44,21 @@ void ContentsLayoutManager::Layout(views::View* contents_container) {
 
   // DevTools cares about the specific position, so we have to compensate RTL
   // layout here.
-  devtools_view_->SetBoundsRect(host_->GetMirroredRect(new_devtools_bounds));
-  contents_view_->SetBoundsRect(host_->GetMirroredRect(new_contents_bounds));
+  layouts.child_layouts.emplace_back(
+      devtools_view_.get(), devtools_view_->GetVisible(),
+      host_view()->GetMirroredRect(new_devtools_bounds),
+      views::SizeBounds(container_size));
+  layouts.child_layouts.emplace_back(
+      contents_view_.get(), contents_view_->GetVisible(),
+      host_view()->GetMirroredRect(new_contents_bounds),
+      views::SizeBounds(container_size));
 
   // Enterprise watermark view is always overlaid, even when empty.
   if (watermark_view_) {
-    watermark_view_->SetBoundsRect(gfx::Rect(0, 0, width, height));
+    layouts.child_layouts.emplace_back(
+        watermark_view_.get(), watermark_view_->GetVisible(),
+        gfx::Rect(0, 0, width, height), views::SizeBounds(container_size));
   }
-}
-
-gfx::Size ContentsLayoutManager::GetPreferredSize(
-    const views::View* host) const {
-  return gfx::Size();
-}
-
-void ContentsLayoutManager::Installed(views::View* host) {
-  DCHECK(!host_);
-  host_ = host;
+  layouts.host_size = gfx::Size(width, height);
+  return layouts;
 }
