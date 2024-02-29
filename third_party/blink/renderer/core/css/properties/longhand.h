@@ -57,6 +57,15 @@ class Longhand : public CSSProperty {
  protected:
   constexpr Longhand(CSSPropertyID id, Flags flags, char repetition_separator)
       : CSSProperty(id, flags | kLonghand, repetition_separator) {}
+  // Applies the computed CSSValue of the parent style using ApplyValue.
+  // This generally achieves the same as ApplyInherit, but effectively
+  // "rezooms" the value.
+  //
+  // https://github.com/w3c/csswg-drafts/issues/9397
+  void ApplyParentValue(StyleResolverState&) const;
+  // If our zoom is different from the parent zoom, calls ApplyParentValue
+  // and returns true. Otherwise does nothing and returns false.
+  bool ApplyParentValueIfZoomChanged(StyleResolverState&) const;
 };
 
 template <>

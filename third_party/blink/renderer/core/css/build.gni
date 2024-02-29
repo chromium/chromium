@@ -589,6 +589,7 @@ blink_core_sources_css = [
   "properties/css_property_ref.h",
   "properties/css_unresolved_property.cc",
   "properties/css_unresolved_property.h",
+  "properties/longhand.cc",
   "properties/longhand.h",
   "properties/longhands/custom_property.cc",
   "properties/longhands/custom_property.h",

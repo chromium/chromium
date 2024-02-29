@@ -744,6 +744,21 @@
       default: false,
       valid_type: "bool",
     },
+
+    // - affected_by_zoom: true
+    //
+    // Whether or not the computed value of this property is affected by
+    // the effective zoom factor. Generally, all computed values that contain
+    // a blink::Length are affected by zoom.
+    //
+    // Setting this flag to 'true' will change the inheritance behavior
+    // (Longhand::ApplyInherit) to effectively "rezoom" the inherited value.
+    //
+    // https://github.com/w3c/csswg-drafts/issues/9397
+    affected_by_zoom: {
+      default: false,
+      valid_type: "bool",
+    },
   },
 
   // Members in the data objects should appear in the same order as in the
@@ -3342,6 +3357,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      affected_by_zoom: true,
     },
     {
       name: "list-style-image",
@@ -6387,6 +6403,7 @@
       supports_incremental_style: true,
       valid_for_formatted_text: true,
       valid_for_position_fallback: true,
+      affected_by_zoom: true,
     },
     {
       name: "will-change",

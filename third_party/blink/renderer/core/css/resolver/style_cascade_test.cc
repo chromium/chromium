@@ -197,8 +197,12 @@ class TestCascade {
         *CSSPropertyName::From(GetDocument().GetExecutionContext(), name));
   }
 
+  CascadePriority* FindPriority(CSSPropertyName name) {
+    return cascade_.map_.Find(name);
+  }
+
   CascadePriority GetPriority(CSSPropertyName name) {
-    CascadePriority* c = cascade_.map_.Find(name);
+    CascadePriority* c = FindPriority(name);
     return c ? *c : CascadePriority();
   }
 
@@ -2713,6 +2717,33 @@ TEST_F(StyleCascadeTest, ZoomImportant) {
   EXPECT_EQ(2.0f, cascade.TakeStyle()->EffectiveZoom());
 }
 
+TEST_F(StyleCascadeTest, ZoomExplicitDefault) {
+  ScopedStandardizedBrowserZoomForTest scoped_feature(true);
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("zoom:200%");
+  cascade.Apply();
+
+  // Since the zoom changed, there should be an explicit entry
+  // in the cascade map with CascadeOrigin::kNone.
+  CascadePriority* priority =
+      cascade.FindPriority(CSSPropertyName(CSSPropertyID::kLineHeight));
+  ASSERT_TRUE(priority);
+  EXPECT_EQ(CascadeOrigin::kNone, priority->GetOrigin());
+}
+
+TEST_F(StyleCascadeTest, ZoomNoExplicitDefault) {
+  ScopedStandardizedBrowserZoomForTest scoped_feature(true);
+
+  TestCascade cascade(GetDocument());
+  cascade.Apply();
+
+  // Since the zoom did not change, there should not be an entry in the map.
+  CascadePriority* priority =
+      cascade.FindPriority(CSSPropertyName(CSSPropertyID::kLineHeight));
+  EXPECT_FALSE(priority);
+}
+
 TEST_F(StyleCascadeTest, WritingModeCascadeOrder) {
   TestCascade cascade(GetDocument());
   cascade.Add("writing-mode", "vertical-lr");
@@ -3691,6 +3722,24 @@ TEST_F(StyleCascadeTest, GetCascadedValuesInterpolated) {
   EXPECT_EQ("linear", CssTextAt(map, "animation-timing-function"));
   EXPECT_EQ("10s", CssTextAt(map, "animation-duration"));
   EXPECT_EQ("-5s", CssTextAt(map, "animation-delay"));
+}
+
+TEST_F(StyleCascadeTest, GetCascadedValuesWithExplicitDefaults) {
+  ScopedStandardizedBrowserZoomForTest scoped_feature(true);
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("top:100px");
+  cascade.Add("zoom:200%");  // Causes explicit defaults.
+  cascade.Apply();
+
+  // Any explicit defaults (StyleCascade::AddExplicitDefaults) should not
+  // be visible via GetCascadedValues.
+
+  auto map = cascade.GetCascadedValues();
+  EXPECT_EQ(2u, map.size());
+
+  EXPECT_EQ("100px", CssTextAt(map, "top"));
+  EXPECT_EQ("200%", CssTextAt(map, "zoom"));
 }
 
 TEST_F(StyleCascadeTest, StaticResolveNoVar) {

@@ -178,6 +178,7 @@ class CORE_EXPORT StyleCascade {
   void AnalyzeIfNeeded();
   void AnalyzeMatchResult();
   void AnalyzeInterpolations();
+  void AddExplicitDefaults();
 
   // Clears the CascadeMap and other state, and analyzes the MatchResult/
   // interpolations again.
@@ -541,6 +542,8 @@ class CORE_EXPORT StyleCascade {
   // computed value of the property affects how e.g. margin-inline-start
   // (and other css-logical properties) cascade.
   bool depends_on_cascade_affecting_property_ = false;
+  // See comment in StyleCascade::AddExplicitDefaults (.cc file).
+  bool effective_zoom_changed_ = false;
   // If true, invisible rules will be added to the cascade, setting
   // `has_invisible_rules_` to true whenever such rules are actually seen.
   // Otherwise, invisible rules are silently ignored.

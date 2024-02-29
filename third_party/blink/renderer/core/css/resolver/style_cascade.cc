@@ -331,8 +331,12 @@ StyleCascade::GetCascadedValues() const {
   for (CSSPropertyID id : map_.NativeBitset()) {
     CSSPropertyName name(id);
     CascadePriority priority = map_.At(name);
-    DCHECK(priority.HasOrigin());
     if (IsInterpolation(priority)) {
+      continue;
+    }
+    if (!priority.HasOrigin()) {
+      // Declarations added for explicit defaults (AddExplicitDefaults)
+      // should not be observable.
       continue;
     }
     const CSSValue* cascaded = ValueAt(match_result_, priority.GetPosition());
@@ -384,6 +388,8 @@ void StyleCascade::AnalyzeIfNeeded() {
 }
 
 void StyleCascade::AnalyzeMatchResult() {
+  AddExplicitDefaults();
+
   int index = 0;
   for (const MatchedProperties& properties :
        match_result_.GetMatchedProperties()) {
@@ -452,6 +458,40 @@ void StyleCascade::AnalyzeInterpolations() {
   }
 }
 
+// The implicit defaulting behavior of inherited properties is to take
+// the value of the parent style [1]. However, we never reach
+// Longhand::ApplyInherit for implicit defaults, which is needed to adjust
+// Lengths with premultiplied zoom. Therefore, all inherited properties
+// are instead explicitly defaulted [2] when the effective zoom has changed
+// versus the parent zoom.
+//
+// [1] https://drafts.csswg.org/css-cascade/#defaulting
+// [2] https://drafts.csswg.org/css-cascade/#defaulting-keywords
+void StyleCascade::AddExplicitDefaults() {
+  if (RuntimeEnabledFeatures::StandardizedBrowserZoomEnabled() &&
+      effective_zoom_changed_) {
+    // TODO(crbug.com/40946858): Generate a list from json5.
+    //
+    // At a glance, these inherited properties can contain lengths:
+    //
+    //   -webkit-border-horizontal-spacing
+    //   -webkit-border-vertical-spacing
+    //   -webkit-text-stroke-width
+    //   letter-spacing
+    //   line-height
+    //   list-style-image
+    //   stroke-dashoffset
+    //   stroke-width
+    //   text-indent
+    //   text-shadow
+    //   text-underline-offset
+    //   word-spacing
+    //
+    // (And maybe more).
+    map_.Add(CSSPropertyID::kLineHeight, CascadePriority(CascadeOrigin::kNone));
+  }
+}
+
 void StyleCascade::Reanalyze() {
   map_.Reset();
   generation_ = 0;
@@ -471,6 +511,12 @@ void StyleCascade::ApplyCascadeAffecting(CascadeResolver& resolver) {
   // values on ComputedStyle.
   auto direction = state_.StyleBuilder().Direction();
   auto writing_mode = state_.StyleBuilder().GetWritingMode();
+  // Similarly, we assume that the effective zoom of this element
+  // is the same as the parent's effective zoom. If it isn't,
+  // we re-cascade with explicit defaults inserted at CascadeOrigin::kNone.
+  //
+  // See also StyleCascade::AddExplicitDefaults.
+  float effective_zoom = state_.StyleBuilder().EffectiveZoom();
 
   if (map_.NativeBitset().Has(CSSPropertyID::kDirection)) {
     LookupAndApply(GetCSSPropertyDirection(), resolver);
@@ -478,12 +524,25 @@ void StyleCascade::ApplyCascadeAffecting(CascadeResolver& resolver) {
   if (map_.NativeBitset().Has(CSSPropertyID::kWritingMode)) {
     LookupAndApply(GetCSSPropertyWritingMode(), resolver);
   }
+  if (map_.NativeBitset().Has(CSSPropertyID::kZoom)) {
+    LookupAndApply(GetCSSPropertyZoom(), resolver);
+  }
+
+  bool reanalyze = false;
 
   if (depends_on_cascade_affecting_property_) {
     if (direction != state_.StyleBuilder().Direction() ||
         writing_mode != state_.StyleBuilder().GetWritingMode()) {
-      Reanalyze();
+      reanalyze = true;
     }
+  }
+  if (effective_zoom != state_.StyleBuilder().EffectiveZoom()) {
+    effective_zoom_changed_ = true;
+    reanalyze = true;
+  }
+
+  if (reanalyze) {
+    Reanalyze();
   }
 }
 
@@ -741,9 +800,13 @@ void StyleCascade::LookupAndApplyDeclaration(const CSSProperty& property,
   *priority = CascadePriority(*priority, resolver.generation_);
   DCHECK(!property.IsSurrogate());
   DCHECK(priority->GetOrigin() < CascadeOrigin::kAnimation);
-  const CSSValue* value = ValueAt(match_result_, priority->GetPosition());
-  DCHECK(value);
   CascadeOrigin origin = priority->GetOrigin();
+  // Values at CascadeOrigin::kNone are used for explicit defaulting,
+  // see StyleCascade::AddExplicitDefaults.
+  const CSSValue* value = (origin == CascadeOrigin::kNone)
+                              ? cssvalue::CSSUnsetValue::Create()
+                              : ValueAt(match_result_, priority->GetPosition());
+  DCHECK(value);
   value = Resolve(property, *value, *priority, origin, resolver);
   DCHECK(IsA<CustomProperty>(property) || !value->IsUnparsedDeclaration());
   DCHECK(!value->IsPendingSubstitutionValue());
