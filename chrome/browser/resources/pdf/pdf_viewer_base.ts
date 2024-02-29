@@ -378,6 +378,13 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
   }
 
   /**
+   * @return True if OOPIF PDF is enabled, false otherwise.
+   */
+  get isPdfOopifEnabled(): boolean {
+    return this.pdfOopifEnabled;
+  }
+
+  /**
    * @return Resolved when the load state reaches LOADED, rejects on FAILED.
    *     Returns null if no promise has been created, which is the case for
    *     initial load of the PDF.

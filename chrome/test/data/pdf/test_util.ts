@@ -4,7 +4,7 @@
 
 // Utilities that are used in multiple tests.
 
-import type {Bookmark, DocumentDimensions, LayoutOptions} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -227,6 +227,24 @@ customElements.define(TestBookmarksElement.is, TestBookmarksElement);
  */
 export function createBookmarksForTest(): TestBookmarksElement {
   return document.createElement('test-bookmarks');
+}
+
+/**
+ * Checks if the PDF title matches the expected title.
+ * @param expectedTitle The expected title of the PDF.
+ * @return True if the PDF title matches the expected title, false otherwise.
+ */
+export function checkPdfTitleIsExpectedTitle(expectedTitle: string): boolean {
+  const viewer = document.body.querySelector<PdfViewerElement>('#viewer')!;
+  // Tab title is updated only when document.title is called in a top-level
+  // document (`main_frame` of `WebContents`). For OOPIF PDF viewer, the current
+  // document is the child of a top-level document, hence document.title is not
+  // set and therefore validation is unnecessary.
+  if (!viewer.isPdfOopifEnabled && expectedTitle !== document.title) {
+    return false;
+  }
+
+  return expectedTitle === viewer.pdfTitle;
 }
 
 /**

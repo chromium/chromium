@@ -638,6 +638,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     return this.bookmarks_;
   }
 
+  /** @return The title. Used for testing. */
+  get pdfTitle(): string {
+    return this.title_;
+  }
+
   override setLoadState(loadState: LoadState) {
     super.setLoadState(loadState);
     if (loadState === LoadState.FAILED) {
