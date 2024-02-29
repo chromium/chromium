@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_IMAGE_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <utility>

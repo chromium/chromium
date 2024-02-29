@@ -6,6 +6,7 @@
 #define CC_TREES_SCROLL_NODE_H_
 
 #include <optional>
+
 #include "cc/base/region.h"
 #include "cc/cc_export.h"
 #include "cc/input/main_thread_scrolling_reason.h"

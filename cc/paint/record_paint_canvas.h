@@ -6,6 +6,7 @@
 #define CC_PAINT_RECORD_PAINT_CANVAS_H_
 
 #include <optional>
+
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"

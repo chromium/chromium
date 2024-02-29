@@ -6,6 +6,7 @@
 #define EXTENSIONS_RENDERER_EXTENSION_WEB_VIEW_HELPER_H_
 
 #include <optional>
+
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_view_observer.h"
 #include "url/origin.h"

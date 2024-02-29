@@ -6,6 +6,7 @@
 #define GPU_IPC_COMMON_GPU_INFO_MOJOM_TRAITS_H_
 
 #include <optional>
+
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_info.h"

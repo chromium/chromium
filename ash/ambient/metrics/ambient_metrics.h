@@ -12,7 +12,6 @@
 #include "ash/public/cpp/ambient/ambient_mode_photo_source.h"
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
-
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "ui/views/view.h"

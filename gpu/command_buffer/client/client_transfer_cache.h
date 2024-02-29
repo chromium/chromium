@@ -6,8 +6,8 @@
 #define GPU_COMMAND_BUFFER_CLIENT_CLIENT_TRANSFER_CACHE_H_
 
 #include <map>
-
 #include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"

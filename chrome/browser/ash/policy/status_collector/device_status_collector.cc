@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <string_view>
 
 #include <algorithm>
 #include <cstdint>
@@ -17,6 +16,7 @@
 #include <optional>
 #include <set>
 #include <sstream>
+#include <string_view>
 #include <utility>
 
 #include "ash/components/arc/mojom/enterprise_reporting.mojom.h"

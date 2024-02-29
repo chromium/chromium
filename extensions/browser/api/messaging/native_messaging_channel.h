@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_API_MESSAGING_NATIVE_MESSAGING_CHANNEL_H_
 
 #include <optional>
+
 #include "base/functional/callback.h"
 #include "base/values.h"
 

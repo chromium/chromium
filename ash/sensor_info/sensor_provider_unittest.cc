@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/sensor_info/sensor_provider.h"
+
 #include <memory>
 #include <optional>
 #include <set>
@@ -9,7 +11,6 @@
 #include <vector>
 
 #include "ash/accelerometer/accelerometer_constants.h"
-#include "ash/sensor_info/sensor_provider.h"
 #include "ash/sensor_info/sensor_types.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/memory/scoped_refptr.h"

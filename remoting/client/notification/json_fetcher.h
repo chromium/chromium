@@ -5,9 +5,9 @@
 #ifndef REMOTING_CLIENT_NOTIFICATION_JSON_FETCHER_H_
 #define REMOTING_CLIENT_NOTIFICATION_JSON_FETCHER_H_
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/functional/callback_forward.h"
 
 namespace base {

@@ -6,6 +6,7 @@
 #define REMOTING_HOST_CHROMEOS_SESSION_STORAGE_H_
 
 #include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
 

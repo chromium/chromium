@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/login/ui/access_code_input.h"
+
 #include <memory>
 #include <optional>
 #include <string>
 
-#include "ash/login/ui/access_code_input.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"

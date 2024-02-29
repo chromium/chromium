@@ -6,11 +6,11 @@
 #define PRINTING_PRINT_SETTINGS_H_
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "printing/buildflags/buildflags.h"

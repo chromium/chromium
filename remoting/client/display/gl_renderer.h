@@ -5,9 +5,9 @@
 #ifndef REMOTING_CLIENT_DISPLAY_GL_RENDERER_H_
 #define REMOTING_CLIENT_DISPLAY_GL_RENDERER_H_
 
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"

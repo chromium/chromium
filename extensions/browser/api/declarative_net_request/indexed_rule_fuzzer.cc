@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/api/declarative_net_request/indexed_rule.h"
+
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stdint.h>
 
 #include <optional>
 #include <string>
 #include <utility>
 
-#include <fuzzer/FuzzedDataProvider.h>
-
 #include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "url/gurl.h"

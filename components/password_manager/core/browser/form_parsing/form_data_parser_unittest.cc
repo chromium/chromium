@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
-#include "components/autofill/core/common/autofill_test_utils.h"
 
 #include <stddef.h>
 
@@ -19,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"

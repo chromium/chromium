@@ -5,6 +5,7 @@
 #include "extensions/common/api/scripts_internal/script_serialization.h"
 
 #include <optional>
+
 #include "base/types/optional_util.h"
 #include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/user_script.h"

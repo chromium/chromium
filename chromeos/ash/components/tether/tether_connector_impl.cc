@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/tether/tether_connector_impl.h"
+
 #include <optional>
 #include <utility>
 

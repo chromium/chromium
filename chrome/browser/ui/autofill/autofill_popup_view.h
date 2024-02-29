@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_VIEW_H_
 
 #include <stddef.h>
+
 #include <optional>
 #include <string>
 

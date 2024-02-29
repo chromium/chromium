@@ -6,10 +6,10 @@
 #define GOOGLE_APIS_GAIA_FAKE_GAIA_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
-#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"

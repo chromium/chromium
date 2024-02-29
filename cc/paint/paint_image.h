@@ -5,10 +5,10 @@
 #ifndef CC_PAINT_PAINT_IMAGE_H_
 #define CC_PAINT_PAINT_IMAGE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/frame_metadata.h"

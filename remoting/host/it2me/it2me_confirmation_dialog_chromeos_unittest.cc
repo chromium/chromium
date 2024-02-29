@@ -6,9 +6,9 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/i18n/message_formatter.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"

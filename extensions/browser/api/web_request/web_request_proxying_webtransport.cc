@@ -5,6 +5,7 @@
 #include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
 
 #include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "content/public/browser/render_process_host.h"

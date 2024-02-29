@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
+
 #include <memory>
 #include <optional>
 #include <utility>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"

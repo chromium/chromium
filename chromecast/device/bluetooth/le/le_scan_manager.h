@@ -7,9 +7,9 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/device/bluetooth/le/le_scan_result.h"

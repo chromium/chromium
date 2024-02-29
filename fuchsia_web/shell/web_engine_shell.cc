@@ -11,9 +11,9 @@
 #include <lib/sys/cpp/service_directory.h>
 
 #include <iostream>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/command_line.h"

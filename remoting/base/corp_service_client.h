@@ -6,9 +6,9 @@
 #define REMOTING_BASE_CORP_SERVICE_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "remoting/base/buildflags.h"

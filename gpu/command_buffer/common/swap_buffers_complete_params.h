@@ -5,9 +5,9 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_SWAP_BUFFERS_COMPLETE_PARAMS_H_
 #define GPU_COMMAND_BUFFER_COMMON_SWAP_BUFFERS_COMPLETE_PARAMS_H_
 
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/gpu_export.h"
 #include "ui/gfx/ca_layer_params.h"

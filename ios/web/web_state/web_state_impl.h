@@ -6,7 +6,6 @@
 #define IOS_WEB_WEB_STATE_WEB_STATE_IMPL_H_
 
 #import <Foundation/Foundation.h>
-
 #include <stddef.h>
 #include <stdint.h>
 

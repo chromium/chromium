@@ -5,9 +5,9 @@
 #ifndef CHROMECAST_CRASH_LINUX_SYNCHRONIZED_MINIDUMP_MANAGER_H_
 #define CHROMECAST_CRASH_LINUX_SYNCHRONIZED_MINIDUMP_MANAGER_H_
 
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "chromecast/crash/linux/dump_info.h"

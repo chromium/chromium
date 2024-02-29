@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <optional>
 #include <set>

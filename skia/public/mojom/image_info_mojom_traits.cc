@@ -5,6 +5,7 @@
 #include "skia/public/mojom/image_info_mojom_traits.h"
 
 #include <optional>
+
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"

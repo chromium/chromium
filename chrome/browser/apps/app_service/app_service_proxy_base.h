@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_BASE_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <ostream>

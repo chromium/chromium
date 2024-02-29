@@ -5,6 +5,7 @@
 #include "ash/events/peripheral_customization_event_rewriter.h"
 
 #include <linux/input.h>
+
 #include <iterator>
 #include <memory>
 #include <optional>

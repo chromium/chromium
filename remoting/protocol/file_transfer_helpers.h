@@ -6,9 +6,9 @@
 #define REMOTING_PROTOCOL_FILE_TRANSFER_HELPERS_H_
 
 #include <cstdint>
+#include <optional>
 #include <ostream>
 
-#include <optional>
 #include "base/location.h"
 #include "remoting/base/result.h"
 #include "remoting/proto/file_transfer.pb.h"

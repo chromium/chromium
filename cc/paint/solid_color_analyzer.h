@@ -5,9 +5,9 @@
 #ifndef CC_PAINT_SOLID_COLOR_ANALYZER_H_
 #define CC_PAINT_SOLID_COLOR_ANALYZER_H_
 
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"

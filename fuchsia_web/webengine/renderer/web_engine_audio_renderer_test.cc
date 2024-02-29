@@ -9,6 +9,7 @@
 #include <lib/fidl/cpp/binding.h>
 
 #include <optional>
+
 #include "base/containers/queue.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"

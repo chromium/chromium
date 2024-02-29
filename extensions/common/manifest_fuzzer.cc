@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/common/manifest.h"
+
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -10,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include <fuzzer/FuzzedDataProvider.h>
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -18,7 +20,6 @@
 #include "base/values.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/install_warning.h"
-#include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/test/test_extensions_client.h"
 

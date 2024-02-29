@@ -5,9 +5,9 @@
 #ifndef CC_SLIM_FRAME_DATA_H_
 #define CC_SLIM_FRAME_DATA_H_
 
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
 #include "cc/base/simple_enclosed_region.h"

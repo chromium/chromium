@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
+
 #include <memory>
 #include <optional>
 

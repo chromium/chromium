@@ -6,7 +6,6 @@
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_WEB_STATE_H_
 
 #import <Foundation/Foundation.h>
-
 #include <stdint.h>
 
 #include <memory>

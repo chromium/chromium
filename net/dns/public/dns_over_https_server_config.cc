@@ -4,11 +4,11 @@
 
 #include "net/dns/public/dns_over_https_server_config.h"
 
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
 
-#include <optional>
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"

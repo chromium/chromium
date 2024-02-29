@@ -7,10 +7,10 @@
 
 #include <grpcpp/support/status.h>
 
+#include <optional>
 #include <string>
 #include <type_traits>
 
-#include <optional>
 #include "base/check.h"
 
 namespace cast {

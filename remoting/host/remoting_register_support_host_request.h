@@ -6,6 +6,7 @@
 #define REMOTING_HOST_REMOTING_REGISTER_SUPPORT_HOST_REQUEST_H_
 
 #include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"

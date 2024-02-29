@@ -6,6 +6,7 @@
 #define BASE_ANDROID_TOKEN_ANDROID_H_
 
 #include <jni.h>
+
 #include <optional>
 
 #include "base/android/scoped_java_ref.h"

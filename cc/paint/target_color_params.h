@@ -5,9 +5,9 @@
 #ifndef CC_PAINT_TARGET_COLOR_PARAMS_H_
 #define CC_PAINT_TARGET_COLOR_PARAMS_H_
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "cc/paint/paint_export.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/hdr_metadata.h"

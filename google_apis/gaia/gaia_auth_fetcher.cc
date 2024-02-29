@@ -4,11 +4,11 @@
 
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"

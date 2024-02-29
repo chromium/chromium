@@ -10,10 +10,10 @@
 #include <fuchsia/web/cpp/fidl.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
-#include <optional>
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/fuchsia/startup_context.h"

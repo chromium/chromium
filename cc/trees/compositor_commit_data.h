@@ -6,9 +6,9 @@
 #define CC_TREES_COMPOSITOR_COMMIT_DATA_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "cc/cc_export.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/input/scroll_snap_data.h"

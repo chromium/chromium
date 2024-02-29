@@ -5,6 +5,7 @@
 #include "extensions/renderer/bindings/api_binding_js_util.h"
 
 #include <optional>
+
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"

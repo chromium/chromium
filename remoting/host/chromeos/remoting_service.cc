@@ -5,9 +5,9 @@
 #include "remoting/host/chromeos/remoting_service.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "remoting/host/chromeos/file_session_storage.h"

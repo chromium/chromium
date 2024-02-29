@@ -5,6 +5,7 @@
 #include "extensions/browser/events/lazy_event_dispatcher.h"
 
 #include <optional>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "extensions/browser/event_router.h"

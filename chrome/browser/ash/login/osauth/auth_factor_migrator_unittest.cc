@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/osauth/auth_factor_migrator.h"
-#include "base/functional/bind.h"
 
 #include <memory>
 #include <optional>
 
+#include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"

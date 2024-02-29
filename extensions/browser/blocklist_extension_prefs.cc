@@ -5,6 +5,7 @@
 #include "extensions/browser/blocklist_extension_prefs.h"
 
 #include <optional>
+
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension_id.h"

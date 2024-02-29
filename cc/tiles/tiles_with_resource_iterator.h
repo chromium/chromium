@@ -5,10 +5,10 @@
 #ifndef CC_TILES_TILES_WITH_RESOURCE_ITERATOR_H_
 #define CC_TILES_TILES_WITH_RESOURCE_ITERATOR_H_
 
+#include <optional>
 #include <set>
 #include <vector>
 
-#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/picture_layer_tiling.h"

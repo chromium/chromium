@@ -9,9 +9,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"

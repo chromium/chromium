@@ -5,11 +5,11 @@
 #ifndef NET_DNS_PUBLIC_DOH_PROVIDER_ENTRY_H_
 #define NET_DNS_PUBLIC_DOH_PROVIDER_ENTRY_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"

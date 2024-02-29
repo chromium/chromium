@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/dns/dns_response.h"
+
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <fuzzer/FuzzedDataProvider.h>
 #include <optional>
 
 #include "base/check.h"
@@ -14,7 +16,6 @@
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_names_util.h"
 #include "net/dns/dns_query.h"
-#include "net/dns/dns_response.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
 

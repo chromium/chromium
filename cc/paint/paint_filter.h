@@ -5,9 +5,9 @@
 #ifndef CC_PAINT_PAINT_FILTER_H_
 #define CC_PAINT_PAINT_FILTER_H_
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/check_op.h"
 #include "cc/paint/color_filter.h"
 #include "cc/paint/paint_export.h"

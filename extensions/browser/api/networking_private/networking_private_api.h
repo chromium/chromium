@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+
 #include "base/values.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
 #include "extensions/browser/extension_function.h"

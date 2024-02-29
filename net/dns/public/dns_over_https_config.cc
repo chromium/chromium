@@ -5,10 +5,10 @@
 #include "net/dns/public/dns_over_https_config.h"
 
 #include <iterator>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/ranges/algorithm.h"

@@ -6,9 +6,9 @@
 #define CC_INPUT_BROWSER_CONTROLS_OFFSET_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/input/browser_controls_state.h"

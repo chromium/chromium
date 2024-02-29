@@ -6,8 +6,8 @@
 #define REMOTING_PROTOCOL_WEBRTC_VIDEO_ENCODER_WRAPPER_H_
 
 #include <memory>
-
 #include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"

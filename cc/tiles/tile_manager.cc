@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <limits>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"

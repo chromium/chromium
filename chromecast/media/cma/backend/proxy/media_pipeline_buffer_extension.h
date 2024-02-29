@@ -6,9 +6,9 @@
 #define CHROMECAST_MEDIA_CMA_BACKEND_PROXY_MEDIA_PIPELINE_BUFFER_EXTENSION_H_
 
 #include <memory>
+#include <optional>
 #include <queue>
 
-#include <optional>
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"

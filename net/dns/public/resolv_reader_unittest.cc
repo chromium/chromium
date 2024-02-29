@@ -8,10 +8,10 @@
 #include <resolv.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/functional/bind.h"

@@ -6,6 +6,7 @@
 #define CC_METRICS_SCROLL_JANK_UKM_REPORTER_H_
 
 #include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 

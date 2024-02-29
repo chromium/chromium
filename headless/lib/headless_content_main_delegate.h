@@ -6,9 +6,9 @@
 #define HEADLESS_LIB_HEADLESS_CONTENT_MAIN_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "build/build_config.h"
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/browser/content_browser_client.h"

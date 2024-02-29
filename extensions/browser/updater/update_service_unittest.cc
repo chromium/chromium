@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/updater/update_service.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -9,6 +11,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -37,7 +40,6 @@
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_update_data.h"
 #include "extensions/browser/updater/uninstall_ping_sender.h"
-#include "extensions/browser/updater/update_service.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"

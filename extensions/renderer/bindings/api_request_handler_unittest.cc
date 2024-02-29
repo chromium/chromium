@@ -5,6 +5,7 @@
 #include "extensions/renderer/bindings/api_request_handler.h"
 
 #include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"

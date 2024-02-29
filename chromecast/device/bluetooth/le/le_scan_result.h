@@ -6,10 +6,10 @@
 #define CHROMECAST_DEVICE_BLUETOOTH_LE_LE_SCAN_RESULT_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/containers/span.h"
 #include "chromecast/public/bluetooth/bluetooth_types.h"
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
+
 #include <memory>
 #include <optional>
 

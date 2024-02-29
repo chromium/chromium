@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include <optional>
+
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"

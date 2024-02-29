@@ -5,11 +5,11 @@
 #include "remoting/host/it2me/it2me_host.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
-#include <optional>
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"

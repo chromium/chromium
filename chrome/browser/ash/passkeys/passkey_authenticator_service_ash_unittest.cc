@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/passkeys/passkey_authenticator_service_ash.h"
+
 #include <array>
 #include <cstdint>
 #include <memory>
@@ -17,7 +19,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "chrome/browser/ash/passkeys/passkey_authenticator_service_ash.h"
 #include "chromeos/crosapi/mojom/passkeys.mojom.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"

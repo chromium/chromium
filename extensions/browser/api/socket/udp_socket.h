@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+
 #include "base/containers/span.h"
 #include "extensions/browser/api/socket/socket.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

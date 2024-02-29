@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <optional>
+
 #include "cc/slim/delayed_scheduler.h"
 #include "cc/slim/scheduler.h"
 #include "testing/gtest/include/gtest/gtest.h"

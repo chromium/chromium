@@ -10,10 +10,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
-#include <optional>
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

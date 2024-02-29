@@ -6,9 +6,9 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"

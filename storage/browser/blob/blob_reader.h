@@ -10,9 +10,9 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/file_system/file_system_url_loader_factory.h"
+
 #include <algorithm>
 #include <memory>
 #include <optional>
@@ -26,7 +28,6 @@
 #include "build/build_config.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
-#include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

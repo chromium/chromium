@@ -7,9 +7,10 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_ptr_set.h>
 #include <lib/sys/cpp/component_context.h>
-#include <vector>
 
 #include <optional>
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/fuchsia/process_context.h"

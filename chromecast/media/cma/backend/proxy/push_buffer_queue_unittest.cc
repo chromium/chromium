@@ -5,9 +5,9 @@
 #include "chromecast/media/cma/backend/proxy/push_buffer_queue.h"
 
 #include <atomic>
+#include <optional>
 #include <sstream>
 
-#include <optional>
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/threading/thread.h"

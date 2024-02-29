@@ -6,6 +6,7 @@
 #define CC_TREES_EFFECT_NODE_H_
 
 #include <optional>
+
 #include "cc/cc_export.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"

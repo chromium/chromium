@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
+
 #include <optional>
 #include <string>
 

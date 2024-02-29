@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/password_infobar_utils.h"
+
 #include <optional>
 
 #include "chrome/browser/profiles/profile.h"

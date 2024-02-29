@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_H_
 
 #include <stdint.h>
+
 #include <iosfwd>
 #include <optional>
 #include <set>

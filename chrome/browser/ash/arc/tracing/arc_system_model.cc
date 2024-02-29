@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/arc/tracing/arc_system_model.h"
 
 #include <cstdio>
-
 #include <optional>
 #include <set>
 

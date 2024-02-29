@@ -7,9 +7,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <vector>
+
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"

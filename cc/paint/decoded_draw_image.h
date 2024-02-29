@@ -7,8 +7,8 @@
 
 #include <cfloat>
 #include <cmath>
-
 #include <optional>
+
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
 #include "gpu/command_buffer/common/mailbox.h"

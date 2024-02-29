@@ -6,9 +6,9 @@
 #define CC_PAINT_PAINT_SHADER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/gtest_prod_util.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/image_analysis_state.h"

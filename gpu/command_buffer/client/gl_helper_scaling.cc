@@ -7,11 +7,11 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"

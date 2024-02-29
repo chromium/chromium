@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+
 #include "base/memory/scoped_refptr.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/api_test_utils.h"

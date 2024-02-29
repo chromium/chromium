@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_INFO_H_
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_INFO_H_
 
-#include <string>
-
 #include <optional>
+#include <string>
 
 #include "base/time/time.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"

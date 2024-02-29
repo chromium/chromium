@@ -4,9 +4,9 @@
 
 #include "remoting/host/desktop_display_layout_util.h"
 
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "build/build_config.h"
 #include "remoting/proto/control.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -9,11 +9,11 @@
 #include <fuchsia/web/cpp/fidl.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/fuchsia/startup_context.h"
 #include "base/gtest_prod_util.h"
 #include "base/message_loop/message_pump_for_io.h"

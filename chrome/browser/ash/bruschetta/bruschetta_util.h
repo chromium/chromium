@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_UTIL_H_
 #define CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_UTIL_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
-
-#include <optional>
 
 class Profile;
 

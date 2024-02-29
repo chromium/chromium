@@ -5,11 +5,11 @@
 #ifndef CC_INPUT_SCROLL_SNAP_DATA_H_
 #define CC_INPUT_SCROLL_SNAP_DATA_H_
 
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/gtest_prod_util.h"
 #include "cc/cc_export.h"
 #include "cc/paint/element_id.h"

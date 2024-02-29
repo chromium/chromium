@@ -4,9 +4,9 @@
 
 #include "google_apis/tasks/tasks_api_url_generator_utils.h"
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

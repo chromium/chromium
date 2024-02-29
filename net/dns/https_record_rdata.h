@@ -6,6 +6,7 @@
 #define NET_DNS_HTTPS_RECORD_RDATA_H_
 
 #include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <optional>

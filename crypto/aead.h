@@ -8,11 +8,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include <optional>
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "crypto/crypto_export.h"

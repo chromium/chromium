@@ -6,6 +6,7 @@
 #define CC_SLIM_SURFACE_LAYER_H_
 
 #include <optional>
+
 #include "base/component_export.h"
 #include "cc/layers/deadline_policy.h"
 #include "cc/slim/layer.h"

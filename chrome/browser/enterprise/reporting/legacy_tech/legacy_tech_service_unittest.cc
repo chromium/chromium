@@ -6,11 +6,11 @@
 
 #include <functional>
 #include <optional>
-#include "base/functional/callback_forward.h"
-#include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_report_generator.h"
 
+#include "base/functional/callback_forward.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_report_generator.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

@@ -6,9 +6,9 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_CHILD_FRAME_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/containers/circular_deque.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"

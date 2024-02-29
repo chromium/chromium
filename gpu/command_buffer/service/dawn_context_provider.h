@@ -8,8 +8,8 @@
 #include <dawn/platform/DawnPlatform.h>
 
 #include <memory>
-
 #include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"

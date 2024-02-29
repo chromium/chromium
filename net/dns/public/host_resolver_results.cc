@@ -6,10 +6,10 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
-#include <optional>
 #include "base/numerics/safe_conversions.h"
 #include "base/values.h"
 #include "net/base/connection_endpoint_metadata.h"

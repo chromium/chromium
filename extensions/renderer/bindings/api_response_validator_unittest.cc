@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <vector>
+
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "extensions/renderer/bindings/api_binding_test.h"

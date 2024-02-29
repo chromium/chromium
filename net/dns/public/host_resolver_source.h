@@ -6,8 +6,8 @@
 #define NET_DNS_PUBLIC_HOST_RESOLVER_SOURCE_H_
 
 #include <iterator>
-
 #include <optional>
+
 #include "base/values.h"
 
 namespace net {

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/dbus/shill/shill_device_client.h"
+
 #include <memory>
 #include <optional>
 
@@ -11,7 +13,6 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_unittest_base.h"
-#include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/values_util.h"

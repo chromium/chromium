@@ -5,6 +5,7 @@
 #include <fuchsia/settings/cpp/fidl_test_base.h>
 
 #include <optional>
+
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/json/json_writer.h"

@@ -6,6 +6,7 @@
 #define EXTENSIONS_COMMON_MOJOM_PERMISSION_SET_MOJOM_TRAITS_H_
 
 #include <optional>
+
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/mojom/permission_set.mojom-shared.h"
 #include "extensions/common/mojom/url_pattern_set_mojom_traits.h"

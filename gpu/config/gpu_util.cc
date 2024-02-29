@@ -13,13 +13,14 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #include <vulkan/vulkan.h>
+
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <thread>
 #include <vector>
 
-#include <optional>
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"

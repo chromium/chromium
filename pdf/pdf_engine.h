@@ -8,10 +8,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"

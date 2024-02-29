@@ -6,6 +6,7 @@
 #define CC_METRICS_VIDEO_PLAYBACK_ROUGHNESS_REPORTER_H_
 
 #include <optional>
+
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"

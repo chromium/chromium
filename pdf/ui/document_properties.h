@@ -5,9 +5,9 @@
 #ifndef PDF_UI_DOCUMENT_PROPERTIES_H_
 #define PDF_UI_DOCUMENT_PROPERTIES_H_
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "pdf/document_metadata.h"
 
 namespace gfx {

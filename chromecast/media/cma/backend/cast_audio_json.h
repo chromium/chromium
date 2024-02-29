@@ -6,6 +6,7 @@
 #define CHROMECAST_MEDIA_CMA_BACKEND_CAST_AUDIO_JSON_H_
 
 #include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/functional/callback.h"

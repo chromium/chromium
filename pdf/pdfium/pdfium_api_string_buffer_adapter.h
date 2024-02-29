@@ -7,9 +7,9 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"

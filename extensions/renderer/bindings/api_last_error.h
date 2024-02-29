@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+
 #include "base/functional/callback.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "v8/include/v8.h"

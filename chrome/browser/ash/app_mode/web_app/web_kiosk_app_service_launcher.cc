@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
+
 #include <memory>
 #include <optional>
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/diagnostics.h"
 

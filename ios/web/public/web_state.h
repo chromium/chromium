@@ -6,7 +6,6 @@
 #define IOS_WEB_PUBLIC_WEB_STATE_H_
 
 #import <UIKit/UIKit.h>
-
 #include <stdint.h>
 
 #include <map>

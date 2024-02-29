@@ -9,12 +9,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/dcheck_is_on.h"

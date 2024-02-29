@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_SCRIPT_INJECTION_TRACKER_H_
 
 #include <optional>
+
 #include "base/debug/crash_logging.h"
 #include "base/types/pass_key.h"
 #include "extensions/common/extension_id.h"

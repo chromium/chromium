@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_INSTALLER_H_
 
 #include <jni.h>
+
 #include <map>
 #include <memory>
 #include <optional>

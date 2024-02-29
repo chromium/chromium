@@ -10,9 +10,9 @@
 #include <atomic>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/base_paths.h"
 #include "base/containers/queue.h"
 #include "base/files/file.h"

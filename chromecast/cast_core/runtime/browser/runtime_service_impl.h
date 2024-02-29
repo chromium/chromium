@@ -6,8 +6,8 @@
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_SERVICE_IMPL_H_
 
 #include <memory>
-
 #include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"

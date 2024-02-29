@@ -5,12 +5,12 @@
 #ifndef CC_TEST_PAINT_OP_MATCHERS_H_
 #define CC_TEST_PAINT_OP_MATCHERS_H_
 
+#include <optional>
 #include <ostream>
 #include <sstream>
 #include <string>
 #include <utility>
 
-#include <optional>
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "cc/paint/paint_op_buffer.h"

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_UTILS_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

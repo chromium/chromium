@@ -5,9 +5,9 @@
 #include "components/services/storage/sandboxed_vfs_delegate.h"
 
 #include <cstdint>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"

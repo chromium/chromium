@@ -6,6 +6,7 @@
 #define CONTENT_COMMON_SERVICE_WORKER_RACE_NETWORK_REQUEST_URL_LOADER_CLIENT_H_
 
 #include <optional>
+
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"

@@ -6,11 +6,11 @@
 #define PDF_PDFIUM_PDFIUM_PAGE_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"

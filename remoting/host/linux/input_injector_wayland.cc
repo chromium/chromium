@@ -7,11 +7,12 @@
 #include <gtk/gtk.h>
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
-#include <optional>
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"

@@ -11,9 +11,9 @@
 #include <dawn/wire/WireServer.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/auto_reset.h"
 #include "base/bits.h"
 #include "base/containers/contains.h"

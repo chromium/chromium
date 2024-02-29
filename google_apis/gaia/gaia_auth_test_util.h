@@ -6,9 +6,9 @@
 #define GOOGLE_APIS_GAIA_GAIA_AUTH_TEST_UTIL_H_
 
 #include <optional>
-#include "base/base64url.h"
-
 #include <string>
+
+#include "base/base64url.h"
 
 namespace gaia {
 

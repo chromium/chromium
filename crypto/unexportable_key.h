@@ -6,8 +6,8 @@
 #define CRYPTO_UNEXPORTABLE_KEY_H_
 
 #include <memory>
-
 #include <optional>
+
 #include "crypto/crypto_export.h"
 #include "crypto/signature_verifier.h"
 

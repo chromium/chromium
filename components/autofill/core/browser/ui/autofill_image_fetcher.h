@@ -5,14 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_IMAGE_FETCHER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_IMAGE_FETCHER_H_
 
-#include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
-
 #include <memory>
 #include <optional>
 
 #include "base/barrier_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 
 class GURL;
 

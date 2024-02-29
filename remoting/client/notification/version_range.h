@@ -5,9 +5,9 @@
 #ifndef REMOTING_CLIENT_NOTIFICATION_VERSION_RANGE_H_
 #define REMOTING_CLIENT_NOTIFICATION_VERSION_RANGE_H_
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/version.h"
 
 namespace remoting {

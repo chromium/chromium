@@ -5,9 +5,9 @@
 #ifndef CC_SLIM_LAYER_H_
 #define CC_SLIM_LAYER_H_
 
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"

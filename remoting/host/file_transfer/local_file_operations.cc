@@ -5,8 +5,8 @@
 #include "remoting/host/file_transfer/local_file_operations.h"
 
 #include <cstdint>
-
 #include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_proxy.h"
 #include "base/files/file_util.h"

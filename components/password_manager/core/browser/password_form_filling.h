@@ -5,9 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FORM_FILLING_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FORM_FILLING_H_
 
-#include <vector>
-
 #include <optional>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"

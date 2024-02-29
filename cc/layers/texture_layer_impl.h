@@ -6,10 +6,10 @@
 #define CC_LAYERS_TEXTURE_LAYER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"

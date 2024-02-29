@@ -6,9 +6,9 @@
 #define CC_RASTER_CATEGORIZED_WORKER_POOL_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"

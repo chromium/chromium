@@ -5,9 +5,9 @@
 #ifndef IPC_MESSAGE_VIEW_H_
 #define IPC_MESSAGE_VIEW_H_
 
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "ipc/ipc_message.h"

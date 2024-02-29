@@ -5,9 +5,8 @@
 #ifndef GOOGLE_APIS_TASKS_TASKS_API_URL_GENERATOR_UTILS_H_
 #define GOOGLE_APIS_TASKS_TASKS_API_URL_GENERATOR_UTILS_H_
 
-#include <string>
-
 #include <optional>
+#include <string>
 
 class GURL;
 

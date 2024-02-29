@@ -6,9 +6,9 @@
 #define REMOTING_HOST_IT2ME_IT2ME_NATIVE_MESSAGING_HOST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"

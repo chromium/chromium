@@ -12,8 +12,8 @@
 #include <string>
 
 #include "base/version.h"
-#include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/browser/content_verifier/content_verifier_delegate.h"
+#include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {

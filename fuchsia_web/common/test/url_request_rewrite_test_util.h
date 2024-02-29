@@ -8,6 +8,7 @@
 #include <fuchsia/web/cpp/fidl.h>
 
 #include <optional>
+
 #include "base/strings/string_piece.h"
 
 // Utility functions to create a fuchsia.web.UrlRequestRewrite in one line.

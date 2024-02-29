@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROME_CONTENT_BROWSER_CLIENT_H_
 
 #include <stddef.h>
+
 #include <memory>
 #include <optional>
 #include <set>

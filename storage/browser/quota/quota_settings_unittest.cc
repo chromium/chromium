@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "storage/browser/quota/quota_settings.h"
+
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -16,7 +18,6 @@
 #include "base/test/task_environment.h"
 #include "storage/browser/quota/quota_device_info_helper.h"
 #include "storage/browser/quota/quota_features.h"
-#include "storage/browser/quota/quota_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::testing::_;

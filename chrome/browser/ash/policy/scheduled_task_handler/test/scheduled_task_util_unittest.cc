@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_util.h"
+
 #include <memory>
 #include <optional>
 

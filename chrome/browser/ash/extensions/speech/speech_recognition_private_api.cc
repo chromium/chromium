@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_api.h"
 
 #include <optional>
+#include <string>
 
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_manager.h"
 #include "chrome/browser/speech/speech_recognition_constants.h"

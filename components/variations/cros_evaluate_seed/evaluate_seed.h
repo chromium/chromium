@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_VARIATIONS_CROS_EVALUATE_SEED_EVALUATE_SEED_H_
 #define COMPONENTS_VARIATIONS_CROS_EVALUATE_SEED_EVALUATE_SEED_H_
 
+#include <stdio.h>
+
 #include <memory>
 #include <optional>
 #include <string>
-
-#include <stdio.h>
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"

@@ -5,10 +5,10 @@
 #include "media/capture/video/file_video_capture_device.h"
 
 #include <stddef.h>
-#include <optional>
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"

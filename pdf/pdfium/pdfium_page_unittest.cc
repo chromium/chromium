@@ -4,10 +4,10 @@
 
 #include "pdf/pdfium/pdfium_page.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"

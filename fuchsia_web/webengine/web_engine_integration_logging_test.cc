@@ -5,8 +5,8 @@
 #include <fidl/fuchsia.logger/cpp/fidl.h>
 
 #include <cstring>
-
 #include <optional>
+
 #include "base/containers/contains.h"
 #include "base/fuchsia/test_log_listener_safe.h"
 #include "base/strings/string_piece.h"

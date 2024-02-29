@@ -5,6 +5,7 @@
 #include "ash/app_list/views/apps_grid_view.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <list>
 #include <memory>

@@ -4,9 +4,9 @@
 
 #include "cc/paint/image_provider.h"
 
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "cc/paint/paint_record.h"
 
 namespace cc {

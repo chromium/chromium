@@ -6,10 +6,11 @@
 #define REMOTING_HOST_MOJOM_REMOTING_MOJOM_TRAITS_H_
 
 #include <stddef.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"

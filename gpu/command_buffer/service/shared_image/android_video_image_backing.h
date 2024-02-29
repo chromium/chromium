@@ -6,8 +6,8 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_ANDROID_VIDEO_IMAGE_BACKING_H_
 
 #include <memory>
-
 #include <optional>
+
 #include "gpu/command_buffer/service/shared_image/android_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"

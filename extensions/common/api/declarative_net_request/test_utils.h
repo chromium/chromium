@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "extensions/common/api/declarative_net_request/constants.h"

@@ -6,10 +6,10 @@
 #define GOOGLE_APIS_TASKS_TASKS_API_RESPONSE_TYPES_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/time/time.h"
 #include "google_apis/tasks/tasks_api_task_status.h"
 

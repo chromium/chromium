@@ -6,6 +6,7 @@
 #define REMOTING_HOST_BASE_DESKTOP_ENVIRONMENT_OPTIONS_H_
 
 #include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/session_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"

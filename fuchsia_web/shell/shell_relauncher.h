@@ -6,6 +6,7 @@
 #define FUCHSIA_WEB_SHELL_SHELL_RELAUNCHER_H_
 
 #include <optional>
+
 #include "base/strings/string_piece.h"
 
 namespace base {

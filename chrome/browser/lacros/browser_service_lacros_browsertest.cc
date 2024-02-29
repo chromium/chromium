@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/lacros/browser_service_lacros.h"
+
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -17,7 +19,6 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
 #include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
-#include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/lacros/profile_util.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"

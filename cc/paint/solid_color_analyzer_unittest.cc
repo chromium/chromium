@@ -5,6 +5,7 @@
 #include "cc/paint/solid_color_analyzer.h"
 
 #include <optional>
+
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "cc/paint/display_item_list.h"

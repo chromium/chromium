@@ -5,9 +5,9 @@
 #ifndef GOOGLE_APIS_CALENDAR_CALENDAR_API_URL_GENERATOR_H_
 #define GOOGLE_APIS_CALENDAR_CALENDAR_API_URL_GENERATOR_H_
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/time/time.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "url/gurl.h"

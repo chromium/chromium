@@ -8,6 +8,7 @@
 #include <wayland-server-protocol-core.h>
 #include <xdg-decoration-unstable-v1-server-protocol.h>
 #include <xdg-shell-server-protocol.h>
+
 #include <optional>
 
 #include "ash/public/cpp/shell_window_ids.h"

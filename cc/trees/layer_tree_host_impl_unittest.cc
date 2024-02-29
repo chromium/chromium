@@ -8,9 +8,9 @@
 
 #include <cmath>
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener.h"

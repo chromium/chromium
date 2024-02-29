@@ -5,9 +5,10 @@
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 
 #include <stddef.h>
-#include <utility>
 
 #include <optional>
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"

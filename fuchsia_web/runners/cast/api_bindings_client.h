@@ -7,9 +7,10 @@
 
 #include <chromium/cast/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
-#include <vector>
 
 #include <optional>
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast/named_message_port_connector/named_message_port_connector.h"

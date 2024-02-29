@@ -7,9 +7,9 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"

@@ -8,9 +8,9 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"

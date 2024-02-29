@@ -6,8 +6,10 @@
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_INDEXED_RULE_H_
 
 #include <stdint.h>
+
 #include <optional>
 #include <string>
+
 #include "base/containers/flat_set.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "extensions/common/api/declarative_net_request.h"

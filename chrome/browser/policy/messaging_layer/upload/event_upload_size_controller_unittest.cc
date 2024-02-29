@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
+
 #include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <string>
 
 #include "base/test/protobuf_matchers.h"
-#include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/testing_network_condition_service.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "content/public/test/browser_task_environment.h"
-
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

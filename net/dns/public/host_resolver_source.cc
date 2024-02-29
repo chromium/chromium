@@ -5,6 +5,7 @@
 #include "net/dns/public/host_resolver_source.h"
 
 #include <optional>
+
 #include "base/values.h"
 
 namespace net {

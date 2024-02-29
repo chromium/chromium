@@ -5,6 +5,7 @@
 #include "remoting/test/test_token_storage.h"
 
 #include <optional>
+
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/json/json_reader.h"

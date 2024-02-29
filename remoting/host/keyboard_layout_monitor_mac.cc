@@ -9,9 +9,9 @@
 #include <CoreServices/CoreServices.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/apple/scoped_cftyperef.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

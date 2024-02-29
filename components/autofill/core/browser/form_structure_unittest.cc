@@ -5,9 +5,9 @@
 #include "components/autofill/core/browser/form_structure.h"
 
 #include <stddef.h>
-#include <cstdint>
 
 #include <algorithm>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>

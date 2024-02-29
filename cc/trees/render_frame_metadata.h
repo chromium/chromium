@@ -6,6 +6,7 @@
 #define CC_TREES_RENDER_FRAME_METADATA_H_
 
 #include <optional>
+
 #include "build/build_config.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/quads/selection.h"

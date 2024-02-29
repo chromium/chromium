@@ -6,9 +6,10 @@
 #define CC_LAYERS_APPEND_QUADS_DATA_H_
 
 #include <stdint.h>
-#include <vector>
 
 #include <optional>
+#include <vector>
+
 #include "cc/cc_export.h"
 #include "components/viz/common/surfaces/surface_id.h"
 

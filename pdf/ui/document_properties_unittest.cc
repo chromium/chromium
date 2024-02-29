@@ -4,9 +4,9 @@
 
 #include "pdf/ui/document_properties.h"
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "pdf/document_metadata.h"

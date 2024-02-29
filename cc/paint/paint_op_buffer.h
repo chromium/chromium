@@ -7,10 +7,10 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/functional/callback.h"

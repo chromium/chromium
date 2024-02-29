@@ -6,6 +6,7 @@
 #define CC_METRICS_SCROLL_JANK_DROPPED_FRAME_TRACKER_H_
 
 #include <optional>
+
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"

@@ -7,11 +7,11 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"

@@ -5,11 +5,11 @@
 #ifndef CC_PAINT_PAINT_WORKLET_INPUT_H_
 #define CC_PAINT_PAINT_WORKLET_INPUT_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "cc/paint/element_id.h"

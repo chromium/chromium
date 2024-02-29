@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
+
 #include <optional>
 
 #include "base/check.h"

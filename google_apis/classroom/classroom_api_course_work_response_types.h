@@ -6,10 +6,10 @@
 #define GOOGLE_APIS_CLASSROOM_CLASSROOM_API_COURSE_WORK_RESPONSE_TYPES_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/time/time.h"
 #include "url/gurl.h"
 

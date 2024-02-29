@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/attestation/attestation_flow.h"
+
 #include <memory>
 #include <optional>
 #include <utility>
@@ -17,7 +19,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
-#include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/attestation_flow_factory.h"
 #include "chromeos/ash/components/attestation/attestation_flow_integrated.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"

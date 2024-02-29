@@ -7,8 +7,8 @@
 #include <vulkan/vulkan.h>
 
 #include <algorithm>
-
 #include <optional>
+
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

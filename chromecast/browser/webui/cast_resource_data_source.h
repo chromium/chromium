@@ -5,9 +5,9 @@
 #ifndef CHROMECAST_BROWSER_WEBUI_CAST_RESOURCE_DATA_SOURCE_H_
 #define CHROMECAST_BROWSER_WEBUI_CAST_RESOURCE_DATA_SOURCE_H_
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "chromecast/browser/webui/mojom/webui.mojom.h"
 #include "content/public/browser/url_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

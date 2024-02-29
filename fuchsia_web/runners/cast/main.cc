@@ -7,9 +7,9 @@
 #include <lib/sys/cpp/component_context.h>
 #include <lib/trace-provider/provider.h>
 
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"

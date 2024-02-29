@@ -6,10 +6,10 @@
 #define CHROMECAST_MEDIA_CMA_BACKEND_PROXY_BUFFER_ID_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <queue>
 #include <utility>
 
-#include <optional>
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromecast/media/api/cma_backend.h"

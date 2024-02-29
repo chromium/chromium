@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <vector>
+
 #include "extensions/common/api/declarative_net_request/constants.h"
 
 namespace extensions::declarative_net_request {

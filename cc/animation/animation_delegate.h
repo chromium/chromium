@@ -6,8 +6,8 @@
 #define CC_ANIMATION_ANIMATION_DELEGATE_H_
 
 #include <memory>
-
 #include <optional>
+
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"

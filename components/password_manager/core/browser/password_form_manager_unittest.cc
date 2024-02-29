@@ -5,7 +5,6 @@
 #include "components/password_manager/core/browser/password_form_manager.h"
 
 #include <memory>
-
 #include <optional>
 #include <string>
 #include <type_traits>

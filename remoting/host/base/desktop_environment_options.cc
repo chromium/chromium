@@ -4,10 +4,10 @@
 
 #include "remoting/host/base/desktop_environment_options.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
-#include <optional>
 #include "build/build_config.h"
 
 namespace remoting {

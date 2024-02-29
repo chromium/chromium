@@ -5,9 +5,9 @@
 #ifndef NET_DNS_PUBLIC_DNS_OVER_HTTPS_SERVER_CONFIG_H_
 #define NET_DNS_PUBLIC_DNS_OVER_HTTPS_SERVER_CONFIG_H_
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/base/ip_address.h"

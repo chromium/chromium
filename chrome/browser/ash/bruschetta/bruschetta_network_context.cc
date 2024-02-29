@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_network_context.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <vector>

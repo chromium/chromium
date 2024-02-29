@@ -5,10 +5,10 @@
 #ifndef TESTING_PERF_LUCI_TEST_RESULT_H_
 #define TESTING_PERF_LUCI_TEST_RESULT_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"

@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "fuchsia_web/webengine/browser/cookie_manager_impl.h"
+
 #include <lib/fidl/cpp/binding.h>
 
 #include <map>
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -15,7 +17,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "fuchsia_web/common/test/fit_adapter.h"
-#include "fuchsia_web/webengine/browser/cookie_manager_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/cookie_access_result.h"
 #include "services/network/network_service.h"

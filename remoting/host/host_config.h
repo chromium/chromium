@@ -6,9 +6,9 @@
 #define REMOTING_HOST_HOST_CONFIG_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/values.h"
 
 namespace base {

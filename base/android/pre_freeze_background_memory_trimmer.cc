@@ -4,6 +4,9 @@
 
 #include "base/android/pre_freeze_background_memory_trimmer.h"
 
+#include <optional>
+#include <string>
+
 #include "base/android/build_info.h"
 #include "base/android/pmf_utils.h"
 #include "base/check.h"
@@ -17,9 +20,6 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
-
-#include <optional>
-#include <string>
 
 namespace base::android {
 namespace {

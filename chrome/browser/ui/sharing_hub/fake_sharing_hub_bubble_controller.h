@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_UI_SHARING_HUB_FAKE_SHARING_HUB_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_SHARING_HUB_FAKE_SHARING_HUB_BUBBLE_CONTROLLER_H_
 
-#include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
-
 #include <optional>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace sharing_hub {

@@ -5,8 +5,8 @@
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 
 #include <memory>
-
 #include <optional>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

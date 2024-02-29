@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #include "base/values.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/browser/mock_screen.h"

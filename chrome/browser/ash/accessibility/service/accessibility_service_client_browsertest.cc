@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/accessibility/service/accessibility_service_client.h"
+
 #include <optional>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -23,7 +25,6 @@
 #include "base/test/bind.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/accessibility/service/accessibility_service_client.h"
 #include "chrome/browser/ash/accessibility/service/automation_client_impl.h"
 #include "chrome/browser/ash/accessibility/service/fake_accessibility_service.h"
 #include "chrome/browser/ash/accessibility/service/speech_recognition_impl.h"

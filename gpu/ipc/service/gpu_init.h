@@ -6,6 +6,7 @@
 #define GPU_IPC_SERVICE_GPU_INIT_H_
 
 #include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/config/device_perf_info.h"

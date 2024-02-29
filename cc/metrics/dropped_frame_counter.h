@@ -6,12 +6,13 @@
 #define CC_METRICS_DROPPED_FRAME_COUNTER_H_
 
 #include <stddef.h>
+
 #include <map>
+#include <optional>
 #include <queue>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/containers/ring_buffer.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"

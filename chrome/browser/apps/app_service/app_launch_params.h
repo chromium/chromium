@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_LAUNCH_PARAMS_H_
 
 #include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <vector>

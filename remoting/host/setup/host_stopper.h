@@ -6,6 +6,7 @@
 #define REMOTING_HOST_SETUP_HOST_STOPPER_H_
 
 #include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"

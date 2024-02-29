@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <optional>
+
 #include "base/synchronization/lock.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"

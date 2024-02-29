@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 #include <tuple>
+
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/renderer/bindings/api_binding_test.h"

@@ -6,8 +6,8 @@
 #define CC_ANIMATION_SCROLL_OFFSET_ANIMATION_CURVE_H_
 
 #include <memory>
-
 #include <optional>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"

@@ -8,9 +8,9 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/nonembedded/component_updater/aw_component_updater_configurator.h"
 #include "base/android/path_utils.h"

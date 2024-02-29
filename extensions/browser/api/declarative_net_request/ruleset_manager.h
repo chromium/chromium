@@ -6,11 +6,13 @@
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_RULESET_MANAGER_H_
 
 #include <stddef.h>
+
 #include <memory>
 #include <optional>
 #include <set>
 #include <utility>
 #include <vector>
+
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"

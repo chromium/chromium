@@ -6,6 +6,7 @@
 #define CC_MOJOM_RENDER_FRAME_METADATA_MOJOM_TRAITS_H_
 
 #include <optional>
+
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom-shared.h"

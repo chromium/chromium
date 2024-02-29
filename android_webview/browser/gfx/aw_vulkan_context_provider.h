@@ -6,8 +6,8 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_AW_VULKAN_CONTEXT_PROVIDER_H_
 
 #include <memory>
-
 #include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"

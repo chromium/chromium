@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_MANAGER_H_
 
 #include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"

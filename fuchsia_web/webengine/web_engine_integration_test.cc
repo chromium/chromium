@@ -8,9 +8,9 @@
 #include <zircon/rights.h>
 #include <zircon/types.h>
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/containers/contains.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"

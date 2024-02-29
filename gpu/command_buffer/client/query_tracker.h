@@ -12,9 +12,9 @@
 
 #include <bitset>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 
-#include <optional>
 #include "base/atomicops.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"

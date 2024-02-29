@@ -5,9 +5,9 @@
 #ifndef CC_PAINT_IMAGE_PROVIDER_H_
 #define CC_PAINT_IMAGE_PROVIDER_H_
 
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/functional/callback.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/decoded_draw_image.h"

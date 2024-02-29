@@ -5,9 +5,9 @@
 #ifndef REMOTING_HOST_NATIVE_MESSAGING_NATIVE_MESSAGING_HELPERS_H_
 #define REMOTING_HOST_NATIVE_MESSAGING_NATIVE_MESSAGING_HELPERS_H_
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/values.h"
 
 namespace remoting {

@@ -14,12 +14,11 @@
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/services/auth_factor_config/chrome_browser_delegates.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-
-#include "components/prefs/pref_registry_simple.h"
-#include "components/user_manager/user.h"
 
 namespace ash::auth {
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_UI_MANAGER_IMPL_H_
 
 #include <stddef.h>
+
 #include <map>
 #include <memory>
 #include <optional>

@@ -6,8 +6,8 @@
 #define CHROMECAST_APP_CAST_MAIN_DELEGATE_H_
 
 #include <memory>
-
 #include <optional>
+
 #include "build/build_config.h"
 #include "chromecast/common/cast_content_client.h"
 #include "content/public/app/content_main_delegate.h"

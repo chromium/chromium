@@ -8,8 +8,8 @@
 
 #include <algorithm>
 #include <cmath>
-
 #include <optional>
+
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
 #include "gpu/command_buffer/service/framebuffer_manager.h"

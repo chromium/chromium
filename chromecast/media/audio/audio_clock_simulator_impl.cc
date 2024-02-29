@@ -7,8 +7,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
-
 #include <optional>
+
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "chromecast/media/api/audio_clock_simulator.h"

@@ -6,6 +6,7 @@
 #define CC_PAINT_SCOPED_RASTER_FLAGS_H_
 
 #include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/decode_stashing_image_provider.h"
 #include "cc/paint/paint_export.h"

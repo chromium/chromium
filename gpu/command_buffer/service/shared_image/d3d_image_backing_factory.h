@@ -11,8 +11,8 @@
 #include <wrl/client.h>
 
 #include <memory>
-
 #include <optional>
+
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/gpu_gles2_export.h"

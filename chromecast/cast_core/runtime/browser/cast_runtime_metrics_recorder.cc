@@ -6,8 +6,8 @@
 
 #include <cfloat>
 #include <cmath>
-
 #include <optional>
+
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"

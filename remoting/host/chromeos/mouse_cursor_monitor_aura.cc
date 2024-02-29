@@ -4,9 +4,9 @@
 
 #include "remoting/host/chromeos/mouse_cursor_monitor_aura.h"
 
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

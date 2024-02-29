@@ -7,10 +7,10 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/file_transfer/buffered_file_writer.h"
