@@ -72,6 +72,7 @@ bool AvailabilityCheck(const std::string& api_full_name,
   if (base::FeatureList::IsEnabled(features::kWebKioskEnableIwaApis) &&
       IsRunningInKioskMode() && url.SchemeIs(url::kHttpsScheme)) {
     is_allowed_for_scheme =
+        extensions::GetCurrentChannel() != version_info::Channel::BETA &&
         extensions::GetCurrentChannel() != version_info::Channel::STABLE;
   }
 #endif
