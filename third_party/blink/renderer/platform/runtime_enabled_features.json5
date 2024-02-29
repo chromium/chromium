@@ -589,7 +589,7 @@
     },
     {
       name: "ClipboardSvg",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ClipboardUnsanitizedContent",
