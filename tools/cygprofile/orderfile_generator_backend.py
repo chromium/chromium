@@ -598,6 +598,18 @@ class OrderfileGenerator:
         self._BUILD_ROOT, self._options.arch + '_instrumented_out')
     if self._options.use_call_graph:
       self._instrumented_out_dir += '_call_graph'
+    if options.use_common_out_dir_for_instrumented:
+      assert options.buildbot, ('--use-common-out-dir-for-instrumented is only '
+                                'meant to be used with --buildbot, otherwise '
+                                'it will overwrite the local out/Release dir.')
+      # This is used on the bot to save the directory for the stack tool. We
+      # only save the instrumented out dir since it is needed to deobfuscate the
+      # stack trace. The uninstrumented build is used to compare performance on
+      # Speedometer with/without orderfile, which is less likely to fail.
+      if os.path.exists(self._instrumented_out_dir):
+        # Clean up any old leftover instrumented dirs.
+        shutil.rmtree(self._instrumented_out_dir, ignore_errors=True)
+      self._instrumented_out_dir = constants.GetOutDirectory()
 
     self._uninstrumented_out_dir = os.path.join(
         self._BUILD_ROOT, self._options.arch + '_uninstrumented_out')
@@ -1010,7 +1022,13 @@ class OrderfileGenerator:
 
     if self._options.profile:
       try:
-        _UnstashOutputDirectory(self._instrumented_out_dir)
+        if not self._options.use_common_out_dir_for_instrumented:
+          _UnstashOutputDirectory(self._instrumented_out_dir)
+        else:
+          # Clean up any old leftover out/Release stuff.
+          if os.path.exists(self._instrumented_out_dir):
+            shutil.rmtree(self._instrumented_out_dir, ignore_errors=True)
+
         self._compiler = ClankCompiler(self._instrumented_out_dir,
                                        self._step_recorder, self._options,
                                        self._GetPathToOrderfile(),
@@ -1028,7 +1046,8 @@ class OrderfileGenerator:
         self._GenerateAndProcessProfile()
         self._MaybeArchiveOrderfile(self._GetUnpatchedOrderfileFilename())
       finally:
-        _StashOutputDirectory(self._instrumented_out_dir)
+        if not self._options.use_common_out_dir_for_instrumented:
+          _StashOutputDirectory(self._instrumented_out_dir)
     elif self._options.manual_symbol_offsets:
       assert self._options.manual_libname
       assert self._options.manual_objdir
@@ -1204,6 +1223,10 @@ def CreateArgumentParser():
                             'checkout; performs no other action'))
   parser.add_argument('--use-call-graph', action='store_true', default=False,
                       help='Use call graph instrumentation.')
+  parser.add_argument('--use-common-out-dir-for-instrumented',
+                      action='store_true',
+                      help='Use out/Release for the instrumented out dir so '
+                      'that the stack tool works on the bot.')
   parser.add_argument('-v',
                       '--verbose',
                       dest='verbosity',
