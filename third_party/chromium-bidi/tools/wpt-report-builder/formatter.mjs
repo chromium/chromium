@@ -55,11 +55,11 @@ export function flattenSingleTest(test) {
  *  is removed from the WPT test file, then the tests appear in the report
  *  as usual.
  */
-export function removeWebDriverBiDiPrefix(name) {
+function removeWebDriverBiDiPrefix(name) {
   return name.replace('/webdriver/tests/bidi/', '');
 }
 
-export function excludeTentativeTests(test) {
+function excludeTentativeTests(test) {
   return !test.test.includes('_tentative.py');
 }
 
@@ -140,7 +140,7 @@ function mergeSingleChildren(map) {
   };
 }
 
-export function generateHtml(map) {
+function generateHtml(map, commitHash) {
   const date = new Date().toISOString().slice(0, 'yyyy-mm-dd'.length);
 
   return `
@@ -173,7 +173,7 @@ export function generateHtml(map) {
     <div class="top">
       <div class="header">
         <div class="headings">
-          <h1>WPT test results (${date})</h1>
+          <h1>WPT test results for <a href="${getCommitLink(commitHash)}">${commitHash.substring(0, 8)}</a> (${date})</h1>
           <h2>${map.stat.pass} / ${map.stat.all} (${
             map.stat.all - map.stat.pass
           } remaining)</h2>
@@ -262,6 +262,10 @@ function generateSubtestReport(subtest) {
       </div>`;
 }
 
-export function generateReport(rawReport) {
-  return generateHtml(groupTests(flattenTests(rawReport)));
+function getCommitLink(commitHash) {
+  return `https://github.com/GoogleChromeLabs/chromium-bidi/commit/${commitHash}`;
+}
+
+export function generateReport(rawReport, commitHash) {
+  return generateHtml(groupTests(flattenTests(rawReport)), commitHash);
 }

@@ -14,9 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import child_process from 'child_process';
 import fs from 'fs';
 
 import {generateReport} from './formatter.mjs';
+
+function getCurrentCommit() {
+  if (process.env.GITHUB_SHA) {
+    // If triggered by GitHub Actions, use the commit SHA provided by GitHub.
+    return process.env.GITHUB_SHA;
+  }
+  return child_process.execSync('git rev-parse HEAD').toString().trim();
+}
 
 function readReport(filePath) {
   const rawReport = fs.readFileSync(filePath);
@@ -31,4 +40,7 @@ function getOutputPath() {
   return process.argv.slice(2)[1];
 }
 
-fs.writeFileSync(getOutputPath(), generateReport(readReport(getReportPath())));
+fs.writeFileSync(
+  getOutputPath(),
+  generateReport(readReport(getReportPath()), getCurrentCommit())
+);
