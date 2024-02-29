@@ -321,10 +321,11 @@ export function createRoutes(): OsSettingsRoutes {
   if (!isGuest()) {
     r.OS_PEOPLE = createSection(
         r.BASIC, routesMojom.PEOPLE_SECTION_PATH, Section.kPeople);
-    r.ACCOUNT_MANAGER = createSubpage(
-        r.OS_PEOPLE, routesMojom.MY_ACCOUNTS_SUBPAGE_PATH, Subpage.kMyAccounts);
 
     if (!isRevampWayfindingEnabled()) {
+      r.ACCOUNT_MANAGER = createSubpage(
+          r.OS_PEOPLE, routesMojom.MY_ACCOUNTS_SUBPAGE_PATH,
+          Subpage.kMyAccounts);
       // TODO(b/305747266) : Disambiguate the names for OS_SYNC and SYNC.
       r.OS_SYNC = createSubpage(
           r.OS_PEOPLE, routesMojom.SYNC_SUBPAGE_PATH, Subpage.kSync);

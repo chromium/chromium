@@ -36,6 +36,10 @@ const OSSettingsBrowserTest = class extends PolymerTest {
       'ash::standalone_browser::features::kLacrosOnly',
       'ash::standalone_browser::features::kLacrosProfileMigrationForceOff',
     ],
+    disabled: [
+      // The account manager subpage does not exist under the revamp.
+      'ash::features::kOsSettingsRevampWayfinding',
+    ],
   },
 ],
 ].forEach(test => registerTest(...test));

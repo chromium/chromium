@@ -1750,18 +1750,23 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
   RunSettingsTest("os_people_page/account_manager_settings_card_test.js");
 }
 
-class OSSettingsPeopleTestLacrosOnlyDisabled : public OSSettingsMochaTest {
+class OSSettingsMochaTestRevampAndLacrosOnlyDisabled
+    : public OSSettingsMochaTest {
  protected:
-  OSSettingsPeopleTestLacrosOnlyDisabled() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ash::standalone_browser::features::kLacrosOnly);
+  OSSettingsMochaTestRevampAndLacrosOnlyDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/{},
+        /*disabled=*/{
+            ash::standalone_browser::features::kLacrosOnly,
+            ash::features::kOsSettingsRevampWayfinding,
+        });
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(OSSettingsPeopleTestLacrosOnlyDisabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampAndLacrosOnlyDisabled,
                        OsPeoplePageAccountManagerSubpage) {
   RunSettingsTest("os_people_page/account_manager_subpage_test.js");
 }
