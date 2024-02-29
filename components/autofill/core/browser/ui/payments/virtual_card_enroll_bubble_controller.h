@@ -44,9 +44,9 @@ class VirtualCardEnrollBubbleController {
   virtual VirtualCardEnrollmentBubbleSource
   GetVirtualCardEnrollmentBubbleSource() const = 0;
 
-  // Returns the currently active virtual card enroll bubble view. Can be
-  // nullptr if no bubble is visible.
-  virtual AutofillBubbleBase* GetVirtualCardEnrollBubbleView() const = 0;
+  // Returns the currently active virtual card enroll or confirmation bubble
+  // view. Can be nullptr if no bubble is visible.
+  virtual AutofillBubbleBase* GetVirtualCardBubbleView() const = 0;
 
 #if !BUILDFLAG(IS_ANDROID)
   // Hides the bubble and icon if it is showing.
@@ -55,6 +55,9 @@ class VirtualCardEnrollBubbleController {
   // Returns true if bubble is already accepted and the virtual card enrollment
   // process is in progress.
   virtual bool IsEnrollmentInProgress() const = 0;
+
+  // Returns true if server request for virtual card enrollment is complete.
+  virtual bool IsEnrollmentComplete() const = 0;
 #endif
 
   // Virtual card enroll button takes card information to enroll into a VCN.

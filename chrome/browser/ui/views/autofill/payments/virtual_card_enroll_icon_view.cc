@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/autofill/payments/save_card_and_virtual_card_enroll_confirmation_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/ui/payments/virtual_card_enroll_bubble_controller.h"
@@ -45,8 +46,19 @@ views::BubbleDialogDelegate* VirtualCardEnrollIconView::GetBubble() const {
     return nullptr;
   }
 
+  // Checking controller's `enrollment_status_` is `kCompleted` ensures that
+  // the bubble view returned is of the type
+  // `SaveCardAndVirtualCardEnrollConfirmationBubbleViews` since controller
+  // hides the `VirtualCardEnrollBubbleViews` once the enrollment completes to
+  // show the confirmation bubble.
+  if (controller->IsEnrollmentComplete()) {
+    return static_cast<
+        autofill::SaveCardAndVirtualCardEnrollConfirmationBubbleViews*>(
+        controller->GetVirtualCardBubbleView());
+  }
+
   return static_cast<autofill::VirtualCardEnrollBubbleViews*>(
-      controller->GetVirtualCardEnrollBubbleView());
+      controller->GetVirtualCardBubbleView());
 }
 
 void VirtualCardEnrollIconView::UpdateImpl() {

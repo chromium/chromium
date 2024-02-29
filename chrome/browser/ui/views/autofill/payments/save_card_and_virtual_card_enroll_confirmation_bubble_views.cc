@@ -6,7 +6,11 @@
 
 #include <utility>
 
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
+#include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/ui_base_types.h"
 
 namespace autofill {
@@ -21,8 +25,13 @@ SaveCardAndVirtualCardEnrollConfirmationBubbleViews::
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       controller_hide_callback_(std::move(controller_hide_callback)),
       ui_params_(std::move(ui_params)) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
-  SetShowCloseButton(true);
+  if (ui_params_.is_success) {
+    SetButtons(ui::DIALOG_BUTTON_NONE);
+    SetShowCloseButton(true);
+  } else {
+    SetButtons(ui::DIALOG_BUTTON_OK);
+    SetButtonLabel(ui::DIALOG_BUTTON_OK, ui_params_.failure_button_text);
+  }
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
@@ -35,11 +44,48 @@ void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::Hide() {
   }
 }
 
+void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::AddedToWidget() {
+  if (ui_params_.is_success) {
+    auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+        ui::ImageModel::FromVectorIcon(kSaveCardAndVcnSuccessConfirmationIcon),
+        ui::ImageModel::FromVectorIcon(
+            kSaveCardAndVcnSuccessConfirmationDarkIcon),
+        base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+                            base::Unretained(this)));
+    image_view->SetBorder(
+        views::CreateEmptyBorder(ChromeLayoutProvider::Get()
+                                     ->GetInsetsMetric(views::INSETS_DIALOG)
+                                     .set_bottom(0)));
+    GetBubbleFrameView()->SetHeaderView(std::move(image_view));
+  }
+  GetBubbleFrameView()->SetTitleView(CreateTitleView(
+      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+}
+
+std::u16string
+SaveCardAndVirtualCardEnrollConfirmationBubbleViews::GetWindowTitle() const {
+  return ui_params_.title_text;
+}
+
 void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::WindowClosing() {
   if (!controller_hide_callback_.is_null()) {
     std::move(controller_hide_callback_)
         .Run(GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
   }
+}
+
+void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::Init() {
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText));
+  auto description = std::make_unique<views::Label>(
+      ui_params_.description_text, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
+  description->SetID(DialogViewId::DESCRIPTION_LABEL);
+  description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  description->SetMultiLine(true);
+  AddChildView(std::move(description));
 }
 
 SaveCardAndVirtualCardEnrollConfirmationBubbleViews::

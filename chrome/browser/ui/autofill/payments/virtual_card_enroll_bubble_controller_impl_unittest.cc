@@ -172,7 +172,7 @@ class VirtualCardEnrollBubbleControllerImplBubbleViewTest
   }
 
   AutofillBubbleBase* GetBubbleViews() {
-    return controller()->GetVirtualCardEnrollBubbleView();
+    return controller()->GetVirtualCardBubbleView();
   }
 
   const VirtualCardEnrollmentFields& virtual_card_enrollment_fields() const {

@@ -132,7 +132,7 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
     }
 
     return static_cast<VirtualCardEnrollBubbleViews*>(
-        controller->GetVirtualCardEnrollBubbleView());
+        controller->GetVirtualCardBubbleView());
   }
 
   void ClickLearnMoreLink() { GetBubbleViews()->LearnMoreLinkClicked(); }
