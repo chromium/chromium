@@ -708,7 +708,7 @@ PolicyServiceProxyConfiguration::Get(
     } else {
       policy_service_proxy_configuration.proxy_pac_url = proxy_pac_url.policy();
     }
-  } else if (proxy_mode.policy().compare(kProxyModeAutoDetect)) {
+  } else if (proxy_mode.policy().compare(kProxyModeAutoDetect) == 0) {
     policy_service_proxy_configuration.proxy_auto_detect = true;
   }
 
