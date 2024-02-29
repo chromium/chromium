@@ -46,7 +46,7 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-cmd"
-version = "1.0.117"
+version = "1.0.118"
 dependencies = [
  "clap",
  "codespan-reporting",
@@ -81,9 +81,9 @@ checksum = "5ee073c9e4cd00e28217186dbe12796d692868f432bf2e97ee73bed0c56dfa01"
 
 [[package]]
 name = "syn"
-version = "2.0.50"
+version = "2.0.51"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "74f1bdc9872430ce9b75da68329d1c1746faf50ffac5f19e02b71e37ff881ffb"
+checksum = "6ab617d94515e94ae53b8406c628598680aa0c9587474ecbe58188f7b345d66c"
 dependencies = [
  "proc-macro2",
  "quote",
