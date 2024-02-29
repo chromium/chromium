@@ -52,6 +52,7 @@ import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
@@ -217,6 +218,21 @@ public class CustomTabsConnectionUnitTest {
                 .setPackagesForUid(uid, "test.package.name");
         var handler = new EngagementSignalsHandler(mConnection, mSession);
         mConnection.mClientManager.newSession(mSession, uid, null, null, null, handler);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SEARCH_IN_CCT)
+    public void shouldEnableOmniboxForIntent_featureDisabled() {
+        // The logic is currently expected to not even peek in the intent.
+        assertFalse(mConnection.shouldEnableOmniboxForIntent(null));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SEARCH_IN_CCT)
+    public void shouldEnableOmniboxForIntent_featureEnabled() {
+        // The logic is currently expected to not even peek in the intent.
+        // Omnibox must remain disabled even if the feature flag is on.
+        assertFalse(mConnection.shouldEnableOmniboxForIntent(null));
     }
 
     // TODO(https://crrev.com/c/4118209) Add more tests for Feature enabling/disabling.

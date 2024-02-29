@@ -1962,6 +1962,11 @@ public class CustomTabsConnection {
         return mClientManager.getEngagementSignalsCallbackForSession(session) != null;
     }
 
+    /** Whether a CustomTabs instance should include interactive Omnibox. */
+    public boolean shouldEnableOmniboxForIntent(BrowserServicesIntentDataProvider intentData) {
+        return false;
+    }
+
     /**
      * Whether PageInsight Hub is enabled by the launching Intent. False by default.
      * @param intentData {@link BrowserServicesIntentDataProvider} built from the Intent that
