@@ -1296,7 +1296,7 @@ Not: Bu politika, dinamik olarak yüklenmiş verilere sahip sayfa içi JavaScrip
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Ayarlanmazsa arama önerileri ilk başta açıktır, ancak kullanıcılar istedikleri zaman kapatabilir.</translation>
 <translation id="2000937390924915996">Giriş sırasında otomatik disk temizlemeyi çalıştırma</translation>
-<translation id="2004382785802837840">Güvenliği ihlal edilmiş şifre uyarılarını kapatmayı devre dışı bırak</translation>
+<translation id="2004382785802837840">Sızdırılmış şifre uyarılarını kapatmayı devre dışı bırak</translation>
 <translation id="2005506794355327448">Kapak kapalıyken yapılacak işlem</translation>
 <translation id="2006530844219044261">Güç yönetimi</translation>
 <translation id="2006954055163088863">Video oynatılırken kullanıcıyı işlem yapmıyor olarak değerlendir</translation>
@@ -4637,7 +4637,7 @@ Kullanıcılar, ilk kurulumdan sonra Google konum hizmetlerini açabilir veya ka
 
           Örnek kalıplar için https://www.chromium.org/developers/how-tos/chrome-frame-getting-started adresine bakın.</translation>
 <translation id="467449052039111439">URL listesi aç</translation>
-<translation id="4674542060943819878">Güvenliği ihlal edilmiş şifre uyarılarını kapatmayı etkinleştir</translation>
+<translation id="4674542060943819878">Sızdırılmış şifre uyarılarını kapatmayı etkinleştir</translation>
 <translation id="4674871290487541952">Uzantı güncelleme ve yükleme işlemleriyle ilgili bütünlük kontrollerinde güvenli olmayan algoritmalara izin verme</translation>
 <translation id="4680961954980851756">Otomatik Doldurmayı etkinleştir</translation>
 <translation id="4685721728282448265">CECPQ2 kuantum sonrası anahtar anlaşması, TLS için etkinleştirildi</translation>

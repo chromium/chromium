@@ -3476,7 +3476,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3640214691812501263">¿Quieres agregar "<ph name="EXTENSION_NAME" />" para <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Protege tus contraseñas contra los ataques de phishing.</translation>
 <translation id="3640613767643722554">Enséñale al Asistente a reconocer tu voz</translation>
-<translation id="3641456520301071208">Los sitios pueden solicitar tu ubicación.</translation>
+<translation id="3641456520301071208">Los sitios pueden solicitar tu ubicación</translation>
 <translation id="3642070413432681490">Marcar con un círculo el cursor</translation>
 <translation id="3642699533549879077">Si otra persona observa tu pantalla, recibirás una alerta y se ocultará el contenido de las notificaciones.</translation>
 <translation id="3643962751030964445">Este dispositivo está administrado por <ph name="DEVICE_MANAGER" />; <ph name="DEVICE_MANAGER" /> solicita un nuevo perfil para la cuenta <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -6130,7 +6130,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5713158217420111469">Conectado con <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Estilo de entrada de espacio</translation>
 <translation id="5715711091495208045">Agente del complemento: <ph name="PLUGIN_NAME" /></translation>
-<translation id="5718049162805123412">Debes cambiarlas ahora.</translation>
+<translation id="5718049162805123412">Debes cambiarlas ahora</translation>
 <translation id="5719854774000914513">Permitir que los sitios soliciten permiso para conectarse a dispositivos HID</translation>
 <translation id="572155275267014074">Configuración de Android</translation>
 <translation id="5722086096420375088">Verde y blanco</translation>
@@ -7333,7 +7333,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6671320560732140690">{COUNT,plural, =1{una dirección}other{# direcciones}}</translation>
 <translation id="6671497123040790595"><ph name="MANAGER" /> está configurando la administración</translation>
 <translation id="6672917148207387131">Agregar <ph name="DOMAIN" /></translation>
-<translation id="6673353404516008367">El modo Incógnito mantiene <ph name="BEGIN_LINK" />tu navegación privada ante las personas<ph name="END_LINK" /> que usan tu dispositivo.</translation>
+<translation id="6673353404516008367">El modo Incógnito mantiene <ph name="BEGIN_LINK" />tu navegación privada ante las personas<ph name="END_LINK" /> que usan tu dispositivo</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6673797129585578649">Extiende la duración de la batería, ya que reduce el brillo, limita la actividad en segundo plano y los efectos visuales, retrasa las notificaciones y activa el Ahorro de energía de Chrome.</translation>
 <translation id="6673898378497337661">aumentar el brillo del teclado</translation>
