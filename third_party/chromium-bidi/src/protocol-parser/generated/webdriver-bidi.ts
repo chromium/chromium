@@ -1123,7 +1123,7 @@ export namespace Network {
       headersSize: z.union([JsUintSchema, z.null()]),
       bodySize: z.union([JsUintSchema, z.null()]),
       content: Network.ResponseContentSchema,
-      authChallenge: Network.AuthChallengeSchema.optional(),
+      authChallenges: z.array(Network.AuthChallengeSchema).optional(),
     })
   );
 }

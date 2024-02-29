@@ -920,7 +920,7 @@ export namespace Network {
     headersSize: JsUint | null;
     bodySize: JsUint | null;
     content: Network.ResponseContent;
-    authChallenge?: Network.AuthChallenge;
+    authChallenges?: [...Network.AuthChallenge[]];
   };
 }
 export namespace Network {
