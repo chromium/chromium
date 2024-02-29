@@ -35,9 +35,9 @@ bool IsExperimentEnabled(const webapps::AppId& app_id) {
   return g_always_enabled_for_testing || app_id == kMicrosoft365AppId;
 }
 
-std::optional<std::vector<const char* const>>&
+std::optional<std::vector<const char*>>&
 GetScopeExtensionsOverrideForTesting() {
-  static base::NoDestructor<std::optional<std::vector<const char* const>>>
+  static base::NoDestructor<std::optional<std::vector<const char*>>>
       scope_extensions;
   return *scope_extensions;
 }
@@ -91,7 +91,7 @@ void ChromeOsWebAppExperiments::SetAlwaysEnabledForTesting() {
 }
 
 void ChromeOsWebAppExperiments::SetScopeExtensionsForTesting(
-    std::vector<const char* const> scope_extensions_override) {
+    std::vector<const char*> scope_extensions_override) {
   GetScopeExtensionsOverrideForTesting() = std::move(scope_extensions_override);
 }
 

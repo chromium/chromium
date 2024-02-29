@@ -53,7 +53,7 @@ class FakeDistilledPage {
   std::string GetPageHtmlWithScripts();
 
   std::unique_ptr<net::test_server::ControllableHttpResponse> response_;
-  std::vector<const std::string> scripts_;
+  std::vector<std::string> scripts_;
 };
 
 // Starts |server| after initializing it to load files from the following

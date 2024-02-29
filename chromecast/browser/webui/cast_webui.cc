@@ -71,7 +71,7 @@ void CastWebUI::RegisterMessageCallback(
 void CastWebUI::CallJavascriptFunction(const std::string& function,
                                        base::Value::List args) {
   message_handler_->CallJavascriptFunction(
-      function, std::vector<const base::ValueView>(args.begin(), args.end()));
+      function, std::vector<base::ValueView>(args.begin(), args.end()));
 }
 
 }  // namespace chromecast

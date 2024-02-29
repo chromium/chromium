@@ -37,7 +37,7 @@ class FakeCaptureContentLayerClient : public FakeContentLayerClient {
 
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     auto display_list = base::MakeRefCounted<DisplayItemList>();
-    for (auto& holder : holders_) {
+    for (const auto& holder : holders_) {
       display_list->StartPaint();
       SkFont font = skia::DefaultFont();
       display_list->push<DrawTextBlobOp>(
@@ -52,7 +52,7 @@ class FakeCaptureContentLayerClient : public FakeContentLayerClient {
   }
 
  private:
-  std::vector<const FakeTextHolder> holders_;
+  std::vector<FakeTextHolder> holders_;
 };
 
 // These tests are for LayerTreeHost::CaptureContent().

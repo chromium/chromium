@@ -48,7 +48,7 @@ class ChromeOsWebAppExperiments {
 
   static void SetAlwaysEnabledForTesting();
   static void SetScopeExtensionsForTesting(
-      std::vector<const char* const> scope_extensions_override);
+      std::vector<const char*> scope_extensions_override);
   static void ClearOverridesForTesting();
 
   ChromeOsWebAppExperiments() = delete;
