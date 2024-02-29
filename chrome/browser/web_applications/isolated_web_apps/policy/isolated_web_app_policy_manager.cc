@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/barrier_callback.h"
+#include "base/containers/to_value_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -43,15 +44,6 @@
 namespace web_app {
 
 namespace {
-
-template <typename Range, typename Proj = std::identity>
-base::Value::List ToList(const Range& items, Proj proj = {}) {
-  base::Value::List list;
-  for (const auto& item : items) {
-    list.Append(std::invoke(proj, item));
-  }
-  return list;
-}
 
 base::File::Error CreateDirectoryWithStatus(const base::FilePath& path) {
   base::File::Error err = base::File::FILE_OK;
@@ -575,20 +567,23 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
   }
 
   debug_info.Set("apps_in_policy",
-                 ToList(apps_in_policy, [](const auto& options) {
+                 base::ToValueList(apps_in_policy, [](const auto& options) {
                    return options.web_bundle_id().id();
                  }));
-  debug_info.Set("installed_apps",
-                 ToList(installed_apps, &web_package::SignedWebBundleId::id));
   debug_info.Set(
-      "to_be_installed", ToList(to_be_installed, [](const auto& options) {
+      "installed_apps",
+      base::ToValueList(installed_apps, &web_package::SignedWebBundleId::id));
+  debug_info.Set(
+      "to_be_installed",
+      base::ToValueList(to_be_installed, [](const auto& options) {
         return base::Value::Dict()
             .Set("id", options.web_bundle_id().id())
             .Set("update_manifest_url",
                  options.update_manifest_url().possibly_invalid_spec());
       }));
-  debug_info.Set("to_be_removed",
-                 ToList(to_be_removed, &web_package::SignedWebBundleId::id));
+  debug_info.Set(
+      "to_be_removed",
+      base::ToValueList(to_be_removed, &web_package::SignedWebBundleId::id));
   current_process_log_.Merge(debug_info.Clone());
 
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
@@ -626,7 +621,8 @@ void IsolatedWebAppPolicyManager::OnUninstalled(
     }
   }
   current_process_log_.Set(
-      "uninstall_results", ToList(uninstall_results, [](const auto& result) {
+      "uninstall_results",
+      base::ToValueList(uninstall_results, [](const auto& result) {
         const auto& [web_bundle_id, uninstall_result] = result;
         return base::Value::Dict()
             .Set("id", web_bundle_id.id())
@@ -666,7 +662,8 @@ void IsolatedWebAppPolicyManager::OnInstalled(
     }
   }
   current_process_log_.Set(
-      "install_results", ToList(install_results, [](const auto& result) {
+      "install_results",
+      base::ToValueList(install_results, [](const auto& result) {
         const auto& [web_bundle_id, install_result] = result;
         return base::Value::Dict()
             .Set("id", web_bundle_id.id())
@@ -711,7 +708,7 @@ void IsolatedWebAppPolicyManager::ProcessLogs::AppendCompletedStep(
 }
 
 base::Value IsolatedWebAppPolicyManager::ProcessLogs::ToDebugValue() const {
-  return base::Value(ToList(logs_, &base::Value::Dict::Clone));
+  return base::Value(base::ToValueList(logs_, &base::Value::Dict::Clone));
 }
 
 }  // namespace web_app
