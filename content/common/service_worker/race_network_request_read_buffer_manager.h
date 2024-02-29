@@ -8,10 +8,12 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/common/content_export.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "net/base/io_buffer.h"
 
 namespace content {
 class CONTENT_EXPORT RaceNetworkRequestReadBufferManager {
@@ -29,12 +31,13 @@ class CONTENT_EXPORT RaceNetworkRequestReadBufferManager {
   void CancelWatching();
   bool IsWatching() { return watcher_.IsWatching(); }
 
-  std::pair<MojoResult, base::span<const char>> BeginReadData();
-  MojoResult EndReadData(size_t num_bytes_read);
+  std::pair<MojoResult, base::span<const char>> ReadData();
+  void ConsumeData(size_t num_bytes_read);
 
  private:
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
   mojo::SimpleWatcher watcher_;
+  scoped_refptr<net::DrainableIOBuffer> buffer_;
 };
 }  // namespace content
 
