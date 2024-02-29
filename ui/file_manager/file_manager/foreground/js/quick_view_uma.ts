@@ -6,7 +6,7 @@ import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getExtension} from '../../common/js/file_type.js';
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordEnum} from '../../common/js/metrics.js';
-import {VolumeType} from '../../common/js/volume_manager_types.js';
+import {UMA_VOLUME_TYPES} from '../../common/js/uma.js';
 import {DialogType} from '../../state/state.js';
 
 import {UMA_INDEX_KNOWN_EXTENSIONS} from './uma_enums.gen.js';
@@ -50,8 +50,8 @@ export class QuickViewUma {
     const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
     const volumeType = volumeInfo && volumeInfo.volumeType;
     if (volumeType) {
-      if (QUICK_VIEW_VOLUME_TYPES.includes(volumeType)) {
-        recordEnum('QuickView.VolumeType', volumeType, QUICK_VIEW_VOLUME_TYPES);
+      if (UMA_VOLUME_TYPES.includes(volumeType)) {
+        recordEnum('QuickView.VolumeType', volumeType, UMA_VOLUME_TYPES);
       } else {
         console.warn('Unknown volume type: ' + volumeType);
       }
@@ -87,24 +87,4 @@ const WAY_TO_OPEN_ENUM_TO_INDEX = [
   WayToOpen.CONTEXT_MENU,
   WayToOpen.SPACE_KEY,
   WayToOpen.SELECTION_MENU,
-];
-
-/**
- * Keep the order of this in sync with FileManagerVolumeType in
- * tools/metrics/histograms/enums.xml.
- */
-const QUICK_VIEW_VOLUME_TYPES = [
-  VolumeType.DRIVE,
-  VolumeType.DOWNLOADS,
-  VolumeType.REMOVABLE,
-  VolumeType.ARCHIVE,
-  VolumeType.PROVIDED,
-  VolumeType.MTP,
-  VolumeType.MEDIA_VIEW,
-  VolumeType.CROSTINI,
-  VolumeType.ANDROID_FILES,
-  VolumeType.DOCUMENTS_PROVIDER,
-  VolumeType.SMB,
-  VolumeType.SYSTEM_INTERNAL,
-  VolumeType.GUEST_OS,
 ];

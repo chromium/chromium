@@ -17,6 +17,7 @@ import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordEnum, recordTime} from '../../common/js/metrics.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {bytesToString, str, strf} from '../../common/js/translations.js';
+import {recordViewingVolumeTypeUma} from '../../common/js/uma.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {descriptorEqual, extractFilePath, isTeleported, makeTaskID, splitExtension} from '../../common/js/util.js';
 import {RootType, RootTypesForUMA, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
@@ -200,10 +201,12 @@ export class FileTasks {
   /** Records trial of opening file grouped by extensions.  */
   private static recordViewingFileTypeUma_(
       volumeManager: VolumeManager, entries: Array<Entry|FilesAppEntry>) {
+    const state = getStore().getState();
     for (const entry of entries) {
       FileTasks.recordEnumWithOnlineAndOffline_(
           volumeManager, 'ViewingFileType', FileTasks.getViewFileType(entry),
           UMA_INDEX_KNOWN_EXTENSIONS as string[]);
+      recordViewingVolumeTypeUma(state, entry.toURL());
     }
   }
 
@@ -577,12 +580,11 @@ export class FileTasks {
       for (const entry of this.entries_) {
         recordEnum(
             'DriveOfflineOpen.Unavailable', FileTasks.getViewFileType(entry),
-            UMA_INDEX_KNOWN_EXTENSIONS as string[]);
+            UMA_INDEX_KNOWN_EXTENSIONS);
         if (isBulkPinningEnabled) {
           recordEnum(
               'GoogleDrive.BulkPinning.OfflineOpen',
-              FileTasks.getViewFileType(entry),
-              UMA_INDEX_KNOWN_EXTENSIONS as string[]);
+              FileTasks.getViewFileType(entry), UMA_INDEX_KNOWN_EXTENSIONS);
         }
       }
       return Promise.reject('drive is offline');

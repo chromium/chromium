@@ -9,9 +9,11 @@ import {isFolderDialogType} from '../../common/js/dialog_type.js';
 import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {str} from '../../common/js/translations.js';
+import {recordViewingVolumeTypeUma} from '../../common/js/uma.js';
 import {testSendMessage, UserCanceledError} from '../../common/js/util.js';
 import {AllowedPaths, RootTypesForUMA} from '../../common/js/volume_manager_types.js';
 import {DialogType} from '../../state/state.js';
+import {getStore} from '../../state/store.js';
 
 import type {FileFilter} from './directory_contents.js';
 import type {DirectoryModel} from './directory_model.js';
@@ -49,8 +51,7 @@ export class DialogActionController {
    * @param fileFilter File filter model.
    * @param namingController Naming controller.
    * @param fileSelectionHandler Initial file selection.
-   * @param launchParam Whether the dialog should return local
-   *     path or not.
+   * @param launchParam Whether the dialog should return local path or not.
    */
   constructor(
       private dialogType_: DialogType, private dialogFooter_: DialogFooter,
@@ -253,6 +254,12 @@ export class DialogActionController {
         this.dialogType_ === DialogType.SELECT_OPEN_MULTI_FILE) {
       recordEnum('OpenFiles.RootType', currentRootType, RootTypesForUMA);
     }
+
+    const state = getStore().getState();
+    for (const url of selection.urls) {
+      recordViewingVolumeTypeUma(state, url);
+    }
+
     if (selection.multiple) {
       chrome.fileManagerPrivate.selectFiles(
           selection.urls, this.allowedPaths_ === AllowedPaths.NATIVE_PATH,

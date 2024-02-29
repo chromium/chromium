@@ -59,6 +59,7 @@ ts_files = [
   "file_manager/common/js/trash.ts",
   "file_manager/common/js/trusted_script_url_policy_util.ts",
   "file_manager/common/js/tslib_shim.ts",
+  "file_manager/common/js/uma.ts",
   "file_manager/common/js/url_constants.ts",
   "file_manager/common/js/util.ts",
   "file_manager/common/js/volume_manager_types.ts",

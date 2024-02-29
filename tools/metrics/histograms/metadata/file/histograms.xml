@@ -54,6 +54,12 @@ chromium-metrics-reviews@google.com.
                365"/>
 </variants>
 
+<variants name="FilesAppMode">
+  <variant name="FilePicker"/>
+  <variant name="Other"/>
+  <variant name="Standalone"/>
+</variants>
+
 <variants name="GraphApiGetDeltaCallType">
   <variant name="GetDeltaIncremental" summary="incremental delta HTTP call"/>
   <variant name="GetDeltaInitial" summary="initial delta HTTP call"/>
@@ -1637,6 +1643,19 @@ chromium-metrics-reviews@google.com.
     when the user is online. This is recorded when the user tries to view a file
     from the Files app.
   </summary>
+</histogram>
+
+<histogram name="FileBrowser.ViewingVolumeType.{FilesAppMode}"
+    enum="FileManagerVolumeType" expires_after="2025-06-30">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files app: The volume type where the file lives at the time that
+    the user opened the file. One record per file opened. NOTE: User might have
+    navigated to the file via different UI Surfaces, see the ViewingSurfaceType
+    metric for those.
+  </summary>
+  <token key="FilesAppMode" variants="FilesAppMode"/>
 </histogram>
 
 <histogram name="FileBrowser.VolumeType" enum="FileManagerVolumeType"
