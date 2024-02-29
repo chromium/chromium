@@ -12,7 +12,7 @@
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/script_result_queue.h"
-#include "extensions/browser/service_worker_task_queue.h"
+#include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 #include "extensions/test/extension_background_page_waiter.h"

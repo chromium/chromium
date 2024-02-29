@@ -20,7 +20,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/message_service_api.h"
 #include "extensions/browser/process_map.h"
-#include "extensions/browser/service_worker_task_queue.h"
+#include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/common/api/messaging/port_context.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/frame.mojom.h"

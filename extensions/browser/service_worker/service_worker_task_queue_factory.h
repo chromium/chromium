@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_SERVICE_WORKER_TASK_QUEUE_FACTORY_H_
-#define EXTENSIONS_BROWSER_SERVICE_WORKER_TASK_QUEUE_FACTORY_H_
+#ifndef EXTENSIONS_BROWSER_SERVICE_WORKER_SERVICE_WORKER_TASK_QUEUE_FACTORY_H_
+#define EXTENSIONS_BROWSER_SERVICE_WORKER_SERVICE_WORKER_TASK_QUEUE_FACTORY_H_
 
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -37,4 +37,4 @@ class ServiceWorkerTaskQueueFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_SERVICE_WORKER_TASK_QUEUE_FACTORY_H_
+#endif  // EXTENSIONS_BROWSER_SERVICE_WORKER_SERVICE_WORKER_TASK_QUEUE_FACTORY_H_
