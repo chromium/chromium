@@ -169,7 +169,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   UIButtonConfiguration* button_config =
       [UIButtonConfiguration filledButtonConfiguration];
   button_config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
-  UIFont* font = [UIFont boldSystemFontOfSize:15];
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   NSDictionary* attributes = @{NSFontAttributeName : font};
   NSMutableAttributedString* attributedString =
       [[NSMutableAttributedString alloc]
@@ -177,16 +177,16 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
                              IDS_IOS_IPH_SIDE_SWIPE_DISMISS_BUTTON)
               attributes:attributes];
   button_config.attributedTitle = attributedString;
-  button_config.baseForegroundColor = [UIColor colorNamed:kGrey800Color];
+  button_config.contentInsets =
+      NSDirectionalEdgeInsetsMake(14.0f, 32.0f, 14.0f, 32.0f);
+  button_config.baseForegroundColor = UIColor.whiteColor;
   button_config.baseBackgroundColor =
-      [UIColor colorNamed:kPrimaryBackgroundColor];
+      [UIColor.whiteColor colorWithAlphaComponent:0.2f];
   UIButton* dismiss_button = [UIButton buttonWithType:UIButtonTypeCustom
                                         primaryAction:primaryAction];
   dismiss_button.configuration = button_config;
   dismiss_button.accessibilityIdentifier =
       kGestureInProductHelpViewDismissButtonAXId;
-  dismiss_button.alpha =
-      UIAccessibilityIsReduceTransparencyEnabled() ? 1.0f : 0.65f;
   dismiss_button.translatesAutoresizingMaskIntoConstraints = NO;
   return dismiss_button;
 }
@@ -528,7 +528,6 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
                                   arrowDirection:direction
                                        alignment:BubbleAlignmentCenter];
   _bubbleView.frame = GetInitialBubbleFrameForView(boundingSize, _bubbleView);
-  _bubbleView.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
   _bubbleView.accessibilityIdentifier = kGestureInProductHelpViewBubbleAXId;
   [self addSubview:_bubbleView];
   [_bubbleView setArrowHidden:!_reduceMotion animated:NO];
@@ -694,7 +693,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   _gestureIndicator.layer.cornerRadius = radius;
   if (visible) {
     _gestureIndicator.alpha =
-        UIAccessibilityIsReduceTransparencyEnabled() ? 1.0f : 0.5f;
+        UIAccessibilityIsReduceTransparencyEnabled() ? 1.0f : 0.7f;
   } else {
     _gestureIndicator.alpha = 0;
   }
