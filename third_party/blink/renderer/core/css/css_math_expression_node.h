@@ -158,7 +158,15 @@ class CORE_EXPORT CSSMathExpressionNode
   bool HasPercentage() const {
     return category_ == kCalcPercent || category_ == kCalcLengthFunction;
   }
-  virtual bool InvolvesPercentage() const { return HasPercentage(); }
+
+  // InvolvesLayout returns whether a percentage, an anchor query, or a
+  // calc-size() keyword is used anywhere in the value, including in contexts
+  // (such as the progress() function) that convert the result type of their
+  // arguments into a number.
+  virtual bool InvolvesLayout() const {
+    return Category() == kCalcPercent || Category() == kCalcLengthFunction;
+  }
+
   virtual bool InvolvesAnchorQueries() const { return IsAnchorQuery(); }
 
   // Returns the unit type of the math expression *without doing any type
@@ -538,7 +546,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
            IsTrigonometricFunction() || IsSignRelatedFunction() || IsCalcSize();
   }
 
-  bool InvolvesPercentage() const final;
+  bool InvolvesLayout() const final;
   bool InvolvesAnchorQueries() const final;
 
   String CSSTextAsClamp() const;

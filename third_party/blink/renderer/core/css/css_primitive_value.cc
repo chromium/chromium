@@ -193,7 +193,7 @@ bool CSSPrimitiveValue::IsPercentage() const {
 }
 
 bool CSSPrimitiveValue::IsResolvableLength() const {
-  return IsLength() && !InvolvesPercentage();
+  return IsLength() && !InvolvesLayout();
 }
 
 bool CSSPrimitiveValue::HasPercentage() const {
@@ -203,11 +203,11 @@ bool CSSPrimitiveValue::HasPercentage() const {
   return To<CSSMathFunctionValue>(this)->ExpressionNode()->HasPercentage();
 }
 
-bool CSSPrimitiveValue::InvolvesPercentage() const {
+bool CSSPrimitiveValue::InvolvesLayout() const {
   if (IsNumericLiteralValue()) {
     return To<CSSNumericLiteralValue>(this)->IsPercentage();
   }
-  return To<CSSMathFunctionValue>(this)->ExpressionNode()->InvolvesPercentage();
+  return To<CSSMathFunctionValue>(this)->ExpressionNode()->InvolvesLayout();
 }
 
 bool CSSPrimitiveValue::IsTime() const {

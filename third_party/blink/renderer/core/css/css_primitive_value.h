@@ -428,7 +428,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   bool IsResolvableLength() const;
 
  private:
-  bool InvolvesPercentage() const;
+  bool InvolvesLayout() const;
 };
 
 using CSSLengthArray = CSSPrimitiveValue::CSSLengthArray;
