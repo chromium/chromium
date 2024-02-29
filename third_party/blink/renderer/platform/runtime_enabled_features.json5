@@ -1994,11 +1994,6 @@
       name: "HTMLInvokeTargetAttribute",
       status: "experimental",
     },
-    // This is a killswitch. Removable a few weeks after M121 ships.
-    {
-      name: "HTMLParserFastPathBulkInsertNotify",
-      status: "stable",
-    },
     {
       // A flag, just for local testing to make the
       // HTML parser yield more often and take longer to resume.

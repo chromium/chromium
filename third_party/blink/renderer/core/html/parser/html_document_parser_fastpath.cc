@@ -273,8 +273,6 @@ class HTMLFastPathParser {
 
   HtmlFastPathResult parse_result() const { return parse_result_; }
 
-  bool bulk_insert_notify() const { return bulk_insert_notify_; }
-
  private:
   Span source_;
   Document& document_;
@@ -283,8 +281,6 @@ class HTMLFastPathParser {
   const Char* const end_ = source_.data() + source_.size();
   const Char* pos_ = source_.data();
 
-  const bool bulk_insert_notify_ =
-      RuntimeEnabledFeatures::HTMLParserFastPathBulkInsertNotifyEnabled();
   bool failed_ = false;
   bool inside_of_tag_a_ = false;
   bool inside_of_tag_li_ = false;
@@ -925,24 +921,14 @@ class HTMLFastPathParser {
         if (text.size() >= Text::kDefaultLengthLimit) {
           return Fail(HtmlFastPathResult::kFailedBigText);
         }
-        if (bulk_insert_notify_) {
-          parent->ParserAppendChildInDocumentFragment(
-              Text::Create(document_, scanned_text.TryCanonicalizeString()));
-        } else {
-          parent->ParserAppendChild(
-              Text::Create(document_, scanned_text.TryCanonicalizeString()));
-        }
+        parent->ParserAppendChildInDocumentFragment(
+            Text::Create(document_, scanned_text.TryCanonicalizeString()));
       } else if (scanned_text.escaped_text) {
         if (scanned_text.escaped_text->size() >= Text::kDefaultLengthLimit) {
           return Fail(HtmlFastPathResult::kFailedBigText);
         }
-        if (bulk_insert_notify_) {
-          parent->ParserAppendChildInDocumentFragment(
-              Text::Create(document_, scanned_text.escaped_text->AsString()));
-        } else {
-          parent->ParserAppendChild(Text::Create(
-              document_, String(scanned_text.escaped_text->AsString())));
-        }
+        parent->ParserAppendChildInDocumentFragment(
+            Text::Create(document_, scanned_text.escaped_text->AsString()));
       }
       if (pos_ == end_) {
         return;
@@ -963,11 +949,7 @@ class HTMLFastPathParser {
         if (failed_) {
           return;
         }
-        if (bulk_insert_notify_) {
-          parent->ParserAppendChildInDocumentFragment(child);
-        } else {
-          parent->ParserAppendChild(child);
-        }
+        parent->ParserAppendChildInDocumentFragment(child);
       }
     }
   }
@@ -1445,9 +1427,7 @@ bool TryParsingHTMLFragmentImpl(const base::span<const Char>& source,
   number_of_bytes_parsed = parser.NumberOfBytesParsed();
   // The time needed to parse is typically < 1ms (even at the 99%).
   if (success) {
-    if (parser.bulk_insert_notify()) {
-      root_node.ParserFinishedBuildingDocumentFragment();
-    }
+    root_node.ParserFinishedBuildingDocumentFragment();
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Blink.HTMLFastPathParser.SuccessfulParseTime2", parse_timer.Elapsed(),
         base::Microseconds(1), base::Milliseconds(10), 100);
