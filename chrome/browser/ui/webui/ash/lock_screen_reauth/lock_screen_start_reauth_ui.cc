@@ -25,7 +25,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/lock_screen_reauth_resources.h"
 #include "chrome/grit/lock_screen_reauth_resources_map.h"
-#include "chrome/grit/oobe_unconditional_resources_map.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"

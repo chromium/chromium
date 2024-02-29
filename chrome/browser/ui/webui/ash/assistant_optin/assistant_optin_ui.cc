@@ -28,7 +28,6 @@
 #include "chrome/grit/assistant_optin_resources.h"
 #include "chrome/grit/assistant_optin_resources_map.h"
 #include "chrome/grit/browser_resources.h"
-#include "chrome/grit/oobe_conditional_resources.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"

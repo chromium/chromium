@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/webui/common/chrome_os_webui_config.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"

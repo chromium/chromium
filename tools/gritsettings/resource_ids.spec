@@ -219,18 +219,13 @@
   "chrome/browser/resources/chromeos/app_icon/app_icon_resources.grd": {
     "structures": [2800],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/login/oobe_conditional_resources.grd": {
-    "META": {"sizes": {"includes": [150], "structures": [300]}},
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/login/resources.grd": {
+    "META": {"sizes": {"includes": [300],}},
     "includes": [2820],
-    "structures": [2840],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/lock_screen_reauth/resources.grd": {
     "META": {"sizes": {"includes": [30]}},
     "includes": [2860],
-  },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/login/oobe_unconditional_resources.grd": {
-    "META": {"sizes": {"includes": [350]}},
-    "includes": [2880],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/multidevice_internals/resources.grd": {
     "META": {"sizes": {"includes": [35]}},
