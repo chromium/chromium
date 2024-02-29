@@ -1,0 +1,5 @@
+# Comment, then empty line with spaces.
+  
+# Another comment
+unsafe_buffers_clean.h
+unsafe_buffers_clean_dir/

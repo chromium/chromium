@@ -18,7 +18,7 @@ class ClangPluginTest(object):
   def __init__(self,
                test_base,
                clang_path,
-               plugin_name,
+               plugin_names,
                reset_results,
                filename_regex=None):
     """Constructor.
@@ -26,20 +26,15 @@ class ClangPluginTest(object):
     Args:
       test_base: Path to the directory containing the tests.
       clang_path: Path to the clang binary.
-      plugin_name: Name of the plugin.
+      plugin_names: Names of the plugins.
       reset_results: If true, resets expected results to the actual test output.
       filename_regex: If present, only runs tests that match the regex pattern.
     """
     self._test_base = test_base
     self._clang_path = clang_path
-    self._plugin_name = plugin_name
+    self._plugin_names = plugin_names
     self._reset_results = reset_results
     self._filename_regex = filename_regex
-
-  def AddPluginArg(self, clang_cmd, plugin_arg):
-    """Helper to add an argument for the tested plugin."""
-    clang_cmd.extend(['-Xclang', '-plugin-arg-%s' % self._plugin_name,
-                      '-Xclang', plugin_arg])
 
   def AdjustClangArguments(self, clang_cmd):
     """Tests can override this to customize the command line for clang."""
@@ -64,7 +59,8 @@ class ClangPluginTest(object):
         '-fno-diagnostics-show-line-numbers', '-fcaret-diagnostics-max-lines=1'
     ])
 
-    clang_cmd.extend(['-Xclang', '-add-plugin', '-Xclang', self._plugin_name])
+    for p in self._plugin_names:
+      clang_cmd.extend(['-Xclang', '-add-plugin', '-Xclang', p])
     self.AdjustClangArguments(clang_cmd)
 
     passing = []

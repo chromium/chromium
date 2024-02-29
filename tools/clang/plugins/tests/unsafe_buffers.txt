@@ -1,0 +1,27 @@
+In file included from unsafe_buffers.cpp:13:
+./unsafe_buffers_clean.h:9:10: warning: unsafe buffer access [-Wunsafe-buffer-usage]
+  return i[s];  // This is in a "clean" file, so it should make a warning.
+         ^
+./unsafe_buffers_clean.h:9:10: note: pass -fsafe-buffer-usage-suggestions to receive code hardening suggestions
+./unsafe_buffers_clean.h:19:3: warning: function introduces unsafe buffer manipulation [-Wunsafe-buffer-usage]
+  unsafe_fn();  // Unannotated call causes error.
+  ^~~~~~~~~~~
+./unsafe_buffers_clean.h:19:3: note: pass -fsafe-buffer-usage-suggestions to receive code hardening suggestions
+./unsafe_buffers_clean.h:20:3: warning: function introduces unsafe buffer manipulation [-Wunsafe-buffer-usage]
+  unsafe_fn();  // Second one uses caching and still makes an error.
+  ^~~~~~~~~~~
+./unsafe_buffers_clean.h:20:3: note: pass -fsafe-buffer-usage-suggestions to receive code hardening suggestions
+In file included from unsafe_buffers.cpp:14:
+./unsafe_buffers_clean_dir/clean_header.h:9:10: warning: unsafe buffer access [-Wunsafe-buffer-usage]
+  return i[s];  // This is in a "clean" file, so it should make a warning.
+         ^
+./unsafe_buffers_clean_dir/clean_header.h:9:10: note: pass -fsafe-buffer-usage-suggestions to receive code hardening suggestions
+./unsafe_buffers_clean_dir/clean_header.h:19:3: warning: function introduces unsafe buffer manipulation [-Wunsafe-buffer-usage]
+  in_a_dir_unsafe_fn();  // Unannotated call causes error.
+  ^~~~~~~~~~~~~~~~~~~~
+./unsafe_buffers_clean_dir/clean_header.h:19:3: note: pass -fsafe-buffer-usage-suggestions to receive code hardening suggestions
+./unsafe_buffers_clean_dir/clean_header.h:20:3: warning: function introduces unsafe buffer manipulation [-Wunsafe-buffer-usage]
+  in_a_dir_unsafe_fn();  // Second one uses caching and still makes an error.
+  ^~~~~~~~~~~~~~~~~~~~
+./unsafe_buffers_clean_dir/clean_header.h:20:3: note: pass -fsafe-buffer-usage-suggestions to receive code hardening suggestions
+6 warnings generated.

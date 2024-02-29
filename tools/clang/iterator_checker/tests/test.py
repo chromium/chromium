@@ -41,7 +41,7 @@ def main():
   dir_name = os.path.dirname(os.path.realpath(__file__))
 
   num_failures = IteratorCheckerPluginTest(dir_name, args.clang_path,
-                                           'iterator-checker',
+                                           ['iterator-checker'],
                                            args.reset_results).Run()
 
   return num_failures

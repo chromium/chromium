@@ -45,7 +45,7 @@ def main():
 
   return ChromeStylePluginTest(os.path.dirname(os.path.realpath(__file__)),
                                args.clang_path,
-                               'find-bad-constructs',
+                               ['find-bad-constructs', 'unsafe-buffers'],
                                args.reset_results,
                                filename_regex=args.filter).Run()
 

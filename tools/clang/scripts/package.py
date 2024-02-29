@@ -485,6 +485,9 @@ def main():
   # on. This can include shared libraries, as well as other dependencies not
   # explicitly mentioned in the source code (those would be found by reclient's
   # include scanner) such as sanitizer ignore lists.
+  #
+  # These paths are written relative to the package root, and will be rebased
+  # to wherever the reclient config file is written when added to the file.
   reclient_inputs = {
       'clang': [
         'lib/clang/$V/share/asan_*list.txt',

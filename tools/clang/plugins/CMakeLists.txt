@@ -8,6 +8,7 @@ set(plugin_sources
   CheckLayoutObjectMethodsVisitor.cpp
   RawPtrHelpers.cpp
   StackAllocatedChecker.cpp
+  UnsafeBuffersPlugin.cpp
   Util.cpp
 )
 
