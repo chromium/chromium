@@ -70,15 +70,6 @@ void PaintRect(GraphicsContext& context,
     context.FillRect(pixel_snapped_rect, color, auto_dark_mode);
 }
 
-void PaintRect(GraphicsContext& context,
-               const PhysicalOffset& location,
-               const PhysicalRect& rect,
-               const Color color,
-               const AutoDarkMode& auto_dark_mode) {
-  PaintRect(context, PhysicalRect(rect.offset + location, rect.size), color,
-            auto_dark_mode);
-}
-
 const HighlightRegistry* GetHighlightRegistry(const Node* node) {
   if (!node)
     return nullptr;
@@ -484,10 +475,10 @@ void HighlightPainter::Paint(Phase phase) {
                   originating_style_.UsedColorScheme(),
                   document.GetColorProviderForPainting(
                       originating_style_.UsedColorScheme()));
-          PaintRect(paint_info_.context, PhysicalOffset(box_origin_),
-                    fragment_item_.LocalRect(text, paint_start_offset,
-                                             paint_end_offset),
-                    color, background_auto_dark_mode_);
+          PaintRect(
+              paint_info_.context,
+              ComputeBackgroundRect(text, paint_start_offset, paint_end_offset),
+              color, background_auto_dark_mode_);
           break;
         }
 
@@ -523,11 +514,10 @@ void HighlightPainter::Paint(Phase phase) {
       case DocumentMarker::kSuggestion: {
         const auto& styleable_marker = To<StyleableMarker>(*marker);
         if (phase == kBackground) {
-          PaintRect(paint_info_.context, PhysicalOffset(box_origin_),
-                    fragment_item_.LocalRect(text, paint_start_offset,
-                                             paint_end_offset),
-                    styleable_marker.BackgroundColor(),
-                    background_auto_dark_mode_);
+          PaintRect(
+              paint_info_.context,
+              ComputeBackgroundRect(text, paint_start_offset, paint_end_offset),
+              styleable_marker.BackgroundColor(), background_auto_dark_mode_);
           break;
         }
         if (DocumentMarkerPainter::ShouldPaintMarkerUnderline(
@@ -564,10 +554,10 @@ void HighlightPainter::Paint(Phase phase) {
                   highlight_pseudo_marker.GetPseudoId(),
                   highlight_pseudo_marker.GetPseudoArgument());
 
-          PaintRect(paint_info_.context, PhysicalOffset(box_origin_),
-                    fragment_item_.LocalRect(text, paint_start_offset,
-                                             paint_end_offset),
-                    background_color, background_auto_dark_mode_);
+          PaintRect(
+              paint_info_.context,
+              ComputeBackgroundRect(text, paint_start_offset, paint_end_offset),
+              background_color, background_auto_dark_mode_);
           break;
         }
 
@@ -852,9 +842,7 @@ const PhysicalRect HighlightPainter::ComputeBackgroundRect(
     StringView text,
     unsigned start_offset,
     unsigned end_offset) {
-  const PhysicalRect& rect =
-      fragment_item_.LocalRect(text, start_offset, end_offset);
-  return PhysicalRect(rect.offset + PhysicalOffset(box_origin_), rect.size);
+  return fragment_item_.LocalRect(text, start_offset, end_offset) + box_origin_;
 }
 
 void HighlightPainter::PaintHighlightOverlays(
