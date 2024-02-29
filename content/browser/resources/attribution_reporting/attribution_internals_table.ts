@@ -138,10 +138,10 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
 
   private dispatchRowsChange_(): void {
     const td = this.$<HTMLTableCellElement>('tfoot td')!;
-    td.colSpan = this.cols_!.length;
+    td.colSpan = this.cols_!.length - 1;
 
     const rowCount = this.rowCount_();
-    td.innerText = `Rows: ${rowCount}`;
+    td.innerText = `${rowCount}`;
 
     this.dispatchEvent(new CustomEvent('rows-change', {
       bubbles: true,

@@ -142,7 +142,7 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
       const table = document.querySelector('#event-level-report-panel attribution-internals-table')
           .shadowRoot.querySelector('tfoot');
       const setTitleIfDone = (_, obs) => {
-        if (table.querySelector('td')?.innerText === 'Rows: 0') {
+        if (table.querySelector('td')?.innerText === '0') {
           if (obs) {
             obs.disconnect();
           }
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(
     const table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tfoot');
     const setTitleIfDone = (_, obs) => {
-      if (table.querySelector('td')?.innerText === 'Rows: 0') {
+      if (table.querySelector('td')?.innerText === '0') {
         if (obs) {
           obs.disconnect();
         }
@@ -961,8 +961,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     const regTable = document.querySelector('#sourceRegistrationTable')
         .shadowRoot.querySelector('tfoot');
     const setTitleIfDone = (_, obs) => {
-      if (table.querySelector('td')?.innerText === 'Rows: 0' &&
-          regTable.querySelector('td')?.innerText === 'Rows: 0') {
+      if (table.querySelector('td')?.innerText === '0' &&
+          regTable.querySelector('td')?.innerText === '0') {
         if (obs) {
           obs.disconnect();
         }
@@ -1286,7 +1286,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     const table = document.querySelector('#aggregatable-report-panel attribution-internals-table')
         .shadowRoot.querySelector('tfoot');
     const setTitleIfDone = (_, obs) => {
-      if (table.querySelector('td')?.innerText !== 'Rows: 0') {
+      if (table.querySelector('td')?.innerText !== '0') {
         if (obs) {
           obs.disconnect();
         }
@@ -1314,7 +1314,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     const table = document.querySelector('#aggregatable-report-panel attribution-internals-table')
         .shadowRoot.querySelector('tfoot');
     const setTitleIfDone = (_, obs) => {
-      if (table.querySelector('td')?.innerText === 'Rows: 0') {
+      if (table.querySelector('td')?.innerText === '0') {
         if (obs) {
           obs.disconnect();
         }

@@ -13,6 +13,11 @@ body {
   font-size: 13px;
   height: 100vh;
   margin: 0;
+
+  --header-background: rgb(241, 243, 244);
+  --header-hover-background: var(--border-color);
+  --border-color: rgb(218, 220, 224);
+  --cell-padding: 16px;
 }
 
 header {
@@ -27,7 +32,6 @@ cr-tab-box {
 
 attribution-internals-table {
   width: 100%;
-  overflow: auto;
 }
 
 div[slot='panel'][selected] {

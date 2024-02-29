@@ -1,6 +1,10 @@
 <style>
+  div {
+    overflow: auto;
+  }
+
   table {
-    border: 0;
+    border: 1px solid var(--border-color);
     border-collapse: collapse;
     /* Per
      * https://limebrains.com/blog/2021-03-02T13:00-heigh-100-inside-table-td
@@ -12,7 +16,7 @@
   }
 
   thead, tfoot {
-    background: #bacbe6;
+    background: var(--header-background);
     position: sticky;
   }
 
@@ -21,18 +25,22 @@
   }
 
   tbody tr, tfoot tr {
-    border-top-color: rgba(0,0,0,.12);
-    border-top-style: solid;
-    border-top-width: 1px;
+    border-top: 1px solid var(--border-color);
   }
 
   tfoot {
     bottom: 0;
-    font-weight: bold;
+  }
+
+  tfoot th {
+    text-align: right;
   }
 
   td, th {
-    padding-inline: 16px;
+    font-weight: normal;
+    padding-inline: var(--cell-padding);
+    text-align: left;
+    vertical-align: top;
   }
 
   th[aria-sort] {
@@ -40,31 +48,38 @@
   }
 
   th[aria-sort] button {
+    align-items: start;
     background: none;
     border: none;
     color: inherit;
     cursor: pointer;
+    display: flex;
     font: inherit;
     height: 100%;
-    padding-inline: 16px;
+    padding-inline: var(--cell-padding);
     height: 100%;
+    text-align: left;
     width: 100%;
   }
 
   th[aria-sort] button:hover {
-    background: rgba(0,0,0,.12);
+    background: var(--header-hover-background);
+  }
+
+  th[aria-sort] button::after {
+    margin-left: auto;
   }
 
   th[aria-sort='none'] button::after {
-    content: '⬍';
+    content: '⇅';
   }
 
   th[aria-sort='ascending'] button::after {
-    content: '⬆';
+    content: '↑';
   }
 
   th[aria-sort='descending'] button::after {
-    content: '⬇';
+    content: '↓';
   }
 
   ul, li {
@@ -77,17 +92,26 @@
     content: ' ❌';
   }
 
-  .number {
+  td.number {
     font-variant-numeric: tabular-nums;
     text-align: right;
   }
+
+  pre {
+    margin: 0;
+  }
 </style>
-<table>
-  <thead>
-    <tr></tr>
-  </thead>
-  <tbody></tbody>
-  <tfoot>
-    <tr><td></td></tr>
-  </tfoot>
-</table>
+<div>
+  <table>
+    <thead>
+      <tr></tr>
+    </thead>
+    <tbody></tbody>
+    <tfoot>
+      <tr>
+        <th scope=row>Row Count</th>
+        <td>0</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
