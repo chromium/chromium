@@ -1763,8 +1763,12 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
     base::UmaHistogramBoolean("Accessibility.CrosLargeCursor",
                               large_cursor_enabled);
     if (large_cursor_enabled) {
-      base::UmaHistogramCounts100(
-          "Accessibility.CrosLargeCursorSize",
+      base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
+          "Accessibility.CrosLargeCursorSize2", kMinLargeCursorSize,
+          kMaxExtraLargeCursorSize + 1,
+          (kMaxExtraLargeCursorSize + 1 - kMinLargeCursorSize) / 2 + 2,
+          base::HistogramBase::kUmaTargetedHistogramFlag);
+      histogram->Add(
           prefs->GetInteger(prefs::kAccessibilityLargeCursorDipSize));
     }
 

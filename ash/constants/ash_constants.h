@@ -31,6 +31,9 @@ constexpr int kFocusBarThickness = 3;
 constexpr int kShelfDisplayOffset = 1;
 
 constexpr int kDefaultLargeCursorSize = 64;
+constexpr int kMinLargeCursorSize = 25;
+constexpr int kMaxLargeCursorSize = 64;
+constexpr int kMaxExtraLargeCursorSize = 128;
 
 constexpr SkColor kDefaultCursorColor = SK_ColorBLACK;
 

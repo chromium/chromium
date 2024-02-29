@@ -48,10 +48,6 @@ namespace ash {
 
 namespace {
 
-const int kMinLargeCursorSize = 25;
-const int kMaxLargeCursorSize = 64;
-const int kMaxExtraLargeCursorSize = 128;
-
 SkBitmap GetColorAdjustedBitmap(const gfx::ImageSkiaRep& image_rep,
                                 SkColor cursor_color) {
   const SkBitmap& bitmap = image_rep.GetBitmap();

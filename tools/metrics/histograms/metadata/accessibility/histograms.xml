@@ -573,36 +573,38 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ChromeVox.PerformGestureType"
-    enum="ChromeVoxGestureType" expires_after="2023-11-30">
+    enum="ChromeVoxGestureType" expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     A user can control ChromeVox via a variety of gestures on the touch screen.
     For example, swiping right with one finger causes ChromeVox to navigate to
-    the next object. Track all possible gestures here.
+    the next object. Track all possible gestures here. Warning: this histogram
+    was expired 2023-11-30 to 2024-02-29, data might be missing.
   </summary>
 </histogram>
 
 <histogram name="Accessibility.CrosAlwaysShowA11yMenu" enum="BooleanEnabled"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Whether the Chrome OS Accessibility Menu is set to be shown regardless of
-    the state of a11y features.(logged once 45 secs after startup).
+    the state of a11y features.(logged once 45 secs after startup). Warning:
+    this histogram was expired 2023-11-30 to 2024-02-29, data might be missing.
   </summary>
 </histogram>
 
 <histogram name="Accessibility.CrosAutoclick" enum="BooleanEnabled"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>kenjibaheux@google.com</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Whether the Chrome OS Autoclick feature is on (logged once 45 secs after
-    startup). Warning: this histogram was expired 2021-12-31 to 2022-07-07, data
-    might be missing.
+    startup). Warning: this histogram was expired 2021-12-31 to 2022-07-07, and
+    2023-11-30 to 2024-02-29, data might be missing.
   </summary>
 </histogram>
 
@@ -732,10 +734,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.MacroFailed"
-    enum="CrosDictationMacroName" expires_after="2023-11-30">
+    enum="CrosDictationMacroName" expires_after="2024-06-30">
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
-  <summary>Recorded whenever Dictation fails to perform a macro.</summary>
+  <summary>
+    Recorded whenever Dictation fails to perform a macro. Warning: this
+    histogram was expired 2023-11-30 to 2024-02-29, data might be missing.
+  </summary>
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.MacroRecognized"
@@ -746,10 +751,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.MacroSucceeded"
-    enum="CrosDictationMacroName" expires_after="2023-11-30">
+    enum="CrosDictationMacroName" expires_after="2024-06-30">
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
-  <summary>Recorded whenever Dictation successfully performs a macro.</summary>
+  <summary>
+    Recorded whenever Dictation successfully performs a macro. Warning: this
+    histogram was expired 2023-11-30 to 2024-02-29, data might be missing.
+  </summary>
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.PumpkinSucceeded"
@@ -834,14 +842,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.CrosLargeCursorSize" units="dip"
-    expires_after="2023-11-30">
-  <owner>sarakato@chromium.org</owner>
+<histogram name="Accessibility.CrosLargeCursorSize2" units="dip"
+    expires_after="2025-02-28">
+  <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Cursor size of the Chrome OS Large Cursor (logged once 45 secs after
-    startup).
+    startup). This replaced Accessibility.CrosLargeCursorSize in M124.
   </summary>
 </histogram>
 
@@ -878,13 +886,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.BubbleDismissMethod"
-    enum="CrosSelectToSpeakActivationMethod" expires_after="2023-11-30">
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2024-06-30">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     When Select-to-speak is active, the user can dismiss the bubble menu in
     multiple ways: by clicking the cancel button on the Select-to-speak menu or
-    using keyboard shortcuts. Track the methods here.
+    using keyboard shortcuts. Track the methods here. Warning: this histogram
+    was expired 2023-11-30 to 2024-02-29, data might be missing.
   </summary>
 </histogram>
 
@@ -909,7 +918,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.CrosSelectToSpeak.OverrideSpeechRateMultiplier"
     enum="CrosSelectToSpeakOverrideSpeechRateMultiplier"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -919,18 +928,20 @@ chromium-metrics-reviews@google.com.
     as a sparse histogram with values (100 * multiple). For example, a speech
     rate multiplier of 1.0 (default) will be seen as 100. Emitted once every
     time playback starts, including on resume after pause or change of
-    selection.
+    selection. Warning: this histogram was expired 2023-11-30 to 2024-02-29,
+    data might be missing.
   </summary>
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.ParagraphNavigationMethod"
-    enum="CrosSelectToSpeakActivationMethod" expires_after="2023-11-30">
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2024-06-30">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     When Select-to-speak is active, the user can navigate between paragraphs in
     multiple ways: by clicking the navigation buttons on the Select-to-speak
-    menu or using keyboard shortcuts. Track the methods here.
+    menu or using keyboard shortcuts. Track the methods here. Warning: this
+    histogram was expired 2023-11-30 to 2024-02-29, data might be missing.
   </summary>
 </histogram>
 
@@ -1338,47 +1349,52 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LanguageDetection.CountDetectionAttempted"
-    units="count" expires_after="2023-11-30">
+    units="count" expires_after="2024-06-30">
   <owner>chrishall@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The number of nodes on this page for which language detection was attempted.
+    Warning: this histogram was expired 2023-11-30 to 2024-02-29, data might be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Accessibility.LanguageDetection.CountLabelled" units="count"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>chrishall@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The number of nodes on this page for which a detected language was
-    successfully assigned.
+    successfully assigned. Warning: this histogram was expired 2023-11-30 to
+    2024-02-29, data might be missing.
   </summary>
 </histogram>
 
 <histogram name="Accessibility.LanguageDetection.LangsPerPage" units="count"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>chrishall@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The number of unique languages which were detected to be the most probable
     language for at least one node on the page, regardless of whether a detected
-    language was assigned for that node.
+    language was assigned for that node. Warning: this histogram was expired
+    2023-11-30 to 2024-02-29, data might be missing.
   </summary>
 </histogram>
 
 <histogram name="Accessibility.LanguageDetection.PercentageLabelledWithTop"
-    units="%" expires_after="2023-11-30">
+    units="%" expires_after="2024-06-30">
   <owner>chrishall@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Of the nodes which had a detected language assigned, the percentage for
     which the assigned language was the language detected as having the highest
-    probability.
+    probability. Warning: this histogram was expired 2023-11-30 to 2024-02-29,
+    data might be missing.
   </summary>
 </histogram>
 
@@ -1394,14 +1410,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LanguageDetection.PercentageOverridden"
-    units="%" expires_after="2023-11-30">
+    units="%" expires_after="2024-06-30">
   <owner>chrishall@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Of the nodes for which a detected language was successfully assigned, the
     percentage where the assigned language differs from the author-provided
-    language.
+    language. Warning: this histogram was expired 2023-11-30 to 2024-02-29, data
+    might be missing.
   </summary>
 </histogram>
 
@@ -2221,7 +2238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Reliability.Tree.UnserializeError"
-    enum="AccessibilityTreeUnserializeError" expires_after="2023-11-30">
+    enum="AccessibilityTreeUnserializeError" expires_after="2024-06-30">
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -2229,7 +2246,8 @@ chromium-metrics-reviews@google.com.
     Tracks the type of failure that occured when unserializing the accessibility
     tree. When an error in unserialization occurs, this is emitted and
     unserialization aborts. In the case of a tree with multiple issues, only the
-    first error is recorded. Refer to AXTree::Unserialize for details.
+    first error is recorded. Refer to AXTree::Unserialize for details. Warning:
+    this histogram was expired 2023-11-30 to 2024-02-29, data might be missing.
   </summary>
 </histogram>
 
@@ -2450,13 +2468,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.WinAPIs.GetPropertyValue"
-    enum="AccessibilityWinAPIGetPropertyValueEnum" expires_after="2023-11-30">
+    enum="AccessibilityWinAPIGetPropertyValueEnum" expires_after="2024-06-30">
   <owner>aleventhal@chromium.org</owner>
   <owner>nektar@chromium.org</owner>
   <owner>dlibby@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Tracks properties requested via UI Automation GetPropertyValue().
+    Tracks properties requested via UI Automation GetPropertyValue(). Warning:
+    this histogram was expired 2023-11-30 to 2024-02-29, data might be missing.
   </summary>
 </histogram>
 
@@ -2609,14 +2628,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PumpkinInstaller.InstallationSuccess" enum="BooleanSuccess"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Pumpkin installation is triggered when one of the features using Pumpkin
     (currently the only feature using Pumpkin is Dictation) are enabled. This
     histogram is recorded once when Pumpkin installation finishes with either
-    success or failure.
+    success or failure. Warning: this histogram was expired 2023-11-30 to
+    2024-02-29, data might be missing.
   </summary>
 </histogram>
 
@@ -2705,84 +2725,96 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextToSpeech.Event" enum="TextToSpeechEvent"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Events fired by the text-to-speech engine when speaking an utterance.
+    Warning: this histogram was expired 2023-11-30 to 2024-02-29, data might be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="TextToSpeech.Settings.GetVoiceBytes"
-    enum="TextToSpeechGetVoiceBytes" expires_after="2023-11-30">
+    enum="TextToSpeechGetVoiceBytes" expires_after="2024-06-30">
   <owner>josiahk@chromium.org</owner>
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     When the user requests a download of a text-to-speech voice, records the
-    success/failure result, and service used to download it.
+    success/failure result, and service used to download it. Warning: this
+    histogram was expired 2023-11-30 to 2024-02-29, data might be missing.
   </summary>
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.FromExtensionAPI"
-    enum="TextToSpeechFromExtensionAPI" expires_after="2023-11-30">
+    enum="TextToSpeechFromExtensionAPI" expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Indicates if an utterance spoken via synthesized text-to-speech was
-    triggered by the Chrome TTS extension API or the web speech API.
+    triggered by the Chrome TTS extension API or the web speech API. Warning:
+    this histogram was expired 2023-11-30 to 2024-02-29, data might be missing.
   </summary>
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.HasVoiceName"
-    enum="TextToSpeechHasVoiceName" expires_after="2023-11-30">
+    enum="TextToSpeechHasVoiceName" expires_after="2024-06-30">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     True if an utterance spoken via synthesized text-to-speech requested a
-    specific voice by name.
+    specific voice by name. Warning: this histogram was expired 2023-11-30 to
+    2024-02-29, data might be missing.
   </summary>
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.Native" enum="TextToSpeechNative"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     True if an utterance is spoken with native speech provided by the operating
     system, otherwise it's spoken via a Chrome extension that implements
-    text-to-speech support.
+    text-to-speech support. Warning: this histogram was expired 2023-11-30 to
+    2024-02-29, data might be missing.
   </summary>
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.Rate" units="count"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The rate of an utterance to be spoken via synthesized text-to-speech.
+    Warning: this histogram was expired 2023-11-30 to 2024-02-29, data might be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.Source" enum="TextToSpeechSource"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>joelriley@google.com</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     ChromeOS source that triggered text-to-speech utterance via extension API,
     from a few known accessibility clients (Select-to-speak, ChromeVox).
+    Warning: this histogram was expired 2023-11-30 to 2024-02-29, data might be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.TextLength" units="bytes"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The length of an utterance to be spoken via synthesized text-to-speech.
+    Warning: this histogram was expired 2023-11-30 to 2024-02-29, data might be
+    missing.
   </summary>
 </histogram>
 
