@@ -596,6 +596,11 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
                       .set_image(std::move(skia_image),
                                  paint_image.GetContentIdForFrame(0u))
                       .TakePaintImage();
+
+    // Update source alpha states after redecoding.
+    parsed_options.source_is_unpremul =
+        paint_image.GetAlphaType() == kUnpremul_SkAlphaType;
+
   } else if (paint_image.IsLazyGenerated()) {
     // Other Image types can still produce lazy generated images (for example
     // SVGs).

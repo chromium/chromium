@@ -341,4 +341,67 @@ TEST_F(ImageBitmapTest,
   DCHECK(image_bitmap);
 }
 
+TEST_F(ImageBitmapTest, ImageAlphaState) {
+  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  auto* image_element =
+      MakeGarbageCollected<HTMLImageElement>(dummy->GetDocument());
+
+  // Load a 2x2 png file which has pixels (255, 102, 153, 0). It is a fully
+  // transparent image.
+  ResourceRequest resource_request(
+      "data:image/"
+      "png;base64,"
+      "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEUlEQVR42mP8nzaTAQQYYQwA"
+      "LssD/5ca+r8AAAAASUVORK5CYII=");
+
+  FetchParameters params =
+      FetchParameters::CreateForTest(std::move(resource_request));
+
+  ImageResourceContent* resource_content =
+      ImageResourceContent::Fetch(params, dummy->GetDocument().Fetcher());
+
+  image_element->SetImageForTest(resource_content);
+
+  ImageBitmapOptions* options = ImageBitmapOptions::Create();
+  // ImageBitmap created from unpremul source image result.
+  options->setPremultiplyAlpha("none");
+
+  // Additional operation shouldn't affect alpha op.
+  options->setImageOrientation("flipY");
+
+  std::optional<gfx::Rect> crop_rect =
+      gfx::Rect(0, 0, image_element->width(), image_element->height());
+  auto* image_bitmap =
+      MakeGarbageCollected<ImageBitmap>(image_element, crop_rect, options);
+  ASSERT_TRUE(image_bitmap);
+
+  // Read 1 pixel
+  sk_sp<SkImage> result =
+      image_bitmap->BitmapImage()->PaintImageForCurrentFrame().GetSwSkImage();
+  SkPixmap pixmap;
+  ASSERT_TRUE(result->peekPixels(&pixmap));
+  const uint32_t* pixels = pixmap.addr32();
+
+  SkColorType result_color_type = result->colorType();
+  SkColor expected = SkColorSetARGB(0, 0, 0, 0);
+
+  switch (result_color_type) {
+    case SkColorType::kRGBA_8888_SkColorType:
+      // Set ABGR value as reverse of RGBA
+      expected =
+          SkColorSetARGB(/* a */ 0, /* b */ 153, /* g */ 102, /* r */ 255);
+      break;
+    case SkColorType::kBGRA_8888_SkColorType:
+      // Set ARGB value as reverse of BGRA
+      expected =
+          SkColorSetARGB(/* a */ 0, /* r */ 255, /* g */ 102, /* b */ 153);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  ASSERT_EQ(pixels[0], expected);
+}
+
 }  // namespace blink
