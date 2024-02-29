@@ -86,7 +86,7 @@ BitMapBlocklistState BlocklistStateToBitMapBlocklistState(
 
 BitMapBlocklistState GetExtensionBlocklistState(
     const ExtensionId& extension_id,
-    ExtensionPrefs* extension_prefs) {
+    const ExtensionPrefs* extension_prefs) {
   BitMapBlocklistState sb_state =
       GetSafeBrowsingExtensionBlocklistState(extension_id, extension_prefs);
   BitMapBlocklistState extension_telemetry_service_state =
@@ -135,7 +135,7 @@ void RemoveOmahaBlocklistState(const ExtensionId& extension_id,
 
 bool HasOmahaBlocklistState(const ExtensionId& extension_id,
                             BitMapBlocklistState state,
-                            ExtensionPrefs* extension_prefs) {
+                            const ExtensionPrefs* extension_prefs) {
   int current_states = extension_prefs->GetBitMapPrefBits(
       extension_id, kPrefOmahaBlocklistState,
       static_cast<int>(kDefaultBitMapBlocklistState));
@@ -219,7 +219,7 @@ void SetSafeBrowsingExtensionBlocklistState(
 
 BitMapBlocklistState GetSafeBrowsingExtensionBlocklistState(
     const ExtensionId& extension_id,
-    ExtensionPrefs* extension_prefs) {
+    const ExtensionPrefs* extension_prefs) {
   int int_value = -1;
   if (extension_prefs->ReadPrefAsInteger(extension_id, kPrefBlocklistState,
                                          &int_value) &&
@@ -250,7 +250,7 @@ void SetExtensionTelemetryServiceBlocklistState(
 
 BitMapBlocklistState GetExtensionTelemetryServiceBlocklistState(
     const ExtensionId& extension_id,
-    ExtensionPrefs* extension_prefs) {
+    const ExtensionPrefs* extension_prefs) {
   int int_value = -1;
   if (extension_prefs->ReadPrefAsInteger(
           extension_id, kPrefExtensionTelemetryServiceBlocklistState,
