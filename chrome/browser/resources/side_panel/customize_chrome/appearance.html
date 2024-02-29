@@ -1,26 +1,46 @@
 <style include="cr-hidden-style cr-icons sp-shared-style">
-  #editThemeButton {
+  #editButtonsContainer {
+    display: flex;
+    gap: 8px;
     margin: 0 16px 24px;
     width: calc(100% - 32px);
   }
 
-  .theme-button:not([hidden]) ~ #editThemeButton {
+  #editThemeButton {
+    flex-grow: 1;
+  }
+
+  #wallpaperSearchButton {
+    flex-grow: 1.5;
+  }
+
+  .theme-button:not([hidden]) ~ #editButtonsContainer {
     margin: 24px 16px 16px;
   }
 
-  #imageIcon {
+  .edit-theme-icon {
     --cr-icon-color: var(--ink-color-action);
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+  }
+
+  :host-context([chrome-refresh-2023]) .edit-theme-icon {
+    --cr-icon-color: currentColor;
+    margin-inline-end: 0;
+  }
+
+  #editThemeIcon {
     --cr-icon-image: url(icons/image.svg);
     --cr-icon-size: 12px;
     height: 12px;
-    margin-inline-end: 0;
-    margin-inline-start: 0;
     width: 12px;
   }
 
-  :host-context([chrome-refresh-2023]) #imageIcon {
-    --cr-icon-color: currentColor;
-    margin-inline-end: 0;
+  #wallpaperSearchIcon {
+    --cr-icon-image: url(icons/sparkle.svg);
+    --cr-icon-size: 20px;
+    height: 20px;
+    width: 20px;
   }
 
   #setClassicChromeButton {
@@ -71,11 +91,12 @@
     margin-top: 16px;
   }
 
-  :host-context([chrome-refresh-2023]) .theme-button:not([hidden]) ~ #editThemeButton {
+  :host-context([chrome-refresh-2023]) .theme-button:not([hidden])
+      ~ #editButtonsContainer {
     margin: 20px 16px;
   }
 
-  :host-context([chrome-refresh-2023]) #editThemeButton {
+  :host-context([chrome-refresh-2023]) #editButtonsContainer {
     margin-bottom: 16px;
   }
 
@@ -113,11 +134,22 @@
     label="$i18n{yourSearchedImage}"
     label-description="$i18n{currentTheme}">
 </customize-chrome-hover-button>
-<cr-button id="editThemeButton" on-click="onEditThemeClicked_"
-    class$="[[themeButtonClass_]]">
-  <div id="imageIcon" class="cr-icon" slot="prefix-icon"></div>
-  $i18n{changeTheme}
-</cr-button>
+<div id="editButtonsContainer">
+  <cr-button id="editThemeButton" on-click="onEditThemeClicked_"
+      class$="[[themeButtonClass_]]">
+    <div id="editThemeIcon" class="cr-icon edit-theme-icon" slot="prefix-icon"
+        hidden$="[[wallpaperSearchButtonEnabled_]]"></div>
+    [[editThemeButtonText_]]
+  </cr-button>
+  <template is="dom-if" if="[[wallpaperSearchButtonEnabled_]]">
+    <cr-button id="wallpaperSearchButton" on-click="onWallpaperSearchClicked_"
+        class$="[[themeButtonClass_]]">
+      <div id="wallpaperSearchIcon" class="cr-icon edit-theme-icon"
+          slot="prefix-icon"></div>
+      $i18n{wallpaperSearchTileLabel}
+    </cr-button>
+  </template>
+</div>
 <hr class="sp-hr">
 <customize-color-scheme-mode>
 </customize-color-scheme-mode>

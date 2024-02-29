@@ -250,6 +250,11 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       wallpaper_search_enabled &&
           base::FeatureList::IsEnabled(
               ntp_features::kCustomizeChromeWallpaperSearchInspirationCard));
+  source->AddBoolean(
+      "wallpaperSearchButtonEnabled",
+      wallpaper_search_enabled &&
+          base::FeatureList::IsEnabled(
+              ntp_features::kCustomizeChromeWallpaperSearchButton));
 
   webui::SetupChromeRefresh2023(source);
 
