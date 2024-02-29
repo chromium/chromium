@@ -618,10 +618,11 @@ HashPrefixStr MmapHashPrefixMap::FileInfo::Matches(
     start = offsets_[index];
     if (++index < offsets_.size())
       end = offsets_[index];
+  }
 
-    // If the start is the same as end, the hash doesn't exist.
-    if (start == end)
-      return HashPrefixStr();
+  // If the start is the same as end, the hash doesn't exist.
+  if (start == end) {
+    return HashPrefixStr();
   }
 
   // TODO(crbug.com/1409674): Remove crash logging.
