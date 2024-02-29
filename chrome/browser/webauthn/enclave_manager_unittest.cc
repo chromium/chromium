@@ -39,13 +39,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// The communication with the enclave process would need to be ported to Windows
-// for these tests to run there.
-//
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
+
 // These tests are also disabled under MSAN. The enclave subprocess is written
 // in Rust and FFI from Rust to C++ doesn't work in Chromium at this time
 // (crbug.com/1369167).
-#if BUILDFLAG(IS_POSIX) && !defined(MEMORY_SANITIZER)
+#if !defined(MEMORY_SANITIZER)
 
 namespace enclave = device::enclave;
 
@@ -145,8 +146,32 @@ std::pair<base::Process, uint16_t> StartEnclave(base::FilePath cwd) {
 
   std::optional<base::Process> enclave_process;
   uint16_t port;
+  char port_str[6];
 
   for (int i = 0; i < 10; i++) {
+#if BUILDFLAG(IS_WIN)
+    HANDLE read_handle;
+    HANDLE write_handle;
+    SECURITY_ATTRIBUTES security_attributes;
+
+    security_attributes.nLength = sizeof(SECURITY_ATTRIBUTES);
+    security_attributes.bInheritHandle = TRUE;
+    security_attributes.lpSecurityDescriptor = NULL;
+    CHECK(CreatePipe(&read_handle, &write_handle, &security_attributes, 0));
+
+    subprocess_opts.stdin_handle = INVALID_HANDLE_VALUE;
+    subprocess_opts.stdout_handle = write_handle;
+    subprocess_opts.stderr_handle = INVALID_HANDLE_VALUE;
+    subprocess_opts.handles_to_inherit.push_back(write_handle);
+    enclave_process = base::LaunchProcess(base::CommandLine(enclave_bin_path),
+                                          subprocess_opts);
+    CloseHandle(write_handle);
+    CHECK(enclave_process->IsValid());
+
+    DWORD read_bytes;
+    CHECK(ReadFile(read_handle, port_str, sizeof(port_str), &read_bytes, NULL));
+    CloseHandle(read_handle);
+#else
     int fds[2];
     CHECK(!pipe(fds));
     subprocess_opts.fds_to_remap.emplace_back(fds[1], 1);
@@ -155,15 +180,16 @@ std::pair<base::Process, uint16_t> StartEnclave(base::FilePath cwd) {
     CHECK(enclave_process->IsValid());
     close(fds[1]);
 
-    char port_str[6];
     const ssize_t read_bytes =
         HANDLE_EINTR(read(fds[0], port_str, sizeof(port_str)));
+    close(fds[0]);
+#endif
+
     CHECK(read_bytes > 0);
     port_str[read_bytes - 1] = 0;
     unsigned u_port;
     CHECK(base::StringToUint(port_str, &u_port)) << port_str;
     port = base::checked_cast<uint16_t>(u_port);
-    close(fds[0]);
 
     if (net::IsPortAllowedForScheme(port, "wss")) {
       break;
