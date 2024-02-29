@@ -7,6 +7,7 @@ import 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {FAKE_PRINT_REQUEST_FAILURE_INVALID_SETTINGS_ERROR, FAKE_PRINT_REQUEST_SUCCESSFUL, FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 
 suite('PrintPreviewCrosApp', () => {
   let printPreviewPageHandler: FakePrintPreviewPageHandler;
@@ -46,4 +47,37 @@ suite('PrintPreviewCrosApp', () => {
     printPreviewPageHandler.cancel();
     assertEquals(1, printPreviewPageHandler.getCallCount('cancel'));
   });
+
+  // Verify the fake PrintPreviewPageHandler method uses 0ms delay resolve
+  // method by default.
+  test('default delay is 0ms', async () => {
+    const mockController = new MockController();
+    const methods = printPreviewPageHandler.getMethodsForTesting();
+    const resolveNoDelay =
+        mockController.createFunctionMock(methods, 'resolveMethodWithDelay');
+    const delay = 0;
+    resolveNoDelay.addExpectation('print', delay);
+    await printPreviewPageHandler.print();
+
+    mockController.verifyMocks();
+    mockController.reset();
+  });
+
+  // Verify the fake PrintPreviewPageHandler use resolve method with delay when
+  // a delay is configured.
+  test(
+      'uses delayed resolver when testDelayMs is greater than zero',
+      async () => {
+        const mockController = new MockController();
+        const methods = printPreviewPageHandler.getMethodsForTesting();
+        const resolveWithDelay = mockController.createFunctionMock(
+            methods, 'resolveMethodWithDelay');
+        const delay = 1;
+        resolveWithDelay.addExpectation('print', delay);
+        printPreviewPageHandler.useTestDelay(delay);
+        await printPreviewPageHandler.print();
+
+        mockController.verifyMocks();
+        mockController.reset();
+      });
 });

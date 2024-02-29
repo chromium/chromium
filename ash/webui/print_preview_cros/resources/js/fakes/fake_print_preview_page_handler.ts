@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {type PrintPreviewPageHandler, type PrintRequestOutcome} from '../utils/print_preview_cros_app_types.js';
 
@@ -29,6 +30,7 @@ const CANCEL_METHOD = 'cancel';
 export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
   private methods: FakeMethodResolver = new FakeMethodResolver();
   private callCount: Map<string, number> = new Map<string, number>();
+  private testDelayMs = 0;
   constructor() {
     this.registerMethods();
   }
@@ -46,6 +48,7 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
     this.callCount.clear();
     this.methods = new FakeMethodResolver();
     this.registerMethods();
+    this.testDelayMs = 0;
   }
 
   setPrintResult(result: PrintRequestOutcome) {
@@ -56,7 +59,7 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
   print(): Promise<PrintRequestOutcome> {
     const prevCallCount = this.callCount.get(PRINT_METHOD) ?? 0;
     this.callCount.set(PRINT_METHOD, prevCallCount + 1);
-    return this.methods.resolveMethod(PRINT_METHOD);
+    return this.methods.resolveMethodWithDelay(PRINT_METHOD, this.testDelayMs);
   }
 
   getCallCount(method: string): number {
@@ -67,5 +70,14 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
   cancel(): void {
     const prevCallCount = this.callCount.get(CANCEL_METHOD) ?? 0;
     this.callCount.set(CANCEL_METHOD, prevCallCount + 1);
+  }
+
+  useTestDelay(delay: number): void {
+    assert(delay >= 0);
+    this.testDelayMs = delay;
+  }
+
+  getMethodsForTesting(): FakeMethodResolver {
+    return this.methods;
   }
 }
