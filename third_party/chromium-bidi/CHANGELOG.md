@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.12](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.11...chromium-bidi-v0.5.12) (2024-02-29)
+
+
+### Features
+
+* implement `storage.deleteCookies` ([#1915](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1915)) ([18d3d4f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/18d3d4f197320dcb152d9d0b729bcf2a77720cec))
+
+
+### Bug Fixes
+
+* implement less flaky network module ([#1871](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1871)) ([4ec8bad](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4ec8bad7d1f42b916bbab207ab68371e79063ff1))
+* parse `browser.RemoveUserContextParameters` ([#1905](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1905)) ([a50821b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/a50821b2661777be4509bf9bc9c6a0890e5e5a7a))
+
 ## [0.5.11](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.10...chromium-bidi-v0.5.11) (2024-02-23)
 
 
