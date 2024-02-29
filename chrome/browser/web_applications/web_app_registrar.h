@@ -468,6 +468,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
   bool IsPreferredAppForCapturingUrl(const GURL& url,
                                      const webapps::AppId& app_id);
 
+  bool IsDiyApp(const webapps::AppId& app_id) const;
+
 #if BUILDFLAG(IS_MAC)
   bool AlwaysShowToolbarInFullscreen(const webapps::AppId& app_id) const;
   void NotifyAlwaysShowToolbarInFullscreenChanged(const webapps::AppId& app_id,

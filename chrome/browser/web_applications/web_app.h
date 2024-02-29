@@ -447,6 +447,8 @@ class WebApp {
     return supported_links_offer_dismiss_count_;
   }
 
+  bool is_diy_app() const { return is_diy_app_; }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -551,6 +553,7 @@ class WebApp {
       proto::LinkCapturingUserPreference user_link_capturing_preference);
   void SetSupportedLinksOfferIgnoreCount(int ignore_count);
   void SetSupportedLinksOfferDismissCount(int dismiss_count);
+  void SetIsDiyApp(bool is_diy_app);
 
   void AddPlaceholderInfoToManagementExternalConfigMap(
       WebAppManagement::Type source_type,
@@ -703,6 +706,8 @@ class WebApp {
 
   int supported_links_offer_ignore_count_ = 0;
   int supported_links_offer_dismiss_count_ = 0;
+
+  bool is_diy_app_ = false;
 
   // New fields must be added to:
   //  - |operator==|

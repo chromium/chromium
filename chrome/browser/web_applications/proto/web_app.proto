@@ -486,4 +486,9 @@ message WebAppProto {
   // specifically from the `EnableLinkCapturingInfoBarDelegate`.
   optional int32 supported_links_offer_ignore_count = 66;
   optional int32 supported_links_offer_dismiss_count = 67;
+
+  // Set to true if the app was installed via the DIY app install path by the
+  // user (3-dot menu, Install page as App...). DIY apps aren't promotable or
+  // installable, and the user can customize its name.
+  optional bool is_diy_app = 68;
 }

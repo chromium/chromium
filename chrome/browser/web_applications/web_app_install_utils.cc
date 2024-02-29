@@ -1256,6 +1256,8 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
     web_app.SetValidatedScopeExtensions(
         web_app_info.validated_scope_extensions.value());
   }
+
+  web_app.SetIsDiyApp(web_app_info.is_diy_app);
 }
 
 void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,

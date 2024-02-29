@@ -1211,6 +1211,14 @@ bool WebAppRegistrar::IsPreferredAppForCapturingUrl(
          CapturesLinksInScope(app_id);
 }
 
+bool WebAppRegistrar::IsDiyApp(const webapps::AppId& app_id) const {
+  if (!IsInstalled(app_id)) {
+    return false;
+  }
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app && web_app->is_diy_app();
+}
+
 std::string WebAppRegistrar::GetAppShortName(
     const webapps::AppId& app_id) const {
   if (base::FeatureList::IsEnabled(

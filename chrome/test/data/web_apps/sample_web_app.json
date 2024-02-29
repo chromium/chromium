@@ -169,6 +169,7 @@
       "source": "Retroactive",
       "window_start_time": "1970-01-27 13:51:34.772000 UTC"
    },
+   "is_diy_app": true,
    "is_from_sync_and_pending_installation": true,
    "is_generated_icon": true,
    "is_locally_installed": true,

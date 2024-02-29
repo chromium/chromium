@@ -912,6 +912,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   local_data->set_supported_links_offer_dismiss_count(
       web_app.supported_links_offer_dismiss_count());
 
+  local_data->set_is_diy_app(web_app.is_diy_app());
+
   return local_data;
 }
 
@@ -1734,6 +1736,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetSupportedLinksOfferDismissCount(
         local_data.supported_links_offer_dismiss_count());
   }
+
+  web_app->SetIsDiyApp(local_data.is_diy_app());
 
   return web_app;
 }

@@ -966,6 +966,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   app->SetSupportedLinksOfferIgnoreCount(random.next_uint());
   app->SetSupportedLinksOfferDismissCount(random.next_uint());
+
+  app->SetIsDiyApp(random.next_bool());
   return app;
 }
 

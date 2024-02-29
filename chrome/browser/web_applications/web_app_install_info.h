@@ -442,6 +442,10 @@ struct WebAppInstallInfo {
 
   IconsWithSizeAny icons_with_size_any;
 
+  // A DIY app isn't installable or promotable, and the user was able to
+  // customize the title, etc.
+  bool is_diy_app = false;
+
  private:
   // Used this method in Clone() method. Use Clone() to deep copy explicitly.
   WebAppInstallInfo(const WebAppInstallInfo& other);
