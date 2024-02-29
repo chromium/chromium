@@ -76,11 +76,28 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
 
   content::WebContents* web_contents = GetWebContentsFromDialog();
 
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "document.querySelector('app-install-dialog')."
+                              "shadowRoot.querySelector('#title') === 'Install "
+                              "app to your Chromebook'"));
+
   // Click the install button.
   EXPECT_TRUE(
       content::ExecJs(web_contents,
                       "document.querySelector('app-install-dialog')."
                       "shadowRoot.querySelector('.action-button').click()"));
+
+  // Make sure the button goes through the 'Installing' state.
+  while (!content::EvalJs(
+              web_contents,
+              "document.querySelector('app-install-dialog').shadowRoot."
+              "querySelector('.action-button').label.includes('Installing')")
+              .ExtractBool()) {
+  }
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      "document.querySelector('app-install-dialog')."
+      "shadowRoot.querySelector('#title') === 'Installing app...'"));
 
   // Wait for the button text to say "Open app", which means it knows the app
   // was installed successfully.
@@ -90,6 +107,10 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
               "querySelector('.action-button').label.includes('Open app')")
               .ExtractBool()) {
   }
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      "document.querySelector('app-install-dialog')."
+      "shadowRoot.querySelector('#title') === 'App installed'"));
 
   // Click the open app button and expect the dialog was closed.
   content::WebContentsDestroyedWatcher watcher(web_contents);
