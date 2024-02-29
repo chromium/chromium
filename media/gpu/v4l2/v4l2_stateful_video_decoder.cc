@@ -52,7 +52,7 @@ void* Mmap(int fd,
 // POLLPRI (meaning a resolution change event) and from |device_fd|, this
 // function calls |dequeue_callback| or |resolution_change_callback|,
 // respectively. Since it blocks, it needs to work on its own
-// SequencedTaskRunner, in this case |event_task_runner_|.
+// SingleThreadTaskRunner, in this case |event_task_runner_|.
 // TODO(mcasas): Add an error callback too.
 void WaitOnceForEvents(int device_fd,
                        int wake_event,
@@ -477,8 +477,12 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   if (!event_task_runner_) {
     CHECK(!CAPTURE_queue_);  // It's the first configuration event.
-    event_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    // |event_task_runner_| will block on OS resources, so it has to be a full
+    // ThreadRunner ISO a SequencedTaskRunner, to avoid interfering with other
+    // runners of the pool.
+    event_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+        {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::SingleThreadTaskRunnerThreadMode::DEDICATED);
     CHECK(event_task_runner_);
   }
   RearmCAPTUREQueueMonitoring();
@@ -831,7 +835,7 @@ void V4L2StatefulVideoDecoder::RearmCAPTUREQueueMonitoring() {
   //   thread that is blocked on a poll() upon the closing of an FD from a
   //   different thread, concretely the "result is unspecified").
   // - Both |device_fd_| and |wake_event_| are posted for destruction on said
-  //   background SequencedTaskRunner so that the FDs monitored by poll() are
+  //   background SingleThreadTaskRunner so that the FDs monitored by poll() are
   //   guaranteed to stay alive until poll() returns, thus avoiding unspecified
   //   behavior.
   cancelable_task_tracker_.PostTask(
