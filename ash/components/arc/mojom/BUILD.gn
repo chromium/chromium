@@ -86,7 +86,6 @@ mojom("mojom") {
     "//services/device/public/mojom:usb",
     "//services/media_session/public/mojom",
     "//services/resource_coordinator/public/mojom",
-    "//ui/accessibility/mojom:ax_assistant_mojom",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]

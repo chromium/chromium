@@ -464,11 +464,6 @@ void FakeAppInstance::StartFastAppReinstallFlow(
   ++start_fast_app_reinstall_request_count_;
 }
 
-void FakeAppInstance::RequestAssistStructure(
-    RequestAssistStructureCallback callback) {
-  std::move(callback).Run(nullptr, nullptr);
-}
-
 void FakeAppInstance::IsInstallable(const std::string& package_name,
                                     IsInstallableCallback callback) {
   std::move(callback).Run(is_installable_);
