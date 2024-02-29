@@ -5,9 +5,9 @@
 // Constants used when describing request modifications via the WebRequest API
 // in the activity log.
 
-#include "extensions/browser/api/activity_log/web_request_constants.h"
+#include "extensions/common/api/web_request/web_request_activity_log_constants.h"
 
-namespace activity_log_web_request_constants {
+namespace web_request_activity_log_constants {
 
 // Keys used in the dictionary summarizing an EventResponseDelta for the
 // extension activity log.
@@ -30,4 +30,4 @@ const char kCookieFilterDomainKey[] = "filter_domain";
 const char kCookieModNameKey[] = "mod_name";
 const char kCookieModDomainKey[] = "mod_domain";
 
-}  // namespace activity_log_web_request_constants
+}  // namespace web_request_activity_log_constants

@@ -86,8 +86,6 @@ source_set("browser_sources") {
 
     # TODO(https://crbug.com/883570): Anything under api/ should be moved out of
     # this target.
-    "api/activity_log/web_request_constants.cc",
-    "api/activity_log/web_request_constants.h",
     "api/api_resource.cc",
     "api/api_resource.h",
     "api/api_resource_manager.h",
