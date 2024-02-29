@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/inline/transformed_string.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
@@ -525,17 +526,15 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
     AppendText(TransformedString(layout_text->TransformedText()), *layout_text);
     return;
   }
-  String original = layout_text->OriginalText();
-  TextOffsetMap offset_map;
-  String transformed =
-      layout_text->TransformAndSecureText(original, offset_map);
-  if (layout_text->TransformedText().length() != transformed.length()) {
-    NOTREACHED() << "Mismatch; class=" << layout_text->GetName()
-                 << " stored=" << layout_text->TransformedText()
-                 << " live=" << transformed;
-  }
+  // Do not use LayoutText::OriginalText() here.  This code is used when
+  // OriginalText() was updated but TransformedText() is not updated yet, and we
+  // need to use TransformedText() in that case.  It is required to make
+  // InlineNode::SetTextWithOffset() workable.
+  auto [original_length, offset_map] =
+      layout_text->GetVariableLengthTransformResult();
+  String transformed = layout_text->TransformedText();
   const Vector<unsigned> length_map = TransformedString::CreateLengthMap(
-      original.length(), transformed.length(), offset_map);
+      original_length, transformed.length(), offset_map);
   CHECK(transformed.length() == length_map.size() || length_map.size() == 0);
   AppendText(
       TransformedString(transformed, {length_map.data(), length_map.size()}),

@@ -672,6 +672,20 @@ TEST_F(InlineNodeTest, NeedsCollectInlinesOnSetText) {
   EXPECT_FALSE(next->GetLayoutObject()->NeedsCollectInlines());
 }
 
+// crbug.com/325306591
+// We had a crash in OffsetMapping building during SetTextWithOffset().
+TEST_F(InlineNodeTest, SetTextWithOffsetWithTextTransform) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container" style="text-transform:uppercase">&#xdf;X</div>)HTML");
+
+  Element* container = GetElementById("container");
+  auto* text = To<Text>(container->firstChild());
+
+  text->deleteData(1, 1, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no crash in InlineItemsBuilder.
+}
+
 struct StyleChangeData {
   const char* css;
   enum ChangedElements {

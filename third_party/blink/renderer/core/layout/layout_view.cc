@@ -141,6 +141,7 @@ LayoutView::~LayoutView() = default;
 void LayoutView::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
   visitor->Trace(svg_text_descendants_);
+  visitor->Trace(text_to_variable_length_transform_result_);
   visitor->Trace(hit_test_cache_);
   visitor->Trace(initial_containing_block_resize_handled_list_);
   LayoutNGBlockFlow::Trace(visitor);
@@ -412,6 +413,24 @@ TrackedDescendantsMap& LayoutView::SvgTextDescendantsMap() {
   if (!svg_text_descendants_)
     svg_text_descendants_ = MakeGarbageCollected<TrackedDescendantsMap>();
   return *svg_text_descendants_;
+}
+
+void LayoutView::RegisterVariableLengthTransformResult(
+    const LayoutText& text,
+    const VariableLengthTransformResult& result) {
+  CHECK(text.HasVariableLengthTransform());
+  text_to_variable_length_transform_result_.Set(&text, result);
+}
+
+void LayoutView::UnregisterVariableLengthTransformResult(
+    const LayoutText& text) {
+  text_to_variable_length_transform_result_.erase(&text);
+}
+
+VariableLengthTransformResult LayoutView::GetVariableLengthTransformResult(
+    const LayoutText& text) {
+  CHECK(text.HasVariableLengthTransform());
+  return text_to_variable_length_transform_result_.at(&text);
 }
 
 LayoutViewTransitionRoot* LayoutView::GetViewTransitionRoot() const {

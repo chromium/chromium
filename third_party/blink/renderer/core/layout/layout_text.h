@@ -45,6 +45,7 @@ class OffsetMapping;
 struct InlineItemsData;
 struct InlineItemSpan;
 struct TextDiffRange;
+struct VariableLengthTransformResult;
 
 // LayoutText is the root class for anything that represents
 // a text node (see core/dom/text.h).
@@ -134,10 +135,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     NOT_DESTROYED();
     return has_variable_length_transform_;
   }
-  void SetHasVariableLengthTransform(bool flag) {
-    NOT_DESTROYED();
-    has_variable_length_transform_ = flag;
-  }
+  VariableLengthTransformResult GetVariableLengthTransformResult() const;
+  void ClearHasVariableLengthTransform();
 
   // Returns first letter part of |LayoutTextFragment|.
   virtual LayoutText* GetFirstLetterPart() const {
@@ -403,6 +402,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   std::pair<String, TextOffsetMap> SecureText(const String& plain,
                                               UChar mask) const;
+  void SetVariableLengthTransformResult(wtf_size_t original_length,
+                                        const TextOffsetMap& offset_map);
 
   bool IsText() const final {
     NOT_DESTROYED();

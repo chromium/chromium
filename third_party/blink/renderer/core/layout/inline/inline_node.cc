@@ -934,7 +934,7 @@ bool InlineNode::SetTextWithOffset(LayoutText* layout_text,
     return false;
   }
   layout_text->SetTextInternal(new_text);
-  layout_text->SetHasVariableLengthTransform(false);
+  layout_text->ClearHasVariableLengthTransform();
 
   InlineNode node(editor.GetLayoutBlockFlow());
   InlineNodeData* data = node.MutableData();

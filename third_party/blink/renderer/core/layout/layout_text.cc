@@ -989,6 +989,31 @@ std::pair<String, TextOffsetMap> LayoutText::SecureText(const String& plain,
   return std::make_pair(masked, TextOffsetMap());
 }
 
+void LayoutText::SetVariableLengthTransformResult(
+    wtf_size_t original_length,
+    const TextOffsetMap& offset_map) {
+  if (offset_map.IsEmpty()) {
+    ClearHasVariableLengthTransform();
+    return;
+  }
+  has_variable_length_transform_ = true;
+  View()->RegisterVariableLengthTransformResult(*this,
+                                                {original_length, offset_map});
+}
+
+VariableLengthTransformResult LayoutText::GetVariableLengthTransformResult()
+    const {
+  return View()->GetVariableLengthTransformResult(*this);
+}
+
+void LayoutText::ClearHasVariableLengthTransform() {
+  NOT_DESTROYED();
+  if (has_variable_length_transform_) {
+    View()->UnregisterVariableLengthTransformResult(*this);
+  }
+  has_variable_length_transform_ = false;
+}
+
 void LayoutText::SetTextIfNeeded(String text) {
   NOT_DESTROYED();
   DCHECK(text);
@@ -1037,8 +1062,9 @@ void LayoutText::TextDidChange() {
 void LayoutText::TextDidChangeWithoutInvalidation() {
   NOT_DESTROYED();
   TextOffsetMap offset_map;
+  wtf_size_t original_length = text_.length();
   text_ = TransformAndSecureText(text_, offset_map);
-  has_variable_length_transform_ = !offset_map.IsEmpty();
+  SetVariableLengthTransformResult(original_length, offset_map);
   if (auto* secure_text_timer = SecureTextTimer::ActiveInstanceFor(this)) {
     // text_ may be updated later before timer fires. We invalidate the
     // last_typed_character_offset_ to avoid inconsistency.
