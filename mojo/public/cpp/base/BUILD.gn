@@ -12,6 +12,8 @@ component("base") {
     "big_buffer.h",
     "shared_memory_utils.cc",
     "shared_memory_utils.h",
+    "shared_memory_version.cc",
+    "shared_memory_version.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -152,6 +154,7 @@ source_set("tests") {
     "ref_counted_memory_unittest.cc",
     "safe_base_name_unittest.cc",
     "shared_memory_unittest.cc",
+    "shared_memory_version_unittest.cc",
     "string16_unittest.cc",
     "text_direction_unittest.cc",
     "thread_type_unittest.cc",

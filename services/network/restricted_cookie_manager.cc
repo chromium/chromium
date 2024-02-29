@@ -488,19 +488,6 @@ RestrictedCookieManager::RestrictedCookieManager(
   if (role == mojom::RestrictedCookieManagerRole::SCRIPT) {
       CHECK(origin_.IsSameOriginWith(isolation_info_.frame_origin().value()));
   }
-
-  // Create a shared memory region and immediately populate it.
-  mapped_region_ =
-      base::ReadOnlySharedMemoryRegion::Create(sizeof(SharedVersionType));
-  CHECK(mapped_region_.IsValid());
-  new (mapped_region_.mapping.memory()) SharedVersionType;
-
-  // Clients will use 0 as special value to indicate the version in the absence
-  // of shared memory communication. Make sure the version starts at 1 to avoid
-  // any confusion. Relaxed memory ordering because this is the only memory
-  // shared.
-  mapped_region_.mapping.GetMemoryAs<SharedVersionType>()->store(
-      mojom::kInitialCookieVersion, std::memory_order_relaxed);
 }
 
 RestrictedCookieManager::~RestrictedCookieManager() {
@@ -515,29 +502,15 @@ RestrictedCookieManager::~RestrictedCookieManager() {
   }
 }
 
-void RestrictedCookieManager::IncrementSharedVersion() {
-  CHECK(mapped_region_.IsValid());
-  // Relaxed memory order since only the version is stored within the region
-  // and as such is the only data shared between processes. There is no
-  // re-ordering to worry about.
-  mapped_region_.mapping.GetMemoryAs<SharedVersionType>()->fetch_add(
-      1, std::memory_order_relaxed);
-}
-
-uint64_t RestrictedCookieManager::GetSharedVersion() {
-  CHECK(mapped_region_.IsValid());
-  // Relaxed memory order since only the version is stored within the region
-  // and as such is the only data shared between processes. There is no
-  // re-ordering to worry about.
-  return mapped_region_.mapping.GetMemoryAs<SharedVersionType>()->load(
-      std::memory_order_relaxed);
-}
-
 void RestrictedCookieManager::OnCookieSettingsChanged() {
   // Cookie settings changes can change cookie values as seen by content.
   // Increment the shared version to make sure it issues a full cookie string
   // request next time around.
   IncrementSharedVersion();
+}
+
+void RestrictedCookieManager::IncrementSharedVersion() {
+  shared_memory_version_controller_.Increment();
 }
 
 void RestrictedCookieManager::SetShouldDeDupCookieAccessDetailsForTesting(
@@ -1019,7 +992,8 @@ void RestrictedCookieManager::GetCookiesString(
 
   base::ReadOnlySharedMemoryRegion shared_memory_region;
   if (get_version_shared_memory) {
-    shared_memory_region = mapped_region_.region.Duplicate();
+    shared_memory_region =
+        shared_memory_version_controller_.GetSharedMemoryRegion();
 
     // Clients can change their URL. If that happens the subscription needs to
     // mirror that to get the correct updates.
@@ -1044,8 +1018,9 @@ void RestrictedCookieManager::GetCookiesString(
   // mechanism to avoid unnecessary IPCs. When the version is stale an
   // additional IPC will take place which is the way it would always be if there
   // was not shared memory versioning.
-  auto bound_callback = base::BindOnce(std::move(callback), GetSharedVersion(),
-                                       std::move(shared_memory_region));
+  auto bound_callback = base::BindOnce(
+      std::move(callback), shared_memory_version_controller_.GetSharedVersion(),
+      std::move(shared_memory_region));
 
   // Match everything.
   auto match_options = mojom::CookieManagerGetOptions::New();

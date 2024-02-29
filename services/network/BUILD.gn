@@ -334,6 +334,7 @@ component("network_service") {
     "//components/url_pattern",
     "//components/web_package",
     "//components/webrtc:fake_ssl_socket",
+    "//mojo/public/cpp/base",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",

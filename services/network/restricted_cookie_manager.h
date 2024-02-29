@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
+#include "mojo/public/cpp/base/shared_memory_version.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
@@ -208,11 +209,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // cookies the other side could have cached.
   void IncrementSharedVersion();
 
-  // Returns the cookie version shared with clients to determine whether a
-  // cookie string has changed since the last request and a new request needs to
-  // be issued.
-  uint64_t GetSharedVersion();
-
   // The state associated with a CookieChangeListener.
   class Listener;
 
@@ -363,9 +359,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   size_t estimated_deduped_cookie_access_details_size_ = 0u;
   size_t cookie_access_details_count_ = 0u;
 
-  // Used to communicate cookie version information with renderers without going
-  // through IPCs.
-  base::MappedReadOnlyRegion mapped_region_;
+  mojo::SharedMemoryVersionController shared_memory_version_controller_;
 
   base::WeakPtrFactory<RestrictedCookieManager> weak_ptr_factory_{this};
 };
