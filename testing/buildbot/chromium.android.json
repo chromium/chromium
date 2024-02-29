@@ -8832,7 +8832,6 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
-        "ci_only": true,
         "description": "Run with android_31_google_apis_x64",
         "experiment_percentage": 100,
         "isolate_profile_data": true,

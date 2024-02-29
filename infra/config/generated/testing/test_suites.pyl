@@ -4244,7 +4244,6 @@
 
     'jni_zero_sample_apk_test': {
       'test_sample_jni_apk': {
-        'ci_only': True,
         'experiment_percentage': 100,
       },
     },

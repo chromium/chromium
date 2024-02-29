@@ -3225,7 +3225,6 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_atd_x64.textpb"
         ],
-        "ci_only": true,
         "experiment_percentage": 100,
         "merge": {
           "args": [

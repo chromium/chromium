@@ -4238,7 +4238,6 @@ targets.legacy_basic_suite(
     name = "jni_zero_sample_apk_test",
     tests = {
         "test_sample_jni_apk": targets.legacy_test_config(
-            ci_only = True,
             experiment_percentage = 100,
         ),
     },
