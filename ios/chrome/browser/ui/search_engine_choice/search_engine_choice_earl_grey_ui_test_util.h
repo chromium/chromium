@@ -37,9 +37,6 @@ typedef NS_ENUM(NSUInteger, FakeOmniboxState) {
 // Checks that the default search engine was correctly set.
 + (void)verifyDefaultSearchEngineSetting:(NSString*)searchEngineName;
 
-// Checks the state of the fake omnibox illustration.
-+ (void)verifyFakeOmniboxIllustrationState:(FakeOmniboxState)state;
-
 // Returns GreyMatcher for the custom search engine for the settings table view.
 // The custom search engine URL needs to be 127.0.0.1.
 + (id<GREYMatcher>)settingsCustomSearchEngineAccessibilityLabelWithName:

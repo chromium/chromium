@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/search_engine_choice_learn_more_coordinator.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/search_engine_choice_learn_more_view_controller.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_mediator.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/search_engine_choice_table_mediator.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/search_engine_choice_table_view_controller.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_view_controller.h"
@@ -33,8 +32,6 @@
   SearchEngineChoiceTableMediator* _searchEnginesTableMediator;
   // The view controller for the search engines table.
   SearchEngineChoiceTableViewController* _searchEnginesTableViewController;
-  // The mediator for the search engine choice screen.
-  SearchEngineChoiceMediator* _mediator;
   // The navigation controller displaying SearchEngineChoiceViewController.
   SearchEngineChoiceViewController* _viewController;
   // Coordinator for the informational popup that may be displayed to the user.
@@ -91,9 +88,6 @@
                                        forFRE:_firstRun];
   _viewController.actionDelegate = self;
 
-  _mediator = [[SearchEngineChoiceMediator alloc] init];
-  _mediator.consumer = _viewController;
-
   _viewController.modalInPresentation = YES;
   if (_firstRun) {
     BOOL animated = self.baseNavigationController.topViewController != nil;
@@ -126,8 +120,6 @@
   [_searchEnginesTableMediator disconnect];
   _searchEnginesTableMediator.consumer = nil;
   _searchEnginesTableMediator = nil;
-  [_mediator disconnect];
-  _mediator = nil;
   _viewController = nil;
   _baseNavigationController = nil;
   _first_run_delegate = nil;
@@ -138,8 +130,6 @@
 
 - (void)selectSearchEngineAtRow:(NSInteger)row {
   _searchEnginesTableMediator.selectedRow = row;
-  [_mediator
-      setSelectedItem:_searchEnginesTableViewController.searchEngines[row]];
   _viewController.didUserSelectARow = YES;
   [_viewController updatePrimaryActionButton];
 }

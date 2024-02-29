@@ -4,11 +4,8 @@
 
 source_set("search_engine_choice") {
   sources = [
-    "search_engine_choice_consumer.h",
     "search_engine_choice_coordinator.h",
     "search_engine_choice_coordinator.mm",
-    "search_engine_choice_mediator.h",
-    "search_engine_choice_mediator.mm",
     "search_engine_choice_view_controller.h",
     "search_engine_choice_view_controller.mm",
   ]
@@ -29,7 +26,6 @@ source_set("search_engine_choice") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
-    "//ios/chrome/browser/ui/search_engine_choice/fake_omnibox",
     "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more",
     "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table",
     "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells",

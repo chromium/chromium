@@ -76,36 +76,6 @@
                                    grey_sufficientlyVisible(), nil)];
 }
 
-+ (void)verifyFakeOmniboxIllustrationState:(FakeOmniboxState)state {
-  switch (state) {
-    case kHidden:
-      [[EarlGrey selectElementWithMatcher:
-                     grey_allOf(grey_accessibilityID(
-                                    kFakeEmptyOmniboxAccessibilityIdentifier),
-                                grey_sufficientlyVisible(), nil)]
-          assertWithMatcher:grey_nil()];
-      [[EarlGrey
-          selectElementWithMatcher:grey_allOf(
-                                       grey_accessibilityID(
-                                           kFakeOmniboxAccessibilityIdentifier),
-                                       grey_sufficientlyVisible(), nil)]
-          assertWithMatcher:grey_nil()];
-      break;
-    case kEmpty:
-      [[EarlGrey
-          selectElementWithMatcher:
-              grey_accessibilityID(kFakeEmptyOmniboxAccessibilityIdentifier)]
-          assertWithMatcher:grey_sufficientlyVisible()];
-      break;
-    case kFull:
-      [[EarlGrey
-          selectElementWithMatcher:grey_accessibilityID(
-                                       kFakeOmniboxAccessibilityIdentifier)]
-          assertWithMatcher:grey_sufficientlyVisible()];
-      break;
-  }
-}
-
 + (id<GREYMatcher>)settingsCustomSearchEngineAccessibilityLabelWithName:
     (const char*)name {
   NSString* label = [NSString stringWithFormat:@"%s, 127.0.0.1", name];

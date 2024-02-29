@@ -1739,12 +1739,6 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   // Checks that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
 
-  BOOL isPhone = (ui::GetDeviceFormFactor() ==
-                  ui::DeviceFormFactor::DEVICE_FORM_FACTOR_PHONE);
-  // Checks that the fake omnibox illustration is displayed on phones and is
-  // initially empty
-  [SearchEngineChoiceEarlGreyUI
-      verifyFakeOmniboxIllustrationState:isPhone ? kEmpty : kHidden];
   // Verifies that the primary button is initially the "More" button.
   id<GREYMatcher> moreButtonMatcher =
       grey_accessibilityID(kSearchEngineMoreButtonIdentifier);
@@ -1757,10 +1751,6 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       selectSearchEngineCellWithName:searchEngineToSelect
                      scrollDirection:kGREYDirectionDown
                               amount:50];
-  // Checks that the fake omnibox illustration is still displayed on phones but
-  // is no longer empty
-  [SearchEngineChoiceEarlGreyUI
-      verifyFakeOmniboxIllustrationState:isPhone ? kFull : kHidden];
   // Taps the primary button. This scrolls the table down to the bottom.
   [[[EarlGrey selectElementWithMatcher:moreButtonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
@@ -1786,12 +1776,6 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   // Checks that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
 
-  BOOL isPhone = (ui::GetDeviceFormFactor() ==
-                  ui::DeviceFormFactor::DEVICE_FORM_FACTOR_PHONE);
-  // Checks that the fake omnibox illustration is displayed on phones and is
-  // initially empty
-  [SearchEngineChoiceEarlGreyUI
-      verifyFakeOmniboxIllustrationState:isPhone ? kEmpty : kHidden];
   // Verifies that the primary button is initially the "More" button.
   id<GREYMatcher> moreButtonMatcher =
       grey_accessibilityID(kSearchEngineMoreButtonIdentifier);
@@ -1816,10 +1800,6 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       selectSearchEngineCellWithName:searchEngineToSelect
                      scrollDirection:kGREYDirectionUp
                               amount:300];
-  // Checks that the fake omnibox illustration is still displayed on phones but
-  // is no longer empty
-  [SearchEngineChoiceEarlGreyUI
-      verifyFakeOmniboxIllustrationState:isPhone ? kFull : kHidden];
   [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
 
   DismissDefaultBrowserAndOmniboxPositionSelectionScreens();

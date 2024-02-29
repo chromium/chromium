@@ -9,7 +9,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/search_engine_choice/fake_omnibox/fake_omnibox_view.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_item.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/search_engine_choice_table_view_controller.h"
@@ -39,14 +38,6 @@ constexpr CGFloat kLogoSize = 50.;
 // The minimum height of the search engines table.
 // TODO(b/280753739): Figure out a way to make this the height of five rows.
 constexpr CGFloat kMinimumTableHeight = 300.;
-// Specifications for the fake omnibox animation. Durations are in seconds.
-constexpr CGFloat kEntranceAnimationDuration = 0.6;
-constexpr CGFloat kExitAnimationDuration = 0.3;
-constexpr CGFloat kSpringDamping = 0.6;
-// Angle in radians of the fake omnibox rotation.
-constexpr CGFloat kRotationAngle = (5.0 / 180.0) * M_PI;
-// Vertical distance, in pixels, that the fake omnibox travels.
-constexpr CGFloat kTravelDistance = 40;
 
 // URL for the "Learn more" link.
 const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
@@ -62,11 +53,6 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   UIButton* _primaryButton;
   // View that contains all the UI elements above the search engine table.
   UIStackView* _topZoneStackView;
-  // A fake empty omnibox illustration, shown before the user has made any
-  // selection.
-  FakeOmniboxView* _fakeEmptyOmniboxView;
-  // A fake empty omnibox illustration, with the user's selection.
-  FakeOmniboxView* _fakeOmniboxView;
   // The chrome logo.
   UIImageView* _logoView;
   // The view title.
@@ -152,15 +138,6 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
                    kSearchEngineChoiceTitleAccessibilityIdentifier];
   _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-
-  _fakeEmptyOmniboxView =
-      [[FakeOmniboxView alloc] initWithSearchEngineName:nil faviconImage:nil];
-  [_topZoneStackView addArrangedSubview:_fakeEmptyOmniboxView];
-  if ([self shouldHideFakeOmniboxForVerticalSizeClass:self.traitCollection
-                                                          .verticalSizeClass]) {
-    _fakeEmptyOmniboxView.hidden = YES;
-  }
-  _fakeEmptyOmniboxView.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSMutableAttributedString* subtitleText = [[NSMutableAttributedString alloc]
       initWithString:[l10n_util::GetNSString(
@@ -252,11 +229,6 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
         constraintEqualToAnchor:_scrollContentView.widthAnchor
                        constant:kHorizontalInsets],
 
-    [_fakeEmptyOmniboxView.widthAnchor
-        constraintEqualToConstant:kFakeOmniboxWidth],
-    [_fakeEmptyOmniboxView.heightAnchor
-        constraintEqualToConstant:kFakeOmniboxHeight],
-
     [_logoView.widthAnchor constraintEqualToConstant:kLogoSize],
     [_logoView.heightAnchor constraintEqualToConstant:kLogoSize],
 
@@ -302,63 +274,6 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   _titleLabel.font = GetTitleFontWithTraitCollection(self.traitCollection);
 }
 
-#pragma mark - SearchEngineChoiceConsumer
-
-- (void)updateFakeOmniboxWithFaviconImage:(UIImage*)icon
-                         searchEngineName:(NSString*)name {
-  UIView* exitingFakeOmniboxView = _fakeOmniboxView;
-  _fakeOmniboxView = [[FakeOmniboxView alloc] initWithSearchEngineName:name
-                                                          faviconImage:icon];
-  _fakeOmniboxView.translatesAutoresizingMaskIntoConstraints = NO;
-  [_topZoneStackView addSubview:_fakeOmniboxView];
-  AddSameConstraints(_fakeOmniboxView, _fakeEmptyOmniboxView);
-  if ([self shouldHideFakeOmniboxForVerticalSizeClass:self.traitCollection
-                                                          .verticalSizeClass]) {
-    // If the vertical size is compact, the new fake omnibox should be added but
-    // hidden (just in case the user rotate the device in portrait mode).
-    // And the previous fake omnibox should be removed.
-    [exitingFakeOmniboxView removeFromSuperview];
-    _fakeOmniboxView.hidden = YES;
-    return;
-  }
-  if (exitingFakeOmniboxView) {
-    // Animate the exiting fake omnibox view.
-    [UIView animateWithDuration:kExitAnimationDuration
-        delay:0
-        usingSpringWithDamping:1
-        initialSpringVelocity:0
-        options:UIViewAnimationCurveEaseIn
-        animations:^{
-          exitingFakeOmniboxView.alpha = 0;
-          CGAffineTransform rotate =
-              CGAffineTransformMakeRotation(kRotationAngle);
-          CGAffineTransform translate =
-              CGAffineTransformMakeTranslation(0, kTravelDistance);
-          exitingFakeOmniboxView.transform =
-              CGAffineTransformConcat(rotate, translate);
-        }
-        completion:^(BOOL finished) {
-          [exitingFakeOmniboxView removeFromSuperview];
-        }];
-  }
-  // Animate the entering fake omnibox view.
-  CGAffineTransform rotate = CGAffineTransformMakeRotation(kRotationAngle);
-  CGAffineTransform translate =
-      CGAffineTransformMakeTranslation(0, kTravelDistance);
-  _fakeOmniboxView.transform = CGAffineTransformConcat(rotate, translate);
-  FakeOmniboxView* enteringFakeOmniboxView = _fakeOmniboxView;
-  [UIView animateWithDuration:kEntranceAnimationDuration
-                        delay:0
-       usingSpringWithDamping:kSpringDamping
-        initialSpringVelocity:0
-                      options:UIViewAnimationCurveEaseOut
-                   animations:^{
-                     enteringFakeOmniboxView.transform =
-                         CGAffineTransformIdentity;
-                   }
-                   completion:nil];
-}
-
 #pragma mark - Private
 
 - (void)primaryButtonAction {
@@ -371,15 +286,6 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
                                               _scrollView.contentInset.bottom);
     [_scrollView setContentOffset:bottomOffset animated:YES];
   }
-}
-
-// Whether the choice screen should hide the fake omnibox illustration.
-- (BOOL)shouldHideFakeOmniboxForVerticalSizeClass:
-    (UIUserInterfaceSizeClass)sizeClass {
-  // Hide the fake omnibox for the FRE on iPads or in landscape mode on iPhones.
-  return sizeClass == UIUserInterfaceSizeClassCompact ||
-         (_isForFRE && (ui::GetDeviceFormFactor() ==
-                        ui::DeviceFormFactor::DEVICE_FORM_FACTOR_TABLET));
 }
 
 #pragma mark - UITextViewDelegate
@@ -405,26 +311,11 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
     case UIUserInterfaceSizeClassRegular:
       _logoView.alpha = 1;
       _logoView.hidden = NO;
-      // The fake omnibox stays hidden in the FRE for iPads.
-      if (![self shouldHideFakeOmniboxForVerticalSizeClass:
-                     UIUserInterfaceSizeClassRegular]) {
-        _fakeEmptyOmniboxView.alpha = 1;
-        _fakeEmptyOmniboxView.hidden = NO;
-        _fakeOmniboxView.alpha = 1;
-        _fakeOmniboxView.hidden = NO;
-      }
       break;
-
     case UIUserInterfaceSizeClassCompact:
       _logoView.alpha = 0;
       _logoView.hidden = YES;
-      _fakeEmptyOmniboxView.alpha = 0;
-      _fakeEmptyOmniboxView.hidden = YES;
-      _fakeOmniboxView.alpha = 0;
-      _fakeOmniboxView.hidden = YES;
-
       break;
-
     default:
       break;
   };

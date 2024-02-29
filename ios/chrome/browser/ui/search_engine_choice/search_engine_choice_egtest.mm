@@ -85,9 +85,6 @@
 - (void)DISABLED_testSearchEngineChoiceScreenSelectThenScroll {
   // Checks that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
-  // Checks that the fake omnibox illustration is displayed and is initially
-  // empty
-  [SearchEngineChoiceEarlGreyUI verifyFakeOmniboxIllustrationState:kEmpty];
   // Verifies that the primary button is initially the "More" button.
   id<GREYMatcher> moreButtonMatcher =
       grey_accessibilityID(kSearchEngineMoreButtonIdentifier);
@@ -100,9 +97,6 @@
       selectSearchEngineCellWithName:searchEngineToSelect
                      scrollDirection:kGREYDirectionDown
                               amount:50];
-  // Checks that the fake omnibox illustration is still displayed but is no
-  // longer empty
-  [SearchEngineChoiceEarlGreyUI verifyFakeOmniboxIllustrationState:kFull];
   // Taps the primary button. This scrolls the table down to the bottom.
   [[[EarlGrey selectElementWithMatcher:moreButtonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
@@ -122,9 +116,6 @@
 - (void)DISABLED_testSearchEngineChoiceScreenScrollThenSelect {
   // Checks that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
-  // Checks that the fake omnibox illustration is displayed and is initially
-  // empty
-  [SearchEngineChoiceEarlGreyUI verifyFakeOmniboxIllustrationState:kEmpty];
   // Verifies that the primary button is initially the "More" button.
   id<GREYMatcher> moreButtonMatcher =
       grey_accessibilityID(kSearchEngineMoreButtonIdentifier);
@@ -149,9 +140,6 @@
       selectSearchEngineCellWithName:searchEngineToSelect
                      scrollDirection:kGREYDirectionUp
                               amount:300];
-  // Checks that the fake omnibox illustration is still displayed but is no
-  // longer empty
-  [SearchEngineChoiceEarlGreyUI verifyFakeOmniboxIllustrationState:kFull];
   [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
   [SearchEngineChoiceEarlGreyUI
       verifyDefaultSearchEngineSetting:searchEngineToSelect];
