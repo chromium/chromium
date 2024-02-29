@@ -181,7 +181,6 @@ std::unique_ptr<KeyedService> BuildMockSessionSyncService(
 using ash::holding_space::ScopedTestMountPoint;
 
 class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
-  // public testing::Test {
  public:
   BirchKeyedServiceTest()
       : BrowserWithTestWindowTest(
