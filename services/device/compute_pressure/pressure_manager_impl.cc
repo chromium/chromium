@@ -25,7 +25,7 @@ PressureManagerImpl::PressureManagerImpl(base::TimeDelta sampling_interval)
     // base::Unretained usage is safe here because the callback is only run
     // while `cpu_probe_manager_` is alive, and `cpu_probe_manager_` is owned by
     // this instance.
-    : cpu_probe_manager_(std::make_unique<CpuProbeManager>(
+    : cpu_probe_manager_(CpuProbeManager::Create(
           sampling_interval,
           base::BindRepeating(&PressureManagerImpl::UpdateClients,
                               base::Unretained(this),

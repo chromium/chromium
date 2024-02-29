@@ -36,8 +36,18 @@ class CpuProbeManager {
   static constexpr system_cpu::CpuSample kUnsupportedValue = {.cpu_utilization =
                                                                   0.0};
 
-  CpuProbeManager(base::TimeDelta,
-                  base::RepeatingCallback<void(mojom::PressureState)>);
+  // Instantiates CpuProbeManager with a CpuProbe for the current platform.
+  // Returns nullptr if no suitable implementation exists.
+  static std::unique_ptr<CpuProbeManager> Create(
+      base::TimeDelta sampling_interval,
+      base::RepeatingCallback<void(mojom::PressureState)> sampling_callback);
+
+  // Instantiates CpuProbeManager with a supplied CpuProbe.
+  static std::unique_ptr<CpuProbeManager> CreateForTesting(
+      std::unique_ptr<system_cpu::CpuProbe> system_cpu_probe,
+      base::TimeDelta sampling_interval,
+      base::RepeatingCallback<void(mojom::PressureState)> sampling_callback);
+
   CpuProbeManager(const CpuProbeManager&) = delete;
   CpuProbeManager& operator=(const CpuProbeManager&) = delete;
 
@@ -63,6 +73,10 @@ class CpuProbeManager {
  private:
   friend class PressureManagerImpl;
   FRIEND_TEST_ALL_PREFIXES(CpuProbeManagerTest, CalculateStateValueTooLarge);
+
+  CpuProbeManager(std::unique_ptr<system_cpu::CpuProbe> system_cpu_probe,
+                  base::TimeDelta,
+                  base::RepeatingCallback<void(mojom::PressureState)>);
 
   // Implements the "break calibration" mitigation by toggling the
   // |state_randomization_requested_| flag every |randomization_time_|

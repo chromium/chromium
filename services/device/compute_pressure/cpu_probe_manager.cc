@@ -46,12 +46,35 @@ constexpr std::array<double,
 
 }  // namespace
 
+// static
+std::unique_ptr<CpuProbeManager> CpuProbeManager::Create(
+    base::TimeDelta sampling_interval,
+    base::RepeatingCallback<void(mojom::PressureState)> sampling_callback) {
+  std::unique_ptr<CpuProbe> system_cpu_probe = CpuProbe::Create();
+  if (!system_cpu_probe) {
+    return nullptr;
+  }
+  return base::WrapUnique(new CpuProbeManager(
+      std::move(system_cpu_probe), sampling_interval, sampling_callback));
+}
+
+// static
+std::unique_ptr<CpuProbeManager> CpuProbeManager::CreateForTesting(
+    std::unique_ptr<CpuProbe> system_cpu_probe,
+    base::TimeDelta sampling_interval,
+    base::RepeatingCallback<void(mojom::PressureState)> sampling_callback) {
+  return base::WrapUnique(new CpuProbeManager(
+      std::move(system_cpu_probe), sampling_interval, sampling_callback));
+}
+
 CpuProbeManager::CpuProbeManager(
+    std::unique_ptr<CpuProbe> system_cpu_probe,
     base::TimeDelta sampling_interval,
     base::RepeatingCallback<void(mojom::PressureState)> sampling_callback)
-    : system_cpu_probe_(CpuProbe::Create()),
+    : system_cpu_probe_(std::move(system_cpu_probe)),
       sampling_interval_(sampling_interval),
       sampling_callback_(std::move(sampling_callback)) {
+  CHECK(system_cpu_probe_);
   CHECK(sampling_callback_);
 }
 
