@@ -84,8 +84,8 @@ class CORE_EXPORT ScrollbarTheme {
   virtual bool UsesOverlayScrollbars() const { return false; }
   virtual bool UsesFluentOverlayScrollbars() const { return false; }
   virtual gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
-      Scrollbar&,
-      gfx::Rect& rect) const {
+      const Scrollbar&,
+      const gfx::Rect& rect) const {
     return rect;
   }
   virtual void UpdateScrollbarOverlayColorTheme(const Scrollbar&) {}
