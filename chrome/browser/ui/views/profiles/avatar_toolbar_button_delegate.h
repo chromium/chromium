@@ -9,23 +9,20 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/sync/sync_ui_util.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_service_observer.h"
-#include "ui/gfx/image/image.h"
+#include "ui/base/models/image_model.h"
 
 class Browser;
 class Profile;
+class AvatarToolbarButton;
+
+namespace ui {
+class ColorProvider;
+}
 
 // Internal structures.
 namespace internal {
@@ -46,7 +43,7 @@ enum class ButtonState;
 // - Explicit modifications override: such as displaying specific text when
 //   intercept bubbles are displayed.
 // - Sync paused/error state.
-class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer {
+class AvatarToolbarButtonDelegate {
  public:
   AvatarToolbarButtonDelegate(AvatarToolbarButton* button, Browser* browser);
 
@@ -54,7 +51,7 @@ class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer {
   AvatarToolbarButtonDelegate& operator=(const AvatarToolbarButtonDelegate&) =
       delete;
 
-  ~AvatarToolbarButtonDelegate() override;
+  ~AvatarToolbarButtonDelegate();
 
   // These info are based on the `ButtonState`.
   std::pair<std::u16string, std::optional<SkColor>> GetTextAndColor(
@@ -69,11 +66,6 @@ class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer {
   [[nodiscard]] base::ScopedClosureRunner ShowExplicitText(
       const std::u16string& text);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  void MaybeShowEnterpriseText();
-#endif
-  void ShowDefaultText();
-
   // Called by the AvatarToolbarButton to notify the delegate about events.
   void OnThemeChanged(const ui::ColorProvider* color_provider);
 
@@ -82,22 +74,7 @@ class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer {
   static void SetTextDurationForTesting(base::TimeDelta duration);
 
  private:
-  // Internal text state
-  enum class TextState {
-    kNotShowing,
-    kWaitingForImage,
-    kShowingName,
-    kShowingExplicitText,
-    kShowingEnterpriseText,
-  };
-
   internal::ButtonState ComputeState() const;
-
-  // ProfileAttributesStorage::Observer:
-  void OnProfileUserManagementAcceptanceChanged(
-      const base::FilePath& profile_path) override;
-
-  TextState GetDefaultTextState() const;
 
   std::u16string GetProfileName() const;
   std::u16string GetShortProfileName() const;
@@ -108,21 +85,9 @@ class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer {
   int GetWindowCount() const;
   gfx::Image GetGaiaAccountImage() const;
 
-  // Callback used to remove the explicit text shown and reset to the default.
-  void ClearExplicitText();
-
-  void OnEnterpriseTextShownTimeout();
-
-  base::ScopedObservation<ProfileAttributesStorage,
-                          ProfileAttributesStorage::Observer>
-      profile_observation_{this};
-
   const raw_ptr<AvatarToolbarButton> avatar_toolbar_button_;
   const raw_ptr<Browser> browser_;
   const raw_ptr<Profile> profile_;
-  TextState button_text_state_ = TextState::kNotShowing;
-
-  bool enterprise_text_hide_scheduled_ = false;
 
   // Text to be displayed while the state is
   // `ButtonState::kExplicitTextShowing`.

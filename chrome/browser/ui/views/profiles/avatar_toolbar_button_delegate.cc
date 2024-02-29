@@ -13,12 +13,14 @@
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -87,6 +89,24 @@ bool IsErrorSyncPaused(Profile* profile) {
          AccountConsistencyModeManager::IsDiceEnabledForProfile(profile);
 }
 
+// Expected to be called when Management is set.
+// Returns:
+// - true for Work.
+// - false for School.
+bool IsManagementWork(Profile* profile) {
+  CHECK(base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging));
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  auto management_environment =
+      chrome::enterprise_util::GetManagementEnvironment(
+          profile, identity_manager->FindExtendedAccountInfoByAccountId(
+                       identity_manager->GetPrimaryAccountId(
+                           signin::ConsentLevel::kSignin)));
+  CHECK_NE(management_environment,
+           chrome::enterprise_util::ManagementEnvironment::kNone);
+  return management_environment ==
+         chrome::enterprise_util::ManagementEnvironment::kWork;
+}
+
 }  // namespace
 
 namespace internal {
@@ -103,8 +123,8 @@ enum class ButtonState {
   // An error in sync-the-feature or sync-the-transport or SyncPaused (use
   // `IsErrorSyncPaused()` to differentiate).
   kSyncError,
-  kWork,
-  kSchool,
+  // Includes Work and School.
+  kManagement,
   kNormal
 };
 
@@ -180,10 +200,8 @@ class PrivateStateProvider : public StateProvider, public BrowserListObserver {
 
 class ExplicitStateProvider : public StateProvider {
  public:
-  explicit ExplicitStateProvider(StateObserver& state_observer,
-                                 base::OnceClosure clear_avatar_text_closure)
-      : StateProvider(state_observer),
-        clear_avatar_text_closure_(std::move(clear_avatar_text_closure)) {}
+  explicit ExplicitStateProvider(StateObserver& state_observer)
+      : StateProvider(state_observer) {}
   ~ExplicitStateProvider() override = default;
 
   bool IsActive() const override { return active_; }
@@ -191,18 +209,8 @@ class ExplicitStateProvider : public StateProvider {
   // Used as the callback closure to the setter of the explicit state,
   // or when overriding the explicit state by another one.
   void Clear() {
-    if (!active_) {
-      RequestUpdate(ElementToUpdate::kAll);
-      return;
-    }
-
     active_ = false;
-    // TODO(b/324018028): Once the default states are implemented through the
-    // state manager, remove this call back and replace it with a call to
-    // `NotifyUpdate(ElementToUpdate::kText)`. The concept of default state
-    // would not exist anymore, which is the main difference with the current
-    // call.
-    std::move(clear_avatar_text_closure_).Run();
+    RequestUpdate(ElementToUpdate::kAll);
   }
 
   base::WeakPtr<ExplicitStateProvider> GetWeakPtr() {
@@ -211,8 +219,6 @@ class ExplicitStateProvider : public StateProvider {
 
  private:
   bool active_ = true;
-
-  base::OnceClosure clear_avatar_text_closure_;
 
   base::WeakPtrFactory<ExplicitStateProvider> weak_ptr_factory_{this};
 };
@@ -420,7 +426,7 @@ class ShowIdentityNameStateProvider
     }
 
     Clear();
-    avatar_toolbar_button_->NotifyShowNameEndedForTesting();  // IN-TEST
+    avatar_toolbar_button_->NotifyShowNameClearedForTesting();  // IN-TEST
   }
 
   // Clears the effects of the state being active.
@@ -497,7 +503,97 @@ class SyncErrorStateProvider : public StateProvider,
       sync_service_observation_{this};
 };
 
-// TO BE USED at the end of the imlpementation.
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class ManagementStateProvider : public StateProvider,
+                                public ProfileAttributesStorage::Observer,
+                                public BrowserListObserver {
+ public:
+  explicit ManagementStateProvider(
+      StateObserver& state_observer,
+      Profile& profile,
+      const AvatarToolbarButton& avatar_toolbar_button)
+      : StateProvider(state_observer),
+        profile_(profile),
+        avatar_toolbar_button_(avatar_toolbar_button),
+        user_accepted_account_management_(
+            chrome::enterprise_util::UserAcceptedAccountManagement(
+                &profile_.get())) {
+    BrowserList::AddObserver(this);
+    profile_observation_.Observe(&GetProfileAttributesStorage());
+  }
+
+  ~ManagementStateProvider() override { BrowserList::RemoveObserver(this); }
+
+  // StateProvider:
+  bool IsActive() const override {
+    return user_accepted_account_management_ &&
+           (!IsTransient() || temporarily_showing_);
+  }
+
+ private:
+  void OnBrowserAdded(Browser*) override {
+    // This is required so that the enterprise text is shown when a profile is
+    // opened.
+    TryShowManagementText();
+  }
+
+  // ProfileAttributesStorage::Observer:
+  void OnProfileUserManagementAcceptanceChanged(
+      const base::FilePath& profile_path) override {
+    user_accepted_account_management_ =
+        chrome::enterprise_util::UserAcceptedAccountManagement(&profile_.get());
+    if (!user_accepted_account_management_) {
+      RequestUpdate(ElementToUpdate::kAll);
+      return;
+    }
+
+    TryShowManagementText();
+  }
+
+  void TryShowManagementText() {
+    if (IsTransient() && !enterprise_text_hide_scheduled_) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&ManagementStateProvider::ClearTransientText,
+                         weak_ptr_factory_.GetWeakPtr()),
+          kTestingDuration.value_or(kEnterpriseTextTransientDuration));
+      enterprise_text_hide_scheduled_ = true;
+      temporarily_showing_ = true;
+    }
+    RequestUpdate(ElementToUpdate::kText);
+  }
+
+  void ClearTransientText() {
+    CHECK(IsTransient());
+
+    temporarily_showing_ = false;
+    RequestUpdate(ElementToUpdate::kAll);
+    avatar_toolbar_button_
+        ->NotifyManagementTransientTextClearedForTesting();  // IN-TEST
+  }
+
+  // Used to determine if the text should be shown permanently or not.
+  bool IsTransient() const {
+    return g_browser_process->local_state()->GetInteger(
+               prefs::kToolbarAvatarLabelSettings) == 1;
+  }
+
+  raw_ref<Profile> profile_;
+  const raw_ref<const AvatarToolbarButton> avatar_toolbar_button_;
+
+  bool user_accepted_account_management_ = false;
+  bool enterprise_text_hide_scheduled_ = false;
+  bool temporarily_showing_ = false;
+
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      profile_observation_{this};
+
+  base::WeakPtrFactory<ManagementStateProvider> weak_ptr_factory_{this};
+};
+#endif
+
+// Regular State, should always have the lowest priority.
 class NormalStateProvider : public StateProvider {
  public:
   explicit NormalStateProvider(StateObserver& state_observer)
@@ -519,11 +615,21 @@ class NormalStateProvider : public StateProvider {
 class StateManager : public StateObserver {
  public:
   explicit StateManager(AvatarToolbarButton& avatar_toolbar_button,
-                        Profile* profile)
+                        Browser* browser)
       : avatar_toolbar_button_(avatar_toolbar_button) {
-    // Add each possible state for each Profile type, since this structure is
-    // tied to Browser, in which a Profile cannot change, it is correct to
-    // compute the Profile type once.
+    // Add each possible state for each Profile type or browser configuration,
+    // since this structure is tied to Browser, in which a Profile cannot
+    // change, it is correct to initialize the possible fixed states once.
+
+    // Web app has limited toolbar space, thus always show kNormal state.
+    if (web_app::AppBrowserController::IsWebApp(browser)) {
+      // This state is always active.
+      states_[ButtonState::kNormal] =
+          std::make_unique<NormalStateProvider>(/*state_observer=*/*this);
+      return;
+    }
+
+    Profile* profile = browser->profile();
     if (profile->IsRegularProfile()) {
       states_[ButtonState::kShowIdentityName] =
           std::make_unique<ShowIdentityNameStateProvider>(
@@ -533,27 +639,36 @@ class StateManager : public StateObserver {
       states_[ButtonState::kSyncError] =
           std::make_unique<SyncErrorStateProvider>(
               /*state_observer=*/*this, *profile);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging)) {
+        // Contains both Work and School.
+        states_[ButtonState::kManagement] =
+            std::make_unique<ManagementStateProvider>(
+                /*state_observer=*/*this, *profile, avatar_toolbar_button);
+      }
+#endif
     } else if (profile->IsGuestSession()) {
+      // This state is always active.
       states_[ButtonState::kGuestSession] =
           std::make_unique<PrivateStateProvider>(
               /*state_observer=*/*this);
     } else if (profile->IsIncognitoProfile()) {
+      // This state is always active.
       states_[ButtonState::kIncognitoProfile] =
           std::make_unique<PrivateStateProvider>(
               /*state_observer=*/*this);
     }
 
-    // TODO(b/324018028): The normal state should be added in the end since it
-    // is always active. While transitioning, since we use nullptr state as not
-    // implemented state yet we cannot activate this one yet.
-    // states_[ButtonState::kNormal] =
-    // std::make_unique<NormalStateProvider>(/*state_observer=*/*this);
+    // This state is always active.
+    states_[ButtonState::kNormal] =
+        std::make_unique<NormalStateProvider>(/*state_observer=*/*this);
   }
   ~StateManager() override = default;
 
   // Computes and returns the current active state with the highest priority.
   // Multiple states could be active at the same time.
-  std::optional<ButtonState> ComputeButtonActiveState() {
+  ButtonState ComputeButtonActiveState() {
     // Traverse the map of states sorted by their priority set in `ButtonState`.
     for (auto& state_pair : states_) {
       // Return the first state that is active.
@@ -565,10 +680,8 @@ class StateManager : public StateObserver {
       }
     }
 
-    // TODO(b/324018028): At the end of the implementation this should not be
-    // expected anymore and be replaced by a `NOTREACHED_NORETURN()`.
-    current_active_state_ = nullptr;
-    return std::nullopt;
+    NOTREACHED_NORETURN()
+        << "There should at least be one active state in the map.";
   }
 
   // Special setter for the explicit state as it is controlled externally.
@@ -648,9 +761,7 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
       profile_(browser->profile()),
       state_manager_(
           std::make_unique<internal::StateManager>(*avatar_toolbar_button_,
-                                                   profile_)) {
-  profile_observation_.Observe(&GetProfileAttributesStorage());
-
+                                                   browser)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On CrOS this button should only show as badging for Incognito, Guest and
   // captivie portal signin. It's only enabled for non captive portal Incognito
@@ -730,43 +841,7 @@ int AvatarToolbarButtonDelegate::GetWindowCount() const {
 }
 
 ButtonState AvatarToolbarButtonDelegate::ComputeState() const {
-  // TODO(b/324018028): adapt each state to be part of a `StateProvider`. When
-  // all states are migrated, remove the optional part of
-  // `StateManager::ComputeButtonActiveState()` as we should always have at
-  // least one active state at all time.
-  std::optional<ButtonState> active_state =
-      state_manager_->ComputeButtonActiveState();
-  if (active_state.has_value()) {
-    return active_state.value();
-  }
-
-  if (button_text_state_ == TextState::kShowingEnterpriseText) {
-    CHECK(base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging));
-    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-    auto management_environment =
-        chrome::enterprise_util::GetManagementEnvironment(
-            profile_, identity_manager->FindExtendedAccountInfoByAccountId(
-                          identity_manager->GetPrimaryAccountId(
-                              signin::ConsentLevel::kSignin)));
-    CHECK_NE(management_environment,
-             chrome::enterprise_util::ManagementEnvironment::kNone);
-    if (management_environment ==
-        chrome::enterprise_util::ManagementEnvironment::kWork) {
-      return ButtonState::kWork;
-    }
-    if (management_environment ==
-        chrome::enterprise_util::ManagementEnvironment::kSchool) {
-      return ButtonState::kSchool;
-    }
-  }
-
-  // Web app has limited toolbar space, thus always show kNormal state.
-  if (web_app::AppBrowserController::IsWebApp(browser_) ||
-      !SyncServiceFactory::IsSyncAllowed(profile_)) {
-    return ButtonState::kNormal;
-  }
-
-  return ButtonState::kNormal;
+  return state_manager_->ComputeButtonActiveState();
 }
 
 void AvatarToolbarButtonDelegate::OnThemeChanged(
@@ -796,18 +871,6 @@ void AvatarToolbarButtonDelegate::OnThemeChanged(
   } else {
     entry->SetProfileThemeColors(std::nullopt);
   }
-  // This is required so that the enterprise text is shown when a profile is
-  // opened.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  MaybeShowEnterpriseText();
-#endif
-}
-
-void AvatarToolbarButtonDelegate::OnProfileUserManagementAcceptanceChanged(
-    const base::FilePath& profile_path) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  MaybeShowEnterpriseText();
-#endif
 }
 
 base::ScopedClosureRunner AvatarToolbarButtonDelegate::ShowExplicitText(
@@ -817,12 +880,7 @@ base::ScopedClosureRunner AvatarToolbarButtonDelegate::ShowExplicitText(
   // Create the new explicit state with the clear text callback.
   std::unique_ptr<ExplicitStateProvider> explicit_state_provider =
       std::make_unique<ExplicitStateProvider>(
-          /*state_observer=*/*state_manager_,
-          /*clear_avatar_text_closure=*/base::BindOnce(
-              &AvatarToolbarButtonDelegate::ClearExplicitText,
-              // This state will exist in the `StateManager` which is part of
-              // the button delegate, so `base::Unretained()` is fine.
-              base::Unretained(this)));
+          /*state_observer=*/*state_manager_);
 
   ExplicitStateProvider* explicit_state_provider_ptr =
       explicit_state_provider.get();
@@ -838,56 +896,6 @@ base::ScopedClosureRunner AvatarToolbarButtonDelegate::ShowExplicitText(
                      // WeakPtr is needed here since this state could be
                      // replaced before the call to the closure.
                      explicit_state_provider_ptr->GetWeakPtr()));
-}
-
-void AvatarToolbarButtonDelegate::ClearExplicitText() {
-  explicit_text_.clear();
-  ShowDefaultText();
-}
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-void AvatarToolbarButtonDelegate::MaybeShowEnterpriseText() {
-  if (!base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging) ||
-      !chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
-    return;
-  }
-  bool transient = g_browser_process->local_state()->GetInteger(
-                       prefs::kToolbarAvatarLabelSettings) == 1;
-  button_text_state_ = TextState::kShowingEnterpriseText;
-  avatar_toolbar_button_->UpdateText();
-  if (transient && !enterprise_text_hide_scheduled_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &AvatarToolbarButtonDelegate::OnEnterpriseTextShownTimeout,
-            weak_ptr_factory_.GetWeakPtr()),
-        kTestingDuration.value_or(kEnterpriseTextTransientDuration));
-    enterprise_text_hide_scheduled_ = true;
-  }
-}
-#endif
-
-void AvatarToolbarButtonDelegate::OnEnterpriseTextShownTimeout() {
-  ShowDefaultText();
-  avatar_toolbar_button_->NotifyShowEnterpriseTextEndedForTesting();  // IN-TEST
-}
-
-void AvatarToolbarButtonDelegate::ShowDefaultText() {
-  button_text_state_ = GetDefaultTextState();
-  avatar_toolbar_button_->UpdateText();
-}
-
-AvatarToolbarButtonDelegate::TextState
-AvatarToolbarButtonDelegate::GetDefaultTextState() const {
-  bool transient_enterprise_text = g_browser_process->local_state()->GetInteger(
-                                       prefs::kToolbarAvatarLabelSettings) == 1;
-  if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging) &&
-      chrome::enterprise_util::UserAcceptedAccountManagement(profile_) &&
-      !transient_enterprise_text) {
-    return TextState::kShowingEnterpriseText;
-  }
-
-  return TextState::kNotShowing;
 }
 
 std::pair<std::u16string, std::optional<SkColor>>
@@ -948,16 +956,16 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
                                               guest_window_count);
       break;
     }
-    case ButtonState::kWork: {
-      text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_WORK);
-      color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
+    case ButtonState::kManagement:
+      if (IsManagementWork(profile_)) {
+        text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_WORK);
+        color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
+      } else {
+        // Shcool.
+        text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SCHOOL);
+        color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
+      }
       break;
-    }
-    case ButtonState::kSchool: {
-      text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SCHOOL);
-      color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
-      break;
-    }
     case ButtonState::kNormal:
       break;
   }
@@ -988,8 +996,7 @@ std::optional<SkColor> AvatarToolbarButtonDelegate::GetHighlightTextColor(
       color = color_provider->GetColor(
           kColorAvatarButtonHighlightDefaultForeground);
       break;
-    case ButtonState::kWork:
-    case ButtonState::kSchool:
+    case ButtonState::kManagement:
       color =
           color_provider->GetColor(kColorAvatarButtonHighlightNormalForeground);
       break;
@@ -1021,8 +1028,7 @@ std::u16string AvatarToolbarButtonDelegate::GetAvatarTooltipText() const {
                   ->HasPrimaryAccount(signin::ConsentLevel::kSync)));
     }
     case ButtonState::kExplicitTextShowing:
-    case ButtonState::kWork:
-    case ButtonState::kSchool:
+    case ButtonState::kManagement:
     case ButtonState::kNormal:
       return GetProfileName();
   }
@@ -1049,8 +1055,7 @@ AvatarToolbarButtonDelegate::GetInkdropColors() const {
       case ButtonState::kExplicitTextShowing:
       case ButtonState::kShowIdentityName:
         break;
-      case ButtonState::kSchool:
-      case ButtonState::kWork:
+      case ButtonState::kManagement:
         ripple_color_id = kColorAvatarButtonNormalRipple;
         break;
       case ButtonState::kNormal:
@@ -1078,8 +1083,7 @@ ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
     // TODO(crbug.com/1191411): If sync-the-feature is disabled, the icon
     // should be different.
     case ButtonState::kSyncError:
-    case ButtonState::kSchool:
-    case ButtonState::kWork:
+    case ButtonState::kManagement:
     case ButtonState::kNormal:
       return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
           GetProfileAvatarImage(icon_size), icon_size, icon_size,
@@ -1095,8 +1099,7 @@ bool AvatarToolbarButtonDelegate::ShouldPaintBorder() const {
       return true;
     case ButtonState::kIncognitoProfile:
     case ButtonState::kExplicitTextShowing:
-    case ButtonState::kWork:
-    case ButtonState::kSchool:
+    case ButtonState::kManagement:
     case ButtonState::kSyncError:
       return false;
   }

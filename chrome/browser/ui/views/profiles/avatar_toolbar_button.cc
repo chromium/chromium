@@ -438,15 +438,16 @@ void AvatarToolbarButton::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void AvatarToolbarButton::NotifyShowNameEndedForTesting() const {
+void AvatarToolbarButton::NotifyShowNameClearedForTesting() const {
   for (auto& observer : observer_list_) {
-    observer.OnShowNameEndedForTesting();  // IN-TEST
+    observer.OnShowNameClearedForTesting();  // IN-TEST
   }
 }
 
-void AvatarToolbarButton::NotifyShowEnterpriseTextEndedForTesting() const {
+void AvatarToolbarButton::NotifyManagementTransientTextClearedForTesting()
+    const {
   for (auto& observer : observer_list_) {
-    observer.OnShowEnterpriseTextEndedForTesting();  // IN-TEST
+    observer.OnShowManagementTransientTextClearedForTesting();  // IN-TEST
   }
 }
 
