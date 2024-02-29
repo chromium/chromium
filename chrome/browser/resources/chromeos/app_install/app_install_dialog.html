@@ -48,6 +48,25 @@
     color: var(--cros-sys-primary);
   }
 
+  hr {
+    border-width: 1px 0px 0px 0px;
+    border-style: solid;
+    border-color: var(--cros-sys-app_base_shaded);
+    margin: 0;
+  }
+
+  #description-and-screenshots {
+    padding: 0px 20px 0px 20px;
+  }
+
+  #description {
+    font: var(--cros-annotation-1-font);
+    color: var(--cros-sys-on_surface_variant);
+    overflow-wrap: break-word;
+    padding: 12px 0px;
+    margin: 0px;
+  }
+
   div[slot=button-container] {
     display: flex;
     justify-content: flex-end;
@@ -71,8 +90,11 @@
         <p id="url">Developer information: <a id="url-link"></a></p>
       </div>
     </div>
-    <!-- TODO(crbug.com/1488697): Add screenshots. -->
-    <p id="description"></p>
+    <hr id="divider" hidden>
+    <div id="description-and-screenshots" hidden>
+      <p id="description"></p>
+      <!-- TODO(crbug.com/40283709): Add screenshots. -->
+    </div>
   </div>
   <div slot="button-container">
     <cros-button

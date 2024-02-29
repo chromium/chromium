@@ -56,22 +56,24 @@ class AppInstallDialogElement extends HTMLElement {
       const dialogArgs = await this.proxy.handler.getDialogArgs();
       assert(dialogArgs.args);
 
-      const nameElement = this.$<HTMLSpanElement>('#name');
+      const nameElement = this.$<HTMLParagraphElement>('#name');
       assert(nameElement);
       nameElement.textContent = dialogArgs.args.name;
 
-      const urlElement = this.$<HTMLSpanElement>('#url-link');
+      const urlElement = this.$<HTMLAnchorElement>('#url-link');
       assert(urlElement);
       urlElement.textContent = dialogArgs.args.url.url;
-
-      const descriptionElement = this.$<HTMLSpanElement>('#description');
-      assert(descriptionElement);
-      descriptionElement.textContent = dialogArgs.args.description;
 
       const iconElement = this.$<HTMLImageElement>('#app-icon');
       assert(iconElement);
       iconElement.setAttribute('auto-src', dialogArgs.args.iconUrl.url);
 
+      if (dialogArgs.args.description) {
+        this.$<HTMLDivElement>('#description').textContent =
+            dialogArgs.args.description;
+        this.$<HTMLDivElement>('#description-and-screenshots').hidden = false;
+        this.$<HTMLHRElement>('#divider').hidden = false;
+      }
     } catch (e) {
       // TODO(crbug.com/1488697) Define expected behavior.
       console.error(`Unable to get dialog arguments . Error: ${e}.`);
@@ -128,8 +130,8 @@ class AppInstallDialogElement extends HTMLElement {
         installButton.addEventListener(
             'click', this.onInstallButtonClick.bind(this), {once: true});
 
-        this.$<HTMLSpanElement>('#installing-icon').setAttribute('slot', '');
-        this.$<HTMLSpanElement>('#install-icon')
+        this.$<HTMLElement>('#installing-icon').setAttribute('slot', '');
+        this.$<HTMLElement>('#install-icon')
             .setAttribute('slot', 'leading-icon');
         break;
       case DialogState.INSTALLING:
@@ -137,8 +139,8 @@ class AppInstallDialogElement extends HTMLElement {
         installButton.label = loadTimeData.getString('installing');
         installButton.classList.replace('install', 'installing');
 
-        this.$<HTMLSpanElement>('#install-icon').setAttribute('slot', '');
-        this.$<HTMLSpanElement>('#installing-icon')
+        this.$<HTMLElement>('#install-icon').setAttribute('slot', '');
+        this.$<HTMLElement>('#installing-icon')
             .setAttribute('slot', 'leading-icon');
         break;
       case DialogState.INSTALLED:
@@ -149,8 +151,8 @@ class AppInstallDialogElement extends HTMLElement {
         installButton.addEventListener(
             'click', this.onOpenAppButtonClick.bind(this));
 
-        this.$<HTMLSpanElement>('#installing-icon').setAttribute('slot', '');
-        this.$<HTMLSpanElement>('#installed-icon')
+        this.$<HTMLElement>('#installing-icon').setAttribute('slot', '');
+        this.$<HTMLElement>('#installed-icon')
             .setAttribute('slot', 'leading-icon');
         break;
       default:
