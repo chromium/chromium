@@ -46,7 +46,7 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(CookiesContentSettingsProviderObserver,
 class SupervisedUserFamilyLinkCookiesSwitchUiTest
     : public InteractiveBrowserTestT<FamilyLiveTest>,
       public testing::WithParamInterface<
-          std::tuple<supervised_user::FamilyIdentifier,
+          std::tuple<FamilyIdentifier,
                      /*cookies_switch_value=*/bool>> {
  public:
   SupervisedUserFamilyLinkCookiesSwitchUiTest()
@@ -158,7 +158,9 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SupervisedUserFamilyLinkCookiesSwitchUiTest,
     testing::Combine(
-        testing::Values(supervised_user::FamilyIdentifier("FAMILY_DMA_ALL")),
+        testing::Values(FamilyIdentifier("FAMILY_DMA_ELIGIBLE_WITH_CONSENT"),
+                        FamilyIdentifier("FAMILY_DMA_ELIGIBILE_NO_CONSENT"),
+                        FamilyIdentifier("FAMILY_DMA_INELIGIBLE")),
         /*cookies_switch_value=*/testing::Bool()),
     [](const auto& info) {
       return std::string(std::get<0>(info.param)->data()) +

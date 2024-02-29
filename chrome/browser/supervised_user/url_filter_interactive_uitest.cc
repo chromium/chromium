@@ -27,9 +27,8 @@ static constexpr std::string_view kPermissionRequestUrl =
 
 // All tests in this unit are subject to flakiness because they interact with a
 // system that can be externally modified during execution.
-class UrlFilterUiTest
-    : public InteractiveFamilyLiveTest,
-      public testing::WithParamInterface<supervised_user::FamilyIdentifier> {
+class UrlFilterUiTest : public InteractiveFamilyLiveTest,
+                        public testing::WithParamInterface<FamilyIdentifier> {
  public:
   UrlFilterUiTest()
       : InteractiveFamilyLiveTest(
@@ -251,9 +250,9 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     UrlFilterUiTest,
-    testing::Values(supervised_user::FamilyIdentifier("FAMILY_DMA_NONE"),
-                    supervised_user::FamilyIdentifier("FAMILY_DMA_ALL"),
-                    supervised_user::FamilyIdentifier("FAMILY")),
+    testing::Values(FamilyIdentifier("FAMILY_DMA_ELIGIBILE_NO_CONSENT"),
+                    FamilyIdentifier("FAMILY_DMA_ELIGIBLE_WITH_CONSENT"),
+                    FamilyIdentifier("FAMILY_DMA_INELIGIBLE")),
     [](const auto& info) { return info.param->data(); });
 
 }  // namespace
