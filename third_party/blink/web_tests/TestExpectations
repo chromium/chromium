@@ -6908,3 +6908,4 @@ crbug.com/41484244 virtual/shared-storage-fenced-frame-mparch/external/wpt/share
 
 # Gardener 2024-02-29
 crbug.com/327468395 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/smooth-scroll-in-load-event.html [ Failure ]
+crbug.com/327468397 wpt_internal/dom/abort/abort-signal-memory-tests.https.any.html [ Failure Pass ]
