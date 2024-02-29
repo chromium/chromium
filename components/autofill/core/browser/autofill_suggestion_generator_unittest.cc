@@ -1190,29 +1190,28 @@ TEST_F(
     AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_GroupFillingLabels_AddFillAddressAddressLine1AndDifferentiatingLabel) {
   AutofillProfile profile_1 = test::GetFullProfile();
-  profile_1.SetRawInfo(EMAIL_ADDRESS, u"a@gmail.com");
+  profile_1.SetRawInfo(ADDRESS_HOME_CITY, u"Munich");
 
   AutofillProfile profile_2 = test::GetFullProfile();
-  profile_2.SetRawInfo(EMAIL_ADDRESS, u"b@gmail.com");
+  profile_2.SetRawInfo(ADDRESS_HOME_CITY, u"Frankfurt");
 
   // `profile_1` and `profile_2` have the same `ADDRESS_HOME_ZIP`, which
   // will lead to the necessity of a differentiating label
-  // (`EMAIL_ADDRESS`).
+  // (`ADDRESS_HOME_CITY`).
   std::vector<Suggestion> suggestions =
       test_api(suggestion_generator())
           .CreateSuggestionsFromProfiles(
-              {&profile_1, &profile_2}, {ADDRESS_HOME_LINE1, ADDRESS_HOME_ZIP},
+              {&profile_1, &profile_2},
+              {ADDRESS_HOME_LINE1, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY},
               GetAddressFieldsForGroupFilling(), ADDRESS_HOME_ZIP,
               /*trigger_field_max_length=*/0);
 
   ASSERT_EQ(suggestions.size(), 2u);
-  EXPECT_EQ(
-      suggestions[0].labels,
-      std::vector<std::vector<Suggestion::Text>>(
-          {{Suggestion::Text(
+  EXPECT_EQ(suggestions[0].labels,
+            std::vector<std::vector<Suggestion::Text>>({{Suggestion::Text(
                 u"Fill address - " +
-                profile_1.GetInfo(ADDRESS_HOME_LINE1, app_locale()) + u", "),
-            Suggestion::Text(u"John H. Doe, a@gmail.com")}}));
+                profile_1.GetInfo(ADDRESS_HOME_LINE1, app_locale()) +
+                u", Munich")}}));
 }
 
 // When there is no need to detailing or differentiating label, we add only the
@@ -1230,33 +1229,6 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
   EXPECT_EQ(suggestions[0].labels,
             std::vector<std::vector<Suggestion::Text>>(
                 {{Suggestion::Text(u"Fill full name")}}));
-}
-
-// Test that a differentiating label is added when the suggestion main text
-// and detailing label are not unique across suggestions.
-TEST_F(
-    AutofillChildrenSuggestionGeneratorTest,
-    CreateSuggestionsFromProfiles_GroupFillingLabels_AddFillNameAndDifferentiatingLabel) {
-  AutofillProfile profile_1 = test::GetFullProfile();
-  profile_1.SetRawInfo(ADDRESS_HOME_ZIP, u"100100");
-
-  AutofillProfile profile_2 = test::GetFullProfile();
-  profile_2.SetRawInfo(ADDRESS_HOME_ZIP, u"200200");
-
-  // `profile_1` and `profile_2` have the same `NAME_FULL`, which will lead to
-  // the necessity of a differentiating label (`ADDRESS_HOME_ZIP`).
-  std::vector<Suggestion> suggestions =
-      test_api(suggestion_generator())
-          .CreateSuggestionsFromProfiles(
-              {&profile_1, &profile_2}, {NAME_FIRST, NAME_LAST},
-              GetFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST,
-              /*trigger_field_max_length=*/0);
-
-  ASSERT_EQ(suggestions.size(), 2u);
-  EXPECT_EQ(
-      suggestions[0].labels,
-      std::vector<std::vector<Suggestion::Text>>(
-          {{Suggestion::Text(u"Fill full name - 666 Erebus St., 100100")}}));
 }
 
 // Test that no labels are added when filling targets only one field.
