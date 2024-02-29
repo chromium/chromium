@@ -60,6 +60,7 @@ class PersistedDataImpl : public PersistedData {
   void SetDateLastActive(const std::string& id, int dla) override;
   void SetDateLastRollCall(const std::string& id, int dlrc) override;
   int GetInstallDate(const std::string& id) const override;
+  void SetInstallDate(const std::string& id, int install_date) override;
   std::string GetCohort(const std::string& id) const override;
   std::string GetCohortHint(const std::string& id) const override;
   std::string GetCohortName(const std::string& id) const override;
@@ -263,6 +264,14 @@ void PersistedDataImpl::SetDateLastRollCall(const std::string& id, int dlrc) {
   ScopedDictPrefUpdate update(pref_service_, kPersistedDataPreference);
   base::Value::Dict* app_key = GetOrCreateAppKey(id, update.Get());
   app_key->Set("dlrc", dlrc);
+}
+
+void PersistedDataImpl::SetInstallDate(const std::string& id,
+                                       int install_date) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ScopedDictPrefUpdate update(pref_service_, kPersistedDataPreference);
+  base::Value::Dict* app_key = GetOrCreateAppKey(id, update.Get());
+  app_key->Set("installdate", install_date);
 }
 
 void PersistedDataImpl::SetString(const std::string& id,

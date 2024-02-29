@@ -1263,6 +1263,12 @@ bool MigrateLegacyUpdaters(
         registration.dlrc = DaynumFromDWORD(date_last_rollcall);
       }
 
+      DWORD install_date = 0;
+      if (client_state_key.ReadValueDW(kRegValueDayOfInstall, &install_date) ==
+          ERROR_SUCCESS) {
+        registration.install_date = DaynumFromDWORD(install_date);
+      }
+
       base::win::RegKey cohort_key;
       if (cohort_key.Open(root, GetAppCohortKey(app_id).c_str(),
                           Wow6432(KEY_READ)) == ERROR_SUCCESS) {

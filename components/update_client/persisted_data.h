@@ -79,6 +79,10 @@ class PersistedData {
   // "InstallDate" is not known, -2 is returned.
   virtual int GetInstallDate(const std::string& id) const = 0;
 
+  // Sets InstallDate. This method should only be used for importing data from
+  // other data stores.
+  virtual void SetInstallDate(const std::string& id, int install_date) = 0;
+
   // These functions return cohort data for the specified |id|. "Cohort"
   // indicates the membership of the client in any release channels components
   // have set up in a machine-readable format, while "CohortName" does so in a

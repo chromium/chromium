@@ -68,6 +68,9 @@ struct RegistrationRequest {
   // Date-last-rollcall. The value is the number of days since Jan 1, 2007.
   std::optional<int> dlrc;
 
+  // Date of install. The value is the number of days since Jan 1, 2007.
+  std::optional<int> install_date;
+
   // Opaque cohort string meaningful to the server.
   std::string cohort;
 

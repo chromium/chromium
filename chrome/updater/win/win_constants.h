@@ -49,6 +49,7 @@ extern const wchar_t kRegValueBrandCode[];
 extern const wchar_t kRegValueAP[];
 extern const wchar_t kRegValueDateOfLastActivity[];
 extern const wchar_t kRegValueDateOfLastRollcall[];
+extern const wchar_t kRegValueDayOfInstall[];
 extern const wchar_t kRegValueName[];
 
 // Values created under `UPDATER_KEY`.
