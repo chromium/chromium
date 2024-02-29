@@ -918,7 +918,6 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
   if (base::FeatureList::IsEnabled(
           features::kVideoEncoderLimitsFramesInEncoder) &&
       frames_in_encoder_count_ >= kMaxFramesInEncoder) {
-    CHECK_EQ(frames_in_encoder_count_, kMaxFramesInEncoder);
     DVLOG(1) << "VAE drops the input frame to reduce latency";
     base::AutoLock lock(lock_);
     if (encoded_image_callback_) {
