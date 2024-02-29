@@ -192,6 +192,10 @@ bool HasUserInteractedWithTailoredFullscreenPromoBefore();
 // non-modal promo before.
 NSInteger UserInteractionWithNonModalPromoCount();
 
+// Returns the number of times a fullscreen default browser promo has been
+// displayed.
+NSInteger DisplayedFullscreenPromoCount();
+
 // Logs that one of the fullscreen default browser promos was displayed.
 void LogFullscreenDefaultBrowserPromoDisplayed();
 
@@ -201,8 +205,13 @@ void LogUserInteractionWithFullscreenPromo();
 // Logs that the user has interacted with a Tailored Fullscreen Promo.
 void LogUserInteractionWithTailoredFullscreenPromo();
 
-// Logs that the user has interacted with a Non-Modals Promo.
-void LogUserInteractionWithNonModalPromo();
+// Logs that the user has interacted with a non-modal promo. The expected
+// parameters are the current counts, because they will be incremented by 1 and
+// then saved to NSUserDefaults. If kNonModalDefaultBrowserPromoCooldownRefactor
+// is disabled, kDisplayedFullscreenPromoCount will also be incremented by 1.
+void LogUserInteractionWithNonModalPromo(
+    NSInteger currentNonModalPromoInteractionsCount,
+    NSInteger currentFullscreenPromoInteractionsCount);
 
 // Logs that the user has interacted with the first run promo.
 void LogUserInteractionWithFirstRunPromo(BOOL openedSettings);

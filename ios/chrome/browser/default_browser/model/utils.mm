@@ -382,14 +382,6 @@ BOOL HasUserInteractedWithFirstRunPromoBefore() {
   return number.boolValue;
 }
 
-// Returns the number of times a fullscreen default browser promo has been
-// displayed.
-NSInteger DisplayedFullscreenPromoCount() {
-  NSNumber* number =
-      GetObjectFromStorageForKey<NSNumber>(kDisplayedFullscreenPromoCount);
-  return number.integerValue;
-}
-
 // Returns the number of time the fullscreen default browser promo has been
 // displayed.
 NSInteger GenericPromoInteractionCount() {
@@ -645,6 +637,12 @@ NSInteger UserInteractionWithNonModalPromoCount() {
   return number.integerValue;
 }
 
+NSInteger DisplayedFullscreenPromoCount() {
+  NSNumber* number =
+      GetObjectFromStorageForKey<NSNumber>(kDisplayedFullscreenPromoCount);
+  return number.integerValue;
+}
+
 void LogFullscreenDefaultBrowserPromoDisplayed() {
   const NSInteger displayed_promo_count = DisplayedFullscreenPromoCount();
   NSDictionary<NSString*, NSObject*>* update = @{
@@ -676,20 +674,22 @@ void LogUserInteractionWithTailoredFullscreenPromo() {
   });
 }
 
-void LogUserInteractionWithNonModalPromo() {
-  const NSInteger interaction_count = UserInteractionWithNonModalPromoCount();
-
+void LogUserInteractionWithNonModalPromo(
+    NSInteger currentNonModalPromoInteractionsCount,
+    NSInteger currentFullscreenPromoInteractionsCount) {
   if (IsNonModalDefaultBrowserPromoCooldownRefactorEnabled()) {
     UpdateStorageWithDictionary(@{
       kLastTimeUserInteractedWithNonModalPromo : [NSDate date],
-      kUserInteractedWithNonModalPromoCount : @(interaction_count + 1),
+      kUserInteractedWithNonModalPromoCount :
+          @(currentNonModalPromoInteractionsCount + 1),
     });
   } else {
-    const NSInteger displayed_promo_count = DisplayedFullscreenPromoCount();
     UpdateStorageWithDictionary(@{
       kLastTimeUserInteractedWithFullscreenPromo : [NSDate date],
-      kUserInteractedWithNonModalPromoCount : @(interaction_count + 1),
-      kDisplayedFullscreenPromoCount : @(displayed_promo_count + 1),
+      kUserInteractedWithNonModalPromoCount :
+          @(currentNonModalPromoInteractionsCount + 1),
+      kDisplayedFullscreenPromoCount :
+          @(currentFullscreenPromoInteractionsCount + 1),
     });
   }
 }

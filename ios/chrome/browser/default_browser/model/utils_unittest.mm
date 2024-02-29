@@ -170,12 +170,14 @@ TEST_F(DefaultBrowserUtilsTest,
 
   EXPECT_FALSE(UserInFullscreenPromoCooldown());
 
-  LogUserInteractionWithNonModalPromo();
+  LogUserInteractionWithNonModalPromo(UserInteractionWithNonModalPromoCount(),
+                                      DisplayedFullscreenPromoCount());
   EXPECT_TRUE(UserInFullscreenPromoCooldown());
 
   ClearDefaultBrowserPromoData();
   LogUserInteractionWithTailoredFullscreenPromo();
-  LogUserInteractionWithNonModalPromo();
+  LogUserInteractionWithNonModalPromo(UserInteractionWithNonModalPromoCount(),
+                                      DisplayedFullscreenPromoCount());
   EXPECT_TRUE(UserInFullscreenPromoCooldown());
 }
 
@@ -211,12 +213,14 @@ TEST_F(DefaultBrowserUtilsTest,
 
   EXPECT_FALSE(UserInNonModalPromoCooldown());
 
-  LogUserInteractionWithNonModalPromo();
+  LogUserInteractionWithNonModalPromo(UserInteractionWithNonModalPromoCount(),
+                                      DisplayedFullscreenPromoCount());
   EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 1);
   EXPECT_TRUE(UserInNonModalPromoCooldown());
   EXPECT_FALSE(UserInFullscreenPromoCooldown());
 
-  LogUserInteractionWithNonModalPromo();
+  LogUserInteractionWithNonModalPromo(UserInteractionWithNonModalPromoCount(),
+                                      DisplayedFullscreenPromoCount());
   EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 2);
   EXPECT_TRUE(UserInNonModalPromoCooldown());
   EXPECT_FALSE(UserInFullscreenPromoCooldown());
@@ -232,15 +236,35 @@ TEST_F(DefaultBrowserUtilsTest,
 
   EXPECT_FALSE(UserInNonModalPromoCooldown());
 
-  LogUserInteractionWithNonModalPromo();
+  LogUserInteractionWithNonModalPromo(UserInteractionWithNonModalPromoCount(),
+                                      DisplayedFullscreenPromoCount());
   EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 1);
   EXPECT_TRUE(UserInNonModalPromoCooldown());
   EXPECT_TRUE(UserInFullscreenPromoCooldown());
 
-  LogUserInteractionWithNonModalPromo();
+  LogUserInteractionWithNonModalPromo(UserInteractionWithNonModalPromoCount(),
+                                      DisplayedFullscreenPromoCount());
   EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 2);
   EXPECT_TRUE(UserInNonModalPromoCooldown());
   EXPECT_TRUE(UserInFullscreenPromoCooldown());
+}
+
+// Tests logging user interactions with a non-modal promo multiple times with
+// the same current interactions count doesn't over-increment the value.
+TEST_F(DefaultBrowserUtilsTest,
+       LogNonModalUserInteractionMultipleTimesSameArguments) {
+  feature_list_.InitWithFeatures(
+      {/*enabled=*/},
+      {/*disabled=*/kNonModalDefaultBrowserPromoCooldownRefactor});
+
+  LogUserInteractionWithNonModalPromo(2, 2);
+  EXPECT_EQ(3, 3);
+
+  LogUserInteractionWithNonModalPromo(2, 2);
+  EXPECT_EQ(3, 3);
+
+  LogUserInteractionWithNonModalPromo(2, 2);
+  EXPECT_EQ(3, 3);
 }
 
 // Tests that the cooldown refactor flag is enabled.
