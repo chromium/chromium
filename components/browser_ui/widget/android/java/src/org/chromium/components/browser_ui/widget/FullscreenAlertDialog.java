@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 
@@ -135,7 +136,8 @@ public class FullscreenAlertDialog extends AlertDialog {
                                                                 mContext),
                                                 null);
                 mAutomotiveToolbar = automotiveLayout.findViewById(R.id.back_button_toolbar);
-                automotiveLayout.addView(view);
+                automotiveLayout.addView(
+                        view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
                 super.setView(automotiveLayout);
             } else {
                 super.setView(view);
