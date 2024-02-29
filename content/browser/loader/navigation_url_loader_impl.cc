@@ -457,6 +457,9 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
 
 // TODO(kinuko): Fix the method ordering and move these methods after the ctor.
 NavigationURLLoaderImpl::~NavigationURLLoaderImpl() {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "NavigationURLLoaderImpl::~NavigationURLLoaderImpl",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
   // If neither OnCompleted nor OnReceivedResponse has been invoked, the
   // request was canceled before receiving a response, so log a cancellation.
   // Results after receiving a non-error response are logged in the renderer,
@@ -472,6 +475,9 @@ NavigationURLLoaderImpl::~NavigationURLLoaderImpl() {
 }
 
 void NavigationURLLoaderImpl::Start() {
+  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationURLLoaderImpl::Start",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!started_);
   started_ = true;
@@ -532,6 +538,10 @@ void NavigationURLLoaderImpl::Start() {
 }
 
 void NavigationURLLoaderImpl::CreateInterceptors() {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "NavigationURLLoaderImpl::CreateInterceptors",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   if (prefetched_signed_exchange_cache_) {
     std::unique_ptr<NavigationLoaderInterceptor>
         prefetched_signed_exchange_interceptor =
@@ -866,6 +876,10 @@ void NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart(
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
         additional_throttles) {
+  TRACE_EVENT_WITH_FLOW0(
+      "navigation", "NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   CHECK(!url_loader_);
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
@@ -1313,6 +1327,10 @@ bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
 
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 NavigationURLLoaderImpl::CreateURLLoaderThrottles() {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "NavigationURLLoaderImpl::CreateURLLoaderThrottles",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   auto throttles = CreateContentBrowserURLLoaderThrottles(
       *resource_request_, browser_context_, web_contents_getter_,
       navigation_ui_data_.get(), frame_tree_node_id_,
@@ -1436,6 +1454,9 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
       ukm_source_id_(FrameTreeNode::GloballyFindByID(frame_tree_node_id_)
                          ->navigation_request()
                          ->GetNextPageUkmSourceId()) {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "NavigationURLLoaderImpl::NavigationURLLoaderImpl",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(

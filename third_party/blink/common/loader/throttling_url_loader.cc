@@ -286,6 +286,8 @@ std::unique_ptr<ThrottlingURLLoader> ThrottlingURLLoader::CreateLoaderAndStart(
 }
 
 ThrottlingURLLoader::~ThrottlingURLLoader() {
+  TRACE_EVENT_WITH_FLOW0("loading", "ThrottlingURLLoader::~ThrottlingURLLoader",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
   if (inside_delegate_calls_ > 0) {
     // A throttle is calling into this object. In this case, delay destruction
     // of the throttles, so that throttles don't need to worry about any
@@ -408,6 +410,8 @@ ThrottlingURLLoader::ThrottlingURLLoader(
     network::mojom::URLLoaderClient* client,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
     : forwarding_client_(client), traffic_annotation_(traffic_annotation) {
+  TRACE_EVENT_WITH_FLOW0("loading", "ThrottlingURLLoader::ThrottlingURLLoader",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
   throttles_.reserve(throttles.size());
   for (auto& throttle : throttles)
     throttles_.emplace_back(this, std::move(throttle));
@@ -420,6 +424,9 @@ void ThrottlingURLLoader::Start(
     network::ResourceRequest* url_request,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::optional<std::vector<std::string>> cors_exempt_header_list) {
+  TRACE_EVENT_WITH_FLOW0("loading", "ThrottlingURLLoader::Start",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
   DCHECK(!loader_completed_);
 
@@ -486,6 +493,9 @@ void ThrottlingURLLoader::Start(
 }
 
 void ThrottlingURLLoader::StartNow() {
+  TRACE_EVENT_WITH_FLOW0("loading", "ThrottlingURLLoader::StartNow",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   DCHECK(start_info_);
   if (!throttle_will_start_redirect_url_.is_empty()) {
     auto first_party_url_policy =
@@ -620,8 +630,10 @@ void ThrottlingURLLoader::OnReceiveResponse(
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
   DCHECK(!loader_completed_);
   DCHECK(deferring_throttles_.empty());
-  TRACE_EVENT1("loading", "ThrottlingURLLoader::OnReceiveResponse", "url",
-               response_url_.possibly_invalid_spec());
+  TRACE_EVENT_WITH_FLOW1("loading", "ThrottlingURLLoader::OnReceiveResponse",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "url", response_url_.possibly_invalid_spec());
   if (start_info_ && start_info_->url_request.keepalive) {
     base::UmaHistogramBoolean("FetchKeepAlive.Renderer.Total.ReceivedResponse",
                               true);

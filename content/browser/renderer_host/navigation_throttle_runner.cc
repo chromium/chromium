@@ -149,6 +149,8 @@ void NavigationThrottleRunner::CallResumeForTesting() {
 }
 
 void NavigationThrottleRunner::RegisterNavigationThrottles() {
+  TRACE_EVENT0("navigation",
+               "NavigationThrottleRunner::RegisterNavigationThrottles");
   // Note: |throttle_| might not be empty. Some NavigationThrottles might have
   // been registered with RegisterThrottleForTesting. These must reside at the
   // end of |throttles_|. TestNavigationManagerThrottle expects that the
@@ -299,11 +301,16 @@ NavigationThrottle* NavigationThrottleRunner::GetDeferringThrottle() const {
 
 void NavigationThrottleRunner::AddThrottle(
     std::unique_ptr<NavigationThrottle> navigation_throttle) {
-  if (navigation_throttle)
+  if (navigation_throttle) {
+    TRACE_EVENT1("navigation", "NavigationThrottleRunner::AddThrottle",
+                 "navigation_throttle",
+                 navigation_throttle->GetNameForLogging());
     throttles_.push_back(std::move(navigation_throttle));
+  }
 }
 
 void NavigationThrottleRunner::ProcessInternal() {
+  TRACE_EVENT0("navigation", "NavigationThrottleRunner::ProcessInternal");
   DCHECK_NE(Event::NoEvent, current_event_);
   base::WeakPtr<NavigationThrottleRunner> weak_ref = weak_factory_.GetWeakPtr();
 
@@ -313,6 +320,8 @@ void NavigationThrottleRunner::ProcessInternal() {
   int64_t local_navigation_id = navigation_id_;
 
   for (size_t i = next_index_; i < throttles_.size(); ++i) {
+    TRACE_EVENT0("navigation",
+                 "NavigationThrottleRunner::ProcessInternal.loop");
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
         "navigation", GetEventName(current_event_), local_navigation_id,
         "throttle", throttles_[i]->GetNameForLogging());

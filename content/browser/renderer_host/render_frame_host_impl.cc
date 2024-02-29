@@ -1595,6 +1595,9 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()),
       fenced_frame_status_(fenced_frame_status),
       devtools_frame_token_(devtools_frame_token) {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "RenderFrameHostImpl::RenderFrameHostImpl",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
   TRACE_EVENT_BEGIN("navigation", "RenderFrameHostImpl",
                     perfetto::Track::FromPointer(this),
                     "render_frame_host_when_created", this);
@@ -1733,6 +1736,9 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 }
 
 RenderFrameHostImpl::~RenderFrameHostImpl() {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "RenderFrameHostImpl::~RenderFrameHostImpl",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
   SCOPED_CRASH_KEY_STRING256("Bug1407526", "lifecycle",
                              LifecycleStateImplToString(lifecycle_state()));
   TRACE_EVENT("navigation", "~RenderFrameHostImpl()",
@@ -5326,6 +5332,10 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompleted(
     const base::TimeTicks& renderer_before_unload_start_time,
     const base::TimeTicks& renderer_before_unload_end_time,
     bool for_legacy) {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "RenderFrameHostImpl::ProcessBeforeUnloadCompleted",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       "navigation", "RenderFrameHostImpl BeforeUnload", TRACE_ID_LOCAL(this),
       "render_frame_host", this);
@@ -9822,6 +9832,10 @@ void RenderFrameHostImpl::Stop() {
 
 void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
                                                bool is_reload) {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "RenderFrameHostImpl::DispatchBeforeUnload",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   bool for_navigation =
       type == BeforeUnloadType::BROWSER_INITIATED_NAVIGATION ||
       type == BeforeUnloadType::RENDERER_INITIATED_NAVIGATION;
@@ -14238,6 +14252,9 @@ void RenderFrameHostImpl::SendBeforeUnload(
     bool is_reload,
     base::WeakPtr<RenderFrameHostImpl> rfh,
     bool for_legacy) {
+  TRACE_EVENT_WITH_FLOW0("navigation", "RenderFrameHostImpl::SendBeforeUnload",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   auto before_unload_closure = base::BindOnce(
       [](base::WeakPtr<RenderFrameHostImpl> impl, bool for_legacy, bool proceed,
          base::TimeTicks renderer_before_unload_start_time,
