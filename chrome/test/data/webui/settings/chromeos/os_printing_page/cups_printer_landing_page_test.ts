@@ -1389,11 +1389,11 @@ suite('CupsNearbyPrintersTests', () => {
     // connected to a network.
     assertTrue(!!page.shadowRoot!.querySelector('#cloudOffIcon'));
     assertTrue(!!page.shadowRoot!.querySelector('#connectionMessage'));
-    const addManualPrinterIcon =
+    const addManualPrinterButtonRevamp =
         page.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#addManualPrinterIcon');
-    assertTrue(!!addManualPrinterIcon);
-    assertTrue(addManualPrinterIcon.disabled);
+            '#addManualPrinterButtonRevamp');
+    assertTrue(!!addManualPrinterButtonRevamp);
+    assertTrue(addManualPrinterButtonRevamp.disabled);
   });
 
   test('checkNetworkConnection', async () => {
@@ -1407,11 +1407,11 @@ suite('CupsNearbyPrintersTests', () => {
     // connected.
     assertTrue(!!page.shadowRoot!.querySelector('#cloudOffIcon'));
     assertTrue(!!page.shadowRoot!.querySelector('#connectionMessage'));
-    const addManualPrinterIcon =
+    const addManualPrinterButtonRevamp =
         page.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#addManualPrinterIcon');
-    assertTrue(!!addManualPrinterIcon);
-    assertTrue(addManualPrinterIcon.disabled);
+            '#addManualPrinterButtonRevamp');
+    assertTrue(!!addManualPrinterButtonRevamp);
+    assertTrue(addManualPrinterButtonRevamp.disabled);
     // Simulate connecting to a network with connectivity.
     wifi1.connectionState = ConnectionStateType.kOnline;
     page.onActiveNetworksChanged([wifi1]);

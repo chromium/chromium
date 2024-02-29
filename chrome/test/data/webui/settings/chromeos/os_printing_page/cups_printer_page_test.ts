@@ -85,11 +85,6 @@ suite('<settings-cups-printers>', () => {
 
   // Verify the Nearby printers section can be properly opened and closed.
   test('CollapsibleNearbyPrinterSection', () => {
-    // The Add printer section above the Nearby printers section should be
-    // hidden.
-    assertFalse(
-        isVisible(page.shadowRoot!.querySelector('#addPrinterSection')));
-
     // The collapsible section should start opened, then after clicking the
     // button should close.
     const toggleButton = page.shadowRoot!.querySelector<HTMLButtonElement>(
@@ -165,7 +160,7 @@ suite('<settings-cups-printers>', () => {
 
     await flushTasks();
     const icon = page.shadowRoot!.querySelector<HTMLButtonElement>(
-        '.add-manual-printer-icon');
+        '#addManualPrinterButtonRevamp');
     assertTrue(!!icon);
     icon.click();
     assertEquals(

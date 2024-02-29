@@ -133,7 +133,6 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_REVAMP_PRINTING_CUPS_PRINT_DESCRIPTION},
       {"cupsPrintersLearnMoreLabel",
        IDS_SETTINGS_PRINTING_CUPS_PRINTERS_LEARN_MORE_LABEL},
-      {"addCupsPrinter", IDS_SETTINGS_PRINTING_CUPS_PRINTERS_ADD_PRINTER},
       {"addCupsPrinterManually",
        IDS_SETTINGS_PRINTING_CUPS_PRINTERS_ADD_PRINTER_MANUALLY},
       {"editPrinter", IDS_SETTINGS_PRINTING_CUPS_PRINTERS_EDIT},
@@ -178,8 +177,6 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRINTING_CUPS_PRINTERS_AVAILABLE_PRINTERS_READY},
       {"availablePrintersReadySubtext",
        IDS_SETTINGS_PRINTING_CUPS_PRINTERS_AVAILABLE_PRINTERS_READY_SUBTEXT},
-      {"nearbyPrintersListTitle",
-       IDS_SETTINGS_PRINTING_CUPS_PRINTERS_AVAILABLE_PRINTERS},
       {"nearbyPrintersCountMany",
        IDS_SETTINGS_PRINTING_CUPS_PRINTERS_AVAILABLE_PRINTERS_COUNT_MANY},
       {"nearbyPrintersCountOne",
@@ -194,8 +191,6 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRINTING_ENTERPRISE_PRINTERS_AVAILABLE_PRINTER_COUNT_ONE},
       {"enterprisePrintersCountNone",
        IDS_SETTINGS_PRINTING_ENTERPRISE_PRINTERS_AVAILABLE_PRINTER_COUNT_NONE},
-      {"nearbyPrintersListDescription",
-       IDS_SETTINGS_PRINTING_CUPS_PRINTERS_ADD_DETECTED_OR_NEW_PRINTER},
       {"manufacturerAndModelAdditionalInformation",
        IDS_SETTINGS_PRINTING_CUPS_MANUFACTURER_MODEL_ADDITIONAL_INFORMATION},
       {"addPrinterButtonText",
@@ -329,8 +324,6 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "printingCUPSPrintPpdLearnMoreUrl",
       GetHelpUrlWithBoard(chrome::kCupsPrintPPDLearnMoreURL));
-  html_source->AddBoolean("isPrinterSettingsRevampEnabled",
-                          features::IsPrinterSettingsRevampEnabled());
   html_source->AddBoolean("isPrinterSettingsPrinterStatusEnabled",
                           features::IsPrinterSettingsPrinterStatusEnabled());
   html_source->AddBoolean("isPrintPreviewDiscoveredPrintersEnabled",

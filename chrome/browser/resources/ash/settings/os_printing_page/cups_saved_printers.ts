@@ -190,18 +190,6 @@ export class SettingsCupsSavedPrintersElement extends
       },
 
       /**
-       * True when the "printer-settings-revamp" feature flag is enabled.
-       */
-      isPrinterSettingsRevampEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean('isPrinterSettingsRevampEnabled');
-        },
-        readOnly: true,
-        reflectToAttribute: true,
-      },
-
-      /**
        * True when the "local-printer-observing" feature flag is enabled.
        */
       isLocalPrinterObservingEnabled_: {

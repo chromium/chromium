@@ -82,18 +82,6 @@ export class SettingsCupsPrintersEntryElement extends
       },
 
       /**
-       * True when the "printer-settings-revamp" feature flag is enabled.
-       */
-      isPrinterSettingsRevampEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean('isPrinterSettingsRevampEnabled');
-        },
-        readOnly: true,
-        reflectToAttribute: true,
-      },
-
-      /**
        * True when the "print-preview-discovered-printers" feature flag is
        * enabled.
        */
@@ -114,7 +102,6 @@ export class SettingsCupsPrintersEntryElement extends
   printerStatusReasonCache: Map<string, PrinterStatusReason>;
   numPrinters: number;
   private hasHighSeverityError_: boolean;
-  private isPrinterSettingsRevampEnabled_: boolean;
   private isPrinterSettingsPrinterStatusEnabled_: boolean;
   private isPrintPreviewDiscoveredPrintersEnabled_: boolean;
 
@@ -208,8 +195,7 @@ export class SettingsCupsPrintersEntryElement extends
   // printers. An exception is enterprise printers which display the managed
   // icon.
   private showNearbyPrinterIcon_(): boolean {
-    return !this.isSavedPrinter_() && !this.isEnterprisePrinter_() &&
-        this.isPrinterSettingsRevampEnabled_;
+    return !this.isSavedPrinter_() && !this.isEnterprisePrinter_();
   }
 
   // Printer status icons are only shown for saved printers.

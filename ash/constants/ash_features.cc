@@ -4116,10 +4116,6 @@ bool IsPrinterSettingsPrinterStatusEnabled() {
   return base::FeatureList::IsEnabled(kPrinterSettingsPrinterStatus);
 }
 
-bool IsPrinterSettingsRevampEnabled() {
-  return true;
-}
-
 bool IsPrinterPreviewCrosAppEnabled() {
   return base::FeatureList::IsEnabled(kPrintPreviewCrosApp);
 }
