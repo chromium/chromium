@@ -38,6 +38,8 @@ public final class ToolbarFeatures {
                             USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM_PARAM,
                             false);
 
+    private static Boolean sShouldBlockCapturesForFullscreen;
+
     /** Private constructor to avoid instantiation. */
     private ToolbarFeatures() {}
 
@@ -47,8 +49,17 @@ public final class ToolbarFeatures {
 
     /** Returns if the suppression logic should avoid capturing during fullscreen, such as video. */
     public static boolean shouldBlockCapturesForFullscreen() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES, BLOCK_FOR_FULLSCREEN, false);
+        // Cache this value to avoid calling into native every time it is checked.
+        if (sShouldBlockCapturesForFullscreen == null) {
+            boolean shouldBlockCaptures =
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                            ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES,
+                            BLOCK_FOR_FULLSCREEN,
+                            false);
+            sShouldBlockCapturesForFullscreen = shouldBlockCaptures;
+            return shouldBlockCaptures;
+        }
+        return sShouldBlockCapturesForFullscreen;
     }
 
     /**
@@ -66,5 +77,10 @@ public final class ToolbarFeatures {
      */
     public static boolean shouldUseToolbarBgColorForStripTransitionScrim() {
         return USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.getValue();
+    }
+
+    /** Resets cached value for whether to block captures for fullscreen. */
+    public static void resetShouldBlockCapturesForFullscreenForTesting() {
+        sShouldBlockCapturesForFullscreen = null;
     }
 }

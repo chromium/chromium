@@ -183,6 +183,7 @@ public class ToolbarControlContainerTest {
     public void before() {
         mJniMocker.mock(ResourceFactoryJni.TEST_HOOKS, mResourceFactoryJni);
         UmaRecorderHolder.resetForTesting();
+        ToolbarFeatures.resetShouldBlockCapturesForFullscreenForTesting();
         when(mToolbarContainer.getWidth()).thenReturn(1);
         when(mToolbarContainer.getHeight()).thenReturn(1);
         when(mToolbarContainer.findViewById(anyInt())).thenReturn(mToolbarHairline);
@@ -393,6 +394,7 @@ public class ToolbarControlContainerTest {
                 ToolbarFeatures.BLOCK_FOR_FULLSCREEN,
                 "true");
         FeatureList.setTestValues(testValues);
+        ToolbarFeatures.resetShouldBlockCapturesForFullscreenForTesting();
 
         final @ToolbarSnapshotDifference int difference = ToolbarSnapshotDifference.URL_TEXT;
         when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(true);
