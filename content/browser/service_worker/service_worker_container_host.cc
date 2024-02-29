@@ -9,6 +9,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/strings/stringprintf.h"
@@ -619,6 +620,7 @@ void ServiceWorkerContainerHost::PostMessageToClient(
 void ServiceWorkerContainerHost::CountFeature(
     blink::mojom::WebFeature feature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SCOPED_CRASH_KEY_NUMBER("SWCH_CF", "feature", static_cast<int32_t>(feature));
 
   // CountFeature is a message about the client's controller. It should be sent
   // only for clients.
