@@ -49,6 +49,11 @@ export class SummaryPanelElement extends PolymerElement {
   private onSheetsUsedChanged(_event: Event) {
     this.sheetsUsedText = this.controller.getSheetsUsedText();
   }
+
+  // Click event handler for `#print` button.
+  protected onPrintClicked(_event: Event): void {
+    this.controller.handlePrintClicked();
+  }
 }
 
 declare global {

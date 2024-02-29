@@ -7,19 +7,24 @@ import 'chrome://os-print/js/summary_panel.js';
 import {SummaryPanelElement} from 'chrome://os-print/js/summary_panel.js';
 import {SHEETS_USED_CHANGED_EVENT, SummaryPanelController} from 'chrome://os-print/js/summary_panel_controller.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {Button} from 'chrome://resources/cros_components/button/button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('SummaryPanel', () => {
   const sheetsUsedSelector = '#sheetsUsed';
+  const printButtonSelector = '#print';
 
   let element: SummaryPanelElement|null = null;
   let controller: SummaryPanelController|null = null;
+  let mockController: MockController|null = null;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    mockController = new MockController();
     element =
         document.createElement(SummaryPanelElement.is) as SummaryPanelElement;
     assertTrue(!!element);
@@ -40,6 +45,8 @@ suite('SummaryPanel', () => {
     }
     element = null;
     controller = null;
+    mockController?.reset();
+    mockController = null;
   });
 
   // Sets sheets used in controller and wait for UI to update.
@@ -62,7 +69,6 @@ suite('SummaryPanel', () => {
     assertTrue(
         isChildVisible(element, cancelButtonSelector),
         `Should display ${cancelButtonSelector}`);
-    const printButtonSelector = '#print';
     assertTrue(
         isChildVisible(element, printButtonSelector),
         `Should display ${printButtonSelector}`);
@@ -107,5 +113,23 @@ suite('SummaryPanel', () => {
         expectedUpdatedText, controller.getSheetsUsedText(),
         `${SummaryPanelElement.is} controller text should match ${
             expectedUpdatedText}`);
+  });
+
+  // Verify print button calls controller.handlePrintClicked functionality.
+  test('click print triggers PrintPreviewPageHandler', async () => {
+    assert(mockController);
+    const handlePrintClickedMock =
+        mockController.createFunctionMock(controller!, 'handlePrintClicked');
+    handlePrintClickedMock.addExpectation();
+
+    // Click print button.
+    const printButton =
+        strictQuery<Button>(printButtonSelector, element!.shadowRoot, Button);
+    const printButtonEvent = eventToPromise('click', printButton);
+    printButton.click();
+    await printButtonEvent;
+
+    // Verify controller is listening to click event.
+    mockController.verifyMocks();
   });
 });
