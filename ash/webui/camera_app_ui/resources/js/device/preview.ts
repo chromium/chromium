@@ -51,7 +51,11 @@ import {
 import * as util from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
-import {MediaStreamPTZController, PTZController} from './ptz_controller.js';
+import {
+  DigitalZoomPTZController,
+  MediaStreamPTZController,
+  PTZController,
+} from './ptz_controller.js';
 import {
   StreamConstraints,
   toMediaStreamConstraints,
@@ -123,6 +127,9 @@ export class Preview {
 
   private readonly autoQRFlag = loadTimeData.getChromeFlag(Flag.AUTO_QR);
 
+  private readonly digitalZoomFlag =
+      loadTimeData.getChromeFlag(Flag.DIGITAL_ZOOM);
+
   /**
    * PTZController for the current stream constraint. Null if PTZ is not
    * supported.
@@ -132,7 +139,9 @@ export class Preview {
   /**
    * @param onNewStreamNeeded Callback to request new stream.
    */
-  constructor(private readonly onNewStreamNeeded: () => Promise<void>) {
+  constructor(
+      private readonly onNewStreamNeeded: () => Promise<void>,
+      private readonly isSquareResolution: () => boolean) {
     expert.addObserver(
         expert.ExpertOption.SHOW_METADATA,
         queuedAsyncCallback('keepLatest', () => this.updateShowMetadata()));
@@ -205,6 +214,18 @@ export class Preview {
   private async updatePTZ() {
     const deviceOperator = DeviceOperator.getInstance();
     const {pan, tilt, zoom} = this.getVideoTrack().getCapabilities();
+    const {deviceId} = getVideoTrackSettings(this.getVideoTrack());
+    const isDigitalZoomSupported = this.digitalZoomFlag &&
+        (await deviceOperator?.isDigitalZoomSupported(deviceId) ?? false);
+
+    if (isDigitalZoomSupported) {
+      this.isSupportPTZInternal = true;
+      const isSquare = this.isSquareResolution();
+      const aspectRatio = isSquare ? 1 : this.getResolution().aspectRatio;
+      this.ptzController =
+          await DigitalZoomPTZController.create(deviceId, aspectRatio);
+      return;
+    }
 
     this.isSupportPTZInternal = (() => {
       if (pan === undefined && tilt === undefined && zoom === undefined) {
@@ -217,6 +238,8 @@ export class Preview {
       if (this.facing === Facing.EXTERNAL) {
         return true;
       } else if (expert.isEnabled(expert.ExpertOption.ENABLE_PTZ_FOR_BUILTIN)) {
+        // TODO(b/225112054): Remove the expert option once digital zoom is
+        // enabled by default.
         return true;
       }
 
@@ -228,7 +251,6 @@ export class Preview {
       return;
     }
 
-    const {deviceId} = getVideoTrackSettings(this.getVideoTrack());
     const deviceDefaultPTZ = await this.getDeviceDefaultPTZ(deviceId);
     this.ptzController = new MediaStreamPTZController(
         this.getVideoTrack(), deviceDefaultPTZ, this.vidPid);

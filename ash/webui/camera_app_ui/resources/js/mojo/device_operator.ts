@@ -813,6 +813,26 @@ export class DeviceOperator {
   }
 
   /**
+   * Returns whether digital zoom is supported in the camera.
+   */
+  async isDigitalZoomSupported(deviceId: string): Promise<boolean> {
+    // Checks if the device can do zoom through the stream manipulator.
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const digitalZoomTag = 0x80070000 as CameraMetadataTag;
+    const digitalZoomData =
+        await this.getStaticMetadata(deviceId, digitalZoomTag);
+
+    // Some devices can do zoom given the crop region in their HALs. This
+    // ability can be checked with AVAILABLE_MAX_DIGITAL_ZOOM value being
+    // greater than 1.
+    const maxZoomRatio = await this.getStaticMetadata(
+        deviceId, CameraMetadataTag.ANDROID_SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
+    const hasInternalZoom = maxZoomRatio.length > 0 && maxZoomRatio[0] > 1;
+
+    return digitalZoomData.length > 0 || hasInternalZoom;
+  }
+
+  /**
    * Initializes the singleton instance.
    *
    * This should be called before all invocation of static getInstance() and

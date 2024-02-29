@@ -115,7 +115,7 @@ export class CameraManager implements EventListener {
   ) {
     this.preview = new Preview(async () => {
       await this.reconfigure();
-    });
+    }, () => this.useSquareResolution());
 
     this.scheduler = new OperationScheduler(
         this,
