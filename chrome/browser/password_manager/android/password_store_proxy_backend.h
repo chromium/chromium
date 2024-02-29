@@ -107,10 +107,6 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend,
   // if it's being used for synced passwords (pre store split).
   bool UsesAndroidBackendAsMainBackend();
 
-  // Determines whether the account store should use the Android backend
-  // or the built-in backend as the main backend.
-  bool UsesAndroidBackendAsMainBackendForAccount();
-
   // Determines whether the profile store should use the Android backend
   // or the built-in backend as the main backend.
   bool UsesAndroidBackendAsMainBackendForProfile();

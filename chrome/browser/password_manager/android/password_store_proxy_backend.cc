@@ -374,18 +374,13 @@ void PasswordStoreProxyBackend::OnRemoteFormChangesReceived(
 bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackend() {
   CHECK(sync_service_, base::NotFatalUntil::M123);
   if (is_account_store_) {
-    // The account store shouldn't be used unless the split happened.
-    CHECK(password_manager::UsesSplitStoresAndUPMForLocal(prefs_));
-    return UsesAndroidBackendAsMainBackendForAccount();
+    // If the account store has been crated it can only use the android
+    // backend as primary backend.
+    return true;
   }
   return UsesAndroidBackendAsMainBackendForProfile();
 }
 
-bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackendForAccount() {
-  CHECK(is_account_store_);
-  return !prefs_->GetBoolean(
-      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
-}
 
 bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackendForProfile() {
   CHECK(!is_account_store_);
