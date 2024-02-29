@@ -1,9 +1,4 @@
 <style include="mwb-shared-style tab-organization-shared-style cr-icons">
-  cr-button {
-    margin-top: 16px;
-    width: fit-content;
-  }
-
   cr-icon-button {
     --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
     --cr-icon-button-icon-size: 16px;
@@ -27,15 +22,13 @@
     --cr-input-padding-top: 8px;
   }
 
-  tab-search-item {
-    --tab-search-favicon-background: var(--color-tab-search-background);
+  tab-organization-results-actions {
+    display: block;
+    margin: 16px 16px 0 16px;
   }
 
-  .button-row {
-    display: flex;
-    gap: 16px;
-    justify-content: flex-end;
-    margin: 0 16px;
+  tab-search-item {
+    --tab-search-favicon-background: var(--color-tab-search-background);
   }
 
   .divider {
@@ -144,14 +137,11 @@
       </tab-search-item>
     </template>
   </iron-selector>
-  <div class="button-row">
-    <template is="dom-if" if="[[showRefresh_]]">
-      <cr-button class="tonal-button" on-click="onRejectGroupClick_">
-        [[getRefreshButtonText_(isLastOrganization)]]
-      </cr-button>
-    </template>
-    <cr-button class="action-button" on-click="onCreateGroupClick_">
-      $i18n{createGroup}
-    </cr-button>
-  </div>
+  <template is="dom-if" if="[[!multiTabOrganization]]">
+    <tab-organization-results-actions
+        is-last-organization="[[isLastOrganization]]"
+        on-create-group-click="onCreateGroupClick_"
+        on-reject-click="onRejectGroupClick_">
+    </tab-organization-results-actions>
+  </template>
 </div>

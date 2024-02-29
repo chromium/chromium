@@ -277,7 +277,10 @@ suite('TabOrganizationPageTest', () => {
     assertTrue(!!results);
     const group = results.shadowRoot!.querySelector('tab-organization-group');
     assertTrue(!!group);
-    const createGroupButton = group.shadowRoot!.querySelector('cr-button');
+    const actions =
+        group.shadowRoot!.querySelector('tab-organization-results-actions');
+    assertTrue(!!actions);
+    const createGroupButton = actions.shadowRoot!.querySelector('cr-button');
     assertTrue(!!createGroupButton);
     createGroupButton.click();
     await flushTasks();
@@ -318,6 +321,7 @@ suite('TabOrganizationPageTest', () => {
     loadTimeData.overrideValues({
       tabOrganizationRefreshButtonEnabled: true,
       rejectFinalSuggestion: rejectFinalSuggestion,
+      multiTabOrganizationEnabled: false,
     });
 
     await tabOrganizationPageSetup();
@@ -333,7 +337,10 @@ suite('TabOrganizationPageTest', () => {
     assertTrue(!!results);
     const group = results.shadowRoot!.querySelector('tab-organization-group');
     assertTrue(!!group);
-    const refreshButton = group.shadowRoot!.querySelector('cr-button');
+    const actions =
+        group.shadowRoot!.querySelector('tab-organization-results-actions');
+    assertTrue(!!actions);
+    const refreshButton = actions.shadowRoot!.querySelector('cr-button');
     assertTrue(!!refreshButton);
     assertTrue(refreshButton.innerHTML.includes(rejectFinalSuggestion));
     refreshButton.click();
@@ -350,6 +357,7 @@ suite('TabOrganizationPageTest', () => {
         loadTimeData.overrideValues({
           tabOrganizationRefreshButtonEnabled: true,
           rejectSuggestion: rejectSuggestion,
+          multiTabOrganizationEnabled: false,
         });
 
         await tabOrganizationPageSetup();
@@ -390,7 +398,10 @@ suite('TabOrganizationPageTest', () => {
         const group =
             results.shadowRoot!.querySelector('tab-organization-group');
         assertTrue(!!group);
-        const refreshButton = group.shadowRoot!.querySelector('cr-button');
+        const actions =
+            group.shadowRoot!.querySelector('tab-organization-results-actions');
+        assertTrue(!!actions);
+        const refreshButton = actions.shadowRoot!.querySelector('cr-button');
         assertTrue(!!refreshButton);
         assertTrue(refreshButton.innerHTML.includes(rejectSuggestion));
       });

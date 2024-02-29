@@ -10885,6 +10885,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_CREATE_GROUP" desc="The label for the button that creates a tab group in the tab organization UI">
         Create group
       </message>
+      <message name="IDS_TAB_ORGANIZATION_CREATE_GROUPS" desc="The label for the button that creates multiple tab groups in the tab organization UI">
+        Create groups
+      </message>
       <message name="IDS_TAB_ORGANIZATION_DISMISS" desc="The label for the button that dismisses the tab organization UI">
         Dismiss
       </message>

@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
 import './strings.m.js';
 import './tab_organization_group.js';
+import './tab_organization_results_actions.js';
 import './tab_organization_shared_style.css.js';
 
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
@@ -85,12 +86,19 @@ export class TabOrganizationResultsElement extends PolymerElement {
     return loadTimeData.getString('successTitle');
   }
 
-  private getOrganizations_() {
+  private getOrganizations_(): TabOrganization[] {
+    if (!this.session) {
+      return [];
+    }
     if (this.multiTabOrganization) {
       return this.session.organizations;
     } else {
       return this.session.organizations.slice(0, 1);
     }
+  }
+
+  private hasMultipleOrganizations_() {
+    return this.getOrganizations_().length > 1;
   }
 
   private getName_(organization: TabOrganization) {
@@ -110,6 +118,18 @@ export class TabOrganizationResultsElement extends PolymerElement {
 
   private onSessionChange_() {
     this.feedbackSelectedOption_ = CrFeedbackOption.UNSPECIFIED;
+  }
+
+  private onCreateAllGroupsClick_(event: CustomEvent) {
+    event.stopPropagation();
+    event.preventDefault();
+    // TODO(b/324942857): Implement
+  }
+
+  private onRejectAllGroupsClick_(event: CustomEvent) {
+    event.stopPropagation();
+    event.preventDefault();
+    // TODO(b/324944497): Implement
   }
 
   private onLearnMoreClick_() {

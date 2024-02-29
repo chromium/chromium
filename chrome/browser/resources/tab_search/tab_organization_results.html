@@ -37,7 +37,8 @@
     [[getTitle_()]]
   </div>
   <div id="scrollable">
-    <template is="dom-repeat" items="[[getOrganizations_(session)]]">
+    <template is="dom-repeat"
+        items="[[getOrganizations_(session, multiTabOrganization)]]">
       <tab-organization-group
         name="[[getName_(item)]]"
         tabs="[[item.tabs]]"
@@ -47,6 +48,13 @@
       </tab-organization-group>
     </template>
   </div>
+  <template is="dom-if" if="[[multiTabOrganization]]">
+    <tab-organization-results-actions
+        multiple-organizations="[[hasMultipleOrganizations_(session)]]"
+        on-create-group-click="onCreateAllGroupsClick_"
+        on-reject-click="onRejectAllGroupsClick_">
+    </tab-organization-results-actions>
+  </template>
   <div class="feedback" role="toolbar" on-keydown="onFeedbackKeyDown_">
     <div class="tab-organization-body">
       $i18n{learnMoreDisclaimer}

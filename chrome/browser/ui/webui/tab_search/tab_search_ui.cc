@@ -73,6 +73,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"tabSearchTabName", IDS_TAB_SEARCH_TAB_NAME},
       // Tab organization UI strings
       {"createGroup", IDS_TAB_ORGANIZATION_CREATE_GROUP},
+      {"createGroups", IDS_TAB_ORGANIZATION_CREATE_GROUPS},
       {"dismiss", IDS_TAB_ORGANIZATION_DISMISS},
       {"failureBodyGenericPreLink",
        IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_PRE_LINK},

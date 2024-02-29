@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import './strings.m.js';
+import './tab_organization_results_actions.js';
 import './tab_organization_shared_style.css.js';
 import './tab_search_item.js';
 
@@ -54,12 +55,6 @@ export class TabOrganizationGroupElement extends PolymerElement {
 
       showInput_: Boolean,
 
-      showRefresh_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('tabOrganizationRefreshButtonEnabled'),
-      },
-
       tabDatas_: {
         type: Array,
         value: () => [],
@@ -76,7 +71,6 @@ export class TabOrganizationGroupElement extends PolymerElement {
 
   private lastFocusedIndex_: number;
   private showInput_: boolean;
-  private showRefresh_: boolean;
   private tabDatas_: TabData[];
 
   static get template() {
@@ -114,13 +108,6 @@ export class TabOrganizationGroupElement extends PolymerElement {
     if (this.lastFocusedIndex_ > this.tabs.length - 1) {
       this.lastFocusedIndex_ = 0;
     }
-  }
-
-  private getRefreshButtonText_(): string {
-    if (this.isLastOrganization) {
-      return loadTimeData.getString('rejectFinalSuggestion');
-    }
-    return loadTimeData.getString('rejectSuggestion');
   }
 
   private getTabIndex_(index: number): number {
@@ -226,7 +213,9 @@ export class TabOrganizationGroupElement extends PolymerElement {
     this.showInput_ = true;
   }
 
-  private onRejectGroupClick_() {
+  private onRejectGroupClick_(event: CustomEvent) {
+    event.stopPropagation();
+    event.preventDefault();
     this.dispatchEvent(new CustomEvent('reject-click', {
       bubbles: true,
       composed: true,
@@ -234,7 +223,9 @@ export class TabOrganizationGroupElement extends PolymerElement {
     }));
   }
 
-  private onCreateGroupClick_() {
+  private onCreateGroupClick_(event: CustomEvent) {
+    event.stopPropagation();
+    event.preventDefault();
     this.dispatchEvent(new CustomEvent('create-group-click', {
       bubbles: true,
       composed: true,
