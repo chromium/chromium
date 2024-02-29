@@ -31,7 +31,8 @@ suite('TabOrganizationPageTest', () => {
   });
 
   test('Switching tabs calls setTabIndex', async () => {
-    assertEquals(0, testProxy.getCallCount('setTabIndex'));
+    assertEquals(1, testProxy.getCallCount('setTabIndex'));
+    testProxy.resetResolver('setTabIndex');
 
     const crTabs = tabSearchApp.shadowRoot!.querySelector('cr-tabs');
     assertTrue(!!crTabs);
@@ -42,6 +43,7 @@ suite('TabOrganizationPageTest', () => {
     const newTabIndex = 1;
     const unselectedTab = allTabs[newTabIndex]!;
     unselectedTab.click();
+    await crTabs.updateComplete;
 
     const [tabIndex] = await testProxy.whenCalled('setTabIndex');
     assertEquals(newTabIndex, tabIndex);

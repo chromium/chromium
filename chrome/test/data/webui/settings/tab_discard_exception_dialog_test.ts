@@ -262,6 +262,7 @@ suite('TabDiscardExceptionsDialog', function() {
     const tab = tabs[tabId];
     assertTrue(!!tab);
     tab.click();
+    return dialog.$.tabs.updateComplete;
   }
 
   test('testExceptionTabbedAddDialogSwitchTabs', async function() {
@@ -273,9 +274,9 @@ suite('TabDiscardExceptionsDialog', function() {
     checkbox.click();
     await checkbox.$.checkbox.updateComplete;
     assertFalse(dialog.$.actionButton.disabled);
-    switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
+    await switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     assertTrue(dialog.$.actionButton.disabled);
-    switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
+    await switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
     assertFalse(dialog.$.actionButton.disabled);
 
     checkbox.click();
@@ -283,7 +284,7 @@ suite('TabDiscardExceptionsDialog', function() {
     switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     await assertUserInputValidated(VALID_RULE);
     assertFalse(dialog.$.actionButton.disabled);
-    switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
+    await switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
     assertTrue(dialog.$.actionButton.disabled);
     switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     await performanceBrowserProxy.whenCalled('validateTabDiscardExceptionRule');

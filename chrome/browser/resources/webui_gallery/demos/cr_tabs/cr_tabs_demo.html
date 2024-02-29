@@ -14,7 +14,8 @@
 
 <h1>cr-tabs</h1>
 <div class="demos">
-  <cr-tabs tab-names="[[tabNames_]]" selected="{{selectedTabIndex_}}"></cr-tabs>
+  <cr-tabs id="tabs" tab-names="[[tabNames_]]" selected="{{selectedTabIndex_}}">
+  </cr-tabs>
   <iron-pages selected="[[selectedTabIndex_]]">
     <template is="dom-repeat" items="[[tabNames_]]" as="tabName">
       <div class="tab-contents">

@@ -24,6 +24,7 @@ import {StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/s
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -64,7 +65,8 @@ export interface SettingsClearBrowsingDataDialogElement {
     cookiesCheckbox: SettingsCheckboxElement,
     cookiesCheckboxBasic: SettingsCheckboxElement,
     clearBrowsingDataDialog: CrDialogElement,
-    tabs: IronPagesElement,
+    pages: IronPagesElement,
+    tabs: CrTabsElement,
   };
 }
 
@@ -419,12 +421,12 @@ export class SettingsClearBrowsingDataDialogElement extends
   private updateClearButtonState_() {
     // on-select-item-changed gets called with undefined during a tab change.
     // https://github.com/PolymerElements/iron-selector/issues/95
-    const tab = this.$.tabs.selectedItem;
-    if (!tab) {
+    const page = this.$.pages.selectedItem;
+    if (!page) {
       return;
     }
     this.clearButtonDisabled_ =
-        this.getSelectedDataTypes_(tab as HTMLElement).length === 0;
+        this.getSelectedDataTypes_(page as HTMLElement).length === 0;
   }
 
   /**
@@ -522,8 +524,8 @@ export class SettingsClearBrowsingDataDialogElement extends
   /**
    * @return A list of selected data types.
    */
-  private getSelectedDataTypes_(tab: HTMLElement): string[] {
-    const checkboxes = tab.querySelectorAll('settings-checkbox');
+  private getSelectedDataTypes_(page: HTMLElement): string[] {
+    const checkboxes = page.querySelectorAll('settings-checkbox');
     const dataTypes: string[] = [];
     checkboxes.forEach((checkbox) => {
       if (checkbox.checked && !checkbox.hidden) {
@@ -551,14 +553,14 @@ export class SettingsClearBrowsingDataDialogElement extends
             'settings-dropdown-menu[no-set-pref]')
         .forEach(dropdown => dropdown.sendPrefChange());
 
-    const tab = this.$.tabs.selectedItem as HTMLElement;
-    const dataTypes = this.getSelectedDataTypes_(tab);
+    const page = this.$.pages.selectedItem as HTMLElement;
+    const dataTypes = this.getSelectedDataTypes_(page);
     const dropdownMenu =
-        tab.querySelector<SettingsDropdownMenuElement>('.time-range-select');
+        page.querySelector<SettingsDropdownMenuElement>('.time-range-select');
     assert(dropdownMenu);
     const timePeriod = dropdownMenu.pref!.value;
 
-    if (tab.id === 'basic-tab') {
+    if (page.id === 'basic-tab') {
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_BasicTab');
     } else {
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_AdvancedTab');

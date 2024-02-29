@@ -129,12 +129,12 @@ export class WebuiGalleryAppElement extends PolymerElement {
               src: 'cr_slider/cr_slider_demo.js',
             },
             {
-              name: 'Tabs, non-Polymer',
+              name: 'Tabs, native',
               path: 'tabs1',
               src: 'cr_tab_box/cr_tab_box_demo.js',
             },
             {
-              name: 'Tabs, Polymer',
+              name: 'Tabs, Lit',
               path: 'tabs2',
               src: 'cr_tabs/cr_tabs_demo.js',
             },

@@ -435,6 +435,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     const crTabs = element.shadowRoot!.querySelector('cr-tabs');
     assertTrue(!!crTabs);
     crTabs.selected = tabIndex;
+    await crTabs.updateComplete;
 
     const timePeriodDropdown = getTimePeriodDropdown(tabName, element);
     const selectElement =
@@ -491,10 +492,8 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
     // Changing the tab selection changes the visible tab, but does not persist
     // the tab selection to the pref.
-    const crTabs = element.shadowRoot!.querySelector('cr-tabs');
-    assertTrue(!!crTabs);
-    crTabs.selected = 1;
-    await waitAfterNextRender(element);
+    element.$.tabs.selected = 1;
+    await element.$.tabs.updateComplete;
     assertEquals(
         0, element.getPref('browser.last_clear_browsing_data_tab').value);
     assertTrue(isChildVisible(element, '#advanced-tab'));
@@ -579,10 +578,12 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(element.$.cookiesCheckboxBasic.checked);
     assertFalse(actionButton!.disabled);
     // Switching to advanced disables the button.
-    element.shadowRoot!.querySelector('cr-tabs')!.selected = 1;
+    element.$.tabs.selected = 1;
+    await element.$.tabs.updateComplete;
     assertTrue(actionButton!.disabled);
     // Switching back enables it again.
-    element.shadowRoot!.querySelector('cr-tabs')!.selected = 0;
+    element.$.tabs.selected = 0;
+    await element.$.tabs.updateComplete;
     assertFalse(actionButton!.disabled);
   });
 

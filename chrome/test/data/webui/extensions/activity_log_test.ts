@@ -116,8 +116,8 @@ suite('ExtensionsActivityLogTest', function() {
     boundTestVisible('activity-log-history', true);
 
     // Navigate to the activity log stream.
-    activityLog.shadowRoot!.querySelector('cr-tabs')!.selected = 1;
-    flush();
+    activityLog.$.tabs.selected = 1;
+    await activityLog.$.tabs.updateComplete;
 
     // One activity is recorded and should appear in the stream.
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
@@ -127,7 +127,7 @@ suite('ExtensionsActivityLogTest', function() {
     assertEquals(1, getStreamItems().length);
 
     // Navigate back to the activity log history tab.
-    activityLog.shadowRoot!.querySelector('cr-tabs')!.selected = 0;
+    activityLog.$.tabs.selected = 0;
 
     // Expect a refresh of the activity log.
     await proxyDelegate.whenCalled('getExtensionActivityLog');
@@ -138,8 +138,8 @@ suite('ExtensionsActivityLogTest', function() {
     // the stream is inactive.
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
 
-    activityLog.shadowRoot!.querySelector('cr-tabs')!.selected = 1;
-    flush();
+    activityLog.$.tabs.selected = 1;
+    await activityLog.$.tabs.updateComplete;
 
     // The one activity in the stream should have persisted between tab
     // switches.

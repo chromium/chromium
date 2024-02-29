@@ -102,7 +102,7 @@ import {navigateTo} from './test_util.js';
       });
     });
 
-    test('route updates from tabs and sidebar menu items', function() {
+    test('route updates from tabs and sidebar menu items', async function() {
       assertEquals('history', sidebar.$.menu.selected);
       assertEquals('chrome://history/', window.location.href);
 
@@ -121,6 +121,7 @@ import {navigateTo} from './test_util.js';
       if (isHistoryClustersEnabled) {
         assertTrue(!!historyTabs);
         historyTabs.selected = 1;
+        await historyTabs.updateComplete;
         assertEquals('grouped', sidebar.$.menu.selected);
         assertEquals('chrome://history/grouped', window.location.href);
 
@@ -134,6 +135,7 @@ import {navigateTo} from './test_util.js';
         assertEquals('chrome://history/grouped', window.location.href);
 
         historyTabs.selected = 0;
+        await historyTabs.updateComplete;
         assertEquals('history', sidebar.$.menu.selected);
         assertEquals('chrome://history/', window.location.href);
       }
@@ -156,24 +158,31 @@ import {navigateTo} from './test_util.js';
       assertEquals('chrome://history/?q=' + searchTerm, window.location.href);
     });
 
-    test('search is preserved across tabs and sidebar menu items', function() {
-      const searchTerm = 'Soldier76';
-      assertEquals('history', sidebar.$.menu.selected);
-      navigateTo('/?q=' + searchTerm, app);
+    test(
+        'search is preserved across tabs and sidebar menu items',
+        async function() {
+          const searchTerm = 'Soldier76';
+          assertEquals('history', sidebar.$.menu.selected);
+          navigateTo('/?q=' + searchTerm, app);
 
-      sidebar.$.syncedTabs.click();
-      assertEquals('syncedTabs', sidebar.$.menu.selected);
-      assertEquals(searchTerm, app.$.toolbar.searchTerm);
-      assertEquals(
-          'chrome://history/syncedTabs?q=' + searchTerm, window.location.href);
+          sidebar.$.syncedTabs.click();
+          assertEquals('syncedTabs', sidebar.$.menu.selected);
+          assertEquals(searchTerm, app.$.toolbar.searchTerm);
+          assertEquals(
+              'chrome://history/syncedTabs?q=' + searchTerm,
+              window.location.href);
 
-      sidebar.$.history.click();
-      assertEquals('history', sidebar.$.menu.selected);
-      assertEquals(searchTerm, app.$.toolbar.searchTerm);
-      assertEquals('chrome://history/?q=' + searchTerm, window.location.href);
+          sidebar.$.history.click();
+          assertEquals('history', sidebar.$.menu.selected);
+          assertEquals(searchTerm, app.$.toolbar.searchTerm);
+          assertEquals(
+              'chrome://history/?q=' + searchTerm, window.location.href);
 
       if (isHistoryClustersEnabled) {
-        app.shadowRoot!.querySelector('cr-tabs')!.selected = 1;
+        const tabs = app.shadowRoot!.querySelector('cr-tabs');
+        assertTrue(!!tabs);
+        tabs.selected = 1;
+        await tabs.updateComplete;
         assertEquals('grouped', sidebar.$.menu.selected);
         assertEquals(searchTerm, app.$.toolbar.searchTerm);
         assertEquals(

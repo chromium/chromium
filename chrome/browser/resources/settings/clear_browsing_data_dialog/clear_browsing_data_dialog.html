@@ -145,12 +145,13 @@
         <div>$i18n{clearBrowsingData}</div>
       </div>
       <div slot="header">
-        <cr-tabs tab-names="[[tabsNames_]]" selected="{{selectedTabIndex_}}"
+        <cr-tabs id="tabs" tab-names="[[tabsNames_]]"
+            selected="{{selectedTabIndex_}}"
             on-selected-changed="recordTabChange_">
         </cr-tabs>
       </div>
       <div slot="body">
-        <iron-pages id="tabs" selected="[[selectedTabIndex_]]"
+        <iron-pages id="pages" selected="[[selectedTabIndex_]]"
             on-selected-item-changed="updateClearButtonState_">
           <div id="basic-tab">
             <div class="row time-range-row">

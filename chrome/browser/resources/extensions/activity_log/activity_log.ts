@@ -14,6 +14,8 @@ import '../strings.m.js';
 import '../shared_style.css.js';
 import '../shared_vars.css.js';
 
+import {NONE_SELECTED} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
+import type {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -31,7 +33,6 @@ import type {ActivityLogDelegate} from './activity_log_history.js';
  * real time. NONE is used when user is away from the page.
  */
 const enum ActivityLogSubpage {
-  NONE = -1,
   HISTORY = 0,
   STREAM = 1,
 }
@@ -50,6 +51,7 @@ export interface ActivityLogExtensionPlaceholder {
 export interface ExtensionsActivityLogElement {
   $: {
     closeButton: HTMLElement,
+    tabs: CrTabsElement,
   };
 }
 
@@ -76,7 +78,7 @@ export class ExtensionsActivityLogElement extends
 
       selectedSubpage_: {
         type: Number,
-        value: ActivityLogSubpage.NONE,
+        value: NONE_SELECTED,
         observer: 'onSelectedSubpageChanged_',
       },
 
@@ -112,10 +114,11 @@ export class ExtensionsActivityLogElement extends
   }
 
   /**
-   * Set |selectedSubpage_| to NONE to remove the active view from the DOM.
+   * Set |selectedSubpage_| to NONE_SELECTED to remove the active view from the
+   * DOM.
    */
   private onViewExitFinish_() {
-    this.selectedSubpage_ = ActivityLogSubpage.NONE;
+    this.selectedSubpage_ = NONE_SELECTED;
     // clear the stream if the user is exiting the activity log page.
     const activityLogStream =
         this.shadowRoot!.querySelector('activity-log-stream');
