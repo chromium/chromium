@@ -130,6 +130,16 @@ TEST(SeaPenMetadataUtilsTest,
 }
 
 TEST(SeaPenMetadataUtilsTest,
+     SeaPenQueryDictToRecentImageInfoInvalidCreationTime) {
+  base::Value::Dict invalid_creation_time_query_dict =
+      GetTestFreeformQueryDict().Set("creation_time", "invalid creation time");
+  auto recent_image_info =
+      SeaPenQueryDictToRecentImageInfo(invalid_creation_time_query_dict);
+
+  EXPECT_FALSE(recent_image_info->creation_time);
+}
+
+TEST(SeaPenMetadataUtilsTest,
      SeaPenQueryDictToRecentImageInfoValidTemplateData) {
   auto expected_user_visible_query =
       ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(

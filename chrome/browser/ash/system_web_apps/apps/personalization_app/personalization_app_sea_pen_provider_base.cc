@@ -14,6 +14,7 @@
 #include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/wallpaper/wallpaper_constants.h"
+#include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
@@ -151,7 +152,7 @@ void PersonalizationAppSeaPenProviderBase::GetRecentSeaPenImageThumbnail(
     GetRecentSeaPenImageThumbnailCallback callback) {
   if (recent_sea_pen_image_ids_.count(id) == 0) {
     LOG(ERROR) << __func__ << " Invalid sea pen image received";
-    std::move(callback).Run(GURL());
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -217,16 +218,36 @@ void PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImages(
 
 void PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImageThumbnail(
     GetRecentSeaPenImageThumbnailCallback callback,
-    const gfx::ImageSkia& image) {
+    const gfx::ImageSkia& image,
+    std::optional<base::Value::Dict> sea_pen_metadata) {
   if (image.isNull()) {
-    // Do not call |mojom::ReportBadMessage| here. The message is valid, but
-    // the jpeg file may be corrupt or unreadable.
-    std::move(callback).Run(GURL());
+    DVLOG(1) << __func__ << " failed to decode image";
+    std::move(callback).Run(nullptr);
     return;
   }
-  std::move(callback).Run(GURL(webui::GetBitmapDataUrl(
+
+  auto thumbnail_url = GURL(webui::GetBitmapDataUrl(
       *WallpaperResizer::GetResizedImage(image, kSeaPenImageThumbnailSizeDip)
-           .bitmap())));
+           .bitmap()));
+
+  if (!sea_pen_metadata.has_value()) {
+    DVLOG(1) << __func__ << " the extracted metadata is not in JSON format";
+    std::move(callback).Run(mojom::RecentSeaPenThumbnailData::New(
+        std::move(thumbnail_url), nullptr));
+    return;
+  }
+
+  auto sea_pen_image_info =
+      ash::SeaPenQueryDictToRecentImageInfo(std::move(*sea_pen_metadata));
+  if (!sea_pen_image_info) {
+    DVLOG(1) << __func__ << " invalid extracted metadata";
+    std::move(callback).Run(mojom::RecentSeaPenThumbnailData::New(
+        std::move(thumbnail_url), nullptr));
+    return;
+  }
+
+  std::move(callback).Run(mojom::RecentSeaPenThumbnailData::New(
+      std::move(thumbnail_url), std::move(sea_pen_image_info)));
 }
 
 void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(

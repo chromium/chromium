@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RecentSeaPenData} from 'chrome://personalization/js/personalization_app.js';
 import {SeaPenImageId} from 'chrome://resources/ash/common/sea_pen/constants.js';
-import {MantaStatusCode, SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {MantaStatusCode, RecentSeaPenImageInfo, RecentSeaPenThumbnailData, SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {isSeaPenImageId} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -36,18 +36,34 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
     333,
   ];
 
-  recentImageData: Record<SeaPenImageId, RecentSeaPenData> = {
+  recentImageInfo2: RecentSeaPenImageInfo = {
+    userVisibleQuery: {
+      text: 'test freeform query',
+      templateTitle: '',
+    },
+    creationTime: stringToMojoString16('Dec 15, 2023'),
+  };
+
+  recentImageInfo3: RecentSeaPenImageInfo = {
+    userVisibleQuery: {
+      text: 'test template query',
+      templateTitle: 'test template title',
+    },
+    creationTime: stringToMojoString16('Dec 31, 2023'),
+  };
+
+  recentImageData: Record<string, RecentSeaPenThumbnailData|null> = {
     111: {
       url: {url: 'data:image/jpeg;base64,image111data'},
-      queryInfo: 'query 1',
+      imageInfo: null,
     },
     222: {
       url: {url: 'data:image/jpeg;base64,image222data'},
-      queryInfo: 'query 2',
+      imageInfo: this.recentImageInfo2,
     },
     333: {
       url: {url: 'data:image/jpeg;base64,image333data'},
-      queryInfo: 'query 3',
+      imageInfo: this.recentImageInfo3,
     },
   };
 
@@ -101,7 +117,9 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
     assertTrue(
         isSeaPenImageId(id), `id must be SeaPenImageId but received: ${id}`);
     this.methodCalled('getRecentSeaPenImageThumbnail', id);
-    return Promise.resolve({url: this.recentImageData[id]!.url});
+    return Promise.resolve({
+      thumbnailData: this.recentImageData[id]!,
+    });
   }
 
   deleteRecentSeaPenImage(id: SeaPenImageId) {

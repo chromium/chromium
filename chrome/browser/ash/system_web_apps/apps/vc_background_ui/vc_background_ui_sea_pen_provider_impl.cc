@@ -32,7 +32,7 @@ void GetImageSkiaFromBackgroundImageInfo(
     personalization_app::DecodeImageCallback callback,
     const std::optional<CameraEffectsController::BackgroundImageInfo>& info) {
   if (!info.has_value()) {
-    std::move(callback).Run(gfx::ImageSkia());
+    std::move(callback).Run(gfx::ImageSkia(), base::Value::Dict());
     return;
   }
 
@@ -43,7 +43,8 @@ void GetImageSkiaFromBackgroundImageInfo(
 
   auto image = gfx::ImageSkia::CreateFrom1xBitmap(*bitmap);
 
-  std::move(callback).Run(image);
+  // TODO(b/325393647): update the value for sea_pen_metadata param.
+  std::move(callback).Run(image, /*sea_pen_metadata=*/base::Value::Dict());
 }
 
 }  // namespace

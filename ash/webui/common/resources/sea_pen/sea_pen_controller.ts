@@ -144,15 +144,12 @@ async function getMissingRecentSeaPenImageData(
   while (recentSeaPenImageDataToFetch.size) {
     await Promise.all(Array.from(recentSeaPenImageDataToFetch).map(async id => {
       recentSeaPenImageDataToFetch.delete(id);
-      const {url} = await provider.getRecentSeaPenImageThumbnail(id);
-      // TODO(b/312783231): add real API to get the image query info.
-      const queryInfo =
-          'query ' + Math.floor(Math.random() * 100 + 1).toString();
-      if (!url) {
+      const {thumbnailData} = await provider.getRecentSeaPenImageThumbnail(id);
+      if (!thumbnailData) {
         console.warn('Failed to fetch recent Sea Pen image data', id);
       }
       store.dispatch(
-          seaPenAction.setRecentSeaPenImageDataAction(id, {url, queryInfo}));
+          seaPenAction.setRecentSeaPenImageDataAction(id, thumbnailData));
     }));
   }
 }

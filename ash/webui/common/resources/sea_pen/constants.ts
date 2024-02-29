@@ -14,14 +14,6 @@ export type Query = 'Query';
 // thumbnail, this is `SeaPenThumbnail.id`.
 export type SeaPenImageId = number;
 
-/**
- * An interface for the data of a recent sea pen image.
- */
-export interface RecentSeaPenData {
-  url: Url;
-  queryInfo: string;
-}
-
 export interface SeaPenOption {
   // `value` is the actual option value to be sent to the server side.
   value: SeaPenTemplateOption;

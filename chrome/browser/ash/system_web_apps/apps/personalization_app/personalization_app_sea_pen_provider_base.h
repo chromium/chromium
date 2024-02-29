@@ -13,6 +13,7 @@
 #include "ash/webui/common/sea_pen_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -31,7 +32,9 @@ class Profile;
 
 namespace ash::personalization_app {
 
-using DecodeImageCallback = base::OnceCallback<void(const gfx::ImageSkia&)>;
+using DecodeImageCallback =
+    base::OnceCallback<void(const gfx::ImageSkia&,
+                            std::optional<base::Value::Dict> sea_pen_metadata)>;
 
 // Base class for PersonalizationApp and VcBackground SeaPen providers.
 // The public functions are the interface required for both PersonalizationApp
@@ -127,7 +130,8 @@ class PersonalizationAppSeaPenProviderBase
 
   void OnGetRecentSeaPenImageThumbnail(
       GetRecentSeaPenImageThumbnailCallback callback,
-      const gfx::ImageSkia& image);
+      const gfx::ImageSkia& image,
+      std::optional<base::Value::Dict> sea_pen_metadata);
 
   SelectRecentSeaPenImageCallback pending_select_recent_sea_pen_image_callback_;
 

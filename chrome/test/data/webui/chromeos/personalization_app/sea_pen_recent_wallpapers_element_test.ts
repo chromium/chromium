@@ -250,10 +250,12 @@ suite('SeaPenRecentWallpapersElementTest', function() {
       recentImageData: {
         111: {
           url: {url: 'data:image/jpeg;base64,image111data'},
-          queryInfo: 'query 1',
+          imageInfo: null,
         },
-        222: {url: {url: ''}, queryInfo: 'query 2'},
-        333: {url: {url: ''}, queryInfo: 'query 3'},
+        222: {
+          url: {url: ''},
+          imageInfo: seaPenProvider.recentImageInfo2,
+        },
       },
       loading: {
         recentImageData: {
@@ -316,11 +318,23 @@ suite('SeaPenRecentWallpapersElementTest', function() {
     });
   });
 
-  // TODO(b/318418911) re-enable this test.
-  test.skip(
+  test(
       'select Wallpaper Info option for recent image', async () => {
         personalizationStore.data.wallpaper.seaPen.recentImages =
             seaPenProvider.recentImageIds;
+        personalizationStore.data.wallpaper.seaPen.recentImageData =
+            seaPenProvider.recentImageData;
+        personalizationStore.data.wallpaper.seaPen.loading = {
+          recentImageData: {
+            111: false,
+            222: false,
+            333: false,
+          },
+          recentImages: false,
+          thumbnails: false,
+          currentSelected: false,
+          setImage: 0,
+        };
 
         // Initialize |seaPenRecentWallpapersElement|.
         seaPenRecentWallpapersElement =
@@ -348,18 +362,21 @@ suite('SeaPenRecentWallpapersElementTest', function() {
         assertEquals(
             3, actionMenus!.length, 'should be 3 action menus available.');
 
-        // Menu dialog 2 should be opened.
+        // Menu dialog for the 3rd image should be opened.
         const actionMenu2 = actionMenus[2] as HTMLElement;
-        const menuDialog = actionMenu2.shadowRoot!.querySelector('dialog') as
+        const menuDialog2 = actionMenu2.shadowRoot!.querySelector('dialog') as
             HTMLDialogElement;
-        assertTrue(!!menuDialog!.open, `menu dialog 2 should be opened.`);
+        assertTrue(
+            !!menuDialog2!.open,
+            `menu dialog for the 3rd image should be opened.`);
 
         // Wallpaper Info menu option is available. Click on this option.
-        const wallpaperInfoOption =
-            actionMenu2.querySelector('.wallpaper-info-option') as HTMLElement;
+        const wallpaperInfoOption2 =
+            actionMenu2.querySelector<HTMLElement>('.wallpaper-info-option');
         assertTrue(
-            !!wallpaperInfoOption, 'Wallpaper Info option should display.');
-        wallpaperInfoOption!.click();
+            !!wallpaperInfoOption2,
+            'Wallpaper Info option for the 3rd image should display.');
+        wallpaperInfoOption2!.click();
 
         await waitAfterNextRender(seaPenRecentWallpapersElement);
 
@@ -371,9 +388,27 @@ suite('SeaPenRecentWallpapersElementTest', function() {
             !!wallpaperInfoDialog, 'Wallpaper Info dialog should display.');
         assertEquals('2', wallpaperInfoDialog.dataset['id']);
 
+        const aboutQueryDesc = wallpaperInfoDialog.querySelector<HTMLElement>(
+            '.about-prompt-info');
+        assertTrue(
+            !!aboutQueryDesc,
+            'Wallpaper Info dialog should include visible user query info');
+        assertTrue(
+            aboutQueryDesc.innerText.includes('test template query'),
+            'user visible query for 3rd image should display');
+
+        const creationTimeDesc =
+            wallpaperInfoDialog.querySelector<HTMLElement>('.about-date-info');
+        assertTrue(
+            !!creationTimeDesc,
+            'Wallpaper Info dialog should include creation time info');
+        assertTrue(
+            creationTimeDesc.innerText.includes('Dec 31, 2023'),
+            'creation time for 3rd image should display');
+
         // Click on 'Close' button to close the dialog.
-        const closeButton = wallpaperInfoDialog.querySelector(
-                                '#wallpaperInfoCloseButton') as HTMLElement;
+        const closeButton = wallpaperInfoDialog.querySelector<HTMLElement>(
+            '#wallpaperInfoCloseButton');
         assertTrue(
             !!closeButton,
             'close button for Wallpaper Info dialog should display.');
@@ -385,6 +420,26 @@ suite('SeaPenRecentWallpapersElementTest', function() {
             seaPenRecentWallpapersElement.shadowRoot!.getElementById(
                 'wallpaperInfoDialog'),
             'no Wallpaper Info dialog after close button clicked');
+
+        // Click on the menu icon button on the first image to open its menu
+        // options.
+        (menuIconButtons[0] as HTMLElement)!.click();
+
+        // Menu dialog for the 1st image should be opened.
+        const actionMenu0 = actionMenus[0] as HTMLElement;
+        const menuDialog0 =
+            actionMenu0.shadowRoot!.querySelector<HTMLDialogElement>('dialog');
+        assertTrue(
+            !!menuDialog0!.open,
+            `menu dialog for the 1st image should be opened.`);
+
+        // Wallpaper Info menu option is not available as SeaPenRecentData has
+        // no imageInfo.
+        const wallpaperInfoOption0 =
+            actionMenu0.querySelector('.wallpaper-info-option');
+        assertFalse(
+            !!wallpaperInfoOption0,
+            'Wallpaper Info option for the 1st image should not display.');
       });
 
   test('deletes a recent Sea Pen image', async () => {

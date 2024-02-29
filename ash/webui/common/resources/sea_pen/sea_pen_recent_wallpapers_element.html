@@ -89,8 +89,7 @@
     margin-inline-end: 8px;
   }
 
-  .more-like-this-option,
-  .wallpaper-info-option {
+  .more-like-this-option {
     display: none;
   }
 </style>
@@ -135,20 +134,22 @@
             <iron-icon icon="sea-pen:delete"></iron-icon>
             [[i18n('seaPenDeleteWallpaper')]]
           </button>
-          <button data-id$="[[index]]" class="dropdown-item wallpaper-info-option"
-              on-click="onClickWallpaperInfo_">
-            <iron-icon icon="cr:info-outline"></iron-icon>
-            [[i18n('seaPenAbout')]]
-          </button>
+          <template is="dom-if" if="[[shouldShowWallpaperInfoButton_(image, recentImageData_, recentImageDataLoading_)]]">
+            <button data-id$="[[index]]" class="dropdown-item wallpaper-info-option"
+                on-click="onClickWallpaperInfo_">
+              <iron-icon icon="cr:info-outline"></iron-icon>
+              [[i18n('seaPenAbout')]]
+            </button>
+          </template>
         </cr-action-menu>
         <template is="dom-if" if="[[shouldShowWallpaperInfoDialog_(index, currentShowWallpaperInfoDialog_)]]" restamp>
           <cr-dialog id="wallpaperInfoDialog" data-id$="[[index]]" on-close="onCloseDialog_" show-on-attach>
             <div slot="body">
               <h2>[[i18n('seaPenAboutDialogTitle')]]</h2>
-              <p>
+              <p class="about-prompt-info">
                 [[getWallpaperInfoPromptMessage_(image, recentImageData_, recentImageDataLoading_)]]
               </p>
-              <p>
+              <p class="about-date-info">
                 [[getWallpaperInfoDateMessage_(image, recentImageData_, recentImageDataLoading_)]]
               </p>
             </div>

@@ -78,11 +78,23 @@ void PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImagesInternal(
 void PersonalizationAppSeaPenProviderImpl::
     GetRecentSeaPenImageThumbnailInternal(uint32_t id,
                                           DecodeImageCallback callback) {
-  // TODO(b/324297539) move file loading to SeaPenWallpaperManager.
-  image_util::DecodeImageFile(std::move(callback),
-                              GetSeaPenDir(GetAccountId(profile_))
-                                  .Append(base::NumberToString(id))
-                                  .AddExtension(".jpg"));
+  image_util::DecodeImageFile(
+      base::BindOnce(
+          &PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImageInfo,
+          weak_ptr_factory_.GetWeakPtr(), id, std::move(callback)),
+      GetSeaPenDir(GetAccountId(profile_))
+          .Append(base::NumberToString(id))
+          .AddExtension(".jpg"));
+}
+
+void PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImageInfo(
+    uint32_t id,
+    DecodeImageCallback callback,
+    const gfx::ImageSkia& image) {
+  ash::WallpaperController* wallpaper_controller = WallpaperController::Get();
+  DCHECK(wallpaper_controller);
+  wallpaper_controller->GetSeaPenMetadata(
+      GetAccountId(profile_), id, base::BindOnce(std::move(callback), image));
 }
 
 void PersonalizationAppSeaPenProviderImpl::DeleteRecentSeaPenImage(

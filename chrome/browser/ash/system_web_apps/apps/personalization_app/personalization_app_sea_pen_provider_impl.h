@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -55,10 +56,17 @@ class PersonalizationAppSeaPenProviderImpl
       uint32_t id,
       DecodeImageCallback callback) override;
 
+  void GetRecentSeaPenImageInfo(uint32_t id,
+                                DecodeImageCallback callback,
+                                const gfx::ImageSkia& image);
+
   void OnFetchWallpaperDoneInternal(
       const SeaPenImage& sea_pen_image,
       const mojom::SeaPenQueryPtr& query,
       base::OnceCallback<void(bool success)> callback) override;
+
+  base::WeakPtrFactory<PersonalizationAppSeaPenProviderImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash::personalization_app

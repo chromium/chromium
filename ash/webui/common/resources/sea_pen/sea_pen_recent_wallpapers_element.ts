@@ -17,10 +17,11 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {AnchorAlignment} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {RecentSeaPenData, SeaPenImageId} from './constants.js';
-import {SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {SeaPenImageId} from './constants.js';
+import {RecentSeaPenThumbnailData, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {deleteRecentSeaPenImage, fetchRecentSeaPenData, selectRecentSeaPenImage} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {getTemplate} from './sea_pen_recent_wallpapers_element.html.js';
@@ -68,7 +69,8 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   }
 
   private recentImages_: SeaPenImageId[]|null;
-  private recentImageData_: Record<SeaPenImageId, RecentSeaPenData>;
+  private recentImageData_:
+      Record<SeaPenImageId, RecentSeaPenThumbnailData|null>;
   private recentImageDataLoading_: Record<SeaPenImageId, boolean>;
   private recentImagesToDisplay_: SeaPenImageId[];
   private currentShowWallpaperInfoDialog_: number|null;
@@ -92,8 +94,6 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     this.watch<SeaPenRecentWallpapersElement['pendingSelected_']>(
         'pendingSelected_', state => state.pendingSelected);
     this.updateFromStore();
-    // TODO(b/304576846): also refetch sea pen data when adding and deleting
-    // image.
     fetchRecentSeaPenData(getSeaPenProvider(), this.getStore());
   }
 
@@ -105,7 +105,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     this.recentImagesToDisplay_ = (recentImages || []).filter(id => {
       if (this.recentImageDataLoading_[id] === false) {
         const data = this.recentImageData_[id];
-        return data && data.queryInfo && data.url;
+        return data && data.url;
       }
       return true;
     });
@@ -116,7 +116,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
    * from the list of displayed images if it has failed to load.
    */
   private onRecentImageLoaded_(
-      recentImageData: Record<SeaPenImageId, RecentSeaPenData>,
+      recentImageData: Record<SeaPenImageId, RecentSeaPenThumbnailData|null>,
       recentImageDataLoading: Record<SeaPenImageId, boolean>) {
     if (!recentImageData || !recentImageDataLoading) {
       return;
@@ -126,8 +126,9 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     // `recentImagesToDisplay` while iterating.
     for (let i = this.recentImagesToDisplay_.length - 1; i >= 0; i--) {
       const id = this.recentImagesToDisplay_[i];
-      const failed = id && recentImageDataLoading[id] === false &&
-          !isImageDataUrl(recentImageData[id].url);
+      const data = recentImageData[id];
+      const validData = !!data && isImageDataUrl(data.url);
+      const failed = id && recentImageDataLoading[id] === false && !validData;
       if (failed) {
         this.recentImagesToDisplay_.splice(i, 1);
       }
@@ -148,7 +149,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
 
   private getRecentImageUrl_(
       recentImage: SeaPenImageId,
-      recentImageData: Record<SeaPenImageId, RecentSeaPenData>,
+      recentImageData: Record<SeaPenImageId, RecentSeaPenThumbnailData|null>,
       recentImageDataLoading: Record<SeaPenImageId, boolean>): Url|null {
     if (!recentImage ||
         this.isRecentImageLoading_(recentImage, recentImageDataLoading)) {
@@ -163,26 +164,39 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
 
   private getWallpaperInfoPromptMessage_(
       recentImage: SeaPenImageId,
-      _recentImageData: Record<SeaPenImageId, RecentSeaPenData>,
+      recentImageData: Record<SeaPenImageId, RecentSeaPenThumbnailData|null>,
       recentImageDataLoading: Record<SeaPenImageId, boolean>): string|null {
     if (!recentImage ||
         this.isRecentImageLoading_(recentImage, recentImageDataLoading)) {
       return null;
     }
-    // TODO(b/323597008): Replace with the actual prompt.
-    return this.i18n('seaPenAboutDialogPrompt', 'A radiant flower in bloom');
+
+    const data = recentImageData[recentImage];
+    if (!data || !data.imageInfo || !data.imageInfo.userVisibleQuery) {
+      return null;
+    }
+
+    return this.i18n(
+        'seaPenAboutDialogPrompt', data.imageInfo.userVisibleQuery.text);
   }
 
   private getWallpaperInfoDateMessage_(
       recentImage: SeaPenImageId,
-      _recentImageData: Record<SeaPenImageId, RecentSeaPenData>,
+      recentImageData: Record<SeaPenImageId, RecentSeaPenThumbnailData|null>,
       recentImageDataLoading: Record<SeaPenImageId, boolean>): string|null {
     if (!recentImage ||
         this.isRecentImageLoading_(recentImage, recentImageDataLoading)) {
       return null;
     }
-    // TODO(b/323597008): Replace with the actual date.
-    return this.i18n('seaPenAboutDialogDate', 'Aug 25, 2023');
+
+    const data = recentImageData[recentImage];
+    if (!data || !data.imageInfo || !data.imageInfo.creationTime) {
+      return null;
+    }
+
+    return this.i18n(
+        'seaPenAboutDialogDate',
+        mojoString16ToString(data.imageInfo.creationTime));
   }
 
 
@@ -272,9 +286,23 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     });
   }
 
+  private shouldShowWallpaperInfoButton_(
+      recentImage: SeaPenImageId,
+      recentImageData: Record<SeaPenImageId, RecentSeaPenThumbnailData|null>,
+      recentImageDataLoading: Record<SeaPenImageId, boolean>): boolean {
+    if (!recentImage ||
+        this.isRecentImageLoading_(recentImage, recentImageDataLoading)) {
+      return false;
+    }
+
+    const data = recentImageData[recentImage];
+    return !!data && !!data.imageInfo && !!data.imageInfo.creationTime &&
+        !!data.imageInfo.userVisibleQuery;
+  }
+
   private shouldShowWallpaperInfoDialog_(
-      _i: number, _currentShowWallpaperInfoDialog: number|null): boolean {
-    return false;
+      i: number, currentShowWallpaperInfoDialog: number|null): boolean {
+    return currentShowWallpaperInfoDialog === i;
   }
 
   private onCloseDialog_() {

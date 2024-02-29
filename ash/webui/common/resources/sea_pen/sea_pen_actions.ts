@@ -5,8 +5,8 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {Action} from 'chrome://resources/js/store.js';
 
-import {RecentSeaPenData, SeaPenImageId} from './constants.js';
-import {MantaStatusCode, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {SeaPenImageId} from './constants.js';
+import {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 
 /**
  * @fileoverview defines the actions to change SeaPen state.
@@ -119,14 +119,15 @@ export function beginLoadRecentSeaPenImageDataAction(id: SeaPenImageId):
 export interface SetRecentSeaPenImageDataAction extends Action {
   name: SeaPenActionName.SET_RECENT_SEA_PEN_IMAGE_DATA;
   id: SeaPenImageId;
-  data: RecentSeaPenData;
+  data: RecentSeaPenThumbnailData|null;
 }
 
 /**
  * Sets the recent sea pen image data.
  */
 export function setRecentSeaPenImageDataAction(
-    id: SeaPenImageId, data: RecentSeaPenData): SetRecentSeaPenImageDataAction {
+    id: SeaPenImageId,
+    data: RecentSeaPenThumbnailData|null): SetRecentSeaPenImageDataAction {
   return {
     name: SeaPenActionName.SET_RECENT_SEA_PEN_IMAGE_DATA,
     id,

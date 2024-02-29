@@ -141,10 +141,12 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
   base::RunLoop run_loop3;
   sea_pen_provider_->GetRecentSeaPenImageThumbnail(
       existing_image_ids_[0],
-      base::BindLambdaForTesting([&](const ::GURL& url) {
-        EXPECT_FALSE(url.is_empty());
-        run_loop3.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](personalization_app::mojom::RecentSeaPenThumbnailDataPtr
+                  thumbnail_data) {
+            EXPECT_FALSE(thumbnail_data->url.is_empty());
+            run_loop3.Quit();
+          }));
 
   run_loop3.Run();
 
@@ -170,14 +172,16 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
       }));
 
   run_loop5.Run();
-  // Get content of an deleted image should return empty
+  // Get content of an deleted image should return nullptr.
   base::RunLoop run_loop6;
   sea_pen_provider_->GetRecentSeaPenImageThumbnail(
       existing_image_ids_[1],
-      base::BindLambdaForTesting([&](const ::GURL& url) {
-        EXPECT_TRUE(url.is_empty());
-        run_loop6.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](personalization_app::mojom::RecentSeaPenThumbnailDataPtr
+                  thumbnail_data) {
+            EXPECT_FALSE(thumbnail_data);
+            run_loop6.Quit();
+          }));
   run_loop6.Run();
 }
 

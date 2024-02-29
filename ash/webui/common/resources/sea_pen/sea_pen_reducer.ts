@@ -4,8 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {RecentSeaPenData, SeaPenImageId} from './constants.js';
-import {MantaStatusCode, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {SeaPenImageId} from './constants.js';
+import {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {SeaPenActionName, SeaPenActions} from './sea_pen_actions.js';
 import {SeaPenLoadingState, SeaPenState} from './sea_pen_state.js';
 
@@ -164,8 +164,9 @@ function recentImagesReducer(
 }
 
 function recentImageDataReducer(
-    state: Record<SeaPenImageId, RecentSeaPenData>,
-    action: SeaPenActions): Record<SeaPenImageId, RecentSeaPenData> {
+    state: Record<SeaPenImageId, RecentSeaPenThumbnailData|null>,
+    action: SeaPenActions):
+    Record<SeaPenImageId, RecentSeaPenThumbnailData|null> {
   switch (action.name) {
     case SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES:
       const newRecentImages: SeaPenImageId[] =
