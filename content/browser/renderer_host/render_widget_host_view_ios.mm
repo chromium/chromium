@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/sys_string_conversions.h"
+#include "build/ios_buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "content/browser/renderer_host/browser_compositor_ios.h"
@@ -52,7 +53,13 @@ constexpr gfx::Size KDefaultSizeForPreventResizingForTesting =
     gfx::Size(980, 735);
 
 bool IsTesting() {
+#if BUILDFLAG(IS_IOS_APP_EXTENSION)
+  // This class shouldn't really be build with extension anyways.
+  // Fix the build to avoid building browser code in extensions.
+  return false;
+#else
   return [[UIApplication sharedApplication] isRunningTests];
+#endif
 }
 
 gfx::Rect GetDefaultSizeForTesting() {
