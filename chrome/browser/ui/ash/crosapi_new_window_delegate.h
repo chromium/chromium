@@ -50,6 +50,7 @@ class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
                         const std::string& description_template) override;
   void OpenPersonalizationHub() override;
   void OpenCaptivePortalSignin(const GURL& url) override;
+  void OpenFile(const base::FilePath& file_path) override;
 
  private:
   // Observes the aura::Window instances created after the webui tab-drop

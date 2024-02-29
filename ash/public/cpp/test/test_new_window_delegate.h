@@ -44,6 +44,7 @@ class ASH_PUBLIC_EXPORT TestNewWindowDelegate : public NewWindowDelegate {
                         const std::string& description_template) override;
   void OpenPersonalizationHub() override;
   void OpenCaptivePortalSignin(const GURL& url) override;
+  void OpenFile(const base::FilePath& file_path) override;
 };
 
 // NewWindowDelegateProvider implementation to provide TestNewWindowDelegate.

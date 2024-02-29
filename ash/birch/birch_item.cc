@@ -153,9 +153,7 @@ std::string BirchFileItem::ToString() const {
 }
 
 void BirchFileItem::PerformAction() {
-  // TODO(jamescook): Open the file using platform_util::OpenItem(), see
-  // chrome/browser/ash/app_list/search/files/file_result.cc. This will require
-  // delegating back to the chrome layer due to Profile dependencies.
+  NewWindowDelegate::GetInstance()->OpenFile(file_path);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

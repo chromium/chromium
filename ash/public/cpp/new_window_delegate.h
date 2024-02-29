@@ -16,6 +16,10 @@ namespace aura {
 class Window;
 }
 
+namespace base {
+class FilePath;
+}
+
 namespace ui {
 class OSExchangeData;
 }
@@ -132,6 +136,9 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
 
   // Shows the a captive portal signin window.
   virtual void OpenCaptivePortalSignin(const GURL& url) = 0;
+
+  // Opens a file on the local file system (which may be DriveFS).
+  virtual void OpenFile(const base::FilePath& file_path) = 0;
 
  protected:
   NewWindowDelegate();

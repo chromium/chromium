@@ -63,7 +63,7 @@ class PineItemView : public views::BoxLayoutView {
                                                 pine::kItemTitleFontSize,
                                                 gfx::Font::Weight::BOLD))
                      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                     .SetText(base::ASCIIToUTF16(app_title))
+                     .SetText(base::UTF8ToUTF16(app_title))
                      .Build());
     SetFlexForView(app_title_label, 1);
 

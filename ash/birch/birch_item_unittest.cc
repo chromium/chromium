@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
@@ -24,7 +25,12 @@ class TestNewWindowDelegateImpl : public TestNewWindowDelegate {
     last_opened_url_ = url;
   }
 
+  void OpenFile(const base::FilePath& file_path) override {
+    last_opened_file_path_ = file_path;
+  }
+
   GURL last_opened_url_;
+  base::FilePath last_opened_file_path_;
 };
 
 class BirchItemTest : public testing::Test {
@@ -78,6 +84,13 @@ TEST_F(BirchItemTest, Attachment_PerformAction_EmptyUrl) {
   BirchAttachmentItem item(u"item");
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
+}
+
+TEST_F(BirchItemTest, File_PerformAction) {
+  BirchFileItem item(base::FilePath("file_path"), base::Time());
+  item.PerformAction();
+  EXPECT_EQ(new_window_delegate_->last_opened_file_path_,
+            base::FilePath("file_path"));
 }
 
 TEST_F(BirchItemTest, Weather_PerformAction) {

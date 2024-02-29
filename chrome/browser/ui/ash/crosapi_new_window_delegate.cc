@@ -221,6 +221,10 @@ void CrosapiNewWindowDelegate::OpenCaptivePortalSignin(const GURL& url) {
   crosapi::BrowserManager::Get()->OpenCaptivePortalSignin(url);
 }
 
+void CrosapiNewWindowDelegate::OpenFile(const base::FilePath& file_path) {
+  delegate_->OpenFile(file_path);
+}
+
 void CrosapiNewWindowDelegate::DestroyWindowObserver() {
   window_observer_.reset();
 }

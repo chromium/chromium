@@ -37,6 +37,7 @@
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -521,6 +522,13 @@ void ChromeNewWindowClient::OpenPersonalizationHub() {
 
 void ChromeNewWindowClient::OpenCaptivePortalSignin(const GURL& url) {
   chromeos::NetworkPortalSigninWindow::Get()->Show(url);
+}
+
+void ChromeNewWindowClient::OpenFile(const base::FilePath& file_path) {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  platform_util::OpenItem(profile, file_path,
+                          platform_util::OpenItemType::OPEN_FILE,
+                          platform_util::OpenOperationCallback());
 }
 
 void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,
