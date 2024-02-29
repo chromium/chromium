@@ -4080,11 +4080,13 @@ const char kDragDropIntoOmniboxDescription[] =
 const char kDrawCutoutEdgeToEdgeName[] = "DrawCutoutEdgeToEdge";
 const char kDrawCutoutEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge Feature to coordinate with the "
-    "Display Cutout for the notch when drawing below the Nav Bar.";
+    "Display Cutout for the notch when drawing below the Nav Bar.  Requires "
+    "DrawEdgeToEdge to also be enabled.";
 
 const char kDrawEdgeToEdgeName[] = "DrawEdgeToEdge";
 const char kDrawEdgeToEdgeDescription[] =
-    "Enables the Android feature Edge-to-Edge to draw below the Nav Bar.";
+    "Enables the Android feature Edge-to-Edge to draw below the Nav Bar. "
+    "Requires DrawCutoutEdgeToEdge to also be enabled.";
 
 const char kDrawNativeEdgeToEdgeName[] = "DrawNativeEdgeToEdge";
 const char kDrawNativeEdgeToEdgeDescription[] =
@@ -4544,7 +4546,8 @@ const char kDelayTempStripRemovalDescription[] =
 
 const char kTotallyEdgeToEdgeName[] = "Totally Edge To Edge exploration";
 const char kTotallyEdgeToEdgeDescription[] =
-    "An exploration of further ideas to activate Edge To Edge.";
+    "An exploration of further ideas to activate Edge To Edge. Requires "
+    "DrawCutoutEdgeToEdge and DrawEdgeToEdge to also be enabled.";
 
 const char kTouchDragAndContextMenuName[] =
     "Simultaneous touch drag and context menu";
