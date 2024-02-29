@@ -12,6 +12,15 @@ namespace crypto {
 UserVerifyingSigningKey::~UserVerifyingSigningKey() = default;
 UserVerifyingKeyProvider::~UserVerifyingKeyProvider() = default;
 
+RefCountedUserVerifyingSigningKey::RefCountedUserVerifyingSigningKey(
+    std::unique_ptr<crypto::UserVerifyingSigningKey> key)
+    : key_(std::move(key)) {
+  CHECK(key_);
+}
+
+RefCountedUserVerifyingSigningKey::~RefCountedUserVerifyingSigningKey() =
+    default;
+
 #if BUILDFLAG(IS_WIN)
 std::unique_ptr<UserVerifyingKeyProvider> GetUserVerifyingKeyProviderWin();
 #endif

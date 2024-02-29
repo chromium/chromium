@@ -12,6 +12,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
 #include "crypto/signature_verifier.h"
@@ -51,6 +52,27 @@ class CRYPTO_EXPORT UserVerifyingSigningKey {
 
   // Get a reference to the label used to create or retrieve this key.
   virtual const UserVerifyingKeyLabel& GetKeyLabel() const = 0;
+};
+
+// Reference-counted wrapper for UserVeriyingSigningKey.
+class CRYPTO_EXPORT RefCountedUserVerifyingSigningKey
+    : public base::RefCountedThreadSafe<RefCountedUserVerifyingSigningKey> {
+ public:
+  explicit RefCountedUserVerifyingSigningKey(
+      std::unique_ptr<crypto::UserVerifyingSigningKey> key);
+
+  RefCountedUserVerifyingSigningKey(const RefCountedUserVerifyingSigningKey&) =
+      delete;
+  RefCountedUserVerifyingSigningKey& operator=(
+      const RefCountedUserVerifyingSigningKey&) = delete;
+
+  crypto::UserVerifyingSigningKey& key() const { return *key_; }
+
+ private:
+  friend class base::RefCountedThreadSafe<RefCountedUserVerifyingSigningKey>;
+  ~RefCountedUserVerifyingSigningKey();
+
+  const std::unique_ptr<crypto::UserVerifyingSigningKey> key_;
 };
 
 // UserVerifyingKeyProvider creates |UserVerifyingSigningKey|s.

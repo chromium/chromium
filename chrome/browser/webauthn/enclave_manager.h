@@ -21,8 +21,7 @@
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace crypto {
-class UnexportableSigningKey;
-class UserVerifyingSigningKey;
+class RefCountedUserVerifyingSigningKey;
 }  // namespace crypto
 
 namespace network {
@@ -33,6 +32,10 @@ namespace signin {
 class IdentityManager;
 class PrimaryAccountAccessTokenFetcher;
 }  // namespace signin
+
+namespace unexportable_keys {
+class RefCountedUnexportableSigningKey;
+}
 
 namespace webauthn_pb {
 class EnclaveLocalState;
@@ -178,11 +181,12 @@ class EnclaveManager : public KeyedService {
   // If the key fails to load, the callback will be invoked with nullptr and
   // the device's enclave registration will be reset.
   void GetHardwareKeyForSignature(
-      base::OnceCallback<void(crypto::UnexportableSigningKey*)>
-          signing_callback);
+      base::OnceCallback<void(
+          scoped_refptr<unexportable_keys::RefCountedUnexportableSigningKey>)>
+          callback);
   void GetUserVerifyingKeyForSignature(
-      base::OnceCallback<void(crypto::UserVerifyingSigningKey*)>
-          signing_callback);
+      base::OnceCallback<void(
+          scoped_refptr<crypto::RefCountedUserVerifyingSigningKey>)> callback);
 
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
@@ -205,10 +209,9 @@ class EnclaveManager : public KeyedService {
   std::unique_ptr<PendingActions> pending_actions_;
 
   // Allow keys to persist across sequences because loading them is slow.
-  // TODO(enclave): Make these scoped_refptrs instead, because they are
-  // used asynchronously by system APIs.
-  std::unique_ptr<crypto::UserVerifyingSigningKey> user_verifying_key_;
-  std::unique_ptr<crypto::UnexportableSigningKey> hardware_key_;
+  scoped_refptr<crypto::RefCountedUserVerifyingSigningKey> user_verifying_key_;
+  scoped_refptr<unexportable_keys::RefCountedUnexportableSigningKey>
+      hardware_key_;
 
   unsigned store_keys_count_ = 0;
 

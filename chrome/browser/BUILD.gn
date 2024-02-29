@@ -4644,6 +4644,7 @@ static_library("browser") {
       "//components/soda:constants",
       "//components/trusted_vault/proto",
       "//components/ukm/content",
+      "//components/unexportable_keys:unexportable_keys",
       "//components/user_notes:features",
       "//components/user_notes:user_notes_prefs",
       "//components/user_notes/browser",
