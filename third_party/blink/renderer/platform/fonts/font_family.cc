@@ -49,20 +49,6 @@ bool operator==(const FontFamily& a, const FontFamily& b) {
   return true;
 }
 
-wtf_size_t FontFamily::CountNames() const {
-  wtf_size_t count = 0;
-  for (const FontFamily* font_family = this; font_family;
-       font_family = font_family->Next())
-    ++count;
-  return count;
-}
-
-void FontFamily::AppendFamily(AtomicString family_name, Type family_type) {
-  scoped_refptr<SharedFontFamily> appended_family = SharedFontFamily::Create();
-  appended_family->SetFamily(family_name, family_type);
-  AppendFamily(appended_family);
-}
-
 String FontFamily::ToString() const {
   StringBuilder builder;
   builder.Append(family_name_);

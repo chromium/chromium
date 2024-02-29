@@ -190,8 +190,8 @@ TEST_F(FontDescriptionTest, VariantAlternatesDifferentCacheKey) {
 
 TEST_F(FontDescriptionTest, AllFeaturesHash) {
   FontDescription font_description;
-  font_description.FirstFamily().SetFamily(font_family_names::kSerif,
-                                           FontFamily::Type::kGenericFamily);
+  font_description.SetFamily(
+      FontFamily(font_family_names::kSerif, FontFamily::Type::kGenericFamily));
   unsigned key_a = font_description.GetHash();
 
   // Test every relevant property except font families, which are tested in
@@ -418,13 +418,10 @@ TEST_F(FontDescriptionTest, FontFamiliesHash) {
   FontDescription a;
   FontDescription b(a);
 
-  FontFamily* family_a = &a.FirstFamily();
-  family_a->SetFamily(font_family_names::kSerif,
-                      FontFamily::Type::kGenericFamily);
-
-  FontFamily* family_b = &b.FirstFamily();
-  family_b->SetFamily(font_family_names::kSerif,
-                      FontFamily::Type::kGenericFamily);
+  a.SetFamily(
+      FontFamily(font_family_names::kSerif, FontFamily::Type::kGenericFamily));
+  b.SetFamily(
+      FontFamily(font_family_names::kSerif, FontFamily::Type::kGenericFamily));
 
   unsigned key_a = a.GetHash();
   unsigned key_b = b.GetHash();
@@ -432,35 +429,31 @@ TEST_F(FontDescriptionTest, FontFamiliesHash) {
   EXPECT_EQ(key_a, key_b);
 
   // Differing family lists
-  scoped_refptr<SharedFontFamily> next_family_a = SharedFontFamily::Create();
-  next_family_a->SetFamily(AtomicString("CustomFont1"),
-                           FontFamily::Type::kFamilyName);
-  family_a->AppendFamily(next_family_a);
-  family_a = next_family_a.get();
+  scoped_refptr<SharedFontFamily> next_family_a = SharedFontFamily::Create(
+      AtomicString("CustomFont1"), FontFamily::Type::kFamilyName);
+  a.SetFamily(FontFamily(font_family_names::kSerif,
+                         FontFamily::Type::kGenericFamily, next_family_a));
   key_a = a.GetHash();
   EXPECT_NE(key_a, key_b);
 
   // Same family lists with multiple entries
-  scoped_refptr<SharedFontFamily> next_family_b = SharedFontFamily::Create();
-  next_family_b->SetFamily(AtomicString("CustomFont1"),
-                           FontFamily::Type::kFamilyName);
-  family_b->AppendFamily(next_family_b);
-  family_b = next_family_b.get();
+  scoped_refptr<SharedFontFamily> next_family_b = SharedFontFamily::Create(
+      AtomicString("CustomFont1"), FontFamily::Type::kFamilyName);
+  b.SetFamily(FontFamily(font_family_names::kSerif,
+                         FontFamily::Type::kGenericFamily, next_family_b));
   key_b = b.GetHash();
   EXPECT_EQ(key_a, key_b);
 
   // Same number of entries, different names
-  next_family_a = SharedFontFamily::Create();
-  next_family_a->SetFamily(AtomicString("CustomFont2a"),
-                           FontFamily::Type::kFamilyName);
-  family_a->AppendFamily(next_family_a);
-  family_a = next_family_a.get();
+  next_family_a = SharedFontFamily::Create(AtomicString("CustomFont1a"),
+                                           FontFamily::Type::kFamilyName);
+  a.SetFamily(FontFamily(font_family_names::kSerif,
+                         FontFamily::Type::kGenericFamily, next_family_a));
   key_a = a.GetHash();
-  next_family_b = SharedFontFamily::Create();
-  next_family_b->SetFamily(AtomicString("CustomFont2b"),
-                           FontFamily::Type::kFamilyName);
-  family_b->AppendFamily(next_family_b);
-  family_b = next_family_b.get();
+  next_family_b = SharedFontFamily::Create(AtomicString("CustomFont1b"),
+                                           FontFamily::Type::kFamilyName);
+  b.SetFamily(FontFamily(font_family_names::kSerif,
+                         FontFamily::Type::kGenericFamily, next_family_b));
   key_b = b.GetHash();
   EXPECT_NE(key_a, key_b);
 }
@@ -472,11 +465,10 @@ TEST_F(FontDescriptionTest, GenericFamilyDifferentHash) {
   FontDescription a;
   FontDescription b(a);
 
-  FontFamily* family_a = &a.FirstFamily();
-  family_a->SetFamily(font_family_names::kSerif,
-                      FontFamily::Type::kGenericFamily);
-  FontFamily* family_b = &b.FirstFamily();
-  family_b->SetFamily(font_family_names::kSerif, FontFamily::Type::kFamilyName);
+  a.SetFamily(
+      FontFamily(font_family_names::kSerif, FontFamily::Type::kGenericFamily));
+  b.SetFamily(
+      FontFamily(font_family_names::kSerif, FontFamily::Type::kFamilyName));
 
   unsigned key_a = a.GetHash();
   unsigned key_b = b.GetHash();
@@ -487,12 +479,10 @@ TEST_F(FontDescriptionTest, GenericFamilyDifferentHash) {
 TEST_F(FontDescriptionTest, ToString) {
   FontDescription description;
 
-  FontFamily family;
-  family.SetFamily(AtomicString("A"), FontFamily::Type::kFamilyName);
-  scoped_refptr<SharedFontFamily> b_family = SharedFontFamily::Create();
-  b_family->SetFamily(AtomicString("B"), FontFamily::Type::kFamilyName);
-  family.AppendFamily(b_family);
-  description.SetFamily(family);
+  description.SetFamily(
+      FontFamily(AtomicString("A"), FontFamily::Type::kFamilyName,
+                 SharedFontFamily::Create(AtomicString("B"),
+                                          FontFamily::Type::kFamilyName)));
 
   description.SetLocale(LayoutLocale::Get(AtomicString("no")));
 
@@ -554,13 +544,11 @@ TEST_F(FontDescriptionTest, DefaultHashTrait) {
   FontDescription description2;
   description1.SetWeight(FontSelectionValue(100));
 
-  FontFamily family;
-  family.SetFamily(AtomicString("A"), FontFamily::Type::kFamilyName);
-  scoped_refptr<SharedFontFamily> b_family = SharedFontFamily::Create();
-  b_family->SetFamily(AtomicString("B"), FontFamily::Type::kFamilyName);
-  family.AppendFamily(b_family);
   FontDescription description3;
-  description3.SetFamily(family);
+  description3.SetFamily(
+      FontFamily(AtomicString("A"), FontFamily::Type::kFamilyName,
+                 SharedFontFamily::Create(AtomicString("B"),
+                                          FontFamily::Type::kFamilyName)));
 
   EXPECT_TRUE(map.insert(description1, 1).is_new_entry);
   EXPECT_FALSE(map.insert(description1, 1).is_new_entry);

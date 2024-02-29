@@ -32,11 +32,9 @@ static Font ReplacementTextFont(const Document* document) {
   const float size = LayoutThemeFontProvider::SystemFontSize(
       CSSValueID::kWebkitSmallControl, document);
 
-  FontFamily font_family;
-  font_family.SetFamily(family, FontFamily::InferredTypeFor(family));
-
   FontDescription font_description;
-  font_description.SetFamily(font_family);
+  font_description.SetFamily(
+      FontFamily(family, FontFamily::InferredTypeFor(family)));
   font_description.SetWeight(kBoldWeightValue);
   font_description.SetSpecifiedSize(size);
   font_description.SetComputedSize(size);

@@ -54,11 +54,9 @@ void FontBuilder::DidChangeWritingMode() {
 }
 
 FontFamily FontBuilder::StandardFontFamily() const {
-  FontFamily family;
   const AtomicString& standard_font_family = StandardFontFamilyName();
-  family.SetFamily(standard_font_family,
-                   FontFamily::InferredTypeFor(standard_font_family));
-  return family;
+  return FontFamily(standard_font_family,
+                    FontFamily::InferredTypeFor(standard_font_family));
 }
 
 AtomicString FontBuilder::StandardFontFamilyName() const {

@@ -18,10 +18,8 @@ static void TestBitmapGlyphsBlockListed(AtomicString windows_family_name,
                                         bool block_listed_expected) {
   FontCache& font_cache = FontCache::Get();
   FontDescription font_description;
-  FontFamily font_family;
-  font_family.SetFamily(windows_family_name,
-                        FontFamily::InferredTypeFor(windows_family_name));
-  font_description.SetFamily(font_family);
+  font_description.SetFamily(FontFamily(
+      windows_family_name, FontFamily::InferredTypeFor(windows_family_name)));
   const SimpleFontData* simple_font_data =
       font_cache.GetFontData(font_description, windows_family_name);
   ASSERT_TRUE(simple_font_data);

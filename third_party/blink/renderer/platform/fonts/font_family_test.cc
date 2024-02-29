@@ -8,57 +8,25 @@
 
 namespace blink {
 
-namespace {
-
-FontFamily* CreateAndAppendFamily(FontFamily& parent,
-                                  const char* family_name,
-                                  FontFamily::Type family_type) {
-  scoped_refptr<SharedFontFamily> family = SharedFontFamily::Create();
-  family->SetFamily(AtomicString(family_name), family_type);
-  parent.AppendFamily(family);
-  return family.get();
-}
-
-}  // namespace
-
-TEST(FontFamilyTest, CountNames) {
-  {
-    FontFamily family;
-    EXPECT_EQ(1u, family.CountNames());
-  }
-  {
-    FontFamily family;
-    family.SetFamily(AtomicString("A"), FontFamily::Type::kFamilyName);
-    CreateAndAppendFamily(family, "B", FontFamily::Type::kFamilyName);
-    EXPECT_EQ(2u, family.CountNames());
-  }
-  {
-    FontFamily family;
-    family.SetFamily(AtomicString("A"), FontFamily::Type::kFamilyName);
-    FontFamily* b_family =
-        CreateAndAppendFamily(family, "B", FontFamily::Type::kFamilyName);
-    CreateAndAppendFamily(*b_family, "C", FontFamily::Type::kFamilyName);
-    EXPECT_EQ(3u, family.CountNames());
-  }
-}
-
 TEST(FontFamilyTest, ToString) {
   {
     FontFamily family;
     EXPECT_EQ("", family.ToString());
   }
   {
-    FontFamily family;
-    family.SetFamily(AtomicString("A"), FontFamily::Type::kFamilyName);
-    CreateAndAppendFamily(family, "B", FontFamily::Type::kFamilyName);
+    scoped_refptr<SharedFontFamily> b = SharedFontFamily::Create(
+        AtomicString("B"), FontFamily::Type::kFamilyName);
+    FontFamily family(AtomicString("A"), FontFamily::Type::kFamilyName,
+                      std::move(b));
     EXPECT_EQ("A, B", family.ToString());
   }
   {
-    FontFamily family;
-    family.SetFamily(AtomicString("A"), FontFamily::Type::kFamilyName);
-    FontFamily* b_family =
-        CreateAndAppendFamily(family, "B", FontFamily::Type::kFamilyName);
-    CreateAndAppendFamily(*b_family, "C", FontFamily::Type::kFamilyName);
+    scoped_refptr<SharedFontFamily> c = SharedFontFamily::Create(
+        AtomicString("C"), FontFamily::Type::kFamilyName);
+    scoped_refptr<SharedFontFamily> b = SharedFontFamily::Create(
+        AtomicString("B"), FontFamily::Type::kFamilyName, std::move(c));
+    FontFamily family(AtomicString("A"), FontFamily::Type::kFamilyName,
+                      std::move(b));
     EXPECT_EQ("A, B, C", family.ToString());
   }
 }

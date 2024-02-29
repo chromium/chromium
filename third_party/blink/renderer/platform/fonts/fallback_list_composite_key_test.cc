@@ -13,8 +13,8 @@ class FallbackListCompositeKeyTest : public ::testing::Test {};
 
 TEST_F(FallbackListCompositeKeyTest, AllFeatures) {
   FontDescription font_description;
-  font_description.FirstFamily().SetFamily(font_family_names::kSerif,
-                                           FontFamily::Type::kGenericFamily);
+  font_description.SetFamily(
+      FontFamily(font_family_names::kSerif, FontFamily::Type::kGenericFamily));
   FallbackListCompositeKey key_a = FallbackListCompositeKey(font_description);
 
   // Test every relevant property except font families, which are tested in
@@ -240,49 +240,47 @@ TEST_F(FallbackListCompositeKeyTest, AllFeatures) {
 TEST_F(FallbackListCompositeKeyTest, FontFamilies) {
   // One family in both descriptors
   FontDescription font_description_a;
-  FontFamily* family_a = &font_description_a.FirstFamily();
-  family_a->SetFamily(font_family_names::kSerif,
-                      FontFamily::Type::kGenericFamily);
+  font_description_a.SetFamily(
+      FontFamily(font_family_names::kSerif, FontFamily::Type::kGenericFamily));
   FallbackListCompositeKey key_a = FallbackListCompositeKey(font_description_a);
 
   FontDescription font_description_b;
-  FontFamily* family_b = &font_description_b.FirstFamily();
-  family_b->SetFamily(font_family_names::kSerif,
-                      FontFamily::Type::kGenericFamily);
+  font_description_b.SetFamily(
+      FontFamily(font_family_names::kSerif, FontFamily::Type::kGenericFamily));
   FallbackListCompositeKey key_b = FallbackListCompositeKey(font_description_b);
 
   EXPECT_EQ(key_a, key_b);
 
   // Differing family lists
-  scoped_refptr<SharedFontFamily> next_family_a = SharedFontFamily::Create();
-  next_family_a->SetFamily(AtomicString("CustomFont1"),
-                           FontFamily::Type::kFamilyName);
-  family_a->AppendFamily(next_family_a);
-  family_a = next_family_a.get();
+  scoped_refptr<SharedFontFamily> next_family_a = SharedFontFamily::Create(
+      AtomicString("CustomFont1"), FontFamily::Type::kFamilyName);
+  font_description_a.SetFamily(FontFamily(font_family_names::kSerif,
+                                          FontFamily::Type::kGenericFamily,
+                                          next_family_a));
   key_a = FallbackListCompositeKey(font_description_a);
   EXPECT_NE(key_a, key_b);
 
   // Same family lists with multiple entries
-  scoped_refptr<SharedFontFamily> next_family_b = SharedFontFamily::Create();
-  next_family_b->SetFamily(AtomicString("CustomFont1"),
-                           FontFamily::Type::kFamilyName);
-  family_b->AppendFamily(next_family_b);
-  family_b = next_family_b.get();
+  scoped_refptr<SharedFontFamily> next_family_b = SharedFontFamily::Create(
+      AtomicString("CustomFont1"), FontFamily::Type::kFamilyName);
+  font_description_b.SetFamily(FontFamily(font_family_names::kSerif,
+                                          FontFamily::Type::kGenericFamily,
+                                          next_family_b));
   key_b = FallbackListCompositeKey(font_description_b);
   EXPECT_EQ(key_a, key_b);
 
   // Same number of entries, different names
-  next_family_a = SharedFontFamily::Create();
-  next_family_a->SetFamily(AtomicString("CustomFont2a"),
-                           FontFamily::Type::kFamilyName);
-  family_a->AppendFamily(next_family_a);
-  family_a = next_family_a.get();
+  next_family_a = SharedFontFamily::Create(AtomicString("CustomFont1a"),
+                                           FontFamily::Type::kFamilyName);
+  font_description_a.SetFamily(FontFamily(font_family_names::kSerif,
+                                          FontFamily::Type::kGenericFamily,
+                                          next_family_a));
   key_a = FallbackListCompositeKey(font_description_a);
-  next_family_b = SharedFontFamily::Create();
-  next_family_b->SetFamily(AtomicString("CustomFont2b"),
-                           FontFamily::Type::kFamilyName);
-  family_b->AppendFamily(next_family_b);
-  family_b = next_family_b.get();
+  next_family_a = SharedFontFamily::Create(AtomicString("CustomFont1b"),
+                                           FontFamily::Type::kFamilyName);
+  font_description_b.SetFamily(FontFamily(font_family_names::kSerif,
+                                          FontFamily::Type::kGenericFamily,
+                                          next_family_b));
   key_b = FallbackListCompositeKey(font_description_b);
   EXPECT_NE(key_a, key_b);
 }
@@ -292,14 +290,13 @@ TEST_F(FallbackListCompositeKeyTest, GenericVsFamily) {
   // CSS generic family and a quoted family name.
   // See crbug.com/1408485
   FontDescription font_description_a;
-  FontFamily* family_a = &font_description_a.FirstFamily();
-  family_a->SetFamily(font_family_names::kSerif,
-                      FontFamily::Type::kGenericFamily);
+  font_description_a.SetFamily(
+      FontFamily(font_family_names::kSerif, FontFamily::Type::kGenericFamily));
   FallbackListCompositeKey key_a = FallbackListCompositeKey(font_description_a);
 
   FontDescription font_description_b;
-  FontFamily* family_b = &font_description_b.FirstFamily();
-  family_b->SetFamily(font_family_names::kSerif, FontFamily::Type::kFamilyName);
+  font_description_b.SetFamily(
+      FontFamily(font_family_names::kSerif, FontFamily::Type::kFamilyName));
   FallbackListCompositeKey key_b = FallbackListCompositeKey(font_description_b);
 
   EXPECT_NE(key_a, key_b);
