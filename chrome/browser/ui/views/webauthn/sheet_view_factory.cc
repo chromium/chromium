@@ -337,13 +337,15 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       sheet_view = std::make_unique<AuthenticatorGpmPinSheetView>(
           std::make_unique<AuthenticatorGPMPinSheetModel>(
               dialog_model, kPinDigitCount,
-              AuthenticatorGPMPinSheetModel::Mode::kPinCreate));
+              AuthenticatorGPMPinSheetModel::Mode::kPinCreate,
+              dialog_model->gpm_pin_error()));
       break;
     case Step::kGPMEnterPin:
       sheet_view = std::make_unique<AuthenticatorGpmPinSheetView>(
           std::make_unique<AuthenticatorGPMPinSheetModel>(
               dialog_model, kPinDigitCount,
-              AuthenticatorGPMPinSheetModel::Mode::kPinEntry));
+              AuthenticatorGPMPinSheetModel::Mode::kPinEntry,
+              dialog_model->gpm_pin_error()));
       break;
     case Step::kNotStarted:
     case Step::kConditionalMediation:

@@ -286,6 +286,12 @@ class AuthenticatorRequestDialogModel
     kReady,
   };
 
+  // Possible error states during GPM pin entry / creation.
+  enum class GpmPinError {
+    kNone,
+    kWrongPin,
+  };
+
   explicit AuthenticatorRequestDialogModel(
       content::RenderFrameHost* render_frame_host);
 
@@ -728,6 +734,8 @@ class AuthenticatorRequestDialogModel
   void set_allow_icloud_keychain(bool);
   void set_should_create_in_icloud_keychain(bool);
 
+  GpmPinError gpm_pin_error() const { return gpm_pin_error_; }
+
 #if BUILDFLAG(IS_MAC)
   void RecordMacOsStartedHistogram();
   void RecordMacOsSuccessHistogram(device::FidoRequestType,
@@ -981,6 +989,9 @@ class AuthenticatorRequestDialogModel
 
   // Records the state of the primary account for the profile, if any.
   AccountState account_state_ = AccountState::kNone;
+
+  // Records the error during GPM pin entry / creation, if any.
+  GpmPinError gpm_pin_error_ = GpmPinError::kNone;
 
 #if BUILDFLAG(IS_MAC)
   // did_record_macos_start_histogram_ is set to true if a histogram record of

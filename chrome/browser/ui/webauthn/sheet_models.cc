@@ -1585,11 +1585,13 @@ void AuthenticatorPriorityMechanismSheetModel::OnAccept() {
 AuthenticatorGPMPinSheetModel::AuthenticatorGPMPinSheetModel(
     AuthenticatorRequestDialogModel* dialog_model,
     int pin_digits_count,
-    Mode mode)
+    Mode mode,
+    AuthenticatorRequestDialogModel::GpmPinError error)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden),
       pin_digits_count_(pin_digits_count),
-      mode_(mode) {
+      mode_(mode),
+      error_(error) {
   // TODO(rgod): Add correct illustration.
   vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
 }
@@ -1625,6 +1627,15 @@ std::u16string AuthenticatorGPMPinSheetModel::GetStepDescription() const {
     case Mode::kPinEntry:
       return u"Sign in with your passkey to example.com as example@gmail.com "
              u"(UNTRANSLATED)";
+  }
+}
+
+std::u16string AuthenticatorGPMPinSheetModel::GetError() const {
+  switch (error_) {
+    case AuthenticatorRequestDialogModel::GpmPinError::kNone:
+      return std::u16string();
+    case AuthenticatorRequestDialogModel::GpmPinError::kWrongPin:
+      return u"Wrong PIN (UNTRANSLATED)";
   }
 }
 

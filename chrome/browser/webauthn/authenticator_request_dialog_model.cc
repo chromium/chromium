@@ -1269,7 +1269,7 @@ void AuthenticatorRequestDialogModel::OnGPMPinEntered(
          current_step() == Step::kGPMEnterPin);
   // TODO(enclave): For kGPMCreatePin - upload pin and handle passkey creation.
   // TODO(enclave): For kGPMEnterPin - verify pin and handle sign-in or setting
-  // up biometrics (if available).
+  // up biometrics (if available) or setting `gpm_pin_error_`.
 }
 
 void AuthenticatorRequestDialogModel::AddAuthenticator(

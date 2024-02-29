@@ -688,7 +688,8 @@ class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
   explicit AuthenticatorGPMPinSheetModel(
       AuthenticatorRequestDialogModel* dialog_model,
       int pin_digits_count,
-      Mode mode);
+      Mode mode,
+      AuthenticatorRequestDialogModel::GpmPinError error);
   ~AuthenticatorGPMPinSheetModel() override;
 
   int pin_digits_count() const;
@@ -700,6 +701,7 @@ class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
   // AuthenticatorSheetModelBase:
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
+  std::u16string GetError() const override;
   bool IsAcceptButtonEnabled() const override;
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
@@ -708,6 +710,7 @@ class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
   std::u16string pin_;
   const int pin_digits_count_;
   const Mode mode_;
+  const AuthenticatorRequestDialogModel::GpmPinError error_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_
