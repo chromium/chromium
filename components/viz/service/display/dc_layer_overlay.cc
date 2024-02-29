@@ -345,6 +345,8 @@ void FromTextureQuad(const TextureDrawQuad* quad,
   dc_layer->color_space = resource_provider->GetColorSpace(quad->resource_id());
   dc_layer->hdr_metadata =
       resource_provider->GetHDRMetadata(quad->resource_id());
+
+  dc_layer->protected_video_type = quad->protected_video_type;
   // Both color space and protected_video_type are hard-coded for stream video.
   // TODO(crbug.com/1384544): Consider using quad->protected_video_type.
   if (quad->is_stream_video) {
