@@ -1386,16 +1386,12 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPageCupsPrinterDialog) {
   RunSettingsTest("os_printing_page/cups_printer_dialog_test.js");
 }
 
-class OSSettingsPrintingTestSettingsRevampAndStatusEnabled
-    : public OSSettingsMochaTest {
+class OSSettingsPrintingTestSettingsStatusEnabled : public OSSettingsMochaTest {
  protected:
-  OSSettingsPrintingTestSettingsRevampAndStatusEnabled() {
+  OSSettingsPrintingTestSettingsStatusEnabled() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled=*/
-        {
-            ash::features::kPrinterSettingsRevamp,
-            ash::features::kPrinterSettingsPrinterStatus,
-        },
+        {ash::features::kPrinterSettingsPrinterStatus},
         /*disabled=*/{});
   }
 
@@ -1403,30 +1399,18 @@ class OSSettingsPrintingTestSettingsRevampAndStatusEnabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(OSSettingsPrintingTestSettingsRevampAndStatusEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsPrintingTestSettingsStatusEnabled,
                        OsPrintingPageCupsPrinterLandingPage) {
   RunSettingsTest("os_printing_page/cups_printer_landing_page_test.js");
 }
 
-class OSSettingsAppsTestSettingsRevampEnabled : public OSSettingsMochaTest {
- protected:
-  OSSettingsAppsTestSettingsRevampEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kPrinterSettingsRevamp);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OSSettingsAppsTestSettingsRevampEnabled,
-                       OsPrintingPageCupsPrinterPage) {
-  RunSettingsTest("os_printing_page/cups_printer_page_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsPrintingTestSettingsRevampAndStatusEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsPrintingTestSettingsStatusEnabled,
                        OsPrintingPageCupsPrintersEntry) {
   RunSettingsTest("os_printing_page/cups_printers_entry_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPageCupsPrinterPage) {
+  RunSettingsTest("os_printing_page/cups_printer_page_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPagePrinterStatus) {

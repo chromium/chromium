@@ -6604,13 +6604,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "printer-settings-revamp",
-    "owners": [
-      "//ash/webui/print_management/OWNERS"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "printing-ppd-channel",
     "owners": [
       "bmgordon@chromium.org",

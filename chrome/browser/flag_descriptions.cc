@@ -6979,10 +6979,6 @@ const char kPrinterSettingsPrinterStatusDescription[] =
     "Enables printer status querying and displaying from the OS Printer "
     "settings page.";
 
-const char kPrinterSettingsRevampName[] = "Enable Printer Settings Revamped UI";
-const char kPrinterSettingsRevampDescription[] =
-    "Show the enhanced UI for the OS Printer settings page.";
-
 const char kPrintPreviewDiscoveredPrintersName[] =
     "Enables showing discovered printers in the Print Preview dialog.";
 const char kPrintPreviewDiscoveredPrintersDescription[] =

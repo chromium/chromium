@@ -2289,11 +2289,6 @@ BASE_FEATURE(kPrintPreviewCrosApp,
              "PrintPreviewCrosApp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the new OS Printer Settings UI.
-BASE_FEATURE(kPrinterSettingsRevamp,
-             "PrinterSettingsRevamp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables showing discovered printers in the Print Preview dialog.
 BASE_FEATURE(kPrintPreviewDiscoveredPrinters,
              "PrintPreviewDiscoveredPrinters",
@@ -4122,7 +4117,7 @@ bool IsPrinterSettingsPrinterStatusEnabled() {
 }
 
 bool IsPrinterSettingsRevampEnabled() {
-  return base::FeatureList::IsEnabled(kPrinterSettingsRevamp);
+  return true;
 }
 
 bool IsPrinterPreviewCrosAppEnabled() {
