@@ -7597,11 +7597,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "storage-buckets",
-    "owners": [ "ayui@chromium.org", "estade@chromium.org", "chrome-owp-storage@google.com" ],
-    "expiry_milestone": 121
-  },
-  {
     "name": "strict-origin-isolation",
     "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
     // This can be used to opt in to origin isolation which isolates full

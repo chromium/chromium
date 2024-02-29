@@ -9912,10 +9912,6 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kPrintingPpdChannelChoices)},
 #endif
 
-    {"storage-buckets", flag_descriptions::kStorageBucketsName,
-     flag_descriptions::kStorageBucketsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kStorageBuckets)},
-
     {"service-worker-bypass-fetch-handler",
      flag_descriptions::kServiceWorkerBypassFetchHandlerName,
      flag_descriptions::kServiceWorkerBypassFetchHandlerDescription, kOsAll,
