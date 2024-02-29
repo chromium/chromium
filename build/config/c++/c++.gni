@@ -59,6 +59,10 @@ declare_args() {
 # enable libc++ hardening there as well.
 use_safe_libcxx = (use_custom_libcxx && enable_safe_libcxx) || is_nacl_saigo
 
+# libstdc++ has its own hardening assertions that we want to enable by default
+# in Chromium builds.
+use_safe_libstdcxx = is_linux && !use_custom_libcxx && enable_safe_libstdcxx
+
 # libc++abi needs to be exported from executables to be picked up by shared
 # libraries on certain instrumented builds.
 export_libcxxabi_from_executables =

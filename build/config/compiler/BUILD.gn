@@ -1069,6 +1069,12 @@ config("compiler") {
   } else {
     defines += [ "_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_NONE" ]
   }
+
+  # Enable libstdc++ hardening lightweight assertions. Those have a low
+  # performance penalty but are considered a bare minimum for security.
+  if (use_safe_libstdcxx) {
+    defines += [ "_GLIBCXX_ASSERTIONS=1" ]
+  }
 }
 
 # The BUILDCONFIG file sets this config on targets by default, which means when

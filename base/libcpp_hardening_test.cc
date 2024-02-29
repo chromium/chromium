@@ -12,7 +12,11 @@ namespace {
 
 // TODO(thakis): Remove _LIBCPP_ENABLE_ASSERTIONS here once
 // pnacl-saigo's libc++ is new enough.
-#if !_LIBCPP_ENABLE_ASSERTIONS && \
+#if defined(__GLIBCXX__)
+#if !defined(_GLIBCXX_ASSERTIONS)
+#error "libstdc++ assertions should be enabled"
+#endif
+#elif !_LIBCPP_ENABLE_ASSERTIONS && \
     _LIBCPP_HARDENING_MODE != _LIBCPP_HARDENING_MODE_EXTENSIVE
 #error "_LIBCPP_HARDENING_MODE not defined"
 #endif

@@ -3533,7 +3533,7 @@ test("base_unittests") {
     ]
   }
 
-  if (use_safe_libcxx) {
+  if (use_safe_libcxx || use_safe_libstdcxx) {
     sources += [ "libcpp_hardening_test.cc" ]
   }
 
