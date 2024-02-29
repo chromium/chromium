@@ -160,7 +160,22 @@ mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
   std::unique_ptr<PrintSettings> existing_settings = std::move(settings_);
   settings_ = std::make_unique<PrintSettings>(*found->second);
   settings_->set_copies(existing_settings->copies());
-  settings_->set_dpi(existing_settings->dpi());
+  // Client-supplied settings take priority over default device settings; try to
+  // transfer the non-empty ones.
+  if (existing_settings->color() != mojom::ColorModel::kUnknownColorModel) {
+    settings_->set_color(existing_settings->color());
+  }
+  settings_->set_collate(existing_settings->collate());
+  if (!existing_settings->dpi_size().IsEmpty()) {
+    settings_->set_dpi_xy(existing_settings->dpi_horizontal(),
+                          existing_settings->dpi_vertical());
+  }
+  if (!existing_settings->title().empty()) {
+    settings_->set_title(existing_settings->title());
+  }
+  if (!existing_settings->requested_media().IsDefault()) {
+    settings_->set_requested_media(existing_settings->requested_media());
+  }
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   for (const auto& item : existing_settings->advanced_settings())
     settings_->advanced_settings().emplace(item.first, item.second.Clone());

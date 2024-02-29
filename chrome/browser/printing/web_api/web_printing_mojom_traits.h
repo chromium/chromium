@@ -68,6 +68,10 @@ struct StructTraits<blink::mojom::WebPrintJobTemplateAttributesDataView,
   static uint32_t copies(const std::unique_ptr<printing::PrintSettings>& ptr) {
     NOTREACHED_NORETURN();
   }
+  static const blink::mojom::WebPrintingMediaCollectionRequestedPtr& media_col(
+      const std::unique_ptr<printing::PrintSettings>& ptr) {
+    NOTREACHED_NORETURN();
+  }
   static const std::optional<blink::mojom::WebPrintingMultipleDocumentHandling>&
   multiple_document_handling(
       const std::unique_ptr<printing::PrintSettings>& ptr) {

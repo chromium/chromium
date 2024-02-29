@@ -21,6 +21,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/test/mock_callback.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/printing/print_job.h"
+#include "chrome/browser/printing/print_job_manager.h"
+#include "printing/print_settings.h"
+#include "printing/printed_document.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/test/chromeos/printing/mock_local_printer_chromeos.h"
@@ -54,7 +63,21 @@ startxref
     const pdfBlob = new Blob([pdf], {type: 'application/pdf'});
     const printers = await navigator.printing.getPrinters();
 
-    const printJob = await printers[0].printJob("Title", { data: pdfBlob }, {});
+    const printJob = await printers[0].printJob("Title", { data: pdfBlob }, {
+      mediaCol: {
+        mediaSize: {
+          xDimension: 21000,
+          yDimension: 29700,
+        }
+      },
+      printColorMode: "color",
+      multipleDocumentHandling: "separate-documents-collated-copies",
+      printerResolution: {
+        crossFeedDirectionResolution: 300,
+        feedDirectionResolution: 400,
+        units: "dots-per-inch",
+      },
+    });
     const printJobComplete = new Promise((resolve, reject) => {
       printJob.onjobstatechange = () => {
         if (printJob.attributes().jobState === $1) {
@@ -69,6 +92,13 @@ startxref
 
 using testing::_;
 using testing::AtMost;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+using testing::AllOf;
+using testing::Eq;
+using testing::Field;
+using testing::Property;
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 using testing::DoAll;
@@ -100,6 +130,26 @@ class MockCupsWrapper : public chromeos::CupsWrapper {
            callback),
       (override));
 };
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+auto ValidatePrintSettings() {
+  // These are synced with the `kPrintScriptWithJobStatePlaceholder` script.
+  return AllOf(
+      // copies:
+      Property(&PrintSettings::copies, Eq(1)),
+      // mediaCol:
+      Property(&PrintSettings::requested_media,
+               Field(&PrintSettings::RequestedMedia::size_microns,
+                     Eq(gfx::Size(210000, 297000)))),
+      // printColorMode:
+      Property(&PrintSettings::color, Eq(mojom::ColorModel::kColorModeColor)),
+      Property(&PrintSettings::title, Eq(u"Title")),
+      // multipleDocumentHandling:
+      Property(&PrintSettings::collate, Eq(true)),
+      // printerResolution:
+      Property(&PrintSettings::dpi_size, Eq(gfx::Size(300, 400))));
+}
+#endif
 
 }  // namespace
 
@@ -295,6 +345,35 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, FetchAttributes) {
     },
     "documentFormatDefault": "application/pdf",
     "documentFormatSupported": [ "application/pdf" ],
+    "mediaColDefault": {
+      "mediaSize": {
+        "xDimension": 21000,
+        "yDimension": 29700,
+      },
+      "mediaSizeName": "iso_a4_210x297mm",
+    },
+    "mediaColDatabase": [{
+      "mediaSize": {
+        "xDimension": 21000,
+        "yDimension": 29700,
+      },
+      "mediaSizeName": "iso_a4_210x297mm",
+    }, {
+      "mediaSize": {
+        "xDimension": 21590,
+        "yDimension": 27940,
+      },
+      "mediaSizeName": "na_letter_8.5x11in",
+    }, {
+      "mediaSize": {
+        "xDimension": 20000,
+        "yDimension": {
+          "from": 25000,
+          "to": 30000,
+        },
+      },
+      "mediaSizeName": "om_200000x250000um_200x250mm",
+    }],
     "multipleDocumentHandlingDefault": "separate-documents-uncollated-copies",
     "multipleDocumentHandlingSupported": [
       "separate-documents-uncollated-copies",
@@ -339,6 +418,16 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, FetchAttributes) {
 
 IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, Print) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Set up a matcher to validate correctness of `PrintSettings`.
+  base::MockRepeatingCallback<void(PrintJob*, PrintedDocument*, int)>
+      doc_done_cb;
+  EXPECT_CALL(
+      doc_done_cb,
+      Run(_, Property(&PrintedDocument::settings, ValidatePrintSettings()), _));
+  auto subscription =
+      g_browser_process->print_job_manager()->AddDocDoneCallback(
+          doc_done_cb.Get());
+
   AddPrinterWithSemanticCaps(kId, kName,
                              extensions::ConstructPrinterCapabilities());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)

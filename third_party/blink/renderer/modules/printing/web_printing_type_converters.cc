@@ -5,10 +5,15 @@
 #include "third_party/blink/renderer/modules/printing/web_printing_type_converters.h"
 
 #include "third_party/blink/public/mojom/printing/web_printing.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_unsignedlong_webprintingrange.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_color_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_template_attributes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printer_state.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_collection.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_collection_requested.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_size.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_size_requested.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_mime_media_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_multiple_document_handling.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_orientation_requested.h"
@@ -20,9 +25,26 @@
 #include "third_party/blink/renderer/platform/resolution_units.h"
 
 namespace {
+// copies:
+using BlinkRange = blink::WebPrintingRange;
+using MojomRangePtr = blink::mojom::blink::WebPrintingRangePtr;
+
 // sides:
 using V8Sides = blink::V8WebPrintingSides;
 using MojomSides = blink::mojom::blink::WebPrintingSides;
+
+// media-col:
+using BlinkMediaCollection = blink::WebPrintingMediaCollection;
+using BlinkMediaCollectionRequested =
+    blink::WebPrintingMediaCollectionRequested;
+using V8MediaSizeDimension = blink::V8UnionUnsignedLongOrWebPrintingRange;
+using MojomMediaCollection = blink::mojom::blink::WebPrintingMediaCollection;
+using MojomMediaCollectionRequested =
+    blink::mojom::blink::WebPrintingMediaCollectionRequested;
+using MojomMediaCollectionRequestedPtr =
+    blink::mojom::blink::WebPrintingMediaCollectionRequestedPtr;
+using MojomMediaSizeDimensionPtr =
+    blink::mojom::blink::WebPrintingMediaSizeDimensionPtr;
 
 // multiple-document-handling:
 using V8MultipleDocumentHandling = blink::V8WebPrintingMultipleDocumentHandling;
@@ -136,6 +158,58 @@ struct TypeConverter<MojomOrientationRequested, V8OrientationRequested> {
       case V8OrientationRequested::Enum::kLandscape:
         return MojomOrientationRequested::kLandscape;
     }
+  }
+};
+
+template <>
+struct TypeConverter<BlinkRange*, MojomRangePtr> {
+  static BlinkRange* Convert(const MojomRangePtr& range_in) {
+    auto* range = blink::MakeGarbageCollected<BlinkRange>();
+    range->setFrom(range_in->from);
+    range->setTo(range_in->to);
+    return range;
+  }
+};
+
+template <>
+struct TypeConverter<V8MediaSizeDimension*, MojomMediaSizeDimensionPtr> {
+  static V8MediaSizeDimension* Convert(
+      const MojomMediaSizeDimensionPtr& dimension) {
+    return dimension->is_range()
+               ? blink::MakeGarbageCollected<V8MediaSizeDimension>(
+                     mojo::ConvertTo<BlinkRange*>(dimension->get_range()))
+               : blink::MakeGarbageCollected<V8MediaSizeDimension>(
+                     dimension->get_value());
+  }
+};
+
+template <>
+struct TypeConverter<BlinkMediaCollection*, MojomMediaCollection*> {
+  static BlinkMediaCollection* Convert(
+      const MojomMediaCollection* media_col_in) {
+    auto* media_col = blink::MakeGarbageCollected<BlinkMediaCollection>();
+    media_col->setMediaSizeName(media_col_in->media_size_name);
+    auto* media_size =
+        blink::MakeGarbageCollected<blink::WebPrintingMediaSize>();
+    media_size->setYDimension(mojo::ConvertTo<V8MediaSizeDimension*>(
+        media_col_in->media_size->y_dimension));
+    media_size->setXDimension(mojo::ConvertTo<V8MediaSizeDimension*>(
+        media_col_in->media_size->x_dimension));
+    media_col->setMediaSize(media_size);
+    return media_col;
+  }
+};
+
+template <>
+struct TypeConverter<MojomMediaCollectionRequestedPtr,
+                     BlinkMediaCollectionRequested*> {
+  static MojomMediaCollectionRequestedPtr Convert(
+      const BlinkMediaCollectionRequested* media_col_in) {
+    auto media_col = MojomMediaCollectionRequested::New();
+    media_col->media_size = {
+        base::checked_cast<int32_t>(media_col_in->mediaSize()->xDimension()),
+        base::checked_cast<int32_t>(media_col_in->mediaSize()->yDimension())};
+    return media_col;
   }
 };
 
@@ -313,10 +387,8 @@ namespace {
 void ProcessCopies(const mojom::blink::WebPrinterAttributes& new_attributes,
                    WebPrinterAttributes* current_attributes) {
   current_attributes->setCopiesDefault(new_attributes.copies_default);
-  auto* copies_range = WebPrintingRange::Create();
-  copies_range->setFrom(new_attributes.copies_supported->from);
-  copies_range->setTo(new_attributes.copies_supported->to);
-  current_attributes->setCopiesSupported(copies_range);
+  current_attributes->setCopiesSupported(
+      mojo::ConvertTo<BlinkRange*>(new_attributes.copies_supported));
 }
 
 void ProcessDocumentFormat(
@@ -326,6 +398,16 @@ void ProcessDocumentFormat(
       V8WebPrintingMimeMediaType::Enum::kApplicationPdf);
   current_attributes->setDocumentFormatSupported({V8WebPrintingMimeMediaType(
       V8WebPrintingMimeMediaType::Enum::kApplicationPdf)});
+}
+
+void ProcessMediaCollection(
+    const mojom::blink::WebPrinterAttributes& new_attributes,
+    WebPrinterAttributes* current_attributes) {
+  current_attributes->setMediaColDefault(
+      mojo::ConvertTo<BlinkMediaCollection*>(new_attributes.media_col_default));
+  current_attributes->setMediaColDatabase(
+      mojo::ConvertTo<HeapVector<Member<BlinkMediaCollection>>>(
+          new_attributes.media_col_database));
 }
 
 void ProcessMultipleDocumentHandling(
@@ -398,6 +480,7 @@ TypeConverter<blink::WebPrinterAttributes*,
 
   blink::ProcessCopies(*printer_attributes, attributes);
   blink::ProcessDocumentFormat(*printer_attributes, attributes);
+  blink::ProcessMediaCollection(*printer_attributes, attributes);
   blink::ProcessMultipleDocumentHandling(*printer_attributes, attributes);
   blink::ProcessOrientationRequested(*printer_attributes, attributes);
   blink::ProcessPrinterResolution(*printer_attributes, attributes);
@@ -421,6 +504,10 @@ TypeConverter<blink::mojom::blink::WebPrintJobTemplateAttributesPtr,
   auto attributes = blink::mojom::blink::WebPrintJobTemplateAttributes::New();
 
   attributes->copies = pjt_attributes->getCopiesOr(1);
+  if (pjt_attributes->hasMediaCol()) {
+    attributes->media_col = mojo::ConvertTo<MojomMediaCollectionRequestedPtr>(
+        pjt_attributes->mediaCol());
+  }
   if (pjt_attributes->hasMultipleDocumentHandling()) {
     attributes->multiple_document_handling =
         mojo::ConvertTo<MojomMultipleDocumentHandling>(

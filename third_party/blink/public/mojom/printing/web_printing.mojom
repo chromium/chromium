@@ -92,10 +92,46 @@ struct WebPrintingRange {
   uint32 to;
 };
 
+union WebPrintingMediaSizeDimension {
+  WebPrintingRange range;
+  uint32 value;
+};
+
+// Each media size dimension can be either a fixed value or a range.
+// Examples from the IPP spec:
+//
+// /* ISO A4 transparency only from manual feed */
+// media-size={
+//  x-dimension=21000
+//  y-dimension=29700
+// }
+//
+// /* Custom sizes from 3x5 to 8.5x14 inches */
+// media-size={
+//  x-dimension=7620-21590
+//  y-dimension=12700-35560
+// }
+//
+// Dimensions are specified in PWG units (hundredths of millimeters).
+struct WebPrintingMediaSize {
+  WebPrintingMediaSizeDimension x_dimension;
+  WebPrintingMediaSizeDimension y_dimension;
+};
+
+// Represents the media-col entry of printer attributes. See §6.3.1 in
+// in https://ftp.pwg.org/pub/pwg/candidates/cs-ippjobext21-20230210-5100.7.pdf
+struct WebPrintingMediaCollection {
+  WebPrintingMediaSize media_size;
+  string media_size_name;
+};
+
 // Detailed description of a single printer.
 struct WebPrinterAttributes {
   uint32 copies_default;
   WebPrintingRange copies_supported;
+
+  WebPrintingMediaCollection media_col_default;
+  array<WebPrintingMediaCollection> media_col_database;
 
   WebPrintingMultipleDocumentHandling multiple_document_handling_default;
   array<WebPrintingMultipleDocumentHandling> multiple_document_handling_supported;
@@ -117,10 +153,20 @@ struct WebPrinterAttributes {
   array<WebPrintingSides> sides_supported;
 };
 
+// Represents the requested media-col entry for a print job. Note that this
+// struct slightly differs from WebPrintingMediaCollection and thus is defined
+// separately:
+//   * `media_size` dimensions are defined as values instead of ranges;
+//   * `media_size_name` is omitted (callers are supposed to pass `media_size`).
+struct WebPrintingMediaCollectionRequested {
+  gfx.mojom.Size media_size;
+};
+
 struct WebPrintJobTemplateAttributes {
   string job_name;
 
   uint32 copies;
+  WebPrintingMediaCollectionRequested? media_col;
   WebPrintingMultipleDocumentHandling? multiple_document_handling;
   WebPrintingOrientationRequested? orientation_requested;
   gfx.mojom.Size? printer_resolution;

@@ -48,8 +48,40 @@ bool IsColorModelKnown(mojom::ColorModel color_model) {
   return color_model != mojom::ColorModel::kUnknownColorModel;
 }
 
-bool ValidatePrintJobTemplateAttributesAgainstPrinterAttributes(
+bool ValidateMediaCol(
     const PrintSettings& pjt_attributes,
+    const PrinterSemanticCapsAndDefaults& printer_attributes) {
+  // media-size / media-size-name:
+  const auto& media = pjt_attributes.requested_media();
+  if (media.IsDefault()) {
+    // Means nothing has actually been requested.
+    return true;
+  }
+  const auto& papers = printer_attributes.papers;
+  // Validate that the requested paper is supported by the printer.
+  if (!base::ranges::any_of(papers, [&](const auto& paper) {
+        return paper.IsSizeWithinBounds(media.size_microns);
+      })) {
+    return false;
+  }
+  return true;
+}
+
+void UpdatePrintJobTemplateAttributesWithPrinterDefaults(
+    PrintSettings& pjt_attributes,
+    const PrinterSemanticCapsAndDefaults& printer_attributes) {
+  if (!IsDuplexModeKnown(pjt_attributes.duplex_mode())) {
+    pjt_attributes.set_duplex_mode(printer_attributes.duplex_default);
+  }
+  if (!IsColorModelKnown(pjt_attributes.color())) {
+    pjt_attributes.set_color(printer_attributes.color_default
+                                 ? mojom::ColorModel::kColorModeColor
+                                 : mojom::ColorModel::kColorModeMonochrome);
+  }
+}
+
+bool ValidateAttributesAndUpdateIfNecessary(
+    PrintSettings& pjt_attributes,
     const PrinterSemanticCapsAndDefaults& printer_attributes) {
   if (pjt_attributes.copies() < 1 ||
       pjt_attributes.copies() > printer_attributes.copies_max) {
@@ -77,20 +109,13 @@ bool ValidatePrintJobTemplateAttributesAgainstPrinterAttributes(
       !base::Contains(printer_attributes.dpis, pjt_attributes.dpi_size())) {
     return false;
   }
+  if (!ValidateMediaCol(pjt_attributes, printer_attributes)) {
+    return false;
+  }
+  // Update selected fields to printer defaults if they're not specified.
+  UpdatePrintJobTemplateAttributesWithPrinterDefaults(pjt_attributes,
+                                                      printer_attributes);
   return true;
-}
-
-void UpdatePrintJobTemplateAttributesWithPrinterDefaults(
-    PrintSettings* pjt_attributes,
-    const PrinterSemanticCapsAndDefaults& printer_attributes) {
-  if (!IsDuplexModeKnown(pjt_attributes->duplex_mode())) {
-    pjt_attributes->set_duplex_mode(printer_attributes.duplex_default);
-  }
-  if (!IsColorModelKnown(pjt_attributes->color())) {
-    pjt_attributes->set_color(printer_attributes.color_default
-                                  ? mojom::ColorModel::kColorModeColor
-                                  : mojom::ColorModel::kColorModeMonochrome);
-  }
 }
 
 blink::mojom::WebPrinterAttributesPtr MergePrinterAttributesAndStatus(
@@ -260,15 +285,12 @@ void WebPrintingServiceChromeOS::OnPrinterAttributesRetrievedForPrint(
     return;
   }
 
-  if (!ValidatePrintJobTemplateAttributesAgainstPrinterAttributes(
-          *pjt_attributes, *printer_attributes)) {
+  if (!ValidateAttributesAndUpdateIfNecessary(*pjt_attributes,
+                                              *printer_attributes)) {
     std::move(callback).Run(blink::mojom::WebPrintResult::NewError(
         blink::mojom::WebPrintError::kPrintJobTemplateAttributesMismatch));
     return;
   }
-  // Update selected fields to printer defaults if they're not specified.
-  UpdatePrintJobTemplateAttributesWithPrinterDefaults(pjt_attributes.get(),
-                                                      *printer_attributes);
 
   pdf_flattener_->ReadAndFlattenPdf(
       std::move(document),

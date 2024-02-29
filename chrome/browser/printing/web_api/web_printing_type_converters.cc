@@ -7,9 +7,56 @@
 #include <optional>
 
 #include "base/containers/contains.h"
+#include "chrome/common/printing/print_media_l10n.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "printing/backend/print_backend.h"
+#include "printing/units.h"
 #include "third_party/blink/public/mojom/printing/web_printing.mojom.h"
+
+namespace {
+
+using MediaCollection = blink::mojom::WebPrintingMediaCollection;
+using MediaCollectionPtr = blink::mojom::WebPrintingMediaCollectionPtr;
+using Paper = printing::PrinterSemanticCapsAndDefaults::Paper;
+
+using MediaSize = blink::mojom::WebPrintingMediaSize;
+using MediaSizeDimension = blink::mojom::WebPrintingMediaSizeDimension;
+using Range = blink::mojom::WebPrintingRange;
+
+}  // namespace
+
+namespace mojo {
+
+template <>
+struct TypeConverter<MediaCollectionPtr, Paper> {
+  static MediaCollectionPtr Convert(const Paper& paper) {
+    // The printing subsystem operates on microns, whereas the spec-compliant
+    // `media_size` must be represented in hundredths of millimeters (PWG
+    // units).
+    auto media_size = MediaSize::New();
+    if (paper.SupportsCustomSize()) {
+      media_size->y_dimension = MediaSizeDimension::NewRange(
+          Range::New(paper.size_um().height() / printing::kMicronsPerPwgUnit,
+                     paper.max_height_um() / printing::kMicronsPerPwgUnit));
+    } else {
+      media_size->y_dimension = MediaSizeDimension::NewValue(
+          paper.size_um().height() / printing::kMicronsPerPwgUnit);
+    }
+    // `Paper` struct doesn't provide information about variable width
+    // (moreover, papers with variable width are silently discarded by
+    // ChromeOS). Hence `x_dimension` is always a single value.
+    media_size->x_dimension = MediaSizeDimension::NewValue(
+        paper.size_um().width() / printing::kMicronsPerPwgUnit);
+
+    auto media_col = MediaCollection::New();
+    media_col->media_size = std::move(media_size);
+    media_col->media_size_name =
+        printing::LocalizePaperDisplayName(paper.size_um()).vendor_id;
+    return media_col;
+  }
+};
+
+}  // namespace mojo
 
 namespace printing {
 namespace {
@@ -36,6 +83,14 @@ void ProcessCopies(const PrinterSemanticCapsAndDefaults& caps,
   attributes->copies_default = 1;
   attributes->copies_supported =
       blink::mojom::WebPrintingRange::New(1, caps.copies_max);
+}
+
+void ProcessMediaCollection(const PrinterSemanticCapsAndDefaults& caps,
+                            blink::mojom::WebPrinterAttributes* attributes) {
+  attributes->media_col_default =
+      mojo::ConvertTo<MediaCollectionPtr>(caps.default_paper);
+  attributes->media_col_database =
+      mojo::ConvertTo<std::vector<MediaCollectionPtr>>(caps.papers);
 }
 
 void ProcessMultipleDocumentHandling(
@@ -122,6 +177,7 @@ TypeConverter<blink::mojom::WebPrinterAttributesPtr,
   auto attributes = blink::mojom::WebPrinterAttributes::New();
 
   printing::ProcessCopies(capabilities, attributes.get());
+  printing::ProcessMediaCollection(capabilities, attributes.get());
   printing::ProcessMultipleDocumentHandling(capabilities, attributes.get());
   printing::ProcessOrientationRequested(capabilities, attributes.get());
   printing::ProcessPrinterResolution(capabilities, attributes.get());

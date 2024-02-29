@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/printing/web_printer.h"
+#include <limits>
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_document_description.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_template_attributes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_collection_requested.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_size_requested.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_resolution.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -24,6 +27,10 @@ constexpr char kUserPermissionDeniedError[] =
     "User denied access to Web Printing API.";
 
 constexpr char kPrinterUnreachableError[] = "Unable to connect to the printer.";
+
+bool IsPositiveInt32(uint32_t value) {
+  return value > 0 && value <= std::numeric_limits<int32_t>::max();
+}
 
 bool ValidatePrintJobTemplateAttributes(
     const WebPrintJobTemplateAttributes* pjt_attributes,
@@ -49,8 +56,20 @@ bool ValidatePrintJobTemplateAttributes(
       return false;
     }
   }
+  if (pjt_attributes->hasMediaCol()) {
+    const auto& media_col = *pjt_attributes->mediaCol();
+    const auto& media_size = *media_col.mediaSize();
+    if (!IsPositiveInt32(media_size.yDimension()) ||
+        !IsPositiveInt32(media_size.xDimension())) {
+      exception_state.ThrowTypeError(
+          "Both `xDimension` and `yDimension` must be positive integer "
+          "values.");
+      return false;
+    }
+  }
   return true;
 }
+
 }  // namespace
 
 WebPrinter::WebPrinter(ExecutionContext* execution_context,

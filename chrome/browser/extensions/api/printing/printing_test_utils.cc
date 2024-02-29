@@ -48,9 +48,19 @@ namespace {
 
 constexpr int kHorizontalDpi = 300;
 constexpr int kVerticalDpi = 400;
-constexpr int kMediaSizeWidth = 210000;
-constexpr int kMediaSizeHeight = 297000;
-constexpr char kMediaSizeVendorId[] = "iso_a4_210x297mm";
+
+// Size of ISO A4 paper in microns.
+constexpr int kIsoA4Width = 210000;
+constexpr int kIsoA4Height = 297000;
+
+// Size of NA Letter paper in microns.
+constexpr int kNaLetterWidth = 215900;
+constexpr int kNaLetterHeight = 279400;
+
+// Size of a custom paper with variable height in microns.
+constexpr int kCustomPaperWidth = 200000;
+constexpr int kCustomPaperHeight = 250000;
+constexpr int kCustomPaperMaxHeight = 300000;
 
 // Mapping of the different extension types used in the test to the specific
 // manifest file names to create an extension of that type. The actual location
@@ -225,10 +235,18 @@ ConstructPrinterCapabilities() {
   capabilities->copies_max = 2;
   capabilities->default_dpi = {kHorizontalDpi, kVerticalDpi};
   capabilities->dpis.emplace_back(capabilities->default_dpi);
-  printing::PrinterSemanticCapsAndDefaults::Paper paper(
-      /*display_name=*/"", kMediaSizeVendorId,
-      {kMediaSizeWidth, kMediaSizeHeight});
-  capabilities->papers.push_back(std::move(paper));
+  printing::PrinterSemanticCapsAndDefaults::Paper iso_a4_paper(
+      /*display_name=*/"", /*vendor_id=*/"", {kIsoA4Width, kIsoA4Height});
+  printing::PrinterSemanticCapsAndDefaults::Paper na_letter_paper(
+      /*display_name=*/"", /*vendor_id=*/"", {kNaLetterWidth, kNaLetterHeight});
+  printing::PrinterSemanticCapsAndDefaults::Paper custom_paper(
+      /*display_name=*/"", /*vendor_id=*/"",
+      {kCustomPaperWidth, kCustomPaperHeight},
+      /*printable_area_um=*/{kCustomPaperWidth, kCustomPaperHeight},
+      /*max_height_um=*/kCustomPaperMaxHeight);
+  capabilities->default_paper = iso_a4_paper;
+  capabilities->papers = {std::move(iso_a4_paper), std::move(na_letter_paper),
+                          std::move(custom_paper)};
   capabilities->collate_capable = true;
   return capabilities;
 }

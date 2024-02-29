@@ -3147,7 +3147,19 @@ if (target_os != "android") {
 # current_os = "linux" and target_os = "android". Using target_os is necessary as
 # we need to compile in the same way as would happen when current_os = "android".
 if (target_os != "android") {
+  generated_union_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_unsignedlong_webprintingrange.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_unsignedlong_webprintingrange.h",
+  ]
   generated_dictionary_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_size.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_size.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_size_requested.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_size_requested.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_collection.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_collection.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_collection_requested.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_collection_requested.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_range.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_range.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_resolution.cc",
