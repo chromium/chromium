@@ -3335,7 +3335,7 @@ class ClosingEventObserver : public ui::EventObserver {
   }
 
  private:
-  raw_ptr<Widget> widget_;
+  raw_ptr<Widget, DanglingUntriaged> widget_;
 };
 
 class ClosingView : public View {
