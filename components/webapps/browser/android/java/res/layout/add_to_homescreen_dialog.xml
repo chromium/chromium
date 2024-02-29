@@ -29,9 +29,9 @@ found in the LICENSE file.
         android:layout_gravity="center_vertical"
         android:layout_marginTop="2dp" />
 
-    <!-- An editable text field for the name of the home screen icon. -->
+    <!-- An editable text field for the name of the shortcut. -->
     <org.chromium.components.browser_ui.widget.text.AlertDialogEditText
-        android:id="@+id/text"
+        android:id="@+id/shortcut_name"
         android:inputType="text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -55,13 +55,25 @@ found in the LICENSE file.
         android:visibility="gone" >
 
         <!-- The name of the web app that will be used on the home screen. Not
-             editable as we preserve the developer's name choice for apps. -->
+             editable as we preserve the developer's name choice for PWAs and native apps.. -->
         <TextView
-            android:id="@+id/name"
+            android:id="@+id/app_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxHeight="128dp"
             android:textAppearance="@style/TextAppearance.AddToHomeScreenWebAppName" />
+
+        <!-- An editable text field for homebrew apps. -->
+        <org.chromium.components.browser_ui.widget.text.AlertDialogEditText
+            android:id="@+id/homebrew_name"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AddToHomeScreenEditText"
+            android:layout_marginStart="-4dp"
+            android:layout_marginTop="-4dp"
+            android:layout_marginBottom="-4dp"
+            android:singleLine="true" />
 
         <!-- The origin of the web app, displayed for security purposes. -->
         <TextView

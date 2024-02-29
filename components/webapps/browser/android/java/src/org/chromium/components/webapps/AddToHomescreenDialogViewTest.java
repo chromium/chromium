@@ -116,17 +116,17 @@ public class AddToHomescreenDialogViewTest {
         Assert.assertNotNull(parentView);
         Assert.assertNotNull(parentView.findViewById(R.id.spinny));
         Assert.assertNotNull(parentView.findViewById(R.id.icon));
-        Assert.assertNotNull(parentView.findViewById(R.id.text));
+        Assert.assertNotNull(parentView.findViewById(R.id.shortcut_name));
         Assert.assertNotNull(parentView.findViewById(R.id.app_info));
-        Assert.assertNotNull(parentView.findViewById(R.id.name));
+        Assert.assertNotNull(parentView.findViewById(R.id.app_name));
         Assert.assertNotNull(parentView.findViewById(R.id.origin));
         Assert.assertNotNull(parentView.findViewById(R.id.control_rating));
         Assert.assertNotNull(parentView.findViewById(R.id.play_logo));
 
-        // Visibility test.
+        // Test visibility when loading: app/shortcut info is hidden until setType is called.
         assertVisibility(R.id.spinny, true);
         assertVisibility(R.id.icon, false);
-        assertVisibility(R.id.text, false);
+        assertVisibility(R.id.shortcut_name, false);
         assertVisibility(R.id.app_info, false);
 
         // Assert dialog buttons text.
@@ -153,17 +153,17 @@ public class AddToHomescreenDialogViewTest {
         Assert.assertNotNull(parentView);
         Assert.assertNotNull(parentView.findViewById(R.id.spinny));
         Assert.assertNotNull(parentView.findViewById(R.id.icon));
-        Assert.assertNotNull(parentView.findViewById(R.id.text));
+        Assert.assertNotNull(parentView.findViewById(R.id.shortcut_name));
         Assert.assertNotNull(parentView.findViewById(R.id.app_info));
-        Assert.assertNotNull(parentView.findViewById(R.id.name));
+        Assert.assertNotNull(parentView.findViewById(R.id.app_name));
         Assert.assertNotNull(parentView.findViewById(R.id.origin));
         Assert.assertNotNull(parentView.findViewById(R.id.control_rating));
         Assert.assertNotNull(parentView.findViewById(R.id.play_logo));
 
-        // Visibility test.
+        // Test visibility when loading: app/shortcut info is hidden until setType is called.
         assertVisibility(R.id.spinny, true);
         assertVisibility(R.id.icon, false);
-        assertVisibility(R.id.text, false);
+        assertVisibility(R.id.shortcut_name, false);
         assertVisibility(R.id.app_info, false);
 
         // Assert dialog buttons text.
@@ -188,12 +188,14 @@ public class AddToHomescreenDialogViewTest {
         assertVisibility(R.id.spinny, false);
         assertVisibility(R.id.icon, true);
         assertVisibility(R.id.app_info, true);
-        assertVisibility(R.id.text, false);
+        assertVisibility(R.id.shortcut_name, false);
+        assertVisibility(R.id.app_name, true);
+        assertVisibility(R.id.homebrew_name, false);
         assertVisibility(R.id.origin, true);
         assertVisibility(R.id.control_rating, false);
         assertVisibility(R.id.play_logo, false);
 
-        Assert.assertEquals(TEST_TITLE, getTextForViewWithId(R.id.name));
+        Assert.assertEquals(TEST_TITLE, getTextForViewWithId(R.id.app_name));
         Assert.assertEquals(TEST_URL, getTextForViewWithId(R.id.origin));
     }
 
@@ -208,12 +210,14 @@ public class AddToHomescreenDialogViewTest {
         assertVisibility(R.id.spinny, false);
         assertVisibility(R.id.icon, true);
         assertVisibility(R.id.app_info, true);
-        assertVisibility(R.id.text, true);
+        assertVisibility(R.id.shortcut_name, false);
+        assertVisibility(R.id.app_name, false);
+        assertVisibility(R.id.homebrew_name, true);
         assertVisibility(R.id.origin, true);
         assertVisibility(R.id.control_rating, false);
         assertVisibility(R.id.play_logo, false);
 
-        Assert.assertEquals(TEST_TITLE, getTextForViewWithId(R.id.name));
+        Assert.assertEquals(TEST_TITLE, getTextForViewWithId(R.id.app_name));
         Assert.assertEquals(TEST_URL, getTextForViewWithId(R.id.origin));
     }
 
@@ -227,12 +231,14 @@ public class AddToHomescreenDialogViewTest {
         assertVisibility(R.id.spinny, false);
         assertVisibility(R.id.icon, true);
         assertVisibility(R.id.app_info, false);
-        assertVisibility(R.id.text, true);
+        assertVisibility(R.id.shortcut_name, true);
+        assertVisibility(R.id.app_name, false);
+        assertVisibility(R.id.homebrew_name, false);
         assertVisibility(R.id.origin, false);
         assertVisibility(R.id.control_rating, false);
         assertVisibility(R.id.play_logo, false);
 
-        Assert.assertEquals(TEST_TITLE, getTextForViewWithId(R.id.text));
+        Assert.assertEquals(TEST_TITLE, getTextForViewWithId(R.id.shortcut_name));
     }
 
     /** Tests the view for {@link AppType#NATIVE}. */
@@ -247,12 +253,14 @@ public class AddToHomescreenDialogViewTest {
         assertVisibility(R.id.spinny, false);
         assertVisibility(R.id.icon, true);
         assertVisibility(R.id.app_info, true);
-        assertVisibility(R.id.text, false);
+        assertVisibility(R.id.shortcut_name, false);
+        assertVisibility(R.id.app_name, true);
+        assertVisibility(R.id.homebrew_name, false);
         assertVisibility(R.id.origin, false);
         assertVisibility(R.id.control_rating, true);
         assertVisibility(R.id.play_logo, true);
 
-        Assert.assertEquals(TEST_TITLE, getTextForViewWithId(R.id.text));
+        Assert.assertEquals(TEST_TITLE, getTextForViewWithId(R.id.shortcut_name));
 
         PropertyModel shownDialogModel = mModalDialogManager.getShownDialogModel();
         Assert.assertEquals(
@@ -266,39 +274,53 @@ public class AddToHomescreenDialogViewTest {
         setUpDialog(/* showAddToHomeScreen= */ true);
         PropertyModel shownDialogModel = mModalDialogManager.getShownDialogModel();
 
-        // Assert 'Add' will be enabled for AppType#WEBAPK after #setCanSubmit(true) is called.
-        mAddToHomescreenDialogView.setType(AppType.WEBAPK);
-        Assert.assertTrue(shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
-        mAddToHomescreenDialogView.setCanSubmit(true);
-        Assert.assertFalse(shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
-        mAddToHomescreenDialogView.setCanSubmit(false);
-        Assert.assertTrue(shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+        for (int i = 0; i <= AppType.COUNT; i++) {
+            mAddToHomescreenDialogView.setType(i);
 
-        // Assert 'Add' will be enabled for AppType#NATIVE after #setCanSubmit(true) is called.
-        mAddToHomescreenDialogView.setType(AppType.NATIVE);
-        Assert.assertTrue(shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
-        mAddToHomescreenDialogView.setCanSubmit(true);
-        Assert.assertFalse(shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
-        mAddToHomescreenDialogView.setCanSubmit(false);
-        Assert.assertTrue(shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+            mAddToHomescreenDialogView.setTitle("");
+            mAddToHomescreenDialogView.setCanSubmit(false);
+            Assert.assertTrue(shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+            mAddToHomescreenDialogView.setCanSubmit(true);
+            Assert.assertTrue(shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
 
-        // Assert 'Add' will be enabled for AppType#SHORTCUT after #setCanSubmit(true) is called and
-        // title EditText is not empty.
-        EditText titleText =
-                mAddToHomescreenDialogView.getParentViewForTest().findViewById(R.id.text);
+            mAddToHomescreenDialogView.setTitle(TEST_TITLE);
+            mAddToHomescreenDialogView.setCanSubmit(false);
+            Assert.assertTrue(shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+            mAddToHomescreenDialogView.setCanSubmit(true);
+            Assert.assertFalse(
+                    shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+        }
+    }
 
-        mAddToHomescreenDialogView.setType(AppType.SHORTCUT);
-        Assert.assertTrue(shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
-        mAddToHomescreenDialogView.setCanSubmit(true);
-        Assert.assertTrue(shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
-        mAddToHomescreenDialogView.setCanSubmit(false);
-        Assert.assertTrue(shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
-        titleText.setText(TEST_TITLE);
-        Assert.assertTrue(shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
-        mAddToHomescreenDialogView.setCanSubmit(true);
-        Assert.assertFalse(shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
-        titleText.setText("");
-        Assert.assertTrue(shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+    @Test
+    @Feature({"Webapp"})
+    public void testAddButtonStateEditTitle() {
+        setUpDialog(/* showAddToHomeScreen= */ true);
+        PropertyModel shownDialogModel = mModalDialogManager.getShownDialogModel();
+        mAddToHomescreenDialogView.setTitle(TEST_TITLE);
+
+        for (int i = 0; i <= AppType.COUNT; i++) {
+            mAddToHomescreenDialogView.setType(i);
+            TextView titleText = mAddToHomescreenDialogView.getAppNameView();
+            // Only run when title is editable.
+            if (titleText instanceof EditText) {
+                titleText.setText("");
+                mAddToHomescreenDialogView.setCanSubmit(false);
+                Assert.assertTrue(
+                        shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+                mAddToHomescreenDialogView.setCanSubmit(true);
+                Assert.assertTrue(
+                        shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+
+                titleText.setText(TEST_TITLE);
+                mAddToHomescreenDialogView.setCanSubmit(false);
+                Assert.assertTrue(
+                        shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+                mAddToHomescreenDialogView.setCanSubmit(true);
+                Assert.assertFalse(
+                        shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+            }
+        }
     }
 
     /** Tests whether the callback for clicking on the title or icon functions correctly. */
@@ -309,7 +331,10 @@ public class AddToHomescreenDialogViewTest {
         initDialogView(AppType.NATIVE);
 
         Assert.assertEquals(0, mTitleClickCallback.getCallCount());
-        mAddToHomescreenDialogView.getParentViewForTest().findViewById(R.id.name).performClick();
+        mAddToHomescreenDialogView
+                .getParentViewForTest()
+                .findViewById(R.id.app_name)
+                .performClick();
         mAddToHomescreenDialogView.getParentViewForTest().findViewById(R.id.icon).performClick();
         Assert.assertEquals(2, mTitleClickCallback.getCallCount());
         Assert.assertEquals(2, mDismissCallback.getCallCount());
