@@ -993,8 +993,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // DrawResult::kSuccess if the frame should be drawn.
   DrawResult CalculateRenderPasses(FrameData* frame);
 
-  void StartScrollbarFadeRecursive(LayerImpl* layer);
-
   // Once a resource is uploaded or deleted, it is no longer an evicted id, this
   // removes it from the evicted set, and updates if we're able to draw now that
   // all UIResources are valid.
