@@ -8,10 +8,11 @@
 #include <string>
 #include <vector>
 
-#include "base/big_endian.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "zucchini/buffer_view.h"
 #include "zucchini/patch_writer.h"
 #include "zucchini/zucchini.h"
@@ -80,21 +81,25 @@ bool CreatePatch(const Buffer& raw_patch,
   patch->resize(kMagicLength + sizeof(header_size) + header_size +
                 raw_patch.size());
 
-  memcpy(patch->data() + offset, kMagic, kMagicLength);
+  base::span(*patch)
+      .subspan(offset, kMagicLength)
+      .copy_from(base::as_bytes(
+          // SAFETY: The kMagicLength is the number of non-null chars in the
+          // kMagic string.
+          UNSAFE_BUFFERS(base::span(kMagic, kMagicLength))));
   offset += kMagicLength;
 
   // Read header size from big-endian mode.
-  uint32_t be_header_size = 0;
-  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(&header_size),
-                      &be_header_size);
-  memcpy(patch->data() + offset, &be_header_size, sizeof(be_header_size));
-  offset += 4;
+  base::span(*patch)
+      .subspan(offset, 4u)
+      .copy_from(base::numerics::U32ToBigEndian(header_size));
+  offset += 4u;
 
   TEST_AND_RETURN_FALSE(
       header.SerializeToArray(patch->data() + offset, header_size));
   offset += header_size;
 
-  memcpy(patch->data() + offset, raw_patch.data(), raw_patch.size());
+  base::span(*patch).subspan(offset).copy_from(raw_patch);
   return true;
 }
 
