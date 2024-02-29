@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
@@ -200,12 +201,25 @@ void ToolbarActionHoverCardController::UpdateHoverCardContent(
   content::WebContents* web_contents = action_view->GetCurrentWebContents();
   DCHECK(web_contents);
 
-  // If the hover card is transitioning between tabs, we need to do a
+  // If the hover card is transitioning between extensions, we need to do a
   // cross-fade.
-  if (hover_card_->GetAnchorView() != action_view)
+  if (hover_card_->GetAnchorView() != action_view) {
     hover_card_->SetTextFade(0.0);
+  }
 
-  hover_card_->UpdateCardContent(action_view->view_controller(), web_contents);
+  std::u16string extension_name =
+      action_view->view_controller()->GetActionName();
+  std::u16string action_title =
+      action_view->view_controller()->GetActionTitle(web_contents);
+  // Hover card only uses the action title when it's different than the
+  // extension name.
+  action_title =
+      extension_name == action_title ? std::u16string() : action_title;
+  ToolbarActionViewController::HoverCardState state =
+      action_view->view_controller()->GetHoverCardState(web_contents);
+
+  hover_card_->UpdateCardContent(extension_name, action_title, state,
+                                 web_contents);
 }
 
 void ToolbarActionHoverCardController::CreateHoverCard(

@@ -70,6 +70,8 @@ class ExtensionActionViewController
   ui::ImageModel GetIcon(content::WebContents* web_contents,
                          const gfx::Size& size) override;
   std::u16string GetActionName() const override;
+  std::u16string GetActionTitle(
+      content::WebContents* web_contents) const override;
   std::u16string GetAccessibleName(
       content::WebContents* web_contents) const override;
   std::u16string GetTooltip(content::WebContents* web_contents) const override;

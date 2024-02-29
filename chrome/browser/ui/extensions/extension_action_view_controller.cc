@@ -219,6 +219,17 @@ std::u16string ExtensionActionViewController::GetActionName() const {
   return base::UTF8ToUTF16(extension_->name());
 }
 
+std::u16string ExtensionActionViewController::GetActionTitle(
+    content::WebContents* web_contents) const {
+  if (!ExtensionIsValid()) {
+    return std::u16string();
+  }
+
+  std::string title = extension_action_->GetTitle(
+      sessions::SessionTabHelper::IdForTab(web_contents).id());
+  return base::UTF8ToUTF16(title);
+}
+
 std::u16string ExtensionActionViewController::GetAccessibleName(
     content::WebContents* web_contents) const {
   if (!ExtensionIsValid())
@@ -229,11 +240,9 @@ std::u16string ExtensionActionViewController::GetAccessibleName(
   if (!web_contents)
     return base::UTF8ToUTF16(extension()->name());
 
-  std::string title = extension_action()->GetTitle(
-      sessions::SessionTabHelper::IdForTab(web_contents).id());
-
-  std::u16string title_utf16 =
-      base::UTF8ToUTF16(title.empty() ? extension()->name() : title);
+  std::u16string action_title = GetActionTitle(web_contents);
+  std::u16string accessible_name =
+      action_title.empty() ? GetActionName() : action_title;
 
   // Include a "host access" portion of the tooltip if the extension has active
   // or pending interaction with the site.
@@ -253,22 +262,21 @@ std::u16string ExtensionActionViewController::GetAccessibleName(
   }
 
   if (site_interaction_description_id != -1) {
-    title_utf16 = base::StrCat(
-        {title_utf16, u"\n",
+    accessible_name = base::StrCat(
+        {accessible_name, u"\n",
          l10n_util::GetStringUTF16(site_interaction_description_id)});
   }
 
-  return title_utf16;
+  return accessible_name;
 }
 
 std::u16string ExtensionActionViewController::GetTooltip(
     content::WebContents* web_contents) const {
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    std::string extension_title = extension_action()->GetTitle(
-        sessions::SessionTabHelper::IdForTab(web_contents).id());
-    std::u16string extension_tooltip_title = base::UTF8ToUTF16(
-        extension_title.empty() ? extension()->name() : extension_title);
+    std::u16string action_title = GetActionTitle(web_contents);
+    std::u16string tooltip =
+        action_title.empty() ? GetActionName() : action_title;
 
     url::Origin origin =
         web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
@@ -299,11 +307,10 @@ std::u16string ExtensionActionViewController::GetTooltip(
     }
 
     return tooltip_site_access_id == -1
-               ? extension_tooltip_title
-               : base::JoinString(
-                     {extension_tooltip_title,
-                      l10n_util::GetStringUTF16(tooltip_site_access_id)},
-                     u"\n");
+               ? tooltip
+               : base::JoinString({tooltip, l10n_util::GetStringUTF16(
+                                                tooltip_site_access_id)},
+                                  u"\n");
   }
 
   return GetAccessibleName(web_contents);

@@ -32,8 +32,10 @@ class ToolbarActionHoverCardBubbleView
       const ToolbarActionHoverCardBubbleView&) = delete;
   ~ToolbarActionHoverCardBubbleView() override;
 
-  // Updates the hover card content for `action_controller` in `web_contents`.
-  void UpdateCardContent(const ToolbarActionViewController* action_controller,
+  // Updates the hover card content with the provided values in `web_contents`.
+  void UpdateCardContent(const std::u16string& extension_name,
+                         const std::u16string& action_title,
+                         ToolbarActionViewController::HoverCardState state,
                          content::WebContents* web_contents);
 
   // Update the text fade to the given percent, which should be between 0 and 1.
@@ -41,6 +43,8 @@ class ToolbarActionHoverCardBubbleView
 
   // Accessors used by tests.
   std::u16string GetTitleTextForTesting() const;
+  std::u16string GetActionTitleTextForTesting() const;
+  bool IsActionTitleVisible() const;
   bool IsSiteAccessSeparatorVisible() const;
   bool IsSiteAccessTitleVisible() const;
   bool IsSiteAccessDescriptionVisible() const;
@@ -53,7 +57,9 @@ class ToolbarActionHoverCardBubbleView
   class FadeLabel;
   class FootnoteView;
 
+  // TODO(emiliapaz): rename to `extension_name_label_`.
   raw_ptr<FadeLabelView> title_label_ = nullptr;
+  raw_ptr<FadeLabelView> action_title_label_ = nullptr;
   raw_ptr<FadeLabelView> site_access_title_label_ = nullptr;
   raw_ptr<FadeLabelView> site_access_description_label_ = nullptr;
   raw_ptr<FadeLabelView> policy_label_ = nullptr;

@@ -23,6 +23,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -179,6 +180,11 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
       CONTEXT_TAB_HOVER_CARD_TITLE, views::style::STYLE_BODY_3_EMPHASIS,
       /*color_id=*/std::nullopt,
       gfx::Insets::VH(kVerticalMargin, kHorizontalMargin)));
+  action_title_label_ = AddChildView(create_label(
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4,
+      /*color_id=*/kColorTabHoverCardSecondaryText,
+      gfx::Insets::TLBR(0, kHorizontalMargin, kVerticalMargin,
+                        kHorizontalMargin)));
 
   site_access_separator_ = AddChildView(create_separator());
   site_access_title_label_ = AddChildView(create_label(
@@ -215,12 +221,28 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
 }
 
 void ToolbarActionHoverCardBubbleView::UpdateCardContent(
-    const ToolbarActionViewController* action_controller,
+    const std::u16string& extension_name,
+    const std::u16string& action_title,
+    ToolbarActionViewController::HoverCardState state,
     content::WebContents* web_contents) {
-  title_label_->SetData(
-      {action_controller->GetActionName(), /*is_filename=*/false});
+  title_label_->SetData({extension_name, /*is_filename=*/false});
 
-  HoverCardState state = action_controller->GetHoverCardState(web_contents);
+  // We need to adjust the bottom margin of `title_label_` depending on
+  // `action_title_` visibility.
+  if (action_title.empty()) {
+    title_label_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::VH(kVerticalMargin, kHorizontalMargin));
+    action_title_label_->SetVisible(false);
+  } else {
+    title_label_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(kVerticalMargin, kHorizontalMargin, 0,
+                          kHorizontalMargin));
+    action_title_label_->SetData({action_title, /*is_filename=*/false});
+    action_title_label_->SetVisible(true);
+  }
+
   bool show_site_access_labels =
       state.site_access !=
       HoverCardState::SiteAccess::kExtensionDoesNotWantAccess;
@@ -246,6 +268,7 @@ void ToolbarActionHoverCardBubbleView::UpdateCardContent(
 
 void ToolbarActionHoverCardBubbleView::SetTextFade(double percent) {
   title_label_->SetFade(percent);
+  action_title_label_->SetFade(percent);
   site_access_title_label_->SetFade(percent);
   site_access_description_label_->SetFade(percent);
   policy_label_->SetFade(percent);
@@ -254,6 +277,15 @@ void ToolbarActionHoverCardBubbleView::SetTextFade(double percent) {
 std::u16string ToolbarActionHoverCardBubbleView::GetTitleTextForTesting()
     const {
   return title_label_->GetText();
+}
+
+std::u16string ToolbarActionHoverCardBubbleView::GetActionTitleTextForTesting()
+    const {
+  return action_title_label_->GetText();
+}
+
+bool ToolbarActionHoverCardBubbleView::IsActionTitleVisible() const {
+  return action_title_label_->GetVisible();
 }
 
 bool ToolbarActionHoverCardBubbleView::IsSiteAccessSeparatorVisible() const {

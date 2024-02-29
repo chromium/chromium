@@ -39,6 +39,11 @@ std::u16string TestToolbarActionViewController::GetActionName() const {
   return action_name_;
 }
 
+std::u16string TestToolbarActionViewController::GetActionTitle(
+    content::WebContents* web_contents) const {
+  return action_title_;
+}
+
 std::u16string TestToolbarActionViewController::GetAccessibleName(
     content::WebContents* web_contents) const {
   return accessible_name_;
@@ -115,6 +120,12 @@ void TestToolbarActionViewController::ShowPopup(bool by_user) {
 void TestToolbarActionViewController::SetActionName(
     const std::u16string& name) {
   action_name_ = name;
+  UpdateDelegate();
+}
+
+void TestToolbarActionViewController::SetActionTitle(
+    const std::u16string& title) {
+  action_title_ = title;
   UpdateDelegate();
 }
 

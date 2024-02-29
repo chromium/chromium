@@ -17,7 +17,10 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_action_manager.h"
 #include "extensions/common/extension_features.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -211,12 +214,14 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
 
   // Install four extensions with different policy and site access permissions
   // to test all the possible footnote combinations.
-  auto simple_extension = InstallExtension("Extension A");
-  auto force_installed_extension = ForceInstallExtension("Extension B");
-  auto extension_with_host_permissions =
-      InstallExtensionWithHostPermissions("Extension C", "<all_urls>");
+  auto simple_extension = InstallExtension("Simple extension");
+  auto force_installed_extension =
+      ForceInstallExtension("Force installed extension");
+  auto extension_with_host_permissions = InstallExtensionWithHostPermissions(
+      "Extension with host permissions", "<all_urls>");
   auto force_pinned_extension_with_host_permissions =
-      InstallExtensionWithHostPermissions("Extension D", "<all_urls>");
+      InstallExtensionWithHostPermissions(
+          "Force pinned extension with host permissions", "<all_urls>");
 
   PinExtension(simple_extension->id());
   PinExtension(force_installed_extension->id());
@@ -241,8 +246,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
   EXPECT_EQ(hover_card()->GetAnchorView(), simple_action);
-  EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
-            simple_action->view_controller()->GetActionName());
+  EXPECT_EQ(hover_card()->GetTitleTextForTesting(), u"Simple extension");
   EXPECT_FALSE(hover_card()->IsSiteAccessSeparatorVisible());
   EXPECT_FALSE(hover_card()->IsSiteAccessTitleVisible());
   EXPECT_FALSE(hover_card()->IsSiteAccessDescriptionVisible());
@@ -262,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   EXPECT_TRUE(widget->IsVisible());
   EXPECT_EQ(hover_card()->GetAnchorView(), force_installed_action);
   EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
-            force_installed_action->view_controller()->GetActionName());
+            u"Force installed extension");
   EXPECT_FALSE(hover_card()->IsSiteAccessSeparatorVisible());
   EXPECT_FALSE(hover_card()->IsSiteAccessTitleVisible());
   EXPECT_FALSE(hover_card()->IsSiteAccessDescriptionVisible());
@@ -281,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   EXPECT_TRUE(widget->IsVisible());
   EXPECT_EQ(hover_card()->GetAnchorView(), action_with_host_permissions);
   EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
-            action_with_host_permissions->view_controller()->GetActionName());
+            u"Extension with host permissions");
   EXPECT_TRUE(hover_card()->IsSiteAccessSeparatorVisible());
   EXPECT_TRUE(hover_card()->IsSiteAccessTitleVisible());
   EXPECT_TRUE(hover_card()->IsSiteAccessDescriptionVisible());
@@ -301,13 +305,62 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   EXPECT_EQ(hover_card()->GetAnchorView(),
             force_pinned_action_with_host_permissions);
   EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
-            force_pinned_action_with_host_permissions->view_controller()
-                ->GetActionName());
+            u"Force pinned extension with host permissions");
   EXPECT_TRUE(hover_card()->IsSiteAccessSeparatorVisible());
   EXPECT_TRUE(hover_card()->IsSiteAccessTitleVisible());
   EXPECT_TRUE(hover_card()->IsSiteAccessDescriptionVisible());
   EXPECT_TRUE(hover_card()->IsPolicySeparatorVisible());
   EXPECT_TRUE(hover_card()->IsPolicyLabelVisible());
+}
+
+// Verify hover card content is dynamically updated when toolbar action title is
+// updated.
+IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
+                       WidgetContentDynamicallyUpdated) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto extension = InstallExtension("Extension name");
+  PinExtension(extension->id());
+
+  // Verify extension is pinned
+  ToolbarActionView* action_view =
+      GetExtensionsToolbarContainer()->GetViewForId(extension->id());
+  ASSERT_TRUE(action_view);
+
+  // Hover over the extension and verify card anchors to its action.
+  HoverMouseOverActionView(action_view);
+  views::Widget* const widget = hover_card()->GetWidget();
+  views::test::WidgetVisibleWaiter(widget).Wait();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_EQ(hover_card()->GetAnchorView(), action_view);
+
+  // Verify card title contains the extension name and action title is not
+  // visible.
+  EXPECT_EQ(hover_card()->GetTitleTextForTesting(), u"Extension name");
+  EXPECT_FALSE(hover_card()->IsActionTitleVisible());
+
+  // Update the extension action's title for the current tab.
+  extensions::ExtensionAction* action =
+      extensions::ExtensionActionManager::Get(profile())->GetExtensionAction(
+          *extension);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(action);
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+  action->SetTitle(tab_id, "Action title");
+  extensions::ExtensionActionAPI::Get(profile())->NotifyChange(
+      action, web_contents, profile());
+
+  // Verify hover card is still visible.
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_EQ(hover_card()->GetAnchorView(), action_view);
+
+  // Verify card contains the extension name and action title.
+  EXPECT_EQ(hover_card()->GetTitleTextForTesting(), u"Extension name");
+  EXPECT_TRUE(hover_card()->IsActionTitleVisible());
+  EXPECT_EQ(hover_card()->GetActionTitleTextForTesting(), u"Action title");
 }
 
 // Verify hover card is not visible when mouse moves inside the extensions

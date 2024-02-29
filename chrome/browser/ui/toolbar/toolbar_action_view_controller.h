@@ -107,9 +107,13 @@ class ToolbarActionViewController {
   virtual ui::ImageModel GetIcon(content::WebContents* web_contents,
                                  const gfx::Size& size) = 0;
 
-  // Returns the name of the action, which can be separate from the accessible
-  // name or name for the tooltip.
+  // Returns the name of the action.
   virtual std::u16string GetActionName() const = 0;
+
+  // Returns the title of the action on the given `web_contents`, which may be
+  // different than the action's name.
+  virtual std::u16string GetActionTitle(
+      content::WebContents* web_contents) const = 0;
 
   // Returns the accessible name to use for the given |web_contents|.
   // May be passed null, or a |web_contents| that returns -1 for
