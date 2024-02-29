@@ -1373,32 +1373,27 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     CheckAllFedCmSessionIDs();
   }
 
-  void CheckAllFedCmSessionIDs() {
-    std::optional<int> session_id;
+  void CheckAllFedCmSessionIDs(size_t expected_num_session_ids = 1u) {
+    std::set<int> session_ids;
     auto CheckUKMSessionID = [&](const auto& ukm_entries) {
       ASSERT_FALSE(ukm_entries.empty());
       for (const ukm::mojom::UkmEntry* const entry : ukm_entries) {
-        const auto* const metric =
-            ukm_recorder()->GetEntryMetric(entry, "FedCmSessionID");
-        ASSERT_TRUE(metric)
-            << "All UKM events should have the SessionID metric";
-        if (!session_id.has_value()) {
-          session_id = *metric;
-        } else {
-          EXPECT_EQ(*metric, *session_id)
-              << "All UKM events should have the same SessionID";
+        const auto* metric =
+            ukm_recorder()->GetEntryMetric(entry, "NumRequestsPerDocument");
+        if (metric) {
+          continue;
         }
+        metric = ukm_recorder()->GetEntryMetric(entry, "FedCmSessionID");
+        ASSERT_TRUE(metric)
+            << "All UKM events except for NumRequestsPerDocument should have "
+               "the SessionID metric";
+        session_ids.insert(*metric);
       }
+      EXPECT_EQ(session_ids.size(), expected_num_session_ids);
     };
     CheckUKMSessionID(ukm_recorder()->GetEntriesByName(FedCmEntry::kEntryName));
     CheckUKMSessionID(
         ukm_recorder()->GetEntriesByName(FedCmIdpEntry::kEntryName));
-  }
-
-  void ComputeLoginStateAndReorderAccounts(const std::string& config_url,
-                                           AccountList& accounts) {
-    federated_auth_request_impl_->ComputeLoginStateAndReorderAccounts(
-        url::Origin::Create(GURL(config_url)), accounts);
   }
 
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr>
@@ -3507,18 +3502,15 @@ TEST_F(FederatedAuthRequestImplTest,
 // Test that the accounts are reordered so that accounts with a LoginState equal
 // to kSignIn are listed before accounts with a LoginState equal to kSignUp.
 TEST_F(FederatedAuthRequestImplTest, ReorderMultipleAccounts) {
-  // Run an auth test to initialize variables.
-  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
-              kConfigurationValid);
-
-  AccountList multiple_accounts = kMultipleAccounts;
-  ComputeLoginStateAndReorderAccounts(kProviderUrlFull, multiple_accounts);
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
 
   // Check the account order using the account ids.
-  ASSERT_EQ(multiple_accounts.size(), 3u);
-  EXPECT_EQ(multiple_accounts[0].id, kAccountIdPeter);
-  EXPECT_EQ(multiple_accounts[1].id, kAccountIdNicolas);
-  EXPECT_EQ(multiple_accounts[2].id, kAccountIdZach);
+  ASSERT_EQ(displayed_accounts().size(), 3u);
+  EXPECT_EQ(displayed_accounts()[0].id, kAccountIdPeter);
+  EXPECT_EQ(displayed_accounts()[1].id, kAccountIdNicolas);
+  EXPECT_EQ(displayed_accounts()[2].id, kAccountIdZach);
 }
 
 // Test that first API call with a given IDP is not affected by the
@@ -5698,7 +5690,7 @@ TEST_F(FederatedAuthRequestImplTest, RecordNumRequestsPerDocumentMetric) {
 
   // Check for RP-keyed UKM presence.
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
-  CheckAllFedCmSessionIDs();
+  CheckAllFedCmSessionIDs(2u);
 }
 
 // Test that an error dialog is shown when the token response is invalid.

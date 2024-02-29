@@ -191,6 +191,12 @@ class CONTENT_EXPORT FedCmMetrics {
 
   ~FedCmMetrics() = default;
 
+  // Records the number of times navigator.credentials.get() is called in a
+  // document. Requests made when FedCM is disabled, when there is a pending
+  // FedCM request or for the purpose of multi-IDP are not counted.
+  static void RecordNumRequestsPerDocument(ukm::SourceId page_source_id,
+                                           const int num_requests);
+
   // Records the time from when a call to the API was made to when the accounts
   // dialog is shown.
   void RecordShowAccountsDialogTime(base::TimeDelta duration);
@@ -289,11 +295,6 @@ class CONTENT_EXPORT FedCmMetrics {
 
   // Records a sample when an accounts request is sent.
   void RecordAccountsRequestSent();
-
-  // Records the number of times navigator.credentials.get() is called in a
-  // document. Requests made when FedCM is disabled, when there is a pending
-  // FedCM request or for the purpose of MDocs or multi-IDP are not counted.
-  void RecordNumRequestsPerDocument(const int num_requests);
 
   // Records metrics for a disconnect call. `duration` is nullopt if the
   // disconnect fetch request was not sent, in which case we do not log the

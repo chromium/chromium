@@ -391,6 +391,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::optional<IdpNetworkRequestManager::FedCmErrorUrlType>
           error_url_type);
 
+  void MaybeCreateFedCmMetrics(const GURL& provider_config_url,
+                               bool is_disabled);
+
   RpMode GetRpMode() const { return rp_mode_; }
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;

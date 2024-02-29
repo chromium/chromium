@@ -556,8 +556,9 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   // Since FederatedAuthRequestImpl is a subclass of
   // DocumentService<blink::mojom::FederatedAuthRequest>, it only lives as long
   // as the current document.
-  if (num_requests_ > 0 && fedcm_metrics_) {
-    fedcm_metrics_->RecordNumRequestsPerDocument(num_requests_);
+  if (num_requests_ > 0) {
+    FedCmMetrics::RecordNumRequestsPerDocument(
+        render_frame_host().GetPageUkmSourceId(), num_requests_);
   }
 }
 
@@ -724,22 +725,9 @@ void FederatedAuthRequestImpl::RequestToken(
     return;
   }
 
-  if (!fedcm_metrics_) {
-    // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
-    // prerendering page. As FederatedAithRequest runs behind the
-    // BrowserInterfaceBinders, the service doesn't receive any request while
-    // prerendering, and the CHECK should always meet the condition.
-    CHECK(!render_frame_host().IsInLifecycleState(
-        RenderFrameHost::LifecycleState::kPrerendering));
-
-    // TODO(crbug.com/1307709): Handle FedCmMetrics for multiple IDPs.
-    fedcm_metrics_ =
-        CreateFedCmMetrics(idp_get_params_ptrs[0]
-                               ->providers[0]
-                               ->config->config_url,
-                           render_frame_host().GetPageUkmSourceId(),
-                           /*is_disabled=*/idp_get_params_ptrs.size() > 1);
-  }
+  MaybeCreateFedCmMetrics(
+      idp_get_params_ptrs[0]->providers[0]->config->config_url,
+      /*is_disabled=*/idp_get_params_ptrs.size() > 1);
 
   had_transient_user_activation_ =
       render_frame_host().HasTransientUserActivation();
@@ -790,6 +778,10 @@ void FederatedAuthRequestImpl::RequestToken(
     // This was reset to false during CleanUp when replacing a widget flow
     // from the same frame so we need to change it back to true.
     had_transient_user_activation_ = true;
+    // This was also possibly reset during cleanup.
+    MaybeCreateFedCmMetrics(
+        idp_get_params_ptrs[0]->providers[0]->config->config_url,
+        /*is_disabled=*/idp_get_params_ptrs.size() > 1);
   }
 
   bool intercept = false;
@@ -984,17 +976,8 @@ void FederatedAuthRequestImpl::RequestUserInfo(
     return;
   }
 
-  if (!fedcm_metrics_) {
-    // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
-    // prerendering page. As FederatedAithRequest runs behind the
-    // BrowserInterfaceBinders, the service doesn't receive any request while
-    // prerendering, and the CHECK should always meet the condition.
-    CHECK(!render_frame_host().IsInLifecycleState(
-        RenderFrameHost::LifecycleState::kPrerendering));
-    fedcm_metrics_ = CreateFedCmMetrics(
-        provider->config_url, render_frame_host().GetPageUkmSourceId(),
-        /*is_disabled=*/false);
-  }
+  MaybeCreateFedCmMetrics(provider->config_url,
+                          /*is_disabled=*/false);
 
   auto network_manager = IdpNetworkRequestManager::Create(
       static_cast<RenderFrameHostImpl*>(&render_frame_host()));
@@ -2405,9 +2388,9 @@ void FederatedAuthRequestImpl::CompleteRequest(
     devtools_instrumentation::DidCloseFedCmDialog(render_frame_host());
   }
 
-  CleanUp();
 
   if (!should_delay_callback || should_complete_request_immediately_) {
+    CleanUp();
     GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(nullptr);
     errors_logged_to_console_ = false;
 
@@ -2455,6 +2438,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   // Given that |request_dialog_controller_| has reference to this web content
   // instance we destroy that first.
   provider_fetcher_.reset();
+  fedcm_metrics_.reset();
   account_id_ = std::string();
   start_time_ = base::TimeTicks();
   ready_to_display_accounts_dialog_time_ = base::TimeTicks();
@@ -2885,17 +2869,8 @@ void FederatedAuthRequestImpl::Disconnect(
     std::move(callback).Run(DisconnectStatus::kError);
     return;
   }
-  if (!fedcm_metrics_) {
-    // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
-    // prerendering page. As FederatedAuthRequest runs behind the
-    // BrowserInterfaceBinders, the service doesn't receive any request while
-    // prerendering, and the CHECK should always meet the condition.
-    CHECK(!render_frame_host().IsInLifecycleState(
-        RenderFrameHost::LifecycleState::kPrerendering));
-    fedcm_metrics_ = CreateFedCmMetrics(
-        options->config->config_url, render_frame_host().GetPageUkmSourceId(),
-        /*is_disabled=*/false);
-  }
+  MaybeCreateFedCmMetrics(options->config->config_url,
+                          /*is_disabled=*/false);
   if (disconnect_request_) {
     // Since we do not send any fetches in this case, consider the request to be
     // instant, e.g. duration is 0.
@@ -2938,17 +2913,8 @@ void FederatedAuthRequestImpl::RecordErrorMetrics(
     return;
   }
 
-  if (!fedcm_metrics_) {
-    // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
-    // prerendering page. As FederatedAuthRequest runs behind the
-    // BrowserInterfaceBinders, the service doesn't receive any request while
-    // prerendering, and the CHECK should always meet the condition.
-    CHECK(!render_frame_host().IsInLifecycleState(
-        RenderFrameHost::LifecycleState::kPrerendering));
-    fedcm_metrics_ = CreateFedCmMetrics(
-        idp->config->config_url, render_frame_host().GetPageUkmSourceId(),
-        /*is_disabled=*/false);
-  }
+  MaybeCreateFedCmMetrics(idp->config->config_url,
+                          /*is_disabled=*/false);
 
   fedcm_metrics_->RecordTokenResponseTypeMetrics(token_response_type);
 
@@ -2961,6 +2927,24 @@ void FederatedAuthRequestImpl::RecordErrorMetrics(
     // devtools issue when failing the request.
     error_url_type_ = error_url_type;
     fedcm_metrics_->RecordErrorUrlTypeMetrics(*error_url_type);
+  }
+}
+
+void FederatedAuthRequestImpl::MaybeCreateFedCmMetrics(
+    const GURL& provider_config_url,
+    bool is_disabled) {
+  if (!fedcm_metrics_) {
+    // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
+    // prerendering page. As FederatedAithRequest runs behind the
+    // BrowserInterfaceBinders, the service doesn't receive any request while
+    // prerendering, and the CHECK should always meet the condition.
+    CHECK(!render_frame_host().IsInLifecycleState(
+        RenderFrameHost::LifecycleState::kPrerendering));
+
+    // TODO(crbug.com/1307709): Handle FedCmMetrics for multiple IDPs.
+    fedcm_metrics_ = CreateFedCmMetrics(
+        provider_config_url, render_frame_host().GetPageUkmSourceId(),
+        is_disabled);
   }
 }
 
