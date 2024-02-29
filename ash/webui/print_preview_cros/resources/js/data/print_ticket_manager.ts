@@ -49,4 +49,10 @@ export class PrintTicketManager extends EventTarget {
     // occurred.
     this.printPreviewPageHandler!.print();
   }
+
+  // Does cleanup for print request.
+  cancelPrintRequest(): void {
+    assert(this.printPreviewPageHandler);
+    this.printPreviewPageHandler!.cancel();
+  }
 }

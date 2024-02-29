@@ -40,4 +40,13 @@ suite('PrintTicketManager', () => {
     instance.sendPrintRequest();
     assertEquals(1, printPreviewPageHandler.getCallCount('print'));
   });
+
+  // Verify PrintPreviewPageHandler called when cancelPrintRequest triggered.
+  test('sendPrintRequest calls PrintPreviewPageHandler.print', () => {
+    const instance = PrintTicketManager.getInstance();
+    const method = 'cancel';
+    assertEquals(0, printPreviewPageHandler.getCallCount(method));
+    instance.cancelPrintRequest();
+    assertEquals(1, printPreviewPageHandler.getCallCount(method));
+  });
 });

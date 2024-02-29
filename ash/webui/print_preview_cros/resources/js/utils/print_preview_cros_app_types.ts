@@ -18,4 +18,7 @@ export interface PrintPreviewPageHandler {
   // Start the print job and close the window. Needs to wait for result to
   // display error messaging if starting the print job fails.
   print(): Promise<PrintRequestOutcome>;
+
+  // Cancel the print preview and close the window.
+  cancel(): void;
 }

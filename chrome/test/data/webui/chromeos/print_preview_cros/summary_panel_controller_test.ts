@@ -55,4 +55,16 @@ suite('SummaryPanelController', () => {
         controller!.handlePrintClicked();
         mockController.verifyMocks();
       });
+
+  // Verify cancelPrintRequest calls PrintTicketManager.
+  test(
+      'calls PrintTicketManager.cancelPrintRequest from handleCancelClicked',
+      () => {
+        const manager = PrintTicketManager.getInstance();
+        const cancelPrintRequestFn =
+            mockController.createFunctionMock(manager, 'cancelPrintRequest');
+        cancelPrintRequestFn.addExpectation();
+        controller!.handleCancelClicked();
+        mockController.verifyMocks();
+      });
 });

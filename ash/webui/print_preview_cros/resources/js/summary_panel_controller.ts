@@ -46,6 +46,12 @@ export class SummaryPanelController extends EventTarget {
   handlePrintClicked(): void {
     this.printTicketManger.sendPrintRequest();
   }
+
+  // Handles any required cleanup prior to sending a cancel request to the
+  // backend and closing the dialog when the cancel button is clicked.
+  handleCancelClicked(): void {
+    this.printTicketManger.cancelPrintRequest();
+  }
 }
 
 declare global {

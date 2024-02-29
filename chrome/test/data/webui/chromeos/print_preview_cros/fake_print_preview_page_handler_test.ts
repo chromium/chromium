@@ -19,6 +19,7 @@ suite('PrintPreviewCrosApp', () => {
   // Verify initial call count for tracked methods is zero.
   test('call count zero', () => {
     assertEquals(0, printPreviewPageHandler.getCallCount('print'));
+    assertEquals(0, printPreviewPageHandler.getCallCount('cancel'));
   });
 
   // Verify the fake PrintPreviewPageHandler returns a successful response by
@@ -37,5 +38,12 @@ suite('PrintPreviewCrosApp', () => {
         FAKE_PRINT_REQUEST_FAILURE_INVALID_SETTINGS_ERROR);
     const result = await printPreviewPageHandler.print();
     assertEquals(FAKE_PRINT_REQUEST_FAILURE_INVALID_SETTINGS_ERROR, result);
+  });
+
+  // Verify the fake PrintPreviewPageHandler cancel increases counter.
+  test('cancel print preview can be sent', async () => {
+    assertEquals(0, printPreviewPageHandler.getCallCount('cancel'));
+    printPreviewPageHandler.cancel();
+    assertEquals(1, printPreviewPageHandler.getCallCount('cancel'));
   });
 });

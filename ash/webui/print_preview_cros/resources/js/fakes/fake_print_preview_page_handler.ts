@@ -23,6 +23,8 @@ export const FAKE_PRINT_REQUEST_FAILURE_INVALID_SETTINGS_ERROR:
       error: 'Invalid settings',
     };
 
+const CANCEL_METHOD = 'cancel';
+
 // Fake implementation of the PrintPreviewPageHandler for tests and UI.
 export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
   private methods: FakeMethodResolver = new FakeMethodResolver();
@@ -35,6 +37,8 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
     this.methods.register(PRINT_METHOD);
     this.methods.setResult(PRINT_METHOD, FAKE_PRINT_REQUEST_SUCCESSFUL);
     this.callCount.set(PRINT_METHOD, 0);
+    this.methods.register(CANCEL_METHOD);
+    this.callCount.set(CANCEL_METHOD, 0);
   }
 
   // Handles restoring state of fake to initial state.
@@ -57,5 +61,11 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
 
   getCallCount(method: string): number {
     return this.callCount.get(method) ?? 0;
+  }
+
+  // Mock implementation of cancel.
+  cancel(): void {
+    const prevCallCount = this.callCount.get(CANCEL_METHOD) ?? 0;
+    this.callCount.set(CANCEL_METHOD, prevCallCount + 1);
   }
 }
