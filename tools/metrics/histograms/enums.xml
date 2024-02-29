@@ -16576,6 +16576,7 @@ from previous Chrome versions.
   <int value="-1937077699" label="http-form-warning"/>
   <int value="-1937038119" label="FullRestoreForLacros:disabled"/>
   <int value="-1936032607" label="enable-experimental-webassembly-features"/>
+  <int value="-1935889520" label="LinkedServicesSetting:enabled"/>
   <int value="-1935787681" label="SystemNotifications:disabled"/>
   <int value="-1935597303" label="OptimizeEarlyNavigation:enabled"/>
   <int value="-1935466197" label="PipTuck:enabled"/>
@@ -21484,6 +21485,7 @@ from previous Chrome versions.
   <int value="301733463" label="SmartZoom:disabled"/>
   <int value="301869874" label="NTPPhysicalWebPageSuggestions:disabled"/>
   <int value="302473173" label="AndroidTabGroupStableIds:disabled"/>
+  <int value="302509562" label="LinkedServicesSetting:disabled"/>
   <int value="302725573" label="NewInstanceFromDraggedLink:enabled"/>
   <int value="302754902" label="MicMuteNotifications:disabled"/>
   <int value="303058039" label="AccountConsistency:disabled"/>

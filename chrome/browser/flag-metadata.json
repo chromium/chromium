@@ -5258,6 +5258,14 @@
     "expiry_milestone": 125
   },
   {
+    "name": "linked-services-setting",
+    "owners": [
+      "rainhard@chromium.org",
+      "chrome-privacy-controls@google.com"
+    ],
+    "expiry_milestone": 127
+  },
+  {
     "name": "linked-services-setting-ios",
     "owners": [
       "rubindl@chromium.org",

@@ -11026,6 +11026,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardBenefitsSyncDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefitsSync)},
 
+    {"linked-services-setting", flag_descriptions::kLinkedServicesSettingName,
+     flag_descriptions::kLinkedServicesSettingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kLinkedServicesSetting)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

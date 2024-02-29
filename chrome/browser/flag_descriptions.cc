@@ -2263,6 +2263,10 @@ const char kLensImageTranslateDescription[] =
     "Lens. The context menu item appears when the current page is being "
     "translated.";
 
+const char kLinkedServicesSettingName[] = "Linked Services Setting";
+const char kLinkedServicesSettingDescription[] =
+    "Add Linked Services Setting to the Sync Settings page.";
+
 const char kCscCompanionEnablePageContentName[] = "CSC Page Contents";
 const char kCscCompanionEnablePageContentDescription[] =
     "Share the page contents with Chrome search companion.";
