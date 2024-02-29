@@ -141,8 +141,8 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
   gfx::Size coded_size_;
   std::optional<VideoFrameLayout> layout_;
 
-  // Mapping from VideoFrame's GpuMemoryBufferId to picture buffer id.
-  std::map<gfx::GpuMemoryBufferId, int32_t /* picture_buffer_id */>
+  // Mapping from a frame's GenericSharedMemoryId to picture buffer id.
+  std::map<gfx::GenericSharedMemoryId, int32_t /* picture_buffer_id */>
       frame_id_to_picture_id_;
   // Record how many times the picture is sent to the client, and keep a refptr
   // of corresponding VideoFrame when the client owns the buffers.

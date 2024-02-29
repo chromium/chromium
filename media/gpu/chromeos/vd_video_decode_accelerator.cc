@@ -25,6 +25,7 @@
 #include "media/base/waiting.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
+#include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -586,8 +587,8 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
   // VideoFrame::WrapExternalGpuMemoryBuffer().
   CHECK_EQ(origin_frame->storage_type(), GetFrameStorageType());
 
-  auto res = frame_id_to_picture_id_.emplace(
-      origin_frame->GetGpuMemoryBuffer()->GetId(), picture_buffer_id);
+  auto res = frame_id_to_picture_id_.emplace(GetSharedMemoryId(*origin_frame),
+                                             picture_buffer_id);
   // The frame ID should not be inside the map before insertion.
   DCHECK(res.second);
 
@@ -619,7 +620,7 @@ std::optional<Picture> VdVideoDecodeAccelerator::GetPicture(
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
-  auto it = frame_id_to_picture_id_.find(frame.GetGpuMemoryBuffer()->GetId());
+  auto it = frame_id_to_picture_id_.find(GetSharedMemoryId(frame));
   if (it == frame_id_to_picture_id_.end()) {
     VLOGF(1) << "Failed to find the picture buffer id.";
     return std::nullopt;
@@ -649,8 +650,7 @@ void VdVideoDecodeAccelerator::OnFrameReleased(
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
-  auto it =
-      frame_id_to_picture_id_.find(origin_frame->GetGpuMemoryBuffer()->GetId());
+  auto it = frame_id_to_picture_id_.find(GetSharedMemoryId(*origin_frame));
   DCHECK(it != frame_id_to_picture_id_.end());
   int32_t picture_buffer_id = it->second;
   frame_id_to_picture_id_.erase(it);
