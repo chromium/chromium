@@ -2323,7 +2323,6 @@ source_set("blink_platform_unittests_sources") {
     "//third_party/blink/renderer/platform/network:unit_tests",
     "//third_party/blink/renderer/platform/scheduler:unit_tests",
     "//third_party/blink/renderer/platform/wtf",
-    "//third_party/libavif:libavif",
     "//third_party/libyuv",
     "//third_party/webrtc/api/task_queue:task_queue_test",
     "//third_party/webrtc_overrides:metronome_like_task_queue_test",

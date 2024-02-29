@@ -121,8 +121,6 @@ source_set("unit_tests") {
 
   if (enable_av1_decoder) {
     sources += [ "avif/avif_image_decoder_test.cc" ]
-
-    deps += [ "//third_party/libavif:libavif" ]
   }
 }
 

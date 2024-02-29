@@ -24,7 +24,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/libavif/src/include/avif/avif.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
 
