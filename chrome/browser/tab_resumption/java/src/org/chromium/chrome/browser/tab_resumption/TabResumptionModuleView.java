@@ -23,6 +23,8 @@ public class TabResumptionModuleView extends LinearLayout {
     private SuggestionBundle mBundle;
 
     private boolean mIsSuggestionBundleReady;
+    private String mTitle;
+    private String mAllTilesTexts;
 
     public TabResumptionModuleView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -56,7 +58,9 @@ public class TabResumptionModuleView extends LinearLayout {
     }
 
     void setTitle(@Nullable String title) {
-        ((TextView) findViewById(R.id.tab_resumption_title_description)).setText(title);
+        mTitle = title;
+        ((TextView) findViewById(R.id.tab_resumption_title_description)).setText(mTitle);
+        setContentDescriptionOfTabResumption();
     }
 
     TabResumptionTileContainerView getTileContainerViewForTesting() {
@@ -67,9 +71,22 @@ public class TabResumptionModuleView extends LinearLayout {
         if (mIsSuggestionBundleReady && mUrlImageProvider != null && mClickCallback != null) {
             if (mBundle == null) {
                 mTileContainerView.removeAllViews();
+                mAllTilesTexts = null;
             } else {
-                mTileContainerView.renderAllTiles(mBundle, mUrlImageProvider, mClickCallback);
+                mAllTilesTexts =
+                        mTileContainerView.renderAllTiles(
+                                mBundle, mUrlImageProvider, mClickCallback);
             }
+            setContentDescriptionOfTabResumption();
+        }
+    }
+
+    /** Sets the content description for the tab resumption module. */
+    private void setContentDescriptionOfTabResumption() {
+        if (mTitle != null && mAllTilesTexts != null) {
+            setContentDescription(mTitle + ". " + mAllTilesTexts);
+        } else {
+            setContentDescription(null);
         }
     }
 }
