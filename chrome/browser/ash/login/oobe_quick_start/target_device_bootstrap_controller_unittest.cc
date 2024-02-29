@@ -789,6 +789,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
 TEST_F(TargetDeviceBootstrapControllerTest,
        NoUserVerificationRequiredWhenResumeAfterUpdate) {
+  GetSessionContext()->FillOrResetSession();
   ResumeAfterUpdate();
   bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   EXPECT_EQ(fake_observer_->last_status.step,
