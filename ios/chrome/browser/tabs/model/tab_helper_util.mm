@@ -131,7 +131,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   VoiceSearchNavigationTabHelper::CreateForWebState(web_state);
   IOSChromeSyncedTabDelegate::CreateForWebState(web_state);
   InfoBarManagerImpl::CreateForWebState(web_state);
-  BlockedPopupTabHelper::CreateForWebState(web_state);
+  if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    BlockedPopupTabHelper::GetOrCreateForWebState(web_state);
+  }
   if (IsNativeFindInPageAvailable()) {
     FindTabHelper::CreateForWebState(web_state);
   } else {

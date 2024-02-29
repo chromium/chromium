@@ -208,7 +208,7 @@ web::WebState* WebStateDelegateBrowserAgent::CreateNewWebState(
 
   // Check if requested web state is a popup and block it if necessary.
   if (!initiated_by_user) {
-    auto* helper = BlockedPopupTabHelper::FromWebState(source);
+    auto* helper = BlockedPopupTabHelper::GetOrCreateForWebState(source);
     if (helper->ShouldBlockPopup(opener_url)) {
       // It's possible for a page to inject a popup into a window created via
       // window.open before its initial load is committed.  Rather than relying

@@ -35,7 +35,7 @@ class BlockedPopupTabHelperTest : public PlatformTest {
     web_state_->SetKeepRenderProcessAlive(true);
     web_state_->SetDelegate(&web_state_delegate_);
 
-    BlockedPopupTabHelper::CreateForWebState(web_state());
+    BlockedPopupTabHelper::GetOrCreateForWebState(web_state());
     InfoBarManagerImpl::CreateForWebState(web_state());
   }
 
@@ -46,7 +46,7 @@ class BlockedPopupTabHelperTest : public PlatformTest {
 
   // Returns BlockedPopupTabHelper that is being tested.
   BlockedPopupTabHelper* GetBlockedPopupTabHelper() {
-    return BlockedPopupTabHelper::FromWebState(web_state());
+    return BlockedPopupTabHelper::GetOrCreateForWebState(web_state());
   }
 
   // Returns InfoBarManager attached to `web_state()`.
