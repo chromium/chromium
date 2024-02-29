@@ -465,6 +465,10 @@ DevToolsWindow::~DevToolsWindow() {
   UpdateBrowserWindow();
   UpdateBrowserToolbar();
 
+  if (sharing_infobar_) {
+    sharing_infobar_->RemoveSelf();
+  }
+
   capture_handle_.RunAndReset();
   owned_toolbox_web_contents_.reset();
 
@@ -1567,7 +1571,6 @@ void DevToolsWindow::Close(DevToolsClosedByAction closed_by) {
 
   if (sharing_infobar_) {
     sharing_infobar_->RemoveSelf();
-    sharing_infobar_ = nullptr;
     checked_sharing_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
   }
 }
@@ -1999,18 +2002,26 @@ void DevToolsWindow::MaybeShowSharedProcessInfobar() {
             }
           });
 
+  // Dismiss old infobar.
+  if (sharing_infobar_) {
+    sharing_infobar_->RemoveSelf();
+  }
+
   if (primary_main_frame_count > 1) {
-    sharing_infobar_ = GetInfoBarManager()->AddInfoBar(
+    auto* info_bar_manager = GetInfoBarManager();
+    sharing_infobar_ = info_bar_manager->AddInfoBar(
         CreateConfirmInfoBar(std::make_unique<ProcessSharingInfobarDelegate>(
             inspected_web_contents)));
-  } else if (sharing_infobar_) {
-    sharing_infobar_->RemoveSelf();
-    sharing_infobar_ = nullptr;
+    info_bar_manager->AddObserver(this);
   }
 }
 
-void DevToolsWindow::InfobarClosed() {
-  sharing_infobar_ = nullptr;
+void DevToolsWindow::OnInfoBarRemoved(infobars::InfoBar* infobar,
+                                      bool animate) {
+  if (sharing_infobar_ == infobar) {
+    infobar->owner()->RemoveObserver(this);
+    sharing_infobar_ = nullptr;
+  }
 }
 
 void DevToolsWindow::PrimaryPageChanged(content::Page& page) {

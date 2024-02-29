@@ -81,7 +81,8 @@ enum class DevToolsClosedByAction {
 
 class DevToolsWindow : public DevToolsUIBindings::Delegate,
                        public content::WebContentsDelegate,
-                       public content::WebContentsObserver {
+                       public content::WebContentsObserver,
+                       public infobars::InfoBarManager::Observer {
  public:
   static const char kDevToolsApp[];
 
@@ -285,8 +286,6 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // content::DevToolsUIBindings::Delegate overrides
   void ActivateWindow() override;
 
-  void InfobarClosed();
-
  private:
   friend class DevToolsWindowTesting;
   friend class DevToolsWindowCreationObserver;
@@ -451,6 +450,9 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // content::WebContentsObserver
   using content::WebContentsObserver::BeforeUnloadFired;
   void PrimaryPageChanged(content::Page& page) override;
+
+  // infobars::InfoBarManager::Observer
+  void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
 
   // This method creates a new Browser object (if possible), and passes
   // ownership of owned_main_web_contents_ to the tab strip of the Browser.

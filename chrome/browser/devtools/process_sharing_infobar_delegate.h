@@ -23,7 +23,6 @@ class ProcessSharingInfobarDelegate : public ConfirmInfoBarDelegate {
 
   // infobars::InfoBarDelegate
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  void InfoBarDismissed() override;
 
  private:
   base::WeakPtr<content::WebContents> inspected_web_contents_;

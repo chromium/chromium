@@ -27,11 +27,3 @@ infobars::InfoBarDelegate::InfoBarIdentifier
 ProcessSharingInfobarDelegate::GetIdentifier() const {
   return DEV_TOOLS_SHARED_PROCESS_DELEGATE;
 }
-
-void ProcessSharingInfobarDelegate::InfoBarDismissed() {
-  auto* devtools_window = DevToolsWindow::GetInstanceForInspectedWebContents(
-      inspected_web_contents_.get());
-  if (devtools_window) {
-    devtools_window->InfobarClosed();
-  }
-}
