@@ -554,6 +554,7 @@ ios_builder(
     name = "ios-m1-simulator",
     mirrors = ["ci/ios-m1-simulator"],
     gn_args = "ci/ios-m1-simulator",
+    os = os.MAC_BETA,
     cpu = cpu.ARM64,
 )
 
