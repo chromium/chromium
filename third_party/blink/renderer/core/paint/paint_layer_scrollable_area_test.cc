@@ -1858,6 +1858,34 @@ TEST_P(PaintLayerScrollableAreaTest,
   }
 }
 
+TEST_P(PaintLayerScrollableAreaTest,
+       UsedColorSchemeRootScrollbarsUseCounterUpdated) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
+
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      :root { height: 1000px; }
+    </style>
+  )HTML");
+
+  ASSERT_EQ(GetDocument().GetPreferredColorScheme(),
+            mojom::blink::PreferredColorScheme::kLight);
+
+  const auto* root_scrollable_area = GetLayoutView().GetScrollableArea();
+  ASSERT_TRUE(root_scrollable_area);
+
+  // Change color scheme to dark.
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
+  UpdateAllLifecyclePhasesForTest();
+
+  root_scrollable_area->UsedColorSchemeScrollbars();
+  EXPECT_EQ(GetDocument().IsUseCounted(
+                WebFeature::kUsedColorSchemeRootScrollbarsDark),
+            RuntimeEnabledFeatures::UsedColorSchemeRootScrollbarsEnabled());
+}
+
 // TODO(crbug.com/1020913): Actually this tests a situation that should not
 // exist but it does exist due to different or incorrect rounding methods for
 // scroll geometries. This test can be converted to test the correct behavior

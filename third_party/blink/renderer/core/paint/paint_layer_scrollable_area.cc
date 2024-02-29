@@ -1255,6 +1255,8 @@ mojom::blink::ColorScheme PaintLayerScrollableArea::UsedColorSchemeScrollbars()
       GetLayoutBox()->StyleRef().ColorSchemeFlagsIsNormal() &&
       GetLayoutBox()->GetDocument().GetPreferredColorScheme() ==
           mojom::blink::PreferredColorScheme::kDark) {
+    UseCounter::Count(GetLayoutBox()->GetDocument(),
+                      WebFeature::kUsedColorSchemeRootScrollbarsDark);
     return mojom::blink::ColorScheme::kDark;
   }
 
