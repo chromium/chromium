@@ -39,49 +39,6 @@ using content::URLLoaderInterceptor;
 using content::WebContents;
 
 namespace tpcd::trial {
-namespace {
-
-// Origin Trials token for `kTrialEnabledSite` generated with:
-// tools/origin_trials/generate_token.py  https://example.test TopLevelTpcd
-// --expire-days 5000
-const char kTopLevelTrialToken[] =
-    "A5sGfiy3qkhJES3yFHkBd7i0jX8rC+"
-    "pCA2M0tAhfmetOLkvOVTAR2589eHxZHbdv3QgX7BtANaw3A+"
-    "A3NvgAtwIAAABXeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLnRlc3Q6NDQzIiwgImZlYXR1"
-    "cmUiOiAiVG9wTGV2ZWxUcGNkIiwgImV4cGlyeSI6IDIxMzkzMjU5MjZ9";
-
-// Origin Trials token for `kTrialEnabledSite` (and all its subdomains)
-// generated with:
-// tools/origin_trials/generate_token.py https://example.test TopLevelTpcd
-// --is-subdomain --expire-days 5000
-const char kTopLevelTrialSubdomainMatchingToken[] =
-    "A5+BZIDRMyQWn2lWBHXWd3egEk2WqNdtEuzEbDZV0qXwYM8nKiqlHNYjGrfXuFgmUQ+"
-    "j0wpk0EBVJC51I3K0gQkAAABseyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLnRlc3Q6NDQzI"
-    "iwgImZlYXR1cmUiOiAiVG9wTGV2ZWxUcGNkIiwgImV4cGlyeSI6IDIxMzkzMzg0NjcsICJpc1N"
-    "1YmRvbWFpbiI6IHRydWV9";
-
-// Origin Trials token for `kTrialEnabledSiteSubdomain` generated with:
-// tools/origin_trials/generate_token.py  https://sub.example.test TopLevelTpcd
-// --expire-days 5000
-const char kSubdomainTopLevelTrialToken[] =
-    "A7CJlPHXa8yQc2lJRvM/"
-    "mq4Oi5+"
-    "SJHbT4nnUmWiYKeuguuMkTd6y8DHBRAdEgvLXPajr9Qm2cMe4f5qzovm07QwAAABbeyJvcmlna"
-    "W4iOiAiaHR0cHM6Ly9zdWIuZXhhbXBsZS50ZXN0OjQ0MyIsICJmZWF0dXJlIjogIlRvcExldmV"
-    "sVHBjZCIsICJleHBpcnkiOiAyMTM5MzM4NTY5fQ==";
-
-// Origin Trials token for `kTrialEnabledSiteSubdomain` (and all its subdomains)
-// generated with:
-// tools/origin_trials/generate_token.py https://sub.example.test TopLevelTpcd
-// --is-subdomain --expire-days 5000
-const char kSubdomainTopLevelTrialSubdomainMatchingToken[] =
-    "Ayuwtl4l9AC0MUBPlPDMZ3on5Db2hTQtFJdRM4fC1Bj03JLXWKNoe9bg4m5CslS5wFG9WQQsKu"
-    "q/"
-    "IbnFBxzGXwMAAABweyJvcmlnaW4iOiAiaHR0cHM6Ly9zdWIuZXhhbXBsZS50ZXN0OjQ0MyIsIC"
-    "JmZWF0dXJlIjogIlRvcExldmVsVHBjZCIsICJleHBpcnkiOiAyMTM5MzM4NTIzLCAiaXNTdWJk"
-    "b21haW4iOiB0cnVlfQ==";
-
-}  // namespace
 
 class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
  public:
@@ -156,8 +113,8 @@ class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
   }
 
   bool OnRequest(content::URLLoaderInterceptor::RequestParams* params) {
-    std::string path = params->url_request.url.path().substr(1);
     std::string host = params->url_request.url.host();
+    std::string path = params->url_request.url.path().substr(1);
     std::string query = params->url_request.url.query();
 
     if (host != kTrialEnabledDomain && host != kTrialEnabledSubdomain) {
