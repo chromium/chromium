@@ -7,11 +7,31 @@ import json
 import logging
 import os
 import pathlib
+import shutil
 import subprocess
 import tempfile
 
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
+
+
+def check_rdb_auth():
+  """Checks that the user is logged in with resultdb."""
+  rdb_path = shutil.which('rdb')
+  if not rdb_path:
+    logging.error("'rdb' binary not found. Is depot_tools not on PATH?")
+    return False
+  cmd = [rdb_path, 'auth-info']
+  p = subprocess.run(cmd,
+                     stdout=subprocess.PIPE,
+                     stderr=subprocess.STDOUT,
+                     text=True)
+  if p.returncode:
+    logging.error('No rdb auth available:')
+    logging.error(p.stdout.strip())
+    logging.error("Please run 'rdb auth-login' to authenticate")
+    return False
+  return True
 
 
 class LegacyRunner:
@@ -90,8 +110,22 @@ class LegacyRunner:
       Tuple of (exit code, error message) of the `recipes.py` invocation.
     """
     with tempfile.TemporaryDirectory() as tmp_dir:
+
+      # TODO(crbug.com/41492688): Support both chrome and chromium realms. Just
+      # hard-code 'chromium' for now.
+      # Put all results in "try" realms. "try" should be writable for most devs,
+      # while other realms like "ci" likely aren't. "try" is generally where we
+      # confine untested code, so it's the best fit for our results here.
+      rdb_realm = 'chromium:try'
+
       output_path = pathlib.Path(tmp_dir).joinpath('out.json')
       cmd = [
+          'rdb',
+          'stream',
+          '-new',
+          '-realm',
+          rdb_realm,
+          '--',
           self._recipes_py,
           'run',
           '--output-result-json',

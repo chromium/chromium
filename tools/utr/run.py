@@ -84,6 +84,9 @@ def main():
   args = parse_args()
   logging.basicConfig(level=logging.DEBUG if args.verbose else logging.WARN)
 
+  if not recipe.check_rdb_auth():
+    return 1
+
   bundle_root = cipd.fetch_recipe_bundle(args.verbose)
   builder_props, swarming_server = builders.find_builder_props(
       args.bucket, args.builder)
