@@ -45,8 +45,12 @@ shared_library("eventlog_provider") {
 # The delay load hook must be a source_set to ensure that it has external
 # linkage and will correctly emplace over the correct symbols in delayimp.lib at
 # link time.
-source_set("delay_load_failure_hook") {
-  sources = [ "delay_load_failure_hook.cc" ]
+source_set("delay_load_hooks") {
+  sources = [
+    "delay_load_failure_hook.cc",
+    "delay_load_notify_hook.cc",
+    "delay_load_notify_hook.h",
+  ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     ":delay_load_failure_support",

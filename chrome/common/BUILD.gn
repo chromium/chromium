@@ -115,7 +115,7 @@ source_set("ini_parser") {
 group("common") {
   public_deps = [ ":common_lib" ]
   if (is_win) {
-    public_deps += [ "//chrome/common/win:delay_load_failure_hook" ]
+    public_deps += [ "//chrome/common/win:delay_load_hooks" ]
   }
 }
 
