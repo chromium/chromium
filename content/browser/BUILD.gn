@@ -2636,7 +2636,7 @@ source_set("browser") {
     ]
   } else if (is_ios) {
     sources += [
-      "child_process_launcher_helper_ios.cc",
+      "child_process_launcher_helper_ios.mm",
       "date_time_chooser/ios/date_time_chooser_coordinator.h",
       "date_time_chooser/ios/date_time_chooser_coordinator.mm",
       "date_time_chooser/ios/date_time_chooser_delegate.h",
@@ -2665,7 +2665,10 @@ source_set("browser") {
       "web_contents/web_contents_view_ios.h",
       "web_contents/web_contents_view_ios.mm",
     ]
-    frameworks += [ "IOSurface.framework" ]
+    frameworks += [
+      "BrowserEngineKit.framework",
+      "IOSurface.framework",
+    ]
     deps += [ "//ui/accelerated_widget_mac" ]
   } else {
     # Not Mac.

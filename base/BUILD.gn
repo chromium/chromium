@@ -2147,7 +2147,7 @@ component("base") {
         "mac/mach_port_rendezvous.cc",
         "mac/mach_port_rendezvous.h",
         "process/kill_mac.cc",
-        "process/launch_mac.cc",
+        "process/launch_ios.cc",
         "process/memory_mac.mm",
         "process/port_provider_mac.cc",
         "process/port_provider_mac.h",

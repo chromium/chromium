@@ -15,11 +15,15 @@
 #include <string>
 
 #include "base/apple/dispatch_source_mach.h"
-#include "base/apple/scoped_dispatch_object.h"
 #include "base/apple/scoped_mach_port.h"
 #include "base/base_export.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "build/ios_buildflags.h"
+
+#if !BUILDFLAG(IS_IOS)
+#include "base/apple/scoped_dispatch_object.h"
+#endif
 
 namespace base {
 
@@ -29,6 +33,9 @@ namespace base {
 // enables a parent process to register Mach port rights for a nascent child,
 // which the child can then retrieve using Mach IPC by looking up the endpoint
 // in launchd's bootstrap namespace.
+//
+// The same mechanism is used on iOS but the Mach IPC endpoint is not found
+// via launchd's bootstrap namespace but via an initial XPC connection.
 //
 // When launching a child process, the parent process' rendezvous server lets
 // calling code register a collection of ports for the new child. In order to
@@ -76,9 +83,64 @@ class BASE_EXPORT MachRendezvousPort {
 // collisions with other clients.
 using MachPortsForRendezvous = std::map<uint32_t, MachRendezvousPort>;
 
-// Class that runs a Mach message server, from which client processes can
-// acquire Mach port rights registered for them.
-class BASE_EXPORT MachPortRendezvousServer {
+// Base class that runs a Mach message server, listening to requests on
+// mach server port.
+class BASE_EXPORT MachPortRendezvousServerBase {
+ protected:
+  MachPortRendezvousServerBase();
+  virtual ~MachPortRendezvousServerBase();
+
+  // The Mach receive right for the server. A send right to this is port is
+  // registered in the bootstrap server.
+  apple::ScopedMachReceiveRight server_port_;
+
+  // Mach message dispatch source for |server_port_|.
+  std::unique_ptr<apple::DispatchSourceMach> dispatch_source_;
+
+  // Ask for the associated ports associated with `pid`. `pid` will
+  // be 0 for iOS.
+  virtual MachPortsForRendezvous PortsForPid(int pid) = 0;
+
+  // The server-side Mach message handler. Called by |dispatch_source_| when a
+  // message is received.
+  void HandleRequest();
+
+  // Returns a buffer containing a well-formed Mach message, destined for
+  // |reply_port| containing descriptors for the specified |ports|.
+  std::unique_ptr<uint8_t[]> CreateReplyMessage(
+      mach_port_t reply_port,
+      const MachPortsForRendezvous& ports);
+};
+
+#if BUILDFLAG(IS_IOS)
+// An implementation class that works for a single process. It is intended
+// that each process spawned will create a corresponding instance and the
+// mach send right of this server will be sent using XPC to the process.
+class BASE_EXPORT MachPortRendezvousServer
+    : public MachPortRendezvousServerBase {
+ public:
+  MachPortRendezvousServer(const MachPortsForRendezvous& ports);
+  ~MachPortRendezvousServer() override;
+  MachPortRendezvousServer(const MachPortRendezvousServer&) = delete;
+  MachPortRendezvousServer& operator=(const MachPortRendezvousServer&) = delete;
+
+  // Retrieve the send right to be sent to the process.
+  apple::ScopedMachSendRight GetMachSendRight();
+
+ protected:
+  MachPortsForRendezvous PortsForPid(int pid) override;
+
+ private:
+  apple::ScopedMachSendRight send_right_;
+  MachPortsForRendezvous ports_;
+};
+
+#else
+
+// An implementation class that uses bootstrap to register ports to many
+// processes.
+class BASE_EXPORT MachPortRendezvousServer
+    : public MachPortRendezvousServerBase {
  public:
   // Returns the instance of the server. Upon the first call to this method,
   // the server is created, which registers an endpoint in the Mach bootstrap
@@ -104,9 +166,19 @@ class BASE_EXPORT MachPortRendezvousServer {
   // registered.
   Lock& GetLock() LOCK_RETURNED(lock_) { return lock_; }
 
+ protected:
+  // Returns the registered collection of ports for the specified |pid|. An
+  // empty collection indicates no ports were found, as it is invalid to
+  // register with an empty collection. This claims the collection of ports
+  // and removes the entry from |client_data_|.
+  MachPortsForRendezvous PortsForPid(int pid) override;
+
  private:
   friend class MachPortRendezvousServerTest;
   friend struct MachPortRendezvousFuzzer;
+
+  MachPortRendezvousServer();
+  ~MachPortRendezvousServer() override;
 
   struct ClientData {
     ClientData(apple::ScopedDispatchObject<dispatch_source_t> exit_watcher,
@@ -121,41 +193,16 @@ class BASE_EXPORT MachPortRendezvousServer {
     MachPortsForRendezvous ports;
   };
 
-  MachPortRendezvousServer();
-  ~MachPortRendezvousServer();
-
-  // The server-side Mach message handler. Called by |dispatch_source_| when a
-  // message is received.
-  void HandleRequest();
-
-  // Returns the registered collection of ports for the specified |pid|. An
-  // empty collection indicates no ports were found, as it is invalid to
-  // register with an empty collection. This claims the collection of ports
-  // and removes the entry from |client_data_|.
-  MachPortsForRendezvous PortsForPid(pid_t pid);
-
-  // Returns a buffer containing a well-formed Mach message, destined for
-  // |reply_port| containing descriptors for the specified |ports|.
-  std::unique_ptr<uint8_t[]> CreateReplyMessage(
-      mach_port_t reply_port,
-      const MachPortsForRendezvous& ports);
-
   // Called by the ClientData::exit_watcher dispatch sources when a process
   // for which ports have been registered exits. This releases port rights
   // that are strongly owned, in the event that the child has not claimed them.
   void OnClientExited(pid_t pid);
 
-  // The Mach receive right for the server. A send right to this is port is
-  // registered in the bootstrap server.
-  apple::ScopedMachReceiveRight server_port_;
-
-  // Mach message dispatch source for |server_port_|.
-  std::unique_ptr<apple::DispatchSourceMach> dispatch_source_;
-
   Lock lock_;
   // Association of pid-to-ports.
   std::map<pid_t, ClientData> client_data_ GUARDED_BY(lock_);
 };
+#endif
 
 // Client class for accessing the memory object exposed by the
 // MachPortRendezvousServer.
@@ -190,8 +237,13 @@ class BASE_EXPORT MachPortRendezvousClient {
   // only reflects the number of remaining rights.
   size_t GetPortCount();
 
+#if BUILDFLAG(IS_IOS)
+  // Initialize the MacPortRendezvousClient using `server_port`.
+  static bool Initialize(apple::ScopedMachSendRight server_port);
+#else
   // Returns the name of the server to look up in the bootstrap namespace.
   static std::string GetBootstrapName();
+#endif
 
  private:
   MachPortRendezvousClient();
@@ -199,7 +251,11 @@ class BASE_EXPORT MachPortRendezvousClient {
 
   // Helper method to look up the server in the bootstrap namespace and send
   // the acquisition request message.
+#if BUILDFLAG(IS_IOS)
+  bool AcquirePorts(apple::ScopedMachSendRight server_port);
+#else
   bool AcquirePorts();
+#endif
 
   // Sends the actual IPC message to |server_port| and parses the reply.
   bool SendRequest(apple::ScopedMachSendRight server_port)

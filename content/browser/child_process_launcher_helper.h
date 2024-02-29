@@ -62,6 +62,10 @@
 
 namespace base {
 class CommandLine;
+
+#if BUILDFLAG(IS_IOS)
+class MachPortRendezvousServer;
+#endif
 }
 
 namespace content {
@@ -82,6 +86,15 @@ namespace internal {
 using FileMappedForLaunch = PosixFileDescriptorInfo;
 #else
 using FileMappedForLaunch = base::HandlesToInheritVector;
+#endif
+
+#if BUILDFLAG(IS_IOS)
+class LaunchResult;
+
+class ProcessStorageBase {
+ public:
+  virtual ~ProcessStorageBase() = default;
+};
 #endif
 
 // ChildProcessLauncherHelper is used by ChildProcessLauncher to start a
@@ -218,6 +231,10 @@ class ChildProcessLauncherHelper
   static void ForceNormalProcessTerminationAsync(
       ChildProcessLauncherHelper::Process process);
 
+#if BUILDFLAG(IS_IOS)
+  void OnChildProcessStarted(std::unique_ptr<LaunchResult> launch_result);
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
   void OnChildProcessStarted(JNIEnv* env, jint handle);
 
@@ -303,6 +320,11 @@ class ChildProcessLauncherHelper
   std::vector<content::WebPluginInfo> plugins_;
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_IOS)
+  std::unique_ptr<base::MachPortRendezvousServer> rendezvous_server_;
+  std::unique_ptr<ProcessStorageBase> process_storage_;
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_peer_;

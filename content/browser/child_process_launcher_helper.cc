@@ -33,6 +33,10 @@
 #include "content/browser/android/launcher_thread.h"
 #endif
 
+#if BUILDFLAG(IS_IOS)
+#include "base/mac/mach_port_rendezvous.h"
+#endif
+
 namespace content {
 namespace internal {
 
