@@ -11,5 +11,7 @@ This is a testharness.js-based test.
   assert_equals: expected "timeout" but got "success"
 [FAIL] public to private: missing PNA header.
   assert_equals: expected "timeout" but got "success"
+[FAIL] public to public redirected to private: missing CORS headers.
+  assert_equals: expected "timeout" but got "success"
 Harness: the test ran to completion.
 

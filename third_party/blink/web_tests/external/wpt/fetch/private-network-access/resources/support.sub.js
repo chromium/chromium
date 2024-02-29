@@ -480,6 +480,13 @@ const NavigationTestResult = {
 };
 
 async function windowOpenTest(t, { source, target, expected }) {
+  if (target.behavior && target.behavior.redirect) {
+    target.behavior.redirect.searchParams.set('file', 'openee.html');
+    target.behavior.redirect.searchParams.set(
+        'file-if-no-preflight-received',
+        'no-preflight-received.html',
+    );
+  }
   const targetUrl = preflightUrl(target);
   targetUrl.searchParams.set("file", "openee.html");
   targetUrl.searchParams.set(
@@ -507,6 +514,13 @@ async function windowOpenTest(t, { source, target, expected }) {
 }
 
 async function windowOpenExistingTest(t, { source, target, expected }) {
+  if (target.behavior && target.behavior.redirect) {
+    target.behavior.redirect.searchParams.set('file', 'openee.html');
+    target.behavior.redirect.searchParams.set(
+        'file-if-no-preflight-received',
+        'no-preflight-received.html',
+    );
+  }
   const targetUrl = preflightUrl(target);
   targetUrl.searchParams.set("file", "openee.html");
   targetUrl.searchParams.set(
@@ -535,6 +549,13 @@ async function windowOpenExistingTest(t, { source, target, expected }) {
 }
 
 async function anchorTest(t, { source, target, expected }) {
+  if (target.behavior && target.behavior.redirect) {
+    target.behavior.redirect.searchParams.set('file', 'openee.html');
+    target.behavior.redirect.searchParams.set(
+        'file-if-no-preflight-received',
+        'no-preflight-received.html',
+    );
+  }
   const targetUrl = preflightUrl(target);
   targetUrl.searchParams.set("file", "openee.html");
   targetUrl.searchParams.set(
