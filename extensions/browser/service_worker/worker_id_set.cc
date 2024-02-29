@@ -7,13 +7,19 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_running_info.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/process_map.h"
 #include "extensions/browser/service_worker/worker_id.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace extensions {
@@ -90,11 +96,18 @@ void WorkerIdSet::Add(const WorkerId& worker_id,
     // CHECK_LE(new_size, 1u) << "Extension with worker id " << worker_id
     //                        << " added additional worker";
 
-    // Only dump when there are two workers. Two added should be enough to solve
-    // why there's N workers.
-    DUMP_WILL_BE_CHECK(new_size != 2u)
-        << "Extension with worker id " << worker_id
-        << " added additional worker";
+    if (new_size == 2) {
+      // new_size == 2 guarantees that a previous WorkerId will be present.
+      const WorkerId& previous_worker_id = previous_worker_ids.front();
+      // Set crash keys for the DUMP_WILL_BE_CHECK() below.
+      debug::ScopedMultiWorkerCrashKeys multi_worker_keys(
+          worker_id.extension_id, previous_worker_id, worker_id, context);
+
+      // Only dump when there are two workers. Two added should be enough to
+      // solve why there's N workers.
+      DUMP_WILL_BE_CHECK(false) << "Extension with worker id " << worker_id
+                                << " added additional worker";
+    }
   }
 
   // Only emit our incorrect worker metrics if an unexpected number of workers
@@ -181,5 +194,158 @@ base::AutoReset<bool>
 WorkerIdSet::AllowMultipleWorkersPerExtensionForTesting() {
   return base::AutoReset<bool>(&g_allow_multiple_workers_per_extension, true);
 }
+
+namespace debug {
+
+namespace {
+
+const char* BoolToCrashKeyValue(bool value) {
+  return value ? "yes" : "no";
+}
+
+std::string GetVersionIdValue(int64_t version_id) {
+  return base::NumberToString(version_id);
+}
+
+base::debug::CrashKeyString* GetExtensionIdCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "multi_extension_worker_extension_id", base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetIdenticalVersionIdsCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "multi_extension_worker_identical_worker_version_ids",
+      base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetPreviousWorkerVersionIdCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "multi_extension_worker_previous_worker_version_id",
+      base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetNewWorkerVersionIdCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "multi_extension_worker_new_worker_version_id",
+      base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetPreviousWorkerLifecycleStateCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "multi_extension_worker_previous_worker_lifecycle_state",
+      base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetNewWorkerLifecycleStateCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "multi_extension_worker_new_worker_lifecycle_state",
+      base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+const char* GetLifecycleStateValue(const WorkerId& worker_id,
+                                   content::BrowserContext* context) {
+  switch (GetWorkerLifecycleState(worker_id, context)) {
+    case content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::
+        kUnknown:
+      return "kUnknown";
+    case content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::kNew:
+      return "kNew";
+    case content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::
+        kInstalling:
+      return "kInstalling";
+    case content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::
+        kInstalled:
+      return "kInstalled";
+    case content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::
+        kActivating:
+      return "kActivating";
+    case content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::
+        kActivated:
+      return "kActivated";
+    case content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::
+        kRedundant:
+      return "kRedundant";
+  }
+}
+
+base::debug::CrashKeyString* GetIdenticalRendererProcessesIdsCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "multi_extension_worker_identical_renderer_process_ids",
+      base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetPreviousWorkerRendererProcessRunningCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "multi_extension_worker_previous_worker_renderer_process_running",
+      base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetNewWorkerRendererProcessRunningCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "multi_extension_worker_new_worker_renderer_process_running",
+      base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+const char* GetRendererProcessRunningValue(const ExtensionId& extension_id,
+                                           int renderer_process_id,
+                                           content::BrowserContext* context) {
+  ProcessMap* process_map = ProcessMap::Get(context);
+  CHECK(process_map);
+
+  return BoolToCrashKeyValue(
+      process_map->Contains(extension_id, renderer_process_id));
+}
+
+}  // namespace
+
+ScopedMultiWorkerCrashKeys::ScopedMultiWorkerCrashKeys(
+    const ExtensionId& extension_id,
+    const WorkerId& previous_worker_id,
+    const WorkerId& new_worker_id,
+    content::BrowserContext* context)
+    : extension_id_crash_key_(GetExtensionIdCrashKey(), extension_id),
+      identical_version_ids_crash_key_(
+          GetIdenticalVersionIdsCrashKey(),
+          BoolToCrashKeyValue(previous_worker_id.version_id ==
+                              new_worker_id.version_id)),
+      previous_worker_version_id_crash_key_(
+          GetPreviousWorkerVersionIdCrashKey(),
+          GetVersionIdValue(previous_worker_id.version_id)),
+      new_worker_version_id_crash_key_(
+          GetNewWorkerVersionIdCrashKey(),
+          GetVersionIdValue(new_worker_id.version_id)),
+      previous_worker_lifecycle_state_crash_key_(
+          GetPreviousWorkerLifecycleStateCrashKey(),
+          GetLifecycleStateValue(previous_worker_id, context)),
+      new_worker_lifecycle_state_crash_key_(
+          GetNewWorkerLifecycleStateCrashKey(),
+          GetLifecycleStateValue(new_worker_id, context)),
+      identical_worker_renderer_process_ids_crash_key_(
+          GetIdenticalRendererProcessesIdsCrashKey(),
+          BoolToCrashKeyValue(previous_worker_id.render_process_id ==
+                              new_worker_id.render_process_id)),
+      previous_worker_renderer_process_running_crash_key_(
+          GetPreviousWorkerRendererProcessRunningCrashKey(),
+          GetRendererProcessRunningValue(extension_id,
+                                         previous_worker_id.render_process_id,
+                                         context)),
+      new_worker_renderer_process_running_crash_key_(
+          GetNewWorkerRendererProcessRunningCrashKey(),
+          GetRendererProcessRunningValue(extension_id,
+                                         new_worker_id.render_process_id,
+                                         context)) {}
+
+ScopedMultiWorkerCrashKeys::~ScopedMultiWorkerCrashKeys() = default;
+
+}  // namespace debug
 
 }  // namespace extensions
