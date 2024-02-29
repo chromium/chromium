@@ -652,11 +652,14 @@ class ConsolidatedConsentScreenArcEnabledParameterizedTest
                     testing::_, consent_auditor::ArcBackupAndRestoreConsentEq(
                                     backup_and_restore_consent)));
 
-    EXPECT_CALL(
-        *auditor,
-        RecordArcGoogleLocationServiceConsent(
-            testing::_, consent_auditor::ArcGoogleLocationServiceConsentEq(
-                            location_service_consent)));
+    // PH Location toggle state is not collected through consent auditor.
+    if (!is_ph_enabled_) {
+      EXPECT_CALL(
+          *auditor,
+          RecordArcGoogleLocationServiceConsent(
+              testing::_, consent_auditor::ArcGoogleLocationServiceConsentEq(
+                              location_service_consent)));
+    }
     test::OobeJS().CreateVisibilityWaiter(true, kAcceptButton)->Wait();
     test::OobeJS().ClickOnPath(kAcceptButton);
   }

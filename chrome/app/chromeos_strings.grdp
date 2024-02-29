@@ -3789,6 +3789,13 @@
   <message name="IDS_ARC_OPT_IN_LOCATION_SETTING_CHILD" desc="Message in the opt-in dialog for Android apps for the user to turn on Google location services, and a child account is in use.">
     Use location. Allow apps and services with location permission to use this device’s location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services. <ph name="BEGIN_LINK1">&lt;a href="#" id="learn-more-link-location-service"&gt;</ph>Learn More<ph name="END_LINK1">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
   </message>
+  <!-- TODO(b/314122885): Remove `translateable=false` when strings are finalized. -->
+  <message name="IDS_CROS_OPT_IN_LOCATION_SETTING" translateable="false" desc="Message in the opt-in dialog for Android apps for the user to turn on Google location services.">
+    Use location. Allow ChromeOS and Android apps, websites, and services with location permission to use your device’s location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services. <ph name="BEGIN_LINK1">&lt;a href="#" id="learn-more-link-location-service"&gt;</ph>Learn More<ph name="END_LINK1">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  </message>
+  <message name="IDS_CROS_OPT_IN_LOCATION_SETTING_CHILD" translateable="false" desc="Message in the opt-in dialog for Android apps for the user to turn on Google location services, and a child account is in use.">
+    Use location. Allow ChromeOS and Android apps, websites, and services with location permission to use this device’s location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services. <ph name="BEGIN_LINK1">&lt;a href="#" id="learn-more-link-location-service"&gt;</ph>Learn More<ph name="END_LINK1">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  </message>
   <message name="IDS_ARC_OPT_IN_PAI" desc="Message in the opt-in dialog for Play auto install.">
     Install updates &#38; apps. By continuing, you agree that this device may also automatically download and install updates and apps from Google, your carrier, and your device's manufacturer, possibly using cellular data. Some of these apps may offer in-app purchases. <ph name="BEGIN_LINK1">&lt;a href="#" id="learn-more-link-pai"&gt;</ph>Learn More<ph name="END_LINK1">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
   </message>
@@ -3893,6 +3900,15 @@
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn off Location by turning off the main Location setting on your device. You can also turn off the use of Wi-Fi, mobile networks, and sensors for location in location settings.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_ARC_OPT_IN_LEARN_MORE_LOCATION_SERVICES_CHILD" desc="Message shown in pop up overlay dialog when user clicks learn more location services, and a child account is in use">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Google's location service uses sources like Wi-Fi, mobile networks, and sensors to help estimate this device’s location.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn off Location by turning off the main Location setting on this device. You can also turn off the use of Wi-Fi, mobile networks, and sensors for location in location settings.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
+  <!-- TODO(b/314122885): Remove `translateable=false` when strings are finalized. -->
+  <message name="IDS_CROS_OPT_IN_LEARN_MORE_LOCATION_SERVICES" translateable="false" desc="Message shown in pop up overlay dialog when user clicks learn more location services">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Google's location service uses sources like Wi-Fi, mobile networks, and sensors to help estimate your device’s location.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn off Location by turning off the main Location setting on your device. You can also turn off the use of Wi-Fi, mobile networks, and sensors for location in location settings.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_CROS_OPT_IN_LEARN_MORE_LOCATION_SERVICES_CHILD" translateable="false" desc="Message shown in pop up overlay dialog when user clicks learn more location services, and a child account is in use">
     <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Google's location service uses sources like Wi-Fi, mobile networks, and sensors to help estimate this device’s location.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn off Location by turning off the main Location setting on this device. You can also turn off the use of Wi-Fi, mobile networks, and sensors for location in location settings.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>

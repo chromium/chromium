@@ -422,29 +422,24 @@ void ConsolidatedConsentScreen::RecordConsents(
   }
 
   if (params.record_location_consent) {
-    ArcGoogleLocationServiceConsent location_service_consent;
-    location_service_consent.set_confirmation_grd_id(
-        IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE);
-    if (features::IsCrosPrivacyHubLocationEnabled()) {
-      location_service_consent.add_description_grd_ids(
-          IDS_CONSOLIDATED_CONSENT_CROS_LOCATION_OPT_IN_TITLE);
-      location_service_consent.add_description_grd_ids(
-          is_child_account_
-              ? IDS_CONSOLIDATED_CONSENT_CROS_LOCATION_OPT_IN_CHILD
-              : IDS_CONSOLIDATED_CONSENT_CROS_LOCATION_OPT_IN);
-    } else {
+    // TODO(b/327350824): Stop sending ARC controls to consent auditor.
+    if (!features::IsCrosPrivacyHubLocationEnabled()) {
+      ArcGoogleLocationServiceConsent location_service_consent;
+      location_service_consent.set_confirmation_grd_id(
+          IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE);
+
       location_service_consent.add_description_grd_ids(
           IDS_CONSOLIDATED_CONSENT_ARC_LOCATION_OPT_IN_TITLE);
       location_service_consent.add_description_grd_ids(
           is_child_account_ ? IDS_CONSOLIDATED_CONSENT_ARC_LOCATION_OPT_IN_CHILD
                             : IDS_CONSOLIDATED_CONSENT_ARC_LOCATION_OPT_IN);
-    }
-    location_service_consent.set_status(params.location_accepted
-                                            ? UserConsentTypes::GIVEN
-                                            : UserConsentTypes::NOT_GIVEN);
+      location_service_consent.set_status(params.location_accepted
+                                              ? UserConsentTypes::GIVEN
+                                              : UserConsentTypes::NOT_GIVEN);
 
-    consent_auditor->RecordArcGoogleLocationServiceConsent(
-        account_id, location_service_consent);
+      consent_auditor->RecordArcGoogleLocationServiceConsent(
+          account_id, location_service_consent);
+    }
   }
 }
 

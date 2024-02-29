@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/timezone.h"
@@ -566,10 +567,17 @@ bool ArcSupportHost::Initialize() {
   loadtime_data.Set(
       "textGoogleServiceConfirmation",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_GOOGLE_SERVICE_CONFIRMATION));
-  loadtime_data.Set(
-      "textLocationService",
-      l10n_util::GetStringUTF16(is_child ? IDS_ARC_OPT_IN_LOCATION_SETTING_CHILD
-                                         : IDS_ARC_OPT_IN_LOCATION_SETTING));
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
+    loadtime_data.Set("textLocationService",
+                      l10n_util::GetStringUTF16(
+                          is_child ? IDS_CROS_OPT_IN_LOCATION_SETTING_CHILD
+                                   : IDS_CROS_OPT_IN_LOCATION_SETTING));
+  } else {
+    loadtime_data.Set("textLocationService",
+                      l10n_util::GetStringUTF16(
+                          is_child ? IDS_ARC_OPT_IN_LOCATION_SETTING_CHILD
+                                   : IDS_ARC_OPT_IN_LOCATION_SETTING));
+  }
   loadtime_data.Set("serverError", l10n_util::GetStringUTF16(
                                        IDS_ARC_SERVER_COMMUNICATION_ERROR));
   loadtime_data.Set("controlledByPolicy",
@@ -592,11 +600,19 @@ bool ArcSupportHost::Initialize() {
   loadtime_data.Set("learnMoreLocationServicesTitle",
                     l10n_util::GetStringUTF16(
                         IDS_ARC_OPT_IN_LEARN_MORE_LOCATION_SERVICES_TITLE));
-  loadtime_data.Set(
-      "learnMoreLocationServices",
-      l10n_util::GetStringUTF16(
-          is_child ? IDS_ARC_OPT_IN_LEARN_MORE_LOCATION_SERVICES_CHILD
-                   : IDS_ARC_OPT_IN_LEARN_MORE_LOCATION_SERVICES));
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
+    loadtime_data.Set(
+        "learnMoreLocationServices",
+        l10n_util::GetStringUTF16(
+            is_child ? IDS_CROS_OPT_IN_LEARN_MORE_LOCATION_SERVICES_CHILD
+                     : IDS_CROS_OPT_IN_LEARN_MORE_LOCATION_SERVICES));
+  } else {
+    loadtime_data.Set(
+        "learnMoreLocationServices",
+        l10n_util::GetStringUTF16(
+            is_child ? IDS_ARC_OPT_IN_LEARN_MORE_LOCATION_SERVICES_CHILD
+                     : IDS_ARC_OPT_IN_LEARN_MORE_LOCATION_SERVICES));
+  }
   loadtime_data.Set(
       "learnMorePaiServiceTitle",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_LEARN_MORE_PAI_SERVICE_TITLE));
@@ -745,20 +761,23 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
     // If the user - not policy - controls Location Services setting, record
     // whether consent was given.
     if (!is_location_service_managed.value()) {
-      UserConsentTypes::ArcGoogleLocationServiceConsent
-          location_service_consent;
-      location_service_consent.set_confirmation_grd_id(
-          IDS_ARC_OPT_IN_DIALOG_BUTTON_AGREE);
-      location_service_consent.add_description_grd_ids(
-          is_child ? IDS_ARC_OPT_IN_LOCATION_SETTING_CHILD
-                   : IDS_ARC_OPT_IN_LOCATION_SETTING);
-      location_service_consent.set_status(is_location_service_enabled.value()
-                                              ? UserConsentTypes::GIVEN
-                                              : UserConsentTypes::NOT_GIVEN);
+      // TODO(b/327350824): Stop sending ARC controls to consent auditor.
+      if (!ash::features::IsCrosPrivacyHubLocationEnabled()) {
+        UserConsentTypes::ArcGoogleLocationServiceConsent
+            location_service_consent;
+        location_service_consent.set_confirmation_grd_id(
+            IDS_ARC_OPT_IN_DIALOG_BUTTON_AGREE);
+        location_service_consent.add_description_grd_ids(
+            is_child ? IDS_ARC_OPT_IN_LOCATION_SETTING_CHILD
+                     : IDS_ARC_OPT_IN_LOCATION_SETTING);
+        location_service_consent.set_status(is_location_service_enabled.value()
+                                                ? UserConsentTypes::GIVEN
+                                                : UserConsentTypes::NOT_GIVEN);
 
-      ConsentAuditorFactory::GetForProfile(profile_)
-          ->RecordArcGoogleLocationServiceConsent(account_id,
-                                                  location_service_consent);
+        ConsentAuditorFactory::GetForProfile(profile_)
+            ->RecordArcGoogleLocationServiceConsent(account_id,
+                                                    location_service_consent);
+      }
     }
 
     if (accepted) {
