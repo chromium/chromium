@@ -677,13 +677,6 @@ BASE_FEATURE(kAutofillVirtualViewStructureAndroid,
 
 namespace test {
 
-// Controls whether autofill activates on non-HTTP(S) pages. Useful for
-// automated tests with data URLS in cases where it's too difficult to use the
-// embedded test server. Generally avoid using.
-BASE_FEATURE(kAutofillAllowNonHttpActivation,
-             "AutofillAllowNonHttpActivation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Testing tool that collects metrics during a run of the captured site tests
 // and dumps the collected metrics into a specified output directory.
 // For each test, a file named {test-name}.txt is created. It contains all the

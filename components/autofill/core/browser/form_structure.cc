@@ -87,9 +87,7 @@ namespace {
 // Returns true if the scheme given by |url| is one for which autofill is
 // allowed to activate. By default this only returns true for HTTP and HTTPS.
 bool HasAllowedScheme(const GURL& url) {
-  return url.SchemeIsHTTPOrHTTPS() ||
-         base::FeatureList::IsEnabled(
-             features::test::kAutofillAllowNonHttpActivation);
+  return url.SchemeIsHTTPOrHTTPS();
 }
 
 std::string ServerTypesToString(const AutofillField* field) {

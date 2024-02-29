@@ -43,7 +43,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 
 using base::ASCIIToUTF16;
@@ -215,9 +214,6 @@ auto HasValue(base::StringPiece value) {
 // go/autofill-iframes-race-condition-explainer for some explanation.
 class AutofillAcrossIframesTest : public InProcessBrowserTest {
  public:
-  AutofillAcrossIframesTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     // Prevent the Keychain from coming up on Mac.
@@ -227,8 +223,8 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
     // Every hostname is handled by that server.
     host_resolver()->AddRule("*", "127.0.0.1");
     cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
-    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
-    https_server_.RegisterRequestHandler(base::BindRepeating(
+    embedded_https_test_server().SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
         [](const std::map<std::string, std::string>* pages,
            const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
@@ -243,8 +239,8 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
           return response;
         },
         base::Unretained(&pages_)));
-    ASSERT_TRUE(https_server_.InitializeAndListen());
-    https_server_.StartAcceptingConnections();
+    ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
+    embedded_https_test_server().StartAcceptingConnections();
   }
 
   void TearDownOnMainThread() override {
@@ -263,7 +259,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
-  // Registers the response `content_html` for a given `relative_path`, wth
+  // Registers the response `content_html` for a given `relative_path`, with
   // all placeholders $1, $2, ... in `content_html` replaced with the
   // corresponding hostname from `kHostnames`.
   // This response is served by for *every* hostname.
@@ -273,9 +269,9 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
     std::vector<std::string> replacements;
     replacements.reserve(std::size(kHostnames));
     for (const char* hostname : kHostnames) {
-      replacements.push_back(std::string(
-          base::TrimString(https_server_.GetURL(hostname, "/").spec(), "/",
-                           base::TRIM_TRAILING)));
+      replacements.push_back(std::string(base::TrimString(
+          embedded_https_test_server().GetURL(hostname, "/").spec(), "/",
+          base::TRIM_TRAILING)));
     }
     pages_[std::move(relative_path)] =
         base::ReplaceStringPlaceholders(content_html, replacements, nullptr);
@@ -292,9 +288,10 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
   // advance.
   const FormStructure* NavigateToUrl(base::StringPiece relative_url,
                                      size_t num_fields) {
-    NavigateParams params(browser(),
-                          https_server_.GetURL(kMainHostname, relative_url),
-                          ui::PAGE_TRANSITION_LINK);
+    NavigateParams params(
+        browser(),
+        embedded_https_test_server().GetURL(kMainHostname, relative_url),
+        ui::PAGE_TRANSITION_LINK);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     ui_test_utils::NavigateToURL(&params);
     return GetOrWaitForFormWithFocusableFields(
@@ -360,7 +357,6 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   base::test::ScopedFeatureList feature_list_{
       features::kAutofillSharedAutofill};
-  net::EmbeddedTestServer https_server_;
   content::ContentMockCertVerifier cert_verifier_;
   // Maps relative paths to HTML content.
   std::map<std::string, std::string> pages_;

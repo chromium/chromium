@@ -25,14 +25,17 @@
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "net/dns/mock_host_resolver.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/third_party/mozilla/url_parse.h"
+#include "third_party/blink/public/common/switches.h"
 
 using testing::AllOf;
 using testing::Eq;
@@ -110,37 +113,78 @@ class WindowedNetworkObserver {
   std::unique_ptr<content::URLLoaderInterceptor> interceptor_;
 };
 
-}  // namespace
-
 class AutofillServerTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    // Enable data-url support.
-    // TODO(crbug.com/894428) - fix this suite to use the embedded test server
-    // instead of data urls.
+  AutofillServerTest() {
     scoped_feature_list_.InitWithFeatures(
         // Enabled.
-        {features::test::kAutofillAllowNonHttpActivation,
-         features::test::kAutofillServerCommunication,
+        {features::test::kAutofillServerCommunication,
          features::kAutofillEnableSupportForApartmentNumbers},
         // Disabled.
         {});
-
-    // Note that features MUST be enabled/disabled before continuing with
-    // SetUp(); otherwise, the feature state doesn't propagate to the test
-    // browser instance.
-    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    // Prevent the Keychain from coming up on Mac.
+    test::DisableSystemServices(browser()->profile()->GetPrefs());
+
     // Wait for Personal Data Manager to be fully loaded as the events about
     // being loaded may throw off the tests and cause flakiness.
     WaitForPersonalDataManagerToBeLoaded(browser()->profile());
+
+    // Set up the HTTPS (!) server (embedded_test_server() is an HTTP server).
+    // Every hostname is handled by that server.
+    host_resolver()->AddRule("a.com", "127.0.0.1");
+    cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    embedded_https_test_server().SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
+        [](const std::map<std::string, std::string>* pages,
+           const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          auto it = pages->find(request.GetURL().path());
+          if (it == pages->end()) {
+            return nullptr;
+          }
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/html;charset=utf-8");
+          response->set_content(it->second);
+          return response;
+        },
+        base::Unretained(&pages_)));
+    ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
+    embedded_https_test_server().StartAcceptingConnections();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    cert_verifier_.SetUpCommandLine(command_line);
+    // Slower test bots (ChromeOS, debug, etc.) are flaky due to slower loading
+    // interacting with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
+
+  void NavigateToUrl(base::StringPiece relative_url) {
+    NavigateParams params(
+        browser(), embedded_https_test_server().GetURL("a.com", relative_url),
+        ui::PAGE_TRANSITION_LINK);
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    ui_test_utils::NavigateToURL(&params);
+  }
+
+  // Registers the response `content_html` for a given `relative_path`.
+  void SetUrlContent(std::string relative_path,
+                     base::StringPiece content_html) {
+    ASSERT_EQ(relative_path[0], '/');
+    pages_[std::move(relative_path)] = content_html;
   }
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  content::ContentMockCertVerifier cert_verifier_;
+  std::map<std::string, std::string> pages_;
 };
 
 MATCHER_P(EqualsUploadProto, expected_const, "") {
@@ -186,26 +230,26 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   personal_data_observer.Wait();
 
   // Load the test page. Expect a query request upon loading the page.
-  const char kDataURIPrefix[] = "data:text/html;charset=utf-8,";
-  const char kFormHtml[] =
-      "<form id='test_form' action='about:blank'>"
-      "  <input name='one'>"
-      "  <input name='two' autocomplete='off'>"
-      "  <input name='three'>"
-      "  <input name='four' autocomplete='off'>"
-      "  <input type='submit'>"
-      "</form>"
-      "<script>"
-      "  document.onclick = function() {"
-      "    document.getElementById('test_form').submit();"
-      "  };"
-      "</script>";
+  SetUrlContent("/test.html", R"(
+      <form id=test_form action=about:blank>
+        <input name=one>
+        <input name=two autocomplete=off>
+        <input name=three>
+        <input name=four autocomplete=off>
+        <input type=submit>
+      </form>
+      <script>
+        document.onclick = function() {
+          document.getElementById('test_form').submit();
+        };
+      </script>
+  )");
 
   AutofillPageQueryRequest query;
   query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
   auto* query_form = query.add_forms();
-  query_form->set_signature(15916856893790176210U);
-  query_form->set_alternative_signature(1512434549531087U);
+  query_form->set_signature(16565345157617645697U);
+  query_form->set_alternative_signature(11880064796695671551U);
 
   query_form->add_fields()->set_signature(2594484045U);
   query_form->add_fields()->set_signature(2750915947U);
@@ -217,8 +261,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
 
   WindowedNetworkObserver query_network_observer(expected_query_string);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kFormHtml)));
+  NavigateToUrl("/test.html");
   query_network_observer.Wait();
 
   // Submit the form, using a simulated mouse click because form submissions not
@@ -229,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   upload->set_submission(true);
   upload->set_client_version(
       std::string(GetProductNameAndVersionForUserAgent()));
-  upload->set_form_signature(15916856893790176210U);
+  upload->set_form_signature(16565345157617645697U);
   upload->set_autofill_used(false);
 
   // The `data_present` fields is a bit mask of field types that are associated
@@ -275,20 +318,20 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
 // of user defined autocomplete types.
 IN_PROC_BROWSER_TEST_F(AutofillServerTest, AlwaysQueryForPasswordFields) {
   // Load the test page. Expect a query request upon loading the page.
-  const char kDataURIPrefix[] = "data:text/html;charset=utf-8,";
-  const char kFormHtml[] =
-      "<form id='test_form'>"
-      "  <input type='text' id='one' autocomplete='username'>"
-      "  <input type='text' id='two' autocomplete='off'>"
-      "  <input type='password' id='three'>"
-      "  <input type='submit'>"
-      "</form>";
+  SetUrlContent("/test.html", R"(
+      <form id=test_form>
+        <input type=text id=one autocomplete=username>
+        <input type=text id=two autocomplete=off>
+        <input type=password id=three>
+        <input type=submit>
+      </form>
+  )");
 
   AutofillPageQueryRequest query;
   query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
   auto* query_form = query.add_forms();
-  query_form->set_signature(8900697631820480876U);
-  query_form->set_alternative_signature(8962829409320837774U);
+  query_form->set_signature(4875414400744072230U);
+  query_form->set_alternative_signature(130271417830211693U);
 
   query_form->add_fields()->set_signature(2594484045U);
   query_form->add_fields()->set_signature(2750915947U);
@@ -298,9 +341,9 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest, AlwaysQueryForPasswordFields) {
   ASSERT_TRUE(query.SerializeToString(&expected_query_string));
 
   WindowedNetworkObserver query_network_observer(expected_query_string);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kFormHtml)));
+  NavigateToUrl("/test.html");
   query_network_observer.Wait();
 }
 
+}  // namespace
 }  // namespace autofill
