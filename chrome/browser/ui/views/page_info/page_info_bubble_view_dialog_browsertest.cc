@@ -885,20 +885,25 @@ IN_PROC_BROWSER_TEST_P(
     InvokeUi_CookiesSubpageFpsBlocked3pcAllowed) {
   ShowAndVerifyUi();
 }
+// Test is failing on M120 bot and can't be fixed (https://crbug.com/40076122)
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
-                       InvokeUi_CookiesSubpageFpsAllowed3pcBlocked) {
+                       DISABLED_InvokeUi_CookiesSubpageFpsAllowed3pcBlocked) {
   ShowAndVerifyUi();
 }
+// Test is failing on M120 bot and can't be fixed (https://crbug.com/40076122)
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
-                       InvokeUi_CookiesSubpageFpsBlocked3pcBlocked) {
+                       DISABLED_InvokeUi_CookiesSubpageFpsBlocked3pcBlocked) {
   ShowAndVerifyUi();
 }
+// Test is failing on M120 bot and can't be fixed (https://crbug.com/40076122)
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
-                       InvokeUi_CookiesSubpageFpsAllowed3pcAllowed) {
+                       DISABLED_InvokeUi_CookiesSubpageFpsAllowed3pcAllowed) {
   ShowAndVerifyUi();
 }
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
-                       InvokeUi_CookiesSubpageFpsAllowed3pcEnforcedByPolicy) {
+// Test is failing on M120 bot and can't be fixed (https://crbug.com/40076122)
+IN_PROC_BROWSER_TEST_P(
+    PageInfoBubbleViewCookiesSubpageBrowserTest,
+    DISABLED_InvokeUi_CookiesSubpageFpsAllowed3pcEnforcedByPolicy) {
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_P(
@@ -911,8 +916,9 @@ IN_PROC_BROWSER_TEST_P(
     InvokeUi_CookiesSubpageFpsAllowed3pcEnforcedByCookieSetting) {
   ShowAndVerifyUi();
 }
+// Test is failing on M120 bot and can't be fixed (https://crbug.com/40076122)
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
-                       InvokeUi_CookiesSubpageFpsManaged3pcAllowed) {
+                       DISABLED_InvokeUi_CookiesSubpageFpsManaged3pcAllowed) {
   ShowAndVerifyUi();
 }
 
