@@ -6887,3 +6887,6 @@ crbug.com/325323464 [ Linux ] http/tests/navigation/back-to-redirect-with-frame.
 
 # Flaky test on all platforms
 crbug.com/41484244 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-service-worker-img.tentative.https.sub.html [ Failure Pass Timeout ]
+
+# Gardener 2024-02-29
+crbug.com/327468395 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/smooth-scroll-in-load-event.html [ Failure ]
