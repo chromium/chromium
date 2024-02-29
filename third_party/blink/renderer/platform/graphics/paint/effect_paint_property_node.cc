@@ -195,7 +195,7 @@ gfx::RectF EffectPaintPropertyNode::MapRect(const gfx::RectF& rect) const {
 }
 
 std::unique_ptr<JSONObject> EffectPaintPropertyNode::ToJSON() const {
-  auto json = ToJSONBase();
+  auto json = EffectPaintPropertyNodeOrAlias::ToJSON();
   json->SetString("localTransformSpace",
                   String::Format("%p", state_.local_transform_space.get()));
   json->SetString("outputClip", String::Format("%p", state_.output_clip.get()));

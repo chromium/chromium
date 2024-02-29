@@ -35,8 +35,8 @@ class PropertyTreeState;
 class ClipPaintPropertyNode;
 
 class PLATFORM_EXPORT ClipPaintPropertyNodeOrAlias
-    : public PaintPropertyNode<ClipPaintPropertyNodeOrAlias,
-                               ClipPaintPropertyNode> {
+    : public PaintPropertyNodeBase<ClipPaintPropertyNodeOrAlias,
+                                   ClipPaintPropertyNode> {
  public:
   // Checks if the accumulated clip from |this| to |relative_to_state.Clip()|
   // has changed, at least significance of |change|, in the space of
@@ -52,14 +52,14 @@ class PLATFORM_EXPORT ClipPaintPropertyNodeOrAlias
 
   void ClearChangedToRoot(int sequence_number) const;
 
-  void AddChanged(PaintPropertyChangeType changed) {
+  void AddChanged(PaintPropertyChangeType changed) final {
     DCHECK_NE(PaintPropertyChangeType::kUnchanged, changed);
     GeometryMapperClipCache::ClearCache();
-    PaintPropertyNode::AddChanged(changed);
+    PaintPropertyNodeBase::AddChanged(changed);
   }
 
  protected:
-  using PaintPropertyNode::PaintPropertyNode;
+  using PaintPropertyNodeBase::PaintPropertyNodeBase;
 
  private:
   template <bool (TransformPaintPropertyNodeOrAlias::*ChangedMethod)(
@@ -71,7 +71,7 @@ class PLATFORM_EXPORT ClipPaintPropertyNodeOrAlias
       const TransformPaintPropertyNodeOrAlias* transform_not_to_check) const;
 };
 
-class ClipPaintPropertyNodeAlias : public ClipPaintPropertyNodeOrAlias {
+class ClipPaintPropertyNodeAlias final : public ClipPaintPropertyNodeOrAlias {
  public:
   static scoped_refptr<ClipPaintPropertyNodeAlias> Create(
       const ClipPaintPropertyNodeOrAlias& parent) {
@@ -84,7 +84,7 @@ class ClipPaintPropertyNodeAlias : public ClipPaintPropertyNodeOrAlias {
       : ClipPaintPropertyNodeOrAlias(parent, kParentAlias) {}
 };
 
-class PLATFORM_EXPORT ClipPaintPropertyNode
+class PLATFORM_EXPORT ClipPaintPropertyNode final
     : public ClipPaintPropertyNodeOrAlias {
  public:
   // To make it less verbose and more readable to construct and update a node,
@@ -197,12 +197,9 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
     return GetClipCache().NearestPixelMovingFilterClip();
   }
 
-  std::unique_ptr<JSONObject> ToJSON() const;
+  std::unique_ptr<JSONObject> ToJSON() const final;
 
  private:
-  friend class PaintPropertyNode<ClipPaintPropertyNodeOrAlias,
-                                 ClipPaintPropertyNode>;
-
   ClipPaintPropertyNode(const ClipPaintPropertyNodeOrAlias* parent,
                         State&& state)
       : ClipPaintPropertyNodeOrAlias(parent), state_(std::move(state)) {}

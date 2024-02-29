@@ -31,8 +31,8 @@ class PropertyTreeState;
 class EffectPaintPropertyNode;
 
 class PLATFORM_EXPORT EffectPaintPropertyNodeOrAlias
-    : public PaintPropertyNode<EffectPaintPropertyNodeOrAlias,
-                               EffectPaintPropertyNode> {
+    : public PaintPropertyNodeBase<EffectPaintPropertyNodeOrAlias,
+                                   EffectPaintPropertyNode> {
  public:
   // Checks if the accumulated effect from |this| to |relative_to_state
   // .Effect()| has changed, at least significance of |change|, in the space of
@@ -51,10 +51,11 @@ class PLATFORM_EXPORT EffectPaintPropertyNodeOrAlias
   void ClearChangedToRoot(int sequence_number) const;
 
  protected:
-  using PaintPropertyNode::PaintPropertyNode;
+  using PaintPropertyNodeBase::PaintPropertyNodeBase;
 };
 
-class EffectPaintPropertyNodeAlias : public EffectPaintPropertyNodeOrAlias {
+class EffectPaintPropertyNodeAlias final
+    : public EffectPaintPropertyNodeOrAlias {
  public:
   static scoped_refptr<EffectPaintPropertyNodeAlias> Create(
       const EffectPaintPropertyNodeOrAlias& parent) {
@@ -67,7 +68,7 @@ class EffectPaintPropertyNodeAlias : public EffectPaintPropertyNodeOrAlias {
       : EffectPaintPropertyNodeOrAlias(parent, kParentAlias) {}
 };
 
-class PLATFORM_EXPORT EffectPaintPropertyNode
+class PLATFORM_EXPORT EffectPaintPropertyNode final
     : public EffectPaintPropertyNodeOrAlias {
  public:
   struct AnimationState {
@@ -330,7 +331,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     return state_.self_or_ancestor_participates_in_view_transition;
   }
 
-  std::unique_ptr<JSONObject> ToJSON() const;
+  std::unique_ptr<JSONObject> ToJSON() const final;
 
  private:
   EffectPaintPropertyNode(const EffectPaintPropertyNodeOrAlias* parent,

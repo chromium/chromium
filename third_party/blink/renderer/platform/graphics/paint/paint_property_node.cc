@@ -11,43 +11,40 @@
 
 namespace blink {
 
-namespace {
-
-// Returns -1 if |maybe_ancestor| is found in the ancestor chain, or returns
-// the depth of the node from the root.
-template <typename NodeType>
-int NodeDepthOrFoundAncestor(const NodeType& node,
-                             const NodeType& maybe_ancestor) {
+int PaintPropertyNode::NodeDepthOrFoundAncestor(
+    const PaintPropertyNode& maybe_ancestor) const {
   int depth = 0;
-  for (const NodeType* n = &node; n; n = n->Parent()) {
-    if (n == &maybe_ancestor)
+  for (const auto* n = this; n; n = n->Parent()) {
+    if (n == &maybe_ancestor) {
       return -1;
+    }
     depth++;
   }
   return depth;
 }
 
-template <typename NodeType>
-const NodeType& LowestCommonAncestorTemplate(const NodeType& a,
-                                             const NodeType& b) {
+const PaintPropertyNode& PaintPropertyNode::LowestCommonAncestorInternal(
+    const PaintPropertyNode& other) const {
   // Measure both depths.
-  auto depth_a = NodeDepthOrFoundAncestor(a, b);
-  if (depth_a == -1)
-    return b;
-  auto depth_b = NodeDepthOrFoundAncestor(b, a);
-  if (depth_b == -1)
-    return a;
+  auto depth_a = NodeDepthOrFoundAncestor(other);
+  if (depth_a == -1) {
+    return other;
+  }
+  auto depth_b = other.NodeDepthOrFoundAncestor(*this);
+  if (depth_b == -1) {
+    return *this;
+  }
 
-  const auto* a_ptr = &a;
-  const auto* b_ptr = &b;
+  const auto* a_ptr = this;
+  const auto* b_ptr = &other;
 
-  // Make it so depthA >= depthB.
+  // Make it so depth_a >= depth_b.
   if (depth_a < depth_b) {
     std::swap(a_ptr, b_ptr);
     std::swap(depth_a, depth_b);
   }
 
-  // Make it so depthA == depthB.
+  // Make it so depth_a == depth_b.
   while (depth_a > depth_b) {
     a_ptr = a_ptr->Parent();
     depth_a--;
@@ -64,30 +61,19 @@ const NodeType& LowestCommonAncestorTemplate(const NodeType& a,
   return *a_ptr;
 }
 
-}  // namespace
-
-const TransformPaintPropertyNodeOrAlias& LowestCommonAncestorInternal(
-    const TransformPaintPropertyNodeOrAlias& a,
-    const TransformPaintPropertyNodeOrAlias& b) {
-  return LowestCommonAncestorTemplate(a, b);
-}
-
-const ClipPaintPropertyNodeOrAlias& LowestCommonAncestorInternal(
-    const ClipPaintPropertyNodeOrAlias& a,
-    const ClipPaintPropertyNodeOrAlias& b) {
-  return LowestCommonAncestorTemplate(a, b);
-}
-
-const EffectPaintPropertyNodeOrAlias& LowestCommonAncestorInternal(
-    const EffectPaintPropertyNodeOrAlias& a,
-    const EffectPaintPropertyNodeOrAlias& b) {
-  return LowestCommonAncestorTemplate(a, b);
-}
-
-const ScrollPaintPropertyNode& LowestCommonAncestorInternal(
-    const ScrollPaintPropertyNode& a,
-    const ScrollPaintPropertyNode& b) {
-  return LowestCommonAncestorTemplate(a, b);
+std::unique_ptr<JSONObject> PaintPropertyNode::ToJSON() const {
+  auto json = std::make_unique<JSONObject>();
+  json->SetString("this", String::Format("%p", this));
+  if (Parent()) {
+    json->SetString("parent", String::Format("%p", Parent()));
+  }
+  if (IsParentAlias()) {
+    json->SetBoolean("is_alias", true);
+  }
+  if (NodeChanged() != PaintPropertyChangeType::kUnchanged) {
+    json->SetString("changed", PaintPropertyChangeTypeToString(NodeChanged()));
+  }
+  return json;
 }
 
 const char* PaintPropertyChangeTypeToString(PaintPropertyChangeType change) {
@@ -106,5 +92,63 @@ const char* PaintPropertyChangeTypeToString(PaintPropertyChangeType change) {
       return "node-add-remove";
   }
 }
+
+#if DCHECK_IS_ON()
+
+String PaintPropertyNode::ToTreeString() const {
+  return PropertyTreePrinter().PathAsString(*this);
+}
+
+void PropertyTreePrinter::AddNode(const PaintPropertyNode* node) {
+  if (node) {
+    nodes_.insert(node);
+  }
+}
+
+String PropertyTreePrinter::NodesAsTreeString() {
+  if (nodes_.empty()) {
+    return "";
+  }
+  StringBuilder string_builder;
+  BuildTreeString(string_builder, RootNode(), 0);
+  return string_builder.ToString();
+}
+
+String PropertyTreePrinter::PathAsString(const PaintPropertyNode& last_node) {
+  for (const auto* n = &last_node; n; n = n->Parent()) {
+    AddNode(n);
+  }
+  return NodesAsTreeString();
+}
+
+void PropertyTreePrinter::BuildTreeString(StringBuilder& string_builder,
+                                          const PaintPropertyNode& node,
+                                          unsigned indent) {
+  for (unsigned i = 0; i < indent; i++) {
+    string_builder.Append(' ');
+  }
+  string_builder.Append(node.ToString());
+  string_builder.Append("\n");
+
+  for (const auto& child_node : nodes_) {
+    if (child_node->Parent() == &node) {
+      BuildTreeString(string_builder, *child_node, indent + 2);
+    }
+  }
+}
+
+const PaintPropertyNode& PropertyTreePrinter::RootNode() {
+  const auto* node = nodes_.back();
+  while (!node->IsRoot()) {
+    node = node->Parent();
+  }
+  if (node->DebugName().empty()) {
+    const_cast<PaintPropertyNode*>(node)->SetDebugName("root");
+  }
+  nodes_.insert(node);
+  return *node;
+}
+
+#endif  // DCHECK_IS_ON()
 
 }  // namespace blink

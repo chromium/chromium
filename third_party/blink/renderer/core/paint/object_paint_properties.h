@@ -400,6 +400,19 @@ class CORE_EXPORT ObjectPaintProperties {
         << "Isolation nodes have to be created for all of transform, clip, and "
            "effect trees.";
   }
+
+  void AddTransformNodesToPrinter(PropertyTreePrinter& printer) const {
+    AddNodesToPrinter(NodeId::kFirstTransform, NodeId::kLastTransform, printer);
+  }
+  void AddClipNodesToPrinter(PropertyTreePrinter& printer) const {
+    AddNodesToPrinter(NodeId::kFirstClip, NodeId::kLastClip, printer);
+  }
+  void AddEffectNodesToPrinter(PropertyTreePrinter& printer) const {
+    AddNodesToPrinter(NodeId::kFirstEffect, NodeId::kLastEffect, printer);
+  }
+  void AddScrollNodesToPrinter(PropertyTreePrinter& printer) const {
+    AddNodesToPrinter(NodeId::kFirstScroll, NodeId::kLastScroll, printer);
+  }
 #endif
 
   // Direct update method implementations.
@@ -426,18 +439,7 @@ class CORE_EXPORT ObjectPaintProperties {
   }
 
  private:
-  // We have to use a variant to keep track of which subtype of node is
-  // instantiated, since the base PaintPropertyNode class is templated and
-  // thus doesn't have a reasonable base class for us to use.
-  using NodeVariant =
-      std::variant<scoped_refptr<TransformPaintPropertyNode>,
-                   scoped_refptr<EffectPaintPropertyNode>,
-                   scoped_refptr<ClipPaintPropertyNode>,
-                   scoped_refptr<TransformPaintPropertyNodeAlias>,
-                   scoped_refptr<EffectPaintPropertyNodeAlias>,
-                   scoped_refptr<ClipPaintPropertyNodeAlias>,
-                   scoped_refptr<ScrollPaintPropertyNode>>;
-  using NodeList = SparseVector<NodeId, NodeVariant>;
+  using NodeList = SparseVector<NodeId, scoped_refptr<PaintPropertyNode>>;
 
   template <typename NodeType, typename ParentType>
   PaintPropertyChangeType Update(
@@ -491,9 +493,7 @@ class CORE_EXPORT ObjectPaintProperties {
   template <typename NodeType>
   const NodeType* GetNode(NodeId node_id) const {
     if (nodes_.HasField(node_id)) {
-      const NodeVariant& field = nodes_.GetField(node_id);
-      CHECK(std::holds_alternative<scoped_refptr<NodeType>>(field));
-      return std::get<scoped_refptr<NodeType>>(field).get();
+      return static_cast<const NodeType*>(nodes_.GetField(node_id).get());
     }
     return nullptr;
   }
@@ -514,6 +514,19 @@ class CORE_EXPORT ObjectPaintProperties {
     }
     return false;
   }
+
+#if DCHECK_IS_ON()
+  void AddNodesToPrinter(NodeId first_id,
+                         NodeId last_id,
+                         PropertyTreePrinter& printer) const {
+    for (NodeId i = first_id; i <= last_id;
+         i = static_cast<NodeId>(static_cast<int>(i) + 1)) {
+      if (nodes_.HasField(i)) {
+        printer.AddNode(nodes_.GetField(i).get());
+      }
+    }
+  }
+#endif
 
   NodeList nodes_;
 

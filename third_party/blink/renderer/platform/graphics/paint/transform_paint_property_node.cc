@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 
 #include "base/memory/values_equivalent.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
@@ -153,7 +154,7 @@ bool TransformPaintPropertyNodeOrAlias::Changed(
 }
 
 std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
-  auto json = ToJSONBase();
+  auto json = TransformPaintPropertyNodeOrAlias::ToJSON();
   if (IsIdentityOr2dTranslation()) {
     if (!Get2dTranslation().IsZero())
       json->SetString("translation2d", String(Get2dTranslation().ToString()));

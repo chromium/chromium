@@ -45,9 +45,9 @@ enum class CompositedScrollingPreference : uint8_t {
 //
 // The scroll tree differs from the other trees because it does not affect
 // geometry directly.
-class PLATFORM_EXPORT ScrollPaintPropertyNode
-    : public PaintPropertyNode<ScrollPaintPropertyNode,
-                               ScrollPaintPropertyNode> {
+class PLATFORM_EXPORT ScrollPaintPropertyNode final
+    : public PaintPropertyNodeBase<ScrollPaintPropertyNode,
+                                   ScrollPaintPropertyNode> {
  public:
   // To make it less verbose and more readable to construct and update a node,
   // a struct with default values is used to represent the state.
@@ -92,12 +92,6 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
       State&& state) {
     return base::AdoptRef(
         new ScrollPaintPropertyNode(&parent, std::move(state)));
-  }
-  static scoped_refptr<ScrollPaintPropertyNode> CreateAlias(
-      const ScrollPaintPropertyNode&) {
-    // ScrollPaintPropertyNodes cannot be aliases.
-    NOTREACHED();
-    return nullptr;
   }
 
   // The empty AnimationState struct is to meet the requirement of
@@ -181,11 +175,11 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
     return state_.compositor_element_id;
   }
 
-  std::unique_ptr<JSONObject> ToJSON() const;
+  std::unique_ptr<JSONObject> ToJSON() const final;
 
  private:
   ScrollPaintPropertyNode(const ScrollPaintPropertyNode* parent, State&& state)
-      : PaintPropertyNode(parent), state_(std::move(state)) {
+      : PaintPropertyNodeBase(parent), state_(std::move(state)) {
     Validate();
   }
 

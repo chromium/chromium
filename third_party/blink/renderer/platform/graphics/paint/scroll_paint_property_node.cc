@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
+#include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 
 namespace blink {
 
@@ -56,7 +57,7 @@ const ScrollPaintPropertyNode& ScrollPaintPropertyNode::Root() {
 }
 
 std::unique_ptr<JSONObject> ScrollPaintPropertyNode::ToJSON() const {
-  auto json = ToJSONBase();
+  auto json = PaintPropertyNode::ToJSON();
   if (!state_.container_rect.IsEmpty())
     json->SetString("containerRect", String(state_.container_rect.ToString()));
   if (!state_.contents_size.IsEmpty())
