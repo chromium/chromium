@@ -26,19 +26,18 @@ class CrOSComponentManager;
 namespace crosapi {
 
 class LacrosSelectionLoader;
+class LacrosSelectionLoaderFactory;
 using browser_util::LacrosSelection;
 
 // Manages download of the lacros-chrome binary.
 // This class is a part of ash-chrome.
 class BrowserLoader {
  public:
-  // Constructor for production.
   explicit BrowserLoader(
       scoped_refptr<component_updater::CrOSComponentManager> manager);
+
   // Constructor for testing.
-  explicit BrowserLoader(
-      std::unique_ptr<LacrosSelectionLoader> rootfs_lacros_loader,
-      std::unique_ptr<LacrosSelectionLoader> stateful_lacros_loader);
+  explicit BrowserLoader(std::unique_ptr<LacrosSelectionLoaderFactory> factory);
 
   BrowserLoader(const BrowserLoader&) = delete;
   BrowserLoader& operator=(const BrowserLoader&) = delete;
@@ -81,15 +80,36 @@ class BrowserLoader {
   };
 
   // Starts to load lacros-chrome binary or the rootfs lacros-chrome binary.
-  // |callback| is called on completion with the path to the lacros-chrome on
+  // `callback` is called on completion with the path to the lacros-chrome on
   // success, or an empty filepath on failure, and the loaded lacros selection
   // which is either 'rootfs' or 'stateful'.
+  //
+  // If Load is called during Load, the previous load requests are discarded
+  // and immediately begin loading. LoadCompletionCallback for the previous
+  // request will NOT be called in this scenario.
+  // TODO(elkurin): We should run Unload for previous LacroSelectionLoader.
+  //
+  // Load should NOT be called once Unlaod is requested. Note that per-
+  // LacrosSelectionLoader unload that is requested inside BrowserManager class
+  // may run before or while calling Load.
+  // If Load is called during per-loader unload, Load request will be processed
+  // after all ongoing per-loader unload requests complete that are at most 2.
+  // Currently, this happens only when selecting stateful lacros-chrome and
+  // unloading rootfs.
   using LoadCompletionCallback = base::OnceCallback<
       void(const base::FilePath&, LacrosSelection, base::Version)>;
   virtual void Load(LoadCompletionCallback callback);
 
   // Starts to unload lacros-chrome binary.
   // Note that this triggers to remove the user directory for lacros-chrome.
+  // Once Unload is called, BrowserLoader should NOT accept Load requests.
+  //
+  // If Unload is called during Load, stops loading procedure on main thread and
+  // requests LacrosSelectionLoaders to unload. Each loader will start unloading
+  // after the current task completed.
+  //
+  // If Unload is called during Unload, no need to unload again so the
+  // coming unload request will be ignored.
   virtual void Unload();
 
  private:
@@ -118,6 +138,10 @@ class BrowserLoader {
                            OnLoadLacrosBinarySpecifiedBySwitch);
   FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest,
                            OnLoadLacrosDirectorySpecifiedBySwitch);
+  FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest, LoadWhileUnloading);
+
+  // Starts loading now/
+  void LoadNow(LoadCompletionCallback callback);
 
   // `source` indicates why rootfs/stateful is selected. `source` is only used
   // for logging.
@@ -150,12 +174,24 @@ class BrowserLoader {
                             base::Version version,
                             const base::FilePath& lacros_binary);
 
-  // Loader for rootfs lacros and stateful lacros.
+  // Called on unload completed.
+  void OnUnloadCompleted(LacrosSelection selection);
+
+  // Loader for rootfs lacros and stateful lacros. Loader objects are
+  // constructed on start loading and reset on unload completion or on reload.
   std::unique_ptr<LacrosSelectionLoader> rootfs_lacros_loader_;
   std::unique_ptr<LacrosSelectionLoader> stateful_lacros_loader_;
 
+  std::unique_ptr<LacrosSelectionLoaderFactory> factory_;
+
   // Time when the lacros component was loaded.
   base::TimeTicks lacros_start_load_time_;
+
+  // Called when Unload is completed for both rootfs and stateful lacros.
+  base::OnceClosure callback_on_unload_completion_;
+
+  // Set to true if BrowserLoader::Unload is requested.
+  bool is_unload_requested_ = false;
 
   // Used for DCHECKs to ensure method calls executed in the correct thread.
   SEQUENCE_CHECKER(sequence_checker_);

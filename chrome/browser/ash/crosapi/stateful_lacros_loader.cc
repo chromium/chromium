@@ -146,9 +146,11 @@ StatefulLacrosLoader::StatefulLacrosLoader(
   DCHECK(component_manager_);
 }
 
+// TODO(elkurin): Maybe we should call Unload or pending_unload at least?
 StatefulLacrosLoader::~StatefulLacrosLoader() = default;
 
 void StatefulLacrosLoader::Load(LoadCompletionCallback callback, bool forced) {
+  CHECK(state_ == State::kNotLoaded || state_ == State::kLoaded) << state_;
   LOG(WARNING) << "Loading stateful lacros.";
 
   // If stateful lacros-chrome is already loaded once, run `callback`
@@ -156,39 +158,49 @@ void StatefulLacrosLoader::Load(LoadCompletionCallback callback, bool forced) {
   // This code path is used in most cases as they are already calculated on
   // getting version except for the case where BrowserLoader is forced to select
   // stateful lacros-chrome by lacros selection policy.
-  if (IsReady()) {
+  if (state_ == State::kLoaded) {
     std::move(callback).Run(version_.value(), path_.value());
     return;
   }
 
+  state_ = State::kLoading;
   LoadInternal(std::move(callback), forced);
 }
 
-void StatefulLacrosLoader::Unload() {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&CheckInstalledAndMaybeRemoveUserDirectory,
-                     component_manager_, lacros_component_name_),
-      base::BindOnce(&StatefulLacrosLoader::OnCheckInstalledToUnload,
-                     weak_factory_.GetWeakPtr()));
-}
+void StatefulLacrosLoader::Unload(base::OnceClosure callback) {
+  switch (state_) {
+    case State::kNotLoaded:
+    case State::kUnloaded:
+      // Nothing to unload if it's not loaded or already unloaded.
+      std::move(callback).Run();
+      state_ = State::kUnloaded;
+      break;
+    case State::kLoading:
+    case State::kUnloading:
+      // If loader is busy, wait Unload until the current task has finished.
+      pending_unload_ =
+          base::BindOnce(&StatefulLacrosLoader::Unload,
+                         weak_factory_.GetWeakPtr(), std::move(callback));
+      break;
+    case State::kLoaded:
+      // Start unloading if lacros-chrome is loaded.
+      state_ = State::kUnloading;
 
-void StatefulLacrosLoader::Reset() {
-  // TODO(crbug.com/1432069): Reset call while loading breaks the behavior. Need
-  // to handle such edge cases.
-  version_ = std::nullopt;
-  path_ = std::nullopt;
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock()},
+          base::BindOnce(&CheckInstalledAndMaybeRemoveUserDirectory,
+                         component_manager_, lacros_component_name_),
+          base::BindOnce(&StatefulLacrosLoader::OnCheckInstalledToUnload,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
+      break;
+  }
 }
 
 void StatefulLacrosLoader::GetVersion(
     base::OnceCallback<void(const base::Version&)> callback) {
-  // If version is already calculated, immediately return the cached value.
-  // Calculate if not.
-  // Note that version value is reset on reloading.
-  if (IsReady()) {
-    std::move(callback).Run(version_.value());
-    return;
-  }
+  CHECK_EQ(state_, State::kNotLoaded) << state_;
+
+  state_ = State::kLoading;
 
   // TODO(crbug.com/1455070): There's KI that the current implementation
   // occasionally wrongly identifies there exists. Fix the logic.
@@ -202,8 +214,18 @@ void StatefulLacrosLoader::GetVersion(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+bool StatefulLacrosLoader::IsUnloading() const {
+  return state_ == State::kUnloading;
+}
+
+bool StatefulLacrosLoader::IsUnloaded() const {
+  return state_ == State::kUnloaded;
+}
+
 void StatefulLacrosLoader::LoadInternal(LoadCompletionCallback callback,
                                         bool forced) {
+  CHECK_EQ(state_, State::kLoading) << state_;
+
   // If a compatible installation exists, use that and download any updates in
   // the background. If not, report just there is no available stateful lacros
   // unless stateful lacros is forced by policy or about:flag entry.
@@ -223,15 +245,22 @@ void StatefulLacrosLoader::LoadInternal(LoadCompletionCallback callback,
                      std::move(callback)));
 }
 
-bool StatefulLacrosLoader::IsReady() {
-  return version_.has_value() && path_.has_value();
-}
-
 void StatefulLacrosLoader::OnLoad(
     LoadCompletionCallback callback,
     component_updater::CrOSComponentManager::Error error,
     const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kLoading) << state_;
+  state_ = State::kLoaded;
+
+  if (pending_unload_) {
+    LOG(WARNING) << "Unload is requested during loading stateful.";
+    if (callback) {
+      std::move(callback).Run(base::Version(), base::FilePath());
+    }
+    std::move(pending_unload_).Run();
+    return;
+  }
 
   bool is_stateful_lacros_available =
       error == component_updater::CrOSComponentManager::Error::NONE &&
@@ -262,12 +291,21 @@ void StatefulLacrosLoader::OnCheckInstalledToGetVersion(
     base::OnceCallback<void(const base::Version&)> callback,
     bool is_installed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kLoading) << state_;
+
+  if (pending_unload_) {
+    LOG(WARNING) << "Unload is requested during getting version of stateful.";
+    state_ = State::kNotLoaded;
+    if (callback) {
+      std::move(callback).Run(base::Version());
+    }
+    std::move(pending_unload_).Run();
+    return;
+  }
 
   if (!is_installed) {
     // Run `callback` immediately with empty version and start loading stateful
     // lacros-chrome in the background.
-    // TODO(crbug.com/1432069): Reconsider `version_` and `path_` values
-    // semantics.
     LoadInternal({}, /*forced=*/false);
     std::move(callback).Run(base::Version());
     return;
@@ -282,10 +320,14 @@ void StatefulLacrosLoader::OnCheckInstalledToGetVersion(
                false);
 }
 
-void StatefulLacrosLoader::OnCheckInstalledToUnload(bool was_installed) {
+void StatefulLacrosLoader::OnCheckInstalledToUnload(base::OnceClosure callback,
+                                                    bool was_installed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kUnloading) << state_;
 
   if (!was_installed) {
+    state_ = State::kUnloaded;
+    std::move(callback).Run();
     return;
   }
 
@@ -294,15 +336,37 @@ void StatefulLacrosLoader::OnCheckInstalledToUnload(bool was_installed) {
   // assumes that system salt is available. This isn't always true when chrome
   // restarts to apply non-owner flags. It's hard to make MetadataTable async.
   // Ensure salt is available before unloading. https://crbug.com/1122674
-  ash::SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
-      &StatefulLacrosLoader::UnloadAfterCleanUp, weak_factory_.GetWeakPtr()));
+  ash::SystemSaltGetter::Get()->GetSystemSalt(
+      base::BindOnce(&StatefulLacrosLoader::UnloadAfterCleanUp,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void StatefulLacrosLoader::UnloadAfterCleanUp(const std::string& ignored_salt) {
+void StatefulLacrosLoader::UnloadAfterCleanUp(base::OnceClosure callback,
+                                              const std::string& ignored_salt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kUnloading) << state_;
 
   CHECK(ash::SystemSaltGetter::Get()->GetRawSalt());
   component_manager_->Unload(lacros_component_name_);
+
+  state_ = State::kUnloaded;
+  std::move(callback).Run();
+}
+
+std::ostream& operator<<(std::ostream& ostream,
+                         StatefulLacrosLoader::State state) {
+  switch (state) {
+    case StatefulLacrosLoader::State::kNotLoaded:
+      return ostream << "NotLoaded";
+    case StatefulLacrosLoader::State::kLoading:
+      return ostream << "Loading";
+    case StatefulLacrosLoader::State::kLoaded:
+      return ostream << "Loaded";
+    case StatefulLacrosLoader::State::kUnloading:
+      return ostream << "Unloading";
+    case StatefulLacrosLoader::State::kUnloaded:
+      return ostream << "Unloaded";
+  }
 }
 
 }  // namespace crosapi
