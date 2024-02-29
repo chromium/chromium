@@ -43,6 +43,6 @@ def junit_test(*, name, label, skip_usage_check = False):
 
     _targets_common.create_test(
         name = name,
-        spec_type = _targets_common.spec_type_for_unimplemented_target_type("junit_test"),
+        spec_handler = _targets_common.spec_handler_for_unimplemented_target_type("junit_test"),
         spec_value = None,
     )

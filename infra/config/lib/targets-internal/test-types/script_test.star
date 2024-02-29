@@ -6,7 +6,7 @@
 
 load("../common.star", _targets_common = "common")
 
-_script_test_target_type = _targets_common.spec_type(
+_script_test_spec_handler = _targets_common.spec_handler(
     finalize = (lambda name, spec: ("scripts", name, spec)),
 )
 
@@ -33,7 +33,7 @@ def script_test(*, name, script):
 
     _targets_common.create_test(
         name = name,
-        spec_type = _script_test_target_type,
+        spec_handler = _script_test_spec_handler,
         spec_value = dict(
             name = name,
             script = script,

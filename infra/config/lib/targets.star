@@ -945,7 +945,7 @@ def get_targets_spec_generator():
         additional_compile_targets, test_spec_by_name = bundle_resolver(bundle_node)
         sort_key_and_specs_by_type_key = {}
         for name, spec in test_spec_by_name.items():
-            type_key, sort_key, spec = spec.spec_type.finalize(name, spec.spec_value)
+            type_key, sort_key, spec = spec.handler.finalize(name, spec.spec_value)
             sort_key_and_specs_by_type_key.setdefault(type_key, []).append((sort_key, spec))
 
         specs_by_type_key = {}

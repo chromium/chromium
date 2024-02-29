@@ -83,29 +83,53 @@ def _create_bundle(*, name, additional_compile_targets = [], targets = [], build
         graph.add_edge(key, _targets_nodes.BUNDLE.key(t))
     return key
 
-def _create_test(*, name, spec_type, spec_value):
+def _create_test(*, name, spec_handler, spec_value):
     return _create_bundle(
         name = name,
         test_spec_by_name = {
             name: struct(
-                spec_type = spec_type,
+                handler = spec_handler,
                 spec_value = spec_value,
             ),
         },
     )
 
-def _spec_type(*, finalize):
+def _spec_handler(*, finalize):
+    """Create a spec handler for a target type.
+
+    The spec handler is responsible for producing the final value of the spec
+    once all mixins have been applied.
+
+    Args:
+        finalize: Produce the final value of a spec for a target. The function
+            will be passed the name of the test and the spec value that has been
+            modified by all applicable mixins. The function should return a
+            3-tuple:
+            * The test_suites key that the spec should be added to in the output
+                json file (one of "gtest_tests", "isolated_scripts",
+                "junit_tests", "scripts" or "skylab_tests").
+            * The sort key used to order tests for a given test_suites key. The
+                format is up to the spec handler, but all sort keys for a given
+                test_suites key must be comparable.
+            * The final value of the spec. This must be some object that can be
+                encoded to json with json.encode
+                (https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/main/lucicfg/doc/README.md#json.encode).
+
+    Returns:
+        An object that can be passed to the spec_handler argument of
+        common.create_test.
+    """
     return struct(
         finalize = finalize,
     )
 
 # TODO: crbug.com/1420012 - Update the handling of unimplemented test types so
 # that more context is provided about where the error is resulting from
-def _spec_type_for_unimplemented_target_type(type_name):
+def _spec_handler_for_unimplemented_target_type(type_name):
     def unimplemented():
         fail("support for {} targets is not yet implemented".format(type_name))
 
-    return _spec_type(
+    return _spec_handler(
         finalize = (lambda name, spec: unimplemented()),
     )
 
@@ -119,6 +143,6 @@ common = struct(
     create_bundle = _create_bundle,
 
     # Functions for defining target spec types
-    spec_type = _spec_type,
-    spec_type_for_unimplemented_target_type = _spec_type_for_unimplemented_target_type,
+    spec_handler = _spec_handler,
+    spec_handler_for_unimplemented_target_type = _spec_handler_for_unimplemented_target_type,
 )
