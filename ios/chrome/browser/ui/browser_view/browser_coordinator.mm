@@ -133,6 +133,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/ui/autofill/error_dialog/autofill_error_dialog_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_coordinator.h"
@@ -388,6 +389,10 @@ enum class ToolbarKind {
 // The coordinator that manages enterprise prompts.
 @property(nonatomic, strong)
     EnterprisePromptCoordinator* enterprisePromptCoordinator;
+
+// Coordinator to show the Autofill error dialog.
+@property(nonatomic, strong)
+    AutofillErrorDialogCoordinator* autofillErrorDialogCoordinator;
 
 // Coordinator for the find bar.
 @property(nonatomic, strong) FindBarCoordinator* findBarCoordinator;
@@ -1239,6 +1244,9 @@ enum class ToolbarKind {
   /* virtualCardEnrollmentBottomSheetCoordinator is created and started by a
    * BrowserCommand */
 
+  /* autofillErrorDialogCoordinator is created and started by a BrowserCommand
+   */
+
   /* PriceNotificationsViewCoordinator is created and started by a
    * BrowserCommand */
 
@@ -1671,9 +1679,22 @@ enum class ToolbarKind {
 
 - (void)showAutofillErrorDialog:
     (autofill::AutofillErrorDialogContext)errorContext {
+  if (self.autofillErrorDialogCoordinator) {
+    [self.autofillErrorDialogCoordinator stop];
+  }
+
+  self.autofillErrorDialogCoordinator = [[AutofillErrorDialogCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                    errorContext:std::move(errorContext)];
+  self.autofillErrorDialogCoordinator.autofillCommandsHandler =
+      HandlerForProtocol(self.dispatcher, AutofillCommands);
+  [self.autofillErrorDialogCoordinator start];
 }
 
 - (void)dismissAutofillErrorDialog {
+  [self.autofillErrorDialogCoordinator stop];
+  self.autofillErrorDialogCoordinator = nil;
 }
 
 #pragma mark - BrowserCoordinatorCommands
