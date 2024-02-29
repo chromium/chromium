@@ -16879,6 +16879,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IWA_INSTALLER_ALREADY_INSTALLED_SUBTITLE" desc="Subtitle of an error dialog shown when the bundle trying to be installed is already installed.">
       <ph name="APP_NAME">$1<ex>Google Maps</ex></ph> version <ph name="APP_VERSION">$2<ex>1.0</ex></ph> is already installed on this device
     </message>
+    <message name="IDS_IWA_INSTALLER_BODY_SCREENREADER_NAME" desc="Name that screen readers should call the body (top) section of the IWA installer UI.">
+      Body
+    </message>
+    <message name="IDS_IWA_INSTALLER_DETAILS_SCREENREADER_NAME" desc="Name that screen readers should call the details section of the IWA installer UI.">
+      Details
+    </message>
+    <message name="IDS_IWA_INSTALLER_PROGRESS_SCREENREADER_NAME" desc="Name that screen readers should call the progress bar section of the IWA installer UI.">
+      Progress
+    </message>
     <message name="IDS_IWA_INSTALLER_INSTALL_SUBTITLE" desc="Subtitle of the installing screen of the IWA installer.">
       Please wait while installation is in progress
     </message>
