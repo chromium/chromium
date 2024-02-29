@@ -109,14 +109,22 @@ class TestCallbacksThatExplicitlyDeletesObserver : public TestCallbacks {
   TestCallbacksThatExplicitlyDeletesObserver& operator=(
       const TestCallbacksThatExplicitlyDeletesObserver&) = delete;
 
-  void set_observer_to_delete_in_animation_started(
-      CallbackLayerAnimationObserver* observer) {
-    observer_to_delete_in_animation_started_ = observer;
+  void set_observer_to_delete_in_animation_ended(
+      std::unique_ptr<CallbackLayerAnimationObserver> observer) {
+    observer_to_delete_in_animation_ended_ = std::move(observer);
   }
 
-  void set_observer_to_delete_in_animation_ended(
-      CallbackLayerAnimationObserver* observer) {
-    observer_to_delete_in_animation_ended_ = observer;
+  void set_observer_to_delete_in_animation_started(
+      std::unique_ptr<CallbackLayerAnimationObserver> observer) {
+    observer_to_delete_in_animation_started_ = std::move(observer);
+  }
+
+  CallbackLayerAnimationObserver* observer_to_delete_in_animation_started() {
+    return observer_to_delete_in_animation_started_.get();
+  }
+
+  CallbackLayerAnimationObserver* observer_to_delete_in_animation_ended() {
+    return observer_to_delete_in_animation_ended_.get();
   }
 
   // TestCallbacks:
@@ -126,12 +134,12 @@ class TestCallbacksThatExplicitlyDeletesObserver : public TestCallbacks {
 
  private:
   // The observer to delete, if non-NULL, in AnimationsStarted().
-  raw_ptr<CallbackLayerAnimationObserver, DanglingUntriaged>
-      observer_to_delete_in_animation_started_ = nullptr;
+  std::unique_ptr<CallbackLayerAnimationObserver>
+      observer_to_delete_in_animation_started_;
 
   // The observer to delete, if non-NULL, in AnimationsEnded().
-  raw_ptr<CallbackLayerAnimationObserver, DanglingUntriaged>
-      observer_to_delete_in_animation_ended_ = nullptr;
+  std::unique_ptr<CallbackLayerAnimationObserver>
+      observer_to_delete_in_animation_ended_;
 };
 
 TestCallbacksThatExplicitlyDeletesObserver::
@@ -139,15 +147,13 @@ TestCallbacksThatExplicitlyDeletesObserver::
 
 void TestCallbacksThatExplicitlyDeletesObserver::AnimationsStarted(
     const CallbackLayerAnimationObserver& observer) {
-  if (observer_to_delete_in_animation_started_)
-    delete observer_to_delete_in_animation_started_;
+  observer_to_delete_in_animation_started_.reset();
   TestCallbacks::AnimationsStarted(observer);
 }
 
 bool TestCallbacksThatExplicitlyDeletesObserver::AnimationsEnded(
     const CallbackLayerAnimationObserver& observer) {
-  if (observer_to_delete_in_animation_ended_)
-    delete observer_to_delete_in_animation_ended_;
+  observer_to_delete_in_animation_ended_.reset();
   return TestCallbacks::AnimationsEnded(observer);
 }
 
@@ -419,17 +425,17 @@ TEST_F(
 
   bool is_destroyed = false;
 
-  TestCallbackLayerAnimationObserver* observer =
-      new TestCallbackLayerAnimationObserver(
+  std::unique_ptr<TestCallbackLayerAnimationObserver> observer =
+      std::make_unique<TestCallbackLayerAnimationObserver>(
           base::BindRepeating(&TestCallbacks::AnimationsStarted,
                               base::Unretained(&callbacks)),
           base::BindRepeating(&TestCallbacks::AnimationsEnded,
                               base::Unretained(&callbacks)),
           &is_destroyed);
 
-  callbacks.set_observer_to_delete_in_animation_started(observer);
+  callbacks.set_observer_to_delete_in_animation_started(std::move(observer));
 
-  observer->SetActive();
+  callbacks.observer_to_delete_in_animation_started()->SetActive();
 
   EXPECT_TRUE(is_destroyed);
 }
@@ -449,8 +455,8 @@ TEST_F(
 
   bool is_destroyed = false;
 
-  TestCallbackLayerAnimationObserver* observer =
-      new TestCallbackLayerAnimationObserver(
+  std::unique_ptr<TestCallbackLayerAnimationObserver> observer =
+      std::make_unique<TestCallbackLayerAnimationObserver>(
           base::BindRepeating(&TestCallbacks::AnimationsStarted,
                               base::Unretained(&callbacks)),
           base::BindRepeating(&TestCallbacks::AnimationsEnded,
@@ -462,9 +468,9 @@ TEST_F(
   observer_->OnLayerAnimationStarted(sequence_1);
   observer_->OnLayerAnimationStarted(sequence_2);
 
-  callbacks.set_observer_to_delete_in_animation_started(observer);
+  callbacks.set_observer_to_delete_in_animation_started(std::move(observer));
 
-  observer->SetActive();
+  callbacks.observer_to_delete_in_animation_started()->SetActive();
 
   EXPECT_TRUE(is_destroyed);
 }
@@ -480,17 +486,17 @@ TEST_F(CallbackLayerAnimationObserverTest,
 
   bool is_destroyed = false;
 
-  TestCallbackLayerAnimationObserver* observer =
-      new TestCallbackLayerAnimationObserver(
+  std::unique_ptr<TestCallbackLayerAnimationObserver> observer =
+      std::make_unique<TestCallbackLayerAnimationObserver>(
           base::BindRepeating(&TestCallbacks::AnimationsStarted,
                               base::Unretained(&callbacks)),
           base::BindRepeating(&TestCallbacks::AnimationsEnded,
                               base::Unretained(&callbacks)),
           &is_destroyed);
 
-  callbacks.set_observer_to_delete_in_animation_ended(observer);
+  callbacks.set_observer_to_delete_in_animation_ended(std::move(observer));
 
-  observer->SetActive();
+  callbacks.observer_to_delete_in_animation_ended()->SetActive();
 
   EXPECT_TRUE(is_destroyed);
 }
