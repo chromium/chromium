@@ -70,7 +70,7 @@ Length InterpolableGridLength::CreateGridLength(
 
   DCHECK(value_);
   if (type_ == kFlex) {
-    return Length::Flex(To<InterpolableNumber>(*value_).Value());
+    return Length::Flex(To<InterpolableNumber>(*value_).Value(conversion_data));
   }
   return To<InterpolableLength>(*value_).CreateLength(
       conversion_data, Length::ValueRange::kNonNegative);
