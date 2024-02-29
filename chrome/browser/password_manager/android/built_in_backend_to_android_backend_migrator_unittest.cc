@@ -89,6 +89,8 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
         prefs::kPasswordsUseUPMLocalAndSeparateStores,
         static_cast<int>(
             password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kShouldShowPostPasswordMigrationSheetAtStartup, false);
     CreateMigrator(&built_in_backend_, &android_backend_, &prefs_);
   }
 
@@ -184,6 +186,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   EXPECT_EQ(
       base::Time::Now().InSecondsFSinceUnixEpoch(),
       prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+  EXPECT_TRUE(prefs()->GetBoolean(
+      prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
 }
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
@@ -700,6 +704,8 @@ class BuiltInBackendToAndroidBackendMigratorTestMetrics
         prefs::kPasswordsUseUPMLocalAndSeparateStores,
         static_cast<int>(
             password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+    prefs()->registry()->RegisterBooleanPref(
+        prefs::kShouldShowPostPasswordMigrationSheetAtStartup, false);
 
     if (GetParam().migration_ran_before) {
       // Setup the pref to indicate that the initial migration has happened

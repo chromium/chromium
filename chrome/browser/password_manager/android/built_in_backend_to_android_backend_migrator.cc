@@ -517,6 +517,8 @@ void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
       case MigrationType::kNonSyncableToBuiltInBackend:
         break;
     }
+    prefs_->SetBoolean(prefs::kShouldShowPostPasswordMigrationSheetAtStartup,
+                       true);
   }
 
   migration_in_progress_type_ = MigrationType::kNone;
