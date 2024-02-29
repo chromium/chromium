@@ -226,6 +226,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // Otherwise, this is undefined.
   private previewVoicePlaying: SpeechSynthesisVoice|null;
 
+  private localeToDisplayName: {[locale: string]: string};
+
   // State for speech synthesis paused/play state needs to be tracked explicitly
   // because there are bugs with window.speechSynthesis.paused and
   // window.speechSynthesis.speaking on some platforms.
@@ -637,8 +639,24 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private getVoices(): SpeechSynthesisVoice[] {
     if (!this.availableVoices) {
       this.availableVoices = this.synth.getVoices();
+      this.populateDisplayNamesForLocaleCodes();
     }
     return this.availableVoices;
+  }
+
+  private populateDisplayNamesForLocaleCodes() {
+    this.localeToDisplayName = {};
+
+    for (const {lang} of this.availableVoices) {
+      if (!(lang in this.localeToDisplayName)) {
+        const langDisplayName =
+            chrome.readingMode.getDisplayNameForLocale(lang, lang);
+        if (langDisplayName) {
+          this.localeToDisplayName =
+              {...this.localeToDisplayName, [lang]: langDisplayName};
+        }
+      }
+    }
   }
 
   private replaceElement(current: HTMLElement, replacer: Node) {

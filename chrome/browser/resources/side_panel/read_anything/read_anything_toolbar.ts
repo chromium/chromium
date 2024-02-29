@@ -112,6 +112,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       paused: Boolean,
       selectedVoice: Object,
       availableVoices: Array,
+      localeToDisplayName: Object,
       previewVoicePlaying: Object,
     };
   }

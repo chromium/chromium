@@ -78,7 +78,7 @@
 
 <cr-action-menu id="voiceSelectionMenu" on-close="onClose_">
   <template is="dom-repeat" items="[[voiceSelectionOptions_]]">
-    <div id$="group-[[item.language]]">
+    <div data-test-id$="group-[[stringToHtmlTestId_(item.language)]]">
       <span class="dropdown-line lang-group-title">
         [[item.language]]
       </span>

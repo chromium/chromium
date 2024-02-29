@@ -23,10 +23,6 @@ export interface VoiceSelectionMenuElement {
   };
 }
 
-// This ID does not ensure uniqueness and is just used for testing purposes.
-export function voiceToHtmlTestId(voice: SpeechSynthesisVoice): string {
-  return voice.name.replace(/\s/g, '-');
-}
 interface VoiceDropdownGroup {
   language: string;
   voices: VoiceDropdownItem[];
@@ -68,10 +64,11 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
       availableVoices: Array,
       previewVoicePlaying: Object,
       paused: Boolean,
+      localeToDisplayName: Object,
       voiceSelectionOptions_: {
         type: Object,
-        computed:
-            'computeVoiceDropdown_(selectedVoice, availableVoices, previewVoicePlaying)',
+        computed: 'computeVoiceDropdown_(selectedVoice, availableVoices,' +
+            ' previewVoicePlaying, localeToDisplayName)',
       },
     };
   }
@@ -79,32 +76,41 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   private computeVoiceDropdown_(
       selectedVoice: SpeechSynthesisVoice,
       availableVoices: SpeechSynthesisVoice[],
-      previewVoicePlaying: SpeechSynthesisVoice|null): VoiceDropdownGroup[] {
+      previewVoicePlaying: SpeechSynthesisVoice|null,
+      localeToDisplayName: {[lang: string]: string}): VoiceDropdownGroup[] {
     const languageToVoices =
         availableVoices.reduce((languageToDropdownItems, voice) => {
           const dropdownItem: VoiceDropdownItem = {
             title: voice.name,
             voice,
-            id: voiceToHtmlTestId(voice),
+            id: this.stringToHtmlTestId_(voice.name),
             selected: voicesAreEqual(selectedVoice, voice),
             previewPlaying: voicesAreEqual(previewVoicePlaying, voice),
           };
 
-          if (languageToDropdownItems[voice.lang]) {
-            languageToDropdownItems[voice.lang].push(dropdownItem);
+          const lang =
+              (localeToDisplayName && voice.lang in localeToDisplayName) ?
+              localeToDisplayName[voice.lang] :
+              voice.lang;
+
+          if (languageToDropdownItems[lang]) {
+            languageToDropdownItems[lang].push(dropdownItem);
           } else {
-            languageToDropdownItems[voice.lang] = [dropdownItem];
+            languageToDropdownItems[lang] = [dropdownItem];
           }
 
           return languageToDropdownItems;
         }, {} as {[language: string]: VoiceDropdownItem[]});
 
-    // TODO(crbug.com/1474951) Use readable language instead of ISO language
-    // codes (e.g. en-US)
     return Object.entries(languageToVoices).map(([
                                                   language,
                                                   voices,
                                                 ]) => ({language, voices}));
+  }
+
+  // This ID does not ensure uniqueness and is just used for testing purposes.
+  private stringToHtmlTestId_(s: string): string {
+    return s.replace(/\s/g, '-').replace(/[()]/g, '');
   }
 
   private onVoiceSelectionMenuClick_(event: MouseEvent) {

@@ -7,8 +7,11 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_m
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_menu.js';
-import {voiceToHtmlTestId} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_menu.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+
+function stringToHtmlTestId(s: string): string {
+  return s.replace(/\s/g, '-').replace(/[()]/g, '');
+}
 
 suite('VoiceSelectionMenuElement', () => {
   let voiceSelectionMenu: VoiceSelectionMenuElement;
@@ -25,7 +28,8 @@ suite('VoiceSelectionMenuElement', () => {
   const getDropdownItemForVoice = (voice: SpeechSynthesisVoice) => {
     return voiceSelectionMenu.$.voiceSelectionMenu
         .querySelector<HTMLButtonElement>(`[data-test-id="${
-            voiceToHtmlTestId(voice)}"].dropdown-voice-selection-button`)!;
+            stringToHtmlTestId(voice.name)}"].dropdown-voice-selection-button`)!
+        ;
   };
 
   setup(() => {
@@ -132,10 +136,10 @@ suite('VoiceSelectionMenuElement', () => {
     test('it groups voices by language', () => {
       const englishGroup: HTMLElement =
           voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
-              'div#group-en-US')!;
+              'div[data-test-id="group-en-US"]')!;
       const italianGroup: HTMLElement =
           voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
-              'div#group-it-IT')!;
+              'div[data-test-id="group-it-IT"]')!;
 
       const englishDropdownItems: NodeListOf<HTMLElement> =
           englishGroup.querySelectorAll<HTMLButtonElement>(
@@ -146,6 +150,38 @@ suite('VoiceSelectionMenuElement', () => {
 
       assertEquals(englishDropdownItems.length, 3);
       assertEquals(italianDropdownItems.length, 1);
+    });
+
+
+    suite('with display names for locales', () => {
+      setup(() => {
+        // Bypass Typescript compiler to allow us to set a private readonly
+        // property
+        // @ts-ignore
+        voiceSelectionMenu.localeToDisplayName = {
+          'en-US': 'English (United States)',
+        };
+        flush();
+      });
+
+      test('it displays the display name', () => {
+        const englishGroup: HTMLElement =
+            voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
+                'div[data-test-id="group-English-United-States"]')!;
+        const groupNameSpan = englishGroup.querySelector<HTMLElement>('span');
+
+        assertEquals(
+            groupNameSpan!.textContent!.trim(), 'English (United States)');
+      });
+
+      test('it defaults to the locale when there is no display name', () => {
+        const italianGroup: HTMLElement =
+            voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
+                'div[data-test-id="group-it-IT"]')!;
+        const groupNameSpan = italianGroup.querySelector<HTMLElement>('span');
+
+        assertEquals(groupNameSpan!.textContent!.trim(), 'it-IT');
+      });
     });
 
     suite('when voices have duplicate names', () => {
@@ -161,10 +197,10 @@ suite('VoiceSelectionMenuElement', () => {
       test('it groups the duplicate languages correctly', () => {
         const usEnglishGroup: HTMLElement =
             voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
-                'div#group-en-US')!;
+                'div[data-test-id="group-en-US"]')!;
         const ukEnglishGroup: HTMLElement =
             voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
-                'div#group-en-UK')!;
+                'div[data-test-id="group-en-UK"]')!;
 
         const usEnglishDropdownItems: NodeListOf<HTMLElement> =
             usEnglishGroup.querySelectorAll<HTMLButtonElement>(

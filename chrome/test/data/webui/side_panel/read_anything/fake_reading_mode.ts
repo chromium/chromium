@@ -299,4 +299,8 @@ export class FakeReadingMode {
   // Signal that the supported fonts should be updated i.e. that the brower's
   // preferred language has changed.
   updateFonts() {}
+
+  getDisplayNameForLocale(_locale: string, _displayLocale: string): string {
+    return '';
+  }
 }

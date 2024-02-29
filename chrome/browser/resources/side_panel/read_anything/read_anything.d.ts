@@ -298,5 +298,9 @@ declare namespace chrome {
 
     // Gets the stored image data url from the AXNode.
     function getImageDataUrl(nodeId: number): string;
+
+    // Gets the readable name for a locale code
+    function getDisplayNameForLocale(locale: string, displayLocale: string):
+        string;
   }
 }
