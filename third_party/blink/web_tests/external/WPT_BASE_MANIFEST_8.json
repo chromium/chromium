@@ -343013,6 +343013,14 @@
       []
      ],
      "insertion-removing-steps": {
+      "blur-event.window-expected.txt": [
+       "7c476a91ba6d9ebbca436a25cccd90144bd3e23f",
+       []
+      ],
+      "insertion-removing-steps-iframe.window-expected.txt": [
+       "a52434e4389db97ce71166f2f9975406e5b0ed7c",
+       []
+      ],
       "insertion-removing-steps-script.window-expected.txt": [
        "420e94308f537d87004ad920c6fb3ea0c758ee88",
        []
@@ -478467,8 +478475,15 @@
       ]
      ],
      "insertion-removing-steps": {
+      "blur-event.window.js": [
+       "4c8cd85cbf5483c552047fe9698576f201a30a5f",
+       [
+        "dom/nodes/insertion-removing-steps/blur-event.window.html",
+        {}
+       ]
+      ],
       "insertion-removing-steps-iframe.window.js": [
-       "a10610f4677b159b8373ead2ff9f6fd1f49dabf7",
+       "60c2bec0c8aa213b1bfa1d75c99ca1745cb9871c",
        [
         "dom/nodes/insertion-removing-steps/insertion-removing-steps-iframe.window.html",
         {}
@@ -583917,7 +583932,7 @@
       ]
      ],
      "test_serialize.html": [
-      "88a9ce5221dcf90ad7c064b6e135ba5e1b37da4f",
+      "59226db6e72b731cf0973a3c2c0fd75d950aefc3",
       [
        null,
        {}
