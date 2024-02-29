@@ -113,8 +113,7 @@ void SplitViewDividerView::OnMouseExited(const ui::MouseEvent& event) {
 bool SplitViewDividerView::OnMousePressed(const ui::MouseEvent& event) {
   gfx::Point location(event.location());
   views::View::ConvertPointToScreen(this, &location);
-  divider_->StartResizeWithDivider(location);
-  OnResizeStatusChanged();
+  StartResizing(location);
   return true;
 }
 
@@ -128,11 +127,7 @@ bool SplitViewDividerView::OnMouseDragged(const ui::MouseEvent& event) {
 void SplitViewDividerView::OnMouseReleased(const ui::MouseEvent& event) {
   gfx::Point location(event.location());
   views::View::ConvertPointToScreen(this, &location);
-  divider_->EndResizeWithDivider(location);
-  OnResizeStatusChanged();
-  if (event.GetClickCount() == 2) {
-    SwapWindows();
-  }
+  EndResizing(location, /*swap_windows=*/event.GetClickCount() == 2);
 }
 
 void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
@@ -152,16 +147,15 @@ void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::ET_GESTURE_TAP_DOWN:
     case ui::ET_GESTURE_SCROLL_BEGIN:
-      divider_->StartResizeWithDivider(location);
-      OnResizeStatusChanged();
+      StartResizing(location);
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
       divider_->ResizeWithDivider(location);
       break;
     case ui::ET_GESTURE_END:
-      divider_->EndResizeWithDivider(location);
-      OnResizeStatusChanged();
+      EndResizing(location, /*swap_windows=*/false);
       break;
+
     default:
       break;
   }
@@ -198,7 +192,10 @@ void SplitViewDividerView::OnResizeStatusChanged() {
   // tablet <-> clamshell transition.
   // TODO(b/314018158): Remove `split_view_controller_` from
   // `SplitViewDividerView`.
-  if (!divider_ || !split_view_controller_->InSplitViewMode()) {
+  // Note that the `divider_widget()` pointer might be cleared while the divider
+  // and this view is being closed asynchronously.
+  if (!divider_->divider_widget() ||
+      !split_view_controller_->InSplitViewMode()) {
     return;
   }
 
@@ -229,6 +226,28 @@ void SplitViewDividerView::OnResizeStatusChanged() {
 
   divider_handler_view_->Refresh(
       split_view_controller_->IsResizingWithDivider());
+}
+
+void SplitViewDividerView::StartResizing(gfx::Point location) {
+  // `StartResizeWithDivider()` may cause this view to be destroyed.
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  divider_->StartResizeWithDivider(location);
+  if (weak_ptr) {
+    OnResizeStatusChanged();
+  }
+}
+
+void SplitViewDividerView::EndResizing(gfx::Point location, bool swap_windows) {
+  // `EndResizeWithDivider()` may cause this view to be destroyed.
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  divider_->EndResizeWithDivider(location);
+  if (!weak_ptr) {
+    return;
+  }
+  OnResizeStatusChanged();
+  if (swap_windows) {
+    SwapWindows();
+  }
 }
 
 BEGIN_METADATA(SplitViewDividerView)

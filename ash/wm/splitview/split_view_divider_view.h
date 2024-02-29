@@ -49,6 +49,12 @@ class SplitViewDividerView : public views::View,
 
   void OnResizeStatusChanged();
 
+  void StartResizing(gfx::Point location);
+
+  // Safely ends resizing, preventing use after destruction. If
+  // `swap_windows` is true, swaps the windows after resizing.
+  void EndResizing(gfx::Point location, bool swap_windows);
+
   // TODO(b/314018158): Replace with `LayoutDividerController`.
   raw_ptr<SplitViewController, DanglingUntriaged> split_view_controller_;
   raw_ptr<SplitViewDividerHandlerView> divider_handler_view_ = nullptr;
@@ -56,6 +62,8 @@ class SplitViewDividerView : public views::View,
 
   // Securely updates the cursor.
   CursorSetter cursor_setter_;
+
+  base::WeakPtrFactory<SplitViewDividerView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

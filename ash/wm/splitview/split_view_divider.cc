@@ -138,10 +138,15 @@ void SplitViewDivider::CloseDividerWidget() {
   }
   observed_windows_.clear();
 
-  divider_view_ = nullptr;
   dragged_window_ = nullptr;
 
   if (divider_widget_) {
+    // Disable any event handling on the divider while we are closing the
+    // widget.
+    divider_view_->SetCanProcessEventsWithinSubtree(false);
+    divider_widget_->GetNativeWindow()->SetEventTargetingPolicy(
+        aura::EventTargetingPolicy::kNone);
+    divider_view_ = nullptr;
     divider_widget_->Close();
     divider_widget_ = nullptr;
   }
