@@ -183,7 +183,7 @@ GuestOsSharePath::GuestOsSharePath(Profile* profile)
   }
 
   if (auto* vmgr = file_manager::VolumeManager::Get(profile_)) {
-    vmgr->AddObserver(this);
+    volume_manager_observer_.Observe(vmgr);
   }
 
   // We receive notifications from DriveFS about any deleted paths so
@@ -200,10 +200,6 @@ void GuestOsSharePath::Shutdown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (auto* client = ash::ConciergeClient::Get()) {
     client->RemoveVmObserver(this);
-  }
-
-  if (auto* vmgr = file_manager::VolumeManager::Get(profile_)) {
-    vmgr->RemoveObserver(this);
   }
 
   for (auto& shared_path : shared_paths_) {
