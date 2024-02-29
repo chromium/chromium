@@ -470,9 +470,11 @@ void CmdBufFuzz::RunCommandBuffer(fuzzing::CmdBufSession session) {
             // Passing totally unstructured data leads to hitting validation
             // errors in webgpu_decoder_impl.cc.
 
-            // TODO(bookholt): Explore whether it's worth giving some structure
-            // to data sent to HandleReturnData().
-            command_buffer_->HandleReturnData(data_span);
+            // We don't fuzz HandleReturnData because, as of right now, that
+            // command is exclusively used by the client in the renderer.
+            // {GPU Process}->{Renderer Process} attacks are not in our threat
+            // model.
+            // command_buffer_->HandleReturnData(data_span);
             break;
           }
 
