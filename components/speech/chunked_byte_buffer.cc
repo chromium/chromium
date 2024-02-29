@@ -8,9 +8,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/big_endian.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/lazy_instance.h"
+#include "base/numerics/byte_conversions.h"
 
 namespace {
 
@@ -119,9 +120,7 @@ ChunkedByteBuffer::Chunk::~Chunk() {}
 
 size_t ChunkedByteBuffer::Chunk::ExpectedContentLength() const {
   DCHECK_EQ(header.size(), kHeaderLength);
-  uint32_t content_length = 0;
-  base::ReadBigEndian(&header[0], &content_length);
-  return static_cast<size_t>(content_length);
+  return base::numerics::U32FromBigEndian(base::span(header).first<4>());
 }
 
 }  // namespace speech

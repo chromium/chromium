@@ -63,7 +63,7 @@ class NET_EXPORT WebSocketFrameParser {
   // If there is not enough data in the remaining buffer to parse a frame
   // header, this function returns 0 without doing anything.
   // This function may update |websocket_error_| if it observes a corrupt frame.
-  size_t DecodeFrameHeader(base::span<const char> data);
+  size_t DecodeFrameHeader(base::span<const uint8_t> data);
 
   // Decodes frame payload and creates a WebSocketFrameChunk object.
   // This function updates |frame_offset_| after

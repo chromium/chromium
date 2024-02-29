@@ -4,7 +4,8 @@
 
 #include "components/gcm_driver/crypto/message_payload_parser.h"
 
-#include "base/big_endian.h"
+#include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/string_piece.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"
 
@@ -37,8 +38,8 @@ MessagePayloadParser::MessagePayloadParser(base::StringPiece message) {
   salt_ = std::string(message.substr(0, kSaltSize));
   message.remove_prefix(kSaltSize);
 
-  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(message.data()),
-                      &record_size_);
+  record_size_ =
+      base::numerics::U32FromBigEndian(base::as_byte_span(message).first<4>());
   message.remove_prefix(sizeof(record_size_));
 
   if (record_size_ < kMinimumRecordSize) {
@@ -46,9 +47,8 @@ MessagePayloadParser::MessagePayloadParser(base::StringPiece message) {
     return;
   }
 
-  uint8_t public_key_length;
-  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(message.data()),
-                      &public_key_length);
+  uint8_t public_key_length =
+      base::numerics::U8FromBigEndian(base::as_byte_span(message).first<1>());
   message.remove_prefix(sizeof(public_key_length));
 
   if (public_key_length != kUncompressedPointSize) {

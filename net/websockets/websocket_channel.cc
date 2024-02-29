@@ -984,8 +984,8 @@ bool WebSocketChannel::ParseClose(base::span<const char> payload,
   }
 
   const char* data = payload.data();
-  uint16_t unchecked_code = 0;
-  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(data), &unchecked_code);
+  uint16_t unchecked_code =
+      base::numerics::U16FromBigEndian(base::as_byte_span(payload).first<2>());
   static_assert(sizeof(unchecked_code) == kWebSocketCloseCodeLength,
                 "they should both be two bytes");
 

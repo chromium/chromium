@@ -9,10 +9,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "net/websockets/websocket_frame.h"
 
 namespace {
@@ -49,7 +49,9 @@ bool WebSocketFrameParser::Decode(
   if (!length)
     return true;
 
-  base::span<const char> data_span = base::make_span(data, length);
+  // TODO(crbug.com/40284755): This span construction can't be sound, the Decode
+  // method should be receiving a span, not a pointer and length.
+  auto data_span = UNSAFE_BUFFERS(base::span(data, length));
   // If we have incomplete frame header, try to decode a header combining with
   // |data|.
   bool first_chunk = false;
@@ -60,7 +62,8 @@ bool WebSocketFrameParser::Decode(
     incomplete_header_buffer_.insert(
         incomplete_header_buffer_.end(), data,
         data + std::min(length, kMaximumFrameHeaderSize - original_size));
-    const size_t consumed = DecodeFrameHeader(incomplete_header_buffer_);
+    const size_t consumed =
+        DecodeFrameHeader(base::as_byte_span(incomplete_header_buffer_));
     if (websocket_error_ != kWebSocketNormalClosure)
       return false;
     if (!current_frame_header_.get())
@@ -75,7 +78,7 @@ bool WebSocketFrameParser::Decode(
   DCHECK(incomplete_header_buffer_.empty());
   while (data_span.size() > 0 || first_chunk) {
     if (!current_frame_header_.get()) {
-      const size_t consumed = DecodeFrameHeader(data_span);
+      const size_t consumed = DecodeFrameHeader(base::as_bytes(data_span));
       if (websocket_error_ != kWebSocketNormalClosure)
         return false;
       // If frame header is incomplete, then carry over the remaining
@@ -104,7 +107,7 @@ bool WebSocketFrameParser::Decode(
   return true;
 }
 
-size_t WebSocketFrameParser::DecodeFrameHeader(base::span<const char> data) {
+size_t WebSocketFrameParser::DecodeFrameHeader(base::span<const uint8_t> data) {
   DVLOG(3) << "DecodeFrameHeader buffer size:"
            << ", data size:" << data.size();
   typedef WebSocketFrameHeader::OpCode OpCode;
@@ -127,9 +130,8 @@ size_t WebSocketFrameParser::DecodeFrameHeader(base::span<const char> data) {
   if (payload_length == kPayloadLengthWithTwoByteExtendedLengthField) {
     if (data.size() < current + 2)
       return 0;
-    uint16_t payload_length_16;
-    base::ReadBigEndian(reinterpret_cast<const uint8_t*>(&data[current]),
-                        &payload_length_16);
+    uint16_t payload_length_16 =
+        base::numerics::U16FromBigEndian(data.subspan(current).first<2>());
     current += 2;
     payload_length = payload_length_16;
     if (payload_length <= kMaxPayloadLengthWithoutExtendedLengthField) {
@@ -139,8 +141,8 @@ size_t WebSocketFrameParser::DecodeFrameHeader(base::span<const char> data) {
   } else if (payload_length == kPayloadLengthWithEightByteExtendedLengthField) {
     if (data.size() < current + 8)
       return 0;
-    base::ReadBigEndian(reinterpret_cast<const uint8_t*>(&data[current]),
-                        &payload_length);
+    payload_length =
+        base::numerics::U64FromBigEndian(data.subspan(current).first<8>());
     current += 8;
     if (payload_length <= UINT16_MAX ||
         payload_length > static_cast<uint64_t>(INT64_MAX)) {
