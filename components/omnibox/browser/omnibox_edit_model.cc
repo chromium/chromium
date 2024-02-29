@@ -24,7 +24,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/core_bookmark_model.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/navigation_metrics/navigation_metrics.h"
@@ -84,7 +84,7 @@
 #include "components/vector_icons/vector_icons.h"  // nogncheck
 #endif
 
-using bookmarks::BookmarkModel;
+using bookmarks::CoreBookmarkModel;
 using metrics::OmniboxEventProto;
 using omnibox::mojom::NavigationPredictor;
 
@@ -2572,7 +2572,8 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
           deviation_char_in_hostname);
     }
 
-    BookmarkModel* bookmark_model = controller_->client()->GetBookmarkModel();
+    CoreBookmarkModel* bookmark_model =
+        controller_->client()->GetBookmarkModel();
     if (bookmark_model && bookmark_model->IsBookmarked(destination_url)) {
       controller_->client()->OnBookmarkLaunched();
     }

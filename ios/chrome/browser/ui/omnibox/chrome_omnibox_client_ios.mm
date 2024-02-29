@@ -22,9 +22,8 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
@@ -94,9 +93,8 @@ PrefService* ChromeOmniboxClientIOS::GetPrefs() {
   return browser_state_->GetPrefs();
 }
 
-bookmarks::BookmarkModel* ChromeOmniboxClientIOS::GetBookmarkModel() {
-  return ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-      browser_state_);
+bookmarks::CoreBookmarkModel* ChromeOmniboxClientIOS::GetBookmarkModel() {
+  return ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
 }
 
 AutocompleteControllerEmitter*

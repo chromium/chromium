@@ -309,7 +309,7 @@ std::u16string GetAdditionalA11yMessage(const AutocompleteMatch& match,
 
 std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     const AutocompleteResult& result,
-    bookmarks::BookmarkModel* bookmark_model,
+    bookmarks::CoreBookmarkModel* bookmark_model,
     const omnibox::GroupConfigMap& suggestion_groups_map) {
   std::vector<omnibox::mojom::AutocompleteMatchPtr> matches;
   int line = 0;
@@ -424,7 +424,7 @@ std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
 omnibox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
     const std::u16string& input,
     const AutocompleteResult& result,
-    bookmarks::BookmarkModel* bookmark_model,
+    bookmarks::CoreBookmarkModel* bookmark_model,
     PrefService* prefs) {
   return omnibox::mojom::AutocompleteResult::New(
       input,
@@ -472,7 +472,7 @@ class RealboxOmniboxClient final : public OmniboxClient {
   bool IsPasteAndGoEnabled() const override;
   SessionID GetSessionID() const override;
   PrefService* GetPrefs() override;
-  bookmarks::BookmarkModel* GetBookmarkModel() override;
+  bookmarks::CoreBookmarkModel* GetBookmarkModel() override;
   AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() override;
   TemplateURLService* GetTemplateURLService() override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
@@ -538,7 +538,7 @@ PrefService* RealboxOmniboxClient::GetPrefs() {
   return profile_->GetPrefs();
 }
 
-bookmarks::BookmarkModel* RealboxOmniboxClient::GetBookmarkModel() {
+bookmarks::CoreBookmarkModel* RealboxOmniboxClient::GetBookmarkModel() {
   return BookmarkModelFactory::GetForBrowserContext(profile_);
 }
 

@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
@@ -157,7 +158,7 @@ PrefService* ChromeOmniboxClient::GetPrefs() {
   return profile_->GetPrefs();
 }
 
-bookmarks::BookmarkModel* ChromeOmniboxClient::GetBookmarkModel() {
+bookmarks::CoreBookmarkModel* ChromeOmniboxClient::GetBookmarkModel() {
   return BookmarkModelFactory::GetForBrowserContext(profile_);
 }
 
