@@ -5,7 +5,7 @@
 #ifndef UI_BASE_IME_WIN_TSF_INPUT_SCOPE_H_
 #define UI_BASE_IME_WIN_TSF_INPUT_SCOPE_H_
 
-#include <inputscope.h>
+#include <InputScope.h>
 #include <vector>
 
 #include "base/component_export.h"
