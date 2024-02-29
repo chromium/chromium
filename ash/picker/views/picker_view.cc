@@ -5,6 +5,7 @@
 #include "ash/picker/views/picker_view.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/picker/model/picker_search_results_section.h"
@@ -271,7 +272,7 @@ void PickerView::SelectCategory(PickerCategory category) {
 
 void PickerView::PublishCategoryResults(
     std::vector<PickerSearchResultsSection> results) {
-  category_view_->SetResults(results);
+  category_view_->SetResults(std::move(results));
 }
 
 void PickerView::AddSearchFieldView() {

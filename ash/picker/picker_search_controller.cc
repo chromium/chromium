@@ -161,7 +161,7 @@ void PickerSearchController::PublishBurnInResults() {
   std::vector<PickerSearchResultsSection> sections;
   if (!suggested_results_.empty()) {
     sections.push_back(PickerSearchResultsSection(
-        PickerSectionType::kSuggestions, suggested_results_));
+        PickerSectionType::kSuggestions, std::move(suggested_results_)));
   }
   if (!category_results_.empty()) {
     sections.push_back(PickerSearchResultsSection(
@@ -337,7 +337,7 @@ void PickerSearchController::HandleDateSearchResults(
   }
 
   if (result.has_value()) {
-    suggested_results_.push_back(*result);
+    suggested_results_.push_back(*std::move(result));
   }
 }
 
