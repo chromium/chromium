@@ -343,13 +343,7 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
       "isEnterpriseManaged",
       policy::ManagementServiceFactory::GetForPlatform()->IsManaged());
 
-#if BUILDFLAG(IS_CHROMEOS)
-  source->AddBoolean(
-      "isBorderlessPrintingEnabled",
-      base::FeatureList::IsEnabled(features::kEnableBorderlessPrinting));
-#else
-  source->AddBoolean("isBorderlessPrintingEnabled", false);
-#endif
+  source->AddBoolean("isBorderlessPrintingEnabled", BUILDFLAG(IS_CHROMEOS));
 }
 
 void SetupPrintPreviewPlugin(content::WebUIDataSource* source) {

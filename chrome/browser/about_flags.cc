@@ -6854,12 +6854,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAddPrinterViaPrintscanmgrDescription,
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(printing::features::kAddPrinterViaPrintscanmgr)},
-
-    {"enable-borderless-printing",
-     flag_descriptions::kEnableBorderlessPrintingName,
-     flag_descriptions::kEnableBorderlessPrintingDescription,
-     kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(printing::features::kEnableBorderlessPrinting)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)

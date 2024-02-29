@@ -7533,11 +7533,6 @@ const char kDisableOfficeEditingComponentAppDescription[] =
     "handlers won't be registered, making it possible to install another "
     "version for testing.";
 
-const char kEnableBorderlessPrintingName[] = "Borderless printing";
-const char kEnableBorderlessPrintingDescription[] =
-    "Enable borderless printing and paper type selection in the print preview "
-    "dialog.";
-
 const char kLacrosColorManagementName[] = "Enable Chrome Color Management.";
 const char kLacrosColorManagementDescription[] =
     "Uses chrome-color-management wayland protocol to manage color spaces "

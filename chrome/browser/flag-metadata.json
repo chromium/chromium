@@ -2237,11 +2237,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-borderless-printing",
-    "owners": [ "bryancain@chromium.org", "project-bolton-eng@google.com" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "enable-bound-session-credentials",
     "owners": [ "alexilin@chromium.org", "msalama@chromium.org", "chrome-signin-team@google.com" ],
     "expiry_milestone": 125

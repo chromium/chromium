@@ -19,11 +19,6 @@ namespace features {
 BASE_FEATURE(kAddPrinterViaPrintscanmgr,
              "AddPrinterViaPrintscanmgr",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable support for borderless printing and media type.
-BASE_FEATURE(kEnableBorderlessPrinting,
-             "EnableBorderlessPrinting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
