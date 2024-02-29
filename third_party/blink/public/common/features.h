@@ -830,6 +830,18 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLightweightNoStatePrefetch);
 // Tracking bug: go/launch/4269184
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLinkPreview);
 
+enum class LinkPreviewTriggerType {
+  // Alt + left click
+  kAltClick,
+  // Alt + mousehover
+  kAltHover,
+  // Long left click down
+  kLongPress,
+};
+
+BLINK_COMMON_EXPORT extern const base::FeatureParam<LinkPreviewTriggerType>
+    kLinkPreviewTriggerType;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLoadingTasksUnfreezable);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
@@ -1619,6 +1631,10 @@ BLINK_COMMON_EXPORT bool ParkableStringsUseSnappy();
 // Note that as the service is shared by two different features, code path
 // specific to one of them should not rely on this function.
 BLINK_COMMON_EXPORT bool IsKeepAliveURLLoaderServiceEnabled();
+
+// Returns true if Link Preview and the given trigger type is enabled.
+BLINK_COMMON_EXPORT bool IsLinkPreviewTriggerTypeEnabled(
+    LinkPreviewTriggerType type);
 
 // Kill-switch for removing Authorization header upon cross origin redirects.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

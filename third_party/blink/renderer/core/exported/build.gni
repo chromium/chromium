@@ -86,6 +86,7 @@ blink_core_tests_exported = [
   "web_frame_serializer_test_helper.h",
   "web_image_test.cc",
   "web_meaningful_layouts_test.cc",
+  "web_link_preview_triggerer_test.cc",
   "web_node_test.cc",
   "web_plugin_container_test.cc",
   "web_range_test.cc",
