@@ -352,27 +352,30 @@ bool AutofillContextMenuManager::
 void AutofillContextMenuManager::LogManualFallbackContextMenuEntryAccepted(
     BrowserAutofillManager& manager,
     const FillingProduct filling_product) {
-  if (filling_product == FillingProduct::kAddress) {
     auto& driver = static_cast<ContentAutofillDriver&>(manager.driver());
     AutofillField* field = GetAutofillField(manager, driver.GetFrameToken());
-    const bool is_address_field =
-        field && IsAddressType(field->Type().GetStorableType());
-    if (is_address_field) {
-      // Address manual fallback was triggered from a classified address field.
-      manager.GetAutocompleteUnrecognizedFallbackEventLogger()
-          .ContextMenuEntryAccepted(
-              /*address_field_has_ac_unrecognized=*/field
-                  ->ShouldSuppressSuggestionsAndFillingByDefault());
-    } else {
+    if (filling_product == FillingProduct::kAddress) {
+      const bool is_address_field =
+          field && IsAddressType(field->Type().GetStorableType());
+      if (is_address_field) {
+        // Address manual fallback was triggered from a classified address
+        // field.
+        manager.GetAutocompleteUnrecognizedFallbackEventLogger()
+            .ContextMenuEntryAccepted(
+                /*address_field_has_ac_unrecognized=*/field
+                    ->ShouldSuppressSuggestionsAndFillingByDefault());
+      } else {
+        manager.GetManualFallbackEventLogger().ContextMenuEntryAccepted(
+            FillingProduct::kAddress);
+      }
+    } else if (filling_product == FillingProduct::kCreditCard &&
+               !(field &&
+                 field->Type().group() == FieldTypeGroup::kCreditCard)) {
+      // Only log payments manual fallback when triggered from a field that is
+      // not classified as payments.
       manager.GetManualFallbackEventLogger().ContextMenuEntryAccepted(
-          FillingProduct::kAddress);
+          FillingProduct::kCreditCard);
     }
-  } else if (filling_product == FillingProduct::kCreditCard) {
-    // Only log payments manual fallback when triggered from a field that is
-    // not classified as payments.
-    manager.GetManualFallbackEventLogger().ContextMenuEntryAccepted(
-        FillingProduct::kCreditCard);
-  }
 }
 
 void AutofillContextMenuManager::LogManualFallbackContextMenuEntryShown(

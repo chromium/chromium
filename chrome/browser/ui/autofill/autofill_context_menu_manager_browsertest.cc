@@ -676,7 +676,6 @@ INSTANTIATE_TEST_SUITE_P(
              .is_field_unclassified = true,
              .test_name = "UnclassifiedField_Payments_NotAccepted",
          },
-
          {
              .manual_fallback_option =
                  AutofillSuggestionTriggerSource::kManualFallbackAddress,
