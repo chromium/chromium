@@ -22,8 +22,9 @@ namespace {
 static const char kNotFromSecureOriginMessage[] =
     "Page is not served from a secure origin";
 static const char kNoManifestMessage[] = "Page has no manifest <link> URL";
-static const char kManifestEmptyMessage[] =
-    "Manifest could not be fetched, is empty, or could not be parsed";
+static const char kManifestParsingOrNetworkErrorMessage[] =
+    "The manifest could not be fetched, parsed, or the document is on an "
+    "opaque origin.";
 static const char kStartUrlNotValidMessage[] =
     "Manifest start URL is not valid";
 static const char kManifestMissingNameOrShortNameMessage[] =
@@ -70,7 +71,8 @@ static const char kPipelineRestarted[] =
 
 static const char kNotFromSecureOriginId[] = "not-from-secure-origin";
 static const char kNoManifestId[] = "no-manifest";
-static const char kManifestEmptyId[] = "manifest-empty";
+static const char kManifestParsingOrNetworkErrorId[] =
+    "manifest-parsing-or-network-error";
 static const char kStartUrlNotValidId[] = "start-url-not-valid";
 static const char kManifestMissingNameOrShortNameId[] =
     "manifest-missing-name-or-short-name";
@@ -139,8 +141,8 @@ std::string GetErrorMessage(InstallableStatusCode code) {
     case webapps::InstallableStatusCode::NO_MANIFEST:
       message = kNoManifestMessage;
       break;
-    case webapps::InstallableStatusCode::MANIFEST_EMPTY:
-      message = kManifestEmptyMessage;
+    case webapps::InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR:
+      message = kManifestParsingOrNetworkErrorMessage;
       break;
     case webapps::InstallableStatusCode::START_URL_NOT_VALID:
       message = kStartUrlNotValidMessage;
@@ -246,8 +248,8 @@ content::InstallabilityError GetInstallabilityError(
     case webapps::InstallableStatusCode::NO_MANIFEST:
       error_id = kNoManifestId;
       break;
-    case webapps::InstallableStatusCode::MANIFEST_EMPTY:
-      error_id = kManifestEmptyId;
+    case webapps::InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR:
+      error_id = kManifestParsingOrNetworkErrorId;
       break;
     case webapps::InstallableStatusCode::START_URL_NOT_VALID:
       error_id = kStartUrlNotValidId;

@@ -27,6 +27,20 @@ bool IsEmptyManifest(const mojom::ManifestPtr& manifest) {
   return !manifest || IsEmptyManifest(*manifest);
 }
 
+bool IsDefaultManifest(const mojom::Manifest& manifest,
+                       const GURL& document_url) {
+  blink::mojom::ManifestPtr expected_manifest = blink::mojom::Manifest::New();
+  expected_manifest->start_url = document_url;
+  expected_manifest->id = document_url.GetWithoutRef();
+  expected_manifest->scope = document_url.GetWithoutFilename();
+  return manifest == *expected_manifest;
+}
+
+bool IsDefaultManifest(const mojom::ManifestPtr& manifest,
+                       const GURL& document_url) {
+  return manifest && IsDefaultManifest(*manifest, document_url);
+}
+
 std::string DisplayModeToString(blink::mojom::DisplayMode display) {
   switch (display) {
     case blink::mojom::DisplayMode::kUndefined:

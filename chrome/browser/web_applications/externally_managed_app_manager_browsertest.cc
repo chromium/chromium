@@ -189,13 +189,13 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   EXPECT_TRUE(app_id.has_value());
   EXPECT_EQ("Web app banner test page",
             registrar().GetAppShortName(app_id.value()));
-  // Same AppID should be in the registrar using install_url.
-  EXPECT_TRUE(registrar().IsLocallyInstalled(install_url));
+  // Same AppID should be in the registrar using final_url.
+  EXPECT_TRUE(registrar().IsLocallyInstalled(final_url));
   std::optional<webapps::AppId> opt_app_id =
-      registrar().FindAppWithUrlInScope(install_url);
+      registrar().FindAppWithUrlInScope(final_url);
   ASSERT_TRUE(opt_app_id.has_value());
   EXPECT_EQ(*opt_app_id, app_id);
-  EXPECT_EQ(registrar().GetAppStartUrl(*opt_app_id), install_url);
+  EXPECT_EQ(registrar().GetAppStartUrl(*opt_app_id), final_url);
 }
 
 // Installing a placeholder app with shortcuts should succeed.

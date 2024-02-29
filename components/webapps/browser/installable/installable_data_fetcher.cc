@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "components/webapps/browser/features.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/manifest_icon_downloader.h"
@@ -58,15 +59,12 @@ void InstallableDataFetcher::OnDidGetManifest(
     const GURL& manifest_url,
     blink::mojom::ManifestPtr manifest) {
   InstallableStatusCode error = InstallableStatusCode::NO_ERROR_DETECTED;
-  if (!base::FeatureList::IsEnabled(
-          features::kUniversalInstallRootScopeNoManifest)) {
-    if (manifest_url.is_empty()) {
-      error = InstallableStatusCode::NO_MANIFEST;
-    } else if (blink::IsEmptyManifest(manifest)) {
-      error = InstallableStatusCode::MANIFEST_EMPTY;
-    }
+  // An empty manifest signifies an error fetching, parsing, or a
+  // frame/CORS/opaque origin related issue. Otherwise the manifest algorithm
+  // will always populate default values for `start_url`, `id`, and `scope`.
+  if (blink::IsEmptyManifest(manifest)) {
+    error = InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR;
   }
-
   page_data_->OnManifestFetched(std::move(manifest), manifest_url, error);
   std::move(finish_callback).Run(error);
 }
@@ -172,7 +170,7 @@ void InstallableDataFetcher::CheckAndFetchBestPrimaryIcon(
     FetcherCallback finish_callback,
     bool prefer_maskable,
     bool fetch_favicon) {
-  if (blink::IsEmptyManifest(page_data_->GetManifest()) && !fetch_favicon) {
+  if (page_data_->manifest_url().is_empty() && !fetch_favicon) {
     std::move(finish_callback).Run(InstallableStatusCode::NO_ERROR_DETECTED);
     return;
   }

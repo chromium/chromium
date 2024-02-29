@@ -121,7 +121,7 @@ TEST_F(FetchInstallabilityForChromeManagementTest, NotInstallable) {
   url_loader->SetNextLoadUrlResult(kWebAppUrl,
                                    WebAppUrlLoaderResult::kUrlLoaded);
   data_retriever->SetManifest(blink::mojom::ManifestPtr(),
-                              webapps::InstallableStatusCode::MANIFEST_EMPTY);
+                              webapps::InstallableStatusCode::NO_MANIFEST);
 
   FetchResult result =
       ScheduleCommandAndWait(kWebAppUrl, web_contents()->GetWeakPtr(),

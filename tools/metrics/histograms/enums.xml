@@ -13841,7 +13841,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="Site not loaded in main frame"/>
   <int value="5" label="Site not served from a secure origin"/>
   <int value="6" label="Site did not provide a manifest link"/>
-  <int value="7" label="Manifest was empty or could not be parsed"/>
+  <int value="7"
+      label="Manifest could not be fetched, parsed, or was in an
+             iframe/opaque origin."/>
   <int value="8" label="Manifest start_url not valid"/>
   <int value="9" label="Manifest missing name or short_name"/>
   <int value="10" label="Manifest display not supported"/>

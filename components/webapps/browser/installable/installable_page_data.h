@@ -72,6 +72,7 @@ class InstallablePageData {
     ~ManifestProperty();
 
     InstallableStatusCode error = InstallableStatusCode::NO_ERROR_DETECTED;
+    //  This can be empty if the page doesn't have a manifest url.
     GURL url;
     blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
     bool fetched = false;

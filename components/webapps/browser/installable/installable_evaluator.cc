@@ -59,14 +59,16 @@ InstallableStatusCode HasManifestOrAtRootScope(
     case InstallableCriteria::kValidManifestWithIcons:
       break;
   }
+  // This occurs when there is an error parsing the manifest, a network issue,
+  // or a CORS / opaque origin issue.
+  if (blink::IsEmptyManifest(manifest)) {
+    return InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR;
+  }
 
   if (manifest_url.is_empty()) {
     return InstallableStatusCode::NO_MANIFEST;
   }
 
-  if (blink::IsEmptyManifest(manifest)) {
-    return InstallableStatusCode::MANIFEST_EMPTY;
-  }
   return InstallableStatusCode::NO_ERROR_DETECTED;
 }
 

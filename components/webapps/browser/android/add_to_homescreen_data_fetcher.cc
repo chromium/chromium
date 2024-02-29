@@ -207,8 +207,9 @@ void AddToHomescreenDataFetcher::OnDidGetInstallableData(
   if (!web_contents_)
     return;
 
-  RecordMobileCapableUserActions(data.web_page_metadata->mobile_capable,
-                                 !blink::IsEmptyManifest(*data.manifest));
+  RecordMobileCapableUserActions(
+      data.web_page_metadata->mobile_capable,
+      /*has_manifest=*/!data.manifest_url->is_empty());
 
   shortcut_info_.UpdateFromWebPageMetadata(*data.web_page_metadata);
   shortcut_info_.UpdateFromManifest(*data.manifest);
@@ -266,9 +267,8 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
   shortcut_info_.UpdateDisplayMode(webapk_compatible);
 
   AddToHomescreenParams::AppType app_type =
-      blink::IsEmptyManifest(*data.manifest)
-          ? AddToHomescreenParams::AppType::WEBAPK_DIY
-          : AddToHomescreenParams::AppType::WEBAPK;
+      data.manifest_url->is_empty() ? AddToHomescreenParams::AppType::WEBAPK_DIY
+                                    : AddToHomescreenParams::AppType::WEBAPK;
 
   observer_->OnUserTitleAvailable(
       webapk_compatible ? shortcut_info_.name : shortcut_info_.user_title,

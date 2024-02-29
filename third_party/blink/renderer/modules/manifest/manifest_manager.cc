@@ -49,7 +49,6 @@ ManifestManager* ManifestManager::From(LocalDOMWindow& window) {
 ManifestManager::ManifestManager(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window),
       ExecutionContextLifecycleObserver(&window),
-      may_have_manifest_(false),
       manifest_dirty_(true),
       receivers_(this, GetExecutionContext()) {
   if (window.GetFrame()->IsMainFrame()) {
@@ -130,11 +129,6 @@ void ManifestManager::RequestManifestImpl(
     return;
   }
 
-  if (!may_have_manifest_) {
-    std::move(callback).Run(KURL(), mojom::blink::ManifestPtr(), nullptr);
-    return;
-  }
-
   if (!manifest_dirty_) {
     std::move(callback).Run(manifest_url_, manifest_,
                             manifest_debug_info_.get());
@@ -151,7 +145,6 @@ void ManifestManager::RequestManifestImpl(
 }
 
 void ManifestManager::DidChangeManifest() {
-  may_have_manifest_ = true;
   manifest_dirty_ = true;
   manifest_url_ = KURL();
   manifest_debug_info_ = nullptr;

@@ -529,17 +529,12 @@ void WebsiteMetrics::OnInstallableWebAppStatusUpdated(
     // the url.
     return;
   }
-
   // WebContents in app windows are filtered out in OnBrowserAdded. Installed
   // web apps opened in tabs are filtered out too. So every WebContents here
-  // must be a website not installed. Check the manifest to get the scope or the
-  // start url if there is a manifest.
-  if (!data || blink::IsEmptyManifest(data->manifest()) ||
-      data->manifest().scope.is_empty()) {
-    return;
+  // must be a website not installed.
+  if (result == webapps::InstallableWebAppCheckResult::kYes_Promotable) {
+    UpdateUrlInfo(it->second, /*promotable=*/true);
   }
-
-  UpdateUrlInfo(it->second, /*promotable=*/true);
 }
 
 void WebsiteMetrics::AddUrlInfo(const GURL& url,

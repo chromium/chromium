@@ -29,6 +29,12 @@ class ResourceResponse;
 // the ManifestParser in order to do so.
 //
 // Consumers should use the mojo ManifestManager interface to use this class.
+//
+// Manifests returned from this class can only be empty if there is a network
+// fetching error, parsing error, or frame/CORS/opaque origin related issue.
+// Otherwise the manifest will always contain a `start_url`, `id`, and `scope`
+// populated, as the parser will always default based on the document url if
+// they are not specified in the json.
 class MODULES_EXPORT ManifestManager
     : public GarbageCollected<ManifestManager>,
       public Supplement<LocalDOMWindow>,
@@ -99,12 +105,6 @@ class MODULES_EXPORT ManifestManager
 
   Member<ManifestFetcher> fetcher_;
   Member<ManifestChangeNotifier> manifest_change_notifier_;
-
-  // Whether the window may have an associated Manifest. If true, the frame
-  // may have a manifest, if false, it can't have one. This boolean is true when
-  // DidChangeManifest() is called, if it is never called, it means that the
-  // associated document has no <link rel="manifest">.
-  bool may_have_manifest_;
 
   // Whether the current Manifest is dirty.
   bool manifest_dirty_;

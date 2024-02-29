@@ -29,6 +29,7 @@
 #include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/webapps_client.h"
@@ -142,10 +143,10 @@ class NullStatusReporter : public AppBannerManager::StatusReporter {
     // In general, NullStatusReporter::ReportStatus should not be called.
     // However, it may be called in cases where Stop is called without a
     // preceding call to RequestAppBanner e.g. because the WebContents is being
-    // destroyed or web app uninstalled. In that case, code should always be
-    // NO_ERROR_DETECTED or PIPELINE_RESTARTED.
+    // destroyed, a web app uninstalled, or the manifest url changing.
     DCHECK(code == InstallableStatusCode::NO_ERROR_DETECTED ||
-           code == InstallableStatusCode::PIPELINE_RESTARTED);
+           code == InstallableStatusCode::PIPELINE_RESTARTED ||
+           code == InstallableStatusCode::MANIFEST_URL_CHANGED);
   }
 
   WebappInstallSource GetInstallSource(content::WebContents* web_contents,
@@ -372,19 +373,20 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
     return;
   }
   UpdateState(State::ACTIVE);
+
   if (!data.errors.empty()) {
     Stop(data.GetFirstError());
     return;
   }
-
+  // An empty manifest means there was a network error or a parsing error, and
+  // that case is caught in the InstallableDataFetcher and an error is produced
+  // & caught above.
+  CHECK(!blink::IsEmptyManifest(*data.manifest));
   manifest_url_ = *(data.manifest_url);
   manifest_ = data.manifest->Clone();
   web_page_metadata_ = data.web_page_metadata->Clone();
-
   manifest_id_ = manifest_->id;
-  if (!manifest_id_.is_valid()) {
-    manifest_id_ = validated_url_.GetWithoutRef();
-  }
+  CHECK(manifest_id_.is_valid());
 
   // Skip checks for PasswordManager WebUI page.
   if (content::HasWebUIScheme(validated_url_) &&
@@ -535,7 +537,7 @@ void AppBannerManager::ResetCurrentPageData() {
   SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kUnknown);
 }
 
-void AppBannerManager::Terminate() {
+void AppBannerManager::Terminate(InstallableStatusCode code) {
   switch (state_) {
     case State::PENDING_PROMPT_CANCELED:
       TrackBeforeInstallEvent(
@@ -553,10 +555,10 @@ void AppBannerManager::Terminate() {
       break;
   }
 
-  Stop(TerminationCode());
+  Stop(code);
 }
 
-InstallableStatusCode AppBannerManager::TerminationCode() const {
+InstallableStatusCode AppBannerManager::TerminationCodeFromState() const {
   switch (state_) {
     case State::PENDING_PROMPT_CANCELED:
     case State::PENDING_PROMPT_NOT_CANCELED:
@@ -682,7 +684,7 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
   }
 
   if (state_ != State::COMPLETE && state_ != State::INACTIVE)
-    Terminate();
+    Terminate(TerminationCodeFromState());
   ResetCurrentPageData();
 
   if (handle->IsServedFromBackForwardCache()) {
@@ -713,29 +715,15 @@ void AppBannerManager::DidFinishLoad(
 void AppBannerManager::DidUpdateWebManifestURL(
     content::RenderFrameHost* target_frame,
     const GURL& manifest_url) {
-  GURL url = validated_url_;
-  switch (state_) {
-    case State::INACTIVE:
-      return;
-    case State::FETCHING_MANIFEST:
-    case State::PENDING_INSTALLABLE_CHECK:
-      UpdateState(State::INACTIVE);
-      RequestAppBanner();
-      return;
-    case State::ACTIVE:
-    case State::FETCHING_NATIVE_DATA:
-    case State::PENDING_ENGAGEMENT:
-    case State::SENDING_EVENT:
-    case State::SENDING_EVENT_GOT_EARLY_PROMPT:
-    case State::PENDING_PROMPT_CANCELED:
-    case State::PENDING_PROMPT_NOT_CANCELED:
-      Terminate();
-      [[fallthrough]];
-    case State::COMPLETE:
-      if (!manifest_url.is_empty()) {
-        RecheckInstallabilityForLoadedPage();
-      }
-      return;
+  if (state_ == State::INACTIVE ||
+      (state_ == State::COMPLETE && manifest_url.is_empty())) {
+    return;
+  }
+  Terminate(manifest_url.is_empty()
+                ? InstallableStatusCode::NO_MANIFEST
+                : InstallableStatusCode::MANIFEST_URL_CHANGED);
+  if (!manifest_url.is_empty()) {
+    RecheckInstallabilityForLoadedPage();
   }
 }
 
@@ -752,7 +740,7 @@ void AppBannerManager::MediaStoppedPlaying(
 }
 
 void AppBannerManager::WebContentsDestroyed() {
-  Terminate();
+  Terminate(TerminationCodeFromState());
   manager_ = nullptr;
 }
 

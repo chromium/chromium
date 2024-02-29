@@ -29,7 +29,11 @@ enum class InstallableStatusCode {
   // NOT_IN_MAIN_FRAME = 4 (DEPRECATED),
   NOT_FROM_SECURE_ORIGIN = 5,
   NO_MANIFEST = 6,
-  MANIFEST_EMPTY = 7,
+  // The manifest failed to parse, the network failed, or the document is an
+  // opaque origin.
+  // Note: This was renamed from MANIFEST_EMPTY now that the document can return
+  // a default manifest.
+  MANIFEST_PARSING_OR_NETWORK_ERROR = 7,
   START_URL_NOT_VALID = 8,
   MANIFEST_MISSING_NAME_OR_SHORT_NAME = 9,
   MANIFEST_DISPLAY_NOT_SUPPORTED = 10,

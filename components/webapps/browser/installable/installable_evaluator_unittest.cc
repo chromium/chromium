@@ -16,6 +16,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -82,8 +83,27 @@ class InstallableEvaluatorUnitTest : public content::RenderViewHostTestHarness {
     web_contents_tester()->TestSetFaviconURL(mojo::Clone(favicon_urls));
   }
 
+  // Builds and sets the default manifest for the given document url.
+  void SetManifestAsDefault(const GURL& document_url) {
+    auto manifest = blink::mojom::Manifest::New();
+    manifest->start_url = document_url;
+    manifest->scope = document_url.GetWithoutFilename();
+    manifest->id = document_url.GetWithoutRef();
+    page_data_->OnManifestFetched(std::move(manifest), /*manifest_url=*/GURL(),
+                                  InstallableStatusCode::NO_ERROR_DETECTED);
+  }
+
+  void SetManifestParsingOrNetworkError() {
+    page_data_->OnManifestFetched(
+        blink::mojom::Manifest::New(),
+        /*manifest_url=*/GURL(),
+        InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR);
+  }
+
   void SetManifest(blink::mojom::ManifestPtr manifest) {
     GURL manifest_url("http://example.com");
+    CHECK(!blink::IsEmptyManifest(manifest))
+        << "Use SetManifestEmpty() instead to set an empty manifest.";
     page_data_->OnManifestFetched(std::move(manifest), manifest_url,
                                   InstallableStatusCode::NO_ERROR_DETECTED);
   }
@@ -152,31 +172,34 @@ INSTANTIATE_TEST_SUITE_P(
                     InstallableCriteria::kImplicitManifestFieldsHTML,
                     InstallableCriteria::kNoManifestAtRootScope));
 
-TEST_P(InstallableEvaluatorCriteriaUnitTest, NoManifest) {
+TEST_P(InstallableEvaluatorCriteriaUnitTest, UnsetManifest) {
   web_contents_tester()->NavigateAndCommit(GURL("https://www.example.com"));
   TestCheckInstallability(
-      InstallableStatusCode::NO_MANIFEST, InstallableStatusCode::NO_MANIFEST,
+      InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR,
+      InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR,
       InstallableStatusCode::MANIFEST_MISSING_NAME_OR_SHORT_NAME);
 
   web_contents_tester()->NavigateAndCommit(
       GURL("https://www.example.com/path/page.html"));
-  TestCheckInstallability(InstallableStatusCode::NO_MANIFEST,
-                          InstallableStatusCode::NO_MANIFEST,
-                          InstallableStatusCode::NO_MANIFEST);
+  TestCheckInstallability(
+      InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR,
+      InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR,
+      InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR);
 }
 
-TEST_P(InstallableEvaluatorCriteriaUnitTest, EmptyManifest) {
-  SetManifest(blink::mojom::Manifest::New());
+TEST_P(InstallableEvaluatorCriteriaUnitTest, ManifestParsingOrNetworkError) {
+  SetManifestParsingOrNetworkError();
   TestCheckInstallability(
-      InstallableStatusCode::MANIFEST_EMPTY,
-      InstallableStatusCode::MANIFEST_EMPTY,
+      InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR,
+      InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR,
       InstallableStatusCode::MANIFEST_MISSING_NAME_OR_SHORT_NAME);
 
   web_contents_tester()->NavigateAndCommit(
       GURL("https://www.example.com/path/page.html"));
-  TestCheckInstallability(InstallableStatusCode::MANIFEST_EMPTY,
-                          InstallableStatusCode::MANIFEST_EMPTY,
-                          InstallableStatusCode::MANIFEST_EMPTY);
+  TestCheckInstallability(
+      InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR,
+      InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR,
+      InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR);
 }
 
 TEST_P(InstallableEvaluatorCriteriaUnitTest, CheckStartUrl) {
@@ -615,13 +638,14 @@ TEST_F(InstallableEvaluatorUnitTest, ValidManifestValidMetadata) {
 TEST_F(InstallableEvaluatorUnitTest, ValidMetadata) {
   // Non-empty manifest with only the "display" field, with valid metadata
   // is installable.
-  SetManifest(blink::mojom::Manifest::New());
-  manifest()->display = blink::mojom::DisplayMode::kStandalone;
+  auto manifest = blink::mojom::Manifest::New();
+  manifest->display = blink::mojom::DisplayMode::kStandalone;
   // Note: the start_url, id, and scope are all set from the document_url if
   // they don't exist
-  manifest()->start_url = GURL("http://example.com");
-  manifest()->id = GURL("http://example.com");
-  manifest()->scope = GURL("http://example.com");
+  manifest->start_url = GURL("http://example.com");
+  manifest->id = GURL("http://example.com");
+  manifest->scope = GURL("http://example.com");
+  SetManifest(std::move(manifest));
   SetMetadata(GetWebPageMetadata());
   AddFavicon();
 
