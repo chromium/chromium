@@ -64,6 +64,13 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
   }
   CHECK(!current_request_origin.opaque());
 
+  // Per-spec, reloads are excluded from the `auto` value which sets the
+  // boolean opt in. If a value specific to reloads is added, we'll need a
+  // finer-grained opt-in from the renderer.
+  if (navigation_request.GetReloadType() != ReloadType::NONE) {
+    return nullptr;
+  }
+
   return base::WrapUnique(
       new ViewTransitionCommitDeferringCondition(navigation_request));
 }
