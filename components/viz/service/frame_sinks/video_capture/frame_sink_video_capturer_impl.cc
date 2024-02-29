@@ -133,32 +133,6 @@ bool IsCompatibleWithFormat(const gfx::Rect& rect,
          rect.width() % 2 == 0 && rect.height() % 2 == 0;
 }
 
-// Given a |visible_rect| representing visible rectangle of some video frame,
-// calculates a centered rectangle that fits entirely within |visible_rect| and
-// has the same aspect ratio as |source_size|, taking into account
-// |pixel_format|.
-gfx::Rect GetContentRectangle(const gfx::Rect& visible_rect,
-                              const gfx::Size& source_size,
-                              media::VideoPixelFormat pixel_format) {
-  DCHECK(pixel_format == media::PIXEL_FORMAT_I420 ||
-         pixel_format == media::PIXEL_FORMAT_NV12 ||
-         pixel_format == media::PIXEL_FORMAT_ARGB);
-
-  if (pixel_format == media::PIXEL_FORMAT_I420 ||
-      pixel_format == media::PIXEL_FORMAT_NV12) {
-    return media::ComputeLetterboxRegionForI420(visible_rect, source_size);
-  } else {
-    DCHECK_EQ(media::PIXEL_FORMAT_ARGB, pixel_format);
-    const gfx::Rect content_rect =
-        media::ComputeLetterboxRegion(visible_rect, source_size);
-
-    // The media letterboxing computation explicitly allows for off-by-one
-    // errors due to computation, so we address those here.
-    return content_rect.ApproximatelyEqual(visible_rect, 1) ? visible_rect
-                                                            : content_rect;
-  }
-}
-
 int AsPercent(float value) {
   return base::saturated_cast<int>(std::nearbyint(value * 100.0f));
 }
@@ -416,8 +390,9 @@ void FrameSinkVideoCapturerImpl::Start(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(consumer);
 
-  if (video_capture_started_)
+  if (video_capture_started_) {
     Stop();
+  }
 
   video_capture_started_ = true;
   buffer_format_preference_ = buffer_format_preference;
@@ -432,8 +407,9 @@ void FrameSinkVideoCapturerImpl::Start(
         buffer_format_preference_ ==
             mojom::BufferFormatPreference::kPreferGpuMemoryBuffer);
 
-  if (resolved_target_)
+  if (resolved_target_) {
     resolved_target_->OnClientCaptureStarted();
+  }
 
   consumer_.Bind(std::move(consumer));
   // In the future, if the connection to the consumer is lost before a call to
@@ -444,8 +420,9 @@ void FrameSinkVideoCapturerImpl::Start(
 }
 
 void FrameSinkVideoCapturerImpl::Stop() {
-  if (!video_capture_started_)
+  if (!video_capture_started_) {
     return;
+  }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -465,8 +442,9 @@ void FrameSinkVideoCapturerImpl::Stop() {
     consumer_informed_of_empty_region_ = false;
   }
 
-  if (resolved_target_)
+  if (resolved_target_) {
     resolved_target_->OnClientCaptureStopped();
+  }
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("gpu.capture",
                                   "FrameSinkVideoCapturerImpl::Start", this);
@@ -522,6 +500,29 @@ void FrameSinkVideoCapturerImpl::OnOverlayConnectionLost(
 void FrameSinkVideoCapturerImpl::RefreshNow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RefreshInternal(VideoCaptureOracle::kRefreshDemand);
+}
+
+gfx::Rect FrameSinkVideoCapturerImpl::GetContentRectangle(
+    const gfx::Rect& visible_rect,
+    const gfx::Size& source_size,
+    media::VideoPixelFormat pixel_format) {
+  DCHECK(pixel_format == media::PIXEL_FORMAT_I420 ||
+         pixel_format == media::PIXEL_FORMAT_NV12 ||
+         pixel_format == media::PIXEL_FORMAT_ARGB);
+
+  if (pixel_format == media::PIXEL_FORMAT_I420 ||
+      pixel_format == media::PIXEL_FORMAT_NV12) {
+    return media::ComputeLetterboxRegionForI420(visible_rect, source_size);
+  } else {
+    DCHECK_EQ(media::PIXEL_FORMAT_ARGB, pixel_format);
+    const gfx::Rect content_rect =
+        media::ComputeLetterboxRegion(visible_rect, source_size);
+
+    // The media letterboxing computation explicitly allows for off-by-one
+    // errors due to computation, so we address those here.
+    return content_rect.ApproximatelyEqual(visible_rect, 1) ? visible_rect
+                                                            : content_rect;
+  }
 }
 
 void FrameSinkVideoCapturerImpl::MaybeScheduleRefreshFrame() {
@@ -918,8 +919,9 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
         gfx::Vector2d(content_rect.width(), content_rect.height()));
     update_rect.Offset(content_rect.OffsetFromOrigin());
     if (pixel_format_ == media::PIXEL_FORMAT_I420 ||
-        pixel_format_ == media::PIXEL_FORMAT_NV12)
+        pixel_format_ == media::PIXEL_FORMAT_NV12) {
       update_rect = ExpandRectToI420SubsampleBoundaries(update_rect);
+    }
   }
   metadata.capture_update_rect = update_rect;
 
@@ -1051,8 +1053,9 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     for (const VideoCaptureOverlay* overlay : GetOverlaysInOrder()) {
       std::optional<VideoCaptureOverlay::BlendInformation> blend_information =
           overlay->CalculateBlendInformation(frame_properties);
-      if (!blend_information)
+      if (!blend_information) {
         continue;
+      }
 
       // Blend in Skia happens from the unscaled bitmap, into the destination
       // region expressed in content's (aka VideoFrame's) space:
@@ -1447,19 +1450,23 @@ gfx::Size FrameSinkVideoCapturerImpl::AdjustSizeForPixelFormat(
     const gfx::Size& raw_size) const {
   if (pixel_format_ == media::PIXEL_FORMAT_ARGB) {
     gfx::Size result(raw_size);
-    if (result.width() <= 0)
+    if (result.width() <= 0) {
       result.set_width(1);
-    if (result.height() <= 0)
+    }
+    if (result.height() <= 0) {
       result.set_height(1);
+    }
     return result;
   }
   DCHECK(media::PIXEL_FORMAT_I420 == pixel_format_ ||
          media::PIXEL_FORMAT_NV12 == pixel_format_);
   gfx::Size result(raw_size.width() & ~1, raw_size.height() & ~1);
-  if (result.width() <= 0)
+  if (result.width() <= 0) {
     result.set_width(2);
-  if (result.height() <= 0)
+  }
+  if (result.height() <= 0) {
     result.set_height(2);
+  }
   return result;
 }
 

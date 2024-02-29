@@ -177,6 +177,15 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // frame may end up waiting up to this long.
   static constexpr base::TimeDelta kMaxRefreshDelay = base::Seconds(1);
 
+  // Calculate content rectangle
+  // Given a |visible_rect| representing visible rectangle of some video frame,
+  // calculates a centered rectangle that fits entirely within |visible_rect|
+  // and has the same aspect ratio as |source_size|, taking into account
+  // |pixel_format|.
+  static gfx::Rect GetContentRectangle(const gfx::Rect& visible_rect,
+                                       const gfx::Size& source_size,
+                                       media::VideoPixelFormat pixel_format);
+
  private:
   friend class FrameSinkVideoCapturerTest;
 
