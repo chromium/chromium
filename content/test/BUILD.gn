@@ -69,8 +69,6 @@ static_library("test_support") {
     "../browser/attribution_reporting/test/mock_attribution_observer.cc",
     "../browser/attribution_reporting/test/mock_attribution_observer.h",
     "../browser/attribution_reporting/test/mock_content_browser_client.h",
-    "../browser/attribution_reporting/test/mock_data_host.cc",
-    "../browser/attribution_reporting/test/mock_data_host.h",
     "../browser/attribution_reporting/test/source_observer.cc",
     "../browser/attribution_reporting/test/source_observer.h",
     "../browser/back_forward_cache_test_util.cc",
