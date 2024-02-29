@@ -249,9 +249,16 @@ void OnDefaultSchemeClientWorkerFinished(
   // If we get here, either we are not the default or we cannot work out
   // what the default is, so we proceed.
   if (prompt_user) {
-    // Never prompt the user without a web_contents or dialog manager.
-    if (!web_contents ||
-        !web_modal::WebContentsModalDialogManager::FromWebContents(
+    // Never prompt the user without a web_contents.
+    if (!web_contents) {
+      return;
+    }
+
+    // Anchor to the outermost WebContents, for e.g. embedded <webview>s.
+    web_contents = web_contents->GetOutermostWebContents();
+
+    // Skip if the WebContents instance is not prepared to show a dialog.
+    if (!web_modal::WebContentsModalDialogManager::FromWebContents(
             web_contents)) {
       LOG(ERROR) << "Skipping ExternalProtocolDialog"
                  << ", escaped_url=" << escaped_url.possibly_invalid_spec()
