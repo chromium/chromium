@@ -50,6 +50,7 @@ constexpr char kAPKey[] = "ap_key";
 
 constexpr char kHadApps[] = "had_apps";
 constexpr char kUsageStatsEnabledKey[] = "usage_stats_enabled";
+constexpr char kEulaRequired[] = "eula_required";
 
 constexpr char kLastChecked[] = "last_checked";
 constexpr char kLastStarted[] = "last_started";
@@ -538,6 +539,18 @@ void PersistedData::SetUsageStatsEnabled(bool usage_stats_enabled) {
   }
 }
 
+bool PersistedData::GetEulaRequired() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_ && pref_service_->GetBoolean(kEulaRequired);
+}
+
+void PersistedData::SetEulaRequired(bool eula_required) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pref_service_) {
+    pref_service_->SetBoolean(kEulaRequired, eula_required);
+  }
+}
+
 base::Time PersistedData::GetLastChecked() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pref_service_->GetTime(kLastChecked);
@@ -610,6 +623,7 @@ void PersistedData::SetLastOSVersion() {
 void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry) {
   registry->RegisterBooleanPref(kHadApps, false);
   registry->RegisterBooleanPref(kUsageStatsEnabledKey, false);
+  registry->RegisterBooleanPref(kEulaRequired, false);
   registry->RegisterTimePref(kLastChecked, {});
   registry->RegisterTimePref(kLastStarted, {});
   registry->RegisterStringPref(kLastOSVersion, {});

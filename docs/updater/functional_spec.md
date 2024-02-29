@@ -1230,11 +1230,32 @@ counts.
 *   The updater deletes the file when reporting active use.
 
 ### EULA/ToS Acceptance
-Software can be installed or updated only if the user has agreed to the `Terms
-of Service`. The updater only runs if the user has accepted the ToS for at
-least one application.
+Most commonly, users accept relevant Terms of Service before downloading or
+installing the updater.
 
-TODO(crbug.com/1035895): Document EULA signals.
+The updater can be installed in "eula-required" mode by passing the install
+process the `--eularequired` switch. While in eula-required mode, the updater
+will not update software nor make any communications to the server, with the
+following exceptions:
+*   The updater will report its own uninstallation to the server, if the user
+    takes manual action to uninstall it.
+*   If the user has agreed to send usage stats / crash reports, the updater will
+    transmit those. (This case may be vacuous.)
+
+In eula-required mode, the updater will still perform offline installations and
+respond as necessary to requests about its version and product set. It will not
+check for device policies or domain enrollment.
+
+If a user installs an app using an online installer, the updater will transition
+out of eula-required mode and begin normal operation.
+
+On Windows, applications can signal the updater that the user has accepted Terms
+of Service by writing `HKCU\SOFTWARE\{Company}\Update\ClientState\{AppID}` →
+`usagestats` (DWORD): `1`. The updater will then transition out of eula-required
+mode and begin normal operation the next time it runs periodic tasks.
+
+Once operating normally, the updater only returns to eula-required mode when
+it is uninstalled and then reinstalled with `--eularequired`.
 
 ### Usage Stats Acceptance
 The updater may upload its crash reports and send usage stats if and only if

@@ -83,6 +83,7 @@ extern const char kUpdateSwitch[];
 // Installs the updater.
 extern const char kInstallSwitch[];
 extern const char kRuntimeSwitch[];
+extern const char kEulaRequiredSwitch[];
 
 // Contains the meta installer tag. The tag is a string of arguments, separated
 // by a delimiter (in this case, the delimiter is =). The tag is typically
@@ -410,6 +411,10 @@ inline constexpr int kErrorFailedToRunInstallList = 44;
 
 // The server was running but had no tasks to do.
 inline constexpr int kErrorIdle = 45;
+
+// The call was rejected because the user needs to accept the EULA / Terms of
+// service.
+inline constexpr int kErrorEulaRequired = 46;
 
 inline constexpr int kErrorTagParsing = 50;
 

@@ -429,6 +429,17 @@ void Install(UpdaterScope scope) {
   ASSERT_EQ(exit_code, 0);
 }
 
+void InstallEulaRequired(UpdaterScope scope) {
+  const base::FilePath path = GetSetupExecutablePath();
+  ASSERT_FALSE(path.empty());
+  base::CommandLine command_line(path);
+  command_line.AppendSwitchASCII(kInstallSwitch, "usagestats=1");
+  command_line.AppendSwitch(kEulaRequiredSwitch);
+  int exit_code = -1;
+  Run(scope, command_line, &exit_code);
+  ASSERT_EQ(exit_code, 0);
+}
+
 void InstallUpdaterAndApp(UpdaterScope scope,
                           const std::string& app_id,
                           const bool is_silent_install,

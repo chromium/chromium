@@ -360,6 +360,8 @@ void AppTestHelper::FirstTaskRun() {
            WithSwitch("updater_version",
                       WithSystemScope(Wrap(&ExpectVersionNotActive)))},
           {"install", WithSystemScope(Wrap(&Install))},
+          {"install_eula_required",
+           WithSystemScope(Wrap(&InstallEulaRequired))},
           {"install_updater_and_app",
            WithSwitch(
                "always_launch_cmd",

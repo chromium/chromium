@@ -11,8 +11,10 @@
 #include <ostream>
 #include <string>
 #include <type_traits>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/ref_counted.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/updater/tag.h"
@@ -208,6 +210,10 @@ void InitializeThreadPool(const char* name);
 // owned by non-root accounts, or avoiding the installation of a user level
 // updater as root.
 bool WrongUser(UpdaterScope scope);
+
+// Returns whether a user has previously accepted a EULA / ToS for at least one
+// of the listed apps.
+bool EulaAccepted(const std::vector<std::string>& app_ids);
 
 // Imports metadata from legacy updaters.
 bool MigrateLegacyUpdaters(

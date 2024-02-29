@@ -142,6 +142,9 @@ void ExpectInstalled(UpdaterScope scope);
 // Installs the updater.
 void Install(UpdaterScope scope);
 
+// Installs the updater in EULA-required mode.
+void InstallEulaRequired(UpdaterScope scope);
+
 // Installs the updater and an app via the command line.
 void InstallUpdaterAndApp(UpdaterScope scope,
                           const std::string& app_id,

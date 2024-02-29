@@ -89,6 +89,10 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     // any other reason.
     kServiceStopped = 11,
 
+    // The request could not be serviced because no user has accepted the terms
+    // of service.
+    kEulaRequired = 12,
+
     // Update EnumTraits<UpdateService::Result> when adding new values.
   };
 
@@ -342,7 +346,7 @@ template <>
 struct EnumTraits<UpdateService::Result> {
   using Result = UpdateService::Result;
   static constexpr Result first_elem = Result::kSuccess;
-  static constexpr Result last_elem = Result::kServiceStopped;
+  static constexpr Result last_elem = Result::kEulaRequired;
 };
 
 template <>

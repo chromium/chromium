@@ -19,8 +19,10 @@
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
@@ -208,7 +210,8 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
 
   // It's possible that a previous updater existed but is nonresponsive. In
   // this case, set the active version in global prefs so that this instance
-  // will take over without qualification.
+  // will take over without qualification. Also, if EULA acceptance is still
+  // required, record so here.
   base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::WithBaseSyncPrimitives()})
       ->PostTaskAndReply(
@@ -219,6 +222,12 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
                 if (prefs) {
                   prefs->SetActiveVersion(kUpdaterVersion);
                   prefs->SetSwapping(true);
+                  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+                          kEulaRequiredSwitch)) {
+                    base::MakeRefCounted<PersistedData>(
+                        scope, prefs->GetPrefService(), nullptr)
+                        ->SetEulaRequired(true);
+                  }
                   PrefsCommitPendingWrites(prefs->GetPrefService());
                 }
               },

@@ -90,11 +90,11 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
     RegistrationRequest registration;
     registration.app_id = kQualificationAppId;
     registration.version = base::Version(kQualificationInitialVersion);
-    base::MakeRefCounted<UpdateServiceImpl>(config_)->RegisterApp(
-        registration,
-        base::BindOnce(
-            &UpdateServiceInternalQualifyingImpl::RegisterQualificationAppDone,
-            this, std::move(callback)));
+    base::MakeRefCounted<UpdateServiceImpl>(GetUpdaterScope(), config_)
+        ->RegisterApp(registration,
+                      base::BindOnce(&UpdateServiceInternalQualifyingImpl::
+                                         RegisterQualificationAppDone,
+                                     this, std::move(callback)));
   }
 
   void RegisterQualificationAppDone(base::OnceCallback<void(bool)> callback,
@@ -114,12 +114,13 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
     // an `Update` task for `kQualificationAppId`.
     base::MakeRefCounted<CheckForUpdatesTask>(
         config_, GetUpdaterScope(),
-        base::BindOnce(&UpdateServiceImpl::Update,
-                       base::MakeRefCounted<UpdateServiceImpl>(config_),
-                       base::ToLowerASCII(kQualificationAppId), "",
-                       UpdateService::Priority::kBackground,
-                       UpdateService::PolicySameVersionUpdate::kNotAllowed,
-                       base::DoNothing()))
+        base::BindOnce(
+            &UpdateServiceImpl::Update,
+            base::MakeRefCounted<UpdateServiceImpl>(GetUpdaterScope(), config_),
+            base::ToLowerASCII(kQualificationAppId), "",
+            UpdateService::Priority::kBackground,
+            UpdateService::PolicySameVersionUpdate::kNotAllowed,
+            base::DoNothing()))
         ->Run(base::BindOnce(
             &UpdateServiceInternalQualifyingImpl::UpdateCheckDone, this,
             std::move(callback)));

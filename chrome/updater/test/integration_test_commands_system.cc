@@ -79,6 +79,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void Install() const override { RunCommand("install"); }
 
+  void InstallEulaRequired() const override {
+    RunCommand("install_eula_required");
+  }
+
   void InstallUpdaterAndApp(const std::string& app_id,
                             const bool is_silent_install,
                             const std::string& tag,

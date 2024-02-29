@@ -239,6 +239,8 @@ class IntegrationTest : public ::testing::Test {
 
   void Install() { test_commands_->Install(); }
 
+  void InstallEulaRequired() { test_commands_->InstallEulaRequired(); }
+
   void InstallUpdaterAndApp(const std::string& app_id,
                             const bool is_silent_install,
                             const std::string& tag,
@@ -926,6 +928,81 @@ TEST_F(IntegrationTest, SelfUpdateWithWakeAll) {
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+
+TEST_F(IntegrationTest, NoSelfUpdateIfNoEula) {
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(InstallEulaRequired());
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectAppVersion(kUpdaterAppId, base::Version(kUpdaterVersion)));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+#if !BUILDFLAG(IS_LINUX)
+// InstallAppViaService does not work on Linux.
+TEST_F(IntegrationTest, SelfUpdateAfterEulaAcceptedViaInstall) {
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(InstallEulaRequired());
+
+  // Installing an app implies EULA accepted.
+  ASSERT_NO_FATAL_FAILURE(ExpectAppsUpdateSequence(
+      GetTestScope(), &test_server,
+      /*request_attributes=*/{},
+      {
+          AppUpdateExpectation(
+              kApp1.GetInstallCommandLineArgs(/*install_v1=*/true), kApp1.appid,
+              base::Version({0, 0, 0, 0}), kApp1.v1,
+              /*is_install=*/true,
+              /*should_update=*/true, false, "", "",
+              GetInstallerPath(kApp1.v1_crx)),
+      }));
+
+  ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kApp1.appid));
+
+  base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      &test_server, kUpdaterAppId, "", UpdateService::Priority::kBackground,
+      base::Version(kUpdaterVersion), next_version));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kUpdaterAppId, next_version));
+  ASSERT_NO_FATAL_FAILURE(ExpectRegistered(kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+#endif  // !BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(IntegrationTest, SelfUpdateAfterEulaAcceptedViaRegistry) {
+  if (!IsSystemInstall(GetTestScope())) {
+    GTEST_SKIP() << "HKLM/CSM only exists in system scope.";
+  }
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(InstallEulaRequired());
+
+  // Set EULA accepted on the updater app itself.
+  ASSERT_EQ(base::win::RegKey(UpdaterScopeToHKeyRoot(GetTestScope()),
+                              base::StrCat({CLIENT_STATE_MEDIUM_KEY,
+                                            base::UTF8ToWide(kUpdaterAppId)})
+                                  .c_str(),
+                              Wow6432(KEY_WRITE))
+                .WriteValue(L"eulaaccepted", 1),
+            ERROR_SUCCESS);
+
+  base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      &test_server, kUpdaterAppId, "", UpdateService::Priority::kBackground,
+      base::Version(kUpdaterVersion), next_version));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kUpdaterAppId, next_version));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(IntegrationTest, ReportsActive) {
   // A longer than usual timeout is needed for this test because the macOS
@@ -1888,6 +1965,14 @@ TEST_F(IntegrationTest, OfflineInstallOsNotSupportedSilentLegacy) {
   ASSERT_NO_FATAL_FAILURE(
       RunOfflineInstallOsNotSupported(/*is_legacy_install=*/true,
                                       /*is_silent_install=*/true));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, OfflineInstallEulaRequired) {
+  ASSERT_NO_FATAL_FAILURE(InstallEulaRequired());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(RunOfflineInstall(/*is_legacy_install=*/false,
+                                            /*is_silent_install=*/false));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 #endif  // BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD)

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/update_service_impl.h"
+#include "chrome/updater/update_service_impl_impl.h"
 
 #include <optional>
 #include <string>

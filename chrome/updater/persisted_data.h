@@ -108,6 +108,12 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
   bool GetUsageStatsEnabled() const;
   void SetUsageStatsEnabled(bool usage_stats_enabled);
 
+  // EulaRequired reflects whether some user responsible for this system has
+  // accepted a EULA that covers the updater's operation or not. EulaRequired
+  // defaults to false; refer to functional_spec.md for details.
+  bool GetEulaRequired() const;
+  void SetEulaRequired(bool eula_required);
+
   // LastChecked is set when the updater completed successfully a call to
   // `UpdateService::UpdateAll` as indicated by the `UpdateService::Result`
   // argument of the completion callback. This means that the execution path

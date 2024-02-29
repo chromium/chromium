@@ -1108,6 +1108,23 @@ bool WrongUser(UpdaterScope scope) {
                                 : ::IsUserAnAdmin() && IsUACOn();
 }
 
+bool EulaAccepted(const std::vector<std::string>& app_ids) {
+  for (const auto& app_id : app_ids) {
+    DWORD eula_accepted = 0;
+    if (base::win::RegKey(
+            HKEY_LOCAL_MACHINE,
+            base::StrCat({CLIENT_STATE_MEDIUM_KEY, base::ASCIIToWide(app_id)})
+                .c_str(),
+            Wow6432(KEY_READ))
+                .ReadValueDW(L"eulaaccepted", &eula_accepted) ==
+            ERROR_SUCCESS &&
+        eula_accepted == 1) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void LogClsidEntries(REFCLSID clsid) {
   const std::wstring local_server32_reg_path(
       base::StrCat({base::StrCat({L"Software\\Classes\\CLSID\\",

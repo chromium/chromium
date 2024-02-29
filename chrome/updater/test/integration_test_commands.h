@@ -41,6 +41,7 @@ class IntegrationTestCommands
   virtual void ExpectInstalled() const = 0;
   virtual void ExpectCandidateUninstalled() const = 0;
   virtual void Install() const = 0;
+  virtual void InstallEulaRequired() const = 0;
   virtual void InstallUpdaterAndApp(
       const std::string& app_id,
       bool is_silent_install,

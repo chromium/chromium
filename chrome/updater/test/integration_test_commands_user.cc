@@ -52,6 +52,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void Install() const override { updater::test::Install(updater_scope_); }
 
+  void InstallEulaRequired() const override {
+    updater::test::InstallEulaRequired(updater_scope_);
+  }
+
   void InstallUpdaterAndApp(const std::string& app_id,
                             const bool is_silent_install,
                             const std::string& tag,
