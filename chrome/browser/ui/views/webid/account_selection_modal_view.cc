@@ -141,7 +141,8 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
               &AccountSelectionViewBase::Observer::OnCloseButtonClicked,
               base::Unretained(observer_)),
           l10n_util::GetStringUTF16(IDS_CANCEL));
-  cancel_button->SetStyle(ui::ButtonStyle::kTonal);
+  cancel_button_ = cancel_button.get();
+  cancel_button->SetStyle(ui::ButtonStyle::kDefault);
   cancel_button->SetAppearDisabledInInactiveWidget(true);
   button_container->AddChildView(std::move(cancel_button));
 
@@ -277,7 +278,9 @@ void AccountSelectionModalView::ShowVerifyingSheet(
   // Disable buttons.
   CHECK(button_row_);
   for (const auto& button : button_row_->children()) {
-    button->SetEnabled(false);
+    if (button != cancel_button_) {
+      button->SetEnabled(false);
+    }
   }
 
   InitDialogWidget();

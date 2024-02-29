@@ -1098,13 +1098,15 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     base::RunLoop().RunUntilIdle();
   }
 
-  void WaitForCurrentAuthRequest() {
+  void WaitForCurrentAuthRequest(bool should_fast_forward = true) {
     request_remote_.set_disconnect_handler(auth_helper_.quit_closure());
 
     // Fast forward clock so that the pending
     // FederatedAuthRequestImpl::OnRejectRequest() task, if any, gets a
     // chance to run.
-    task_environment()->FastForwardBy(base::Minutes(10));
+    if (should_fast_forward) {
+      task_environment()->FastForwardBy(base::Minutes(10));
+    }
     auth_helper_.WaitForCallback();
 
     request_remote_.set_disconnect_handler(base::OnceClosure());
@@ -1476,7 +1478,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     federated_auth_request_impl_->OnIdpSigninStatusReceived(
         OriginFromString(kProviderUrlFull), true);
 
-    WaitForCurrentAuthRequest();
+    WaitForCurrentAuthRequest(/*should_fast_forward=*/false);
     CheckAuthExpectations(kConfigurationValid, kExpectationSuccess);
   }
 

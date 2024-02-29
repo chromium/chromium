@@ -126,6 +126,9 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // View containing the modal dialog title.
   raw_ptr<views::Label> title_label_ = nullptr;
 
+  // View containing the modal dialog cancel button.
+  raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
+
   // The title for the modal dialog.
   std::u16string title_;
 

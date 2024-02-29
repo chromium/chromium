@@ -10,11 +10,13 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
@@ -269,7 +271,10 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     std::vector<raw_ptr<views::View, VectorExperimental>> button_row =
         dialog()->children()[3]->children();
     for (const auto& button : button_row) {
-      ASSERT_FALSE(static_cast<views::MdTextButton*>(button)->GetEnabled());
+      auto* text_button = static_cast<views::MdTextButton*>(button);
+      ASSERT_TRUE(!text_button->GetEnabled() ||
+                  text_button->GetText() ==
+                      l10n_util::GetStringUTF16(IDS_CANCEL));
     }
   }
 
