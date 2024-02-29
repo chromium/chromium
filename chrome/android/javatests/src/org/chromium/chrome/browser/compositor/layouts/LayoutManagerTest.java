@@ -751,7 +751,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         tabListMode =
                                 mActivityTestRule
                                         .getActivity()
-                                        .getTabSwitcherForTesting()
+                                        .getTabSwitcherSupplierForTesting()
+                                        .get()
                                         .getTabListDelegate()
                                         .getListModeForTesting();
                     } else {
