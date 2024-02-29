@@ -20,15 +20,6 @@ constexpr int32_t kDelayMilliseconds = 50;
 
 // static
 BufferingBytesConsumer* BufferingBytesConsumer::CreateWithDelay(
-    BytesConsumer* bytes_consumer) {
-  return MakeGarbageCollected<BufferingBytesConsumer>(
-      base::PassKey<BufferingBytesConsumer>(), bytes_consumer,
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
-      base::Milliseconds(kDelayMilliseconds));
-}
-
-// static
-BufferingBytesConsumer* BufferingBytesConsumer::CreateWithDelayForTest(
     BytesConsumer* bytes_consumer,
     scoped_refptr<base::SingleThreadTaskRunner> timer_task_runner) {
   return MakeGarbageCollected<BufferingBytesConsumer>(
@@ -53,7 +44,6 @@ BufferingBytesConsumer::BufferingBytesConsumer(
       timer_(std::move(timer_task_runner),
              this,
              &BufferingBytesConsumer::OnTimerFired) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bytes_consumer_->SetClient(this);
   if (buffering_start_delay.is_zero()) {
     MaybeStartBuffering();
@@ -65,7 +55,6 @@ BufferingBytesConsumer::BufferingBytesConsumer(
 BufferingBytesConsumer::~BufferingBytesConsumer() = default;
 
 void BufferingBytesConsumer::MaybeStartBuffering() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (buffering_state_ != BufferingState::kDelayed)
     return;
   timer_.Stop();
@@ -74,14 +63,12 @@ void BufferingBytesConsumer::MaybeStartBuffering() {
 }
 
 void BufferingBytesConsumer::StopBuffering() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   timer_.Stop();
   buffering_state_ = BufferingState::kStopped;
 }
 
 BytesConsumer::Result BufferingBytesConsumer::BeginRead(const char** buffer,
                                                         size_t* available) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Stop delaying buffering on the first read as it will no longer be safe to
   // drain the underlying |bytes_consumer_| anyway.
   MaybeStartBuffering();
@@ -114,7 +101,6 @@ BytesConsumer::Result BufferingBytesConsumer::BeginRead(const char** buffer,
 }
 
 BytesConsumer::Result BufferingBytesConsumer::EndRead(size_t read_size) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (buffer_.empty()) {
     if (buffering_state_ != BufferingState::kStarted)
       return bytes_consumer_->EndRead(read_size);
@@ -144,17 +130,14 @@ BytesConsumer::Result BufferingBytesConsumer::EndRead(size_t read_size) {
 
 scoped_refptr<BlobDataHandle> BufferingBytesConsumer::DrainAsBlobDataHandle(
     BlobSizePolicy policy) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return bytes_consumer_->DrainAsBlobDataHandle(policy);
 }
 
 scoped_refptr<EncodedFormData> BufferingBytesConsumer::DrainAsFormData() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return bytes_consumer_->DrainAsFormData();
 }
 
 mojo::ScopedDataPipeConsumerHandle BufferingBytesConsumer::DrainAsDataPipe() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (buffering_state_ != BufferingState::kStarted)
     return bytes_consumer_->DrainAsDataPipe();
 
@@ -174,25 +157,21 @@ void BufferingBytesConsumer::ClearClient() {
 }
 
 void BufferingBytesConsumer::Cancel() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ClearClient();
   bytes_consumer_->Cancel();
 }
 
 BytesConsumer::PublicState BufferingBytesConsumer::GetPublicState() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (buffer_.empty())
     return bytes_consumer_->GetPublicState();
   return PublicState::kReadableOrWaiting;
 }
 
 BytesConsumer::Error BufferingBytesConsumer::GetError() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return bytes_consumer_->GetError();
 }
 
 String BufferingBytesConsumer::DebugName() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StringBuilder builder;
   builder.Append("BufferingBytesConsumer(");
   builder.Append(bytes_consumer_->DebugName());
@@ -210,7 +189,6 @@ void BufferingBytesConsumer::Trace(Visitor* visitor) const {
 }
 
 void BufferingBytesConsumer::OnTimerFired(TimerBase*) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   MaybeStartBuffering();
 }
 
