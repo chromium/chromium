@@ -489,11 +489,14 @@
           'shards': 2,
         },
       },
+      # Save some overhead loads of starting up emulator.
+      'fuchsia-x64-cast-receiver-dbg': {
+        'swarming': {
+          'shards': 1,
+        },
+      },
+      # Save some overhead loads of starting up emulator.
       'fuchsia-x64-cast-receiver-rel': {
-        'args': [
-          '--platform=fuchsia',
-          '--jobs=1',
-        ],
         'swarming': {
           'shards': 1,
         },
@@ -814,11 +817,14 @@
           '--additional-driver-flag=--use-gpu-in-tests',
         ],
       },
+      # Save some overhead loads of starting up emulator.
+      'fuchsia-x64-cast-receiver-dbg': {
+        'swarming': {
+          'shards': 1,
+        },
+      },
+      # Save some overhead loads of starting up emulator.
       'fuchsia-x64-cast-receiver-rel': {
-        'args': [
-          '--platform=fuchsia',
-          '--jobs=1',
-        ],
         'swarming': {
           'shards': 1,
         },
@@ -2081,6 +2087,19 @@
         'swarming': {
           'shards': 41,
         },
+      },
+      'fuchsia-x64-cast-receiver-dbg': {
+        # Temporarily only run this on CI due to resource requirements.
+        # TODO(crbug.com/1374125): Remove this once resources are available.
+        'ci_only': True,
+        'swarming': {
+          'shards': 41,
+        },
+        'args': [
+          # TODO(crbug.com/1406693): Remove this when the kernal panic in
+          # fuchsia has been resolved.
+          '--test-arg=--test-launcher-jobs=1',
+        ],
       },
       'fuchsia-x64-cast-receiver-rel': {
         # Temporarily only run this on CI due to resource requirements.
@@ -3526,12 +3545,6 @@
       'Mac FYI Retina ASAN (AMD)',
     ],
   },
-  'mediapipe_validating_tests': {
-    'remove_from': [
-      # TODO(crbug.com/1372213): Remove these once tests are stable.
-      'fuchsia-x64-cast-receiver-rel',
-    ],
-  },
   'model_validation_tests MODEL_VALIDATION_BASE': {
     'modifications': {
       'optimization_guide-win32': {
@@ -3999,10 +4012,6 @@
         ],
       },
     },
-    'remove_from': [
-      # TODO(https://crbug.com/1302427): Remove once tests pass.
-      'fuchsia-x64-cast-receiver-rel',
-    ],
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
@@ -4111,10 +4120,6 @@
         ],
       },
     },
-    'remove_from': [
-      # TODO(https://crbug.com/1302427): Remove once tests pass.
-      'fuchsia-x64-cast-receiver-rel',
-    ],
   },
   'services_unittests': {
     'remove_from': [

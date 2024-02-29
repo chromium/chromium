@@ -104,6 +104,9 @@
 crbug.com/324934210 [ mac intel angle-metal passthrough asan graphite-enabled ] ScreenshotSync_GPURasterWithDivs [ RetryOnFailure ]
 crbug.com/324934210 [ mac intel angle-metal passthrough asan graphite-enabled ] ScreenshotSync_GPURasterWithCanvas [ RetryOnFailure ]
 
+crbug.com/414481724 [ fuchsia fuchsia-board-qemu-x64 ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
+crbug.com/414481724 [ fuchsia fuchsia-board-qemu-x64 ] ScreenshotSync_SWRasterWithDivs [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
