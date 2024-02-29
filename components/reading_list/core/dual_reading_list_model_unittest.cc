@@ -130,7 +130,6 @@ class TestEntryBuilder {
   std::optional<base::FilePath> distilation_path_;
 };
 
-// TODO(crbug.com/1510547): Add test coverage for GetAccountModelIfSyncing.
 class DualReadingListModelTest : public testing::Test {
  public:
   DualReadingListModelTest() = default;
@@ -3982,6 +3981,18 @@ TEST_F(
 
   base::flat_set<GURL> keys = dual_model_->GetKeysThatNeedUploadToSyncServer();
   EXPECT_THAT(keys, ::testing::IsEmpty());
+}
+
+TEST_F(DualReadingListModelTest,
+       GetAccountModelIfSyncingShouldNotReturnNullWhenSignedInSyncDisabled) {
+  ResetStorageAndMimicSignedInSyncDisabled();
+  ASSERT_THAT(dual_model_->GetAccountModelIfSyncing(), NotNull());
+}
+
+TEST_F(DualReadingListModelTest,
+       GetAccountModelIfSyncingShouldReturnNullWhenSignedOut) {
+  ResetStorageAndMimicSignedOut();
+  ASSERT_THAT(dual_model_->GetAccountModelIfSyncing(), IsNull());
 }
 
 }  // namespace
