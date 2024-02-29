@@ -219,12 +219,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="RunNonWebVisible">
     Errors in `run()` not visible to the document.
   </int>
-  <int value="4" label="kSelectURLWebVisible">
+  <int value="4" label="SelectURLWebVisible">
     Errors in `selectURL()` visible to the document.
   </int>
-  <int value="5" label="kSelectURLNonWebVisible">
+  <int value="5" label="SelectURLNonWebVisible">
     Errors in `selectURL()` not visible to the document.
   </int>
+  <int value="6" label="Success"/>
 </enum>
 
 <enum name="SqlRecoveryResult">

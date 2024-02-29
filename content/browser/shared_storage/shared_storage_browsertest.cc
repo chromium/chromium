@@ -1514,7 +1514,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   histogram_tester_.ExpectUniqueSample(
       kDestroyedStatusHistogram,
       blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kRunWebVisible,
       1);
   histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);

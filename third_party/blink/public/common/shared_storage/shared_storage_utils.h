@@ -35,9 +35,10 @@ enum class SharedStorageWorkletErrorType {
   kRunNonWebVisible = 3,
   kSelectURLWebVisible = 4,
   kSelectURLNonWebVisible = 5,
+  kSuccess = 6,
 
   // Keep this at the end and equal to the last entry.
-  kMaxValue = kSelectURLNonWebVisible,
+  kMaxValue = kSuccess,
 };
 
 // Whether the length of the urls input parameter (of the

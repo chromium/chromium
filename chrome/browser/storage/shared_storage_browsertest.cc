@@ -833,7 +833,9 @@ class SharedStoragePrefBrowserTest
         "Finish executing customizable_module.js",
         base::UTF16ToUTF8(add_module_console_observer.messages()[0].message));
 
-    WaitForHistograms({kTimingDocumentAddModuleHistogram});
+    WaitForHistograms({kErrorTypeHistogram, kTimingDocumentAddModuleHistogram});
+    histogram_tester_.ExpectUniqueSample(
+        kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 1);
     histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
 
     content::WebContentsConsoleObserver script_console_observer(
@@ -966,8 +968,10 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
-  WaitForHistograms(
-      {kTimingDocumentAddModuleHistogram, kWorkletNumPerPageHistogram});
+  WaitForHistograms({kErrorTypeHistogram, kTimingDocumentAddModuleHistogram,
+                     kWorkletNumPerPageHistogram});
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 1);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
@@ -987,7 +991,11 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunOperation) {
           'test-operation', {data: {'customKey': 'customValue'}});
     )");
 
-  WaitForHistograms({kTimingDocumentAddModuleHistogram});
+  WaitForHistograms({kErrorTypeHistogram, kTimingDocumentAddModuleHistogram});
+  EXPECT_GE(
+      histogram_tester_.GetBucketCount(
+          kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess),
+      1);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
 
   if (!SuccessExpected()) {
@@ -1000,7 +1008,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunOperation) {
     EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                        GURL(url::kAboutBlankURL)));
     WaitForHistograms({kErrorTypeHistogram, kWorkletNumPerPageHistogram});
-    histogram_tester_.ExpectUniqueSample(
+    histogram_tester_.ExpectBucketCount(
+        kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 1);
+    histogram_tester_.ExpectBucketCount(
         kErrorTypeHistogram,
         blink::SharedStorageWorkletErrorType::kRunWebVisible, 1);
     histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
@@ -1019,8 +1029,10 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunOperation) {
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
-  WaitForHistograms({kTimingDocumentAddModuleHistogram,
+  WaitForHistograms({kErrorTypeHistogram, kTimingDocumentAddModuleHistogram,
                      kTimingDocumentRunHistogram, kWorkletNumPerPageHistogram});
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
@@ -1074,7 +1086,11 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
         })()
       )");
 
-  WaitForHistograms({kTimingDocumentAddModuleHistogram});
+  WaitForHistograms({kErrorTypeHistogram, kTimingDocumentAddModuleHistogram});
+  EXPECT_GE(
+      histogram_tester_.GetBucketCount(
+          kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess),
+      1);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
 
   if (!SuccessExpected()) {
@@ -1088,7 +1104,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
     EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                        GURL(url::kAboutBlankURL)));
     WaitForHistograms({kErrorTypeHistogram, kWorkletNumPerPageHistogram});
-    histogram_tester_.ExpectUniqueSample(
+    histogram_tester_.ExpectBucketCount(
+        kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 1);
+    histogram_tester_.ExpectBucketCount(
         kErrorTypeHistogram,
         blink::SharedStorageWorkletErrorType::kSelectURLWebVisible, 1);
     histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
@@ -1117,9 +1135,11 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
-  WaitForHistograms({kTimingDocumentAddModuleHistogram,
+  WaitForHistograms({kErrorTypeHistogram, kTimingDocumentAddModuleHistogram,
                      kTimingDocumentSelectUrlHistogram,
                      kWorkletNumPerPageHistogram});
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingDocumentSelectUrlHistogram, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
@@ -1492,13 +1512,15 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms(
-      {kWorkletNumPerPageHistogram, kTimingDocumentAddModuleHistogram,
-       kTimingDocumentRunHistogram, kTimingWorkletKeysHistogram,
-       kTimingWorkletEntriesHistogram, kEntriesQueuedCountHistogram,
-       kReceivedEntriesBenchmarksHistogram,
+      {kWorkletNumPerPageHistogram, kErrorTypeHistogram,
+       kTimingDocumentAddModuleHistogram, kTimingDocumentRunHistogram,
+       kTimingWorkletKeysHistogram, kTimingWorkletEntriesHistogram,
+       kEntriesQueuedCountHistogram, kReceivedEntriesBenchmarksHistogram,
        kIteratedEntriesBenchmarksHistogram});
 
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingWorkletKeysHistogram, 151);
@@ -1584,13 +1606,16 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
-  WaitForHistograms(
-      {kWorkletNumPerPageHistogram, kTimingDocumentAddModuleHistogram,
-       kTimingDocumentRunHistogram, kTimingWorkletKeysHistogram,
-       kEntriesQueuedCountHistogram, kReceivedEntriesBenchmarksHistogram,
-       kIteratedEntriesBenchmarksHistogram});
+  WaitForHistograms({kWorkletNumPerPageHistogram, kErrorTypeHistogram,
+                     kTimingDocumentAddModuleHistogram,
+                     kTimingDocumentRunHistogram, kTimingWorkletKeysHistogram,
+                     kEntriesQueuedCountHistogram,
+                     kReceivedEntriesBenchmarksHistogram,
+                     kIteratedEntriesBenchmarksHistogram});
 
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingWorkletKeysHistogram, 150 + 243);
@@ -1676,12 +1701,15 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms(
-      {kWorkletNumPerPageHistogram, kTimingDocumentAddModuleHistogram,
-       kTimingDocumentRunHistogram, kTimingWorkletEntriesHistogram,
-       kEntriesQueuedCountHistogram, kReceivedEntriesBenchmarksHistogram,
+      {kWorkletNumPerPageHistogram, kErrorTypeHistogram,
+       kTimingDocumentAddModuleHistogram, kTimingDocumentRunHistogram,
+       kTimingWorkletEntriesHistogram, kEntriesQueuedCountHistogram,
+       kReceivedEntriesBenchmarksHistogram,
        kIteratedEntriesBenchmarksHistogram});
 
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingWorkletEntriesHistogram, 101 + 299);
@@ -1755,13 +1783,15 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms(
-      {kWorkletNumPerPageHistogram, kTimingDocumentAddModuleHistogram,
-       kTimingDocumentRunHistogram, kTimingWorkletKeysHistogram,
-       kTimingWorkletEntriesHistogram, kEntriesQueuedCountHistogram,
-       kReceivedEntriesBenchmarksHistogram,
+      {kWorkletNumPerPageHistogram, kErrorTypeHistogram,
+       kTimingDocumentAddModuleHistogram, kTimingDocumentRunHistogram,
+       kTimingWorkletKeysHistogram, kTimingWorkletEntriesHistogram,
+       kEntriesQueuedCountHistogram, kReceivedEntriesBenchmarksHistogram,
        kIteratedEntriesBenchmarksHistogram});
 
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingWorkletKeysHistogram, 6);
@@ -1850,13 +1880,15 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms(
-      {kWorkletNumPerPageHistogram, kTimingDocumentAddModuleHistogram,
-       kTimingDocumentRunHistogram, kTimingWorkletKeysHistogram,
-       kTimingWorkletEntriesHistogram, kEntriesQueuedCountHistogram,
-       kReceivedEntriesBenchmarksHistogram,
+      {kWorkletNumPerPageHistogram, kErrorTypeHistogram,
+       kTimingDocumentAddModuleHistogram, kTimingDocumentRunHistogram,
+       kTimingWorkletKeysHistogram, kTimingWorkletEntriesHistogram,
+       kEntriesQueuedCountHistogram, kReceivedEntriesBenchmarksHistogram,
        kIteratedEntriesBenchmarksHistogram});
 
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingWorkletKeysHistogram, 4 + 3);
@@ -1927,13 +1959,15 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms(
-      {kWorkletNumPerPageHistogram, kTimingDocumentAddModuleHistogram,
-       kTimingDocumentRunHistogram, kTimingWorkletKeysHistogram,
-       kTimingWorkletEntriesHistogram, kEntriesQueuedCountHistogram,
-       kReceivedEntriesBenchmarksHistogram,
+      {kWorkletNumPerPageHistogram, kErrorTypeHistogram,
+       kTimingDocumentAddModuleHistogram, kTimingDocumentRunHistogram,
+       kTimingWorkletKeysHistogram, kTimingWorkletEntriesHistogram,
+       kEntriesQueuedCountHistogram, kReceivedEntriesBenchmarksHistogram,
        kIteratedEntriesBenchmarksHistogram});
 
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingWorkletKeysHistogram, 1);
@@ -2101,7 +2135,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
                      kWorkletNumPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
@@ -2147,7 +2183,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotRegisteredError) {
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
                      kWorkletNumPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
+  histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
@@ -2174,7 +2212,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_FunctionError) {
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
                      kWorkletNumPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
+  histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
@@ -2201,7 +2241,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_ScriptError) {
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
                      kWorkletNumPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
+  histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
@@ -2229,7 +2271,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
                      kWorkletNumPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
+  histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
@@ -2317,7 +2361,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
                      kWorkletNumPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
+  histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
@@ -2374,7 +2420,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
                      kWorkletNumPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
+  histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
@@ -2422,7 +2470,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
                      kWorkletNumPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
+  histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
@@ -2470,7 +2520,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
                      kWorkletNumPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
+  histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
@@ -2518,7 +2570,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
                      kWorkletNumPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
+  histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
@@ -2566,7 +2620,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
                      kWorkletNumPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
+  histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
@@ -2652,12 +2708,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletTiming) {
       GetActiveWebContents(),
       https_server()->GetURL(kCrossOriginHost, kSimplePagePath)));
   WaitForHistograms(
-      {kTimingDocumentAddModuleHistogram, kTimingDocumentRunHistogram,
-       kTimingWorkletSetHistogram, kTimingWorkletAppendHistogram,
-       kTimingWorkletGetHistogram, kTimingWorkletLengthHistogram,
-       kTimingWorkletDeleteHistogram, kTimingWorkletClearHistogram,
-       kWorkletNumPerPageHistogram});
+      {kErrorTypeHistogram, kTimingDocumentAddModuleHistogram,
+       kTimingDocumentRunHistogram, kTimingWorkletSetHistogram,
+       kTimingWorkletAppendHistogram, kTimingWorkletGetHistogram,
+       kTimingWorkletLengthHistogram, kTimingWorkletDeleteHistogram,
+       kTimingWorkletClearHistogram, kWorkletNumPerPageHistogram});
 
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingWorkletSetHistogram, 6);
@@ -2697,9 +2755,11 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
-  WaitForHistograms({kTimingDocumentAddModuleHistogram,
+  WaitForHistograms({kErrorTypeHistogram, kTimingDocumentAddModuleHistogram,
                      kTimingDocumentRunHistogram, kTimingWorkletSetHistogram,
                      kWorkletNumPerPageHistogram});
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 4);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 2);
   histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 2);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 2, 1);
@@ -2745,9 +2805,11 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
-  WaitForHistograms({kTimingDocumentAddModuleHistogram,
+  WaitForHistograms({kErrorTypeHistogram, kTimingDocumentAddModuleHistogram,
                      kTimingDocumentRunHistogram, kTimingWorkletSetHistogram,
                      kWorkletNumPerPageHistogram});
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 6);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 3);
   histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 3);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 3, 1);
@@ -2935,9 +2997,11 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameChromeBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms(
-      {kTimingDocumentAddModuleHistogram, kTimingDocumentSelectUrlHistogram,
-       kTimingDocumentRunHistogram, kTimingRemainingBudgetHistogram,
-       kWorkletNumPerPageHistogram});
+      {kErrorTypeHistogram, kTimingDocumentAddModuleHistogram,
+       kTimingDocumentSelectUrlHistogram, kTimingDocumentRunHistogram,
+       kTimingRemainingBudgetHistogram, kWorkletNumPerPageHistogram});
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 5);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 2);
   histogram_tester_.ExpectTotalCount(kTimingDocumentSelectUrlHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 2);
@@ -2999,9 +3063,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms(
-      {kTimingDocumentAddModuleHistogram, kTimingDocumentSelectUrlHistogram,
-       kTimingDocumentRunHistogram, kTimingRemainingBudgetHistogram,
-       kWorkletNumPerPageHistogram});
+      {kErrorTypeHistogram, kTimingDocumentAddModuleHistogram,
+       kTimingDocumentSelectUrlHistogram, kTimingDocumentRunHistogram,
+       kTimingRemainingBudgetHistogram, kWorkletNumPerPageHistogram});
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 9);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 3);
   histogram_tester_.ExpectTotalCount(kTimingDocumentSelectUrlHistogram, 2);
   histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 4);

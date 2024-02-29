@@ -194,6 +194,8 @@ ScriptPromise SharedStorageWorklet::AddModuleHelper(
                   return;
                 }
 
+                LogSharedStorageWorkletError(
+                    SharedStorageWorkletErrorType::kSuccess);
                 base::UmaHistogramMediumTimes(
                     "Storage.SharedStorage.Document.Timing.AddModule",
                     base::TimeTicks::Now() - start_time);
@@ -474,6 +476,8 @@ ScriptPromiseTyped<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
               return;
             }
 
+            LogSharedStorageWorkletError(
+                SharedStorageWorkletErrorType::kSuccess);
             base::UmaHistogramMediumTimes(
                 "Storage.SharedStorage.Document.Timing.SelectURL",
                 base::TimeTicks::Now() - start_time);
@@ -589,6 +593,8 @@ ScriptPromise SharedStorageWorklet::run(
               return;
             }
 
+            LogSharedStorageWorkletError(
+                SharedStorageWorkletErrorType::kSuccess);
             base::UmaHistogramMediumTimes(
                 "Storage.SharedStorage.Document.Timing.Run",
                 base::TimeTicks::Now() - start_time);
