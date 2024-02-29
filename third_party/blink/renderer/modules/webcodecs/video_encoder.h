@@ -14,6 +14,7 @@
 #include "media/base/video_color_space.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame_pool.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_output_callback.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoder_base.h"
 #include "third_party/blink/renderer/modules/webcodecs/hardware_preference.h"
@@ -32,6 +33,7 @@ namespace blink {
 class VideoEncoderConfig;
 class VideoEncoderInit;
 class VideoEncoderEncodeOptions;
+class VideoEncoderSupport;
 class WebGraphicsContext3DVideoFramePool;
 class BackgroundReadback;
 
@@ -76,9 +78,8 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   VideoEncoder(ScriptState*, const VideoEncoderInit*, ExceptionState&);
   ~VideoEncoder() override;
 
-  static ScriptPromise isConfigSupported(ScriptState*,
-                                         const VideoEncoderConfig*,
-                                         ExceptionState&);
+  static ScriptPromiseTyped<VideoEncoderSupport>
+  isConfigSupported(ScriptState*, const VideoEncoderConfig*, ExceptionState&);
 
   // EventTarget interface
   const AtomicString& InterfaceName() const override;

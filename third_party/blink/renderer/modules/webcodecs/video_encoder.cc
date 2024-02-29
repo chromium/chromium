@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
+#include "third_party/blink/renderer/platform/heap/heap_barrier_callback.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -1421,9 +1422,21 @@ void VideoEncoder::ResetInternal(DOMException* ex) {
   active_encodes_ = 0;
 }
 
+void FindAnySupported(ScriptPromiseResolverTyped<VideoEncoderSupport>* resolver,
+                      const HeapVector<Member<VideoEncoderSupport>>& supports) {
+  VideoEncoderSupport* result = nullptr;
+  for (auto& support : supports) {
+    result = support;
+    if (result->supported()) {
+      break;
+    }
+  }
+  resolver->Resolve(result);
+}
+
 static void isConfigSupportedWithSoftwareOnly(
     ScriptState* script_state,
-    ScriptPromiseResolver* resolver,
+    base::OnceCallback<void(VideoEncoderSupport*)> callback,
     VideoEncoderSupport* support,
     VideoEncoderTraits::ParsedConfig* config) {
   std::unique_ptr<media::VideoEncoder> software_encoder;
@@ -1443,19 +1456,20 @@ static void isConfigSupportedWithSoftwareOnly(
   }
   if (!software_encoder) {
     support->setSupported(false);
-    resolver->Resolve(support);
+    std::move(callback).Run(support);
     return;
   }
 
-  auto done_callback = [](std::unique_ptr<media::VideoEncoder> encoder,
-                          ScriptPromiseResolver* resolver,
-                          scoped_refptr<base::SingleThreadTaskRunner> runner,
-                          VideoEncoderSupport* support,
-                          media::EncoderStatus status) {
-    support->setSupported(status.is_ok());
-    resolver->Resolve(support);
-    runner->DeleteSoon(FROM_HERE, std::move(encoder));
-  };
+  auto done_callback =
+      [](std::unique_ptr<media::VideoEncoder> encoder,
+         WTF::CrossThreadOnceFunction<void(blink::VideoEncoderSupport*)>
+             callback,
+         scoped_refptr<base::SingleThreadTaskRunner> runner,
+         VideoEncoderSupport* support, media::EncoderStatus status) {
+        support->setSupported(status.is_ok());
+        std::move(callback).Run(support);
+        runner->DeleteSoon(FROM_HERE, std::move(encoder));
+      };
 
   auto* context = ExecutionContext::From(script_state);
   auto runner = context->GetTaskRunner(TaskType::kInternalDefault);
@@ -1465,12 +1479,12 @@ static void isConfigSupportedWithSoftwareOnly(
       /*output_cb=*/base::DoNothing(),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           done_callback, std::move(software_encoder),
-          MakeUnwrappingCrossThreadHandle(resolver), std::move(runner),
+          CrossThreadBindOnce(std::move(callback)), std::move(runner),
           MakeUnwrappingCrossThreadHandle(support))));
 }
 
 static void isConfigSupportedWithHardwareOnly(
-    ScriptPromiseResolver* resolver,
+    WTF::CrossThreadOnceFunction<void(blink::VideoEncoderSupport*)> callback,
     VideoEncoderSupport* support,
     VideoEncoderTraits::ParsedConfig* config,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
@@ -1479,42 +1493,18 @@ static void isConfigSupportedWithHardwareOnly(
   bool supported = IsAcceleratedConfigurationSupported(
       config->profile, config->options, gpu_factories, required_encoder_type);
   support->setSupported(supported);
-  resolver->Resolve(support);
+  std::move(callback).Run(support);
 }
 
-class FindAnySupported final : public ScriptFunction::Callable {
- public:
-  ScriptValue Call(ScriptState* state, ScriptValue value) override {
-    ExceptionContext context(ExceptionContextType::kConstructorOperationInvoke,
-                             "VideoEncoderSupport");
-    ExceptionState exception_state(state->GetIsolate(), context);
-    HeapVector<Member<VideoEncoderSupport>> supports =
-        NativeValueTraits<IDLSequence<VideoEncoderSupport>>::NativeValue(
-            state->GetIsolate(), value.V8Value(), exception_state);
-
-    VideoEncoderSupport* result = nullptr;
-    // We don't really expect exceptions here, but if isConfigSupported() is
-    // given a VideoEncoderConfig with uint64 values above max JS int (2^53 - 1)
-    // creation of |supports| vector will fail. This can happen during fuzzing.
-    if (!exception_state.HadException()) {
-      for (auto& support : supports) {
-        result = support;
-        if (result->supported())
-          break;
-      }
-    }
-    return ScriptValue::From(state, result);
-  }
-};
-
 // static
-ScriptPromise VideoEncoder::isConfigSupported(ScriptState* script_state,
-                                              const VideoEncoderConfig* config,
-                                              ExceptionState& exception_state) {
+ScriptPromiseTyped<VideoEncoderSupport> VideoEncoder::isConfigSupported(
+    ScriptState* script_state,
+    const VideoEncoderConfig* config,
+    ExceptionState& exception_state) {
   auto* parsed_config = ParseConfigStatic(config, exception_state);
   if (!parsed_config) {
     DCHECK(exception_state.HadException());
-    return ScriptPromise();
+    return ScriptPromiseTyped<VideoEncoderSupport>();
   }
   auto* config_copy = CopyConfig(*config, *parsed_config);
 
@@ -1524,27 +1514,35 @@ ScriptPromise VideoEncoder::isConfigSupported(ScriptState* script_state,
     auto* support = VideoEncoderSupport::Create();
     support->setConfig(config_copy);
     support->setSupported(false);
-
-    return ScriptPromise::Cast(
-        script_state,
-        ToV8Traits<VideoEncoderSupport>::ToV8(script_state, support));
+    return ToResolvedPromise<VideoEncoderSupport>(script_state, support);
   }
 
-  // Create promises for resolving hardware and software encoding support and
-  // put them into |promises|. Simultaneously run both versions of
-  // isConfigSupported(), each version fulfills its own promise.
-  HeapVector<ScriptPromise> promises;
+  // Schedule tasks for determining hardware and software encoding support and
+  // register them with HeapBarrierCallback.
+  wtf_size_t num_callbacks = 0;
+  if (parsed_config->hw_pref != HardwarePreference::kPreferSoftware ||
+      MayHaveOSSoftwareEncoder(parsed_config->profile)) {
+    ++num_callbacks;
+  }
+  if (parsed_config->hw_pref != HardwarePreference::kPreferHardware) {
+    ++num_callbacks;
+  }
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<VideoEncoderSupport>>(
+          script_state);
+  auto promise = resolver->Promise();
+  auto find_any_callback = HeapBarrierCallback<VideoEncoderSupport>(
+      num_callbacks,
+      WTF::BindOnce(&FindAnySupported, WrapPersistent(resolver)));
+
   if (parsed_config->hw_pref != HardwarePreference::kPreferSoftware ||
       MayHaveOSSoftwareEncoder(parsed_config->profile)) {
     // Hardware support not denied, detect support by hardware encoders.
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-        script_state, exception_state.GetContext());
-    promises.push_back(resolver->Promise());
     auto* support = VideoEncoderSupport::Create();
     support->setConfig(config_copy);
     auto gpu_retrieved_callback =
         CrossThreadBindOnce(isConfigSupportedWithHardwareOnly,
-                            MakeUnwrappingCrossThreadHandle(resolver),
+                            CrossThreadBindOnce(find_any_callback),
                             MakeUnwrappingCrossThreadHandle(support),
                             MakeUnwrappingCrossThreadHandle(parsed_config));
     RetrieveGpuFactoriesWithKnownEncoderSupport(
@@ -1553,21 +1551,13 @@ ScriptPromise VideoEncoder::isConfigSupported(ScriptState* script_state,
 
   if (parsed_config->hw_pref != HardwarePreference::kPreferHardware) {
     // Hardware support not required, detect support by software encoders.
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-        script_state, exception_state.GetContext());
-    promises.push_back(resolver->Promise());
     auto* support = VideoEncoderSupport::Create();
     support->setConfig(config_copy);
-    isConfigSupportedWithSoftwareOnly(script_state, resolver, support,
+    isConfigSupportedWithSoftwareOnly(script_state, find_any_callback, support,
                                       parsed_config);
   }
 
-  // Wait for all |promises| to resolve and check if any of them have
-  // support=true.
-  auto* find_any_supported = MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<FindAnySupported>());
-
-  return ScriptPromise::All(script_state, promises).Then(find_any_supported);
+  return promise;
 }
 
 }  // namespace blink
