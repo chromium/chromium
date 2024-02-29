@@ -226,3 +226,9 @@ promise_test(async() => {
     assert_equals(stringValue, 'foo');
   }
 }, 'JS decoding and C++ encoding of optional nested unions work as expected.');
+
+promise_test(async() => {
+  const remote = getMojoEchoRemote();
+  const response = await remote.echoBoolArray([true, false, true]);
+  assert_array_equals(response.values, [true, false, true]);
+}, 'JS encoding and decoding array of bools as expected.');

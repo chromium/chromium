@@ -90,6 +90,9 @@ class MojoEcho : public mojom::MojoEcho {
   void EchoStringAsOptionalNestedUnion(
       const std::string& value,
       EchoStringAsOptionalNestedUnionCallback callback) override;
+
+  void EchoBoolArray(const std::vector<bool>& values,
+                     EchoBoolArrayCallback callback) override;
 };
 
 }  // namespace content

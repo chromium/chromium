@@ -240,7 +240,7 @@ mojo.internal.computeUnionDimensions = function(unionSpec, nullable, value) {
  */
 mojo.internal.computeInlineArraySize = function(arraySpec, value) {
   if (arraySpec.elementType === mojo.internal.Bool) {
-    return mojo.internal.kArrayHeaderSize + (value.length + 7) >> 3;
+    return mojo.internal.kArrayHeaderSize + ((value.length + 7) >> 3);
   } else {
     return mojo.internal.kArrayHeaderSize +
         value.length *
