@@ -14,8 +14,6 @@ from telemetry import benchmark
 from telemetry.timeline import chrome_trace_category_filter
 from telemetry.web_perf import timeline_based_measurement
 
-from py_utils import xvfb
-
 # Features to enable via command line.
 _ENABLED_FEATURES = [
     'SharedStorageAPI:ExposeDebugMessageForSettingsStatus/true',
@@ -91,8 +89,8 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
       logging.warning('The maximum allowed number of iterations is 10. ' +
                       'Increase pageset_repeat instead.')
       cls.iterations = _MAX_NUM_ITERATIONS
-    if args.xvfb and xvfb.ShouldStartXvfb():
-      cls.xvfb_process = xvfb.StartXvfb()
+    if args.xvfb and utils.ShouldStartXvfb():
+      cls.xvfb_process = utils.StartXvfb()
 
   def SetExtraBrowserOptions(self, options):
     # `options` is an instance of `browser_options.BrowserOptions`.

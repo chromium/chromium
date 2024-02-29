@@ -15,6 +15,8 @@ __all__ = [
     'JsonDump',
     'MovePreviousExpectedHistogramsFile',
     'ProcessResults',
+    'ShouldStartXvfb',
+    'StartXvfb',
 ]
 
 from .file_util import (CleanUpRunPathFile, EnsureDataDir,
@@ -25,4 +27,5 @@ from .histogram_list import (GetHistogramsFromEventType,
                              GetSharedStorageIteratorHistograms,
                              GetSharedStorageUmaHistograms)
 from .process_results import ProcessResults
+from .xvfb import ShouldStartXvfb, StartXvfb
 from .util import GetNonePlaceholder, JsonDump
