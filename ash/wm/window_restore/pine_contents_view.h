@@ -37,9 +37,12 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
 
   static std::unique_ptr<views::Widget> Create(aura::Window* root);
 
-  // TODO(sammiequon): Move this to a test api.
+  // TODO(sammiequon): Move these to a test api.
   const PillButton* restore_button_for_testing() const {
     return restore_button_for_testing_;
+  }
+  const PillButton* cancel_button_for_testing() const {
+    return cancel_button_for_testing_;
   }
 
  private:
@@ -64,6 +67,7 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   raw_ptr<PillButton> restore_button_for_testing_ = nullptr;
+  raw_ptr<PillButton> cancel_button_for_testing_ = nullptr;
 
   raw_ptr<PineItemsContainerView> container_view_ = nullptr;
 

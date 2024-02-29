@@ -31,25 +31,33 @@ namespace ash::full_restore {
 
 namespace {
 
-// Retrieve the "Restore" button from the pine dialog, if we are in a overview
-// pine session.
-const PillButton* GetPineDialogRestoreButton() {
+PineContentsView* GetPineContentsView() {
   OverviewGrid* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   if (!overview_grid) {
     return nullptr;
   }
 
-  // Retrieve the "Restore" button from the pine dialog.
   views::Widget* pine_widget = OverviewGridTestApi(overview_grid).pine_widget();
   if (!pine_widget) {
     return nullptr;
   }
 
-  PineContentsView* pine_contents_view =
-      views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
-  CHECK(pine_contents_view);
-  return pine_contents_view->restore_button_for_testing();
+  return views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
+}
+
+// Retrieve the "Restore" button from the pine dialog, if we are in a overview
+// pine session.
+const PillButton* GetPineDialogRestoreButton() {
+  PineContentsView* pine_contents_view = GetPineContentsView();
+  return pine_contents_view ? pine_contents_view->restore_button_for_testing()
+                            : nullptr;
+}
+
+const PillButton* GetPineDialogCancelButton() {
+  PineContentsView* pine_contents_view = GetPineContentsView();
+  return pine_contents_view ? pine_contents_view->cancel_button_for_testing()
+                            : nullptr;
 }
 
 }  // namespace
@@ -339,6 +347,36 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, WindowStates) {
   auto* window_state = WindowState::Get((*it)->window()->GetNativeWindow());
   window_state->Unminimize();
   EXPECT_TRUE(window_state->IsMaximized());
+}
+
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_ClickCancelButton) {
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CreateBrowser(profile);
+  CreateBrowser(profile);
+  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+
+  // Immediate save to full restore file to bypass the 2.5 second throttle.
+  AppLaunchInfoSaveWaiter::Wait();
+}
+
+// Verify that with two elements in the full restore file, if we click cancel no
+// browsers are launched.
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, ClickCancelButton) {
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+
+  // Verify we have entered overview. The cancel button will be null if we
+  // failed to enter overview.
+  WaitForOverviewEnterAnimation();
+  const PillButton* cancel_button = GetPineDialogCancelButton();
+  ASSERT_TRUE(cancel_button);
+
+  // Click the cancel button. We spin the run loop because launching browsers is
+  // async. Verify that no browsers are launched.
+  test::Click(cancel_button, /*flag=*/0);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
 }
 
 }  // namespace ash::full_restore

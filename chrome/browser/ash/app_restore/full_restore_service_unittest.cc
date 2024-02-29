@@ -229,6 +229,7 @@ class FullRestoreServiceTest : public testing::Test {
     test_helper_ = std::make_unique<FullRestoreTestHelper>(
         "usertest@gmail.com", "1234567890", fake_user_manager_.Get(),
         profile_manager_.get(), testing_pref_service_.get());
+    scoped_feature_list_.InitAndDisableFeature(features::kForestFeature);
   }
   FullRestoreServiceTest(const FullRestoreServiceTest&) = delete;
   FullRestoreServiceTest& operator=(const FullRestoreServiceTest&) = delete;
@@ -355,6 +356,7 @@ class FullRestoreServiceTest : public testing::Test {
       testing_pref_service_;
   std::unique_ptr<FullRestoreTestHelper> test_helper_;
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // If the system is crash, and there is no FullRestore file, don't show the
@@ -826,6 +828,12 @@ class FullRestoreServiceMultipleUsersTest
     test_helper2_->CreateFullRestoreServiceForTesting(nullptr);
   }
 
+  void CreateFullRestoreService2ForTesting(
+      std::unique_ptr<MockFullRestoreServiceDelegate> mock_delegate) {
+    test_helper2_->CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+    content::RunAllTasksUntilIdle();
+  }
+
   RestoreOption GetRestoreOptionForProfile2() const {
     return test_helper2_->GetRestoreOption();
   }
@@ -1007,7 +1015,10 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginWithActiveUserLogin) {
 
 class ForestFullRestoreServiceTest : public FullRestoreServiceTest {
  protected:
-  ForestFullRestoreServiceTest() = default;
+  ForestFullRestoreServiceTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(features::kForestFeature);
+  }
   ForestFullRestoreServiceTest(const ForestFullRestoreServiceTest&) = delete;
   ForestFullRestoreServiceTest& operator=(const ForestFullRestoreServiceTest&) =
       delete;
@@ -1022,9 +1033,6 @@ class ForestFullRestoreServiceTest : public FullRestoreServiceTest {
     switches::SetIgnoreForestSecretKeyForTest(false);
     FullRestoreServiceTest::TearDown();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
 };
 
 // If the system is crash, and there is no full restore file, don't show the
@@ -1192,7 +1200,10 @@ TEST_F(ForestFullRestoreServiceTest, Upgrading) {
 class ForestFullRestoreServiceTestHavingFullRestoreFile
     : public FullRestoreServiceTestHavingFullRestoreFile {
  protected:
-  ForestFullRestoreServiceTestHavingFullRestoreFile() = default;
+  ForestFullRestoreServiceTestHavingFullRestoreFile() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(features::kForestFeature);
+  }
   ForestFullRestoreServiceTestHavingFullRestoreFile(
       const ForestFullRestoreServiceTestHavingFullRestoreFile&) = delete;
   ForestFullRestoreServiceTestHavingFullRestoreFile& operator=(
@@ -1208,13 +1219,10 @@ class ForestFullRestoreServiceTestHavingFullRestoreFile
     switches::SetIgnoreForestSecretKeyForTest(false);
     FullRestoreServiceTestHavingFullRestoreFile::TearDown();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
 };
 
 // If the system is crash, the delegate is notified.
-TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, CrashAndRestore) {
+TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, Crash) {
   ExitTypeService::GetInstanceForProfile(profile())
       ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
 
@@ -1254,6 +1262,188 @@ TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile,
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
   EXPECT_TRUE(CanPerformRestore(account_id()));
   EXPECT_TRUE(allow_save());
+}
+
+// Test tha for an existing user, if re-image, do not show the pine dialog for
+// the first run.
+TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, ExistingUserReImage) {
+  // Set the restore pref setting to simulate sync for the first time.
+  SetRestoreOption(RestoreOption::kAskEveryTime);
+  first_run::ResetCachedSentinelDataForTesting();
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ::switches::kForceFirstRun);
+
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  EXPECT_TRUE(allow_save());
+
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      ::switches::kForceFirstRun);
+  first_run::ResetCachedSentinelDataForTesting();
+}
+
+class ForestFullRestoreServiceMultipleUsersTest
+    : public FullRestoreServiceMultipleUsersTest {
+ protected:
+  ForestFullRestoreServiceMultipleUsersTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(features::kForestFeature);
+  }
+  ForestFullRestoreServiceMultipleUsersTest(
+      const ForestFullRestoreServiceMultipleUsersTest&) = delete;
+  ForestFullRestoreServiceMultipleUsersTest& operator=(
+      const ForestFullRestoreServiceMultipleUsersTest&) = delete;
+  ~ForestFullRestoreServiceMultipleUsersTest() override = default;
+
+  void SetUp() override {
+    switches::SetIgnoreForestSecretKeyForTest(true);
+    FullRestoreServiceMultipleUsersTest::SetUp();
+  }
+
+  void TearDown() override {
+    switches::SetIgnoreForestSecretKeyForTest(false);
+    FullRestoreServiceMultipleUsersTest::TearDown();
+  }
+};
+
+// Verify the full restore init process when 2 users login at the same time,
+// e.g. after the system restart or upgrading.
+TEST_F(ForestFullRestoreServiceMultipleUsersTest, TwoUsersLoginAtTheSameTime) {
+  // Add `switches::kLoginUser` to the command line to simulate the system
+  // restart.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kLoginUser, account_id().GetUserEmail());
+  // Set the first user as the last session active user.
+  fake_user_manager()->set_last_session_active_account_id(account_id());
+
+  SetRestoreOption(RestoreOption::kAskEveryTime);
+  SetRestoreOptionForProfile2(RestoreOption::kAskEveryTime);
+
+  // The pine dialog is only shown for the first user.
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .Times(1);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+
+  auto mock_delegate_2 = std::make_unique<MockFullRestoreServiceDelegate>();
+  auto* mock_delegate_2_ptr = mock_delegate_2.get();
+  EXPECT_CALL(*mock_delegate_2, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreService2ForTesting(std::move(mock_delegate_2));
+
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  EXPECT_TRUE(CanPerformRestore(account_id()));
+  EXPECT_TRUE(allow_save());
+
+  // Simulate switch to the second user. The pine dialog should be shown for
+  // them.
+  auto* full_restore_service2 = FullRestoreService::GetForProfile(profile2());
+  EXPECT_CALL(*mock_delegate_2_ptr, MaybeStartPineOverviewSession(testing::_))
+      .Times(1);
+  full_restore_service2->OnTransitionedToNewActiveUser(profile2());
+
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOptionForProfile2());
+  EXPECT_TRUE(CanPerformRestore(account_id2()));
+  EXPECT_TRUE(allow_save());
+}
+
+// Verify the full restore init process when 2 users login one by one.
+TEST_F(ForestFullRestoreServiceMultipleUsersTest, TwoUsersLoginOneByOne) {
+  SetRestoreOption(RestoreOption::kAskEveryTime);
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .Times(1);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  EXPECT_TRUE(CanPerformRestore(account_id()));
+  EXPECT_TRUE(allow_save());
+
+  SetRestoreOptionForProfile2(RestoreOption::kAskEveryTime);
+  auto mock_delegate_2 = std::make_unique<MockFullRestoreServiceDelegate>();
+  auto* mock_delegate_2_ptr = mock_delegate_2.get();
+  EXPECT_CALL(*mock_delegate_2, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreService2ForTesting(std::move(mock_delegate_2));
+
+  // Simulate switch to the second user. The pine dialog should be shown for
+  // them.
+  auto* full_restore_service2 = FullRestoreService::GetForProfile(profile2());
+  EXPECT_CALL(*mock_delegate_2_ptr, MaybeStartPineOverviewSession(testing::_))
+      .Times(1);
+  full_restore_service2->OnTransitionedToNewActiveUser(profile2());
+
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOptionForProfile2());
+  EXPECT_TRUE(CanPerformRestore(account_id()));
+  EXPECT_TRUE(allow_save());
+}
+
+// Verify the full restore init process when the system restarts.
+TEST_F(ForestFullRestoreServiceMultipleUsersTest,
+       TwoUsersLoginWithActiveUserLogin) {
+  // Add `switches::kLoginUser` to the command line to simulate the system
+  // restart.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kLoginUser, account_id().GetUserEmail());
+  // Set the second user as the last session active user.
+  fake_user_manager()->set_last_session_active_account_id(account_id2());
+
+  SetRestoreOption(RestoreOption::kAskEveryTime);
+  SetRestoreOptionForProfile2(RestoreOption::kAskEveryTime);
+
+  // The pine dialog shouldn't be shown for neither user yet.
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  auto* mock_delegate_ptr = mock_delegate.get();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+
+  auto mock_delegate_2 = std::make_unique<MockFullRestoreServiceDelegate>();
+  auto* mock_delegate_2_ptr = mock_delegate_2.get();
+  EXPECT_CALL(*mock_delegate_2, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreService2ForTesting(std::move(mock_delegate_2));
+
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 0);
+
+  // Simulate switch to the second user. The pine dialog should be shown for
+  // them.
+  auto* full_restore_service2 = FullRestoreService::GetForProfile(profile2());
+  EXPECT_CALL(*mock_delegate_2_ptr, MaybeStartPineOverviewSession(testing::_))
+      .Times(1);
+  full_restore_service2->OnTransitionedToNewActiveUser(profile2());
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
+  EXPECT_TRUE(CanPerformRestore(account_id2()));
+
+  // Simulate switch to the first user. The pine dialog should be shown for
+  // them.
+  auto* full_restore_service = FullRestoreService::GetForProfile(profile());
+  EXPECT_CALL(*mock_delegate_ptr, MaybeStartPineOverviewSession(testing::_))
+      .Times(1);
+  full_restore_service->OnTransitionedToNewActiveUser(profile());
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
+  EXPECT_TRUE(CanPerformRestore(account_id()));
+
+  // Simulate switch to the second user, and verify no more init processes.
+  EXPECT_CALL(*mock_delegate_2_ptr, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  full_restore_service2->OnTransitionedToNewActiveUser(profile2());
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
+
+  // Simulate switch to the first user, and verify no more init processes.
+  EXPECT_CALL(*mock_delegate_ptr, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  full_restore_service->OnTransitionedToNewActiveUser(profile());
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
 }
 
 }  // namespace ash::full_restore

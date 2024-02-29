@@ -108,6 +108,7 @@ PineContentsView::PineContentsView() {
                               PillButton::Type::kPrimaryWithoutIcon)
                           .SetText(u"Restore"),
                       views::Builder<PillButton>()
+                          .CopyAddressTo(&cancel_button_for_testing_)
                           .SetCallback(base::BindRepeating(
                               &PineContentsView::OnCancelButtonPressed,
                               weak_ptr_factory_.GetWeakPtr()))
