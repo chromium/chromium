@@ -56,6 +56,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   friend bool operator==(const TriggerRegistration&,
                          const TriggerRegistration&) = default;
 
+
   FilterPair filters;
   std::optional<uint64_t> debug_key;
   std::vector<AggregatableDedupKey> aggregatable_dedup_keys;
@@ -70,6 +71,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   AttributionWindow attribution_window;
   AggregatableValues aggregatable_cap_values;
   std::string attribution_logic;
+  std::string partitioning;
 
 };
 

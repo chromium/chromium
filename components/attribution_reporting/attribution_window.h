@@ -31,6 +31,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AttributionWindow {
 
   uint64_t epoch_start() const { return epoch_start_; }
   uint64_t epoch_end() const { return epoch_end_; }
+  uint64_t size() const { return epoch_end_ - epoch_start_ + 1; }
 
   base::Value::Dict ToJson() const;
 

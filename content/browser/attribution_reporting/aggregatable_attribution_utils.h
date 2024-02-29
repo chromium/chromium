@@ -13,6 +13,7 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/common/content_export.h"
+#include "content/browser/attribution_reporting/partition.h"
 
 namespace attribution_reporting {
 class AggregatableTriggerData;
@@ -42,14 +43,16 @@ CreateAggregatableHistogram(
     const std::vector<attribution_reporting::AggregatableTriggerData>&,
     const attribution_reporting::AggregatableValues&);
 
-CONTENT_EXPORT std::vector<AggregatableHistogramContribution>
-CreateAggregatableHistogramM2M(
-    std::string attribution_logic,
-    const base::flat_map<std::string, 
-        base::flat_map<absl::uint128, uint32_t>>& keypiece_counter,
-    double total_count,
-    const std::vector<attribution_reporting::AggregatableTriggerData>&,
-    const attribution_reporting::AggregatableValues&);
+CONTENT_EXPORT void AttributionLogicLastTouch(Partition& partition,
+        const base::flat_map<std::string, std::vector<absl::uint128>>& trigger_keypieces_per_source);
+
+CONTENT_EXPORT void AttributionLogicUniform(Partition& partition,
+        const base::flat_map<std::string, std::vector<absl::uint128>>& trigger_keypieces_per_source);
+
+CONTENT_EXPORT void CreateAggregatableHistogramM2M(
+    Partition& partition,
+    const std::vector<attribution_reporting::AggregatableTriggerData>& aggregatable_trigger_data);
+  
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class AssembleAggregatableReportStatus {

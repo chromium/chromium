@@ -34,6 +34,10 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) GlobalEpsilon {
     return epsilon_;
   }
 
+  double global_epsilon() const {
+    return epsilon_;
+  }
+
   [[nodiscard]] bool SetIfValid(double);
 
   void Serialize(base::Value::Dict&) const;

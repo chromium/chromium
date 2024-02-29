@@ -54,6 +54,7 @@
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "content/browser/attribution_reporting/partition.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
@@ -1033,11 +1034,11 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReportM2M(
             AggregatableResult::kNoMatchingSourceFilterData);    
   }
   
+  std::vector<Partition> partitions;
   if (!aggregatable_status.has_value()) {
     if (AggregatableResult create_aggregatable_status =
             MaybeCreateAggregatableAttributionReportM2M(
-                attribution_info, sources_to_attribute, trigger,
-                new_aggregatable_report);
+                sources_to_attribute, trigger, partitions);
         create_aggregatable_status != AggregatableResult::kSuccess) {
       aggregatable_status = create_aggregatable_status;
     }
@@ -1058,11 +1059,13 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReportM2M(
 
   std::optional<AggregatableResult> store_aggregatable_status;
   if (!aggregatable_status.has_value()) {
-    DCHECK(new_aggregatable_report.has_value());
+    // DCHECK(new_aggregatable_report.has_value());
+    // make sure function populates new_aggregatable report with final report
     store_aggregatable_status = MaybeStoreAggregatableAttributionReportDataM2M(
-        *new_aggregatable_report
-        // source_to_attribute->source.aggregatable_budget_consumed()
-        );
+      partitions,
+      new_aggregatable_report,
+      trigger
+    );
   }
 
   if (store_aggregatable_status == AggregatableResult::kInternalError) {
@@ -1135,84 +1138,149 @@ bool AttributionStorageSql::FindMatchingSourceForTriggerM2M(
   return statement.Succeeded();
 }
 
+
+bool AttributionStorageSql::GetPartitions(
+    std::vector<Partition>& partitions,
+    const attribution_reporting::TriggerRegistration& trigger_registration) {
+
+    auto& attribution_window = trigger_registration.attribution_window;
+
+  // options = {"", "uniform", "weighted"}
+  if (trigger_registration.partitioning == "") {
+    // No partitioning - take union of all epochs
+    Partition partition(attribution_window,
+            trigger_registration.attribution_logic);
+    
+    for (auto& pair : trigger_registration.aggregatable_values.values()) {
+      Partition::ReportValuePair report_value_pair;
+      report_value_pair.value = (double) pair.second;
+      partition.report_value_pairs[pair.first] = report_value_pair;
+    }
+    partitions.push_back(partition);
+    return true;
+  } 
+  
+  // One epoch per partition
+  for (uint64_t i=attribution_window.epoch_start(); i <= attribution_window.epoch_end(); i++) {
+    Partition partition(*attribution_reporting::AttributionWindow().Create(i, i),
+            trigger_registration.attribution_logic);
+    partitions.push_back(partition);
+  }
+
+  if (trigger_registration.partitioning == "uniform") {
+      // Split Value uniformly across partitions
+      for (auto& pair : trigger_registration.aggregatable_values.values()) {
+        double per_partition_value = (double) pair.second / partitions.size();
+
+        for (auto& partition : partitions) {
+          Partition::ReportValuePair report_value_pair;
+          report_value_pair.value = per_partition_value;
+          partition.report_value_pairs[pair.first] = report_value_pair;
+        }
+      }
+  } else {
+    return false;
+  }
+
+  return true;
+}
+
 AggregatableResult
 AttributionStorageSql::MaybeCreateAggregatableAttributionReportM2M(
-    const AttributionInfo& attribution_info,
-    const std::vector<StoredSource>& sources_to_attribute,
+    std::vector<StoredSource>& sources_to_attribute,
     const AttributionTrigger& trigger,
-    std::optional<AttributionReport>& report) {
+    std::vector<Partition>& partitions) {
+
+  // TODO(kelly): here cap the values somewhere
+  // const AttributionReport::AggregatableValues& aggregatable_cap_values = 
+  //     trigger_registration.aggregatable_cap_values;
 
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
+  
+  const attribution_reporting::AttributionWindow attribution_window = 
+      trigger_registration.attribution_window;
 
-  // {source_key -> {key_piece -> count}}
-  base::flat_map<std::string, 
-        base::flat_map<absl::uint128, uint32_t>> keypiece_counter;
-
+  //--------------------------------------------------------------------------------
+  // Sanity check: every source_key from trigger_data must exist in source aggregation_keys too
   for (auto& pair : trigger_registration.aggregatable_values.values()) {
-    keypiece_counter[pair.first] = {};
-  }
-
-  assert(keypiece_counter.size() == 
-          trigger_registration.aggregatable_values.values().size());
-
-  double total_count = sources_to_attribute.size();
-
-  for (const auto& pair : keypiece_counter) {
-    auto source_key = pair.first;
-
-    for (const StoredSource& source_to_attribute : sources_to_attribute) {
+    for (StoredSource& source_to_attribute : sources_to_attribute) {
       auto aggregation_keys = source_to_attribute.aggregation_keys().keys();
-      // Every source_key from trigger_data must exist in source too
-      auto it = aggregation_keys.find(source_key);
+      auto it = aggregation_keys.find(pair.first);
       if (it == aggregation_keys.end()) {
         return AggregatableResult::kInternalError; 
       }
+    }
+  }
+  //--------------------------------------------------------------------------------
 
-      auto& source_key_piece = aggregation_keys[source_key];
-    
-      auto iit = keypiece_counter[source_key].find(source_key_piece);
-      if (iit == keypiece_counter[source_key].end()) {
-        keypiece_counter[source_key][source_key_piece] = 0;
+  //--------------------------------------------------------------------------------
+  // Partitions epochs and splits Value among the partitions
+  if (!GetPartitions(partitions, trigger_registration)) {
+    return AggregatableResult::kInternalError; 
+  }
+
+  LOG(INFO) << "Partitions:";
+  for (const auto& partition : partitions) {
+      LOG(INFO) << "Partition: " << partition.attribution_window.epoch_start() << "-" << partition.attribution_window.epoch_end() << std::endl;
+      for (const auto& pair : partition.report_value_pairs) {
+          LOG(INFO) << "  Source Key: " << pair.first << ", value: " << pair.second.value << std::endl;
       }
-      keypiece_counter[source_key][source_key_piece]++; 
+  }
+  //--------------------------------------------------------------------------------
+
+  //--------------------------------------------------------------------------------
+  // Groups sources_to_attribute by epoch
+  base::flat_map<uint64_t, std::vector<StoredSource*>> sources_per_epoch;
+  for (StoredSource& source_to_attribute : sources_to_attribute) {
+      uint64_t epoch = source_to_attribute.source_epoch();
+
+      auto it = sources_per_epoch.find(epoch);
+      if (it == sources_per_epoch.end()) {
+        sources_per_epoch[epoch] = {};
+      }
+      // Push source_to_attribute to epoch's sources
+      sources_per_epoch[epoch].push_back(&source_to_attribute);
+  }
+  
+  LOG(INFO) << "Sources per epoch:";
+  for (const auto& pair : sources_per_epoch) {
+    LOG(INFO) << "  Epoch: " << pair.first << std::endl;
+    for (const StoredSource* source : pair.second) {
+        LOG(INFO) << "  Source keypiece: " << source->source_event_id() << std::endl;
     }
   }
 
-// assert here that total_count == sum(source_id_counts[*])
-  for (const auto& outerPair : keypiece_counter) {
-      LOG(INFO) << "Outer Key: " << outerPair.first << std::endl;
-      for (const auto& innerPair : outerPair.second) {
-          LOG(INFO) << "  Inner Key: " << innerPair.first << ", Value: " << innerPair.second << std::endl;
+  // Move each epoch-group to the relevant partition
+  for (auto& partition : partitions) {
+    for (uint64_t i=partition.attribution_window.epoch_start(); 
+            i <= partition.attribution_window.epoch_end(); i++) {
+      partition.sources_per_epoch[i] = std::move(sources_per_epoch[i]);
+    }
+  }
+  //--------------------------------------------------------------------------------
+
+  //--------------------------------------------------------------------------------
+  // Create a report per partition
+  for (auto& partition : partitions) {
+    CreateAggregatableHistogramM2M(
+          partition,
+          trigger_registration.aggregatable_trigger_data);
+  }
+
+  for (auto& partition : partitions) {
+    LOG(INFO) << "Partition...:";
+    for (auto& pair : partition.report_value_pairs) {
+      auto& source_key = pair.first;
+      auto& report_value_pair = pair.second;
+      LOG(INFO) << "Source_key " << source_key << " value " << report_value_pair.value;
+      for (auto& keyvalue : report_value_pair.report) {
+        LOG(INFO) << " key " << keyvalue.key() << " value " << keyvalue.value();
       }
+    }
   }
-
-  // Use the vector of key,values to store pairs of <source-id, contribution-value> instead
-  std::vector<AggregatableHistogramContribution> contributions =
-      CreateAggregatableHistogramM2M(
-          trigger_registration.attribution_logic,
-          keypiece_counter,
-          total_count,
-          trigger_registration.aggregatable_trigger_data,
-          trigger_registration.aggregatable_values);
-  if (contributions.empty()) {
-    return AggregatableResult::kNoHistograms;
-  }
-
-  base::Time report_time =
-      GetAggregatableReportTime(trigger, attribution_info.time);
-
-  report = AttributionReport(
-      attribution_info, AttributionReport::Id(kUnsetRecordId), report_time,
-      /*initial_report_time=*/report_time, delegate_->NewReportID(),
-      /*failed_send_attempts=*/0,
-      AttributionReport::AggregatableAttributionData(
-          AttributionReport::CommonAggregatableData(
-              trigger_registration.aggregation_coordinator_origin,
-              /*verification_token=*/std::nullopt,
-              trigger_registration.aggregatable_trigger_config),
-          std::move(contributions), sources_to_attribute[0]));
-
+  //--------------------------------------------------------------------------------
+  
   return AggregatableResult::kSuccess;
 }
 
@@ -2893,20 +2961,20 @@ bool AttributionStorageSql::CreateSchema() {
     return false;
   }
 
-  // All columns in this table are const except |budget_consumed| and
-  // which are updated when a non null report is about to be send.
-  // |epoch| is a primary key and represents the period of time covered by the filter
-  // |initial_budget| is the initial budget capacity of the filter <epoch>
-  // |consumed_budget| is the budget that has been consumed so far from the filter <epoch>.
-  static constexpr char kAllOriginsFiltersTableSql[] =
-      "CREATE TABLE all_origins_filters("
-      "epoch INTEGER PRIMARY KEY NOT NULL,"
-      // "querying_origin_type TEXT NOT NULL,"
-      "initial_budget FLOAT NOT NULL,"
-      "consumed_budget FLOAT NOT NULL)";
-  if (!db_.Execute(kAllOriginsFiltersTableSql)) {
-    return false;
-  }
+  // // All columns in this table are const except |budget_consumed| and
+  // // which are updated when a non null report is about to be send.
+  // // |epoch| is a primary key and represents the period of time covered by the filter
+  // // |initial_budget| is the initial budget capacity of the filter <epoch>
+  // // |consumed_budget| is the budget that has been consumed so far from the filter <epoch>.
+  // static constexpr char kAllOriginsFiltersTableSql[] =
+  //     "CREATE TABLE all_origins_filters("
+  //     "epoch INTEGER PRIMARY KEY NOT NULL,"
+  //     // "querying_origin_type TEXT NOT NULL,"
+  //     "initial_budget FLOAT NOT NULL,"
+  //     "consumed_budget FLOAT NOT NULL)";
+  // if (!db_.Execute(kAllOriginsFiltersTableSql)) {
+  //   return false;
+  // }
 
   if (!rate_limit_table_.CreateTable(&db_)) {
     return false;
@@ -3321,49 +3389,129 @@ bool AttributionStorageSql::StoreAttributionReport(AttributionReport& report) {
 
 AggregatableResult
 AttributionStorageSql::MaybeStoreAggregatableAttributionReportDataM2M(
-    AttributionReport& report) {
-  const auto* aggregatable_attribution =
-      absl::get_if<AttributionReport::AggregatableAttributionData>(
-          &report.data());
-  DCHECK(aggregatable_attribution);
+    std::vector<Partition>& partitions,
+    std::optional<AttributionReport>& report,
+    const AttributionTrigger& trigger) {
 
-  // switch (AggregatableAttributionAllowedForBudgetLimit(
-  //     *aggregatable_attribution, aggregatable_budget_consumed)) {
-  //   case RateLimitResult::kAllowed:
-  //     break;
-  //   case RateLimitResult::kNotAllowed:
-  //     return AggregatableResult::kInsufficientBudget;
-  //   case RateLimitResult::kError:
-  //     return AggregatableResult::kInternalError;
+  // """ Obtains remaining budget per requested epoch for the querying origin.
+  // Computes the budget-required per requested epoch for the querying origin using different
+  // possible optimization methods. Tries to consume budget from every requested epoch from the
+  // querying origin. Partitions whose epochs don't have remaining budget will have their reports NULLed.
+  // Sums the reports across partitions to create one attribution report.
+  // """
+
+  // // USE THAT WHERE I WILL SUM REPORTS ACROSS PARTITIONS
+  // // base::Time report_time =
+  // //     GetAggregatableReportTime(trigger, attribution_info.time);
+
+  // // report = AttributionReport(
+  // //     attribution_info, AttributionReport::Id(kUnsetRecordId), report_time,
+  // //     /*initial_report_time=*/report_time, delegate_->NewReportID(),
+  // //     /*failed_send_attempts=*/0,
+  // //     AttributionReport::AggregatableAttributionData(
+  // //         AttributionReport::CommonAggregatableData(
+  // //             trigger_registration.aggregation_coordinator_origin,
+  // //             /*verification_token=*/std::nullopt,
+  // //             trigger_registration.aggregatable_trigger_config),
+  // //         std::move(contributions), sources_to_attribute[0]));
+
+
+  // const SuitableOrigin& querying_origin = trigger.destination_origin();
+
+  // const attribution_reporting::TriggerRegistration& trigger_registration =
+  //     trigger.registration();
+
+  // const attribution_reporting::AttributionWindow attribution_window = 
+  //     trigger_registration.attribution_window;
+
+  // const AttributionReport::AggregatableValues& aggregatable_cap_values = 
+  //     trigger_registration.aggregatable_cap_values;
+
+  // const double global_epsilon = trigger_registration.global_epsilon();
+
+  // // 1. Obtain remaining per epoch budget for all epochs for this querying origin
+  // base::flat_map<attribution_reporting::Epoch, double> remaining_budgets;
+  // sql::Statement statement(db_.GetCachedStatement(
+  // SQL_FROM_HERE, attribution_queries::kGetRemainingBudgets));
+
+  // statement.BindString(0, net::SchemefulSite(querying_origin).Serialize());
+  // statement.BindInt64(1, SerializeUint64(attribution_window.epoch_start()));
+  // statement.BindInt64(2, SerializeUint64(attribution_window.epoch_end()));
+  
+  // while (statement.Step()) {
+  //     remaining_budgets[Epoch(statement.ColumnUInt64(0))] = statement.ColumnDouble(1);
   // }
+
+  // // 2. Compute budget required per epoch for this querying origin
+
+  // /////////////////////////////////////////////////////////////////////////////////////////
+  // // here the user could deliberately choose to give no budget too
+  // // TODO(kelly): define an iterator over the attribution window.
+  // // rename GlobalEpsilon to Epsilon
+
+  // // double noise_scale = max_L1_sensitivity?(aggregatable_cap_values) / global_epsilon;
+  // base::flat_map<attribution_reporting::Epoch, double> budget_required;
+  // for (uint64_t i=attribution_window.epoch_start(); 
+  //         i<=attribution_window.epoch_end(); ++i) {
+    
+  //   // Case 1: Baseline - spend global epsilon
+  //   budget_required[Epoch(i)] = global_epsilon;
+
+  //   // Case 2: Optimization 1 (If epoch-report is null spend 0 in that epoch
+  //   budget_required[Epoch(i)] = !individual_sensitivity_per_epoch[Epoch(i)] ? global_epsilon : 0;
+
+  //   // Case 3: Optimization 2 (Use epoch-report's local sensitivity to spend local-epsilon in that epoch
+  //   budget_required[Epoch(i)] = individual_sensitivity  _per_epoch[Epoch(i)] / noise_scale;
+  // }
+  // /////////////////////////////////////////////////////////////////////////////////////////
+  
+  // // Consume the budget required from all epochs.
+  // // If an epoch doesn't have enough remaining budget then null its report
+
+  // static constexpr char kAdjustBudgetConsumed[] =
+  //   "UPDATE per_origin_filters "
+  //   "SET consumed_budget=consumed_budget+?,"
+  //   "WHERE epoch=? and origin=?";
 
   // sql::Transaction transaction(&db_);
   // if (!transaction.Begin()) {
   //   return AggregatableResult::kInternalError;
   // }
 
-  // StoredSource::Id source_id = aggregatable_attribution->source.source_id();
+  // for (uint64_t i=attribution_window.epoch_start(); 
+  //         i<=attribution_window.epoch_end(); ++i) {
+    
+  //   if (remaining_budgets[Epoch(i)] < budget_required[Epoch(i)]) {
+      
+  //     // Not enough budget for this epoch
 
-  // base::CheckedNumeric<int64_t> budget_required =
-  //     aggregatable_attribution->BudgetRequired();
-  // // The value was already validated by
-  // // `AggregatableAttributionAllowedForBudgetLimit()` above.
-  // DCHECK(budget_required.IsValid());
-  // if (!AdjustBudgetConsumedForSource(source_id, budget_required.ValueOrDie())) {
-  //   return AggregatableResult::kInternalError;
-  // }
-
-  // if (dedup_key.has_value() &&
-  //     !StoreDedupKey(source_id, *dedup_key,
-  //                    AttributionReport::Type::kAggregatableAttribution)) {
-  //   return AggregatableResult::kInternalError;
+  //     // If case==baseline then null all entire report and break
+  //       // null-report(report)
+  //       // roll-back transaction
+  //       // return AggregatableResult::kInsufficientBudget;
+    
+  //       // else {
+  //         // null-report-epoch(report)
+  //         // budget_required[Epoch(i)] = 0
+  //       // }
+  //   } else {
+  //     //consume the budget from epoch
+  //       sql::Statement statement(
+  //       db_.GetCachedStatement(SQL_FROM_HERE, kAdjustBudgetConsumedForSourceSql));
+  //       statement.BindInt64(0, i);
+  //       statement.BindInt64(1, budget_required[Epoch(i)]);
+  //       return statement.Run() && db_.GetLastChangeCount() == 1;
+  //       return AggregatableResult::kInternalError;
+  //   }
   // }
 
   // if (!transaction.Commit()) {
   //   return AggregatableResult::kInternalError;
   // }
 
-  return AggregatableResult::kSuccess;
+  // return AggregatableResult::kInternalError;
+  return AggregatableResult::kInternalError;
+  // return AggregatableResult::kSuccess;
 }
 
 AggregatableResult

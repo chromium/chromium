@@ -18,6 +18,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "content/browser/attribution_reporting/partition.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -307,6 +308,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     std::vector<StoredSource::Id>& source_ids_to_attribute)
     VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+bool GetPartitions(
+    std::vector<Partition>& partitions,
+    const attribution_reporting::TriggerRegistration& trigger_registration);
+
   AttributionTrigger::EventLevelResult MaybeCreateEventLevelReport(
       const AttributionInfo& attribution_info,
       const StoredSource&,
@@ -393,10 +398,9 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   AttributionTrigger::AggregatableResult
   MaybeCreateAggregatableAttributionReportM2M(
-      const AttributionInfo& attribution_info,
-      const std::vector<StoredSource>&,
+      std::vector<StoredSource>& sources_to_attribute,
       const AttributionTrigger& trigger,
-      std::optional<AttributionReport>& report)
+      std::vector<Partition>& partitions)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Stores the data associated with the aggregatable report, e.g. budget
@@ -412,7 +416,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   AttributionTrigger::AggregatableResult
-  MaybeStoreAggregatableAttributionReportDataM2M(AttributionReport& report)
+  MaybeStoreAggregatableAttributionReportDataM2M(
+      std::vector<Partition>& partitions,
+      std::optional<AttributionReport>& report,
+      const AttributionTrigger& trigger)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool StoreAttributionReport(AttributionReport& report)

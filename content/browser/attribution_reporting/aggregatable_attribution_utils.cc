@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 
+#include <set>
 #include <iterator>
 #include <optional>
 #include <utility>
@@ -34,6 +35,7 @@
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/partition.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
@@ -127,67 +129,115 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
   return contributions;
 }
 
-std::vector<AggregatableHistogramContribution> CreateAggregatableHistogramM2M(
-    std::string attribution_logic,
-    const base::flat_map<std::string, 
-        base::flat_map<absl::uint128, uint32_t>>& keypiece_counter,
-    double total_count,
-    const std::vector<attribution_reporting::AggregatableTriggerData>&
-        aggregatable_trigger_data,
-    const attribution_reporting::AggregatableValues& aggregatable_values) {
-  
-  const attribution_reporting::AggregatableValues::Values& values =
-      aggregatable_values.values();
 
-  std::vector<absl::uint128> contribution_keys;
-  std::vector<double> contribution_values;
-  base::flat_map<std::string, std::vector<absl::uint128>> source_keys_to_buckets;
+// TODO(kelly): Organize in classes
+void AttributionLogicLastTouch(Partition& partition, 
+        base::flat_map<std::string, std::vector<absl::uint128>>& trigger_keypieces_per_source) {
 
-  // Assign contribution values to each bucket
-  for (auto& outer : keypiece_counter) {
-    auto source_key = outer.first;
-    auto trigger_value = values.find(source_key);
-    // if (trigger_value == values.end()) {
-      // return AggregatableResult::kInternalError; 
-    // }
-    for (auto& inner : outer.second) {
-      source_keys_to_buckets[source_key].push_back(inner.first);
-      contribution_values.push_back((inner.second / total_count) * trigger_value->second);
-    }
-  }
+  // for (uint64_t i=attribution_window.epoch_start(); i<=attribution_window.epoch_end(); i++) {
+  //   for (auto& pair : epoch_sources_count[i]) {
+  //     auto& source_key_piece = pair.first;
+  //     auto count = pair.second;
 
-  // Extend the key_pieces of source_keys
-  for (const auto& data : aggregatable_trigger_data) {
-    for (const auto& source_key : data.source_keys()) {
-      auto buckets = source_keys_to_buckets.find(source_key);
-      if (buckets == source_keys_to_buckets.end()) {
-        continue;
-      }
-      // Append key_piece to all these buckets
-      for (auto& bucket : buckets->second) {
-          bucket |= data.key_piece();
-      }
-    }
-  }
-
-  for (auto& pair : source_keys_to_buckets) {
-    for (auto bucket_key : pair.second) {
-        contribution_keys.push_back(bucket_key);
-    }
-  }
-
-  std::vector<AggregatableHistogramContribution> contributions;
-  assert(contribution_keys.size() == contribution_values.size());
-
-  for (uint32_t i=0; i<contribution_keys.size(); ++i) {
-    LOG(INFO) << contribution_keys[i] << ", " << contribution_values[i];
-    contributions.emplace_back(contribution_keys[i], 
-            contribution_values[i]);
-  }
-  return contributions;
+  //     auto it = source_counts.find(source_key_piece);
+  //     if (it == source_counts.end()) {
+  //       source_counts[source_key_piece] = count;
+  //     }
+  //     source_counts[source_key_piece] += count;
+  //   }
+  // }
 }
 
+// using Keys = base::flat_map<std::string, absl::uint128>;
 
+void AttributionLogicUniform(Partition& partition,
+        base::flat_map<std::string, std::vector<absl::uint128>>& trigger_keypieces_per_source) {
+
+  auto& attribution_window = partition.attribution_window;
+  auto& sources_per_epoch = partition.sources_per_epoch;
+  
+  double total_sources_count = 0;
+
+  base::flat_map<std::string, base::flat_map<absl::uint128, double>>
+          source_counts_per_sourcekey;
+
+
+  for (uint64_t i=attribution_window.epoch_start(); 
+          i <= attribution_window.epoch_end(); i++) {
+    
+    // Ignore empty epochs
+    auto it = sources_per_epoch.find(i);
+    if (it == sources_per_epoch.end()) {
+      continue;
+    }
+
+    // Count occurrences per source keypiece across all epochs
+    for (StoredSource* source : sources_per_epoch[i]) {
+      auto aggregation_keys = source->aggregation_keys().keys();
+      for (auto& pair : aggregation_keys) {
+        auto& source_key = pair.first;
+        auto& key_piece = pair.second;
+
+        auto it1 = source_counts_per_sourcekey.find(source_key);
+        if (it1 == source_counts_per_sourcekey.end()) {
+          source_counts_per_sourcekey[source_key] = {};
+        }
+
+        auto& source_counts = source_counts_per_sourcekey[source_key];
+        auto it2 = source_counts.find(key_piece);
+        if (it2 == source_counts.end()) {
+          source_counts[key_piece] = 0;
+        }
+        source_counts[key_piece] += 1;
+      }
+      total_sources_count++;
+    }
+  }
+
+  // Populate partition.report_value_pairs[*].report for all source_keys
+  for (auto& outer : source_counts_per_sourcekey) {
+    auto source_key = outer.first;
+    auto& report_value_pair = partition.report_value_pairs[source_key];
+    auto& trigger_keypieces = trigger_keypieces_per_source[source_key];
+
+    for (auto& inner : outer.second) {
+      auto source_keypiece = inner.first;
+      auto source_count = inner.second;
+
+      // Extend the source key_pieces for source_key
+      for (auto& trigger_keypiece : trigger_keypieces) {
+        source_keypiece |= trigger_keypiece;
+      }
+
+      double contribution_value = (source_count / total_sources_count) * report_value_pair.value;
+      report_value_pair.report.emplace_back(source_keypiece, contribution_value);      
+    }
+  }
+ }
+
+void CreateAggregatableHistogramM2M(
+    Partition& partition,
+    const std::vector<attribution_reporting::AggregatableTriggerData>& aggregatable_trigger_data) {
+  
+  // Collect trigger keypieces per source_key
+  base::flat_map<std::string, std::vector<absl::uint128>> trigger_keypieces_per_source;  
+  for (const auto& data : aggregatable_trigger_data) {
+    for (const auto& source_key : data.source_keys()) {
+
+        auto it = trigger_keypieces_per_source.find(source_key);
+        if (it == trigger_keypieces_per_source.end()) {
+          trigger_keypieces_per_source[source_key] = {};
+        }
+        trigger_keypieces_per_source[source_key].push_back(data.key_piece());
+    }
+  }
+  // Apply "attribution_logic" on the union of all epochs
+  if (partition.attribution_logic == "last_touch") {
+    AttributionLogicLastTouch(partition, trigger_keypieces_per_source);
+  } else if (partition.attribution_logic == "uniform") {
+    AttributionLogicUniform(partition, trigger_keypieces_per_source);
+  }
+}
 
 std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
     const AttributionReport& report) {

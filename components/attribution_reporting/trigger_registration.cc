@@ -211,6 +211,7 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
   LOG(INFO) << "PARSE TRIGGER REGISTRATION" ;
   LOG(INFO) << registration.ToJson() ;
 
+  registration.partitioning = "";
   return registration;
 }
 

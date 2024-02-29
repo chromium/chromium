@@ -467,6 +467,8 @@ source_set("browser") {
     "attribution_reporting/attribution_suitable_context.h",
     "attribution_reporting/attribution_trigger.cc",
     "attribution_reporting/attribution_trigger.h",
+    "attribution_reporting/partition.cc",
+    "attribution_reporting/partition.h",
     "attribution_reporting/attribution_utils.cc",
     "attribution_reporting/attribution_utils.h",
     "attribution_reporting/common_source_info.cc",

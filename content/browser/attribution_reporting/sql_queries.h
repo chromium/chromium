@@ -39,6 +39,12 @@ inline constexpr const char kGetMatchingSourcesSqlM2M[] =
     "WHERE I.source_epoch>=? "
     "AND I.source_epoch<=? ";
 
+inline constexpr const char kGetRemainingBudgets[] =
+    "SELECT F.epoch, (F.initial_budget - F.consumed_budget) AS remaining_budgets "
+    "FROM per_origin_filters F "
+    "WHERE AND F.origin=? "
+    "AND F.epoch>=? "
+    "AND F.epoch<=? ";
 
 inline constexpr const char kSelectExpiredSourcesSql[] =
     "SELECT source_id FROM sources "
