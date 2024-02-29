@@ -307,7 +307,6 @@ interface NotificationsHost {
 
 // Deprecated method IDs: 0
 // Next Method ID: 15
-// TODO(lhchavez): Migrate all request/response messages to Mojo.
 interface NotificationsInstance {
   // Establishes full-duplex communication with the host.
   [MinVersion=14] Init@5(pending_remote<NotificationsHost> host_remote) => ();
