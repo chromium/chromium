@@ -33,6 +33,8 @@ class ASH_EXPORT PickerSearchResultsSection {
   PickerSearchResultsSection(const PickerSearchResultsSection& other);
   PickerSearchResultsSection& operator=(
       const PickerSearchResultsSection& other);
+  PickerSearchResultsSection(PickerSearchResultsSection&& other);
+  PickerSearchResultsSection& operator=(PickerSearchResultsSection&& other);
   ~PickerSearchResultsSection();
 
   PickerSectionType type() const;

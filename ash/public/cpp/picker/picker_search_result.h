@@ -102,6 +102,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
 
   PickerSearchResult(const PickerSearchResult&);
   PickerSearchResult& operator=(const PickerSearchResult&);
+  PickerSearchResult(PickerSearchResult&&);
+  PickerSearchResult& operator=(PickerSearchResult&&);
   ~PickerSearchResult();
 
   static PickerSearchResult BrowsingHistory(const GURL& url,

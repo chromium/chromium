@@ -63,6 +63,11 @@ PickerSearchResult::PickerSearchResult(const PickerSearchResult&) = default;
 PickerSearchResult& PickerSearchResult::operator=(const PickerSearchResult&) =
     default;
 
+PickerSearchResult::PickerSearchResult(PickerSearchResult&&) = default;
+
+PickerSearchResult& PickerSearchResult::operator=(PickerSearchResult&&) =
+    default;
+
 PickerSearchResult PickerSearchResult::Text(std::u16string_view text) {
   return PickerSearchResult(TextData{.text = std::u16string(text)});
 }

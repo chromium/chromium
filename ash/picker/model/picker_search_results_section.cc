@@ -20,6 +20,12 @@ PickerSearchResultsSection::PickerSearchResultsSection(
 PickerSearchResultsSection& PickerSearchResultsSection::operator=(
     const PickerSearchResultsSection& other) = default;
 
+PickerSearchResultsSection::PickerSearchResultsSection(
+    PickerSearchResultsSection&& other) = default;
+
+PickerSearchResultsSection& PickerSearchResultsSection::operator=(
+    PickerSearchResultsSection&& other) = default;
+
 PickerSearchResultsSection::~PickerSearchResultsSection() = default;
 
 PickerSectionType PickerSearchResultsSection::type() const {
