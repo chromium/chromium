@@ -12686,6 +12686,21 @@
             ]
         }
     ],
+    "OmniboxIpadPopout": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnablePopoutOmniboxIpad"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxKeywordModeRefresh": [
         {
             "platforms": [
