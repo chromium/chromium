@@ -6,11 +6,14 @@
 
 #include <memory>
 
+#include "ash/quick_pair/feature_status_tracker/battery_saver_active_provider.h"
 #include "ash/quick_pair/feature_status_tracker/bluetooth_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/fast_pair_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/fast_pair_pref_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/google_api_key_availability_provider.h"
+#include "ash/quick_pair/feature_status_tracker/hardware_offloading_supported_provider.h"
 #include "ash/quick_pair/feature_status_tracker/logged_in_user_enabled_provider.h"
+#include "ash/quick_pair/feature_status_tracker/power_connected_provider.h"
 #include "ash/quick_pair/feature_status_tracker/screen_state_enabled_provider.h"
 #include "base/functional/bind.h"
 
@@ -23,7 +26,12 @@ FeatureStatusTrackerImpl::FeatureStatusTrackerImpl()
           std::make_unique<FastPairPrefEnabledProvider>(),
           std::make_unique<LoggedInUserEnabledProvider>(),
           std::make_unique<ScreenStateEnabledProvider>(),
-          std::make_unique<GoogleApiKeyAvailabilityProvider>())) {
+          std::make_unique<GoogleApiKeyAvailabilityProvider>(),
+          std::make_unique<ScanningEnabledProvider>(
+              std::make_unique<BatterySaverActiveProvider>(),
+              std::make_unique<FastPairPrefEnabledProvider>(),
+              std::make_unique<HardwareOffloadingSupportedProvider>(),
+              std::make_unique<PowerConnectedProvider>()))) {
   fast_pair_enabled_provider_->SetCallback(
       base::BindRepeating(&FeatureStatusTrackerImpl::OnFastPairEnabledChanged,
                           weak_factory_.GetWeakPtr()));

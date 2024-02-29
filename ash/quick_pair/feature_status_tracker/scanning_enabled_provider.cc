@@ -47,15 +47,18 @@ ScanningEnabledProvider::ScanningEnabledProvider(
   Shell* shell = Shell::Get();
   CHECK(shell);
   PrefService* local_state = shell->local_state();
-  CHECK(local_state);
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(local_state);
-  pref_change_registrar_->Add(
-      ash::prefs::kSoftwareScanningEnabled,
-      base::BindRepeating(
-          &ScanningEnabledProvider::OnSoftwareScanningStatusChanged,
-          weak_factory_.GetWeakPtr()));
-  OnSoftwareScanningStatusChanged();
+
+  // `local_state` may be null in unit tests.
+  if (local_state) {
+    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+    pref_change_registrar_->Init(local_state);
+    pref_change_registrar_->Add(
+        ash::prefs::kSoftwareScanningEnabled,
+        base::BindRepeating(
+            &ScanningEnabledProvider::OnSoftwareScanningStatusChanged,
+            weak_factory_.GetWeakPtr()));
+    OnSoftwareScanningStatusChanged();
+  }
 }
 
 ScanningEnabledProvider::~ScanningEnabledProvider() = default;

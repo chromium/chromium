@@ -11,8 +11,7 @@
 #include "base/functional/bind.h"
 #include "components/cross_device/logging/logging.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 FastPairEnabledProvider::FastPairEnabledProvider(
     std::unique_ptr<BluetoothEnabledProvider> bluetooth_enabled_provider,
@@ -22,7 +21,8 @@ FastPairEnabledProvider::FastPairEnabledProvider(
         logged_in_user_enabled_provider,
     std::unique_ptr<ScreenStateEnabledProvider> screen_state_enabled_provider,
     std::unique_ptr<GoogleApiKeyAvailabilityProvider>
-        google_api_key_availability_provider)
+        google_api_key_availability_provider,
+    std::unique_ptr<ScanningEnabledProvider> scanning_enabled_provider)
     : bluetooth_enabled_provider_(std::move(bluetooth_enabled_provider)),
       fast_pair_pref_enabled_provider_(
           std::move(fast_pair_pref_enabled_provider)),
@@ -33,23 +33,39 @@ FastPairEnabledProvider::FastPairEnabledProvider(
           std::move(google_api_key_availability_provider)) {
   // If the flag isn't enabled or if the API keys aren't available,
   // Fast Pair will never be enabled so don't hook up any callbacks.
-  if (features::IsFastPairEnabled() &&
-      google_api_key_availability_provider_->is_enabled()) {
-    bluetooth_enabled_provider_->SetCallback(base::BindRepeating(
-        &FastPairEnabledProvider::OnSubProviderEnabledChanged,
-        weak_factory_.GetWeakPtr()));
+  if (features::IsFastPairEnabled() && AreAPIKeysAvailable()) {
+    if (features::IsFastPairSoftwareScanningSupportEnabled()) {
+      scanning_enabled_provider_ = std::move(scanning_enabled_provider);
+      if (scanning_enabled_provider_) {
+        scanning_enabled_provider_->SetCallback(base::BindRepeating(
+            &FastPairEnabledProvider::OnSubProviderEnabledChanged,
+            weak_factory_.GetWeakPtr()));
+      }
+    }
 
-    fast_pair_pref_enabled_provider_->SetCallback(base::BindRepeating(
-        &FastPairEnabledProvider::OnSubProviderEnabledChanged,
-        weak_factory_.GetWeakPtr()));
+    if (bluetooth_enabled_provider_) {
+      bluetooth_enabled_provider_->SetCallback(base::BindRepeating(
+          &FastPairEnabledProvider::OnSubProviderEnabledChanged,
+          weak_factory_.GetWeakPtr()));
+    }
 
-    logged_in_user_enabled_provider_->SetCallback(base::BindRepeating(
-        &FastPairEnabledProvider::OnSubProviderEnabledChanged,
-        weak_factory_.GetWeakPtr()));
+    if (fast_pair_pref_enabled_provider_) {
+      fast_pair_pref_enabled_provider_->SetCallback(base::BindRepeating(
+          &FastPairEnabledProvider::OnSubProviderEnabledChanged,
+          weak_factory_.GetWeakPtr()));
+    }
 
-    screen_state_enabled_provider_->SetCallback(base::BindRepeating(
-        &FastPairEnabledProvider::OnSubProviderEnabledChanged,
-        weak_factory_.GetWeakPtr()));
+    if (logged_in_user_enabled_provider_) {
+      logged_in_user_enabled_provider_->SetCallback(base::BindRepeating(
+          &FastPairEnabledProvider::OnSubProviderEnabledChanged,
+          weak_factory_.GetWeakPtr()));
+    }
+
+    if (screen_state_enabled_provider_) {
+      screen_state_enabled_provider_->SetCallback(base::BindRepeating(
+          &FastPairEnabledProvider::OnSubProviderEnabledChanged,
+          weak_factory_.GetWeakPtr()));
+    }
 
     SetEnabledAndInvokeCallback(AreSubProvidersEnabled());
   }
@@ -57,28 +73,69 @@ FastPairEnabledProvider::FastPairEnabledProvider(
 
 FastPairEnabledProvider::~FastPairEnabledProvider() = default;
 
-bool FastPairEnabledProvider::AreSubProvidersEnabled() {
-  CD_LOG(INFO, Feature::FP)
-      << __func__
-      << ": Flag:" << base::FeatureList::IsEnabled(features::kFastPair)
-      << " Policy Pref:" << fast_pair_pref_enabled_provider_->is_enabled()
-      << " Google API Key:"
-      << google_api_key_availability_provider_->is_enabled()
-      << " Logged in User:" << logged_in_user_enabled_provider_->is_enabled()
-      << " Screen State:" << screen_state_enabled_provider_->is_enabled()
-      << " Bluetooth:" << bluetooth_enabled_provider_->is_enabled();
+bool FastPairEnabledProvider::IsBluetoothEnabled() {
+  return bluetooth_enabled_provider_ &&
+         bluetooth_enabled_provider_->is_enabled();
+}
 
-  return base::FeatureList::IsEnabled(features::kFastPair) &&
-         fast_pair_pref_enabled_provider_->is_enabled() &&
-         google_api_key_availability_provider_->is_enabled() &&
-         logged_in_user_enabled_provider_->is_enabled() &&
-         bluetooth_enabled_provider_->is_enabled() &&
+bool FastPairEnabledProvider::AreAPIKeysAvailable() {
+  return google_api_key_availability_provider_ &&
+         google_api_key_availability_provider_->is_enabled();
+}
+
+bool FastPairEnabledProvider::IsFastPairPrefEnabled() {
+  return fast_pair_pref_enabled_provider_ &&
+         fast_pair_pref_enabled_provider_->is_enabled();
+}
+
+bool FastPairEnabledProvider::IsUserLoggedIn() {
+  return logged_in_user_enabled_provider_ &&
+         logged_in_user_enabled_provider_->is_enabled();
+}
+
+bool FastPairEnabledProvider::IsDisplayScreenOn() {
+  return screen_state_enabled_provider_ &&
          screen_state_enabled_provider_->is_enabled();
+}
+
+bool FastPairEnabledProvider::IsScanningEnabled() {
+  return scanning_enabled_provider_ && scanning_enabled_provider_->is_enabled();
+}
+
+bool FastPairEnabledProvider::AreSubProvidersEnabled() {
+  if (features::IsFastPairSoftwareScanningSupportEnabled()) {
+    CD_LOG(INFO, Feature::FP)
+        << __func__
+        << ": Flag:" << base::FeatureList::IsEnabled(features::kFastPair)
+        << " Policy Pref:" << IsFastPairPrefEnabled()
+        << " Google API Key:" << AreAPIKeysAvailable()
+        << " Logged in User:" << IsUserLoggedIn()
+        << " Screen State:" << IsDisplayScreenOn()
+        << " Bluetooth:" << IsBluetoothEnabled()
+        << " Scanning Enabled: " << IsScanningEnabled();
+
+    return base::FeatureList::IsEnabled(features::kFastPair) &&
+           IsFastPairPrefEnabled() && AreAPIKeysAvailable() &&
+           IsUserLoggedIn() && IsDisplayScreenOn() && IsBluetoothEnabled() &&
+           IsScanningEnabled();
+  } else {
+    CD_LOG(INFO, Feature::FP)
+        << __func__
+        << ": Flag:" << base::FeatureList::IsEnabled(features::kFastPair)
+        << " Policy Pref:" << IsFastPairPrefEnabled()
+        << " Google API Key:" << AreAPIKeysAvailable()
+        << " Logged in User:" << IsUserLoggedIn()
+        << " Screen State:" << IsDisplayScreenOn()
+        << " Bluetooth:" << IsBluetoothEnabled();
+
+    return base::FeatureList::IsEnabled(features::kFastPair) &&
+           IsFastPairPrefEnabled() && AreAPIKeysAvailable() &&
+           IsUserLoggedIn() && IsDisplayScreenOn() && IsBluetoothEnabled();
+  }
 }
 
 void FastPairEnabledProvider::OnSubProviderEnabledChanged(bool) {
   SetEnabledAndInvokeCallback(AreSubProvidersEnabled());
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

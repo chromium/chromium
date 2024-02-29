@@ -75,6 +75,8 @@ static_library("test_support") {
     "mock_power_connected_provider.h",
     "mock_quick_pair_feature_status_tracker.cc",
     "mock_quick_pair_feature_status_tracker.h",
+    "mock_scanning_enabled_provider.cc",
+    "mock_scanning_enabled_provider.h",
     "mock_screen_state_enabled_provider.cc",
     "mock_screen_state_enabled_provider.h",
     "quick_pair_feature_status_tracker.h",
