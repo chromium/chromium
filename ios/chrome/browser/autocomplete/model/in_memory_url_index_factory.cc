@@ -11,8 +11,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
-#include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
-#include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
 #include "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
@@ -34,8 +33,7 @@ std::unique_ptr<KeyedService> BuildInMemoryURLIndex(
 
   // Do not force creation of the HistoryService if saving history is disabled.
   std::unique_ptr<InMemoryURLIndex> in_memory_url_index(new InMemoryURLIndex(
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          browser_state),
+      ios::BookmarkModelFactory::GetForBrowserState(browser_state),
       ios::HistoryServiceFactory::GetForBrowserState(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS),
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state),
@@ -63,8 +61,7 @@ InMemoryURLIndexFactory::InMemoryURLIndexFactory()
     : BrowserStateKeyedServiceFactory(
           "InMemoryURLIndex",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
-  // TODO(crbug.com/1425459): Add AccountBookmarkModelFactory support.
+  DependsOn(ios::BookmarkModelFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
 }

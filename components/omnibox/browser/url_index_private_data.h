@@ -26,7 +26,7 @@ class OmniboxTriggeredFeatureService;
 class TemplateURLService;
 
 namespace bookmarks {
-class BookmarkModel;
+class CoreBookmarkModel;
 }
 
 namespace history {
@@ -72,7 +72,7 @@ class URLIndexPrivateData
       size_t cursor_position,
       const std::string& host_filter,
       size_t max_matches,
-      bookmarks::BookmarkModel* bookmark_model,
+      bookmarks::CoreBookmarkModel* bookmark_model,
       TemplateURLService* template_url_service,
       OmniboxTriggeredFeatureService* triggered_feature_service);
 
@@ -254,7 +254,7 @@ class URLIndexPrivateData
       const std::u16string& lower_raw_string,
       const std::string& host_filter,
       const TemplateURLService* template_url_service,
-      bookmarks::BookmarkModel* bookmark_model,
+      bookmarks::CoreBookmarkModel* bookmark_model,
       ScoredHistoryMatches* scored_items,
       OmniboxTriggeredFeatureService* triggered_feature_service) const;
 

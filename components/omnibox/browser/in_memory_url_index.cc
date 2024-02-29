@@ -75,7 +75,7 @@ InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
 
 // InMemoryURLIndex ------------------------------------------------------------
 
-InMemoryURLIndex::InMemoryURLIndex(bookmarks::BookmarkModel* bookmark_model,
+InMemoryURLIndex::InMemoryURLIndex(bookmarks::CoreBookmarkModel* bookmark_model,
                                    history::HistoryService* history_service,
                                    TemplateURLService* template_url_service,
                                    const base::FilePath& history_dir,
