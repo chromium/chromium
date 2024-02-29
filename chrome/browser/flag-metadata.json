@@ -2361,11 +2361,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "enable-critical-persisted-tab-data",
-    "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-cros-autocorrect-by-default",
     "owners": [ "curtismcmullan@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 130
