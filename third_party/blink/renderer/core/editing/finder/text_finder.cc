@@ -483,8 +483,8 @@ void TextFinder::ReportFindInPageResultToAccessibility(int identifier) {
   Node* end_node = active_match_->endContainer();
   ax_object_cache->HandleTextMarkerDataAdded(start_node, end_node);
 
-  int32_t start_id = ax_object_cache->GetAXID(start_node);
-  int32_t end_id = ax_object_cache->GetAXID(end_node);
+  int32_t start_id = start_node->GetDomNodeId();
+  int32_t end_id = end_node->GetDomNodeId();
 
   auto params = mojom::blink::FindInPageResultAXParams::New(
       identifier, active_match_index_ + 1, start_id,

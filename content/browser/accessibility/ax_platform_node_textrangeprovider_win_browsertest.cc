@@ -2929,18 +2929,19 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider,
                           L"Before frame\nText in iframe\nAfter frame");
 
+  // Traversing by word should include trailing whitespace.
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Word,
                   /*count*/ 2,
                   /*expected_text*/ L"Text ",
                   /*expected_count*/ 2);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Word,
                   /*count*/ -1,
-                  /*expected_text*/ L"frame",
+                  /*expected_text*/ L"frame\n",
                   /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Character,
       /*count*/ 2,
-      /*expected_text*/ L"frame\nT",
+      /*expected_text*/ L"frame\nTe",
       /*expected_count*/ 2);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Character,
                   /*count*/ 7,

@@ -1,5 +1,8 @@
 AXTitleChanged on AXGroup AXDescription='list item 1'
 AXTitleChanged on AXGroup AXDescription='list item 2'
 AXTitleChanged on AXGroup AXDescription='list item 3'
+AXTitleChanged on AXListMarker AXValue='%E2%80%A2 '
+AXTitleChanged on AXListMarker AXValue='%E2%80%A2 '
+AXTitleChanged on AXListMarker AXValue='%E2%80%A2 '
 === Start Continuation ===
 AXExpandedChanged on AXLink AXDescription='Toggle'

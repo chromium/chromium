@@ -532,6 +532,9 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   static bool HasInvalidAttribute(const ui::TextAttributeList& attributes);
 
   // A unique ID, since node IDs are frame-local.
+  // TODO(accessibility) We should be able to get rid of this, because node IDs
+  // are actually local to the renderer process, and each renderer process has
+  // its own OS-level window, which is all the uniqueness we need.
   ui::AXUniqueId unique_id_;
 };
 

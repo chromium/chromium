@@ -63,7 +63,7 @@ BrowserAccessibilityManagerMac::~BrowserAccessibilityManagerMac() = default;
 // static
 ui::AXTreeUpdate BrowserAccessibilityManagerMac::GetEmptyDocument() {
   ui::AXNodeData empty_document;
-  empty_document.id = 1;
+  empty_document.id = ui::kInitialEmptyDocumentRootNodeID;
   empty_document.role = ax::mojom::Role::kRootWebArea;
   ui::AXTreeUpdate update;
   update.root_id = empty_document.id;

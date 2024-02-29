@@ -52,13 +52,12 @@ promise_test(async t => {
     assert_equals(button2CAXNode.name, "axButton");
     assert_equals(button2CAXNode.role, "button");
 
-    // As button1 has no node in the accessibility tree anymore, assert that the
-    // its previously retrieved computed accessible node has had its attributes
-    // nullified.
+    // As button1 still has a node in the accessibility tree, but its layout has
+    // been removed,and therefore the name is now null.
     assert_equals(button1CAXNode.name, null);
-    assert_equals(button1CAXNode.role, null);
+    assert_equals(button1CAXNode.role, "button");
 
-}, "Deleting nodes from the accessibility tree will not cause a crash, and properties on any references to a deleted computed accessible node have been nullified.");
+}, "Deleting layout from the accessibility tree will not cause a crash.");
 
 </script>
 

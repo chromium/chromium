@@ -1,9 +1,5 @@
-AXMenuClosed on AXWebArea
-AXMenuClosed on AXWebArea
+AXTitleChanged on AXMenu AXDescription='menu'
 === Start Continuation ===
-AXMenuClosed on AXWebArea
+AXMenuOpened on AXMenu
 === Start Continuation ===
-AXMenuClosed on AXWebArea
 === Start Continuation ===
-AXMenuClosed on AXWebArea
-AXMenuClosed on AXWebArea

@@ -161,7 +161,7 @@ bool BrowserAccessibilityManager::is_fail_fast_mode_ = false;
 // static
 ui::AXTreeUpdate BrowserAccessibilityManager::GetEmptyDocument() {
   ui::AXNodeData empty_document;
-  empty_document.id = 1;
+  empty_document.id = ui::kInitialEmptyDocumentRootNodeID;
   empty_document.role = ax::mojom::Role::kRootWebArea;
   ui::AXTreeUpdate update;
   update.root_id = empty_document.id;

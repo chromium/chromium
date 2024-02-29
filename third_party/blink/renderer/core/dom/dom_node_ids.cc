@@ -17,6 +17,11 @@ DOMNodeId DOMNodeIds::ExistingIdForNode(Node* node) {
 }
 
 // static
+DOMNodeId DOMNodeIds::ExistingIdForNode(const Node* node) {
+  return ExistingIdForNode(const_cast<Node*>(node));
+}
+
+// static
 DOMNodeId DOMNodeIds::IdForNode(Node* node) {
   return node ? WeakIdentifierMap<Node, DOMNodeId>::Identifier(node)
               : kInvalidDOMNodeId;
