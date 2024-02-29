@@ -215,6 +215,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -502,6 +503,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 RecordUserAction.record("MobileNewTabOpened");
             };
 
+    // Manager for tab group visual data lifecycle updates.
+    private TabGroupVisualDataManager mTabGroupVisualDataManager;
+
     /**
      * This class is used to warm up the chrome split ClassLoader. See SplitChromeApplication for
      * more info
@@ -677,6 +681,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mLocaleManager.showSearchEnginePromoIfNeeded(this, null);
 
             mTabModelOrchestrator.onNativeLibraryReady(getTabContentManager());
+
+            TabModelUtils.runOnTabStateInitialized(
+                    mTabModelSelector,
+                    (tabModelSelector) -> {
+                        assert tabModelSelector != null;
+                        mTabGroupVisualDataManager =
+                                new TabGroupVisualDataManager(tabModelSelector);
+                    });
 
             // For saving non-incognito tab closures for Recent Tabs.
             mHistoricalTabModelObserver =
@@ -3610,6 +3622,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         if (mHubProvider != null) mHubProvider.destroy();
+
+        if (mTabGroupVisualDataManager != null) {
+            mTabGroupVisualDataManager.destroy();
+            mTabGroupVisualDataManager = null;
+        }
 
         super.onDestroyInternal();
     }

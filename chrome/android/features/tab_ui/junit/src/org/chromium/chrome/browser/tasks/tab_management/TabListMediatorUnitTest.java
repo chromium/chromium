@@ -1130,7 +1130,7 @@ public class TabListMediatorUnitTest {
         mMediator.initWithNative(mProfile);
 
         // mTabModelObserverCaptor captures on every initWithNative call.
-        verify(mTabGroupModelFilter, times(4)).addObserver(mTabModelObserverCaptor.capture());
+        verify(mTabGroupModelFilter, times(2)).addObserver(mTabModelObserverCaptor.capture());
         initAndAssertAllProperties();
 
         ThumbnailFetcher tab1Fetcher = mModel.get(0).model.get(TabProperties.THUMBNAIL_FETCHER);
@@ -3204,11 +3204,11 @@ public class TabListMediatorUnitTest {
     @Test
     public void testChangingTabModelFilters() {
         mCurrentTabModelFilterSupplier.set(mIncognitoTabGroupModelFilter);
-        // Once for the Mediator and once for the TabGroupTitleEditor.
-        verify(mTabGroupModelFilter, times(2)).removeObserver(any());
-        verify(mTabGroupModelFilter, times(2)).removeTabGroupObserver(any());
-        verify(mIncognitoTabGroupModelFilter, times(2)).addObserver(any());
-        verify(mIncognitoTabGroupModelFilter, times(2)).addTabGroupObserver(any());
+        // Once for the Mediator.
+        verify(mTabGroupModelFilter).removeObserver(any());
+        verify(mTabGroupModelFilter).removeTabGroupObserver(any());
+        verify(mIncognitoTabGroupModelFilter).addObserver(any());
+        verify(mIncognitoTabGroupModelFilter).addTabGroupObserver(any());
     }
 
     @Test
@@ -3558,10 +3558,10 @@ public class TabListMediatorUnitTest {
         mMediator.initWithNative(mProfile);
 
         assertThat(
-                mTabModelObserverCaptor.getAllValues().size(), equalTo(tabModelObserverCount + 2));
+                mTabModelObserverCaptor.getAllValues().size(), equalTo(tabModelObserverCount + 1));
         assertThat(
                 mTabGroupModelFilterObserverCaptor.getAllValues().size(),
-                equalTo(tabGroupModelFilterObserverCount + 2));
+                equalTo(tabGroupModelFilterObserverCount + 1));
 
         mMediatorTabModelObserver =
                 mTabModelObserverCaptor.getAllValues().get(tabModelObserverCount);

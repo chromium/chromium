@@ -105,6 +105,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -158,6 +159,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                     + "Study.Group:skip-slow-zooming/false/zooming-min-memory-mb/512";
 
     private static final String TEST_URL = "/chrome/test/data/android/google.html";
+
+    private static final int INVALID_COLOR_ID = -1;
 
     // Tests need animation on.
     @ClassRule
@@ -1731,6 +1734,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testUndoGroupMergeInTabSwitcher_TabToTab() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -1738,27 +1742,54 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
 
+        // Get the next suggested color id.
+        int nextSuggestedColorId =
+                TabGroupColorUtils.getNextSuggestedColorId(
+                        (TabGroupModelFilter)
+                                cta.getTabModelSelectorSupplier()
+                                        .get()
+                                        .getTabModelFilterProvider()
+                                        .getCurrentTabModelFilter());
+
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
         assertTrue(
                 snackbarManager.getCurrentSnackbarForTesting().getController()
                         instanceof UndoGroupSnackbarController);
 
+        // Assert that the suggested default color was set.
+        TabModel normalTabModel = cta.getTabModelSelectorSupplier().get().getModel(false);
+        int tabGroupRootId = normalTabModel.getTabAt(0).getRootId();
+        assertEquals(nextSuggestedColorId, TabGroupColorUtils.getTabGroupColor(tabGroupRootId));
+
         // Undo merge in tab switcher.
         verifyTabSwitcherCardCount(cta, 1);
         assertEquals("2", snackbarManager.getCurrentSnackbarForTesting().getTextForTesting());
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         verifyTabSwitcherCardCount(cta, 2);
+
+        // Assert the color is no longer set for that group.
+        assertEquals(INVALID_COLOR_ID, TabGroupColorUtils.getTabGroupColor(tabGroupRootId));
     }
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testUndoGroupMergeInTabSwitcher_TabToGroupAdjacent() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
         createTabs(cta, false, 3);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 3);
+
+        // Get the next suggested color id.
+        int nextSuggestedColorId =
+                TabGroupColorUtils.getNextSuggestedColorId(
+                        (TabGroupModelFilter)
+                                cta.getTabModelSelectorSupplier()
+                                        .get()
+                                        .getTabModelFilterProvider()
+                                        .getCurrentTabModelFilter());
 
         // Merge first two tabs into a group.
         TabModel normalTabModel = cta.getTabModelSelector().getModel(false);
@@ -1777,11 +1808,21 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                         instanceof UndoGroupSnackbarController);
         assertEquals("2", snackbarManager.getCurrentSnackbarForTesting().getTextForTesting());
 
+        // Assert default color was set properly.
+        assertEquals(
+                nextSuggestedColorId,
+                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(0).getRootId()));
+
         // Merge tab group of 2 at first index with the 3rd tab.
         mergeAllNormalTabsToAGroup(cta);
         assertTrue(
                 snackbarManager.getCurrentSnackbarForTesting().getController()
                         instanceof UndoGroupSnackbarController);
+
+        // Assert the default color is still the tab group color
+        assertEquals(
+                nextSuggestedColorId,
+                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(0).getRootId()));
 
         // Undo merge in tab switcher.
         verifyTabSwitcherCardCount(cta, 1);
@@ -1797,17 +1838,35 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                     assertNull(
                             TabGroupTitleUtils.getTabGroupTitle(
                                     normalTabModel.getTabAt(2).getRootId()));
+                    assertEquals(
+                            nextSuggestedColorId,
+                            TabGroupColorUtils.getTabGroupColor(
+                                    normalTabModel.getTabAt(1).getRootId()));
+                    assertEquals(
+                            INVALID_COLOR_ID,
+                            TabGroupColorUtils.getTabGroupColor(
+                                    normalTabModel.getTabAt(2).getRootId()));
                 });
     }
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testUndoGroupMergeInTabSwitcher_GroupToGroupNonAdjacent() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
         createTabs(cta, false, 5);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 5);
+
+        // Get the next suggested color id.
+        int nextSuggestedColorId1 =
+                TabGroupColorUtils.getNextSuggestedColorId(
+                        (TabGroupModelFilter)
+                                cta.getTabModelSelectorSupplier()
+                                        .get()
+                                        .getTabModelFilterProvider()
+                                        .getCurrentTabModelFilter());
 
         // Merge last two tabs into a group.
         TabModel normalTabModel = cta.getTabModelSelector().getModel(false);
@@ -1820,6 +1879,20 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                 snackbarManager.getCurrentSnackbarForTesting().getController()
                         instanceof UndoGroupSnackbarController);
         assertEquals("2", snackbarManager.getCurrentSnackbarForTesting().getTextForTesting());
+
+        // Assert default color 1 was set properly.
+        assertEquals(
+                nextSuggestedColorId1,
+                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(4).getRootId()));
+
+        // Get the next suggested color id.
+        int nextSuggestedColorId2 =
+                TabGroupColorUtils.getNextSuggestedColorId(
+                        (TabGroupModelFilter)
+                                cta.getTabModelSelectorSupplier()
+                                        .get()
+                                        .getTabModelFilterProvider()
+                                        .getCurrentTabModelFilter());
 
         // Merge first two tabs into a group.
         List<Tab> tabGroup2 =
@@ -1839,6 +1912,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                         instanceof UndoGroupSnackbarController);
         assertEquals("2", snackbarManager.getCurrentSnackbarForTesting().getTextForTesting());
 
+        // Assert default color 2 was set properly.
+        assertEquals(
+                nextSuggestedColorId2,
+                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
+
         // Merge the two tab groups into a group.
         List<Tab> tabGroup3 =
                 new ArrayList<>(
@@ -1847,6 +1925,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         assertTrue(
                 snackbarManager.getCurrentSnackbarForTesting().getController()
                         instanceof UndoGroupSnackbarController);
+
+        // Assert default color 2 was set as the overall merged group color.
+        assertEquals(
+                nextSuggestedColorId2,
+                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(3).getRootId()));
 
         // Undo merge in tab switcher.
         verifyTabSwitcherCardCount(cta, 2);
@@ -1863,17 +1946,35 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                             "Bar",
                             TabGroupTitleUtils.getTabGroupTitle(
                                     normalTabModel.getTabAt(0).getRootId()));
+                    assertEquals(
+                            nextSuggestedColorId1,
+                            TabGroupColorUtils.getTabGroupColor(
+                                    normalTabModel.getTabAt(4).getRootId()));
+                    assertEquals(
+                            nextSuggestedColorId2,
+                            TabGroupColorUtils.getTabGroupColor(
+                                    normalTabModel.getTabAt(0).getRootId()));
                 });
     }
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testUndoGroupMergeInTabSwitcher_PostMergeGroupTitleCommit() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
         createTabs(cta, false, 3);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 3);
+
+        // Get the next suggested color id.
+        int nextSuggestedColorId =
+                TabGroupColorUtils.getNextSuggestedColorId(
+                        (TabGroupModelFilter)
+                                cta.getTabModelSelectorSupplier()
+                                        .get()
+                                        .getTabModelFilterProvider()
+                                        .getCurrentTabModelFilter());
 
         // Merge first two tabs into a group.
         TabModel normalTabModel = cta.getTabModelSelector().getModel(false);
@@ -1895,11 +1996,21 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                         instanceof UndoGroupSnackbarController);
         assertEquals("2", snackbarManager.getCurrentSnackbarForTesting().getTextForTesting());
 
+        // Assert default color was set properly.
+        assertEquals(
+                nextSuggestedColorId,
+                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
+
         // Merge tab group of 2 at first index with the 3rd tab.
         mergeAllNormalTabsToAGroup(cta);
         assertTrue(
                 snackbarManager.getCurrentSnackbarForTesting().getController()
                         instanceof UndoGroupSnackbarController);
+
+        // Assert default color was set properly for the overall merged group.
+        assertEquals(
+                nextSuggestedColorId,
+                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(2).getRootId()));
 
         // Check that the old group title was handed over when the group merge is committed
         // and no longer exists.
@@ -1912,6 +2023,128 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                             TabGroupTitleUtils.getTabGroupTitle(
                                     normalTabModel.getTabAt(0).getRootId()));
                 });
+
+        // Assert color still exists post snackbar dismissal.
+        assertEquals(
+                nextSuggestedColorId,
+                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    public void testUndoClosure_UndoGroupClosure() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
+        createTabs(cta, false, 2);
+
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        assertNull(snackbarManager.getCurrentSnackbarForTesting());
+
+        // Get the next suggested color id.
+        int nextSuggestedColorId =
+                TabGroupColorUtils.getNextSuggestedColorId(
+                        (TabGroupModelFilter)
+                                cta.getTabModelSelectorSupplier()
+                                        .get()
+                                        .getTabModelFilterProvider()
+                                        .getCurrentTabModelFilter());
+
+        // Merge first two tabs into a group.
+        TabModel normalTabModel = cta.getTabModelSelector().getModel(false);
+        List<Tab> tabGroup =
+                new ArrayList<>(
+                        Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
+        createTabGroup(cta, false, tabGroup);
+        verifyTabSwitcherCardCount(cta, 1);
+        assertTrue(
+                snackbarManager.getCurrentSnackbarForTesting().getController()
+                        instanceof UndoGroupSnackbarController);
+        assertEquals("2", snackbarManager.getCurrentSnackbarForTesting().getTextForTesting());
+
+        // Assert default color was set properly.
+        assertEquals(
+                nextSuggestedColorId,
+                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
+        TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
+
+        // Temporarily save the rootID to check during closure.
+        int groupRootId = normalTabModel.getTabAt(1).getRootId();
+
+        closeFirstTabInTabSwitcher(cta);
+        assertTrue(
+                snackbarManager.getCurrentSnackbarForTesting().getController()
+                        instanceof UndoBarController);
+        verifyTabSwitcherCardCount(cta, 0);
+
+        // Assert default color still persists.
+        assertEquals(nextSuggestedColorId, TabGroupColorUtils.getTabGroupColor(groupRootId));
+
+        CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Assert default color still persists.
+        assertEquals(
+                nextSuggestedColorId,
+                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    public void testUndoClosure_AcceptGroupClosure() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
+        createTabs(cta, false, 2);
+
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        assertNull(snackbarManager.getCurrentSnackbarForTesting());
+
+        // Get the next suggested color id.
+        int nextSuggestedColorId =
+                TabGroupColorUtils.getNextSuggestedColorId(
+                        (TabGroupModelFilter)
+                                cta.getTabModelSelectorSupplier()
+                                        .get()
+                                        .getTabModelFilterProvider()
+                                        .getCurrentTabModelFilter());
+
+        // Merge first two tabs into a group.
+        TabModel normalTabModel = cta.getTabModelSelector().getModel(false);
+        List<Tab> tabGroup =
+                new ArrayList<>(
+                        Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
+        createTabGroup(cta, false, tabGroup);
+        verifyTabSwitcherCardCount(cta, 1);
+        assertTrue(
+                snackbarManager.getCurrentSnackbarForTesting().getController()
+                        instanceof UndoGroupSnackbarController);
+        assertEquals("2", snackbarManager.getCurrentSnackbarForTesting().getTextForTesting());
+
+        // Assert default color was set properly.
+        assertEquals(
+                nextSuggestedColorId,
+                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
+        TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
+
+        // Temporarily save the rootID to check during closure.
+        int groupRootId = normalTabModel.getTabAt(1).getRootId();
+
+        closeFirstTabInTabSwitcher(cta);
+        assertTrue(
+                snackbarManager.getCurrentSnackbarForTesting().getController()
+                        instanceof UndoBarController);
+        verifyTabSwitcherCardCount(cta, 0);
+
+        // Assert default color still persists.
+        assertEquals(nextSuggestedColorId, TabGroupColorUtils.getTabGroupColor(groupRootId));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
+
+        // Assert default color is cleared.
+        assertEquals(INVALID_COLOR_ID, TabGroupColorUtils.getTabGroupColor(groupRootId));
     }
 
     @Test
