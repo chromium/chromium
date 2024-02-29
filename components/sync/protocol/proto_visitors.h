@@ -929,6 +929,7 @@ VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics& proto) {
   VISIT(has_url_keyed_image);
   VISIT_REP(categories);
   VISIT_REP(related_searches);
+  VISIT(app_id);
 }
 
 VISIT_PROTO_FIELDS(

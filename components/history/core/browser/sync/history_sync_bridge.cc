@@ -175,6 +175,11 @@ VisitRow MakeVisitRow(const sync_pb::HistorySpecifics& specifics,
   // Definitionally, any visit from Sync is known to sync.
   row.is_known_to_sync = true;
 
+  // Transfer app_id if present.
+  if (specifics.has_app_id()) {
+    row.app_id = specifics.app_id();
+  }
+
   // Reconstruct the page transition - first get the core type.
   int page_transition = syncer::FromSyncPageTransition(
       specifics.page_transition().core_transition());
@@ -300,7 +305,8 @@ std::unique_ptr<syncer::EntityData> MakeEntityData(
     const GURL& referrer_url,
     const std::vector<GURL>& favicon_urls,
     int64_t local_cluster_id,
-    std::vector<VisitID>* included_visit_ids) {
+    std::vector<VisitID>* included_visit_ids,
+    std::optional<std::string> app_id) {
   DCHECK(!local_cache_guid.empty());
   DCHECK(!redirect_visits.empty());
 
@@ -442,6 +448,9 @@ std::unique_ptr<syncer::EntityData> MakeEntityData(
   }
 
   history->set_originator_cluster_id(local_cluster_id);
+  if (app_id) {
+    history->set_app_id(*app_id);
+  }
 
   // The entity name is used for debugging purposes; choose something that's a
   // decent tradeoff between "unique" and "readable".
@@ -1064,9 +1073,10 @@ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
     // should be the same (except potentially in unit tests).
     int64_t local_cluster_id = history_backend_->GetClusterIdContainingVisit(
         redirect_visits.front().visit_id);
-    entities.push_back(MakeEntityData(
-        GetLocalCacheGuid(), annotated_visits, chain_middle_trimmed,
-        referrer_url, favicon_urls, local_cluster_id, included_visit_ids));
+    entities.push_back(MakeEntityData(GetLocalCacheGuid(), annotated_visits,
+                                      chain_middle_trimmed, referrer_url,
+                                      favicon_urls, local_cluster_id,
+                                      included_visit_ids, final_visit.app_id));
   }
 
   return entities;

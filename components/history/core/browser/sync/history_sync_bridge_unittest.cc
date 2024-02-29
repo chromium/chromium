@@ -34,6 +34,9 @@
 
 namespace history {
 
+const std::string kTestAppId = "org.chromium.dino.stegosaurus";
+const std::string kTestAppId2 = "org.chromium.dino.velociraptor";
+
 namespace {
 
 using testing::_;
@@ -48,6 +51,7 @@ sync_pb::HistorySpecifics CreateSpecifics(
     const std::string& originator_cache_guid,
     const std::vector<GURL>& urls,
     const std::vector<VisitID>& originator_visit_ids = {},
+    std::optional<std::string> app_id = std::nullopt,
     const bool has_url_keyed_image = false,
     const std::vector<VisitContentModelAnnotations::Category>& categories = {},
     const std::vector<std::string>& related_searches = {}) {
@@ -67,6 +71,9 @@ sync_pb::HistorySpecifics CreateSpecifics(
           sync_pb::SyncEnums_PageTransitionRedirectType_SERVER_REDIRECT);
     }
   }
+  if (app_id) {
+    specifics.set_app_id(*app_id);
+  }
   specifics.set_has_url_keyed_image(has_url_keyed_image);
   for (const auto& category : categories) {
     auto* category_to_sync = specifics.add_categories();
@@ -83,12 +90,13 @@ sync_pb::HistorySpecifics CreateSpecifics(
     const std::string& originator_cache_guid,
     const GURL& url,
     VisitID originator_visit_id = 0,
+    std::optional<std::string> app_id = std::nullopt,
     const bool has_url_keyed_image = false,
     const std::vector<VisitContentModelAnnotations::Category>& categories = {},
     const std::vector<std::string>& related_searches = {}) {
   return CreateSpecifics(visit_time, originator_cache_guid, std::vector{url},
-                         std::vector{originator_visit_id}, has_url_keyed_image,
-                         categories, related_searches);
+                         std::vector{originator_visit_id}, app_id,
+                         has_url_keyed_image, categories, related_searches);
 }
 
 syncer::EntityData SpecificsToEntityData(
@@ -293,7 +301,8 @@ class HistorySyncBridgeTest : public testing::Test {
   std::pair<URLRow, VisitRow> AddVisitToBackendAndAdvanceClock(
       const GURL& url,
       ui::PageTransition transition,
-      VisitID referring_visit = kInvalidVisitID) {
+      VisitID referring_visit = kInvalidVisitID,
+      std::optional<std::string> app_id = std::nullopt) {
     // After grabbing the visit time, advance the mock time so that the next
     // visit will get a unique time.
     base::Time visit_time = base::Time::Now();
@@ -316,6 +325,7 @@ class HistorySyncBridgeTest : public testing::Test {
         ui::PageTransitionFromInt(transition | ui::PAGE_TRANSITION_CHAIN_START |
                                   ui::PAGE_TRANSITION_CHAIN_END);
     visit_row.referring_visit = referring_visit;
+    visit_row.app_id = app_id;
     visit_row.visit_id = backend()->AddVisit(visit_row);
 
     return {url_row, visit_row};
@@ -475,11 +485,13 @@ TEST_F(HistorySyncBridgeTest, AppliesRemoteChanges) {
   const std::vector<std::string> related_searches(
       {related_search_1, related_search_2});
 
-  AddVisitToBackendAndAdvanceClock(local_url, ui::PAGE_TRANSITION_LINK);
+  AddVisitToBackendAndAdvanceClock(local_url, ui::PAGE_TRANSITION_LINK,
+                                   /*referring_visit=*/kInvalidVisitID,
+                                   kTestAppId);
 
   sync_pb::HistorySpecifics remote_entity = CreateSpecifics(
       base::Time::Now() - base::Minutes(1), remote_cache_guid, remote_url, {},
-      has_url_keyed_image, categories, related_searches);
+      kTestAppId2, has_url_keyed_image, categories, related_searches);
 
   ApplyInitialSyncChanges({remote_entity});
 
@@ -494,6 +506,9 @@ TEST_F(HistorySyncBridgeTest, AppliesRemoteChanges) {
   EXPECT_EQ(backend()->GetVisits()[1].url_id, backend()->GetURLs()[1].id());
   EXPECT_EQ(backend()->GetVisits()[1].originator_cache_guid, remote_cache_guid);
   EXPECT_TRUE(backend()->GetVisits()[1].is_known_to_sync);
+  EXPECT_EQ(backend()->GetVisits()[0].app_id, kTestAppId);
+  EXPECT_EQ(backend()->GetVisits()[1].app_id, kTestAppId2);
+
   // Check that the remote visit's annotation info got synced.
   // NOTE: Annotation info is present on the last remote visit.
   const std::vector<AnnotatedVisit> annotated_visits =
@@ -531,25 +546,29 @@ TEST_F(HistorySyncBridgeTest, AppliesRemoteChanges) {
 TEST_F(HistorySyncBridgeTest, MergesRemoteChanges) {
   const GURL remote_url("https://remote.com");
 
-  sync_pb::HistorySpecifics remote_entity = CreateSpecifics(
-      base::Time::Now() - base::Minutes(1), "remote_cache_guid", remote_url);
+  sync_pb::HistorySpecifics remote_entity =
+      CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
+                      remote_url, {}, kTestAppId);
 
   // Start Sync the first time, so the remote data gets written to the local DB.
   ApplyInitialSyncChanges({remote_entity});
   ASSERT_EQ(backend()->GetURLs().size(), 1u);
   ASSERT_EQ(backend()->GetVisits().size(), 1u);
   ASSERT_EQ(backend()->GetVisits()[0].visit_duration, base::TimeDelta());
+  ASSERT_EQ(backend()->GetVisits()[0].app_id, kTestAppId);
 
   // Stop Sync, then start it again so the same data gets downloaded again.
   ApplyDisableSyncChanges();
   // ...but the data has been updated in the meantime.
   remote_entity.set_visit_duration_micros(1000);
+  remote_entity.set_app_id(kTestAppId2);
   ApplyInitialSyncChanges({remote_entity});
 
   // The entries in the local DB should have been updated (*not* duplicated).
   ASSERT_EQ(backend()->GetURLs().size(), 1u);
   ASSERT_EQ(backend()->GetVisits().size(), 1u);
   EXPECT_EQ(backend()->GetVisits()[0].visit_duration, base::Microseconds(1000));
+  ASSERT_EQ(backend()->GetVisits()[0].app_id, kTestAppId2);
 }
 
 TEST_F(HistorySyncBridgeTest, DoesNotApplyUnsyncableRemoteChanges) {

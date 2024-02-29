@@ -145,4 +145,8 @@ message HistorySpecifics {
 
   // Related search URLs for a Google SRP visit, to provide next steps to user.
   repeated string related_searches = 25;
+
+  // ID of the app (non-BrApp) this entity was generated for, if any. Only
+  // visits originating from Android devices may have this set.
+  optional string app_id = 26;
 }
