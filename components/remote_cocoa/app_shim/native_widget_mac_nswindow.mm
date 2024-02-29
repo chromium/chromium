@@ -840,6 +840,10 @@ void OrderChildWindow(NSWindow* child_window,
   return NO;
 }
 
+- (NSWindow*)preferredSheetParent {
+  return [self immersiveFullscreen] ? [self rootWindow] : self;
+}
+
 #ifndef NDEBUG
 - (NSString*)debugDescription {
   if (!self.title.length) {

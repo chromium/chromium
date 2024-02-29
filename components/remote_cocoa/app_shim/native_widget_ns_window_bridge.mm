@@ -1790,6 +1790,10 @@ void NativeWidgetNSWindowBridge::ShowAsModalSheet() {
   host_->OnVisibilityChanged(window_visible_);
 
   NSWindow* parent_window = parent_->ns_window();
+  if (NativeWidgetMacNSWindow* parent_widget_window =
+          base::apple::ObjCCast<NativeWidgetMacNSWindow>(parent_window)) {
+    parent_window = [parent_widget_window preferredSheetParent];
+  }
   DCHECK(parent_window);
   NSWindow* __weak weak_window = window_;
 
