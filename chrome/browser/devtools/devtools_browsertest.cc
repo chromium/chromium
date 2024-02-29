@@ -3820,6 +3820,57 @@ IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteTest,
             infobars::InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE);
 }
 
+// Observe that the active tab has changed.
+class ActiveTabChangedObserver : public TabStripModelObserver {
+ public:
+  explicit ActiveTabChangedObserver(TabStripModel* tab_strip_model) {
+    tab_strip_model->AddObserver(this);
+  }
+
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (change.type() == TabStripModelChange::kSelectionOnly &&
+        tab_strip_model->active_index() == 0) {
+      loop_.Quit();
+      return;
+    }
+  }
+
+  void Wait() { loop_.Run(); }
+
+ private:
+  base::RunLoop loop_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteTest, PausedDebuggerFocus) {
+  const GURL url = embedded_test_server()->GetURL("foo.test", "/hello.html");
+
+  auto* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* devtools_window = DevToolsWindowTesting::OpenDevToolsWindowSync(
+      tab_strip_model->GetWebContentsAt(0), true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, url,
+                                     ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
+  ASSERT_EQ(2, tab_strip_model->count());
+  ASSERT_EQ(
+      tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame()->GetProcess(),
+      tab_strip_model->GetWebContentsAt(1)
+          ->GetPrimaryMainFrame()
+          ->GetProcess());
+  ASSERT_EQ(1, tab_strip_model->active_index());
+
+  ASSERT_TRUE(content::ExecJs(tab_strip_model->GetWebContentsAt(0),
+                              "setTimeout(() => {debugger;}, 0);"));
+  DispatchOnTestSuite(devtools_window, "waitForDebuggerPaused");
+  ActiveTabChangedObserver active_tab_observer(tab_strip_model);
+  content::SimulateMouseClick(tab_strip_model->GetActiveWebContents(), 0,
+                              blink::WebMouseEvent::Button::kLeft);
+  active_tab_observer.Wait();
+  ASSERT_EQ(0, tab_strip_model->active_index());
+}
+
 class DevToolsConsoleInsightsTest : public DevToolsTest {
  public:
   DevToolsConsoleInsightsTest() {
