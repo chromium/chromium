@@ -315,8 +315,9 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
   }
 
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
-  bool canShowMostRecentItem = NewTabPageTabHelper::FromWebState(activeWebState)
-                                   ->ShouldShowStartSurface();
+  bool canShowMostRecentItem =
+      activeWebState && NewTabPageTabHelper::FromWebState(activeWebState)
+                            ->ShouldShowStartSurface();
   // If both times have not been updated, that means there is no item to return.
   if (mostRecentTabOpenedTime == base::Time::UnixEpoch() &&
       lastSyncedTabSyncedTime == base::Time::UnixEpoch()) {
