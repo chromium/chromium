@@ -4,6 +4,7 @@
 
 #include "ui/views/background.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -65,6 +66,11 @@ class BaseRoundedRectBackground : public Background {
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setColor(get_color());
     canvas->DrawPath(path, flags);
+  }
+
+  std::optional<gfx::RoundedCornersF> GetRoundedCornerRadiiForTesing()
+      override {
+    return radii_;
   }
 
  private:
@@ -185,6 +191,11 @@ void Background::SetNativeControlColor(SkColor color) {
 }
 
 void Background::OnViewThemeChanged(View* view) {}
+
+std::optional<gfx::RoundedCornersF>
+Background::GetRoundedCornerRadiiForTesing() {
+  return std::nullopt;
+}
 
 std::unique_ptr<Background> CreateSolidBackground(SkColor color) {
   return std::make_unique<SolidBackground>(color);
