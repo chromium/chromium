@@ -10,13 +10,9 @@
 
 [package]
 name = "cc"
-version = "1.0.83"
+version = "1.0.88"
 
 [features]
-"jobserver" = []
+"libc" = []
 "parallel" = []
 
-[dependencies.libc]
-version = "*"
-default_features = false
-features = []

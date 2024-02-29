@@ -204,7 +204,7 @@ extensions/common/manifest_handlers 1 1
 extensions/shell/common 1 1
 google_apis/gaia 1 1
 gpu/config 1 1
-infra 4 2
+infra 5 3
 infra/config/generated/luci 1 1
 infra/config/gn_args 1 1
 infra/config/subprojects/webrtc/consoles 1 1
@@ -370,7 +370,6 @@ third_party/blink/public/mojom/permissions_policy 1 1
 third_party/blink/public/mojom/printing 1 1
 third_party/blink/public/mojom/service_worker 4 3
 third_party/blink/public/mojom/storage_key 1 1
-third_party/blink/public/web 1 1
 third_party/blink/renderer/bindings 4 1
 third_party/blink/renderer/bindings/core/v8 1 1
 third_party/blink/renderer/core 1 1
