@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_content_capture_client.h"
 #include "third_party/blink/public/web/web_content_holder.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -198,6 +200,23 @@ class ContentCaptureTest : public PageTestBase,
     GetOrResetContentCaptureManager()->OnScrollPositionChanged();
   }
 
+  void CreateTextNodeAndNotifyManager() {
+    Document& doc = GetDocument();
+    Node* node = doc.createTextNode("New Text");
+    Element* element = MakeGarbageCollected<Element>(html_names::kPTag, &doc);
+    element->appendChild(node);
+    Element* div_element = GetElementById("d1");
+    div_element->appendChild(element);
+    UpdateAllLifecyclePhasesForTest();
+    GetOrResetContentCaptureManager()->ScheduleTaskIfNeeded(*node);
+    created_node_id_ = DOMNodeIds::IdForNode(node);
+    Vector<cc::NodeInfo> captured_content{
+        cc::NodeInfo(created_node_id_, GetRect(node->GetLayoutObject()))};
+    GetOrResetContentCaptureManager()
+        ->GetContentCaptureTaskForTesting()
+        ->SetCapturedContentForTesting(captured_content);
+  }
+
   ContentCaptureManager* GetOrResetContentCaptureManager() {
     if (content_capture_manager_ == nullptr)
       content_capture_manager_ = GetFrame().GetOrResetContentCaptureManager();
@@ -340,6 +359,7 @@ class ContentCaptureTest : public PageTestBase,
   std::unique_ptr<WebContentCaptureClientTestHelper> content_capture_client_;
   Persistent<ContentCaptureManager> content_capture_manager_;
   Persistent<ContentCaptureLocalFrameClientHelper> local_frame_client_;
+  DOMNodeId created_node_id_ = kInvalidDOMNodeId;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -536,6 +556,127 @@ TEST_P(ContentCaptureTest, RemoveNodeAfterSendingOut) {
   RunContentCaptureTask();
   EXPECT_EQ(0u, GetWebContentCaptureClient()->Data().size());
   EXPECT_EQ(1u, GetWebContentCaptureClient()->RemovedData().size());
+}
+
+TEST_P(ContentCaptureTest, TaskHistogramReporter) {
+  // This performs gc for all DocumentSession, flushes the existing
+  // SentContentCount and give a clean baseline for histograms.
+  // We are not sure if it always work, maybe still be the source of flaky.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  base::HistogramTester histograms;
+
+  // The task stops before captures content.
+  GetContentCaptureTask()->SetTaskStopForTesting(
+      ContentCaptureTask::TaskState::kCaptureContent);
+  RunContentCaptureTask();
+  // Verify no histogram reported yet.
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kCaptureContentTime, 0u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kSendContentTime, 0u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime, 0u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 0u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kTaskDelayInMs, 1u);
+
+  // The task stops before sends the captured content out.
+  GetContentCaptureTask()->SetTaskStopForTesting(
+      ContentCaptureTask::TaskState::kProcessCurrentSession);
+  RunContentCaptureTask();
+  // Verify has one CaptureContentTime record.
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kCaptureContentTime, 1u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kSendContentTime, 0u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime, 0u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
+
+  // The task stops at kProcessRetryTask because the captured content
+  // needs to be sent with 2 batch.
+  GetContentCaptureTask()->SetTaskStopForTesting(
+      ContentCaptureTask::TaskState::kProcessRetryTask);
+  RunContentCaptureTask();
+  // Verify has one CaptureContentTime, one SendContentTime and one
+  // CaptureContentDelayTime record.
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kCaptureContentTime, 1u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kSendContentTime, 1u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime, 1u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
+
+  // Run task until it stops, task will not capture content, because there is no
+  // content change.
+  GetContentCaptureTask()->SetTaskStopForTesting(
+      ContentCaptureTask::TaskState::kStop);
+  RunContentCaptureTask();
+  // Verify has two SendContentTime records.
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kCaptureContentTime, 1u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kSendContentTime, 2u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime, 1u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
+
+  // Verify retry task won't count to TaskDelay metrics.
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kTaskDelayInMs, 1u);
+
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 1u);
+  // Verify the task ran 4 times, first run stopped before capturing content
+  // and 2nd run captured content, 3rd and 4th run sent the content out.
+  histograms.ExpectBucketCount(
+      ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 4u, 1u);
+
+  // Create a node and run task until it stops.
+  CreateTextNodeAndNotifyManager();
+  GetContentCaptureTask()->SetTaskStopForTesting(
+      ContentCaptureTask::TaskState::kStop);
+  RunNextContentCaptureTask();
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kCaptureContentTime, 2u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kSendContentTime, 3u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime, 2u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
+
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 2u);
+  // Verify the task ran 1 times for this session because we didn't explicitly
+  // stop it.
+  histograms.ExpectBucketCount(
+      ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 1u, 1u);
+
+  GetContentCaptureTask()->ClearDocumentSessionsForTesting();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kCaptureContentTime, 2u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kSendContentTime, 3u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime, 2u);
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kSentContentCount, 1u);
+  // Verify total content has been sent.
+  histograms.ExpectBucketCount(
+      ContentCaptureTaskHistogramReporter::kSentContentCount, 9u, 1u);
+
+  // Verify TaskDelay was recorded again for node change.
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kTaskDelayInMs, 2u);
 }
 
 TEST_P(ContentCaptureTest, RescheduleTask) {
