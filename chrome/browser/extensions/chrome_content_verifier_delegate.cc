@@ -60,7 +60,25 @@ GetModeForTesting() {
 const char kContentVerificationExperimentName[] =
     "ExtensionContentVerification";
 
+ChromeContentVerifierDelegate::GetVerifyInfoTestOverride::VerifyInfoCallback*
+    g_verify_info_test_callback = nullptr;
+
 }  // namespace
+
+ChromeContentVerifierDelegate::GetVerifyInfoTestOverride::
+    GetVerifyInfoTestOverride(VerifyInfoCallback callback)
+    : callback_(std::move(callback)) {
+  DCHECK_EQ(nullptr, g_verify_info_test_callback)
+      << "Nested overrides are not supported.";
+  g_verify_info_test_callback = &callback_;
+}
+
+ChromeContentVerifierDelegate::GetVerifyInfoTestOverride::
+    ~GetVerifyInfoTestOverride() {
+  DCHECK_EQ(&callback_, g_verify_info_test_callback)
+      << "Nested overrides are not supported.";
+  g_verify_info_test_callback = nullptr;
+}
 
 ChromeContentVerifierDelegate::VerifyInfo::VerifyInfo(Mode mode,
                                                       bool is_from_webstore,
@@ -302,6 +320,10 @@ bool ChromeContentVerifierDelegate::IsFromWebstore(
 
 ChromeContentVerifierDelegate::VerifyInfo
 ChromeContentVerifierDelegate::GetVerifyInfo(const Extension& extension) const {
+  if (g_verify_info_test_callback) {
+    return g_verify_info_test_callback->Run(extension);
+  }
+
   ManagementPolicy* management_policy =
       ExtensionSystem::Get(context_)->management_policy();
 

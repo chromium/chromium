@@ -85,6 +85,24 @@ class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
                     ContentVerifyJob::FailureReason reason) override;
   void Shutdown() override;
 
+  // A helper class to allow tests to provide their own `VerifyInfo` for
+  // different extensions. The included callback will be called for each check
+  // of `GetVerifyInfo()`.
+  class GetVerifyInfoTestOverride {
+   public:
+    using VerifyInfoCallback =
+        base::RepeatingCallback<VerifyInfo(const Extension& extension)>;
+
+    explicit GetVerifyInfoTestOverride(VerifyInfoCallback callback);
+    GetVerifyInfoTestOverride(const GetVerifyInfoTestOverride&) = delete;
+    GetVerifyInfoTestOverride& operator=(const GetVerifyInfoTestOverride&) =
+        delete;
+    ~GetVerifyInfoTestOverride();
+
+   private:
+    VerifyInfoCallback callback_;
+  };
+
  private:
   // Returns true iff |extension| is considered extension from Chrome Web Store
   // (and therefore signed hashes may be used for its content verification).
