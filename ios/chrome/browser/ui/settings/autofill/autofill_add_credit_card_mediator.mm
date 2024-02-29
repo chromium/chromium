@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
@@ -103,6 +104,10 @@
   } else {
     base::RecordAction(
         base::UserMetricsAction("MobileAddCreditCard.CreditCardAdded"));
+    base::UmaHistogramCounts100(
+        "Autofill.PaymentMethods.SettingsPage."
+        "StoredCreditCardCountBeforeCardAdded",
+        self.personalDataManager->GetCreditCards().size());
     self.personalDataManager->AddCreditCard(creditCard);
   }
 

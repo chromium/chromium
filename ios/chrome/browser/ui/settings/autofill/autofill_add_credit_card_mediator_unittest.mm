@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
@@ -243,4 +244,62 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestAlreadyExistsCreditCardNumber) {
   EXPECT_TRUE(savedCreditCard->HasNonEmptyValidNickname());
 
   [add_credit_card_mediator_delegate_mock_ verify];
+}
+
+// Test that the metrics for saving a credit card are recorded.
+TEST_F(AutofillAddCreditCardMediatorTest, TestMetricsWhenSavingCreditCard) {
+  base::HistogramTester histogram_tester;
+
+  // Adding a local card requires waiting for the async operation to complete.
+  autofill::PersonalDataChangedWaiter waiter(*personal_data_manager_);
+  personal_data_manager_->AddCreditCard(autofill::test::GetCreditCard2());
+  std::move(waiter).Wait();
+
+  // Required for adding the server card.
+  personal_data_manager_->SetSyncingForTest(true);
+  personal_data_manager_->AddServerCreditCardForTest(
+      std::make_unique<autofill::CreditCard>(
+          autofill::test::GetMaskedServerCard()));
+
+  int number_of_credit_cards = personal_data_manager_->GetCreditCards().size();
+  EXPECT_EQ(number_of_credit_cards, 2);
+
+  [add_credit_card_mediator_
+      addCreditCardViewController:nil
+      addCreditCardWithHolderName:@"Test"
+                       cardNumber:@"4111111111111111"
+                  expirationMonth:@"12"
+                   expirationYear:base::SysUTF8ToNSString(
+                                      autofill::test::NextYear())
+                     cardNickname:@"nickname"];
+
+  // Expect the metric to add a record based on the number of existing cards.
+  histogram_tester.ExpectUniqueSample("Autofill.PaymentMethods.SettingsPage."
+                                      "StoredCreditCardCountBeforeCardAdded",
+                                      number_of_credit_cards, 1);
+}
+
+// Test that the metrics for saving a credit card for the first time through the
+// settings are recorded accurately.
+TEST_F(AutofillAddCreditCardMediatorTest,
+       TestMetricsWhenSavingFirstCreditCard) {
+  base::HistogramTester histogram_tester;
+
+  // Ensure that there are no existing credit cards.
+  int number_of_credit_cards = personal_data_manager_->GetCreditCards().size();
+  EXPECT_EQ(number_of_credit_cards, 0);
+
+  [add_credit_card_mediator_
+      addCreditCardViewController:nil
+      addCreditCardWithHolderName:@"Test"
+                       cardNumber:@"4111111111111111"
+                  expirationMonth:@"12"
+                   expirationYear:base::SysUTF8ToNSString(
+                                      autofill::test::NextYear())
+                     cardNickname:@"nickname"];
+
+  // Expect the metric to add a record for a stored credit card count of 0.
+  histogram_tester.ExpectUniqueSample("Autofill.PaymentMethods.SettingsPage."
+                                      "StoredCreditCardCountBeforeCardAdded",
+                                      0, 1);
 }
