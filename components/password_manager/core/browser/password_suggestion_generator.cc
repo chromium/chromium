@@ -244,11 +244,14 @@ void AddPasswordUsernameChildSuggestion(const std::u16string& username,
       username, autofill::PopupItemId::kPasswordFieldByFieldFilling));
 }
 
-void AddFillPasswordChildSuggestion(autofill::Suggestion& suggestion) {
-  suggestion.children.push_back(autofill::Suggestion(
+void AddFillPasswordChildSuggestion(autofill::Suggestion& suggestion,
+                                    const std::u16string& password) {
+  autofill::Suggestion fill_password(
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
-      autofill::PopupItemId::kFillPassword));
+      autofill::PopupItemId::kFillPassword);
+  fill_password.payload = autofill::Suggestion::ValueToFill(password);
+  suggestion.children.push_back(fill_password);
 }
 
 void AddViewPasswordDetailsChildSuggestion(autofill::Suggestion& suggestion) {
@@ -274,7 +277,7 @@ autofill::Suggestion GetManualFallbackSuggestion(
   if (!replaced) {
     AddPasswordUsernameChildSuggestion(maybe_username, suggestion);
   }
-  AddFillPasswordChildSuggestion(suggestion);
+  AddFillPasswordChildSuggestion(suggestion, credential.password);
   suggestion.children.push_back(
       autofill::Suggestion(autofill::PopupItemId::kSeparator));
   AddViewPasswordDetailsChildSuggestion(suggestion);

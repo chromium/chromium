@@ -28,4 +28,13 @@ Matcher<Suggestion> EqualsSuggestion(PopupItemId id,
   return AllOf(EqualsSuggestion(id, main_text), Field(&Suggestion::icon, icon));
 }
 
+::testing::Matcher<Suggestion> EqualsSuggestion(
+    PopupItemId id,
+    const std::u16string& main_text,
+    Suggestion::Icon icon,
+    const Suggestion::Payload& payload) {
+  return AllOf(EqualsSuggestion(id, main_text, icon),
+               Field(&Suggestion::payload, payload));
+}
+
 }  // namespace autofill

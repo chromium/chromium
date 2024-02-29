@@ -141,6 +141,8 @@ struct Suggestion {
 #if DCHECK_IS_ON()
   bool Invariant() const {
     switch (popup_item_id) {
+      case PopupItemId::kFillPassword:
+        return absl::holds_alternative<ValueToFill>(payload);
       case PopupItemId::kSeePromoCodeDetails:
         return absl::holds_alternative<GURL>(payload);
       case PopupItemId::kIbanEntry:

@@ -193,7 +193,8 @@ TEST_F(PasswordSuggestionGeneratorTest, ManualFallback_ChildSuggestionContent) {
           EqualsSuggestion(
               PopupItemId::kFillPassword,
               l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY)),
+                  IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
+              Suggestion::Icon::kNoIcon, Suggestion::ValueToFill(u"password")),
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsSuggestion(
               PopupItemId::kViewPasswordDetails,
