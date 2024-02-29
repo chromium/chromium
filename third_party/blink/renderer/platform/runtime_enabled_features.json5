@@ -1052,19 +1052,6 @@
       status: "experimental",
     },
     {
-      // Support for CSS ::spelling-error, ::grammar-error, and the
-      // spelling-error and grammar-error values in text-decoration-line.
-      // Includes painting spelling and grammar markers using standard CSS
-      // styling.
-      //
-      // https://drafts.csswg.org/css-pseudo-4/#selectordef-spelling-error
-      // https://drafts.csswg.org/css-pseudo-4/#selectordef-grammar-error
-      // https://drafts.csswg.org/css-text-decor-4/#valdef-text-decoration-line-spelling-error
-      // https://drafts.csswg.org/css-text-decor-4/#valdef-text-decoration-line-grammar-error
-      name: "CSSSpellingGrammarErrors",
-      status: "stable",
-    },
-    {
       // Explainer: https://drafts.csswg.org/css-values/#round-func
       name: "CSSSteppedValueFunctions",
       status: "experimental",

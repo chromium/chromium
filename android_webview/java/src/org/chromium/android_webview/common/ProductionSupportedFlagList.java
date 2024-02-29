@@ -490,9 +490,6 @@ public final class ProductionSupportedFlagList {
                 "Switches skia to use DMSAA instead of MSAA for tile raster"
                         + " on Android GL backend."),
         Flag.baseFeature(
-                BlinkFeatures.CSS_SPELLING_GRAMMAR_ERRORS,
-                "Enables new CSS spelling and grammar features"),
-        Flag.baseFeature(
                 BlinkFeatures.WEB_RTC_INITIALIZE_ENCODER_ON_FIRST_FRAME,
                 "Initialize VideoEncodeAccelerator on the first encode."),
         Flag.baseFeature(

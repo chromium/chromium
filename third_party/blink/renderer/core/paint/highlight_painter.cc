@@ -674,18 +674,6 @@ void HighlightPainter::PaintOneSpellingGrammarDecoration(
   if (fragment_item_.GetNode()->GetDocument().Printing())
     return;
 
-  // If the new ::spelling-error and ::grammar-error pseudos are not enabled,
-  // use the old marker-based decorations for now.
-  if (!RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
-    return DocumentMarkerPainter::PaintDocumentMarker(
-        paint_info_, box_origin_, originating_style_, type,
-        LineRelativeLocalRect(fragment_item_, text, paint_start_offset,
-                              paint_end_offset),
-        HighlightStyleUtils::HighlightTextDecorationColor(
-            layout_object_->GetDocument(), originating_style_, node_,
-            originating_text_style_.current_color, PseudoFor(type)));
-  }
-
   if (!text_painter_.GetSvgState()) {
     if (const auto* pseudo_style = HighlightStyleUtils::HighlightPseudoStyle(
             node_, originating_style_, PseudoFor(type))) {
@@ -768,7 +756,6 @@ void HighlightPainter::PaintOriginatingText(const TextPaintStyle& text_style,
         fragment_paint_info_.Slice(part.range.from, part.range.to), text_style,
         node_id, foreground_auto_dark_mode_, TextPainter::kTextProperOnly);
     PaintDecorationsOnlyLineThrough(part);
-    PaintSpellingGrammarDecorations(part);
   }
 }
 
@@ -948,7 +935,6 @@ void HighlightPainter::PaintHighlightOverlays(
           layer.text_style, node_id, foreground_auto_dark_mode_,
           TextPainterBase::kTextProperOnly);
       PaintDecorationsOnlyLineThrough(part);
-      PaintSpellingGrammarDecorations(part);
     }
   }
 
@@ -968,7 +954,6 @@ void HighlightPainter::PaintHighlightOverlays(
     for (const HighlightPart& part : parts_) {
       if (part.layer.type == HighlightLayerType::kSelection) {
         PaintDecorationsOnlyLineThrough(part);
-        PaintSpellingGrammarDecorations(part);
       }
     }
   }
@@ -1227,54 +1212,6 @@ void HighlightPainter::PaintDecorationsOnlyLineThrough(
 
     decoration_painter_.PaintOnlyLineThrough(*decoration_info,
                                              decoration_layer.text_style);
-  }
-}
-
-void HighlightPainter::PaintSpellingGrammarDecorations(
-    const HighlightPart& part) {
-  if (RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled())
-    return;
-
-  const StringView text = cursor_.CurrentText();
-  std::optional<LineRelativeRect> marker_rect;
-
-  for (const HighlightDecoration& decoration : part.decorations) {
-    switch (decoration.layer.type) {
-      case HighlightLayerType::kSpelling:
-      case HighlightLayerType::kGrammar: {
-        wtf_size_t i = layers_.Find(decoration.layer);
-        DCHECK_NE(i, kNotFound);
-        const LayerPaintState& decoration_layer = layers_[i];
-
-        // TODO(crbug.com/1163436): remove once UA stylesheet sets ::spelling
-        // and ::grammar to text-decoration-line:{spelling,grammar}-error
-        if (decoration_layer.style &&
-            decoration_layer.style->HasAppliedTextDecorations()) {
-          break;
-        }
-
-        if (!marker_rect) {
-          marker_rect = LineRelativeLocalRect(fragment_item_, text,
-                                              part.range.from, part.range.to);
-        }
-
-        DocumentMarkerPainter::PaintDocumentMarker(
-            paint_info_, box_origin_, originating_style_,
-            decoration.layer.type == HighlightLayerType::kSpelling
-                ? DocumentMarker::kSpelling
-                : DocumentMarker::kGrammar,
-            *marker_rect,
-            HighlightStyleUtils::HighlightTextDecorationColor(
-                layout_object_->GetDocument(), originating_style_, node_,
-                layers_[i - 1].text_style.current_color,
-                decoration.layer.type == HighlightLayerType::kSpelling
-                    ? kPseudoIdSpellingError
-                    : kPseudoIdGrammarError));
-      } break;
-
-      default:
-        break;
-    }
   }
 }
 

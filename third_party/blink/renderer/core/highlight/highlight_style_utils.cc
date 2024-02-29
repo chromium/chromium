@@ -499,10 +499,6 @@ std::optional<Color> HighlightStyleUtils::HighlightTextDecorationColor(
     PseudoId pseudo) {
   DCHECK(pseudo == kPseudoIdSpellingError || pseudo == kPseudoIdGrammarError);
 
-  if (!RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
-    return std::nullopt;
-  }
-
   if (const ComputedStyle* pseudo_style =
           HighlightPseudoStyle(node, style, pseudo)) {
     return ResolveColor(document, style, pseudo_style, pseudo,
@@ -516,40 +512,22 @@ std::optional<Color> HighlightStyleUtils::HighlightTextDecorationColor(
 bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(
     const Node& node,
     DocumentMarker::MarkerType type) {
-  if ((type == DocumentMarker::kSpelling || type == DocumentMarker::kGrammar) &&
-      RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
+  // Custom highlights and selection are handled separately. Here we just need
+  // to handle spelling, grammar and target-text. Note that we assume
+  // RuntimeEnabledFeatures::HighlightInheritanceEnabled() is true to avoid
+  // needing a non-const node.
+  if (type == DocumentMarker::kSpelling || type == DocumentMarker::kGrammar) {
     return true;
   }
 
-  // Custom highlights are handled separately. Here we just need to handle
-  // spelling, grammar and target-text. Note that we assume
-  // RuntimeEnabledFeatures::HighlightInheritanceEnabled() is true to avoid
-  // needing a non-const node.
+  if (type != DocumentMarker::kTextFragment) {
+    return false;
+  }
   const ComputedStyle* style = node.GetComputedStyle();
   if (!style) {
     return false;
   }
-  const ComputedStyle* pseudo_style = nullptr;
-  switch (type) {
-    case DocumentMarker::kTextFragment:
-      pseudo_style = style->HighlightData().TargetText();
-      break;
-
-    case DocumentMarker::kSpelling:
-      if (RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
-        pseudo_style = style->HighlightData().SpellingError();
-      }
-      break;
-
-    case DocumentMarker::kGrammar:
-      if (RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
-        pseudo_style = style->HighlightData().GrammarError();
-      }
-      break;
-
-    default:
-      break;
-  }
+  const ComputedStyle* pseudo_style = style->HighlightData().TargetText();
   if (!pseudo_style) {
     return false;
   }

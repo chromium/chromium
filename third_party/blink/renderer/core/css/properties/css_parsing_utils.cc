@@ -6661,8 +6661,7 @@ CSSValue* ConsumeTextDecorationLine(CSSParserTokenRange& range) {
     return ConsumeIdent(range);
   }
 
-  if (RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled() &&
-      (id == CSSValueID::kSpellingError || id == CSSValueID::kGrammarError)) {
+  if (id == CSSValueID::kSpellingError || id == CSSValueID::kGrammarError) {
     // Note that StyleBuilderConverter::ConvertFlags() requires that values
     // other than 'none' appear in a CSSValueList.
     CSSValueList* list = CSSValueList::CreateSpaceSeparated();

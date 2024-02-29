@@ -640,12 +640,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if ((match->type == CSSSelector::kPseudoSpellingError ||
-       match->type == CSSSelector::kPseudoGrammarError) &&
-      !RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
   if (match->type == CSSSelector::kPseudoDetailsContent &&
       !RuntimeEnabledFeatures::DetailsStylingEnabled()) {
     return CSSSelector::kPseudoUnknown;
