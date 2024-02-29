@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/file_system_access_capacity_allocation_host_impl.h"
+#include "content/browser/file_system_access/file_system_access_file_modification_host_impl.h"
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -16,13 +16,13 @@
 
 namespace content {
 
-FileSystemAccessCapacityAllocationHostImpl::
-    FileSystemAccessCapacityAllocationHostImpl(
+FileSystemAccessFileModificationHostImpl::
+    FileSystemAccessFileModificationHostImpl(
         FileSystemAccessManagerImpl* manager,
         const storage::FileSystemURL& url,
         base::PassKey<FileSystemAccessAccessHandleHostImpl> pass_key,
         mojo::PendingReceiver<
-            blink::mojom::FileSystemAccessCapacityAllocationHost> receiver,
+            blink::mojom::FileSystemAccessFileModificationHost> receiver,
         int64_t file_size)
     : manager_(manager),
       url_(url),
@@ -31,22 +31,22 @@ FileSystemAccessCapacityAllocationHostImpl::
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(manager_);
   // base::Unretained is safe here because this
-  // FileSystemAccessCapacityAllocationHostImpl owns `receiver_`. So, the
-  // unretained FileSystemAccessCapacityAllocationHostImpl is guaranteed to
+  // FileSystemAccessFileModificationHostImpl owns `receiver_`. So, the
+  // unretained FileSystemAccessFileModificationHostImpl is guaranteed to
   // outlive `receiver_` and the closure that it uses.
   receiver_.set_disconnect_handler(base::BindOnce(
-      &FileSystemAccessCapacityAllocationHostImpl::OnReceiverDisconnect,
+      &FileSystemAccessFileModificationHostImpl::OnReceiverDisconnect,
       base::Unretained(this)));
 }
 
 // Constructor for testing.
-FileSystemAccessCapacityAllocationHostImpl::
-    FileSystemAccessCapacityAllocationHostImpl(
+FileSystemAccessFileModificationHostImpl::
+    FileSystemAccessFileModificationHostImpl(
         FileSystemAccessManagerImpl* manager,
         const storage::FileSystemURL& url,
-        base::PassKey<FileSystemAccessCapacityAllocationHostImplTest> pass_key,
+        base::PassKey<FileSystemAccessFileModificationHostImplTest> pass_key,
         mojo::PendingReceiver<
-            blink::mojom::FileSystemAccessCapacityAllocationHost> receiver,
+            blink::mojom::FileSystemAccessFileModificationHost> receiver,
         int64_t file_size)
     : manager_(manager),
       url_(url),
@@ -55,23 +55,23 @@ FileSystemAccessCapacityAllocationHostImpl::
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(manager_);
   // base::Unretained is safe here because this
-  // FileSystemAccessCapacityAllocationHostImpl owns `receiver_`. So, the
-  // unretained FileSystemAccessCapacityAllocationHostImpl is guaranteed to
+  // FileSystemAccessFileModificationHostImpl owns `receiver_`. So, the
+  // unretained FileSystemAccessFileModificationHostImpl is guaranteed to
   // outlive `receiver_` and the closure that it uses.
   receiver_.set_disconnect_handler(base::BindOnce(
-      &FileSystemAccessCapacityAllocationHostImpl::OnReceiverDisconnect,
+      &FileSystemAccessFileModificationHostImpl::OnReceiverDisconnect,
       base::Unretained(this)));
 }
 
-FileSystemAccessCapacityAllocationHostImpl::
-    ~FileSystemAccessCapacityAllocationHostImpl() = default;
+FileSystemAccessFileModificationHostImpl::
+    ~FileSystemAccessFileModificationHostImpl() = default;
 
-void FileSystemAccessCapacityAllocationHostImpl::OnReceiverDisconnect() {
+void FileSystemAccessFileModificationHostImpl::OnReceiverDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   receiver_.reset();
 }
 
-void FileSystemAccessCapacityAllocationHostImpl::RequestCapacityChange(
+void FileSystemAccessFileModificationHostImpl::RequestCapacityChange(
     int64_t capacity_delta,
     RequestCapacityChangeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -92,11 +92,11 @@ void FileSystemAccessCapacityAllocationHostImpl::RequestCapacityChange(
       url_.storage_key(), blink::mojom::StorageType::kTemporary,
       base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
-          &FileSystemAccessCapacityAllocationHostImpl::DidGetUsageAndQuota,
+          &FileSystemAccessFileModificationHostImpl::DidGetUsageAndQuota,
           weak_factory_.GetWeakPtr(), capacity_delta, std::move(callback)));
 }
 
-void FileSystemAccessCapacityAllocationHostImpl::DidGetUsageAndQuota(
+void FileSystemAccessFileModificationHostImpl::DidGetUsageAndQuota(
     int64_t capacity_delta,
     RequestCapacityChangeCallback callback,
     blink::mojom::QuotaStatusCode status,
@@ -121,7 +121,7 @@ void FileSystemAccessCapacityAllocationHostImpl::DidGetUsageAndQuota(
   std::move(callback).Run(capacity_delta);
 }
 
-void FileSystemAccessCapacityAllocationHostImpl::OnContentsModified() {
+void FileSystemAccessFileModificationHostImpl::OnContentsModified() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (const storage::ChangeObserverList* change_observers =

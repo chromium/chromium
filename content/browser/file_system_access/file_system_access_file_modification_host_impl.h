@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_CAPACITY_ALLOCATION_HOST_IMPL_H_
-#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_CAPACITY_ALLOCATION_HOST_IMPL_H_
+#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FILE_MODIFICATION_HOST_IMPL_H_
+#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FILE_MODIFICATION_HOST_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -15,7 +15,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_modification_host.mojom.h"
 
 namespace storage {
 class QuotaManagerProxy;
@@ -23,43 +23,43 @@ class QuotaManagerProxy;
 
 namespace content {
 
-class FileSystemAccessCapacityAllocationHostImplTest;
+class FileSystemAccessFileModificationHostImplTest;
 
 // This is the browser side implementation of the
-// FileSystemAccessCapacityAllocationHost mojom interface. Instances of this
+// FileSystemAccessFileModificationHost mojom interface. Instances of this
 // class are owned by the FileSystemAccessHandleHost instance passed in to the
 // constructor.
-class CONTENT_EXPORT FileSystemAccessCapacityAllocationHostImpl
-    : public blink::mojom::FileSystemAccessCapacityAllocationHost {
+class CONTENT_EXPORT FileSystemAccessFileModificationHostImpl
+    : public blink::mojom::FileSystemAccessFileModificationHost {
  public:
-  // Creates a FileSystemAccessCapacityAllocationHost that manages capacity
-  // reservations for the file. CapacityAllocationHosts should only be created
+  // Creates a FileSystemAccessFileModificationHost that manages capacity
+  // reservations for the file. FileModificationHosts should only be created
   // via the FileSystemAccessHandleHost.
-  FileSystemAccessCapacityAllocationHostImpl(
+  FileSystemAccessFileModificationHostImpl(
       FileSystemAccessManagerImpl* manager,
       const storage::FileSystemURL& url,
       base::PassKey<FileSystemAccessAccessHandleHostImpl> pass_key,
-      mojo::PendingReceiver<
-          blink::mojom::FileSystemAccessCapacityAllocationHost> receiver,
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessFileModificationHost>
+          receiver,
       int64_t file_size);
 
   // Constructor for testing
-  FileSystemAccessCapacityAllocationHostImpl(
+  FileSystemAccessFileModificationHostImpl(
       FileSystemAccessManagerImpl* manager,
       const storage::FileSystemURL& url,
-      base::PassKey<FileSystemAccessCapacityAllocationHostImplTest> pass_key,
-      mojo::PendingReceiver<
-          blink::mojom::FileSystemAccessCapacityAllocationHost> receiver,
+      base::PassKey<FileSystemAccessFileModificationHostImplTest> pass_key,
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessFileModificationHost>
+          receiver,
       int64_t file_size);
 
-  FileSystemAccessCapacityAllocationHostImpl(
-      const FileSystemAccessCapacityAllocationHostImpl&) = delete;
-  FileSystemAccessCapacityAllocationHostImpl& operator=(
-      const FileSystemAccessCapacityAllocationHostImpl&) = delete;
+  FileSystemAccessFileModificationHostImpl(
+      const FileSystemAccessFileModificationHostImpl&) = delete;
+  FileSystemAccessFileModificationHostImpl& operator=(
+      const FileSystemAccessFileModificationHostImpl&) = delete;
 
-  ~FileSystemAccessCapacityAllocationHostImpl() override;
+  ~FileSystemAccessFileModificationHostImpl() override;
 
-  // blink::mojom::FileSystemAccessCapacityAllocationHost:
+  // blink::mojom::FileSystemAccessFileModificationHost:
   void RequestCapacityChange(int64_t capacity_delta,
                              RequestCapacityChangeCallback callback) override;
   void OnContentsModified() override;
@@ -94,7 +94,7 @@ class CONTENT_EXPORT FileSystemAccessCapacityAllocationHostImpl
   // URL of the file whose capacity is managed through this host.
   const storage::FileSystemURL url_;
 
-  mojo::Receiver<blink::mojom::FileSystemAccessCapacityAllocationHost> receiver_
+  mojo::Receiver<blink::mojom::FileSystemAccessFileModificationHost> receiver_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Total capacity granted to the file managed through this host. Initially,
@@ -102,10 +102,10 @@ class CONTENT_EXPORT FileSystemAccessCapacityAllocationHostImpl
   // reaching `RequestCapacityChange()`.
   int64_t granted_capacity_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtrFactory<FileSystemAccessCapacityAllocationHostImpl> weak_factory_
+  base::WeakPtrFactory<FileSystemAccessFileModificationHostImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_CAPACITY_ALLOCATION_HOST_IMPL_H_
+#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FILE_MODIFICATION_HOST_IMPL_H_

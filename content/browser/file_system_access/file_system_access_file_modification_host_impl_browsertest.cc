@@ -26,8 +26,8 @@
 namespace content {
 
 // This browser test implements end-to-end tests for
-// FileSystemAccessCapacityAllocationHostImpl.
-class FileSystemAccessCapacityAllocationHostImplBrowserTest
+// FileSystemAccessFileModificationHostImpl.
+class FileSystemAccessFileModificationHostImplBrowserTest
     : public ContentBrowserTest {
  public:
   void SetUpOnMainThread() override {
@@ -73,7 +73,7 @@ class FileSystemAccessCapacityAllocationHostImplBrowserTest
   base::ScopedTempDir temp_dir_;
 };
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileModificationHostImplBrowserTest,
                        QuotaUsageAfterClosing) {
   const GURL& test_url =
       embedded_test_server()->GetURL("/run_async_code_on_worker.html");
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
   EXPECT_EQ(usage_after_operation, usage_before_operation + 10);
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileModificationHostImplBrowserTest,
                        QuotaUsageAfterForNonemptyFile) {
   const GURL& test_url =
       embedded_test_server()->GetURL("/run_async_code_on_worker.html");
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
 #else
 #define MAYBE_QuotaUsageOverallocation QuotaUsageOverallocation
 #endif
-IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileModificationHostImplBrowserTest,
                        MAYBE_QuotaUsageOverallocation) {
   // TODO(https://crbug.com/1240056): Implement a more sophisticated test suite
   // for this feature.
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
 
 // TODO(crbug.com/1304977): Failing on Mac, Linux, and ChromeOS builders.
 // TODO(crbug.com/1459385): Re-enable this test
-IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileModificationHostImplBrowserTest,
                        DISABLED_QuotaUsageShrinks) {
   const GURL& test_url =
       embedded_test_server()->GetURL("/run_async_code_on_worker.html");
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
             1024 * 1024);
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileModificationHostImplBrowserTest,
                        QuotaUsageWrite) {
   const GURL& test_url =
       embedded_test_server()->GetURL("/run_async_code_on_worker.html");

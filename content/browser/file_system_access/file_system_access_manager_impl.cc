@@ -58,9 +58,9 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_modification_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -1217,8 +1217,8 @@ FileSystemAccessManagerImpl::CreateAccessHandleHost(
     const storage::FileSystemURL& url,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessFileDelegateHost>
         file_delegate_receiver,
-    mojo::PendingReceiver<blink::mojom::FileSystemAccessCapacityAllocationHost>
-        capacity_allocation_host_receiver,
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessFileModificationHost>
+        file_modification_host_receiver,
     int64_t file_size,
     scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
     base::ScopedClosureRunner on_close_callback) {
@@ -1230,7 +1230,7 @@ FileSystemAccessManagerImpl::CreateAccessHandleHost(
       std::make_unique<FileSystemAccessAccessHandleHostImpl>(
           this, url, std::move(lock), PassKey(), std::move(receiver),
           std::move(file_delegate_receiver),
-          std::move(capacity_allocation_host_receiver), file_size,
+          std::move(file_modification_host_receiver), file_size,
           std::move(on_close_callback));
   access_handle_host_receivers_.insert(std::move(access_handle_host));
 

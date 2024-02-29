@@ -17,8 +17,8 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_modification_host.mojom.h"
 
 namespace content {
 

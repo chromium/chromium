@@ -37,10 +37,10 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_modification_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -400,12 +400,12 @@ void FileSystemAccessFileHandleImpl::DidOpenFileAndGetLength(
   }
   DCHECK_GE(length_or_error.value(), 0);
 
-  mojo::PendingRemote<blink::mojom::FileSystemAccessCapacityAllocationHost>
-      capacity_allocation_host_remote;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessFileModificationHost>
+      file_modification_host_remote;
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
       access_handle_host_remote = manager()->CreateAccessHandleHost(
           url(), mojo::NullReceiver(),
-          capacity_allocation_host_remote.InitWithNewPipeAndPassReceiver(),
+          file_modification_host_remote.InitWithNewPipeAndPassReceiver(),
           length_or_error.value(), std::move(lock),
           std::move(on_close_callback));
 
@@ -414,7 +414,7 @@ void FileSystemAccessFileHandleImpl::DidOpenFileAndGetLength(
       blink::mojom::FileSystemAccessAccessHandleFile::NewRegularFile(
           blink::mojom::FileSystemAccessRegularFile::New(
               std::move(file), length_or_error.value(),
-              std::move(capacity_allocation_host_remote))),
+              std::move(file_modification_host_remote))),
       std::move(access_handle_host_remote));
 }
 

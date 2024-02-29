@@ -4,15 +4,12 @@
 
 module blink.mojom;
 
-// Manages storge capacity allocations for a non-incognito file handle held by
+// Manages storage file modifications for a non-incognito file handle held by
 // an AccessHandle of FileSystemAccess.
 //
-// Capacity allocations are used for non-incognito files only. In incognito
-// mode, quota is fully managed in the browser process.
-//
-// TODO(https://crbug.com/1490686): Consider renaming this to be more generic,
-// since it now does more than just handle quota.
-interface FileSystemAccessCapacityAllocationHost {
+// This interface is used for non-incognito files only. In incognito mode, quota
+// is fully managed in the browser process.
+interface FileSystemAccessFileModificationHost {
   // Requests or releases storage capacity.
   //
   // This interface's consumer must only expand the file handle associated with
@@ -29,7 +26,7 @@ interface FileSystemAccessCapacityAllocationHost {
   // to succeed. In other words, if `capacity_delta` < 0,
   // `granted_capacity_delta` is guaranteed to == `capacity_delta`.
   //
-  // The synchronous interface is needed as File System Access Access Handles
+  // The synchronous method is needed as File System Access Access Handles
   // implement synchronous write operations.
   [Sync]
   RequestCapacityChange(int64 capacity_delta) =>

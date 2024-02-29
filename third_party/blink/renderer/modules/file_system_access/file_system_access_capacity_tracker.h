@@ -8,7 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_modification_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -28,8 +28,8 @@ class FileSystemAccessCapacityTracker final
  public:
   explicit FileSystemAccessCapacityTracker(
       ExecutionContext* context,
-      mojo::PendingRemote<mojom::blink::FileSystemAccessCapacityAllocationHost>
-          capacity_allocation_host_remote,
+      mojo::PendingRemote<mojom::blink::FileSystemAccessFileModificationHost>
+          file_modification_host_remote,
       int64_t file_size,
       base::PassKey<FileSystemAccessRegularFileDelegate>);
 
@@ -64,7 +64,7 @@ class FileSystemAccessCapacityTracker final
 
   // GarbageCollected
   void Trace(Visitor* visitor) const {
-    visitor->Trace(capacity_allocation_host_);
+    visitor->Trace(file_modification_host_);
   }
 
  private:
@@ -81,8 +81,8 @@ class FileSystemAccessCapacityTracker final
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to route capacity allocation requests to the browser.
-  HeapMojoRemote<mojom::blink::FileSystemAccessCapacityAllocationHost>
-      capacity_allocation_host_;
+  HeapMojoRemote<mojom::blink::FileSystemAccessFileModificationHost>
+      file_modification_host_;
 
   // Size of the file represented by the FileSystemAccessRegularFileDelegate
   // owning this.

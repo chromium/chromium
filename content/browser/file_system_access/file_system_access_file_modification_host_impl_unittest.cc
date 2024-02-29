@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/file_system_access_capacity_allocation_host_impl.h"
+#include "content/browser/file_system_access/file_system_access_file_modification_host_impl.h"
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -29,10 +29,10 @@ namespace content {
 
 namespace {
 
-// Synchronous proxy to FileSystemAccessCapacityAllocationHostImpl's
+// Synchronous proxy to FileSystemAccessFileModificationHostImpl's
 // RequestCapacityChange.
 int64_t RequestCapacityChangeSync(
-    FileSystemAccessCapacityAllocationHostImpl* allocation_host,
+    FileSystemAccessFileModificationHostImpl* allocation_host,
     int64_t capacity_delta) {
   base::test::TestFuture<int64_t> future;
   allocation_host->RequestCapacityChange(capacity_delta, future.GetCallback());
@@ -42,9 +42,9 @@ int64_t RequestCapacityChangeSync(
 
 }  // namespace
 
-class FileSystemAccessCapacityAllocationHostImplTest : public testing::Test {
+class FileSystemAccessFileModificationHostImplTest : public testing::Test {
  public:
-  FileSystemAccessCapacityAllocationHostImplTest()
+  FileSystemAccessFileModificationHostImplTest()
       : special_storage_policy_(
             base::MakeRefCounted<storage::MockSpecialStoragePolicy>()),
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
@@ -74,12 +74,12 @@ class FileSystemAccessCapacityAllocationHostImplTest : public testing::Test {
         base::FilePath::FromUTF8Unsafe("test"));
     test_file_url.SetBucket(
         storage::BucketLocator::ForDefaultBucket(kTestStorageKey));
-    mojo::Remote<blink::mojom::FileSystemAccessCapacityAllocationHost>
+    mojo::Remote<blink::mojom::FileSystemAccessFileModificationHost>
         allocation_host_remote;
     allocation_host_ =
-        std::make_unique<FileSystemAccessCapacityAllocationHostImpl>(
+        std::make_unique<FileSystemAccessFileModificationHostImpl>(
             manager_.get(), test_file_url,
-            base::PassKey<FileSystemAccessCapacityAllocationHostImplTest>(),
+            base::PassKey<FileSystemAccessFileModificationHostImplTest>(),
             allocation_host_remote.BindNewPipeAndPassReceiver(), 0);
   }
 
@@ -111,12 +111,12 @@ class FileSystemAccessCapacityAllocationHostImplTest : public testing::Test {
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
 
-  std::unique_ptr<FileSystemAccessCapacityAllocationHostImpl> allocation_host_;
+  std::unique_ptr<FileSystemAccessFileModificationHostImpl> allocation_host_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
 };
 
-TEST_F(FileSystemAccessCapacityAllocationHostImplTest,
+TEST_F(FileSystemAccessFileModificationHostImplTest,
        RequestCapacityChange_PositiveCapacity) {
   const int64_t requested_capacity = 50;
   int64_t granted_capacity =
@@ -126,7 +126,7 @@ TEST_F(FileSystemAccessCapacityAllocationHostImplTest,
             requested_capacity);
 }
 
-TEST_F(FileSystemAccessCapacityAllocationHostImplTest,
+TEST_F(FileSystemAccessFileModificationHostImplTest,
        RequestCapacityChange_PositiveAndNegativeCapacity) {
   const int64_t positive_requested_capacity = 50;
   const int64_t negative_requested_capacity = -40;
@@ -146,7 +146,7 @@ TEST_F(FileSystemAccessCapacityAllocationHostImplTest,
   EXPECT_EQ(quota_manager_proxy_->notify_bucket_modified_count(), 2);
 }
 
-TEST_F(FileSystemAccessCapacityAllocationHostImplTest,
+TEST_F(FileSystemAccessFileModificationHostImplTest,
        RequestCapacityChange_IllegalNegativeCapacity) {
   mojo::test::BadMessageObserver bad_message_observer;
   mojo::FakeMessageDispatchContext fake_dispatch_context;

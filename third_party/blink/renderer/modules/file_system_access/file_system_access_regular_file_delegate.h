@@ -10,7 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_modification_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_capacity_tracker.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
@@ -29,8 +29,8 @@ class FileSystemAccessRegularFileDelegate final
       ExecutionContext* context,
       base::File backing_file,
       int64_t backing_file_size,
-      mojo::PendingRemote<mojom::blink::FileSystemAccessCapacityAllocationHost>
-          capacity_allocation_host_remote,
+      mojo::PendingRemote<mojom::blink::FileSystemAccessFileModificationHost>
+          file_modification_host_remote,
       base::PassKey<FileSystemAccessFileDelegate>);
 
   FileSystemAccessRegularFileDelegate(
