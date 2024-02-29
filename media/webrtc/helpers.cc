@@ -159,12 +159,6 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
 #else
   apm_config.echo_canceller.mobile_mode = false;
 #endif
-#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-      BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) ||               \
-      BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
-  apm_config.transient_suppression.enabled =
-      settings.transient_noise_suppression;
-#endif
   ConfigAutomaticGainControl(settings, apm_config);
   return ap_builder.SetConfig(apm_config).Create();
 }

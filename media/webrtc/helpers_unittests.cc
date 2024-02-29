@@ -57,17 +57,11 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
   EXPECT_EQ(config.noise_suppression.level,
             webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-  EXPECT_FALSE(config.transient_suppression.enabled);
-#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // Android and iOS use echo cancellation optimized for mobiles, and does not
-  // support keytap suppression.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Android and iOS use echo cancellation optimized for mobiles.
   EXPECT_TRUE(config.echo_canceller.mobile_mode);
-  EXPECT_FALSE(config.transient_suppression.enabled);
 #else
   EXPECT_FALSE(config.echo_canceller.mobile_mode);
-  EXPECT_TRUE(config.transient_suppression.enabled);
 #endif
 }
 
@@ -186,24 +180,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, ToggleHighPassFilter) {
         /*settings=*/{.high_pass_filter = high_pass_filter_enabled});
 
     EXPECT_EQ(config.high_pass_filter.enabled, high_pass_filter_enabled);
-  }
-}
-
-TEST(CreateWebRtcAudioProcessingModuleTest, ToggleTransientSuppression) {
-  for (bool transient_suppression_enabled : {true, false}) {
-    SCOPED_TRACE(transient_suppression_enabled);
-    auto config = CreateApmGetConfig(/*settings=*/{
-        .transient_noise_suppression = transient_suppression_enabled});
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) ||               \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    // Transient suppression is not supported (nor useful) on mobile platforms.
-    EXPECT_FALSE(config.transient_suppression.enabled);
-#else
-    EXPECT_EQ(config.transient_suppression.enabled,
-              transient_suppression_enabled);
-#endif
   }
 }
 

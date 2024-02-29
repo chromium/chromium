@@ -20,6 +20,7 @@ struct MEDIA_EXPORT AudioProcessingSettings {
   bool echo_cancellation = true;
   bool noise_suppression = true;
   // Keytap removal, sometimes called "experimental noise suppression".
+  // TODO(https://webrtc.com/7494): Deprecate this setting.
   bool transient_noise_suppression = true;
   bool automatic_gain_control = true;
   bool high_pass_filter = true;

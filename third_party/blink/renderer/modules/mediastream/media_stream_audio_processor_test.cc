@@ -168,19 +168,13 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     EXPECT_TRUE(config.noise_suppression.enabled);
     EXPECT_EQ(config.noise_suppression.level,
               webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
+    EXPECT_FALSE(config.transient_suppression.enabled);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-    EXPECT_FALSE(config.echo_canceller.mobile_mode);
-    EXPECT_FALSE(config.transient_suppression.enabled);
-#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    // Android uses echo cancellation optimized for mobiles, and does not
-    // support keytap suppression.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    // Android uses echo cancellation optimized for mobiles.
     EXPECT_TRUE(config.echo_canceller.mobile_mode);
-    EXPECT_FALSE(config.transient_suppression.enabled);
 #else
     EXPECT_FALSE(config.echo_canceller.mobile_mode);
-    EXPECT_TRUE(config.transient_suppression.enabled);
 #endif
   }
 
