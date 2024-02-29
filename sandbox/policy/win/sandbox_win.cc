@@ -854,7 +854,11 @@ ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetConfig* config) {
   if (result != SBOX_ALL_OK)
     return result;
 
-  return config->SetFakeGdiInit();
+  if (base::FeatureList::IsEnabled(features::kWinSboxNoFakeGdiInit)) {
+    return SBOX_ALL_OK;
+  } else {
+    return config->SetFakeGdiInit();
+  }
 }
 
 // static

@@ -99,6 +99,15 @@ BASE_FEATURE(kWinSboxZeroAppShim,
 BASE_FEATURE(kNetworkServiceCodeIntegrity,
              "NetworkServiceCodeIntegrity",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Run win32k lockdown without applying the interceptions to fake out the
+// dllmain of gdi32 and user32. With this feature enabled, processes with
+// win32k lockdown policy will fail to load gdi32.dll and user32.dll.
+// TODO(crbug.com/326277735) this feature is under development and not
+// completely supported in every process type, may cause delayload failures.
+BASE_FEATURE(kWinSboxNoFakeGdiInit,
+             "WinSboxNoFakeGdiInit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
