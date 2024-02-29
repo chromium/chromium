@@ -161,7 +161,7 @@ extern const base::FeatureParam<int> kMaxSingleUsernameFieldsToStore{
 
 BASE_FEATURE(kUsernameFirstFlowWithIntermediateValues,
              "UsernameFirstFlowWithIntermediateValues",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 extern const base::FeatureParam<int> kSingleUsernameTimeToLive{
     &kUsernameFirstFlowWithIntermediateValues, /*name=*/"ttl",
     /*default_value=*/5};
