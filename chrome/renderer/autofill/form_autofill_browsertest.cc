@@ -1372,9 +1372,6 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
     ApplyFormAction(input_element.GetDocument(), form.fields,
                     mojom::ActionPersistence::kPreview);
-    // The selection should be set after the fifth character.
-    EXPECT_EQ(5u, input_element.SelectionStart());
-    EXPECT_EQ(5u, input_element.SelectionEnd());
 
     // Fill the form.
     ApplyFormAction(input_element.GetDocument(), form.fields,
@@ -1481,10 +1478,6 @@ class FormAutofillTest : public ChromeRenderViewTest {
     expected.is_user_edited = false;
     expected.max_length = 0;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[5]);
-
-    // Verify that the cursor position has been updated.
-    EXPECT_EQ(5u, input_element.SelectionStart());
-    EXPECT_EQ(5u, input_element.SelectionEnd());
   }
 
   // Similar to TestFillFormAndModifyValues().
@@ -1538,9 +1531,6 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
     ApplyFormAction(input_element.GetDocument(), form.fields,
                     mojom::ActionPersistence::kPreview);
-    // The selection should be set after the fifth character.
-    EXPECT_EQ(5u, input_element.SelectionStart());
-    EXPECT_EQ(5u, input_element.SelectionEnd());
 
     // Fill the form.
     ApplyFormAction(input_element.GetDocument(), form.fields,
@@ -1599,10 +1589,6 @@ class FormAutofillTest : public ChromeRenderViewTest {
     }
     expected.is_autofilled = false;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
-
-    // Verify that the cursor position has been updated.
-    EXPECT_EQ(5u, input_element.SelectionStart());
-    EXPECT_EQ(5u, input_element.SelectionEnd());
   }
 
   // Similar to TestFillFormAndModifyValues().

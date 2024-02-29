@@ -385,15 +385,6 @@ bool IsWebpageEmpty(const blink::WebLocalFrame* frame);
 // are of the type <script>, <meta>, or <title>.
 bool IsWebElementEmpty(const blink::WebElement& element);
 
-// Previews |suggestion| in |input_element| and highlights the suffix of
-// |suggestion| not included in the |input_element| text. |input_element| must
-// not be null. |user_input| should be the text typed by the user into
-// |input_element|. Note that |user_input| cannot be easily derived from
-// |input_element| by calling value(), because of http://crbug.com/507714.
-void PreviewSuggestion(const std::u16string& suggestion,
-                       const std::u16string& user_input,
-                       blink::WebFormControlElement& input_element);
-
 // Returns the aggregated values of the descendants of |element| that are
 // non-empty text nodes.  This is a faster alternative to |innerText()| for
 // performance critical operations.  It does a full depth-first search so can be

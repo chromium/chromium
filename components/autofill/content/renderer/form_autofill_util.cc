@@ -1091,7 +1091,6 @@ void FillFormField(const FormFieldData::FillData& data,
 // Sets the |field|'s "suggested" (non JS visible) value to the value in |data|.
 // Also sets the "autofilled" attribute, causing the background to be blue.
 void PreviewFormField(const FormFieldData::FillData& data,
-                      bool is_initiating_node,
                       WebFormControlElement& field,
                       FieldDataManager& field_data_manager) {
   CHECK(!IsCheckableElement(field));
@@ -1111,13 +1110,6 @@ void PreviewFormField(const FormFieldData::FillData& data,
   } else if (IsTextAreaElement(field) || IsSelectOrSelectListElement(field)) {
     field.SetSuggestedValue(WebString::FromUTF16(data.value));
     field.SetAutofillState(new_autofill_state);
-  }
-
-  if (is_initiating_node &&
-      (IsTextInput(input_element) || IsTextAreaElement(field))) {
-    // Select the part of the text that the user didn't type.
-    PreviewSuggestion(field.SuggestedValue().Utf16(), field.Value().Utf16(),
-                      field);
   }
 }
 
@@ -2239,11 +2231,6 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
     SetPreventHighlightingOfAutofilledFields(document, true);
   }
 
-  auto fill_or_preview =
-      action_persistence == mojom::ActionPersistence::kPreview
-          ? &PreviewFormField
-          : &FillFormField;
-
   // This container stores the FormFieldData::FillData* of `form.fields` that
   // will be filled into their corresponding blink elements.
   std::vector<std::pair<FieldRef, WebAutofillState>> filled_fields;
@@ -2308,8 +2295,13 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
             features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
       filled_fields.emplace_back(focused_field.element,
                                  focused_field.element.GetAutofillState());
-      fill_or_preview(*focused_field.data, /*is_initiating_element=*/true,
+      if (action_persistence == mojom::ActionPersistence::kFill) {
+        FillFormField(*focused_field.data, /*is_initiating_node=*/true,
                       focused_field.element, field_data_manager);
+      } else {
+        PreviewFormField(*focused_field.data, focused_field.element,
+                         field_data_manager);
+      }
     }
   }
 
@@ -2330,7 +2322,12 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
   // events.
   for (Field& field : unfocused_fields) {
     filled_fields.emplace_back(field.element, field.element.GetAutofillState());
-    fill_or_preview(*field.data, false, field.element, field_data_manager);
+    if (action_persistence == mojom::ActionPersistence::kFill) {
+      FillFormField(*field.data, /*is_initiating_node=*/false, field.element,
+                    field_data_manager);
+    } else {
+      PreviewFormField(*field.data, field.element, field_data_manager);
+    }
   }
 
   // Step 4: A focus event is emitted for the initiating element after
@@ -2421,14 +2418,6 @@ bool IsWebElementEmpty(const WebElement& root) {
     }
   }
   return true;
-}
-
-void PreviewSuggestion(const std::u16string& suggestion,
-                       const std::u16string& user_input,
-                       WebFormControlElement& input_element) {
-  input_element.SetSelectionRange(
-      base::checked_cast<unsigned>(user_input.length()),
-      base::checked_cast<unsigned>(suggestion.length()));
 }
 
 std::u16string FindChildText(const WebNode& node) {

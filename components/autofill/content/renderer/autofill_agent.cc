@@ -775,9 +775,6 @@ void AutofillAgent::ApplyFieldAction(
             previewed_elements_.emplace_back(last_queried_element_,
                                              form_control.GetAutofillState());
             form_control.SetSuggestedValue(WebString::FromUTF16(value));
-            form_util::PreviewSuggestion(form_control.SuggestedValue().Utf16(),
-                                         form_control.Value().Utf16(),
-                                         form_control);
             break;
           case mojom::FieldActionType::kSelectAll:
             NOTIMPLEMENTED() << "Previewing select all is not implemented";
