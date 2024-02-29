@@ -191,7 +191,6 @@ public class StripLayoutTab extends StripLayoutView {
     private final LayoutUpdateHost mUpdateHost;
     private TintedCompositorButton mCloseButton;
 
-    private boolean mVisible = true;
     private boolean mIsDying;
     private boolean mIsReordering;
     private boolean mIsDraggedOffStrip;
@@ -518,24 +517,15 @@ public class StripLayoutTab extends StripLayoutView {
         return mEndDividerVisible;
     }
 
-    /**
-     * @param visible Whether or not this {@link StripLayoutTab} should be drawn.
-     */
+    @Override
     public void setVisible(boolean visible) {
-        mVisible = visible;
+        super.setVisible(visible);
         if (!visible) {
             mUpdateHost.releaseResourcesForTab(mId);
         }
         for (Observer observer : mObservers) {
-            observer.onVisibilityChanged(mVisible);
+            observer.onVisibilityChanged(isVisible());
         }
-    }
-
-    /**
-     * @return Whether or not this {@link StripLayoutTab} should be drawn.
-     */
-    public boolean isVisible() {
-        return mVisible;
     }
 
     /**

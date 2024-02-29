@@ -14,6 +14,8 @@ import java.util.List;
  * the GL canvas.
  */
 public abstract class StripLayoutView implements VirtualView {
+    boolean mVisible = true;
+
     /**
      * @return The horizontal position of the view.
      */
@@ -53,6 +55,20 @@ public abstract class StripLayoutView implements VirtualView {
      * @param height The height of the view.
      */
     public abstract void setHeight(float height);
+
+    /**
+     * @return Whether or not this {@link StripLayoutView} should be drawn.
+     */
+    public boolean isVisible() {
+        return mVisible;
+    }
+
+    /**
+     * @param visible Whether or not this {@link StripLayoutView} should be drawn.
+     */
+    public void setVisible(boolean visible) {
+        mVisible = visible;
+    }
 
     /**
      * Get a list of virtual views for accessibility events.

@@ -186,6 +186,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private StripLayoutTab[] mStripTabs = new StripLayoutTab[0];
     private StripLayoutTab[] mStripTabsVisuallyOrdered = new StripLayoutTab[0];
     private StripLayoutTab[] mStripTabsToRender = new StripLayoutTab[0];
+    private StripLayoutGroupTitle[] mStripGroupTitles = new StripLayoutGroupTitle[0];
+    private StripLayoutGroupTitle[] mStripGroupTitlesToRender = new StripLayoutGroupTitle[0];
     private StripLayoutTab mTabAtPositionForTesting;
     private final StripTabEventHandler mStripTabEventHandler = new StripTabEventHandler();
     private final TabLoadTrackerCallback mTabLoadTrackerHost = new TabLoadTrackerCallbackImpl();
@@ -490,6 +492,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     /**
+     * @return The visually ordered list of visible {@link StripLayoutGroupTitle}s.
+     */
+    public StripLayoutGroupTitle[] getStripLayoutGroupTitlesToRender() {
+        return mStripGroupTitlesToRender;
+    }
+
+    /**
      * @return A {@link TintedCompositorButton} that represents the positioning of the new tab
      *         button.
      */
@@ -751,6 +760,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      */
     public void setTabGroupModelFilter(TabGroupModelFilter tabGroupModelFilter) {
         mTabGroupModelFilter = tabGroupModelFilter;
+        rebuildStripViews();
     }
 
     /**
@@ -989,7 +999,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         for (int i = 0; i < mStripTabs.length; i++) {
             mStripTabs[i] = createPlaceholderStripTab();
         }
-        rebuildNonTabViews();
+        rebuildStripViews();
 
         // 2. Initialize the draw parameters.
         computeAndUpdateTabWidth(false, false);
@@ -2079,7 +2089,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         int oldTabsLength = mStripTabs.length;
         mStripTabs = tabs;
-        rebuildNonTabViews();
+        rebuildStripViews();
 
         List<Animator> animationList = null;
         // If multi-step animation is running, the resize will be handled elsewhere.
@@ -2092,8 +2102,81 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return animationList;
     }
 
-    private void rebuildNonTabViews() {
-        // TODO(crbug.com/1524186): Rebuild the title indicators if necessary here.
+    private StripLayoutGroupTitle findOrCreateGroupTitle(int rootId) {
+        for (int i = 0; i < mStripGroupTitles.length; i++) {
+            final StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
+            if (groupTitle.getRootId() == rootId) return groupTitle;
+        }
+        return createGroupTitle(rootId);
+    }
+
+    private StripLayoutGroupTitle createGroupTitle(int rootId) {
+        StripLayoutGroupTitle groupTitle = new StripLayoutGroupTitle(mContext, rootId);
+        pushPropertiesToGroupTitle(groupTitle);
+        return groupTitle;
+    }
+
+    private void pushPropertiesToGroupTitle(StripLayoutGroupTitle groupTitle) {
+        groupTitle.setDrawY(0);
+        groupTitle.setHeight(mHeight);
+    }
+
+    @VisibleForTesting
+    void rebuildStripViews() {
+        if (mTabGroupModelFilter != null
+                && mTabStateInitialized
+                && ChromeFeatureList.sTabStripGroupIndicators.isEnabled()) {
+            copyTabsWithGroupTitles();
+        } else {
+            copyTabs();
+        }
+    }
+
+    private void copyTabsWithGroupTitles() {
+        if (mStripTabs.length == 0) return;
+
+        int numGroups = mTabGroupModelFilter.getTabGroupCount();
+        int groupTitleIndex = 0;
+        StripLayoutGroupTitle[] groupTitles = new StripLayoutGroupTitle[numGroups];
+
+        int numViews = mStripTabs.length + numGroups;
+        if (numViews != mStripViews.length) {
+            mStripViews = new StripLayoutView[numViews];
+        }
+
+        int viewIndex = 0;
+        // First view will be tab group title if first tab is grouped.
+        Tab firstTab = mModel.getTabAt(0);
+        if (mTabGroupModelFilter.isTabInTabGroup(firstTab)) {
+            int rootId = firstTab.getRootId();
+            StripLayoutGroupTitle groupTitle = findOrCreateGroupTitle(rootId);
+            groupTitles[groupTitleIndex++] = groupTitle;
+            mStripViews[viewIndex++] = groupTitle;
+        }
+        // Copy the StripLayoutTabs and create group titles where needed.
+        for (int i = 0; i < mStripTabs.length - 1; i++) {
+            final StripLayoutTab stripTab = mStripTabs[i];
+            mStripViews[viewIndex++] = stripTab;
+
+            Tab currTab = getTabById(stripTab.getId());
+            Tab nextTab = getTabById(mStripTabs[i + 1].getId());
+            int nextRootId = nextTab.getRootId();
+            boolean nextTabInGroup = mTabGroupModelFilter.isTabInTabGroup(nextTab);
+            boolean areRelatedTabs = currTab.getRootId() == nextRootId;
+            if (nextTabInGroup && !areRelatedTabs) {
+                StripLayoutGroupTitle groupTitle = findOrCreateGroupTitle(nextRootId);
+                groupTitles[groupTitleIndex++] = groupTitle;
+                mStripViews[viewIndex++] = groupTitle;
+            }
+        }
+        // Final view will be the last tab.
+        assert viewIndex == mStripViews.length - 1 : "Did not find all tab groups.";
+        mStripViews[viewIndex] = mStripTabs[mStripTabs.length - 1];
+
+        mStripGroupTitles = groupTitles;
+    }
+
+    private void copyTabs() {
         int numViews = mStripTabs.length;
         if (numViews != mStripViews.length) {
             mStripViews = new StripLayoutView[numViews];
@@ -2346,25 +2429,38 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
     }
 
+    private int getVisibleViewCount(StripLayoutView[] views) {
+        int renderCount = 0;
+        for (int i = 0; i < views.length; ++i) {
+            if (views[i].isVisible()) renderCount++;
+        }
+        return renderCount;
+    }
+
+    private void populateVisibleViews(StripLayoutView[] allViews, StripLayoutView[] viewsToRender) {
+        int renderIndex = 0;
+        for (int i = 0; i < allViews.length; ++i) {
+            final StripLayoutView view = allViews[i];
+            if (view.isVisible()) viewsToRender[renderIndex++] = view;
+        }
+    }
+
     private void createRenderList() {
         // 1. Figure out how many tabs will need to be rendered.
-        int renderCount = 0;
-        for (int i = 0; i < mStripTabsVisuallyOrdered.length; ++i) {
-            if (mStripTabsVisuallyOrdered[i].isVisible()) renderCount++;
-        }
+        int tabRenderCount = getVisibleViewCount(mStripTabsVisuallyOrdered);
+        int groupTitleRenderCount = getVisibleViewCount(mStripGroupTitles);
 
         // 2. Reallocate the render list if necessary.
-        if (mStripTabsToRender.length != renderCount) {
-            mStripTabsToRender = new StripLayoutTab[renderCount];
+        if (mStripTabsToRender.length != tabRenderCount) {
+            mStripTabsToRender = new StripLayoutTab[tabRenderCount];
+        }
+        if (mStripGroupTitlesToRender.length != groupTitleRenderCount) {
+            mStripGroupTitlesToRender = new StripLayoutGroupTitle[groupTitleRenderCount];
         }
 
         // 3. Populate it with the visible tabs.
-        int renderIndex = 0;
-        for (int i = 0; i < mStripTabsVisuallyOrdered.length; ++i) {
-            if (mStripTabsVisuallyOrdered[i].isVisible()) {
-                mStripTabsToRender[renderIndex++] = mStripTabsVisuallyOrdered[i];
-            }
-        }
+        populateVisibleViews(mStripTabsVisuallyOrdered, mStripTabsToRender);
+        populateVisibleViews(mStripGroupTitles, mStripGroupTitlesToRender);
     }
 
     private CompositorAnimator updateNewTabButtonState(boolean animate) {
@@ -3336,7 +3432,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 4. Swap the tabs.
         moveElement(mStripTabs, index, newIndex);
-        rebuildNonTabViews();
+        rebuildStripViews();
     }
 
     private void handleReorderAutoScrolling(long time) {
@@ -3670,6 +3766,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     /** Set the value of mStripTabs for testing */
     void setStripLayoutTabsForTesting(StripLayoutTab[] stripTabs) {
         this.mStripTabs = stripTabs;
+    }
+
+    /**
+     * @return An array containing the StripLayoutViews.
+     */
+    StripLayoutView[] getStripLayoutViewsForTesting() {
+        return mStripViews;
     }
 
     /**

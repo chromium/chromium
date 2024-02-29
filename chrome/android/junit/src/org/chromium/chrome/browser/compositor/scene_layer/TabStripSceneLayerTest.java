@@ -133,6 +133,7 @@ public class TabStripSceneLayerTest {
                 mLayerTitleCache,
                 mResourceManager,
                 mStripLayoutTabs,
+                null,
                 1.f,
                 0,
                 -1,

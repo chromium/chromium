@@ -126,6 +126,8 @@ public class StripLayoutHelperTest {
     private static final String[] TEST_TAB_TITLES = {"Tab 1", "Tab 2", "Tab 3", "", null};
     private static final String EXPECTED_MARGIN = "The tab should have a trailing margin.";
     private static final String EXPECTED_NO_MARGIN = "The tab should not have a trailing margin.";
+    private static final String EXPECTED_TAB = "The view should be a tab.";
+    private static final String EXPECTED_TITLE = "The view should be a title.";
     private static final String CLOSE_TAB = "Close %1$s tab";
     private static final String IDENTIFIER = "Tab";
     private static final String IDENTIFIER_SELECTED = "Selected Tab";
@@ -3021,6 +3023,55 @@ public class StripLayoutHelperTest {
         assertTrue(
                 "Shouldn't stop reorder when dragged tab Incognito state is different.",
                 mStripLayoutHelper.getInReorderModeForTesting());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testRebuildNonTabViews_IndicatorsDisabled() {
+        // Initialize with 10 tabs. Group tabs 2 through 3. Group tabs 5 through 8.
+        initializeTest(false, false, true, 0, 10);
+        groupTabs(1, 3);
+        groupTabs(4, 8);
+        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(2);
+
+        // Rebuild views.
+        mStripLayoutHelper.rebuildStripViews();
+
+        // Verify.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertEquals("Should be 10 views (10 tabs).", 10, views.length);
+        for (StripLayoutView view : views) {
+            assertTrue(EXPECTED_TAB, view instanceof StripLayoutTab);
+        }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testRebuildNonTabViews_IndicatorsEnabled() {
+        // Initialize with 10 tabs. Group tabs 2 through 3. Group tabs 5 through 8.
+        initializeTest(false, false, true, 0, 10);
+        groupTabs(1, 3);
+        groupTabs(4, 8);
+        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(2);
+
+        // Rebuild views.
+        mStripLayoutHelper.rebuildStripViews();
+
+        // Verify.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertEquals("Should be 12 views (10 tabs and 2 titles).", 12, views.length);
+        assertTrue(EXPECTED_TAB, views[0] instanceof StripLayoutTab);
+        assertTrue(EXPECTED_TITLE, views[1] instanceof StripLayoutGroupTitle);
+        assertTrue(EXPECTED_TAB, views[2] instanceof StripLayoutTab);
+        assertTrue(EXPECTED_TAB, views[3] instanceof StripLayoutTab);
+        assertTrue(EXPECTED_TAB, views[4] instanceof StripLayoutTab);
+        assertTrue(EXPECTED_TITLE, views[5] instanceof StripLayoutGroupTitle);
+        assertTrue(EXPECTED_TAB, views[6] instanceof StripLayoutTab);
+        assertTrue(EXPECTED_TAB, views[7] instanceof StripLayoutTab);
+        assertTrue(EXPECTED_TAB, views[8] instanceof StripLayoutTab);
+        assertTrue(EXPECTED_TAB, views[9] instanceof StripLayoutTab);
+        assertTrue(EXPECTED_TAB, views[10] instanceof StripLayoutTab);
+        assertTrue(EXPECTED_TAB, views[11] instanceof StripLayoutTab);
     }
 
     @Test

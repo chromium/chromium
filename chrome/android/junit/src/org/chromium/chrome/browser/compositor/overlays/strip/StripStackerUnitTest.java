@@ -116,6 +116,6 @@ public class StripStackerUnitTest {
 
         @Override
         public void performOcclusionPass(
-                StripLayoutTab[] indexOrderedTabs, float xOffset, float visibleWidth) {}
+                StripLayoutView[] indexOrderedViews, float xOffset, float visibleWidth) {}
     }
 }

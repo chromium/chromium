@@ -509,6 +509,7 @@ public class StripLayoutHelperManagerTest {
                         mLayerTitleCacheSupplier.get(),
                         mRenderHost.getResourceManager(),
                         activeLayoutHelper.getStripLayoutTabsToRender(),
+                        activeLayoutHelper.getStripLayoutGroupTitlesToRender(),
                         0f,
                         selectedTabId,
                         hoveredTabId,
@@ -573,6 +574,7 @@ public class StripLayoutHelperManagerTest {
                         any(),
                         any(),
                         any(),
+                        any(),
                         /* yOffset= */ eq(yOffset),
                         anyInt(),
                         anyInt(),
@@ -594,6 +596,7 @@ public class StripLayoutHelperManagerTest {
                         any(),
                         any(),
                         any(),
+                        any(),
                         /* yOffset= */ eq(0f),
                         anyInt(),
                         anyInt(),
@@ -607,6 +610,7 @@ public class StripLayoutHelperManagerTest {
                 new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
         verify(mTabStripTreeProvider)
                 .pushAndUpdateStrip(
+                        any(),
                         any(),
                         any(),
                         any(),
@@ -743,6 +747,7 @@ public class StripLayoutHelperManagerTest {
                         any(),
                         any(),
                         any(),
+                        any(),
                         /* yOffset= */ eq(yOffset - TAB_STRIP_HEIGHT_PX),
                         anyInt(),
                         anyInt(),
@@ -765,6 +770,7 @@ public class StripLayoutHelperManagerTest {
                         any(),
                         any(),
                         any(),
+                        any(),
                         /* yOffset= */ eq(0f),
                         anyInt(),
                         anyInt(),
@@ -778,6 +784,7 @@ public class StripLayoutHelperManagerTest {
                 new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
         verify(mTabStripTreeProvider)
                 .pushAndUpdateStrip(
+                        any(),
                         any(),
                         any(),
                         any(),

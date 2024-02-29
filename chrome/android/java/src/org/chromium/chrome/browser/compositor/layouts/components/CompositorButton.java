@@ -74,7 +74,6 @@ public class CompositorButton extends StripLayoutView {
     private boolean mIsPressed;
     private boolean mIsPressedFromMouse;
     private boolean mIsHovered;
-    private boolean mIsVisible;
     private boolean mIsIncognito;
     private boolean mIsEnabled;
     private String mAccessibilityDescription = "";
@@ -93,9 +92,9 @@ public class CompositorButton extends StripLayoutView {
 
         mOpacity = 1.f;
         mIsPressed = false;
-        mIsVisible = true;
         mIsIncognito = false;
         mIsEnabled = true;
+        setVisible(true);
 
         Resources res = context.getResources();
         float sPxToDp = 1.0f / res.getDisplayMetrics().density;
@@ -150,7 +149,7 @@ public class CompositorButton extends StripLayoutView {
      */
     @Override
     public boolean checkClickedOrHovered(float x, float y) {
-        if (mOpacity < 1.f || !mIsVisible || !mIsEnabled) return false;
+        if (mOpacity < 1.f || !isVisible() || !mIsEnabled) return false;
 
         mCacheBounds.set(mBounds);
         mCacheBounds.inset(-mClickSlop, -mClickSlop);
@@ -252,20 +251,6 @@ public class CompositorButton extends StripLayoutView {
     public void setPressed(boolean state, boolean fromMouse) {
         mIsPressed = state;
         mIsPressedFromMouse = fromMouse;
-    }
-
-    /**
-     * @return The visibility of the button.
-     */
-    public boolean isVisible() {
-        return mIsVisible;
-    }
-
-    /**
-     * @param state The visibility of the button.
-     */
-    public void setVisible(boolean state) {
-        mIsVisible = state;
     }
 
     /**

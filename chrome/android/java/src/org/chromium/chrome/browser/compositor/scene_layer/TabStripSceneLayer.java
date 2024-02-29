@@ -15,6 +15,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
@@ -79,6 +80,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             LayerTitleCache layerTitleCache,
             ResourceManager resourceManager,
             StripLayoutTab[] stripLayoutTabsToRender,
+            StripLayoutGroupTitle[] stripLayoutGroupTitlesToRender,
             float yOffset,
             int selectedTabId,
             int hoveredTabId,

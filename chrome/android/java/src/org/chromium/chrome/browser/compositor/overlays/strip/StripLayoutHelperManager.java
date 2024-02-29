@@ -626,6 +626,7 @@ public class StripLayoutHelperManager
                 mLayerTitleCacheSupplier.get(),
                 resourceManager,
                 getActiveStripLayoutHelper().getStripLayoutTabsToRender(),
+                getActiveStripLayoutHelper().getStripLayoutGroupTitlesToRender(),
                 yOffset,
                 selectedTabId,
                 hoveredTabId,
