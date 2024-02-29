@@ -43,8 +43,8 @@ class SpeechRecognizer;
 // The SpeechRecognitionManager has the following responsibilities:
 //  - Handles requests received from various render frames and makes sure only
 //    one of them accesses the audio device at any given time.
-//  - Handles the instantiation of SpeechRecognitionEngine objects when
-//    requested by SpeechRecognitionSessions.
+//  - Handles the instantiation of NetworkSpeechRecognitionEngineImpl objects
+//    when requested by SpeechRecognitionSessions.
 //  - Relays recognition results/status/error events of each session to the
 //    corresponding listener (demuxing on the base of their session_id).
 //  - Relays also recognition results/status/error events of every session to

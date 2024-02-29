@@ -19,7 +19,7 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
-#include "content/browser/speech/speech_recognition_engine.h"
+#include "content/browser/speech/network_speech_recognition_engine_impl.h"
 #include "content/browser/speech/speech_recognizer_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -180,14 +180,14 @@ int SpeechRecognitionManagerImpl::CreateSession(
   session->context = config.initial_context;
 
 #if !BUILDFLAG(IS_ANDROID)
-  // A SpeechRecognitionEngine (and corresponding Config) is required only
-  // when using SpeechRecognizerImpl, which performs the audio capture and
+  // A NetworkSpeechRecognitionEngineImpl (and corresponding Config) is required
+  // only when using SpeechRecognizerImpl, which performs the audio capture and
   // endpointing in the browser. This is not the case of Android where, not
   // only the speech recognition, but also the audio capture and endpointing
   // activities performed outside of the browser (delegated via JNI to the
   // Android API implementation).
 
-  SpeechRecognitionEngine::Config remote_engine_config;
+  NetworkSpeechRecognitionEngineImpl::Config remote_engine_config;
   remote_engine_config.language = config.language;
   remote_engine_config.grammars = config.grammars;
   remote_engine_config.audio_sample_rate =
@@ -203,13 +203,14 @@ int SpeechRecognitionManagerImpl::CreateSession(
   remote_engine_config.auth_scope = config.auth_scope;
   remote_engine_config.preamble = config.preamble;
 
-  SpeechRecognitionEngine* google_remote_engine = new SpeechRecognitionEngine(
-      config.shared_url_loader_factory, config.accept_language);
+  std::unique_ptr<NetworkSpeechRecognitionEngineImpl> google_remote_engine =
+      std::make_unique<NetworkSpeechRecognitionEngineImpl>(
+          config.shared_url_loader_factory, config.accept_language);
   google_remote_engine->SetConfig(remote_engine_config);
 
   session->recognizer = new SpeechRecognizerImpl(
       this, audio_system_, session_id, config.continuous,
-      config.interim_results, google_remote_engine);
+      config.interim_results, std::move(google_remote_engine));
 #else
   session->recognizer = new SpeechRecognizerImplAndroid(this, session_id);
 #endif

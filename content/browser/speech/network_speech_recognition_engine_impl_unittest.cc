@@ -1,8 +1,8 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/speech/speech_recognition_engine.h"
+#include "content/browser/speech/network_speech_recognition_engine_impl.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -17,6 +17,7 @@
 #include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
 #include "components/speech/audio_buffer.h"
+#include "content/browser/speech/speech_recognition_engine.h"
 #include "content/public/browser/google_streaming_api.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
@@ -42,11 +43,11 @@ static const uint32_t kFrameTypeRecognitionAudio = 1;
 // Note: the terms upstream and downstream are from the point-of-view of the
 // client (engine_under_test_).
 
-class SpeechRecognitionEngineTest
+class NetworkSpeechRecognitionEngineImplTest
     : public SpeechRecognitionEngine::Delegate,
       public testing::Test {
  public:
-  SpeechRecognitionEngineTest()
+  NetworkSpeechRecognitionEngineImplTest()
       : last_number_of_upstream_chunks_seen_(0U),
         error_(blink::mojom::SpeechRecognitionErrorCode::kNone),
         end_of_utterance_counter_(0) {}
@@ -107,7 +108,7 @@ class SpeechRecognitionEngineTest
   mojo::Remote<network::mojom::ChunkedDataPipeGetter> chunked_data_pipe_getter_;
   mojo::ScopedDataPipeConsumerHandle upstream_data_pipe_;
 
-  std::unique_ptr<SpeechRecognitionEngine> engine_under_test_;
+  std::unique_ptr<NetworkSpeechRecognitionEngineImpl> engine_under_test_;
   size_t last_number_of_upstream_chunks_seen_;
   std::string response_buffer_;
   blink::mojom::SpeechRecognitionErrorCode error_;
@@ -115,7 +116,7 @@ class SpeechRecognitionEngineTest
   base::queue<std::vector<blink::mojom::SpeechRecognitionResultPtr>> results_;
 };
 
-TEST_F(SpeechRecognitionEngineTest, SingleDefinitiveResult) {
+TEST_F(NetworkSpeechRecognitionEngineImplTest, SingleDefinitiveResult) {
   StartMockRecognition();
   ASSERT_TRUE(GetUpstreamRequest());
   ASSERT_EQ("", ConsumeChunkedUploadData());
@@ -155,7 +156,7 @@ TEST_F(SpeechRecognitionEngineTest, SingleDefinitiveResult) {
   ASSERT_EQ(0U, results_.size());
 }
 
-TEST_F(SpeechRecognitionEngineTest, SeveralStreamingResults) {
+TEST_F(NetworkSpeechRecognitionEngineImplTest, SeveralStreamingResults) {
   StartMockRecognition();
   ASSERT_TRUE(GetUpstreamRequest());
   ASSERT_EQ("", ConsumeChunkedUploadData());
@@ -201,7 +202,8 @@ TEST_F(SpeechRecognitionEngineTest, SeveralStreamingResults) {
   ASSERT_EQ(0U, results_.size());
 }
 
-TEST_F(SpeechRecognitionEngineTest, NoFinalResultAfterAudioChunksEnded) {
+TEST_F(NetworkSpeechRecognitionEngineImplTest,
+       NoFinalResultAfterAudioChunksEnded) {
   StartMockRecognition();
   ASSERT_TRUE(GetUpstreamRequest());
   ASSERT_EQ("", ConsumeChunkedUploadData());
@@ -240,7 +242,7 @@ TEST_F(SpeechRecognitionEngineTest, NoFinalResultAfterAudioChunksEnded) {
 
 // Simulate the network service repeatedly re-requesting data (Possibly due to
 // using a stale socket, for instance).
-TEST_F(SpeechRecognitionEngineTest, ReRequestData) {
+TEST_F(NetworkSpeechRecognitionEngineImplTest, ReRequestData) {
   StartMockRecognition();
   ASSERT_TRUE(GetUpstreamRequest());
   ASSERT_EQ("", ConsumeChunkedUploadData());
@@ -293,7 +295,7 @@ TEST_F(SpeechRecognitionEngineTest, ReRequestData) {
   ASSERT_EQ(0U, results_.size());
 }
 
-TEST_F(SpeechRecognitionEngineTest, NoMatchError) {
+TEST_F(NetworkSpeechRecognitionEngineImplTest, NoMatchError) {
   StartMockRecognition();
   ASSERT_TRUE(GetUpstreamRequest());
   ASSERT_EQ("", ConsumeChunkedUploadData());
@@ -326,7 +328,7 @@ TEST_F(SpeechRecognitionEngineTest, NoMatchError) {
   ExpectResultsReceived(empty_result);
 }
 
-TEST_F(SpeechRecognitionEngineTest, HTTPError) {
+TEST_F(NetworkSpeechRecognitionEngineImplTest, HTTPError) {
   StartMockRecognition();
   ASSERT_TRUE(GetUpstreamRequest());
   ASSERT_EQ("", ConsumeChunkedUploadData());
@@ -345,7 +347,7 @@ TEST_F(SpeechRecognitionEngineTest, HTTPError) {
   ASSERT_EQ(0U, results_.size());
 }
 
-TEST_F(SpeechRecognitionEngineTest, NetworkError) {
+TEST_F(NetworkSpeechRecognitionEngineImplTest, NetworkError) {
   StartMockRecognition();
   ASSERT_TRUE(GetUpstreamRequest());
   ASSERT_EQ("", ConsumeChunkedUploadData());
@@ -364,7 +366,7 @@ TEST_F(SpeechRecognitionEngineTest, NetworkError) {
   ASSERT_EQ(0U, results_.size());
 }
 
-TEST_F(SpeechRecognitionEngineTest, Stability) {
+TEST_F(NetworkSpeechRecognitionEngineImplTest, Stability) {
   StartMockRecognition();
   ASSERT_TRUE(GetUpstreamRequest());
   ASSERT_EQ("", ConsumeChunkedUploadData());
@@ -411,12 +413,12 @@ TEST_F(SpeechRecognitionEngineTest, Stability) {
   ASSERT_EQ(0U, results_.size());
 }
 
-TEST_F(SpeechRecognitionEngineTest, EndOfUtterance) {
+TEST_F(NetworkSpeechRecognitionEngineImplTest, EndOfUtterance) {
   StartMockRecognition();
   ASSERT_TRUE(GetUpstreamRequest());
 
   // Simulate a END_OF_UTTERANCE proto event with continuous true.
-  SpeechRecognitionEngine::Config config;
+  NetworkSpeechRecognitionEngineImpl::Config config;
   config.continuous = true;
   engine_under_test_->SetConfig(config);
   proto::SpeechRecognitionEvent proto_event;
@@ -436,14 +438,14 @@ TEST_F(SpeechRecognitionEngineTest, EndOfUtterance) {
   EndMockRecognition();
 }
 
-TEST_F(SpeechRecognitionEngineTest, SendPreamble) {
+TEST_F(NetworkSpeechRecognitionEngineImplTest, SendPreamble) {
   const size_t kPreambleLength = 100;
   scoped_refptr<SpeechRecognitionSessionPreamble> preamble =
       new SpeechRecognitionSessionPreamble();
   preamble->sample_rate = 16000;
   preamble->sample_depth = 2;
   preamble->sample_data.assign(kPreambleLength, 0);
-  SpeechRecognitionEngine::Config config;
+  NetworkSpeechRecognitionEngineImpl::Config config;
   config.auth_token = "foo";
   config.auth_scope = "bar";
   config.preamble = preamble;
@@ -486,20 +488,20 @@ TEST_F(SpeechRecognitionEngineTest, SendPreamble) {
   ASSERT_EQ(0U, results_.size());
 }
 
-void SpeechRecognitionEngineTest::SetUp() {
-  engine_under_test_ = std::make_unique<SpeechRecognitionEngine>(
+void NetworkSpeechRecognitionEngineImplTest::SetUp() {
+  engine_under_test_ = std::make_unique<NetworkSpeechRecognitionEngineImpl>(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &url_loader_factory_),
       "" /* accept_language */);
   engine_under_test_->set_delegate(this);
 }
 
-void SpeechRecognitionEngineTest::TearDown() {
+void NetworkSpeechRecognitionEngineImplTest::TearDown() {
   engine_under_test_.reset();
 }
 
 const network::TestURLLoaderFactory::PendingRequest*
-SpeechRecognitionEngineTest::GetUpstreamRequest() {
+NetworkSpeechRecognitionEngineImplTest::GetUpstreamRequest() {
   for (const auto& pending_request : *url_loader_factory_.pending_requests()) {
     if (pending_request.request.url.spec().find("/up") != std::string::npos)
       return &pending_request;
@@ -508,7 +510,7 @@ SpeechRecognitionEngineTest::GetUpstreamRequest() {
 }
 
 const network::TestURLLoaderFactory::PendingRequest*
-SpeechRecognitionEngineTest::GetDownstreamRequest() {
+NetworkSpeechRecognitionEngineImplTest::GetDownstreamRequest() {
   for (const auto& pending_request : *url_loader_factory_.pending_requests()) {
     if (pending_request.request.url.spec().find("/down") != std::string::npos)
       return &pending_request;
@@ -518,7 +520,7 @@ SpeechRecognitionEngineTest::GetDownstreamRequest() {
 
 // Starts recognition on the engine, ensuring that both stream fetchers are
 // created.
-void SpeechRecognitionEngineTest::StartMockRecognition() {
+void NetworkSpeechRecognitionEngineImplTest::StartMockRecognition() {
   DCHECK(engine_under_test_.get());
 
   ASSERT_FALSE(engine_under_test_->IsRecognitionPending());
@@ -530,7 +532,7 @@ void SpeechRecognitionEngineTest::StartMockRecognition() {
   ASSERT_TRUE(GetDownstreamRequest());
 }
 
-void SpeechRecognitionEngineTest::EndMockRecognition() {
+void NetworkSpeechRecognitionEngineImplTest::EndMockRecognition() {
   DCHECK(engine_under_test_.get());
   engine_under_test_->EndRecognition();
   ASSERT_FALSE(engine_under_test_->IsRecognitionPending());
@@ -542,7 +544,7 @@ void SpeechRecognitionEngineTest::EndMockRecognition() {
   // de-registered from the TestURLFetcherFactory on destruction.
 }
 
-void SpeechRecognitionEngineTest::InjectDummyAudioChunk() {
+void NetworkSpeechRecognitionEngineImplTest::InjectDummyAudioChunk() {
   // Enough data so that the encoder will output something, as can't read 0
   // bytes from a Mojo stream.
   unsigned char dummy_audio_buffer_data[2000 * 2] = {'\0'};
@@ -554,7 +556,8 @@ void SpeechRecognitionEngineTest::InjectDummyAudioChunk() {
   engine_under_test_->TakeAudioChunk(*dummy_audio_chunk.get());
 }
 
-void SpeechRecognitionEngineTest::ProvideMockResponseStartDownstreamIfNeeded() {
+void NetworkSpeechRecognitionEngineImplTest::
+    ProvideMockResponseStartDownstreamIfNeeded() {
   if (downstream_data_pipe_.get())
     return;
   const network::TestURLLoaderFactory::PendingRequest* downstream_request =
@@ -576,7 +579,7 @@ void SpeechRecognitionEngineTest::ProvideMockResponseStartDownstreamIfNeeded() {
   downstream_data_pipe_ = std::move(producer_handle);
 }
 
-void SpeechRecognitionEngineTest::ProvideMockProtoResultDownstream(
+void NetworkSpeechRecognitionEngineImplTest::ProvideMockProtoResultDownstream(
     const proto::SpeechRecognitionEvent& result) {
   ProvideMockResponseStartDownstreamIfNeeded();
   ASSERT_TRUE(downstream_data_pipe_.get());
@@ -604,7 +607,7 @@ void SpeechRecognitionEngineTest::ProvideMockProtoResultDownstream(
   base::RunLoop().RunUntilIdle();
 }
 
-void SpeechRecognitionEngineTest::ProvideMockResultDownstream(
+void NetworkSpeechRecognitionEngineImplTest::ProvideMockResultDownstream(
     const blink::mojom::SpeechRecognitionResultPtr& result) {
   proto::SpeechRecognitionEvent proto_event;
   proto_event.set_status(proto::SpeechRecognitionEvent::STATUS_SUCCESS);
@@ -622,7 +625,7 @@ void SpeechRecognitionEngineTest::ProvideMockResultDownstream(
   base::RunLoop().RunUntilIdle();
 }
 
-void SpeechRecognitionEngineTest::CloseMockDownstream(
+void NetworkSpeechRecognitionEngineImplTest::CloseMockDownstream(
     DownstreamError error) {
   if (error == DOWNSTREAM_ERROR_HTTP500) {
     // Can't provide a network error if already gave the consumer a 200
@@ -658,14 +661,14 @@ void SpeechRecognitionEngineTest::CloseMockDownstream(
   base::RunLoop().RunUntilIdle();
 }
 
-void SpeechRecognitionEngineTest::ExpectResultsReceived(
+void NetworkSpeechRecognitionEngineImplTest::ExpectResultsReceived(
     const std::vector<blink::mojom::SpeechRecognitionResultPtr>& results) {
   ASSERT_GE(1U, results_.size());
   ASSERT_TRUE(ResultsAreEqual(results, results_.front()));
   results_.pop();
 }
 
-bool SpeechRecognitionEngineTest::ResultsAreEqual(
+bool NetworkSpeechRecognitionEngineImplTest::ResultsAreEqual(
     const std::vector<blink::mojom::SpeechRecognitionResultPtr>& a,
     const std::vector<blink::mojom::SpeechRecognitionResultPtr>& b) {
   if (a.size() != b.size())
@@ -693,7 +696,7 @@ bool SpeechRecognitionEngineTest::ResultsAreEqual(
   return true;
 }
 
-void SpeechRecognitionEngineTest::ExpectFramedChunk(
+void NetworkSpeechRecognitionEngineImplTest::ExpectFramedChunk(
     const std::string& chunk, uint32_t type) {
   uint32_t value = base::numerics::U32FromBigEndian(
       base::as_byte_span(chunk).subspan<0u, 4u>());
@@ -703,7 +706,7 @@ void SpeechRecognitionEngineTest::ExpectFramedChunk(
   EXPECT_EQ(type, value);
 }
 
-std::string SpeechRecognitionEngineTest::ConsumeChunkedUploadData() {
+std::string NetworkSpeechRecognitionEngineImplTest::ConsumeChunkedUploadData() {
   std::string result;
   base::RunLoop().RunUntilIdle();
 
@@ -755,7 +758,7 @@ std::string SpeechRecognitionEngineTest::ConsumeChunkedUploadData() {
   return out;
 }
 
-std::string SpeechRecognitionEngineTest::SerializeProtobufResponse(
+std::string NetworkSpeechRecognitionEngineImplTest::SerializeProtobufResponse(
     const proto::SpeechRecognitionEvent& msg) {
   std::string msg_string;
   msg.SerializeToString(&msg_string);

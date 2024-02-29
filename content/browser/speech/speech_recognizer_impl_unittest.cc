@@ -16,7 +16,7 @@
 #include "base/sys_byteorder.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
-#include "content/browser/speech/speech_recognition_engine.h"
+#include "content/browser/speech/network_speech_recognition_engine_impl.h"
 #include "content/browser/speech/speech_recognizer_impl.h"
 #include "content/public/browser/google_streaming_api.pb.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
@@ -89,11 +89,12 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
         /*disabled_features=*/{features::kAudioServiceOutOfProcess});
 
     // SpeechRecognizer takes ownership of sr_engine.
-    SpeechRecognitionEngine* sr_engine = new SpeechRecognitionEngine(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &url_loader_factory_),
-        "" /* accept_language */);
-    SpeechRecognitionEngine::Config config;
+    std::unique_ptr<NetworkSpeechRecognitionEngineImpl> sr_engine =
+        std::make_unique<NetworkSpeechRecognitionEngineImpl>(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &url_loader_factory_),
+            "" /* accept_language */);
+    NetworkSpeechRecognitionEngineImpl::Config config;
     config.audio_num_bits_per_sample =
         SpeechRecognizerImpl::kNumBitsPerAudioSample;
     config.audio_sample_rate = SpeechRecognizerImpl::kAudioSampleRate;
@@ -110,14 +111,16 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
         std::make_unique<media::AudioSystemImpl>(audio_manager_.get());
     SpeechRecognizerImpl::SetAudioEnvironmentForTesting(
         audio_system_.get(), audio_capturer_source_.get());
-    recognizer_ = new SpeechRecognizerImpl(
-        this, audio_system_.get(), kTestingSessionId, false, false, sr_engine);
+    recognizer_ =
+        new SpeechRecognizerImpl(this, audio_system_.get(), kTestingSessionId,
+                                 false, false, std::move(sr_engine));
 
     int audio_packet_length_bytes =
         (SpeechRecognizerImpl::kAudioSampleRate *
-         SpeechRecognitionEngine::kAudioPacketIntervalMs *
+         NetworkSpeechRecognitionEngineImpl::kAudioPacketIntervalMs *
          ChannelLayoutToChannelCount(SpeechRecognizerImpl::kChannelLayout) *
-         SpeechRecognizerImpl::kNumBitsPerAudioSample) / (8 * 1000);
+         SpeechRecognizerImpl::kNumBitsPerAudioSample) /
+        (8 * 1000);
     audio_packet_.resize(audio_packet_length_bytes);
 
     const int channels =
@@ -648,8 +651,10 @@ TEST_F(SpeechRecognizerImplTest, NoSpeechCallbackIssued) {
   WaitForAudioThreadToPostDeviceInfo();
   base::RunLoop().RunUntilIdle();  // EVENT_START processing.
 
-  int num_packets = (SpeechRecognizerImpl::kNoSpeechTimeoutMs) /
-                     SpeechRecognitionEngine::kAudioPacketIntervalMs + 1;
+  int num_packets =
+      (SpeechRecognizerImpl::kNoSpeechTimeoutMs) /
+          NetworkSpeechRecognitionEngineImpl::kAudioPacketIntervalMs +
+      1;
   // The vector is already filled with zero value samples on create.
   for (int i = 0; i < num_packets; ++i) {
     Capture(audio_bus_.get());
@@ -674,7 +679,7 @@ TEST_F(SpeechRecognizerImplTest, NoSpeechCallbackNotIssued) {
   base::RunLoop().RunUntilIdle();  // EVENT_START processing.
 
   int num_packets = (SpeechRecognizerImpl::kNoSpeechTimeoutMs) /
-                     SpeechRecognitionEngine::kAudioPacketIntervalMs;
+                    NetworkSpeechRecognitionEngineImpl::kAudioPacketIntervalMs;
 
   // The vector is already filled with zero value samples on create.
   for (int i = 0; i < num_packets / 2; ++i) {
@@ -709,7 +714,7 @@ TEST_F(SpeechRecognizerImplTest, SetInputVolumeCallback) {
 
   // Feed some samples to begin with for the endpointer to do noise estimation.
   int num_packets = SpeechRecognizerImpl::kEndpointerEstimationTimeMs /
-                    SpeechRecognitionEngine::kAudioPacketIntervalMs;
+                    NetworkSpeechRecognitionEngineImpl::kAudioPacketIntervalMs;
   FillPacketWithNoise();
   for (int i = 0; i < num_packets; ++i) {
     Capture(audio_bus_.get());

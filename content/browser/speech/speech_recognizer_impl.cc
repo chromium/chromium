@@ -183,10 +183,10 @@ SpeechRecognizerImpl::SpeechRecognizerImpl(
     int session_id,
     bool continuous,
     bool provisional_results,
-    SpeechRecognitionEngine* engine)
+    std::unique_ptr<SpeechRecognitionEngine> engine)
     : SpeechRecognizer(listener, session_id),
       audio_system_(audio_system),
-      recognition_engine_(engine),
+      recognition_engine_(std::move(engine)),
       endpointer_(kAudioSampleRate),
       is_dispatching_event_(false),
       provisional_results_(provisional_results),
@@ -631,6 +631,7 @@ SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
   // and WebSpeech specific output format.
   audio_converter_ =
       std::make_unique<OnDataConverter>(input_parameters, output_parameters);
+  recognition_engine_->SetAudioParameters(output_parameters);
 
   // The endpointer needs to estimate the environment/background noise before
   // starting to treat the audio as user input. We wait in the state

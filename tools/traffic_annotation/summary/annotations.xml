@@ -213,8 +213,8 @@ Refer to README.md for content description and update process.
  <item id="signed_in_profile_avatar" added_in_milestone="62" content_hash_code="064a36f4" os_list="linux,windows,chromeos,android" file_path="chrome/browser/profiles/profile_downloader.cc" />
  <item id="socket_bio_adapter" added_in_milestone="66" content_hash_code="014a4058" os_list="linux,windows,chromeos,android" file_path="net/socket/socket_bio_adapter.cc" />
  <item id="spdy_session_control" added_in_milestone="66" content_hash_code="01c6f3f0" os_list="linux,windows,chromeos,android" file_path="net/spdy/spdy_session.cc" />
- <item id="speech_recognition_downstream" added_in_milestone="62" content_hash_code="07323e31" os_list="linux,windows,chromeos" file_path="content/browser/speech/speech_recognition_engine.cc" />
- <item id="speech_recognition_upstream" added_in_milestone="62" content_hash_code="0075966b" os_list="linux,windows,chromeos" file_path="content/browser/speech/speech_recognition_engine.cc" />
+ <item id="speech_recognition_downstream" added_in_milestone="123" content_hash_code="07a72205" os_list="linux,windows,chromeos" file_path="content/browser/speech/network_speech_recognition_engine_impl.cc" />
+ <item id="speech_recognition_upstream" added_in_milestone="123" content_hash_code="0798290a" os_list="linux,windows,chromeos" file_path="content/browser/speech/network_speech_recognition_engine_impl.cc" />
  <item id="spellcheck_hunspell_dictionary" added_in_milestone="62" content_hash_code="02b8bb18" os_list="linux,windows,chromeos,android" file_path="chrome/browser/spellchecker/spellcheck_hunspell_dictionary.cc" />
  <item id="spellcheck_lookup" added_in_milestone="62" content_hash_code="072d1525" os_list="linux,windows,chromeos" file_path="components/spellcheck/browser/spelling_service_client.cc" />
  <item id="ssl_hmac_channel_authenticator" added_in_milestone="66" content_hash_code="0695685d" os_list="linux,windows,chromeos,android" file_path="remoting/protocol/ssl_hmac_channel_authenticator.cc" />

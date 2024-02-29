@@ -52,7 +52,7 @@ class CONTENT_EXPORT SpeechRecognizerImpl
                        int session_id,
                        bool continuous,
                        bool provisional_results,
-                       SpeechRecognitionEngine* engine);
+                       std::unique_ptr<SpeechRecognitionEngine> engine);
 
   SpeechRecognizerImpl(const SpeechRecognizerImpl&) = delete;
   SpeechRecognizerImpl& operator=(const SpeechRecognizerImpl&) = delete;

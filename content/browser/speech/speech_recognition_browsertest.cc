@@ -19,7 +19,7 @@
 #include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "content/browser/speech/speech_recognition_engine.h"
+#include "content/browser/speech/network_speech_recognition_engine_impl.h"
 #include "content/browser/speech/speech_recognition_manager_impl.h"
 #include "content/browser/speech/speech_recognizer_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -210,7 +210,7 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
     const int capture_packet_interval_ms =
         (1000 * audio_parameters.frames_per_buffer()) /
         audio_parameters.sample_rate();
-    ASSERT_EQ(SpeechRecognitionEngine::kAudioPacketIntervalMs,
+    ASSERT_EQ(NetworkSpeechRecognitionEngineImpl::kAudioPacketIntervalMs,
               capture_packet_interval_ms);
     FeedAudioCapturerSource(audio_parameters, capture_callback, 500 /* ms */,
                             /*noise=*/false);
@@ -269,7 +269,7 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
     const int ms_per_buffer = audio_params.GetBufferDuration().InMilliseconds();
     // We can only simulate durations that are integer multiples of the
     // buffer size. In this regard see
-    // SpeechRecognitionEngine::GetDesiredAudioChunkDurationMs().
+    // NetworkSpeechRecognitionEngineImpl::GetDesiredAudioChunkDurationMs().
     ASSERT_EQ(0, duration_ms % ms_per_buffer);
 
     const int n_buffers = duration_ms / ms_per_buffer;
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest, MAYBE_OneShotRecognition) {
   // Use a base path that doesn't end in a slash to mimic the default URL.
   std::string web_service_base_url =
       embedded_test_server()->base_url().spec() + "foo";
-  SpeechRecognitionEngine::set_web_service_base_url_for_tests(
+  NetworkSpeechRecognitionEngineImpl::set_web_service_base_url_for_tests(
       web_service_base_url.c_str());
 
   // Need to watch for two navigations. Can't use
@@ -350,7 +350,8 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest, MAYBE_OneShotRecognition) {
   EXPECT_EQ("goodresult1", GetPageFragment());
 
   // Remove reference to URL string that's on the stack.
-  SpeechRecognitionEngine::set_web_service_base_url_for_tests(nullptr);
+  NetworkSpeechRecognitionEngineImpl::set_web_service_base_url_for_tests(
+      nullptr);
 }
 
 }  // namespace content
