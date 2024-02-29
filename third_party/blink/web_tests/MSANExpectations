@@ -113,3 +113,6 @@ crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-e
 
 
 crbug.com/1457275 [ Linux ] external/wpt/dom/ranges/Range-surroundContents.html [ Skip ]
+
+# Sheriff 2024-02-28
+crbug.com/326356909 [ Linux ] virtual/webnn-service-enabled/external/wpt/webnn/conformance_tests/gpu/* [ Crash ]
