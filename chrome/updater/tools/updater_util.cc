@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <iomanip>
 #include <iostream>
 #include <map>
 #include <string>
@@ -9,7 +10,9 @@
 #include <vector>
 
 #include "base/at_exit.h"
+#include "base/base64.h"
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -28,12 +31,17 @@
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/device_management/dm_cached_policy_info.h"
+#include "chrome/updater/device_management/dm_message.h"
+#include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/external_constants_default.h"
 #include "chrome/updater/ipc/ipc_support.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/protos/omaha_settings.pb.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 
 namespace updater::tools {
 
@@ -42,8 +50,244 @@ constexpr char kBackgroundSwitch[] = "background";
 constexpr char kListAppsSwitch[] = "list-apps";
 constexpr char kListUpdateSwitch[] = "list-update";
 constexpr char kListPoliciesSwitch[] = "list-policies";
+constexpr char kListCBCMPoliciesSwitch[] = "list-cbcm-policies";
 constexpr char kJSONFormatSwitch[] = "json";
 constexpr char kUpdateSwitch[] = "update";
+
+namespace updater_policy {
+
+namespace edm = ::wireless_android_enterprise_devicemanagement;
+
+std::string UpdateValueAsString(edm::UpdateValue value) {
+  switch (value) {
+    case edm::UPDATES_DISABLED:
+      return "Disabled";
+    case edm::MANUAL_UPDATES_ONLY:
+      return "Manual Updates Only";
+    case edm::AUTOMATIC_UPDATES_ONLY:
+      return "Automatic Updates Only";
+    case edm::UPDATES_ENABLED:
+    default:
+      return "Enabled";
+  }
+}
+
+std::string InstallDefaultValueAsString(edm::InstallDefaultValue value) {
+  switch (value) {
+    case edm::INSTALL_DEFAULT_DISABLED:
+      return "Disabled";
+    case edm::INSTALL_DEFAULT_ENABLED_MACHINE_ONLY:
+      return "Enabled Machine Only";
+    case edm::INSTALL_DEFAULT_ENABLED:
+    default:
+      return "Enabled";
+  }
+}
+
+std::string InstallValueAsString(edm::InstallValue value) {
+  switch (value) {
+    case edm::INSTALL_DISABLED:
+      return "Disabled";
+    case edm::INSTALL_ENABLED_MACHINE_ONLY:
+      return "Enabled Machine Only";
+    case edm::INSTALL_FORCED:
+      return "Forced";
+    case edm::INSTALL_ENABLED:
+    default:
+      return "Enabled";
+  }
+}
+
+std::unique_ptr<edm::OmahaSettingsClientProto> GetOmahaPolicySettings() {
+  std::string encoded_omaha_policy_type =
+      base::Base64Encode(kGoogleUpdatePolicyType);
+
+  base::FilePath omaha_policy_file = GetDefaultDMStorage()
+                                         ->policy_cache_folder()
+                                         .AppendASCII(encoded_omaha_policy_type)
+                                         .AppendASCII("PolicyFetchResponse");
+  std::string response_data;
+  ::enterprise_management::PolicyFetchResponse response;
+  ::enterprise_management::PolicyData policy_data;
+  auto omaha_settings = std::make_unique<edm::OmahaSettingsClientProto>();
+  if (!base::PathExists(omaha_policy_file) ||
+      !base::ReadFileToString(omaha_policy_file, &response_data) ||
+      response_data.empty() || !response.ParseFromString(response_data) ||
+      !policy_data.ParseFromString(response.policy_data()) ||
+      !policy_data.has_policy_value() ||
+      !omaha_settings->ParseFromString(policy_data.policy_value())) {
+    VLOG(1) << "No Omaha policies.";
+    return nullptr;
+  }
+
+  return omaha_settings;
+}
+
+void PrintCachedPolicyInfo(const CachedPolicyInfo& cached_info) {
+  constexpr size_t kPrintWidth = 16;
+
+  std::cout << "Cached policy info:" << std::endl;
+  std::cout << "  Key version: " << cached_info.key_version() << std::endl;
+  std::cout << "  Timestamp: " << cached_info.timestamp() << std::endl;
+  std::cout << "  Key data (" << cached_info.public_key().size()
+            << " bytes): " << std::endl;
+  const std::string key = cached_info.public_key();
+  for (size_t i = 0; i < key.size(); ++i) {
+    std::cout << std::setfill('0') << std::setw(2) << std::hex
+              << static_cast<unsigned int>(0xff & key[i]) << ' ';
+    if (i % kPrintWidth == kPrintWidth - 1) {
+      std::cout << std::endl;
+    }
+  }
+  std::cout << std::endl;
+}
+
+void PrintCBCMPolicies() {
+  scoped_refptr<DMStorage> storage = GetDefaultDMStorage();
+  if (!storage) {
+    std::cerr << "Failed to instantiate DM storage instance." << std::endl;
+    return;
+  }
+
+  std::cout << "-------------------------------------------------" << std::endl;
+  std::cout << "Device ID: " << storage->GetDeviceID() << std::endl;
+  std::cout << "Enrollment token: " << storage->GetEnrollmentToken()
+            << std::endl;
+  std::cout << "DM token: " << storage->GetDmToken() << std::endl;
+  std::cout << "-------------------------------------------------" << std::endl;
+
+  std::unique_ptr<CachedPolicyInfo> cached_info =
+      storage->GetCachedPolicyInfo();
+  if (cached_info) {
+    PrintCachedPolicyInfo(*cached_info);
+    std::cout << "-------------------------------------------------"
+              << std::endl;
+  }
+
+  std::unique_ptr<edm::OmahaSettingsClientProto> omaha_settings =
+      GetOmahaPolicySettings();
+  if (omaha_settings) {
+    bool has_global_policy = false;
+    std::cout << "Global policies:" << std::endl;
+    if (omaha_settings->has_install_default()) {
+      std::cout << "  InstallDefault: "
+                << InstallDefaultValueAsString(
+                       omaha_settings->install_default())
+                << "(" << omaha_settings->install_default() << ")" << std::endl;
+      has_global_policy = true;
+    }
+    if (omaha_settings->has_update_default()) {
+      std::cout << "  UpdateDefault: "
+                << UpdateValueAsString(omaha_settings->update_default()) << "("
+                << omaha_settings->update_default() << ")" << std::endl;
+      has_global_policy = true;
+    }
+    if (omaha_settings->has_auto_update_check_period_minutes()) {
+      std::cout << "  Auto-update check period minutes: "
+                << omaha_settings->auto_update_check_period_minutes()
+                << std::endl;
+      has_global_policy = true;
+    }
+    if (omaha_settings->has_updates_suppressed()) {
+      std::cout << "  Update suppressed: " << std::endl
+                << "      Start Hour: "
+                << omaha_settings->updates_suppressed().start_hour()
+                << std::endl
+                << "      Start Minute: "
+                << omaha_settings->updates_suppressed().start_minute()
+                << std::endl
+                << "      Duration Minute: "
+                << omaha_settings->updates_suppressed().duration_min()
+                << std::endl;
+      has_global_policy = true;
+    }
+    if (omaha_settings->has_proxy_mode()) {
+      std::cout << "  Proxy Mode: " << omaha_settings->proxy_mode()
+                << std::endl;
+      has_global_policy = true;
+    }
+    if (omaha_settings->has_proxy_pac_url()) {
+      std::cout << "  Proxy PacURL: " << omaha_settings->proxy_pac_url()
+                << std::endl;
+      has_global_policy = true;
+    }
+    if (omaha_settings->has_proxy_server()) {
+      std::cout << "  Proxy Server: " << omaha_settings->proxy_server()
+                << std::endl;
+      has_global_policy = true;
+    }
+    if (omaha_settings->has_download_preference()) {
+      std::cout << "  DownloadPreference: "
+                << omaha_settings->download_preference() << std::endl;
+      has_global_policy = true;
+    }
+    if (!has_global_policy) {
+      std::cout << "  (No policy)" << std::endl;
+    }
+
+    for (const auto& app_settings : omaha_settings->application_settings()) {
+      bool has_policy = false;
+      if (app_settings.has_app_guid()) {
+        std::cout << "App : " << app_settings.app_guid();
+        if (app_settings.has_bundle_identifier()) {
+          std::cout << "(" << app_settings.bundle_identifier() << ")";
+        }
+        std::cout << std::endl;
+      }
+      if (app_settings.has_install()) {
+        std::cout << "  Install : "
+                  << InstallValueAsString(app_settings.install()) << "("
+                  << app_settings.install() << ")" << std::endl;
+        has_policy = true;
+      }
+      if (app_settings.has_update()) {
+        std::cout << "  Update : " << UpdateValueAsString(app_settings.update())
+                  << "(" << app_settings.update() << ")" << std::endl;
+        has_policy = true;
+      }
+      if (app_settings.has_rollback_to_target_version()) {
+        std::cout << "  RollbackToTargetVersionAllowed : "
+                  << app_settings.rollback_to_target_version() << std::endl;
+        has_policy = true;
+      }
+      if (app_settings.has_target_version_prefix()) {
+        std::cout << "  TargetVersionPrefix : "
+                  << app_settings.target_version_prefix() << std::endl;
+        has_policy = true;
+      }
+      if (app_settings.has_target_channel()) {
+        std::cout << "  TargetChannel : " << app_settings.target_channel()
+                  << std::endl;
+        has_policy = true;
+      }
+      if (app_settings.has_gcpw_application_settings()) {
+        std::cout << "  DomainsAllowedToLogin: ";
+        for (const auto& domain : app_settings.gcpw_application_settings()
+                                      .domains_allowed_to_login()) {
+          std::cout << domain << ", ";
+          has_policy = true;
+        }
+        std::cout << std::endl;
+      }
+      if (!has_policy) {
+        std::cout << "  (No policy)" << std::endl;
+      }
+    }
+  }
+  std::cout << "-------------------------------------------------" << std::endl;
+  std::cout << "Downloaded CBCM policy types:" << std::endl;
+  base::FileEnumerator(storage->policy_cache_folder(), false,
+                       base::FileEnumerator::DIRECTORIES)
+      .ForEach([](const base::FilePath& name) {
+        std::string policy_type;
+        if (base::Base64Decode(name.BaseName().MaybeAsASCII(), &policy_type)) {
+          std::cout << "  " << policy_type << std::endl;
+        }
+      });
+  std::cout << std::endl;
+}
+
+}  // namespace updater_policy
 
 UpdaterScope Scope() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kSystemSwitch)
@@ -168,6 +412,7 @@ class UpdaterUtilApp : public App {
   void ListUpdate();
   void Update();
   void ListPolicies();
+  void ListCBCMPolicies();
 
   void FindApp(const std::string& app_id,
                base::OnceCallback<void(scoped_refptr<AppState>)> callback);
@@ -187,15 +432,16 @@ void UpdaterUtilApp::PrintUsage(const std::string& error_message) {
             << base::CommandLine::ForCurrentProcess()->GetProgram().BaseName()
             << " [action...] [parameters...]" << R"(
     Actions:
-        --update            Update app(s).
-        --list-apps         List all registered apps.
-        --list-update       List update for an app (skip update install).
-        --list-policies     List all currently effective enterprise policies.
+        --update              Update app(s).
+        --list-apps           List all registered apps.
+        --list-update         List update for an app (skip update install).
+        --list-policies       List all currently effective enterprise policies.
+        --list-cbcm-policies  List downloaded CBCM policies.
     Action parameters:
-        --background        Use background priority.
-        --product           ProductID.
-        --system            Use the system scope.
-        --json              Use JSON as output format where applicable.)"
+        --background          Use background priority.
+        --product             ProductID.
+        --system              Use the system scope.
+        --json                Use JSON as output format where applicable.)"
             << std::endl;
   Shutdown(error_message.empty() ? 0 : 1);
 }
@@ -359,13 +605,20 @@ void UpdaterUtilApp::ListPolicies() {
       base::BindOnce(&UpdaterUtilApp::Shutdown, this, 0));
 }
 
+void UpdaterUtilApp::ListCBCMPolicies() {
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
+      base::BindOnce(&updater_policy::PrintCBCMPolicies),
+      base::BindOnce(&UpdaterUtilApp::Shutdown, this, 0));
+}
+
 void UpdaterUtilApp::FirstTaskRun() {
   const std::map<std::string, void (UpdaterUtilApp::*)()> commands = {
       {kListAppsSwitch, &UpdaterUtilApp::ListApps},
       {kListUpdateSwitch, &UpdaterUtilApp::ListUpdate},
       {kUpdateSwitch, &UpdaterUtilApp::Update},
       {kListPoliciesSwitch, &UpdaterUtilApp::ListPolicies},
-  };
+      {kListCBCMPoliciesSwitch, &UpdaterUtilApp::ListCBCMPolicies}};
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   for (const auto& [switch_name, func] : commands) {

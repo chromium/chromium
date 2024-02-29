@@ -56,16 +56,6 @@ executable("${updater_product_full_name}Util") {
     "//chrome/updater:base",
     "//chrome/updater:constants_prod",
     "//chrome/updater:external_constants",
-  ]
-}
-
-executable("dm_policy_dump") {
-  sources = [ "dm_policy_dump.cc" ]
-  deps = [
-    "//base",
-    "//chrome/updater:base",
-    "//chrome/updater:constants_prod",
-    "//chrome/updater:external_constants",
     "//chrome/updater/protos:omaha_proto",
     "//components/policy/proto",
   ]
