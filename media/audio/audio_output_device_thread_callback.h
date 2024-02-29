@@ -39,6 +39,10 @@ class MEDIA_EXPORT AudioOutputDeviceThreadCallback
   // Called whenever we receive notifications about pending data.
   void Process(uint32_t control_signal) override;
 
+  // Called when the AudioDeviceThread shuts down. Unexpected calls are treated
+  // as errors.
+  void OnSocketError() override;
+
   // Returns whether the current thread is the audio device thread or not.
   // Will always return true if DCHECKs are not enabled.
   bool CurrentThreadIsAudioDeviceThread();

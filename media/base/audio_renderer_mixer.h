@@ -56,6 +56,9 @@ class MEDIA_EXPORT AudioRendererMixer
     return output_params_;
   }
 
+  // Return true if this mixer has ever received an error from its sink.
+  bool HasSinkError();
+
  private:
   // AudioRendererSink::RenderCallback implementation.
   int Render(base::TimeDelta delay,
@@ -99,6 +102,10 @@ class MEDIA_EXPORT AudioRendererMixer
   base::TimeDelta pause_delay_ GUARDED_BY(lock_);
   base::TimeTicks last_play_time_ GUARDED_BY(lock_);
   bool playing_ GUARDED_BY(lock_);
+
+  // Set if the mixer receives an error from the sink. Indicates that this
+  // mixer and sink should no longer be reused.
+  bool sink_error_ GUARDED_BY(lock_) = false;
 };
 
 }  // namespace media

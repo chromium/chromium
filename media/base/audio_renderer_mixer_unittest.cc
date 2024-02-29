@@ -503,9 +503,13 @@ TEST_P(AudioRendererMixerBehavioralTest, OnRenderError) {
     EXPECT_CALL(*fake_callbacks_[i], OnRenderError()).Times(1);
   }
 
+  EXPECT_FALSE(mixer_->HasSinkError());
+
   mixer_callback_->OnRenderError();
   for (size_t i = 0; i < mixer_inputs_.size(); ++i)
     mixer_inputs_[i]->Stop();
+
+  EXPECT_TRUE(mixer_->HasSinkError());
 }
 
 TEST_P(AudioRendererMixerBehavioralTest, OnRenderErrorPausedInput) {

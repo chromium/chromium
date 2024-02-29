@@ -82,6 +82,8 @@ class AudioInputDevice::AudioThreadCallback
   // Called whenever we receive notifications about pending data.
   void Process(uint32_t pending_data) override;
 
+  void OnSocketError() override;
+
  private:
   const bool enable_uma_;
   base::ReadOnlySharedMemoryRegion shared_memory_region_;
@@ -493,6 +495,12 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
       "audio", "AudioInputDevice::AudioThreadCallback::Process",
       "capture_time (ms)", (capture_time - base::TimeTicks()).InMillisecondsF(),
       "now_time (ms)", (now_time - base::TimeTicks()).InMillisecondsF());
+}
+
+void AudioInputDevice::AudioThreadCallback::OnSocketError() {
+  capture_callback_->OnCaptureError(
+      AudioCapturerSource::ErrorCode::kSocketError,
+      "Socket closed unexpectedly");
 }
 
 }  // namespace media
