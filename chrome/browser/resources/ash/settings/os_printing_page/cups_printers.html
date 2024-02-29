@@ -17,7 +17,7 @@
     padding: 20px;
   }
 
-  #addManualPrinterButtonRevamp {
+  #addManualPrinterButton {
     background: none;
   }
 
@@ -66,7 +66,7 @@
     pointer-events: none;
   }
 
-  #nearbyPrintersRevamp {
+  #nearbyPrinters {
     display: flex;
   }
 
@@ -120,12 +120,12 @@
     padding-inline-start: 20px;
   }
 
-  #addPrinterSectionRevamp {
+  #addPrinterSection {
     height: 64px;
     padding-inline: 0;
   }
 
-  #addPrinterSectionRevampContainer {
+  #addPrinterSectionContainer {
     padding-inline-start: 10px;
     padding-top: 8px;
   }
@@ -245,10 +245,10 @@
           active-printer="{{activePrinter}}"
           printers-count="{{nearbyPrinterCount_}}">
       </settings-cups-nearby-printers>
-      <div id="addPrinterSectionRevamp" class="list-frame add-printer-section">
-        <div id="addPrinterSectionRevampContainer"
+      <div id="addPrinterSection" class="list-frame add-printer-section">
+        <div id="addPrinterSectionContainer"
             class="layout horizontal center custom-list-item-top">
-          <cr-button id="addManualPrinterButtonRevamp"
+          <cr-button id="addManualPrinterButton"
               class="prefix-icon" on-click="onAddPrinterClick_"
               disabled="[[!addPrinterButtonActive_(hasActiveNetworkConnection,
                   prefs.native_printing.user_native_printers_allowed.value)]]"

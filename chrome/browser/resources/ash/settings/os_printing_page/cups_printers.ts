@@ -471,7 +471,7 @@ export class SettingsCupsPrintersElement extends
 
   private onAddPrinterDialogClose_(): void {
     const icon = this.shadowRoot!.querySelector<CrIconButtonElement>(
-        '#addManualPrinterButtonRevamp');
+        '#addManualPrinterButton');
     assert(icon);
     focusWithoutInk(icon);
   }

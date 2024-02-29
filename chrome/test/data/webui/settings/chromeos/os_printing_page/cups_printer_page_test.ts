@@ -160,7 +160,7 @@ suite('<settings-cups-printers>', () => {
 
     await flushTasks();
     const icon = page.shadowRoot!.querySelector<HTMLButtonElement>(
-        '#addManualPrinterButtonRevamp');
+        '#addManualPrinterButton');
     assertTrue(!!icon);
     icon.click();
     assertEquals(
