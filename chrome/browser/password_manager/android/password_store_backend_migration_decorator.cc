@@ -68,7 +68,7 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
       /*affiliated_match_helper=*/nullptr,
       base::BindRepeating(remote_changes_callback,
                           android_backend_->AsWeakPtr()),
-      base::DoNothing(), pending_initialization_calls);
+      base::NullCallback(), pending_initialization_calls);
 
   // Post delayed task to start migration of local passwords to avoid extra load
   // on start-up.
