@@ -1714,16 +1714,13 @@ std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
       result.value() *= number;
       break;
     }
-    case CSSMathOperator::kCalcSize: {
-      // TODO(https://crbug.com/313072): For now we handle only the case where
-      // the calculation converts to a PixelsAndPercent without any
-      // substitutions of the 'size' keyword from the basis (which may or may
-      // not itself convert to PixelsAndPercent).  We could theoretically
-      // handle more cases, but this should be fine for now (as for many of
-      // the functions below) not to handle all cases.
-      result = operands_[1]->ToPixelsAndPercent(length_resolver);
-      break;
-    }
+    case CSSMathOperator::kCalcSize:
+      // While it looks like we might be able to handle some calc-size() cases
+      // here, we don't want to do because it would be difficult to avoid a
+      // has_explicit_percent state inside the calculation propagating to the
+      // result (which should not happen; only the has_explicit_percent state
+      // from the basis should do so).
+      return std::nullopt;
     case CSSMathOperator::kMin:
     case CSSMathOperator::kMax:
     case CSSMathOperator::kClamp:
