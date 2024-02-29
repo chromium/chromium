@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/check_deref.h"
+#include "base/functional/callback_forward.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -11,9 +14,53 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_service_observer.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+class DefaultSearchEngineObserver : public TemplateURLServiceObserver {
+ public:
+  explicit DefaultSearchEngineObserver(
+      TemplateURLService& template_url_service,
+      base::OnceClosure on_default_search_engine_changed,
+      int engine_prepopulated_id)
+      : template_url_service_(template_url_service),
+        on_default_search_engine_changed_(
+            std::move(on_default_search_engine_changed)),
+        engine_prepopulated_id_(engine_prepopulated_id) {
+    if (MaybeRunDefaultSearchEngineChangedCallback()) {
+      return;
+    }
+
+    observations_.AddObservation(&template_url_service_.get());
+  }
+
+  ~DefaultSearchEngineObserver() override = default;
+
+  void OnTemplateURLServiceChanged() override {
+    MaybeRunDefaultSearchEngineChangedCallback();
+  }
+
+ private:
+  bool MaybeRunDefaultSearchEngineChangedCallback() {
+    const TemplateURL* default_search_engine =
+        template_url_service_->GetDefaultSearchProvider();
+    if (default_search_engine->prepopulate_id() == engine_prepopulated_id_) {
+      std::move(on_default_search_engine_changed_).Run();
+      return true;
+    }
+
+    return false;
+  }
+
+  raw_ref<TemplateURLService> template_url_service_;
+  base::OnceClosure on_default_search_engine_changed_;
+  int engine_prepopulated_id_;
+
+  base::ScopedMultiSourceObservation<TemplateURLService,
+                                     TemplateURLServiceObserver>
+      observations_{this};
+};
 class TemplateURLServiceBrowserTest : public InProcessBrowserTest {
  public:
   TemplateURLServiceBrowserTest() {
@@ -69,13 +116,15 @@ IN_PROC_BROWSER_TEST_F(TemplateURLServiceBrowserTest, PRE_LoadKeywordData) {
             TemplateURLPrepopulateData::yahoo_fr.keyword);
 }
 
-// TODO(crbug.com/1520740): Fails in Mac builds.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_LoadKeywordData DISABLED_LoadKeywordData
-#else
-#define MAYBE_LoadKeywordData LoadKeywordData
-#endif
-IN_PROC_BROWSER_TEST_F(TemplateURLServiceBrowserTest, MAYBE_LoadKeywordData) {
+IN_PROC_BROWSER_TEST_F(TemplateURLServiceBrowserTest, LoadKeywordData) {
+  // We wait for the expected search engine to load because the test was flaky.
+  // See crbug.com/1520740
+  base::RunLoop runloop;
+  DefaultSearchEngineObserver observer(CHECK_DEREF(template_url_service()),
+                                       runloop.QuitClosure(),
+                                       TemplateURLPrepopulateData::yahoo_fr.id);
+  runloop.Run();
+
   const TemplateURL* loaded_dse =
       template_url_service()->GetDefaultSearchProvider();
   EXPECT_EQ(loaded_dse->prepopulate_id(),
