@@ -89,6 +89,8 @@ class GPU_EXPORT ClientSharedImage
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder);
 
   const Mailbox& mailbox() { return mailbox_; }
+  viz::SharedImageFormat format() const { return metadata_.format; }
+  gfx::Size size() const { return metadata_.size; }
   uint32_t usage() { return metadata_.usage; }
 
   bool HasHolder() { return sii_holder_ != nullptr; }
