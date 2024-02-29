@@ -402,9 +402,11 @@ public class PageInsightsCoordinatorTest {
     public void testResizeContent() throws Exception {
         createPageInsightsCoordinator();
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
-        setAutoTriggerTimerFinished();
 
+        setAutoTriggerTimerFinished();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         hideTopBar(); // Signal for auto triggering the PIH
+
         int peekHeight = mPageInsightsController.getCurrentOffset();
         verify(mBrowserControlsSizer).setBottomControlsHeight(eq(peekHeight), eq(0));
 
