@@ -30,6 +30,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattServiceFloss
   static device::BluetoothGattService::GattErrorCode GattStatusToServiceError(
       const GattStatus status);
 
+  // Processes a |GattErrorCode| into a status code.
+  static GattStatus GattServiceErrorToStatus(
+      device::BluetoothGattService::GattErrorCode error_code);
+
   // Adds an observer for a specific handle. This observer will only get
   // callbacks invoked for that specific handle.
   void AddObserverForHandle(int32_t handle, FlossGattClientObserver* observer);
