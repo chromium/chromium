@@ -48,7 +48,8 @@ namespace {
 namespace crosapi = ::crosapi::mojom;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kKeyboardDiagnosticsUrl[] = "chrome://diagnostics?input";
+const char kKeyboardDiagnosticsUrl[] =
+    "chrome://diagnostics?input&showDefaultKeyboardTester";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

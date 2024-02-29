@@ -185,6 +185,34 @@ suite('inputListTestSuite', function() {
     assertTrue(keyboardTester.isOpen());
   });
 
+  test('KeyboardTesterShowDirectlyWithOneKeyboard', async () => {
+    const params = new URLSearchParams(window.location.search);
+    params.set('showDefaultKeyboardTester', '');
+    window.history.replaceState(
+        null, '', `${window.location.pathname}?${params.toString()}`);
+
+    await initializeInputList([fakeKeyboards[0]], []);
+    await flushTasks();
+
+    const keyboardTester =
+        inputListElement.shadowRoot.querySelector('keyboard-tester');
+    assertTrue(keyboardTester.isOpen());
+  });
+
+  test('KeyboardTesterShowDirectlyWithNoKeyboard', async () => {
+    const params = new URLSearchParams(window.location.search);
+    params.set('showDefaultKeyboardTester', '');
+    window.history.replaceState(
+        null, '', `${window.location.pathname}?${params.toString()}`);
+
+    await initializeInputList([], []);
+    await flushTasks();
+
+    const keyboardTester =
+        inputListElement.shadowRoot.querySelector('keyboard-tester');
+    assertFalse(keyboardTester.isOpen());
+  });
+
   test('KeyboardTesterCloseOnLidClosed', async () => {
     await initializeInputList([fakeKeyboards[0]], []);
     const testButton =
