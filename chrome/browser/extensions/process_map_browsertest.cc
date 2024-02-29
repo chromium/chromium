@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
@@ -221,6 +222,9 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
       extension_dir->WriteFile(
           FILE_PATH_LITERAL("parent.html"),
           base::StringPrintf(kPageContent, e1_page_url.spec().c_str()));
+      // Create a page that is not listed as a web_accessible_resource.
+      extension_dir->WriteFile(FILE_PATH_LITERAL("private_page.html"),
+                               R"(<html>E2 Private</html>)");
       extension2 = LoadExtension(extension_dir->UnpackedPath());
       extension_dirs_.push_back(std::move(extension_dir));
     }
@@ -739,6 +743,28 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   // doesn't mean the extension it contains is "sandboxed".
   EXPECT_FALSE(ExtensionFrameIsSandboxed(main_frame));
   EXPECT_FALSE(ExtensionFrameIsSandboxed(sandboxed_child_frame));
+
+  // Attempt to have `extension1` (in `sandboxed_child_frame`) load a
+  // non-web-accessible resource from `extension2`. This should fail. The fact
+  // that the child is sandboxed doesn't matter.
+  GURL e2_private_page_url = extension2->GetResourceURL("private_page.html");
+  const char kJsScript[] =
+      R"(
+        frm = document.createElement('iframe');
+        frm.src = $1;
+        document.body.appendChild(frm);
+      )";
+  content::TestNavigationObserver observer(GetActiveTab(), 1);
+  EXPECT_TRUE(ExecJs(sandboxed_child_frame,
+                     content::JsReplace(kJsScript, e2_private_page_url)));
+  observer.Wait();
+
+  EXPECT_FALSE(observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, observer.last_net_error_code());
+  content::RenderFrameHost* grand_child_frame =
+      content::ChildFrameAt(sandboxed_child_frame, 0);
+  EXPECT_NE(nullptr, grand_child_frame);
+  EXPECT_EQ(e2_private_page_url, grand_child_frame->GetLastCommittedURL());
 }
 
 // Tests that sandboxed extension frames are considered privileged

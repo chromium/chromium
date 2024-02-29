@@ -91,11 +91,10 @@ bool AllowCrossRendererResourceLoad(
     return true;
   }
 
-  // When navigating in subframe, allow if it is the same origin
-  // as the top-level frame. This can only be the case if the subframe
-  // request is coming from the extension process.
+  // When navigating in subframe, verify that the extension the resource is
+  // loaded from matches the process loading it.
   if (network::IsRequestDestinationEmbeddedFrame(destination) &&
-      process_map.Contains(child_id)) {
+      process_map.Contains(extension->id(), child_id)) {
     *allowed = true;
     return true;
   }
