@@ -923,6 +923,12 @@ uLong ZEXPORT deflateBound(z_streamp strm, uLong sourceLen) {
         wraplen = 6;
     }
 
+    /* With Chromium's hashing, s->hash_bits may not correspond to the
+       memLevel, making the computations below incorrect. Return the
+       conservative bound. */
+    if (s->chromium_zlib_hash)
+        return (fixedlen > storelen ? fixedlen : storelen) + wraplen;
+
     /* if not default parameters, return one of the conservative bounds */
     if (s->w_bits != 15 || s->hash_bits != 8 + 7)
         return (s->w_bits <= s->hash_bits && s->level ? fixedlen : storelen) +
