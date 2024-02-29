@@ -179069,6 +179069,32 @@
        {}
       ]
      ],
+     "collapsed-border-partial-invalidation-001.html": [
+      "67330e4d2c4e976fd4837334417151dab50e4cb6",
+      [
+       null,
+       [
+        [
+         "/css/css-tables/collapsed-border-partial-invalidation-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "collapsed-border-partial-invalidation-002.html": [
+      "e48271995cf0ebd41b2afdbe8d0a110dac280082",
+      [
+       null,
+       [
+        [
+         "/css/css-tables/collapsed-border-partial-invalidation-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "collapsed-border-positioned-tr-td.html": [
       "d5c6094497268941071e516073a54f38e5900d45",
       [
@@ -226564,6 +226590,32 @@
        {}
       ]
      ],
+     "calc-rounding-001.html": [
+      "46ea2ebc04560a11f5047838a8f0b7db908e7d76",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-rounding-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-rounding-002.html": [
+      "32c4a75dd8f2185866b2f1eba5e19ff884e38373",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-rounding-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "calc-text-indent-1.html": [
       "f1480f46e773e8767367306dd16a64950f176880",
       [
@@ -258660,65 +258712,130 @@
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic.html": [
-        "6376d07b0e640b617ef100b7c04e8fe93e352ee8",
+       "2d.filter.canvasFilterObject.gaussianBlur.isotropic.tentative.html": [
+        "f4c8c1033abc400b1876ee63d3cbfd01ac18d784",
         [
          null,
          [
           [
-           "/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic-expected.html",
+           "/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.isotropic.tentative-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x.html": [
-        "145cb32757adbec61bb541a0cf6737b3ac9146f4",
+       "2d.filter.canvasFilterObject.gaussianBlur.mostly-x.tentative.html": [
+        "b3efcb8c3e64070f40e572d0f63a0b18746209c7",
         [
          null,
          [
           [
-           "/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x-expected.html",
+           "/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.mostly-x.tentative-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y.html": [
-        "e921e0eaa65a6410a66aadce57fd8b1fe6096998",
+       "2d.filter.canvasFilterObject.gaussianBlur.mostly-y.tentative.html": [
+        "d5cc6e0058ca23328f5d7a4d08ddcfffef2dc112",
         [
          null,
          [
           [
-           "/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y-expected.html",
+           "/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.mostly-y.tentative-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only.html": [
-        "fd6ac687f9cf72a2efbf0975e5d645c88d5d4ed8",
+       "2d.filter.canvasFilterObject.gaussianBlur.x-only.tentative.html": [
+        "4e8576fe746d6ed92a59f6973cc1550760ca39d1",
         [
          null,
          [
           [
-           "/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only-expected.html",
+           "/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.x-only.tentative-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only.html": [
-        "6442433e7c5a37e5447a9871e7528f16cd37b9c9",
+       "2d.filter.canvasFilterObject.gaussianBlur.y-only.tentative.html": [
+        "ec0a2353cfd18c682f3d76b060021c93972fa4f2",
         [
          null,
          [
           [
-           "/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only-expected.html",
+           "/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.y-only.tentative-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.layers.gaussianBlur.isotropic.html": [
+        "a2cc098896823a201c7e6f108e6b2e81b432c13d",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/filters/2d.filter.layers.gaussianBlur.isotropic-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.layers.gaussianBlur.mostly-x.html": [
+        "0090e0e71e0a30deaef2fa725d285a47dfe94350",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/filters/2d.filter.layers.gaussianBlur.mostly-x-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.layers.gaussianBlur.mostly-y.html": [
+        "5c481cbe255dc5155d885d543dfc0504c2c3edea",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/filters/2d.filter.layers.gaussianBlur.mostly-y-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.layers.gaussianBlur.x-only.html": [
+        "f7940eb92154d5862635477c3665de0901c409bc",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/filters/2d.filter.layers.gaussianBlur.x-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.layers.gaussianBlur.y-only.html": [
+        "59421a1ff34a659b68c500830a52f333d9fe6f0c",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/filters/2d.filter.layers.gaussianBlur.y-only-expected.html",
            "=="
           ]
          ],
@@ -260815,130 +260932,260 @@
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic.html": [
-        "4417a1917c9abe01ad1fd7ed90051c72be1080e7",
+       "2d.filter.canvasFilterObject.gaussianBlur.isotropic.tentative.html": [
+        "801e6fdb8c5b867fd5cf84c2baa0d7ebfb872a63",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic-expected.html",
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.isotropic.tentative-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic.w.html": [
-        "d2024ad205e415ef069faef0a47d4008c531dbe9",
+       "2d.filter.canvasFilterObject.gaussianBlur.isotropic.tentative.w.html": [
+        "6c7c7f7649d8e17a962c22fe4352bb26226bb152",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic-expected.html",
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.isotropic.tentative-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x.html": [
-        "2ea26359fe9b5f05a874a79566a4964351aaff70",
+       "2d.filter.canvasFilterObject.gaussianBlur.mostly-x.tentative.html": [
+        "ba986d8e7b42aea8e42e8bc014f094dfee0fcdea",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x-expected.html",
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.mostly-x.tentative-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x.w.html": [
-        "fa49ea4682823b3b48b6fa77f3dbb4fae2e61812",
+       "2d.filter.canvasFilterObject.gaussianBlur.mostly-x.tentative.w.html": [
+        "86fe086327df6b70463224f558f54835d0bbd7d2",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x-expected.html",
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.mostly-x.tentative-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y.html": [
-        "a9783ccb6a006a34d8cba0d533e23099c6ee7024",
+       "2d.filter.canvasFilterObject.gaussianBlur.mostly-y.tentative.html": [
+        "0265cfa6c4fd643cda2eedb5792c6dfdf479c88f",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y-expected.html",
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.mostly-y.tentative-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y.w.html": [
-        "ab83f50ea0e36b36caeb3411f698b19cf1fec636",
+       "2d.filter.canvasFilterObject.gaussianBlur.mostly-y.tentative.w.html": [
+        "c22b3208571babcf281d394c6e970adf9c9f95a0",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y-expected.html",
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.mostly-y.tentative-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only.html": [
-        "3028c2a700e1c4d2736de39565abfbbd00f1ac6f",
+       "2d.filter.canvasFilterObject.gaussianBlur.x-only.tentative.html": [
+        "3ed8e9ddf9f794f5a6bd6bc087bb00cf21cd205f",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only-expected.html",
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.x-only.tentative-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only.w.html": [
-        "e8482cf3ed8df4d0c66dc2fd99a9f3011f6edc19",
+       "2d.filter.canvasFilterObject.gaussianBlur.x-only.tentative.w.html": [
+        "35cbc1b36580c3bdb7f23092a1a5781214386d2d",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only-expected.html",
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.x-only.tentative-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only.html": [
-        "fca324716b4807d54c74a0045704de3ced4040aa",
+       "2d.filter.canvasFilterObject.gaussianBlur.y-only.tentative.html": [
+        "f563ad9d770b2222bb98d1a2bb0b3bda5d9548a1",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only-expected.html",
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.y-only.tentative-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only.w.html": [
-        "50cfb3083a2507040dabb7fc577d5edbbba15534",
+       "2d.filter.canvasFilterObject.gaussianBlur.y-only.tentative.w.html": [
+        "171a41caa8ce51d8adb001368a0455e927c8fab7",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only-expected.html",
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.y-only.tentative-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.layers.gaussianBlur.isotropic.html": [
+        "50a98df1bed0b50618c9ffd2e9ccae1b37fccfdd",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.layers.gaussianBlur.isotropic-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.layers.gaussianBlur.isotropic.w.html": [
+        "a68b8e78a2c0f276c9c3c467794d7f663359e214",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.layers.gaussianBlur.isotropic-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.layers.gaussianBlur.mostly-x.html": [
+        "efc634796c2d95fcf60497bcb80cb48fc62786aa",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.layers.gaussianBlur.mostly-x-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.layers.gaussianBlur.mostly-x.w.html": [
+        "7d20d7850307f635827a679153015175a63acaef",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.layers.gaussianBlur.mostly-x-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.layers.gaussianBlur.mostly-y.html": [
+        "bdc6e66fe58f4ec50206af8a8a3841feb9eda077",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.layers.gaussianBlur.mostly-y-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.layers.gaussianBlur.mostly-y.w.html": [
+        "dfd6438b1977df60655a9d2b8a2dc8c8a1cc5197",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.layers.gaussianBlur.mostly-y-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.layers.gaussianBlur.x-only.html": [
+        "0d42acb8b5f9ddab79df2b31d9507dde84766318",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.layers.gaussianBlur.x-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.layers.gaussianBlur.x-only.w.html": [
+        "b235c7ad38c3037116d60983f05b9d9efdfdddc8",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.layers.gaussianBlur.x-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.layers.gaussianBlur.y-only.html": [
+        "c9bc85d6997e37331f5f885a9178e717cb8e7d63",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.layers.gaussianBlur.y-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.layers.gaussianBlur.y-only.w.html": [
+        "5deb96c2552925e4ab3460e6383a9d55bff56410",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.layers.gaussianBlur.y-only-expected.html",
            "=="
           ]
          ],
@@ -286772,11 +287019,11 @@
     ],
     "headers": {
      "header-origin-same-origin-expected.txt": [
-      "65ed3be30ce73f18b39e687772dbfbdc65bfa8f8",
+      "0fab8104bf5a860c6b45af4b79309c18bd87a652",
       []
      ],
      "header-referrer.js": [
-      "f30385386aca6f1f4b4a9defd1bea4ddfa21dd5a",
+      "1e9d4f697d008ee793b8649280bbe712acf56d0f",
       []
      ]
     },
@@ -291302,6 +291549,10 @@
        "00700666675413d378bba7c3f8bed12f2b9b4849",
        []
       ],
+      "manifest-token-nocors.json": [
+       "77ba1b4702bc03c324d1af007eacb9d24df62c3b",
+       []
+      ],
       "manifest.py": [
        "a40fc100eee697ed7dcd451626409af18606442e",
        []
@@ -291371,7 +291622,7 @@
        []
       ],
       "request-params-check.py": [
-       "daf91aad8f154af610d299c0de249bbc76db53c8",
+       "b774496d5dab3e9bbce92f94cb0dc27128b909d4",
        []
       ],
       "resolve.html": [
@@ -291391,7 +291642,7 @@
        []
       ],
       "token.py": [
-       "b914eb2d9656cb4a892c8b51dc1754748b86d5c5",
+       "7ec81c390a9ea116e0a1809e08159a1d1c40e5a1",
        []
       ],
       "token_with_account_id.py": [
@@ -300735,6 +300986,10 @@
      ]
     },
     "css-borders": {
+     "META.yml": [
+      "e1ef68513f7cabfd9c1ec444e8e9c5f00c9e0baf",
+      []
+     ],
      "reference": {
       "border-radius-greater-than-width-ref.html": [
        "3c8c470ef5ac93ed8d29fb26d40a2c4bbea47827",
@@ -325961,6 +326216,14 @@
       "ab9d83927458d5b9881b07bc7fd8a1d31e471b33",
       []
      ],
+     "collapsed-border-partial-invalidation-001-ref.html": [
+      "a3705965fe4470f25cb98c331f148b8b93fd22fc",
+      []
+     ],
+     "collapsed-border-partial-invalidation-002-ref.html": [
+      "d89389a6dc3bc2d86a17ea6f22857feaff6119fb",
+      []
+     ],
      "collapsed-border-positioned-tr-td-ref.html": [
       "b3099017699bb83d78bf0492c9c451ccd1e034bf",
       []
@@ -334643,6 +334906,14 @@
      ],
      "calc-rem-lang-ref.html": [
       "a0f6add684a57f394f2dd97b163a3ca9fc61a1ef",
+      []
+     ],
+     "calc-rounding-001-ref.html": [
+      "476e337505b0e21292a84f3fb91472db864716c5",
+      []
+     ],
+     "calc-rounding-002-ref.html": [
+      "a2e9fd0d188940cd1f6b198480141cde59801b97",
       []
      ],
      "calc-size": {
@@ -351259,7 +351530,7 @@
          []
         ],
         "rc-helper.js": [
-         "80c164f56053d3379e0ac5ed31cde312c09ae6a3",
+         "ad2119b7385684dff539d80b5f3a37aefae10816",
          []
         ],
         "service-worker.js": [
@@ -354243,24 +354514,44 @@
         "86c5710132f348bd3e2332983d7211f4b3315cdb",
         []
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic-expected.html": [
-        "f9571f208ea843b11bc18dfe142c08a950571ff7",
+       "2d.filter.canvasFilterObject.gaussianBlur.isotropic.tentative-expected.html": [
+        "dac31c97f126b4841499110f28a9fcbea711a732",
         []
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x-expected.html": [
-        "e76613271f3971ac267e13a6a36fe87036902a25",
+       "2d.filter.canvasFilterObject.gaussianBlur.mostly-x.tentative-expected.html": [
+        "88d0cb2de28097a7663b40a0fdb11383a4834363",
         []
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y-expected.html": [
-        "0f214fca9fdf37aba06dc20425c85d84c9bf2b19",
+       "2d.filter.canvasFilterObject.gaussianBlur.mostly-y.tentative-expected.html": [
+        "744983d4ae2127be450791ddbe5fb60473d378da",
         []
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only-expected.html": [
-        "285a6417266212d28aec1515a9d7c5a339d47338",
+       "2d.filter.canvasFilterObject.gaussianBlur.x-only.tentative-expected.html": [
+        "e611113e420c52605d133c444e2452a866ce7730",
         []
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only-expected.html": [
-        "d59945b5da6da751480b8d4361aa26670d69b3cc",
+       "2d.filter.canvasFilterObject.gaussianBlur.y-only.tentative-expected.html": [
+        "c6d915cb078f55d306cc369da8b1c3d1c4c0ef63",
+        []
+       ],
+       "2d.filter.layers.gaussianBlur.isotropic-expected.html": [
+        "4f937548628d17bb9a1760c04471f8386e080261",
+        []
+       ],
+       "2d.filter.layers.gaussianBlur.mostly-x-expected.html": [
+        "255270c192c54be83e27b2c24f0fe3c5b53839b4",
+        []
+       ],
+       "2d.filter.layers.gaussianBlur.mostly-y-expected.html": [
+        "76a46b15338faea4306c6454ba2e54129732a460",
+        []
+       ],
+       "2d.filter.layers.gaussianBlur.x-only-expected.html": [
+        "26741f984749f44d2974ecbd4ce59a708971b81c",
+        []
+       ],
+       "2d.filter.layers.gaussianBlur.y-only-expected.html": [
+        "d00eec6b578ad0434da90f83020f079ba27cced1",
         []
        ]
       },
@@ -355395,24 +355686,44 @@
         "86c5710132f348bd3e2332983d7211f4b3315cdb",
         []
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic-expected.html": [
-        "f9571f208ea843b11bc18dfe142c08a950571ff7",
+       "2d.filter.canvasFilterObject.gaussianBlur.isotropic.tentative-expected.html": [
+        "dac31c97f126b4841499110f28a9fcbea711a732",
         []
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x-expected.html": [
-        "e76613271f3971ac267e13a6a36fe87036902a25",
+       "2d.filter.canvasFilterObject.gaussianBlur.mostly-x.tentative-expected.html": [
+        "88d0cb2de28097a7663b40a0fdb11383a4834363",
         []
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y-expected.html": [
-        "0f214fca9fdf37aba06dc20425c85d84c9bf2b19",
+       "2d.filter.canvasFilterObject.gaussianBlur.mostly-y.tentative-expected.html": [
+        "744983d4ae2127be450791ddbe5fb60473d378da",
         []
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only-expected.html": [
-        "285a6417266212d28aec1515a9d7c5a339d47338",
+       "2d.filter.canvasFilterObject.gaussianBlur.x-only.tentative-expected.html": [
+        "e611113e420c52605d133c444e2452a866ce7730",
         []
        ],
-       "2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only-expected.html": [
-        "d59945b5da6da751480b8d4361aa26670d69b3cc",
+       "2d.filter.canvasFilterObject.gaussianBlur.y-only.tentative-expected.html": [
+        "c6d915cb078f55d306cc369da8b1c3d1c4c0ef63",
+        []
+       ],
+       "2d.filter.layers.gaussianBlur.isotropic-expected.html": [
+        "4f937548628d17bb9a1760c04471f8386e080261",
+        []
+       ],
+       "2d.filter.layers.gaussianBlur.mostly-x-expected.html": [
+        "255270c192c54be83e27b2c24f0fe3c5b53839b4",
+        []
+       ],
+       "2d.filter.layers.gaussianBlur.mostly-y-expected.html": [
+        "76a46b15338faea4306c6454ba2e54129732a460",
+        []
+       ],
+       "2d.filter.layers.gaussianBlur.x-only-expected.html": [
+        "26741f984749f44d2974ecbd4ce59a708971b81c",
+        []
+       ],
+       "2d.filter.layers.gaussianBlur.y-only-expected.html": [
+        "d00eec6b578ad0434da90f83020f079ba27cced1",
         []
        ]
       },
@@ -355871,7 +356182,7 @@
        []
       ],
       "gentestutilsunion.py": [
-       "cf141f2f07475edb4912b6846aa67468648a6a74",
+       "4fe7f2bd42ee4fca6f3613fb60caca862f6d1baa",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -355968,7 +356279,7 @@
         []
        ],
        "filters.yaml": [
-        "01c83a33e2c0b92fc46b69039f47a4a867f809b3",
+        "e18ab61b41ef31153e4d55eb4020f60e02a492ef",
         []
        ],
        "layers.yaml": [
@@ -368965,10 +369276,6 @@
     "META.yml": [
      "212cae7fa52e95b820d11e7ca8e2eed7d36bf112",
      []
-    ],
-    "names-expected.txt": [
-     "5f7b69fbdee2c42443d374cf57ef185f2eed54bd",
-     []
     ]
    },
    "html-media-capture": {
@@ -375411,14 +375718,6 @@
      []
     ],
     "not-restored-reasons": {
-     "performance-navigation-timing-lock.https.tentative.window-expected.txt": [
-      "781a7c7a8ec887bd8d6f77b07aeee5618c7f50d7",
-      []
-     ],
-     "performance-navigation-timing-navigation-failure.tentative.window-expected.txt": [
-      "0a4aa3f96ce1ba0d949396bf28be3dfe8968d21e",
-      []
-     ],
      "test-helper.js": [
       "826b0ccb2bead6135d513564f80f786da4a98544",
       []
@@ -384253,7 +384552,7 @@
        []
       ],
       "utils.js": [
-       "940edcc0ca359e3ececefac7498acf66af898c67",
+       "bc1bc5911eb8552efd689f84a0e61d2f74aa268a",
        []
       ],
       "wake-lock.https.html": [
@@ -386459,13 +386758,7 @@
     "META.yml": [
      "b0a59c18030bd44644bde1df16b0c08e74ff6abd",
      []
-    ],
-    "name": {
-     "comp_host_language_label-expected.txt": [
-      "d0112f13dd5aab6c4531c551534dcdc0cbfe0641",
-      []
-     ]
-    }
+    ]
    },
    "timing-entrytypes-registry": {
     "META.yml": [
@@ -387683,10 +387976,6 @@
     "role": {
      "ReadMe.md": [
       "eb89da7846bec8a2611446dac153e16484937111",
-      []
-     ],
-     "generic-roles-expected.txt": [
-      "9cbbb87c61b339bffd46069521e69c8df033679f",
       []
      ]
     },
@@ -390321,6 +390610,12 @@
         "0941411fab84f20df84563698821f5cdb7a13ccd",
         []
        ],
+       "delete_cookies": {
+        "__init__.py": [
+         "4b73b0bcedf401f9af495d853e943501f81cce7e",
+         []
+        ]
+       },
        "get_cookies": {
         "__init__.py": [
          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -391256,30 +391551,6 @@
      "3f87fc8042d2b3de1bf13d64333ba08cdfdabb3b",
      []
     ],
-    "arg_min_max.https.any-expected.txt": [
-     "4aff9eaedf2f7e9403866c4d47e0c3a3bceb8e9d",
-     []
-    ],
-    "arg_min_max.https.any.worker-expected.txt": [
-     "4aff9eaedf2f7e9403866c4d47e0c3a3bceb8e9d",
-     []
-    ],
-    "batch_normalization.https.any-expected.txt": [
-     "0070a9c43de29a2e0722afc3c0751df54e6b5296",
-     []
-    ],
-    "batch_normalization.https.any.worker-expected.txt": [
-     "0070a9c43de29a2e0722afc3c0751df54e6b5296",
-     []
-    ],
-    "cast.https.any-expected.txt": [
-     "9b4696afb657b1e3f51ba2eac4109b9341cae542",
-     []
-    ],
-    "cast.https.any.worker-expected.txt": [
-     "9b4696afb657b1e3f51ba2eac4109b9341cae542",
-     []
-    ],
     "conformance_tests": {
      "arg_min_max.https.any-expected.txt": [
       "4aff9eaedf2f7e9403866c4d47e0c3a3bceb8e9d",
@@ -391490,160 +391761,12 @@
       []
      ]
     },
-    "constant.https.any-expected.txt": [
-     "f1e5051ab903e205575c1ddcd637d0f2860cc9c3",
-     []
-    ],
-    "constant.https.any.worker-expected.txt": [
-     "f1e5051ab903e205575c1ddcd637d0f2860cc9c3",
-     []
-    ],
-    "conv2d.https.any-expected.txt": [
-     "f2ab788fee7af0fa4affb55e9da84b7aa8df2597",
-     []
-    ],
-    "conv2d.https.any.worker-expected.txt": [
-     "f2ab788fee7af0fa4affb55e9da84b7aa8df2597",
-     []
-    ],
-    "conv_transpose2d.https.any-expected.txt": [
-     "a25167826cd77476a78d98450e1165a26ace77ad",
-     []
-    ],
-    "conv_transpose2d.https.any.worker-expected.txt": [
-     "a25167826cd77476a78d98450e1165a26ace77ad",
-     []
-    ],
-    "elementwise_binary.https.any-expected.txt": [
-     "8d8ca860775b4d5283204dc5b5bc8d851a147f26",
-     []
-    ],
-    "elementwise_binary.https.any.worker-expected.txt": [
-     "8d8ca860775b4d5283204dc5b5bc8d851a147f26",
-     []
-    ],
-    "elementwise_logical.https.any-expected.txt": [
-     "257892f56f4b7a5332f3eb6df01ee3872b8f7748",
-     []
-    ],
-    "elementwise_unary.https.any-expected.txt": [
-     "65caf10349d8ed5289723fd375eaebf8c26c8e73",
-     []
-    ],
-    "elementwise_unary.https.any.worker-expected.txt": [
-     "65caf10349d8ed5289723fd375eaebf8c26c8e73",
-     []
-    ],
-    "elu.https.any-expected.txt": [
-     "4e44422b63cf51e81ff32ccd4ed93404b6c4051c",
-     []
-    ],
-    "elu.https.any.worker-expected.txt": [
-     "4e44422b63cf51e81ff32ccd4ed93404b6c4051c",
-     []
-    ],
-    "expand.https.any-expected.txt": [
-     "8f2c06a76d63c9ff281d7e2fd01b5fd30811918a",
-     []
-    ],
-    "expand.https.any.worker-expected.txt": [
-     "8f2c06a76d63c9ff281d7e2fd01b5fd30811918a",
-     []
-    ],
-    "gather.https.any-expected.txt": [
-     "c2c963cb7b83e31d0e5767e0103713b2dafb87f3",
-     []
-    ],
-    "gather.https.any.worker-expected.txt": [
-     "c2c963cb7b83e31d0e5767e0103713b2dafb87f3",
-     []
-    ],
-    "gemm.https.any-expected.txt": [
-     "3bc8a4d835fa3cd726ebb51333b95c7ab878ae96",
-     []
-    ],
-    "gemm.https.any.worker-expected.txt": [
-     "3bc8a4d835fa3cd726ebb51333b95c7ab878ae96",
-     []
-    ],
-    "hard_sigmoid.https.any-expected.txt": [
-     "512251a4980693a848fdc96a2a91a1014017dff8",
-     []
-    ],
-    "hard_sigmoid.https.any.worker-expected.txt": [
-     "512251a4980693a848fdc96a2a91a1014017dff8",
-     []
-    ],
     "idlharness.https.any-expected.txt": [
      "d8b5b08dc9774fa2bd1e2ce6bcad121e3f02d7d9",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
      "05cd225c9302239f0dc71884c9ba48857a8a5d5f",
-     []
-    ],
-    "instance_normalization.https.any-expected.txt": [
-     "a21bb3c22b15814c0fd81c093d5abadbf97caed7",
-     []
-    ],
-    "instance_normalization.https.any.worker-expected.txt": [
-     "a21bb3c22b15814c0fd81c093d5abadbf97caed7",
-     []
-    ],
-    "layer_normalization.https.any-expected.txt": [
-     "5ac33602acdc73862d9b9d2b9cf86066c81ef641",
-     []
-    ],
-    "layer_normalization.https.any.worker-expected.txt": [
-     "5ac33602acdc73862d9b9d2b9cf86066c81ef641",
-     []
-    ],
-    "linear.https.any-expected.txt": [
-     "95c04e19f5b365acde0bdb2119d2feff03b7f2c1",
-     []
-    ],
-    "linear.https.any.worker-expected.txt": [
-     "95c04e19f5b365acde0bdb2119d2feff03b7f2c1",
-     []
-    ],
-    "matmul.https.any-expected.txt": [
-     "37ab231f355b9966ed525721a6f5f76dee909398",
-     []
-    ],
-    "matmul.https.any.worker-expected.txt": [
-     "37ab231f355b9966ed525721a6f5f76dee909398",
-     []
-    ],
-    "pad.https.any-expected.txt": [
-     "3a61439d50dd7980dc465d81e04977e665e559ba",
-     []
-    ],
-    "pad.https.any.worker-expected.txt": [
-     "3a61439d50dd7980dc465d81e04977e665e559ba",
-     []
-    ],
-    "pooling.https.any-expected.txt": [
-     "7cf96aa069b82b5b560500d95195c7399c02b9b9",
-     []
-    ],
-    "pooling.https.any.worker-expected.txt": [
-     "7cf96aa069b82b5b560500d95195c7399c02b9b9",
-     []
-    ],
-    "prelu.https.any-expected.txt": [
-     "3c022185f74d7e6dcde8aa7074af95fb4a260af0",
-     []
-    ],
-    "prelu.https.any.worker-expected.txt": [
-     "3c022185f74d7e6dcde8aa7074af95fb4a260af0",
-     []
-    ],
-    "reduction.https.any-expected.txt": [
-     "b910943e96a179e3099dd12b8f7d4b7c785d88ed",
-     []
-    ],
-    "reduction.https.any.worker-expected.txt": [
-     "b910943e96a179e3099dd12b8f7d4b7c785d88ed",
      []
     ],
     "resources": {
@@ -391949,47 +392072,7 @@
       "10c704384f46107be234bcbd65d3beea034ba2bf",
       []
      ]
-    },
-    "softplus.https.any-expected.txt": [
-     "4334c31880022c9b62c331dd959f3afc22a9c79e",
-     []
-    ],
-    "softplus.https.any.worker-expected.txt": [
-     "4334c31880022c9b62c331dd959f3afc22a9c79e",
-     []
-    ],
-    "softsign.https.any-expected.txt": [
-     "36f99abe023229e7485caf5b69ed7ec314110b91",
-     []
-    ],
-    "softsign.https.any.worker-expected.txt": [
-     "36f99abe023229e7485caf5b69ed7ec314110b91",
-     []
-    ],
-    "squeeze.https.any-expected.txt": [
-     "e1a2e675c721944ac46c12517a6cceb968824d43",
-     []
-    ],
-    "squeeze.https.any.worker-expected.txt": [
-     "e1a2e675c721944ac46c12517a6cceb968824d43",
-     []
-    ],
-    "triangular.https.any-expected.txt": [
-     "d1b95c65a9d3858125789c418cd56f60910e2058",
-     []
-    ],
-    "triangular.https.any.worker-expected.txt": [
-     "d1b95c65a9d3858125789c418cd56f60910e2058",
-     []
-    ],
-    "where.https.any-expected.txt": [
-     "2d02412c0be6254be345bb9f292eff49adc42b99",
-     []
-    ],
-    "where.https.any.worker-expected.txt": [
-     "2d02412c0be6254be345bb9f292eff49adc42b99",
-     []
-    ]
+    }
    },
    "webrtc": {
     "DIR_METADATA": [
@@ -392893,6 +392976,10 @@
       "ce5f3a7f6ae7a7f816471e869584ab2eb01632e5",
       []
      ],
+     "passive-close-abort_wsh.py": [
+      "ac3f67c8db17f2cfe796431249525bfdf5c435f0",
+      []
+     ],
      "protocol_array_wsh.py": [
       "be24ee01fd9aabd0722b7a498289a26eeb532037",
       []
@@ -392911,6 +392998,10 @@
      ],
      "referrer_wsh.py": [
       "9df652dc3cbf12f6364462839e340848dec8e08f",
+      []
+     ],
+     "remote-close_wsh.py": [
+      "aadd99ea950d0d8414c432356443d5f3ce3e444e",
       []
      ],
      "send-backpressure_wsh.py": [
@@ -393136,6 +393227,22 @@
       ],
       "constructor.any_wpt_flags=h2-expected.txt": [
        "44ec0771d8d016219790ea61d5d1a5b0242f1750",
+       []
+      ],
+      "remote-close.any.serviceworker_wpt_flags=h2-expected.txt": [
+       "7d8f86827274bfb56e3c3587e827000e3f3693bb",
+       []
+      ],
+      "remote-close.any.sharedworker_wpt_flags=h2-expected.txt": [
+       "7d8f86827274bfb56e3c3587e827000e3f3693bb",
+       []
+      ],
+      "remote-close.any.worker_wpt_flags=h2-expected.txt": [
+       "7d8f86827274bfb56e3c3587e827000e3f3693bb",
+       []
+      ],
+      "remote-close.any_wpt_flags=h2-expected.txt": [
+       "7d8f86827274bfb56e3c3587e827000e3f3693bb",
        []
       ],
       "resources": {
@@ -414466,7 +414573,7 @@
       ]
      ],
      "header-origin-same-origin.html": [
-      "747c67244c06ff369d20b341dad87857cd0cc03b",
+      "7c1bb2ce9a5e8a01aea008d176a4d0a9ddd6322e",
       [
        null,
        {}
@@ -434057,6 +434164,15 @@
       }
      ]
     ],
+    "fedcm-identity-assertion-nocors.https.html": [
+     "612387b4a0dc69a428f85333868b7f9877c76a81",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "fedcm-iframe.https.html": [
      "dc0c17dea695e632988c773df32a7c0e20d24d91",
      [
@@ -436397,13 +436513,6 @@
      ],
      "anchor-name-style-contained.html": [
       "a5295758891e4e29353e3e1942c547b7d5c92ea5",
-      [
-       null,
-       {}
-      ]
-     ],
-     "anchor-non-oof-inherit.html": [
-      "75f98a1ebfe0e6b61008e2152bea88228829af08",
       [
        null,
        {}
@@ -466620,13 +466729,6 @@
        {}
       ]
      ],
-     "calc-rounding-001.html": [
-      "dfd03a695305e0721154bf26f68a5912216d9862",
-      [
-       null,
-       {}
-      ]
-     ],
      "calc-rounds-to-integer.html": [
       "80589785c36e14d0859b3f4a5555f7e9d47ac963",
       [
@@ -468645,6 +468747,13 @@
      ],
      "CSSStyleSheet-constructable-duplicate.html": [
       "579f5d0fcedc44b38ad98a94610e01850a3fef5d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "CSSStyleSheet-constructable-invalidation.html": [
+      "f63abaa80c4a20d7b37916d05a1be37ef87bdefa",
       [
        null,
        {}
@@ -479604,6 +479713,15 @@
        {
         "testdriver": true,
         "timeout": "long"
+       }
+      ]
+     ],
+     "delete-in-inline-editing-host-under-shadow-root.html": [
+      "c1a825a6452f31305d8677bccfb2804ba92dfd0d",
+      [
+       null,
+       {
+        "testdriver": true
        }
       ]
      ],
@@ -559459,6 +559577,69 @@
       ],
       "element-render-blocking-028.tentative.html": [
        "a64d542c4ac7ef97a2e3427dabe485519da97518",
+       [
+        null,
+        {}
+       ]
+      ],
+      "element-render-blocking-029.tentative.html": [
+       "44dff3cb8429d901b65f5991d3696abb31ff6831",
+       [
+        null,
+        {}
+       ]
+      ],
+      "element-render-blocking-030.tentative.html": [
+       "307c2d303d045d090c180ae22476b1419b91d9bc",
+       [
+        null,
+        {}
+       ]
+      ],
+      "element-render-blocking-031.tentative.html": [
+       "2098483a0600c642f32403fff97be2bb4fed4572",
+       [
+        null,
+        {}
+       ]
+      ],
+      "element-render-blocking-032.tentative.html": [
+       "307c2d303d045d090c180ae22476b1419b91d9bc",
+       [
+        null,
+        {}
+       ]
+      ],
+      "element-render-blocking-033.tentative.html": [
+       "59d41c08c0a677e0e462c53e47e76635cb3bf9b1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "element-render-blocking-034.tentative.html": [
+       "92d4a06b1a93f4f2f6dfb77b4c293064522ebca4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "element-render-blocking-035.tentative.html": [
+       "fd3b6b1759f21d2b71fd9b0b137324529c72f14a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "element-render-blocking-036.tentative.html": [
+       "83637b3a08b859b0fa46b3bfdab6edc8df86c7bb",
+       [
+        null,
+        {}
+       ]
+      ],
+      "element-render-blocking-037.tentative.html": [
+       "885d64604fe8c1ad4b605a3582c90c70c8302f5d",
        [
         null,
         {}
@@ -681009,7 +681190,38 @@
        ]
       ],
       "close.any.js": [
-       "098caf31c82fa9b702f3e1e260c7f7af09445052",
+       "ad41dc6e2e9fd3fcff4af10da30c548a60d8e880",
+       [
+        "websockets/stream/tentative/close.any.html?default",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
        [
         "websockets/stream/tentative/close.any.html?wpt_flags=h2",
         {
@@ -681025,6 +681237,10 @@
           [
            "global",
            "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
           ],
           [
            "variant",
@@ -681055,6 +681271,41 @@
           ],
           [
            "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/close.any.serviceworker.html?default",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
            "?wss"
           ],
           [
@@ -681079,6 +681330,10 @@
           [
            "global",
            "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
           ],
           [
            "variant",
@@ -681109,6 +681364,41 @@
           ],
           [
            "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/close.any.sharedworker.html?default",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
            "?wss"
           ],
           [
@@ -681133,6 +681423,10 @@
           [
            "global",
            "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
           ],
           [
            "variant",
@@ -681163,6 +681457,41 @@
           ],
           [
            "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/close.any.worker.html?default",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
            "?wss"
           ],
           [
@@ -681190,6 +681519,10 @@
           ],
           [
            "variant",
+           "?default"
+          ],
+          [
+           "variant",
            "?wss"
           ],
           [
@@ -681214,6 +681547,10 @@
           [
            "global",
            "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
           ],
           [
            "variant",
@@ -681433,6 +681770,381 @@
           [
            "global",
            "window,worker"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ]
+      ],
+      "remote-close.any.js": [
+       "b7fd321914a4e6f9bf70d431bca591a7c5460675",
+       [
+        "websockets/stream/tentative/remote-close.any.html?default",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/remote-close.any.html?wpt_flags=h2",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/remote-close.any.html?wss",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/remote-close.any.serviceworker.html?default",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/remote-close.any.serviceworker.html?wpt_flags=h2",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/remote-close.any.serviceworker.html?wss",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/remote-close.any.sharedworker.html?default",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/remote-close.any.sharedworker.html?wpt_flags=h2",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/remote-close.any.sharedworker.html?wss",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/remote-close.any.worker.html?default",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/remote-close.any.worker.html?wpt_flags=h2",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/remote-close.any.worker.html?wss",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
           ],
           [
            "variant",
@@ -707164,6 +707876,29 @@
        }
       },
       "storage": {
+       "delete_cookies": {
+        "filter.py": [
+         "eff2f00dd320a45db4b3f7b0e99fcacee8a2c19f",
+         [
+          null,
+          {}
+         ]
+        ],
+        "invalid.py": [
+         "ba9c5a5da0ab510473afef3e860eedf71d7676a7",
+         [
+          null,
+          {}
+         ]
+        ],
+        "partition.py": [
+         "0b3726142cbba03602431402cb34fc48a1a8d6f9",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
        "get_cookies": {
         "filter.py": [
          "b244ef86ac24d22c619fcdbc73f32d3edee828cc",
@@ -707173,14 +707908,14 @@
          ]
         ],
         "invalid.py": [
-         "fbd5647f30345387e0d63e4741d2f630f47a4e1c",
+         "93d0da2ac472a7b406138198c70f9264033403ed",
          [
           null,
           {}
          ]
         ],
         "partition.py": [
-         "a1c26503525034614a1861b3512b60144df9f2ca",
+         "fb1755421ece4c9af0b1392c085af8286d17b0fd",
          [
           null,
           {}
@@ -707245,7 +707980,7 @@
          ]
         ],
         "invalid.py": [
-         "53d2573575b645b76c2e101c833e28e87e7d86b4",
+         "9962d303a14672010b56c30bf502dfaf733300d1",
          [
           null,
           {}
@@ -707259,7 +707994,7 @@
          ]
         ],
         "partition.py": [
-         "cb0ace1f4028290b2089857fb8ba9e60aa2acbd6",
+         "9283ee0732912e2a77f51ec25e8cbe413759161a",
          [
           null,
           {}

@@ -18,17 +18,17 @@ function testReferrerHeader(testBase, expectedReferrer, mayBeBlockedAsMixedConte
   }, "Test referer header " + testBase);
 }
 
-function testOriginHeader(testBase, expectedOrigin, usePOST) {
+function testOriginHeader(testBase, expectedOrigin, addBody) {
   var id = self.token();
   var testUrl = testBase + "inspect-header.py?header=origin&cmd=put&id=" + id;
 
   promise_test(function(test) {
-    const sentBeacon = navigator.sendBeacon(testUrl, usePOST ? "data" : undefined);
+    const sentBeacon = navigator.sendBeacon(testUrl, addBody ? "data" : undefined);
     assert_true(sentBeacon, "SendBeacon Succeeded");
     return pollResult(expectedOrigin, id, "origin") .then(result => {
       assert_equals(result, expectedOrigin, "Correct origin header result");
     });
-  }, "Test origin header " + testBase + (usePOST ? " - POST" : " - GET"));
+  }, "Test origin header " + testBase + (addBody ? " - with body" : " - without body"));
 }
 
 // SendBeacon is an asynchronous and non-blocking request to a web server.

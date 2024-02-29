@@ -13,13 +13,13 @@
     <script src="header-referrer.js"></script>
     <script>
       var testBase = RESOURCES_DIR;
-      const usePOST = true;
+      const addBody = true;
       testOriginHeader(testBase, window.location.origin);
-      testOriginHeader(testBase, window.location.origin, usePOST);
+      testOriginHeader(testBase, window.location.origin, addBody);
 
       testBase = get_host_info().HTTP_REMOTE_ORIGIN + RESOURCES_DIR;
       testOriginHeader(testBase, "null");
-      testOriginHeader(testBase, "null", usePOST);
+      testOriginHeader(testBase, "null", addBody);
     </script>
   </body>
 </html>
