@@ -341,11 +341,15 @@ class AutofillAgent : public content::RenderFrameObserver,
   void OnTextFieldDidChange(const blink::WebFormControlElement& element);
   void DidChangeScrollOffsetImpl(const blink::WebFormControlElement& element);
 
-  // Shows the autofill suggestions for `element`. This call is asynchronous
-  // and may or may not lead to the showing of a suggestion popup (no popup is
-  // shown if there are no available suggestions).
+  // Shows Password Manager, password generation, or Autofill suggestions for
+  // `element`. This call is asynchronous and may or may not lead to the showing
+  // of a suggestion popup (no popup is shown if there are no available
+  // suggestions).
   void ShowSuggestions(const blink::WebFormControlElement& element,
                        AutofillSuggestionTriggerSource trigger_source);
+
+  // Shows Autofill suggestions for `element` if `element` is a contenteditable.
+  void ShowSuggestionsForContentEditable(const blink::WebElement& element);
 
   // Queries the browser for Autocomplete and Autofill suggestions for the given
   // `element`.

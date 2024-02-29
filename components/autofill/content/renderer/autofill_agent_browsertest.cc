@@ -20,12 +20,14 @@
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
+#include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
@@ -136,6 +138,12 @@ class AutofillAgentTest : public test::AutofillRendererTest {
   blink::WebElement GetWebElementById(const std::string& id) {
     return GetMainFrame()->GetDocument().GetElementById(
         blink::WebString::FromUTF8(id));
+  }
+
+  FormRendererId GetFormRendererIdById(std::string_view id) {
+    return form_util::GetFormRendererId(
+        GetMainFrame()->GetDocument().GetElementById(
+            blink::WebString::FromUTF8(id)));
   }
 
   void SimulateUserEditField(const blink::WebFormElement& form,
@@ -491,12 +499,6 @@ class AutofillAgentTestExtractForms : public AutofillAgentTestWithFeatures {
     AutofillAgentTestWithFeatures::LoadHTML(html);
     WaitForFormsSeen();
   }
-
-  FormRendererId GetFormRendererIdById(std::string_view id) {
-    return form_util::GetFormRendererId(
-        GetMainFrame()->GetDocument().GetElementById(
-            blink::WebString::FromUTF8(id)));
-  }
 };
 
 TEST_F(AutofillAgentTestExtractForms, CallbackIsCalledIfFormIsNotFound) {
@@ -563,6 +565,17 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerSuggestions) {
   autofill_agent().TriggerSuggestions(
       FieldRendererId(2),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
+}
+
+// Tests that `AutofillDriver::TriggerSuggestions()` works for contenteditables.
+TEST_F(AutofillAgentTestWithFeatures, TriggerSuggestionsForContenteditable) {
+  LoadHTML("<body><div id=ce contenteditable></div></body>");
+
+  FormRendererId form_id = GetFormRendererIdById("ce");
+  EXPECT_CALL(autofill_driver(), AskForValuesToFill);
+  autofill_agent().TriggerSuggestions(
+      FieldRendererId(form_id.value()),
+      AutofillSuggestionTriggerSource::kComposeDialogLostFocus);
 }
 
 TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {

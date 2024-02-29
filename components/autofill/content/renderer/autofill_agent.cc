@@ -31,6 +31,7 @@
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/suggestion_properties.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -746,6 +747,15 @@ void AutofillAgent::TriggerSuggestions(
       !control_element.IsNull()) {
     last_queried_element_ = FieldRef(control_element);
     ShowSuggestions(control_element, trigger_source);
+    return;
+  }
+  if (trigger_source ==
+      AutofillSuggestionTriggerSource::kComposeDialogLostFocus) {
+    if (WebElement content_editable =
+            form_util::GetContentEditableByRendererId(field_id);
+        !content_editable.IsNull()) {
+      ShowSuggestionsForContentEditable(content_editable);
+    }
   }
 }
 
@@ -991,6 +1001,21 @@ void AutofillAgent::ShowSuggestions(
   }
 
   QueryAutofillSuggestions(element, trigger_source);
+}
+
+void AutofillAgent::ShowSuggestionsForContentEditable(
+    const blink::WebElement& element) {
+  std::optional<FormData> form = form_util::FindFormForContentEditable(element);
+  if (!form) {
+    return;
+  }
+  CHECK_EQ(form->fields.size(), 1u);
+  if (auto* autofill_driver = unsafe_autofill_driver()) {
+    is_popup_possibly_visible_ = true;
+    autofill_driver->AskForValuesToFill(
+        *form, form->fields[0], form->fields[0].bounds,
+        mojom::AutofillSuggestionTriggerSource::kContentEditableClicked);
+  }
 }
 
 void AutofillAgent::EnableHeavyFormDataScraping() {
@@ -1396,16 +1421,7 @@ void AutofillAgent::HandleFocusChangeComplete(
   //   false since at the preceding DidReceiveLeftMouseDownOrGestureTapInNode()
   //   call `node.Focused()` was false.
   if (!focused_element.IsNull()) {
-    if (std::optional<FormData> form =
-            form_util::FindFormForContentEditable(focused_element)) {
-      CHECK_EQ(form->fields.size(), 1u);
-      if (auto* autofill_driver = unsafe_autofill_driver()) {
-        is_popup_possibly_visible_ = true;
-        autofill_driver->AskForValuesToFill(
-            *form, form->fields[0], form->fields[0].bounds,
-            mojom::AutofillSuggestionTriggerSource::kContentEditableClicked);
-      }
-    }
+    ShowSuggestionsForContentEditable(focused_element);
   }
 }
 
