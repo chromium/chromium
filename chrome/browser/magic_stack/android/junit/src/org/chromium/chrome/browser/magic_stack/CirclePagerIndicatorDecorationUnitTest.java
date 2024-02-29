@@ -4,12 +4,9 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,7 +20,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.View;
-import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,7 +39,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
-import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
 
@@ -52,7 +47,6 @@ import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplaySty
 @Config(manifest = Config.NONE)
 public class CirclePagerIndicatorDecorationUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private UiConfig mUiConfig;
     @Mock private Canvas mCanvas;
     @Mock private RecyclerView mRecyclerView;
     @Mock private RecyclerView.Adapter mAdapter;
@@ -66,10 +60,9 @@ public class CirclePagerIndicatorDecorationUnitTest {
     private float mIndicatorItemDiameter;
     private float mIndicatorRadius;
 
-    private float mIndicatorItemPadding;
+    private int mIndicatorItemPadding;
     private int mParentViewWidth;
     private int mParentHeight;
-    private int mModuleInternalPaddingPx;
     private CirclePagerIndicatorDecoration mDecoration;
     private Context mContext;
 
@@ -81,13 +74,12 @@ public class CirclePagerIndicatorDecorationUnitTest {
 
         Resources resources = mContext.getResources();
         mIndicatorItemPadding =
-                (float) resources.getDimensionPixelSize(R.dimen.page_indicator_internal_padding);
+                resources.getDimensionPixelSize(R.dimen.page_indicator_internal_padding);
         mIndicatorItemDiameter = resources.getDimensionPixelSize(R.dimen.page_indicator_dot_size);
         mIndicatorRadius = mIndicatorItemDiameter / 2f;
         mIndicatorHeight =
                 (int) mIndicatorItemDiameter
                         + resources.getDimensionPixelSize(R.dimen.page_indicator_top_margin);
-        mModuleInternalPaddingPx = resources.getDimensionPixelSize(R.dimen.module_internal_padding);
         mParentViewWidth = 800;
         mParentHeight = 400;
         when(mRecyclerView.getHeight()).thenReturn(mParentHeight);
@@ -299,102 +291,88 @@ public class CirclePagerIndicatorDecorationUnitTest {
         Rect rect = new Rect();
         View view = Mockito.mock(View.class);
         RecyclerView.State state = Mockito.mock(State.class);
-        when(mRecyclerView.getMeasuredWidth()).thenReturn(mParentViewWidth);
         when(mAdapter.getItemCount()).thenReturn(3);
+        when(mRecyclerView.getChildAdapterPosition(view)).thenReturn(1);
 
         mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
-        // Verifies that the width is not updated for phones.
+        // Verifies that the page indicator is shown, but no extra padding is added to any view.
         assertEquals(mIndicatorHeight, rect.bottom);
         assertEquals(0, rect.left);
-        verify(view, never()).getLayoutParams();
     }
 
     @Test
     @SmallTest
-    public void testGetItemOffsetsOneItemOnly_Tablet() {
+    public void testGetItemOffsets_DoNotShowPageIndicator() {
         mDecoration = create(/* isTablet= */ true);
 
         Rect rect = new Rect();
         View view = Mockito.mock(View.class);
         RecyclerView.State state = Mockito.mock(State.class);
+
         // The recyclerview has only 1 item shown.
-        when(mAdapter.getItemCount()).thenReturn(1);
+        int itemCount = 1;
+        when(mAdapter.getItemCount()).thenReturn(itemCount);
 
         // Sets the tablet as a wide screen.
-        DisplayStyle displayStyle =
-                new DisplayStyle(HorizontalDisplayStyle.WIDE, VerticalDisplayStyle.REGULAR);
-        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
-        assertEquals(2, getItemPerScreen(mUiConfig.getCurrentDisplayStyle()));
-
-        MarginLayoutParams layoutParams = new MarginLayoutParams(0, 0);
-        when(view.getLayoutParams()).thenReturn(layoutParams);
-
-        mDecoration.onDisplayStyleChanged(0, getItemPerScreen(displayStyle));
+        int itemPerScreen = 2;
+        mDecoration.onDisplayStyleChanged(0, itemPerScreen);
         mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
-        // Verifies that the space of the indicators are removed.
+        // Verifies that the space of the indicators are removed when the itemCount is less than the
+        // itemPerScreen.
         assertEquals(0, rect.bottom);
         assertEquals(0, rect.left);
-        assertEquals(MATCH_PARENT, layoutParams.width);
+
+        itemCount = 2;
+        when(mAdapter.getItemCount()).thenReturn(itemCount);
+        mDecoration.onDisplayStyleChanged(0, itemPerScreen);
+        mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
+        // Verifies that the space of the indicators are removed when the itemCount equals to the
+        // itemPerScreen.
+        assertEquals(0, rect.bottom);
+        assertEquals(0, rect.left);
     }
 
     @Test
     @SmallTest
-    public void testGetItemOffsets_Tablet() {
+    public void testGetItemOffsets_ShowPageIndicator() {
         mDecoration = create(/* isTablet= */ true);
 
         Rect rect = new Rect();
         View view = Mockito.mock(View.class);
         RecyclerView.State state = Mockito.mock(State.class);
-        when(mRecyclerView.getMeasuredWidth()).thenReturn(mParentViewWidth);
-        int expectedItemWith = (mParentViewWidth - mModuleInternalPaddingPx) / 2;
         // The recyclerview has 3 items shown.
-        when(mAdapter.getItemCount()).thenReturn(3);
+        int itemCount = 3;
+        when(mAdapter.getItemCount()).thenReturn(itemCount);
 
+        // Sets the tablet as a wide screen.
+        int itemPerScreen = 2;
+        mDecoration.onDisplayStyleChanged(0, itemPerScreen);
+        mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
+        // Verifies that the page indicator is shown when all of the items can't fit in one screen.
+        assertEquals(mIndicatorHeight, rect.bottom);
+        // Verifies that no extra padding is added for the first child view.
+        assertEquals(0, rect.left);
+
+        // Sets the view not be the first child.
+        when(mRecyclerView.getChildAdapterPosition(view)).thenReturn(1);
+        mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
+        // Verifies that an extra padding is added on the left side of the view.
+        assertEquals(mIndicatorHeight, rect.bottom);
+        assertEquals(mIndicatorItemPadding, rect.left);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetItemPerScreen() {
         // Sets the tablet as a wide screen.
         DisplayStyle displayStyle =
                 new DisplayStyle(HorizontalDisplayStyle.WIDE, VerticalDisplayStyle.REGULAR);
-        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
-        assertEquals(2, getItemPerScreen(mUiConfig.getCurrentDisplayStyle()));
+        assertEquals(2, getItemPerScreen(displayStyle));
 
-        MarginLayoutParams layoutParams = new MarginLayoutParams(0, 0);
-        when(view.getLayoutParams()).thenReturn(layoutParams);
-
-        mDecoration.onDisplayStyleChanged(0, getItemPerScreen(displayStyle));
-        mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
-        // Verifies that the width is updated for the view when multiple items are shown per screen.
-        assertEquals(mIndicatorHeight, rect.bottom);
-        assertEquals(0, rect.left);
-        assertEquals(expectedItemWith, layoutParams.width);
-
-        // Changes the current screen to a narrow window on tablets.
+        // Sets the tablet as a small screen.
         displayStyle =
                 new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
-        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
-        MarginLayoutParams marginLayoutParams = Mockito.mock(MarginLayoutParams.class);
-        when(view.getLayoutParams()).thenReturn(marginLayoutParams);
-        assertEquals(1, getItemPerScreen(mUiConfig.getCurrentDisplayStyle()));
-        int startMargin = 20;
-        mDecoration.onDisplayStyleChanged(startMargin, getItemPerScreen(displayStyle));
-        mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
-
-        // Verifies that the start margin is set to the view if a single item is shown per screen.
-        verify(marginLayoutParams).setMarginStart(eq(startMargin));
-        verify(marginLayoutParams).setMarginEnd(eq(startMargin));
-        verify(view).setLayoutParams(eq(marginLayoutParams));
-
-        // Set back to wide screen.
-        displayStyle = new DisplayStyle(HorizontalDisplayStyle.WIDE, VerticalDisplayStyle.REGULAR);
-        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
-        startMargin = 0;
-        assertEquals(2, getItemPerScreen(mUiConfig.getCurrentDisplayStyle()));
-
-        mDecoration.onDisplayStyleChanged(startMargin, getItemPerScreen(displayStyle));
-        mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
-        // Verifies that the width is updated for the view when multiple items are shown per screen.
-        verify(marginLayoutParams).setMarginStart(eq(startMargin));
-        verify(marginLayoutParams).setMarginEnd(eq(startMargin));
-        verify(view, times(2)).setLayoutParams(eq(marginLayoutParams));
-        assertEquals(expectedItemWith, layoutParams.width);
+        assertEquals(1, getItemPerScreen(displayStyle));
     }
 
     private CirclePagerIndicatorDecoration create(boolean isTablet) {

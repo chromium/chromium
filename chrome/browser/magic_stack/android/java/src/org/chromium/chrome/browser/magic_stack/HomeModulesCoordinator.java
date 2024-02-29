@@ -45,7 +45,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private final ModuleDelegateHost mModuleDelegateHost;
     private HomeModulesMediator mMediator;
     private final SimpleRecyclerViewAdapter mAdapter;
-    private final RecyclerView mRecyclerView;
+    private final HomeModulesRecyclerView mRecyclerView;
     private final ModelList mModel;
     private final HomeModulesContextMenuManager mHomeModulesContextMenuManager;
     private final ObservableSupplier<Profile> mProfileSupplier;
@@ -132,11 +132,19 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
     private void setupRecyclerView(Activity activity) {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
+        int startMargin = mModuleDelegateHost.getStartMargin();
         mUiConfig = isTablet ? mModuleDelegateHost.getUiConfig() : null;
+        mItemPerScreen =
+                mUiConfig == null
+                        ? 1
+                        : CirclePagerIndicatorDecoration.getItemPerScreen(
+                                mUiConfig.getCurrentDisplayStyle());
+        mRecyclerView.initialize(isTablet, startMargin, mItemPerScreen);
+
         mPageIndicatorDecoration =
                 new CirclePagerIndicatorDecoration(
                         activity,
-                        mModuleDelegateHost.getStartMargin(),
+                        startMargin,
                         SemanticColorUtils.getDefaultIconColorSecondary(activity),
                         activity.getColor(
                                 org.chromium.components.browser_ui.styles.R.color
@@ -152,9 +160,6 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                         mIsSnapHelperAttached = recyclerView != null;
                     }
                 };
-
-        // Sets the default value.
-        mItemPerScreen = 1;
 
         // Snap scroll is supported by the recyclerview if it shows a single item per screen. This
         // happens on phones or small windows on tablets.
@@ -187,15 +192,17 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                     }
 
                     // Notifies the CirclePageIndicatorDecoration.
+                    int updatedStartMargin = mModuleDelegateHost.getStartMargin();
                     mPageIndicatorDecoration.onDisplayStyleChanged(
-                            mModuleDelegateHost.getStartMargin(), mItemPerScreen);
+                            updatedStartMargin, mItemPerScreen);
+                    mRecyclerView.onDisplayStyleChanged(updatedStartMargin, mItemPerScreen);
 
                     // Redraws the recyclerview when display style is changed on tablets.
                     mRecyclerView.invalidateItemDecorations();
                 };
         mUiConfig.addObserver(mDisplayStyleObserver);
-        mPageIndicatorDecoration.onDisplayStyleChanged(
-                mModuleDelegateHost.getStartMargin(), mItemPerScreen);
+        mPageIndicatorDecoration.onDisplayStyleChanged(startMargin, mItemPerScreen);
+        mRecyclerView.onDisplayStyleChanged(startMargin, mItemPerScreen);
     }
 
     /**
