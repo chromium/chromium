@@ -1286,14 +1286,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (this.chromeRefresh2023Enabled_ && (colorSuffix === '')) {
       return 'var(--color-sys-state-hover-on-subtle)';
     }
-    return `var(--color-current-read-aloud-highlight${colorSuffix})`;
+    return `var(--color-read-anything-current-read-aloud-highlight${
+        colorSuffix})`;
   }
 
   getPreviousHighlightColorVar(colorSuffix: string) {
     if (this.chromeRefresh2023Enabled_ && (colorSuffix === '')) {
       return 'var(--color-sys-on-surface-secondary)';
     }
-    return `var(--color-previous-read-aloud-highlight${colorSuffix})`;
+    return `var(--color-read-anything-previous-read-aloud-highlight${
+        colorSuffix})`;
   }
 
   getBackgroundColorVar(colorSuffix: string) {

@@ -406,6 +406,16 @@
   E_CPONLY(kColorReadAnythingBackgroundDark) \
   E_CPONLY(kColorReadAnythingBackgroundLight) \
   E_CPONLY(kColorReadAnythingBackgroundYellow) \
+  E_CPONLY(kColorReadAnythingCurrentReadAloudHighlight) \
+  E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightBlue) \
+  E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightDark) \
+  E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightLight) \
+  E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightYellow) \
+  E_CPONLY(kColorReadAnythingFocusRingBackground) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundBlue) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundDark) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundLight) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundYellow) \
   E_CPONLY(kColorReadAnythingForeground) \
   E_CPONLY(kColorReadAnythingForegroundBlue) \
   E_CPONLY(kColorReadAnythingForegroundDark) \
@@ -441,21 +451,11 @@
   E_CPONLY(kColorReadAnythingLinkVisitedDark) \
   E_CPONLY(kColorReadAnythingLinkVisitedLight) \
   E_CPONLY(kColorReadAnythingLinkVisitedYellow) \
-  E_CPONLY(kColorReadAnythingFocusRingBackground) \
-  E_CPONLY(kColorReadAnythingFocusRingBackgroundBlue) \
-  E_CPONLY(kColorReadAnythingFocusRingBackgroundDark) \
-  E_CPONLY(kColorReadAnythingFocusRingBackgroundLight) \
-  E_CPONLY(kColorReadAnythingFocusRingBackgroundYellow) \
-  E_CPONLY(kColorCurrentReadAloudHighlight) \
-  E_CPONLY(kColorCurrentReadAloudHighlightBlue) \
-  E_CPONLY(kColorCurrentReadAloudHighlightDark) \
-  E_CPONLY(kColorCurrentReadAloudHighlightLight) \
-  E_CPONLY(kColorCurrentReadAloudHighlightYellow) \
-  E_CPONLY(kColorPreviousReadAloudHighlight) \
-  E_CPONLY(kColorPreviousReadAloudHighlightBlue) \
-  E_CPONLY(kColorPreviousReadAloudHighlightDark) \
-  E_CPONLY(kColorPreviousReadAloudHighlightLight) \
-  E_CPONLY(kColorPreviousReadAloudHighlightYellow) \
+  E_CPONLY(kColorReadAnythingPreviousReadAloudHighlight) \
+  E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightBlue) \
+  E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightDark) \
+  E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightLight) \
+  E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightYellow) \
   /* Realbox colors. */ \
   E_CPONLY(kColorRealboxAnswerIconBackground) \
   E_CPONLY(kColorRealboxAnswerIconForeground) \
