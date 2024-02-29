@@ -190,21 +190,21 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
 
-    // TODO(crbug.com/40067771): ConsentLevel::kSync is deprecated and should be
-    //     removed. See ConsentLevel::kSync documentation for details.
-    endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
-        kMockOAuthConsumerName, GURL(kMockEndpoint), kHttpMethod,
-        kMockContentType, std::vector<std::string>{kMockScope}, kMockTimeout,
-        kMockPostData, TRAFFIC_ANNOTATION_FOR_TESTS, test_url_loader_factory,
-        identity_test_env_.identity_manager(), signin::ConsentLevel::kSync);
-
     logger_ = std::make_unique<LoggerImpl>();
 
-    discovery_interface_ =
-        absl::WrapUnique(new AccessCodeCastDiscoveryInterface(
-            profile, "123456", logger_.get(),
-            identity_test_env_.identity_manager(),
-            std::move(endpoint_fetcher_)));
+    discovery_interface_ = std::make_unique<AccessCodeCastDiscoveryInterface>(
+        profile, "123456", logger_.get(),
+        identity_test_env_.identity_manager());
+
+    // TODO(crbug.com/40067771): ConsentLevel::kSync is deprecated and should be
+    //     removed. See ConsentLevel::kSync documentation for details.
+    discovery_interface_->SetEndpointFetcherForTesting(
+        std::make_unique<EndpointFetcher>(
+            kMockOAuthConsumerName, GURL(kMockEndpoint), kHttpMethod,
+            kMockContentType, std::vector<std::string>{kMockScope},
+            kMockTimeout, kMockPostData, TRAFFIC_ANNOTATION_FOR_TESTS,
+            test_url_loader_factory, identity_test_env_.identity_manager(),
+            signin::ConsentLevel::kSync));
 
     in_process_data_decoder_ =
         std::make_unique<data_decoder::test::InProcessDataDecoder>();
@@ -268,8 +268,6 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
     return discovery_interface_.get();
   }
 
-  EndpointFetcher* endpoint_fetcher() { return endpoint_fetcher_.get(); }
-
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
   }
@@ -289,7 +287,6 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
   std::unique_ptr<AccessCodeCastDiscoveryInterface> discovery_interface_;
   TestingProfileManager profile_manager_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  std::unique_ptr<EndpointFetcher> endpoint_fetcher_;
   std::unique_ptr<data_decoder::test::InProcessDataDecoder>
       in_process_data_decoder_;
   std::unique_ptr<LoggerImpl> logger_;
@@ -471,14 +468,14 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, WrongDataTypesInResponse) {
 TEST_F(AccessCodeCastDiscoveryInterfaceTest, CommandLineSwitch) {
   // If no switch is set, fetcher should use default.
   std::unique_ptr<EndpointFetcher> fetcher =
-      stub_interface()->CreateEndpointFetcher("foobar");
+      stub_interface()->CreateEndpointFetcherForTesting("foobar");
   EXPECT_EQ(std::string(kDefaultURL) + "/v1/receivers/foobar",
             fetcher->GetUrlForTesting());
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitchASCII(switches::kDiscoveryEndpointSwitch,
                                   std::string(kMockEndpoint) + "/v1/receivers");
-  fetcher = stub_interface()->CreateEndpointFetcher("foobar");
+  fetcher = stub_interface()->CreateEndpointFetcherForTesting("foobar");
   EXPECT_EQ(std::string(kMockEndpoint) + "/v1/receivers/foobar",
             fetcher->GetUrlForTesting());
 }
@@ -496,7 +493,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest,
   response->error_type =
       std::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
   response->response = "No primary accounts found";
-  stub_interface()->HandleServerError(std::move(response));
+  stub_interface()->HandleServerErrorForTesting(std::move(response));
   task_environment_.RunUntilIdle();
 }
 
@@ -511,7 +508,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, HandleServerErrorAuthError) {
   auto response = std::make_unique<EndpointResponse>();
   response->error_type =
       std::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
-  stub_interface()->HandleServerError(std::move(response));
+  stub_interface()->HandleServerErrorForTesting(std::move(response));
   task_environment_.RunUntilIdle();
 }
 
@@ -526,7 +523,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, HandleServerErrorServerError) {
   auto response = std::make_unique<EndpointResponse>();
   response->error_type =
       std::make_optional<FetchErrorType>(FetchErrorType::kNetError);
-  stub_interface()->HandleServerError(std::move(response));
+  stub_interface()->HandleServerErrorForTesting(std::move(response));
   task_environment_.RunUntilIdle();
 }
 
@@ -542,7 +539,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest,
   auto response = std::make_unique<EndpointResponse>();
   response->error_type =
       std::make_optional<FetchErrorType>(FetchErrorType::kResultParseError);
-  stub_interface()->HandleServerError(std::move(response));
+  stub_interface()->HandleServerErrorForTesting(std::move(response));
   task_environment_.RunUntilIdle();
 }
 
