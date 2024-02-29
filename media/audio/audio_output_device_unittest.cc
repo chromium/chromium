@@ -293,22 +293,29 @@ TEST_F(AudioOutputDeviceTest, NoErrorForNormalShutdown) {
   StopAudioDevice();
 }
 
-// TODO(crbug.com/327577325) Re-enable this test
-TEST_F(AudioOutputDeviceTest, DISABLED_ErrorFiredForSocketClose) {
+TEST_F(AudioOutputDeviceTest, ErrorFiredForSocketClose) {
   StartAudioDevice();
   CallOnStreamCreated();
 
+  // Lock used to ensure Render() completes before CloseBrowserSocket() starts.
+  base::Lock send_lock_;
+
   base::RunLoop run_loop;
   EXPECT_CALL(callback_, Render(_, _, _, _))
-      .WillOnce(DoAll(base::test::RunClosure(base::BindLambdaForTesting(
-                          [&]() { CloseBrowserSocket(); })),
+      .WillOnce(DoAll(base::test::RunClosure(base::BindLambdaForTesting([&]() {
+                        base::AutoLock lock(send_lock_);
+                        CloseBrowserSocket();
+                      })),
                       Return(0)))
       .WillRepeatedly(Return(0));
 
   EXPECT_CALL(callback_, OnRenderError())
       .WillOnce(base::test::RunClosure(run_loop.QuitWhenIdleClosure()));
 
-  Render();
+  {
+    base::AutoLock lock(send_lock_);
+    Render();
+  }
   run_loop.Run();
 
   StopAudioDevice();
