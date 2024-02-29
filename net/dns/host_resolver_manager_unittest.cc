@@ -14,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -38,7 +39,6 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
-#include "base/test/to_vector.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
@@ -14857,7 +14857,7 @@ class HostResolverManagerBootstrapTest : public HostResolverManagerDnsTest {
 };
 
 std::vector<IPAddress> IPAddresses(const std::vector<IPEndPoint>& endpoints) {
-  return base::test::ToVector(endpoints, &IPEndPoint::address);
+  return base::ToVector(endpoints, &IPEndPoint::address);
 }
 
 std::vector<IPAddress> IPAddresses(const AddressList& addresses) {

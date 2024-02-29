@@ -10,11 +10,11 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
-#include "base/test/to_vector.h"
 #include "chromeos/ash/services/secure_channel/ble_initiator_connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/ble_listener_connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/fake_authenticated_channel.h"
@@ -455,8 +455,8 @@ GenerateFakeClientParameters(size_t num_to_generate) {
 std::vector<ClientConnectionParameters*> ClientParamsListToRawPtrs(
     const std::vector<std::unique_ptr<ClientConnectionParameters>>&
         unique_ptr_list) {
-  return base::test::ToVector(
-      unique_ptr_list, &std::unique_ptr<ClientConnectionParameters>::get);
+  return base::ToVector(unique_ptr_list,
+                        &std::unique_ptr<ClientConnectionParameters>::get);
 }
 
 }  // namespace

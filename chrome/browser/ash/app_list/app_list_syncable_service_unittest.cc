@@ -10,10 +10,10 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/test/to_vector.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -785,7 +785,7 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate_BadData) {
 
   // Validate items with bad data are processed without crashing.
   app_list_syncable_service()->ProcessSyncChanges(
-      FROM_HERE, base::test::ToVector(
+      FROM_HERE, base::ToVector(
                      CreateBadAppRemoteData(kItemId), [](const auto& update) {
                        return syncer::SyncChange(
                            FROM_HERE, syncer::SyncChange::ACTION_UPDATE,

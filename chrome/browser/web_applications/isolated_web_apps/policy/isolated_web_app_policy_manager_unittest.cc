@@ -10,12 +10,12 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/test/to_vector.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -263,7 +263,7 @@ class BulkIwaInstallerTest : public ::testing::Test {
 // ephemeral session. The install options will cover cases of success as well as
 // legitimate failures.
 TEST_F(BulkIwaInstallerTest, MgsRegularFlow) {
-  auto expected_results = base::test::ToVector<
+  auto expected_results = base::ToVector<
       std::vector<std::pair<std::string_view, InstallResult::Type>>>(
       {{kWebBundleId1, InstallResult::Type::kSuccess},
        {kWebBundleId2, InstallResult::Type::kSuccess},
@@ -296,7 +296,7 @@ TEST_F(BulkIwaInstallerTest, MgsRegularFlow) {
 TEST_F(BulkIwaInstallerTest, RegularUserDirectoryForIwaNotCreated) {
   test_managed_guest_session_.reset();
 
-  auto expected_results = base::test::ToVector<
+  auto expected_results = base::ToVector<
       std::vector<std::pair<std::string_view, InstallResult::Type>>>(
       {{kWebBundleId1, InstallResult::Type::kErrorNotEphemeralSession},
        {kWebBundleId2, InstallResult::Type::kErrorNotEphemeralSession},

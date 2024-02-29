@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -15,7 +16,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/to_vector.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -249,7 +249,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
   // - content::WebContentsConsoleObserver
   template <typename TConsoleObserver>
   void VerifyFetchWasBlockedByCors(const TConsoleObserver& console_observer) {
-    std::vector<std::string> messages = base::test::ToVector(
+    std::vector<std::string> messages = base::ToVector(
         console_observer.messages(), [](const auto& console_message) {
           return base::UTF16ToUTF8(console_message.message);
         });

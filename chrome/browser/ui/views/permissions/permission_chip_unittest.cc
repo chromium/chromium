@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/test/to_vector.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip_controller.h"
@@ -42,7 +42,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
           quiet_ui_reason,
       content::WebContents* web_contents)
       : quiet_ui_reason_(quiet_ui_reason), web_contents_(web_contents) {
-    requests_ = base::test::ToVector(
+    requests_ = base::ToVector(
         request_types,
         [&](auto request_type)
             -> std::unique_ptr<permissions::PermissionRequest> {
@@ -52,7 +52,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
                   ? permissions::PermissionRequestGestureType::GESTURE
                   : permissions::PermissionRequestGestureType::NO_GESTURE);
         });
-    raw_requests_ = base::test::ToVector(
+    raw_requests_ = base::ToVector(
         requests_,
         [](const auto& request)
             -> raw_ptr<permissions::PermissionRequest, VectorExperimental> {

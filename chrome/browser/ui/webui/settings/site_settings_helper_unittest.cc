@@ -5,12 +5,12 @@
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/to_vector.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -611,7 +611,7 @@ TEST_F(SiteSettingsHelperTest, CookieExceptions) {
   // Convert the test cases, and the returned dictionary, into tuples for
   // unordered comparison, as the order of exception is not relevant.
   std::vector<std::tuple<std::string, std::string, std::string>> expected =
-      base::test::ToVector(test_cases, [&](const auto& test_case) {
+      base::ToVector(test_cases, [&](const auto& test_case) {
         // make_tuple as we've some temporary rvalues.
         return std::make_tuple(
             test_case.primary_pattern,
@@ -624,7 +624,7 @@ TEST_F(SiteSettingsHelperTest, CookieExceptions) {
       });
 
   std::vector<std::tuple<std::string, std::string, std::string>> actual =
-      base::test::ToVector(exceptions, [](const auto& exception) {
+      base::ToVector(exceptions, [](const auto& exception) {
         const base::Value::Dict& dict = exception.GetDict();
         return std::make_tuple(*dict.FindString(kOrigin),
                                *dict.FindString(kEmbeddingOrigin),

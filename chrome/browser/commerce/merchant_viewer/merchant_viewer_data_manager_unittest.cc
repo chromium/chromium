@@ -6,13 +6,13 @@
 
 #include <optional>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/to_vector.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
 #include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -69,7 +69,7 @@ class MerchantViewerDataManagerTest : public testing::Test {
                              MerchantViewerDataManager::MerchantSignals found) {
     EXPECT_TRUE(success);
 
-    EXPECT_THAT(base::test::ToVector(
+    EXPECT_THAT(base::ToVector(
                     found, [](const auto& item) { return item.second.key(); }),
                 testing::UnorderedElementsAreArray(expected_hostnames));
 

@@ -9,13 +9,13 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/to_vector.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
@@ -182,10 +182,9 @@ ExtensionMenuItemView* ExtensionsMenuViewUnitTest::GetExtensionMenuItemView(
 }
 
 std::vector<std::string> ExtensionsMenuViewUnitTest::GetPinnedExtensionNames() {
-  return base::test::ToVector(
-      GetPinnedExtensionViews(), [](ToolbarActionView* view) {
-        return base::UTF16ToUTF8(view->view_controller()->GetActionName());
-      });
+  return base::ToVector(GetPinnedExtensionViews(), [](ToolbarActionView* view) {
+    return base::UTF16ToUTF8(view->view_controller()->GetActionName());
+  });
 }
 
 void ExtensionsMenuViewUnitTest::LayoutMenuIfNecessary() {

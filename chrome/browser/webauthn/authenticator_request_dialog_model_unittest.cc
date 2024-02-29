@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -19,7 +20,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/test/to_vector.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -249,7 +249,7 @@ base::StringPiece TransportAvailabilityParamToString(
 
 template <typename T, base::StringPiece (*F)(T)>
 std::string SetToString(base::flat_set<T> s) {
-  return base::JoinString(base::test::ToVector(s, F), ", ");
+  return base::JoinString(base::ToVector(s, F), ", ");
 }
 
 std::unique_ptr<device::cablev2::Pairing> GetPairingFromSync() {

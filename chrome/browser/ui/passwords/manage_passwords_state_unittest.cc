@@ -9,13 +9,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
-#include "base/test/to_vector.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -49,7 +49,7 @@ std::vector<raw_ptr<const PasswordForm, VectorExperimental>> GetRawPointers(
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
   // &std::unique_ptr<PasswordForm>::get returns a non-const ptr and hence
   // cannot be used instead.
-  return base::test::ToVector(
+  return base::ToVector(
       forms,
       [](const auto& form) -> raw_ptr<const PasswordForm, VectorExperimental> {
         return form.get();

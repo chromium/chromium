@@ -10,9 +10,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/to_vector.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -163,9 +163,8 @@ class ChromeShelfPrefsTest : public testing::Test {
   }
 
   std::vector<std::string> GetPinnedAppIds() const {
-    return base::test::ToVector(
-        shelf_prefs_->GetPinnedAppsFromSync(helper_.get()),
-        &ash::ShelfID::app_id);
+    return base::ToVector(shelf_prefs_->GetPinnedAppsFromSync(helper_.get()),
+                          &ash::ShelfID::app_id);
   }
 
  protected:

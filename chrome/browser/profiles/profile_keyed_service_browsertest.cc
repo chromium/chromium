@@ -4,10 +4,10 @@
 
 #include <sstream>
 
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/to_vector.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -69,7 +69,7 @@ std::vector<KeyedServiceBaseFactory*> GetKeyedServiceBaseFactories() {
   bool success = dependency_graph.GetConstructionOrder(&nodes);
   DCHECK(success);
 
-  return base::test::ToVector(nodes, [](DependencyNode* node) {
+  return base::ToVector(nodes, [](DependencyNode* node) {
     return static_cast<KeyedServiceBaseFactory*>(node);
   });
 }

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/containers/to_vector.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/to_vector.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -424,10 +424,9 @@ class InputMethodPreferencesTest : public PreferencesTest {
   // Translates engine IDs in a CSV string to input method IDs.
   std::string ToInputMethodIds(const std::string& value) {
     return base::JoinString(
-        base::test::ToVector(
-            base::SplitString(value, ",", base::TRIM_WHITESPACE,
-                              base::SPLIT_WANT_ALL),
-            &extension_ime_util::GetInputMethodIDByEngineID),
+        base::ToVector(base::SplitString(value, ",", base::TRIM_WHITESPACE,
+                                         base::SPLIT_WANT_ALL),
+                       &extension_ime_util::GetInputMethodIDByEngineID),
         ",");
   }
 

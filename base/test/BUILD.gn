@@ -160,7 +160,6 @@ static_library("test_support") {
     "test_waitable_event.h",
     "thread_test_helper.cc",
     "thread_test_helper.h",
-    "to_vector.h",
     "values_test_util.cc",
     "values_test_util.h",
     "with_feature_override.cc",

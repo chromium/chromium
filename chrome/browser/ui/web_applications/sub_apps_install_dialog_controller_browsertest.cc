@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/test/run_until.h"
-#include "base/test/to_vector.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
       return base::Contains(open_urls, parent_app_settings_url);
     })) << "Timeout waiting for settings page at "
         << parent_app_settings_url << " to open in Ash. Open Ash windows:\n"
-        << base::JoinString(base::test::ToVector(open_urls, &GURL::spec), "\n");
+        << base::JoinString(base::ToVector(open_urls, &GURL::spec), "\n");
   } else {
     bool open;
     waiter.CheckAtLeastOneAshBrowserWindowOpen(&open);

@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 
 #include "base/containers/adapters.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/test/to_vector.h"
 #include "chrome/browser/ui/sharing_hub/fake_sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_action_button.h"
 #include "chrome/test/base/testing_profile.h"
@@ -121,7 +121,7 @@ class SharingHubBubbleTest : public ChromeViewsTestBase {
   }
 
   std::vector<sharing_hub::SharingHubBubbleActionButton*> GetActionButtons() {
-    return base::test::ToVector(
+    return base::ToVector(
         DescendantsMatchingPredicate(
             bubble(), base::BindRepeating(&ViewHasClassName,
                                           "SharingHubBubbleActionButton")),

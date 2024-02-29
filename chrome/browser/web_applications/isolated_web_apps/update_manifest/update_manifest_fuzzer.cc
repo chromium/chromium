@@ -9,8 +9,8 @@
 #include <tuple>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/json/json_reader.h"
-#include "base/test/to_vector.h"
 #include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
@@ -89,8 +89,8 @@ auto ArbitraryValueList(fuzztest::Domain<base::Value> entry_domain) {
       [](const base::Value& value) {
         auto maybe_list = base::optional_ref(value.GetIfList());
         return maybe_list.has_value()
-                   ? std::make_optional(std::tuple{base::test::ToVector(
-                         *maybe_list, &base::Value::Clone)})
+                   ? std::make_optional(std::tuple{
+                         base::ToVector(*maybe_list, &base::Value::Clone)})
                    : std::nullopt;
       },
       fuzztest::ContainerOf<std::vector<base::Value>>(entry_domain));
@@ -108,7 +108,7 @@ auto ArbitraryValueDict(fuzztest::Domain<base::Value> value_domain) {
       [](const base::Value& value) {
         auto maybe_dict = base::optional_ref(value.GetIfDict());
         return maybe_dict.has_value()
-                   ? std::make_optional(std::tuple{base::test::ToVector(
+                   ? std::make_optional(std::tuple{base::ToVector(
                          *maybe_dict,
                          [](const auto& entry) {
                            return std::make_pair(entry.first,

@@ -12,13 +12,13 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/test/to_vector.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/history/core/browser/history_backend.h"
@@ -501,7 +501,7 @@ TEST_F(HistoryQuickProviderTest,
                     false, u"https://suffix.com/prefixsuffix1",
                     std::u16string());
   std::vector<int> unbroken_scores =
-      base::test::ToVector(ac_matches(), &AutocompleteMatch::relevance);
+      base::ToVector(ac_matches(), &AutocompleteMatch::relevance);
   EXPECT_EQ(unbroken_scores.size(), 3U);
 
   // Get scores for 'prefix suffix'
@@ -509,7 +509,7 @@ TEST_F(HistoryQuickProviderTest,
                     false, u"https://suffix.com/prefixsuffix1",
                     std::u16string());
   std::vector<int> broken_scores =
-      base::test::ToVector(ac_matches(), &AutocompleteMatch::relevance);
+      base::ToVector(ac_matches(), &AutocompleteMatch::relevance);
   EXPECT_EQ(broken_scores.size(), 3U);
   // Ensure the latter scores are higher than the former.
   for (size_t i = 0; i < 3; ++i)

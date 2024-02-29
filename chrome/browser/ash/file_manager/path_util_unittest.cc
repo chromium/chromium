@@ -15,6 +15,7 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_file_system_instance.h"
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -25,7 +26,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "base/test/test_future.h"
-#include "base/test/to_vector.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
@@ -1371,8 +1371,8 @@ TEST_F(FileManagerPathUtilTest, ParseFileSystemSources) {
       "external/fake_aa_mount_name/a/b/c.txt",
       "external/fake_ad_mount_name/d/e/f.txt",
   };
-  std::vector<std::string> file_urls = base::test::ToVector(
-      file_names, [&file_manager_url](const std::string& name) {
+  std::vector<std::string> file_urls =
+      base::ToVector(file_names, [&file_manager_url](const std::string& name) {
         return base::StrCat({url::kFileSystemScheme, ":",
                              file_manager_url.Resolve(name).spec()});
       });

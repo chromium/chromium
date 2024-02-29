@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -18,7 +19,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
-#include "base/test/to_vector.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -121,8 +121,7 @@ MATCHER(IsSystemFolder, "") {
 
 // Get a set of all apps in |model|.
 std::vector<std::string> GetModelContent(AppListModelUpdater* model_updater) {
-  return base::test::ToVector(model_updater->GetItems(),
-                              &ChromeAppListItem::name);
+  return base::ToVector(model_updater->GetItems(), &ChromeAppListItem::name);
 }
 
 scoped_refptr<extensions::Extension> MakeApp(const std::string& name,

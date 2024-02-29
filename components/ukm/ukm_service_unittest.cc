@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
@@ -26,7 +27,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/test/to_vector.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "components/metrics/cloned_install_detector.h"
@@ -1874,7 +1874,7 @@ TEST_F(UkmServiceTest, FilterRejectsEvent) {
         return true;
       }
 
-      filtered_metric_hashes->replace(base::test::ToVector(
+      filtered_metric_hashes->replace(base::ToVector(
           entry->metrics, &decltype(entry->metrics)::value_type::first));
 
       // Note that the event still contains metrics.

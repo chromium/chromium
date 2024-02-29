@@ -11,10 +11,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
-#include "base/test/to_vector.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/types_util.h"
@@ -100,7 +100,7 @@ class SearchControllerTest : public testing::Test {
   void ExpectIdOrder(std::vector<std::string> expected_ids) {
     const auto& actual_results = model_updater_.search_results();
     EXPECT_EQ(actual_results.size(), expected_ids.size());
-    EXPECT_THAT(base::test::ToVector(actual_results, &ChromeSearchResult::id),
+    EXPECT_THAT(base::ToVector(actual_results, &ChromeSearchResult::id),
                 ElementsAreArray(expected_ids));
   }
 

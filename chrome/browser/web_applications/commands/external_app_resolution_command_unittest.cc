@@ -10,12 +10,12 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
-#include "base/test/to_vector.h"
 #include "chrome/browser/web_applications/commands/internal/callback_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -193,14 +193,14 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
 
   std::vector<SquareSizePx> GetIconSizesForApp(const webapps::AppId& app_id) {
     DCHECK(base::Contains(app_to_icons_data_, app_id));
-    return base::test::ToVector(
+    return base::ToVector(
         app_to_icons_data_[app_id],
         [](const auto& icon_data) { return icon_data.first; });
   }
 
   std::vector<SkColor> GetIconColorsForApp(const webapps::AppId& app_id) {
     DCHECK(base::Contains(app_to_icons_data_, app_id));
-    return base::test::ToVector(
+    return base::ToVector(
         app_to_icons_data_[app_id],
         [](const auto& icon_data) { return icon_data.second.getColor(0, 0); });
   }
