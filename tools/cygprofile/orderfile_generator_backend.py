@@ -522,8 +522,10 @@ class OrderfileGenerator:
   """
   _CHECK_ORDERFILE_SCRIPT = os.path.join(
       constants.DIR_SOURCE_ROOT, 'tools', 'cygprofile', 'check_orderfile.py')
-  _BUILD_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(
-      constants.GetOutDirectory())))  # Normally /path/to/src
+  # Normally /path/to/src/out.
+  _OUT_DIR = os.path.abspath(os.path.dirname(constants.GetOutDirectory()))
+  # Normally /path/to/src.
+  _BUILD_ROOT = os.path.dirname(_OUT_DIR)
 
   # Previous orderfile_generator debug files would be overwritten.
   _DIRECTORY_FOR_DEBUG_FILES = '/tmp/orderfile_generator_debug_files'
@@ -609,7 +611,7 @@ class OrderfileGenerator:
       if os.path.exists(self._instrumented_out_dir):
         # Clean up any old leftover instrumented dirs.
         shutil.rmtree(self._instrumented_out_dir, ignore_errors=True)
-      self._instrumented_out_dir = constants.GetOutDirectory()
+      self._instrumented_out_dir = self._OUT_DIR
 
     self._uninstrumented_out_dir = os.path.join(
         self._BUILD_ROOT, self._options.arch + '_uninstrumented_out')
