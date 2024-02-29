@@ -5,6 +5,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 
 #include "base/location.h"
+#include "base/trace_event/typed_macros.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager_in_memory.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
@@ -56,6 +57,7 @@ SharedDictionaryManager::~SharedDictionaryManager() = default;
 
 scoped_refptr<SharedDictionaryStorage> SharedDictionaryManager::GetStorage(
     const net::SharedDictionaryIsolationKey& isolation_key) {
+  TRACE_EVENT("loading", "SharedDictionaryManager::GetStorage");
   auto cached_storages_it = cached_storages_.Get(isolation_key);
   if (cached_storages_it != cached_storages_.end()) {
     return cached_storages_it->second;

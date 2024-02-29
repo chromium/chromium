@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -233,6 +234,8 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
           params->require_cross_site_request_for_cookies),
       origin_access_list_(origin_access_list),
       resource_block_list_(resource_block_list) {
+  TRACE_EVENT("loading", "CorsURLLoaderFactory::CorsURLLoaderFactory",
+              perfetto::Flow::FromPointer(this));
   DCHECK(context_);
   DCHECK(origin_access_list_);
   DCHECK_NE(mojom::kInvalidProcessId, process_id_);
@@ -337,6 +340,8 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     const ResourceRequest& resource_request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  TRACE_EVENT("loading", "CorsURLLoaderFactory::CreateLoaderAndStart",
+              perfetto::Flow::FromPointer(this));
 #if BUILDFLAG(IS_ANDROID)
   // Use pseudo flag to investigate histogram issue.
   // See https://crbug.com/1439721.
@@ -779,6 +784,7 @@ bool CorsURLLoaderFactory::GetAllowAnyCorsExemptHeaderForBrowser() const {
 mojo::PendingRemote<mojom::DevToolsObserver>
 CorsURLLoaderFactory::GetDevToolsObserver(
     const ResourceRequest& resource_request) const {
+  TRACE_EVENT("loading", "CorsURLLoaderFactory::GetDevToolsObserver");
   mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
   if (resource_request.trusted_params &&
       resource_request.trusted_params->devtools_observer) {

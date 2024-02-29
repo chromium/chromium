@@ -583,8 +583,6 @@ URLLoader::URLLoader(
           request.request_body->AllowHTTP1ForStreamingUpload()),
       accept_ch_frame_observer_(std::move(accept_ch_frame_observer)),
       provide_data_use_updates_(context.DataUseUpdatesEnabled()) {
-  TRACE_EVENT("loading", "URLLoader::URLLoader",
-              perfetto::Flow::FromPointer(this));
   DCHECK(delete_callback_);
 
   mojom::TrustedURLLoaderHeaderClient* url_loader_header_client =
@@ -612,6 +610,10 @@ URLLoader::URLLoader(
   url_request_ = url_request_context_->CreateRequest(
       GURL(request.url), request.priority, this, traffic_annotation,
       /*is_for_websockets=*/false, request.net_log_create_info);
+
+  TRACE_EVENT(
+      "loading", "URLLoader::URLLoader",
+      perfetto::Flow::ProcessScoped(url_request_->net_log().source().id));
 
   url_request_->set_method(request.method);
   url_request_->set_site_for_cookies(request.site_for_cookies);
@@ -1084,6 +1086,9 @@ void URLLoader::OnDoneBeginningTrustTokenOperation(
 }
 
 void URLLoader::ScheduleStart() {
+  TRACE_EVENT(
+      "loading", "URLLoader::ScheduleStart",
+      perfetto::Flow::ProcessScoped(url_request_->net_log().source().id));
   bool defer = false;
   if (resource_scheduler_client_) {
     resource_scheduler_request_handle_ =
@@ -1100,8 +1105,9 @@ void URLLoader::ScheduleStart() {
 }
 
 URLLoader::~URLLoader() {
-  TRACE_EVENT("loading", "URLLoader::~URLLoader",
-              perfetto::TerminatingFlow::FromPointer(this));
+  TRACE_EVENT(
+      "loading", "URLLoader::~URLLoader",
+      perfetto::Flow::ProcessScoped(url_request_->net_log().source().id));
   if (keepalive_ && keepalive_statistics_recorder_) {
     keepalive_statistics_recorder_->OnLoadFinished(
         *factory_params_->top_frame_id, keepalive_request_size_);
@@ -2304,8 +2310,10 @@ void URLLoader::DeleteSelf() {
 }
 
 void URLLoader::SendResponseToClient() {
-  TRACE_EVENT("loading", "network::URLLoader::SendResponseToClient",
-              perfetto::Flow::FromPointer(this), "url", url_request_->url());
+  TRACE_EVENT(
+      "loading", "network::URLLoader::SendResponseToClient",
+      perfetto::Flow::ProcessScoped(url_request_->net_log().source().id), "url",
+      url_request_->url());
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
   response_->emitted_extra_info = emitted_devtools_raw_request_;
 

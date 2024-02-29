@@ -350,6 +350,8 @@ CorsURLLoader::CorsURLLoader(
       context_(context),
       shared_dictionary_storage_(std::move(shared_dictionary_storage)),
       shared_dictionary_observer_(shared_dictionary_observer) {
+  TRACE_EVENT("loading", "CorsURLLoader::CorsURLLoader",
+              perfetto::Flow::ProcessScoped(net_log_.source().id));
   CHECK(url_loader_network_service_observer_ != nullptr);
   if (ignore_isolated_world_origin)
     request_.isolated_world_origin = std::nullopt;
@@ -392,12 +394,16 @@ CorsURLLoader::CorsURLLoader(
 }
 
 CorsURLLoader::~CorsURLLoader() {
+  TRACE_EVENT("loading", "CorsURLLoader::~CorsURLLoader",
+              perfetto::Flow::ProcessScoped(net_log_.source().id));
   // Reset pipes first to ignore possible subsequent callback invocations
   // caused by `network_loader_`
   network_client_receiver_.reset();
 }
 
 void CorsURLLoader::Start() {
+  TRACE_EVENT("loading", "CorsURLLoader::Start",
+              perfetto::Flow::ProcessScoped(net_log_.source().id));
   if (fetch_cors_flag_ && IsCorsEnabledRequestMode(request_.mode)) {
     // Username and password should be stripped in a CORS-enabled request.
     if (request_.url.has_username() || request_.url.has_password()) {
@@ -819,6 +825,8 @@ void CorsURLLoader::OnComplete(const URLLoaderCompletionStatus& status) {
 }
 
 void CorsURLLoader::StartRequest() {
+  TRACE_EVENT("loading", "CorsURLLoader::StartRequest",
+              perfetto::Flow::ProcessScoped(net_log_.source().id));
   // All results should be reported to `forwarding_client_` as part of a
   // `URLResponseHead`, then `pna_preflight_result_` reset to `kNone`.
   CHECK_EQ(pna_preflight_result_,
@@ -1060,6 +1068,8 @@ void CorsURLLoader::OnPreflightRequestComplete(
 }
 
 void CorsURLLoader::StartNetworkRequest() {
+  TRACE_EVENT("loading", "CorsURLLoader::StartNetworkRequest",
+              perfetto::Flow::ProcessScoped(net_log_.source().id));
   // Here we overwrite the credentials mode sent to URLLoader because
   // network::URLLoader doesn't understand |kSameOrigin|.
   // TODO(crbug.com/943939): Fix this.

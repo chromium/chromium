@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/resource_request.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
@@ -241,7 +242,10 @@ ResourceRequest::ResourceRequest(const base::Location& location)
 #else
 ResourceRequest::ResourceRequest() = default;
 #endif
-ResourceRequest::ResourceRequest(const ResourceRequest& request) = default;
+ResourceRequest::ResourceRequest(const ResourceRequest& request) {
+  TRACE_EVENT("loading", "ResourceRequest::ResourceRequest.copy_constructor");
+  *this = request;
+}
 ResourceRequest::~ResourceRequest() = default;
 
 bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
