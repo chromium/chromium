@@ -41,6 +41,7 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -67,8 +68,7 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
 
   // Test relies on browser window activation, while platform such as Linux's
   // window activation is asynchronous.
-  views::test::WidgetActivationWaiter waiter(widget, true);
-  waiter.Wait();
+  views::test::WaitForWidgetActive(widget, true);
 
   // Send focus to the toolbar as if the user pressed Alt+Shift+T. This should
   // happen after the browser window activation.

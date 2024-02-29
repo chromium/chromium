@@ -24,6 +24,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 
@@ -139,10 +140,9 @@ class RelaunchNotificationControllerUiTest : public policy::PolicyTest {
 
   // Minimizes `browser_view` and waits for it to be deactivated.
   static void MinimizeBrowser(BrowserView* browser_view) {
-    views::test::WidgetActivationWaiter waiter(browser_view->GetWidget(),
-                                               /*active=*/false);
     browser_view->Minimize();
-    waiter.Wait();
+    views::test::WaitForWidgetActive(browser_view->GetWidget(),
+                                     /*active=*/false);
     // Pump all pending UI events so that the window manager isn't racing with
     // the test.
     base::RunLoop().RunUntilIdle();

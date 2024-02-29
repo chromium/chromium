@@ -40,6 +40,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -1200,9 +1201,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_TRUE(IsWidgetVisible());
 
   // Test that widget doesn't hide when focused.
-  views::test::WidgetActivationWaiter waiter(GetCaptionWidget(), true);
   GetCaptionWidget()->Activate();
-  waiter.Wait();
+  views::test::WaitForWidgetActive(GetCaptionWidget(), true);
   test_task_runner->FastForwardBy(base::Seconds(10));
   EXPECT_TRUE(IsWidgetVisible());
 

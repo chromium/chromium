@@ -49,6 +49,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -263,9 +264,8 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
     widget_->SetBounds(gfx::Rect(0, 0, 100, 100));
     widget_->Show();
 
-    views::test::WidgetActivationWaiter waiter(widget_.get(), true);
     widget_->Show();
-    waiter.Wait();
+    views::test::WaitForWidgetActive(widget_.get(), true);
 
     ASSERT_TRUE(widget_->IsActive());
 

@@ -20,6 +20,7 @@
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -235,12 +236,9 @@ bool ChromeOSBrowserUITest::IsShelfVisible() {
 }
 
 void ChromeOSBrowserUITest::DeactivateWidget(views::Widget* widget) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  views::test::WidgetActivationWaiter waiter(widget, false);
-#endif
   widget->Deactivate();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  waiter.Wait();
+  views::test::WaitForWidgetActive(widget, false);
 #endif
 }
 

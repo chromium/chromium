@@ -21,6 +21,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -46,9 +47,8 @@ class AXSystemCaretWinTest : public test::DesktopWidgetTest {
     textfield_->SetBounds(0, 0, 200, 20);
     textfield_->SetText(u"Some text.");
     widget_->GetRootView()->AddChildView(textfield_.get());
-    test::WidgetActivationWaiter waiter(widget_, true);
     widget_->Show();
-    waiter.Wait();
+    test::WaitForWidgetActive(widget_, true);
     textfield_->RequestFocus();
     ASSERT_TRUE(widget_->IsActive());
     ASSERT_TRUE(textfield_->HasFocus());
@@ -351,11 +351,10 @@ TEST_F(AXSystemCaretWinTest, DISABLED_TestCaretMSAAEvents) {
     LabelButton button{Button::PressedCallback(), std::u16string()};
     button.SetBounds(500, 0, 200, 20);
     widget_->GetRootView()->AddChildView(&button);
-    test::WidgetActivationWaiter waiter(widget_, true);
     WinAccessibilityCaretEventMonitor monitor(EVENT_OBJECT_SHOW,
                                               EVENT_OBJECT_LOCATIONCHANGE);
     widget_->Show();
-    waiter.Wait();
+    test::WaitForWidgetActive(widget_, true);
     button.SetFocusBehavior(View::FocusBehavior::ALWAYS);
     button.RequestFocus();
     monitor.WaitForNextEvent(&event, &role, &state);

@@ -93,6 +93,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -189,7 +190,7 @@ class ProfileMenuViewTestBase {
     views::Widget* menu_widget = profile_menu_view()->GetWidget();
     ASSERT_TRUE(menu_widget);
     if (menu_widget->CanActivate()) {
-      views::test::WidgetActivationWaiter(menu_widget, /*active=*/true).Wait();
+      views::test::WaitForWidgetActive(menu_widget, /*active=*/true);
     } else {
       LOG(ERROR) << "menu_widget can not be activated";
     }

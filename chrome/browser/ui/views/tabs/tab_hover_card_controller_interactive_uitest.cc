@@ -55,6 +55,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "url/gurl.h"
 
@@ -332,10 +333,9 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
 
   // Activate the active browser and wait for the inactive browser to be
   // inactive.
-  views::test::WidgetActivationWaiter waiter(
-      BrowserView::GetBrowserViewForBrowser(inactive_window)->frame(), false);
   BrowserView::GetBrowserViewForBrowser(active_window)->Activate();
-  waiter.Wait();
+  views::test::WaitForWidgetActive(
+      BrowserView::GetBrowserViewForBrowser(inactive_window)->frame(), false);
   ASSERT_FALSE(
       BrowserView::GetBrowserViewForBrowser(inactive_window)->IsActive());
 

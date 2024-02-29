@@ -26,6 +26,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 
@@ -295,7 +296,7 @@ class ProfileMenuViewPixelTest
     views::Widget* menu_widget = profile_menu_view()->GetWidget();
     ASSERT_TRUE(menu_widget);
     if (menu_widget->CanActivate()) {
-      views::test::WidgetActivationWaiter(menu_widget, /*active=*/true).Wait();
+      views::test::WaitForWidgetActive(menu_widget, /*active=*/true);
     } else {
       LOG(ERROR) << "menu_widget can not be activated";
     }

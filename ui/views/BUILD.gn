@@ -1092,6 +1092,8 @@ source_set("test_support") {
     "test/views_test_helper.h",
     "test/views_test_utils.cc",
     "test/views_test_utils.h",
+    "test/widget_activation_waiter.cc",
+    "test/widget_activation_waiter.h",
     "test/widget_animation_waiter.cc",
     "test/widget_animation_waiter.h",
     "test/widget_test.cc",

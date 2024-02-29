@@ -229,40 +229,6 @@ View* TestInitialFocusWidgetDelegate::GetInitiallyFocusedView() {
   return view_;
 }
 
-WidgetActivationWaiter::WidgetActivationWaiter(Widget* widget, bool active)
-    : active_(active) {
-  if (active == widget->IsActive()) {
-    observed_ = true;
-    return;
-  }
-  widget_observation_.Observe(widget);
-}
-
-WidgetActivationWaiter::~WidgetActivationWaiter() = default;
-
-void WidgetActivationWaiter::Wait() {
-  if (!observed_) {
-#if BUILDFLAG(IS_MAC)
-    // Some tests waiting on widget creation + activation are flaky due to
-    // timeout. crbug.com/1327590.
-    const base::test::ScopedRunLoopTimeout increased_run_timeout(
-        FROM_HERE, TestTimeouts::action_max_timeout());
-#endif
-    run_loop_.Run();
-  }
-}
-
-void WidgetActivationWaiter::OnWidgetActivationChanged(Widget* widget,
-                                                       bool active) {
-  if (active_ != active)
-    return;
-
-  observed_ = true;
-  widget_observation_.Reset();
-  if (run_loop_.running())
-    run_loop_.Quit();
-}
-
 WidgetDestroyedWaiter::WidgetDestroyedWaiter(Widget* widget) {
   widget_observation_.Observe(widget);
 }

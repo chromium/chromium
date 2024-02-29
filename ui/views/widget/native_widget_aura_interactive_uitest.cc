@@ -7,6 +7,7 @@
 #include "ui/aura/window.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/native_widget_factory.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/wm/core/base_focus_rules.h"
 #include "ui/wm/core/focus_controller.h"
@@ -76,9 +77,8 @@ TEST_F(NativeWidgetAuraTest, NonActiveWindowRequestImeFocus) {
   Textfield* textfield2b = new Textfield;
   widget2->GetRootView()->AddChildView(textfield2b);
 
-  views::test::WidgetActivationWaiter waiter1(widget1, true);
   widget1->Show();
-  waiter1.Wait();
+  views::test::WaitForWidgetActive(widget1, true);
   textfield1->RequestFocus();
   EXPECT_TRUE(textfield1->HasFocus());
   EXPECT_FALSE(textfield2a->HasFocus());
@@ -94,9 +94,8 @@ TEST_F(NativeWidgetAuraTest, NonActiveWindowRequestImeFocus) {
   // Allow window activation and |widget2| gets activated at this step, focus
   // should be properly restored.
   test_focus_rules->set_can_activate(true);
-  views::test::WidgetActivationWaiter waiter2(widget2, true);
   widget2->Activate();
-  waiter2.Wait();
+  views::test::WaitForWidgetActive(widget2, true);
   EXPECT_TRUE(textfield2a->HasFocus());
   EXPECT_FALSE(textfield2b->HasFocus());
   EXPECT_FALSE(textfield1->HasFocus());

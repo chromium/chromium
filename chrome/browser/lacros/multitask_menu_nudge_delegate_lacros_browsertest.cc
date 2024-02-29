@@ -16,6 +16,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 
 using MultitaskMenuNudgeDelegateLacrosBrowserTest = InProcessBrowserTest;
@@ -93,9 +94,9 @@ IN_PROC_BROWSER_TEST_F(MultitaskMenuNudgeDelegateLacrosBrowserTest,
 
   Browser* browser2 = CreateBrowser(browser()->profile());
   ASSERT_TRUE(browser_test_util::WaitForWindowCreation(browser2));
-  views::test::WidgetActivationWaiter(
-      BrowserView::GetBrowserViewForBrowser(browser2)->frame(), /*active=*/true)
-      .Wait();
+  views::test::WaitForWidgetActive(
+      BrowserView::GetBrowserViewForBrowser(browser2)->frame(),
+      /*active=*/true);
   ASSERT_TRUE(browser2->window()->IsActive());
 
   chromeos::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(false);
@@ -106,12 +107,12 @@ IN_PROC_BROWSER_TEST_F(MultitaskMenuNudgeDelegateLacrosBrowserTest,
   browser1->window()->Activate();
   browser2->window()->Activate();
   browser1->window()->Activate();
-  views::test::WidgetActivationWaiter(
-      BrowserView::GetBrowserViewForBrowser(browser1)->frame(), /*active=*/true)
-      .Wait();
+  views::test::WaitForWidgetActive(
+      BrowserView::GetBrowserViewForBrowser(browser1)->frame(),
+      /*active=*/true);
 
   browser2->window()->Activate();
-  views::test::WidgetActivationWaiter(
-      BrowserView::GetBrowserViewForBrowser(browser2)->frame(), /*active=*/true)
-      .Wait();
+  views::test::WaitForWidgetActive(
+      BrowserView::GetBrowserViewForBrowser(browser2)->frame(),
+      /*active=*/true);
 }

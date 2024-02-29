@@ -260,33 +260,6 @@ class TestInitialFocusWidgetDelegate : public TestDesktopWidgetDelegate {
   raw_ptr<View> view_;
 };
 
-// Use in tests to wait until a Widget's activation change to a particular
-// value. To use create and call Wait().
-class WidgetActivationWaiter : public WidgetObserver {
- public:
-  WidgetActivationWaiter(Widget* widget, bool active);
-
-  WidgetActivationWaiter(const WidgetActivationWaiter&) = delete;
-  WidgetActivationWaiter& operator=(const WidgetActivationWaiter&) = delete;
-
-  ~WidgetActivationWaiter() override;
-
-  // Returns when the active status matches that supplied to the constructor. If
-  // the active status does not match that of the constructor a RunLoop is used
-  // until the active status matches, otherwise this returns immediately.
-  void Wait();
-
- private:
-  // views::WidgetObserver override:
-  void OnWidgetActivationChanged(Widget* widget, bool active) override;
-
-  bool observed_ = false;
-  bool active_;
-
-  base::RunLoop run_loop_;
-  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
-};
-
 // Use in tests to wait for a widget to be destroyed.
 class WidgetDestroyedWaiter : public WidgetObserver {
  public:

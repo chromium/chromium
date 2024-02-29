@@ -1193,6 +1193,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Returns the current ownership model of the widget.
   InitParams::Ownership ownership() const { return ownership_; }
 
+  bool native_widget_active() const { return native_widget_active_; }
+
  protected:
   // Creates the RootView to be used within this Widget. Subclasses may override
   // to create custom RootViews that do specialized event processing.

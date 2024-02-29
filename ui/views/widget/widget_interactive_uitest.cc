@@ -38,6 +38,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/focus_manager_test.h"
 #include "ui/views/test/native_widget_factory.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/touchui/touch_selection_controller_impl.h"
 #include "ui/views/widget/root_view.h"
@@ -244,17 +245,15 @@ void RunPendingMessagesForActiveStatusChange() {
 // this is just an activation. For other widgets, it means activating and then
 // spinning the run loop until the OS has activated the window.
 void ActivateSync(Widget* widget) {
-  views::test::WidgetActivationWaiter waiter(widget, true);
   widget->Activate();
-  waiter.Wait();
+  views::test::WaitForWidgetActive(widget, true);
 }
 
 // Like for ActivateSync(), wait for a widget to become active, but Show() the
 // widget rather than calling Activate().
 void ShowSync(Widget* widget) {
-  views::test::WidgetActivationWaiter waiter(widget, true);
   widget->Show();
-  waiter.Wait();
+  views::test::WaitForWidgetActive(widget, true);
 }
 
 void DeactivateSync(Widget* widget) {
@@ -271,9 +270,8 @@ void DeactivateSync(Widget* widget) {
   stealer->CloseNow();
   widget->widget_delegate()->SetCanActivate(true);
 #else
-  views::test::WidgetActivationWaiter waiter(widget, false);
   widget->Deactivate();
-  waiter.Wait();
+  views::test::WaitForWidgetActive(widget, false);
 #endif
 }
 
@@ -950,9 +948,8 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
 #if BUILDFLAG(IS_MAC)
   // Window modal dialogs on Mac are "sheets", which animate to close before
   // activating their parent widget.
-  views::test::WidgetActivationWaiter waiter(top_level_widget.get(), true);
   modal_dialog_widget->Close();
-  waiter.Wait();
+  views::test::WaitForWidgetActive(top_level_widget.get(), true);
 #else
   views::test::WidgetDestroyedWaiter waiter(modal_dialog_widget);
   modal_dialog_widget->Close();
@@ -1123,9 +1120,8 @@ TEST_F(WidgetTestInteractive, WidgetShouldBeActiveWhenShow) {
   // TODO(crbug/1217331): This test fails if put under NativeWidgetAuraTest.
   WidgetAutoclosePtr anchor_widget(CreateTopLevelNativeWidget());
 
-  test::WidgetActivationWaiter waiter(anchor_widget.get(), true);
   anchor_widget->Show();
-  waiter.Wait();
+  test::WaitForWidgetActive(anchor_widget.get(), true);
   EXPECT_TRUE(anchor_widget->IsActive());
 #if !BUILDFLAG(IS_MAC)
   EXPECT_TRUE(anchor_widget->GetNativeWindow()->HasFocus());

@@ -5,6 +5,7 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 
 #include "ui/views/test/native_widget_factory.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -57,13 +58,10 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetsWithChildrenDeactivateCorrectly) {
 
   const auto show_widget = [&](Widget* target) {
     target->Show();
-    views::test::WidgetActivationWaiter(widget1.get(), target == widget1.get())
-        .Wait();
-    views::test::WidgetActivationWaiter(widget1_child.get(),
-                                        target == widget1_child.get())
-        .Wait();
-    views::test::WidgetActivationWaiter(widget2.get(), target == widget2.get())
-        .Wait();
+    views::test::WaitForWidgetActive(widget1.get(), target == widget1.get());
+    views::test::WaitForWidgetActive(widget1_child.get(),
+                                     target == widget1_child.get());
+    views::test::WaitForWidgetActive(widget2.get(), target == widget2.get());
   };
 
   show_widget(widget1.get());
@@ -131,23 +129,23 @@ TEST_F(DesktopNativeWidgetAuraTest,
   ASSERT_EQ(activation_client, activation_client_child);
 
   widget->Show();
-  views::test::WidgetActivationWaiter(widget.get(), true).Wait();
-  views::test::WidgetActivationWaiter(widget_child.get(), false).Wait();
+  views::test::WaitForWidgetActive(widget.get(), true);
+  views::test::WaitForWidgetActive(widget_child.get(), false);
   EXPECT_TRUE(widget->IsActive());
   EXPECT_FALSE(widget_child->IsActive());
   EXPECT_EQ(activation_client->GetActiveWindow(), widget->GetNativeView());
 
   widget_child->Show();
-  views::test::WidgetActivationWaiter(widget.get(), false).Wait();
-  views::test::WidgetActivationWaiter(widget_child.get(), true).Wait();
+  views::test::WaitForWidgetActive(widget.get(), false);
+  views::test::WaitForWidgetActive(widget_child.get(), true);
   EXPECT_FALSE(widget->IsActive());
   EXPECT_TRUE(widget_child->IsActive());
   EXPECT_EQ(activation_client->GetActiveWindow(),
             widget_child->GetNativeView());
 
   widget_child->Close();
-  views::test::WidgetActivationWaiter(widget.get(), true).Wait();
-  views::test::WidgetActivationWaiter(widget_child.get(), false).Wait();
+  views::test::WaitForWidgetActive(widget.get(), true);
+  views::test::WaitForWidgetActive(widget_child.get(), false);
   EXPECT_TRUE(widget->IsActive());
   EXPECT_FALSE(widget_child->IsActive());
   EXPECT_EQ(activation_client->GetActiveWindow(), widget->GetNativeView());
