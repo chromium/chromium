@@ -38,6 +38,30 @@ base::TimeDelta GetMaxFileSuggestionRecency() {
       kDefaultMaxRecencyInDays));
 }
 
+double ToTimestampBasedScore(const FileSuggestData& data,
+                             base::TimeDelta max_recency) {
+  auto score_timestamp = [&](const base::Time& timestamp, double interval_max,
+                             double interval_size) {
+    return interval_max -
+           interval_size *
+               std::min(
+                   1.0,
+                   (base::Time::Now() - timestamp).magnitude().InSeconds() /
+                       static_cast<double>(max_recency.InSeconds()));
+  };
+
+  if (data.timestamp) {
+    return score_timestamp(*data.timestamp,
+                           /*interval_max=*/1.0, /*interval_size=*/0.5);
+  }
+
+  if (data.secondary_timestamp) {
+    return score_timestamp(*data.secondary_timestamp,
+                           /*interval_max=*/0.5, /*interval_size=*/0.5);
+  }
+  return 0.0;
+}
+
 // FileSuggestData -------------------------------------------------------------
 
 FileSuggestData::FileSuggestData(

@@ -1310,6 +1310,7 @@ bool IsFeatureAwareDeviceDemoModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldShowPlayStoreInDemoMode();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV1DeviceSync();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV2DeviceSync();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool UseMixedFileLauncherContinueSection();
 
 // Keep alphabetized.
 

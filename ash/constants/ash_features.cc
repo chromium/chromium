@@ -4513,4 +4513,10 @@ bool IsUseAuthPanelInSettingsEnabled() {
   return base::FeatureList::IsEnabled(kUseAuthPanelInSettings);
 }
 
+bool UseMixedFileLauncherContinueSection() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      ash::features::kLauncherContinueSectionWithRecents, "mix_local_and_drive",
+      false);
+}
+
 }  // namespace ash::features
