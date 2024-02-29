@@ -55,13 +55,6 @@ class CORE_EXPORT HighlightStyleUtils {
       const TextPaintStyle& previous_layer_text_style,
       const PaintInfo&,
       const AtomicString& pseudo_argument = g_null_atom);
-  static std::optional<Color> HighlightTextDecorationColor(
-      const Document&,
-      const ComputedStyle&,
-      Node*,
-      std::optional<Color> previous_layer_color,
-      PseudoId);
-
   static const ComputedStyle* HighlightPseudoStyle(
       Node* node,
       const ComputedStyle& style,

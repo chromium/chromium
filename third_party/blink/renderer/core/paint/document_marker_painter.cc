@@ -225,61 +225,6 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
   }
 }
 
-void DocumentMarkerPainter::PaintDocumentMarker(
-    const PaintInfo& paint_info,
-    const PhysicalOffset& box_origin,
-    const ComputedStyle& style,
-    DocumentMarker::MarkerType marker_type,
-    const LineRelativeRect& local_rect,
-    std::optional<Color> custom_marker_color) {
-  // IMPORTANT: The misspelling underline is not considered when calculating the
-  // text bounds, so we have to make sure to fit within those bounds.  This
-  // means the top pixel(s) of the underline will overlap the bottom pixel(s) of
-  // the glyphs in smaller font sizes.  The alternatives are to increase the
-  // line spacing (bad!!) or decrease the underline thickness.  The overlap is
-  // actually the most useful, and matches what AppKit does.  So, we generally
-  // place the underline at the bottom of the text, but in larger fonts that's
-  // not so good so we pin to two pixels under the baseline.
-  float zoom = style.EffectiveZoom();
-  int line_thickness = static_cast<int>(ceilf(kMarkerHeight * zoom));
-
-  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
-  DCHECK(font_data);
-  int baseline = font_data->GetFontMetrics().Ascent();
-  int available_height = (local_rect.BlockSize() - baseline).ToInt();
-  int underline_offset;
-  if (available_height <= line_thickness + 2 * zoom) {
-    // Place the underline at the very bottom of the text in small/medium fonts.
-    // The underline will overlap with the bottom of the text if
-    // available_height is smaller than line_thickness.
-    underline_offset = (local_rect.BlockSize() - line_thickness).ToInt();
-  } else {
-    // In larger fonts, though, place the underline up near the baseline to
-    // prevent a big gap.
-    underline_offset = baseline + 2 * zoom;
-  }
-
-  DEFINE_STATIC_LOCAL(
-      PaintRecord, spelling_marker,
-      (RecordMarker(
-          LayoutTheme::GetTheme().PlatformSpellingMarkerUnderlineColor())));
-  DEFINE_STATIC_LOCAL(
-      PaintRecord, grammar_marker,
-      (RecordMarker(
-          LayoutTheme::GetTheme().PlatformGrammarMarkerUnderlineColor())));
-
-  PaintRecord marker = custom_marker_color ? RecordMarker(*custom_marker_color)
-                       : marker_type == DocumentMarker::kSpelling
-                           ? spelling_marker
-                           : grammar_marker;
-
-  DrawDocumentMarker(
-      paint_info.context,
-      gfx::PointF((box_origin.left + local_rect.LineLeft()).ToFloat(),
-                  (box_origin.top + underline_offset).ToFloat()),
-      local_rect.InlineSize().ToFloat(), zoom, marker);
-}
-
 TextPaintStyle DocumentMarkerPainter::ComputeTextPaintStyleFrom(
     const Document& document,
     Node* node,

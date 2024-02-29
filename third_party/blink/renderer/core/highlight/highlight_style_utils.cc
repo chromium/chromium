@@ -491,24 +491,6 @@ TextPaintStyle HighlightStyleUtils::HighlightPaintingStyle(
   return highlight_style;
 }
 
-std::optional<Color> HighlightStyleUtils::HighlightTextDecorationColor(
-    const Document& document,
-    const ComputedStyle& style,
-    Node* node,
-    std::optional<Color> previous_layer_color,
-    PseudoId pseudo) {
-  DCHECK(pseudo == kPseudoIdSpellingError || pseudo == kPseudoIdGrammarError);
-
-  if (const ComputedStyle* pseudo_style =
-          HighlightPseudoStyle(node, style, pseudo)) {
-    return ResolveColor(document, style, pseudo_style, pseudo,
-                        GetCSSPropertyTextDecorationColor(),
-                        previous_layer_color);
-  }
-
-  return std::nullopt;
-}
-
 bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(
     const Node& node,
     DocumentMarker::MarkerType type) {

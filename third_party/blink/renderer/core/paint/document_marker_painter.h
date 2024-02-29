@@ -37,13 +37,6 @@ class DocumentMarkerPainter {
                                             const LineRelativeRect& marker_rect,
                                             LayoutUnit logical_height,
                                             bool in_dark_mode);
-  static void PaintDocumentMarker(
-      const PaintInfo& paint_info,
-      const PhysicalOffset& box_origin,
-      const ComputedStyle& style,
-      DocumentMarker::MarkerType marker_type,
-      const LineRelativeRect& local_rect,
-      std::optional<Color> custom_marker_color = std::nullopt);
   static TextPaintStyle ComputeTextPaintStyleFrom(const Document& document,
                                                   Node* node,
                                                   const ComputedStyle& style,
