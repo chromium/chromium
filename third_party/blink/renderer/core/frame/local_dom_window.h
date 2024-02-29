@@ -373,7 +373,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(orientationchange, kOrientationchange)
 
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(pageconceal, kPageconceal)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(pageswap, kPageswap)
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(pagereveal, kPagereveal)
 

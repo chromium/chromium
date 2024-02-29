@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_PAGE_CONCEAL_EVENT_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_PAGE_CONCEAL_EVENT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_PAGE_SWAP_EVENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_PAGE_SWAP_EVENT_H_
 
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -16,17 +16,17 @@ class Document;
 class DOMViewTransition;
 class NavigationActivation;
 
-// Implementation for the pageconceal event. Fired before the Document is hidden
+// Implementation for the pageswap event. Fired before the Document is hidden
 // and unloaded or placed in the BFCache.
 // TODO(khushalsagar): Update spec link once it's settled.
-class PageConcealEvent final : public Event {
+class PageSwapEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  PageConcealEvent(Document&,
-                   mojom::blink::PageConcealEventParamsPtr,
+  PageSwapEvent(Document&,
+                   mojom::blink::PageSwapEventParamsPtr,
                    DOMViewTransition*);
-  ~PageConcealEvent() override;
+  ~PageSwapEvent() override;
 
   const AtomicString& InterfaceName() const override;
 
@@ -41,12 +41,12 @@ class PageConcealEvent final : public Event {
 };
 
 template <>
-struct DowncastTraits<PageConcealEvent> {
+struct DowncastTraits<PageSwapEvent> {
   static bool AllowFrom(const Event& event) {
-    return event.type() == event_type_names::kPageconceal;
+    return event.type() == event_type_names::kPageswap;
   }
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_PAGE_CONCEAL_EVENT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_PAGE_SWAP_EVENT_H_

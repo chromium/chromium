@@ -154,9 +154,9 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       const std::string& page_state,
       bool is_browser_initiated) override;
   void SnapshotDocumentForViewTransition(
-      blink::mojom::PageConcealEventParamsPtr,
+      blink::mojom::PageSwapEventParamsPtr,
       SnapshotDocumentForViewTransitionCallback callback) override;
-  void DispatchPageConceal(blink::mojom::PageConcealEventParamsPtr) override;
+  void DispatchPageSwap(blink::mojom::PageSwapEventParamsPtr) override;
   void AddResourceTimingEntryForFailedSubframeNavigation(
       const ::blink::FrameToken& subframe_token,
       const GURL& initial_url,

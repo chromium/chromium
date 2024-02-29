@@ -1088,17 +1088,17 @@ interface LocalFrame {
   // Requests a one-time snapshot of the document state for a ViewTransition.
   // See https://drafts.csswg.org/css-view-transitions-1/ for details.
   SnapshotDocumentForViewTransition(
-    PageConcealEventParams page_conceal_event_params) => (
+    PageSwapEventParams page_swap_event_params) => (
       blink.mojom.ViewTransitionState view_transition_state);
 
-  // Dispatches a `pageconceal` event on the previous Document before the
+  // Dispatches a `pageswap` event on the previous Document before the
   // navigation is committed. This API is used for navigations which don't have
   // a ViewTransition.
   // For ViewTransition the event must be dispatched before snapshotting the old
   // Document with a `ViewTransition` object passed to script. So the dispatch
   // is done as a part of the `SnapshotDocumentForViewTransition` API above.
-  DispatchPageConceal(
-    PageConcealEventParams? page_conceal_event_params);
+  DispatchPageSwap(
+    PageSwapEventParams? page_swap_event_params);
 
   // Allows the browser to add a resource timing entry for a subframe
   // navigation that has failed before committing - a non-ok object navigation

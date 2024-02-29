@@ -1,16 +1,13 @@
-<!DOCTYPE html>
-<title>View transitions: pageconceal navigationactivation for push navigations with a same-origin redirect</title>
-<link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
-<link rel="author" href="mailto:khushalsagar@chromium.org">
+<!DOCTYPE HTML>
+<title>Tests pageswap for cross-origin navigations</title>
+<link rel="author" title="Khushal Sagar"  href="mailto:khushalsagar@chromium.org">
+<link rel="help" href="https://html.spec.whatwg.org/">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<style>
-@view-transition {
-  navigation: auto;
-}
-</style>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script>
-const expectedUrl = location.href + '?new';
+const expectedUrl = "http://{{hosts[][www]}}:{{ports[http][0]}}/html/browsers/browsing-the-web/history-traversal/pageswap/pageswap-cross-origin.sub.html?new";
 
 const params = new URLSearchParams(location.search);
 // The page the popup navigates to.
@@ -24,7 +21,7 @@ const channel = new BroadcastChannel("testchannel");
 
 if (is_test_page) {
   const expectedUrl = location.href + "?new";
-  const expectedEvents = ["pageconceal", "transition", expectedUrl, "push","from", "pagehide"];
+  const expectedEvents = ["pageswap", "pagehide"];
 
   promise_test(async t => {
     let popup;
@@ -43,21 +40,19 @@ if (is_test_page) {
           }
       }));
     });
-  }, `pageconceal on navigation with same-origin redirect`);
+  }, `pageswap on navigation from script`);
 } else if (is_popup_page) {
   onload = () => {
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      location.href = "/common/redirect.py?location=/wpt_internal/view-transition-on-navigation/pageconceal-push-with-redirect.html?new";
+      location.href = expectedUrl;
     }));
 
-    onpageconceal = (e) => {
-      window.opener.events.push("pageconceal");
+    onpageswap = (e) => {
+      window.opener.events.push("pageswap");
+      if (e.activation != null)
+        window.opener.events.push("activation");
       if (e.viewTransition != null)
         window.opener.events.push("transition");
-      window.opener.events.push(e.activation.entry.url);
-      window.opener.events.push(e.activation.navigationType);
-      if (e.activation.from == navigation.currentEntry)
-        window.opener.events.push("from");
     };
 
     onpagehide = () => {

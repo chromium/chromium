@@ -53,7 +53,7 @@ class CORE_EXPORT ViewTransitionSupplement
   // |ViewTransitionStateCallback|.
   static void SnapshotDocumentForNavigation(
       Document&,
-      mojom::blink::PageConcealEventParamsPtr,
+      mojom::blink::PageSwapEventParamsPtr,
       ViewTransition::ViewTransitionStateCallback);
 
   // Creates a ViewTransition using cached state from the previous Document
@@ -123,7 +123,7 @@ class CORE_EXPORT ViewTransitionSupplement
                                      const std::optional<Vector<String>>& types,
                                      ExceptionState& exception_state);
   void StartTransition(Document& document,
-                       mojom::blink::PageConcealEventParamsPtr,
+                       mojom::blink::PageSwapEventParamsPtr,
                        ViewTransition::ViewTransitionStateCallback callback);
   void StartTransition(Document& document,
                        ViewTransitionState transition_state);

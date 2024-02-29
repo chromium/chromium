@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>pageconceal navigationactivation for traverse navigations</title>
+<title>pageswap navigationactivation for traverse navigations</title>
 <link rel="help" href="https://html.spec.whatwg.org/">
 <link rel="author" href="mailto:khushalsagar@chromium.org">
 <script src="/resources/testharness.js"></script>
@@ -18,7 +18,7 @@ const is_test_page = !params.has('popup') && !params.has('new');
 // The test page which opens a popup for the navigation sequence.
 if (is_test_page) {
   const expectedUrl = location.href.split('?')[0] + "?popup";
-  const expectedEvents = ["pageconceal", expectedUrl, "traverse","from", "pagehide"];
+  const expectedEvents = ["pageswap", expectedUrl, "traverse","from", "pagehide"];
 
   promise_test(async t => {
     let popup;
@@ -37,7 +37,7 @@ if (is_test_page) {
           }
       }));
     });
-  }, `pageconceal on traverse navigation from script`);
+  }, `pageswap on traverse navigation from script`);
 } else if (is_initial_page_first_navigation) {
   // The popup page which the user navigates back to.
   onload = async () => {
@@ -57,8 +57,8 @@ if (is_test_page) {
     }));
   };
 
-  onpageconceal = (e) => {
-    window.opener.events.push("pageconceal");
+  onpageswap = (e) => {
+    window.opener.events.push("pageswap");
     if (e.viewTransition != null)
       window.opener.events.push("transition");
     window.opener.events.push(e.activation.entry.url);

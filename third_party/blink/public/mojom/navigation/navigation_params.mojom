@@ -625,9 +625,9 @@ struct CommitNavigationParams {
   string? cookie_deprecation_label;
 };
 
-// Parameters used to dispatch the `pageconceal` event on the old Document for
+// Parameters used to dispatch the `pageswap` event on the old Document for
 // a navigation. Only generated for same-origin navigations.
-struct PageConcealEventParams {
+struct PageSwapEventParams {
   // The URL of the destination page.
   url.mojom.Url url;
 

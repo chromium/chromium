@@ -6879,8 +6879,8 @@ crbug.com/40280906 virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-loa
 crbug.com/326478175 wpt_internal/dom/about_srcdoc/grandparent_location_aboutsrcdoc.sub.window.html [ Failure Pass Timeout ]
 
 # Test infra bug
-crbug.com/326459000 virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/pageconceal-push-from-click.html [ Timeout ]
-crbug.com/326459000 virtual/pageconceal/external/wpt/html/browsers/browsing-the-web/history-traversal/pageconceal/pageconceal-push-from-click.html [ Timeout ]
+crbug.com/326459000 virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/pageswap-push-from-click.html [ Timeout ]
+crbug.com/326459000 virtual/pageswap/external/wpt/html/browsers/browsing-the-web/history-traversal/pageswap/pageswap-push-from-click.html [ Timeout ]
 
 crbug.com/1467464 http/tests/devtools/network/network-columns-visible.js [ Failure Pass Timeout ]
 crbug.com/1467464 http/tests/devtools/security/origin-view-ct-compliance.js [ Failure Pass Timeout ]

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/view_transition/page_conceal_event.h"
+#include "third_party/blink/renderer/core/view_transition/page_swap_event.h"
 
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
@@ -38,25 +38,25 @@ String TypeToString(mojom::blink::NavigationTypeForNavigationApi type) {
 
 }  // namespace
 
-PageConcealEvent::PageConcealEvent(
+PageSwapEvent::PageSwapEvent(
     Document& document,
-    mojom::blink::PageConcealEventParamsPtr page_conceal_event_params,
+    mojom::blink::PageSwapEventParamsPtr page_swap_event_params,
     DOMViewTransition* view_transition)
-    : Event(event_type_names::kPageconceal, Bubbles::kNo, Cancelable::kNo),
+    : Event(event_type_names::kPageswap, Bubbles::kNo, Cancelable::kNo),
       dom_view_transition_(view_transition) {
-  CHECK(RuntimeEnabledFeatures::PageConcealEventEnabled());
+  CHECK(RuntimeEnabledFeatures::PageSwapEventEnabled());
   CHECK(!view_transition ||
         RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
-  CHECK(!view_transition || page_conceal_event_params);
+  CHECK(!view_transition || page_swap_event_params);
 
-  if (page_conceal_event_params) {
+  if (page_swap_event_params) {
     NavigationApi* navigation = document.domWindow()->navigation();
 
     // The current entry could be null for the initial about:blank Document, a
     // detached window, or an opaque origin. We shouldn't be creating the
     // activation info for the first 2 cases:
-    // 1. We don't fire `pageconceal` on the initial about:blank Document.
-    // 2. We shouldn't be firing `pageconceal` for detached windows. The event
+    // 1. We don't fire `pageswap` on the initial about:blank Document.
+    // 2. We shouldn't be firing `pageswap` for detached windows. The event
     //    only fires when navigating away from a Document and there shouldn't be
     //    navigations in a detached window, i.e., a disconnected iframe.
     // 3. The activation info is only provided for same-origin navigations. An
@@ -65,7 +65,7 @@ PageConcealEvent::PageConcealEvent(
     CHECK(from);
 
     NavigationHistoryEntry* entry = nullptr;
-    switch (page_conceal_event_params->navigation_type) {
+    switch (page_swap_event_params->navigation_type) {
       case mojom::blink::NavigationTypeForNavigationApi::kReload:
         entry = from;
         break;
@@ -74,7 +74,7 @@ PageConcealEvent::PageConcealEvent(
         // rare race conditions.
         Member<HistoryItem> destination_item =
             HistoryItem::Create(PageState::CreateFromEncodedData(
-                page_conceal_event_params->page_state));
+                page_swap_event_params->page_state));
         entry = navigation->GetExistingEntryFor(
             destination_item->GetNavigationApiKey(),
             destination_item->GetNavigationApiId());
@@ -85,34 +85,34 @@ PageConcealEvent::PageConcealEvent(
             document.domWindow(),
             /*key=*/WTF::CreateCanonicalUUIDString(),
             /*id=*/WTF::CreateCanonicalUUIDString(),
-            /*url=*/page_conceal_event_params->url,
+            /*url=*/page_swap_event_params->url,
             /*document_sequence_number=*/0,
             /*state=*/nullptr);
     }
 
     activation_ = MakeGarbageCollected<NavigationActivation>();
     activation_->Update(
-        entry, from, TypeToString(page_conceal_event_params->navigation_type));
+        entry, from, TypeToString(page_swap_event_params->navigation_type));
   }
 }
 
-PageConcealEvent::~PageConcealEvent() = default;
+PageSwapEvent::~PageSwapEvent() = default;
 
-const AtomicString& PageConcealEvent::InterfaceName() const {
-  return event_interface_names::kPageConcealEvent;
+const AtomicString& PageSwapEvent::InterfaceName() const {
+  return event_interface_names::kPageSwapEvent;
 }
 
-void PageConcealEvent::Trace(Visitor* visitor) const {
+void PageSwapEvent::Trace(Visitor* visitor) const {
   visitor->Trace(activation_);
   visitor->Trace(dom_view_transition_);
   Event::Trace(visitor);
 }
 
-DOMViewTransition* PageConcealEvent::viewTransition() const {
+DOMViewTransition* PageSwapEvent::viewTransition() const {
   return dom_view_transition_.Get();
 }
 
-NavigationActivation* PageConcealEvent::activation() const {
+NavigationActivation* PageSwapEvent::activation() const {
   return activation_.Get();
 }
 

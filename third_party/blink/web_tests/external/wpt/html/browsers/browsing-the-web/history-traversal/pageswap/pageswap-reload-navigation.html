@@ -1,32 +1,29 @@
 <!DOCTYPE html>
-<title>Tests pageconceal dispatch on hidden Documents</title>
-<link rel="author" title="Khushal Sagar"  href="mailto:khushalsagar@chromium.org">
+<title>pageswap navigationactivation for replace navigations</title>
+<link rel="help" href="https://html.spec.whatwg.org/">
 <link rel="author" href="mailto:khushalsagar@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
 <script>
 const expectedUrl = location.href + '?new';
 
 const params = new URLSearchParams(location.search);
-// The page the popup navigates to.
-const is_new_page = params.has('new');
 // The initial page in the popup.
-const is_popup_page = params.has('popup');
+const is_popup_page = params.has('popup') && !window.opener.didreload;
 // The test page itself.
-const is_test_page = !is_popup_page && !is_new_page;
+const is_test_page = !params.has('popup');
 
 const channel = new BroadcastChannel("testchannel");
 
 if (is_test_page) {
-  const expectedUrl = location.href + "?new";
-  const expectedEvents = ["pageconceal", expectedUrl, "push","from", "pagehide"];
+  const expectedUrl = location.href.split('?')[0] + "?popup";
+  const expectedEvents = ["pageswap", "entry", "reload","from", "pagehide"];
 
   promise_test(async t => {
     let popup;
-    onload = async () => {
+    onload = () => {
       window.events = [];
+      window.didreload = false;
       popup = window.open("?popup");
     };
 
@@ -40,21 +37,20 @@ if (is_test_page) {
           }
       }));
     });
-  }, `pageconceal on navigation from script`);
+  }, `pageswap on replace navigation from script`);
 } else if (is_popup_page) {
-    onload = async () => {
-      await test_driver.minimize_window();
-      assert_equals(document.visibilityState, "hidden");
-      assert_equals(document.hidden, true);
+  onload = () => {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      window.opener.didreload = true;
+      location.reload();
+    }));
 
-      location.href = location.href.split('?')[0] + '?new';
-    };
-
-    onpageconceal = (e) => {
-      window.opener.events.push("pageconceal");
+    onpageswap = (e) => {
+      window.opener.events.push("pageswap");
       if (e.viewTransition != null)
-      window.opener.events.push("transition");
-      window.opener.events.push(e.activation.entry.url);
+        window.opener.events.push("transition");
+      if (e.activation.entry == navigation.currentEntry)
+        window.opener.events.push("entry");
       window.opener.events.push(e.activation.navigationType);
       if (e.activation.from == navigation.currentEntry)
         window.opener.events.push("from");
@@ -64,5 +60,6 @@ if (is_test_page) {
       window.opener.events.push("pagehide");
       channel.postMessage("nav");
     };
-  }
+  };
+}
 </script>

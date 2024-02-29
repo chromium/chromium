@@ -4,8 +4,8 @@
 
 [
   Exposed=Window,
-  RuntimeEnabled=PageConcealEvent
-] interface PageConcealEvent : Event {
+  RuntimeEnabled=PageSwapEvent
+] interface PageSwapEvent : Event {
   [RuntimeEnabled=ViewTransitionOnNavigation] readonly attribute ViewTransition? viewTransition;
   readonly attribute NavigationActivation? activation;
 };

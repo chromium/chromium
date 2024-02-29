@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<title>Tests pageconceal dispatch on iframe Documents</title>
+<title>Tests pageswap dispatch on iframe Documents</title>
 <link rel="author" title="Khushal Sagar"  href="mailto:khushalsagar@chromium.org">
 <link rel="help" href="https://html.spec.whatwg.org/">
 <script src="/resources/testharness.js"></script>
@@ -12,18 +12,18 @@ setup({explicit_done: true});
 function runTest(frame) {
   let frameWindow = frame.contentWindow;
 
-  let pageconcealfired = false;
+  let pageswapfired = false;
   let expectedUrl = frameWindow.location.href + '?new';
-  frameWindow.onpageconceal = (e) => {
-      assert_equals(e.activation.entry.url, expectedUrl, 'activation url incorrect in pageconceal');
-      assert_equals(e.activation.navigationType, "push", 'navigation type incorrect in pageconceal');
-      assert_equals(e.activation.from, frameWindow.navigation.currentEntry, 'from entry incorrect in pageconceal');
+  frameWindow.onpageswap = (e) => {
+      assert_equals(e.activation.entry.url, expectedUrl, 'activation url incorrect in pageswap');
+      assert_equals(e.activation.navigationType, "push", 'navigation type incorrect in pageswap');
+      assert_equals(e.activation.from, frameWindow.navigation.currentEntry, 'from entry incorrect in pageswap');
       assert_false(e.activation.entry.sameDocument, 'new entry must be cross-document');
-      pageconcealfired = true;
+      pageswapfired = true;
   }
 
   frameWindow.onpagehide = (e) => {
-      assert_true(pageconcealfired, 'pageconceal not fired');
+      assert_true(pageswapfired, 'pageswap not fired');
       done();
   }
 

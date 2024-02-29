@@ -5767,7 +5767,7 @@ void NavigationRequest::AddOldPageInfoToCommitParamsIfNeeded() {
           can_store_old_page_in_bfcache /* persisted */);
 }
 
-bool NavigationRequest::ShouldDispatchPageConcealEvent() const {
+bool NavigationRequest::ShouldDispatchPageSwapEvent() const {
   if (early_render_frame_host_swap_type_ !=
       EarlyRenderFrameHostSwapType::kNone) {
     return false;
@@ -5777,11 +5777,11 @@ bool NavigationRequest::ShouldDispatchPageConcealEvent() const {
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(blink::features::kPageConcealEvent)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kPageSwapEvent)) {
     return false;
   }
 
-  return !did_fire_page_conceal_;
+  return !did_fire_page_swap_;
 }
 
 void NavigationRequest::CommitNavigation() {
@@ -5809,10 +5809,10 @@ void NavigationRequest::CommitNavigation() {
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
 
   AddOldPageInfoToCommitParamsIfNeeded();
-  if (ShouldDispatchPageConcealEvent()) {
+  if (ShouldDispatchPageSwapEvent()) {
     frame_tree_node_->current_frame_host()
         ->GetAssociatedLocalFrame()
-        ->DispatchPageConceal(WillDispatchPageConceal());
+        ->DispatchPageSwap(WillDispatchPageSwap());
   }
 
   url::Origin origin_to_commit = GetOriginToCommit().value();
@@ -10316,13 +10316,12 @@ bool NavigationRequest::HasLoader() const {
   return loader_.get() != nullptr;
 }
 
-blink::mojom::PageConcealEventParamsPtr
-NavigationRequest::WillDispatchPageConceal() {
-  CHECK(ShouldDispatchPageConcealEvent());
+blink::mojom::PageSwapEventParamsPtr NavigationRequest::WillDispatchPageSwap() {
+  CHECK(ShouldDispatchPageSwapEvent());
 
-  did_fire_page_conceal_ = true;
+  did_fire_page_swap_ = true;
 
-  // The `pageconceal` event is fired on the old Document to provide information
+  // The `pageswap` event is fired on the old Document to provide information
   // about the new Document. The information shared must be restricted to
   // same-origin Documents.
   const bool is_same_origin =
@@ -10336,24 +10335,24 @@ NavigationRequest::WillDispatchPageConceal() {
 
   CHECK(!frame_tree_node_->current_origin().opaque());
 
-  auto page_conceal_event_params = blink::mojom::PageConcealEventParams::New();
-  page_conceal_event_params->url = common_params_->url;
+  auto page_swap_event_params = blink::mojom::PageSwapEventParams::New();
+  page_swap_event_params->url = common_params_->url;
 
   switch (common_params_->navigation_type) {
     case blink::mojom::NavigationType::RELOAD:
     case blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE:
-      page_conceal_event_params->navigation_type =
+      page_swap_event_params->navigation_type =
           blink::mojom::NavigationTypeForNavigationApi::kReload;
       break;
 
     case blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
-      page_conceal_event_params->navigation_type =
+      page_swap_event_params->navigation_type =
           blink::mojom::NavigationTypeForNavigationApi::kTraverse;
-      page_conceal_event_params->page_state = commit_params_->page_state;
+      page_swap_event_params->page_state = commit_params_->page_state;
       break;
 
     case blink::mojom::NavigationType::DIFFERENT_DOCUMENT:
-      page_conceal_event_params->navigation_type =
+      page_swap_event_params->navigation_type =
           common_params_->should_replace_current_entry
               ? blink::mojom::NavigationTypeForNavigationApi::kReplace
               : blink::mojom::NavigationTypeForNavigationApi::kPush;
@@ -10367,10 +10366,10 @@ NavigationRequest::WillDispatchPageConceal() {
     case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
     case blink::mojom::NavigationType::SAME_DOCUMENT:
       NOTREACHED_NORETURN()
-          << "Same-document navigations shouldn't fire pageconceal";
+          << "Same-document navigations shouldn't fire pageswap";
   }
 
-  return page_conceal_event_params;
+  return page_swap_event_params;
 }
 
 void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {

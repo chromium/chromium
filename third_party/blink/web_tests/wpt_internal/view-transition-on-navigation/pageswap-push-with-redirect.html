@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>View transitions: pageconceal navigationactivation for replace navigations</title>
+<title>View transitions: pageswap navigationactivation for push navigations with a same-origin redirect</title>
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
 <link rel="author" href="mailto:khushalsagar@chromium.org">
 <script src="/resources/testharness.js"></script>
@@ -23,8 +23,8 @@ const is_test_page = !is_popup_page && !is_new_page;
 const channel = new BroadcastChannel("testchannel");
 
 if (is_test_page) {
-  const expectedUrl = location.href.split('?')[0] + "?new";
-  const expectedEvents = ["pageconceal", "transition", expectedUrl, "replace","from", "pagehide"];
+  const expectedUrl = location.href + "?new";
+  const expectedEvents = ["pageswap", "transition", expectedUrl, "push","from", "pagehide"];
 
   promise_test(async t => {
     let popup;
@@ -43,15 +43,15 @@ if (is_test_page) {
           }
       }));
     });
-  }, `pageconceal on replace navigation from script`);
+  }, `pageswap on navigation with same-origin redirect`);
 } else if (is_popup_page) {
   onload = () => {
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      location.replace(location.href.split('?')[0] + '?new');
+      location.href = "/common/redirect.py?location=/wpt_internal/view-transition-on-navigation/pageswap-push-with-redirect.html?new";
     }));
 
-    onpageconceal = (e) => {
-      window.opener.events.push("pageconceal");
+    onpageswap = (e) => {
+      window.opener.events.push("pageswap");
       if (e.viewTransition != null)
         window.opener.events.push("transition");
       window.opener.events.push(e.activation.entry.url);

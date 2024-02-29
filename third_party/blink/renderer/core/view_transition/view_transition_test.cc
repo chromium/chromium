@@ -1312,12 +1312,12 @@ TEST_P(ViewTransitionTest, ScriptCallAfterNavigationTransition) {
   ScriptState* script_state = v8_scope.GetScriptState();
   ExceptionState& exception_state = v8_scope.GetExceptionState();
 
-  auto page_conceal_params = mojom::blink::PageConcealEventParams::New();
-  page_conceal_params->url = KURL("http://test.com");
-  page_conceal_params->navigation_type =
+  auto page_swap_params = mojom::blink::PageSwapEventParams::New();
+  page_swap_params->url = KURL("http://test.com");
+  page_swap_params->navigation_type =
       mojom::blink::NavigationTypeForNavigationApi::kPush;
   ViewTransitionSupplement::SnapshotDocumentForNavigation(
-      GetDocument(), std::move(page_conceal_params),
+      GetDocument(), std::move(page_swap_params),
       base::BindOnce([](const ViewTransitionState&) {}));
 
   ASSERT_TRUE(ViewTransitionSupplement::From(GetDocument())->GetTransition());

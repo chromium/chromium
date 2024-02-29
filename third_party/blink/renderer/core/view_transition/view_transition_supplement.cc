@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
-#include "third_party/blink/renderer/core/view_transition/page_conceal_event.h"
+#include "third_party/blink/renderer/core/view_transition/page_swap_event.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -209,7 +209,7 @@ void ViewTransitionSupplement::SetCrossDocumentOptIn(
 // static
 void ViewTransitionSupplement::SnapshotDocumentForNavigation(
     Document& document,
-    mojom::blink::PageConcealEventParamsPtr params,
+    mojom::blink::PageSwapEventParamsPtr params,
     ViewTransition::ViewTransitionStateCallback callback) {
   DCHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
   auto* supplement = From(document);
@@ -218,7 +218,7 @@ void ViewTransitionSupplement::SnapshotDocumentForNavigation(
 
 void ViewTransitionSupplement::StartTransition(
     Document& document,
-    mojom::blink::PageConcealEventParamsPtr params,
+    mojom::blink::PageSwapEventParamsPtr params,
     ViewTransition::ViewTransitionStateCallback callback) {
   if (transition_) {
     // We should skip a transition if one exists, regardless of how it was
@@ -230,9 +230,9 @@ void ViewTransitionSupplement::StartTransition(
   transition_ = ViewTransition::CreateForSnapshotForNavigation(
       &document, std::move(callback), this);
 
-  auto* page_conceal_event = MakeGarbageCollected<PageConcealEvent>(
+  auto* page_swap_event = MakeGarbageCollected<PageSwapEvent>(
       document, std::move(params), transition_->GetScriptDelegate());
-  document.domWindow()->DispatchEvent(*page_conceal_event);
+  document.domWindow()->DispatchEvent(*page_swap_event);
 }
 
 // static

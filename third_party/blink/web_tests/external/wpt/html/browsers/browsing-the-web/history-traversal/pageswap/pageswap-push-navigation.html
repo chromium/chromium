@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>pageconceal navigationactivation for push navigations</title>
+<title>pageswap navigationactivation for push navigations</title>
 <link rel="help" href="https://html.spec.whatwg.org/">
 <link rel="author" href="mailto:khushalsagar@chromium.org">
 <script src="/resources/testharness.js"></script>
@@ -19,7 +19,7 @@ const channel = new BroadcastChannel("testchannel");
 
 if (is_test_page) {
   const expectedUrl = location.href + "?new";
-  const expectedEvents = ["pageconceal", expectedUrl, "push","from", "pagehide"];
+  const expectedEvents = ["pageswap", expectedUrl, "push","from", "pagehide"];
 
   promise_test(async t => {
     let popup;
@@ -38,15 +38,15 @@ if (is_test_page) {
           }
       }));
     });
-  }, `pageconceal on navigation from script`);
+  }, `pageswap on navigation from script`);
 } else if (is_popup_page) {
   onload = () => {
     requestAnimationFrame(() => requestAnimationFrame(() => {
       location.href = location.href.split('?')[0] + '?new';
     }));
 
-    onpageconceal = (e) => {
-      window.opener.events.push("pageconceal");
+    onpageswap = (e) => {
+      window.opener.events.push("pageswap");
       if (e.viewTransition != null)
       window.opener.events.push("transition");
       window.opener.events.push(e.activation.entry.url);

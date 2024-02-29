@@ -69,7 +69,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
-#include "third_party/blink/renderer/core/view_transition/page_conceal_event.h"
+#include "third_party/blink/renderer/core/view_transition/page_swap_event.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
@@ -1348,17 +1348,17 @@ void LocalFrameMojoHandler::SetV8CompileHints(
 }
 
 void LocalFrameMojoHandler::SnapshotDocumentForViewTransition(
-    mojom::blink::PageConcealEventParamsPtr params,
+    mojom::blink::PageSwapEventParamsPtr params,
     SnapshotDocumentForViewTransitionCallback callback) {
   ViewTransitionSupplement::SnapshotDocumentForNavigation(
       *frame_->GetDocument(), std::move(params), std::move(callback));
 }
 
-void LocalFrameMojoHandler::DispatchPageConceal(
-    mojom::blink::PageConcealEventParamsPtr params) {
-  auto* page_conceal_event = MakeGarbageCollected<PageConcealEvent>(
+void LocalFrameMojoHandler::DispatchPageSwap(
+    mojom::blink::PageSwapEventParamsPtr params) {
+  auto* page_swap_event = MakeGarbageCollected<PageSwapEvent>(
       *frame_->GetDocument(), std::move(params), nullptr);
-  frame_->GetDocument()->domWindow()->DispatchEvent(*page_conceal_event);
+  frame_->GetDocument()->domWindow()->DispatchEvent(*page_swap_event);
 }
 
 void LocalFrameMojoHandler::DispatchBeforeUnload(

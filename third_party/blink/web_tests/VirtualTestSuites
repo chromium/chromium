@@ -1401,7 +1401,7 @@
     "owners": ["view-transitions-api@chromium.org"],
     "bases": ["wpt_internal/view-transition-on-navigation"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=ViewTransitionOnNavigation,PageConcealEvent",
+    "args": ["--enable-features=ViewTransitionOnNavigation,PageSwapEvent",
              "--enable-threaded-compositing"],
     "expires": "May 1, 2024"
   },
@@ -2734,11 +2734,11 @@
     "owners": ["evelynn.kaplan@microsoft.com", "almaher@microsoft.com"]
   },
   {
-    "prefix": "pageconceal",
+    "prefix": "pageswap",
     "platforms": ["Linux", "Mac", "Win"],
     "exclusive_tests": "ALL",
-    "bases": ["external/wpt/html/browsers/browsing-the-web/history-traversal/pageconceal"],
-    "args": ["--enable-features=PageConcealEvent"],
+    "bases": ["external/wpt/html/browsers/browsing-the-web/history-traversal/pageswap"],
+    "args": ["--enable-features=PageSwapEvent"],
     "expires": "June 1, 2024",
     "owners": ["khushalsagar@chromium.org", "vmpstr@chromium.org"]
   },

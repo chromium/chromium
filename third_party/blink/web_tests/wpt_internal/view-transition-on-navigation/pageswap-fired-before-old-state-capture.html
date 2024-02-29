@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
-<title>View transitions: Test pageconceal fires before document capture</title>
+<title>View transitions: Test pageswap fires before document capture</title>
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
 <link rel="author" href="mailto:khushalsagar@chromium.org">
-<link rel="match" href="pageconceal-fired-before-old-state-capture-ref.html">
+<link rel="match" href="pageswap-fired-before-old-state-capture-ref.html">
 <script src="/common/reftest-wait.js"></script>
 <script>
 const params = new URLSearchParams(location.search);
@@ -18,7 +18,7 @@ if (is_new_page) {
     });
   });
 } else {
-  addEventListener('pageconceal', e => {
+  addEventListener('pageswap', e => {
     document.documentElement.classList.add('oldPage');
   });
 

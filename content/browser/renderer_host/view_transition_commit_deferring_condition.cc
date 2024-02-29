@@ -39,7 +39,7 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
   if (!navigation_request.IsInPrimaryMainFrame())
     return nullptr;
 
-  if (!navigation_request.ShouldDispatchPageConcealEvent()) {
+  if (!navigation_request.ShouldDispatchPageSwapEvent()) {
     return nullptr;
   }
 
@@ -89,16 +89,16 @@ ViewTransitionCommitDeferringCondition::WillCommitNavigation(
   auto* render_frame_host =
       navigation_request->frame_tree_node()->current_frame_host();
 
-  blink::mojom::PageConcealEventParamsPtr page_conceal_event_params =
-      navigation_request->WillDispatchPageConceal();
-  CHECK(page_conceal_event_params);
+  blink::mojom::PageSwapEventParamsPtr page_swap_event_params =
+      navigation_request->WillDispatchPageSwap();
+  CHECK(page_swap_event_params);
 
   // TODO(crbug.com/1372584):  Implement a timeout, to avoid blocking the
   // navigation for too long.
   CHECK(render_frame_host->IsRenderFrameLive());
   render_frame_host->GetAssociatedLocalFrame()
       ->SnapshotDocumentForViewTransition(
-          std::move(page_conceal_event_params),
+          std::move(page_swap_event_params),
           base::BindOnce(&OnSnapshotAck, std::move(resume),
                          navigation_request->GetWeakPtr()));
   return Result::kDefer;

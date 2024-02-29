@@ -211,9 +211,9 @@ class LocalFrameMojoHandler
       const std::string& page_state,
       bool is_browser_initiated) final;
   void SnapshotDocumentForViewTransition(
-      mojom::blink::PageConcealEventParamsPtr,
+      mojom::blink::PageSwapEventParamsPtr,
       SnapshotDocumentForViewTransitionCallback callback) final;
-  void DispatchPageConceal(mojom::blink::PageConcealEventParamsPtr) final;
+  void DispatchPageSwap(mojom::blink::PageSwapEventParamsPtr) final;
 
   void AddResourceTimingEntryForFailedSubframeNavigation(
       const FrameToken& subframe_token,

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>View transitions: skipTransition() in pageconceal aborts the transition</title>
+<title>View transitions: skipTransition() in pageswap aborts the transition</title>
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
 <link rel="author" href="mailto:khushalsagar@chromium.org">
 <script src="/resources/testharness.js"></script>
@@ -21,7 +21,7 @@ if (is_initial_page) {
       location.replace(location.href + '?new');
     }));
   };
-  onpageconceal = (e) => {
+  onpageswap = (e) => {
     assert_not_equals(e.viewTransition, null);
     e.viewTransition.skipTransition();
   };

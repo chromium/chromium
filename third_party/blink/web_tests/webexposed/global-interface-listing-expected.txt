@@ -6974,12 +6974,12 @@ interface OverscrollEvent : Event
     getter deltaX
     getter deltaY
     method constructor
-interface PageConcealEvent : Event
-    attribute @@toStringTag
-    getter activation
-    method constructor
 interface PageRevealEvent : Event
     attribute @@toStringTag
+    method constructor
+interface PageSwapEvent : Event
+    attribute @@toStringTag
+    getter activation
     method constructor
 interface PageTransitionEvent : Event
     attribute @@toStringTag
@@ -12722,10 +12722,10 @@ namespace console
     getter onoffline
     getter ononline
     getter onoverscroll
-    getter onpageconceal
     getter onpagehide
     getter onpagereveal
     getter onpageshow
+    getter onpageswap
     getter onpause
     getter onplay
     getter onplaying
@@ -12954,10 +12954,10 @@ namespace console
     setter onoffline
     setter ononline
     setter onoverscroll
-    setter onpageconceal
     setter onpagehide
     setter onpagereveal
     setter onpageshow
+    setter onpageswap
     setter onpause
     setter onplay
     setter onplaying
