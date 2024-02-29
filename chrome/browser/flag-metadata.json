@@ -7297,16 +7297,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "service-worker-bypass-fetch-handler",
-    "owners": [ "sisidovski@google.com", "chrome-worker@google.com" ],
-    "expiry_milestone": 119
-  },
-  {
-    "name": "service-worker-bypass-fetch-handler-for-main-resource",
-    "owners": [ "sisidovski@google.com", "chrome-worker@google.com" ],
-    "expiry_milestone": 119
-  },
-  {
     "name": "service-worker-static-router",
     "owners": [ "yyanagisawa@google.com", "sisidovski@google.com", "chrome-worker@google.com" ],
     "expiry_milestone": 125

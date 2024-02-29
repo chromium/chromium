@@ -434,12 +434,6 @@ extern const char kSearchInCCTDescription[];
 extern const char kSeparateWebAppShortcutBadgeIconName[];
 extern const char kSeparateWebAppShortcutBadgeIconDescription[];
 
-extern const char kServiceWorkerBypassFetchHandlerName[];
-extern const char kServiceWorkerBypassFetchHandlerDescription[];
-
-extern const char kServiceWorkerBypassFetchHandlerForMainResourceName[];
-extern const char kServiceWorkerBypassFetchHandlerForMainResourceDescription[];
-
 extern const char kServiceWorkerStaticRouterName[];
 extern const char kServiceWorkerStaticRouterDescription[];
 

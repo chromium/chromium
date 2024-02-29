@@ -761,25 +761,6 @@ const char kSeparateWebAppShortcutBadgeIconDescription[] =
     "The shortcut app badge is painted in the UI instead of being part of the "
     "shortcut app icon, and more effects are added for the icon.";
 
-const char kServiceWorkerBypassFetchHandlerName[] =
-    "Bypass Service Worker Fetch Handler";
-const char kServiceWorkerBypassFetchHandlerDescription[] =
-    "Bypass starting a service worker and its fetch handler when the fetch "
-    "event meets the conditions. The service worker may start after sending a "
-    "resource request, or conduct a race between the network request and its "
-    "fetch handler. If the resource could be handled in the fetch handler, the "
-    "feature may affect the page load. This feature will override "
-    "chrome://flags/#service-worker-bypass-fetch-handler-for-main-resource";
-
-const char kServiceWorkerBypassFetchHandlerForMainResourceName[] =
-    "Bypass Service Worker Fetch Handler for main resource";
-const char kServiceWorkerBypassFetchHandlerForMainResourceDescription[] =
-    "Bypass starting a service worker and its fetch handler for main resource "
-    "requests. The service worker starts after sending a main resource request "
-    "and handles subresources. If the main resource could be handled in the "
-    "fetch handler, the feature may affect the page load. This feature will be "
-    "overridden by chrome://flags/#service-worker-bypass-fetch-handler";
-
 const char kServiceWorkerStaticRouterName[] = "Service Worker Static Router";
 const char kServiceWorkerStaticRouterDescription[] =
     "When enabled, Chrome will enable the Service Worker Static Routing API. "

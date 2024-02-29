@@ -3156,30 +3156,6 @@ const FeatureEntry::FeatureVariation
          std::size(kServiceWorkerSkipIgnorableFetchHandler_SkipEmpty), nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kServiceWorkerBypassFetchHandler_MainResource[] = {
-        {"bypass_for", "main_resource"},
-        {"strategy", "optin"}};
-const FeatureEntry::FeatureParam
-    kServiceWorkerBypassFetchHandler_RaceNetworkRequest[] = {
-        {"bypass_for", "all_with_race_network_request"},
-        {"strategy", "optin"}};
-const FeatureEntry::FeatureParam
-    kServiceWorkerBypassFetchHandler_Subresource[] = {
-        {"bypass_for", "sub_resource"},
-        {"strategy", "optin"}};
-const FeatureEntry::FeatureVariation
-    kServiceWorkerBypassFetchHandlerVariations[] = {
-        {"Main Resource", kServiceWorkerBypassFetchHandler_MainResource,
-         std::size(kServiceWorkerBypassFetchHandler_MainResource), nullptr},
-        {"Subesource", kServiceWorkerBypassFetchHandler_Subresource,
-         std::size(kServiceWorkerBypassFetchHandler_Subresource), nullptr},
-        {"Race Network Request and Fetch Handler",
-         kServiceWorkerBypassFetchHandler_RaceNetworkRequest,
-         std::size(kServiceWorkerBypassFetchHandler_RaceNetworkRequest),
-         nullptr},
-};
-
 #if !BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam
@@ -9911,19 +9887,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrintingPpdChannelDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kPrintingPpdChannelChoices)},
 #endif
-
-    {"service-worker-bypass-fetch-handler",
-     flag_descriptions::kServiceWorkerBypassFetchHandlerName,
-     flag_descriptions::kServiceWorkerBypassFetchHandlerDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kServiceWorkerBypassFetchHandler,
-                                    kServiceWorkerBypassFetchHandlerVariations,
-                                    "ServiceWorkerBypassFetchHandler")},
-
-    {"service-worker-bypass-fetch-handler-for-main-resource",
-     flag_descriptions::kServiceWorkerBypassFetchHandlerForMainResourceName,
-     flag_descriptions::
-         kServiceWorkerBypassFetchHandlerForMainResourceDescription,
-     kOsAll, FEATURE_VALUE_TYPE(features::kServiceWorkerBypassFetchHandler)},
 
     {"service-worker-static-router",
      flag_descriptions::kServiceWorkerStaticRouterName,
