@@ -700,7 +700,8 @@ PolicyServiceProxyConfiguration::Get(
       policy_service_proxy_configuration.proxy_url = proxy_url.policy();
     }
   } else if (proxy_mode.policy().compare(kProxyModePacScript) == 0) {
-    const PolicyStatus<std::string> proxy_pac_url;
+    const PolicyStatus<std::string> proxy_pac_url =
+        policy_service->GetProxyPacUrl();
     if (!proxy_pac_url) {
       VLOG(1) << "PAC proxy policy has no PAC URL specified.";
       is_policy_config_valid = false;
