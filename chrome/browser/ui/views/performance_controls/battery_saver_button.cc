@@ -35,7 +35,7 @@ BatterySaverButton::BatterySaverButton(BrowserView* browser_view)
   SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_BATTERY_SAVER_BUTTON_ACCNAME));
   SetTooltipText(l10n_util::GetStringUTF16(IDS_BATTERY_SAVER_BUTTON_TOOLTIP));
-  GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
+  GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kDialog);
   SetProperty(views::kElementIdentifierKey,
               kToolbarBatterySaverButtonElementId);
 

@@ -83,7 +83,7 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
 
   SetVectorIcon(GetIcon(state_));
 
-  GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
+  GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
 
   // Do not flip the Extensions icon in RTL.
   SetFlipCanvasOnPaintForRTLUI(false);

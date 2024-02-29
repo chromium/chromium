@@ -93,7 +93,7 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
   // and LabelButton image/label placement is still flipped like usual.
   SetFlipCanvasOnPaintForRTLUI(false);
 
-  GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
+  GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
 
   // For consistency with identity representation, we need to have the avatar on
   // the left and the (potential) user name on the right.

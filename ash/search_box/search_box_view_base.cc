@@ -514,7 +514,7 @@ views::ImageButton* SearchBoxViewBase::CreateFilterButton(
   filter_button_ = filter_and_close_button_container_->AddChildView(
       std::make_unique<SearchBoxImageButton>(button_callback));
   filter_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kPopUpButton);
-  filter_button_->GetViewAccessibility().OverrideHasPopup(
+  filter_button_->GetViewAccessibility().SetHasPopup(
       ax::mojom::HasPopup::kMenu);
   return filter_button_;
 }

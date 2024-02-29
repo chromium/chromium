@@ -166,7 +166,7 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
                      ? kDownloadToolbarButtonChromeRefreshIcon
                      : kDownloadToolbarButtonIcon,
                  kDownloadToolbarButtonIcon);
-  GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
+  GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kDialog);
   tooltip_texts_[0] = l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON);
   SetTooltipText(tooltip_texts_.at(0));
   SetVisible(false);

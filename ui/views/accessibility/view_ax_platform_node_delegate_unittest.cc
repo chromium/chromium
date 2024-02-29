@@ -982,13 +982,11 @@ TEST_F(ViewAXPlatformNodeDelegateTest, SetIsEnabled) {
   EXPECT_FALSE(label_accessibility()->IsAccessibilityFocusable());
 }
 
-TEST_F(ViewAXPlatformNodeDelegateTest, OverrideHasPopup) {
+TEST_F(ViewAXPlatformNodeDelegateTest, SetHasPopup) {
   View::Views view_ids = SetUpExtraViews();
 
-  view_ids[1]->GetViewAccessibility().OverrideHasPopup(
-      ax::mojom::HasPopup::kTrue);
-  view_ids[2]->GetViewAccessibility().OverrideHasPopup(
-      ax::mojom::HasPopup::kMenu);
+  view_ids[1]->GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kTrue);
+  view_ids[2]->GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
 
   ui::AXNodeData node_data_0;
   view_ids[0]->GetViewAccessibility().GetAccessibleNodeData(&node_data_0);

@@ -41,7 +41,7 @@ ChromeLabsButton::ChromeLabsButton(BrowserView* browser_view,
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   GetViewAccessibility().SetRole(ax::mojom::Role::kPopUpButton);
-  GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
+  GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kDialog);
   new_experiments_indicator_ =
       views::DotIndicator::Install(image_container_view());
   UpdateDotIndicator();
