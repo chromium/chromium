@@ -6,6 +6,7 @@
 // http://dev.chromium.org/developers/testing/no-compile-tests
 
 #include "base/compiler_specific.h"
+#include "build/config/clang/unsafe_buffers_buildflags.h"
 
 namespace base {
 
@@ -15,7 +16,11 @@ UNSAFE_BUFFER_USAGE int uses_pointer_as_array(int* i) {
 
 void CallToUnsafeBufferFunctionDisallowed() {
   int arr[] = {1, 2};
+#if BUILDFLAG(UNSAFE_BUFFERS_WARNING_ENABLED)
   uses_pointer_as_array(arr);  // expected-error {{function introduces unsafe buffer manipulation}}
+#else
+  uses_pointer_as_array(arr);  // expected-no-diagnostics: No error when not enabled.
+#endif
 }
 
 }  // namespace base

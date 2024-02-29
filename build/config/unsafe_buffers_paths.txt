@@ -1,0 +1,22 @@
+# Copyright 2024 The Chromium Project. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# The set of path prefixes that should be checked for unsafe buffer usage (see
+# -Wunsafe-buffer-usage in Clang).
+#
+# ***
+# Paths should be written as relative to the root of the source tree with
+# unix-style path separators. Directory prefixes should end with `/`, such
+# as `base/`.
+# ***
+#
+# Files in this set are known to not use pointer arithmetic/subscripting, and
+# make use of constructs like base::span or containers like std::vector instead.
+#
+# See `docs/unsafe_buffers.md`.
+
+base/containers/buffer_iterator_nocompile.nc
+base/containers/span.h
+base/unsafe_buffers_unittest.cc
+base/unsafe_buffers_nocompile.nc
