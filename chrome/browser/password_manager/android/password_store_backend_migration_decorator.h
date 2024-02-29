@@ -133,6 +133,8 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
+  void RecordAddLoginAsyncCalledFromTheStore() override;
+  void RecordUpdateLoginAsyncCalledFromTheStore() override;
   base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
   // Starts migration process.

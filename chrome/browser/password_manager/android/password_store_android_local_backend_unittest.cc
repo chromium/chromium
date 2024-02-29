@@ -7,6 +7,7 @@
 #include <jni.h>
 #include <cstdint>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/password_manager/android/fake_password_manager_lifecycle_helper.h"
@@ -363,6 +364,24 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
 
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
+}
+
+TEST_F(PasswordStoreAndroidLocalBackendTest, RecordPasswordStoreMetrics) {
+  base::HistogramTester histogram_tester;
+  backend().InitBackend(
+      /*affiliated_match_helper=*/nullptr,
+      PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
+      base::NullCallback(), base::DoNothing());
+
+  backend().RecordAddLoginAsyncCalledFromTheStore();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordStore.LocalBackend.AddLoginCalledOnStore", true,
+      1);
+
+  backend().RecordUpdateLoginAsyncCalledFromTheStore();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordStore.LocalBackend.UpdateLoginCalledOnStore",
+      true, 1);
 }
 
 class PasswordStoreAndroidLocalBackendRetriesTest

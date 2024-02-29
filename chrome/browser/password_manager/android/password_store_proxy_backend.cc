@@ -306,6 +306,14 @@ void PasswordStoreProxyBackend::OnSyncServiceInitialized(
   android_backend_->OnSyncServiceInitialized(sync_service);
 }
 
+void PasswordStoreProxyBackend::RecordAddLoginAsyncCalledFromTheStore() {
+  main_backend()->RecordAddLoginAsyncCalledFromTheStore();
+}
+
+void PasswordStoreProxyBackend::RecordUpdateLoginAsyncCalledFromTheStore() {
+  main_backend()->RecordUpdateLoginAsyncCalledFromTheStore();
+}
+
 base::WeakPtr<PasswordStoreBackend> PasswordStoreProxyBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
