@@ -1285,6 +1285,10 @@ const base::FeatureParam<int> kLCPScriptObserverMaxUrlCountPerOrigin{
 const base::FeatureParam<bool> kLCPScriptObserverAdjustImageLoadPriority{
     &kLCPScriptObserver, "lcpscriptobserver_adjust_image_load_priority", false};
 
+BASE_FEATURE(kLCPTimingPredictorPrerender2,
+             "LCPTimingPredictorPrerender2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLCPPAutoPreconnectLcpOrigin,
              "LCPPAutoPreconnectLcpOrigin",
              base::FEATURE_DISABLED_BY_DEFAULT);

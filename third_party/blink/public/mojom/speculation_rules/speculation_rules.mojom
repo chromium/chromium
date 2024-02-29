@@ -22,6 +22,8 @@ interface SpeculationHost {
   // Pushes a new set of speculation candidates, which replaces any previously
   // sent.
   UpdateSpeculationCandidates(array<SpeculationCandidate> candidates);
+  // Called when LCP is predicted.
+  OnLCPPredicted();
   // Enables matching prefetches according to No-Vary-Search response headers.
   EnableNoVarySearchSupport();
   // Initiates previewing the given `url`.

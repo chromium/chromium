@@ -113,6 +113,9 @@ class CORE_EXPORT DocumentSpeculationRules
   // Populates |selectors_| and notifies the StyleEngine.
   void UpdateSelectors();
 
+  // Called when LCP is predicted.
+  void OnLCPPredicted(const Element* lcp_candidate);
+
   // Tracks when the next update to speculation candidates is scheduled to
   // occur. See `SetPendingUpdateState` for details.
   enum class PendingUpdateState : uint8_t {

@@ -2090,10 +2090,10 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=Prerender2InNewTab,Prerender2AllowActivationInBackground",
+      "--enable-features=Prerender2InNewTab,Prerender2AllowActivationInBackground,LCPCriticalPathPredictor,LCPTimingPredictorPrerender2",
       "--disable-features=KeepAliveInBrowserMigration"
     ],
-    "owners": ["nhiroki@chromium.org"],
+    "owners": ["nhiroki@chromium.org", "yoichio@chromium.org"],
     "expires": "Jul 1, 2024"
   },
   {

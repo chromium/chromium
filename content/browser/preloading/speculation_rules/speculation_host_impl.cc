@@ -76,6 +76,13 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
   preloading_decider->UpdateSpeculationCandidates(candidates);
 }
 
+void SpeculationHostImpl::OnLCPPredicted() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
+  preloading_decider->OnLCPPredicted();
+}
+
 void SpeculationHostImpl::EnableNoVarySearchSupport() {
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(

@@ -379,6 +379,10 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   prerenderer_->ProcessCandidatesForPrerender(candidates);
 }
 
+void PreloadingDecider::OnLCPPredicted() {
+  prerenderer_->OnLCPPredicted();
+}
+
 bool PreloadingDecider::MaybePrefetch(const GURL& url,
                                       const PreloadingPredictor& predictor) {
   SpeculationCandidateKey key{url, blink::mojom::SpeculationAction::kPrefetch};

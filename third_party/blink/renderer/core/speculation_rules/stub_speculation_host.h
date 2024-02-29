@@ -46,6 +46,7 @@ class StubSpeculationHost : public mojom::blink::SpeculationHost {
 
   // mojom::blink::SpeculationHost.
   void UpdateSpeculationCandidates(Candidates candidates) override;
+  void OnLCPPredicted() override {}
   void EnableNoVarySearchSupport() override;
   void InitiatePreview(const KURL& url) override;
 

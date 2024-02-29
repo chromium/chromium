@@ -64,6 +64,11 @@ class CONTENT_EXPORT PreloadingDecider
   void UpdateSpeculationCandidates(
       std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
 
+  // Called when LCP is predicted.
+  // This is used to defer starting prerenders until LCP timing and is only
+  // used under LCPTimingPredictorPrerender2.
+  void OnLCPPredicted();
+
   // Returns true if the |url|, |action| pair is in the on-standby list.
   bool IsOnStandByForTesting(const GURL& url,
                              blink::mojom::SpeculationAction action);

@@ -75,6 +75,8 @@ class MockPrerenderer : public Prerenderer {
     }
   }
 
+  void OnLCPPredicted() override {}
+
   bool MaybePrerender(
       const blink::mojom::SpeculationCandidatePtr& candidate) override {
     if (PrerenderExists(candidate->url)) {

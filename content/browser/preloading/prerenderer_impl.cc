@@ -40,6 +40,10 @@ PrerendererImpl::PrerendererImpl(RenderFrameHost& render_frame_host)
     observation_.Observe(registry_.get());
   }
   ResetReceivedPrerendersCountForMetrics();
+  if (base::FeatureList::IsEnabled(
+          blink::features::kLCPTimingPredictorPrerender2)) {
+    blocked_ = true;
+  }
 }
 
 PrerendererImpl::~PrerendererImpl() {
@@ -191,9 +195,20 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
   }
 }
 
+void PrerendererImpl::OnLCPPredicted() {
+  blocked_ = false;
+  for (auto& candidate : std::move(blocked_candidates_)) {
+    MaybePrerender(candidate);
+  }
+}
+
 bool PrerendererImpl::MaybePrerender(
     const blink::mojom::SpeculationCandidatePtr& candidate) {
   CHECK_EQ(candidate->action, blink::mojom::SpeculationAction::kPrerender);
+  if (blocked_) {
+    blocked_candidates_.push_back(candidate->Clone());
+    return false;
+  }
 
   // Prerendering frames should not trigger any prerender request.
   CHECK(!render_frame_host_->IsInLifecycleState(

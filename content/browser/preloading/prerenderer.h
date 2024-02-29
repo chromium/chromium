@@ -21,6 +21,11 @@ class Prerenderer {
   virtual void ProcessCandidatesForPrerender(
       const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) = 0;
 
+  // Called when LCP is predicted.
+  // This is used to defer starting prerenders until LCP timing and is only
+  // used under LCPTimingPredictorPrerender2.
+  virtual void OnLCPPredicted() = 0;
+
   virtual bool MaybePrerender(
       const blink::mojom::SpeculationCandidatePtr& candidate) = 0;
 

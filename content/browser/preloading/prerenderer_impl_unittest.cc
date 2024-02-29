@@ -99,6 +99,27 @@ TEST_F(PrerendererTest, StartPrerender) {
   EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }
 
+// Tests that Prerenderer should not start prerendering when
+// kLCPTimingPredictorPrerender2 is enabled and until OnLCPPredicted is called.
+TEST_F(PrerendererTest, LCPTimingPredictorPrerender2) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kLCPTimingPredictorPrerender2);
+
+  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerendererImpl prerenderer(*GetRenderFrameHost());
+
+  const GURL kPrerenderingUrl = GetSameOriginUrl("/empty.html");
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(CreatePrerenderCandidate(kPrerenderingUrl));
+
+  prerenderer.ProcessCandidatesForPrerender(std::move(candidates));
+  EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
+
+  prerenderer.OnLCPPredicted();
+  EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
+}
+
 // Tests that Prerenderer will skip a cross-site candidate even if it is the
 // first prerender candidate in the candidate list.
 TEST_F(PrerendererTest, ProcessFirstSameOriginPrerenderCandidate) {

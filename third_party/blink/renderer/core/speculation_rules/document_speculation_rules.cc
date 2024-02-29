@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/speculation_rule_loader.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
@@ -214,7 +215,32 @@ DocumentSpeculationRules* DocumentSpeculationRules::FromIfExists(
 }
 
 DocumentSpeculationRules::DocumentSpeculationRules(Document& document)
-    : Supplement(document), host_(document.GetExecutionContext()) {}
+    : Supplement(document), host_(document.GetExecutionContext()) {
+  if (!base::FeatureList::IsEnabled(features::kLCPTimingPredictorPrerender2)) {
+    return;
+  }
+  auto* frame = GetSupplementable()->GetFrame();
+  if (!frame) {
+    return;
+  }
+  // LCPP is supposed to be attached to outer-most-main-frame only.
+  // This matches with the current implementation of prerender2.
+  LCPCriticalPathPredictor* lcpp = frame->GetLCPP();
+  if (!lcpp) {
+    return;
+  }
+  lcpp->AddLCPPredictedCallback(WTF::BindOnce(
+      &DocumentSpeculationRules::OnLCPPredicted, WrapPersistent(this)));
+}
+
+void DocumentSpeculationRules::OnLCPPredicted(const Element*) {
+  CHECK(base::FeatureList::IsEnabled(features::kLCPTimingPredictorPrerender2));
+  mojom::blink::SpeculationHost* host = GetHost();
+  if (!host) {
+    return;
+  }
+  host->OnLCPPredicted();
+}
 
 void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
   SpeculationRulesLoadOutcome outcome = SpeculationRulesLoadOutcome::kSuccess;

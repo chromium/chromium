@@ -32,6 +32,7 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
 
   bool MaybePrerender(
       const blink::mojom::SpeculationCandidatePtr& candidate) override;
+  void OnLCPPredicted() override;
 
   bool ShouldWaitForPrerenderResult(const GURL& url) override;
 
@@ -85,6 +86,11 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
   // content::PreloadingDecider, which inherits content::DocumentUserData, owns
   // `this`, so `this` can access `render_frame_host_` safely.
   const raw_ref<RenderFrameHost> render_frame_host_;
+
+  // Below two fields are used to defer starting prerenders until LCP timing
+  // and are only used under LCPTimingPredictorPrerender2.
+  bool blocked_ = false;
+  std::vector<blink::mojom::SpeculationCandidatePtr> blocked_candidates_;
 };
 
 }  // namespace content
