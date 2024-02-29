@@ -91,7 +91,7 @@ const addPrefix = () =>
 
 class SyncFileStreams extends Transform {
   // Matches lines like `PyTest: XXX [ 39%]` or
-  static percentRegEx = /\[ \d+%\]/;
+  static percentRegEx = /\[ {0,2}\d{1,3}%\]/;
   serverLogs = Buffer.from('');
 
   _transform(chunk, _, callback) {
