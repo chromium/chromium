@@ -82,10 +82,14 @@ std::vector<RecentFile> PrepareResponse(std::vector<RecentFile>&& files,
 
 }  // namespace
 
-RecentArcMediaSource::CallContext::CallContext(GetRecentFilesCallback callback)
-    : callback(std::move(callback)), build_start_time(base::TimeTicks::Now()) {}
+RecentArcMediaSource::CallContext::CallContext(const Params& params,
+                                               GetRecentFilesCallback callback)
+    : params(params),
+      callback(std::move(callback)),
+      build_start_time(base::TimeTicks::Now()) {}
 RecentArcMediaSource::CallContext::CallContext(CallContext&& context)
-    : callback(std::move(context.callback)),
+    : params(context.params),
+      callback(std::move(context.callback)),
       build_start_time(std::move(context.build_start_time)) {}
 
 RecentArcMediaSource::CallContext::~CallContext() = default;
@@ -124,7 +128,7 @@ bool RecentArcMediaSource::MatchesFileType(FileType file_type) const {
   }
 }
 
-void RecentArcMediaSource::GetRecentFiles(Params params,
+void RecentArcMediaSource::GetRecentFiles(const Params& params,
                                           GetRecentFilesCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(context_map_.Lookup(params.call_id()) == nullptr);
@@ -142,7 +146,7 @@ void RecentArcMediaSource::GetRecentFiles(Params params,
     return;
   }
 
-  auto context = std::make_unique<CallContext>(std::move(callback));
+  auto context = std::make_unique<CallContext>(params, std::move(callback));
   context_map_.AddWithID(std::move(context), params.call_id());
 
   if (!MatchesFileType(params.file_type())) {
@@ -163,14 +167,14 @@ void RecentArcMediaSource::GetRecentFiles(Params params,
   runner->GetRecentDocuments(
       arc::kMediaDocumentsProviderAuthority, root_id_,
       base::BindOnce(&RecentArcMediaSource::OnRunnerDone,
-                     weak_ptr_factory_.GetWeakPtr(), params));
+                     weak_ptr_factory_.GetWeakPtr(), params.call_id()));
 }
 
 void RecentArcMediaSource::OnRunnerDone(
-    const Params& params,
+    const int32_t call_id,
     std::optional<std::vector<arc::mojom::DocumentPtr>> maybe_documents) {
   if (!lag_.is_positive()) {
-    OnGotRecentDocuments(params, std::move(maybe_documents));
+    OnGotRecentDocuments(call_id, std::move(maybe_documents));
     return;
   }
 
@@ -179,23 +183,23 @@ void RecentArcMediaSource::OnRunnerDone(
   }
   timer_->Start(FROM_HERE, lag_,
                 base::BindOnce(&RecentArcMediaSource::OnGotRecentDocuments,
-                               weak_ptr_factory_.GetWeakPtr(), params,
+                               weak_ptr_factory_.GetWeakPtr(), call_id,
                                std::move(maybe_documents)));
 }
 
 void RecentArcMediaSource::OnGotRecentDocuments(
-    const Params& params,
+    const int32_t call_id,
     std::optional<std::vector<arc::mojom::DocumentPtr>> maybe_documents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  CallContext* context = context_map_.Lookup(params.call_id());
+  CallContext* context = context_map_.Lookup(call_id);
   if (context == nullptr) {
     return;
   }
 
   // Initialize |document_id_to_file_| with recent document IDs returned.
   if (maybe_documents.has_value()) {
-    const std::u16string q16 = base::UTF8ToUTF16(params.query());
+    const std::u16string q16 = base::UTF8ToUTF16(context->params.query());
     for (const auto& document : maybe_documents.value()) {
       // Exclude media files under Downloads or MyFiles directory since they are
       // covered by RecentDiskSource.
@@ -212,20 +216,20 @@ void RecentArcMediaSource::OnGotRecentDocuments(
   }
 
   if (context->document_id_to_file.empty()) {
-    OnComplete(params.call_id());
+    OnComplete(call_id);
     return;
   }
 
   // We have several recent documents, so start searching their real paths.
-  ScanDirectory(params, base::FilePath());
+  ScanDirectory(call_id, base::FilePath());
 }
 
-void RecentArcMediaSource::ScanDirectory(const Params& params,
+void RecentArcMediaSource::ScanDirectory(const int32_t call_id,
                                          const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // If context was cleared while we were scanning directories, just abandon
   // this effort.
-  CallContext* context = context_map_.Lookup(params.call_id());
+  CallContext* context = context_map_.Lookup(call_id);
   if (context == nullptr) {
     return;
   }
@@ -238,7 +242,7 @@ void RecentArcMediaSource::ScanDirectory(const Params& params,
     // We already checked ARC is allowed for this profile (indirectly), so
     // this should never happen.
     LOG(ERROR) << "ArcDocumentsProviderRootMap is not available";
-    OnDirectoryRead(params, path, base::File::FILE_ERROR_FAILED, {});
+    OnDirectoryRead(call_id, path, base::File::FILE_ERROR_FAILED, {});
     return;
   }
 
@@ -247,24 +251,24 @@ void RecentArcMediaSource::ScanDirectory(const Params& params,
   if (!root) {
     // Media roots should always exist.
     LOG(ERROR) << "ArcDocumentsProviderRoot is missing";
-    OnDirectoryRead(params, path, base::File::FILE_ERROR_NOT_FOUND, {});
+    OnDirectoryRead(call_id, path, base::File::FILE_ERROR_NOT_FOUND, {});
     return;
   }
 
   root->ReadDirectory(
       path, base::BindOnce(&RecentArcMediaSource::OnDirectoryRead,
-                           weak_ptr_factory_.GetWeakPtr(), params, path));
+                           weak_ptr_factory_.GetWeakPtr(), call_id, path));
 }
 
 void RecentArcMediaSource::OnDirectoryRead(
-    const Params& params,
+    const int32_t call_id,
     const base::FilePath& path,
     base::File::Error result,
     std::vector<arc::ArcDocumentsProviderRoot::ThinFileInfo> files) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // If callback was cleared while we were scanning directories just abandon
   // this effort.
-  CallContext* context = context_map_.Lookup(params.call_id());
+  CallContext* context = context_map_.Lookup(call_id);
   if (context == nullptr) {
     return;
   }
@@ -272,8 +276,8 @@ void RecentArcMediaSource::OnDirectoryRead(
   for (const auto& file : files) {
     base::FilePath subpath = path.Append(file.name);
     if (file.is_directory) {
-      if (!params.IsLate()) {
-        ScanDirectory(params, subpath);
+      if (!context->params.IsLate()) {
+        ScanDirectory(call_id, subpath);
       }
       continue;
     }
@@ -286,7 +290,7 @@ void RecentArcMediaSource::OnDirectoryRead(
     // Update |document_id_to_file_|.
     // We keep the lexicographically smallest URL to stabilize the results when
     // there are multiple files with the same document ID.
-    auto url = BuildDocumentsProviderUrl(params, subpath);
+    auto url = BuildDocumentsProviderUrl(context->params, subpath);
     std::optional<RecentFile>& entry = doc_it->second;
     if (!entry.has_value() ||
         storage::FileSystemURL::Comparator()(url, entry.value().url())) {
@@ -298,11 +302,11 @@ void RecentArcMediaSource::OnDirectoryRead(
   DCHECK_LE(0, context->num_inflight_readdirs);
 
   if (context->num_inflight_readdirs == 0) {
-    OnComplete(params.call_id());
+    OnComplete(call_id);
   }
 }
 
-std::vector<RecentFile> RecentArcMediaSource::Stop(int32_t call_id) {
+std::vector<RecentFile> RecentArcMediaSource::Stop(const int32_t call_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   CallContext* context = context_map_.Lookup(call_id);

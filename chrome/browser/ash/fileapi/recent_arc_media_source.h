@@ -53,11 +53,12 @@ class RecentArcMediaSource : public RecentSource {
 
   // Overrides the base class method to launch searches for recent file in the
   // root identified by the `root_id` parameter given at the construction time.
-  void GetRecentFiles(Params params, GetRecentFilesCallback callback) override;
+  void GetRecentFiles(const Params& params,
+                      GetRecentFilesCallback callback) override;
 
   // Overrides the base class Stop method to return partial results collected
   // before the timeout call. This method must be called on the UI thread.
-  std::vector<RecentFile> Stop(int32_t call_id) override;
+  std::vector<RecentFile> Stop(const int32_t call_id) override;
 
   // Causes laggy performance for this source. This is to be only used in tests.
   void SetLagForTesting(const base::TimeDelta& lag);
@@ -70,10 +71,13 @@ class RecentArcMediaSource : public RecentSource {
   // Call context stores information specific to a single GetRecentFiles call.
   // If multiple calls are issued each will have its own context.
   struct CallContext {
-    explicit CallContext(GetRecentFilesCallback callback);
+    CallContext(const Params& params, GetRecentFilesCallback callback);
     // Move constructor needed as callback cannot be copied.
     CallContext(CallContext&& context);
     ~CallContext();
+
+    // The parameters of the GetRecentFiles call.
+    const Params params;
 
     // The callback to be called once all files are gathered. We do not know
     // ahead of time when this may be the case, due to nested directories.
@@ -102,28 +106,28 @@ class RecentArcMediaSource : public RecentSource {
   // Extra method that allows us to insert an optional lag between the runner
   // being done and the OnGotRecentDocuments being called.
   void OnRunnerDone(
-      const Params& params,
+      const int32_t call_id,
       std::optional<std::vector<arc::mojom::DocumentPtr>> maybe_documents);
 
   // The method called once recent document pointers have been retrieved. This
   // may take place immediately after the runner was done, or with a small lag
   // that helps testing the interaction with the Stop method.
   void OnGotRecentDocuments(
-      const Params& params,
+      const int32_t call_id,
       std::optional<std::vector<arc::mojom::DocumentPtr>> maybe_documents);
 
   // Starts scanning of the directory with the given path.
-  void ScanDirectory(const Params& params, const base::FilePath& path);
+  void ScanDirectory(const int32_t call_id, const base::FilePath& path);
 
   // The method called once a scan of directory is completed.
   void OnDirectoryRead(
-      const Params& params,
+      const int32_t call_id,
       const base::FilePath& path,
       base::File::Error result,
       std::vector<arc::ArcDocumentsProviderRoot::ThinFileInfo> files);
 
   // Invoked once traversing of the directory hirerachy is finished.
-  void OnComplete(int32_t call_id);
+  void OnComplete(const int32_t call_id);
 
   // Creates a complete FileSystemURL for the given `path`, with the
   // help of `relative_mount_path_`.

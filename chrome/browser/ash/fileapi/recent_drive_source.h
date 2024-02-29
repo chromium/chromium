@@ -40,7 +40,8 @@ class RecentDriveSource : public RecentSource {
   ~RecentDriveSource() override;
 
   // RecentSource overrides:
-  void GetRecentFiles(Params params, GetRecentFilesCallback callback) override;
+  void GetRecentFiles(const Params& params,
+                      GetRecentFilesCallback callback) override;
 
   // Overrides the Stop method to implement search interruption.
   std::vector<RecentFile> Stop(const int32_t call_id) override;

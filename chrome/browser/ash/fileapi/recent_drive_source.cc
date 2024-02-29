@@ -83,7 +83,7 @@ std::vector<std::string> RecentDriveSource::CreateTypeFilters(
   return type_filters;
 }
 
-void RecentDriveSource::GetRecentFiles(Params params,
+void RecentDriveSource::GetRecentFiles(const Params& params,
                                        GetRecentFilesCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -137,7 +137,7 @@ std::vector<RecentFile> RecentDriveSource::Stop(const int32_t call_id) {
   return files;
 }
 
-void RecentDriveSource::OnComplete(int32_t call_id) {
+void RecentDriveSource::OnComplete(const int32_t call_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CallContext* context = context_map_.Lookup(call_id);
   if (context == nullptr) {

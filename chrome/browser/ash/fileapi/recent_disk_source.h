@@ -47,7 +47,8 @@ class RecentDiskSource : public RecentSource {
   ~RecentDiskSource() override;
 
   // RecentSource overrides:
-  void GetRecentFiles(Params params, GetRecentFilesCallback callback) override;
+  void GetRecentFiles(const Params& params,
+                      GetRecentFilesCallback callback) override;
 
   // Stops the recent files search. Returns any partial results already
   // collected.
@@ -63,20 +64,20 @@ class RecentDiskSource : public RecentSource {
 
   static const char kLoadHistogramName[];
 
-  void ScanDirectory(const Params& params,
+  void ScanDirectory(const int32_t call_id,
                      const base::FilePath& path,
                      int depth);
-  void OnReadDirectory(const Params& params,
+  void OnReadDirectory(const int32_t call_id,
                        const base::FilePath& path,
                        int depth,
                        base::File::Error result,
                        storage::FileSystemOperation::FileEntryList entries,
                        bool has_more);
-  void OnGotMetadata(const Params& params,
+  void OnGotMetadata(const int32_t call_id,
                      const storage::FileSystemURL& url,
                      base::File::Error result,
                      const base::File::Info& info);
-  void OnReadOrStatFinished(const Params& params);
+  void OnReadOrStatFinished(int32_t call_id);
 
   storage::FileSystemURL BuildDiskURL(const Params& params,
                                       const base::FilePath& path) const;
@@ -93,11 +94,16 @@ class RecentDiskSource : public RecentSource {
   // map is only accessed on the UI thread we do not need to use additional
   // locks to guarantee its consistency.
   struct CallContext {
-    CallContext(size_t max_files, GetRecentFilesCallback callback);
+    CallContext(const Params& params,
+                size_t max_files,
+                GetRecentFilesCallback callback);
     // Move constructor; necessary as callback is a move-only type.
     CallContext(CallContext&& context);
 
     ~CallContext();
+
+    // The parameters of the GetRecentFiles call.
+    const Params params;
 
     // The callback called when the files and their metadata is ready.
     GetRecentFilesCallback callback;

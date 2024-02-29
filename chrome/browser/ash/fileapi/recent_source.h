@@ -108,7 +108,7 @@ class RecentSource {
   // You can assume that, once this function is called, it is not called again
   // until the callback is invoked. This means that you can safely save internal
   // states to compute recent files in member variables.
-  virtual void GetRecentFiles(Params params,
+  virtual void GetRecentFiles(const Params& params,
                               GetRecentFilesCallback callback) = 0;
 
   // Called by the RecentModel if it wants to interrupt search for recent files.
