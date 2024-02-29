@@ -765,6 +765,18 @@ class BidderWorkletTest : public testing::Test {
     return bidder_worklet;
   }
 
+  bool OnlyBidsForKAnonUpdate() {
+    if (kanon_mode_ != auction_worklet::mojom::KAnonymityBidMode::kEnforce) {
+      return false;
+    }
+    for (const auto& bid : bids_) {
+      if (bid->bid_role != auction_worklet::mojom::BidRole::kUnenforcedKAnon) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   void GenerateBidCallback(
       std::vector<mojom::BidderWorkletBidPtr> bids,
       std::optional<uint32_t> data_version,
@@ -801,8 +813,10 @@ class BidderWorkletTest : public testing::Test {
     generate_bid_dependency_latencies_ =
         std::move(generate_bid_dependency_latencies);
     reject_reason_ = reject_reason;
-    if (!bids_.empty()) {
-      // Shouldn't have a reject reason if the bid isn't rejected.
+    // Shouldn't have a reject reason if we have bids, unless they are all
+    // non-k-anon bids only there to update k-anon data and not determine the
+    // actual winner.
+    if (!bids_.empty() && !OnlyBidsForKAnonUpdate()) {
       EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
     }
     bid_errors_ = errors;
@@ -2628,12 +2642,14 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
   // Empty array means no-bid.
   RunGenerateBidWithReturnValueExpectingResult(
       "[]", /*expected_bid=*/mojom::BidderWorkletBidPtr());
+  EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 
   // Single bid as an array member.
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 2,
           render: "https://response.test/"}])",
       expected_bid->Clone());
+  EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 
   // Actually multiple bids.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -2646,6 +2662,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
   ASSERT_EQ(2u, bids_.size());
   EXPECT_EQ(bids_[1]->bid, 3);
   EXPECT_EQ(bids_[1]->ad, "\"ad2\"");
+  EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 
   // Too many bids.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -2661,6 +2678,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
       /*expected_errors=*/
       {"https://url.test/ generateBid() more bids provided than permitted by "
        "auction configuration."});
+  EXPECT_EQ(reject_reason_, mojom::RejectReason::kMultiBidLimitExceeded);
 
   // The bid limit looks at the length of the sequence provided; some entries
   // being dropped as non-bids doesn't change that.
@@ -2677,6 +2695,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
       /*expected_errors=*/
       {"https://url.test/ generateBid() more bids provided than permitted by "
        "auction configuration."});
+  EXPECT_EQ(reject_reason_, mojom::RejectReason::kMultiBidLimitExceeded);
 
   // Catches errors in individual entries.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -2686,6 +2705,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
       /*expected_errors=*/
       {"https://url.test/ generateBid() bids sequence entry: 'render' is "
        "required when making a bid."});
+  EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 
   // Some more complicated error messages.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -2695,6 +2715,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
       /*expected_errors=*/
       {"https://url.test/ generateBid() bids sequence entry: 'render': "
        "Required field 'url' is undefined."});
+  EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 10, render: "https://example.org/",
@@ -2705,6 +2726,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
       /*expected_errors=*/
       {"https://url.test/ generateBid() bids sequence entry: adComponents "
        "entry: Required field 'url' is undefined."});
+  EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 2,
@@ -2715,6 +2737,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
       /*expected_errors=*/
       {"https://url.test/ generateBid() bids sequence entry: 'render' is "
        "required when making a bid."});
+  EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 2,
@@ -2725,12 +2748,14 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
       /*expected_errors=*/
       {"https://url.test/ generateBid() bids sequence entry: Value passed as "
        "dictionary is neither object, null, nor undefined."});
+  EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 
   // A non-bid is still ignored.
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad",
           render: "https://response.test/"}])",
       /*expected_bid=*/mojom::BidderWorkletBidPtr());
+  EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 
   // A non-bid among real bids in an array is also ignored.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -2740,6 +2765,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
           render: "https://response.test/"},
          ])",
       expected_bid->Clone());
+  EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 
   // Make sure the IDL checks happen before semantic checks. This has 4 bids,
   // but 4th one isn't an object, so the IDL error about that is what we should
@@ -2758,6 +2784,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
       /*expected_errors=*/
       {"https://url.test/ generateBid() bids sequence entry: Value passed as "
        "dictionary is neither object, null, nor undefined."});
+  EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 }
 
 // For now multi-bid support, even in degenerate form of passing a single bid in

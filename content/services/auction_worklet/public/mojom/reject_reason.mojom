@@ -17,4 +17,5 @@ enum RejectReason {
   kBelowKAnonThreshold = 8,
   kWrongGenerateBidCurrency = 9,
   kWrongScoreAdCurrency = 10,
+  kMultiBidLimitExceeded = 11,
 };

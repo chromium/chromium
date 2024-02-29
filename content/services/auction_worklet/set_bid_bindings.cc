@@ -313,6 +313,7 @@ IdlConvert::Status SetBidBindings::SetBidImpl(v8::Local<v8::Value> value,
 
   // Now do semantic checks. Length is first.
   if (idl_bids.size() > multi_bid_limit_) {
+    reject_reason_ = mojom::RejectReason::kMultiBidLimitExceeded;
     return IdlConvert::Status::MakeErrorMessage(too_many_bids_error);
   }
 

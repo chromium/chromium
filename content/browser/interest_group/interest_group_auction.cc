@@ -1902,9 +1902,12 @@ class InterestGroupAuction::BuyerHelper
 
     if (reject_reason != auction_worklet::mojom::RejectReason::kNotAvailable &&
         reject_reason !=
-            auction_worklet::mojom::RejectReason::kWrongGenerateBidCurrency) {
-      // Only possible reject reason from generateBid(), besides the default
-      // "not available", is "wrong generate bid currency".
+            auction_worklet::mojom::RejectReason::kWrongGenerateBidCurrency &&
+        reject_reason !=
+            auction_worklet::mojom::RejectReason::kMultiBidLimitExceeded) {
+      // Only possible reject reasons from generateBid(), besides the default
+      // "not available", are "wrong generate bid currency" and "multi-bid
+      // limit exceeded",
       mojo_bids.clear();
       state->reject_reason =
           auction_worklet::mojom::RejectReason::kNotAvailable;
@@ -3166,6 +3169,9 @@ base::StringPiece GetRejectReasonString(
       break;
     case auction_worklet::mojom::RejectReason::kWrongScoreAdCurrency:
       reject_reason_str = "wrong-score-ad-currency";
+      break;
+    case auction_worklet::mojom::RejectReason::kMultiBidLimitExceeded:
+      reject_reason_str = "multi-bid-limit-exceeded";
       break;
   }
   return reject_reason_str;
