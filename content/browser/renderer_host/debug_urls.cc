@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/debug/asan_invalid_access.h"
 #include "base/debug/profiler.h"
 #include "base/functional/bind.h"
@@ -103,11 +104,16 @@ bool HandleAsanDebugURL(const GURL& url) {
   return true;
 }
 
-void HangCurrentThread() {
+NOINLINE void HangCurrentThread() {
   ScopedAllowWaitForDebugURL allow_wait;
   base::WaitableEvent(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                       base::WaitableEvent::InitialState::NOT_SIGNALED)
       .Wait();
+}
+
+NOINLINE void CrashBrowserProcessIntentionally() {
+  // Induce an intentional crash in the browser process.
+  CHECK(false);
 }
 
 }  // namespace
@@ -129,8 +135,7 @@ bool HandleDebugURL(const GURL& url,
     return HandleAsanDebugURL(url);
 
   if (url == blink::kChromeUIBrowserCrashURL) {
-    // Induce an intentional crash in the browser process.
-    CHECK(false);
+    CrashBrowserProcessIntentionally();
     return true;
   }
 
