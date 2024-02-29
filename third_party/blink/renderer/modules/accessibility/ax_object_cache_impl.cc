@@ -97,6 +97,7 @@
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
+#include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
@@ -3929,6 +3930,12 @@ void AXObjectCacheImpl::HandleAriaNotification(
         std::make_unique<AriaNotification>(announcement, options));
     DeferTreeUpdate(TreeUpdateReason::kMarkAXObjectDirty, obj);
   }
+}
+
+std::unique_ptr<AriaNotification> AXObjectCacheImpl::RetrieveAriaNotification(
+    const AXObject* obj) {
+  DCHECK(obj);
+  return aria_notifications_.Take(obj->AXObjectID());
 }
 
 void AXObjectCacheImpl::UpdateTableRoleWithCleanLayout(Node* table) {

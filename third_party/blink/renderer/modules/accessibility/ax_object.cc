@@ -104,9 +104,8 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
+#include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_enums.h"
-#include "ui/accessibility/ax_tree_id.h"
-#include "ui/accessibility/ax_tree_source.h"
 #if DCHECK_IS_ON()
 #include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
 #endif
@@ -133,6 +132,8 @@
 #include "ui/accessibility/ax_enums.mojom-blink-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_tree_source.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/transform.h"
@@ -1304,6 +1305,32 @@ AccessibleNode* AXObject::GetAccessibleNode() const {
   return element->ExistingAccessibleNode();
 }
 
+namespace {
+
+void SerializeAriaNotificationAttributes(const AriaNotification& notification,
+                                         ui::AXNodeData* node_data) {
+  DCHECK(node_data);
+
+  TruncateAndAddStringAttribute(
+      node_data,
+      ax::mojom::blink::StringAttribute::kAriaNotificationAnnouncement,
+      notification.Announcement());
+
+  TruncateAndAddStringAttribute(
+      node_data, ax::mojom::blink::StringAttribute::kAriaNotificationId,
+      notification.NotificationId());
+
+  node_data->AddIntAttribute(
+      ax::mojom::blink::IntAttribute::kAriaNotificationInterrupt,
+      static_cast<int32_t>(notification.Interrupt()));
+
+  node_data->AddIntAttribute(
+      ax::mojom::blink::IntAttribute::kAriaNotificationPriority,
+      static_cast<int32_t>(notification.Priority()));
+}
+
+}  // namespace
+
 void AXObject::Serialize(ui::AXNodeData* node_data,
                          ui::AXMode accessibility_mode) {
   // Reduce redundant ancestor chain walking for display lock computations.
@@ -1402,6 +1429,10 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     SerializeLiveRegionAttributes(node_data);
 
   SerializeOtherScreenReaderAttributes(node_data);
+
+  if (auto notification = AXObjectCache().RetrieveAriaNotification(this)) {
+    SerializeAriaNotificationAttributes(*notification, node_data);
+  }
 
   // Return early. The following attributes are unnecessary for ignored nodes.
   // Exception: focusable ignored nodes are fully serialized, so that reasonable

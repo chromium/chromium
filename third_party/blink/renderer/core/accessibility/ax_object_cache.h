@@ -48,6 +48,7 @@ struct AXTreeUpdate;
 namespace blink {
 
 class AbstractInlineTextBox;
+class AriaNotification;
 class AriaNotificationOptions;
 class AXObject;
 class AccessibleNode;
@@ -164,10 +165,15 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void HandleAttributeChanged(const QualifiedName& attr_name,
                                       AccessibleNode*) = 0;
 
-  // Handle notifications from the `ariaNotify` API.
+  // Handles a notification from the `ariaNotify` API.
   virtual void HandleAriaNotification(const Node*,
                                       const String&,
                                       const AriaNotificationOptions*) = 0;
+
+  // Retrieves the `AriaNotification` (if any) for a given `AXObject`.
+  // Note that ownership of such notification will be removed from this object.
+  virtual std::unique_ptr<AriaNotification> RetrieveAriaNotification(
+      const AXObject*) = 0;
 
   // Called when a HTMLFrameOwnerElement (such as an iframe element) changes the
   // embedding token of its child frame.
