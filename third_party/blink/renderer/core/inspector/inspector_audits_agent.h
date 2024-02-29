@@ -12,13 +12,11 @@
 #include "third_party/blink/renderer/core/inspector/inspector_contrast.h"
 #include "third_party/blink/renderer/core/inspector/protocol/audits.h"
 
-namespace protocol {
-namespace Audits {
-class InspectorIssue;
-}  // namespace Audits
-}  // namespace protocol
-
 namespace blink {
+
+namespace protocol::Audits {
+class InspectorIssue;
+}  // namespace protocol::Audits
 
 class InspectorIssueStorage;
 class WebAutofillClient;

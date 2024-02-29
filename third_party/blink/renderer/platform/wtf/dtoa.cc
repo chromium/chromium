@@ -43,6 +43,29 @@
 
 namespace WTF {
 
+namespace {
+
+double ParseDoubleFromLongString(const UChar* string,
+                                 size_t length,
+                                 size_t& parsed_length) {
+  wtf_size_t conversion_length = base::checked_cast<wtf_size_t>(length);
+  auto conversion_buffer = std::make_unique<LChar[]>(conversion_length);
+  for (wtf_size_t i = 0; i < conversion_length; ++i) {
+    conversion_buffer[i] = IsASCII(string[i]) ? string[i] : 0;
+  }
+  return ParseDouble(conversion_buffer.get(), length, parsed_length);
+}
+
+const double_conversion::StringToDoubleConverter& GetDoubleConverter() {
+  static double_conversion::StringToDoubleConverter converter(
+      double_conversion::StringToDoubleConverter::ALLOW_LEADING_SPACES |
+          double_conversion::StringToDoubleConverter::ALLOW_TRAILING_JUNK,
+      0.0, 0, nullptr, nullptr);
+  return converter;
+}
+
+}  // namespace
+
 const char* NumberToString(double d, NumberToStringBuffer buffer) {
   double_conversion::StringBuilder builder(buffer, kNumberToStringBufferLength);
   const double_conversion::DoubleToStringConverter& converter =
@@ -136,31 +159,34 @@ const char* NumberToFixedWidthString(double d,
 
 double ParseDouble(const LChar* string, size_t length, size_t& parsed_length) {
   int int_parsed_length = 0;
-  double d = internal::GetDoubleConverter().StringToDouble(
+  double d = GetDoubleConverter().StringToDouble(
       reinterpret_cast<const char*>(string), base::saturated_cast<int>(length),
       &int_parsed_length);
   parsed_length = int_parsed_length;
   return d;
 }
 
-namespace internal {
-
-double ParseDoubleFromLongString(const UChar* string,
-                                 size_t length,
-                                 size_t& parsed_length) {
-  wtf_size_t conversion_length = base::checked_cast<wtf_size_t>(length);
-  auto conversion_buffer = std::make_unique<LChar[]>(conversion_length);
-  for (wtf_size_t i = 0; i < conversion_length; ++i)
-    conversion_buffer[i] = IsASCII(string[i]) ? string[i] : 0;
-  return ParseDouble(conversion_buffer.get(), length, parsed_length);
+double ParseDouble(const UChar* string, size_t length, size_t& parsed_length) {
+  const size_t kConversionBufferSize = 64;
+  if (length > kConversionBufferSize) {
+    return ParseDoubleFromLongString(string, length, parsed_length);
+  }
+  LChar conversion_buffer[kConversionBufferSize];
+  for (size_t i = 0; i < length; ++i) {
+    conversion_buffer[i] =
+        IsASCII(string[i]) ? static_cast<LChar>(string[i]) : 0;
+  }
+  return ParseDouble(conversion_buffer, length, parsed_length);
 }
 
-const double_conversion::StringToDoubleConverter& GetDoubleConverter() {
-  static double_conversion::StringToDoubleConverter converter(
-      double_conversion::StringToDoubleConverter::ALLOW_LEADING_SPACES |
-          double_conversion::StringToDoubleConverter::ALLOW_TRAILING_JUNK,
-      0.0, 0, nullptr, nullptr);
-  return converter;
+namespace internal {
+
+void InitializeDoubleConverter() {
+  // Force initialization of static DoubleToStringConverter converter variable
+  // inside EcmaScriptConverter function while we are in single thread mode.
+  double_conversion::DoubleToStringConverter::EcmaScriptConverter();
+
+  GetDoubleConverter();
 }
 
 }  // namespace internal
