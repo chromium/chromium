@@ -23,7 +23,7 @@ void TestDataOfferDelegate::OnAction(DndAction dnd_action) {
   dnd_action_ = dnd_action;
 }
 
-SecurityDelegate* TestDataOfferDelegate::GetSecurityDelegate() const {
+TestSecurityDelegate* TestDataOfferDelegate::GetSecurityDelegate() const {
   return security_delegate_.get();
 }
 

@@ -6,8 +6,23 @@
 #define CHROME_BROWSER_ASH_EXO_CHROME_SECURITY_DELEGATE_H_
 
 #include "components/exo/security_delegate.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 namespace ash {
+
+// Translate paths from |source| VM to valid paths in the host. Invalid paths
+// are ignored.
+std::vector<base::FilePath> TranslateVMPathsToHost(
+    ui::EndpointType source,
+    const std::vector<ui::FileInfo>& vm_paths);
+
+// Share |files| with |target| VM, and translate |files| to be "file://" URLs
+// which can be used inside the vm. |callback| is invoked with translated
+// "file://" URLs.
+void ShareWithVMAndTranslateToFileUrls(
+    ui::EndpointType target,
+    const std::vector<base::FilePath>& files,
+    base::OnceCallback<void(std::vector<std::string>)> callback);
 
 class ChromeSecurityDelegate : public exo::SecurityDelegate {
  public:
@@ -20,6 +35,15 @@ class ChromeSecurityDelegate : public exo::SecurityDelegate {
   bool CanSelfActivate(aura::Window* window) const override;
   bool CanLockPointer(aura::Window* window) const override;
   SetBoundsPolicy CanSetBounds(aura::Window* window) const override;
+  std::vector<ui::FileInfo> GetFilenames(
+      ui::EndpointType source,
+      const std::vector<uint8_t>& data) const override;
+  void SendFileInfo(ui::EndpointType target,
+                    const std::vector<ui::FileInfo>& files,
+                    SendDataCallback callback) const override;
+  void SendPickle(ui::EndpointType target,
+                  const base::Pickle& pickle,
+                  SendDataCallback callback) override;
 
   virtual std::string GetVmName() const;
 };

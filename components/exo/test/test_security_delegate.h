@@ -7,6 +7,8 @@
 
 #include "components/exo/security_delegate.h"
 
+#include "url/gurl.h"
+
 namespace aura {
 class Window;
 }
@@ -24,12 +26,25 @@ class TestSecurityDelegate : public SecurityDelegate {
   bool CanSelfActivate(aura::Window* window) const override;
   bool CanLockPointer(aura::Window* toplevel) const override;
   SetBoundsPolicy CanSetBounds(aura::Window* window) const override;
+  std::vector<ui::FileInfo> GetFilenames(
+      ui::EndpointType source,
+      const std::vector<uint8_t>& data) const override;
+  void SendFileInfo(ui::EndpointType target,
+                    const std::vector<ui::FileInfo>& files,
+                    SendDataCallback callback) const override;
+  void SendPickle(ui::EndpointType target,
+                  const base::Pickle& pickle,
+                  SendDataCallback callback) override;
 
   // Choose the return value of |CanSetBounds()|.
   void SetCanSetBounds(SetBoundsPolicy policy);
 
+  // Run the callback received in SendPickle() with the specified values..
+  void RunSendPickleCallback(std::vector<GURL> urls);
+
  protected:
   SetBoundsPolicy policy_ = SetBoundsPolicy::IGNORE;
+  SendDataCallback send_pickle_callback_;
 };
 
 }  // namespace exo::test

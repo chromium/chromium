@@ -35,13 +35,13 @@ class TestDataOfferDelegate : public DataOfferDelegate {
     return source_actions_;
   }
   DndAction dnd_action() const { return dnd_action_; }
-  SecurityDelegate* GetSecurityDelegate() const override;
+  TestSecurityDelegate* GetSecurityDelegate() const override;
 
  private:
   base::flat_set<std::string> mime_types_;
   base::flat_set<DndAction> source_actions_;
   DndAction dnd_action_ = DndAction::kNone;
-  std::unique_ptr<SecurityDelegate> security_delegate_ =
+  std::unique_ptr<TestSecurityDelegate> security_delegate_ =
       std::make_unique<TestSecurityDelegate>();
 };
 

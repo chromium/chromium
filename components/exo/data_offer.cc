@@ -23,6 +23,7 @@
 #include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_offer_delegate.h"
 #include "components/exo/data_offer_observer.h"
+#include "components/exo/security_delegate.h"
 #include "net/base/filename_util.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -265,9 +266,9 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
   if (!filenames.empty()) {
     data_callbacks_.emplace(
         uri_list_mime_type,
-        base::BindOnce(&DataExchangeDelegate::SendFileInfo,
-                       base::Unretained(data_exchange_delegate), endpoint_type,
-                       std::move(filenames)));
+        base::BindOnce(&SecurityDelegate::SendFileInfo,
+                       base::Unretained(delegate_->GetSecurityDelegate()),
+                       endpoint_type, std::move(filenames)));
     delegate_->OnOffer(uri_list_mime_type);
     return;
   }
@@ -276,9 +277,9 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
       data_exchange_delegate->HasUrlsInPickle(pickle)) {
     data_callbacks_.emplace(
         uri_list_mime_type,
-        base::BindOnce(&DataExchangeDelegate::SendPickle,
-                       base::Unretained(data_exchange_delegate), endpoint_type,
-                       pickle));
+        base::BindOnce(&SecurityDelegate::SendPickle,
+                       base::Unretained(delegate_->GetSecurityDelegate()),
+                       endpoint_type, pickle));
     delegate_->OnOffer(uri_list_mime_type);
     return;
   }
@@ -406,9 +407,9 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
     delegate_->OnOffer(std::string(ui::kMimeTypeURIList));
     data_callbacks_.emplace(
         std::string(ui::kMimeTypeURIList),
-        base::BindOnce(&DataExchangeDelegate::SendFileInfo,
-                       base::Unretained(data_exchange_delegate), endpoint_type,
-                       std::move(filenames)));
+        base::BindOnce(&SecurityDelegate::SendFileInfo,
+                       base::Unretained(delegate_->GetSecurityDelegate()),
+                       endpoint_type, std::move(filenames)));
   }
 }
 

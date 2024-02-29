@@ -19,6 +19,7 @@
 #include "components/exo/data_source_delegate.h"
 #include "components/exo/data_source_observer.h"
 #include "components/exo/mime_utils.h"
+#include "components/exo/security_delegate.h"
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
@@ -212,6 +213,12 @@ void DataSource::DndFinished() {
   finished_ = true;
   read_data_weak_ptr_factory_.InvalidateWeakPtrs();
   delegate_->OnDndFinished();
+}
+
+std::vector<ui::FileInfo> DataSource::GetFilenames(
+    ui::EndpointType source,
+    const std::vector<uint8_t>& data) const {
+  return delegate_->GetSecurityDelegate()->GetFilenames(source, data);
 }
 
 void DataSource::ReadDataForTesting(const std::string& mime_type,

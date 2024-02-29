@@ -345,9 +345,11 @@ void Seat::OnFilenamesRead(
     base::OnceClosure callback,
     const std::string& mime_type,
     const std::vector<uint8_t>& data) {
-  std::vector<ui::FileInfo> filenames =
-      data_exchange_delegate_->GetFilenames(source, data);
-  writer->WriteFilenames(ui::FileInfosToURIList(filenames));
+  if (selection_source_) {
+    std::vector<ui::FileInfo> filenames =
+        selection_source_->get()->GetFilenames(source, data);
+    writer->WriteFilenames(ui::FileInfosToURIList(filenames));
+  }
   std::move(callback).Run();
 }
 

@@ -7,10 +7,25 @@
 
 #include <memory>
 #include <string>
+#include <vector>
+
+#include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace aura {
 class Window;
 }
+
+namespace base {
+class Pickle;
+class RefCountedMemory;
+}  // namespace base
+
+namespace ui {
+struct FileInfo;
+enum class EndpointType;
+}  // namespace ui
 
 namespace exo {
 
@@ -61,6 +76,27 @@ class SecurityDelegate {
   // own window bounds, as they may not be able to compute them correctly
   // (accounting for the size of the window decorations).
   virtual SetBoundsPolicy CanSetBounds(aura::Window* window) const = 0;
+
+  // Read filenames from text/uri-list |data| which was provided by `source`
+  // endpoint. Translates paths from source to host format.
+  virtual std::vector<ui::FileInfo> GetFilenames(
+      ui::EndpointType source,
+      const std::vector<uint8_t>& data) const = 0;
+
+  // Sends the given list of `files` to `target` endpoint. Translates paths from
+  // host format to the target and performs any required file sharing for VMs.
+  using SendDataCallback =
+      base::OnceCallback<void(scoped_refptr<base::RefCountedMemory>)>;
+  virtual void SendFileInfo(ui::EndpointType target,
+                            const std::vector<ui::FileInfo>& files,
+                            SendDataCallback callback) const = 0;
+
+  // Takes in `pickle` constructed by the web contents view containing
+  // filesystem URLs. Provides translations for the specified `target` endpoint
+  // and performs any required file sharing for VMs.
+  virtual void SendPickle(ui::EndpointType target,
+                          const base::Pickle& pickle,
+                          SendDataCallback callback) = 0;
 };
 
 }  // namespace exo

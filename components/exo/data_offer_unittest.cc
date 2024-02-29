@@ -25,6 +25,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/test/test_data_offer_delegate.h"
+#include "components/exo/test/test_security_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -350,7 +351,7 @@ TEST_F(DataOfferTest, ReceiveUriListFromPickle_ReceiveBeforeUrlIsResolved) {
   std::vector<GURL> urls;
   urls.push_back(
       GURL("content://org.chromium.arc.chromecontentprovider/path/to/file1"));
-  data_exchange_delegate.RunSendPickleCallback(urls);
+  delegate.GetSecurityDelegate()->RunSendPickleCallback(urls);
 
   std::string result1;
   ASSERT_TRUE(ReadString(std::move(read_pipe1), &result1));
@@ -389,7 +390,7 @@ TEST_F(DataOfferTest,
   // Run callback with an empty URL.
   std::vector<GURL> urls;
   urls.push_back(GURL(""));
-  data_exchange_delegate.RunSendPickleCallback(urls);
+  delegate.GetSecurityDelegate()->RunSendPickleCallback(urls);
 
   std::u16string result;
   ASSERT_TRUE(ReadString16(std::move(read_pipe), &result));

@@ -321,7 +321,7 @@ void DragDropOperation::OnFilenamesRead(
     const std::string& mime_type,
     const std::vector<uint8_t>& data) {
   DCHECK(os_exchange_data_);
-  os_exchange_data_->SetFilenames(data_exchange_delegate->GetFilenames(
+  os_exchange_data_->SetFilenames(source_->get()->GetFilenames(
       data_exchange_delegate->GetDataTransferEndpointType(source), data));
   mime_type_ = mime_type;
   counter_.Run();
