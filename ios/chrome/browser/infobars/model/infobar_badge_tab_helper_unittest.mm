@@ -33,7 +33,7 @@ class InfobarBadgeTabHelperTest : public PlatformTest {
     InfoBarManagerImpl::CreateForWebState(&web_state_);
 
     // Create the InfobarBadgeTabHelper for web_state_ and set its delegate.
-    InfobarBadgeTabHelper::CreateForWebState(&web_state_);
+    InfobarBadgeTabHelper::GetOrCreateForWebState(&web_state_);
     delegate_.badgeTabHelper = tab_helper();
     tab_helper()->SetDelegate(delegate_);
   }
@@ -54,7 +54,7 @@ class InfobarBadgeTabHelperTest : public PlatformTest {
 
   // Returns InfobarBadgeTabHelper attached to web_state_.
   InfobarBadgeTabHelper* tab_helper() {
-    return InfobarBadgeTabHelper::FromWebState(&web_state_);
+    return InfobarBadgeTabHelper::GetOrCreateForWebState(&web_state_);
   }
 
   web::FakeWebState web_state_;

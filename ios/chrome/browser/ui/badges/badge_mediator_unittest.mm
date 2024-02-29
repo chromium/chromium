@@ -104,7 +104,7 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
         std::make_unique<web::FakeNavigationManager>());
     web_state->SetBrowserState(browser_state());
     InfoBarManagerImpl::CreateForWebState(web_state.get());
-    InfobarBadgeTabHelper::CreateForWebState(web_state.get());
+    InfobarBadgeTabHelper::GetOrCreateForWebState(web_state.get());
     web_state_list()->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate());
@@ -147,7 +147,7 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
   }
   // Returns the active WebState's InfobarBadgeTabHelper.
   InfobarBadgeTabHelper* tab_helper() {
-    return InfobarBadgeTabHelper::FromWebState(web_state());
+    return InfobarBadgeTabHelper::GetOrCreateForWebState(web_state());
   }
 
   base::test::TaskEnvironment environment_;
@@ -301,7 +301,7 @@ TEST_P(BadgeMediatorTest, InfobarBannerOverlayObserving) {
   AppendActivatedWebState();
   InfobarType type = kFirstInfobarType;
   InfobarBadgeTabHelper* tab_helper =
-      InfobarBadgeTabHelper::FromWebState(web_state());
+      InfobarBadgeTabHelper::GetOrCreateForWebState(web_state());
   InfoBarIOS* infobar = AddInfobar(kFirstInfobarType, kFirstInfobarMessageText);
 
   std::map<InfobarType, BadgeState> badge_states =

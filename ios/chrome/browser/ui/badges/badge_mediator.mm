@@ -104,7 +104,8 @@ const char kInfobarOverflowBadgeShownUserAction[] =
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
 
     if (_webState) {
-      InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(self);
+      InfobarBadgeTabHelper::GetOrCreateForWebState(_webState)->SetDelegate(
+          self);
       _webState->AddObserver(_webStateObserver.get());
     }
   }
@@ -184,20 +185,21 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   if (_webState == webState)
     return;
   if (_webState) {
-    InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(nil);
+    InfobarBadgeTabHelper::GetOrCreateForWebState(_webState)->SetDelegate(nil);
     _webState->RemoveObserver(_webStateObserver.get());
   }
   _webState = webState;
   if (_webState) {
-    InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(self);
+    InfobarBadgeTabHelper::GetOrCreateForWebState(_webState)->SetDelegate(self);
     _webState->AddObserver(_webStateObserver.get());
   }
   [self updateConsumer];
 }
 
 - (InfobarBadgeTabHelper*)badgeTabHelper {
-  return self.webState ? InfobarBadgeTabHelper::FromWebState(self.webState)
-                       : nullptr;
+  return self.webState
+             ? InfobarBadgeTabHelper::GetOrCreateForWebState(self.webState)
+             : nullptr;
 }
 
 - (BadgeType)permissionsBadgeType {

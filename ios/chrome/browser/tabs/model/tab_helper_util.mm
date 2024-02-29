@@ -277,7 +277,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     ]);
   }
 
-  InfobarBadgeTabHelper::CreateForWebState(web_state);
+  if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    InfobarBadgeTabHelper::GetOrCreateForWebState(web_state);
+  }
 
   if (base::FeatureList::IsEnabled(kSharedHighlightingIOS)) {
     LinkToTextTabHelper::CreateForWebState(web_state);
