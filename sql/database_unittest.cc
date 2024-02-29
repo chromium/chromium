@@ -23,9 +23,12 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
@@ -517,6 +520,35 @@ TEST_P(SQLDatabaseTest, ErrorCallbackThatClosesDb) {
     EXPECT_EQ(SQLITE_CONSTRAINT_PRIMARYKEY, error);
     EXPECT_EQ(db_->is_open(), reopen_db);
   }
+}
+
+TEST_P(SQLDatabaseTest, DetachFromSequence) {
+  base::test::TaskEnvironment task_environment;
+
+  // Get a task runner so we can post tasks to different sequence.
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  ASSERT_FALSE(task_runner->RunsTasksInCurrentSequence());
+
+  // The database's sequence checker is already implicitly attached to the
+  // current sequence because the test fixture opened it.
+  ASSERT_TRUE(db_->is_open());
+
+  // Detach before moving the Database instance to another sequence. Note that
+  // it will be destroyed on the other sequence.
+  db_->DetachFromSequence();
+  base::RunLoop run_loop;
+  task_runner->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          [](std::unique_ptr<Database> db) {
+            static constexpr char kCreateSql[] =
+                "CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)";
+            ASSERT_TRUE(db->Execute(kCreateSql));
+          },
+          std::move(db_)),
+      run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 // Regression test for https://crbug.com/1522873
