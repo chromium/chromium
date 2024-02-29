@@ -263,12 +263,14 @@ class CORE_EXPORT ElementRuleCollector {
   bool CollectMatchingRulesInternal(const MatchRequest&);
 
   template <bool stop_at_first_match, bool perf_trace_enabled>
-  bool CollectMatchingRulesForListInternal(base::span<const RuleData>,
-                                           const MatchRequest&,
-                                           const RuleSet*,
-                                           int,
-                                           const SelectorChecker&,
-                                           PartRequest* = nullptr);
+  bool CollectMatchingRulesForListInternal(
+      base::span<const RuleData>,
+      const MatchRequest&,
+      const RuleSet*,
+      int,
+      const SelectorChecker&,
+      SelectorChecker::SelectorCheckingContext&,
+      PartRequest* = nullptr);
 
   template <bool stop_at_first_match>
   bool CollectMatchingRulesForList(base::span<const RuleData>,
@@ -276,6 +278,7 @@ class CORE_EXPORT ElementRuleCollector {
                                    const RuleSet*,
                                    int,
                                    const SelectorChecker&,
+                                   SelectorChecker::SelectorCheckingContext&,
                                    PartRequest* = nullptr);
 
   bool Match(SelectorChecker&,
