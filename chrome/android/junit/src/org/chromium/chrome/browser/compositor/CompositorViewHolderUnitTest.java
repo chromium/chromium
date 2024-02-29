@@ -79,7 +79,10 @@ import java.util.List;
 
 /** Unit tests for {@link CompositorViewHolder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+@DisableFeatures({
+    ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+    ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+})
 public class CompositorViewHolderUnitTest {
     // Since these tests don't depend on the heights being pixels, we can use these as dpi directly.
     private static final int TOOLBAR_HEIGHT = 56;
@@ -298,7 +301,10 @@ public class CompositorViewHolderUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testHandleSystemUiVisibilityChangesWithUpdatedFullscreenApis() {
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
