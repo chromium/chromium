@@ -335,6 +335,13 @@ export class AppElement extends AppElementBase {
         value: document.documentElement.scrollTop <= 0,
       },
 
+      wallpaperSearchButtonAnimationEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('wallpaperSearchButtonAnimationEnabled'),
+        reflectToAttribute: true,
+      },
+
       wallpaperSearchButtonEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('wallpaperSearchButtonEnabled'),
@@ -382,6 +389,7 @@ export class AppElement extends AppElementBase {
   private promoAndModulesLoaded_: boolean;
   private lazyRender_: boolean;
   private scrolledToTop_: boolean;
+  private wallpaperSearchButtonAnimationEnabled_: boolean;
   private wallpaperSearchButtonEnabled_: boolean;
 
   private callbackRouter_: PageCallbackRouter;

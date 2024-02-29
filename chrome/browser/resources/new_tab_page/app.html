@@ -338,6 +338,56 @@
     }
   }
 
+  :host([wallpaper-search-button-animation-enabled_])
+      #wallpaperSearchButtonContainer {
+    animation: 750ms forwards grow;
+    opacity: 0;
+    right: 0px;
+    transform-origin: right;
+  }
+
+  @keyframes grow {
+    from {
+      opacity: 0;
+      right: 0px;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 100%;
+      right: 40px;
+      transform: scale(1);
+    }
+  }
+
+  :host([wallpaper-search-button-animation-enabled_])
+      #wallpaperSearchIcon {
+    animation: 2.5s 350ms spin;
+  }
+
+  @keyframes spin {
+    from {
+      transform:rotate(0deg);
+    }
+    to {
+      transform:rotate(720deg);
+    }
+  }
+
+  :host([wallpaper-search-button-animation-enabled_])
+      #wallpaperSearchText {
+    animation: 500ms forwards 300ms show;
+    opacity: 0;
+  }
+
+  @keyframes show {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 100%;
+    }
+  }
+
   #themeAttribution {
     align-self: flex-start;
     bottom: 16px;
@@ -527,7 +577,8 @@
                 aria-pressed="[[showWallpaperSearch_]]">
               <div id="wallpaperSearchIcon"
                   class="customize-icon" slot="prefix-icon"></div>
-              <div class="customize-text" hidden$="[[showWallpaperSearch_]]">
+              <div id="wallpaperSearchText" class="customize-text"
+                  hidden$="[[showWallpaperSearch_]]">
                 $i18n{wallpaperSearchButton}
               </div>
             </cr-button>

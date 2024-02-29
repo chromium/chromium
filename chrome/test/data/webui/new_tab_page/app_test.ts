@@ -1175,12 +1175,25 @@ suite('NewTabPageAppTest', () => {
       suiteSetup(() => {
         loadTimeData.overrideValues({
           wallpaperSearchButtonEnabled: true,
+          wallpaperSearchButtonAnimationEnabled: true,
         });
       });
 
       test('wallpaper search button shows if it is enabled', () => {
         assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
         assertTrue(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+      });
+
+      test('button has animation if the flag is enabled', () => {
+        assertNotStyle(
+            $$(app, '#wallpaperSearchButtonContainer')!, 'animation-name',
+            'none');
+        assertNotStyle(
+            $$(app, '#wallpaperSearchButton .customize-icon')!,
+            'animation-name', 'none');
+        assertNotStyle(
+            $$(app, '#wallpaperSearchButton .customize-text')!,
+            'animation-name', 'none');
       });
 
       ([
@@ -1357,6 +1370,26 @@ suite('NewTabPageAppTest', () => {
                 32,
                 $$<HTMLElement>(app, '#customizeButtonContainer')!.offsetWidth);
           });
+    });
+
+    suite('AnimationDisabled', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          wallpaperSearchButtonAnimationEnabled: false,
+        });
+      });
+
+      test('button has no animation if the flag is disabled', () => {
+        assertStyle(
+            $$(app, '#wallpaperSearchButtonContainer')!, 'animation-name',
+            'none');
+        assertStyle(
+            $$(app, '#wallpaperSearchButton .customize-icon')!,
+            'animation-name', 'none');
+        assertStyle(
+            $$(app, '#wallpaperSearchButton .customize-text')!,
+            'animation-name', 'none');
+      });
     });
   });
 });
