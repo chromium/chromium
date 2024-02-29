@@ -6727,6 +6727,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpWallpaperSearchButtonDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpWallpaperSearchButton)},
 
+    {"ntp-wallpaper-search-button-animation",
+     flag_descriptions::kNtpWallpaperSearchButtonAnimationName,
+     flag_descriptions::kNtpWallpaperSearchButtonAnimationDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpWallpaperSearchButtonAnimation)},
+
     {"shopping-page-types", commerce::flag_descriptions::kShoppingPageTypesName,
      commerce::flag_descriptions::kShoppingPageTypesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(commerce::kShoppingPageTypes)},

@@ -99,6 +99,7 @@ BASE_DECLARE_FEATURE(kNtpTabResumptionModule);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModuleCategories);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModuleTimeLimit);
 BASE_DECLARE_FEATURE(kNtpWallpaperSearchButton);
+BASE_DECLARE_FEATURE(kNtpWallpaperSearchButtonAnimation);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.

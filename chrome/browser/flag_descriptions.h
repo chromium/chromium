@@ -2925,6 +2925,9 @@ extern const char kNtpSingleRowShortcutsDescription[];
 extern const char kNtpWallpaperSearchButtonName[];
 extern const char kNtpWallpaperSearchButtonDescription[];
 
+extern const char kNtpWallpaperSearchButtonAnimationName[];
+extern const char kNtpWallpaperSearchButtonAnimationDescription[];
+
 extern const char kNtpWideModulesName[];
 extern const char kNtpWideModulesDescription[];
 

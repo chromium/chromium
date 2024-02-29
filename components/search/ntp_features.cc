@@ -418,6 +418,11 @@ BASE_FEATURE(kNtpWallpaperSearchButton,
              "NtpWallpaperSearchButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, animates New Tab Page's Wallpaper Search Button.
+BASE_FEATURE(kNtpWallpaperSearchButtonAnimation,
+             "NtpWallpaperSearchButtonAnimation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kNtpModuleIgnoredCriteriaThreshold[] =
     "NtpModuleIgnoredCriteriaThreshold";
 const char kNtpModuleIgnoredHaTSDelayTimeParam[] =
