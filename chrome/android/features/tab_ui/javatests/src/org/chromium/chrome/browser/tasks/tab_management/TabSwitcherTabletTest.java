@@ -42,6 +42,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
@@ -157,6 +158,7 @@ public class TabSwitcherTabletTest {
     @Test
     @MediumTest
     @RequiresRestart
+    @DisabledTest(message = "https://crbug.com/327457591")
     public void testEnterAndExitTabSwitcher() throws TimeoutException {
         Layout layout = sActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
         assertNull("StartSurface layout should not be initialized", layout);
