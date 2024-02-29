@@ -136,7 +136,7 @@ criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 [policy."link-cplusplus:1.0.9"]
 criteria = []
 
-[policy."log:0.4.20"]
+[policy."log:0.4.21"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."memchr:2.7.1"]

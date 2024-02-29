@@ -10,9 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
+edition = "2021"
 rust-version = "1.60.0"
 name = "log"
-version = "0.4.20"
+version = "0.4.21"
 authors = ["The Rust Project Developers"]
 exclude = ["rfcs/**/*"]
 description = """
@@ -29,9 +30,9 @@ repository = "https://github.com/rust-lang/log"
 features = [
     "std",
     "serde",
-    "kv_unstable_std",
-    "kv_unstable_sval",
-    "kv_unstable_serde",
+    "kv_std",
+    "kv_sval",
+    "kv_serde",
 ]
 
 [[test]]
@@ -60,7 +61,8 @@ optional = true
 default-features = false
 
 [dependencies.value-bag]
-version = "1.4"
+version = "1.7"
+features = ["inline-i128"]
 optional = true
 default-features = false
 
@@ -72,6 +74,9 @@ default-features = false
 version = "1.0"
 features = ["derive"]
 
+[dev-dependencies.serde_json]
+version = "1.0"
+
 [dev-dependencies.serde_test]
 version = "1.0"
 
@@ -82,26 +87,42 @@ version = "2.1"
 version = "2.1"
 
 [dev-dependencies.value-bag]
-version = "1.4"
+version = "1.7"
 features = ["test"]
 
 [features]
-kv_unstable = ["value-bag"]
-kv_unstable_serde = [
-    "kv_unstable_std",
+kv = []
+kv_serde = [
+    "kv_std",
     "value-bag/serde",
     "serde",
 ]
-kv_unstable_std = [
+kv_std = [
     "std",
-    "kv_unstable",
+    "kv",
     "value-bag/error",
 ]
-kv_unstable_sval = [
-    "kv_unstable",
+kv_sval = [
+    "kv",
     "value-bag/sval",
     "sval",
     "sval_ref",
+]
+kv_unstable = [
+    "kv",
+    "value-bag",
+]
+kv_unstable_serde = [
+    "kv_serde",
+    "kv_unstable_std",
+]
+kv_unstable_std = [
+    "kv_std",
+    "kv_unstable",
+]
+kv_unstable_sval = [
+    "kv_sval",
+    "kv_unstable",
 ]
 max_level_debug = []
 max_level_error = []

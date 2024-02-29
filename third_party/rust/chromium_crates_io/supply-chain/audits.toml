@@ -415,6 +415,15 @@ the `libc` crate is enabled.  See https://github.com/rust-lang/libc/issues/3560
 for more details.
 """
 
+[[audits.log]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.4.20 -> 0.4.21"
+notes = """
+I grepped for \"crypt\", \"cipher\", \"fs\", \"net\" - there were no hits.  I also skimmed
+through the 0.4.20 => 0.4.21 delta and there was no new crypto-related code AFAICT.
+"""
+
 [[audits.minimal-lexical]]
 who = "danakj@chromium.org"
 criteria = "ub-risk-3"

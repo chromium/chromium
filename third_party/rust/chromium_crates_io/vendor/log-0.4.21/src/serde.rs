@@ -1,13 +1,12 @@
 #![cfg(feature = "serde")]
 
-extern crate serde;
-use self::serde::de::{
+use serde::de::{
     Deserialize, DeserializeSeed, Deserializer, EnumAccess, Error, Unexpected, VariantAccess,
     Visitor,
 };
-use self::serde::ser::{Serialize, Serializer};
+use serde::ser::{Serialize, Serializer};
 
-use {Level, LevelFilter, LOG_LEVEL_NAMES};
+use crate::{Level, LevelFilter, LOG_LEVEL_NAMES};
 
 use std::fmt;
 use std::str::{self, FromStr};
@@ -43,6 +42,17 @@ impl<'de> Deserialize<'de> for Level {
                 formatter.write_str("log level")
             }
 
+            fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
+            where
+                E: Error,
+            {
+                let variant = LOG_LEVEL_NAMES[1..]
+                    .get(v as usize)
+                    .ok_or_else(|| Error::invalid_value(Unexpected::Unsigned(v), &self))?;
+
+                self.visit_str(variant)
+            }
+
             fn visit_str<E>(self, s: &str) -> Result<Self::Value, E>
             where
                 E: Error,
@@ -57,17 +67,6 @@ impl<'de> Deserialize<'de> for Level {
             {
                 let variant = str::from_utf8(value)
                     .map_err(|_| Error::invalid_value(Unexpected::Bytes(value), &self))?;
-
-                self.visit_str(variant)
-            }
-
-            fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
-            where
-                E: Error,
-            {
-                let variant = LOG_LEVEL_NAMES[1..]
-                    .get(v as usize)
-                    .ok_or_else(|| Error::invalid_value(Unexpected::Unsigned(v), &self))?;
 
                 self.visit_str(variant)
             }
@@ -138,6 +137,17 @@ impl<'de> Deserialize<'de> for LevelFilter {
                 formatter.write_str("log level filter")
             }
 
+            fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
+            where
+                E: Error,
+            {
+                let variant = LOG_LEVEL_NAMES
+                    .get(v as usize)
+                    .ok_or_else(|| Error::invalid_value(Unexpected::Unsigned(v), &self))?;
+
+                self.visit_str(variant)
+            }
+
             fn visit_str<E>(self, s: &str) -> Result<Self::Value, E>
             where
                 E: Error,
@@ -152,17 +162,6 @@ impl<'de> Deserialize<'de> for LevelFilter {
             {
                 let variant = str::from_utf8(value)
                     .map_err(|_| Error::invalid_value(Unexpected::Bytes(value), &self))?;
-
-                self.visit_str(variant)
-            }
-
-            fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
-            where
-                E: Error,
-            {
-                let variant = LOG_LEVEL_NAMES
-                    .get(v as usize)
-                    .ok_or_else(|| Error::invalid_value(Unexpected::Unsigned(v), &self))?;
 
                 self.visit_str(variant)
             }
@@ -205,15 +204,13 @@ impl<'de> Deserialize<'de> for LevelFilter {
 
 #[cfg(test)]
 mod tests {
-    extern crate serde_test;
-    use self::serde_test::{assert_de_tokens, assert_de_tokens_error, assert_tokens, Token};
-
-    use {Level, LevelFilter};
+    use crate::{Level, LevelFilter};
+    use serde_test::{assert_de_tokens, assert_de_tokens_error, assert_tokens, Token};
 
     fn level_token(variant: &'static str) -> Token {
         Token::UnitVariant {
             name: "Level",
-            variant: variant,
+            variant,
         }
     }
 
@@ -236,7 +233,7 @@ mod tests {
     fn level_filter_token(variant: &'static str) -> Token {
         Token::UnitVariant {
             name: "LevelFilter",
-            variant: variant,
+            variant,
         }
     }
 
@@ -262,7 +259,7 @@ mod tests {
 
     #[test]
     fn test_level_ser_de() {
-        let cases = [
+        let cases = &[
             (Level::Error, [level_token("ERROR")]),
             (Level::Warn, [level_token("WARN")]),
             (Level::Info, [level_token("INFO")]),
@@ -270,14 +267,14 @@ mod tests {
             (Level::Trace, [level_token("TRACE")]),
         ];
 
-        for &(s, expected) in &cases {
-            assert_tokens(&s, &expected);
+        for (s, expected) in cases {
+            assert_tokens(s, expected);
         }
     }
 
     #[test]
     fn test_level_case_insensitive() {
-        let cases = [
+        let cases = &[
             (Level::Error, [level_token("error")]),
             (Level::Warn, [level_token("warn")]),
             (Level::Info, [level_token("info")]),
@@ -285,14 +282,14 @@ mod tests {
             (Level::Trace, [level_token("trace")]),
         ];
 
-        for &(s, expected) in &cases {
-            assert_de_tokens(&s, &expected);
+        for (s, expected) in cases {
+            assert_de_tokens(s, expected);
         }
     }
 
     #[test]
     fn test_level_de_bytes() {
-        let cases = [
+        let cases = &[
             (Level::Error, level_bytes_tokens(b"ERROR")),
             (Level::Warn, level_bytes_tokens(b"WARN")),
             (Level::Info, level_bytes_tokens(b"INFO")),
@@ -300,14 +297,14 @@ mod tests {
             (Level::Trace, level_bytes_tokens(b"TRACE")),
         ];
 
-        for &(value, tokens) in &cases {
-            assert_de_tokens(&value, &tokens);
+        for (value, tokens) in cases {
+            assert_de_tokens(value, tokens);
         }
     }
 
     #[test]
     fn test_level_de_variant_index() {
-        let cases = [
+        let cases = &[
             (Level::Error, level_variant_tokens(0)),
             (Level::Warn, level_variant_tokens(1)),
             (Level::Info, level_variant_tokens(2)),
@@ -315,8 +312,8 @@ mod tests {
             (Level::Trace, level_variant_tokens(4)),
         ];
 
-        for &(value, tokens) in &cases {
-            assert_de_tokens(&value, &tokens);
+        for (value, tokens) in cases {
+            assert_de_tokens(value, tokens);
         }
     }
 
@@ -329,7 +326,7 @@ mod tests {
 
     #[test]
     fn test_level_filter_ser_de() {
-        let cases = [
+        let cases = &[
             (LevelFilter::Off, [level_filter_token("OFF")]),
             (LevelFilter::Error, [level_filter_token("ERROR")]),
             (LevelFilter::Warn, [level_filter_token("WARN")]),
@@ -338,14 +335,14 @@ mod tests {
             (LevelFilter::Trace, [level_filter_token("TRACE")]),
         ];
 
-        for &(s, expected) in &cases {
-            assert_tokens(&s, &expected);
+        for (s, expected) in cases {
+            assert_tokens(s, expected);
         }
     }
 
     #[test]
     fn test_level_filter_case_insensitive() {
-        let cases = [
+        let cases = &[
             (LevelFilter::Off, [level_filter_token("off")]),
             (LevelFilter::Error, [level_filter_token("error")]),
             (LevelFilter::Warn, [level_filter_token("warn")]),
@@ -354,14 +351,14 @@ mod tests {
             (LevelFilter::Trace, [level_filter_token("trace")]),
         ];
 
-        for &(s, expected) in &cases {
-            assert_de_tokens(&s, &expected);
+        for (s, expected) in cases {
+            assert_de_tokens(s, expected);
         }
     }
 
     #[test]
     fn test_level_filter_de_bytes() {
-        let cases = [
+        let cases = &[
             (LevelFilter::Off, level_filter_bytes_tokens(b"OFF")),
             (LevelFilter::Error, level_filter_bytes_tokens(b"ERROR")),
             (LevelFilter::Warn, level_filter_bytes_tokens(b"WARN")),
@@ -370,14 +367,14 @@ mod tests {
             (LevelFilter::Trace, level_filter_bytes_tokens(b"TRACE")),
         ];
 
-        for &(value, tokens) in &cases {
-            assert_de_tokens(&value, &tokens);
+        for (value, tokens) in cases {
+            assert_de_tokens(value, tokens);
         }
     }
 
     #[test]
     fn test_level_filter_de_variant_index() {
-        let cases = [
+        let cases = &[
             (LevelFilter::Off, level_filter_variant_tokens(0)),
             (LevelFilter::Error, level_filter_variant_tokens(1)),
             (LevelFilter::Warn, level_filter_variant_tokens(2)),
@@ -386,8 +383,8 @@ mod tests {
             (LevelFilter::Trace, level_filter_variant_tokens(5)),
         ];
 
-        for &(value, tokens) in &cases {
-            assert_de_tokens(&value, &tokens);
+        for (value, tokens) in cases {
+            assert_de_tokens(value, tokens);
         }
     }
 

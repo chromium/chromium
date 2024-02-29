@@ -13,23 +13,23 @@ cargo_crate("lib") {
   epoch = "0.4"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/log-0.4.20/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/log-0.4.21/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.20/src/__private_api.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.20/src/kv/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.20/src/kv/key.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.20/src/kv/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.20/src/kv/source.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.20/src/kv/value.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.20/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.20/src/macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.20/src/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.21/src/__private_api.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.21/src/kv/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.21/src/kv/key.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.21/src/kv/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.21/src/kv/source.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.21/src/kv/value.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.21/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.21/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.21/src/serde.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2015"
-  cargo_pkg_version = "0.4.20"
+  edition = "2021"
+  cargo_pkg_version = "0.4.21"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "log"
   cargo_pkg_description = "A lightweight logging facade for Rust"

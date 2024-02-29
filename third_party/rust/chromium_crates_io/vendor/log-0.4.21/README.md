@@ -43,12 +43,12 @@ pub fn shave_the_yak(yak: &mut Yak) {
     loop {
         match find_a_razor() {
             Ok(razor) => {
-                info!("Razor located: {}", razor);
+                info!("Razor located: {razor}");
                 yak.shave(razor);
                 break;
             }
             Err(err) => {
-                warn!("Unable to locate a razor: {}, retrying", err);
+                warn!("Unable to locate a razor: {err}, retrying");
             }
         }
     }
@@ -81,12 +81,15 @@ There are many available implementations to choose from, here are some options:
     * [`win_dbg_logger`](https://docs.rs/win_dbg_logger/*/win_dbg_logger/)
     * [`db_logger`](https://docs.rs/db_logger/*/db_logger/)
     * [`log-to-defmt`](https://docs.rs/log-to-defmt/*/log_to_defmt/)
+    * [`logcontrol-log`](https://docs.rs/logcontrol-log/*/logcontrol_log/)
 * For WebAssembly binaries:
     * [`console_log`](https://docs.rs/console_log/*/console_log/)
 * For dynamic libraries:
     * You may need to construct [an FFI-safe wrapper over `log`](https://github.com/rust-lang/log/issues/421) to initialize in your libraries.
 * Utilities:
     * [`log_err`](https://docs.rs/log_err/*/log_err/)
+    * [`log-reload`](https://docs.rs/log-reload/*/log_reload/)
+    * [`alterable_logger`](https://docs.rs/alterable_logger/*/alterable_logger)
 
 Executables should choose a logger implementation and initialize it early in the
 runtime of the program. Logger implementations will typically include a
@@ -97,23 +100,28 @@ The executable itself may use the `log` crate to log as well.
 
 ## Structured logging
 
-If you enable the `kv_unstable` feature, you can associate structured data with your log records:
+If you enable the `kv` feature, you can associate structured data with your log records:
 
 ```rust
-use log::{info, trace, warn, as_serde, as_error};
+use log::{info, trace, warn};
 
 pub fn shave_the_yak(yak: &mut Yak) {
-    trace!(target = "yak_events", yak = as_serde!(yak); "Commencing yak shaving");
+    // `yak:serde` will capture `yak` using its `serde::Serialize` impl
+    //
+    // You could also use `:?` for `Debug`, or `:%` for `Display`. For a
+    // full list, see the `log` crate documentation
+    trace!(target = "yak_events", yak:serde; "Commencing yak shaving");
 
     loop {
         match find_a_razor() {
             Ok(razor) => {
-                info!(razor = razor; "Razor located");
+                info!(razor; "Razor located");
                 yak.shave(razor);
                 break;
             }
-            Err(err) => {
-                warn!(err = as_error!(err); "Unable to locate a razor, retrying");
+            Err(e) => {
+                // `e:err` will capture `e` using its `std::error::Error` impl
+                warn!(e:err; "Unable to locate a razor, retrying");
             }
         }
     }
