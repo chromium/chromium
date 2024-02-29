@@ -85,7 +85,8 @@ def main():
   logging.basicConfig(level=logging.DEBUG if args.verbose else logging.WARN)
 
   bundle_root = cipd.fetch_recipe_bundle(args.verbose)
-  builder_props = builders.find_builder_props(args.bucket, args.builder)
+  builder_props, swarming_server = builders.find_builder_props(
+      args.bucket, args.builder)
   if not builder_props:
     return 1
 
@@ -96,6 +97,7 @@ def main():
       builder_props,
       args.bucket,
       args.builder,
+      swarming_server,
       args.test,
       skip_compile,
       skip_test,

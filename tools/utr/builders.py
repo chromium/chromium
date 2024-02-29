@@ -22,7 +22,8 @@ def find_builder_props(bucket_name, builder_name):
     builder_name: Builder name of the builder
 
   Returns:
-    Dict of the builder's input props, or None if the props weren't found
+    Tuple of (Dict of the builder's input props, Swarming server the builder
+      runs on). Both elements will be None if the builder wasn't found.
   """
   # TODO(crbug.com/41492688): Allow bucket_name to be optional?
   possible_matches = []
@@ -42,16 +43,20 @@ def find_builder_props(bucket_name, builder_name):
 
   if not possible_matches:
     logging.error('No prop file found for %s', builder_name)
-    return None
+    return None, None
   elif len(possible_matches) > 1:
     logging.error('Found multiple prop files for builder %s:', builder_name)
     for m in possible_matches:
       logging.error(m)
-    return None
+    return None, None
 
   prop_file = possible_matches[0]
   logging.debug('Found prop file %s', prop_file)
   with open(possible_matches[0]) as f:
     props = json.load(f)
 
-  return props
+  # TODO(crbug.com/41492688): Support src-internal configs too. Fow now, assume
+  # chromium builders correlate to "chromium-swarm".
+  swarming_server = 'chromium-swarm'
+
+  return props, swarming_server

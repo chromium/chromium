@@ -5,6 +5,7 @@
 
 import json
 import logging
+import os
 import pathlib
 import subprocess
 import tempfile
@@ -28,6 +29,7 @@ class LegacyRunner:
                builder_props,
                bucket,
                builder,
+               swarming_server,
                tests,
                skip_compile,
                skip_test,
@@ -39,6 +41,7 @@ class LegacyRunner:
       builder_props: Dict containing the props for the builder to run as.
       bucket: Bucket name of the builder to run as.
       builder: Builder name of the builder to run as.
+      swarming_server: Swarming server the builder runs on.
       tests: List of tests to run.
       skip_compile: If True, the UTR will only run the tests.
       skip_test: If True, the UTR will only compile.
@@ -46,6 +49,7 @@ class LegacyRunner:
           default otherwise if needed.
     """
     self._recipes_py = bundle_root_path.joinpath('recipes')
+    self._swarming_server = swarming_server
     assert self._recipes_py.exists()
 
     # Add UTR recipe props. Its schema is located at:
@@ -96,7 +100,11 @@ class LegacyRunner:
           '-',  # '-' means read from stdin
           self.UTR_RECIPE_NAME,
       ]
-      p = subprocess.Popen(cmd, stdin=subprocess.PIPE, text=True)
+      env = os.environ.copy()
+      # This env var is read by both the cas and swarming recipe modules to
+      # determine where to upload/run things.
+      env['SWARMING_SERVER'] = f'https://{self._swarming_server}.appspot.com'
+      p = subprocess.Popen(cmd, stdin=subprocess.PIPE, env=env, text=True)
       p.communicate(input=json.dumps(self._input_props))
 
       # Try to pull out the summary markdown from the recipe run.
