@@ -35,6 +35,7 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
+#include "components/compose/core/browser/compose_utils.h"
 #include "components/compose/core/browser/config.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
@@ -61,20 +62,8 @@ bool IsValidComposePrompt(const std::string& prompt) {
     return false;
   }
 
-  base::StringTokenizer tokenizer(
-      prompt, " ", base::StringTokenizer::WhitespacePolicy::kSkipOver);
-  unsigned int word_count = 0;
-  while (tokenizer.GetNext()) {
-    ++word_count;
-    if (word_count > config.input_max_words) {
-      return false;
-    }
-  }
-
-  if (word_count < config.input_min_words) {
-    return false;
-  }
-  return true;
+  return compose::IsWordCountWithinBounds(prompt, config.input_min_words,
+                                          config.input_max_words);
 }
 
 const char kComposeBugReportURL[] = "https://goto.google.com/ccbrfd";

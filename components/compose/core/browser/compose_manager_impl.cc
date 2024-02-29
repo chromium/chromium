@@ -10,12 +10,15 @@
 
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
+#include "components/compose/core/browser/compose_utils.h"
+#include "components/compose/core/browser/config.h"
 
 namespace {
 
@@ -93,10 +96,31 @@ void ComposeManagerImpl::GetBrowserFormHandler(
     client_->getPageUkmTracker()->ShowDialogAbortedDueToMissingFormFieldData();
     return;
   }
+
   autofill::AutofillManager& manager = driver->GetAutofillManager();
-  auto compose_callback =
-      base::BindOnce(&FillTextWithAutofill, manager.GetWeakPtr(),
-                     form_data.value(), *form_field_data);
+  ComposeCallback compose_callback;
+
+  if (base::FeatureList::IsEnabled(compose::features::kComposeTextSelection) &&
+      IsWordCountWithinBounds(base::UTF16ToUTF8(form_field_data->selected_text),
+                              0, compose::GetComposeConfig().input_min_words)) {
+    // Select all words.
+    static_cast<autofill::BrowserAutofillManager*>(&manager)
+        ->FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
+                             autofill::mojom::FieldActionType::kSelectAll,
+                             form_data.value(), *form_field_data, u"",
+                             autofill::PopupItemId::kCompose);
+
+    // Update form_field_data to use the newly selected text.
+    autofill::FormFieldData updated_form_field_data =
+        autofill::FormFieldData(*form_field_data);
+
+    updated_form_field_data.selected_text = form_field_data->value;
+
+    form_field_data = &updated_form_field_data;
+  }
+
+  compose_callback = base::BindOnce(&FillTextWithAutofill, manager.GetWeakPtr(),
+                                    form_data.value(), *form_field_data);
 
   OpenComposeWithFormFieldData(ui_entry_point, *form_field_data,
                                manager.client().GetPopupScreenLocation(),

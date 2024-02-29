@@ -22,6 +22,8 @@ static_library("browser") {
     "compose_manager_impl.h",
     "compose_metrics.cc",
     "compose_metrics.h",
+    "compose_utils.cc",
+    "compose_utils.h",
     "config.cc",
     "config.h",
   ]
