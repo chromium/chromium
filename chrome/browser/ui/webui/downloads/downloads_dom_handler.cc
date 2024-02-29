@@ -40,6 +40,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
@@ -51,6 +52,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
@@ -775,4 +777,14 @@ void DownloadsDOMHandler::RemoveDownloadInArgs(const std::string& id) {
   DownloadVector downloads;
   downloads.push_back(file);
   RemoveDownloads(downloads);
+}
+
+void DownloadsDOMHandler::OpenEsbSettings() {
+  Browser* browser = chrome::FindBrowserWithTab(GetWebUIWebContents());
+  if (!browser) {
+    return;
+  }
+  chrome::ShowSafeBrowsingEnhancedProtectionWithIph(
+      browser,
+      safe_browsing::SafeBrowsingSettingReferralMethod::kDownloadPageRowPromo);
 }

@@ -15,7 +15,8 @@ enum class SafeBrowsingSettingReferralMethod {
   kPromoSlingerReferral = 2,
   kDownloadBubbleSubpage = 3,
   kDownloadButtonIphPromo = 4,
-  kMaxValue = kDownloadButtonIphPromo,
+  kDownloadPageRowPromo = 5,
+  kMaxValue = kDownloadPageRowPromo,
 };
 
 }  // namespace safe_browsing

@@ -74,6 +74,7 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   void ReviewDangerousRequiringGesture(const std::string& id) override;
   void DeepScan(const std::string& id) override;
   void BypassDeepScanRequiringGesture(const std::string& id) override;
+  void OpenEsbSettings() override;
 
  protected:
   // These methods are for mocking so that most of this class does not actually

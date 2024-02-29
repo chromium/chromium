@@ -145,6 +145,7 @@ interface PageHandler {
   Cancel(string id);
   ClearAll();
   OpenDownloadsFolderRequiringGesture();
+  OpenEsbSettings();
 
   // Opens this download with the given |id| while it is being scanned by Safe
   // Browsing. This completes the scan early. This requires a user gesture on
