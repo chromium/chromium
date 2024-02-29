@@ -9,6 +9,7 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -231,14 +232,12 @@ base::FilePath GetODFSFuseboxMount(Profile* profile) {
 
 bool IsODFSInstalled(Profile* profile) {
   auto* service = ash::file_system_provider::Service::Get(profile);
-  for (const auto& [provider_id, provider] : service->GetProviders()) {
-    if (provider_id.GetType() ==
-            ash::file_system_provider::ProviderId::EXTENSION &&
-        provider_id.GetExtensionId() == extension_misc::kODFSExtensionId) {
-      return true;
-    }
-  }
-  return false;
+  return base::ranges::any_of(
+      service->GetProviders(), [](const auto& provider) {
+        return provider.first ==
+               ash::file_system_provider::ProviderId::CreateFromExtensionId(
+                   extension_misc::kODFSExtensionId);
+      });
 }
 
 bool IsODFSMounted(Profile* profile) {
