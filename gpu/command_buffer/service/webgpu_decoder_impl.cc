@@ -1367,6 +1367,18 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
     required_features.push_back(wgpu::FeatureName::SharedFenceMTLSharedEvent);
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  if (adapter_obj.HasFeature(
+          wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer)) {
+    required_features.push_back(
+        wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer);
+  }
+  if (adapter_obj.HasFeature(wgpu::FeatureName::SharedFenceVkSemaphoreSyncFD)) {
+    required_features.push_back(
+        wgpu::FeatureName::SharedFenceVkSemaphoreSyncFD);
+  }
+#endif
+
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   // On Desktop GL via ANGLE, require GL texture sharing.
   if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES &&
@@ -1707,6 +1719,9 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     // NOTE: These platforms should be switched to the corresponding
     // SharedTextureMemory feature check as they are converted to using
     // SharedTextureMemory.
+    // TODO(crbug.com/327111284): Change this to check for
+    // SharedTextureMemoryAHardwareBuffer on Android-Vulkan once we've made the
+    // switch there.
     supports_external_textures = adapter.SupportsExternalImages();
 #endif
     if (!(supports_external_textures || is_swiftshader)) {

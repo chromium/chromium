@@ -376,6 +376,11 @@ bool DawnContextProvider::Initialize(
       wgpu::FeatureName::SharedTextureMemoryIOSurface,
       wgpu::FeatureName::SharedFenceMTLSharedEvent,
 
+      // The following features are always supported when running on the Vulkan
+      // backend on Android.
+      wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer,
+      wgpu::FeatureName::SharedFenceVkSemaphoreSyncFD,
+
       wgpu::FeatureName::TransientAttachments,
   };
 
