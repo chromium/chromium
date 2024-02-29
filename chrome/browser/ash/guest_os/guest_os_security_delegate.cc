@@ -34,7 +34,7 @@ void GuestOsSecurityDelegate::MakeServerWithFd(
       base::BindOnce(std::move(callback), cap_ptr));
 }
 
-std::string GuestOsSecurityDelegate::GetVmName() const {
+std::string GuestOsSecurityDelegate::GetVmName(ui::EndpointType target) const {
   return vm_name_;
 }
 

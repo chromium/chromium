@@ -36,7 +36,8 @@ class GuestOsSecurityDelegate : public ash::ChromeSecurityDelegate {
                               std::unique_ptr<exo::WaylandServerHandle>)>
           callback);
 
-  std::string GetVmName() const override;
+  // ash::ChromeSecurityDelegate:
+  std::string GetVmName(ui::EndpointType target) const override;
 
  private:
   std::string vm_name_;

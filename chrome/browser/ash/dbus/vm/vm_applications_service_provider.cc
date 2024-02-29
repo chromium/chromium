@@ -88,13 +88,8 @@ void DialogListener::MultiFilesSelected(
   // VmApplicationsServiceProvider::SelectFile(). Take back ownership.
   auto data = base::WrapUnique(static_cast<SelectFileData*>(params));
 
-  ui::EndpointType target = ui::EndpointType::kDefault;
-  if (data->signal.vm_name() == crostini::kCrostiniDefaultVmName) {
-    target = ui::EndpointType::kCrostini;
-  }
-
   ShareWithVMAndTranslateToFileUrls(
-      target, ui::SelectedFileInfoListToFilePathList(files),
+      data->signal.vm_name(), ui::SelectedFileInfoListToFilePathList(files),
       base::BindOnce(
           [](std::unique_ptr<SelectFileData> data,
              std::vector<std::string> file_urls) {
@@ -287,14 +282,8 @@ void VmApplicationsServiceProvider::SelectFile(
                                         base::FilePath()));
     }
     // Translate to path in host and DLP component type if possible.
-    ui::EndpointType source = ui::EndpointType::kUnknownVm;
-    if (request.vm_name() == crostini::kCrostiniDefaultVmName) {
-      source = ui::EndpointType::kCrostini;
-      owner.dialog_caller =
-          policy::DlpFileDestination(data_controls::Component::kCrostini);
-    }
     std::vector<base::FilePath> paths =
-        TranslateVMPathsToHost(source, file_infos);
+        TranslateVMPathsToHost(request.vm_name(), file_infos);
     default_path =
         !paths.empty() ? std::move(paths[0]) : std::move(file_infos[0].path);
   }

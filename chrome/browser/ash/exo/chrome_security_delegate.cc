@@ -41,6 +41,7 @@ namespace {
 
 constexpr char kUriListSeparator[] = "\r\n";
 constexpr char kVmFileScheme[] = "vmfile";
+constexpr char kDefaultVmMount[] = "/mnt/shared";
 
 void SendArcUrls(exo::SecurityDelegate::SendDataCallback callback,
                  const std::vector<GURL>& urls) {
@@ -95,23 +96,23 @@ bool IsPathShared(Profile* profile,
   return false;
 }
 
+// Return VM mount path for specified `vm_name`.
+base::FilePath GetVmMount(const std::string& vm_name) {
+  if (vm_name == crostini::kCrostiniDefaultVmName) {
+    return crostini::ContainerChromeOSBaseDirectory();
+  }
+  if (vm_name == plugin_vm::kPluginVmName) {
+    return plugin_vm::ChromeOSBaseDirectory();
+  }
+  return base::FilePath(std::string(kDefaultVmMount));
+}
+
 // Translate |vm_paths| from |source| VM to host paths.
-std::vector<FileInfo> TranslateVMToHost(ui::EndpointType source,
+std::vector<FileInfo> TranslateVMToHost(const std::string vm_name,
                                         std::vector<ui::FileInfo> vm_paths) {
   std::vector<FileInfo> file_infos;
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  bool is_crostini = source == ui::EndpointType::kCrostini;
-  bool is_plugin_vm = source == ui::EndpointType::kPluginVm;
-
-  base::FilePath vm_mount;
-  std::string vm_name;
-  if (is_crostini) {
-    vm_mount = crostini::ContainerChromeOSBaseDirectory();
-    vm_name = crostini::kCrostiniDefaultVmName;
-  } else if (is_plugin_vm) {
-    vm_mount = plugin_vm::ChromeOSBaseDirectory();
-    vm_name = plugin_vm::kPluginVmName;
-  }
+  bool is_crostini = vm_name == crostini::kCrostiniDefaultVmName;
 
   for (ui::FileInfo& info : vm_paths) {
     base::FilePath path = std::move(info.path);
@@ -121,9 +122,9 @@ std::vector<FileInfo> TranslateVMToHost(ui::EndpointType source,
     // /mnt/chromeos for crostini; in //ChromeOS for Plugin VM), otherwise
     // prefix with 'vmfile:<vm_name>:' to avoid VMs spoofing host paths.
     // E.g. crostini /etc/mime.types => vmfile:termina:/etc/mime.types.
-    if (is_crostini || is_plugin_vm) {
+    if (!vm_name.empty() && vm_name != arc::kArcVmName) {
       if (file_manager::util::ConvertPathInsideVMToFileSystemURL(
-              primary_profile, path, vm_mount,
+              primary_profile, path, GetVmMount(vm_name),
               /*map_crostini_home=*/is_crostini, &url)) {
         path = url.path();
         // Only allow write to clipboard for paths that are shared.
@@ -163,27 +164,11 @@ std::vector<FileInfo> CrackPaths(std::vector<base::FilePath> paths) {
 // Share |files| with |target| VM and invoke |callback| with translated file:
 // URLs.
 void ShareAndTranslateHostToVM(
-    ui::EndpointType target,
-    std::vector<FileInfo> file_infos,
+    const std::string& vm_name,
+    const std::vector<FileInfo>& file_infos,
     base::OnceCallback<void(std::vector<std::string>)> callback) {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  bool is_arc = target == ui::EndpointType::kArc;
-  bool is_crostini = target == ui::EndpointType::kCrostini;
-  bool is_plugin_vm = target == ui::EndpointType::kPluginVm;
-
-  base::FilePath vm_mount;
-  std::string vm_name;
-  if (is_arc) {
-    // For ARC, |share_required| below will always be false and |vm_name| will
-    // not be used. Setting it to arc::kArcVmName has no effect.
-    vm_name = arc::kArcVmName;
-  } else if (is_crostini) {
-    vm_mount = crostini::ContainerChromeOSBaseDirectory();
-    vm_name = crostini::kCrostiniDefaultVmName;
-  } else if (is_plugin_vm) {
-    vm_mount = plugin_vm::ChromeOSBaseDirectory();
-    vm_name = plugin_vm::kPluginVmName;
-  }
+  bool is_crostini = vm_name == crostini::kCrostiniDefaultVmName;
 
   const std::string vm_prefix =
       base::StrCat({kVmFileScheme, ":", vm_name, ":"});
@@ -194,7 +179,7 @@ void ShareAndTranslateHostToVM(
   for (auto& info : file_infos) {
     std::string file_url;
     bool share_required = false;
-    if (is_arc) {
+    if (vm_name == arc::kArcVmName) {
       GURL arc_url;
       if (!file_manager::util::ConvertPathToArcUrl(info.path, &arc_url,
                                                    &share_required)) {
@@ -202,7 +187,7 @@ void ShareAndTranslateHostToVM(
         continue;
       }
       file_url = arc_url.spec();
-    } else if (is_crostini || is_plugin_vm) {
+    } else if (!vm_name.empty()) {
       base::FilePath path;
       // Check if it is a path inside the VM: 'vmfile:<vm_name>:'.
       if (base::StartsWith(info.path.value(), vm_prefix,
@@ -210,7 +195,7 @@ void ShareAndTranslateHostToVM(
         file_url = ui::FilePathToFileURL(
             base::FilePath(info.path.value().substr(vm_prefix.size())));
       } else if (file_manager::util::ConvertFileSystemURLToPathInsideVM(
-                     primary_profile, info.url, vm_mount,
+                     primary_profile, info.url, GetVmMount(vm_name),
                      /*map_crostini_home=*/is_crostini, &path)) {
         // Convert to path inside the VM.
         file_url = ui::FilePathToFileURL(path);
@@ -230,7 +215,7 @@ void ShareAndTranslateHostToVM(
   }
 
   if (!paths_to_share.empty()) {
-    if (!is_plugin_vm) {
+    if (vm_name != plugin_vm::kPluginVmName) {
       auto vm_info =
           guest_os::GuestOsSessionTracker::GetForProfile(primary_profile)
               ->GetVmInfo(vm_name);
@@ -252,7 +237,7 @@ void ShareAndTranslateHostToVM(
                 }
 
                 // Still send the data, even if sharing failed.
-                std::move(callback).Run(file_urls);
+                std::move(callback).Run(std::move(file_urls));
               },
               std::move(callback), std::move(file_urls)));
       return;
@@ -273,9 +258,9 @@ void ShareAndTranslateHostToVM(
 
 // static
 std::vector<base::FilePath> TranslateVMPathsToHost(
-    ui::EndpointType source,
+    const std::string& vm_name,
     const std::vector<ui::FileInfo>& vm_paths) {
-  std::vector<FileInfo> translated = TranslateVMToHost(source, vm_paths);
+  std::vector<FileInfo> translated = TranslateVMToHost(vm_name, vm_paths);
   std::vector<base::FilePath> result;
   for (auto& info : translated) {
     result.push_back(std::move(info.path));
@@ -285,10 +270,10 @@ std::vector<base::FilePath> TranslateVMPathsToHost(
 
 // static
 void ShareWithVMAndTranslateToFileUrls(
-    ui::EndpointType target,
+    const std::string& vm_name,
     const std::vector<base::FilePath>& files,
     base::OnceCallback<void(std::vector<std::string>)> callback) {
-  ShareAndTranslateHostToVM(target, CrackPaths(files), std::move(callback));
+  ShareAndTranslateHostToVM(vm_name, CrackPaths(files), std::move(callback));
 }
 
 ChromeSecurityDelegate::ChromeSecurityDelegate() = default;
@@ -328,7 +313,8 @@ std::vector<ui::FileInfo> ChromeSecurityDelegate::GetFilenames(
     const std::vector<uint8_t>& data) const {
   std::vector<ui::FileInfo> result;
   std::vector<FileInfo> file_infos = TranslateVMToHost(
-      source, ui::URIListToFileInfos(std::string(data.begin(), data.end())));
+      GetVmName(source),
+      ui::URIListToFileInfos(std::string(data.begin(), data.end())));
   for (auto& info : file_infos) {
     result.push_back(ui::FileInfo(std::move(info.path), base::FilePath()));
   }
@@ -345,7 +331,7 @@ void ChromeSecurityDelegate::SendFileInfo(
   }
 
   ShareAndTranslateHostToVM(
-      target, CrackPaths(std::move(paths)),
+      GetVmName(target), CrackPaths(std::move(paths)),
       base::BindOnce(&SendAfterShare, target, std::move(callback)));
 }
 
@@ -379,11 +365,16 @@ void ChromeSecurityDelegate::SendPickle(ui::EndpointType target,
   }
 
   ShareAndTranslateHostToVM(
-      target, std::move(file_infos),
+      GetVmName(target), std::move(file_infos),
       base::BindOnce(&SendAfterShare, target, std::move(callback)));
 }
 
-std::string ChromeSecurityDelegate::GetVmName() const {
+std::string ChromeSecurityDelegate::GetVmName(ui::EndpointType target) const {
+  if (target == ui::EndpointType::kArc) {
+    return arc::kArcVmName;
+  } else if (target == ui::EndpointType::kPluginVm) {
+    return plugin_vm::kPluginVmName;
+  }
   return std::string();
 }
 

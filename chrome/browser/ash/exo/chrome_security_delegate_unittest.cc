@@ -11,10 +11,14 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
+#include "chrome/browser/ash/crostini/crostini_security_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/test/base/testing_profile.h"
@@ -162,6 +166,8 @@ TEST_F(ChromeSecurityDelegateTest, GetFilenames) {
                                           shared_path);
   guest_os_share_path->RegisterSharedPath(plugin_vm::kPluginVmName,
                                           shared_path);
+  guest_os_share_path->RegisterSharedPath(bruschetta::kBruschettaVmName,
+                                          shared_path);
 
   // Multiple lines should be parsed.
   // Arc should not translate paths.
@@ -175,30 +181,31 @@ TEST_F(ChromeSecurityDelegateTest, GetFilenames) {
   EXPECT_EQ("", files[1].display_name.value());
 
   // Crostini shared paths should be mapped.
-  files = security_delegate.GetFilenames(
+  guest_os::GuestOsSecurityDelegate crostini_security_delegate("termina");
+  files = crostini_security_delegate.GetFilenames(
       ui::EndpointType::kCrostini,
       Data("file:///mnt/chromeos/MyFiles/shared/file"));
   EXPECT_EQ(1u, files.size());
   EXPECT_EQ(shared_path.Append("file"), files[0].path);
 
   // Crostini homedir should be mapped.
-  files = security_delegate.GetFilenames(ui::EndpointType::kCrostini,
-                                         Data("file:///home/testuser/file"));
+  files = crostini_security_delegate.GetFilenames(
+      ui::EndpointType::kCrostini, Data("file:///home/testuser/file"));
   EXPECT_EQ(1u, files.size());
   EXPECT_EQ(crostini_dir_.Append("file"), files[0].path);
 
   // Crostini internal paths should be mapped.
-  files = security_delegate.GetFilenames(ui::EndpointType::kCrostini,
-                                         Data("file:///etc/hosts"));
+  files = crostini_security_delegate.GetFilenames(ui::EndpointType::kCrostini,
+                                                  Data("file:///etc/hosts"));
   EXPECT_EQ(1u, files.size());
   EXPECT_EQ("vmfile:termina:/etc/hosts", files[0].path.value());
 
   // Unshared paths should fail.
-  files = security_delegate.GetFilenames(
+  files = crostini_security_delegate.GetFilenames(
       ui::EndpointType::kCrostini,
       Data("file:///mnt/chromeos/MyFiles/unshared/file"));
   EXPECT_EQ(0u, files.size());
-  files = security_delegate.GetFilenames(
+  files = crostini_security_delegate.GetFilenames(
       ui::EndpointType::kCrostini,
       Data("file:///mnt/chromeos/MyFiles/shared/file1\r\n"
            "file:///mnt/chromeos/MyFiles/unshared/file2"));
@@ -206,29 +213,29 @@ TEST_F(ChromeSecurityDelegateTest, GetFilenames) {
   EXPECT_EQ(shared_path.Append("file1"), files[0].path);
 
   // file:/path should fail.
-  files = security_delegate.GetFilenames(
+  files = crostini_security_delegate.GetFilenames(
       ui::EndpointType::kCrostini, Data("file:/mnt/chromeos/MyFiles/file"));
   EXPECT_EQ(0u, files.size());
 
   // file:path should fail.
-  files = security_delegate.GetFilenames(
+  files = crostini_security_delegate.GetFilenames(
       ui::EndpointType::kCrostini, Data("file:mnt/chromeos/MyFiles/file"));
   EXPECT_EQ(0u, files.size());
 
   // file:// should fail.
-  files = security_delegate.GetFilenames(ui::EndpointType::kCrostini,
-                                         Data("file://"));
+  files = crostini_security_delegate.GetFilenames(ui::EndpointType::kCrostini,
+                                                  Data("file://"));
   EXPECT_EQ(0u, files.size());
 
   // file:/// maps to internal root.
-  files = security_delegate.GetFilenames(ui::EndpointType::kCrostini,
-                                         Data("file:///"));
+  files = crostini_security_delegate.GetFilenames(ui::EndpointType::kCrostini,
+                                                  Data("file:///"));
   EXPECT_EQ(1u, files.size());
   EXPECT_EQ("vmfile:termina:/", files[0].path.value());
 
   // /path should fail.
-  files = security_delegate.GetFilenames(ui::EndpointType::kCrostini,
-                                         Data("/mnt/chromeos/MyFiles/file"));
+  files = crostini_security_delegate.GetFilenames(
+      ui::EndpointType::kCrostini, Data("/mnt/chromeos/MyFiles/file"));
   EXPECT_EQ(0u, files.size());
 
   // Plugin VM shared paths should be mapped.
@@ -252,6 +259,38 @@ TEST_F(ChromeSecurityDelegateTest, GetFilenames) {
       ui::EndpointType::kPluginVm,
       Data("file://ChromeOS/MyFiles/shared/file1\r\n"
            "file://ChromeOS/MyFiles/unshared/file2"));
+  EXPECT_EQ(1u, files.size());
+  EXPECT_EQ(shared_path.Append("file1"), files[0].path);
+
+  // Bruschetta shared paths should be mapped.
+  guest_os::GuestOsSecurityDelegate bru_security_delegate("bru");
+  files = bru_security_delegate.GetFilenames(
+      ui::EndpointType::kCrostini,
+      Data("file:///mnt/shared/MyFiles/shared/file"));
+  EXPECT_EQ(1u, files.size());
+  EXPECT_EQ(shared_path.Append("file"), files[0].path);
+
+  // Bruschetta homedir is mapped as an internal path.
+  files = bru_security_delegate.GetFilenames(
+      ui::EndpointType::kCrostini, Data("file:///home/testuser/file"));
+  EXPECT_EQ(1u, files.size());
+  EXPECT_EQ("vmfile:bru:/home/testuser/file", files[0].path.value());
+
+  // Bruschetta internal paths should be mapped.
+  files = bru_security_delegate.GetFilenames(ui::EndpointType::kCrostini,
+                                             Data("file:///etc/hosts"));
+  EXPECT_EQ(1u, files.size());
+  EXPECT_EQ("vmfile:bru:/etc/hosts", files[0].path.value());
+
+  // Unshared paths should fail.
+  files = bru_security_delegate.GetFilenames(
+      ui::EndpointType::kCrostini,
+      Data("file:///mnt/shared/MyFiles/unshared/file"));
+  EXPECT_EQ(0u, files.size());
+  files = bru_security_delegate.GetFilenames(
+      ui::EndpointType::kCrostini,
+      Data("file:///mnt/shared/MyFiles/shared/file1\r\n"
+           "file:///mnt/shared/MyFiles/unshared/file2"));
   EXPECT_EQ(1u, files.size());
   EXPECT_EQ(shared_path.Append("file1"), files[0].path);
 }
@@ -288,14 +327,16 @@ TEST_F(ChromeSecurityDelegateTest, SendFileInfoConvertPaths) {
       data);
 
   // Crostini should convert path to inside VM, and share the path.
-  security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
-                                 base::BindOnce(&Capture, &data));
+  guest_os::GuestOsSecurityDelegate crostini_security_delegate("termina");
+  crostini_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
+                                          base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file:///mnt/chromeos/MyFiles/file1", data);
 
   // Crostini should join lines with CRLF.
-  security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1, file2},
-                                 base::BindOnce(&Capture, &data));
+  crostini_security_delegate.SendFileInfo(ui::EndpointType::kCrostini,
+                                          {file1, file2},
+                                          base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(
       "file:///mnt/chromeos/MyFiles/file1"
@@ -309,17 +350,24 @@ TEST_F(ChromeSecurityDelegateTest, SendFileInfoConvertPaths) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file://ChromeOS/MyFiles/file1", data);
 
+  // Bruschetta should convert path to inside VM, and share the path.
+  guest_os::GuestOsSecurityDelegate bru_security_delegate("bru");
+  bru_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
+                                     base::BindOnce(&Capture, &data));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ("file:///mnt/shared/MyFiles/file1", data);
+
   // Crostini should handle vmfile:termina:/etc/hosts.
   file1.path = base::FilePath("vmfile:termina:/etc/hosts");
-  security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
-                                 base::BindOnce(&Capture, &data));
+  crostini_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
+                                          base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file:///etc/hosts", data);
 
   // Crostini should ignore vmfile:PvmDefault:C:/WINDOWS/notepad.exe.
   file1.path = base::FilePath("vmfile:PvmDefault:C:/WINDOWS/notepad.exe");
-  security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
-                                 base::BindOnce(&Capture, &data));
+  crostini_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
+                                          base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("", data);
 
@@ -336,10 +384,24 @@ TEST_F(ChromeSecurityDelegateTest, SendFileInfoConvertPaths) {
                                  base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("", data);
+
+  // Bruschetta should handle vmfile:bru:/etc/hosts.
+  file1.path = base::FilePath("vmfile:bru:/etc/hosts");
+  bru_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
+                                     base::BindOnce(&Capture, &data));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ("file:///etc/hosts", data);
+
+  // Bruschetta should ignore vmfile:termina:/etc/hosts.
+  file1.path = base::FilePath("vmfile:termina:/etc/hosts");
+  bru_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
+                                     base::BindOnce(&Capture, &data));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ("", data);
 }
 
 TEST_F(ChromeSecurityDelegateTest, SendFileInfoSharePathsCrostini) {
-  ChromeSecurityDelegate security_delegate;
+  guest_os::GuestOsSecurityDelegate crostini_security_delegate("termina");
 
   // A path which is already shared should not be shared again.
   base::FilePath shared_path = myfiles_dir_.Append("shared");
@@ -350,16 +412,16 @@ TEST_F(ChromeSecurityDelegateTest, SendFileInfoSharePathsCrostini) {
   ui::FileInfo file(shared_path, base::FilePath());
   EXPECT_FALSE(FakeSeneschalClient::Get()->share_path_called());
   std::string data;
-  security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file},
-                                 base::BindOnce(&Capture, &data));
+  crostini_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file},
+                                          base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file:///mnt/chromeos/MyFiles/shared", data);
   EXPECT_FALSE(FakeSeneschalClient::Get()->share_path_called());
 
   // A path which is not already shared should be shared.
   file = ui::FileInfo(myfiles_dir_.Append("file"), base::FilePath());
-  security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file},
-                                 base::BindOnce(&Capture, &data));
+  crostini_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file},
+                                          base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file:///mnt/chromeos/MyFiles/file", data);
   EXPECT_TRUE(FakeSeneschalClient::Get()->share_path_called());
