@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shutdown_controller.h"
@@ -24,6 +25,7 @@
 #include "ash/wm/lock_state_controller_test_api.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/session_state_animator.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/test/test_session_state_animator.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/barrier_closure.h"
@@ -1051,6 +1053,7 @@ class LockStateControllerPineTest : public LockStateControllerTest {
     CHECK(temp_dir_.CreateUniqueTempDir());
     file_path_ = temp_dir_.GetPath().AppendASCII("test_pine.png");
     SetPineImagePathForTest(file_path_);
+    Initialize(ButtonType::NORMAL, LoginStatus::USER);
   }
 
   void TearDown() override {
@@ -1069,7 +1072,6 @@ class LockStateControllerPineTest : public LockStateControllerTest {
 
 // Tests that a pine image is taken when there are windows open.
 TEST_F(LockStateControllerPineTest, ShutdownWithWindows) {
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
   std::unique_ptr<aura::Window> window = CreateTestWindow();
 
   base::RunLoop run_loop;
@@ -1097,8 +1099,6 @@ TEST_F(LockStateControllerPineTest, ShutdownWithWindows) {
 // Tests that no pine image is taken when there are no windows opened and the
 // existing pine image should be deleted.
 TEST_F(LockStateControllerPineTest, ShutdownWithoutWindows) {
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
-
   // Create an empty file to simulate an old pine image.
   ASSERT_TRUE(base::WriteFile(file_path(), ""));
 
@@ -1109,6 +1109,69 @@ TEST_F(LockStateControllerPineTest, ShutdownWithoutWindows) {
   run_loop.Run();
 
   // Existing pine image was deleted.
+  EXPECT_FALSE(base::PathExists(file_path()));
+}
+
+TEST_F(LockStateControllerPineTest, ShutdownInOverview) {
+  // Create an empty file to simulate an old pine image.
+  ASSERT_TRUE(base::WriteFile(file_path(), ""));
+
+  // Create a window and enter the overview before requesting shutdown.
+  CreateTestWindow();
+  EnterOverview();
+
+  base::RunLoop run_loop;
+  lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
+  lock_state_controller_->RequestShutdown(
+      ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
+  run_loop.Run();
+
+  // The pine image should not be taken if it is in overview when shutting down.
+  // The existing pine image should be deleted as well.
+  EXPECT_FALSE(base::PathExists(file_path()));
+}
+
+TEST_F(LockStateControllerPineTest, ShutdownInLockScreen) {
+  // Create an empty file to simulate an old pine image.
+  ASSERT_TRUE(base::WriteFile(file_path(), ""));
+
+  // Create a window and go the lock screen before requesting shutdown.
+  CreateTestWindowInShellWithId(0);
+  GetSessionControllerClient()->LockScreen();
+  EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
+
+  base::RunLoop run_loop;
+  lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
+  lock_state_controller_->RequestShutdown(
+      ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
+  run_loop.Run();
+
+  // The pine image should not be taken if it is in the lock screen. The
+  // existing pine image should be deleted as well.
+  EXPECT_FALSE(base::PathExists(file_path()));
+}
+
+TEST_F(LockStateControllerPineTest, ShutdownInHomeLauncher) {
+  // Create an empty file to simulate an old pine image.
+  ASSERT_TRUE(base::WriteFile(file_path(), ""));
+
+  // Create a window and go to the home launcher page before requesting
+  // shutdown.
+  std::unique_ptr<aura::Window> window(CreateTestWindow());
+  TabletModeControllerTestApi().EnterTabletMode();
+  auto* app_list_controller = Shell::Get()->app_list_controller();
+  app_list_controller->GoHome(GetPrimaryDisplay().id());
+  ASSERT_TRUE(app_list_controller->IsHomeScreenVisible());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
+
+  base::RunLoop run_loop;
+  lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
+  lock_state_controller_->RequestShutdown(
+      ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
+  run_loop.Run();
+
+  // The pine image should not be taken if it is in the home launcher page when
+  // shutting down. The existing image should be deleted as well.
   EXPECT_FALSE(base::PathExists(file_path()));
 }
 

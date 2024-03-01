@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/cancel_mode.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -23,6 +24,7 @@
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/session_state_animator_impl.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
@@ -132,6 +134,23 @@ void MaybeAppendTestCallback(Callback& callback,
         base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
                            std::move(for_test_callback)));
   }
+}
+
+// TODO(minch): Check whether the screenshot should be taken in kiosk mode or
+// locked mode.
+// Returns true if the pine screenshot should be taken on shutdown.
+bool ShouldTakePineScreeshot(aura::Window* active_desk) {
+  auto* shell = Shell::Get();
+  // Do not take the pine screenshot if it is in overview mode, lock screen or
+  // in the home launcher page.
+  if (shell->overview_controller()->InOverviewSession() ||
+      shell->session_controller()->IsScreenLocked() ||
+      shell->app_list_controller()->IsHomeScreenVisible()) {
+    return false;
+  }
+
+  // Do not take the pine screenshot if the active desk has no windows.
+  return !active_desk->children().empty();
 }
 
 }  // namespace
@@ -703,10 +722,9 @@ void LockStateController::TakePineImageAndShutdown(bool with_pre_animation) {
   CHECK(active_desk);
   const base::FilePath file_path = GetShutdownPineImagePath();
 
-  if (active_desk->children().empty()) {
-    // If there are no windows in the desk container, taking the pine image will
-    // fail. Delete any existing pine image so on next startup no pine image
-    // preview will be shown.
+  if (!ShouldTakePineScreeshot(active_desk)) {
+    // Delete any existing pine image if we should not take the screenshot on
+    // this shutdown, then no stale screenshot will be shown on next startup.
     auto delete_image_cb =
         base::BindOnce(base::IgnoreResult(&base::DeleteFile), file_path);
     MaybeAppendTestCallback(delete_image_cb, pine_image_callback_for_test_);
