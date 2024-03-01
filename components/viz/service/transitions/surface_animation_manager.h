@@ -17,6 +17,7 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
+#include "components/viz/service/frame_sinks/surface_resource_holder.h"
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "components/viz/service/transitions/transferable_resource_tracker.h"
 #include "components/viz/service/viz_service_export.h"
@@ -36,7 +37,8 @@ struct TransferableResource;
 //
 // This class is owned by CompositorFrameSinkSupport but can be moved between
 // CompositorFrameSinkSupports for transitions between 2 renderer CC instances.
-class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
+class VIZ_SERVICE_EXPORT SurfaceAnimationManager
+    : public ReservedResourceDelegate {
  public:
   using TransitionDirectiveCompleteCallback =
       base::OnceCallback<void(const CompositorFrameTransitionDirective&)>;
@@ -47,13 +49,16 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
       SharedBitmapManager* shared_bitmap_manager,
       TransitionDirectiveCompleteCallback sequence_id_finished_callback);
 
-  ~SurfaceAnimationManager();
+  ~SurfaceAnimationManager() override;
 
   void Animate();
 
-  // Resource ref count management.
-  void RefResources(const std::vector<TransferableResource>& resources);
-  void UnrefResources(const std::vector<ReturnedResource>& resources);
+  // ReservedResourceDelegate:
+  void ReceiveFromChild(
+      const std::vector<TransferableResource>& resources) override;
+  void RefResources(
+      const std::vector<TransferableResource>& resources) override;
+  void UnrefResources(const std::vector<ReturnedResource>& resources) override;
 
   // Replaced ViewTransitionElementResourceIds with corresponding ResourceIds if
   // necessary.

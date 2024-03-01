@@ -179,6 +179,12 @@ void SurfaceAnimationManager::Animate() {
   empty_resource_ids_.clear();
 }
 
+void SurfaceAnimationManager::ReceiveFromChild(
+    const std::vector<TransferableResource>& resources) {
+  // We don't do anything here, because resources are initially reffed via
+  // `ImportResources`.
+}
+
 void SurfaceAnimationManager::RefResources(
     const std::vector<TransferableResource>& resources) {
   if (transferable_resource_tracker_.is_empty())
