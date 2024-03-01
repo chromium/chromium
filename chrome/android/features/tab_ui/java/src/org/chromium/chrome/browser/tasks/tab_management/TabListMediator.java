@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
@@ -1976,7 +1977,20 @@ class TabListMediator {
             List<Tab> relatedTabList = getRelatedTabsForId(pseudoTab.getId());
             if (mMode != TabListMode.LIST) {
                 // For tab group card in grid tab switcher, the favicon is set to be null.
-                mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, null);
+                // With tab group colors, set the the favicon fetcher to a circle of color.
+                TabFaviconFetcher faviconFetcher = null;
+                if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+                    TabGroupModelFilter filter =
+                            (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+                    int color =
+                            TabGroupColorUtils.getOrCreateTabGroupColor(
+                                    pseudoTab.getRootId(), filter);
+                    faviconFetcher =
+                            mTabListFaviconProvider.getFaviconFromTabGroupColorFetcher(
+                                    color, filter.getTabModel().isIncognito());
+                }
+
+                mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, faviconFetcher);
                 return;
             }
 

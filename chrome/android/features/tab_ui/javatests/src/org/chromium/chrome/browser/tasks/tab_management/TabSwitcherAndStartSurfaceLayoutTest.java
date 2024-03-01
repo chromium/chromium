@@ -376,6 +376,30 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    @CommandLineFlags.Add({BASE_PARAMS})
+    public void testRenderGrid_1TabGroup_ColorIcon() throws IOException {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+        // Hardcode TabGroupColorId.GREY as the tab group color for render testing purposes.
+        Tab tab = cta.getTabModelSelector().getCurrentTab();
+        TabGroupColorUtils.storeTabGroupColor(tab.getRootId(), 0);
+        // Leave and re enter GTS to refetch the favicon.
+        leaveTabSwitcher(cta);
+        enterTabSwitcher(cta);
+        mRenderTestRule.render(
+                cta.findViewById(R.id.tab_list_recycler_view),
+                "1_tab_group_GTS_card_item_color_icon");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisableIf.Build(
@@ -1658,6 +1682,21 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         verifyTabSwitcherCardCount(cta, 0);
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    public void testTabGroupColorInTabSwitcher() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        // Verify the color icon exists.
+        onView(allOf(withId(R.id.tab_favicon), withParent(withId(R.id.card_view))))
+                .check(matches(isDisplayed()));
     }
 
     @Test
