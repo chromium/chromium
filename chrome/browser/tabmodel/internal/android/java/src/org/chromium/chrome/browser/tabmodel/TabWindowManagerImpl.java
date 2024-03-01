@@ -207,6 +207,8 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
                         + newActivity
                         + " new activity task id: "
                         + newActivity.getTaskId()
+                        + " new activity is finishing? "
+                        + newActivity.isFinishing()
                         + " activity at requested index: "
                         + activityAtRequestedIndex;
         if (activityAtRequestedIndex == null) {
