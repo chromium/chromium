@@ -126,6 +126,11 @@ export class AppearanceElement extends I18nMixin
         value: () => loadTimeData.getBoolean('wallpaperSearchButtonEnabled'),
         reflectToAttribute: true,
       },
+
+      wallpaperSearchEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('wallpaperSearchEnabled'),
+      },
     };
   }
 
@@ -144,6 +149,8 @@ export class AppearanceElement extends I18nMixin
   private showThemeSnapshot: boolean;
   private showManagedDialog_: boolean;
   private wallpaperSearchButtonEnabled_:
+    boolean;
+  private wallpaperSearchEnabled_:
     boolean;
 
   private setThemeListenerId_: number|null = null;
@@ -272,7 +279,11 @@ export class AppearanceElement extends I18nMixin
   }
 
   private onSearchedImageButtonClick_() {
-    this.dispatchEvent(new CustomEvent('wallpaper-search-click'));
+    if (this.wallpaperSearchEnabled_) {
+      this.dispatchEvent(new CustomEvent('wallpaper-search-click'));
+    } else {
+      this.dispatchEvent(new Event('edit-theme-click'));
+    }
   }
 
   private onSetClassicChromeClicked_() {
