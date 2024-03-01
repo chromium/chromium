@@ -456,12 +456,9 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 
 
 # Flaky tests
-crbug.com/1489477 [ fuchsia web-engine-shell ] WebglExtension_EXT_float_blend [ Failure ]
 crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 crbug.com/1489477 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 
-# Anti-aliasing disabled on Fuchsia
-[ fuchsia ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
 
 ####################
@@ -530,7 +527,6 @@ crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-i
 
 ## SkiaGraphite on AMD/Intel ##
 
-crbug.com/326283382 [ mac angle-metal graphite-enabled ] conformance/context/context-creation-and-destruction.html [ RetryOnFailure ]
 
 ## SkiaGraphite on on SwANGLE ##
 
