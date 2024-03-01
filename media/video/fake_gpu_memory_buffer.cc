@@ -15,6 +15,11 @@
 #include <sys/types.h>
 #endif
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include <lib/zx/eventpair.h>
+#include <lib/zx/object.h>
+#endif
+
 namespace media {
 
 namespace {
@@ -87,6 +92,13 @@ FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
   }
   handle_.native_pixmap_handle.modifier = modifier;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_FUCHSIA)
+  zx::eventpair client_handle, service_handle;
+  zx::eventpair::create(0, &client_handle, &service_handle);
+  handle_.native_pixmap_handle.buffer_collection_handle =
+      std::move(client_handle);
+#endif
 }
 
 FakeGpuMemoryBuffer::~FakeGpuMemoryBuffer() = default;
@@ -132,7 +144,7 @@ gfx::GpuMemoryBufferHandle FakeGpuMemoryBuffer::CloneHandle() const {
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::NATIVE_PIXMAP;
   handle.id = handle_.id;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   handle.native_pixmap_handle =
       gfx::CloneHandleForIPC(handle_.native_pixmap_handle);
 #endif
