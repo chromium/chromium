@@ -102,11 +102,20 @@ export class CrLitElement extends LitElement {
 
     const notifyProps = (this.constructor as typeof CrLitElement).notifyProps_;
     if (notifyProps !== null) {
+      const indexableThis = this as Record<PropertyKey, any>;
       for (const key of changedProperties.keys()) {
         if (notifyProps.has(key)) {
+          if (changedProperties.get(key as keyof CrLitElement) === undefined &&
+              indexableThis[key] === undefined) {
+            // Don't fire events if the property was changed back to 'undefined'
+            // before the element was connected. Lit still reports such
+            // properties in `changedProperties` as going from 'undefined' to
+            // 'undefined'.
+            continue;
+          }
           this.fire(
               `${toDashCase(key.toString())}-changed`,
-              {value: (this as Record<PropertyKey, any>)[key]});
+              {value: indexableThis[key]});
         }
       }
     }

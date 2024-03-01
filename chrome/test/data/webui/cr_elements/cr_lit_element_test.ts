@@ -86,6 +86,11 @@ class CrDummyPropertiesWithNotifyElement extends CrLitElement {
         type: Boolean,
         notify: true,
       },
+
+      prop5: {
+        type: Boolean,
+        notify: true,
+      },
     };
   }
 
@@ -93,6 +98,7 @@ class CrDummyPropertiesWithNotifyElement extends CrLitElement {
   prop2: boolean = false;
   prop3: boolean = false;
   propFour: boolean = false;
+  prop5: boolean|undefined = false;
 }
 
 customElements.define(
@@ -300,12 +306,20 @@ suite('CrLitElement', function() {
   test('PropertiesWithNotify', async function() {
     const element = document.createElement('cr-dummy-properties-with-notify');
 
-    // Ensure that properties without 'notify: true' don't trigger events.
     function unexpectedEventListener(e: Event) {
       assertNotReached(`Unexpected event caught: ${e.type}`);
     }
+
+    // Ensure that properties without 'notify: true' don't trigger events.
     element.addEventListener('prop2-changed', unexpectedEventListener);
     element.addEventListener('prop3-changed', unexpectedEventListener);
+
+    // Ensure that properties with 'notify: true' that
+    //   1) have a non-undefined initial value AND
+    //   2) are changed back to undefined before the element is connected
+    // also don't trigger updates.
+    element.addEventListener('prop5-changed', unexpectedEventListener);
+    element.prop5 = undefined;
 
     // Ensure that properties with 'notify: true' trigger events.
 
