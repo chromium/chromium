@@ -54,13 +54,13 @@ TEST(RaceNetworkRequestReadBufferManagerTest, ReadData) {
   buffer_manager.Watch(base::BindLambdaForTesting(
       [&](MojoResult result, const mojo::HandleSignalsState& state) {
         EXPECT_EQ(result, MOJO_RESULT_OK);
-        auto [read_result, buffer] = buffer_manager.ReadData();
+        auto [read_result, buffer] = buffer_manager.BeginReadData();
         EXPECT_EQ(read_result, MOJO_RESULT_OK);
         EXPECT_EQ(result, MOJO_RESULT_OK);
         EXPECT_EQ(buffer.size(), num_bytes);
         std::string_view expected_str(expected_data);
         EXPECT_EQ(buffer.data(), expected_str);
-        buffer_manager.ConsumeData(num_bytes);
+        EXPECT_EQ(buffer_manager.EndReadData(num_bytes), MOJO_RESULT_OK);
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, run_loop.QuitClosure());
       }));

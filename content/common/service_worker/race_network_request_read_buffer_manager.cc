@@ -4,10 +4,7 @@
 
 #include "content/common/service_worker/race_network_request_read_buffer_manager.h"
 #include "base/debug/crash_logging.h"
-#include "base/memory/scoped_refptr.h"
 #include "mojo/public/c/system/types.h"
-#include "net/base/io_buffer.h"
-#include "services/network/public/cpp/features.h"
 
 namespace content {
 RaceNetworkRequestReadBufferManager::RaceNetworkRequestReadBufferManager(
@@ -31,35 +28,33 @@ void RaceNetworkRequestReadBufferManager::ArmOrNotify() {
   watcher_.ArmOrNotify();
 }
 
+MojoResult RaceNetworkRequestReadBufferManager::EndReadData(
+    size_t num_bytes_read) {
+  return consumer_handle_->EndReadData(num_bytes_read);
+}
 
 void RaceNetworkRequestReadBufferManager::CancelWatching() {
   watcher_.Cancel();
 }
 
 std::pair<MojoResult, base::span<const char>>
-RaceNetworkRequestReadBufferManager::ReadData() {
-  if (buffer_ && buffer_->BytesRemaining() > 0) {
-    return std::make_pair(MOJO_RESULT_OK, buffer_->span());
-  }
-
-  uint32_t num_bytes = network::features::GetDataPipeDefaultAllocationSize(
-      network::features::DataPipeAllocationSize::kLargerSizeIfPossible);
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBufferWithSize>(num_bytes);
-  MojoResult result = consumer_handle_->ReadData(buffer->data(), &num_bytes,
-                                                 MOJO_READ_DATA_FLAG_NONE);
+RaceNetworkRequestReadBufferManager::BeginReadData() {
+  const void* buffer;
+  uint32_t buffer_num_bytes = 0;
+  base::span<const char> read_buffer;
+  MojoResult result = consumer_handle_->BeginReadData(
+      &buffer, &buffer_num_bytes, MOJO_BEGIN_READ_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_OK) {
-    buffer_ = base::MakeRefCounted<net::DrainableIOBuffer>(std::move(buffer),
-                                                           num_bytes);
-    return std::make_pair(result, buffer_->span());
+    SCOPED_CRASH_KEY_NUMBER("SWRace", "num_bytes_read_buffer",
+                            buffer_num_bytes);
+    volatile const char* buffer_v = static_cast<volatile const char*>(buffer);
+    for (size_t i = 0; i < buffer_num_bytes; ++i) {
+      buffer_v[i];
+    }
+    read_buffer =
+        base::make_span(static_cast<const char*>(buffer), buffer_num_bytes);
   }
 
-  base::span<const char> empty;
-  return std::make_pair(result, empty);
-}
-
-void RaceNetworkRequestReadBufferManager::ConsumeData(size_t num_bytes_read) {
-  CHECK(buffer_);
-  buffer_->DidConsume(num_bytes_read);
+  return std::make_pair(result, read_buffer);
 }
 }  // namespace content
