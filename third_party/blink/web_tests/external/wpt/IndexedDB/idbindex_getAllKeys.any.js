@@ -1,18 +1,17 @@
-<!DOCTYPE html>
-<title>IndexedDB: Test IDBIndex.getAllKeys.</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/support.js"></script>
-<script>
+// META: global=window,worker
+// META: title=IndexedDB: Test IDBIndex.getAllKeys.
+// META: script=resources/support.js
 
-var alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+'use_strict';
+
+const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
 function getall_test(func, name) {
   indexeddb_test(
     function(t, connection, tx) {
-      var store = connection.createObjectStore('generated',
+      let store = connection.createObjectStore('generated',
             {autoIncrement: true, keyPath: 'id'});
-      var index = store.createIndex('test_idx', 'upper');
+      let index = store.createIndex('test_idx', 'upper');
       alphabet.forEach(function(letter) {
         store.put({ch: letter, upper: letter.toUpperCase()});
       });
@@ -47,25 +46,25 @@ function getall_test(func, name) {
 }
 
 function createGetAllKeysRequest(t, storeName, connection, range, maxCount) {
-    var transaction = connection.transaction(storeName, 'readonly');
-    var store = transaction.objectStore(storeName);
-    var index = store.index('test_idx');
-    var req = index.getAllKeys(range, maxCount);
+    const transaction = connection.transaction(storeName, 'readonly');
+    const store = transaction.objectStore(storeName);
+    const index = store.index('test_idx');
+    const req = index.getAllKeys(range, maxCount);
     req.onerror = t.unreached_func('getAllKeys request should succeed');
     return req;
 }
 
 getall_test(function(t, connection) {
-      var req = createGetAllKeysRequest(t, 'out-of-line', connection, 'C');
+      const req = createGetAllKeysRequest(t, 'out-of-line', connection, 'C');
       req.onsuccess = t.step_func(function(evt) {
-          var data = evt.target.result;
+          const data = evt.target.result;
           assert_array_equals(evt.target.result, ['c']);
           t.done();
       });
     }, 'Single item get');
 
 getall_test(function(t, connection) {
-      var req = createGetAllKeysRequest(t, 'empty', connection);
+      const req = createGetAllKeysRequest(t, 'empty', connection);
       req.onsuccess = t.step_func(function(evt) {
           assert_array_equals(evt.target.result, [],
               'getAllKeys() on empty object store should return empty array');
@@ -74,7 +73,7 @@ getall_test(function(t, connection) {
     }, 'Empty object store');
 
 getall_test(function(t, connection) {
-      var req = createGetAllKeysRequest(t, 'out-of-line', connection);
+      const req = createGetAllKeysRequest(t, 'out-of-line', connection);
       req.onsuccess = t.step_func(function(evt) {
           assert_array_equals(evt.target.result, alphabet,
               'getAllKeys() should return a..z');
@@ -83,7 +82,7 @@ getall_test(function(t, connection) {
     }, 'Get all keys');
 
 getall_test(function(t, connection) {
-      var req = createGetAllKeysRequest(t, 'generated', connection);
+      const req = createGetAllKeysRequest(t, 'generated', connection);
       req.onsuccess = t.step_func(function(evt) {
           assert_array_equals(evt.target.result,
               [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
@@ -94,7 +93,7 @@ getall_test(function(t, connection) {
     }, 'Get all generated keys');
 
 getall_test(function(t, connection) {
-      var req = createGetAllKeysRequest(t, 'out-of-line', connection, undefined,
+      const req = createGetAllKeysRequest(t, 'out-of-line', connection, undefined,
                                     10);
       req.onsuccess = t.step_func(function(evt) {
           assert_array_equals(evt.target.result,
@@ -105,7 +104,7 @@ getall_test(function(t, connection) {
     }, 'maxCount=10');
 
 getall_test(function(t, connection) {
-      var req = createGetAllKeysRequest(t, 'out-of-line', connection,
+      const req = createGetAllKeysRequest(t, 'out-of-line', connection,
                                     IDBKeyRange.bound('G', 'M'));
       req.onsuccess = t.step_func(function(evt) {
           assert_array_equals(evt.target.result,
@@ -116,7 +115,7 @@ getall_test(function(t, connection) {
     }, 'Get bound range');
 
 getall_test(function(t, connection) {
-      var req = createGetAllKeysRequest(t, 'out-of-line', connection,
+      const req = createGetAllKeysRequest(t, 'out-of-line', connection,
                                     IDBKeyRange.bound('G', 'M'), 3);
       req.onsuccess = t.step_func(function(evt) {
           assert_array_equals(evt.target.result,
@@ -127,7 +126,7 @@ getall_test(function(t, connection) {
     }, 'Get bound range with maxCount');
 
 getall_test(function(t, connection) {
-      var req = createGetAllKeysRequest(t, 'out-of-line', connection,
+      const req = createGetAllKeysRequest(t, 'out-of-line', connection,
           IDBKeyRange.bound('G', 'K', false, true));
       req.onsuccess = t.step_func(function(evt) {
           assert_array_equals(evt.target.result,
@@ -138,7 +137,7 @@ getall_test(function(t, connection) {
     }, 'Get upper excluded');
 
 getall_test(function(t, connection) {
-      var req = createGetAllKeysRequest(t, 'out-of-line', connection,
+      const req = createGetAllKeysRequest(t, 'out-of-line', connection,
           IDBKeyRange.bound('G', 'K', true, false));
       req.onsuccess = t.step_func(function(evt) {
           assert_array_equals(evt.target.result,
@@ -149,7 +148,7 @@ getall_test(function(t, connection) {
     }, 'Get lower excluded');
 
 getall_test(function(t, connection) {
-      var req = createGetAllKeysRequest(t, 'generated',
+      const req = createGetAllKeysRequest(t, 'generated',
           connection, IDBKeyRange.bound(4, 15), 3);
       req.onsuccess = t.step_func(function(evt) {
           assert_array_equals(evt.target.result, [],
@@ -159,7 +158,7 @@ getall_test(function(t, connection) {
     }, 'Get bound range (generated) with maxCount');
 
 getall_test(function(t, connection) {
-      var req = createGetAllKeysRequest(t, 'out-of-line',
+      const req = createGetAllKeysRequest(t, 'out-of-line',
           connection, "Doesn't exist");
       req.onsuccess = t.step_func(function(evt) {
           assert_array_equals(evt.target.result, [],
@@ -170,7 +169,7 @@ getall_test(function(t, connection) {
     }, 'Non existent key');
 
 getall_test(function(t, connection) {
-      var req = createGetAllKeysRequest(t, 'out-of-line', connection,
+      const req = createGetAllKeysRequest(t, 'out-of-line', connection,
           undefined, 0);
       req.onsuccess = t.step_func(function(evt) {
           assert_array_equals(evt.target.result, alphabet,
@@ -180,7 +179,7 @@ getall_test(function(t, connection) {
     }, 'maxCount=0');
 
 getall_test(function(t, connection) {
-      var req = createGetAllKeysRequest(t, 'out-of-line-multi', connection,
+      const req = createGetAllKeysRequest(t, 'out-of-line-multi', connection,
                                         'vowel');
       req.onsuccess = t.step_func(function(evt) {
         assert_array_equals(evt.target.result, ['A','E','I','O','U'])
@@ -188,5 +187,3 @@ getall_test(function(t, connection) {
       });
       req.onerror = t.unreached_func('getAllKeys request should succeed');
     }, 'Retrieve multiEntry keys');
-
-</script>
