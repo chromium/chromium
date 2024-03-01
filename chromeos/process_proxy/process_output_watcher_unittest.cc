@@ -10,6 +10,7 @@
 #include <memory>
 #include <queue>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_util.h"
@@ -174,7 +175,7 @@ class ProcessOutputWatcherTest : public testing::Test {
       if (test_cases[i].should_send_terminating_null)
         test_size += sizeof(*test_str.c_str());
       EXPECT_TRUE(base::WriteFileDescriptor(
-          pt_pipe[1], base::StringPiece(test_str.c_str(), test_size)));
+          pt_pipe[1], std::string_view(test_str.c_str(), test_size)));
 
       run_loop.Run();
       EXPECT_TRUE(expectations_.IsDone());
