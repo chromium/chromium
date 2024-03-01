@@ -2517,6 +2517,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
         Listen to this page
       </message>
 
+      <message name="IDS_MENU_LISTEN_TO_THIS_PAGE_IPH" desc="The in-product-help message that encourages users to use the Listen to this Page feature in the app menu">
+        You can listen to this page
+      </message>
+
       <message name="IDS_MENU_PRINT" desc="Menu item for printing the current page. [CHAR_LIMIT=27]">
         Print…
       </message>

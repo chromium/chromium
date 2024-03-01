@@ -86,8 +86,8 @@ public class ReadAloudIPHController {
                 new IPHCommandBuilder(
                                 mToolbarMenuButton.getContext().getResources(),
                                 FeatureConstants.READ_ALOUD_APP_MENU_FEATURE,
-                                R.string.menu_listen_to_this_page,
-                                R.string.menu_listen_to_this_page)
+                                R.string.menu_listen_to_this_page_iph,
+                                R.string.menu_listen_to_this_page_iph)
                         .setAnchorView(mToolbarMenuButton)
                         .setOnShowCallback(() -> turnOnHighlightForMenuItem(R.id.readaloud_menu_id))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
