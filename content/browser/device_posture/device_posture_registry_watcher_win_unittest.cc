@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/device_posture/device_posture_platform_provider_win.h"
+#include "content/browser/device_posture/device_posture_registry_watcher_win.h"
 
 #include <string_view>
 
@@ -12,31 +12,31 @@
 
 namespace content {
 
-class DevicePosturePlatformProviderWinTest : public testing::Test {
+class DevicePostureRegistryWatcherWinTest : public testing::Test {
  protected:
-  DevicePosturePlatformProviderWinTest() = default;
+  DevicePostureRegistryWatcherWinTest() = default;
 
-  ~DevicePosturePlatformProviderWinTest() override = default;
+  ~DevicePostureRegistryWatcherWinTest() override = default;
 
   static std::optional<std::vector<gfx::Rect>> ParseViewportSegments(
       const base::Value::List& viewport_segments) {
-    return DevicePosturePlatformProviderWin::ParseViewportSegments(
+    return DevicePostureRegistryWatcherWin::ParseViewportSegments(
         viewport_segments);
   }
 
   static std::optional<blink::mojom::DevicePostureType> ParsePosture(
       std::string_view posture_state) {
-    return DevicePosturePlatformProviderWin::ParsePosture(posture_state);
+    return DevicePostureRegistryWatcherWin::ParsePosture(posture_state);
   }
 };
 
-TEST_F(DevicePosturePlatformProviderWinTest, InvalidPostureData) {
+TEST_F(DevicePostureRegistryWatcherWinTest, InvalidPostureData) {
   EXPECT_FALSE(ParsePosture(""));
   EXPECT_FALSE(ParsePosture("test"));
   EXPECT_FALSE(ParsePosture(" LAPTOP"));
 }
 
-TEST_F(DevicePosturePlatformProviderWinTest, ValidPostureData) {
+TEST_F(DevicePostureRegistryWatcherWinTest, ValidPostureData) {
   EXPECT_EQ(ParsePosture("MODE_HANDHELD"),
             blink::mojom::DevicePostureType::kFolded);
   EXPECT_EQ(ParsePosture("MODE_DUAL_ANGLE"),
@@ -51,7 +51,7 @@ TEST_F(DevicePosturePlatformProviderWinTest, ValidPostureData) {
             blink::mojom::DevicePostureType::kContinuous);
 }
 
-TEST_F(DevicePosturePlatformProviderWinTest, InvalidViewportSegmentsData) {
+TEST_F(DevicePostureRegistryWatcherWinTest, InvalidViewportSegmentsData) {
   base::Value::List list;
   std::optional<std::vector<gfx::Rect>> result_viewport_segments =
       ParseViewportSegments(list);
@@ -149,7 +149,7 @@ TEST_F(DevicePosturePlatformProviderWinTest, InvalidViewportSegmentsData) {
   EXPECT_FALSE(ParseViewportSegments(list));
 }
 
-TEST_F(DevicePosturePlatformProviderWinTest, ValidViewportSegmentsData) {
+TEST_F(DevicePostureRegistryWatcherWinTest, ValidViewportSegmentsData) {
   std::optional<std::vector<gfx::Rect>> result_viewport_segments;
   base::Value::List list = base::test::ParseJsonList(R"([
     "132, 123, 123, 123"

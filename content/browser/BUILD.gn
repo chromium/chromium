@@ -2780,6 +2780,8 @@ source_set("browser") {
       "child_process_launcher_helper_win.cc",
       "device_posture/device_posture_platform_provider_win.cc",
       "device_posture/device_posture_platform_provider_win.h",
+      "device_posture/device_posture_registry_watcher_win.cc",
+      "device_posture/device_posture_registry_watcher_win.h",
       "font_access/font_enumeration_data_source_win.cc",
       "font_access/font_enumeration_data_source_win.h",
       "installedapp/installed_app_provider_impl_win.cc",
