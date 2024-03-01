@@ -219,6 +219,10 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // third-party-context IDB files are stored.
   std::map<storage::BucketId, base::FilePath> FindIndexedDBFiles() const;
 
+  void DidForceCloseForDeleteBucketData(
+      const storage::BucketLocator& bucket_locator,
+      DeleteBucketDataCallback callback);
+
   void OnBucketInfoReady(
       GetAllBucketsDetailsCallback callback,
       std::vector<storage::QuotaErrorOr<storage::BucketInfo>> bucket_infos);
@@ -227,7 +231,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void ForEachBucketContext(IndexedDBBucketContext::InstanceClosure callback);
 
   // Calculates in-memory/incognito usage for usage reporting.
-  int64_t GetInMemorySize(const storage::BucketLocator& bucket_locator) const;
+  void GetInMemorySize(storage::BucketId bucket_id,
+                       base::OnceCallback<void(int64_t)> on_got_size) const;
 
   std::vector<storage::BucketId> GetOpenBucketIdsForTesting() const;
 
@@ -261,6 +266,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const storage::BucketLocator& bucket_locator,
       const std::u16string& database_name,
       const std::u16string& object_store_name);
+
+  void DestroyBucketContext(storage::BucketId id);
 
   std::optional<storage::BucketLocator> LookUpBucket(
       storage::BucketId bucket_id);

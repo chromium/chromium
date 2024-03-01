@@ -595,7 +595,7 @@ void IndexedDBBucketContext::ForceClose(bool doom) {
 }
 
 int64_t IndexedDBBucketContext::GetInMemorySize() {
-  return backing_store_->GetInMemorySize();
+  return backing_store_ ? backing_store_->GetInMemorySize() : 0;
 }
 
 void IndexedDBBucketContext::ReportOutstandingBlobs(bool blobs_outstanding) {
@@ -978,6 +978,10 @@ void IndexedDBBucketContext::FillInMetadata(
     base::OnceCallback<void(storage::mojom::IdbBucketMetadataPtr)> result) {
   // TODO(jsbell): Sort by name?
   std::vector<storage::mojom::IdbDatabaseMetadataPtr> database_list;
+
+  if (backing_store_ && backing_store_->in_memory()) {
+    info->size = GetInMemorySize();
+  }
 
   for (const auto& [name, db] : databases_) {
     storage::mojom::IdbDatabaseMetadataPtr db_info =
