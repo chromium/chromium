@@ -387,65 +387,40 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfExtensionLoadedWhileOldPdfCloses) {
 // Content-Security-Policy, the embed tag is still sized correctly.
 // Regression test for https://crbug.com/271452.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, CSPDoesNotBlockEmbedStyles) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   const GURL main_url(embedded_test_server()->GetURL("/pdf/test-csp.pdf"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  ASSERT_TRUE(GetActiveWebContents());
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(main_url);
+  ASSERT_TRUE(extension_host);
   auto* primary_main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
-  ASSERT_TRUE(primary_main_frame);
-
-  // Verify the pdf has loaded.
-  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
-  ASSERT_TRUE(guest_view);
-  auto* guest_main_frame = guest_view->GetGuestMainFrame();
-  EXPECT_NE(primary_main_frame, guest_main_frame);
-  TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
 
   // Verify the extension was loaded.
   const GURL extension_url(
       "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
-  EXPECT_EQ(extension_url, guest_main_frame->GetLastCommittedURL());
+  EXPECT_EQ(extension_url, extension_host->GetLastCommittedURL());
   EXPECT_EQ(main_url, primary_main_frame->GetLastCommittedURL());
 
   // Verify that the plugin occupies all of the page area.
   const gfx::Rect embedder_rect =
       primary_main_frame->GetView()->GetViewBounds();
-  const gfx::Rect guest_rect = guest_main_frame->GetView()->GetViewBounds();
-  EXPECT_EQ(embedder_rect, guest_rect);
+  const gfx::Rect extension_rect = extension_host->GetView()->GetViewBounds();
+  EXPECT_EQ(embedder_rect, extension_rect);
 }
 
 // This test verifies that when a PDF is served with
 // Content-Security-Policy: sandbox, this is ignored and the PDF is displayed.
 // Regression test for https://crbug.com/1187122.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, CSPWithSandboxDoesNotBlockPDF) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   const GURL main_url(
       embedded_test_server()->GetURL("/pdf/test-csp-sandbox.pdf"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  ASSERT_TRUE(GetActiveWebContents());
-  auto* primary_main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
-  ASSERT_TRUE(primary_main_frame);
-
-  // Verify the pdf has loaded.
-  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
-  ASSERT_TRUE(guest_view);
-  EXPECT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
-  TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(main_url);
+  ASSERT_TRUE(extension_host);
 
   // Verify the extension was loaded.
   const GURL extension_url(
       "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
-  EXPECT_EQ(extension_url,
-            guest_view->GetGuestMainFrame()->GetLastCommittedURL());
-  EXPECT_EQ(main_url, primary_main_frame->GetLastCommittedURL());
+  EXPECT_EQ(extension_url, extension_host->GetLastCommittedURL());
+  EXPECT_EQ(
+      main_url,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 }
 
 // This test verifies that Content-Security-Policy's frame-ancestors 'none'
@@ -472,30 +447,35 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, CSPFrameAncestorsCanBlockEmbedding) {
 // Regression test for https://crbug.com/1107535.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
                        CSPFrameAncestorsOverridesXFrameOptions) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   const GURL main_url(
       embedded_test_server()->GetURL("/pdf/frame-test-csp-and-xfo.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  ASSERT_TRUE(GetActiveWebContents());
-  auto* primary_main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
-  ASSERT_TRUE(primary_main_frame);
 
-  // Verify the pdf has loaded.
-  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
-  ASSERT_TRUE(guest_view);
-  EXPECT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
-  TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
+  content::RenderFrameHost* extension_host;
+  if (UseOopif()) {
+    extension_host = LoadPdfInFirstChildGetExtensionHost(main_url);
+  } else {
+    // The URL uses an iframe element to embed the PDF, so
+    // `LoadPdfInFirstChild()` can't be used here.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+    // Verify the pdf has loaded.
+    auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+    ASSERT_TRUE(guest_view);
+    TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
+    extension_host = guest_view->GetGuestMainFrame();
+  }
+  ASSERT_TRUE(extension_host);
+
+  auto* primary_main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
+  EXPECT_NE(primary_main_frame, extension_host);
 
   // Verify the extension was loaded.
   const GURL extension_url(
       "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
-  EXPECT_EQ(extension_url,
-            guest_view->GetGuestMainFrame()->GetLastCommittedURL());
-  EXPECT_EQ(main_url, primary_main_frame->GetLastCommittedURL());
+  EXPECT_EQ(extension_url, extension_host->GetLastCommittedURL());
+  EXPECT_EQ(
+      main_url,
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 }
 
 class PDFExtensionLoadTest

@@ -59,7 +59,8 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
 
   // Same as `LoadPdf()` but loads URLs where the first child of the primary
   // main frame should be the embedder. This is a common case where an HTML page
-  // only embeds a single PDF.
+  // only embeds a single PDF. For GuestView PDF viewer, the embedder must be an
+  // embed element.
   testing::AssertionResult LoadPdfInFirstChild(const GURL& url);
 
   // Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
