@@ -192,6 +192,9 @@ class NetworkFetcherFactory::Impl {
     ScopedImpersonation impersonate;
     if (IsSystemInstall()) {
       HResultOr<ScopedKernelHANDLE> token = GetLoggedOnUserToken();
+      VLOG_IF(2, !token.has_value())
+          << __func__ << ": GetLoggedOnUserToken failed: " << std::hex
+          << token.error();
       if (token.has_value()) {
         const HRESULT hr = impersonate.Impersonate(token.value().get());
         VLOG(2)
