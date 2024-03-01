@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -366,7 +367,9 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
 void SigninErrorNotifier::HandleSecondaryAccountReauthNotificationClick(
     std::optional<int> button_index) {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile_, chromeos::settings::mojom::kMyAccountsSubpagePath);
+      profile_, ash::features::IsOsSettingsRevampWayfindingEnabled()
+                    ? chromeos::settings::mojom::kPeopleSectionPath
+                    : chromeos::settings::mojom::kMyAccountsSubpagePath);
 }
 
 }  // namespace ash
