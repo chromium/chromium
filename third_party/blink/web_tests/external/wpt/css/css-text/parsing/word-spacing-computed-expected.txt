@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Property word-spacing value '110%'
+  assert_true: '110%' is a supported value for word-spacing. expected true got false
+[FAIL] Property word-spacing value '-5%'
+  assert_true: '-5%' is a supported value for word-spacing. expected true got false
+[FAIL] Property word-spacing value 'calc(10% - 20%)'
+  assert_true: 'calc(10% - 20%)' is a supported value for word-spacing. expected true got false
+[FAIL] Property word-spacing value 'calc(10px - (5% + 10%)'
+  assert_true: 'calc(10px - (5% + 10%)' is a supported value for word-spacing. expected true got false
+Harness: the test ran to completion.
+

@@ -2632,6 +2632,9 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-percent-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/word-spacing/word-spacing-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/word-spacing/word-spacing-percent-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text-decor/text-shadow/svg-stroke.html [ Failure ]
 crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/batch_normalization.https.any.html [ Crash Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/batch_normalization.https.any.worker.html [ Crash Timeout ]

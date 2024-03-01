@@ -183507,6 +183507,19 @@
         ],
         {}
        ]
+      ],
+      "letter-spacing-percent-001.html": [
+       "522320de580652becea6fee125a170f940958827",
+       [
+        null,
+        [
+         [
+          "/css/css-text/letter-spacing/reference/letter-spacing-percent-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "line-break": {
@@ -198408,6 +198421,19 @@
         {}
        ]
       ],
+      "word-spacing-002.html": [
+       "0def7e01790a885e52fc685231fbcf38df12d8bf",
+       [
+        null,
+        [
+         [
+          "/css/css-text/word-spacing/word-spacing-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "word-spacing-negative-value-001.html": [
        "6e5df950c0b55a8b55e6d8c836ca166f0957849c",
        [
@@ -198415,6 +198441,19 @@
         [
          [
           "/css/css-text/word-spacing/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "word-spacing-percent-001.html": [
+       "65f9972040e3b5ccc96d45f1ad668ac55991751b",
+       [
+        null,
+        [
+         [
+          "/css/css-text/word-spacing/reference/word-spacing-percent-001-ref.html",
           "=="
          ]
         ],
@@ -327757,6 +327796,10 @@
        "letter-spacing-nesting-003-ref.xht": [
         "996f2a1e30435038e1e02ff7b78bd361c06efc17",
         []
+       ],
+       "letter-spacing-percent-001-ref.html": [
+        "1025ecb67cda6ffbb108566279dbc9ba7311eb72",
+        []
        ]
       },
       "support": {
@@ -328329,6 +328372,14 @@
        "da6ecb32455878c26d4bcd307bf3c651c3d5b065",
        []
       ],
+      "letter-spacing-computed-expected.txt": [
+       "6c45f23b1c3b1904f2ea0d83a4742f26e6a49d03",
+       []
+      ],
+      "letter-spacing-valid-expected.txt": [
+       "9decd1a95edf2debf45fcb504fc7d39127a5ade7",
+       []
+      ],
       "text-align-all-valid-expected.txt": [
        "eed49d7a26f16f94b0320cd9ee431ffdf2d4fc01",
        []
@@ -328439,6 +328490,14 @@
       ],
       "word-space-transform-valid-expected.txt": [
        "a62737d545b509d0175fc41937ebac799189d48b",
+       []
+      ],
+      "word-spacing-computed-expected.txt": [
+       "9045a13d63617d22ffca2707c88ed3ee911e54b9",
+       []
+      ],
+      "word-spacing-valid-expected.txt": [
+       "77e20da66a1af65c8bde82422205413e505b6ff4",
        []
       ]
      },
@@ -330562,6 +330621,10 @@
       "reference": {
        "ref-filled-green-100px-square.xht": [
         "05a13794482a94f6c10bd9d4c98704e63ef60331",
+        []
+       ],
+       "word-spacing-percent-001-ref.html": [
+        "02bd2f64f45f1ea1e33a0e2f528414c7cb6c7b0c",
         []
        ]
       },
@@ -333390,6 +333453,10 @@
         "07301e286d4573309d66c3ca4323f6d736c2ddb2",
         []
        ],
+       "letter-spacing-expected.txt": [
+        "5d4fa8be30384b0b2d3ca29cafa98871e8777136",
+        []
+       ],
        "list-style-type-expected.txt": [
         "a88dfe45f1e20e09391d0643e07dbf635169a996",
         []
@@ -335020,6 +335087,10 @@
      ],
      "calc-infinity-nan-serialize-length-expected.txt": [
       "34df7a6d227c760e19d4d6110e3fb3ac9835021f",
+      []
+     ],
+     "calc-letter-spacing-expected.txt": [
+      "4446bc0ab25d5af5c1d71ad94371386bb5ceecf2",
       []
      ],
      "calc-linear-radial-conic-gradient-001-expected.txt": [
@@ -461035,7 +461106,7 @@
       }
      },
      "inheritance.html": [
-      "2043afe999db7be2b519aeeb9ec03cc75241e4e2",
+      "f41a5edcaf594a87149fc9f875453c3b87f1805c",
       [
        null,
        {}
@@ -461180,21 +461251,21 @@
        ]
       ],
       "letter-spacing-computed.html": [
-       "45417d1b4a83c3e0cbb6fcead8a38cd19900e64a",
+       "a7ef1390c1229ce4c11e0a8cb9cc63911bc61564",
        [
         null,
         {}
        ]
       ],
       "letter-spacing-invalid.html": [
-       "e9ad4e56a5bb71188535bdbf4fee96e8918c4dcc",
+       "e32b98c6d776ad4b3d5c57f2123229d0e1314601",
        [
         null,
         {}
        ]
       ],
       "letter-spacing-valid.html": [
-       "740d1fc39884de8adcf0b29aacd34ff6c4ff2cb3",
+       "f20fa21de1c67d12a02f42dfbcf2d1030f8bdbf9",
        [
         null,
         {}
@@ -461635,21 +461706,21 @@
        ]
       ],
       "word-spacing-computed.html": [
-       "192dec6f7a71e32dcb5658716150e725b4dfe4bb",
+       "7c3f989525cc5c04ad2feb778bc8ff45254e6698",
        [
         null,
         {}
        ]
       ],
       "word-spacing-invalid.html": [
-       "3a1c4ca487c43256e2bb04dfae89f623be95783d",
+       "ae8e121b9d8e9a6c499ee3d408496d1c0f74f8ed",
        [
         null,
         {}
        ]
       ],
       "word-spacing-valid.html": [
-       "217b2488f53128b8475ce4a3f4ca2aa84570b743",
+       "640f697f7089ff50dca814e8fd952ccfbdea3091",
        [
         null,
         {}
@@ -462029,7 +462100,7 @@
      },
      "word-spacing": {
       "word-spacing-computed-001.html": [
-       "84d1fcf1e5a8031844de2d7f0027b0aa50b28c86",
+       "fac211af66c09315869408af86927fdf7e95daf8",
        [
         null,
         {}
@@ -465318,7 +465389,7 @@
         ]
        ],
        "letter-spacing.html": [
-        "9d313c13955a385920a60fc8e836bf8b296c6e95",
+        "ab78031b2186c0ebc9ed0917a29df2fa4732cf45",
         [
          null,
          {}
@@ -466917,7 +466988,7 @@
       ]
      ],
      "calc-letter-spacing.html": [
-      "444785ba14c21faefe56c22de0c23766ddb26c95",
+      "4db3b012208452c799244640e09e4677c983122e",
       [
        null,
        {}
@@ -467264,7 +467335,7 @@
       ]
      ],
      "minmax-length-invalid.html": [
-      "1405c3198128530939d9778642aaab2920bb6e60",
+      "7b8ca88cd26fb2910ca2e2e04cf5c1629d6b9f89",
       [
        null,
        {}
