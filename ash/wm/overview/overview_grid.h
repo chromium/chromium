@@ -202,6 +202,12 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   void SetSplitViewDragIndicatorsWindowDraggingState(
       SplitViewDragIndicators::WindowDraggingState window_dragging_state);
 
+  // Clips wallpaper and adds `wallpaper_mask_layer_` upon overview entry.
+  // Updates the bounds of clip rect and `wallpaper_mask_layer_` when grid
+  // bounds change. Restores the wallpaper to its original state upon overview
+  // exit.
+  void RefreshClipWallpaper();
+
   // Updates the desks bar widget bounds if necessary.
   // Returns true if the desks widget's bounds have been updated.
   bool MaybeUpdateDesksWidgetBounds();
@@ -658,6 +664,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // The owner of the widget that displays split-view-related information. Null
   // if split view is unsupported (see |ShouldAllowSplitView|).
   std::unique_ptr<SplitViewDragIndicators> split_view_drag_indicators_;
+
+  // A solid-color layer stacked below the clipped wallpaper.
+  std::unique_ptr<ui::Layer> wallpaper_underlay_layer_;
 
   // Widget that contains the DeskBarView contents when the Virtual Desks
   // feature is enabled.

@@ -35,6 +35,9 @@ constexpr SystemShadow::Type kDefaultShadowType =
 constexpr SystemShadow::Type kDraggedShadowType =
     SystemShadow::Type::kElevation24;
 
+// Rounded corner radii applied on the wallpaper clip rect.
+constexpr gfx::RoundedCornersF kWallpaperClipRoundedCornerRadii(20.f);
+
 }  // namespace ash
 
 #endif  // ASH_WM_OVERVIEW_OVERVIEW_CONSTANTS_H_

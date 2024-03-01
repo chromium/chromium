@@ -20,6 +20,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
@@ -39,6 +40,8 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/raster_scale_change_tracker.h"
 #include "ash/test/test_window_builder.h"
+#include "ash/wallpaper/views/wallpaper_view.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_button.h"
 #include "ash/wm/desks/desk_action_view.h"
@@ -86,6 +89,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
@@ -121,6 +125,7 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -10743,6 +10748,132 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   EXPECT_FALSE(InOverviewSession());
   EXPECT_FALSE(SplitViewController::Get(root_windows[0])->InSplitViewMode());
   EXPECT_FALSE(SplitViewController::Get(root_windows[1])->InSplitViewMode());
+}
+
+// -----------------------------------------------------------------------------
+// OverviewWallpaperClipTest:
+
+// Test fixture to validate wallpaper clipping behavior during overview
+// transitions.
+class OverviewWallpaperClipTest : public OverviewTestBase {
+ public:
+  OverviewWallpaperClipTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kForestFeature,
+                              features::kFasterSplitScreenSetup,
+                              features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+    switches::SetIgnoreForestSecretKeyForTest(true);
+  }
+  OverviewWallpaperClipTest(const OverviewWallpaperClipTest&) = delete;
+  OverviewWallpaperClipTest& operator=(const OverviewWallpaperClipTest&) =
+      delete;
+  ~OverviewWallpaperClipTest() override {
+    switches::SetIgnoreForestSecretKeyForTest(false);
+  }
+
+  void SnapOneTestWindow(aura::Window* window,
+                         WindowStateType state_type,
+                         float snap_ratio,
+                         WindowSnapActionSource snap_action_source) {
+    WindowState* window_state = WindowState::Get(window);
+    const WindowSnapWMEvent snap_event(
+        state_type == WindowStateType::kPrimarySnapped
+            ? WM_EVENT_SNAP_PRIMARY
+            : WM_EVENT_SNAP_SECONDARY,
+        snap_ratio, snap_action_source);
+    window_state->OnWMEvent(&snap_event);
+    EXPECT_EQ(state_type, window_state->GetStateType());
+  }
+
+  gfx::Rect GetDisplayBoundsForRootWindow(aura::Window* root_window) {
+    return display::Screen::GetScreen()
+        ->GetDisplayNearestWindow(root_window)
+        .bounds();
+  }
+
+  ui::Layer* GetWallpaperViewLayer() {
+    return Shell::GetPrimaryRootWindowController()
+        ->wallpaper_widget_controller()
+        ->wallpaper_view()
+        ->layer();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that the wallpaper layer is correctly clipped with rounded corners
+// during overview sessions, and fully restored upon exiting overview.
+TEST_F(OverviewWallpaperClipTest, WallpaperClipRectAndRoundedCorners) {
+  const gfx::Rect display_bounds(
+      GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
+  auto* wallpaper_view_layer = GetWallpaperViewLayer();
+  // Ensure the wallpaper begins with its original dimensions (matching the
+  // active display) and has square corners.
+  EXPECT_EQ(display_bounds, wallpaper_view_layer->bounds());
+  EXPECT_TRUE(wallpaper_view_layer->clip_rect().IsEmpty());
+  EXPECT_TRUE(wallpaper_view_layer->rounded_corner_radii().IsEmpty());
+
+  // Enter overview mode and verify that the wallpaper is clipped with rounded
+  // corners.
+  ToggleOverview();
+  OverviewGrid* overview_grid = GetOverviewSession()->grid_list()[0].get();
+  EXPECT_EQ(overview_grid->GetGridEffectiveBounds(),
+            wallpaper_view_layer->clip_rect());
+  EXPECT_EQ(kWallpaperClipRoundedCornerRadii,
+            wallpaper_view_layer->rounded_corner_radii());
+
+  // Exit overview. Check that the wallpaper has been fully restored..
+  ToggleOverview();
+  EXPECT_EQ(display_bounds, wallpaper_view_layer->bounds());
+  EXPECT_TRUE(wallpaper_view_layer->clip_rect().IsEmpty());
+  EXPECT_TRUE(wallpaper_view_layer->rounded_corner_radii().IsEmpty());
+}
+
+// Tests that the wallpaper is clipped in partial overview mode and adjusts
+// correctly when the snapped window is resized.
+TEST_F(OverviewWallpaperClipTest, PartialOverviewVisualsAndResize) {
+  const gfx::Rect display_bounds(
+      GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
+  auto* wallpaper_view_layer = GetWallpaperViewLayer();
+  std::unique_ptr<aura::Window> win1(
+      CreateAppWindow(gfx::Rect(10, 10, 100, 100)));
+  std::unique_ptr<aura::Window> win2(
+      CreateAppWindow(gfx::Rect(500, 10, 200, 200)));
+  // Check the wallpaper's original state before initiating partial overview.
+  EXPECT_EQ(display_bounds, wallpaper_view_layer->bounds());
+  EXPECT_TRUE(wallpaper_view_layer->clip_rect().IsEmpty());
+  EXPECT_TRUE(wallpaper_view_layer->rounded_corner_radii().IsEmpty());
+
+  // Snap one test window to start partial overview.
+  SnapOneTestWindow(win1.get(), chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  ASSERT_TRUE(IsInOverviewSession());
+  OverviewGrid* overview_grid = GetOverviewSession()->grid_list()[0].get();
+  // Verify that wallpaper is clipped properly with rounded corners applied in
+  // partial overview.
+  EXPECT_EQ(overview_grid->GetGridEffectiveBounds(),
+            wallpaper_view_layer->clip_rect());
+  EXPECT_EQ(kWallpaperClipRoundedCornerRadii,
+            wallpaper_view_layer->rounded_corner_radii());
+
+  // Verify that the wallpaper's clip rect updates responsively when the snapped
+  // window is dragged in partial overview.
+  auto* event_generator = GetEventGenerator();
+  const gfx::Point drag_starting_point =
+      win1.get()->GetBoundsInScreen().right_center();
+  event_generator->set_current_screen_location(drag_starting_point);
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseBy(-10, 0);
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_TRUE(WindowState::Get(win1.get())->is_dragged());
+  EXPECT_EQ(overview_grid->GetGridEffectiveBounds(),
+            wallpaper_view_layer->clip_rect());
+  EXPECT_EQ(kWallpaperClipRoundedCornerRadii,
+            wallpaper_view_layer->rounded_corner_radii());
+  event_generator->ReleaseLeftButton();
 }
 
 }  // namespace ash

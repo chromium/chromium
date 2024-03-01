@@ -69,7 +69,7 @@ void OverviewTestBase::ClickWindow(aura::Window* window) {
 }
 
 OverviewController* OverviewTestBase::GetOverviewController() {
-  return Shell::Get()->overview_controller();
+  return OverviewController::Get();
 }
 
 OverviewSession* OverviewTestBase::GetOverviewSession() {

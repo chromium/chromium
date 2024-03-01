@@ -28,6 +28,8 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "ash/system/toast/toast_manager_impl.h"
+#include "ash/wallpaper/views/wallpaper_view.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/default_desk_button.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
@@ -88,12 +90,16 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -156,6 +162,10 @@ constexpr int kFeedbackCornerSpacing = 30;
 // The minimum height of the grid area in order for the feedback button to be
 // visible.
 constexpr int kFeedbackGridMinHeight = 100;
+
+// Vertical spacing between the desk bar widget's bottom edge and the clipped
+// wallpaper's top edge.
+const int kSpaceBetweenBottomOfDeskBarAndClipWallpaper = 16;
 
 // The bottom padding applied to the bottom of the birch bar.
 constexpr int kBirchBarBottomPadding = 16;
@@ -572,6 +582,7 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
     animator->RemoveObserver(this);
   }
 
+  RefreshClipWallpaper();
   Shell::Get()->wallpaper_controller()->RemoveObserver(this);
   grid_event_handler_.reset();
 
@@ -642,6 +653,8 @@ void OverviewGrid::PrepareForOverview() {
   }
 
   MaybeInitBirchBarWidget();
+
+  RefreshClipWallpaper();
 
   if (root_window_ == Shell::GetPrimaryRootWindow() &&
       overview_session_->enter_exit_overview_type() ==
@@ -1047,6 +1060,7 @@ void OverviewGrid::SetBoundsAndUpdatePositions(
   bounds_ = bounds_in_screen;
   MaybeUpdateDesksWidgetBounds();
   MaybeUpdateBirchBarWidgetBounds();
+  RefreshClipWallpaper();
   PositionWindows(animate, ignored_items);
 
   if (bounds_updated && saved_desk_library_widget_)
@@ -1089,6 +1103,61 @@ void OverviewGrid::SetSplitViewDragIndicatorsWindowDraggingState(
     SplitViewDragIndicators::WindowDraggingState window_dragging_state) {
   DCHECK(split_view_drag_indicators_);
   split_view_drag_indicators_->SetWindowDraggingState(window_dragging_state);
+}
+
+void OverviewGrid::RefreshClipWallpaper() {
+  if (!features::IsForestFeatureEnabled()) {
+    return;
+  }
+
+  WallpaperWidgetController* wallpaper_widget_controller =
+      RootWindowController::ForWindow(root_window_)
+          ->wallpaper_widget_controller();
+  auto* wallpaper_view_layer =
+      wallpaper_widget_controller->wallpaper_view()->layer();
+  auto* wallpaper_view_layer_parent = wallpaper_view_layer->parent();
+
+  // Reset the clip wallpaper visuals on overview session shutting down.
+  // TODO(http://b/327663425): Use scoped object to ensure wallpaper will be
+  // restored to its original state on overview exit.
+  if (overview_session_->is_shutting_down()) {
+    if (wallpaper_underlay_layer_) {
+      CHECK_EQ(wallpaper_underlay_layer_->parent(),
+               wallpaper_view_layer_parent);
+      wallpaper_view_layer_parent->Remove(wallpaper_underlay_layer_.get());
+      wallpaper_underlay_layer_.reset();
+      wallpaper_view_layer->SetClipRect(gfx::Rect());
+      wallpaper_view_layer->SetBounds(
+          display::Screen::GetScreen()
+              ->GetDisplayNearestWindow(root_window_)
+              .bounds());
+      wallpaper_view_layer->SetRoundedCornerRadius(gfx::RoundedCornersF());
+    }
+    return;
+  }
+
+  const gfx::Rect current_grid_bounds = GetGridBoundsInScreen(root_window_);
+  const gfx::Rect effective_grid_bounds = GetGridEffectiveBounds();
+  if (wallpaper_underlay_layer_) {
+    wallpaper_underlay_layer_->SetBounds(current_grid_bounds);
+    wallpaper_view_layer->SetClipRect(effective_grid_bounds);
+  } else {
+    wallpaper_underlay_layer_ =
+        std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+    wallpaper_underlay_layer_->SetBounds(current_grid_bounds);
+    // TODO(http://b/327663905): Implement on theme change for the
+    // `wallpaper_underlay_layer_`.
+    wallpaper_underlay_layer_->SetColor(
+        wallpaper_widget_controller->GetWidget()->GetColorProvider()->GetColor(
+            cros_tokens::kCrosSysSystemBase));
+    wallpaper_view_layer->SetRoundedCornerRadius(
+        kWallpaperClipRoundedCornerRadii);
+    wallpaper_view_layer->SetClipRect(effective_grid_bounds);
+    wallpaper_view_layer_parent->Add(wallpaper_underlay_layer_.get());
+    wallpaper_view_layer_parent->StackBelow(wallpaper_underlay_layer_.get(),
+                                            wallpaper_view_layer);
+    // TODO(http://b/327515857): Apply animation on the `wallpaper_view_layer`.
+  }
 }
 
 bool OverviewGrid::MaybeUpdateDesksWidgetBounds() {
@@ -1646,7 +1715,11 @@ gfx::Insets OverviewGrid::GetGridVerticalPaddings() const {
 
   // TODO(http://b/326087216): extend the expanded desk bar height by 16px for
   // Forest feature.
-  vertical_paddings.set_top(has_desk_bar ? GetDesksBarHeight() : 0);
+  const int desk_bar_padding_with_clip_wallpaper =
+      forest_enabled ? kSpaceBetweenBottomOfDeskBarAndClipWallpaper : 0;
+  vertical_paddings.set_top(
+      has_desk_bar ? GetDesksBarHeight() + desk_bar_padding_with_clip_wallpaper
+                   : 0);
 
   // TODO(http://b/325963519): implement the paddings in tablet mode when the
   // design is finalized.
