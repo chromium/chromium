@@ -753,9 +753,6 @@ TerminalPrivateGetOSInfoFunction::~TerminalPrivateGetOSInfoFunction() = default;
 
 ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
   base::Value::Dict info;
-  info.Set("alternative_emulator",
-           base::FeatureList::IsEnabled(
-               ash::features::kTerminalAlternativeEmulator));
   info.Set("tast", extensions::ExtensionRegistry::Get(browser_context())
                        ->enabled_extensions()
                        .Contains(extension_misc::kGuestModeTestExtensionId));

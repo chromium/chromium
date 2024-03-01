@@ -7147,11 +7147,6 @@ const char kSupportF11AndF12ShortcutsDescription[] =
     "Customize keyboard keys "
     "page.";
 
-const char kTerminalAlternativeEmulatorName[] = "Terminal alternative emulator";
-const char kTerminalAlternativeEmulatorDescription[] =
-    "Enable the alternative emulator for the Terminal app. You will also get "
-    "an option in Terminal settings to change the default emulator.";
-
 const char kTerminalDevName[] = "Terminal dev";
 const char kTerminalDevDescription[] =
     "Enables Terminal System App to load from Downloads for developer testing. "

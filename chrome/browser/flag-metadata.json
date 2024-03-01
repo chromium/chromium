@@ -7790,13 +7790,8 @@
     "expiry_milestone": 135
   },
   {
-    "name": "terminal-alternative-emulator",
-    "owners": [ "lxj@chromium.org", "joelhockey@chromium.org", "//chrome/browser/ash/guest_os/OWNERS" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "terminal-dev",
-    "owners": [ "joelhockey@chromium.org", "lxj@google.com", "//chrome/browser/ash/guest_os/OWNERS" ],
+    "owners": [ "joelhockey@chromium.org", "//chrome/browser/ash/guest_os/OWNERS" ],
     // This flag is used by CrOS Terminal developers for testing SSH on devices
     // with valid machine certs and should not be removed.  Only works in dev
     // and canary channels.

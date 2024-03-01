@@ -4120,9 +4120,6 @@ extern const char kSystemJapanesePhysicalTypingDescription[];
 extern const char kSupportF11AndF12ShortcutsName[];
 extern const char kSupportF11AndF12ShortcutsDescription[];
 
-extern const char kTerminalAlternativeEmulatorName[];
-extern const char kTerminalAlternativeEmulatorDescription[];
-
 extern const char kTerminalDevName[];
 extern const char kTerminalDevDescription[];
 

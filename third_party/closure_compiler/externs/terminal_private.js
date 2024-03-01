@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -114,7 +114,6 @@ chrome.terminalPrivate.openSettingsSubpage = function(subpage, callback) {};
  * Returns an object containing info about ChromeOS settings that affect the
  * Terminal, e.g. which feature flags are enabled.
  * @param {function({
- *   alternative_emulator: boolean,
  *   tast: boolean
  * }): void} callback Callback that will be called with the info object.
  */

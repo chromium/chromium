@@ -2700,11 +2700,6 @@ BASE_FEATURE(kTelemetryExtension,
              "TelemetryExtension",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the alternative emulator for the Terminal app.
-BASE_FEATURE(kTerminalAlternativeEmulator,
-             "TerminalAlternativeEmulator",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-//
 // Enables Terminal System App to load from Downloads for developer testing.
 // Only works in dev and canary channels.
 BASE_FEATURE(kTerminalDev, "TerminalDev", base::FEATURE_DISABLED_BY_DEFAULT);
