@@ -48,7 +48,6 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     private final @NonNull Activity mActivity;
     private final @NonNull TabSupplierObserver mTabSupplierObserver;
     private final ObserverList<EdgeToEdgePadAdjuster> mPadAdjusters = new ObserverList<>();
-    private final ObserverList<ChangeObserver> mEdgeChangeObservers = new ObserverList<>();
     private final @NonNull TabObserver mTabObserver;
 
     /** Multiplier to convert from pixels to DPs. */
@@ -144,16 +143,6 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     }
 
     @Override
-    public void registerObserver(ChangeObserver changeObserver) {
-        mEdgeChangeObservers.addObserver(changeObserver);
-    }
-
-    @Override
-    public void unregisterObserver(ChangeObserver changeObserver) {
-        mEdgeChangeObservers.removeObserver(changeObserver);
-    }
-
-    @Override
     public int getBottomInset() {
         return mSystemInsets == null || !isToEdge()
                 ? 0
@@ -185,8 +174,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     }
 
     /**
-     * Conditionally draws the given View ToEdge or ToNormal based on {@link
-     * EdgeToEdgeUtils#shouldDrawToEdge(Tab)}
+     * Conditionally draws the given View ToEdge or ToNormal based on {@link #shouldDrawToEdge(Tab)}
      *
      * @param viewId The ID of the Root UI View.
      * @param webContents The {@link WebContents} to notify of inset env() changes.
@@ -197,8 +185,8 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     }
 
     /**
-     * Conditionally draws the given View ToEdge or ToNormal based on {@link
-     * EdgeToEdgeUtils#shouldDrawToEdge(Tab, int)}.
+     * Conditionally draws the given View ToEdge or ToNormal based on {@link #shouldDrawToEdge(Tab,
+     * int)}.
      *
      * @param viewId The ID of the Root UI View.
      * @param value A new {@link WebContentsObserver.ViewportFitType} value being applied now.
@@ -291,9 +279,6 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         for (var adjuster : mPadAdjusters) {
             adjuster.adjustToEdge(toEdge, mSystemInsets.bottom);
         }
-        for (var observer : mEdgeChangeObservers) {
-            observer.onToEdgeChange(isToEdge() ? mSystemInsets.bottom : 0);
-        }
 
         // We only make the Nav Bar transparent because it's the only thing we want to draw
         // underneath.
@@ -368,10 +353,6 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
 
     public void setToEdgeForTesting(boolean toEdge) {
         mIsActivityToEdge = toEdge;
-    }
-
-    public @Nullable ChangeObserver getAnyChangeObserverForTesting() {
-        return mEdgeChangeObservers.isEmpty() ? null : mEdgeChangeObservers.iterator().next();
     }
 
     void setSystemInsetsForTesting(Insets systemInsetsForTesting) {

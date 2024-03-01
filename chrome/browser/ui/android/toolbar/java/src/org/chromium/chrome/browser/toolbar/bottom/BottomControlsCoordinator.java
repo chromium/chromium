@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsViewBinder.ViewHolder;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -49,15 +48,13 @@ public class BottomControlsCoordinator implements BackPressHandler {
 
     /**
      * Build the coordinator that manages the bottom controls.
-     *
      * @param activity Activity instance to use.
      * @param windowAndroid A {@link WindowAndroid} for watching keyboard visibility events.
      * @param layoutManager A {@link LayoutManager} to attach overlays to.
      * @param resourceManager A {@link ResourceManager} for loading textures into the compositor.
-     * @param controlsSizer A {@link BrowserControlsSizer} to update the bottom controls height for
-     *     the renderer.
+     * @param controlsSizer A {@link BrowserControlsSizer} to update the bottom controls
+     *                          height for the renderer.
      * @param fullscreenManager A {@link FullscreenManager} to listen for fullscreen changes.
-     * @param edgeToEdgeControllerSupplier A supplier to control drawing to the edge of the screen.
      * @param root The parent {@link ViewGroup} for the bottom controls.
      * @param contentDelegate Delegate for bottom controls UI operations.
      * @param tabObscuringHandler Delegate object handling obscuring views.
@@ -72,7 +69,6 @@ public class BottomControlsCoordinator implements BackPressHandler {
             ResourceManager resourceManager,
             BrowserControlsSizer controlsSizer,
             FullscreenManager fullscreenManager,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ScrollingBottomViewResourceFrameLayout root,
             BottomControlsContentDelegate contentDelegate,
             TabObscuringHandler tabObscuringHandler,
@@ -91,10 +87,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
 
         View container = root.findViewById(R.id.bottom_container_slot);
         ViewGroup.LayoutParams params = container.getLayoutParams();
-
-        int bottomControlsHeightRes =
-                root.getResources().getDimensionPixelOffset(bottomControlsHeightId);
-        params.height = bottomControlsHeightRes;
+        params.height = root.getResources().getDimensionPixelOffset(bottomControlsHeightId);
         mMediator =
                 new BottomControlsMediator(
                         windowAndroid,
@@ -102,9 +95,9 @@ public class BottomControlsCoordinator implements BackPressHandler {
                         controlsSizer,
                         fullscreenManager,
                         tabObscuringHandler,
-                        bottomControlsHeightRes,
-                        overlayPanelVisibilitySupplier,
-                        edgeToEdgeControllerSupplier);
+                        root.getResources().getDimensionPixelOffset(bottomControlsHeightId),
+                        overlayPanelVisibilitySupplier);
+
         resourceManager
                 .getDynamicResourceLoader()
                 .registerResource(root.getId(), root.getResourceAdapter());

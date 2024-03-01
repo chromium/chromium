@@ -10,8 +10,9 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
 class BottomControlsProperties {
-    /** The height of the Android View in px. */
-    static final WritableIntPropertyKey ANDROID_VIEW_HEIGHT = new WritableIntPropertyKey();
+    /** The height of the bottom control container (view which includes the top shadow) in px. */
+    static final WritableIntPropertyKey BOTTOM_CONTROLS_CONTAINER_HEIGHT_PX =
+            new WritableIntPropertyKey();
 
     /** The Y offset of the view in px. */
     static final WritableIntPropertyKey Y_OFFSET = new WritableIntPropertyKey();
@@ -35,7 +36,7 @@ class BottomControlsProperties {
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                ANDROID_VIEW_HEIGHT,
+                BOTTOM_CONTROLS_CONTAINER_HEIGHT_PX,
                 Y_OFFSET,
                 ANDROID_VIEW_TRANSLATE_Y,
                 ANDROID_VIEW_VISIBLE,
