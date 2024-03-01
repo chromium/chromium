@@ -8,6 +8,7 @@
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_encoder.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_codec_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_output_callback.h"
@@ -22,6 +23,7 @@ namespace blink {
 class ExceptionState;
 class AudioEncoderConfig;
 class AudioEncoderInit;
+class AudioEncoderSupport;
 
 class MODULES_EXPORT AudioEncoderTraits {
  public:
@@ -68,9 +70,8 @@ class MODULES_EXPORT AudioEncoder final
   // EventTarget interface
   const AtomicString& InterfaceName() const override;
 
-  static ScriptPromise isConfigSupported(ScriptState*,
-                                         const AudioEncoderConfig*,
-                                         ExceptionState&);
+  static ScriptPromiseTyped<AudioEncoderSupport>
+  isConfigSupported(ScriptState*, const AudioEncoderConfig*, ExceptionState&);
 
  private:
   using Base = EncoderBase<AudioEncoderTraits>;

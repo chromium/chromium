@@ -9,6 +9,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
@@ -29,7 +31,6 @@ class ImageData;
 class ImageElementBase;
 class ImageDecoder;
 class OffscreenCanvas;
-class ScriptPromiseResolver;
 
 class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
                                       public CanvasImageSource,
@@ -38,7 +39,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
 
  public:
   // Expects the ImageElementBase to return/have an SVGImage.
-  static ScriptPromise CreateAsync(
+  static ScriptPromiseTyped<ImageBitmap> CreateAsync(
       ImageElementBase*,
       std::optional<gfx::Rect>,
       ScriptState*,
@@ -143,11 +144,12 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
 
  private:
   void UpdateImageBitmapMemoryUsage();
-  static void ResolvePromiseOnOriginalThread(ScriptPromiseResolver*,
-                                             bool origin_clean,
-                                             std::unique_ptr<ParsedOptions>,
-                                             sk_sp<SkImage>,
-                                             const ImageOrientationEnum);
+  static void ResolvePromiseOnOriginalThread(
+      ScriptPromiseResolverTyped<ImageBitmap>*,
+      bool origin_clean,
+      std::unique_ptr<ParsedOptions>,
+      sk_sp<SkImage>,
+      const ImageOrientationEnum);
   static void RasterizeImageOnBackgroundThread(
       PaintRecord,
       const gfx::Rect&,

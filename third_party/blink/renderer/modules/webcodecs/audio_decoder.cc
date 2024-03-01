@@ -108,25 +108,23 @@ AudioDecoder* AudioDecoder::Create(ScriptState* script_state,
 }
 
 // static
-ScriptPromise AudioDecoder::isConfigSupported(ScriptState* script_state,
-                                              const AudioDecoderConfig* config,
-                                              ExceptionState& exception_state) {
+ScriptPromiseTyped<AudioDecoderSupport> AudioDecoder::isConfigSupported(
+    ScriptState* script_state,
+    const AudioDecoderConfig* config,
+    ExceptionState& exception_state) {
   String js_error_message;
   std::optional<media::AudioType> audio_type =
       IsValidAudioDecoderConfig(*config, &js_error_message);
 
   if (!audio_type) {
     exception_state.ThrowTypeError(js_error_message);
-    return ScriptPromise();
+    return ScriptPromiseTyped<AudioDecoderSupport>();
   }
 
   AudioDecoderSupport* support = AudioDecoderSupport::Create();
   support->setSupported(media::IsSupportedAudioType(*audio_type));
   support->setConfig(CopyConfig(*config));
-
-  return ScriptPromise::Cast(
-      script_state,
-      ToV8Traits<AudioDecoderSupport>::ToV8(script_state, support));
+  return ToResolvedPromise<AudioDecoderSupport>(script_state, support);
 }
 
 // static

@@ -612,13 +612,14 @@ void AudioEncoder::CallOutputCallback(
 }
 
 // static
-ScriptPromise AudioEncoder::isConfigSupported(ScriptState* script_state,
-                                              const AudioEncoderConfig* config,
-                                              ExceptionState& exception_state) {
+ScriptPromiseTyped<AudioEncoderSupport> AudioEncoder::isConfigSupported(
+    ScriptState* script_state,
+    const AudioEncoderConfig* config,
+    ExceptionState& exception_state) {
   auto* parsed_config = ParseConfigStatic(config, exception_state);
   if (!parsed_config) {
     DCHECK(exception_state.HadException());
-    return ScriptPromise();
+    return ScriptPromiseTyped<AudioEncoderSupport>();
   }
 
   String unused_js_error_message;
@@ -626,10 +627,7 @@ ScriptPromise AudioEncoder::isConfigSupported(ScriptState* script_state,
   support->setSupported(
       VerifyCodecSupportStatic(parsed_config, &unused_js_error_message));
   support->setConfig(CopyConfig(*config));
-
-  return ScriptPromise::Cast(
-      script_state,
-      ToV8Traits<AudioEncoderSupport>::ToV8(script_state, support));
+  return ToResolvedPromise<AudioEncoderSupport>(script_state, support);
 }
 
 const AtomicString& AudioEncoder::InterfaceName() const {

@@ -186,9 +186,7 @@ ScriptPromise CreateResolvedPromiseToDecodingInfoWith(
   MediaCapabilitiesDecodingInfo* info = CreateDecodingInfoWith(value);
   media_capabilities_identifiability_metrics::ReportDecodingInfoResult(
       ExecutionContext::From(script_state), config, info);
-  return ScriptPromise::Cast(
-      script_state,
-      ToV8Traits<MediaCapabilitiesDecodingInfo>::ToV8(script_state, info));
+  return ToResolvedPromise<MediaCapabilitiesDecodingInfo>(script_state, info);
 }
 
 MediaCapabilitiesDecodingInfo* CreateEncryptedDecodingInfoWith(
@@ -946,9 +944,8 @@ ScriptPromise MediaCapabilities::decodingInfo(
           CreateEncryptedDecodingInfoWith(false, nullptr);
       media_capabilities_identifiability_metrics::ReportDecodingInfoResult(
           ExecutionContext::From(script_state), config, info);
-      return ScriptPromise::Cast(
-          script_state,
-          ToV8Traits<MediaCapabilitiesDecodingInfo>::ToV8(script_state, info));
+      return ToResolvedPromise<MediaCapabilitiesDecodingInfo>(script_state,
+                                                              info);
     }
   }
 

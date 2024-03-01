@@ -23,6 +23,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_STYLE_SHEET_H_
 
 #include "base/gtest_prod_util.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
@@ -50,7 +51,6 @@ class Document;
 class Element;
 class ExceptionState;
 class MediaQuerySet;
-class ScriptPromise;
 class ScriptState;
 class StyleSheetContents;
 class TreeScope;
@@ -119,9 +119,9 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
     deleteRule(index, exception_state);
   }
 
-  ScriptPromise replace(ScriptState* script_state,
-                        const String& text,
-                        ExceptionState&);
+  ScriptPromiseTyped<CSSStyleSheet> replace(ScriptState* script_state,
+                                            const String& text,
+                                            ExceptionState&);
   void replaceSync(const String& text, ExceptionState&);
 
   // For CSSRuleList.

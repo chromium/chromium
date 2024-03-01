@@ -39,15 +39,15 @@ CookieDeprecationLabel::CookieDeprecationLabel(Navigator& navigator)
 
 CookieDeprecationLabel::~CookieDeprecationLabel() = default;
 
-ScriptPromise CookieDeprecationLabel::getValue(ScriptState* script_state) {
+ScriptPromiseTyped<IDLString> CookieDeprecationLabel::getValue(
+    ScriptState* script_state) {
   String label;
 
   if (auto* dom_window = GetSupplementable()->DomWindow()) {
     label = dom_window->document()->Loader()->GetCookieDeprecationLabel();
   }
 
-  return ScriptPromise::Cast(script_state,
-                             V8String(script_state->GetIsolate(), label));
+  return ToResolvedPromise<IDLString>(script_state, label);
 }
 
 void CookieDeprecationLabel::Trace(Visitor* visitor) const {

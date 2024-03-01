@@ -481,21 +481,25 @@ class Internals final : public ScriptWrappable {
   ScriptPromiseTyped<IDLAny> createResolvedPromise(ScriptState*, ScriptValue);
   ScriptPromise createRejectedPromise(ScriptState*, ScriptValue);
   ScriptPromise addOneToPromise(ScriptState*, ScriptPromise);
-  ScriptPromise promiseCheck(ScriptState*,
-                             int32_t,
-                             bool,
-                             const ScriptValue&,
-                             const String&,
-                             const Vector<String>&,
-                             ExceptionState&);
-  ScriptPromise promiseCheckWithoutExceptionState(ScriptState*,
-                                                  const ScriptValue&,
-                                                  const String&,
-                                                  const Vector<String>&);
-  ScriptPromise promiseCheckRange(ScriptState*, int32_t);
-  ScriptPromise promiseCheckOverload(ScriptState*, Location*);
-  ScriptPromise promiseCheckOverload(ScriptState*, Document*);
-  ScriptPromise promiseCheckOverload(ScriptState*, Location*, int32_t, int32_t);
+  ScriptPromiseTyped<IDLAny> promiseCheck(ScriptState*,
+                                          int32_t,
+                                          bool,
+                                          const ScriptValue&,
+                                          const String&,
+                                          const Vector<String>&,
+                                          ExceptionState&);
+  ScriptPromiseTyped<IDLAny> promiseCheckWithoutExceptionState(
+      ScriptState*,
+      const ScriptValue&,
+      const String&,
+      const Vector<String>&);
+  ScriptPromiseTyped<IDLAny> promiseCheckRange(ScriptState*, int32_t);
+  ScriptPromiseTyped<IDLAny> promiseCheckOverload(ScriptState*, Location*);
+  ScriptPromiseTyped<IDLAny> promiseCheckOverload(ScriptState*, Document*);
+  ScriptPromiseTyped<IDLAny> promiseCheckOverload(ScriptState*,
+                                                  Location*,
+                                                  int32_t,
+                                                  int32_t);
 
   void Trace(Visitor*) const override;
 

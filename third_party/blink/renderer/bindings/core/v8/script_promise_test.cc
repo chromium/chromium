@@ -445,8 +445,8 @@ TEST(ScriptPromiseTest, CastPromise) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptPromise promise = Resolver(scope.GetScriptState()).Promise();
-  ScriptPromise new_promise =
-      ScriptPromise::Cast(scope.GetScriptState(), promise.V8Value());
+  ScriptPromise new_promise = ScriptPromise::FromUntypedValueForBindings(
+      scope.GetScriptState(), promise.V8Value());
 
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_EQ(promise.V8Value(), new_promise.V8Value());

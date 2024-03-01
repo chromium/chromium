@@ -78,9 +78,10 @@ NavigationResult* EarlyErrorResult(ScriptState* script_state,
 NavigationResult* EarlySuccessResult(ScriptState* script_state,
                                      NavigationHistoryEntry* entry) {
   auto* result = NavigationResult::Create();
-  auto v8_entry = ToV8Traits<NavigationHistoryEntry>::ToV8(script_state, entry);
-  result->setCommitted(ScriptPromise::Cast(script_state, v8_entry));
-  result->setFinished(ScriptPromise::Cast(script_state, v8_entry));
+  result->setCommitted(
+      ToResolvedPromise<NavigationHistoryEntry>(script_state, entry));
+  result->setFinished(
+      ToResolvedPromise<NavigationHistoryEntry>(script_state, entry));
   return result;
 }
 

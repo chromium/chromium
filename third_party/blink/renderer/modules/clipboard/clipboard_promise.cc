@@ -384,9 +384,8 @@ void ClipboardPromise::ResolveRead() {
   items.ReserveInitialCapacity(clipboard_item_data_.size());
 
   for (const auto& item : clipboard_item_data_) {
-    ScriptPromise promise = ScriptPromise::Cast(
-        script_state,
-        ToV8Traits<IDLNullable<Blob>>::ToV8(script_state, item.second));
+    ScriptPromise promise =
+        ToResolvedPromise<IDLNullable<Blob>>(script_state, item.second);
     items.emplace_back(item.first, promise);
   }
   HeapVector<Member<ClipboardItem>> clipboard_items = {

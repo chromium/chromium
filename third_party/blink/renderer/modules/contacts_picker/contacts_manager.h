@@ -22,6 +22,7 @@ class ContactInfo;
 class ExceptionState;
 class Navigator;
 class ScriptState;
+class V8ContactProperty;
 
 // Represents an the ContactManager, providing access to Contacts.
 class ContactsManager final : public ScriptWrappable,
@@ -42,7 +43,8 @@ class ContactsManager final : public ScriptWrappable,
       const Vector<V8ContactProperty>& properties,
       ContactsSelectOptions* options,
       ExceptionState& exception_state);
-  ScriptPromise getProperties(ScriptState* script_state);
+  ScriptPromiseTyped<IDLSequence<V8ContactProperty>> getProperties(
+      ScriptState* script_state);
 
   void Trace(Visitor*) const override;
 
@@ -53,12 +55,12 @@ class ContactsManager final : public ScriptWrappable,
       ScriptPromiseResolverTyped<IDLSequence<ContactInfo>>* resolver,
       std::optional<Vector<mojom::blink::ContactInfoPtr>> contacts);
 
-  const Vector<String>& GetProperties(ScriptState* script_state);
+  const Vector<V8ContactProperty>& GetProperties(ScriptState* script_state);
 
   // Created lazily.
   HeapMojoRemote<mojom::blink::ContactsManager> contacts_manager_;
   bool contact_picker_in_use_ = false;
-  Vector<String> properties_;
+  Vector<V8ContactProperty> properties_;
 };
 
 }  // namespace blink

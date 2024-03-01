@@ -299,8 +299,8 @@ TEST_P(HTMLCanvasElementWithTracingAsyncTest,
   ScriptEvaluationResult script_result =
       script->RunScriptOnScriptStateAndReturnValue(script_state);
 
-  ScriptPromise promise =
-      ScriptPromise::Cast(script_state, script_result.GetSuccessValue());
+  auto promise =
+      ToResolvedPromise<IDLAny>(script_state, script_result.GetSuccessValue());
   promise.Then(fn, fn);
 
   // Avoid the NOTREACHED in CanvasPerformanceMonitor::WillProcessTask().

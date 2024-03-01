@@ -40,9 +40,9 @@ class EncodedVideoChunk;
 class ExceptionState;
 class VideoDecoderConfig;
 class VideoDecoderInit;
+class VideoDecoderSupport;
 class VideoFrame;
 class V8VideoFrameOutputCallback;
-class ScriptPromise;
 
 class MODULES_EXPORT VideoDecoderTraits {
  public:
@@ -81,9 +81,8 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
                               const VideoDecoderInit*,
                               ExceptionState&);
 
-  static ScriptPromise isConfigSupported(ScriptState*,
-                                         const VideoDecoderConfig*,
-                                         ExceptionState&);
+  static ScriptPromiseTyped<VideoDecoderSupport>
+  isConfigSupported(ScriptState*, const VideoDecoderConfig*, ExceptionState&);
 
   static HardwarePreference GetHardwareAccelerationPreference(
       const ConfigType& config);

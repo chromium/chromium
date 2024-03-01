@@ -74,7 +74,7 @@ namespace {
 void DecoderSupport_OnKnown(
     VideoDecoderSupport* support,
     std::unique_ptr<VideoDecoder::MediaConfigType> media_config,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<VideoDecoderSupport>* resolver,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
   if (!gpu_factories) {
     support->setSupported(false);
@@ -282,16 +282,17 @@ VideoDecoder* VideoDecoder::Create(ScriptState* script_state,
 }
 
 // static
-ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
-                                              const VideoDecoderConfig* config,
-                                              ExceptionState& exception_state) {
+ScriptPromiseTyped<VideoDecoderSupport> VideoDecoder::isConfigSupported(
+    ScriptState* script_state,
+    const VideoDecoderConfig* config,
+    ExceptionState& exception_state) {
   // Run the "check if a config is a valid VideoDecoderConfig" algorithm.
   String js_error_message;
   std::optional<media::VideoType> video_type =
       IsValidVideoDecoderConfig(*config, &js_error_message /* out */);
   if (!video_type) {
     exception_state.ThrowTypeError(js_error_message);
-    return ScriptPromise();
+    return ScriptPromiseTyped<VideoDecoderSupport>();
   }
 
   // Run the "Clone Configuration" algorithm.
@@ -306,9 +307,7 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
        !media::IsBuiltInVideoCodec(video_type->codec)) ||
       !media::IsSupportedVideoType(*video_type)) {
     support->setSupported(false);
-    return ScriptPromise::Cast(
-        script_state,
-        ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support));
+    return ToResolvedPromise<VideoDecoderSupport>(script_state, support);
   }
 
   // Check that we can make a media::VideoDecoderConfig. The |js_error_message|
@@ -317,16 +316,15 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
   media_config = MakeMediaVideoDecoderConfig(*config_copy, &js_error_message);
   if (!media_config) {
     support->setSupported(false);
-    return ScriptPromise::Cast(
-        script_state,
-        ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support));
+    return ToResolvedPromise<VideoDecoderSupport>(script_state, support);
   }
 
   // If hardware is preferred, asynchronously check for a hardware decoder.
   if (hw_pref == HardwarePreference::kPreferHardware) {
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-        script_state, exception_state.GetContext());
-    ScriptPromise promise = resolver->Promise();
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolverTyped<VideoDecoderSupport>>(
+            script_state, exception_state.GetContext());
+    auto promise = resolver->Promise();
     RetrieveGpuFactoriesWithKnownDecoderSupport(CrossThreadBindOnce(
         &DecoderSupport_OnKnown, MakeUnwrappingCrossThreadHandle(support),
         std::make_unique<MediaConfigType>(*media_config),
@@ -336,9 +334,7 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
 
   // Otherwise, the config is supported.
   support->setSupported(true);
-  return ScriptPromise::Cast(
-      script_state,
-      ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support));
+  return ToResolvedPromise<VideoDecoderSupport>(script_state, support);
 }
 
 HardwarePreference VideoDecoder::GetHardwarePreference(

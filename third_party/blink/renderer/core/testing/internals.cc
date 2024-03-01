@@ -3463,54 +3463,60 @@ ScriptPromise Internals::addOneToPromise(ScriptState* script_state,
       script_state, MakeGarbageCollected<AddOneFunction>()));
 }
 
-ScriptPromise Internals::promiseCheck(ScriptState* script_state,
-                                      int32_t arg1,
-                                      bool arg2,
-                                      const ScriptValue& arg3,
-                                      const String& arg4,
-                                      const Vector<String>& arg5,
-                                      ExceptionState& exception_state) {
-  if (arg2)
-    return ScriptPromise::Cast(script_state,
-                               V8String(script_state->GetIsolate(), "done"));
+ScriptPromiseTyped<IDLAny> Internals::promiseCheck(
+    ScriptState* script_state,
+    int32_t arg1,
+    bool arg2,
+    const ScriptValue& arg3,
+    const String& arg4,
+    const Vector<String>& arg5,
+    ExceptionState& exception_state) {
+  if (arg2) {
+    return ToResolvedPromise<IDLAny>(
+        script_state, V8String(script_state->GetIsolate(), "done"));
+  }
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                     "Thrown from the native implementation.");
-  return ScriptPromise();
+  return ScriptPromiseTyped<IDLAny>();
 }
 
-ScriptPromise Internals::promiseCheckWithoutExceptionState(
+ScriptPromiseTyped<IDLAny> Internals::promiseCheckWithoutExceptionState(
     ScriptState* script_state,
     const ScriptValue& arg1,
     const String& arg2,
     const Vector<String>& arg3) {
-  return ScriptPromise::Cast(script_state,
-                             V8String(script_state->GetIsolate(), "done"));
+  return ToResolvedPromise<IDLAny>(
+      script_state, V8String(script_state->GetIsolate(), "done"));
 }
 
-ScriptPromise Internals::promiseCheckRange(ScriptState* script_state,
-                                           int32_t arg1) {
-  return ScriptPromise::Cast(script_state,
-                             V8String(script_state->GetIsolate(), "done"));
+ScriptPromiseTyped<IDLAny> Internals::promiseCheckRange(
+    ScriptState* script_state,
+    int32_t arg1) {
+  return ToResolvedPromise<IDLAny>(
+      script_state, V8String(script_state->GetIsolate(), "done"));
 }
 
-ScriptPromise Internals::promiseCheckOverload(ScriptState* script_state,
-                                              Location*) {
-  return ScriptPromise::Cast(script_state,
-                             V8String(script_state->GetIsolate(), "done"));
+ScriptPromiseTyped<IDLAny> Internals::promiseCheckOverload(
+    ScriptState* script_state,
+    Location*) {
+  return ToResolvedPromise<IDLAny>(
+      script_state, V8String(script_state->GetIsolate(), "done"));
 }
 
-ScriptPromise Internals::promiseCheckOverload(ScriptState* script_state,
-                                              Document*) {
-  return ScriptPromise::Cast(script_state,
-                             V8String(script_state->GetIsolate(), "done"));
+ScriptPromiseTyped<IDLAny> Internals::promiseCheckOverload(
+    ScriptState* script_state,
+    Document*) {
+  return ToResolvedPromise<IDLAny>(
+      script_state, V8String(script_state->GetIsolate(), "done"));
 }
 
-ScriptPromise Internals::promiseCheckOverload(ScriptState* script_state,
-                                              Location*,
-                                              int32_t,
-                                              int32_t) {
-  return ScriptPromise::Cast(script_state,
-                             V8String(script_state->GetIsolate(), "done"));
+ScriptPromiseTyped<IDLAny> Internals::promiseCheckOverload(
+    ScriptState* script_state,
+    Location*,
+    int32_t,
+    int32_t) {
+  return ToResolvedPromise<IDLAny>(
+      script_state, V8String(script_state->GetIsolate(), "done"));
 }
 
 void Internals::Trace(Visitor* visitor) const {

@@ -937,8 +937,8 @@ struct CORE_EXPORT NativeValueTraits<IDLPromise>
   static ScriptPromise NativeValue(v8::Isolate* isolate,
                                    v8::Local<v8::Value> value,
                                    ExceptionState& exception_state) {
-    return ScriptPromise::Cast(ScriptState::From(isolate->GetCurrentContext()),
-                               value);
+    return ScriptPromise::FromUntypedValueForBindings(
+        ScriptState::From(isolate->GetCurrentContext()), value);
   }
 };
 

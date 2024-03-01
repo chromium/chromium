@@ -196,7 +196,7 @@ v8::Local<v8::Value> AsyncIterationSourceBase::MakeEndOfIteration() const {
 }
 
 // step 8. Let nextSteps be the following steps:
-ScriptPromise AsyncIterationSourceBase::RunNextSteps(
+ScriptPromiseTyped<IDLAny> AsyncIterationSourceBase::RunNextSteps(
     ScriptState* script_state) {
   if (is_finished_) {
     // step 8.2. If object's is finished is true, then:
@@ -204,7 +204,7 @@ ScriptPromise AsyncIterationSourceBase::RunNextSteps(
     // step 8.2.2. Perform ! Call(nextPromiseCapability.[[Resolve]], undefined,
     //     << result >>).
     // step 8.2.3. Return nextPromiseCapability.[[Promise]].
-    return ScriptPromise::Cast(
+    return ToResolvedPromise<IDLAny>(
         script_state,
         ESCreateIterResultObject(script_state, true,
                                  v8::Undefined(script_state->GetIsolate())));
@@ -217,9 +217,9 @@ ScriptPromise AsyncIterationSourceBase::RunNextSteps(
   // step 8.10. Return nextPromiseCapability.[[Promise]].
   DCHECK(!pending_promise_resolver_);
   pending_promise_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(script_state);
   pending_promise_resolver_->KeepAliveWhilePending();
-  ScriptPromise promise = pending_promise_resolver_->Promise();
+  auto promise = pending_promise_resolver_->Promise();
   GetNextIterationResult();
   return promise.Then(on_fulfilled_function_, on_rejected_function_);
 }
@@ -275,7 +275,7 @@ ScriptValue AsyncIterationSourceBase::RunRejectSteps(ScriptState* script_state,
 }
 
 // step 8. Let returnSteps be the following steps:
-ScriptPromise AsyncIterationSourceBase::RunReturnSteps(
+ScriptPromiseTyped<IDLAny> AsyncIterationSourceBase::RunReturnSteps(
     ScriptState* script_state,
     ScriptValue value) {
   if (is_finished_) {
@@ -284,7 +284,7 @@ ScriptPromise AsyncIterationSourceBase::RunReturnSteps(
     // step 8.2.2. Perform ! Call(returnPromiseCapability.[[Resolve]],
     //     undefined, << result >>).
     // step 8.2.3. Return returnPromiseCapability.[[Promise]].
-    return ScriptPromise::Cast(
+    return ToResolvedPromise<IDLAny>(
         script_state,
         ESCreateIterResultObject(script_state, true, value.V8Value()));
   }
@@ -296,9 +296,9 @@ ScriptPromise AsyncIterationSourceBase::RunReturnSteps(
   //     algorithm for interface, given object's target, object, and value.
   DCHECK(!pending_promise_resolver_);
   pending_promise_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(script_state);
   pending_promise_resolver_->KeepAliveWhilePending();
-  ScriptPromise promise = pending_promise_resolver_->Promise();
+  auto promise = pending_promise_resolver_->Promise();
   AsyncIteratorReturn(value);
   return promise;
 }

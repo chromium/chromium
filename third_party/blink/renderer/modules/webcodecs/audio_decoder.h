@@ -32,10 +32,10 @@ namespace blink {
 
 class AudioData;
 class AudioDecoderConfig;
+class AudioDecoderSupport;
 class EncodedAudioChunk;
 class ExceptionState;
 class AudioDecoderInit;
-class ScriptPromise;
 class V8AudioDataOutputCallback;
 
 class MODULES_EXPORT AudioDecoderTraits {
@@ -75,9 +75,8 @@ class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {
                               const AudioDecoderInit*,
                               ExceptionState&);
 
-  static ScriptPromise isConfigSupported(ScriptState*,
-                                         const AudioDecoderConfig*,
-                                         ExceptionState&);
+  static ScriptPromiseTyped<AudioDecoderSupport>
+  isConfigSupported(ScriptState*, const AudioDecoderConfig*, ExceptionState&);
 
   // Returns parsed AudioType if the configuration is valid.
   static std::optional<media::AudioType> IsValidAudioDecoderConfig(

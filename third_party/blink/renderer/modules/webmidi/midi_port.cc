@@ -89,11 +89,12 @@ V8MIDIPortType MIDIPort::type() const {
   return V8MIDIPortType(type_);
 }
 
-ScriptPromise MIDIPort::open(ScriptState* script_state) {
+ScriptPromiseTyped<MIDIPort> MIDIPort::open(ScriptState* script_state) {
   if (connection_ == MIDIPortConnectionState::kOpen)
     return Accept(script_state);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<MIDIPort>>(script_state);
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
       ->PostTask(FROM_HERE,
@@ -113,11 +114,12 @@ void MIDIPort::open() {
   running_open_count_++;
 }
 
-ScriptPromise MIDIPort::close(ScriptState* script_state) {
+ScriptPromiseTyped<MIDIPort> MIDIPort::close(ScriptState* script_state) {
   if (connection_ == MIDIPortConnectionState::kClosed)
     return Accept(script_state);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<MIDIPort>>(script_state);
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
       ->PostTask(FROM_HERE,
@@ -183,7 +185,8 @@ void MIDIPort::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-void MIDIPort::OpenAsynchronously(ScriptPromiseResolver* resolver) {
+void MIDIPort::OpenAsynchronously(
+    ScriptPromiseResolverTyped<MIDIPort>* resolver) {
   // The frame should exist, but it may be already detached and the execution
   // context may be lost here.
   if (!GetExecutionContext())
@@ -211,7 +214,8 @@ void MIDIPort::OpenAsynchronously(ScriptPromiseResolver* resolver) {
     resolver->Resolve(this);
 }
 
-void MIDIPort::CloseAsynchronously(ScriptPromiseResolver* resolver) {
+void MIDIPort::CloseAsynchronously(
+    ScriptPromiseResolverTyped<MIDIPort>* resolver) {
   // The frame should exist, but it may be already detached and the execution
   // context may be lost here.
   if (!GetExecutionContext())
@@ -224,9 +228,8 @@ void MIDIPort::CloseAsynchronously(ScriptPromiseResolver* resolver) {
   resolver->Resolve(this);
 }
 
-ScriptPromise MIDIPort::Accept(ScriptState* script_state) {
-  return ScriptPromise::Cast(script_state,
-                             ToV8Traits<MIDIPort>::ToV8(script_state, this));
+ScriptPromiseTyped<MIDIPort> MIDIPort::Accept(ScriptState* script_state) {
+  return ToResolvedPromise<MIDIPort>(script_state, this);
 }
 
 void MIDIPort::SetStates(PortState state, MIDIPortConnectionState connection) {

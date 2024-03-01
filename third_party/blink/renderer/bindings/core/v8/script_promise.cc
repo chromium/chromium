@@ -46,9 +46,10 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
  public:
   static ScriptPromise All(ScriptState* script_state,
                            const HeapVector<ScriptPromise>& promises) {
-    if (promises.empty())
-      return ScriptPromise::Cast(script_state,
-                                 v8::Array::New(script_state->GetIsolate()));
+    if (promises.empty()) {
+      return ScriptPromise::FromUntypedValueForBindings(
+          script_state, v8::Array::New(script_state->GetIsolate()));
+    }
     return (MakeGarbageCollected<PromiseAllHandler>(script_state, promises))
         ->resolver_.Promise();
   }
@@ -229,54 +230,56 @@ ScriptPromise::ScriptPromise(const ScriptPromise& other) {
   promise_ = other.promise_;
 }
 
-ScriptPromise ScriptPromise::Then(v8::Local<v8::Function> on_fulfilled,
-                                  v8::Local<v8::Function> on_rejected) {
+ScriptPromiseTyped<IDLAny> ScriptPromise::Then(
+    v8::Local<v8::Function> on_fulfilled,
+    v8::Local<v8::Function> on_rejected) {
   if (promise_.IsEmpty())
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLAny>();
 
   v8::Local<v8::Promise> promise = promise_.V8Value().As<v8::Promise>();
 
   if (on_fulfilled.IsEmpty() && on_rejected.IsEmpty())
-    return *this;
+    return ScriptPromiseTyped<IDLAny>(script_state_, V8Value());
 
   v8::Local<v8::Promise> result_promise;
   if (on_rejected.IsEmpty()) {
     if (!promise->Then(script_state_->GetContext(), on_fulfilled)
              .ToLocal(&result_promise)) {
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLAny>();
     }
-    return ScriptPromise(script_state_, result_promise);
+    return ScriptPromiseTyped<IDLAny>(script_state_, result_promise);
   }
 
   if (on_fulfilled.IsEmpty()) {
     if (!promise->Catch(script_state_->GetContext(), on_rejected)
              .ToLocal(&result_promise)) {
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLAny>();
     }
-    return ScriptPromise(script_state_, result_promise);
+    return ScriptPromiseTyped<IDLAny>(script_state_, result_promise);
   }
 
   if (!promise->Then(script_state_->GetContext(), on_fulfilled, on_rejected)
            .ToLocal(&result_promise)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLAny>();
   }
-  return ScriptPromise(script_state_, result_promise);
+  return ScriptPromiseTyped<IDLAny>(script_state_, result_promise);
 }
 
-ScriptPromise ScriptPromise::Then(ScriptFunction* on_fulfilled,
-                                  ScriptFunction* on_rejected) {
+ScriptPromiseTyped<IDLAny> ScriptPromise::Then(ScriptFunction* on_fulfilled,
+                                               ScriptFunction* on_rejected) {
   const v8::Local<v8::Function> empty;
   return Then(on_fulfilled ? on_fulfilled->V8Function() : empty,
               on_rejected ? on_rejected->V8Function() : empty);
 }
 
 ScriptPromise ScriptPromise::CastUndefined(ScriptState* script_state) {
-  return ScriptPromise::Cast(script_state,
-                             v8::Undefined(script_state->GetIsolate()));
+  return FromUntypedValueForBindings(script_state,
+                                     v8::Undefined(script_state->GetIsolate()));
 }
 
-ScriptPromise ScriptPromise::Cast(ScriptState* script_state,
-                                  v8::Local<v8::Value> value) {
+ScriptPromise ScriptPromise::FromUntypedValueForBindings(
+    ScriptState* script_state,
+    v8::Local<v8::Value> value) {
   if (value.IsEmpty())
     return ScriptPromise();
   if (value->IsPromise()) {

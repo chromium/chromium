@@ -6,12 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ASYNC_ITERABLE_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/async_iterator_base.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 
 namespace blink {
-
-class ScriptPromiseResolver;
 
 namespace bindings {
 
@@ -57,7 +56,7 @@ class CORE_EXPORT AsyncIterationSourceBase
   }
 
   // Returns the pending promise resolver by removing it from this instance.
-  ScriptPromiseResolver* TakePendingPromiseResolver() {
+  ScriptPromiseResolverTyped<IDLAny>* TakePendingPromiseResolver() {
     DCHECK(pending_promise_resolver_);
     return pending_promise_resolver_.Release();
   }
@@ -76,12 +75,13 @@ class CORE_EXPORT AsyncIterationSourceBase
   class RunReturnStepsCallable;
   class RunReturnFulfillStepsCallable;
 
-  ScriptPromise RunNextSteps(ScriptState* script_state);
+  ScriptPromiseTyped<IDLAny> RunNextSteps(ScriptState* script_state);
   ScriptValue RunFulfillSteps(ScriptState* script_state,
                               ScriptValue iter_result_object_or_undefined);
   ScriptValue RunRejectSteps(ScriptState* script_state, ScriptValue reason);
 
-  ScriptPromise RunReturnSteps(ScriptState* script_state, ScriptValue value);
+  ScriptPromiseTyped<IDLAny> RunReturnSteps(ScriptState* script_state,
+                                            ScriptValue value);
   ScriptValue RunReturnFulfillSteps(ScriptState* script_state,
                                     ScriptValue value);
 
@@ -93,7 +93,7 @@ class CORE_EXPORT AsyncIterationSourceBase
   // https://webidl.spec.whatwg.org/#dfn-default-asynchronous-iterator-object
   // its 'ongoing promise', which is a Promise or null,
   // its 'is finished', which is a boolean.
-  ScriptPromise ongoing_promise_;
+  ScriptPromiseTyped<IDLAny> ongoing_promise_;
   bool is_finished_ = false;
 
   // The pending promise resolver. This is basically corresponding to
@@ -102,7 +102,11 @@ class CORE_EXPORT AsyncIterationSourceBase
   // 'end of iteration' value returned by `MakeEndOfIteration`, otherwise
   // must be rejected. When used for 'returnStepsPromise', the fulfillment
   // value is ignored.
-  Member<ScriptPromiseResolver> pending_promise_resolver_;
+  // NOTE: `pending_promise_resolver_` should probably be typed according to
+  // the iterable result type in the relevant IDL, but everything internal to
+  // our implementation gives the resolver a v8::Value, which doesn't work
+  // well with typing according to the IDL.
+  Member<ScriptPromiseResolverTyped<IDLAny>> pending_promise_resolver_;
 
   template <typename IDLKeyType,
             typename IDLValueType,
