@@ -99,8 +99,8 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   // Invalid states include a previous animating frame that's not complete
   // yet (including deferred processing not having started yet), or timing
   // heuristics indicating that it should be retried later.
-  bool WebVrCanAnimateFrame();
-  // Call this after state changes that could result in WebVrCanAnimateFrame
+  bool WebXrCanAnimateFrame();
+  // Call this after state changes that could result in WebXrCanAnimateFrame
   // becoming true.
   void WebXrTryStartAnimatingFrame();
 
@@ -111,7 +111,7 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   bool SubmitFrameInternal(int16_t frame_index);
 
   // Transition a frame from animating to processing.
-  void ProcessWebVrFrameFromMailbox(int16_t frame_index,
+  void ProcessWebXrFrameFromMailbox(int16_t frame_index,
                                     const gpu::MailboxHolder& mailbox);
 
   void ClosePresentationBindings();
