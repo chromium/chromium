@@ -257,4 +257,15 @@ void WebRequestInfo::AddResponseInfoFromResourceResponse(
   response_from_cache = response.was_fetched_via_cache;
 }
 
+void WebRequestInfo::EraseDNRActionsForExtension(
+    const ExtensionId& extension_id) {
+  if (dnr_actions.has_value()) {
+    std::erase_if(
+        *dnr_actions,
+        [extension_id](declarative_net_request::RequestAction& action) {
+          return action.extension_id == extension_id;
+        });
+  }
+}
+
 }  // namespace extensions

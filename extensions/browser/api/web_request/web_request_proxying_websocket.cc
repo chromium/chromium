@@ -285,6 +285,11 @@ void WebRequestProxyingWebSocket::OnHeadersReceived(
   ContinueToHeadersReceived();
 }
 
+void WebRequestProxyingWebSocket::OnDNRExtensionUnloaded(
+    const Extension* extension) {
+  info_.EraseDNRActionsForExtension(extension->id());
+}
+
 void WebRequestProxyingWebSocket::StartProxying(
     WebSocketFactory factory,
     const GURL& url,
