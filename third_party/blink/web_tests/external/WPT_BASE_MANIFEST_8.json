@@ -260306,7 +260306,7 @@
           ]
          ],
          "canvas-filter-object-turbulence.html": [
-          "b5b494825e7a714be3326cd052078c9b5c780a92",
+          "fe87d37930123e3e1113b14b620fdc5a0de08edf",
           [
            null,
            [
@@ -260315,7 +260315,23 @@
              "=="
             ]
            ],
-           {}
+           {
+            "fuzzy": [
+             [
+              null,
+              [
+               [
+                0,
+                16
+               ],
+               [
+                0,
+                1000
+               ]
+              ]
+             ]
+            ]
+           }
           ]
          ],
          "idl-conversions": {
@@ -276560,7 +276576,22 @@
       ],
       {}
      ]
-    ]
+    ],
+    "errors": {
+     "unknown-ancillary-error-recovery.html": [
+      "df37153fd76026be581c4da33f9df0fd60e2c05b",
+      [
+       null,
+       [
+        [
+         "/png/errors/unknown-ancillary-error-recovery-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ]
+    }
    },
    "preload": {
     "preload-in-data-doc.html": [
@@ -316750,7 +316781,7 @@
       []
      ],
      "highlight-pseudo-computed-expected.txt": [
-      "34d8abea11982a5784f3ebf4fb0b42d9b67537cd",
+      "a5f58429dcaebab1c37a653544fc478c052575a8",
       []
      ],
      "painting": {
@@ -338786,7 +338817,7 @@
       []
      ],
      "getComputedStyle-pseudo-with-argument-expected.txt": [
-      "8ca2b6411e71068844959637a3014128b868b431",
+      "07f3a7b88c141486ea6873c825a20dfbecfb8362",
       []
      ],
      "getComputedStyle-width-scroll.tentative-expected.txt": [
@@ -376692,6 +376723,22 @@
      "de7629453d91d09551fdfcbe51c90cda494e6fcf",
      []
     ],
+    "errors": {
+     "support": {
+      "invalid-unknown-ancillary.png": [
+       "21373a5a5aff91c2755cdc9a7f381da29658850c",
+       []
+      ],
+      "no-invalid-chunks.png": [
+       "6605d479854ba0d9e772b105f1b276b7c842a306",
+       []
+      ]
+     },
+     "unknown-ancillary-error-recovery-ref.html": [
+      "cfa2cbb6f14cc95cb5930dab38fa3fb11bda49bd",
+      []
+     ]
+    },
     "support": {
      "cICP-and-iCCP.png": [
       "71d88defc12b18b29d2c2dd4303e4bfb15d1a4c0",
@@ -442491,6 +442538,29 @@
       ],
       "display-valid.html": [
        "c011c2a30ca26dab4c97c9278a845efb47d69970",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
+     "reading-order": {
+      "reading-order-items-computed.html": [
+       "a8280337665d7779f59dac55d342d8224d262b94",
+       [
+        null,
+        {}
+       ]
+      ],
+      "reading-order-items-invalid.html": [
+       "eff5846e316cafce44f3c876c6a1ad9056a2d939",
+       [
+        null,
+        {}
+       ]
+      ],
+      "reading-order-items-valid.html": [
+       "d1ac7de64eb869dc585680f5bdde06839453c448",
        [
         null,
         {}
@@ -603872,6 +603942,15 @@
     }
    },
    "private-aggregation": {
+    "protected-audience-auction-report-buyers-debug-mode-surface.https.html": [
+     "ddc2b6a3723071d7b0f21b0f17757a1f1c59e1c8",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
     "protected-audience-surface-failure.https.html": [
      "b512afc25dbe99441a0c57638e7b11e2e0681f36",
      [
