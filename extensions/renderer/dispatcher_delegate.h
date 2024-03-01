@@ -12,7 +12,6 @@ namespace extensions {
 class Dispatcher;
 class ModuleSystem;
 class NativeExtensionBindingsSystem;
-class ResourceBundleSourceMap;
 class ScriptContext;
 
 // Base class and default implementation for an extensions::Dispacher delegate.
@@ -28,9 +27,6 @@ class DispatcherDelegate {
       ModuleSystem* module_system,
       NativeExtensionBindingsSystem* bindings_system,
       ScriptContext* context) {}
-
-  // Includes additional source resources into the resource map.
-  virtual void PopulateSourceMap(ResourceBundleSourceMap* source_map) {}
 
   // Requires modules for defining <webview> within an extension context's
   // module system.

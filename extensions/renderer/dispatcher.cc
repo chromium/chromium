@@ -1482,7 +1482,6 @@ void Dispatcher::PopulateSourceMap() {
   const std::vector<JsResourceInfo> resources = GetJsResources();
   for (const auto& resource : resources)
     source_map_.RegisterSource(resource.name, resource.id);
-  delegate_->PopulateSourceMap(&source_map_);
   for (const auto& api_provider : api_providers_) {
     api_provider->PopulateSourceMap(&source_map_);
   }

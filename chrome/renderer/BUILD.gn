@@ -333,6 +333,8 @@ static_library("renderer") {
       "extensions/api/accessibility_private_hooks_delegate.h",
       "extensions/api/app_hooks_delegate.cc",
       "extensions/api/app_hooks_delegate.h",
+      "extensions/api/chrome_extensions_renderer_api_provider.cc",
+      "extensions/api/chrome_extensions_renderer_api_provider.h",
       "extensions/api/extension_hooks_delegate.cc",
       "extensions/api/extension_hooks_delegate.h",
       "extensions/api/identity_hooks_delegate.cc",
