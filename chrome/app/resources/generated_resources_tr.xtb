@@ -3733,7 +3733,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3817524650114746564">Bilgisayarınızın proxy ayarlarını açın</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazların otomatik raporlar göndermesine izin vererek ChromeOS ile ilgili düzeltme ve iyileştirme çalışmalarımızda nelere öncelik verileceğini belirlememize yardımcı olursunuz. ChromeOS kilitlenme zamanı, kullandığınız özellikler ve genellikle kullandığınız bellek miktarı gibi bilgiler bu raporlarda yer alabilir.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />İstediğiniz zaman Chrome cihaz ayarlarınızda bu raporlara izin verebilir veya izni iptal edebilirsiniz. Alan yöneticisiyseniz bu ayarı yönetici konsolunda değiştirebilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="3818662907126913619">Cihazınızı <ph name="DOMAIN" /> profilinizle kullanmak için kuruluşunuzun cihazla ilgili bilgilere ihtiyacı vardır.
+<translation id="3818662907126913619">Cihazınızı <ph name="DOMAIN" /> profilinizle kullanmak için kuruluşunuzun cihazla ilgili bilgilere ihtiyacı var.
 
 Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakkındaki bilgiler bu kapsamda yer alabilir.</translation>
 <translation id="3819164369574292143">Ekrandaki öğeleri büyütmek için yakınlaştırın. Büyüteci açmak ve kapatmak için Arama + Ctrl + M tuşlarını kullanın. Yakınlaştırılmış ekranda gezinmek için de Ctrl + Alt + Ok tuşlarını kullanın.</translation>

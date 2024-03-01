@@ -8822,7 +8822,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7799650166313181433">Apenas os dispositivos com sessão iniciada na conta <ph name="USER_EMAIL" /> podem partilhar com este dispositivo. Não precisa de aprovar a partilha entre os seus dispositivos.</translation>
 <translation id="7800485561443537737">Usa os dados móveis do seu <ph name="DEVICE_TYPE" />, sendo que o seu operador pode cobrar taxas adicionais. Pode aumentar a utilização da bateria. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Rodar para a &amp;Esquerda</translation>
-<translation id="780301667611848630">Não</translation>
+<translation id="780301667611848630">Não, obrigado</translation>
 <translation id="7803657407897251194">Para continuar a configuração com o seu dispositivo Android, ligue o dispositivo <ph name="DEVICE_TYPE" /> a uma rede</translation>
 <translation id="7804072833593604762">Separador fechado</translation>
 <translation id="780446144738273886">Digitalize o PDF para extrair texto para o leitor de ecrã. Só é suportado no navegador Chrome</translation>

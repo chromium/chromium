@@ -2092,7 +2092,7 @@
 <translation id="5043480802608081735">Σύνδεσμος που αντιγράψατε</translation>
 <translation id="5045550434625856497">Λανθασμένος κωδικός πρόσβασης</translation>
 <translation id="5052517576853118371">Ενεργά θέματα</translation>
-<translation id="5056425809654826431">{NUM_FILES,plural, =1{Για να στείλετε αυτό το αρχείο χρησιμοποιώντας την Κοινοποίηση κοντά, ελευθερώστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}other{Για να στείλετε αυτά τα αρχεία χρησιμοποιώντας την Κοινοποίηση κοντά, ελευθερώστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}}</translation>
+<translation id="5056425809654826431">{NUM_FILES,plural, =1{Για να στείλετε αυτό το αρχείο χρησιμοποιώντας την Κοινοποίηση κοντά, αποδεσμεύστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}other{Για να στείλετε αυτά τα αρχεία χρησιμοποιώντας την Κοινοποίηση κοντά, αποδεσμεύστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}}</translation>
 <translation id="505757197798929356">Καταχωρίστε τον λόγο για το άνοιγμα (απαιτείται)</translation>
 <translation id="5060419232449737386">Ρυθμίσεις υποτίτλων</translation>
 <translation id="5060483733937416656">Επιλέξατε να γίνεται επαλήθευση με το Windows Hello σε ιστοτόπους που χρησιμοποιούν τον πάροχο <ph name="PROVIDER_ORIGIN" />. Αυτός ο πάροχος μπορεί να έχει αποθηκεύσει πληροφορίες σχετικά με τον τρόπο πληρωμής σας, τις οποίες μπορείτε να <ph name="LINK_TEXT" />.</translation>
@@ -2916,7 +2916,7 @@
 <translation id="6688775486821967877">Η εικονική κάρτα δεν είναι διαθέσιμη αυτήν τη στιγμή. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="6689249931105087298">Σχετική με τη συμπίεση μαύρου σημείου</translation>
 <translation id="6689271823431384964">Το Chrome προσφέρεται να αποθηκεύσει τις κάρτες σας στον Λογαριασμό σας Google, επειδή έχετε συνδεθεί. Μπορείτε να αλλάξετε αυτήν τη συμπεριφορά στις ρυθμίσεις. Το όνομα του κατόχου κάρτας προέρχεται από τον λογαριασμό σας.</translation>
-<translation id="6691397311652656001">Απελευθερώστε περισσότερο από <ph name="REQUIRED_FREE_DISK_SPACE" /> χώρου</translation>
+<translation id="6691397311652656001">Αποδεσμεύστε περισσότερο από <ph name="REQUIRED_FREE_DISK_SPACE" /> χώρου</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και, στη συνέχεια, Enter για να βρείτε τη συσκευή σας στον Λογαριασμό Google.</translation>
 <translation id="6695428916538794739">Ταινίες δράσης και περιπέτειας</translation>
 <translation id="6696424331653607346">Ταξιδιωτικοί οδηγοί και οδοιπορικά</translation>
@@ -3156,7 +3156,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}other{<ph name="PAYMENT_METHOD_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}}</translation>
 <translation id="7153618581592392745">Λιλά</translation>
 <translation id="7156870133441232244">Ο διακομιστής θα πρέπει να αναβαθμιστεί σε έκδοση TLS 1.2 ή μεταγενέστερη.</translation>
-<translation id="715996170234243096">{NUM_FILES,plural, =1{Για να στείλετε αυτό το αρχείο χρησιμοποιώντας την εφαρμογή <ph name="FEATURE_NAME" />, ελευθερώστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}other{Για να στείλετε αυτά τα αρχεία χρησιμοποιώντας την εφαρμογή <ph name="FEATURE_NAME" />, ελευθερώστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}}</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Για να στείλετε αυτό το αρχείο χρησιμοποιώντας την εφαρμογή <ph name="FEATURE_NAME" />, αποδεσμεύστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}other{Για να στείλετε αυτά τα αρχεία χρησιμοποιώντας την εφαρμογή <ph name="FEATURE_NAME" />, αποδεσμεύστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}}</translation>
 <translation id="7160999678034985039">Αποθηκεύστε την εργασία σας και ξεκινήστε την ενημέρωση όταν είστε έτοιμοι.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Αντιγραφή εμπιστευτικού αρχείου;}other{Αντιγραφή εμπιστευτικών αρχείων;}}</translation>
 <translation id="717330890047184534">Αναγνωριστικό Gaia:</translation>

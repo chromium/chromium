@@ -1028,7 +1028,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1769104665586091481">Ireki esteka &amp;Leiho berri batean</translation>
 <translation id="1770407692401984718">Arrastatu irudia hona edo</translation>
 <translation id="177053719077591686">Egin Android-erako aplikazioen babeskopiak Google Drive-n.</translation>
-<translation id="1771075623623424448">Arakatzailearen "Gailuen erregistroa" orriaren bila zabiltza? Joan helbide honetara: <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
+<translation id="1771075623623424448">Arakatzailearen "Gailuaren erregistroa" orriaren bila zabiltza? Joan helbide honetara: <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">Sortu wifi-gune bat <ph name="DEVICE_TYPE" /> gailuaren datu-konexioa erabilita, beste gailu batzuei Internet erabiltzeko aukera emateko. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Aplikazio ostatatuen datuak</translation>
 <translation id="177529472352014190">Konektatu OneDrive-ra</translation>
@@ -1458,7 +1458,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2087822576218954668">Inprimatu: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> instalatu behar da erregistratu ahal izateko.</translation>
 <translation id="2088564884469682888">TrackPoint integratua</translation>
-<translation id="208928984520943006">Edozein unetan hasierako pantailara joateko, pasatu hatza pantailaren behealdetik gora.</translation>
+<translation id="208928984520943006">Edozein unetan orri nagusira joateko, pasatu hatza pantailaren behealdetik gora.</translation>
 <translation id="2089925163047119068">EDO</translation>
 <translation id="2090165459409185032">Kontuko informazioa berreskuratzeko, joan hona: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Automatikoki konektatzen da saioa hasten duzunean</translation>
@@ -1865,7 +1865,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2381499968174336913">Partekatutako fitxaren aurrebista</translation>
 <translation id="2382875860893882175">Igorpena pausatuta dago. Nahi duzunean berrekin edo utz diezaiokezu igortzeari.</translation>
 <translation id="2383825469508278924">Aldatu teklatuaren tekla-esleipena, funtzio-teklak eta beste</translation>
-<translation id="2387052489799050037">Joan hasierako pantailara</translation>
+<translation id="2387052489799050037">Joan orri nagusira</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (oraingoa)</translation>
 <translation id="2390226379317200116">Gehitu orri honi buruzko ohar edo gogoeta bat, geroago berriz ikusi ahal izateko.</translation>
 <translation id="2390347491606624519">Ezin da konektatu proxyra. Hasi saioa berriro.</translation>
@@ -4142,7 +4142,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4124823734405044952">Berrezarri da segurtasun-giltza</translation>
 <translation id="4124935795427217608">Adarbakarra</translation>
 <translation id="412730574613779332">Superheroia</translation>
-<translation id="4130199216115862831">Gailuen erregistroa</translation>
+<translation id="4130199216115862831">Gailuaren erregistroa</translation>
 <translation id="4130750466177569591">Ados nago</translation>
 <translation id="413121957363593859">Osagaiak</translation>
 <translation id="4131283654370308898">Eman fitxa honetan <ph name="EXTENSION_NAME" /> erabiltzeko baimena</translation>
@@ -9336,7 +9336,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8195854162863398249">Desgaitu <ph name="FEATURE_NAME" /></translation>
 <translation id="8197673340773315084">Gehitu izen edo etiketa bat; adibidez, "Lana" edo "Pertsonala"</translation>
 <translation id="8198456017687137612">Edukia igortzen ari den fitxa</translation>
-<translation id="8198457270656084773">Sistemaren "Gailuen erregistroa" orriaren bila zabiltza? Joan helbide honetara: <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
+<translation id="8198457270656084773">Sistemaren "Gailuaren erregistroa" orriaren bila zabiltza? Joan helbide honetara: <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Sarearen mantentze-zerbitzua eta gailuaren propietateak</translation>
 <translation id="8200772114523450471">Berrekin</translation>
 <translation id="8200789660596905522">Ziurtatu igortzeko eskaera onartzen duzula <ph name="DEVICE_NAME" /> gailuan.</translation>

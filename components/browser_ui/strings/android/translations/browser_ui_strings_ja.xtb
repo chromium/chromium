@@ -407,7 +407,7 @@
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7791543448312431591">追加</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{このタブを続行}other{これらのタブを続行}}</translation>
-<translation id="780301667611848630">同意しない</translation>
+<translation id="780301667611848630">いいえ</translation>
 <translation id="7804248752222191302">サイトでカメラが使用されています</translation>
 <translation id="7807060072011926525">Google から提供</translation>
 <translation id="7822573154188733812">Chrome では、サードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。<ph name="BEGIN_LINK" />トラッキング防止機能を管理<ph name="END_LINK" />するには、設定にアクセスしてください。</translation>
