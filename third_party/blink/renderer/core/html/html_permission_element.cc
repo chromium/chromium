@@ -176,6 +176,7 @@ HTMLPermissionElement::HTMLPermissionElement(Document& document)
       embedded_permission_control_receiver_(this,
                                             document.GetExecutionContext()) {
   DCHECK(RuntimeEnabledFeatures::PermissionElementEnabled());
+  SetHasCustomStyleCallbacks();
   EnsureUserAgentShadowRoot();
 }
 
@@ -276,6 +277,51 @@ void HTMLPermissionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   permission_text_span_->SetShadowPseudoId(
       shadow_element_names::kPseudoInternalPermissionTextSpan);
   shadow_element_->AppendChild(permission_text_span_);
+}
+
+void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
+  Element::AdjustStyle(builder);
+
+  builder.SetOutlineOffset(builder.OutlineOffset().ClampNegativeToZero());
+
+  // TODO(crbug.com/1462930): Handle calculated Lengths.
+  if (!builder.MarginLeft().IsCalculated() &&
+      builder.MarginLeft().Value() < 0) {
+    builder.ResetMarginLeft();
+  }
+  if (!builder.MarginRight().IsCalculated() &&
+      builder.MarginRight().Value() < 0) {
+    builder.ResetMarginRight();
+  }
+  if (!builder.MarginTop().IsCalculated() && builder.MarginTop().Value() < 0) {
+    builder.ResetMarginTop();
+  }
+  if (!builder.MarginBottom().IsCalculated() &&
+      builder.MarginBottom().Value() < 0) {
+    builder.ResetMarginBottom();
+  }
+
+  // TODO(crbug.com/1462930): Validate here that the 'background-color' and
+  // 'color' properties pass accessibility checks (and are at 100% alpha).
+
+  // TODO(crbug.com/1462930): Add here checks to force the min/max-width/height.
+
+  // TODO(crbug.com/1462930): Validate here the `letter-spacing` property, and
+  // that it's not too big.
+
+  // TODO(crbug.com/1462930): Clamp font weight to at least 200.
+
+  // TODO(crbug.com/1462930): Remove <angle> from font-style: 'oblique'.
+
+  // TODO(crbug.com/1462930): Set text direction (ltr\rtl) based on language.
+
+  // TODO(crbug.com/1462930): Set word-spacing so it's at most 5px.
+
+  // TODO(crbug.com/1462930): Ensure font-size at least as large as the
+  // equivalent of 'small'.
+
+  // TODO(crbug.com/1462930): Ensure any value of display other than 'none' is
+  // converted to 'inline-block'.
 }
 
 void HTMLPermissionElement::DefaultEventHandler(Event& event) {

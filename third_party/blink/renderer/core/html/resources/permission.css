@@ -15,7 +15,6 @@ permission {
   color: #000000;
   display: inline-block;
   height: 1.2em;
-  opacity: 1 !important;
   outline: solid 1px #767676;
   width: 188px;
  }
@@ -26,16 +25,17 @@ permission:granted {
 
 permission::-internal-permission-text {
   display: inherit;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif !important;
   font-size: inherit;
   font-style: normal;
   font-weight: 400;
   height: 100%;
+  hyphenate-character: auto !important;
   line-height: inherit;
-  opacity: 1 !important;
   outline: none;
   user-select:none !important;
   vertical-align: inherit;
   white-space:nowrap !important;
+  word-wrap: normal !important;
   width: 100%;
 }

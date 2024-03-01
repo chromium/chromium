@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
 #include "third_party/blink/renderer/core/css/style_recalc_change.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
@@ -1372,6 +1373,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // [1]https://drafts.csswg.org/selectors/#the-target-pseudo
   void SetTargetedSnapAreaIdsForSnapContainers();
   void ClearTargetedSnapAreaIdsForSnapContainers();
+
+  // Subclasses can override this method to specify a CascadeFilter to
+  // filter out any unwanted CSS properties.
+  virtual CascadeFilter GetCascadeFilter() const { return CascadeFilter(); }
 
  protected:
   bool HasElementData() const { return static_cast<bool>(element_data_); }

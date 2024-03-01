@@ -265,6 +265,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kValidForHighlight = 1ull << 31,
     // See accepts_numeric_literal in css_properties.json5.
     kAcceptsNumericLiteral = 1ull << 32,
+    // See valid_for_permission_element in css_properties.json5
+    kValidForPermissionElement = 1ull << 33,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

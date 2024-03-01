@@ -11,6 +11,8 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/shadow/permission_shadow_element.h"
@@ -55,6 +57,11 @@ class CORE_EXPORT HTMLPermissionElement final
     return permission_text_span_;
   }
 
+  CascadeFilter GetCascadeFilter() const override {
+    // Reject all properties for which 'kValidForPermissionElement' is false.
+    return CascadeFilter(CSSProperty::kValidForPermissionElement, false);
+  }
+
  private:
   enum class DisableReason {
     kRecentlyAttachedToDOM,
@@ -67,6 +74,7 @@ class CORE_EXPORT HTMLPermissionElement final
   // blink::Element implements
   void AttributeChanged(const AttributeModificationParams& params) override;
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
+  void AdjustStyle(ComputedStyleBuilder& builder) override;
 
   // blink::Node override.
   void DefaultEventHandler(Event&) override;
