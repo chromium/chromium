@@ -17,13 +17,13 @@ WvrApi::WvrApi() {
   memset((void*)&system_state_, 0, sizeof(mozilla::gfx::VRSystemState));
 }
 
-void WvrApi::PushState(bool notify_cond) {
+void WvrApi::PushState(NotifyCondition notify_cond) {
   DCHECK(shmem_);
 
   if (pthread_mutex_lock((pthread_mutex_t*)&(shmem_->geckoMutex)) == 0) {
     memcpy((void*)&(shmem_->geckoState), (void*)&browser_state_,
            sizeof(mozilla::gfx::VRBrowserState));
-    if (notify_cond) {
+    if (notify_cond == NotifyCondition::YES) {
       pthread_cond_signal((pthread_cond_t*)&(shmem_->geckoCond));
     }
     pthread_mutex_unlock((pthread_mutex_t*)&(shmem_->geckoMutex));
@@ -75,7 +75,7 @@ void WvrApi::StartWebXR() {
 void WvrApi::ExitWebXR() {
   browser_state_.presentationActive = false;
   browser_state_.layerState[0].type = mozilla::gfx::VRLayerType::LayerType_None;
-  PushState(true);
+  PushState(NotifyCondition::YES);
 }
 
 bool WvrApi::PresentingGenerationChanged() {
@@ -109,7 +109,7 @@ bool WvrApi::SyncState(bool is_frame_submmitted,
 
   browser_state_.dropFame = !is_frame_submmitted;
   uint64_t oldDroppedFrameCount = system_state_.displayState.droppedFrameCount;
-  PushState(true);
+  PushState(NotifyCondition::YES);
   PullState([this, oldDroppedFrameCount]() {
     return (system_state_.displayState.lastSubmittedFrameId == sync_frame_index_ &&
            (!browser_state_.dropFame || system_state_.displayState.droppedFrameCount != oldDroppedFrameCount)) ||
@@ -120,7 +120,7 @@ bool WvrApi::SyncState(bool is_frame_submmitted,
   // Avoid racing texture between processing in chromium and consuming in
   // wolvic.
   layer.textureHandle = 0;
-  PushState(true);
+  PushState(NotifyCondition::YES);
 
   return true;
 }
