@@ -344,7 +344,7 @@ void IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl(
       apps::IntentPickerIconEvent::kIconClicked);
 
   if (apps.size() == 1 && intent_picker_delegate_->ShouldLaunchAppDirectly(
-                              url, apps[0].launch_name)) {
+                              url, apps[0].launch_name, apps[0].type)) {
     // TODO(b/305075981): Move IntentChipDisplayPrefs to
     // c/b/apps/link_capturing.
     if (apps::features::ShouldShowLinkCapturingUX()) {

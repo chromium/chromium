@@ -149,7 +149,8 @@ void ChromeOsAppsIntentPickerDelegate::RecordIntentPickerIconEvent(
 
 bool ChromeOsAppsIntentPickerDelegate::ShouldLaunchAppDirectly(
     const GURL& url,
-    const std::string& app_name) {
+    const std::string& app_name,
+    PickerEntryType) {
   // If there is only a single available app, immediately launch it if
   // ShouldShowLinkCapturingUX() is enabled and the app is preferred for this
   // link.
