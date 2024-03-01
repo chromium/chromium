@@ -736,6 +736,10 @@ class TestAutofillClientTemplate : public T {
 
   ukm::TestUkmRecorder* GetTestUkmRecorder() { return &test_ukm_recorder_; }
 
+  signin::IdentityTestEnvironment& identity_test_environment() {
+    return identity_test_env_;
+  }
+
  private:
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   signin::IdentityTestEnvironment identity_test_env_;

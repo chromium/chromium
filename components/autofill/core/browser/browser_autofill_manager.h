@@ -108,6 +108,26 @@ enum class ValuePatternsMetric {
   kMaxValue = kIban,
 };
 
+// Describes whether Autocomplete suggestions would have been suppressed by a
+// plus address suggestion.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// TODO(b/327328460): Clean up once the metric is has been evaluated.
+enum class AutocompleteSuppressionByPlusAddress {
+  // The Autocomplete suggestions would not have been suppressed.
+  kNotSuppressed = 0,
+  // The Autocomplete suggestions would have been suppressed and would have
+  // contained email addresses.
+  kSuppressedWithEmailResults = 1,
+  // The Autocomplete suggestions would have been suppressed and would not have
+  // contained email addresses.
+  kSuppressedWithoutEmailResults = 2,
+  kMaxValue = kSuppressedWithoutEmailResults,
+};
+
+inline constexpr char kAutocompleteSuppressionByPlusAddressUma[] =
+    "Autofill.Autocomplete.SuppressionByPlusAddress";
+
 // Manages saving and restoring the user's personal information entered into web
 // forms. One per frame; owned by the AutofillDriver.
 class BrowserAutofillManager : public AutofillManager {

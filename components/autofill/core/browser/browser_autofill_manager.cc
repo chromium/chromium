@@ -127,6 +127,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/core/security_state.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -260,6 +262,52 @@ bool IsSingleFieldFormFillerFillingProduct(FillingProduct filling_product) {
     case FillingProduct::kNone:
       return false;
   }
+}
+
+// Is `suggestions` contains Autocomplete suggestions, then this function logs
+// a metric to record whether Autocomplete would have been suppressed due to
+// a plus address suggestion.
+// It only logs these metrics for users that are signed in and tabs that are not
+// in incognito mode.
+// TODO(b/327328460): Clean up once the metric is has been evaluated.
+void MaybeLogAutocompleteSuppressionByPlusAddresses(
+    AutofillClient& client,
+    base::span<const Suggestion> suggestions,
+    AutofillField* focused_field) {
+  if (client.IsOffTheRecord()) {
+    return;
+  }
+
+  // Do not log metrics for users that are not signed in.
+  if (signin::IdentityManager* identity_manager = client.GetIdentityManager();
+      !identity_manager ||
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .IsEmpty()) {
+    return;
+  }
+
+  if (suggestions.empty() ||
+      GetFillingProductFromPopupItemId(suggestions[0].popup_item_id) !=
+          FillingProduct::kAutocomplete) {
+    return;
+  }
+
+  // If the focused field is not classified as an email address, plus addresses
+  // would never be shown.
+  using enum AutocompleteSuppressionByPlusAddress;
+  if (!focused_field ||
+      focused_field->Type().group() != FieldTypeGroup::kEmail) {
+    base::UmaHistogramEnumeration(kAutocompleteSuppressionByPlusAddressUma,
+                                  kNotSuppressed);
+    return;
+  }
+  const bool has_email =
+      base::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
+        return IsValidEmailAddress(suggestion.main_text.value);
+      });
+  base::UmaHistogramEnumeration(
+      kAutocompleteSuppressionByPlusAddressUma,
+      has_email ? kSuppressedWithEmailResults : kSuppressedWithoutEmailResults);
 }
 
 // Emits a metric that measures how long it took to show a single field form
@@ -1184,17 +1232,22 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
               field, client(),
               base::BindRepeating(
                   [](base::WeakPtr<BrowserAutofillManager> self,
-                     base::TimeTicks request_start_time, FieldGlobalId field_id,
+                     base::TimeTicks request_start_time,
+                     AutofillField* focused_field, FieldGlobalId field_id,
                      const std::vector<Suggestion>& suggestions) {
-                    if (self) {
-                      LogTimeDelayForSingleFieldFormFill(
-                          suggestions,
-                          base::TimeTicks::Now() - request_start_time);
-                      self->external_delegate_->OnSuggestionsReturned(
-                          field_id, suggestions);
+                    if (!self) {
+                      return;
                     }
+                    MaybeLogAutocompleteSuppressionByPlusAddresses(
+                        self->client(), suggestions, focused_field);
+                    LogTimeDelayForSingleFieldFormFill(
+                        suggestions,
+                        base::TimeTicks::Now() - request_start_time);
+                    self->external_delegate_->OnSuggestionsReturned(
+                        field_id, suggestions);
                   },
-                  weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+                  weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                  context.focused_field),
               context);
       if (handled_by_single_field_form_filler) {
         return false;

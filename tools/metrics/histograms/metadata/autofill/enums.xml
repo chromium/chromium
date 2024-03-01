@@ -59,6 +59,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Suggestion Deleted"/>
 </enum>
 
+<enum name="AutocompleteSuppressionByPlusAddress">
+  <int value="0"
+      label="Autocomplete suggestions would not have been suppressed."/>
+  <int value="1"
+      label="Autocomplete suggestions would have been suppressed and would
+             have contained email addresses."/>
+  <int value="2"
+      label="Autocomplete suggestions would have been suppressed and would
+             not have contained email addresses."/>
+</enum>
+
 <enum name="AutofillAddressProfileImportCountrySpecificFieldRequirement">
   <int value="0" label="All required fields present"/>
   <int value="1" label="Missing: ZIP"/>

@@ -43,6 +43,7 @@
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -107,6 +108,8 @@ namespace autofill {
 
 namespace {
 
+using ::base::Bucket;
+using ::base::BucketsAre;
 using ::base::UTF8ToUTF16;
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
@@ -2000,6 +2003,121 @@ TEST_F(BrowserAutofillManagerTest,
                                         {suggestions[0], suggestions[1]});
   histogram_tester.ExpectTotalCount(
       "Autofill.Popup.SingleFieldFormFillerDelay.Autocomplete", 1);
+}
+
+// Tests that metrics are logged to measure whether Autocomplete would have been
+// suppressed by Plus Address suggestions whenever an Autocomplete popup is
+// shown. Simulates Autocomplete suggestions that do not contain email strings.
+TEST_F(BrowserAutofillManagerTest,
+       AutocompleteSuppressionWithoutEmailSuggestions) {
+  // Required to enable heuristics for small forms.
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableEmailHeuristicOnlyAddressForms};
+
+  autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
+      "plus@plus.plus", signin::ConsentLevel::kSignin);
+  // Clear profiles to avoid that Autofill takes precedence.
+  personal_data().ClearProfiles();
+  FormData form_without_email =
+      test::GetFormData({.fields = {{.role = NAME_FIRST}}});
+  FormData form_with_email =
+      test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
+  FormsSeen({form_without_email, form_with_email});
+
+  ON_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+      .WillByDefault(
+          [&](const FormFieldData& field, const AutofillClient&,
+              SingleFieldFormFiller::OnSuggestionsReturnedCallback callback,
+              const SuggestionsContext&) {
+            std::move(callback).Run(field.global_id(),
+                                    {Suggestion(u"one"), Suggestion(u"test@")});
+            return true;
+          });
+
+  // An interaction with a non-email field will never lead to a suppression of
+  // Autocomplete.
+  {
+    base::HistogramTester histogram_tester;
+    GetAutofillSuggestions(
+        form_without_email, form_without_email.fields[0],
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+    histogram_tester.ExpectUniqueSample(
+        kAutocompleteSuppressionByPlusAddressUma,
+        AutocompleteSuppressionByPlusAddress::kNotSuppressed, 1);
+  }
+
+  // But an interaction with an email field will suppress Autocomplete.
+  {
+    base::HistogramTester histogram_tester;
+    GetAutofillSuggestions(
+        form_with_email, form_with_email.fields[0],
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+    histogram_tester.ExpectUniqueSample(
+        kAutocompleteSuppressionByPlusAddressUma,
+        AutocompleteSuppressionByPlusAddress::kSuppressedWithoutEmailResults,
+        1);
+  }
+}
+
+// Tests that metrics are logged to measure whether Autocomplete would have been
+// suppressed by Plus Address suggestions. Simulates Autocomplete suggestions
+// with email strings. Also tests that no metrics are emitted for signed-out
+// users and in incognito mode.
+TEST_F(BrowserAutofillManagerTest,
+       AutocompleteSuppressionWithEmailSuggestions) {
+  // Required to enable heuristics for small forms.
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableEmailHeuristicOnlyAddressForms};
+
+  // Clear profiles to avoid that Autofill takes precedence.
+  personal_data().ClearProfiles();
+  FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
+  FormsSeen({form});
+  ON_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+      .WillByDefault(
+          [&](const FormFieldData& field, const AutofillClient&,
+              SingleFieldFormFiller::OnSuggestionsReturnedCallback callback,
+              const SuggestionsContext&) {
+            std::move(callback).Run(
+                field.global_id(),
+                {Suggestion(u"one"), Suggestion(u"test@foo.com")});
+            return true;
+          });
+
+  // No metrics are recorded if the user is not signed in.
+  {
+    base::HistogramTester histogram_tester;
+    GetAutofillSuggestions(
+        form, form.fields[0],
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+    histogram_tester.ExpectTotalCount(kAutocompleteSuppressionByPlusAddressUma,
+                                      0);
+  }
+
+  // An interaction with an email field will suppress Autocomplete for a
+  // signed-in user.
+  autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
+      "plus@plus.plus", signin::ConsentLevel::kSignin);
+  {
+    base::HistogramTester histogram_tester;
+    GetAutofillSuggestions(
+        form, form.fields[0],
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+    histogram_tester.ExpectUniqueSample(
+        kAutocompleteSuppressionByPlusAddressUma,
+        AutocompleteSuppressionByPlusAddress::kSuppressedWithEmailResults, 1);
+  }
+
+  // No metrics are recorded in incognito mode.
+  autofill_client_.set_is_off_the_record(true);
+  {
+    base::HistogramTester histogram_tester;
+    GetAutofillSuggestions(
+        form, form.fields[0],
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+    histogram_tester.ExpectTotalCount(kAutocompleteSuppressionByPlusAddressUma,
+                                      0);
+  }
 }
 
 class BrowserAutofillManagerTestForMetadataCardSuggestions

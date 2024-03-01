@@ -882,6 +882,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Autocomplete.SuppressionByPlusAddress"
+    enum="AutocompleteSuppressionByPlusAddress" expires_after="2024-09-30">
+  <owner>jkeitel@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <summary>
+    Records whether an Autocomplete suggestion would have been suppressed by a
+    Plus Address suggestion. In case that it would have been suppressed, it also
+    checks whether any of the Autocomplete suggestions would have contained a
+    valid email string. Emitted whenever one or more Autocomplete suggestions
+    are shown (either in the Autofill popup or the keyboard accessory), the user
+    is signed in, and is not using incognito mode. Note that this metric will
+    become meaningless once the Plus Address feature is rolled out to a
+    significant portion of users.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AutocompleteUnrecognized.FieldFillingStat"
     enum="FieldFillingStat" expires_after="2024-12-12">
   <owner>jihadghanna@google.com</owner>
