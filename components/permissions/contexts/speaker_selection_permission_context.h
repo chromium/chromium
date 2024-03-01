@@ -7,8 +7,9 @@
 
 #include "components/permissions/permission_context_base.h"
 
-namespace permissions {
-
+// TODO(https://crbug.com/41492674): speaker selection is not hooked with
+// MediaStreamDevicesController yet, which could be when we have permission
+// prompt for speaker selection.
 class SpeakerSelectionPermissionContext
     : public permissions::PermissionContextBase {
  public:
@@ -20,23 +21,6 @@ class SpeakerSelectionPermissionContext
       delete;
   SpeakerSelectionPermissionContext& operator=(
       const SpeakerSelectionPermissionContext&) = delete;
-
- protected:
-  ContentSetting GetPermissionStatusInternal(
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin) const override;
-
-  void DecidePermission(
-      permissions::PermissionRequestData request_data,
-      permissions::BrowserPermissionCallback callback) override;
-
-  void UpdateContentSetting(const GURL& requesting_origin,
-                            const GURL& embedding_origin,
-                            ContentSetting content_setting,
-                            bool is_one_time) override;
 };
-
-}  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_CONTEXTS_SPEAKER_SELECTION_PERMISSION_CONTEXT_H_

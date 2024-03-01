@@ -115,6 +115,9 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<MediaStreamDevicePermissionContext>(
           profile, ContentSettingsType::MEDIASTREAM_MIC);
 
+  permission_contexts[ContentSettingsType::SPEAKER_SELECTION] =
+      std::make_unique<SpeakerSelectionPermissionContext>(profile);
+
   // TODO(crbug.com/1025610): Move once Notifications are supported on WebLayer.
   permission_contexts[ContentSettingsType::NOTIFICATIONS] =
       std::make_unique<NotificationPermissionContext>(profile);
@@ -146,9 +149,6 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::CAPTURED_SURFACE_CONTROL] =
       std::make_unique<permissions::CapturedSurfaceControlPermissionContext>(
           profile);
-
-  permission_contexts[ContentSettingsType::SPEAKER_SELECTION] =
-      std::make_unique<permissions::SpeakerSelectionPermissionContext>(profile);
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
   permission_contexts[ContentSettingsType::WEB_PRINTING] =

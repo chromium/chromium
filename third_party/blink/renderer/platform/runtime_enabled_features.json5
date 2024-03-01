@@ -3510,7 +3510,7 @@
     },
     {
       name: "SpeakerSelection",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "SpeculationRulesDocumentRules",
