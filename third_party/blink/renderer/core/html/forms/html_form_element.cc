@@ -765,8 +765,17 @@ void HTMLFormElement::CollectListedElements(
     ListedElement::List* elements_including_shadow_trees,
     bool in_shadow_tree) const {
   DCHECK(!in_shadow_tree || elements_including_shadow_trees);
-  if (!in_shadow_tree)
+  HeapVector<Member<HTMLFormElement>> nested_forms;
+  if (!in_shadow_tree) {
     elements.clear();
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillIncludeFormElementsInShadowDom)) {
+      for (HTMLFormElement& nested_form :
+           Traversal<HTMLFormElement>::DescendantsOf(*this)) {
+        nested_forms.push_back(nested_form);
+      }
+    }
+  }
   for (HTMLElement& element : Traversal<HTMLElement>::StartsAfter(root)) {
     if (ListedElement* listed_element = ListedElement::From(element)) {
       // There are two scenarios:
@@ -793,6 +802,10 @@ void HTMLFormElement::CollectListedElements(
         elements.push_back(listed_element);
         if (elements_including_shadow_trees)
           elements_including_shadow_trees->push_back(listed_element);
+      } else if (base::Contains(nested_forms, listed_element->Form())) {
+        if (elements_including_shadow_trees) {
+          elements_including_shadow_trees->push_back(listed_element);
+        }
       }
     }
     if (elements_including_shadow_trees && element.AuthorShadowRoot() &&

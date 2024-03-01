@@ -52,6 +52,9 @@ void HTMLFormElementTest::SetUp() {
 //     <form id=form2>
 //       <input>
 TEST_F(HTMLFormElementTest, ListedElementsNestedForms) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillIncludeFormElementsInShadowDom);
   HTMLBodyElement* body = GetDocument().FirstBodyElement();
 
   HTMLFormElement* form1 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
@@ -106,6 +109,9 @@ TEST_F(HTMLFormElementTest, ListedElementsDetachedForm) {
 // in this tree, and each step of the way, ListedElements is checked on all
 // forms.
 TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTrees) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillIncludeFormElementsInShadowDom);
   HTMLBodyElement* body = GetDocument().FirstBodyElement();
 
   HTMLFormElement* form1 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
@@ -348,8 +354,8 @@ TEST_F(HTMLFormElementTest, ListedElementsInNestedForms) {
                           GetListedElement("i3", shadow_root)));
 }
 
-// Tests that dynamic addition and removal of an element properly invalidates
-// the caches of all ancestors.
+// Tests that dynamic addition and removal of an element inside Shadow DOM
+// properly invalidates the caches of all ancestors.
 TEST_F(HTMLFormElementTest, ListedElementsInDeepNestedForms) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillIncludeFormElementsInShadowDom};
@@ -403,6 +409,53 @@ TEST_F(HTMLFormElementTest, ListedElementsInDeepNestedForms) {
   EXPECT_THAT(f1->ListedElements(/*include_shadow_trees=*/true),
               ElementsAre(GetListedElement("i1", shadow_root1),
                           GetListedElement("i2", shadow_root2)));
+}
+
+// Tests that changes inside nested forms inside light DOM properly invalidate
+// the cache for listed elements.
+TEST_F(HTMLFormElementTest, ListedElementsInDeepNestedFormsLightDom) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillIncludeFormElementsInShadowDom};
+
+  HTMLBodyElement* body = GetDocument().FirstBodyElement();
+  HTMLFormElement* f1 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
+  body->AppendChild(f1);
+  HTMLFormElement* f2 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
+  f1->AppendChild(f2);
+  HTMLFormElement* f3 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
+  f2->AppendChild(f3);
+  HTMLInputElement* input =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
+
+  // Prior to attaching `input`, no form has a listed element.
+  EXPECT_THAT(f1->ListedElements(/*include_shadow_trees=*/true), IsEmpty());
+  EXPECT_THAT(f2->ListedElements(/*include_shadow_trees=*/true), IsEmpty());
+  EXPECT_THAT(f3->ListedElements(/*include_shadow_trees=*/true), IsEmpty());
+
+  // If input is attached to a form, all parent forms should also have this
+  // element.
+  f1->AppendChild(input);
+  EXPECT_THAT(f1->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(input));
+  EXPECT_THAT(f2->ListedElements(/*include_shadow_trees=*/true), IsEmpty());
+  EXPECT_THAT(f3->ListedElements(/*include_shadow_trees=*/true), IsEmpty());
+
+  input->remove();
+  f2->AppendChild(input);
+  EXPECT_THAT(f1->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(input));
+  EXPECT_THAT(f2->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(input));
+  EXPECT_THAT(f3->ListedElements(/*include_shadow_trees=*/true), IsEmpty());
+
+  input->remove();
+  f3->AppendChild(input);
+  EXPECT_THAT(f1->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(input));
+  EXPECT_THAT(f2->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(input));
+  EXPECT_THAT(f3->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(input));
 }
 
 }  // namespace blink

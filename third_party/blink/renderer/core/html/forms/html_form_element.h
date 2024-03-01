@@ -120,6 +120,15 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     return radio_button_group_scope_;
   }
 
+  // Returns the listed elements associated with `this`. If
+  // `include_shadow_trees` is `true`, then the list will also contain
+  // descendants of `this` that are form control elements and inside Shadow DOM.
+  // Note that if `kAutofillIncludeFormElementsInShadowDom` is enabled and
+  // `include_shadow_trees` is true, then, additionally, the result will contain
+  // the form control elements of <form>s nested inside `this`. In principle,
+  // form nesting is prohibited by the HTML standard, but in practice it can
+  // still occur - e.g., by dynamically appending <form> children to (a
+  // descendant of) `this`.
   const ListedElement::List& ListedElements(
       bool include_shadow_trees = false) const;
   const HeapVector<Member<HTMLImageElement>>& ImageElements();

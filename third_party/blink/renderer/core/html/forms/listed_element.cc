@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -56,10 +57,18 @@ namespace {
 
 void InvalidateShadowIncludingAncestorForms(ContainerNode& insertion_point) {
   // Let any forms in the shadow including ancestors know that this
-  // ListedElement has changed. Don't include any forms inside the same
-  // TreeScope know because that relationship isn't tracked by listed elements
-  // including shadow trees.
-  for (ContainerNode* parent = insertion_point.OwnerShadowHost(); parent;
+  // ListedElement has changed. If `kAutofillIncludeFormElementsInShadowDom` is
+  // disabled, forms inside the same `TreeScope` do not need to be included
+  // because their listed elements track their association elsewhere.
+  // If `kAutofillIncludeFormElementsInShadowDom` is enabled, we also cache
+  // listed elements inside (descendant) nested forms in and therefore need to
+  // invalidate the caches also inside the same `TreeScope`.
+  ContainerNode* starting_node =
+      base::FeatureList::IsEnabled(
+          features::kAutofillIncludeFormElementsInShadowDom)
+          ? insertion_point.ParentOrShadowHostNode()
+          : insertion_point.OwnerShadowHost();
+  for (ContainerNode* parent = starting_node; parent;
        parent = parent->ParentOrShadowHostNode()) {
     if (HTMLFormElement* form = DynamicTo<HTMLFormElement>(parent)) {
       form->InvalidateListedElementsIncludingShadowTrees();
