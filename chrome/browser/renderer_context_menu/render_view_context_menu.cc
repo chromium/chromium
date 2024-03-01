@@ -300,7 +300,7 @@
 #include "chrome/browser/chromeos/arc/start_smart_selection_action_menu.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
+#include "chrome/browser/renderer_context_menu/read_write_card_observer.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
@@ -1323,10 +1323,10 @@ void RenderViewContextMenu::InitMenu() {
     menu_model_.RemoveItemAt(0);
   }
 
-  // Always add Quick Answers view last, as it is rendered next to the context
+  // Always add read write cards UI last, as it is rendered next to the context
   // menu, meaning that each menu item added/removed in this function will cause
   // it to visibly jump on the screen (see b/173569669).
-  AppendQuickAnswersItems();
+  AppendReadWriteCardItems();
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillPopupDoesNotOverlapWithContextMenu)) {
@@ -1892,15 +1892,15 @@ void RenderViewContextMenu::AppendOpenWithLinkItems() {
 #endif
 }
 
-void RenderViewContextMenu::AppendQuickAnswersItems() {
+void RenderViewContextMenu::AppendReadWriteCardItems() {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (!quick_answers_menu_observer_) {
-    quick_answers_menu_observer_ =
-        std::make_unique<QuickAnswersMenuObserver>(this, GetProfile());
+  if (!read_write_card_observer_) {
+    read_write_card_observer_ =
+        std::make_unique<ReadWriteCardObserver>(this, GetProfile());
   }
 
-  observers_.AddObserver(quick_answers_menu_observer_.get());
-  quick_answers_menu_observer_->InitMenu(params_);
+  observers_.AddObserver(read_write_card_observer_.get());
+  read_write_card_observer_->InitMenu(params_);
 #endif
 }
 

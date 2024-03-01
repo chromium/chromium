@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_QUICK_ANSWERS_MENU_OBSERVER_H_
-#define CHROME_BROWSER_RENDERER_CONTEXT_MENU_QUICK_ANSWERS_MENU_OBSERVER_H_
+#ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_READ_WRITE_CARD_OBSERVER_H_
+#define CHROME_BROWSER_RENDERER_CONTEXT_MENU_READ_WRITE_CARD_OBSERVER_H_
 
 #include <memory>
 #include <string>
@@ -21,14 +21,15 @@ namespace chromeos {
 class ReadWriteCardController;
 }  // namespace chromeos
 
-// A class that implements the quick answers menu.
-class QuickAnswersMenuObserver : public RenderViewContextMenuObserver {
+// A class that observes context menu actions and notify all the associated
+// `ReadWriteCardController` about the events.
+class ReadWriteCardObserver : public RenderViewContextMenuObserver {
  public:
-  QuickAnswersMenuObserver(const QuickAnswersMenuObserver&) = delete;
-  QuickAnswersMenuObserver& operator=(const QuickAnswersMenuObserver&) = delete;
+  ReadWriteCardObserver(const ReadWriteCardObserver&) = delete;
+  ReadWriteCardObserver& operator=(const ReadWriteCardObserver&) = delete;
 
-  QuickAnswersMenuObserver(RenderViewContextMenuProxy* proxy, Profile* profile);
-  ~QuickAnswersMenuObserver() override;
+  ReadWriteCardObserver(RenderViewContextMenuProxy* proxy, Profile* profile);
+  ~ReadWriteCardObserver() override;
 
   // RenderViewContextMenuObserver implementation.
   void CommandWillBeExecuted(int command_id) override;
@@ -39,7 +40,7 @@ class QuickAnswersMenuObserver : public RenderViewContextMenuObserver {
   void OnMenuClosed() override;
 
  private:
-  friend class QuickAnswersMenuObserverTest;
+  friend class ReadWriteCardObserverTest;
 
   void OnTextSurroundingSelectionAvailable(
       const std::u16string& selected_text,
@@ -67,7 +68,7 @@ class QuickAnswersMenuObserver : public RenderViewContextMenuObserver {
   std::vector<raw_ptr<chromeos::ReadWriteCardController>>
       read_write_card_controllers_;
 
-  base::WeakPtrFactory<QuickAnswersMenuObserver> weak_factory_{this};
+  base::WeakPtrFactory<ReadWriteCardObserver> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_QUICK_ANSWERS_MENU_OBSERVER_H_
+#endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_READ_WRITE_CARD_OBSERVER_H_

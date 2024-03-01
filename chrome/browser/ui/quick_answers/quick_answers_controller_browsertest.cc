@@ -10,11 +10,11 @@
 
 namespace {
 
-using QuickAnswersMenuObserverTest = quick_answers::QuickAnswersBrowserTestBase;
+using QuickAnswersControllerTest = quick_answers::QuickAnswersBrowserTestBase;
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, FeatureIneligible) {
+IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, FeatureIneligible) {
   QuickAnswersState::Get()->set_eligibility_for_testing(false);
 
   ShowMenuParams params;
@@ -27,7 +27,7 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, FeatureIneligible) {
             controller()->GetVisibilityForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, PasswordField) {
+IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, PasswordField) {
   QuickAnswersState::Get()->set_eligibility_for_testing(true);
 
   ShowMenuParams params;
@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, PasswordField) {
             controller()->GetVisibilityForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, NoSelectedText) {
+IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, NoSelectedText) {
   QuickAnswersState::Get()->set_eligibility_for_testing(true);
 
   ShowMenu(ShowMenuParams());
@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, NoSelectedText) {
             controller()->GetVisibilityForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, QuickAnswersPending) {
+IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, QuickAnswersPending) {
   QuickAnswersState::Get()->set_eligibility_for_testing(true);
 
   ShowMenuParams params;

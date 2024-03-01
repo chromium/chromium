@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
+#include "chrome/browser/renderer_context_menu/read_write_card_observer.h"
 
 #include <utility>
 #include <vector>
@@ -22,14 +22,13 @@ constexpr int kMaxSurroundingTextLength = 300;
 
 }  // namespace
 
-QuickAnswersMenuObserver::QuickAnswersMenuObserver(
-    RenderViewContextMenuProxy* proxy,
-    Profile* profile)
+ReadWriteCardObserver::ReadWriteCardObserver(RenderViewContextMenuProxy* proxy,
+                                             Profile* profile)
     : proxy_(proxy), profile_(profile) {}
 
-QuickAnswersMenuObserver::~QuickAnswersMenuObserver() = default;
+ReadWriteCardObserver::~ReadWriteCardObserver() = default;
 
-void QuickAnswersMenuObserver::OnContextMenuShown(
+void ReadWriteCardObserver::OnContextMenuShown(
     const content::ContextMenuParams& params,
     const gfx::Rect& bounds_in_screen) {
   chromeos::ReadWriteCardsManager* cards_manager =
@@ -38,11 +37,11 @@ void QuickAnswersMenuObserver::OnContextMenuShown(
 
   cards_manager->FetchController(
       params, proxy_->GetBrowserContext(),
-      base::BindOnce(&QuickAnswersMenuObserver::OnFetchControllers,
+      base::BindOnce(&ReadWriteCardObserver::OnFetchControllers,
                      weak_factory_.GetWeakPtr(), params, bounds_in_screen));
 }
 
-void QuickAnswersMenuObserver::OnContextMenuViewBoundsChanged(
+void ReadWriteCardObserver::OnContextMenuViewBoundsChanged(
     const gfx::Rect& bounds_in_screen) {
   for (auto controller : read_write_card_controllers_) {
     if (!controller) {
@@ -55,7 +54,7 @@ void QuickAnswersMenuObserver::OnContextMenuViewBoundsChanged(
   }
 }
 
-void QuickAnswersMenuObserver::OnMenuClosed() {
+void ReadWriteCardObserver::OnMenuClosed() {
   for (auto controller : read_write_card_controllers_) {
     if (!controller) {
       continue;
@@ -68,11 +67,11 @@ void QuickAnswersMenuObserver::OnMenuClosed() {
   is_other_command_executed_ = false;
 }
 
-void QuickAnswersMenuObserver::CommandWillBeExecuted(int command_id) {
+void ReadWriteCardObserver::CommandWillBeExecuted(int command_id) {
   is_other_command_executed_ = true;
 }
 
-void QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable(
+void ReadWriteCardObserver::OnTextSurroundingSelectionAvailable(
     const std::u16string& selected_text,
     const std::u16string& surrounding_text,
     uint32_t start_offset,
@@ -88,7 +87,7 @@ void QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable(
   }
 }
 
-void QuickAnswersMenuObserver::OnFetchControllers(
+void ReadWriteCardObserver::OnFetchControllers(
     const content::ContextMenuParams& params,
     const gfx::Rect& bounds_in_screen,
     std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> controllers) {
@@ -116,7 +115,7 @@ void QuickAnswersMenuObserver::OnFetchControllers(
   if (focused_frame) {
     focused_frame->RequestTextSurroundingSelection(
         base::BindOnce(
-            &QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable,
+            &ReadWriteCardObserver::OnTextSurroundingSelectionAvailable,
             weak_factory_.GetWeakPtr(), params.selection_text),
         kMaxSurroundingTextLength);
   }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
+#include "chrome/browser/renderer_context_menu/read_write_card_observer.h"
 
 #include <cstddef>
 #include <memory>
@@ -73,22 +73,22 @@ class TestReadWriteCardController : public chromeos::ReadWriteCardController {
 
 }  // namespace
 
-class QuickAnswersMenuObserverTest : public ChromeRenderViewHostTestHarness {
+class ReadWriteCardObserverTest : public ChromeRenderViewHostTestHarness {
  public:
-  QuickAnswersMenuObserverTest() = default;
+  ReadWriteCardObserverTest() = default;
 
-  QuickAnswersMenuObserverTest(const QuickAnswersMenuObserverTest&) = delete;
-  QuickAnswersMenuObserverTest& operator=(const QuickAnswersMenuObserverTest&) =
+  ReadWriteCardObserverTest(const ReadWriteCardObserverTest&) = delete;
+  ReadWriteCardObserverTest& operator=(const ReadWriteCardObserverTest&) =
       delete;
 
-  ~QuickAnswersMenuObserverTest() override = default;
+  ~ReadWriteCardObserverTest() override = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
     context_menu_ = CreateContextMenu(web_contents());
-    observer_ = std::make_unique<QuickAnswersMenuObserver>(context_menu_.get(),
-                                                           profile());
+    observer_ =
+        std::make_unique<ReadWriteCardObserver>(context_menu_.get(), profile());
 
     auto controllers = InitControllers();
 
@@ -110,7 +110,7 @@ class QuickAnswersMenuObserverTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   std::vector<std::unique_ptr<TestReadWriteCardController>> controllers_;
-  std::unique_ptr<QuickAnswersMenuObserver> observer_;
+  std::unique_ptr<ReadWriteCardObserver> observer_;
 
  private:
   std::vector<base::WeakPtr<chromeos::ReadWriteCardController>>
@@ -132,7 +132,7 @@ class QuickAnswersMenuObserverTest : public ChromeRenderViewHostTestHarness {
 
 // Make sure that all controllers are fetched into the class after
 // `OnFetchControllers`.
-TEST_F(QuickAnswersMenuObserverTest, FetchController) {
+TEST_F(ReadWriteCardObserverTest, FetchController) {
   EXPECT_EQ(controllers_.size(), GetReadWriteCardControllers().size());
   EXPECT_FALSE(controllers_.empty());
 
@@ -141,14 +141,14 @@ TEST_F(QuickAnswersMenuObserverTest, FetchController) {
   }
 }
 
-TEST_F(QuickAnswersMenuObserverTest, BoundsChanged) {
+TEST_F(ReadWriteCardObserverTest, BoundsChanged) {
   observer_->OnContextMenuViewBoundsChanged(/*bounds_in_screen=*/gfx::Rect());
   for (auto& controller : controllers_) {
     EXPECT_TRUE(controller->on_anchor_bounds_changed_called());
   }
 }
 
-TEST_F(QuickAnswersMenuObserverTest, OnMenuClosed) {
+TEST_F(ReadWriteCardObserverTest, OnMenuClosed) {
   observer_->OnMenuClosed();
   for (auto& controller : controllers_) {
     EXPECT_TRUE(controller->on_dismiss_called());

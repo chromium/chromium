@@ -63,7 +63,7 @@ class ClickToCallContextMenuObserver;
 class LinkToTextMenuObserver;
 class PrintPreviewContextMenuObserver;
 class Profile;
-class QuickAnswersMenuObserver;
+class ReadWriteCardObserver;
 class SpellingMenuObserver;
 class SpellingOptionsSubMenuObserver;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -283,7 +283,7 @@ class RenderViewContextMenu
   void AppendOpenWithLinkItems();
   void AppendSmartSelectionActionItems();
   void AppendOpenInWebAppLinkItems();
-  void AppendQuickAnswersItems();
+  void AppendReadWriteCardItems();
   void AppendImageItems();
   void AppendAudioItems();
   void AppendCanvasItems();
@@ -499,8 +499,8 @@ class RenderViewContextMenu
   // An observer that handles smart text selection action items.
   std::unique_ptr<RenderViewContextMenuObserver>
       start_smart_selection_action_menu_observer_;
-  // An observer that generate Quick answers queries.
-  std::unique_ptr<QuickAnswersMenuObserver> quick_answers_menu_observer_;
+  // An observer that populates events to read write cards.
+  std::unique_ptr<ReadWriteCardObserver> read_write_card_observer_;
 
   // A submenu model to contain clipboard history item descriptors. Used only if
   // the clipboard history refresh feature is enabled.
