@@ -516,6 +516,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 }
 
 // Regression test for crbug.com/1076378.
+// TODO(b/327118794): Delete this test once implicit signin no longer exists.
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        EnablesPasswordSyncOnOptingInToSync) {
   AddTestPasswordToFakeServer();
@@ -523,13 +524,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Setup Sync for an unconsented account (i.e. in transport mode).
-  AccountInfo account_info = secondary_account_helper::SignInUnconsentedAccount(
-      GetProfile(0), &test_url_loader_factory_, "user@email.com");
+  AccountInfo account_info =
+      secondary_account_helper::ImplicitSignInUnconsentedAccount(
+          GetProfile(0), &test_url_loader_factory_, "user@email.com");
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
-  // The user is not opted in to the account-scoped password storage, so the
-  // passwords data type should *not* be active.
+  // If signin is implicit, the user is not opted in to the account-scoped
+  // password storage, so the passwords data type should *not* be active.
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   // Turn on Sync-the-feature.

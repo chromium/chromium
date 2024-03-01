@@ -159,10 +159,13 @@ class SigninManagerTest : public testing::Test,
       const std::string& email,
       signin_metrics::AccessPoint access_point =
           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
-    AccountInfo account = identity_test_env_.MakeAccountAvailable(email);
-    EXPECT_FALSE(account.IsEmpty());
-    account.access_point = access_point;
-    identity_test_env_.UpdateAccountInfoForAccount(account);
+    AccountAvailabilityOptionsBuilder builder =
+        identity_test_env()
+            ->CreateAccountAvailabilityOptionsBuilder()
+            .WithAccessPoint(access_point);
+
+    AccountInfo account =
+        identity_test_env_.MakeAccountAvailable(builder.Build(email));
     signin::CookieParamsForTest cookie_params = {account.email, account.gaia};
     identity_test_env_.SetCookieAccounts({cookie_params});
     EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -529,10 +532,14 @@ TEST_P(SigninManagerTest,
 
 TEST_P(SigninManagerTest, UnconsentedPrimaryAccountUpdatedOnHandleDestroyed) {
   base::HistogramTester histogram_tester;
+  AccountAvailabilityOptionsBuilder builder =
+      identity_test_env()
+          ->CreateAccountAvailabilityOptionsBuilder()
+          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   AccountInfo first_account =
-      identity_test_env()->MakeAccountAvailable(kTestEmail);
+      identity_test_env()->MakeAccountAvailable(builder.Build(kTestEmail));
   AccountInfo second_account =
-      identity_test_env()->MakeAccountAvailable(kTestEmail2);
+      identity_test_env()->MakeAccountAvailable(builder.Build(kTestEmail2));
   identity_test_env()->SetCookieAccounts(
       {{first_account.email, first_account.gaia},
        {second_account.email, second_account.gaia}});
@@ -648,11 +655,6 @@ TEST_F(SigninManagerTest, SigninCompletedMetric) {
   AccountInfo account =
       MakeAccountAvailableWithCookies(kTestEmail, access_point);
   ExpectUnconsentedPrimaryAccountSetEvent(account);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros always records `ACCESS_POINT_DESKTOP_SIGNIN_MANAGER`.
-  access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER;
-#endif
   histogram_tester.ExpectUniqueSample("Signin.SignIn.Completed", access_point,
                                       1);
   histogram_tester.ExpectUniqueSample("Signin.SigninManager.SigninAccessPoint",

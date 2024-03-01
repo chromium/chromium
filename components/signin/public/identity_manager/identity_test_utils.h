@@ -159,7 +159,7 @@ struct AccountAvailabilityOptions {
       nullptr;
 
   const signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
 
   explicit AccountAvailabilityOptions(base::StringPiece email);
   ~AccountAvailabilityOptions();
@@ -230,7 +230,7 @@ class AccountAvailabilityOptionsBuilder {
   std::optional<std::string> refresh_token_ = std::string();
   bool with_cookie_ = false;
   signin_metrics::AccessPoint access_point_ =
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
 };
 
 // Sets up an account identified by `email` according to options provided. See

@@ -1427,12 +1427,13 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountNewProfile) {
   CheckDelegateCalls();
   CheckSigninMetrics({
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    .sign_in_access_point = signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      .sign_in_access_point =
+          signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
 #else
-    .sign_in_access_point = kAccessPoint,
+      .sign_in_access_point = kAccessPoint,
 #endif
-    .sign_in_recorded = true, .sync_opt_in_started = true
-  });
+      .sign_in_recorded = true,
+      .sync_opt_in_started = true});
 }
 
 // Abort after the enterprise confirmation prompt.
@@ -1513,12 +1514,13 @@ TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationNewProfile) {
   CheckDelegateCalls();
   CheckSigninMetrics({
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    .sign_in_access_point = signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      .sign_in_access_point =
+          signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
 #else
-    .sign_in_access_point = kAccessPoint,
+      .sign_in_access_point = kAccessPoint,
 #endif
-    .sign_in_recorded = true, .sync_opt_in_started = true
-  });
+      .sign_in_recorded = true,
+      .sync_opt_in_started = true});
 }
 
 // Wait for cloud policy to be merged before showing sync confirmation.
@@ -1612,12 +1614,13 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
   CheckDelegateCalls();
   CheckSigninMetrics({
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    .sign_in_access_point = signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      .sign_in_access_point =
+          signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
 #else
-    .sign_in_access_point = kAccessPoint,
+      .sign_in_access_point = kAccessPoint,
 #endif
-    .sign_in_recorded = true, .sync_opt_in_started = true
-  });
+      .sign_in_recorded = true,
+      .sync_opt_in_started = true});
 }
 
 class TurnSyncOnHelperSearchEngineTest : public TurnSyncOnHelperTest {

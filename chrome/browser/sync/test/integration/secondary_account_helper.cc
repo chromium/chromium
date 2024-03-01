@@ -116,6 +116,28 @@ AccountInfo SignInUnconsentedAccount(
   return account_info;
 }
 
+AccountInfo ImplicitSignInUnconsentedAccount(
+    Profile* profile,
+    network::TestURLLoaderFactory* test_url_loader_factory,
+    const std::string& email) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  signin::AccountAvailabilityOptionsBuilder builder;
+  AccountInfo account_info = signin::MakeAccountAvailable(
+      identity_manager,
+      builder
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+          .AsPrimary(signin::ConsentLevel::kSignin)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+        // `ACCESS_POINT_WEB_SIGNIN` is not explicit signin.
+          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
+          .Build(email));
+  SetCookieForGaiaId(account_info.gaia, account_info.email,
+                     /*signed_out=*/false, identity_manager,
+                     test_url_loader_factory);
+  return account_info;
+}
+
 void SignOutAccount(Profile* profile,
                     network::TestURLLoaderFactory* test_url_loader_factory,
                     const CoreAccountId& account_id) {

@@ -65,6 +65,7 @@
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -1143,9 +1144,21 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
           syncer::kSyncEnableWalletOfferInTransportMode)) {
     allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
   }
-  if (base::FeatureList::IsEnabled(
-          syncer::kEnablePasswordsAccountStorageForNonSyncingUsers)) {
+
+  bool allow_passwords = base::FeatureList::IsEnabled(
+      syncer::kEnablePasswordsAccountStorageForNonSyncingUsers);
+#if !BUILDFLAG(IS_ANDROID)
+  // This is an approximation because passwords are only enabled if the signin
+  // is explicit (they are not enabled for users who signed in through Dice).
+  allow_passwords &= switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+      switches::ExplicitBrowserSigninPhase::kExperimental);
+#endif
+
+  if (allow_passwords) {
     allowed_types.Put(syncer::PASSWORDS);
+    allowed_types.Put(syncer::WEBAUTHN_CREDENTIAL);
+    allowed_types.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);
+    allowed_types.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
   }
   if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage) &&
       base::FeatureList::IsEnabled(

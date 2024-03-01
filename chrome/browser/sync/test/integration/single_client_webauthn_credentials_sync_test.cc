@@ -15,6 +15,7 @@
 #include "chrome/browser/sync/test/integration/webauthn_credentials_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -856,26 +857,47 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 
 // The unconsented primary account isn't supported on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+
+class SingleClientWebAuthnCredentialsSyncTestExplicitParamTest
+    : public SingleClientWebAuthnCredentialsSyncTest,
+      public testing::WithParamInterface<bool /*explicit_signin*/> {
+ public:
+  SingleClientWebAuthnCredentialsSyncTestExplicitParamTest() = default;
+
+  bool is_explicit_signin() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+};
+
 // Tests that passkeys sync on transport mode only if the user has consented to
 // showing credentials from their Google account.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTestExplicitParamTest,
                        TransportModeConsent) {
   const std::string sync_id = InjectPasskeyToFakeServer(NewPasskey());
   ASSERT_TRUE(SetupClients());
 
-  AccountInfo account_info = secondary_account_helper::SignInUnconsentedAccount(
-      GetProfile(0), &test_url_loader_factory_, "user@email.com");
+  const char kTestEmail[] = "user@email.com";
+  AccountInfo account_info =
+      is_explicit_signin()
+          ? secondary_account_helper::SignInUnconsentedAccount(
+                GetProfile(0), &test_url_loader_factory_, kTestEmail)
+          : secondary_account_helper::ImplicitSignInUnconsentedAccount(
+                GetProfile(0), &test_url_loader_factory_, kTestEmail);
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
-  // Passkeys should not be syncing.
-  EXPECT_FALSE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::WEBAUTHN_CREDENTIAL));
+  if (!is_explicit_signin()) {
+    // Passkeys should be syncing only if the signin is explicit.
+    EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+        syncer::WEBAUTHN_CREDENTIAL));
 
-  // Let the user opt in to transport mode and wait for passkeys to start
-  // syncing.
-  password_manager::features_util::OptInToAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0));
+    // Let the user opt in to transport mode and wait for passkeys to start
+    // syncing.
+    password_manager::features_util::OptInToAccountStorage(
+        GetProfile(0)->GetPrefs(), GetSyncService(0));
+  }
   PasskeySyncActiveChecker(GetSyncService(0)).Wait();
   EXPECT_TRUE(
       LocalPasskeysMatchChecker(kSingleProfile,
@@ -887,6 +909,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
       GetProfile(0)->GetPrefs(), GetSyncService(0));
   EXPECT_TRUE(LocalPasskeysMatchChecker(kSingleProfile, IsEmpty()).Wait());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    SingleClientWebAuthnCredentialsSyncTestExplicitParamTest,
+    ::testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "Explicit" : "Implicit";
+    });
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

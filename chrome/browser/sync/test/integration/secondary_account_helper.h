@@ -48,6 +48,16 @@ AccountInfo SignInUnconsentedAccount(
     network::TestURLLoaderFactory* test_url_loader_factory,
     const std::string& email);
 
+// Sets an account as primary with `signin::ConsentLevel::kSignin`. There is no
+// consent for Sync. The account is available with both a refresh token and
+// cookie. The signin is not considered explicit (it happened through Dice
+// automatic signin), and account storage for passwords and addresses is not
+// opted-in.
+AccountInfo ImplicitSignInUnconsentedAccount(
+    Profile* profile,
+    network::TestURLLoaderFactory* test_url_loader_factory,
+    const std::string& email);
+
 // Clears signin cookies and removes the refresh token for the given account.
 void SignOutAccount(Profile* profile,
                     network::TestURLLoaderFactory* test_url_loader_factory,

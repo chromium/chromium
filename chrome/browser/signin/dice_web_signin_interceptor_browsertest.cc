@@ -931,8 +931,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
       switches::ExplicitBrowserSigninPhase::kExperimental));
 
-  signin::MakePrimaryAccountAvailable(identity_manager(), email_,
-                                      signin::ConsentLevel::kSignin);
+  signin::AccountAvailabilityOptionsBuilder builder;
+  AccountInfo account_info = signin::MakeAccountAvailable(
+      identity_manager(),
+      builder
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          // `ACCESS_POINT_UNKNOWN` is not explicit signin.
+          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN)
+          .Build(email_));
 
   EXPECT_TRUE(IsChromeSignedIn());
   EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
