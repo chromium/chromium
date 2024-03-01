@@ -12,6 +12,10 @@
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace WTF {
+class StringBuilder;
+}  // namespace WTF
+
 namespace blink {
 
 // Represents numeric values that can be expressed as a single number plus a
@@ -63,7 +67,7 @@ class CORE_EXPORT CSSUnitValue final : public CSSNumericValue {
   double ConvertFixedLength(CSSPrimitiveValue::UnitType) const;
   double ConvertAngle(CSSPrimitiveValue::UnitType) const;
 
-  void BuildCSSText(Nested, ParenLess, StringBuilder&) const final;
+  void BuildCSSText(Nested, ParenLess, WTF::StringBuilder&) const final;
 
   // From CSSNumericValue
   CSSNumericValue* Negate() final;

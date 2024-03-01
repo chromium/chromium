@@ -37,6 +37,10 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
+namespace WTF {
+class StringBuilder;
+}  // namespace WTF
+
 namespace blink {
 
 class CSSParserContext;
@@ -649,8 +653,8 @@ class CORE_EXPORT CSSSelector {
 
   unsigned SpecificityForOneSelector() const;
   unsigned SpecificityForPage() const;
-  bool SerializeSimpleSelector(StringBuilder& builder) const;
-  const CSSSelector* SerializeCompound(StringBuilder&) const;
+  bool SerializeSimpleSelector(WTF::StringBuilder& builder) const;
+  const CSSSelector* SerializeCompound(WTF::StringBuilder&) const;
 
   struct RareData : public GarbageCollected<RareData> {
     explicit RareData(const AtomicString& value);

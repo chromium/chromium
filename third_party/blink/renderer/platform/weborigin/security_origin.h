@@ -42,6 +42,10 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "url/origin.h"
 
+namespace WTF {
+class StringBuilder;
+}  // namespace WTF
+
 namespace blink {
 
 class KURL;
@@ -432,7 +436,7 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
 
   // FIXME: Rename this function to something more semantic.
   bool PassesFileCheck(const SecurityOrigin*) const;
-  void BuildRawString(StringBuilder&) const;
+  void BuildRawString(WTF::StringBuilder&) const;
 
   // Get the nonce associated with this origin, if it is opaque. This should be
   // used only when trying to send an Origin across an IPC pipe or comparing

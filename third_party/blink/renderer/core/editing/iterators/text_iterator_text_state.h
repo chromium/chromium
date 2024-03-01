@@ -33,6 +33,10 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+namespace WTF {
+class StringBuilder;
+}  // namespace WTF
+
 namespace blink {
 
 class ContainerNode;
@@ -53,7 +57,7 @@ class CORE_EXPORT TextIteratorTextState {
   UChar CharacterAt(unsigned index) const;
   // TODO(xiaochengh): Rename to |GetText()| as it's used in production code.
   String GetTextForTesting() const;
-  void AppendTextToStringBuilder(StringBuilder&,
+  void AppendTextToStringBuilder(WTF::StringBuilder&,
                                  unsigned position = 0,
                                  unsigned max_length = UINT_MAX) const;
 
