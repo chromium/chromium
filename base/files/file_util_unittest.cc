@@ -45,6 +45,7 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -4485,7 +4486,20 @@ TEST_F(FileUtilTest, GetUniquePathNumberTooManyFiles) {
   EXPECT_EQ(GetUniquePathNumber(some_file), -1);
 }
 
-TEST_F(FileUtilTest, PreReadFile_ExistingFile_NoSize) {
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
+    defined(ARCH_CPU_32_BITS)
+// TODO(crbug.com/327582285): Re-enable these tests. They may be failing due to
+// prefetching failing under memory pressure.
+#define FLAKY_327582285 1
+#endif
+
+#if defined(FLAKY_327582285)
+#define MAYBE_PreReadFileExistingFileNoSize \
+  DISABLED_PreReadFileExistingFileNoSize
+#else
+#define MAYBE_PreReadFileExistingFileNoSize PreReadFileExistingFileNoSize
+#endif
+TEST_F(FileUtilTest, MAYBE_PreReadFileExistingFileNoSize) {
   FilePath text_file = temp_dir_.GetPath().Append(FPL("text_file"));
   CreateTextFile(text_file, bogus_content);
 
@@ -4493,7 +4507,13 @@ TEST_F(FileUtilTest, PreReadFile_ExistingFile_NoSize) {
       PreReadFile(text_file, /*is_executable=*/false, /*sequential=*/false));
 }
 
-TEST_F(FileUtilTest, PreReadFile_ExistingFile_ExactSize) {
+#if defined(FLAKY_327582285)
+#define MAYBE_PreReadFileExistingFileExactSize \
+  DISABLED_PreReadFileExistingFileExactSize
+#else
+#define MAYBE_PreReadFileExistingFileExactSize PreReadFileExistingFileExactSize
+#endif
+TEST_F(FileUtilTest, MAYBE_PreReadFileExistingFileExactSize) {
   FilePath text_file = temp_dir_.GetPath().Append(FPL("text_file"));
   CreateTextFile(text_file, bogus_content);
 
@@ -4501,7 +4521,13 @@ TEST_F(FileUtilTest, PreReadFile_ExistingFile_ExactSize) {
                           /*sequential=*/false, std::size(bogus_content)));
 }
 
-TEST_F(FileUtilTest, PreReadFile_ExistingFile_OverSized) {
+#if defined(FLAKY_327582285)
+#define MAYBE_PreReadFileExistingFileOverSized \
+  DISABLED_PreReadFileExistingFileOverSized
+#else
+#define MAYBE_PreReadFileExistingFileOverSized PreReadFileExistingFileOverSized
+#endif
+TEST_F(FileUtilTest, MAYBE_PreReadFileExistingFileOverSized) {
   FilePath text_file = temp_dir_.GetPath().Append(FPL("text_file"));
   CreateTextFile(text_file, bogus_content);
 
@@ -4509,7 +4535,14 @@ TEST_F(FileUtilTest, PreReadFile_ExistingFile_OverSized) {
                           /*sequential=*/false, std::size(bogus_content) * 2));
 }
 
-TEST_F(FileUtilTest, PreReadFile_ExistingFile_UnderSized) {
+#if defined(FLAKY_327582285)
+#define MAYBE_PreReadFileExistingFileUnderSized \
+  DISABLED_PreReadFileExistingFileUnderSized
+#else
+#define MAYBE_PreReadFileExistingFileUnderSized \
+  PreReadFileExistingFileUnderSized
+#endif
+TEST_F(FileUtilTest, MAYBE_PreReadFileExistingFileUnderSized) {
   FilePath text_file = temp_dir_.GetPath().Append(FPL("text_file"));
   CreateTextFile(text_file, bogus_content);
 
@@ -4517,7 +4550,7 @@ TEST_F(FileUtilTest, PreReadFile_ExistingFile_UnderSized) {
                           /*sequential=*/false, std::size(bogus_content) / 2));
 }
 
-TEST_F(FileUtilTest, PreReadFile_ExistingFile_ZeroSize) {
+TEST_F(FileUtilTest, PreReadFileExistingFileZeroSize) {
   FilePath text_file = temp_dir_.GetPath().Append(FPL("text_file"));
   CreateTextFile(text_file, bogus_content);
 
@@ -4525,7 +4558,7 @@ TEST_F(FileUtilTest, PreReadFile_ExistingFile_ZeroSize) {
                           /*sequential=*/false, /*max_bytes=*/0));
 }
 
-TEST_F(FileUtilTest, PreReadFile_ExistingEmptyFile_NoSize) {
+TEST_F(FileUtilTest, PreReadFileExistingEmptyFileNoSize) {
   FilePath text_file = temp_dir_.GetPath().Append(FPL("text_file"));
   CreateTextFile(text_file, L"");
   // The test just asserts that this doesn't crash. The Windows implementation
@@ -4534,20 +4567,25 @@ TEST_F(FileUtilTest, PreReadFile_ExistingEmptyFile_NoSize) {
   PreReadFile(text_file, /*is_executable=*/false, /*sequential=*/false);
 }
 
-TEST_F(FileUtilTest, PreReadFile_ExistingEmptyFile_ZeroSize) {
+TEST_F(FileUtilTest, PreReadFileExistingEmptyFileZeroSize) {
   FilePath text_file = temp_dir_.GetPath().Append(FPL("text_file"));
   CreateTextFile(text_file, L"");
   EXPECT_TRUE(PreReadFile(text_file, /*is_executable=*/false,
                           /*sequential=*/false, /*max_bytes=*/0));
 }
 
-TEST_F(FileUtilTest, PreReadFile_InexistentFile) {
+TEST_F(FileUtilTest, PreReadFileInexistentFile) {
   FilePath inexistent_file = temp_dir_.GetPath().Append(FPL("inexistent_file"));
   EXPECT_FALSE(PreReadFile(inexistent_file, /*is_executable=*/false,
                            /*sequential=*/false));
 }
 
-TEST_F(FileUtilTest, PreReadFile_Executable) {
+#if defined(FLAKY_327582285)
+#define MAYBE_PreReadFileExecutable DISABLED_PreReadFileExecutable
+#else
+#define MAYBE_PreReadFileExecutable PreReadFileExecutable
+#endif
+TEST_F(FileUtilTest, MAYBE_PreReadFileExecutable) {
   FilePath exe_data_dir;
   ASSERT_TRUE(PathService::Get(DIR_TEST_DATA, &exe_data_dir));
   exe_data_dir = exe_data_dir.Append(FPL("pe_image_reader"));
@@ -4561,13 +4599,21 @@ TEST_F(FileUtilTest, PreReadFile_Executable) {
       PreReadFile(test_exe, /*is_executable=*/true, /*sequential=*/false));
 }
 
-TEST_F(FileUtilTest, PreReadFileWithSequentialAccess) {
+#if defined(FLAKY_327582285)
+#define MAYBE_PreReadFileWithSequentialAccess \
+  DISABLED_PreReadFileWithSequentialAccess
+#else
+#define MAYBE_PreReadFileWithSequentialAccess PreReadFileWithSequentialAccess
+#endif
+TEST_F(FileUtilTest, MAYBE_PreReadFileWithSequentialAccess) {
   FilePath text_file = temp_dir_.GetPath().Append(FPL("text_file"));
   CreateTextFile(text_file, bogus_content);
 
   EXPECT_TRUE(
       PreReadFile(text_file, /*is_executable=*/false, /*sequential=*/true));
 }
+
+#undef FLAKY_327582285
 
 // Test that temp files obtained racily are all unique (no interference between
 // threads). Mimics file operations in DoLaunchChildTestProcess() to rule out
