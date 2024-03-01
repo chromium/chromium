@@ -294,8 +294,9 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   }
 
   private handleKeyDown(e: CustomEvent): void {
-    // Announce the key pressed.
-    this.makeA11yAnnouncement(e.detail.keyEvent.keyDisplay);
+    // Announce the icon label or key pressed.
+    const keyOrIcon = e.detail.keyEvent.keyDisplay;
+    this.makeA11yAnnouncement(getKeyDisplay(keyOrIcon));
     const rewrittenKeyEvent = e.detail.keyEvent;
     const pendingAccelerator = keyEventToAccelerator(rewrittenKeyEvent);
     if (this.hasError) {

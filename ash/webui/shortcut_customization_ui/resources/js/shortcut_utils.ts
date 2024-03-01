@@ -375,12 +375,12 @@ export const getSourceAndActionFromAcceleratorId =
 /**
  *
  * @param keyOrIcon the text for an individual accelerator key.
- * @returns the associated icon name for the given `keyOrIcon` text if it
+ * @returns the associated icon label for the given `keyOrIcon` text if it
  *     exists, otherwise returns `keyOrIcon` itself.
  */
 export const getKeyDisplay = (keyOrIcon: string): string => {
   const iconName = keyToIconNameMap[keyOrIcon];
-  return iconName ? iconName : keyOrIcon;
+  return iconName ? loadTimeData.getString(`iconLabel${keyOrIcon}`) : keyOrIcon;
 };
 
 /**
