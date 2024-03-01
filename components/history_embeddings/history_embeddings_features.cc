@@ -12,4 +12,9 @@ BASE_FEATURE(kHistoryEmbeddings,
              "HistoryEmbeddings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<int> kPassageExtractionMaxWordsPerAggregatePassage(
+    &kHistoryEmbeddings,
+    "PassageExtractionMaxWordsPerAggregatePassage",
+    200);
+
 }  // namespace history_embeddings

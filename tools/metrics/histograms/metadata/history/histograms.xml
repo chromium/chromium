@@ -1834,6 +1834,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.Passages.ExtractionTime" units="ms"
+    expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <summary>
+    Round trip request and response time for a single passage extraction. The
+    clock starts just before the browser requests passages from a renderer, and
+    stops just after results are received. Logged each time passages are
+    successfully retrieved from a RenderFrameHost.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Passages.PassageCount" units="passages"
+    expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <summary>
+    Number of passages retrieved from a single page passage extraction. Logged
+    each time passages are retrieved from a RenderFrameHost.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Passages.TotalTextSize" units="bytes"
+    expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <summary>
+    The sum of passage text sizes for all passages retrieved from an extraction.
+    Logged each time passages are retrieved from a RenderFrameHost.
+  </summary>
+</histogram>
+
 <histogram name="History.FaviconDatabaseSizeMB" units="MB" expires_after="M130">
   <owner>rogerm@chromium.org</owner>
   <owner>sky@chromium.org</owner>
