@@ -403,23 +403,39 @@ bool IsModelQualityLoggingEnabled() {
 }
 
 bool IsModelQualityLoggingEnabledForFeature(
-    proto::ModelExecutionFeature feature_name) {
+    proto::ModelExecutionFeature feature) {
   if (!IsModelQualityLoggingEnabled()) {
     return false;
   }
 
-  // Disable logging for test features.
-  if (feature_name ==
+  // Always disable logging for test features.
+  if (feature ==
           proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED ||
-      feature_name ==
-          proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST) {
+      feature == proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST) {
     return false;
   }
 
+  bool default_logging_enabled = false;
+  switch (feature) {
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
+      // Enable logging when you have approvals. For new features please
+      // consult with components/optimization_guide/core/model_quality/OWNERS to
+      // discuss if you need logging or not for your feature.
+      default_logging_enabled = true;
+      break;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
+      // Logging disabled.
+      NOTREACHED();
+      break;
+  }
+
   std::string param_name =
-      base::ToLowerASCII(proto::ModelExecutionFeature_Name(feature_name));
+      base::ToLowerASCII(proto::ModelExecutionFeature_Name(feature));
   return GetFieldTrialParamByFeatureAsBool(kModelQualityLogging, param_name,
-                                           true);
+                                           default_logging_enabled);
 }
 
 bool IsRemoteFetchingEnabled() {

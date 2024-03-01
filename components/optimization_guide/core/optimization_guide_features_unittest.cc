@@ -95,6 +95,25 @@ TEST(OptimizationGuideFeaturesTest, ModelQualityLoggingDefault) {
       proto::MODEL_EXECUTION_FEATURE_UNSPECIFIED));
 }
 
+TEST(OptimizationGuideFeaturesTest,
+     ModelQualityLoggingAlwaysDisabledForTestAndUnspecifiedFeatures) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kModelQualityLogging,
+      {{"model_execution_feature_test", "true"},
+       {"model_execution_feature_unspecified", "true"}});
+
+  EXPECT_TRUE(features::IsModelQualityLoggingEnabled());
+
+  // Test and Unspecified features should have logging always disabled not
+  // allowed to be controlled via finch.
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_TEST));
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_UNSPECIFIED));
+}
+
 TEST(OptimizationGuideFeaturesTest, ComposeModelQualityLoggingDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
 
