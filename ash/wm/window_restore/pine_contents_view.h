@@ -37,12 +37,16 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
 
   static std::unique_ptr<views::Widget> Create(aura::Window* root);
 
-  // TODO(sammiequon): Move these to a test api.
+  // TODO(b/327499182): Move test functions to a Pine test API.
   const PillButton* restore_button_for_testing() const {
     return restore_button_for_testing_;
   }
   const PillButton* cancel_button_for_testing() const {
     return cancel_button_for_testing_;
+  }
+
+  const PineItemsContainerView* container_view_for_testing() const {
+    return container_view_;
   }
 
  private:

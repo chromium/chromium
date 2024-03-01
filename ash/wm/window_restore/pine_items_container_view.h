@@ -11,6 +11,8 @@
 
 namespace ash {
 
+class PineItemsOverflowView;
+
 // The right side contents (in LTR) of the `PineContentsView`. It is a
 // vertical list of `PineItemView`, with each view representing an app. Shows
 // a maximum of `kMaxItems` items.
@@ -23,6 +25,13 @@ class PineItemsContainerView : public views::BoxLayoutView {
   PineItemsContainerView(const PineItemsContainerView&) = delete;
   PineItemsContainerView& operator=(const PineItemsContainerView&) = delete;
   ~PineItemsContainerView() override = default;
+
+  const PineItemsOverflowView* overflow_view_for_testing() const {
+    return overflow_view_for_testing_;
+  }
+
+ private:
+  raw_ptr<PineItemsOverflowView> overflow_view_for_testing_ = nullptr;
 };
 
 }  // namespace ash

@@ -30,8 +30,25 @@ class PineItemsOverflowView : public views::BoxLayoutView {
 
   void SetIconForIndex(int index, const gfx::ImageSkia& icon);
 
+  const base::flat_map<int, views::ImageView*>& image_view_map_for_testing()
+      const {
+    return image_view_map_;
+  }
+
+  const views::BoxLayoutView* top_row_view_for_testing() const {
+    return top_row_view_;
+  }
+  const views::BoxLayoutView* bottom_row_view_for_testing() const {
+    return bottom_row_view_;
+  }
+
  private:
   base::flat_map<int, views::ImageView*> image_view_map_;
+
+  // These views are stacked vertically to act as rows of window icons.
+  raw_ptr<views::BoxLayoutView> top_row_view_ = nullptr;
+  raw_ptr<views::BoxLayoutView> bottom_row_view_ = nullptr;
+
   base::WeakPtrFactory<PineItemsOverflowView> weak_ptr_factory_{this};
 };
 

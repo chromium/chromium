@@ -46,10 +46,6 @@ PineItemsOverflowView::PineItemsOverflowView(
   // TODO(sammiequon): Handle case where the app is not ready or installed.
   auto* delegate = Shell::Get()->saved_desk_delegate();
 
-  // Save the views so they can be used later (e.g., for callbacks).
-  views::BoxLayoutView* top_row_view;
-  views::BoxLayoutView* bottom_row_view;
-
   // Create a series of `BoxLayoutView`s to represent a 1x2 row, a triangle
   // with one element on top and two on the bottom, or a 2x2 box. The triangle
   // is specific to the 3-window overflow case, and is why we prefer a
@@ -63,7 +59,7 @@ PineItemsOverflowView::PineItemsOverflowView(
               SK_ColorLTGRAY, kOverflowBackgroundRounding))
           .AddChildren(
               views::Builder<views::BoxLayoutView>()
-                  .CopyAddressTo(&top_row_view)
+                  .CopyAddressTo(&top_row_view_)
                   .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
                   .SetMainAxisAlignment(
                       views::BoxLayout::MainAxisAlignment::kCenter)
@@ -71,7 +67,7 @@ PineItemsOverflowView::PineItemsOverflowView(
                       views::BoxLayout::CrossAxisAlignment::kStretch)
                   .SetBetweenChildSpacing(kOverflowIconSpacing),
               views::Builder<views::BoxLayoutView>()
-                  .CopyAddressTo(&bottom_row_view)
+                  .CopyAddressTo(&bottom_row_view_)
                   .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
                   .SetMainAxisAlignment(
                       views::BoxLayout::MainAxisAlignment::kCenter)
@@ -87,7 +83,7 @@ PineItemsOverflowView::PineItemsOverflowView(
     // bottom row to count the remaining windows.
     if (elements > kOverflowMaxElements && i >= kOverflowMaxThreshold) {
       views::Label* count_label;
-      bottom_row_view->AddChildView(
+      bottom_row_view_->AddChildView(
           views::Builder<views::Label>()
               .CopyAddressTo(&count_label)
               // TODO(hewer): Cut off the maximum number of digits to
@@ -116,8 +112,8 @@ PineItemsOverflowView::PineItemsOverflowView(
                 // == 4) to the top row, as the view will be in a 1x2 or 2x2
                 // configuration.
                 (elements != kOverflowTriangleElements && i <= pine::kMaxItems)
-            ? top_row_view
-            : bottom_row_view;
+            ? top_row_view_
+            : bottom_row_view_;
     views::ImageView* image_view =
         row_view->AddChildView(views::Builder<views::ImageView>()
                                    .SetImageSize(kOverflowIconPreferredSize)
