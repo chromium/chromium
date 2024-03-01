@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/account_manager/account_manager_ui_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -35,7 +36,9 @@ bool AccountManagerUIImpl::IsDialogShown() {
 void AccountManagerUIImpl::ShowManageAccountsSettings() {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       ProfileManager::GetActiveUserProfile(),
-      chromeos::settings::mojom::kMyAccountsSubpagePath);
+      ash::features::IsOsSettingsRevampWayfindingEnabled()
+          ? chromeos::settings::mojom::kPeopleSectionPath
+          : chromeos::settings::mojom::kMyAccountsSubpagePath);
 }
 
 }  // namespace ash
