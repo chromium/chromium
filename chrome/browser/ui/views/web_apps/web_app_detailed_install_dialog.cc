@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
@@ -17,11 +18,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_icon_name_and_origin_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/prefs/pref_service.h"
@@ -351,49 +354,81 @@ void ShowWebAppDetailedInstallDialog(
                             gfx::Size(kIconSize, kIconSize));
 
   auto title = install_info->title;
+  GURL start_url = install_info->start_url;
   std::u16string start_url_host_formatted_for_display =
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          install_info->start_url);
+          start_url);
+
   const std::u16string description = gfx::TruncateString(
       install_info->description, webapps::kMaximumDescriptionLength,
       gfx::CHARACTER_BREAK);
   auto manifest_id = install_info->manifest_id;
 
-  auto delegate = std::make_unique<web_app::WebAppInstallDialogDelegate>(
+  auto delegate = std::make_unique<WebAppInstallDialogDelegate>(
       web_contents, std::move(install_info), std::move(install_tracker),
       std::move(callback), std::move(iph_state), prefs, tracker,
       InstallDialogType::kDetailed);
   auto delegate_weak_ptr = delegate->AsWeakPtr();
-  auto dialog_model =
-      ui::DialogModel::Builder(std::move(delegate))
-          .SetInternalName("WebAppDetailedInstallDialog")
-          .SetIcon(ui::ImageModel::FromImageSkia(icon_image))
-          .SetTitle(title)
-          .SetSubtitle(start_url_host_formatted_for_display)
-          .AddParagraph(
-              ui::DialogModelLabel(description).set_is_secondary(),
-              l10n_util::GetStringUTF16(
-                  IDS_WEB_APP_DETAILED_INSTALL_DIALOG_DESCRIPTION_TITLE))
-          .AddOkButton(
-              base::BindOnce(&web_app::WebAppInstallDialogDelegate::OnAccept,
-                             delegate_weak_ptr),
-              ui::DialogModel::Button::Params().SetLabel(
-                  l10n_util::GetStringUTF16(IDS_INSTALL)))
-          .AddCancelButton(
-              base::BindOnce(&web_app::WebAppInstallDialogDelegate::OnCancel,
-                             delegate_weak_ptr))
-          .SetCloseActionCallback(
-              base::BindOnce(&web_app::WebAppInstallDialogDelegate::OnClose,
-                             delegate_weak_ptr))
-          .AddCustomField(
-              std::make_unique<views::BubbleDialogModelHost::CustomView>(
-                  std::make_unique<ImageCarouselView>(screenshots),
-                  views::BubbleDialogModelHost::FieldType::kControl))
-          .SetDialogDestroyingCallback(
-              base::BindOnce(&web_app::WebAppInstallDialogDelegate::OnClose,
-                             delegate_weak_ptr))
-          .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
-          .Build();
+
+  std::unique_ptr<ui::DialogModel> dialog_model;
+  if (base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
+    dialog_model =
+        ui::DialogModel::Builder(std::move(delegate))
+            .SetInternalName("WebAppDetailedInstallDialog")
+            .SetTitle(l10n_util::GetStringUTF16(IDS_INSTALL_PWA_DIALOG_TITLE))
+            .AddCustomField(
+                std::make_unique<views::BubbleDialogModelHost::CustomView>(
+                    WebAppIconNameAndOriginView::Create(icon_image, title,
+                                                        start_url),
+                    views::BubbleDialogModelHost::FieldType::kControl))
+            .AddParagraph(
+                ui::DialogModelLabel(description).set_is_secondary(),
+                l10n_util::GetStringUTF16(
+                    IDS_WEB_APP_DETAILED_INSTALL_DIALOG_DESCRIPTION_TITLE))
+            .AddOkButton(base::BindOnce(&WebAppInstallDialogDelegate::OnAccept,
+                                        delegate_weak_ptr),
+                         ui::DialogModel::Button::Params().SetLabel(
+                             l10n_util::GetStringUTF16(IDS_INSTALL)))
+            .AddCancelButton(base::BindOnce(
+                &WebAppInstallDialogDelegate::OnCancel, delegate_weak_ptr))
+            .SetCloseActionCallback(base::BindOnce(
+                &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
+            .AddCustomField(
+                std::make_unique<views::BubbleDialogModelHost::CustomView>(
+                    std::make_unique<ImageCarouselView>(screenshots),
+                    views::BubbleDialogModelHost::FieldType::kControl))
+            .SetDialogDestroyingCallback(base::BindOnce(
+                &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
+            .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
+            .Build();
+  } else {
+    dialog_model =
+        ui::DialogModel::Builder(std::move(delegate))
+            .SetInternalName("WebAppDetailedInstallDialog")
+            .SetIcon(ui::ImageModel::FromImageSkia(icon_image))
+            .SetTitle(title)
+            .SetSubtitle(start_url_host_formatted_for_display)
+            .AddParagraph(
+                ui::DialogModelLabel(description).set_is_secondary(),
+                l10n_util::GetStringUTF16(
+                    IDS_WEB_APP_DETAILED_INSTALL_DIALOG_DESCRIPTION_TITLE))
+            .AddOkButton(base::BindOnce(&WebAppInstallDialogDelegate::OnAccept,
+                                        delegate_weak_ptr),
+                         ui::DialogModel::Button::Params().SetLabel(
+                             l10n_util::GetStringUTF16(IDS_INSTALL)))
+            .AddCancelButton(base::BindOnce(
+                &WebAppInstallDialogDelegate::OnCancel, delegate_weak_ptr))
+            .SetCloseActionCallback(base::BindOnce(
+                &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
+            .AddCustomField(
+                std::make_unique<views::BubbleDialogModelHost::CustomView>(
+                    std::make_unique<ImageCarouselView>(screenshots),
+                    views::BubbleDialogModelHost::FieldType::kControl))
+            .SetDialogDestroyingCallback(base::BindOnce(
+                &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
+            .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
+            .Build();
+  }
 
   auto dialog = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::MODAL_TYPE_CHILD);
