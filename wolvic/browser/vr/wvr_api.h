@@ -34,7 +34,8 @@ class WvrApi {
   mozilla::gfx::VRSystemState get_system_state() { return system_state_; }
 
  private:
-  void PushState(bool notifyCond = false);
+  enum class NotifyCondition { YES, NO };
+  void PushState(NotifyCondition notifyCond = NotifyCondition::NO);
   void PullState(const std::function<bool()>& waitCondition = {});
 
   // Communicate via mozilla shared memory.
