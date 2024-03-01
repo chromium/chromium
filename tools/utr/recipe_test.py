@@ -27,14 +27,16 @@ class LegacyRunnerTests(unittest.TestCase):
 
   def testProps(self):
     runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
-                                 'some-builder', [], False, False)
+                                 'some-builder', 'swarming-server', [], False,
+                                 False)
     self.assertEqual(
         runner._input_props['$recipe_engine/buildbucket']['build']['builder']
         ['builder'], 'some-builder')
 
   def testRun(self):
     runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
-                                 'some-builder', [], False, False)
+                                 'some-builder', 'swarming-server', [], False,
+                                 False)
     self.subp_mock.returncode = 123
     with mock.patch('subprocess.Popen', return_value=self.subp_mock):
       exit_code, _ = runner.run_recipe()
@@ -42,7 +44,8 @@ class LegacyRunnerTests(unittest.TestCase):
 
   def testJson(self):
     runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
-                                 'some-builder', [], False, False)
+                                 'some-builder', 'swarming-server', [], False,
+                                 False)
     with mock.patch('tempfile.TemporaryDirectory', return_value=self.tmp_dir):
       with mock.patch('subprocess.Popen', return_value=self.subp_mock):
         # Missing json file
