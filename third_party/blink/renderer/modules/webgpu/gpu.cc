@@ -199,6 +199,7 @@ void GPU::OnRequestAdapterCallback(ScriptState* script_state,
     case WGPURequestAdapterStatus_Unavailable:
     case WGPURequestAdapterStatus_Error:
     case WGPURequestAdapterStatus_Unknown:
+    case WGPURequestAdapterStatus_InstanceDropped:
       break;
 
     default:
