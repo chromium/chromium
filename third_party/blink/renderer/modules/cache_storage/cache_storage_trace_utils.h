@@ -13,6 +13,10 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class TracedValue;
@@ -21,11 +25,11 @@ class TracedValue;
 // related value into something that can be passed to the TRACE_EVENT*
 // macros.
 //
-// Note, these are designed to use WTF::String, blink mojo types, and
+// Note, these are designed to use WTF::WTF::String, blink mojo types, and
 // blink::TracedValue.  Unforfortunately these types are not usable in
 // content, so these routines must be duplicated there as well.
 
-std::unique_ptr<TracedValue> CacheStorageTracedValue(const String& string);
+std::unique_ptr<TracedValue> CacheStorageTracedValue(const WTF::String& string);
 
 std::unique_ptr<TracedValue> CacheStorageTracedValue(
     const mojom::blink::FetchAPIRequestPtr& request);
@@ -51,7 +55,7 @@ std::unique_ptr<TracedValue> CacheStorageTracedValue(
     const mojom::blink::BatchOperationPtr& op);
 
 std::unique_ptr<TracedValue> CacheStorageTracedValue(
-    const WTF::Vector<String>& string_list);
+    const WTF::Vector<WTF::String>& string_list);
 
 }  // namespace blink
 

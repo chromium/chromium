@@ -15,6 +15,10 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class LayoutPoint;
@@ -129,7 +133,7 @@ struct CORE_EXPORT PhysicalOffset {
   constexpr explicit operator gfx::PointF() const { return {left, top}; }
   constexpr explicit operator gfx::Vector2dF() const { return {left, top}; }
 
-  String ToString() const;
+  WTF::String ToString() const;
 };
 
 // TODO(crbug.com/962299): These functions should upgraded to force correct

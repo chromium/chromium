@@ -39,6 +39,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class PLATFORM_EXPORT LayoutPoint {
@@ -66,7 +70,7 @@ class PLATFORM_EXPORT LayoutPoint {
   void SetX(LayoutUnit x) { x_ = x; }
   void SetY(LayoutUnit y) { y_ = y; }
 
-  String ToString() const;
+  WTF::String ToString() const;
 
  private:
   LayoutUnit x_, y_;

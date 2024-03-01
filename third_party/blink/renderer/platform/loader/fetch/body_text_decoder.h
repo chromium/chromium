@@ -7,14 +7,18 @@
 
 #include "third_party/blink/public/platform/web_encoding_data.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class BodyTextDecoder {
  public:
   virtual ~BodyTextDecoder() = default;
 
-  virtual String Decode(const char* data, size_t length) = 0;
-  virtual String Flush() = 0;
+  virtual WTF::String Decode(const char* data, size_t length) = 0;
+  virtual WTF::String Flush() = 0;
   virtual WebEncodingData GetEncodingData() const = 0;
 };
 

@@ -38,6 +38,10 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class ExecutionContext;
@@ -60,7 +64,7 @@ class MODULES_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
                         const HeapVector<ScriptValue>& arguments);
   static int setTimeout(ScriptState*,
                         ExecutionContext&,
-                        const String& handler,
+                        const WTF::String& handler,
                         int timeout,
                         const HeapVector<ScriptValue>&);
   static int setInterval(ScriptState*,
@@ -70,7 +74,7 @@ class MODULES_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
                          const HeapVector<ScriptValue>&);
   static int setInterval(ScriptState*,
                          ExecutionContext&,
-                         const String& handler,
+                         const WTF::String& handler,
                          int timeout,
                          const HeapVector<ScriptValue>&);
   static void clearTimeout(ExecutionContext&, int timeout_id);

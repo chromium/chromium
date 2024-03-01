@@ -33,6 +33,10 @@ namespace base {
 class TickClock;
 }
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class TracedValue;
@@ -321,7 +325,7 @@ class PLATFORM_EXPORT RuntimeCallStats {
     return &(counters_[static_cast<uint16_t>(id)]);
   }
 
-  String ToString() const;
+  WTF::String ToString() const;
 
   static void SetRuntimeCallStatsForTesting();
   static void ClearRuntimeCallStatsForTesting();

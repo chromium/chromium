@@ -11,6 +11,10 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 namespace cssvalue {
@@ -32,7 +36,7 @@ class StyleCrossfadeImage final : public StyleImage {
   bool IsLoading() const override;
   bool IsLoaded() const override;
   bool ErrorOccurred() const override;
-  bool IsAccessAllowed(String&) const override;
+  bool IsAccessAllowed(WTF::String&) const override;
 
   IntrinsicSizingInfo GetNaturalSizingInfo(
       float multiplier,

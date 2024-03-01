@@ -7,6 +7,10 @@
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class ExceptionState;
@@ -36,7 +40,7 @@ class PrivateAttribution final : public ScriptWrappable {
   ~PrivateAttribution() final = default;
 
   static ScriptPromise getEncryptedMatchKey(ScriptState*,
-                                            String report_collector,
+                                            WTF::String report_collector,
                                             PrivateAttributionOptions* options,
                                             ExceptionState& exception_state);
 

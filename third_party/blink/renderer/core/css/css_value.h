@@ -27,6 +27,12 @@
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
+using WTF::String;
+
 namespace blink {
 
 class Document;

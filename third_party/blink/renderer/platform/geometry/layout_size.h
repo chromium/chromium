@@ -34,9 +34,12 @@
 #include <iosfwd>
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -65,7 +68,7 @@ class PLATFORM_EXPORT DeprecatedLayoutSize {
   constexpr LayoutUnit Width() const { return width_; }
   constexpr LayoutUnit Height() const { return height_; }
 
-  String ToString() const;
+  WTF::String ToString() const;
 
  private:
   LayoutUnit width_, height_;

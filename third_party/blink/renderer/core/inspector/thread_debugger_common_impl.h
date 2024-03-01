@@ -11,6 +11,10 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class ExecutionContext;
@@ -34,7 +38,7 @@ class ThreadDebuggerCommonImpl : public ThreadDebugger {
   void AsyncTaskStarted(void* task) override;
   void AsyncTaskFinished(void* task) override;
   unsigned PromiseRejected(v8::Local<v8::Context>,
-                           const String& error_message,
+                           const WTF::String& error_message,
                            v8::Local<v8::Value> exception,
                            std::unique_ptr<SourceLocation>) override;
   void PromiseRejectionRevoked(v8::Local<v8::Context>,
@@ -52,7 +56,7 @@ class ThreadDebuggerCommonImpl : public ThreadDebugger {
   virtual void ReportConsoleMessage(ExecutionContext*,
                                     mojom::ConsoleMessageSource,
                                     mojom::ConsoleMessageLevel,
-                                    const String& message,
+                                    const WTF::String& message,
                                     SourceLocation*) = 0;
   void installAdditionalCommandLineAPI(v8::Local<v8::Context>,
                                        v8::Local<v8::Object>) override;

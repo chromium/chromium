@@ -27,7 +27,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_TYPESETTING_FEATURES_H_
 
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -42,7 +45,7 @@ enum TypesettingFeature {
 
 typedef unsigned TypesettingFeatures;
 
-PLATFORM_EXPORT String ToString(TypesettingFeatures);
+PLATFORM_EXPORT WTF::String ToString(TypesettingFeatures);
 
 }  // namespace blink
 

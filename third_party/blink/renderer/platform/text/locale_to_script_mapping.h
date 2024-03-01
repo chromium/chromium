@@ -35,15 +35,18 @@
 
 #include "base/check.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
-PLATFORM_EXPORT UScriptCode LocaleToScriptCodeForFontSelection(const String&);
-PLATFORM_EXPORT UScriptCode ScriptNameToCode(const String&);
+PLATFORM_EXPORT UScriptCode
+LocaleToScriptCodeForFontSelection(const WTF::String&);
+PLATFORM_EXPORT UScriptCode ScriptNameToCode(const WTF::String&);
 
-PLATFORM_EXPORT UScriptCode ScriptCodeForHanFromSubtags(const String&,
+PLATFORM_EXPORT UScriptCode ScriptCodeForHanFromSubtags(const WTF::String&,
                                                         char delimiter = '-');
 
 inline bool IsUnambiguousHanScript(UScriptCode script) {

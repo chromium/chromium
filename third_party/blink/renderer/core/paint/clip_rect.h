@@ -30,6 +30,10 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class FloatClipRect;
@@ -81,7 +85,7 @@ class CORE_EXPORT ClipRect {
 
   void Reset();
 
-  String ToString() const;
+  WTF::String ToString() const;
 
  private:
   void SetRectInternal(const FloatClipRect&);

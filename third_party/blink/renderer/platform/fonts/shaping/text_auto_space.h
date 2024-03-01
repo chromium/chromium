@@ -10,7 +10,11 @@
 
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -27,9 +31,9 @@ class PLATFORM_EXPORT TextAutoSpace {
   static CharType GetType(UChar32 ch);
 
   // `GetType` and advance the `offset` by one character (grapheme cluster.)
-  static CharType GetTypeAndNext(const String& text, wtf_size_t& offset);
+  static CharType GetTypeAndNext(const WTF::String& text, wtf_size_t& offset);
   // `GetType` of the character before `offset`.
-  static CharType GetPrevType(const String& text, wtf_size_t offset);
+  static CharType GetPrevType(const WTF::String& text, wtf_size_t offset);
 
   // `CharType::kIdeograph` is `USCRIPT_HAN`, except characters in this range
   // may be other scripts.

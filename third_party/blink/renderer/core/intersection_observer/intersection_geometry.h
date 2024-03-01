@@ -13,6 +13,10 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class Element;
@@ -101,7 +105,7 @@ class CORE_EXPORT IntersectionGeometry {
     int relationship = 0;
     bool root_scrolls_target = false;
 
-    String ToString() const;
+    WTF::String ToString() const;
 #endif
   };
 

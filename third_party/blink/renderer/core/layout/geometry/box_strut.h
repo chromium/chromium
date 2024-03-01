@@ -17,6 +17,10 @@
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "ui/gfx/geometry/outsets_f.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 struct LineBoxStrut;
@@ -89,7 +93,7 @@ struct CORE_EXPORT BoxStrut {
   }
   bool operator!=(const BoxStrut& other) const { return !(*this == other); }
 
-  String ToString() const;
+  WTF::String ToString() const;
 
   LayoutUnit inline_start;
   LayoutUnit inline_end;

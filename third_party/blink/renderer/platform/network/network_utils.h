@@ -11,6 +11,10 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class KURL;
@@ -23,16 +27,16 @@ enum PrivateRegistryFilter {
   kExcludePrivateRegistries,
 };
 
-PLATFORM_EXPORT bool IsReservedIPAddress(const String& host);
+PLATFORM_EXPORT bool IsReservedIPAddress(const WTF::String& host);
 
-PLATFORM_EXPORT String GetDomainAndRegistry(const String& host,
-                                            PrivateRegistryFilter);
+PLATFORM_EXPORT WTF::String GetDomainAndRegistry(const WTF::String& host,
+                                                 PrivateRegistryFilter);
 
 // Returns the decoded data url as ResourceResponse and SharedBuffer if parsing
 // was successful. The result is returned as net error code. It returns net::OK
 // if decoding succeeds, otherwise it failed.
 PLATFORM_EXPORT std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>>
-ParseDataURL(const KURL&, const String& method);
+ParseDataURL(const KURL&, const WTF::String& method);
 
 // Returns true if the URL is a data URL and its MIME type is in the list of
 // supported/recognized MIME types.
@@ -45,7 +49,7 @@ PLATFORM_EXPORT bool IsRedirectResponseCode(int);
 
 PLATFORM_EXPORT bool IsCertificateTransparencyRequiredError(int);
 
-PLATFORM_EXPORT String GenerateAcceptLanguageHeader(const String&);
+PLATFORM_EXPORT WTF::String GenerateAcceptLanguageHeader(const WTF::String&);
 
 PLATFORM_EXPORT Vector<char> ParseMultipartBoundary(
     const AtomicString& content_type_header);

@@ -6,7 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TESTING_INTERNALS_STORAGE_ACCESS_H_
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -21,8 +24,8 @@ class InternalsStorageAccess {
  public:
   static ScriptPromise setStorageAccess(ScriptState*,
                                         Internals&,
-                                        const String& origin,
-                                        const String& embedding_origin,
+                                        const WTF::String& origin,
+                                        const WTF::String& embedding_origin,
                                         const bool blocked,
                                         ExceptionState&);
 };

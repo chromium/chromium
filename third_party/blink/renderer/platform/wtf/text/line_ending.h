@@ -32,11 +32,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_LINE_ENDING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_LINE_ENDING_H_
 
-#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace WTF {
+
+class String;
 
 // Normalize all line-endings in the given string to CRLF.
 WTF_EXPORT String NormalizeLineEndingsToCRLF(const String& from);

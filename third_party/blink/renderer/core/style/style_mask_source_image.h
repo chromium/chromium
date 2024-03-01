@@ -10,6 +10,10 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class CSSImageValue;
@@ -43,7 +47,7 @@ class StyleMaskSourceImage : public StyleImage {
   bool IsLoaded() const override;
   bool IsLoading() const override;
   bool ErrorOccurred() const override;
-  bool IsAccessAllowed(String& failing_url) const override;
+  bool IsAccessAllowed(WTF::String& failing_url) const override;
 
   IntrinsicSizingInfo GetNaturalSizingInfo(
       float multiplier,

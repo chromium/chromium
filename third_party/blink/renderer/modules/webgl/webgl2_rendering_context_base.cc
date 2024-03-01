@@ -99,8 +99,6 @@
   };                                             \
   GetCurrentUnpackState(params)
 
-using WTF::String;
-
 namespace blink {
 
 namespace {

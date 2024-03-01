@@ -13,6 +13,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 enum AspectRatioFit { kAspectRatioFitShrink, kAspectRatioFitGrow };
@@ -140,7 +144,7 @@ struct CORE_EXPORT PhysicalSize {
   explicit PhysicalSize(const gfx::Size& size)
       : width(size.width()), height(size.height()) {}
 
-  String ToString() const;
+  WTF::String ToString() const;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const PhysicalSize&);

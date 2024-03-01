@@ -26,7 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SERIALIZERS_HTML_INTERCHANGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SERIALIZERS_HTML_INTERCHANGE_H_
 
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -34,7 +36,7 @@ class Text;
 
 #define AppleInterchangeNewline "Apple-interchange-newline"
 
-String ConvertHTMLTextToInterchangeFormat(const String&, const Text&);
+WTF::String ConvertHTMLTextToInterchangeFormat(const WTF::String&, const Text&);
 
 }  // namespace blink
 

@@ -36,6 +36,10 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 struct PixelsAndPercent {
@@ -439,7 +443,7 @@ class PLATFORM_EXPORT Length {
 
   Length Zoom(double factor) const;
 
-  String ToString() const;
+  WTF::String ToString() const;
 
  private:
   Length BlendMixedTypes(const Length& from, double progress, ValueRange) const;

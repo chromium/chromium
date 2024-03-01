@@ -16,6 +16,10 @@ namespace gfx {
 class ColorSpace;
 }
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 // Return the gfx::ColorSpace for the specified `predefined_color_space`.
@@ -47,8 +51,8 @@ class PLATFORM_EXPORT CanvasColorParams {
   CanvasPixelFormat PixelFormat() const { return pixel_format_; }
   OpacityMode GetOpacityMode() const { return opacity_mode_; }
 
-  String GetColorSpaceAsString() const;
-  String GetPixelFormatAsString() const;
+  WTF::String GetColorSpaceAsString() const;
+  WTF::String GetPixelFormatAsString() const;
 
   SkColorInfo GetSkColorInfo() const;
 

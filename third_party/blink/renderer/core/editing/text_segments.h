@@ -7,7 +7,10 @@
 
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -47,7 +50,7 @@ class TextSegments final {
     // Note: |text| must contains character 16.
     // Note: Since implementations can have state, |Find()| function isn't
     // marked |const| intentionally.
-    virtual Position Find(const String text, unsigned offset) = 0;
+    virtual Position Find(const WTF::String text, unsigned offset) = 0;
   };
 
   // Returns a boundary position found by |finder| followed by |position|

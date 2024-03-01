@@ -34,6 +34,10 @@
 #include "third_party/blink/renderer/core/svg/properties/svg_list_property.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 // Typed wrapper for SVG*List properties that adds type-dependent operations.
@@ -106,7 +110,7 @@ class SVGListPropertyHelper : public SVGListPropertyBase {
     return svg_list;
   }
 
-  SVGPropertyBase* CloneForAnimation(const String& value) const override {
+  SVGPropertyBase* CloneForAnimation(const WTF::String& value) const override {
     auto* property = MakeGarbageCollected<Derived>();
     property->SetValueAsString(value);
     return property;

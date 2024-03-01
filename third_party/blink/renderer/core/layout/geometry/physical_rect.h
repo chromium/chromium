@@ -14,8 +14,9 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace WTF {
+class String;
 class TextStream;
-}
+}  // namespace WTF
 
 namespace blink {
 
@@ -211,7 +212,7 @@ struct CORE_EXPORT PhysicalRect {
     size.Scale(s);
   }
 
-  String ToString() const;
+  WTF::String ToString() const;
 };
 
 inline PhysicalRect UnionRect(const PhysicalRect& a, const PhysicalRect& b) {

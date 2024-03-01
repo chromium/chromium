@@ -34,7 +34,10 @@
 #include <limits>
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -91,7 +94,7 @@ class PLATFORM_EXPORT DateComponents {
   // Returns an ISO 8601 representation for this instance.
   // The format argument is valid for kDateTime, kDateTimeLocal, and
   // kTime types.
-  String ToString(SecondFormat format = SecondFormat::kNone) const;
+  WTF::String ToString(SecondFormat format = SecondFormat::kNone) const;
 
   // Parse*() and SetMillisecondsSince*() functions are initializers for an
   // DateComponents instance. If these functions return false, the instance
@@ -104,15 +107,15 @@ class PLATFORM_EXPORT DateComponents {
   // failures, and the trailing extra characters don't cause parse failures.
 
   // Sets FullYear and Month.
-  bool ParseMonth(const String& src, unsigned start, unsigned& end);
+  bool ParseMonth(const WTF::String& src, unsigned start, unsigned& end);
   // Sets FullYear, Month and MonthDay.
-  bool ParseDate(const String& src, unsigned start, unsigned& end);
+  bool ParseDate(const WTF::String& src, unsigned start, unsigned& end);
   // Sets FullYear and Week.
-  bool ParseWeek(const String& src, unsigned start, unsigned& end);
+  bool ParseWeek(const WTF::String& src, unsigned start, unsigned& end);
   // Sets Hour, Minute, Second and Millisecond.
-  bool ParseTime(const String& src, unsigned start, unsigned& end);
+  bool ParseTime(const WTF::String& src, unsigned start, unsigned& end);
   // Sets FullYear, Month, MonthDay, Hour, Minute, Second and Millisecond.
-  bool ParseDateTimeLocal(const String&, unsigned start, unsigned& end);
+  bool ParseDateTimeLocal(const WTF::String&, unsigned start, unsigned& end);
 
   // The following SetMillisecondsSinceEpochFor*() functions take
   // the number of milliseconds since 1970-01-01 00:00:00.000 UTC as
@@ -187,14 +190,14 @@ class PLATFORM_EXPORT DateComponents {
   // Returns the maximum week number in this DateComponents's year.
   // The result is either of 52 and 53.
   int MaxWeekNumberInYear() const;
-  bool ParseYear(const String&, unsigned start, unsigned& end);
+  bool ParseYear(const WTF::String&, unsigned start, unsigned& end);
   // Helper for MillisecondsSinceEpoch().
   double MillisecondsSinceEpochForTime() const;
   // Helpers for SetMillisecondsSinceEpochFor*().
   bool SetMillisecondsSinceEpochForDateInternal(double ms);
   void SetMillisecondsSinceMidnightInternal(double ms);
   // Helper for ToString().
-  String ToStringForTime(SecondFormat) const;
+  WTF::String ToStringForTime(SecondFormat) const;
 
   // m_weekDay values
   enum {

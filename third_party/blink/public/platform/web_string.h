@@ -46,6 +46,9 @@
 #endif
 
 namespace WTF {
+#if INSIDE_BLINK
+class String;
+#endif
 class StringImpl;
 }
 

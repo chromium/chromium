@@ -6,7 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PERMISSIONS_TESTING_INTERNALS_PERMISSION_H_
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -23,7 +26,7 @@ class InternalsPermission {
   static ScriptPromise setPermission(ScriptState*,
                                      Internals&,
                                      const ScriptValue&,
-                                     const String& state,
+                                     const WTF::String& state,
                                      ExceptionState&);
 };
 

@@ -38,6 +38,10 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 // Base class for properties that represent lists of other properties. Used to
@@ -71,7 +75,7 @@ class SVGListPropertyBase : public SVGPropertyBase {
   void Replace(uint32_t index, SVGListablePropertyBase* new_item);
 
  public:
-  String ValueAsString() const final;
+  WTF::String ValueAsString() const final;
 
   void Trace(Visitor* visitor) const final {
     visitor->Trace(values_);
