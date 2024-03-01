@@ -4219,81 +4219,8 @@ const CSSValue* ComputedStyleUtils::ComputedPropertyValue(
     const CSSProperty& property,
     const ComputedStyle& style,
     const LayoutObject* layout_object) {
-  switch (property.PropertyID()) {
-    case CSSPropertyID::kAnimationDuration:
-      return ComputedStyleUtils::ValueForAnimationDurationList(
-          style.Animations(), CSSValuePhase::kComputedValue);
-    // Computed value is usually relative so that multiple fonts in child
-    // elements work properly, but resolved value is always a pixel length.
-    case CSSPropertyID::kLineHeight:
-      return ComputedStyleUtils::ComputedValueForLineHeight(style);
-
-    // Returns a transform list instead of converting to a (resolved) matrix.
-    case CSSPropertyID::kTransform:
-      return ComputedStyleUtils::ComputedTransformList(style, layout_object);
-
-    // For the following properties, the resolved value is the used value, which
-    // is not what we want. Obtain the computed value instead.
-    case CSSPropertyID::kBackgroundColor:
-      return ComputedStyleUtils::CurrentColorOrValidColor(
-          style, style.BackgroundColor(), CSSValuePhase::kComputedValue);
-    case CSSPropertyID::kBorderBlockEndColor:
-    case CSSPropertyID::kBorderBlockStartColor:
-    case CSSPropertyID::kBorderInlineEndColor:
-    case CSSPropertyID::kBorderInlineStartColor:
-      return ComputedStyleUtils::ComputedPropertyValue(
-          property.ResolveDirectionAwareProperty(style.Direction(),
-                                                 style.GetWritingMode()),
-          style, layout_object);
-    case CSSPropertyID::kBorderBottomColor:
-      return ComputedStyleUtils::CurrentColorOrValidColor(
-          style, style.BorderBottomColor(), CSSValuePhase::kComputedValue);
-    case CSSPropertyID::kBorderLeftColor:
-      return ComputedStyleUtils::CurrentColorOrValidColor(
-          style, style.BorderLeftColor(), CSSValuePhase::kComputedValue);
-    case CSSPropertyID::kBorderRightColor:
-      return ComputedStyleUtils::CurrentColorOrValidColor(
-          style, style.BorderRightColor(), CSSValuePhase::kComputedValue);
-    case CSSPropertyID::kBorderTopColor:
-      return ComputedStyleUtils::CurrentColorOrValidColor(
-          style, style.BorderTopColor(), CSSValuePhase::kComputedValue);
-    case CSSPropertyID::kBoxShadow:
-      return ComputedStyleUtils::ValueForShadowList(
-          style.BoxShadow(), style, true, CSSValuePhase::kComputedValue);
-    case CSSPropertyID::kCaretColor:
-      return ComputedStyleUtils::ValueForStyleAutoColor(
-          style, style.CaretColor(), CSSValuePhase::kComputedValue);
-    case CSSPropertyID::kColor:
-      return ComputedStyleUtils::CurrentColorOrValidColor(
-          style, style.Color(), CSSValuePhase::kComputedValue);
-    case CSSPropertyID::kMinHeight: {
-      if (style.MinHeight().IsAuto()) {
-        return CSSIdentifierValue::Create(CSSValueID::kAuto);
-      }
-      return property.CSSValueFromComputedStyle(
-          style, /*layout_object=*/nullptr, false,
-          CSSValuePhase::kComputedValue);
-    }
-    case CSSPropertyID::kMinWidth: {
-      if (style.MinWidth().IsAuto()) {
-        return CSSIdentifierValue::Create(CSSValueID::kAuto);
-      }
-      return property.CSSValueFromComputedStyle(
-          style, /*layout_object=*/nullptr, false,
-          CSSValuePhase::kComputedValue);
-    }
-    case CSSPropertyID::kOutlineColor:
-      return ComputedStyleUtils::CurrentColorOrValidColor(
-          style, style.OutlineColor(), CSSValuePhase::kComputedValue);
-
-    // For all other properties, the resolved value is either always the same
-    // as the computed value (most properties), or the same as the computed
-    // value when there is no layout box ('width' and friends).
-    default:
-      return property.CSSValueFromComputedStyle(
-          style, /*layout_object=*/nullptr, false,
-          CSSValuePhase::kComputedValue);
-  }
+  return property.CSSValueFromComputedStyle(style, layout_object, false,
+                                            CSSValuePhase::kComputedValue);
 }
 
 }  // namespace blink

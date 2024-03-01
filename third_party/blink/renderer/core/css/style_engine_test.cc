@@ -108,7 +108,7 @@ class StyleEngineTest : public PageTestBase {
     return ref.GetProperty().CSSValueFromComputedStyle(
         element->ComputedStyleRef(),
         /* layout_object */ nullptr,
-        /* allow_visited_style */ false, CSSValuePhase::kComputedValue);
+        /* allow_visited_style */ false, CSSValuePhase::kResolvedValue);
   }
 
   void InjectSheet(String key, WebCssOrigin origin, String text) {

@@ -815,7 +815,8 @@ const CSSValue* BackgroundColor::CSSValueFromComputedStyleInternal(
   }
 
   StyleColor background_color = style.BackgroundColor();
-  if (style.ShouldForceColor(background_color)) {
+  if (value_phase == CSSValuePhase::kResolvedValue &&
+      style.ShouldForceColor(background_color)) {
     return GetCSSPropertyInternalForcedBackgroundColor()
         .CSSValueFromComputedStyle(style, nullptr, allow_visited_style,
                                    value_phase);
@@ -1081,7 +1082,8 @@ const CSSValue* BorderBottomColor::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   StyleColor border_bottom_color = style.BorderBottomColor();
-  if (style.ShouldForceColor(border_bottom_color)) {
+  if (value_phase == CSSValuePhase::kResolvedValue &&
+      style.ShouldForceColor(border_bottom_color)) {
     return GetCSSPropertyInternalForcedBorderColor().CSSValueFromComputedStyle(
         style, nullptr, allow_visited_style, value_phase);
   }
@@ -1356,7 +1358,8 @@ const CSSValue* BorderLeftColor::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   StyleColor border_left_color = style.BorderLeftColor();
-  if (style.ShouldForceColor(border_left_color)) {
+  if (value_phase == CSSValuePhase::kResolvedValue &&
+      style.ShouldForceColor(border_left_color)) {
     return GetCSSPropertyInternalForcedBorderColor().CSSValueFromComputedStyle(
         style, nullptr, allow_visited_style, value_phase);
   }
@@ -1418,7 +1421,8 @@ const CSSValue* BorderRightColor::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   StyleColor border_right_color = style.BorderRightColor();
-  if (style.ShouldForceColor(border_right_color)) {
+  if (value_phase == CSSValuePhase::kResolvedValue &&
+      style.ShouldForceColor(border_right_color)) {
     return GetCSSPropertyInternalForcedBorderColor().CSSValueFromComputedStyle(
         style, nullptr, allow_visited_style, value_phase);
   }
@@ -1494,7 +1498,8 @@ const CSSValue* BorderTopColor::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   StyleColor border_top_color = style.BorderTopColor();
-  if (style.ShouldForceColor(border_top_color)) {
+  if (value_phase == CSSValuePhase::kResolvedValue &&
+      style.ShouldForceColor(border_top_color)) {
     return GetCSSPropertyInternalForcedBorderColor().CSSValueFromComputedStyle(
         style, nullptr, allow_visited_style, value_phase);
   }
@@ -1691,7 +1696,8 @@ const CSSValue* CaretColor::CSSValueFromComputedStyleInternal(
   // the background to ensure good visibility and contrast.
   StyleColor result = auto_color.IsAutoColor() ? StyleColor::CurrentColor()
                                                : auto_color.ToStyleColor();
-  if (style.ShouldForceColor(result)) {
+  if (value_phase == CSSValuePhase::kResolvedValue &&
+      style.ShouldForceColor(result)) {
     return cssvalue::CSSColor::Create(style.GetInternalForcedCurrentColor());
   }
 
@@ -1873,7 +1879,8 @@ const CSSValue* Color::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.ShouldForceColor(style.Color())) {
+  if (value_phase == CSSValuePhase::kResolvedValue &&
+      style.ShouldForceColor(style.Color())) {
     return GetCSSPropertyInternalForcedColor().CSSValueFromComputedStyle(
         style, nullptr, allow_visited_style, value_phase);
   }
@@ -4293,7 +4300,8 @@ const CSSValue* Height::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (ComputedStyleUtils::WidthOrHeightShouldReturnUsedValue(layout_object)) {
+  if (value_phase == CSSValuePhase::kResolvedValue &&
+      ComputedStyleUtils::WidthOrHeightShouldReturnUsedValue(layout_object)) {
     return ZoomAdjustedPixelValue(
         ComputedStyleUtils::UsedBoxSize(*layout_object).height(), style);
   }
@@ -5470,6 +5478,9 @@ const CSSValue* LineHeight::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
+  if (value_phase == CSSValuePhase::kComputedValue) {
+    return ComputedStyleUtils::ComputedValueForLineHeight(style);
+  }
   return ComputedStyleUtils::ValueForLineHeight(style);
 }
 
@@ -5941,6 +5952,9 @@ const CSSValue* MinHeight::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   if (style.MinHeight().IsAuto()) {
+    if (value_phase == CSSValuePhase::kComputedValue) {
+      return CSSIdentifierValue::Create(CSSValueID::kAuto);
+    }
     return ComputedStyleUtils::MinWidthOrMinHeightAuto(style);
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.MinHeight(),
@@ -5967,6 +5981,9 @@ const CSSValue* MinWidth::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   if (style.MinWidth().IsAuto()) {
+    if (value_phase == CSSValuePhase::kComputedValue) {
+      return CSSIdentifierValue::Create(CSSValueID::kAuto);
+    }
     return ComputedStyleUtils::MinWidthOrMinHeightAuto(style);
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.MinWidth(),
@@ -6285,7 +6302,8 @@ const CSSValue* OutlineColor::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   StyleColor outline_color = style.OutlineColor();
-  if (style.ShouldForceColor(outline_color)) {
+  if (value_phase == CSSValuePhase::kResolvedValue &&
+      style.ShouldForceColor(outline_color)) {
     return GetCSSPropertyInternalForcedOutlineColor().CSSValueFromComputedStyle(
         style, nullptr, allow_visited_style, value_phase);
   }
@@ -9029,6 +9047,9 @@ const CSSValue* Transform::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
+  if (value_phase == CSSValuePhase::kComputedValue) {
+    return ComputedStyleUtils::ComputedTransformList(style, layout_object);
+  }
   return ComputedStyleUtils::ResolvedTransform(layout_object, style);
 }
 
@@ -10882,7 +10903,8 @@ const CSSValue* Width::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (ComputedStyleUtils::WidthOrHeightShouldReturnUsedValue(layout_object)) {
+  if (value_phase == CSSValuePhase::kResolvedValue &&
+      ComputedStyleUtils::WidthOrHeightShouldReturnUsedValue(layout_object)) {
     return ZoomAdjustedPixelValue(
         ComputedStyleUtils::UsedBoxSize(*layout_object).width(), style);
   }
