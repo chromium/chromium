@@ -525,7 +525,6 @@ crbug.com/angleproject/7079 [ angle-metal intel-0x3e9b mac-x86_64 passthrough ve
 
 ## SkiaGraphite on AMD/Intel ##
 
-crbug.com/326283382 [ mac angle-metal graphite-enabled ] conformance/context/context-creation-and-destruction.html [ RetryOnFailure ]
 
 ## Metal AMD ##
 
