@@ -199,7 +199,10 @@ struct PolicyServiceProxyConfiguration {
   static std::optional<PolicyServiceProxyConfiguration> Get(
       scoped_refptr<PolicyService> policy_service);
 
-  std::optional<bool> proxy_auto_detect;
+  // Note `Get()` returns a nullopt when there's no proxy policies. Otherwise
+  // `proxy_auto_detect` must have a value, and is only set to true when the
+  // policy chooses "auto-detect".
+  bool proxy_auto_detect = false;
   std::optional<std::string> proxy_pac_url;
   std::optional<std::string> proxy_url;
 };

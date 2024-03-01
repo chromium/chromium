@@ -43,7 +43,7 @@ scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
         policy_service_proxy_configuration) {
   if (policy_service_proxy_configuration) {
     return base::MakeRefCounted<winhttp::ProxyConfiguration>(winhttp::ProxyInfo{
-        policy_service_proxy_configuration->proxy_auto_detect.value_or(true),
+        policy_service_proxy_configuration->proxy_auto_detect,
         base::SysUTF8ToWide(
             policy_service_proxy_configuration->proxy_pac_url.value_or("")),
         base::SysUTF8ToWide(
