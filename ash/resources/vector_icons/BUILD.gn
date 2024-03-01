@@ -133,6 +133,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "gd_button_up_arrow.icon",
     "gd_game_controls.icon",
     "gd_help.icon",
+    "gd_notification.icon",
     "gd_record_game.icon",
     "gd_screen_size_settings.icon",
     "gd_screenshot.icon",

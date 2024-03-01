@@ -164,10 +164,6 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // needed.
   void CloseWelcomeDialog();
 
-  // Checks whether the welcome dialog should be displayed when the game window
-  // opens.
-  bool ShouldShowWelcomeDialog() const;
-
   // Resets the `main_menu_view_`, removes the cursor handler, and updates the
   // `game_dashboard_button_` UI.
   void UpdateOnMainMenuClosed();
@@ -177,7 +173,8 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // Game Dashboard button widget for the Game Dashboard.
   std::unique_ptr<views::Widget> game_dashboard_button_widget_;
 
-  // Expanded main menu for the Game Dashboard.
+  // Expanded main menu for the Game Dashboard, which displays the main menu and
+  // the settings view.
   views::UniqueWidgetPtr main_menu_widget_;
 
   // The toolbar for the Game Dashboard.
@@ -194,8 +191,8 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   raw_ptr<GameDashboardButton> game_dashboard_button_ = nullptr;
 
   // The `GameDashboardMainMenuView` when the user presses the Game Dashboard
-  // button.
-  // Owned by the views hierarchy.
+  // button to display all Game Dashboard views. This displays the main menu and
+  // settings views. Owned by the views hierarchy.
   raw_ptr<GameDashboardMainMenuView, DanglingUntriaged> main_menu_view_ =
       nullptr;
 

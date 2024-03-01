@@ -4,11 +4,14 @@
 
 #include "ash/game_dashboard/game_dashboard_utils.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/unified/feature_tile.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/button.h"
@@ -98,6 +101,22 @@ bool ShouldEnableGameDashboardButton(aura::Window* window) {
   const auto flags = window->GetProperty(kArcGameControlsFlagsKey);
   return IsFlagSet(flags, ArcGameControlsFlag::kKnown) &&
          !IsFlagSet(flags, ArcGameControlsFlag::kEdit);
+}
+
+bool ShouldShowWelcomeDialog() {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  DCHECK(prefs) << "A valid PrefService is needed to determine whether to show "
+                   "the welcome dialog.";
+  return prefs->GetBoolean(prefs::kGameDashboardShowWelcomeDialog);
+}
+
+void SetShowWelcomeDialog(bool show_dialog) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  DCHECK(prefs) << "A valid PrefService is needed to update the show welcome "
+                   "dialog param.";
+  prefs->SetBoolean(prefs::kGameDashboardShowWelcomeDialog, show_dialog);
 }
 
 }  // namespace ash::game_dashboard_utils

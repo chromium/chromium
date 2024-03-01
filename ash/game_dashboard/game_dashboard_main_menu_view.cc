@@ -40,6 +40,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -48,6 +49,7 @@
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
@@ -56,7 +58,9 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -527,9 +531,9 @@ GameDashboardMainMenuView::GameDashboardMainMenuView(
       gfx::Insets::VH(kPaddingHeight, kPaddingWidth),
       /*between_child_spacing=*/16));
 
-  AddShortcutTilesRow();
-  MaybeAddArcFeatureRows();
-  AddUtilityClusterRow();
+  // TODO(b/326259321): Move the main menu view and settings view panels into
+  // separate class containers and show/hide the view containers
+  AddMainMenuViews();
 
   SizeToPreferredSize();
 }
@@ -595,6 +599,21 @@ void GameDashboardMainMenuView::OnScreenshotTilePressed() {
       context_->game_window());
 }
 
+void GameDashboardMainMenuView::OnSettingsBackButtonPressed() {
+  DCHECK(settings_view_container_ && main_menu_container_);
+  DCHECK(settings_view_container_->GetVisible() &&
+         !main_menu_container_->GetVisible());
+  settings_view_container_->SetVisible(false);
+  main_menu_container_->SetVisible(true);
+  SizeToContents();
+}
+
+void GameDashboardMainMenuView::OnWelcomeDialogSwitchPressed() {
+  const bool new_state = welcome_dialog_settings_switch_->GetIsOn();
+  game_dashboard_utils::SetShowWelcomeDialog(new_state);
+  OnWelcomeDialogSwitchStateChanged(new_state);
+}
+
 void GameDashboardMainMenuView::OnGameControlsTilePressed() {
   auto* game_window = context_->game_window();
   game_window->SetProperty(
@@ -638,12 +657,32 @@ void GameDashboardMainMenuView::OnHelpButtonPressed() {
 }
 
 void GameDashboardMainMenuView::OnSettingsButtonPressed() {
-  // TODO(b/281773221): Add support when settings button is pressed.
+  DCHECK(main_menu_container_ && main_menu_container_->GetVisible());
+  main_menu_container_->SetVisible(false);
+  if (settings_view_container_) {
+    settings_view_container_->SetVisible(true);
+  } else {
+    AddSettingsViews();
+  }
+  SizeToContents();
+}
+
+void GameDashboardMainMenuView::AddMainMenuViews() {
+  DCHECK(!main_menu_container_);
+  main_menu_container_ = AddChildView(std::make_unique<views::BoxLayoutView>());
+  main_menu_container_->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+  main_menu_container_->SetBetweenChildSpacing(16);
+
+  AddShortcutTilesRow();
+  MaybeAddArcFeatureRows();
+  AddUtilityClusterRow();
 }
 
 void GameDashboardMainMenuView::AddShortcutTilesRow() {
-  views::BoxLayoutView* container =
-      AddChildView(std::make_unique<views::BoxLayoutView>());
+  DCHECK(main_menu_container_);
+  views::BoxLayoutView* container = main_menu_container_->AddChildView(
+      std::make_unique<views::BoxLayoutView>());
   container->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   container->SetBetweenChildSpacing(kCenterPadding);
 
@@ -697,9 +736,9 @@ void GameDashboardMainMenuView::MaybeAddArcFeatureRows() {
   if (!IsArcWindow(context_->game_window())) {
     return;
   }
-
+  DCHECK(main_menu_container_);
   auto* feature_details_container =
-      AddChildView(std::make_unique<views::View>());
+      main_menu_container_->AddChildView(std::make_unique<views::View>());
   feature_details_container->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical,
@@ -754,7 +793,9 @@ void GameDashboardMainMenuView::AddScreenSizeSettingsRow(
 }
 
 void GameDashboardMainMenuView::AddUtilityClusterRow() {
-  auto* container = AddChildView(std::make_unique<views::View>());
+  DCHECK(main_menu_container_);
+  auto* container =
+      main_menu_container_->AddChildView(std::make_unique<views::View>());
   auto* layout = container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       /*inside_border_insets=*/gfx::Insets(),
@@ -916,6 +957,104 @@ void GameDashboardMainMenuView::ShowNudgeForSetupButton() {
   nudge_data.duration = NudgeDuration::kMediumDuration;
 
   Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
+}
+
+void GameDashboardMainMenuView::AddSettingsViews() {
+  DCHECK(!settings_view_container_);
+  settings_view_container_ =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  settings_view_container_->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+  settings_view_container_->SetBetweenChildSpacing(16);
+
+  AddSettingsTitleRow();
+  AddWelcomeDialogSettingsRow();
+}
+
+void GameDashboardMainMenuView::AddSettingsTitleRow() {
+  auto* title_container = settings_view_container_->AddChildView(
+      std::make_unique<views::BoxLayoutView>());
+  title_container->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  title_container->SetInsideBorderInsets(
+      gfx::Insets::TLBR(0, 0, 0, /*padding to offset back button size=*/32));
+
+  // Add back button to the title container.
+  settings_view_back_button_ =
+      title_container->AddChildView(std::make_unique<IconButton>(
+          base::BindRepeating(
+              &GameDashboardMainMenuView::OnSettingsBackButtonPressed,
+              base::Unretained(this)),
+          IconButton::Type::kMedium, &kQuickSettingsLeftArrowIcon,
+          IDS_ASH_GAME_DASHBOARD_BACK_TOOLTIP));
+
+  // Add title label to the title container.
+  auto* title = title_container->AddChildView(bubble_utils::CreateLabel(
+      TypographyToken::kCrosTitle1,
+      l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_SETTINGS_TITLE),
+      cros_tokens::kCrosSysOnSurface));
+  title->SetMultiLine(true);
+  title->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  // Flex `title` to fill empty space in row.
+  title_container->SetFlexForView(title, /*flex=*/1);
+}
+
+void GameDashboardMainMenuView::AddWelcomeDialogSettingsRow() {
+  auto* welcome_settings_container = settings_view_container_->AddChildView(
+      std::make_unique<views::BoxLayoutView>());
+  welcome_settings_container->SetOrientation(
+      views::BoxLayout::Orientation::kHorizontal);
+  welcome_settings_container->SetInsideBorderInsets(gfx::Insets::VH(16, 16));
+  welcome_settings_container->SetBackground(
+      views::CreateThemedRoundedRectBackground(
+          cros_tokens::kCrosSysSystemOnBase, kBubbleCornerRadius));
+
+  // Add icon.
+  auto* icon_container = welcome_settings_container->AddChildView(
+      std::make_unique<views::FlexLayoutView>());
+  icon_container->SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBase,
+      /*radius=*/12.0f));
+  icon_container->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(6, 6)));
+  icon_container->SetProperty(views::kMarginsKey,
+                              gfx::Insets::TLBR(0, 0, 0, 16));
+  icon_container->AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          kGdNotificationIcon, cros_tokens::kCrosSysOnSurface,
+          /*icon_size=*/20)));
+
+  // Add title.
+  auto* feature_title = welcome_settings_container->AddChildView(
+      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+          IDS_ASH_GAME_DASHBOARD_SETTINGS_WELCOME_DIALOG_TITLE)));
+  feature_title->SetAutoColorReadabilityEnabled(false);
+  feature_title->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  feature_title->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+      TypographyToken::kCrosTitle2));
+  feature_title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  feature_title->SetMultiLine(true);
+  feature_title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  // Flex `feature_title` to fill empty space in row.
+  welcome_settings_container->SetFlexForView(feature_title, /*flex=*/1);
+
+  // Add welcome dialog switch.
+  welcome_dialog_settings_switch_ = welcome_settings_container->AddChildView(
+      std::make_unique<Switch>(base::BindRepeating(
+          &GameDashboardMainMenuView::OnWelcomeDialogSwitchPressed,
+          base::Unretained(this))));
+  const bool is_enabled = game_dashboard_utils::ShouldShowWelcomeDialog();
+  OnWelcomeDialogSwitchStateChanged(is_enabled);
+  welcome_dialog_settings_switch_->SetProperty(views::kMarginsKey,
+                                               gfx::Insets::TLBR(0, 8, 0, 0));
+  welcome_dialog_settings_switch_->SetIsOn(is_enabled);
+}
+
+void GameDashboardMainMenuView::OnWelcomeDialogSwitchStateChanged(
+    bool is_enabled) {
+  welcome_dialog_settings_switch_->SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_ASH_GAME_DASHBOARD_SETTINGS_WELCOME_DIALOG_A11Y_LABEL,
+      l10n_util::GetStringUTF16(is_enabled
+                                    ? IDS_ASH_GAME_DASHBOARD_TILE_ON
+                                    : IDS_ASH_GAME_DASHBOARD_GC_TILE_OFF)));
 }
 
 PillButton* GameDashboardMainMenuView::GetGameControlsSetupButton() {

@@ -93,7 +93,7 @@ GameDashboardContext::GameDashboardContext(aura::Window* game_window)
     : game_window_(game_window),
       toolbar_snap_location_(ToolbarSnapLocation::kTopRight) {
   DCHECK(game_window_);
-  show_welcome_dialog_ = ShouldShowWelcomeDialog();
+  show_welcome_dialog_ = game_dashboard_utils::ShouldShowWelcomeDialog();
   CreateAndAddGameDashboardButtonWidget();
   // ARC windows handle displaying the welcome dialog once the
   // `game_dashboard_button_` becomes available.
@@ -510,14 +510,6 @@ void GameDashboardContext::CloseWelcomeDialog() {
     welcome_dialog_widget_->RemoveObserver(this);
     welcome_dialog_widget_.reset();
   }
-}
-
-bool GameDashboardContext::ShouldShowWelcomeDialog() const {
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  DCHECK(prefs) << "A valid PrefService is needed to determine whether to show "
-                   "the welcome dialog.";
-  return prefs->GetBoolean(prefs::kGameDashboardShowWelcomeDialog);
 }
 
 void GameDashboardContext::UpdateOnMainMenuClosed() {

@@ -1576,6 +1576,44 @@ TEST_P(GameTypeGameDashboardContextTest, MoveAndHideToolbarWidget) {
             ToolbarSnapLocation::kBottomLeft);
 }
 
+// Verifies the settings view can be closed via the back arrow and the Game
+// Dashboard button.
+TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseSettingsView) {
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenMainMenuSettings();
+
+  // Close the settings page via the back button and verify the main menu is now
+  // displayed.
+  test_api_->CloseTheSettings();
+  auto* main_menu_container = test_api_->GetMainMenuContainer();
+  EXPECT_TRUE(test_api_->GetMainMenuView());
+  EXPECT_TRUE(main_menu_container && main_menu_container->GetVisible());
+
+  // Re-open the settings view and close it via the Game Dashboard button.
+  test_api_->OpenMainMenuSettings();
+  test_api_->CloseTheMainMenu();
+}
+
+// Verifies the Welcome Dialog switch can be toggled off in the settings and its
+// state preserved.
+TEST_P(GameTypeGameDashboardContextTest, ToggleWelcomeDialogSettings) {
+  // Open the settings with the welcome dialog flag disabled.
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenMainMenuSettings();
+
+  // Verify the initial welcome dialog switch state is disabled.
+  EXPECT_FALSE(test_api_->GetSettingsViewWelcomeDialogSwitch()->GetIsOn());
+
+  // Toggle the switch on, close the main menu, then reopen settings and verify
+  // the switch is still on.
+  test_api_->ToggleWelcomeDialogSettingsSwitch();
+  EXPECT_TRUE(test_api_->GetSettingsViewWelcomeDialogSwitch()->GetIsOn());
+  test_api_->CloseTheMainMenu();
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenMainMenuSettings();
+  EXPECT_TRUE(test_api_->GetSettingsViewWelcomeDialogSwitch()->GetIsOn());
+}
+
 // -----------------------------------------------------------------------------
 // OnOverviewModeEndedWaiter:
 class OnOverviewModeEndedWaiter : public OverviewObserver {

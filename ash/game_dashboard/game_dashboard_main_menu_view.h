@@ -12,11 +12,16 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+namespace views {
+class BoxLayoutView;
+}  // namespace views
+
 namespace ash {
 
 class AnchoredNudge;
 class FeatureTile;
 class GameDashboardContext;
+class IconButton;
 class PillButton;
 class Switch;
 
@@ -64,6 +69,13 @@ class ASH_EXPORT GameDashboardMainMenuView
   // Handles taking a screenshot of the game window when pressed.
   void OnScreenshotTilePressed();
 
+  // Callbacks for the buttons in the settings view.
+  // Handles going back to the main menu view when pressed.
+  void OnSettingsBackButtonPressed();
+  // Handles toggling the welcome dialog preference and updating the Switch
+  // state.
+  void OnWelcomeDialogSwitchPressed();
+
   // Handles functions for Game Controls buttons.
   void OnGameControlsTilePressed();
 
@@ -76,12 +88,16 @@ class ASH_EXPORT GameDashboardMainMenuView
   // Opens up the Game Dashboard Settings.
   void OnSettingsButtonPressed();
 
-  // Adds a row of shortcut tiles to the main menu view for users to quickly
-  // access common functionality.
+  // Creates the `main_menu_container_` and adds all rows of views pertaining to
+  // the main menu view to it.
+  void AddMainMenuViews();
+
+  // Adds a row of shortcut tiles to the `main_menu_container_` for users to
+  // quickly access common functionality.
   void AddShortcutTilesRow();
 
   // Adds feature details rows, for example, including Game Controls or window
-  // size.
+  // size to the `main_menu_container_`.
   void MaybeAddArcFeatureRows();
 
   // Adds Game Controls feature tile in `container` if it is the ARC game window
@@ -96,7 +112,7 @@ class ASH_EXPORT GameDashboardMainMenuView
   void AddScreenSizeSettingsRow(views::View* container);
 
   // Adds the dashboard cluster (containing feedback, settings, and help
-  // buttons) to the Game Controls tile view.
+  // buttons) to the `main_menu_container_`.
   void AddUtilityClusterRow();
 
   // views::View:
@@ -116,6 +132,19 @@ class ASH_EXPORT GameDashboardMainMenuView
   // Shows education nudge for `game_controls_setup_button_`.
   void ShowNudgeForSetupButton();
 
+  // Creates the `settings_view_container_` and adds all rows pertaining to the
+  // settings view to it.
+  void AddSettingsViews();
+
+  // Adds a row displaying the title and back button.
+  void AddSettingsTitleRow();
+
+  // Adds a row displaying the welcome dialog setting.
+  void AddWelcomeDialogSettingsRow();
+
+  // Updates the accessible name for the `welcome_dialog_settings_switch_`.
+  void OnWelcomeDialogSwitchStateChanged(bool is_enabled);
+
   // Gets UI elements from Game Controls details row.
   PillButton* GetGameControlsSetupButton();
   Switch* GetGameControlsFeatureSwith();
@@ -128,6 +157,12 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   // Allows this class to access `GameDashboardContext` owned functions/objects.
   const raw_ptr<GameDashboardContext> context_;
+
+  // Container holding all views displayed in the main menu view.
+  raw_ptr<views::BoxLayoutView> main_menu_container_ = nullptr;
+
+  // Container holding all views displayed in the settings view.
+  raw_ptr<views::BoxLayoutView> settings_view_container_ = nullptr;
 
   // Shortcut Tiles:
   // Toolbar button to toggle the `GameDashboardToolbarView`.
@@ -142,6 +177,12 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   // Game Controls details row to configure Game Controls.
   raw_ptr<GameControlsDetailsRow> game_controls_details_ = nullptr;
+
+  // The `Switch` representing toggling the welcome dialog within the settings.
+  raw_ptr<Switch> welcome_dialog_settings_switch_ = nullptr;
+
+  // Back button in the `settings_view_container_`. Visible for testing.
+  raw_ptr<IconButton> settings_view_back_button_ = nullptr;
 
   // Layer for setup button pulse animation.
   std::unique_ptr<ui::Layer> gc_setup_button_pulse_layer_;

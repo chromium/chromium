@@ -49,6 +49,14 @@ void UpdateGameControlsHintButton(views::Button* button,
 // known and not in edit mode.
 bool ShouldEnableGameDashboardButton(aura::Window* window);
 
+// Checks whether the welcome dialog should be displayed when the game window
+// opens.
+bool ShouldShowWelcomeDialog();
+
+// Updates the `PrefService` preference for showing the welcome dialog with
+// the new value specified in `show_dialog`.
+void SetShowWelcomeDialog(bool show_dialog);
+
 }  // namespace ash::game_dashboard_utils
 
 #endif  // ASH_GAME_DASHBOARD_GAME_DASHBOARD_UTILS_H_
