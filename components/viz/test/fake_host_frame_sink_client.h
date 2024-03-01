@@ -29,7 +29,7 @@ class FakeHostFrameSinkClient : public HostFrameSinkClient {
   uint32_t last_frame_token_seen() const { return last_frame_token_seen_; }
 
  private:
-  uint32_t last_frame_token_seen_ = kInvalidOrLocalFrameToken;
+  uint32_t last_frame_token_seen_ = kInvalidFrameToken;
 };
 
 }  // namespace viz

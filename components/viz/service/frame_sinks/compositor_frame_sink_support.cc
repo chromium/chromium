@@ -25,6 +25,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/surfaces/surface_info.h"
@@ -392,8 +393,12 @@ void CompositorFrameSinkSupport::OnSurfacePresented(
     base::TimeTicks draw_start_timestamp,
     const gfx::SwapTimings& swap_timings,
     const gfx::PresentationFeedback& feedback) {
-  DidPresentCompositorFrame(frame_token, draw_start_timestamp, swap_timings,
-                            feedback);
+  // If the frame was submitted locally (from inside viz), do not tell the
+  // client about it, since the client did not send it.
+  if (frame_token != kLocalFrameToken) {
+    DidPresentCompositorFrame(frame_token, draw_start_timestamp, swap_timings,
+                              feedback);
+  }
 }
 
 void CompositorFrameSinkSupport::RefResources(
@@ -999,7 +1004,8 @@ void CompositorFrameSinkSupport::DidPresentCompositorFrame(
     base::TimeTicks draw_start_timestamp,
     const gfx::SwapTimings& swap_timings,
     const gfx::PresentationFeedback& feedback) {
-  CHECK_NE(frame_token, kInvalidOrLocalFrameToken);
+  CHECK_NE(frame_token, kInvalidFrameToken);
+  CHECK_NE(frame_token, kLocalFrameToken);
   DCHECK((feedback.flags & gfx::PresentationFeedback::kFailure) ||
          (!draw_start_timestamp.is_null() && !swap_timings.is_null()));
 

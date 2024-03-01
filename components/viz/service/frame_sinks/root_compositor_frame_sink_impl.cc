@@ -288,7 +288,7 @@ bool RootCompositorFrameSinkImpl::WillEvictSurface(
     CompositorFrame frame;
 
     auto& metadata = frame.metadata;
-    metadata.frame_token = kInvalidOrLocalFrameToken;
+    metadata.frame_token = kLocalFrameToken;
 
     // The given `surface_id` may be newer than `current_surface_id`, so use the
     // one we actually have.
