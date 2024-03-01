@@ -631,7 +631,7 @@ targets.legacy_basic_suite(
     tests = {
         "chromeos_js_code_coverage_browser_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 20,
+                shards = 32,
             ),
         ),
     },
