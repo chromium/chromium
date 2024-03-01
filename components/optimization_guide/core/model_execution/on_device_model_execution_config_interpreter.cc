@@ -38,32 +38,6 @@ ReadOnDeviceModelExecutionConfig(const base::FilePath& path) {
   return config;
 }
 
-std::vector<Rule> ExtractRedactRules(const proto::RedactRules& proto_rules) {
-  std::vector<Rule> rules;
-  if (proto_rules.rules_size()) {
-    for (const auto& rule : proto_rules.rules()) {
-      if (rule.has_regex() && rule.has_behavior()) {
-        rules.push_back(Rule());
-        rules.back().regex = rule.regex();
-        rules.back().behavior = rule.behavior();
-        if (rule.has_replacement_string()) {
-          rules.back().replacement_string = rule.replacement_string();
-        }
-        if (rule.has_min_pattern_length()) {
-          rules.back().min_pattern_length = rule.min_pattern_length();
-        }
-        if (rule.has_max_pattern_length()) {
-          rules.back().max_pattern_length = rule.max_pattern_length();
-        }
-        if (rule.has_group_index()) {
-          rules.back().matching_group = rule.group_index();
-        }
-      }
-    }
-  }
-  return rules;
-}
-
 }  // namespace
 
 OnDeviceModelExecutionConfigInterpreter::
@@ -142,8 +116,8 @@ void OnDeviceModelExecutionConfigInterpreter::RegisterFeature(
   if (config.has_output_config() && config.output_config().has_redact_rules() &&
       config.output_config().redact_rules().fields_to_check_size() &&
       !config.output_config().redact_rules().rules().empty()) {
-    feature_data->redactor = std::make_unique<Redactor>(
-        ExtractRedactRules(config.output_config().redact_rules()));
+    feature_data->redactor =
+        Redactor::FromProto(config.output_config().redact_rules());
   }
   feature_to_data_[config.feature()] = std::move(feature_data);
 }

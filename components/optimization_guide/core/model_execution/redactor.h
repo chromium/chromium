@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/redaction.pb.h"
 
 namespace re2 {
 class RE2;
@@ -41,16 +41,21 @@ enum RedactResult {
 };
 
 // Used to redact (or reject) text.
-class Redactor {
+class Redactor final {
  public:
-  explicit Redactor(const std::vector<Rule>& rules);
   ~Redactor();
+
+  // Construct a Redactor that implements the RedactRules.
+  static std::unique_ptr<Redactor> FromProto(
+      const proto::RedactRules& proto_rules);
 
   // Redacts (or rejects) the applicable text in`output`. `input` is the string
   // regexes of type REDACT_IF_ONLY_IN_OUTPUT checks.
   RedactResult Redact(const std::string& input, std::string& output) const;
 
  private:
+  explicit Redactor(const std::vector<Rule>& rules);
+
   struct CachedRule {
     CachedRule();
     ~CachedRule();

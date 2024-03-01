@@ -6,11 +6,42 @@
 
 #include <algorithm>
 
+#include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace optimization_guide {
+
+namespace {
+
+std::vector<Rule> ExtractRedactRules(const proto::RedactRules& proto_rules) {
+  std::vector<Rule> rules;
+  if (proto_rules.rules_size()) {
+    for (const auto& rule : proto_rules.rules()) {
+      if (rule.has_regex() && rule.has_behavior()) {
+        rules.push_back(Rule());
+        rules.back().regex = rule.regex();
+        rules.back().behavior = rule.behavior();
+        if (rule.has_replacement_string()) {
+          rules.back().replacement_string = rule.replacement_string();
+        }
+        if (rule.has_min_pattern_length()) {
+          rules.back().min_pattern_length = rule.min_pattern_length();
+        }
+        if (rule.has_max_pattern_length()) {
+          rules.back().max_pattern_length = rule.max_pattern_length();
+        }
+        if (rule.has_group_index()) {
+          rules.back().matching_group = rule.group_index();
+        }
+      }
+    }
+  }
+  return rules;
+}
+
+}  // namespace
 
 Rule::Rule() = default;
 Rule::Rule(const Rule& r) = default;
@@ -40,6 +71,12 @@ Redactor::Redactor(const std::vector<Rule>& rules) {
 }
 
 Redactor::~Redactor() = default;
+
+// static
+std::unique_ptr<Redactor> Redactor::FromProto(
+    const proto::RedactRules& proto_rules) {
+  return base::WrapUnique(new Redactor(ExtractRedactRules(proto_rules)));
+}
 
 RedactResult Redactor::Redact(const std::string& input,
                               std::string& output) const {
