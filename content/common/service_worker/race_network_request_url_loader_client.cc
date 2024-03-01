@@ -383,77 +383,46 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete() {
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::WatchDataUpdate() {
-  auto write_callback =
+  auto callback_func =
       base::GetFieldTrialParamByFeatureAsBool(
           features::kServiceWorkerAutoPreload, "use_two_phase_write", true)
-          ? &ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite
-          : &ServiceWorkerRaceNetworkRequestURLLoaderClient::Write;
+          ? &ServiceWorkerRaceNetworkRequestURLLoaderClient::
+                ReadAndTwoPhaseWrite
+          : &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite;
   CHECK(read_buffer_manager_.has_value());
   read_buffer_manager_->Watch(
-      base::BindRepeating(&ServiceWorkerRaceNetworkRequestURLLoaderClient::Read,
-                          weak_factory_.GetWeakPtr()));
+      base::BindRepeating(callback_func, weak_factory_.GetWeakPtr()));
   read_buffer_manager_->ArmOrNotify();
   write_buffer_manager_for_race_network_request_.Watch(
-      base::BindRepeating(write_callback, weak_factory_.GetWeakPtr()));
+      base::BindRepeating(callback_func, weak_factory_.GetWeakPtr()));
   write_buffer_manager_for_fetch_handler_.Watch(
-      base::BindRepeating(write_callback, weak_factory_.GetWeakPtr()));
+      base::BindRepeating(callback_func, weak_factory_.GetWeakPtr()));
 }
 
-void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndTwoPhaseWrite(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
-  if (!IsReadyToHandleReadWrite(result)) {
+  std::optional<base::span<const char>> read_buffer = StartReadData(result);
+  if (!read_buffer.has_value()) {
     return;
   }
+  TwoPhaseWrite(read_buffer.value());
+}
 
-  CHECK(read_buffer_manager_.has_value());
-  if (read_buffer_manager_->BytesRemaining() > 0) {
-    write_buffer_manager_for_race_network_request_.ArmOrNotify();
-    write_buffer_manager_for_fetch_handler_.ArmOrNotify();
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
+  std::optional<base::span<const char>> read_buffer = StartReadData(result);
+  if (!read_buffer.has_value()) {
     return;
   }
-
-  auto [read_result, read_buffer] = read_buffer_manager_->ReadData();
-  TRACE_EVENT_WITH_FLOW2("ServiceWorker",
-                         "ServiceWorkerRaceNetworkRequestURLLoaderClient::Read",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "url", request_.url, "read_data_result", result);
-  RecordMojoResultForDataTransfer(result, "Read");
-  switch (read_result) {
-    case MOJO_RESULT_OK:
-      CHECK(state.readable());
-      write_buffer_manager_for_race_network_request_.ArmOrNotify();
-      write_buffer_manager_for_fetch_handler_.ArmOrNotify();
-      return;
-    case MOJO_RESULT_FAILED_PRECONDITION:
-      // Successfully read the whole data. This case the peer is already closed.
-      CHECK(state.peer_closed());
-      OnDataTransferComplete();
-      return;
-    case MOJO_RESULT_BUSY:
-    case MOJO_RESULT_SHOULD_WAIT:
-      return;
-    default:
-      NOTREACHED() << "ReadData result:" << result;
-      return;
-  }
+  Write(read_buffer.value());
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite(
-    MojoResult result,
-    const mojo::HandleSignalsState& state) {
-  if (!IsReadyToHandleReadWrite(result)) {
-    return;
-  }
-
+    base::span<const char> read_buffer) {
   CHECK(read_buffer_manager_.has_value());
-  if (read_buffer_manager_->BytesRemaining() == 0) {
-    read_buffer_manager_->ArmOrNotify();
-    return;
-  }
-  base::span<const char> read_buffer = read_buffer_manager_->RemainingBuffer();
-
+  MojoResult result;
   uint32_t num_bytes_to_consume = 0;
   if (write_buffer_manager_for_race_network_request_.IsWatching() &&
       write_buffer_manager_for_fetch_handler_.IsWatching()) {
@@ -560,19 +529,9 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite(
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::Write(
-    MojoResult result,
-    const mojo::HandleSignalsState& state) {
-  if (!IsReadyToHandleReadWrite(result)) {
-    return;
-  }
-
+    base::span<const char> read_buffer) {
   CHECK(read_buffer_manager_.has_value());
-  if (read_buffer_manager_->BytesRemaining() == 0) {
-    read_buffer_manager_->ArmOrNotify();
-    return;
-  }
-  base::span<const char> read_buffer = read_buffer_manager_->RemainingBuffer();
-
+  MojoResult result;
   size_t num_bytes_to_consume = read_buffer.size();
   if (write_buffer_manager_for_race_network_request_.IsWatching() &&
       write_buffer_manager_for_fetch_handler_.IsWatching()) {
@@ -660,21 +619,44 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Write(
   CompleteReadData(num_bytes_to_consume);
 }
 
-bool ServiceWorkerRaceNetworkRequestURLLoaderClient::IsReadyToHandleReadWrite(
-    MojoResult result) {
+std::optional<base::span<const char>>
+ServiceWorkerRaceNetworkRequestURLLoaderClient::StartReadData(
+    MojoResult initial_mojo_result) {
   if (!owner_) {
-    return false;
+    return std::nullopt;
   }
   if (state_ == State::kDataTransferFinished) {
-    return false;
+    return std::nullopt;
   }
 
-  RecordMojoResultForDataTransfer(result, "Initial");
-  if (result != MOJO_RESULT_OK) {
-    return false;
+  RecordMojoResultForDataTransfer(initial_mojo_result, "Initial");
+  if (initial_mojo_result != MOJO_RESULT_OK) {
+    return std::nullopt;
   }
 
-  return true;
+  CHECK(read_buffer_manager_.has_value());
+  auto [result, read_buffer] = read_buffer_manager_->ReadData();
+  TRACE_EVENT_WITH_FLOW2(
+      "ServiceWorker",
+      "ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
+      "read_data_result", result);
+  RecordMojoResultForDataTransfer(result, "Read");
+  switch (result) {
+    case MOJO_RESULT_OK:
+      return read_buffer;
+    case MOJO_RESULT_FAILED_PRECONDITION:
+      // Successfully read the whole data.
+      OnDataTransferComplete();
+      return std::nullopt;
+    case MOJO_RESULT_BUSY:
+    case MOJO_RESULT_SHOULD_WAIT:
+      return std::nullopt;
+    default:
+      NOTREACHED() << "ReadData result:" << result;
+      return std::nullopt;
+  }
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::RecordMojoResultForWrite(

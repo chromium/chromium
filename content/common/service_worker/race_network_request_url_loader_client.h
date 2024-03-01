@@ -179,19 +179,14 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   void OnDataTransferComplete();
   void TransitionState(State new_state);
 
-  // Reads data from RaceNetworkRequestReadBufferManager. If there is a buffer
-  // to read, notifies the write buffer manager to start write operations.
-  // If no buffer to read, calls |OnDataTransferComplete()| and return nothing.
-  void Read(MojoResult result, const mojo::HandleSignalsState& state);
-  // Writes data in RaceNetworkRequestReadBufferManager into the data
-  // pipe producer that handles for both the race network request and the fetch
-  // handler respectively.
+  // Reads data from |body_|, and writes it into the data pipe producer handles
+  // for both the race network request and the fetch handler respectively.
   //
   // To guarantee the consistent data between the race network request and the
   // fetch handler, this method always writes a same chunk of data into two data
   // pipe handles. If one side fails the data write process for some reason, we
-  // don't consume the buffer, and retry it later. the buffer is consumed only
-  // when the both producer handles successfully write data.
+  // don't consume |body_| data, and retry it later. |body_| data is consumed
+  // only when the both producer handles successfully write data.
   //
   // When the first chunk of data is written to the data pipes, this starts the
   // commit process. And when the data transfer is finished, this complete the
@@ -201,21 +196,30 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // process, and there could be the case if the response is not returned due to
   // the long fetch handler execution. and test case the mechanism to wait for
   // the fetch handler
-  void TwoPhaseWrite(MojoResult result, const mojo::HandleSignalsState& state);
-  // Writes data in RaceNetworkRequestReadBufferManager into the data
-  // pipe producer that handles for both the race network request and the fetch
-  // handler respectively.
+  void ReadAndTwoPhaseWrite(MojoResult result,
+                            const mojo::HandleSignalsState& state);
+  // Reads data from |body_|, and writes it into the data pipe producer handles
+  // for both the race network request and the fetch handler respectively.
   //
-  // Unlike |TwoPhaseWrite()|, this doesn't use two-phase operations to
+  // Unlike |ReadAndTwoPhaseWrite()|, this doesn't use two-phase operations to
   // write data into data pipes. However, the result should be the same as
-  // |TwoPhaseWrite()| because mojo's |WriteData()| is expected to write
+  // |ReadAndTwoPhaseWrite()| because mojo's |WriteData()| is expected to write
   // the same amount of data from the given data pipe consumer handle to read.
-  // also |Write()| has CHECK to guarantee that the actual written sizes
+  // also |ReadAndWrite()| has CHECK to guarantee that the actual written sizes
   // to data pips are exactly same.
-  void Write(MojoResult result, const mojo::HandleSignalsState& state);
+  void ReadAndWrite(MojoResult result, const mojo::HandleSignalsState& state);
 
-  bool IsReadyToHandleReadWrite(MojoResult result);
+  void Write(base::span<const char> read_buffer);
+  void TwoPhaseWrite(base::span<const char> read_buffer);
 
+  // Begins a two-phase read from |body_|, the data pipe consumer. If succeed,
+  // the read buffer is returned. If there are no data to read from the data
+  // pipe, this internally calls |OnDataTransferComplete()| and return nothing.
+  //
+  // Since this starts a two-phase read process, `EndReadData()` in |body_|
+  // has to be called after calling this function.
+  std::optional<base::span<const char>> StartReadData(
+      MojoResult initial_mojo_result);
   void CompleteReadData(uint32_t num_bytes_to_consume);
   void WatchDataUpdate();
 
