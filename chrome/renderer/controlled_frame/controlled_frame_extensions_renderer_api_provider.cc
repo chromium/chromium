@@ -12,10 +12,10 @@
 
 namespace controlled_frame {
 
-void ControlledFrameExtensionsRendererAPIProvider::
-    EnableCustomElementAllowlist() {
-  blink::WebCustomElement::AddEmbedderCustomElementName("controlledframe");
-}
+void ControlledFrameExtensionsRendererAPIProvider::RegisterNativeHandlers(
+    extensions::ModuleSystem* module_system,
+    extensions::NativeExtensionBindingsSystem* bindings_system,
+    extensions::ScriptContext* context) {}
 
 void ControlledFrameExtensionsRendererAPIProvider::PopulateSourceMap(
     extensions::ResourceBundleSourceMap* source_map) {
@@ -26,6 +26,11 @@ void ControlledFrameExtensionsRendererAPIProvider::PopulateSourceMap(
                              IDR_CONTROLLED_FRAME_INTERNAL_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("controlledFrameApiMethods",
                              IDR_CONTROLLED_FRAME_API_METHODS_JS);
+}
+
+void ControlledFrameExtensionsRendererAPIProvider::
+    EnableCustomElementAllowlist() {
+  blink::WebCustomElement::AddEmbedderCustomElementName("controlledframe");
 }
 
 bool ControlledFrameExtensionsRendererAPIProvider::RequireWebViewModules(

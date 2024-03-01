@@ -1474,8 +1474,10 @@ void Dispatcher::RegisterNativeHandlers(
       "automationInternal", std::make_unique<AutomationInternalCustomBindings>(
                                 context, bindings_system));
 
-  delegate_->RegisterNativeHandlers(this, module_system, bindings_system,
-                                    context);
+  for (const auto& api_provider : api_providers_) {
+    api_provider->RegisterNativeHandlers(module_system, bindings_system,
+                                         context);
+  }
 }
 
 void Dispatcher::PopulateSourceMap() {

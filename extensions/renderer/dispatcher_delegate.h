@@ -10,7 +10,6 @@
 
 namespace extensions {
 class Dispatcher;
-class ModuleSystem;
 class NativeExtensionBindingsSystem;
 class ScriptContext;
 
@@ -20,13 +19,6 @@ class ScriptContext;
 class DispatcherDelegate {
  public:
   virtual ~DispatcherDelegate() {}
-
-  // Includes additional native handlers in a ScriptContext's ModuleSystem.
-  virtual void RegisterNativeHandlers(
-      Dispatcher* dispatcher,
-      ModuleSystem* module_system,
-      NativeExtensionBindingsSystem* bindings_system,
-      ScriptContext* context) {}
 
   // Requires modules for defining <webview> within an extension context's
   // module system.

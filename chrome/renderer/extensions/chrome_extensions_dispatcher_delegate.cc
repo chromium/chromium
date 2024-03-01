@@ -59,52 +59,6 @@ ChromeExtensionsDispatcherDelegate::ChromeExtensionsDispatcherDelegate() {}
 
 ChromeExtensionsDispatcherDelegate::~ChromeExtensionsDispatcherDelegate() {}
 
-void ChromeExtensionsDispatcherDelegate::RegisterNativeHandlers(
-    extensions::Dispatcher* dispatcher,
-    extensions::ModuleSystem* module_system,
-    extensions::NativeExtensionBindingsSystem* bindings_system,
-    extensions::ScriptContext* context) {
-  module_system->RegisterNativeHandler(
-      "sync_file_system",
-      std::unique_ptr<NativeHandler>(
-          new extensions::SyncFileSystemCustomBindings(context)));
-#if BUILDFLAG(IS_CHROMEOS)
-  module_system->RegisterNativeHandler(
-      "file_browser_handler",
-      std::make_unique<extensions::FileBrowserHandlerCustomBindings>(context));
-  module_system->RegisterNativeHandler(
-      "platform_keys_natives",
-      std::make_unique<extensions::PlatformKeysNatives>(context));
-#endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  module_system->RegisterNativeHandler(
-      "file_manager_private",
-      std::unique_ptr<NativeHandler>(
-          new extensions::FileManagerPrivateCustomBindings(context)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  module_system->RegisterNativeHandler(
-      "notifications_private",
-      std::unique_ptr<NativeHandler>(
-          new extensions::NotificationsNativeHandler(context)));
-  module_system->RegisterNativeHandler(
-      "mediaGalleries",
-      std::unique_ptr<NativeHandler>(
-          new extensions::MediaGalleriesCustomBindings(context)));
-  module_system->RegisterNativeHandler(
-      "page_capture", std::make_unique<extensions::PageCaptureCustomBindings>(
-                          context, bindings_system->GetIPCMessageSender()));
-
-  // The following are native handlers that are defined in //extensions, but
-  // are only used for APIs defined in Chrome.
-  // TODO(devlin): We should clean this up. If an API is defined in Chrome,
-  // there's no reason to have its native handlers residing and being compiled
-  // in //extensions.
-  module_system->RegisterNativeHandler(
-      "lazy_background_page",
-      std::unique_ptr<NativeHandler>(
-          new extensions::LazyBackgroundPageNativeHandler(context)));
-}
-
 void ChromeExtensionsDispatcherDelegate::RequireWebViewModules(
     extensions::ScriptContext* context) {
   DCHECK(context->GetAvailability("webViewInternal").is_available());

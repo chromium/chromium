@@ -21,11 +21,6 @@ class ChromeExtensionsDispatcherDelegate
 
  private:
   // extensions::DispatcherDelegate implementation.
-  void RegisterNativeHandlers(
-      extensions::Dispatcher* dispatcher,
-      extensions::ModuleSystem* module_system,
-      extensions::NativeExtensionBindingsSystem* bindings_system,
-      extensions::ScriptContext* context) override;
   void RequireWebViewModules(extensions::ScriptContext* context) override;
   void OnActiveExtensionsUpdated(
       const std::set<std::string>& extensions_ids) override;

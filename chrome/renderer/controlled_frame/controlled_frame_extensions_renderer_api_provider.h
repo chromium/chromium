@@ -28,9 +28,13 @@ class ControlledFrameExtensionsRendererAPIProvider
   ControlledFrameExtensionsRendererAPIProvider& operator=(
       const ControlledFrameExtensionsRendererAPIProvider&) = delete;
 
-  void EnableCustomElementAllowlist() override;
+  void RegisterNativeHandlers(
+      extensions::ModuleSystem* module_system,
+      extensions::NativeExtensionBindingsSystem* bindings_system,
+      extensions::ScriptContext* context) override;
   void PopulateSourceMap(
       extensions::ResourceBundleSourceMap* source_map) override;
+  void EnableCustomElementAllowlist() override;
   bool RequireWebViewModules(extensions::ScriptContext* context) override;
 };
 

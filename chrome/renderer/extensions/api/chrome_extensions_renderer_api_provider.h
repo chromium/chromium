@@ -23,6 +23,9 @@ class ChromeExtensionsRendererAPIProvider
   ~ChromeExtensionsRendererAPIProvider() override = default;
 
   // ExtensionsRendererAPIProvider:
+  void RegisterNativeHandlers(ModuleSystem* module_system,
+                              NativeExtensionBindingsSystem* bindings_system,
+                              ScriptContext* context) override;
   void PopulateSourceMap(ResourceBundleSourceMap* source_map) override;
   void EnableCustomElementAllowlist() override;
   bool RequireWebViewModules(ScriptContext* context) override;

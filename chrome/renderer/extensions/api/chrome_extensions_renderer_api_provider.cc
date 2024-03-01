@@ -6,9 +6,66 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/grit/renderer_resources.h"
+#include "chrome/renderer/extensions/api/media_galleries_custom_bindings.h"
+#include "chrome/renderer/extensions/api/notifications_native_handler.h"
+#include "chrome/renderer/extensions/api/page_capture_custom_bindings.h"
+#include "chrome/renderer/extensions/api/sync_file_system_custom_bindings.h"
+#include "extensions/renderer/bindings/api_bindings_system.h"
+#include "extensions/renderer/lazy_background_page_native_handler.h"
+#include "extensions/renderer/module_system.h"
+#include "extensions/renderer/native_extension_bindings_system.h"
+#include "extensions/renderer/native_handler.h"
 #include "extensions/renderer/resource_bundle_source_map.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/renderer/extensions/api/file_browser_handler_custom_bindings.h"
+#include "chrome/renderer/extensions/api/platform_keys_natives.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/renderer/extensions/api/file_manager_private_custom_bindings.h"
+#endif
+
 namespace extensions {
+
+void ChromeExtensionsRendererAPIProvider::RegisterNativeHandlers(
+    ModuleSystem* module_system,
+    NativeExtensionBindingsSystem* bindings_system,
+    ScriptContext* context) {
+  module_system->RegisterNativeHandler(
+      "sync_file_system",
+      std::make_unique<SyncFileSystemCustomBindings>(context));
+#if BUILDFLAG(IS_CHROMEOS)
+  module_system->RegisterNativeHandler(
+      "file_browser_handler",
+      std::make_unique<FileBrowserHandlerCustomBindings>(context));
+  module_system->RegisterNativeHandler(
+      "platform_keys_natives", std::make_unique<PlatformKeysNatives>(context));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  module_system->RegisterNativeHandler(
+      "file_manager_private",
+      std::make_unique<FileManagerPrivateCustomBindings>(context));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  module_system->RegisterNativeHandler(
+      "notifications_private",
+      std::make_unique<NotificationsNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "mediaGalleries",
+      std::make_unique<MediaGalleriesCustomBindings>(context));
+  module_system->RegisterNativeHandler(
+      "page_capture", std::make_unique<PageCaptureCustomBindings>(
+                          context, bindings_system->GetIPCMessageSender()));
+
+  // The following are native handlers that are defined in //extensions, but
+  // are only used for APIs defined in Chrome.
+  // TODO(devlin): We should clean this up. If an API is defined in Chrome,
+  // there's no reason to have its native handlers residing and being compiled
+  // in //extensions.
+  module_system->RegisterNativeHandler(
+      "lazy_background_page",
+      std::make_unique<LazyBackgroundPageNativeHandler>(context));
+}
 
 void ChromeExtensionsRendererAPIProvider::PopulateSourceMap(
     ResourceBundleSourceMap* source_map) {
