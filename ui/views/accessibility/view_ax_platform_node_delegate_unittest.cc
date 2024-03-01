@@ -797,12 +797,12 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   EXPECT_EQ(0u, button_accessibility()->GetIndexInParent());
   EXPECT_EQ(2u, parent_view->GetIndexInParent());
 
-  EXPECT_FALSE(contents_view->IsIgnored());
-  EXPECT_FALSE(parent_view->IsIgnored());
-  EXPECT_TRUE(child_view_1->IsIgnored());
-  EXPECT_TRUE(child_view_2->IsIgnored());
-  EXPECT_TRUE(child_view_3->IsIgnored());
-  EXPECT_TRUE(child_view_4->IsIgnored());
+  EXPECT_FALSE(contents_view->GetIsIgnored());
+  EXPECT_FALSE(parent_view->GetIsIgnored());
+  EXPECT_TRUE(child_view_1->GetIsIgnored());
+  EXPECT_TRUE(child_view_2->GetIsIgnored());
+  EXPECT_TRUE(child_view_3->GetIsIgnored());
+  EXPECT_TRUE(child_view_4->GetIsIgnored());
 
   EXPECT_FALSE(contents_view->IsLeaf());
   EXPECT_TRUE(parent_view->IsLeaf());
@@ -834,12 +834,12 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   EXPECT_EQ(0u, button_accessibility()->GetIndexInParent());
   EXPECT_EQ(2u, parent_view->GetIndexInParent());
 
-  EXPECT_FALSE(contents_view->IsIgnored());
-  EXPECT_FALSE(parent_view->IsIgnored());
-  EXPECT_FALSE(child_view_1->IsIgnored());
-  EXPECT_FALSE(child_view_2->IsIgnored());
-  EXPECT_FALSE(child_view_3->IsIgnored());
-  EXPECT_FALSE(child_view_4->IsIgnored());
+  EXPECT_FALSE(contents_view->GetIsIgnored());
+  EXPECT_FALSE(parent_view->GetIsIgnored());
+  EXPECT_FALSE(child_view_1->GetIsIgnored());
+  EXPECT_FALSE(child_view_2->GetIsIgnored());
+  EXPECT_FALSE(child_view_3->GetIsIgnored());
+  EXPECT_FALSE(child_view_4->GetIsIgnored());
 
   EXPECT_FALSE(contents_view->IsLeaf());
   EXPECT_FALSE(parent_view->IsLeaf());

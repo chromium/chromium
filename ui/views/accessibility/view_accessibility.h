@@ -165,7 +165,7 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Hides this view from the accessibility APIs.
   void SetIsIgnored(bool is_ignored);
-  bool GetIsIgnored() const;
+  virtual bool GetIsIgnored() const;
 
   // Note that `pos_in_set` starts from 1 not 0.
   void SetPosInSet(int pos_in_set);

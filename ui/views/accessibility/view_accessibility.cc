@@ -351,7 +351,8 @@ bool ViewAccessibility::IsAccessibilityFocusable() const {
   // be focusable, if there is test coverage, such a situation will cause a test
   // failure.
   return view_->GetFocusBehavior() != View::FocusBehavior::NEVER &&
-         GetIsEnabled() && view_->IsDrawn() && !GetIsIgnored();
+         GetIsEnabled() && view_->IsDrawn() &&
+         !ViewAccessibility::GetIsIgnored();
 }
 
 bool ViewAccessibility::IsFocusedForTesting() const {
