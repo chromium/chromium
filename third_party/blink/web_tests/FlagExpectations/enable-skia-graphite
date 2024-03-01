@@ -31,6 +31,11 @@ crbug.com/1517847 virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.html [ Pas
 crbug.com/1518086 external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-on-top-of-viewport-partially-onscreen-old.html [ Failure ]
+crbug.com/626703 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/pseudo-with-classes-match-wildard.html [ Failure ]
+crbug.com/626703 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/pseudo-with-classes-new-with-class-old-without.html [ Failure ]
+crbug.com/626703 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/transform-origin-view-transition-group.html [ Failure ]
+crbug.com/626703 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/hit-test-unpainted-element.html [ Failure ]
 crbug.com/626703 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/pseudo-with-classes-entry.html [ Failure ]
 crbug.com/626703 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-and-old-sizes-match.html [ Failure ]
 crbug.com/626703 virtual/view-transition/external/wpt/css/css-view-transitions/new-content-container-writing-modes.html [ Failure ]
