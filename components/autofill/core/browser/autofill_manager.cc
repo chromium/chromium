@@ -318,8 +318,6 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   DCHECK(!forms.empty());
   OnBeforeProcessParsedForms();
 
-  driver().HandleParsedForms(forms);
-
   std::vector<raw_ptr<FormStructure, VectorExperimental>> non_queryable_forms;
   std::vector<raw_ptr<FormStructure, VectorExperimental>> queryable_forms;
   DenseSet<FormType> form_types;

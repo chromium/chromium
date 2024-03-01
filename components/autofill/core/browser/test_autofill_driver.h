@@ -68,7 +68,6 @@ class TestAutofillDriverTemplate : public T {
                         mojom::ActionPersistence action_persistence,
                         const FieldGlobalId& field,
                         const std::u16string& value) override {}
-  void HandleParsedForms(const std::vector<FormData>& forms) override {}
   void SendAutofillTypePredictionsToRenderer(
       const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms)
       override {}
