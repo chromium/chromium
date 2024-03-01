@@ -5,6 +5,7 @@
 #include "ash/system/mahi/mahi_panel_view.h"
 
 #include <algorithm>
+#include <climits>
 #include <memory>
 #include <string>
 
@@ -32,11 +33,13 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -50,6 +53,7 @@ constexpr int kPanelCornerRadius = 16;
 constexpr gfx::Insets kPanelPadding = gfx::Insets(16);
 constexpr int kPanelChildSpacing = 8;
 constexpr int kHeaderRowSpacing = 8;
+constexpr float kScrollerViewCornerRadius = 16;
 
 }  // namespace
 
@@ -57,10 +61,12 @@ BEGIN_METADATA(MahiPanelView)
 END_METADATA
 
 MahiPanelView::MahiPanelView() {
-  SetOrientation(views::BoxLayout::Orientation::kVertical);
-  SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
-  SetInsideBorderInsets(kPanelPadding);
-  SetBetweenChildSpacing(kPanelChildSpacing);
+  SetOrientation(views::LayoutOrientation::kVertical);
+  SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  SetInteriorMargin(kPanelPadding);
+  SetDefault(views::kMarginsKey, gfx::Insets::VH(kPanelChildSpacing, 0));
+  SetIgnoreDefaultMainAxisMargins(true);
+  SetCollapseMargins(true);
 
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kPanelCornerRadius));
@@ -77,6 +83,7 @@ MahiPanelView::MahiPanelView() {
       views::HighlightBorder::Type::kHighlightBorderOnShadow,
       /*insets_type=*/views::HighlightBorder::InsetsType::kHalfInsets));
 
+  // Views constructions.
   auto header_row = std::make_unique<views::FlexLayoutView>();
   header_row->SetOrientation(views::LayoutOrientation::kHorizontal);
 
@@ -116,7 +123,34 @@ MahiPanelView::MahiPanelView() {
 
   AddChildView(std::move(header_row));
 
-  AddChildView(std::make_unique<SummaryOutlinesSection>());
+  // Scrollable contents, which should contain the summary outline section and
+  // the Q&A section.
+  auto scroll_view =
+      views::Builder<views::ScrollView>()
+          .SetBackgroundThemeColorId(cros_tokens::kCrosSysSystemOnBase)
+          .SetProperty(views::kFlexBehaviorKey,
+                       views::FlexSpecification(views::FlexSpecification(
+                           views::MinimumFlexSizeRule::kPreferred,
+                           views::MaximumFlexSizeRule::kUnbounded)))
+          .ClipHeightTo(/*min_height=*/0, /*max_height=*/INT_MAX)
+          .SetDrawOverflowIndicator(false)
+          .Build();
+
+  scroll_view->SetContents(
+      views::Builder<views::View>()
+          .SetUseDefaultFillLayout(true)
+          .AddChild(views::Builder<SummaryOutlinesSection>())
+          // TODO(b/319731486): Change this view to the Q&A section and
+          // show/hide it accordingly.
+          .AddChild(views::Builder<views::View>())
+          .Build());
+
+  // Add layer for rounded corners.
+  scroll_view->SetPaintToLayer();
+  scroll_view->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF{kScrollerViewCornerRadius});
+
+  AddChildView(std::move(scroll_view));
 
   auto feedback_view = std::make_unique<views::BoxLayoutView>();
   feedback_view->SetOrientation(views::BoxLayout::Orientation::kHorizontal);

@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 
@@ -27,6 +28,11 @@ class ASH_EXPORT SummaryOutlinesSection : public views::BoxLayoutView {
   base::WeakPtrFactory<SummaryOutlinesSection> weak_ptr_factory_{this};
 };
 
+BEGIN_VIEW_BUILDER(ASH_EXPORT, SummaryOutlinesSection, views::BoxLayoutView)
+END_VIEW_BUILDER
+
 }  // namespace ash
+
+DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::SummaryOutlinesSection)
 
 #endif  // ASH_SYSTEM_MAHI_SUMMARY_OUTLINES_SECTION_H_

@@ -19,7 +19,6 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -34,7 +33,6 @@ constexpr int64_t kSectionHeaderChildSpacing = 4;
 constexpr int64_t kSectionHeaderIconSize = 20;
 constexpr gfx::Insets kSectionPadding = gfx::Insets::TLBR(8, 8, 16, 8);
 constexpr int64_t kSectionChildSpacing = 8;
-constexpr int64_t kSectionCornerRadius = 16;
 
 std::unique_ptr<views::View> CreateSectionHeader(const gfx::VectorIcon& icon,
                                                  int name_id) {
@@ -61,9 +59,6 @@ SummaryOutlinesSection::SummaryOutlinesSection() {
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
   SetInsideBorderInsets(kSectionPadding);
   SetBetweenChildSpacing(kSectionChildSpacing);
-
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase, kSectionCornerRadius));
 
   AddChildView(CreateSectionHeader(chromeos::kMahiSummarizeIcon,
                                    IDS_MAHI_PANEL_SUMMARY_SECTION_NAME));
