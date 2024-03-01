@@ -182,10 +182,79 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    public void testGetBackgroundColor() {
-        mStripLayoutHelperManager.onContextChanged(mContext);
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
+    public void testGetBackgroundColor_ActivityFocusChange_TsloDisabled() {
         assertEquals(
+                "Initial strip background color is incorrect.",
                 ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_3),
+                mStripLayoutHelperManager.getBackgroundColor());
+        // Assume the current activity lost focus.
+        mStripLayoutHelperManager.onTopResumedActivityChanged(false);
+        assertEquals(
+                "Strip background color should not be updated when activity focus state changes",
+                ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_3),
+                mStripLayoutHelperManager.getBackgroundColor());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
+    public void testGetBackgroundColor_ActivityFocusChange_LightTheme() {
+        doTestBackgroundColorOnActivityFocusChange(
+                /* isNightMode= */ false, /* isIncognito= */ false);
+    }
+
+    @Test
+    @Config(qualifiers = "night")
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
+    public void testGetBackgroundColor_ActivityFocusChange_DarkTheme() {
+        doTestBackgroundColorOnActivityFocusChange(
+                /* isNightMode= */ true, /* isIncognito= */ false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
+    public void testGetBackgroundColor_ActivityFocusChange_Incognito() {
+        mStripLayoutHelperManager.setIsIncognitoForTesting(true);
+        doTestBackgroundColorOnActivityFocusChange(
+                /* isNightMode= */ false, /* isIncognito= */ true);
+    }
+
+    private void doTestBackgroundColorOnActivityFocusChange(
+            boolean isNightMode, boolean isIncognito) {
+        @ColorInt
+        int focusedColor =
+                ChromeColors.getSurfaceColor(
+                        mContext,
+                        isNightMode ? R.dimen.default_elevation_2 : R.dimen.default_elevation_3);
+        @ColorInt
+        int unfocusedColor =
+                ChromeColors.getSurfaceColor(
+                        mContext,
+                        isNightMode ? R.dimen.default_elevation_1 : R.dimen.default_elevation_2);
+
+        if (isIncognito) {
+            focusedColor = mContext.getColor(R.color.default_bg_color_dark_elev_2_baseline);
+            unfocusedColor = mContext.getColor(R.color.default_bg_color_dark_elev_1_baseline);
+        }
+
+        // Initially use the default tab strip background.
+        assertEquals(
+                "Initial strip background color is incorrect.",
+                focusedColor,
+                mStripLayoutHelperManager.getBackgroundColor());
+        // Assume the current activity lost focus.
+        mStripLayoutHelperManager.onTopResumedActivityChanged(false);
+        assertEquals(
+                "Strip background color should be updated when activity focus state changes to"
+                        + " false.",
+                unfocusedColor,
+                mStripLayoutHelperManager.getBackgroundColor());
+        // Assume the current activity gained focus.
+        mStripLayoutHelperManager.onTopResumedActivityChanged(true);
+        assertEquals(
+                "Strip background color should be updated when activity focus state changes to"
+                        + " true.",
+                focusedColor,
                 mStripLayoutHelperManager.getBackgroundColor());
     }
 

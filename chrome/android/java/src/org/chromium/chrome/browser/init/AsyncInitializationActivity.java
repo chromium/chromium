@@ -776,6 +776,14 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         Thread.dumpStack();
     }
 
+    @CallSuper
+    @Override
+    public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        super.onTopResumedActivityChanged(isTopResumedActivity);
+
+        mLifecycleDispatcher.dispatchOnTopResumedActivityChanged(isTopResumedActivity);
+    }
+
     /**
      * @return Whether the activity is running in tablet mode.
      */

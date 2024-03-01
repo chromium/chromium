@@ -20,6 +20,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/lifecycle/RecreateObserver.java",
     "java/src/org/chromium/chrome/browser/lifecycle/SaveInstanceStateObserver.java",
     "java/src/org/chromium/chrome/browser/lifecycle/StartStopWithNativeObserver.java",
+    "java/src/org/chromium/chrome/browser/lifecycle/TopResumedActivityChangedObserver.java",
     "java/src/org/chromium/chrome/browser/lifecycle/WindowFocusChangedObserver.java",
   ]
 }

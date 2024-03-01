@@ -7,9 +7,12 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Px;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
@@ -26,19 +29,42 @@ public class TabUiThemeUtil {
      *
      * @param context {@link Context} used to retrieve color.
      * @param isIncognito Whether the color is used for incognito mode.
-     * @return The {@link ColorInt} for tab strip redesign background.
+     * @param isActivityFocused Whether the activity containing the tab strip is focused.
+     * @return The {@link ColorInt} for the tab strip background.
      */
-    public static @ColorInt int getTabStripBackgroundColor(Context context, boolean isIncognito) {
-        // Use black color for incognito and night mode for folio.
+    public static @ColorInt int getTabStripBackgroundColor(
+            Context context, boolean isIncognito, boolean isActivityFocused) {
+        // Default specs for incognito, dark and light themes, used when
+        // TAB_STRIP_LAYOUT_OPTIMIZATION is disabled or when the activity is focused when this
+        // feature is enabled.
+        @ColorRes int incognitoColor = R.color.default_bg_color_dark_elev_2_baseline;
+        @Px
+        float darkThemeElevation =
+                context.getResources().getDimensionPixelSize(R.dimen.default_elevation_2);
+        @Px
+        float lightThemeElevation =
+                context.getResources().getDimensionPixelSize(R.dimen.default_elevation_3);
+
+        // Specs for when the activity containing the tab strip is not focused.
+        // TODO (crbug.com/326290073): Use another boolean to allow using the default spec even when
+        // the activity is not in focus, when this feature is enabled.
+        // TODO (crbug.com/326290073): Update this to use the helper method from
+        // TabUiFeatureUtilities.
+        if (ChromeFeatureList.sTabStripLayoutOptimization.isEnabled() && !isActivityFocused) {
+            incognitoColor = R.color.default_bg_color_dark_elev_1_baseline;
+            darkThemeElevation =
+                    context.getResources().getDimensionPixelSize(R.dimen.default_elevation_1);
+            lightThemeElevation =
+                    context.getResources().getDimensionPixelSize(R.dimen.default_elevation_2);
+        }
+
         if (isIncognito) {
-            return context.getColor(R.color.default_bg_color_dark_elev_2_baseline);
+            return context.getColor(incognitoColor);
         }
 
-        if (ColorUtils.inNightMode(context)) {
-            return ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
-        }
-
-        return ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_3);
+        return ChromeColors.getSurfaceColor(
+                context,
+                ColorUtils.inNightMode(context) ? darkThemeElevation : lightThemeElevation);
     }
 
     /**

@@ -147,7 +147,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
     private Drawable getTempTabStripDrawable(boolean incognito) {
         Drawable bgdColor =
                 new ColorDrawable(
-                        TabUiThemeUtil.getTabStripBackgroundColor(getContext(), incognito));
+                        TabUiThemeUtil.getTabStripBackgroundColor(
+                                getContext(), incognito, /* isActivityFocused= */ true));
         Drawable bdgTabImage =
                 ResourcesCompat.getDrawable(
                         getContext().getResources(),

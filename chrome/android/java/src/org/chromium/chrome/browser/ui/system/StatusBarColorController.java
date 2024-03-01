@@ -515,9 +515,15 @@ public class StatusBarColorController
         }
 
         if (mIsTablet) {
+            // When applicable, the status bar should use the focused activity tab strip color
+            // (default), and should not be affected by an activity focus change.
+            // TODO (crbug.com/326290073): Use another boolean to allow using the default color spec
+            // even when the activity is not in focus, to avoid any confusion stemming from why
+            // |isActivityFocused| is always true in this invocation here.
             return mTabStripHiddenOnTablet
                     ? mToolbarColor
-                    : TabUiThemeUtil.getTabStripBackgroundColor(mWindow.getContext(), mIsIncognito);
+                    : TabUiThemeUtil.getTabStripBackgroundColor(
+                            mWindow.getContext(), mIsIncognito, /* isActivityFocused= */ true);
         }
 
         // When Omnibox gains focus, we want to clear the status bar theme color.

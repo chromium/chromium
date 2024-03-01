@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
@@ -89,7 +90,10 @@ import java.util.List;
  * all input and model events to the proper destination.
  */
 public class StripLayoutHelperManager
-        implements SceneOverlay, PauseResumeWithNativeObserver, TabStripHeightObserver {
+        implements SceneOverlay,
+                PauseResumeWithNativeObserver,
+                TabStripHeightObserver,
+                TopResumedActivityChangedObserver {
 
     /**
      * POD type that contains the necessary tab model info on startup. Used in the startup flicker
@@ -171,6 +175,8 @@ public class StripLayoutHelperManager
     private TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
     private final ViewStub mTabHoverCardViewStub;
     private float mModelSelectorWidth;
+
+    private boolean mIsTopResumedActivity;
 
     // 3-dots menu button with tab strip end padding
     private float mStripEndPadding;
@@ -497,6 +503,10 @@ public class StripLayoutHelperManager
             }
         }
 
+        // TODO (crbug.com/326290073): Update this to check the actual activity resumption state
+        // because it is technically possible for the current activity to lose the top resumed
+        // activity status before the StripLayoutHelperManager instance is instantiated.
+        mIsTopResumedActivity = true;
         onContextChanged(context);
     }
 
@@ -739,6 +749,15 @@ public class StripLayoutHelperManager
         }
 
         return mStripTransitionScrimOpacity;
+    }
+
+    @Override
+    public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        // TODO (crbug.com/326290073): Update this to use the helper method from
+        // TabUiFeatureUtilities.
+        if (!ChromeFeatureList.sTabStripLayoutOptimization.isEnabled()) return;
+        mIsTopResumedActivity = isTopResumedActivity;
+        mUpdateHost.requestUpdate();
     }
 
     private float getModelSelectorButtonWidthWithEndPadding() {
@@ -1096,7 +1115,8 @@ public class StripLayoutHelperManager
     }
 
     public @ColorInt int getBackgroundColor() {
-        return TabUiThemeUtil.getTabStripBackgroundColor(mContext, mIsIncognito);
+        return TabUiThemeUtil.getTabStripBackgroundColor(
+                mContext, mIsIncognito, mIsTopResumedActivity);
     }
 
     /**
@@ -1203,5 +1223,9 @@ public class StripLayoutHelperManager
 
     public TabDragSource getTabDragSourceForTesting() {
         return mTabDragSource;
+    }
+
+    public void setIsIncognitoForTesting(boolean isIncognito) {
+        mIsIncognito = isIncognito;
     }
 }
