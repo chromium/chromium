@@ -16,6 +16,7 @@
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -183,6 +184,12 @@ WallpaperControllerClientImpl::WallpaperControllerClientImpl(
   // SessionManager might not exist in unit tests.
   if (session_manager)
     session_observation_.Observe(session_manager);
+
+  if (user_manager::UserManager::IsInitialized()) {
+    user_manager_observation_.Observe(user_manager::UserManager::Get());
+  } else {
+    CHECK_IS_TEST();
+  }
 }
 
 WallpaperControllerClientImpl::~WallpaperControllerClientImpl() {
@@ -358,6 +365,16 @@ void WallpaperControllerClientImpl::OnUserProfileLoaded(
     const AccountId& account_id) {
   wallpaper_controller_->SyncLocalAndRemotePrefs(account_id);
   ObserveVolumeManagerForAccountId(account_id);
+}
+
+void WallpaperControllerClientImpl::OnUserLoggedIn(
+    const user_manager::User& user) {
+  // For public account, it's possible that the user-policy controlled wallpaper
+  // was fetched/cleared at the login screen (while for a regular user it was
+  // always fetched/cleared inside a user session), in the case the user-policy
+  // controlled wallpaper was fetched/cleared but not updated in the login
+  // screen, we need to update the wallpaper after the public user logged in.
+  ShowUserWallpaper(user.GetAccountId());
 }
 
 void WallpaperControllerClientImpl::DeviceWallpaperImageFilePathChanged() {

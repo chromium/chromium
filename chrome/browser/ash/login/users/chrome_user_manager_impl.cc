@@ -66,7 +66,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -731,10 +730,6 @@ void ChromeUserManagerImpl::GuestUserLoggedIn() {
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LOGIN_DEFAULT_USER)),
       user_manager::User::USER_IMAGE_INVALID, false);
-
-  // Initializes wallpaper after active_user_ is set.
-  WallpaperControllerClientImpl::Get()->ShowUserWallpaper(
-      user_manager::GuestAccountId());
 }
 
 void ChromeUserManagerImpl::RegularUserLoggedIn(
@@ -745,8 +740,6 @@ void ChromeUserManagerImpl::RegularUserLoggedIn(
 
   MaybeStartBluetoothLogging(account_id);
 
-  WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
-
   // Make sure that new data is persisted to Local State.
   GetLocalState()->CommitPendingWrite();
 }
@@ -756,7 +749,6 @@ void ChromeUserManagerImpl::RegularUserLoggedInAsEphemeral(
     const user_manager::UserType user_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   UserManagerBase::RegularUserLoggedInAsEphemeral(account_id, user_type);
-  WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
 }
 
 bool ChromeUserManagerImpl::IsEphemeralAccountIdByPolicy(
@@ -774,13 +766,6 @@ void ChromeUserManagerImpl::PublicAccountUserLoggedIn(
     user_manager::User* user) {
   SetIsCurrentUserNew(true);
   active_user_ = user;
-
-  // For public account, it's possible that the user-policy controlled wallpaper
-  // was fetched/cleared at the login screen (while for a regular user it was
-  // always fetched/cleared inside a user session), in the case the user-policy
-  // controlled wallpaper was fetched/cleared but not updated in the login
-  // screen, we need to update the wallpaper after the public user logged in.
-  WallpaperControllerClientImpl::Get()->ShowUserWallpaper(user->GetAccountId());
 }
 
 void ChromeUserManagerImpl::KioskAppLoggedIn(user_manager::User* user) {
@@ -794,7 +779,6 @@ void ChromeUserManagerImpl::KioskAppLoggedIn(user_manager::User* user) {
       user_manager::User::USER_IMAGE_INVALID, false);
 
   const AccountId& kiosk_app_account_id = user->GetAccountId();
-  WallpaperControllerClientImpl::Get()->ShowUserWallpaper(kiosk_app_account_id);
 
   // TODO(bartfab): Add KioskAppUsers to the users_ list and keep metadata like
   // the kiosk_app_id in these objects, removing the need to re-parse the

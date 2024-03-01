@@ -160,11 +160,6 @@ class UserManagerTest : public testing::Test {
     ResetUserManager();
 
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-
-    wallpaper_controller_client_ = std::make_unique<
-        WallpaperControllerClientImpl>(
-        std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
-    wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
   }
 
   void TearDown() override {
@@ -201,10 +196,17 @@ class UserManagerTest : public testing::Test {
   void ResetUserManager() {
     // Initialize the UserManager singleton to a fresh ChromeUserManagerImpl
     // instance.
+    // WallpaperControllerClient needs to be recreated, too, because
+    // it subscribes UserManager singleton.
+    wallpaper_controller_client_.reset();
     user_image_manager_registry_.reset();
     user_manager_.Reset(ChromeUserManagerImpl::CreateChromeUserManager());
     user_image_manager_registry_ =
         std::make_unique<ash::UserImageManagerRegistry>(user_manager_.Get());
+    wallpaper_controller_client_ = std::make_unique<
+        WallpaperControllerClientImpl>(
+        std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
+    wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 
     // ChromeUserManagerImpl ctor posts a task to reload policies.
     // Also ensure that all existing ongoing user manager tasks are completed.
