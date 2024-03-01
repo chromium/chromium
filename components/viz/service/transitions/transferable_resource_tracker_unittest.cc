@@ -34,7 +34,7 @@ std::unique_ptr<SurfaceSavedFrame> CreateFrameWithResult() {
 class TransferableResourceTrackerTest : public testing::Test {
  public:
   void SetNextId(TransferableResourceTracker* tracker, uint32_t id) {
-    tracker->next_id_ = id;
+    tracker->id_tracker_.set_next_id_for_test(id);
   }
 
   // Returns if there is a SharedBitmap in SharedBitmapManager for |resource|.
@@ -85,6 +85,7 @@ TEST_F(TransferableResourceTrackerTest, ExhaustedIdLoops) {
   SetNextId(&tracker, next_id);
 
   ResourceId last_id = kInvalidResourceId;
+  std::vector<TransferableResourceTracker::ResourceFrame> frames;
   for (int i = 0; i < 10; ++i) {
     auto frame = tracker.ImportResources(CreateFrameWithResult());
     ASSERT_EQ(frame.shared.size(), 1u);
@@ -94,8 +95,11 @@ TEST_F(TransferableResourceTrackerTest, ExhaustedIdLoops) {
     EXPECT_GE(resource->resource.id, kVizReservedRangeStartId);
     EXPECT_NE(resource->resource.id, last_id);
     last_id = resource->resource.id;
+    frames.push_back(std::move(frame));
+  }
+  for (auto& frame : frames) {
     tracker.ReturnFrame(frame);
-    EXPECT_FALSE(HasBitmapResource(resource->resource));
+    EXPECT_FALSE(HasBitmapResource(frame.shared.at(0)->resource));
   }
 }
 
@@ -131,6 +135,7 @@ TEST_F(TransferableResourceTrackerTest,
   SetNextId(&tracker, next_id);
 
   ResourceId last_id = kInvalidResourceId;
+  std::vector<TransferableResourceTracker::ResourceFrame> frames;
   for (int i = 0; i < 10; ++i) {
     auto frame = tracker.ImportResources(CreateFrameWithResult());
     ASSERT_EQ(frame.shared.size(), 1u);
@@ -141,8 +146,11 @@ TEST_F(TransferableResourceTrackerTest,
     EXPECT_NE(new_resource->resource.id, last_id);
     EXPECT_NE(new_resource->resource.id, resource->resource.id);
     last_id = new_resource->resource.id;
+    frames.push_back(std::move(frame));
+  }
+  for (auto& frame : frames) {
     tracker.ReturnFrame(frame);
-    EXPECT_FALSE(HasBitmapResource(new_resource->resource));
+    EXPECT_FALSE(HasBitmapResource(frame.shared.at(0)->resource));
   }
 }
 

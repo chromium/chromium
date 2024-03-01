@@ -219,6 +219,7 @@ viz_component("common") {
     "resources/bitmap_allocation.h",
     "resources/platform_color.h",
     "resources/release_callback.h",
+    "resources/resource_id.cc",
     "resources/resource_id.h",
     "resources/return_callback.h",
     "resources/returned_resource.cc",

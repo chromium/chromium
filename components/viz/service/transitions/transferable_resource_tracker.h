@@ -89,17 +89,12 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
  private:
   friend class TransferableResourceTrackerTest;
 
-  ResourceId GetNextAvailableResourceId();
-
   PositionedResource ImportResource(
       SurfaceSavedFrame::OutputCopyResult output_copy);
 
   static_assert(std::is_same<decltype(kInvalidResourceId.GetUnsafeValue()),
                              uint32_t>::value,
                 "ResourceId underlying type should be uint32_t");
-
-  const uint32_t starting_id_;
-  uint32_t next_id_;
 
   const raw_ptr<SharedBitmapManager> shared_bitmap_manager_;
 
@@ -116,8 +111,9 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
 
     TransferableResource resource;
     ResourceReleaseCallback release_callback;
-    int ref_count = 0;
   };
+
+  ReservedResourceIdTracker id_tracker_;
 
   std::map<ResourceId, TransferableResourceHolder> managed_resources_;
 };

@@ -23,9 +23,7 @@ namespace viz {
 
 TransferableResourceTracker::TransferableResourceTracker(
     SharedBitmapManager* shared_bitmap_manager)
-    : starting_id_(kVizReservedRangeStartId.GetUnsafeValue()),
-      next_id_(kVizReservedRangeStartId.GetUnsafeValue()),
-      shared_bitmap_manager_(shared_bitmap_manager) {}
+    : shared_bitmap_manager_(shared_bitmap_manager) {}
 
 TransferableResourceTracker::~TransferableResourceTracker() = default;
 
@@ -112,7 +110,7 @@ TransferableResourceTracker::ImportResource(
     }
   }
 
-  resource.id = GetNextAvailableResourceId();
+  resource.id = id_tracker_.AllocId(/*initial_ref_count=*/1);
   DCHECK(!base::Contains(managed_resources_, resource.id));
   managed_resources_.emplace(
       resource.id,
@@ -133,39 +131,15 @@ void TransferableResourceTracker::ReturnFrame(const ResourceFrame& frame) {
 
 void TransferableResourceTracker::RefResource(ResourceId id) {
   DCHECK(base::Contains(managed_resources_, id));
-  ++managed_resources_[id].ref_count;
+  id_tracker_.RefId(id, /*count=*/1);
 }
 
 void TransferableResourceTracker::UnrefResource(ResourceId id, int count) {
   DCHECK(base::Contains(managed_resources_, id));
-  DCHECK_LE(count, managed_resources_[id].ref_count);
-  managed_resources_[id].ref_count -= count;
-  if (managed_resources_[id].ref_count == 0)
+
+  if (id_tracker_.UnrefId(id, count)) {
     managed_resources_.erase(id);
-}
-
-ResourceId TransferableResourceTracker::GetNextAvailableResourceId() {
-  uint32_t result = next_id_;
-
-  // Since we're working with a limit range of resources, it is a lot more
-  // likely that we will loop back to the starting id after running out of
-  // resource ids. This loop ensures that `next_id_` is set to a value that is
-  // not `result` and is also available in that it's currently tracked by
-  // `managed_resources_`. Note that if we end up looping twice, we fail with a
-  // CHECK since we don't have any available resources for this request.
-  bool looped = false;
-  while (next_id_ == result ||
-         base::Contains(managed_resources_, ResourceId(next_id_))) {
-    if (next_id_ == std::numeric_limits<uint32_t>::max()) {
-      CHECK(!looped);
-      next_id_ = starting_id_;
-      looped = true;
-    } else {
-      ++next_id_;
-    }
   }
-  DCHECK_GE(result, kVizReservedRangeStartId.GetUnsafeValue());
-  return ResourceId(result);
 }
 
 TransferableResourceTracker::TransferableResourceHolder::
@@ -175,9 +149,7 @@ TransferableResourceTracker::TransferableResourceHolder::
 TransferableResourceTracker::TransferableResourceHolder::
     TransferableResourceHolder(const TransferableResource& resource,
                                ResourceReleaseCallback release_callback)
-    : resource(resource),
-      release_callback(std::move(release_callback)),
-      ref_count(1u) {}
+    : resource(resource), release_callback(std::move(release_callback)) {}
 
 TransferableResourceTracker::TransferableResourceHolder::
     ~TransferableResourceHolder() {
