@@ -104,8 +104,7 @@ class NavigationPolicyTest : public testing::Test {
 class NavigationPolicyWithLinkPreviewEnabledTest : public NavigationPolicyTest {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kLinkPreview, {{"trigger_type", "alt_click"}});
+    scoped_feature_list_.InitAndEnableFeature(features::kLinkPreview);
   }
 };
 

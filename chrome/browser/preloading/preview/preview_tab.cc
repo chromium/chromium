@@ -68,10 +68,8 @@ class PreviewTab::PreviewWidget final : public views::Widget {
       return;
     }
 
-    // This doesn't triggered for long press trigger.
-    //
-    // TODO(b:320386573): Cancel preview when focus lost.
-    if (!is_event_for_preview_window && event->type() == ui::ET_MOUSE_PRESSED) {
+    if (!is_event_for_preview_window &&
+        event->type() == ui::ET_MOUSE_RELEASED) {
       event->SetHandled();
       preview_manager_->Cancel(content::PreviewCancelReason::Build(
           content::PreviewFinalStatus::kCancelledByWindowClose));

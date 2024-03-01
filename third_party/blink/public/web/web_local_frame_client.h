@@ -140,7 +140,6 @@ class URLLoader;
 class WebURLRequest;
 class WebURLResponse;
 class WebView;
-class WebLinkPreviewTriggerer;
 struct FramePolicy;
 struct Impression;
 struct JavaScriptFrameworkDetectionResult;
@@ -863,11 +862,6 @@ class BLINK_EXPORT WebLocalFrameClient {
       const WebURL& base_url) {
     return nullptr;
   }
-
-  virtual std::unique_ptr<WebLinkPreviewTriggerer> CreateLinkPreviewTriggerer();
-
-  virtual void SetLinkPreviewTriggererForTesting(
-      std::unique_ptr<WebLinkPreviewTriggerer> trigger);
 };
 
 }  // namespace blink

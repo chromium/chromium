@@ -58,8 +58,6 @@ class CORE_EXPORT KeyboardEventManager final
   bool is_handling_key_event() const { return is_handling_key_event_; }
 
  private:
-  void KeyEventModifierMayHaveChanged(int modifiers);
-
   friend class Internals;
   // Allows overriding the current caps lock state for testing purposes.
   static void SetCurrentCapsLockState(OverrideCapsLockState);

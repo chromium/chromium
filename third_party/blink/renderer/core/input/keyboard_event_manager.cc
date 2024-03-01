@@ -13,7 +13,6 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/web/web_link_preview_triggerer.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -210,8 +209,6 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
   if (initial_key_event.windows_key_code == VK_CAPITAL)
     CapsLockStateMayHaveChanged();
 
-  KeyEventModifierMayHaveChanged(initial_key_event.GetModifiers());
-
   if (scroll_manager_->MiddleClickAutoscrollInProgress()) {
     DCHECK(RuntimeEnabledFeatures::MiddleClickAutoscrollEnabled());
     // If a key is pressed while the middleClickAutoscroll is in progress then
@@ -406,16 +403,6 @@ void KeyboardEventManager::CapsLockStateMayHaveChanged() {
     if (auto* text_control = DynamicTo<HTMLInputElement>(element))
       text_control->CapsLockStateMayHaveChanged();
   }
-}
-
-void KeyboardEventManager::KeyEventModifierMayHaveChanged(int modifiers) {
-  WebLinkPreviewTriggerer* triggerer =
-      frame_->GetOrCreateLinkPreviewTriggerer();
-  if (!triggerer) {
-    return;
-  }
-
-  triggerer->MaybeChangedKeyEventModifier(modifiers);
 }
 
 void KeyboardEventManager::DefaultKeyboardEventHandler(

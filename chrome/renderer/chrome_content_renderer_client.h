@@ -210,8 +210,6 @@ class ChromeContentRendererClient
   void AppendContentSecurityPolicy(
       const blink::WebURL& url,
       blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) override;
-  std::unique_ptr<blink::WebLinkPreviewTriggerer> CreateLinkPreviewTriggerer()
-      override;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   static blink::WebPlugin* CreatePlugin(

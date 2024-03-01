@@ -149,7 +149,6 @@ class LocalWindowProxy;
 class Node;
 class NodeTraversal;
 class PerformanceMonitor;
-class WebLinkPreviewTriggerer;
 class PluginData;
 class PolicyContainer;
 class ScrollSnapshotClient;
@@ -290,7 +289,6 @@ class CORE_EXPORT LocalFrame final
   void SetDOMWindow(LocalDOMWindow*);
   LocalFrameView* View() const override;
   Document* GetDocument() const;
-  void DocumentDetached();
   void SetPagePopupOwner(Element&);
   Element* PagePopupOwner() const { return page_popup_owner_.Get(); }
   bool HasPagePopupOwner() const { return page_popup_owner_ != nullptr; }
@@ -934,10 +932,6 @@ class CORE_EXPORT LocalFrame final
 
   const WebPrintParams& GetPrintParams() const;
 
-  WebLinkPreviewTriggerer* GetOrCreateLinkPreviewTriggerer();
-  void SetLinkPreviewTriggererForTesting(
-      std::unique_ptr<WebLinkPreviewTriggerer> trigger);
-
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.
@@ -1020,8 +1014,6 @@ class CORE_EXPORT LocalFrame final
   void SetTitlebarAreaDocumentStyleEnvironmentVariables() const;
   void MaybeUpdateWindowControlsOverlayWithNewZoomLevel();
 #endif
-
-  void EnsureLinkPreviewTriggererInitialized();
 
   std::unique_ptr<FrameScheduler> frame_scheduler_;
 
@@ -1205,12 +1197,6 @@ class CORE_EXPORT LocalFrame final
       feature_handle_for_scheduler_;
 
   WebPrintParams print_params_;
-
-  // Holds WebLinkPreviewTriggerer instance if content renderer client wants to
-  // inject it. Note that `link_preview_triggerer_` may be nullptr after
-  // initialization.
-  bool is_link_preivew_triggerer_initialized_ = false;
-  std::unique_ptr<WebLinkPreviewTriggerer> link_preview_triggerer_;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {
