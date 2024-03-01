@@ -564032,7 +564032,7 @@
        ]
       ],
       "event-propagate-disabled.tentative.html": [
-       "e3dcd43a17ab2a4bd2b3807f699236d080b95f52",
+       "2be6dc72fe7261f7987b8babbc1628ed6e936423",
        [
         null,
         {
@@ -626015,6 +626015,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "focus-scroll-under-delegatesFocus.html": [
+      "ea5fc472b5a0ffd3bbc6cc2eff112c3f38c0e09e",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "focus-selector-delegatesFocus.html": [
