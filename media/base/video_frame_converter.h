@@ -41,6 +41,10 @@ class MEDIA_EXPORT VideoFrameConverter {
   EncoderStatus ConvertAndScale(const VideoFrame& src_frame,
                                 VideoFrame& dest_frame);
 
+  size_t get_pool_size_for_testing() const {
+    return frame_pool_->get_pool_size_for_testing();
+  }
+
  private:
   // Creates a temporary frame backed by `frame_pool_`.
   scoped_refptr<VideoFrame> CreateTempFrame(VideoPixelFormat format,

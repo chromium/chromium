@@ -326,6 +326,14 @@ TEST_P(VideoFrameConverterTest, ConvertAndScale) {
     EXPECT_DOUBLE_EQ(ssim, 1.0);
     EXPECT_EQ(psnr, libyuv::kMaxPsnr);
   }
+
+  // Ensure memory pool is functioning correctly by running conversions which
+  // use scratch space twice.
+  if (converter_.get_pool_size_for_testing() > 0) {
+    EXPECT_EQ(converter_.get_pool_size_for_testing(), 1u);
+    ASSERT_TRUE(converter_.ConvertAndScale(*src_frame, *dest_frame).is_ok());
+    EXPECT_EQ(converter_.get_pool_size_for_testing(), 1u);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(,
