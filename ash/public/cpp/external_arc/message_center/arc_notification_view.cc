@@ -273,11 +273,6 @@ void ArcNotificationView::SetGroupedChildExpanded(bool expanded) {
 
   collapsed_summary_view_->SetVisible(!expanded);
   content_view_->SetVisible(expanded);
-  if (expanded) {
-    content_view_->EnsureSurfaceAttached();
-  } else {
-    content_view_->EnsureSurfaceDetached();
-  }
 }
 
 void ArcNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {

@@ -65,10 +65,11 @@ class ArcNotificationContentView
   void OnContainerAnimationStarted();
   void OnContainerAnimationEnded();
   void ActivateWidget(bool activate);
-  void EnsureSurfaceAttached();
-  void EnsureSurfaceDetached();
 
   bool slide_in_progress() const { return slide_in_progress_; }
+
+  // views::NativeViewHost
+  void SetVisible(bool visible) override;
 
  private:
   friend class ArcNotificationViewTest;
@@ -92,6 +93,8 @@ class ArcNotificationContentView
   bool IsExpanded() const;
   void SetManuallyExpandedOrCollapsed(bool value);
   bool IsManuallyExpandedOrCollapsed() const;
+  void EnsureSurfaceAttached();
+  void EnsureSurfaceDetached();
 
   void ShowCopiedSurface();
   void HideCopiedSurface();

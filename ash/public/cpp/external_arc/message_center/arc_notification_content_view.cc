@@ -554,6 +554,15 @@ void ArcNotificationContentView::AttachSurface() {
   UpdateMask(false /* force_update */);
 }
 
+void ArcNotificationContentView::SetVisible(bool visible) {
+  NativeViewHost::SetVisible(visible);
+  if (visible) {
+    EnsureSurfaceAttached();
+  } else {
+    EnsureSurfaceDetached();
+  }
+}
+
 void ArcNotificationContentView::EnsureSurfaceAttached() {
   if (!surface_ || surface_->IsAttached()) {
     return;
