@@ -603,6 +603,17 @@ void WaitForBrowserSetLastActive(Browser* browser,
   waiter.Wait();
 }
 
+Browser* OpenNewEmptyWindowAndWaitUntilSetAsLastActive(
+    Profile* profile,
+    bool should_trigger_session_restore) {
+  BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  chrome::NewEmptyWindow(profile, should_trigger_session_restore);
+  Browser* new_browser = new_browser_observer.Wait();
+  WaitForBrowserSetLastActive(new_browser);
+  return new_browser;
+}
+
 void SendToOmniboxAndSubmit(Browser* browser,
                             const std::string& input,
                             base::TimeTicks match_selection_timestamp) {

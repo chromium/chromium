@@ -318,6 +318,13 @@ void WaitForBrowserSetLastActive(
     Browser* browser,
     bool wait_for_set_last_active_observed = false);
 
+// Opens a new browser window with chrome::NewEmptyWindow() and wait until it
+// becomes the last active browser.
+// Returns newly created browser.
+Browser* OpenNewEmptyWindowAndWaitUntilSetAsLastActive(
+    Profile* profile,
+    bool should_trigger_session_restore = false);
+
 // Send the given text to the omnibox and wait until it's updated.
 void SendToOmniboxAndSubmit(
     Browser* browser,

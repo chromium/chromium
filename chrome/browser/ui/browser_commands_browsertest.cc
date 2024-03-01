@@ -240,10 +240,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveToExistingWindow) {
   };
 
   // Create another window, and add tabs.
-  ui_test_utils::BrowserChangeObserver second_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  chrome::NewEmptyWindow(browser()->profile());
-  ui_test_utils::WaitForBrowserSetLastActive(second_browser_observer.Wait());
+  ui_test_utils::OpenNewEmptyWindowAndWaitUntilSetAsLastActive(
+      browser()->profile());
   Browser* second_window = BrowserList::GetInstance()->GetLastActive();
   AddTabs(browser(), 2);
   AddTabs(second_window, 1);
