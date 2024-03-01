@@ -467,6 +467,31 @@ TEST_F(VaapiTest, DefaultEntrypointIsSupported) {
   }
 }
 
+// Verifies that VaapiWrapper::Create...() fails after the limit of created
+// instances exceeds the threshold.
+TEST_F(VaapiTest, TooManyDecoderInstances) {
+  std::map<VAProfile, std::vector<VAEntrypoint>> configurations =
+      VaapiWrapper::GetSupportedConfigurationsForCodecModeForTesting(
+          VaapiWrapper::kDecode);
+  // H.264 decoding is currently supported everywhere, but leave an ASSERT.
+  constexpr auto kVAProfile = VAProfileH264ConstrainedBaseline;
+  ASSERT_TRUE(base::Contains(configurations, kVAProfile));
+
+  const int kMaxNumOfInstances = VaapiWrapper::GetMaxNumDecoderInstances();
+  std::vector<scoped_refptr<VaapiWrapper>> vaapi_wrappers(kMaxNumOfInstances);
+  for (auto& wrapper : vaapi_wrappers) {
+    wrapper =
+        VaapiWrapper::Create(VaapiWrapper::kDecode, kVAProfile,
+                             EncryptionScheme::kUnencrypted, base::DoNothing());
+    ASSERT_TRUE(wrapper);
+  }
+  // Next one fails
+  scoped_refptr<VaapiWrapper> wrapper =
+      VaapiWrapper::Create(VaapiWrapper::kDecode, kVAProfile,
+                           EncryptionScheme::kUnencrypted, base::DoNothing());
+  ASSERT_FALSE(wrapper);
+}
+
 // Verifies that VaapiWrapper::CreateContext() will queue up a buffer to set the
 // encoder to its lowest quality setting if a given VAProfile and VAEntrypoint
 // claims to support configuring it.

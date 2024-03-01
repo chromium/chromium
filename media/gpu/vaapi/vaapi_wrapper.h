@@ -20,6 +20,7 @@
 #include <set>
 #include <vector>
 
+#include "base/atomic_ref_count.h"
 #include "base/files/file.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -586,10 +587,18 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   friend class VaapiVideoEncodeAcceleratorTest;
 
   FRIEND_TEST_ALL_PREFIXES(VaapiTest, LowQualityEncodingSetting);
+  FRIEND_TEST_ALL_PREFIXES(VaapiTest, TooManyDecoderInstances);
   FRIEND_TEST_ALL_PREFIXES(VaapiUtilsTest, ScopedVAImage);
   FRIEND_TEST_ALL_PREFIXES(VaapiUtilsTest, BadScopedVAImage);
   FRIEND_TEST_ALL_PREFIXES(VaapiUtilsTest, BadScopedVABufferMapping);
   FRIEND_TEST_ALL_PREFIXES(VaapiMinigbmTest, AllocateAndCompareWithMinigbm);
+
+  // There's a limit to the number of simultaneous decoder instances a given SoC
+  // can have, e.g. sometimes the process where VaapiWrapper runs can exhaust
+  // the FDs and subsequently crash (b/181264362). We run into stability
+  // problems for various reasons when that limit is reached; this class method
+  // provides that number to prevent that erroneous behaviour during Create().
+  static int GetMaxNumDecoderInstances();
 
   [[nodiscard]] bool Initialize(VAProfile va_profile,
                                 EncryptionScheme encryption_scheme);
@@ -657,6 +666,9 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // If a protected session is active, attaches it to the decoding context.
   [[nodiscard]] bool MaybeAttachProtectedSession_Locked()
       EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
+
+  // Tracks the number of decoder instances globally in the process.
+  static base::AtomicRefCount num_decoder_instances_;
 
   const CodecMode mode_;
   const bool enforce_sequence_affinity_;

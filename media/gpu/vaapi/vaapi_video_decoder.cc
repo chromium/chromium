@@ -89,9 +89,6 @@ inline int RoundUpToEven(int x) {
 
 }  // namespace
 
-// static
-base::AtomicRefCount VaapiVideoDecoder::num_instances_(0);
-
 VaapiVideoDecoder::DecodeTask::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
                                           int32_t buffer_id,
                                           DecodeCB decode_done_cb)
@@ -108,13 +105,6 @@ std::unique_ptr<VideoDecoderMixin> VaapiVideoDecoder::Create(
     std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<VideoDecoderMixin::Client> client) {
-  const bool can_create_decoder =
-      num_instances_.Increment() < kMaxNumOfInstances ||
-      !base::FeatureList::IsEnabled(media::kLimitConcurrentDecoderInstances);
-  if (!can_create_decoder) {
-    num_instances_.Decrement();
-    return nullptr;
-  }
   return base::WrapUnique<VideoDecoderMixin>(new VaapiVideoDecoder(
       std::move(media_log), std::move(decoder_task_runner), std::move(client)));
 }
@@ -173,8 +163,6 @@ VaapiVideoDecoder::~VaapiVideoDecoder() {
     DCHECK(vaapi_wrapper_->HasOneRef());
     vaapi_wrapper_ = nullptr;
   }
-
-  num_instances_.Decrement();
 }
 
 void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
@@ -275,7 +263,9 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
 #endif
   }
 
-  // Initialize VAAPI wrapper.
+  // TODO(b/266003084): Consider returning a std::expected or std::optional and
+  // figure out whether there are too many instances, returning kTooManyDecoders
+  // in that case.
   const VideoCodecProfile profile = config.profile();
   vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
