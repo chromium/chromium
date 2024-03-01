@@ -77,12 +77,23 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
     GetOverlayProcessor()
         ->set_frames_since_last_qualified_multi_overlays_for_testing(value);
   }
-  void set_system_hdr_enabled_for_testing(int value) {
+  void set_system_hdr_enabled_for_testing(bool value) {
+    CHECK_IS_TEST();
     GetOverlayProcessor()->set_system_hdr_enabled_for_testing(value);
   }
-  void set_has_p010_video_processor_support_for_testing(int value) {
+  void set_has_p010_video_processor_support_for_testing(bool value) {
+    CHECK_IS_TEST();
     GetOverlayProcessor()->set_has_p010_video_processor_support_for_testing(
         value);
+  }
+  void set_has_auto_hdr_video_processor_support_for_testing(bool value) {
+    CHECK_IS_TEST();
+    GetOverlayProcessor()->set_has_auto_hdr_video_processor_support_for_testing(
+        value);
+  }
+  void set_is_on_battery_power_for_testing(bool value) {
+    CHECK_IS_TEST();
+    GetOverlayProcessor()->set_is_on_battery_power_for_testing(value);
   }
   size_t get_previous_frame_render_pass_count() {
     CHECK_IS_TEST();
