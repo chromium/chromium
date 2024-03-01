@@ -5830,7 +5830,7 @@ Element* Element::GetFocusableArea(bool in_descendant_traversal) const {
   }
 
   DCHECK(GetShadowRoot());
-  if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
+  if (RuntimeEnabledFeatures::NewGetFocusableAreaBehaviorEnabled()) {
     return GetFocusDelegate(in_descendant_traversal);
   } else {
     return FocusController::FindFocusableElementInShadowHost(*this);

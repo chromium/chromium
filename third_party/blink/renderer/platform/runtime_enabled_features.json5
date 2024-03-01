@@ -1247,6 +1247,7 @@
     {
       name: "DialogNewFocusBehavior",
       status: "experimental",
+      depends_on: ["NewGetFocusableAreaBehavior"],
     },
     {
       name: "DigitalGoods",
@@ -2458,6 +2459,13 @@
         "default": "experimental",
       },
       base_feature: "none",
+    },
+    {
+      // This is a killswitch for the behavior of Element::GetFocusableArea
+      // on delegatesFocus shadow hosts. This flag can be removed in M127 if
+      // things are stable.
+      name: "NewGetFocusableAreaBehavior",
+      status: "stable",
     },
     {
       name: "NextSiblingPositionUseNextCandidate",
