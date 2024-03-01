@@ -121,6 +121,9 @@ class ASH_EXPORT LockScreenMediaControlsView
   void MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType type,
       const SkBitmap& bitmap) override;
+  // This view is used before `media::kGlobalMediaControlsCrOSUpdatedUI` is
+  // enabled. So we don't need to implement this method since there's no chapter
+  // images in this view.
   void MediaControllerChapterImageChanged(int chapter_index,
                                           const SkBitmap& bitmap) override {}
 

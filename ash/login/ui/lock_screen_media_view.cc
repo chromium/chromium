@@ -270,6 +270,17 @@ void LockScreenMediaView::MediaControllerImageChanged(
   view_->UpdateWithMediaArtwork(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
 }
 
+void LockScreenMediaView::MediaControllerChapterImageChanged(
+    int chapter_index,
+    const SkBitmap& bitmap) {
+  if (switch_media_delay_timer_->IsRunning()) {
+    return;
+  }
+
+  view_->UpdateWithChapterArtwork(chapter_index,
+                                  gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // media_message_center::MediaNotificationContainer implementations:
 
