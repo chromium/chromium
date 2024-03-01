@@ -1533,18 +1533,24 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, ExpectSiteIsolation) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
 
   // Load a page with an embedded PDF and an HTML iframe, both of the same
   // origin.
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+  const GURL main_url(
       embedded_test_server()->GetURL("/pdf/embed_pdf_and_html.html"));
-  ASSERT_TRUE(guest);
+
+  if (UseOopif()) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+    // The PDF embed is the second child of the HTML page.
+    content::RenderFrameHost* pdf_embed =
+        ChildFrameAt(GetActiveWebContents(), 1);
+    ASSERT_TRUE(GetTestPdfViewerStreamManager(GetActiveWebContents())
+                    ->WaitUntilPdfLoaded(pdf_embed));
+  } else {
+    ASSERT_TRUE(LoadPdf(main_url));
+  }
 
   // The PDF plugin frame and the iframe should not share renderer processes
   // even though they share origins.
@@ -1564,11 +1570,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, DataNavigation) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   content::RenderFrameHost* extension_host =
       LoadPdfInFirstChildGetExtensionHost(
           embedded_test_server()->GetURL("/pdf/data_url_rectangles.html"));
@@ -1584,11 +1585,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, DataNavigation) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, HistoryNavigation) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   // Navigating to a PDF should spawn a PDF renderer process.
   EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
   EXPECT_EQ(CountPDFProcesses(), 1);
