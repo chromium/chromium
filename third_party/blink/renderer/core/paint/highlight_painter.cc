@@ -191,6 +191,34 @@ bool HasNonTrivialSpellingGrammarStyles(const FragmentItem& fragment_item,
   return false;
 }
 
+TextPaintStyle TextPaintStyleForTextMatch(const TextMatchMarker& marker,
+                                          const ComputedStyle& style,
+                                          const Document& document,
+                                          bool ignore_current_color) {
+  const mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  const Color platform_text_color =
+      LayoutTheme::GetTheme().PlatformTextSearchColor(
+          marker.IsActiveMatch(), color_scheme,
+          document.GetColorProviderForPainting(color_scheme));
+  // Comparing against the value of the 'color' property doesn't always make
+  // sense (for example for SVG <text> which paints using 'fill' and 'stroke').
+  if (!ignore_current_color) {
+    const Color text_color = style.VisitedDependentColor(GetCSSPropertyColor());
+    if (platform_text_color == text_color) {
+      return {};
+    }
+  }
+
+  TextPaintStyle text_style;
+  text_style.current_color = text_style.fill_color = text_style.stroke_color =
+      text_style.emphasis_mark_color = platform_text_color;
+  text_style.stroke_width = style.TextStrokeWidth();
+  text_style.color_scheme = color_scheme;
+  text_style.shadow = nullptr;
+  text_style.paint_order = style.PaintOrder();
+  return text_style;
+}
+
 }  // namespace
 
 HighlightPainter::SelectionPaintState::SelectionPaintState(
@@ -482,27 +510,13 @@ void HighlightPainter::Paint(Phase phase) {
           break;
         }
 
-        TextPaintStyle text_style;
+        const TextPaintStyle text_style =
+            TextPaintStyleForTextMatch(text_match_marker, originating_style_,
+                                       document, fragment_item_->IsSvgText());
         if (fragment_item_->IsSvgText()) {
-          // DocumentMarkerPainter::ComputeTextPaintStyleFrom() doesn't work
-          // well with SVG <text>, which doesn't apply 'color' CSS property.
-          const Color platform_matched_color =
-              LayoutTheme::GetTheme().PlatformTextSearchColor(
-                  text_match_marker.IsActiveMatch(),
-                  originating_style_.UsedColorScheme(),
-                  document.GetColorProviderForPainting(
-                      originating_style_.UsedColorScheme()));
           text_painter_.SetSvgState(
               *To<LayoutSVGInlineText>(fragment_item_->GetLayoutObject()),
-              originating_style_, platform_matched_color);
-          text_style.current_color = platform_matched_color;
-          text_style.stroke_width = originating_style_.TextStrokeWidth();
-          text_style.color_scheme = originating_style_.UsedColorScheme();
-          text_style.paint_order = originating_style_.PaintOrder();
-        } else {
-          text_style = DocumentMarkerPainter::ComputeTextPaintStyleFrom(
-              document, node_, originating_style_, text_match_marker,
-              paint_info_);
+              originating_style_, text_style.fill_color);
         }
         text_painter_.Paint(
             fragment_paint_info_.Slice(paint_start_offset, paint_end_offset),

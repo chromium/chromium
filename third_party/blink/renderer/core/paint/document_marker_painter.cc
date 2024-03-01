@@ -4,18 +4,12 @@
 
 #include "third_party/blink/renderer/core/paint/document_marker_painter.h"
 
-#include <algorithm>
-
 #include "build/build_config.h"
-#include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
-#include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
+#include "third_party/blink/renderer/core/editing/markers/styleable_marker.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
-#include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
-#include "third_party/blink/renderer/core/paint/paint_info.h"
-#include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -225,34 +219,4 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
   }
 }
 
-TextPaintStyle DocumentMarkerPainter::ComputeTextPaintStyleFrom(
-    const Document& document,
-    Node* node,
-    const ComputedStyle& style,
-    const DocumentMarker& marker,
-    const PaintInfo& paint_info) {
-  Color text_color = style.VisitedDependentColor(GetCSSPropertyColor());
-  if (marker.GetType() == DocumentMarker::kTextMatch) {
-    const Color platform_text_color =
-        LayoutTheme::GetTheme().PlatformTextSearchColor(
-            To<TextMatchMarker>(marker).IsActiveMatch(),
-            style.UsedColorScheme(),
-            document.GetColorProviderForPainting(style.UsedColorScheme()));
-    if (platform_text_color == text_color)
-      return {};
-    text_color = platform_text_color;
-  }
-
-  TextPaintStyle text_style;
-  text_style.current_color = text_style.fill_color = text_style.stroke_color =
-      text_style.emphasis_mark_color = text_color;
-  text_style.stroke_width = style.TextStrokeWidth();
-  text_style.color_scheme = style.UsedColorScheme();
-  text_style.shadow = nullptr;
-  text_style.paint_order = style.PaintOrder();
-  if (marker.GetType() == DocumentMarker::kTextMatch)
-    return text_style;
-  return HighlightStyleUtils::HighlightPaintingStyle(
-      document, style, node, kPseudoIdTargetText, text_style, paint_info);
-}
 }  // namespace blink
