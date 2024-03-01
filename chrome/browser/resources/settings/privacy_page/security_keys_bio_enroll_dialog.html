@@ -84,10 +84,10 @@
                 <template>
                   <div class="list-item" first$="[[!index]]">
                     <iron-icon id="darkIcon"
-                        icon="cr-fingerprint-icon:fingerprint-scanned-dark">
+                        icon="fingerprint-icon:fingerprint-scanned-dark">
                     </iron-icon>
                     <iron-icon id="lightIcon"
-                        icon="cr-fingerprint-icon:fingerprint-scanned-light">
+                        icon="fingerprint-icon:fingerprint-scanned-light">
                     </iron-icon>
                     <div class="name" aria-label="[[item.name]]">
                       [[item.name]]
@@ -105,8 +105,8 @@
 
           <div id="enroll">
             <p>[[progressArcLabel_]]</p>
-            <cr-fingerprint-progress-arc id="arc" autoplay>
-            </cr-fingerprint-progress-arc>
+            <fingerprint-progress-arc id="arc" autoplay>
+            </fingerprint-progress-arc>
           </div>
 
           <div id="chooseName">

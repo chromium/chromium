@@ -4,30 +4,29 @@
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import './cr_fingerprint_icons.html.js';
-import '../cr_lottie/cr_lottie.js';
+import './fingerprint_icons.html.js';
+import '//resources/cr_elements/cr_lottie/cr_lottie.js';
 
+import type {CrLottieElement} from '//resources/cr_elements/cr_lottie/cr_lottie.js';
 import {assert} from '//resources/js/assert.js';
 import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {CrLottieElement} from '../cr_lottie/cr_lottie.js';
-
-import {getTemplate} from './cr_fingerprint_progress_arc.html.js';
+import {getTemplate} from './fingerprint_progress_arc.html.js';
 
 /**
  * The dark-mode fingerprint icon displayed temporarily each time a user scans
  * their fingerprint and persistently once the enrollment process is complete.
  */
 export const FINGERPRINT_SCANNED_ICON_DARK: string =
-    'cr-fingerprint-icon:fingerprint-scanned-dark';
+    'fingerprint-icon:fingerprint-scanned-dark';
 
 /**
  * The light-mode fingerprint icon displayed temporarily each time a user scans
  * their fingerprint and persistently once the enrollment process is complete.
  */
 export const FINGERPRINT_SCANNED_ICON_LIGHT: string =
-    'cr-fingerprint-icon:fingerprint-scanned-light';
+    'fingerprint-icon:fingerprint-scanned-light';
 
 export const FINGERPRINT_CHECK_DARK_URL: string =
     'chrome://theme/IDR_FINGERPRINT_COMPLETE_CHECK_DARK';
@@ -104,7 +103,7 @@ const FINGERPRINT_SCAN_SUCCESS_MS: number = 500;
 const PROGRESS_CIRCLE_STROKE_WIDTH: number = 4;
 
 
-export interface CrFingerprintProgressArcElement {
+export interface FingerprintProgressArcElement {
   $: {
     canvas: HTMLCanvasElement,
     fingerprintScanned: IronIconElement,
@@ -112,9 +111,9 @@ export interface CrFingerprintProgressArcElement {
   };
 }
 
-export class CrFingerprintProgressArcElement extends PolymerElement {
+export class FingerprintProgressArcElement extends PolymerElement {
   static get is() {
-    return 'cr-fingerprint-progress-arc';
+    return 'fingerprint-progress-arc';
   }
 
   static get template() {
@@ -258,8 +257,7 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
       this.drawProgressCircle_(nextPercentToDraw);
       if (!this.progressAnimationIntervalId_) {
         this.dispatchEvent(new CustomEvent(
-            'cr-fingerprint-progress-arc-drawn',
-            {bubbles: true, composed: true}));
+            'fingerprint-progress-arc-drawn', {bubbles: true, composed: true}));
       }
       nextPercentToDraw += step;
     };
@@ -459,9 +457,9 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-fingerprint-progress-arc': CrFingerprintProgressArcElement;
+    'fingerprint-progress-arc': FingerprintProgressArcElement;
   }
 }
 
 customElements.define(
-    CrFingerprintProgressArcElement.is, CrFingerprintProgressArcElement);
+    FingerprintProgressArcElement.is, FingerprintProgressArcElement);

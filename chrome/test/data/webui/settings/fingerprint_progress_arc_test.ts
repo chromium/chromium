@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
+import 'chrome://settings/lazy_load.js';
 
-import type {CrFingerprintProgressArcElement} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.js';
-import {FINGERPRINT_CHECK_DARK_URL, FINGERPRINT_CHECK_LIGHT_URL, FINGERPRINT_SCANNED_ICON_DARK, FINGERPRINT_SCANNED_ICON_LIGHT, PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK, PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT, PROGRESS_CIRCLE_FILL_COLOR_DARK, PROGRESS_CIRCLE_FILL_COLOR_LIGHT} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.js';
+import type {FingerprintProgressArcElement} from 'chrome://settings/lazy_load.js';
+import {FINGERPRINT_CHECK_DARK_URL, FINGERPRINT_CHECK_LIGHT_URL, FINGERPRINT_SCANNED_ICON_DARK, FINGERPRINT_SCANNED_ICON_LIGHT, PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK, PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT, PROGRESS_CIRCLE_FILL_COLOR_DARK, PROGRESS_CIRCLE_FILL_COLOR_LIGHT} from 'chrome://settings/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
@@ -53,7 +53,7 @@ class FakeMediaQueryList extends EventTarget implements MediaQueryList {
   }
 }
 
-/** @fileoverview Suite of tests for cr-fingerprint-progress-arc. */
+/** @fileoverview Suite of tests for fingerprint-progress-arc. */
 suite('cr_fingerprint_progress_arc_test', function() {
   /**
    * An object descrbing a 2d point.
@@ -65,7 +65,7 @@ suite('cr_fingerprint_progress_arc_test', function() {
 
   const canvasColor: string = 'rgba(255, 255, 255, 1.0)';
 
-  let progressArc: CrFingerprintProgressArcElement;
+  let progressArc: FingerprintProgressArcElement;
   let canvas: HTMLCanvasElement;
   let mockController: MockController;
   let fakeMediaQueryList: FakeMediaQueryList;
@@ -84,8 +84,7 @@ suite('cr_fingerprint_progress_arc_test', function() {
     matchMediaMock.returnValue = fakeMediaQueryList;
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    progressArc = /** @type {!CrFingerprintProgressArcElement} */ (
-        document.createElement('cr-fingerprint-progress-arc'));
+    progressArc = document.createElement('fingerprint-progress-arc');
     document.body.appendChild(progressArc);
 
     // Override some parameters and function for testing purposes.
@@ -180,7 +179,7 @@ suite('cr_fingerprint_progress_arc_test', function() {
       progressArc.setProgress(
           this.prevPercentComplete_, this.currPercentComplete_,
           this.isComplete_);
-      await eventToPromise('cr-fingerprint-progress-arc-drawn', progressArc);
+      await eventToPromise('fingerprint-progress-arc-drawn', progressArc);
 
       this.verifyProgressCircleColors();
     }

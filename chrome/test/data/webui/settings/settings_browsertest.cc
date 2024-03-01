@@ -16,6 +16,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "ui/compositor/compositor_switches.h"
 
 class SettingsBrowserTest : public WebUIMochaBrowserTest {
  protected:
@@ -609,6 +610,27 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest,
                        TrackingProtectionSettingsRollbackNotice) {
   RunTest("settings/cookies_page_test.js",
           "runMochaSuite('TrackingProtectionSettingsRollbackNotice')");
+}
+
+// Test with --enable-pixel-output-in-tests enabled, required by fingerprint
+// element test using HTML canvas.
+class SettingsWithPixelOutputTest : public SettingsBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(::switches::kEnablePixelOutputInTests);
+    SettingsBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+// https://crbug.com/1044390 - maybe flaky on Mac?
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FingerprintProgressArc DISABLED_FingerprintProgressArc
+#else
+#define MAYBE_FingerprintProgressArc FingerprintProgressArc
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsWithPixelOutputTest,
+                       MAYBE_FingerprintProgressArc) {
+  RunTest("settings/fingerprint_progress_arc_test.js", "mocha.run()");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

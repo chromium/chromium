@@ -187,14 +187,3 @@ class CrElementsWithPixelOutputTest : public WebUIMochaBrowserTest {
 IN_PROC_BROWSER_TEST_F(CrElementsWithPixelOutputTest, MAYBE_CrLottie) {
   RunTest("cr_elements/cr_lottie_test.js", "mocha.run()");
 }
-
-// https://crbug.com/1044390 - maybe flaky on Mac?
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CrFingerprintProgressArc DISABLED_CrFingerprintProgressArc
-#else
-#define MAYBE_CrFingerprintProgressArc CrFingerprintProgressArc
-#endif
-IN_PROC_BROWSER_TEST_F(CrElementsWithPixelOutputTest,
-                       MAYBE_CrFingerprintProgressArc) {
-  RunTest("cr_elements/cr_fingerprint_progress_arc_test.js", "mocha.run()");
-}
