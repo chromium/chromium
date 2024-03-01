@@ -13,6 +13,8 @@ import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PrintTicketMa
  * to update.
  */
 
+export const PRINT_BUTTON_DISABLED_CHANGED_EVENT =
+    'summary-panel-controller.print-button-disabled-changed';
 export const SHEETS_USED_CHANGED_EVENT =
     'summary-panel-controller.sheets-used-changed';
 
@@ -48,8 +50,7 @@ export class SummaryPanelController extends EventTarget {
   setSheetsUsedForTesting(sheetsUsed: number): void {
     assert(sheetsUsed >= 0);
     this.sheetsUsed = sheetsUsed;
-    this.dispatchEvent(new CustomEvent<void>(
-        SHEETS_USED_CHANGED_EVENT, {bubbles: true, composed: true}));
+    this.dispatch(SHEETS_USED_CHANGED_EVENT);
   }
 
   // Handles behavior for when the print button is clicked.
@@ -63,11 +64,26 @@ export class SummaryPanelController extends EventTarget {
     this.printTicketManger.cancelPrintRequest();
   }
 
+  // CustomEvent dispatch helper.
+  private dispatch(eventName: string): void {
+    this.dispatchEvent(
+        new CustomEvent<void>(eventName, {bubbles: true, composed: true}));
+  }
+
   // Handles notifying UI to update state when print request starts.
-  private onPrintRequestStarted(_e: Event): void {}
+  private onPrintRequestStarted(_e: Event): void {
+    this.dispatch(PRINT_BUTTON_DISABLED_CHANGED_EVENT);
+  }
 
   // Handles notifying UI to update state when print request finishes.
-  private onPrintRequestFinished(_e: Event): void {}
+  private onPrintRequestFinished(_e: Event): void {
+    this.dispatch(PRINT_BUTTON_DISABLED_CHANGED_EVENT);
+  }
+
+  // Whether the print button should be enabled for the current state.
+  shouldDisablePrintButton(): boolean {
+    return this.printTicketManger.isPrintRequestInProgress();
+  }
 }
 
 declare global {

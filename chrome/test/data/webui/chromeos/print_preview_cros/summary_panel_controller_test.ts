@@ -9,7 +9,7 @@ import {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print
 import {SummaryPanelController} from 'chrome://os-print/js/summary_panel_controller.js';
 import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -113,5 +113,26 @@ suite('SummaryPanelController', () => {
         await finishRequest;
 
         mockController.verifyMocks();
+      });
+
+  // Verify shouldDisablePrintButton is true when print request is in progress.
+  test(
+      'shouldDisablePrintButton true while print request is in progress',
+      () => {
+        const printRequestInProgressFn = mockController.createFunctionMock(
+            printTicketManger, 'isPrintRequestInProgress');
+        printRequestInProgressFn.returnValue = true;
+        assertTrue(controller!.shouldDisablePrintButton());
+      });
+
+  // Verify shouldDisablePrintButton is false when print request is not in
+  // progress.
+  test(
+      'shouldDisablePrintButton true while print request is in progress',
+      () => {
+        const printRequestInProgressFn = mockController.createFunctionMock(
+            printTicketManger, 'isPrintRequestInProgress');
+        printRequestInProgressFn.returnValue = false;
+        assertFalse(controller!.shouldDisablePrintButton());
       });
 });

@@ -4,14 +4,18 @@
 
 import 'chrome://os-print/js/summary_panel.js';
 
+import {PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
+import {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {SummaryPanelElement} from 'chrome://os-print/js/summary_panel.js';
-import {SHEETS_USED_CHANGED_EVENT, SummaryPanelController} from 'chrome://os-print/js/summary_panel_controller.js';
+import {PRINT_BUTTON_DISABLED_CHANGED_EVENT, SHEETS_USED_CHANGED_EVENT, SummaryPanelController} from 'chrome://os-print/js/summary_panel_controller.js';
+import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {Button} from 'chrome://resources/cros_components/button/button.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('SummaryPanel', () => {
@@ -22,10 +26,18 @@ suite('SummaryPanel', () => {
   let element: SummaryPanelElement|null = null;
   let controller: SummaryPanelController|null = null;
   let mockController: MockController|null = null;
+  let printPreviewPageHandler: FakePrintPreviewPageHandler;
+  let mockTimer: MockTimer;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    // Configure mocks and fakes.
     mockController = new MockController();
+    mockTimer = new MockTimer();
+    mockTimer.install();
+    PrintTicketManager.resetInstanceForTesting();
+    printPreviewPageHandler = new FakePrintPreviewPageHandler();
+    setPrintPreviewPageHandlerForTesting(printPreviewPageHandler);
     element =
         document.createElement(SummaryPanelElement.is) as SummaryPanelElement;
     assertTrue(!!element);
@@ -37,10 +49,11 @@ suite('SummaryPanel', () => {
 
     // CrOS components are async and require flushTasks before they are
     // available.
-    await flushTasks();
+    flush();
   });
 
   teardown(() => {
+    mockTimer.uninstall();
     if (element) {
       element.remove();
     }
@@ -48,6 +61,7 @@ suite('SummaryPanel', () => {
     controller = null;
     mockController?.reset();
     mockController = null;
+    PrintTicketManager.resetInstanceForTesting();
   });
 
   // Sets sheets used in controller and wait for UI to update.
@@ -57,7 +71,7 @@ suite('SummaryPanel', () => {
         eventToPromise(SHEETS_USED_CHANGED_EVENT, controller);
     controller.setSheetsUsedForTesting(sheetsUsed);
     await sheetsUsedEvent;
-    await flushTasks();
+    flush();
   }
 
   // Verify the summary-panel element can be rendered, contains print, cancel,
@@ -149,5 +163,43 @@ suite('SummaryPanel', () => {
 
     // Verify controller is listening to click event.
     mockController.verifyMocks();
+  });
+
+  // Verify print button disabled when print button clicked and re-enabled when
+  // PrintPreviewPageHandler.print resolves.
+  test('Print button disabled while print request in progress', async () => {
+    assert(controller);
+    const printDisabledEvent1 =
+        eventToPromise(PRINT_BUTTON_DISABLED_CHANGED_EVENT, controller);
+    const delay = 10;
+    printPreviewPageHandler.useTestDelay(delay);
+
+    const printButton =
+        strictQuery<Button>(printButtonSelector, element!.shadowRoot, Button);
+    assertFalse(
+        printButton.disabled, 'Print should be enabled before request sent');
+
+    printButton.click();
+    await printDisabledEvent1;
+
+    const printTicketManger = PrintTicketManager.getInstance();
+    assertTrue(
+        printTicketManger.isPrintRequestInProgress(),
+        'Print request in progress');
+    assertTrue(
+        printButton.disabled,
+        'Print should be disabled while request in progress');
+
+    const printDisabledEvent2 =
+        eventToPromise(PRINT_BUTTON_DISABLED_CHANGED_EVENT, controller);
+    mockTimer.tick(delay);
+    await printDisabledEvent2;
+
+    assertFalse(
+        printTicketManger.isPrintRequestInProgress(),
+        'Print request is complete');
+    assertFalse(
+        printButton.disabled,
+        'Print should be enabled after request completes');
   });
 });

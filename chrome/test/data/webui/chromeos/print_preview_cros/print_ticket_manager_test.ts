@@ -7,7 +7,7 @@ import 'chrome://os-print/js/data/print_ticket_manager.js';
 import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -98,5 +98,32 @@ suite('PrintTicketManager', () => {
 
         assertEquals(1, startCount, 'Start should have one call');
         assertEquals(1, finishCount, 'Finish should have one call');
+      });
+
+  // Verify isPrintRequestInProgress is false until sentPrintRequest is called
+  // and returns to false when PrintPreviewPageHandler.print resolves.
+  test(
+      'isPrintRequestInProgress updates based on sendPrintRequest progress',
+      async () => {
+        const delay = 1;
+        printPreviewPageHandler.useTestDelay(delay);
+        const instance = PrintTicketManager.getInstance();
+        const startEvent =
+            eventToPromise(PRINT_REQUEST_STARTED_EVENT, instance);
+        const finishEvent =
+            eventToPromise(PRINT_REQUEST_FINISHED_EVENT, instance);
+
+        assertFalse(instance.isPrintRequestInProgress(), 'Request not started');
+
+        instance.sendPrintRequest();
+
+        await startEvent;
+
+        assertTrue(instance.isPrintRequestInProgress(), 'Request started');
+
+        mockTimer.tick(delay);
+        await finishEvent;
+
+        assertFalse(instance.isPrintRequestInProgress(), 'Request finished');
       });
 });

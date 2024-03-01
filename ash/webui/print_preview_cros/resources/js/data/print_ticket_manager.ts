@@ -35,6 +35,7 @@ export class PrintTicketManager extends EventTarget {
 
   // Non-static properties:
   private printPreviewPageHandler: PrintPreviewPageHandler|null;
+  private printRequestInProgress = false;
 
   // Prevent additional initialization.
   private constructor() {
@@ -56,11 +57,13 @@ export class PrintTicketManager extends EventTarget {
   sendPrintRequest(): void {
     assert(this.printPreviewPageHandler);
 
+    this.printRequestInProgress = true;
     this.dispatch(PRINT_REQUEST_STARTED_EVENT);
 
     // TODO(b/323421684): Handle result from page handler and update UI if error
     // occurred.
     this.printPreviewPageHandler!.print().finally(() => {
+      this.printRequestInProgress = false;
       this.dispatch(PRINT_REQUEST_FINISHED_EVENT);
     });
   }
@@ -69,6 +72,10 @@ export class PrintTicketManager extends EventTarget {
   cancelPrintRequest(): void {
     assert(this.printPreviewPageHandler);
     this.printPreviewPageHandler!.cancel();
+  }
+
+  isPrintRequestInProgress(): boolean {
+    return this.printRequestInProgress;
   }
 }
 

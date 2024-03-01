@@ -7,7 +7,7 @@ import 'chrome://resources/cros_components/button/button.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './summary_panel.html.js';
-import {SHEETS_USED_CHANGED_EVENT, SummaryPanelController} from './summary_panel_controller.js';
+import {PRINT_BUTTON_DISABLED_CHANGED_EVENT, SHEETS_USED_CHANGED_EVENT, SummaryPanelController} from './summary_panel_controller.js';
 
 /**
  * @fileoverview
@@ -27,19 +27,25 @@ export class SummaryPanelElement extends PolymerElement {
   static get properties() {
     return {
       sheetsUsedText: String,
+      printButtonDisabled: Boolean,
     };
   }
 
   private controller: SummaryPanelController = new SummaryPanelController();
   private sheetsUsedText: string;
+  private printButtonDisabled: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
+    this.controller.addEventListener(
+        PRINT_BUTTON_DISABLED_CHANGED_EVENT,
+        (e: Event) => this.onPrintButtonDisabledChanged(e));
     this.controller.addEventListener(
         SHEETS_USED_CHANGED_EVENT, (e: Event) => this.onSheetsUsedChanged(e));
 
     // Initialize properties using controller.
     this.sheetsUsedText = this.controller.getSheetsUsedText();
+    this.printButtonDisabled = this.controller.shouldDisablePrintButton();
   }
 
   getControllerForTesting() {
@@ -58,6 +64,12 @@ export class SummaryPanelElement extends PolymerElement {
   // Click event handler for `#cancel` button.
   protected onCancelClicked(_event: Event): void {
     this.controller.handleCancelClicked();
+  }
+
+  // Ensure `#print` disabled state updates based on controller's
+  // shouldDisablePrintButton method on `PRINT_BUTTON_DISABLED_CHANGED_EVENT`.
+  private onPrintButtonDisabledChanged(_event: Event): void {
+    this.printButtonDisabled = this.controller.shouldDisablePrintButton();
   }
 }
 
