@@ -41,7 +41,6 @@ from concurrent.futures import ThreadPoolExecutor
 from blinkpy.common.host import Host
 from blinkpy.tool.commands.analyze_baselines import AnalyzeBaselines
 from blinkpy.tool.commands.command import HelpPrintingOptionParser
-from blinkpy.tool.commands.flaky_tests import FlakyTests
 from blinkpy.tool.commands.help_command import HelpCommand
 from blinkpy.tool.commands.optimize_baselines import OptimizeBaselines
 from blinkpy.tool.commands.pretty_diff import PrettyDiff
@@ -75,7 +74,6 @@ class BlinkTool(Host):
         self.commands = [
             AnalyzeBaselines(),
             CrashLog(),
-            FlakyTests(),
             OptimizeBaselines(),
             PrettyDiff(),
             PrintBaselines(),
