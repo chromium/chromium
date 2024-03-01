@@ -613,7 +613,7 @@ void WvrManager::DrawFrameSubmitNow(device::WebXrFrame* processing_frame) {
   }
 }
 
-bool WvrManager::WebVrCanAnimateFrame() {
+bool WvrManager::WebXrCanAnimateFrame() {
   // If we already have a JS frame that's animating, don't send another one.
   // This check depends on the Renderer calling either SubmitFrame or
   // SubmitFrameMissing for each animated frame.
@@ -634,7 +634,7 @@ bool WvrManager::WebVrCanAnimateFrame() {
 void WvrManager::GetFrameData(
     device::mojom::XRFrameDataRequestOptionsPtr options,
     device::mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
-  if (!WebVrCanAnimateFrame()) {
+  if (!WebXrCanAnimateFrame()) {
     // We bind this as a post task so that whatever processing is run when we
     // attempt to get new frame data can complete before the pending
     // GetFrameData call actually happens.
@@ -776,7 +776,7 @@ void WvrManager::SubmitFrame(int16_t frame_index,
     return;
 
   webxr_.ProcessOrDefer(
-      base::BindOnce(&WvrManager::ProcessWebVrFrameFromMailbox,
+      base::BindOnce(&WvrManager::ProcessWebXrFrameFromMailbox,
                      weak_ptr_factory_.GetWeakPtr(), frame_index, mailbox));
 }
 
@@ -792,7 +792,7 @@ bool WvrManager::SubmitFrameCommon(int16_t frame_index,
   return true;
 }
 
-void WvrManager::ProcessWebVrFrameFromMailbox(
+void WvrManager::ProcessWebXrFrameFromMailbox(
     int16_t frame_index,
     const gpu::MailboxHolder& mailbox) {
   // LIFECYCLE: pending_frames_ should be empty when there's no processing
