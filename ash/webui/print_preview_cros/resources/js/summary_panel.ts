@@ -48,11 +48,11 @@ export class SummaryPanelElement extends PolymerElement {
     this.printButtonDisabled = this.controller.shouldDisablePrintButton();
   }
 
-  getControllerForTesting() {
+  getControllerForTesting(): SummaryPanelController {
     return this.controller;
   }
 
-  private onSheetsUsedChanged(_event: Event) {
+  private onSheetsUsedChanged(_event: Event): void {
     this.sheetsUsedText = this.controller.getSheetsUsedText();
   }
 
