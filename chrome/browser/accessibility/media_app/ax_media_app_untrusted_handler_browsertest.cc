@@ -39,6 +39,7 @@
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/screen_ai/public/test/fake_screen_ai_annotator.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
@@ -51,34 +52,34 @@
 
 namespace ash::test {
 
-namespace {
-
 using ash::media_app_ui::mojom::PageMetadataPtr;
 
+namespace {
+
+// Page coordinates are expressed as a `gfx::RectF`, so float values should be
+// used.
+
 // Gap or padding between pages.
-constexpr uint64_t kTestPageGap = 2;
-// Width of a test page.
-constexpr uint64_t kTestPageWidth = 3;
-// Height of a test page.
-constexpr uint64_t kTestPageHeight = 8;
+constexpr float kTestPageGap = 2.0f;
+constexpr float kTestPageWidth = 3.0f;
+constexpr float kTestPageHeight = 8.0f;
 
 // Use letters to generate fake IDs for fake page metadata. If more than 26
 // pages are needed, more characters can be added.
 constexpr std::string_view kTestPageIds = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-// Create fake page metadata with pages of the same size positioned 10 units
-// spaced apart.
+// Create fake page metadata with pages of the same size positioned
+// (kTestPageWidth + kTestPageGap) unit spaced apart.
 std::vector<PageMetadataPtr> CreateFakePageMetadata(const uint64_t num_pages) {
-  if (num_pages > kTestPageIds.size()) {
-    LOG(ERROR) << "Can't make more than " << kTestPageIds.size() << " pages.";
-  }
-  uint64_t x = 0, y = 0;
+  EXPECT_LE(num_pages, kTestPageIds.size())
+      << "Can't make more than " << kTestPageIds.size() << " pages.";
   std::vector<PageMetadataPtr> fake_page_metadata;
   for (uint64_t i = 0; i < num_pages; ++i) {
     PageMetadataPtr page = ash::media_app_ui::mojom::PageMetadata::New();
     page->id = std::format("Page{}", kTestPageIds[i]);
-    page->rect = gfx::RectF(x, y + kTestPageGap * i + kTestPageHeight * i,
-                            kTestPageWidth, kTestPageHeight);
+    page->rect =
+        gfx::RectF(/*x=*/0.0f, /*y=*/kTestPageGap * i + kTestPageHeight * i,
+                   kTestPageWidth, kTestPageHeight);
     fake_page_metadata.push_back(std::move(page));
   }
   return fake_page_metadata;
@@ -87,8 +88,8 @@ std::vector<PageMetadataPtr> CreateFakePageMetadata(const uint64_t num_pages) {
 std::vector<PageMetadataPtr> ClonePageMetadataPtrs(
     const std::vector<PageMetadataPtr>& metadata) {
   std::vector<PageMetadataPtr> fake_page_metadata;
-  for (const auto& page : metadata) {
-    auto cloned_page = mojo::Clone(page);
+  for (const PageMetadataPtr& page : metadata) {
+    PageMetadataPtr cloned_page = mojo::Clone(page);
     fake_page_metadata.push_back(std::move(cloned_page));
   }
   return fake_page_metadata;
@@ -113,10 +114,10 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
 
     handler_ = std::make_unique<TestAXMediaAppUntrustedHandler>(
         *browser()->profile(), std::move(pageRemote));
+    ASSERT_NE(nullptr, handler_.get());
     // TODO(b/309860428): Delete MediaApp interface - after we implement all
     // Mojo APIs, it should not be needed any more.
     handler_->SetMediaAppForTesting(&fake_media_app_);
-    ASSERT_NE(nullptr, handler_.get());
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     handler_->SetIsOcrServiceEnabledForTesting();
     handler_->SetScreenAIAnnotatorForTesting(
@@ -153,7 +154,8 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
   const size_t kTestNumPages = 3;
-  auto fake_metadata = CreateFakePageMetadata(kTestNumPages);
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
   handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
   WaitForOcringPages(kTestNumPages);
 
@@ -249,11 +251,12 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageContentsUpdatedEdit) {
   const size_t kTestNumPages = 3;
-  auto fake_metadata = CreateFakePageMetadata(kTestNumPages);
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
   handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
   WaitForOcringPages(kTestNumPages);
 
-  // All pages have gone through OCR.
+  // All pages must have gone through OCR.
   ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
   EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
   EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
@@ -272,11 +275,12 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageRotation) {
   const size_t kTestNumPages = 4;
-  auto fake_metadata = CreateFakePageMetadata(kTestNumPages);
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
   handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
   WaitForOcringPages(kTestNumPages);
 
-  // All pages have gone through OCR.
+  // All pages must have gone through OCR.
   ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
   EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
   EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
@@ -359,7 +363,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
       browser()->tab_strip_model()->GetActiveWebContents(), ui::kAXModeComplete,
       ui::AXEventGenerator::Event::CHILDREN_CHANGED);
   const size_t kTestNumPages = 1u;
-  auto fake_metadata = CreateFakePageMetadata(kTestNumPages);
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
   handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
   WaitForOcringPages(kTestNumPages);
   ASSERT_TRUE(child_tree_added_waiter.WaitForNotification());
@@ -495,6 +500,198 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
       "scrollable=true is_line_breaking_object=true\n",
       pending_serialized_updates[9].ToString());
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollUpAndDown) {
+  constexpr size_t kTestNumPages = 3u;
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+
+  // All pages must have gone through OCR.
+  ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+  EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
+
+  // View the second page by scrolling to it.
+  handler_->ViewportUpdated(
+      gfx::RectF(/*x=*/0.0f, /*y=*/kTestPageHeight + kTestPageGap,
+                 kTestPageWidth, kTestPageHeight),
+      /*scale_factor=*/1.0f);
+
+  ui::AXActionData scroll_action_data;
+  scroll_action_data.action = ax::mojom::Action::kScrollUp;
+  scroll_action_data.target_tree_id = handler_->GetDocumentTreeIDForTesting();
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(gfx::RectF(/*x=*/0.0f, /*y=*/kTestPageGap, kTestPageWidth,
+                       kTestPageHeight),
+            fake_media_app_.ViewportBox());
+
+  // Scroll up again, which should only scroll to the top of the document, i.e.
+  // viewport should not get a negative y value.
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(
+      gfx::RectF(/*x =*/0.0f, /*y=*/0.0f, kTestPageWidth, kTestPageHeight),
+      fake_media_app_.ViewportBox());
+
+  // View the second page again by scrolling to it.
+  handler_->ViewportUpdated(
+      gfx::RectF(/*x=*/0.0f, /*y=*/kTestPageHeight + kTestPageGap,
+                 kTestPageWidth, kTestPageHeight),
+      /*scale_factor=*/1.0f);
+
+  scroll_action_data.action = ax::mojom::Action::kScrollDown;
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(gfx::RectF(/*x=*/0.0f, /*y=*/kTestPageGap + kTestPageHeight * 2.0f,
+                       kTestPageWidth, kTestPageHeight),
+            fake_media_app_.ViewportBox());
+
+  // Scroll down again, which should only scroll to the bottom of the document
+  // but not further.
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(
+      gfx::RectF(/*x=*/0.0f, /*y=*/(kTestPageGap + kTestPageHeight) * 2.0f,
+                 kTestPageWidth, kTestPageHeight),
+      fake_media_app_.ViewportBox());
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollLeftAndRight) {
+  constexpr float kTestViewportWidth = kTestPageWidth / 3.0f;
+  constexpr float kTestViewportHeight = kTestPageHeight;
+  constexpr size_t kTestNumPages = 3u;
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+
+  // All pages must have gone through OCR.
+  ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+  EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
+
+  // View the center part of the second page by scrolling to it.
+  handler_->ViewportUpdated(gfx::RectF(/*x=*/kTestViewportWidth,
+                                       /*y=*/kTestPageHeight + kTestPageGap,
+                                       kTestViewportWidth, kTestViewportHeight),
+                            /*scale_factor=*/1.0f);
+
+  ui::AXActionData scroll_action_data;
+  scroll_action_data.action = ax::mojom::Action::kScrollLeft;
+  scroll_action_data.target_tree_id = handler_->GetDocumentTreeIDForTesting();
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(gfx::RectF(/*x=*/0.0f, /*y=*/kTestPageHeight + kTestPageGap,
+                       kTestViewportWidth, kTestViewportHeight),
+            fake_media_app_.ViewportBox());
+
+  // No scrolling should happen because we are already at the leftmost position
+  // of the second page.
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(gfx::RectF(/*x=*/0.0f, /*y=*/kTestPageHeight + kTestPageGap,
+                       kTestViewportWidth, kTestViewportHeight),
+            fake_media_app_.ViewportBox());
+
+  // View the rightmost part of the second page again by scrolling to it.
+  handler_->ViewportUpdated(gfx::RectF(/*x=*/kTestViewportWidth * 2.0f,
+                                       /*y=*/kTestViewportHeight + kTestPageGap,
+                                       kTestViewportWidth, kTestViewportHeight),
+                            /*scale_factor=*/1.0f);
+
+  scroll_action_data.action = ax::mojom::Action::kScrollRight;
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(gfx::RectF(/*x=*/kTestPageWidth - kTestViewportWidth,
+                       /*y=*/kTestViewportHeight + kTestPageGap,
+                       kTestViewportWidth, kTestViewportHeight),
+            fake_media_app_.ViewportBox());
+
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(gfx::RectF(/*x=*/kTestPageWidth - 1.0f,
+                       /*y=*/kTestViewportHeight + kTestPageGap,
+                       kTestViewportWidth, kTestViewportHeight),
+            fake_media_app_.ViewportBox());
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollToMakeVisible) {
+  constexpr float kPageX = 0.0f;
+  constexpr float kPageY = 0.0f;
+  constexpr float kViewportWidth = 2.0f;
+  constexpr float kViewportHeight = 4.0f;
+  std::vector<PageMetadataPtr> fake_metadata;
+  PageMetadataPtr fake_page = ash::media_app_ui::mojom::PageMetadata::New();
+  fake_page->id = std::format("Page{}", kTestPageIds[0]);
+  fake_page->rect =
+      gfx::RectF(/*x=*/kPageX, /*y=*/kPageY, kTestPageWidth, kTestPageHeight);
+  fake_metadata.push_back(std::move(fake_page));
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(1u);
+
+  // All pages must have gone through OCR.
+  ASSERT_EQ(1u, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+
+  ui::AXActionData scroll_action_data;
+  scroll_action_data.action = ax::mojom::Action::kScrollToMakeVisible;
+  scroll_action_data.target_tree_id =
+      handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetTreeID();
+  ASSERT_NE(nullptr,
+            handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot());
+  scroll_action_data.target_node_id =
+      handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot()->id();
+
+  // "Scroll to make visible", which should scroll forward.
+  handler_->ViewportUpdated(
+      gfx::RectF(/*x=*/0.0f, /*y=*/0.0f, kViewportWidth, kViewportHeight),
+      /*scale_factor=*/1.0f);
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(gfx::RectF(/*x=*/kPageX + kTestPageWidth - kViewportWidth,
+                       /*y=*/kPageY + kTestPageHeight - kViewportHeight,
+                       kViewportWidth, kViewportHeight),
+            fake_media_app_.ViewportBox());
+  handler_->ViewportUpdated(
+      gfx::RectF(/*x=*/0.0f, /*y=*/kPageY, kViewportWidth, kViewportHeight),
+      /*scale_factor=*/1.0f);
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(gfx::RectF(/*x=*/kPageX + kTestPageWidth - kViewportWidth,
+                       /*y=*/kPageY + kTestPageHeight - kViewportHeight,
+                       kViewportWidth, kViewportHeight),
+            fake_media_app_.ViewportBox());
+
+  // "Scroll to make visible", which should scroll backward.
+  handler_->ViewportUpdated(gfx::RectF(/*x=*/kPageX + kTestPageWidth - 1.0f,
+                                       /*y=*/kPageY + kTestPageHeight - 1.0f,
+                                       kViewportWidth, kViewportHeight),
+                            /*scale_factor=*/1.0f);
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(gfx::RectF(kPageX, kPageY, kViewportWidth, kViewportHeight),
+            fake_media_app_.ViewportBox());
+  handler_->ViewportUpdated(
+      gfx::RectF(/*x=*/kPageX + kTestPageWidth, /*y=*/kPageY + kTestPageHeight,
+                 kViewportWidth, kViewportHeight),
+      /*scale_factor=*/1.0f);
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(gfx::RectF(kPageX, kPageY, kViewportWidth, kViewportHeight),
+            fake_media_app_.ViewportBox());
+
+  // No scrolling should be needed because page can fit into viewport.
+  handler_->ViewportUpdated(
+      gfx::RectF(kPageX, kPageY, kTestPageWidth, kTestPageHeight),
+      /*scale_factor=*/1.0f);
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(gfx::RectF(kPageX, kPageY, kTestPageWidth, kTestPageHeight),
+            fake_media_app_.ViewportBox());
+
+  // Viewport can only display part of the page; so "scroll to make visible"
+  // should only scroll to the top-left corner.
+  handler_->ViewportUpdated(
+      gfx::RectF(/*x=*/kPageX + kTestPageWidth - kViewportWidth,
+                 /*y-*/ kPageY + kTestPageHeight - kViewportHeight,
+                 kViewportWidth, kViewportHeight),
+      /*scale_factor=*/1.0f);
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(gfx::RectF(kPageX, kPageY, kViewportWidth, kViewportHeight),
+            fake_media_app_.ViewportBox());
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node.h"
@@ -41,8 +43,6 @@
 
 namespace ash {
 
-namespace {
-
 // The ID used for the AX document root.
 constexpr ui::AXNodeID kDocumentRootNodeId = 1;
 
@@ -54,6 +54,8 @@ constexpr ui::AXNodeID kStartPageAXNodeId = 2;
 // used both to validate the number of pages (untrusted data) coming from the
 // MediaApp and manage resources (caps the number of pages stored at a time).
 constexpr size_t kMaxPages = 10000;
+
+namespace {
 
 bool ReportIfNonExistentPageId(
     const std::string& context,
@@ -103,8 +105,9 @@ void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool successful) {
   service_router->BindScreenAIAnnotator(
       screen_ai_annotator_.BindNewPipeAndPassReceiver());
   OcrNextDirtyPageIfAny();
-
   if (media_app_) {
+    // `media_app_` is only used for testing.
+    CHECK_IS_TEST();
     media_app_->OcrServiceEnabledChanged(true);
   }
 }
@@ -116,6 +119,10 @@ bool AXMediaAppUntrustedHandler::IsAccessibilityEnabled() const {
 
 void AXMediaAppUntrustedHandler::PerformAction(
     const ui::AXActionData& action_data) {
+  if (!document_.GetRoot()) {
+    return;
+  }
+  CHECK(document_.ax_tree());
   switch (action_data.action) {
     case ax::mojom::Action::kBlur:
     case ax::mojom::Action::kClearAccessibilityFocus:
@@ -127,17 +134,112 @@ void AXMediaAppUntrustedHandler::PerformAction(
     case ax::mojom::Action::kGetImageData:
     case ax::mojom::Action::kIncrement:
     case ax::mojom::Action::kLoadInlineTextBoxes:
-      return;
+      return;  // Irrelevant for Backlight.
     case ax::mojom::Action::kScrollBackward:
+    case ax::mojom::Action::kScrollUp: {
+      float y_min = static_cast<float>(document_.GetRoot()->GetIntAttribute(
+          ax::mojom::IntAttribute::kScrollYMin));
+      viewport_box_.set_y(
+          std::max(viewport_box_.y() - viewport_box_.height(), y_min));
+      if (media_app_) {
+        // `media_app_` is only used for testing.
+        CHECK_IS_TEST();
+        media_app_->SetViewport(viewport_box_);
+      }
+      return;
+    }
     case ax::mojom::Action::kScrollForward:
-    case ax::mojom::Action::kScrollUp:
-    case ax::mojom::Action::kScrollDown:
-    case ax::mojom::Action::kScrollLeft:
-    case ax::mojom::Action::kScrollRight:
-    case ax::mojom::Action::kScrollToMakeVisible:
+    case ax::mojom::Action::kScrollDown: {
+      float y_max = static_cast<float>(document_.GetRoot()->GetIntAttribute(
+          ax::mojom::IntAttribute::kScrollYMax));
+      viewport_box_.set_y(
+          std::min(viewport_box_.y() + viewport_box_.height(), y_max));
+      if (media_app_) {
+        // `media_app_` is only used for testing.
+        CHECK_IS_TEST();
+        media_app_->SetViewport(viewport_box_);
+      }
+      return;
+    }
+    case ax::mojom::Action::kScrollLeft: {
+      float x_min = static_cast<float>(document_.GetRoot()->GetIntAttribute(
+          ax::mojom::IntAttribute::kScrollXMin));
+      viewport_box_.set_x(
+          std::max(viewport_box_.x() - viewport_box_.width(), x_min));
+      if (media_app_) {
+        // `media_app_` is only used for testing.
+        CHECK_IS_TEST();
+        media_app_->SetViewport(viewport_box_);
+      }
+      return;
+    }
+    case ax::mojom::Action::kScrollRight: {
+      float x_max = static_cast<float>(document_.GetRoot()->GetIntAttribute(
+          ax::mojom::IntAttribute::kScrollXMax));
+      viewport_box_.set_x(
+          std::min(viewport_box_.x() + viewport_box_.width(), x_max));
+      if (media_app_) {
+        // `media_app_` is only used for testing.
+        CHECK_IS_TEST();
+        media_app_->SetViewport(viewport_box_);
+      }
+      return;
+    }
+    case ax::mojom::Action::kScrollToMakeVisible: {
+      if (!media_app_) {
+        CHECK_NE(action_data.target_tree_id, ui::AXTreeIDUnknown());
+      } else {
+        // `media_app_` is only used for testing.
+        CHECK_IS_TEST();
+      }
+      CHECK_NE(action_data.target_node_id, ui::kInvalidAXNodeID);
+      CHECK_EQ(pages_.size(), document_.GetRoot()->GetUnignoredChildCount());
+      for (size_t page_index = 0u; const auto& page : pages_) {
+        const std::unique_ptr<ui::AXTreeManager>& page_manager = page.second;
+        if (page_manager->GetTreeID() != action_data.target_tree_id) {
+          ++page_index;
+          continue;
+        }
+        ui::AXNode* target_node =
+            page_manager->GetNode(action_data.target_node_id);
+        if (!target_node) {
+          break;
+        }
+        CHECK(page_manager->ax_tree());
+        // Passing an empty `RectF` for the node bounds will initialize it
+        // automatically to `target_node->data().relative_bounds.bounds`.
+        gfx::RectF global_bounds =
+            page_manager->ax_tree()->RelativeToTreeBounds(
+                target_node, /*node_bounds=*/gfx::RectF());
+        global_bounds.Offset(document_.GetRoot()
+                                 ->GetUnignoredChildAtIndex(page_index)
+                                 ->data()
+                                 .relative_bounds.bounds.OffsetFromOrigin());
+        if (global_bounds.x() < viewport_box_.x()) {
+          viewport_box_.set_x(global_bounds.x());
+        } else if (global_bounds.right() > viewport_box_.right()) {
+          viewport_box_.set_x(
+              std::max(0.0f, global_bounds.right() - viewport_box_.width()));
+        }
+        if (global_bounds.y() < viewport_box_.y()) {
+          viewport_box_.set_y(global_bounds.y());
+        } else if (global_bounds.bottom() > viewport_box_.bottom()) {
+          viewport_box_.set_y(
+              std::max(0.0f, global_bounds.bottom() - viewport_box_.height()));
+        }
+        break;
+      }
+      if (media_app_) {
+        // `media_app_` is only used for testing.
+        CHECK_IS_TEST();
+        media_app_->SetViewport(viewport_box_);
+      }
+      return;
+    }
+    case ax::mojom::Action::kScrollToPoint:
       NOTIMPLEMENTED();
       return;
-    case ax::mojom::Action::kScrollToPoint:
+      // Used only on Android.
     case ax::mojom::Action::kScrollToPositionAtRowColumn:
     case ax::mojom::Action::kSetAccessibilityFocus:
     case ax::mojom::Action::kSetScrollOffset:
@@ -161,12 +263,15 @@ void AXMediaAppUntrustedHandler::PerformAction(
     case ax::mojom::Action::kStopDuckingMedia:
     case ax::mojom::Action::kSuspendMedia:
     case ax::mojom::Action::kLongClick:
+      NOTIMPLEMENTED();
       return;
   }
 }
 
 void AXMediaAppUntrustedHandler::OnAXModeAdded(ui::AXMode mode) {
   if (media_app_) {
+    // `media_app_` is only used for testing.
+    CHECK_IS_TEST();
     media_app_->AccessibilityEnabledChanged(
         accessibility_state_utils::IsScreenReaderEnabled());
   }
@@ -214,7 +319,7 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
     }
     page_metadata_[page_id].page_num = i + 1;  // 1-indexed.
     page_metadata_[page_id].rect = page_metadata[i]->rect;
-    // Page location can only be set after the corresponding |pages_|
+    // Page location can only be set after the corresponding `pages_`
     // `AXTreeManager` entry has been created, so don't update it for first
     // load.
     if (!is_first_load) {
@@ -254,10 +359,6 @@ void AXMediaAppUntrustedHandler::PageContentsUpdated(
   PushDirtyPage(dirty_page_id);
   OcrNextDirtyPageIfAny();
 }
-
-void AXMediaAppUntrustedHandler::ViewportUpdated(
-    const ::gfx::RectF& viewport_box,
-    float scale_factor) {}
 
 content::WebContents* AXMediaAppUntrustedHandler::GetMediaAppWebContents()
     const {
@@ -320,6 +421,39 @@ void AXMediaAppUntrustedHandler::SendAXTreeToAccessibilityService(
       {ui::AXEvent(update.root_id, ax::mojom::Event::kLayoutComplete,
                    ax::mojom::EventFrom::kNone)});
 #endif  // defined(USE_AURA)
+}
+
+void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
+                                                 float scale_factor) {
+  // TODO(nektar): Use scale factor to convert to device independent pixels.
+  viewport_box_ = viewport_box;
+  if (!document_.GetRoot()) {
+    return;
+  }
+  CHECK(document_.ax_tree());
+  ui::AXNodeData document_root_data = document_.GetRoot()->data();
+  document_root_data.AddIntAttribute(
+      ax::mojom::IntAttribute::kScrollX,
+      base::checked_cast<int32_t>(viewport_box_.x()));
+  document_root_data.AddIntAttribute(
+      ax::mojom::IntAttribute::kScrollXMax,
+      base::checked_cast<int32_t>(
+          document_root_data.relative_bounds.bounds.width() -
+          viewport_box_.width()));
+  document_root_data.AddIntAttribute(
+      ax::mojom::IntAttribute::kScrollY,
+      base::checked_cast<int32_t>(viewport_box_.y()));
+  document_root_data.AddIntAttribute(
+      ax::mojom::IntAttribute::kScrollYMax,
+      base::checked_cast<int32_t>(
+          document_root_data.relative_bounds.bounds.height() -
+          viewport_box_.height()));
+  ui::AXTreeUpdate document_update;
+  document_update.root_id = document_root_data.id;
+  document_update.nodes = {document_root_data};
+  if (!document_.ax_tree()->Unserialize(document_update)) {
+    mojo::ReportBadMessage(document_.ax_tree()->error());
+  }
 }
 
 void AXMediaAppUntrustedHandler::UpdatePageLocation(
@@ -498,8 +632,12 @@ void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
   }
   auto dirty_page_id = PopDirtyPage();
   // TODO(b/289012145): Refactor this code to support things happening
-  // asynchronously - e.g. RequestBitmap will be async.
+  // asynchronously - i.e. `RequestBitmap` will be async.
   if (media_app_) {
+    // `media_app_` is only used for testing.
+    CHECK_IS_TEST();
+    // TODO(b/303133098): Change this as soon as `RequestBitmap` becomes
+    // available by the Backlight team.
     SkBitmap page_bitmap = media_app_->RequestBitmap(dirty_page_id);
     screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
         page_bitmap,
@@ -545,7 +683,7 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
   }
   // Update the page location again - running the page through OCR overwrites
   // the previous `AXTree` it was given and thus the page location it was
-  // already given in `PageMetadataUpdated ()`. Restore it here.
+  // already given in `PageMetadataUpdated()`. Restore it here.
   UpdatePageLocation(dirty_page_id, page_metadata_[dirty_page_id].rect);
   SendAXTreeToAccessibilityService(*pages_[dirty_page_id],
                                    *page_serializers_[dirty_page_id]);

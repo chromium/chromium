@@ -97,6 +97,9 @@ class AXMediaAppUntrustedHandler
   void ViewportUpdated(const ::gfx::RectF& viewport_box,
                        float scale_factor) override;
 
+  // TODO(b/309860428): Delete once AXMediaApp is deleted.
+  void SetMediaAppForTesting(AXMediaApp* media_app) { media_app_ = media_app; }
+
  protected:
   void PushDirtyPage(const std::string& dirty_page_id);
   std::string PopDirtyPage();
@@ -134,6 +137,7 @@ class AXMediaAppUntrustedHandler
   // This `BrowserContext` will always outlive the WebUI, so this is safe.
   raw_ref<content::BrowserContext> browser_context_;
   mojo::Remote<media_app_ui::mojom::OcrUntrustedPage> media_app_page_;
+  gfx::RectF viewport_box_;
   base::circular_deque<std::string> dirty_page_ids_;
   ui::AXTreeID document_tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
   SEQUENCE_CHECKER(sequence_checker_);

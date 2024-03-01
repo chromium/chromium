@@ -9,6 +9,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace screen_ai::test {
 
@@ -31,6 +32,7 @@ void FakeScreenAIAnnotator::PerformOcrAndReturnAXTreeUpdate(
     node.id = next_node_id_;
     node.role = ax::mojom::Role::kStaticText;
     node.SetNameChecked("Testing");
+    node.relative_bounds.bounds = gfx::RectF(1.0f, 2.0f, 1.0f, 2.0f);
     update.nodes = {node};
     --next_node_id_;
   }
