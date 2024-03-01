@@ -713,8 +713,7 @@ bool WvrManager::SubmitFrameInternal(int16_t frame_index) {
 
   if (!wvr_api_->SyncState(is_frame_submmitted_,
                            graphics_->webxr_texture_handle(),
-                           graphics_->webxr_surface_size().width(),
-                           graphics_->webxr_surface_size().height())) {
+                           graphics_->webxr_surface_size())) {
     DLOG(WARNING) << __func__
                   << "SyncState failed. Don't submit frame";
     return false;

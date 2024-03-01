@@ -85,16 +85,15 @@ bool WvrApi::PresentingGenerationChanged() {
 
 bool WvrApi::SyncState(bool is_frame_submmitted,
                        int32_t texture_handle,
-                       int32_t width,
-                       int32_t height) {
+                       const gfx::Size& size) {
   if (is_frame_submmitted) {
     ++sync_frame_index_;
   }
 
   auto& layer = browser_state_.layerState[0].layer_stereo_immersive;
   layer.frameId = sync_frame_index_;
-  layer.textureSize.width = width;
-  layer.textureSize.height = height;
+  layer.textureSize.width = size.width();
+  layer.textureSize.height = size.height();
   layer.textureHandle = texture_handle;
 
   // for (auto& view: views) {
