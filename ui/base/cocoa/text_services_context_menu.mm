@@ -70,19 +70,20 @@ TextServicesContextMenu::TextServicesContextMenu(Delegate* delegate)
 
 namespace ui {
 
-// When running on an OS release earlier than macOS 14, do this as well, for two
-// reasons:
+// When running on an OS release earlier than macOS 14, or running on macOS 14.4
+// and later, do this as well, for two reasons:
 //
 // 1. Interoperability with the other parts of the system that use this same
 //    speech synthesizer.
 //
 // 2. Working around a bug in `AVSpeechSynthesizer` which does not provide the
 //    correct voice when a specific voice is chosen in the system accessibility
-//    settings (see https://crbug.com/1484940#c9, FB13197951).
+//    settings (see https://crbug.com/40072850#comment10, FB13197951).
 //
-// However, for macOS 14, directly use the deprecated NSSpeechSynthesizer class,
-// as there is a bug with the NSApplication provided methods that causes
-// occasional hiccups in the audio (see https://crbug.com/1489906, FB13261400).
+// However, for macOS 14.0 through 14.3, directly use the deprecated
+// NSSpeechSynthesizer class, as there is a bug with the NSApplication provided
+// methods that causes occasional hiccups in the audio (see
+// https://crbug.com/40074199, FB13261400).
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -117,7 +118,8 @@ void SpeakText(const std::u16string& text) {
 #pragma clang diagnostic pop
 
 void TextServicesContextMenu::SpeakText(const std::u16string& text) {
-  if (base::mac::MacOSVersion() >= 14'00'00) {
+  int version = base::mac::MacOSVersion();
+  if (version >= 14'00'00 && version < 14'04'00) {
     FB13261400Workaround::SpeakText(text);
   } else {
     [NSApp speakString:base::SysUTF16ToNSString(text)];
@@ -125,7 +127,8 @@ void TextServicesContextMenu::SpeakText(const std::u16string& text) {
 }
 
 void TextServicesContextMenu::StopSpeaking() {
-  if (base::mac::MacOSVersion() >= 14'00'00) {
+  int version = base::mac::MacOSVersion();
+  if (version >= 14'00'00 && version < 14'04'00) {
     FB13261400Workaround::StopSpeaking();
   } else {
     [NSApp stopSpeaking:nil];
@@ -133,7 +136,8 @@ void TextServicesContextMenu::StopSpeaking() {
 }
 
 bool TextServicesContextMenu::IsSpeaking() {
-  if (base::mac::MacOSVersion() >= 14'00'00) {
+  int version = base::mac::MacOSVersion();
+  if (version >= 14'00'00 && version < 14'04'00) {
     return FB13261400Workaround::IsSpeaking();
   } else {
     return [NSApp isSpeaking];
