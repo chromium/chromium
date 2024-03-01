@@ -58,7 +58,7 @@ void SetJSModuleDefaults(content::WebUIDataSource* source) {
   if (scheme == content::kChromeUIScheme) {
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::ConnectSrc,
-        "connect-src chrome://resources 'self';");
+        "connect-src chrome://resources chrome://theme 'self';");
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::ImgSrc,
         "img-src chrome://resources chrome://theme chrome://image "
