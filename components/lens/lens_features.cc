@@ -175,5 +175,9 @@ bool GetShouldIssueProcessPrewarmingForLens() {
   return kShouldIssueProcessPrewarmingForLens.Get();
 }
 
+bool IsLensOverlayEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlay);
+}
+
 }  // namespace features
 }  // namespace lens

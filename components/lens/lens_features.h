@@ -195,6 +195,10 @@ extern std::string GetPreconnectKeyForLens();
 // is shown.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetShouldIssueProcessPrewarmingForLens();
+
+// Returns whether to the Lens overlay is enabled
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayEnabled();
 }  // namespace features
 }  // namespace lens
 

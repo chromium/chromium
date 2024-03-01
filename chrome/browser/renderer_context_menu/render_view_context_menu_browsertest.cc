@@ -171,6 +171,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+#include "base/test/run_until.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_side_panel_helper.h"
 #include "ui/events/test/event_generator.h"
 #endif
@@ -2642,6 +2644,57 @@ IN_PROC_BROWSER_TEST_F(
   std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
   std::string expected_content = GetNonGoogleRegionSearchURL().GetContent();
   EXPECT_EQ(new_tab_content, expected_content);
+}
+
+class LensOverlayBrowserTest : public SearchByRegionBrowserBaseTest {
+ protected:
+  void SetUp() override {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({lens::features::kLensOverlay}, {});
+
+    // This does not use SearchByRegionBrowserBaseTest::SetUp because that
+    // function does its own conflicting initialization of a FeatureList.
+    InProcessBrowserTest::SetUp();
+  }
+
+  void OpenContextMenuAndClickRegionSearchEntrypoint(
+      ContextMenuNotificationObserver::MenuShownCallback callback) {
+    // |menu_observer_| will cause the search lens for image menu item to be
+    // clicked.
+    menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
+        IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, ui::EF_MOUSE_BUTTON,
+        std::move(callback));
+    RightClickToOpenContextMenu();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
+                       RegionSearchContextMenuOpensLensOverlay) {
+  // State should start in off.
+  auto* controller =
+      browser()->tab_strip_model()->GetActiveTab()->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), LensOverlayController::State::kOff);
+
+  OpenContextMenuAndClickRegionSearchEntrypoint(base::NullCallback());
+
+  // Clicking the region search entrypoint should eventually result in overlay
+  // state.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return controller->state() == LensOverlayController::State::kOverlay;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
+                       RegionSearchContextMenuDoesNotOpenRegionSearch) {
+  OpenContextMenuAndClickRegionSearchEntrypoint(
+      // Callback that will be called after the context menu item is clicked.
+      base::BindLambdaForTesting([&](RenderViewContextMenu* menu) {
+        // Verify the normal region search flow does not activate
+        lens::LensRegionSearchController* controller =
+            menu->GetLensRegionSearchControllerForTesting();
+        ASSERT_EQ(controller, nullptr);
+      }));
+  base::RunLoop().RunUntilIdle();
 }
 
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)

@@ -286,6 +286,7 @@
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_side_panel_helper.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -4270,6 +4271,15 @@ void RenderViewContextMenu::ExecRegionSearch(
   CHECK(browser);
   if (lens::features::IsLensRegionSearchStaticPageEnabled()) {
     lens::OpenLensStaticPage(browser);
+    return;
+  }
+
+  if (is_google_default_search_provider &&
+      lens::features::IsLensOverlayEnabled()) {
+    browser->tab_strip_model()
+        ->GetActiveTab()
+        ->lens_overlay_controller()
+        ->ShowUI();
     return;
   }
 
