@@ -148,12 +148,18 @@ TEST_F(ShadowIncludingTreeOrderTraversalTest, DescendantsOf) {
     </div>
     <div id="a2"></div>
   )HTML");
+  GetDocument().body()->SetIdAttribute(AtomicString("body"));
 
   EXPECT_THAT(GatherElementIdsFromTraversalRange(
                   ShadowIncludingTreeOrderTraversal::DescendantsOf(
                       *GetDocument().body())),
               ElementsAre("a0", "a00", "a01", "a1", "shadow", "b0", "b00",
                           "a10", "a2"));
+  EXPECT_THAT(GatherElementIdsFromTraversalRange(
+                  ShadowIncludingTreeOrderTraversal::InclusiveDescendantsOf(
+                      *GetDocument().body())),
+              ElementsAre("body", "a0", "a00", "a01", "a1", "shadow", "b0",
+                          "b00", "a10", "a2"));
 }
 
 TEST_F(ShadowIncludingTreeOrderTraversalTest, ChildrenOf) {

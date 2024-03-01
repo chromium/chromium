@@ -132,7 +132,6 @@ class NodeData : public GarbageCollected<NodeData> {
     return static_cast<ClassType>(bit_field_.get_concurrently<ClassTypeData>());
   }
 
- protected:
   subtle::UncompressedMember<const ComputedStyle> computed_style_;
   Member<LayoutObject> layout_object_;
   BitField bit_field_;
