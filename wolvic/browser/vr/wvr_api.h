@@ -9,6 +9,7 @@
 #include <functional>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/gfx/geometry/size.h"
 #include "wolvic/browser/vr/moz_external_vr.h"
 
 namespace wolvic {
@@ -27,8 +28,7 @@ class WvrApi {
   bool PresentingGenerationChanged();
   bool SyncState(bool is_frame_submmitted,
                  int32_t texture_handle,
-                 int32_t width,
-                 int32_t height);
+                 const gfx::Size& size);
   void PullSystemState();
 
   mozilla::gfx::VRSystemState get_system_state() { return system_state_; }
