@@ -126,4 +126,49 @@ suite('PrintTicketManager', () => {
 
         assertFalse(instance.isPrintRequestInProgress(), 'Request finished');
       });
+
+  // Verify PrintTicketManger ensures that PrintPreviewPageHandler.print is only
+  // called if print request is not in progress.
+  test('ensure only one print request triggered at a time', async () => {
+    const delay = 1;
+    printPreviewPageHandler.useTestDelay(delay);
+    const instance = PrintTicketManager.getInstance();
+    const startEvent = eventToPromise(PRINT_REQUEST_STARTED_EVENT, instance);
+    const finishEvent = eventToPromise(PRINT_REQUEST_FINISHED_EVENT, instance);
+
+    const method = 'print';
+    let expectedCallCount = 0;
+    assertEquals(
+        expectedCallCount, printPreviewPageHandler.getCallCount(method),
+        'No request sent');
+    assertFalse(instance.isPrintRequestInProgress(), 'Request not started');
+
+    instance.sendPrintRequest();
+
+    // After calling `sendPrintRequest` the call count should increment.
+    ++expectedCallCount;
+    await startEvent;
+
+    assertEquals(
+        expectedCallCount, printPreviewPageHandler.getCallCount(method),
+        'One request sent');
+    assertTrue(instance.isPrintRequestInProgress(), 'Request started');
+
+    // While request is in progress additional `sendPrintRequest` should not
+    // call `PrintPreviewPageHandler.print`.
+    instance.sendPrintRequest();
+    instance.sendPrintRequest();
+    instance.sendPrintRequest();
+    assertEquals(
+        expectedCallCount, printPreviewPageHandler.getCallCount(method),
+        'One request sent');
+
+    mockTimer.tick(delay);
+    await finishEvent;
+
+    assertEquals(
+        expectedCallCount, printPreviewPageHandler.getCallCount(method),
+        'One request sent');
+    assertFalse(instance.isPrintRequestInProgress(), 'Request finished');
+  });
 });

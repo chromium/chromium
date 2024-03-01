@@ -57,6 +57,11 @@ export class PrintTicketManager extends EventTarget {
   sendPrintRequest(): void {
     assert(this.printPreviewPageHandler);
 
+    if (this.printRequestInProgress) {
+      // Print is already in progress, wait for request to resolve before
+      // allowing a second attempt.
+      return;
+    }
     this.printRequestInProgress = true;
     this.dispatch(PRINT_REQUEST_STARTED_EVENT);
 
