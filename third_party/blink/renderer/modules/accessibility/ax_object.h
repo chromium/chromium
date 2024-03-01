@@ -68,7 +68,6 @@ class Transform;
 
 namespace ui {
 struct AXActionData;
-class AXNode;
 struct AXNodeData;
 struct AXRelativeBounds;
 }
