@@ -257,16 +257,12 @@ class MotionMarkFixed2SecondsPage(MotionMarkPage):
 
   def RunPageInteractions(self, action_runner):
     with action_runner.CreateInteraction('Filter'):
-      action_runner.Wait(2)
       action_runner.WaitForJavaScriptCondition(
           'window.benchmarkRunnerClient.results._results')
 
-    # Navigate to about:blank to stop rendering frames and let the device
-    # cool down while the trace data for the story is processed.
-    action_runner.Navigate('about:blank')
-
   @classmethod
-  def GetFixed2SecondsUrl(cls, suite_name, test_name, complexity):
+  def GetFixed2SecondsUrl(cls, suite_name, test_name, complexity,
+                          test_interval):
     # Strip unwanted characters from names
     for ch in [' ', '.', ',']:
       suite_name = suite_name.replace(ch, '')
@@ -278,65 +274,68 @@ class MotionMarkFixed2SecondsPage(MotionMarkPage):
         '?suite-name=%s'
         '&test-name=%s'
         '&complexity=%d'
-        '&test-interval=2'
-        '&warmup-length=100'
-        '&warmup-frame-count=10'
+        '&test-interval=%d'
+        '&warmup-length=0'
+        '&warmup-frame-count=0'
         '&first-frame-minimum-length=0'
         '&display=minimal'
         '&tiles=big'
         '&controller=fixed'
         '&system-frame-rate=60'
         '&frame-rate=60'
-        '&time-measurement=performance') % (suite_name, test_name, complexity)
+        '&time-measurement=performance') % (suite_name, test_name, complexity,
+                                            test_interval)
 
 
 #Numbers for complexity based on MotionMark score for chrome build without PGO
+#TODO(vmiura): Update names from fixed_2_seconds to match the new durations.
 class MotionMarkFixed2SecondsMultiply(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_multiply'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark',
-                                                        'Multiply', 1396)
+                                                        'Multiply', 1396, 5)
 
 
 class MotionMarkFixed2SecondsCanvasArcs(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_canvas_arcs'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark',
-                                                        'Canvas Arcs', 6194)
+                                                        'Canvas Arcs', 6194, 5)
 
 
 class MotionMarkFixed2SecondsLeaves(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_leaves'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Leaves',
-                                                        1377)
+                                                        1377, 5)
 
 
 class MotionMarkFixed2SecondsPaths(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_paths'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Paths',
-                                                        29172)
+                                                        29172, 5)
 
 
 class MotionMarkFixed2SecondsCanvasLines(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_canvas_lines'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark',
-                                                        'Canvas Lines', 16520)
+                                                        'Canvas Lines', 16520,
+                                                        5)
 
 
 class MotionMarkFixed2SecondsImages(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_images'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Images',
-                                                        200)
+                                                        200, 5)
 
 
 class MotionMarkFixed2SecondsDesign(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_design'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Design',
-                                                        213)
+                                                        213, 5)
 
 
 class MotionMarkFixed2SecondsSuits(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_suits'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Suits',
-                                                        1299)
+                                                        1299, 5)
 
 
 @benchmark.Info(emails=['chrome-skia-graphite@google.com'],
