@@ -323,6 +323,7 @@ ts_library("build_ts") {
     "//ui/webui/resources/js:build_ts",
   ]
   definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/chrome_timeticks.d.ts",
     "//tools/typescript/definitions/dom_automation_controller.d.ts",

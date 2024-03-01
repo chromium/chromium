@@ -14,7 +14,10 @@ build_webui("build") {
     "pref_util.ts",
   ]
 
-  ts_definitions = [ "//tools/typescript/definitions/settings_private.d.ts" ]
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+  ]
   ts_composite = true
 
   # Note: Do not add a dep on ui/webui/resources/cr_elements:build_ts here, as

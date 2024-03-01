@@ -316,11 +316,9 @@ def validateDefinitionDeps(definitions_files, target_path, gen_dir,
   # TODO(https://crbug.com/326005022): Determine if the following are actually
   # safe for computation of gn input values.
   exceptions_list = [
-      'third_party/lit/v3_0/',
       'third_party/material_web_components/',
       'third_party/node/node_modules/',
       'third_party/polymer/v3_0/',
-      'tools/typescript/definitions/',
       'tools/typescript/tests/',
   ]
   exceptions = [getPathFromCwd(e) for e in exceptions_list]

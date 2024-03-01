@@ -69,6 +69,7 @@ build_webui_tests("build") {
   }
 
   ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_test.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/mime_handler_private.d.ts",

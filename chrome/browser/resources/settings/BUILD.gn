@@ -390,6 +390,7 @@ build_webui("build") {
   ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/autofill_private.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/language_settings_private.d.ts",
     "//tools/typescript/definitions/management.d.ts",

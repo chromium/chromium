@@ -39,6 +39,7 @@ build_webui_tests("build") {
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_test.d.ts",
   ]
 }

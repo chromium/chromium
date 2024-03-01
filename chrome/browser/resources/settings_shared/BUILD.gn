@@ -30,6 +30,7 @@ build_webui("build") {
 
   ts_composite = true
   ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",

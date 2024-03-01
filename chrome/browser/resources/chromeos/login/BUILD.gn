@@ -225,6 +225,7 @@ build_webui("build") {
     "//chrome/browser/resources/chromeos/accessibility/definitions/tts.d.ts",
     "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
     "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/extension_types.d.ts",

@@ -66,6 +66,7 @@ build_webui_tests("build") {
   ts_definitions = [
     "//tools/typescript/definitions/bookmarks.d.ts",
     "//tools/typescript/definitions/bookmark_manager_private.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
   ]

@@ -20,6 +20,7 @@ build_webui("build") {
 
   ts_definitions = [
     "//chrome/browser/resources/chromeos/network_ui/third_party/uPlot.iife.min.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/networking_private.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",

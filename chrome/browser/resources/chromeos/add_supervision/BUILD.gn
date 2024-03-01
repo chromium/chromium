@@ -23,6 +23,7 @@ build_webui("build") {
   ts_definitions = [
     "//tools/typescript/definitions/webview_tag.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/extension_types.d.ts",

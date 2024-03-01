@@ -88,6 +88,7 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
   ]
   ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
   ]

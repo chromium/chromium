@@ -101,6 +101,7 @@ ts_library("build_ts") {
   composite = true
 
   definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_test.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/file_system.d.ts",

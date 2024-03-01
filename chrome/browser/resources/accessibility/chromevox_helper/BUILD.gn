@@ -20,6 +20,7 @@ ts_library("build_ts") {
   ]
   out_dir = tsc_output_dir
   definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/scripting.d.ts",
     "//tools/typescript/definitions/storage.d.ts",
