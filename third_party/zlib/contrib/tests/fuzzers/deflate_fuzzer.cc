@@ -84,14 +84,20 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     }
     ASSERT(ret == Z_OK || Z_BUF_ERROR);
   }
-
-  // Check that the bound was correct.
-  // size_t deflate_bound = deflateBound(&stream, src.size());
-  // TODO(crbug.com/40270738): This does not always hold.
-  // ASSERT(compressed.size() <= deflate_bound);
-
   deflateEnd(&stream);
 
+  // Check deflateBound().
+  // Use a newly initialized stream since computing the bound on a "used" stream
+  // may not yield a correct result (https://github.com/madler/zlib/issues/944).
+  z_stream bound_stream;
+  bound_stream.zalloc = Z_NULL;
+  bound_stream.zfree = Z_NULL;
+  ret = deflateInit2(&bound_stream, level, Z_DEFLATED, windowBits, memLevel,
+                     strategy);
+  ASSERT(ret == Z_OK);
+  size_t deflate_bound = deflateBound(&bound_stream, src.size());
+  ASSERT(compressed.size() <= deflate_bound);
+  deflateEnd(&bound_stream);
 
   // Verify that the data decompresses correctly.
   ret = inflateInit2(&stream, windowBits);
