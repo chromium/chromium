@@ -164,10 +164,6 @@ public class StartSurfaceHomeLayout extends Layout {
         mBackgroundTabAnimation.start();
     }
 
-    public StartSurface getStartSurfaceForTesting() {
-        return mStartSurface;
-    }
-
     @Override
     public int getLayoutType() {
         return LayoutType.START_SURFACE;

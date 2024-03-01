@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
@@ -62,27 +61,15 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     /** A {@link Layout} that should be used when the user is swiping sideways on the toolbar. */
     protected ToolbarSwipeLayout mToolbarSwipeLayout;
 
-    /**
-     * A {@link Layout} that should be used when the user is in the tab switcher or start surface
-     * when the refactor flag isn't enabled.
-     */
-    protected Layout mOverviewLayout;
-
-    /**
-     * A {@link Layout} that should be used when the user is in the start surface when the refactor
-     * flag is enabled.
-     */
+    /** A {@link Layout} that should be used when the user is in the start surface. */
     protected Layout mStartSurfaceHomeLayout;
 
-    /**
-     * A {@link Layout} that should be used when the user is in the tab switcher when the refactor
-     * flag is enabled.
-     */
+    /** A {@link Layout} that should be used when the user is in the tab switcher. */
     protected Layout mTabSwitcherLayout;
 
     /**
-     * A {@link Layout} that should be used when the user is in the tab switcher when the refactor
-     * flag and hub flags are enabled.
+     * A {@link Layout} that should be used when the user is in the tab switcher when the hub flag
+     * is enabled.
      */
     protected Layout mHubLayout;
 
@@ -133,12 +120,10 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      *
      * @param host A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
-     * @param startSurfaceSupplier Supplier for an interface to talk to the Grid Tab Switcher.
-     *     Creates overviewLayout with this surface if this is has value. If not, {@link
-     *     #showLayout(int, boolean)} will create overviewLayout.
-     * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher when
-     *     Start surface refactor is enabled. Used to create overviewLayout if it has value,
-     *     otherwise will use the accessibility overview layout.
+     * @param startSurfaceSupplier Supplier for an interface to talk to the Start surface. Creates
+     *     StartSurfaceHomeLayout if it has value.
+     * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher. Used
+     *     to create TabSwitcherLayout if it has value.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
      *     controls.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
@@ -174,21 +159,10 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         mCreateTabSwitcherOrStartSurfaceCallable = delayedTabSwitcherOrStartSurfaceCallable;
         mHubLayoutDependencyHolder = hubLayoutDependencyHolder;
 
-        Context context = host.getContext();
-        if (ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context)) {
-            if (mStartSurfaceSupplier.hasValue() || mTabSwitcherSupplier.hasValue()) {
-                createLayoutsForStartSurfaceAndTabSwitcher(
-                        mStartSurfaceSupplier.get(),
-                        mTabSwitcherSupplier.get(),
-                        browserControlsStateProvider,
-                        scrimCoordinator,
-                        tabSwitcherScrimAnchor,
-                        hubLayoutDependencyHolder);
-            }
-        } else if (mStartSurfaceSupplier.hasValue()) {
+        if (mStartSurfaceSupplier.hasValue() || mTabSwitcherSupplier.hasValue()) {
             createLayoutsForStartSurfaceAndTabSwitcher(
                     mStartSurfaceSupplier.get(),
-                    /* tabSwitcher= */ null,
+                    mTabSwitcherSupplier.get(),
                     browserControlsStateProvider,
                     scrimCoordinator,
                     tabSwitcherScrimAnchor,
@@ -197,14 +171,12 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     }
 
     /**
-     * Creates {@link org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout}
-     * or ({@link org.chromium.chrome.features.start_surface.StartSurfaceHomeLayout} AND {@link
+     * Creates {@link org.chromium.chrome.features.start_surface.StartSurfaceHomeLayout} AND {@link
      * org.chromium.chrome.features.tasks.tab_management.TabSwitcherLayout}).
      *
-     * @param startSurface An interface to talk to the Grid Tab Switcher when Start surface refactor
-     *     is disabled.
-     * @param tabSwitcher An interface to talk to the GridTabSwitcher when Start surface refactor is
-     *     enabled and DeferTabSwitcherLayoutCreation is disabled.
+     * @param startSurface An interface to talk to the Start surface.
+     * @param tabSwitcher An interface to talk to the GridTabSwitcher when
+     *     DeferTabSwitcherLayoutCreation is disabled.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
      *     controls.
      * @param scrimCoordinator scrim coordinator for GTS
@@ -218,37 +190,23 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             ScrimCoordinator scrimCoordinator,
             ViewGroup tabSwitcherScrimAnchor,
             HubLayoutDependencyHolder hubLayoutDependencyHolder) {
-        assert mOverviewLayout == null
-                && mTabSwitcherLayout == null
-                && mStartSurfaceHomeLayout == null
-                && mHubLayout == null;
-        boolean isRefactorEnabled =
-                ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mHost.getContext());
+        assert mTabSwitcherLayout == null && mStartSurfaceHomeLayout == null && mHubLayout == null;
 
-        if (isRefactorEnabled) {
-            // TabSwitcherLayout creation is deferred until it is first shown.
-            if (!ChromeFeatureList.sDeferTabSwitcherLayoutCreation.isEnabled()) {
-                if (HubFieldTrial.isHubEnabled()) {
-                    createHubLayout(hubLayoutDependencyHolder);
-                } else {
-                    assert tabSwitcher != null;
-                    createTabSwitcherLayout(
-                            tabSwitcher,
-                            browserControlsStateProvider,
-                            scrimCoordinator,
-                            tabSwitcherScrimAnchor);
-                }
+        // TabSwitcherLayout creation is deferred until it is first shown.
+        if (!ChromeFeatureList.sDeferTabSwitcherLayoutCreation.isEnabled()) {
+            if (HubFieldTrial.isHubEnabled()) {
+                createHubLayout(hubLayoutDependencyHolder);
+            } else {
+                assert tabSwitcher != null;
+                createTabSwitcherLayout(
+                        tabSwitcher,
+                        browserControlsStateProvider,
+                        scrimCoordinator,
+                        tabSwitcherScrimAnchor);
             }
-            if (startSurface != null) {
-                createStartSurfaceHomeLayout(startSurface);
-            }
-        } else {
-            assert startSurface != null;
-            createTabSwitcherAndStartSurfaceLayout(
-                    startSurface,
-                    browserControlsStateProvider,
-                    scrimCoordinator,
-                    tabSwitcherScrimAnchor);
+        }
+        if (startSurface != null) {
+            createStartSurfaceHomeLayout(startSurface);
         }
     }
 
@@ -266,9 +224,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             ScrimCoordinator scrimCoordinator,
             ViewGroup tabSwitcherScrimAnchor) {
         assert mTabSwitcherLayout == null;
-        boolean isRefactorEnabled =
-                ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mHost.getContext());
-        assert isRefactorEnabled;
 
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
@@ -334,14 +289,11 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     /**
      * Creates {@link org.chromium.chrome.features.start_surface.StartSurfaceHomeLayout}.
-     * @param startSurface An interface to talk to the Grid Tab Switcher when Start surface refactor
-     *         is disabled.
+     *
+     * @param startSurface An interface to talk to the Start surface.
      */
     protected void createStartSurfaceHomeLayout(@NonNull StartSurface startSurface) {
         assert mStartSurfaceHomeLayout == null;
-        boolean isRefactorEnabled =
-                ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mHost.getContext());
-        assert isRefactorEnabled;
 
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
@@ -358,63 +310,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         }
         if (mFinishNativeInitialization) {
             mStartSurfaceHomeLayout.onFinishNativeInitialization();
-        }
-    }
-
-    /**
-     * Creates {@link org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout}
-     * @param startSurface An interface to talk to the Grid Tab Switcher when Start surface refactor
-     *         is disabled.
-     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
-     *         controls.
-     * @param scrimCoordinator scrim coordinator for GTS
-     * @param tabSwitcherScrimAnchor scrim anchor view for GTS
-     */
-    protected void createTabSwitcherAndStartSurfaceLayout(
-            @NonNull StartSurface startSurface,
-            BrowserControlsStateProvider browserControlsStateProvider,
-            ScrimCoordinator scrimCoordinator,
-            ViewGroup tabSwitcherScrimAnchor) {
-        assert mOverviewLayout == null;
-        boolean isRefactorEnabled =
-                ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mHost.getContext());
-        assert !isRefactorEnabled;
-
-        Context context = mHost.getContext();
-        LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
-
-        mOverviewLayout =
-                StartSurfaceDelegate.createTabSwitcherAndStartSurfaceLayout(
-                        context,
-                        this,
-                        renderHost,
-                        browserControlsStateProvider,
-                        startSurface,
-                        tabSwitcherScrimAnchor,
-                        scrimCoordinator);
-
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mHost.getContext())) {
-            mTabSwitcherFocusLayoutStateObserver =
-                    new LayoutStateObserver() {
-                        @Override
-                        public void onFinishedShowing(int layoutType) {
-                            if (layoutType == LayoutType.TAB_SWITCHER) {
-                                startSurface.getGridTabListDelegate().requestFocusOnCurrentTab();
-                            }
-                        }
-                    };
-            addObserver(mTabSwitcherFocusLayoutStateObserver);
-        }
-
-        if (mTabContentManagerSupplier.hasValue()) {
-            mOverviewLayout.setTabContentManager(mTabContentManagerSupplier.get());
-        }
-
-        if (getTabModelSelector() != null) {
-            mOverviewLayout.setTabModelSelector(getTabModelSelector());
-        }
-        if (mFinishNativeInitialization) {
-            mOverviewLayout.onFinishNativeInitialization();
         }
     }
 
@@ -467,11 +362,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         TabContentManager content = mTabContentManagerSupplier.get();
         mToolbarSwipeLayout.setTabModelSelector(selector);
         mToolbarSwipeLayout.setTabContentManager(content);
-        if (mOverviewLayout != null) {
-            mOverviewLayout.setTabModelSelector(selector);
-            mOverviewLayout.setTabContentManager(content);
-            mOverviewLayout.onFinishNativeInitialization();
-        }
         if (mTabSwitcherLayout != null) {
             mTabSwitcherLayout.setTabModelSelector(selector);
             mTabSwitcherLayout.setTabContentManager(content);
@@ -493,7 +383,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     @Override
     public void showLayout(int layoutType, boolean animate) {
         if (layoutType == LayoutType.TAB_SWITCHER
-                && mOverviewLayout == null
                 && mTabSwitcherLayout == null
                 && mHubLayout == null) {
             initTabSwitcher();
@@ -502,22 +391,17 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     }
 
     /**
-     * For lazy initialization of {@link mTabSwitcherLayout} or {@link mOverviewLayout}.
-     * This always happens the first time the tab switcher is shown on tablets or if Start Surface
-     * refactor is enabled for phones.
+     * For lazy initialization of {@link mTabSwitcherLayout} This always happens the first time the
+     * tab switcher is shown on tablets and phones.
      */
     private void initTabSwitcher() {
-        boolean isRefactorEnabled =
-                ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mHost.getContext());
-
         // Implicitly guarded by sDeferTabSwitcherLayoutCreation as mTabSwitcherSupplier will
         // have a value already if the feature is disabled.
-        if (mStartSurfaceSupplier.hasValue()
-                && (!isRefactorEnabled || mTabSwitcherSupplier.hasValue())) {
+        if (mStartSurfaceSupplier.hasValue() && mTabSwitcherSupplier.hasValue()) {
             return;
         }
 
-        if (isRefactorEnabled && HubFieldTrial.isHubEnabled()) {
+        if (HubFieldTrial.isHubEnabled()) {
             if (mHubLayout == null) {
                 createHubLayout(mHubLayoutDependencyHolder);
             }
@@ -528,7 +412,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         try {
             final ViewGroup containerView = mCreateTabSwitcherOrStartSurfaceCallable.call();
 
-            if (isRefactorEnabled) {
                 final TabSwitcher tabSwitcher = mTabSwitcherSupplier.get();
                 assert tabSwitcher != null;
                 createTabSwitcherLayout(
@@ -536,15 +419,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                         mHost.getBrowserControlsManager(),
                         mScrimCoordinator,
                         containerView);
-            } else {
-                final StartSurface startSurface = mStartSurfaceSupplier.get();
-                assert startSurface != null;
-                createTabSwitcherAndStartSurfaceLayout(
-                        startSurface,
-                        mHost.getBrowserControlsManager(),
-                        mScrimCoordinator,
-                        containerView);
-            }
 
             if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mHost.getContext())) {
                 mThemeColorObserver = new ThemeColorObserverImpl(containerView);
@@ -559,9 +433,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     @Override
     public void setTabModelSelector(TabModelSelector selector) {
         super.setTabModelSelector(selector);
-        if (mOverviewLayout != null) {
-            mOverviewLayout.setTabModelSelector(selector);
-        }
         if (mTabSwitcherLayout != null) {
             mTabSwitcherLayout.setTabModelSelector(selector);
         }
@@ -592,10 +463,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             mTabSwitcherFocusLayoutStateObserver = null;
         }
 
-        if (mOverviewLayout != null) {
-            mOverviewLayout.destroy();
-            mOverviewLayout = null;
-        }
         if (mTabSwitcherLayout != null) {
             mTabSwitcherLayout.destroy();
             mTabSwitcherLayout = null;
@@ -620,7 +487,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     @Override
     protected Layout getLayoutForType(@LayoutType int layoutType) {
-        Layout layout;
+        Layout layout = null;
         if (layoutType == LayoutType.TOOLBAR_SWIPE) {
             layout = mToolbarSwipeLayout;
         } else if (layoutType == LayoutType.TAB_SWITCHER) {
@@ -628,8 +495,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                 layout = mHubLayout;
             } else if (mTabSwitcherLayout != null) {
                 layout = mTabSwitcherLayout;
-            } else {
-                layout = mOverviewLayout;
             }
         } else if (layoutType == LayoutType.START_SURFACE) {
             layout = mStartSurfaceHomeLayout;
@@ -669,12 +534,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         super.onTabsAllClosing(incognito);
     }
 
-    /** Returns the overview layout {@link Layout} managed by this class. */
-    @VisibleForTesting
-    public Layout getOverviewLayout() {
-        return mOverviewLayout;
-    }
-
     /** Initializes TabSwitcherLayout without needing to open the Tab Switcher. */
     public void initTabSwitcherLayoutForTesting() {
         initTabSwitcher();
@@ -682,7 +541,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     /**
      * Returns the grid tab switcher layout {@link Layout} managed by this class. This should be
-     * non-null when the Start surface refactor is enabled if init has finished.
+     * non-null if init has finished.
      */
     public Layout getTabSwitcherLayoutForTesting() {
         if (mTabSwitcherLayout != null) return mTabSwitcherLayout;
@@ -835,14 +694,11 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
         /** Returns whether or not we are ready to show the GTS layout. */
         private boolean isTabSwitcherReady() {
-            // On Tablets, or with Start Surface Refactor, attempting to show the GTS while it's
-            // null will trigger its creation.
-            return mOverviewLayout != null
-                    || mTabSwitcherLayout != null
+            // Attempting to show the GTS while it's null will trigger its creation.
+            return mTabSwitcherLayout != null
                     || mHubLayout != null
                     || DeviceFormFactor.isNonMultiDisplayContextOnTablet(mHost.getContext())
-                    || (ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mHost.getContext())
-                            && ChromeFeatureList.sDeferTabSwitcherLayoutCreation.isEnabled());
+                    || ChromeFeatureList.sDeferTabSwitcherLayoutCreation.isEnabled();
         }
     }
 
@@ -870,9 +726,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         assert mTabContentManager == null;
         mTabContentManager = tabContentManager;
         mTabContentManager.addThumbnailChangeListener(mThumbnailChangeListener);
-        if (mOverviewLayout != null) {
-            mOverviewLayout.setTabContentManager(mTabContentManager);
-        }
         if (mTabSwitcherLayout != null) {
             mTabSwitcherLayout.setTabContentManager(mTabContentManager);
         }
