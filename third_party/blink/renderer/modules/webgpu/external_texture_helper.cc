@@ -345,19 +345,30 @@ ExternalTexture CreateExternalTexture(
     video_renderer = local_video_renderer.get();
   }
 
-  // We don't need to specify a sync token since both CanvasResourceProvider and
-  // PaintCanvasVideoRenderer use the SharedGpuContext.
-  gpu::MailboxHolder dst_mailbox(
-      resource_provider->GetBackingMailboxForOverwrite(
-          MailboxSyncMode::kUnverifiedSyncToken),
-      gpu::SyncToken(), resource_provider->GetBackingTextureTarget());
+  // TODO(crbug.com/327270287): Expand CopyVideoFrameToSharedImage() ability to
+  // support all video frame valid formats. And remove draw path in that time.
+  if (media::IsYuvPlanar(media_video_frame->format())) {
+    // We don't need to specify a sync token since both CanvasResourceProvider
+    // and PaintCanvasVideoRenderer use the SharedGpuContext.
+    gpu::MailboxHolder dst_mailbox(
+        resource_provider->GetBackingMailboxForOverwrite(
+            MailboxSyncMode::kUnverifiedSyncToken),
+        gpu::SyncToken(), resource_provider->GetBackingTextureTarget());
 
-  // The returned sync token is from the SharedGpuContext - it's ok to drop it
-  // here since WebGPUMailboxTexture::FromCanvasResource will generate a new
-  // sync token from the SharedContextState and wait on it anyway.
-  std::ignore = video_renderer->CopyVideoFrameToSharedImage(
-      raster_context_provider, std::move(media_video_frame), dst_mailbox,
-      /*use_visible_rect=*/true);
+    // The returned sync token is from the SharedGpuContext - it's ok to drop it
+    // here since WebGPUMailboxTexture::FromCanvasResource will generate a new
+    // sync token from the SharedContextState and wait on it anyway.
+    std::ignore = video_renderer->CopyVideoFrameToSharedImage(
+        raster_context_provider, std::move(media_video_frame), dst_mailbox,
+        /*use_visible_rect=*/true);
+  } else {
+    const gfx::Rect dest_rect = media_video_frame->visible_rect();
+    if (!DrawVideoFrameIntoResourceProvider(
+            std::move(media_video_frame), resource_provider,
+            raster_context_provider, dest_rect, video_renderer)) {
+      return {};
+    }
+  }
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromCanvasResource(
