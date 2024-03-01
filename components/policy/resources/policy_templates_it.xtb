@@ -1385,7 +1385,7 @@ Il criterio <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separato può essere utiliz
 <translation id="209586405398070749">Canale stabile</translation>
 <translation id="2096932573113293941">Chiedi all'utente l'autorizzazione a eseguire plug-in che la richiedono</translation>
 <translation id="2098658257603918882">Attiva rapporti sull'utilizzo e sui dati relativi agli arresti anomali</translation>
-<translation id="2099380339157427935">Non mostrare il pulsante di uscita nella barra delle applicazioni</translation>
+<translation id="2099380339157427935">Non mostrare il pulsante di disconnessione nella barra delle applicazioni</translation>
 <translation id="2100630160869631650">Aggiunge account Kerberos compilati automaticamente. Se le credenziali di Kerberos corrispondono a quelle di accesso, un account può essere configurato in modo da riutilizzare le credenziali di accesso specificando "<ph name="LOGIN_EMAIL_PLACEHOLDER" />" e "<ph name="PASSWORD_PLACEHOLDER" />" rispettivamente per l'account principale e la password, in modo che il ticket Kerberos possa essere recuperato automaticamente, a meno che non sia configurata l'autenticazione a due fattori. Gli utenti non possono modificare gli account aggiunti tramite questo criterio.
 
           Se questo criterio viene attivato, l'elenco degli account definiti dal criterio viene aggiunto alle impostazioni dell'account Kerberos.
@@ -4027,7 +4027,7 @@ Se il criterio non viene configurato, si applica il criterio <ph name="ASK_GEOLO
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="4322842393287974810">Consenti all'app kiosk avviata automaticamente senza ritardo di controllare la versione di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4323412353642577604">Attiva l'attestazione da remoto per la protezione dei contenuti</translation>
-<translation id="4325690621216251241">Aggiungi un pulsante di uscita all'area di notifica</translation>
+<translation id="4325690621216251241">Aggiungi un pulsante di disconnessione all'area di notifica</translation>
 <translation id="4326070401554882952">Questo criterio consente di impostare un elenco di URL di accesso aziendale (solo protocolli HTTP e HTTPS). Il servizio di protezione tramite password acquisisce gli hash con salt delle password in questi URL e li utilizza per il rilevamento del riutilizzo delle password. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente gli hash con salt della password, assicurati che le pagine di accesso seguano queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
 
 Se l'impostazione viene disattivata o se non viene configurata, il servizio di protezione tramite password acquisisce solo gli hash con salt della password all'indirizzo https://accounts.google.com.
@@ -5689,7 +5689,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> viene disattivato.<
 <translation id="5733357908790472408">Utilizza Chrome Root Store.</translation>
 <translation id="5735348887833535655">Consente di stabilire se le VM che utilizzano questa configurazione hanno accesso a un vTPM; il valore predefinito è false.</translation>
 <translation id="5735915264686983150">Nascondi e blocca le funzionalità disattivate</translation>
-<translation id="5736498355107027047">Mostra il pulsante di uscita nella barra delle applicazioni</translation>
+<translation id="5736498355107027047">Mostra il pulsante di disconnessione nella barra delle applicazioni</translation>
 <translation id="5737394734996319911">La funzione di accessibilità <ph name="PRODUCT_NAME" /> consente agli utenti di screen reader con disabilità visiva di recuperare le descrizioni delle immagini senza etichetta sul Web. Gli utenti che decidono di attivarla avranno la possibilità di usare un servizio Google anonimo per avere descrizioni automatiche delle immagini senza etichetta che trovano sul Web.
 
           Se questa funzione viene attivata, i contenuti delle immagini vengono inviati ai server di Google per generare una descrizione. Non vengono inviati cookie o altri dati utente e Google non salva né registra i contenuti delle immagini.

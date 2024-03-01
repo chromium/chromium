@@ -28,7 +28,7 @@
 <translation id="1147031633655575115">Używasz konta <ph name="USER" /></translation>
 <translation id="1150989369772528668">Kalendarz</translation>
 <translation id="1154984953698510061">Zobacz inne karty</translation>
-<translation id="1161340988127985692">Poproś o otwieranie linków z innych aplikacji w trybie incognito</translation>
+<translation id="1161340988127985692">Pytaj, czy otwierać linki z innych aplikacji w trybie incognito</translation>
 <translation id="1164064664035028907">Użyj silnego hasła:</translation>
 <translation id="1164891049599601209">Wpisano na stronie wprowadzającej w błąd</translation>
 <translation id="1165039591588034296">Błąd</translation>
@@ -110,7 +110,7 @@
 <translation id="1545749641540134597">Zeskanuj kod QR</translation>
 <translation id="1552525382687785070">Administrator wyłączył synchronizację</translation>
 <translation id="1554477036522844996">Nowe okno</translation>
-<translation id="1563071802032385236">Włącz „Poproś o otwieranie linków z innych aplikacji w trybie incognito”.</translation>
+<translation id="1563071802032385236">Włącz „Pytaj, czy otwierać linki z innych aplikacji w trybie incognito”.</translation>
 <translation id="1565371473877914088">Nowa karta incognito</translation>
 <translation id="1565395699240341063">Ukryte</translation>
 <translation id="1580715474678097352">Korzystaj z ochrony przed niebezpiecznymi stronami</translation>

@@ -1032,7 +1032,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1769104665586091481">Otvori link u novom prozoru</translation>
 <translation id="1770407692401984718">Prevucite sliku ovdje ili</translation>
 <translation id="177053719077591686">Napravite sigurnosnu kopiju Android aplikacija na Google Disku.</translation>
-<translation id="1771075623623424448">Tražite stranicu sa zapisnikom o uređaju koju je kreirao preglednik? Posjetite<ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
+<translation id="1771075623623424448">Tražite stranicu zapisnika uređaja koju je kreirao preglednik? Posjetite<ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">Kreirajte WiFi pristupnu tačku koristeći prijenos podataka na mobilnoj mreži uređaja <ph name="DEVICE_TYPE" /> da omogućite internet drugim uređajima <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Podaci hostirane aplikacije</translation>
 <translation id="177529472352014190">Poveži se s uslugom OneDrive</translation>
@@ -9323,7 +9323,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8197151971904389091">Uvijek dozvoli upotrebu MIDI uređaja web lokaciji <ph name="HOST" />.</translation>
 <translation id="8197673340773315084">Dodajte naziv ili oznaku, kao što je Posao ili Lično</translation>
 <translation id="8198456017687137612">Emitiranje kartice</translation>
-<translation id="8198457270656084773">Tražite stranicu sa sistemskim zapisnikom o uređaju? Posjetite<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
+<translation id="8198457270656084773">Tražite stranicu sistemskog zapisnika uređaja? Posjetite<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Svojstva mreže (usluge) i uređaja</translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8200789660596905522">Obavezno prihvatite zahtjev za emitiranje na uređaju <ph name="DEVICE_NAME" />.</translation>

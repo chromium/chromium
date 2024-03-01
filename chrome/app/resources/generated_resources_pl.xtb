@@ -3701,9 +3701,9 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3817524650114746564">Otwórz ustawienia serwera proxy dla komputera</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Jeśli pozwolisz na wysyłanie automatycznych raportów z urządzeń z ChromeOS, pomożesz nam w ustalaniu, co przede wszystkim należy naprawić i ulepszyć w tym systemie operacyjnym. Raporty mogą zawierać na przykład informacje o czasie wystąpienia awarii ChromeOS, używanych funkcjach i typowym wykorzystaniu pamięci.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Wysyłanie raportów możesz rozpocząć lub wstrzymać w dowolnym momencie w ustawieniach urządzenia z Chrome. Jeśli jesteś administratorem domeny, możesz zmienić to ustawienie w konsoli administracyjnej.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="3818662907126913619">Aby można było korzystać z urządzenia w profilu <ph name="DOMAIN" />, organizacja potrzebuje informacji o urządzeniu.
+<translation id="3818662907126913619">Organizacja wymaga informacji o urządzeniu, aby można było z niego korzystać w profilu <ph name="DOMAIN" />. 
 
-Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeglądarce i systemie operacyjnym urządzenia.</translation>
+Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarce i systemie operacyjnym urządzenia.</translation>
 <translation id="3819164369574292143">Powiększa elementy na ekranie. Aby włączyć lub wyłączyć lupę, użyj klawisza wyszukiwania + Ctrl + M. Po powiększeniu możesz poruszać się po ekranie, naciskając Ctrl + Alt + klawisze strzałek.</translation>
 <translation id="3819257035322786455">Kopia zapasowa</translation>
 <translation id="3819261658055281761">System nie mógł zapisać długoterminowego tokenu dostępu do interfejsu API dla tego urządzenia.</translation>
@@ -3986,9 +3986,9 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4033471457476425443">Dodaj nowy folder</translation>
 <translation id="4033711848170683365">Spowoduje to trwałe usunięcie danych przeglądania z tego urządzenia. Inne aplikacje na urządzeniu <ph name="DEVICE_TYPE" /> mogą używać kont Google w tym profilu. Możesz usunąć te konta tutaj: <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Bezpieczne witryny mogą umieszczać niebezpieczną zawartość w postaci obrazów lub ramek</translation>
-<translation id="4034706080855851454">Aby można było korzystać z urządzenia w profilu organizacji, musi ona uzyskać informacje o urządzeniu.
+<translation id="4034706080855851454">Organizacja wymaga informacji o urządzeniu, aby można było z niego korzystać w jej profilu. 
 
-Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeglądarce i systemie operacyjnym urządzenia.</translation>
+Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarce i systemie operacyjnym urządzenia.</translation>
 <translation id="4034824040120875894">Drukarka</translation>
 <translation id="4035758313003622889">&amp;Menedżer zadań</translation>
 <translation id="4035877632587724847">Nie zezwalaj</translation>

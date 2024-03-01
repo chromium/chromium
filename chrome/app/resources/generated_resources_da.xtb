@@ -3735,7 +3735,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3817524650114746564">Åbn computerens proxyindstillinger</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Ved at give dine ChromeOS-enheder tilladelse til at sende automatiske rapporter gør du det nemmere for os at prioritere, hvad der skal rettes og forbedres i ChromeOS. Disse rapporter kan f.eks. indeholde oplysninger om, hvornår ChromeOS oplever nedbrud, hvilke funktioner du bruger, og hvor meget hukommelse du normalt anvender.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan til enhver tid tillade eller fjerne tilladelsen for afsendelse af disse rapporter i indstillingerne for din Chrome-enhed. Hvis du er domæneadministrator, kan du ændre denne indstilling i Administrationskonsol.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="3818662907126913619">Din organisation skal have oplysninger om din <ph name="DOMAIN" />-profil for at kunne bruge din enhed med din organisationsprofil.
+<translation id="3818662907126913619">For at kunne benytte enheden med din <ph name="DOMAIN" />-profil skal din organisation bruge oplysninger om enheden.
 
 Dette kan omfatte oplysninger om installeret software, filer, din browser og enhedens operativsystem.</translation>
 <translation id="3819164369574292143">Zoom ind for at forstørre elementer på skærmen. Brug søgetasten+Ctrl+M til at aktivere eller deaktivere luppen. Brug Ctrl+Alt+piletasterne til at bevæge dig rundt på skærmen, når der er zoomet ind.</translation>
