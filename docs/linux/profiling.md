@@ -35,6 +35,10 @@ perf record -f -g -p 1234
 perf record -f -g -a  # captures the whole system
 ```
 
+> ⚠️ Note: on virtualized systems, e.g. cloudtops, the PMU counters may not
+be available or may be broken. Use `-e cpu-clock` as a workaround.
+Googlers, see [b/313526654](https://b.corp.google.com/issues/313526654).
+
 Some versions of the perf command can be confused by process renames. Affected
 versions will be unable to resolve Chromium's symbols if it was started through
 perf, as in the first example above. It should work correctly if you attach to
