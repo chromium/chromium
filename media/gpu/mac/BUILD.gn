@@ -10,7 +10,9 @@ import("//ui/gl/features.gni")
 
 assert(is_apple)
 
-import("//build/config/mac/mac_sdk.gni")
+if (is_mac) {
+  import("//build/config/mac/mac_sdk.gni")
+}
 
 source_set("mac") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]

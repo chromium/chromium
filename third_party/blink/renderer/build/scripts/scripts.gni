@@ -6,7 +6,9 @@ import("//build/config/python.gni")
 import("//build/toolchain/toolchain.gni")
 import("//third_party/blink/renderer/config.gni")
 
-if (host_os == "mac") {
+if (is_ios) {
+  import("//build/config/ios/ios_sdk.gni")
+} else if (host_os == "mac") {
   import("//build/config/mac/mac_sdk.gni")
 }
 
@@ -73,6 +75,8 @@ make_trie_helpers_files =
 # on Posix we want to run the system one on the path.
 if (host_os == "win") {
   gperf_exe = rebase_path("//third_party/gperf/bin/gperf.exe", root_build_dir)
+} else if (is_ios) {
+  gperf_exe = ios_bin_path + "gperf"
 } else if (host_os == "mac") {
   # TODO(thakis): This should probably run in the host toolchain and check
   # is_mac instead of checking host_os.

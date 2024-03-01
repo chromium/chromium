@@ -10,9 +10,7 @@ import("//build/toolchain/rbe.gni")
 import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
 
-assert(
-    current_os == "mac" || current_toolchain == default_toolchain ||
-    (current_os == "ios" && current_toolchain == "${default_toolchain}_blink"))
+assert(current_os == "mac" || current_toolchain == default_toolchain)
 
 declare_args() {
   # The following two variables control the minimum supported version for
