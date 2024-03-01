@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -29,18 +29,18 @@ class BuilderPropsTests(unittest.TestCase):
 
   def testNoProps(self):
     # Empty base dir
-    self.assertEqual(builders.find_builder_props('some-bucket', 'some-builder'),
-                     None)
+    props, _ = builders.find_builder_props('some-bucket', 'some-builder')
+    self.assertIsNone(props)
 
     # Empty bucket dir
     os.makedirs(self.tmp_dir.joinpath('some-bucket'))
-    self.assertEqual(builders.find_builder_props('some-bucket', 'some-builder'),
-                     None)
+    props, _ = builders.find_builder_props('some-bucket', 'some-builder')
+    self.assertIsNone(props)
 
     # Empty builder dir
     os.makedirs(self.tmp_dir.joinpath('some-bucket', 'some-builder'))
-    self.assertEqual(builders.find_builder_props('some-bucket', 'some-builder'),
-                     None)
+    props, _ = builders.find_builder_props('some-bucket', 'some-builder')
+    self.assertIsNone(props)
 
   def testSomeProps(self):
     builder_dir = self.tmp_dir.joinpath('some-bucket', 'some-builder')
@@ -48,7 +48,7 @@ class BuilderPropsTests(unittest.TestCase):
     with open(builder_dir.joinpath('properties.json'), 'w') as f:
       json.dump({'some-key': 'some-val'}, f)
 
-    props = builders.find_builder_props('some-bucket', 'some-builder')
+    props, _ = builders.find_builder_props('some-bucket', 'some-builder')
     self.assertEqual(props['some-key'], 'some-val')
 
 

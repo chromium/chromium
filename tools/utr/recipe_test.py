@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -42,27 +42,28 @@ class LegacyRunnerTests(unittest.TestCase):
       exit_code, _ = runner.run_recipe()
       self.assertEqual(exit_code, 123)
 
-  def testJson(self):
+  @mock.patch('tempfile.TemporaryDirectory')
+  def testJson(self, mock_tmp_dir):
+    mock_tmp_dir.return_value.__enter__.return_value = self.tmp_dir
     runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
                                  'some-builder', 'swarming-server', [], False,
                                  False)
-    with mock.patch('tempfile.TemporaryDirectory', return_value=self.tmp_dir):
-      with mock.patch('subprocess.Popen', return_value=self.subp_mock):
-        # Missing json file
-        _, error_msg = runner.run_recipe()
-        self.assertIsNone(error_msg)
+    with mock.patch('subprocess.Popen', return_value=self.subp_mock):
+      # Missing json file
+      _, error_msg = runner.run_recipe()
+      self.assertIsNone(error_msg)
 
-        # Broken json
-        with open(self.tmp_dir.joinpath('out.json'), 'w') as f:
-          f.write('this-is-not-json')
-        _, error_msg = runner.run_recipe()
-        self.assertIsNone(error_msg)
+      # Broken json
+      with open(self.tmp_dir.joinpath('out.json'), 'w') as f:
+        f.write('this-is-not-json')
+      _, error_msg = runner.run_recipe()
+      self.assertIsNone(error_msg)
 
-        # Actual json
-        with open(self.tmp_dir.joinpath('out.json'), 'w') as f:
-          json.dump({'failure': {'humanReason': 'it exploded'}}, f)
-        _, error_msg = runner.run_recipe()
-        self.assertEqual(error_msg, 'it exploded')
+      # Actual json
+      with open(self.tmp_dir.joinpath('out.json'), 'w') as f:
+        json.dump({'failure': {'humanReason': 'it exploded'}}, f)
+      _, error_msg = runner.run_recipe()
+      self.assertEqual(error_msg, 'it exploded')
 
 
 if __name__ == '__main__':
