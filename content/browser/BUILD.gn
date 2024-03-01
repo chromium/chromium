@@ -2669,7 +2669,10 @@ source_set("browser") {
       "BrowserEngineKit.framework",
       "IOSurface.framework",
     ]
-    deps += [ "//ui/accelerated_widget_mac" ]
+    deps += [
+      "//build:ios_buildflags",
+      "//ui/accelerated_widget_mac",
+    ]
   } else {
     # Not Mac.
     deps += [ "//sandbox" ]
