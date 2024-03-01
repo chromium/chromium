@@ -8,6 +8,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
@@ -29,6 +30,8 @@ namespace SetPdfOcrPref = api::pdf_viewer_private::SetPdfOcrPref;
 
 namespace SetPdfPluginAttributes =
     api::pdf_viewer_private::SetPdfPluginAttributes;
+
+namespace SetPdfDocumentTitle = api::pdf_viewer_private::SetPdfDocumentTitle;
 
 // Check if the current URL is allowed based on a list of allowlisted domains.
 bool IsUrlAllowedToEmbedLocalFiles(
@@ -133,6 +136,31 @@ PdfViewerPrivateIsPdfOcrAlwaysActiveFunction::Run() {
   DCHECK(pref->GetValue()->is_bool());
   bool value = pref->GetValue()->GetBool();
   return RespondNow(WithArguments(value));
+}
+
+PdfViewerPrivateSetPdfDocumentTitleFunction::
+    PdfViewerPrivateSetPdfDocumentTitleFunction() = default;
+
+PdfViewerPrivateSetPdfDocumentTitleFunction::
+    ~PdfViewerPrivateSetPdfDocumentTitleFunction() = default;
+
+// This function is only called for full-page PDFs.
+ExtensionFunction::ResponseAction
+PdfViewerPrivateSetPdfDocumentTitleFunction::Run() {
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (!web_contents) {
+    return RespondNow(Error("Could not find a valid web contents."));
+  }
+
+  std::optional<SetPdfDocumentTitle::Params> params =
+      SetPdfDocumentTitle::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  web_contents->UpdateTitleForEntry(
+      web_contents->GetController().GetLastCommittedEntry(),
+      base::UTF8ToUTF16(params->title));
+
+  return RespondNow(NoArguments());
 }
 
 PdfViewerPrivateSetPdfOcrPrefFunction::PdfViewerPrivateSetPdfOcrPrefFunction() =

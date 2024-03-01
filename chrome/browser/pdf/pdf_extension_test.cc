@@ -1013,11 +1013,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, LinkPermissions) {
 
 // This test ensures that titles are set properly for PDFs without /Title.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithNoTitle) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
 
   const std::u16string kExpectedTitle = u"test.pdf";
@@ -1030,11 +1025,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithNoTitle) {
 
 // This test ensures that titles are set properly for PDFs with /Title.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithTitle) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test-title.pdf")));
 
   const std::u16string kExpectedTitle = u"PDF title test";
@@ -1068,11 +1058,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdfDataUrl) {
 // This test ensures that tab titles are set properly for embedded PDFs.
 // PDF /Title should be ignored for embedded PDFs.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   // Load page with embedded PDF and make sure it succeeds.
   ASSERT_TRUE(LoadPdfInFirstChild(
       embedded_test_server()->GetURL("/pdf/pdf_embed.html")));

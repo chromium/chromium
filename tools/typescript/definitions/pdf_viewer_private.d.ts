@@ -33,6 +33,7 @@ declare global {
           url: string, callback: (isAllowed: boolean) => void): void;
       export function isPdfOcrAlwaysActive(
           callback: (isAlwaysActive: boolean) => void): void;
+      export function setPdfDocumentTitle(title: string): void;
       export function setPdfOcrPref(
           isAlwaysActive: boolean, callback: (isSet: boolean) => void): void;
       export function setPdfPluginAttributes(attributes: PdfPluginAttributes):

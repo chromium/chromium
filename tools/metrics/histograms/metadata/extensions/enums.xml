@@ -2722,6 +2722,7 @@ Called by update_extension_histograms.py.-->
   <int value="1870" label="AUTOFILLPRIVATE_SETAUTOFILLSYNCTOGGLEENABLED"/>
   <int value="1871"
       label="ODFSCONFIGPRIVATE_ISFILESYSTEMPROVIDERCLOUDFILESYSTEMENABLED"/>
+  <int value="1872" label="PDFVIEWERPRIVATE_SETPDFDOCUMENTTITLE"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

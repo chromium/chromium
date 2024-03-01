@@ -10,6 +10,7 @@ export type PdfOcrPrefCallback = chrome.pdfViewerPrivate.PdfOcrPrefCallback;
 // `chrome/browser/resources/pdf/navigator.ts`.
 interface PdfViewerPrivateProxy {
   isPdfOcrAlwaysActive(): Promise<boolean>;
+  setPdfDocumentTitle(title: string): void;
   setPdfOcrPref(value: boolean): Promise<boolean>;
   addPdfOcrPrefChangedListener(listener: PdfOcrPrefCallback): void;
   removePdfOcrPrefChangedListener(listener: PdfOcrPrefCallback): void;
@@ -20,6 +21,10 @@ export class PdfViewerPrivateProxyImpl implements PdfViewerPrivateProxy {
     return new Promise(resolve => {
       chrome.pdfViewerPrivate.isPdfOcrAlwaysActive(result => resolve(result));
     });
+  }
+
+  setPdfDocumentTitle(title: string): void {
+    chrome.pdfViewerPrivate.setPdfDocumentTitle(title);
   }
 
   setPdfOcrPref(value: boolean): Promise<boolean> {

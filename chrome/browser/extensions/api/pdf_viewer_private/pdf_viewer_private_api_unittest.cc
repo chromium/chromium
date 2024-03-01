@@ -14,6 +14,7 @@
 #include "chrome/browser/pdf/pdf_test_util.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/test/navigation_simulator.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
@@ -136,6 +137,23 @@ TEST_F(PdfViewerPrivateApiUnitTest, GetStreamInfoValid) {
   ASSERT_TRUE(result_dict);
 
   EXPECT_THAT(*result_dict, base::test::IsJson(kExpectedStreamInfo));
+}
+
+// Succeed in setting tab title.
+TEST_F(PdfViewerPrivateApiUnitTest, SetPdfDocumentTitle) {
+  auto function =
+      base::MakeRefCounted<PdfViewerPrivateSetPdfDocumentTitleFunction>();
+  function->SetRenderFrameHost(extension_host());
+
+  ASSERT_TRUE(api_test_utils::RunFunction(function.get(),
+                                          "[\"PDF title test\"]", profile()));
+
+  const std::u16string kExpectedTitle = u"PDF title test";
+  EXPECT_EQ(kExpectedTitle, web_contents()
+                                ->GetController()
+                                .GetLastCommittedEntry()
+                                ->GetTitleForDisplay());
+  EXPECT_EQ(kExpectedTitle, web_contents()->GetTitle());
 }
 
 // Getting the stream info should fail if there isn't an embedder host.

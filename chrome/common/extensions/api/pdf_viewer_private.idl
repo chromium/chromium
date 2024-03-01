@@ -60,6 +60,11 @@ namespace pdfViewerPrivate {
     static void isPdfOcrAlwaysActive(
         IsPdfOcrAlwaysActiveCallback callback);
 
+    // Sets the current tab title to `title` for a full-page PDF.
+    static void setPdfDocumentTitle(
+        DOMString title,
+        optional VoidCallback callback);
+
     // Sets a pref value for PDF OCR.
     // |value|: The new value of the pref.
     // |callback|: The callback for whether the pref was set or not.
