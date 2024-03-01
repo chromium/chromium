@@ -4,6 +4,7 @@
 
 module content.mojom;
 
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -44,8 +45,9 @@ struct WebTestRendererDumpResult {
   // Audio dump.
   array<uint8>? audio;
 
-  // Layout dump.
-  string? layout;
+  // Layout dump. A ByteString rather than a string because the layout dump can
+  // be supplied by the test and may contain non-UTF8 encoded text.
+  mojo_base.mojom.ByteString? layout;
 
   // Image dump.
   skia.mojom.BitmapN32? pixels;
