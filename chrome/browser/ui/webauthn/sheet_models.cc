@@ -1654,3 +1654,75 @@ std::u16string AuthenticatorGPMPinSheetModel::GetAcceptButtonLabel() const {
 void AuthenticatorGPMPinSheetModel::OnAccept() {
   dialog_model()->OnGPMPinEntered(pin_);
 }
+
+// AuthenticatorGPMArbitraryPinSheetModel ------------------------------------
+
+AuthenticatorGPMArbitraryPinSheetModel::AuthenticatorGPMArbitraryPinSheetModel(
+    AuthenticatorRequestDialogModel* dialog_model,
+    Mode mode)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kHidden),
+      mode_(mode) {
+  // TODO(rgod): Add correct illustration.
+  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+}
+
+AuthenticatorGPMArbitraryPinSheetModel::
+    ~AuthenticatorGPMArbitraryPinSheetModel() = default;
+
+void AuthenticatorGPMArbitraryPinSheetModel::SetPin(std::u16string pin) {
+  bool accept_button_enabled = IsAcceptButtonEnabled();
+  pin_ = std::move(pin);
+  if (accept_button_enabled != IsAcceptButtonEnabled()) {
+    dialog_model()->OnButtonsStateChange();
+  }
+}
+
+void AuthenticatorGPMArbitraryPinSheetModel::SetPinConfirmation(
+    std::u16string pin_confirmation) {
+  bool accept_button_enabled = IsAcceptButtonEnabled();
+  pin_confirmation_ = std::move(pin_confirmation);
+  if (accept_button_enabled != IsAcceptButtonEnabled()) {
+    dialog_model()->OnButtonsStateChange();
+  }
+}
+
+std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetStepTitle() const {
+  switch (mode_) {
+    case Mode::kPinCreate:
+      return u"Create a PIN for your Google Password Manager (UNTRANSLATED)";
+    case Mode::kPinEntry:
+      return u"Enter your PIN for your Google Password Manager (UNTRANSLATED)";
+  }
+}
+
+std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetStepDescription()
+    const {
+  switch (mode_) {
+    case Mode::kPinCreate:
+      return u"Your PIN protects your data. You'll need it when you want to "
+             u"start using your passkeys on new devices. (UNTRANSLATED)";
+    case Mode::kPinEntry:
+      return u"Sign in with your passkey to example.com as example@gmail.com "
+             u"(UNTRANSLATED)";
+  }
+}
+
+bool AuthenticatorGPMArbitraryPinSheetModel::IsAcceptButtonVisible() const {
+  return true;
+}
+
+bool AuthenticatorGPMArbitraryPinSheetModel::IsAcceptButtonEnabled() const {
+  return pin_.length() > 0 && pin_confirmation_.length() > 0;
+}
+
+std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetAcceptButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
+}
+
+void AuthenticatorGPMArbitraryPinSheetModel::OnAccept() {
+  // TODO(rgod): Handle pin mismatch error.
+  // TODO(rgod): Possibly add OnGPMArbitraryPinEntered().
+  dialog_model()->OnGPMPinEntered(pin_);
+}

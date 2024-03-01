@@ -157,13 +157,22 @@ class AuthenticatorRequestDialogModel
     kAttestationPermissionRequest,
     kEnterpriseAttestationPermissionRequest,
 
-    kCreatePasskey,
-    kRecoverSecurityDomain,
-    kTrustThisComputer,
-    kGPMCreatePasskey,
+    // GPM Pin (6-digit).
     kGPMCreatePin,
     kGPMEnterPin,
+
+    // GPM Pin (alphanumeric).
+    kGPMCreateArbitraryPin,
+    kGPMEnterArbitraryPin,
+
+    // GPM passkey creation.
     kGPMOnboarding,
+    kGPMCreatePasskey,
+    kCreatePasskey,
+
+    // Device bootstrap to use GPM passkeys.
+    kRecoverSecurityDomain,
+    kTrustThisComputer,
     kWaitingForEnclave,
 
     // User verification prompt for GPM for demo purposes.

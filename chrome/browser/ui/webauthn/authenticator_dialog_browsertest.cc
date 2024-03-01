@@ -712,6 +712,12 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     } else if (name == "gpm_enter_pin") {
       model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
+    } else if (name == "gpm_create_arbitrary_pin") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMCreateArbitraryPin);
+    } else if (name == "gpm_enter_arbitrary_pin") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMEnterArbitraryPin);
     } else {
       NOTREACHED();
     }
@@ -806,6 +812,16 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_gpm_enter_pin) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_gpm_create_arbitrary_pin) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_gpm_enter_arbitrary_pin) {
   ShowAndVerifyUi();
 }
 
