@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
 
-#include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/util/persistent_proto_test.pb.h"
@@ -67,21 +67,18 @@ class PersistentProtoTest : public testing::Test {
     ASSERT_TRUE(base::WriteFile(GetPath(), proto.SerializeAsString()));
   }
 
-  void OnRead(const ReadStatus status) {
-    read_status_ = status;
-    ++read_count_;
+  void OnInit() { ++read_count_; }
+
+  base::OnceClosure GetInitCallback() {
+    return base::BindOnce(&PersistentProtoTest::OnInit, base::Unretained(this));
   }
 
-  base::OnceCallback<void(ReadStatus)> ReadCallback() {
-    return base::BindOnce(&PersistentProtoTest::OnRead, base::Unretained(this));
-  }
-
-  void OnWrite(const WriteStatus status) {
-    ASSERT_EQ(status, WriteStatus::kOk);
+  void OnWrite(bool success) {
+    ASSERT_TRUE(success);
     ++write_count_;
   }
 
-  base::RepeatingCallback<void(WriteStatus)> WriteCallback() {
+  base::RepeatingCallback<void(bool)> GetWriteCallback() {
     return base::BindRepeating(&PersistentProtoTest::OnWrite,
                                base::Unretained(this));
   }
@@ -89,7 +86,6 @@ class PersistentProtoTest : public testing::Test {
   void Wait() { task_environment_.RunUntilIdle(); }
 
   // Records the information passed to the callbacks for later expectation.
-  ReadStatus read_status_;
   int read_count_ = 0;
   int write_count_ = 0;
 
@@ -99,12 +95,12 @@ class PersistentProtoTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-// Test that the underlying proto is nullptr until a read is complete, and isn't
-// after that.
+// Test that the underlying proto is nullptr until proto initialization
+// completes, and isn't after that.
 TEST_F(PersistentProtoTest, Initialization) {
   PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
-  pproto.RegisterOnRead(ReadCallback());
-  pproto.RegisterOnWrite(WriteCallback());
+  pproto.RegisterOnInitUnsafe(GetInitCallback());
+  pproto.RegisterOnWriteUnsafe(GetWriteCallback());
   pproto.Init();
   EXPECT_EQ(pproto.get(), nullptr);
   Wait();
@@ -114,8 +110,8 @@ TEST_F(PersistentProtoTest, Initialization) {
 // Test bool conversion and has_value.
 TEST_F(PersistentProtoTest, BoolTests) {
   PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
-  pproto.RegisterOnRead(ReadCallback());
-  pproto.RegisterOnWrite(WriteCallback());
+  pproto.RegisterOnInitUnsafe(GetInitCallback());
+  pproto.RegisterOnWriteUnsafe(GetWriteCallback());
   pproto.Init();
   EXPECT_EQ(pproto.get(), nullptr);
   EXPECT_FALSE(pproto);
@@ -129,8 +125,8 @@ TEST_F(PersistentProtoTest, BoolTests) {
 // Test -> and *.
 TEST_F(PersistentProtoTest, Getters) {
   PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
-  pproto.RegisterOnRead(ReadCallback());
-  pproto.RegisterOnWrite(WriteCallback());
+  pproto.RegisterOnInitUnsafe(GetInitCallback());
+  pproto.RegisterOnWriteUnsafe(GetWriteCallback());
   pproto.Init();
   Wait();
   // We're really just checking these don't crash.
@@ -143,15 +139,19 @@ TEST_F(PersistentProtoTest, Getters) {
 
 // Test that the pproto correctly saves the in-memory proto to disk.
 TEST_F(PersistentProtoTest, Read) {
+  // Build a `PersistentProto` whose underlying file does not exist before init.
   PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
-  pproto.RegisterOnRead(ReadCallback());
-  pproto.RegisterOnWrite(WriteCallback());
+  pproto.RegisterOnInitUnsafe(GetInitCallback());
+  pproto.RegisterOnWriteUnsafe(GetWriteCallback());
   pproto.Init();
   // Underlying proto should be nullptr until read is complete.
   EXPECT_EQ(pproto.get(), nullptr);
 
+  base::HistogramTester histogram_tester;
   Wait();
-  EXPECT_EQ(read_status_, ReadStatus::kMissing);
+  histogram_tester.ExpectBucketCount("Apps.AppList.PersistentProto.ReadStatus",
+                                     internal::ReadStatus::kMissing,
+                                     /*expected_count=*/1);
   EXPECT_EQ(read_count_, 1);
   EXPECT_EQ(write_count_, 1);
 
@@ -168,12 +168,17 @@ TEST_F(PersistentProtoTest, Read) {
 TEST_F(PersistentProtoTest, ReadInvalidProto) {
   ASSERT_TRUE(base::WriteFile(GetPath(), "this isn't a valid proto"));
 
+  // Build a `PersistentProto` with an invalid proto file.
   PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
-  pproto.RegisterOnRead(ReadCallback());
-  pproto.RegisterOnWrite(WriteCallback());
+
+  pproto.RegisterOnInitUnsafe(GetInitCallback());
+  pproto.RegisterOnWriteUnsafe(GetWriteCallback());
   pproto.Init();
+  base::HistogramTester histogram_tester;
   Wait();
-  EXPECT_EQ(read_status_, ReadStatus::kParseError);
+  histogram_tester.ExpectBucketCount("Apps.AppList.PersistentProto.ReadStatus",
+                                     internal::ReadStatus::kParseError,
+                                     /*expected_count=*/1);
   EXPECT_EQ(read_count_, 1);
   EXPECT_EQ(write_count_, 1);
 }
@@ -184,13 +189,16 @@ TEST_F(PersistentProtoTest, Write) {
   WriteToDisk(test_proto);
 
   PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
-  pproto.RegisterOnRead(ReadCallback());
-  pproto.RegisterOnWrite(WriteCallback());
+  pproto.RegisterOnInitUnsafe(GetInitCallback());
+  pproto.RegisterOnWriteUnsafe(GetWriteCallback());
   pproto.Init();
   EXPECT_EQ(pproto.get(), nullptr);
 
+  base::HistogramTester histogram_tester;
   Wait();
-  EXPECT_EQ(read_status_, ReadStatus::kOk);
+  histogram_tester.ExpectBucketCount("Apps.AppList.PersistentProto.ReadStatus",
+                                     internal::ReadStatus::kOk,
+                                     /*expected_count=*/1);
   EXPECT_EQ(read_count_, 1);
   EXPECT_EQ(write_count_, 0);
   EXPECT_NE(pproto.get(), nullptr);
@@ -200,8 +208,8 @@ TEST_F(PersistentProtoTest, Write) {
 // Test that several saves all happen correctly.
 TEST_F(PersistentProtoTest, MultipleWrites) {
   PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
-  pproto.RegisterOnRead(ReadCallback());
-  pproto.RegisterOnWrite(WriteCallback());
+  pproto.RegisterOnInitUnsafe(GetInitCallback());
+  pproto.RegisterOnWriteUnsafe(GetWriteCallback());
   pproto.Init();
   EXPECT_EQ(pproto.get(), nullptr);
 
@@ -223,8 +231,8 @@ TEST_F(PersistentProtoTest, MultipleWrites) {
 // write.
 TEST_F(PersistentProtoTest, QueueWrites) {
   PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
-  pproto.RegisterOnRead(ReadCallback());
-  pproto.RegisterOnWrite(WriteCallback());
+  pproto.RegisterOnInitUnsafe(GetInitCallback());
+  pproto.RegisterOnWriteUnsafe(GetWriteCallback());
   pproto.Init();
   Wait();
   EXPECT_EQ(write_count_, 1);

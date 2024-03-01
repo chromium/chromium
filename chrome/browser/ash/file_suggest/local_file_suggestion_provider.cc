@@ -99,9 +99,13 @@ LocalFileSuggestionProvider::LocalFileSuggestionProvider(
         app_list::RankerStateDirectory(profile).AppendASCII(
             "zero_state_local_files.pb"),
         kSaveDelay);
-    proto.RegisterOnRead(
+
+    // `proto` is owned by `files_ranker_` which is a class member so it is safe
+    // to call `RegisterOnInitUnsafe()`.
+    proto.RegisterOnInitUnsafe(
         base::BindOnce(&LocalFileSuggestionProvider::OnProtoInitialized,
                        base::Unretained(this)));
+
     files_ranker_ =
         std::make_unique<app_list::MrfuCache>(std::move(proto), params);
   }
@@ -189,8 +193,7 @@ void LocalFileSuggestionProvider::OnFilesOpened(
   }
 }
 
-void LocalFileSuggestionProvider::OnProtoInitialized(
-    app_list::ReadStatus status) {
+void LocalFileSuggestionProvider::OnProtoInitialized() {
   NotifySuggestionUpdate(FileSuggestionType::kLocalFile);
 }
 

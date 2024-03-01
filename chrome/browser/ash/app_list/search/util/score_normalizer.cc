@@ -8,6 +8,7 @@
 #include <cmath>
 #include <limits>
 
+#include "base/functional/bind.h"
 #include "base/logging.h"
 
 namespace app_list {
@@ -61,8 +62,10 @@ inline void InsertBin(Bins& bins, double lower_divider, double count) {
 ScoreNormalizer::ScoreNormalizer(ScoreNormalizer::Proto proto,
                                  const Params& params)
     : proto_(std::move(proto)), params_(params) {
-  proto_.RegisterOnRead(base::BindOnce(&ScoreNormalizer::OnProtoRead,
-                                       weak_factory_.GetWeakPtr()));
+  // `proto_` is a class member so it is safe to call `RegisterOnInitUnsafe()`.
+  proto_.RegisterOnInitUnsafe(
+      base::BindOnce(&ScoreNormalizer::OnProtoInit, base::Unretained(this)));
+
   proto_.Init();
 }
 
@@ -244,7 +247,7 @@ void ScoreNormalizer::Update(const std::string& name, double score) {
   proto_.QueueWrite();
 }
 
-void ScoreNormalizer::OnProtoRead(ReadStatus status) {
+void ScoreNormalizer::OnProtoInit() {
   DCHECK(proto_.initialized());
 
   if ((proto_->has_model_version() &&

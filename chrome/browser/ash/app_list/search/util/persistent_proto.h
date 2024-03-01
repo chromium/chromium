@@ -5,9 +5,16 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_UTIL_PERSISTENT_PROTO_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_UTIL_PERSISTENT_PROTO_H_
 
+#include <memory>
+#include <string>
+#include <string_view>
+#include <utility>
+
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,6 +26,10 @@
 #include "base/time/time.h"
 
 namespace app_list {
+
+namespace internal {
+
+// Data types ------------------------------------------------------------------
 
 // The result of reading a backing file from disk. These values persist to logs.
 // Entries should not be renumbered and numeric values should never be reused.
@@ -42,7 +53,7 @@ enum class WriteStatus {
   kMaxValue = kSerializationError,
 };
 
-namespace {
+// Helpers ---------------------------------------------------------------------
 
 template <class T>
 std::pair<ReadStatus, std::unique_ptr<T>> Read(const base::FilePath& filepath) {
@@ -62,52 +73,40 @@ std::pair<ReadStatus, std::unique_ptr<T>> Read(const base::FilePath& filepath) {
   return {ReadStatus::kOk, std::move(proto)};
 }
 
-WriteStatus Write(const base::FilePath& filepath,
-                  const std::string& proto_str) {
-  const auto directory = filepath.DirName();
-  if (!base::DirectoryExists(directory))
-    base::CreateDirectory(directory);
+// Writes `proto_str` to the file specified by `filepath`.
+WriteStatus Write(const base::FilePath& filepath, std::string_view proto_str);
 
-  bool write_result;
-  {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
-    write_result = base::ImportantFileWriter::WriteFileAtomically(
-        filepath, proto_str, "AppListPersistentProto");
-  }
-
-  if (!write_result)
-    return WriteStatus::kWriteError;
-  return WriteStatus::kOk;
-}
-
-}  // namespace
+}  // namespace internal
 
 // PersistentProto wraps a proto class and persists it to disk. Usage summary:
-//  - Init is asynchronous, usage before |on_read| is called will crash.
-//  - pproto->Method() will call Method on the underlying proto.
-//  - Call QueueWrite() to write to disk.
+// 1. Init is asynchronous. Using the object before initialization is complete
+//     will result in a crash.
+// 2. pproto->Method() will call Method on the underlying proto.
+// 3. Call `QueueWrite()` to write to disk.
 //
-// Reading. The backing file is read asynchronously from disk once at
-// initialization, and the |on_read| callback is run once this is done. Until
-// |on_read| is called, has_value is false and get() will always return nullptr.
-// If no proto file exists on disk, or it is invalid, a blank proto is
-// constructed and immediately written to disk.
+// Reading. The backing file is loaded asynchronously during initialization.
+// Until initialization completed, `has_value()` will be false and `get()` will
+// return `nullptr`. Register an init callback to be notified of completion.
 //
 // Writing. Writes must be triggered manually. Two methods are available:
-//  - QueueWrite() delays writing to disk for |write_delay| time, in order to
+// 1. `QueueWrite()` delays writing to disk for `write_delay` time, in order to
 //    batch successive writes.
-//  - StartWrite() writes to disk as soon as the task scheduler allows.
-// The |on_write| callback is run each time a write has completed.
+// 2. `StartWrite()` writes to disk as soon as the task scheduler allows.
+// Registered write callbacks are executed whenever a write operation finishes.
 template <class T>
 class PersistentProto {
  public:
-  using ReadCallback = base::OnceCallback<void(ReadStatus)>;
-  using WriteCallback = base::RepeatingCallback<void(WriteStatus)>;
+  using InitCallback = base::OnceClosure;
+  using WriteCallback = base::RepeatingCallback<void(/*success=*/bool)>;
 
   PersistentProto(const base::FilePath& path, const base::TimeDelta write_delay)
       : path_(path),
         write_delay_(write_delay),
+        on_init_callbacks_(
+            std::make_unique<base::OnceCallbackList<InitCallback::RunType>>()),
+        on_write_callbacks_(
+            std::make_unique<
+                base::RepeatingCallbackList<WriteCallback::RunType>>()),
         task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
@@ -123,25 +122,33 @@ class PersistentProto {
     initialized_ = other.initialized_;
     write_is_queued_ = false;
     purge_after_reading_ = other.purge_after_reading_;
-    read_callbacks_ = std::move(other.read_callbacks_);
-    write_callbacks_ = std::move(other.write_callbacks_);
+    on_init_callbacks_ = std::move(other.on_init_callbacks_);
+    on_write_callbacks_ = std::move(other.on_write_callbacks_);
     task_runner_ = std::move(other.task_runner_);
     proto_ = std::move(other.proto_);
   }
 
   void Init() {
     task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&Read<T>, path_),
+        FROM_HERE, base::BindOnce(&internal::Read<T>, path_),
         base::BindOnce(&PersistentProto<T>::OnReadComplete,
                        weak_factory_.GetWeakPtr()));
   }
 
-  void RegisterOnRead(ReadCallback on_read) {
-    read_callbacks_.push_back(std::move(on_read));
+  [[nodiscard]] base::CallbackListSubscription RegisterOnInit(
+      InitCallback on_init) {
+    return on_init_callbacks_->Add(std::move(on_init));
   }
 
-  void RegisterOnWrite(WriteCallback on_write) {
-    write_callbacks_.push_back(std::move(on_write));
+  // NOTE: The caller must ensure `on_init` to be valid when init completes.
+  void RegisterOnInitUnsafe(InitCallback on_init) {
+    on_init_callbacks_->AddUnsafe(std::move(on_init));
+  }
+
+  // NOTE: The caller must ensure `on_write` to be valid during the life cycle
+  // of `PersistentProto`.
+  void RegisterOnWriteUnsafe(WriteCallback on_write) {
+    on_write_callbacks_->AddUnsafe(std::move(on_write));
   }
 
   T* get() { return proto_.get(); }
@@ -167,7 +174,7 @@ class PersistentProto {
 
   constexpr explicit operator bool() const { return has_value(); }
 
-  // Write the backing proto to disk after |save_delay_ms_| has elapsed.
+  // Write the backing proto to disk after `save_delay_ms_` has elapsed.
   void QueueWrite() {
     DCHECK(proto_);
     if (!proto_)
@@ -197,13 +204,13 @@ class PersistentProto {
     // causing a crash.
     std::string proto_str;
     if (!proto_->SerializeToString(&proto_str))
-      OnWriteComplete(WriteStatus::kSerializationError);
+      OnWriteComplete(internal::WriteStatus::kSerializationError);
 
     // The SequentialTaskRunner ensures the writes won't trip over each other,
     // so we can schedule without checking whether another write is currently
     // active.
     task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&Write, path_, proto_str),
+        FROM_HERE, base::BindOnce(&internal::Write, path_, proto_str),
         base::BindOnce(&PersistentProto<T>::OnWriteComplete,
                        weak_factory_.GetWeakPtr()));
   }
@@ -212,7 +219,7 @@ class PersistentProto {
   // the proto, because it ensures the proto is purged even if called before the
   // backing file is read from disk. In this case, the file is overwritten after
   // it has been read. In either case, the file is written as soon as possible,
-  // skipping the |save_delay_ms_| wait time.
+  // skipping the `save_delay_ms_` wait time.
   void Purge() {
     if (proto_) {
       proto_.reset();
@@ -224,10 +231,13 @@ class PersistentProto {
   }
 
  private:
-  void OnReadComplete(std::pair<ReadStatus, std::unique_ptr<T>> result) {
+  void OnReadComplete(
+      std::pair<internal::ReadStatus, std::unique_ptr<T>> result) {
+    const internal::ReadStatus status = result.first;
     base::UmaHistogramEnumeration("Apps.AppList.PersistentProto.ReadStatus",
-                                  result.first);
-    if (result.first == ReadStatus::kOk) {
+                                  status);
+
+    if (status == internal::ReadStatus::kOk) {
       proto_ = std::move(result.second);
     } else {
       proto_ = std::make_unique<T>();
@@ -242,23 +252,19 @@ class PersistentProto {
     }
 
     initialized_ = true;
-    for (auto& cb : read_callbacks_) {
-      std::move(cb).Run(result.first);
-    }
-    read_callbacks_.clear();
+    on_init_callbacks_->Notify();
   }
 
-  void OnWriteComplete(const WriteStatus status) {
+  void OnWriteComplete(const internal::WriteStatus status) {
     base::UmaHistogramEnumeration("Apps.AppList.PersistentProto.WriteStatus",
                                   status);
-    for (auto& cb : write_callbacks_) {
-      cb.Run(status);
-    }
+    on_write_callbacks_->Notify(/*success=*/status ==
+                                internal::WriteStatus::kOk);
   }
 
   void OnQueueWrite() {
     // Reset the queued flag before posting the task. Last-moment updates to
-    // |proto_| will post another task to write the proto, avoiding race
+    // `proto_` will post another task to write the proto, avoiding race
     // conditions.
     write_is_queued_ = false;
     StartWrite();
@@ -270,8 +276,8 @@ class PersistentProto {
   // How long to delay writing to disk for on a call to QueueWrite.
   base::TimeDelta write_delay_;
 
-  // Whether the proto has finished reading from disk. |proto_| will be empty
-  // before |initialized_| is true.
+  // Whether the proto has finished reading from disk. `proto_` will be empty
+  // before `initialized_` is true.
   bool initialized_ = false;
 
   // Whether or not a write is currently scheduled.
@@ -280,11 +286,13 @@ class PersistentProto {
   // Whether we should immediately clear the proto after reading it.
   bool purge_after_reading_ = false;
 
-  // Run when the cache finishes reading from disk.
-  std::vector<ReadCallback> read_callbacks_;
+  // Run when `proto_` finishes initialization.
+  std::unique_ptr<base::OnceCallbackList<InitCallback::RunType>>
+      on_init_callbacks_;
 
   // Run when the cache finishes writing to disk.
-  std::vector<WriteCallback> write_callbacks_;
+  std::unique_ptr<base::RepeatingCallbackList<WriteCallback::RunType>>
+      on_write_callbacks_;
 
   // The proto itself.
   std::unique_ptr<T> proto_;

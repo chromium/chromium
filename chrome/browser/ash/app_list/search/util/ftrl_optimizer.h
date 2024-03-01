@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/search/util/ftrl_optimizer.pb.h"
 #include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
 
@@ -82,7 +81,7 @@ class FtrlOptimizer {
  private:
   double Loss(size_t expert, const std::string& item);
 
-  void OnProtoRead(ReadStatus status);
+  void OnProtoInit();
 
   Params params_;
 
@@ -92,8 +91,6 @@ class FtrlOptimizer {
   std::map<std::string, std::vector<double>> last_expert_scores_;
 
   PersistentProto<FtrlOptimizerProto> proto_;
-
-  base::WeakPtrFactory<FtrlOptimizer> weak_factory_{this};
 };
 
 }  // namespace app_list

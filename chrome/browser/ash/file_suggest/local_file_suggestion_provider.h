@@ -55,7 +55,7 @@ class LocalFileSuggestionProvider
 
 
  private:
-  void OnProtoInitialized(app_list::ReadStatus status);
+  void OnProtoInitialized();
   void OnValidationComplete(std::pair<std::vector<LocalFileData>,
                                       std::vector<base::FilePath>> results);
 

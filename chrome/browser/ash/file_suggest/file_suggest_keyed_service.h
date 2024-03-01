@@ -117,7 +117,7 @@ class FileSuggestKeyedService : public KeyedService {
 
  private:
   // Called when `proto_` is ready to read.
-  void OnRemovedSuggestionProtoReady(app_list::ReadStatus read_status);
+  void OnRemovedSuggestionProtoReady();
 
   // Removes the suggestions specified by type-id pairs.
   void RemoveSuggestionsByTypeIdPairs(

@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
@@ -74,8 +75,10 @@ float ApproximateBoostCoefficient(float decay_coefficient, float boost_factor) {
 
 MrfuCache::MrfuCache(MrfuCache::Proto proto, const Params& params)
     : proto_(std::move(proto)) {
-  proto_.RegisterOnRead(
-      base::BindOnce(&MrfuCache::OnProtoRead, weak_factory_.GetWeakPtr()));
+  // `proto_` is a class member so it is safe to call `RegisterOnInitUnsafe()`.
+  proto_.RegisterOnInitUnsafe(
+      base::BindOnce(&MrfuCache::OnProtoInit, base::Unretained(this)));
+
   proto_.Init();
   // See header comment for explanation.
   decay_coeff_ = exp(log(0.5f) / params.half_life);
@@ -238,7 +241,7 @@ void MrfuCache::MaybeCleanup() {
   proto_.QueueWrite();
 }
 
-void MrfuCache::OnProtoRead(ReadStatus status) {
+void MrfuCache::OnProtoInit() {
   if (!proto_->has_version() || proto_->version() != kVersion) {
     proto_.Purge();
   }

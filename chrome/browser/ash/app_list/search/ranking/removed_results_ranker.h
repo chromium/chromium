@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_REMOVED_RESULTS_RANKER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_REMOVED_RESULTS_RANKER_H_
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -43,9 +44,8 @@ class RemovedResultsRanker : public Ranker {
  private:
   friend class RemovedResultsRankerTest;
 
-  // Called when `proto_` finishes initialization. Note: `proto_` is initialized
-  // asyncly.
-  void OnRemovedResultsProtoReady(app_list::ReadStatus read_status);
+  // Called when `proto_` finishes init. Note: `proto_` is initialized asyncly.
+  void OnRemovedResultsProtoInit();
 
   ash::FileSuggestKeyedService* GetFileSuggestKeyedService();
 
@@ -60,6 +60,8 @@ class RemovedResultsRanker : public Ranker {
   // TODO(https://crbug.com/1368833): after this issue gets fixed, the ranker
   // should own a proto that contains only non-file result ids.
   const raw_ptr<PersistentProto<RemovedResultsProto>> proto_;
+
+  base::CallbackListSubscription on_init_subscription_;
 
   base::WeakPtrFactory<RemovedResultsRanker> weak_ptr_factory_{this};
 };

@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/search/util/mrfu_cache.pb.h"
 #include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
 
@@ -143,7 +142,7 @@ class MrfuCache {
 
   void Decay(Score* score);
   void MaybeCleanup();
-  void OnProtoRead(ReadStatus status);
+  void OnProtoInit();
 
   PersistentProto<MrfuCacheProto> proto_;
 
@@ -151,8 +150,6 @@ class MrfuCache {
   float boost_coeff_;
   size_t max_items_;
   float min_score_;
-
-  base::WeakPtrFactory<MrfuCache> weak_factory_{this};
 };
 
 }  // namespace app_list

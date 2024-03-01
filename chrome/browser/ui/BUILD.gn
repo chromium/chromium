@@ -2525,6 +2525,7 @@ static_library("ui") {
       "../ash/app_list/search/util/manatee.h",
       "../ash/app_list/search/util/mrfu_cache.cc",
       "../ash/app_list/search/util/mrfu_cache.h",
+      "../ash/app_list/search/util/persistent_proto.cc",
       "../ash/app_list/search/util/persistent_proto.h",
       "../ash/app_list/search/util/score_normalizer.cc",
       "../ash/app_list/search/util/score_normalizer.h",

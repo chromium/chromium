@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_suggest/drive_file_suggestion_provider.h"
 #include "chrome/browser/ash/file_suggest/drive_recent_file_suggestion_provider.h"
@@ -25,9 +26,11 @@ FileSuggestKeyedService::FileSuggestKeyedService(
     : profile_(profile), proto_(std::move(proto)) {
   DCHECK(profile_);
 
-  proto_.RegisterOnRead(
+  // `proto_` is a class member so it is safe to call `RegisterOnInitUnsafe()`.
+  proto_.RegisterOnInitUnsafe(
       base::BindOnce(&FileSuggestKeyedService::OnRemovedSuggestionProtoReady,
-                     weak_factory_.GetWeakPtr()));
+                     base::Unretained(this)));
+
   proto_.Init();
 
   if (features::IsLauncherContinueSectionWithRecentsEnabled() ||
@@ -189,8 +192,7 @@ bool FileSuggestKeyedService::IsProtoInitialized() const {
   return proto_.initialized();
 }
 
-void FileSuggestKeyedService::OnRemovedSuggestionProtoReady(
-    app_list::ReadStatus read_status) {
+void FileSuggestKeyedService::OnRemovedSuggestionProtoReady() {
   OnSuggestionProviderUpdated(FileSuggestionType::kDriveFile);
 
   if (local_file_suggestion_provider_->IsInitialized()) {
