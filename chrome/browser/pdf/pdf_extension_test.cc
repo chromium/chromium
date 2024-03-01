@@ -223,53 +223,49 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfInMainFrameHasFocus) {
             guest_view->GetGuestMainFrame());
 }
 
-// This test verifies that when a PDF is loaded, that (i) the embedder
+// For GuestView PDF, this test verifies that when a PDF is loaded, the embedder
 // WebContents' html consists of a single <embed> tag with appropriate
-// properties, and (ii) that the guest WebContents finishes loading and
-// has the correct URL for the PDF extension.
+// properties. It also verifies that the guest WebContents finishes loading. For
+// OOPIF PDF, this test verifies that extension frame finished loading. For
+// both, the WebContents and the extension frame should have the correct URL for
+// the PDF extension.
 // TODO(wjmaclean): Are there any attributes we can/should test with respect to
 // the extension's loaded html?
-IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfExtensionLoadedInGuest) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  // Load test HTML, and verify the text area has focus.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfExtensionLoaded) {
+  // Load test PDF.
   const GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  auto* primary_main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
-
-  // Verify the pdf has loaded.
-  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
-  ASSERT_TRUE(guest_view);
-  EXPECT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
-  TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(main_url);
+  ASSERT_TRUE(extension_host);
+  auto* web_contents = GetActiveWebContents();
+  auto* primary_main_frame = web_contents->GetPrimaryMainFrame();
 
   // Verify we loaded the extension.
   const GURL extension_url(
       "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
-  EXPECT_EQ(extension_url,
-            guest_view->GetGuestMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(extension_url, extension_host->GetLastCommittedURL());
   EXPECT_EQ(main_url, primary_main_frame->GetLastCommittedURL());
 
-  // Make sure the embedder has the correct html boilerplate.
-  EXPECT_EQ(
-      1, content::EvalJs(primary_main_frame, "document.body.children.length;")
-             .ExtractInt());
-  EXPECT_EQ("EMBED", content::EvalJs(primary_main_frame,
-                                     "document.body.firstChild.tagName;")
-                         .ExtractString());
-  EXPECT_EQ("application/pdf", content::EvalJs(primary_main_frame,
-                                               "document.body.firstChild.type;")
-                                   .ExtractString());
-  EXPECT_EQ("about:blank",
-            content::EvalJs(primary_main_frame, "document.body.firstChild.src;")
-                .ExtractString());
-  EXPECT_TRUE(
-      content::EvalJs(primary_main_frame,
-                      "document.body.firstChild.hasAttribute('internalid');")
-          .ExtractBool());
+  // Make sure the embedder has the correct html boilerplate. GuestView PDF
+  // only, as OOPIF PDF hides the html using shadow DOM.
+  if (!UseOopif()) {
+    EXPECT_EQ(
+        1, content::EvalJs(primary_main_frame, "document.body.children.length;")
+               .ExtractInt());
+    EXPECT_EQ("EMBED", content::EvalJs(primary_main_frame,
+                                       "document.body.firstChild.tagName;")
+                           .ExtractString());
+    EXPECT_EQ(
+        "application/pdf",
+        content::EvalJs(primary_main_frame, "document.body.firstChild.type;")
+            .ExtractString());
+    EXPECT_EQ("about:blank", content::EvalJs(primary_main_frame,
+                                             "document.body.firstChild.src;")
+                                 .ExtractString());
+    EXPECT_TRUE(
+        content::EvalJs(primary_main_frame,
+                        "document.body.firstChild.hasAttribute('internalid');")
+            .ExtractBool());
+  }
 }
 
 // Helper class to allow pausing the asynchronous attachment of an inner
