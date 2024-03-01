@@ -34,28 +34,12 @@ FaceGazeMediaPipeTest = class extends FaceGazeTestBase {
     window.chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
   }
 
-  /** Gets the webCamFaceLandmarker object from the camera stream context. */
-  getWebCamFaceLandmarker() {
-    const window = chrome.extension.getViews().find(
-        view => view.location.href.includes('camera_stream.html'));
-
-    return window ? window.webCamFaceLandmarker : null;
-  }
-
   /** @return {!webCamFaceLandmarker} */
   async waitForWebCamFaceLandmarker() {
-    if (this.getWebCamFaceLandmarker()) {
-      return this.getWebCamFaceLandmarker();
-    }
-
-    return new Promise(resolve => {
-      const id = setInterval(() => {
-        if (this.getWebCamFaceLandmarker()) {
-          clearInterval(id);
-          resolve(this.getWebCamFaceLandmarker());
-        }
-      }, 1000);
-    });
+    await this.getFaceGaze().cameraStreamReadyPromise_;
+    const window = chrome.extension.getViews().find(
+        view => view.location.href.includes('camera_stream.html'));
+    return window.webCamFaceLandmarker;
   }
 };
 

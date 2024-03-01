@@ -155,4 +155,5 @@ document.addEventListener('DOMContentLoaded', () => {
   button?.addEventListener(
       'click', () => globalThis.webCamFaceLandmarker.init());
   button?.removeAttribute('hidden');
+  chrome.runtime.sendMessage(undefined, {type: 'cameraStreamReadyForTesting'});
 });

@@ -14,10 +14,15 @@ export class FaceGaze {
   private gestureHandler_: GestureHandler;
   private onInitCallbackForTest_: (() => void)|undefined;
   private initialized_ = false;
+  declare private cameraStreamReadyPromise_: Promise<void>;
+  private cameraStreamReadyResolver_?: () => void;
 
   constructor() {
     this.mouseController_ = new MouseController();
     this.gestureHandler_ = new GestureHandler(this.mouseController_);
+    this.cameraStreamReadyPromise_ = new Promise(resolve => {
+      this.cameraStreamReadyResolver_ = resolve;
+    });
     this.init_();
   }
 
@@ -50,6 +55,8 @@ export class FaceGaze {
       chrome.runtime.onMessage.addListener(message => {
         if (message.type === 'faceLandmarkerResult') {
           this.processFaceLandmarkerResult_(message.result);
+        } else if (message.type === 'cameraStreamReadyForTesting') {
+          this.cameraStreamReadyResolver_!();
         }
 
         return false;

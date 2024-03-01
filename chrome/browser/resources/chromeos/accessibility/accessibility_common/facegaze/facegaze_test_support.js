@@ -22,24 +22,10 @@ class FaceGazeTestSupport {
    * @return {!webCamFaceLandmarker}
    */
   async waitForWebCamFaceLandmarker() {
-    const getWebCamFaceLandmarker = () => {
-      const window = chrome.extension.getViews().find(
-          view => view.location.href.includes('camera_stream.html'));
-      return window ? window.webCamFaceLandmarker : null;
-    };
-
-    if (getWebCamFaceLandmarker()) {
-      return getWebCamFaceLandmarker();
-    }
-
-    return new Promise(resolve => {
-      const id = setInterval(() => {
-        if (getWebCamFaceLandmarker()) {
-          clearInterval(id);
-          resolve(getWebCamFaceLandmarker());
-        }
-      }, 1000);
-    });
+    await accessibilityCommon.getFaceGazeForTest().cameraStreamReadyPromise_;
+    const window = chrome.extension.getViews().find(
+        view => view.location.href.includes('camera_stream.html'));
+    return window.webCamFaceLandmarker;
   }
 
   /** Instantiates the FaceLandmarker. */
