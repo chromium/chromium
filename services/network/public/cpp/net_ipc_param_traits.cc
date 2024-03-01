@@ -123,7 +123,7 @@ bool ParamTraits<net::IPAddress>::Read(const base::Pickle* m,
   if (bytes.size() > 16) {
     return false;
   }
-  *p = net::IPAddress(bytes.data(), bytes.size());
+  *p = net::IPAddress(bytes);
   return true;
 }
 

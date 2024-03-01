@@ -165,7 +165,7 @@ bool GetDnsServersInternal(JNIEnv* env,
   base::android::JavaArrayOfByteArrayToBytesVector(
       env, Java_DnsStatus_getDnsServers(env, dns_status), &dns_servers_data);
   for (const std::vector<uint8_t>& dns_address_data : dns_servers_data) {
-    IPAddress dns_address(dns_address_data.data(), dns_address_data.size());
+    IPAddress dns_address(dns_address_data);
     IPEndPoint dns_server(dns_address, dns_protocol::kDefaultPort);
     dns_servers->push_back(dns_server);
   }

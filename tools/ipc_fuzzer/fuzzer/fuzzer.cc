@@ -1286,7 +1286,7 @@ struct FuzzTraits<net::IPAddress> {
     std::vector<uint8_t> bytes = p->CopyBytesToVector();
     if (!FuzzParam(&bytes, fuzzer))
       return false;
-    net::IPAddress ip_address(bytes.data(), bytes.size());
+    net::IPAddress ip_address(bytes);
     *p = ip_address;
     return true;
   }

@@ -631,7 +631,7 @@ TEST_F(UDPSocketTest, TestSendToInvalidAddress) {
 
   std::vector<uint8_t> test_msg{1};
   std::vector<uint8_t> invalid_ip_addr{127, 0, 0, 0, 1};
-  net::IPAddress ip_address(invalid_ip_addr.data(), invalid_ip_addr.size());
+  net::IPAddress ip_address(invalid_ip_addr);
   EXPECT_FALSE(ip_address.IsValid());
   net::IPEndPoint invalid_addr(ip_address, 53);
   server_socket->SendTo(

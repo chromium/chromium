@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/big_endian.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
@@ -99,8 +100,7 @@ std::unique_ptr<ARecordRdata> ARecordRdata::Create(
     return nullptr;
 
   auto rdata = base::WrapUnique(new ARecordRdata());
-  rdata->address_ =
-      IPAddress(reinterpret_cast<const uint8_t*>(data.data()), data.length());
+  rdata->address_ = IPAddress(base::as_byte_span(data));
   return rdata;
 }
 
@@ -126,8 +126,7 @@ std::unique_ptr<AAAARecordRdata> AAAARecordRdata::Create(
     return nullptr;
 
   auto rdata = base::WrapUnique(new AAAARecordRdata());
-  rdata->address_ =
-      IPAddress(reinterpret_cast<const uint8_t*>(data.data()), data.length());
+  rdata->address_ = IPAddress(base::as_byte_span(data));
   return rdata;
 }
 

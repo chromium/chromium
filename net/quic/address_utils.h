@@ -7,6 +7,7 @@
 
 #include <string.h>
 
+#include "base/containers/span.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/third_party/quiche/src/quiche/common/quiche_ip_address.h"
@@ -36,13 +37,12 @@ inline IPAddress ToIPAddress(quic::QuicIpAddress address) {
   switch (address.address_family()) {
     case quiche::IpAddressFamily::IP_V4: {
       in_addr raw_address = address.GetIPv4();
-      return IPAddress(reinterpret_cast<const uint8_t*>(&raw_address),
-                       sizeof(raw_address));
+      // `s_addr` is a `uint32_t`, but it is already in network byte order.
+      return IPAddress(base::byte_span_from_ref(raw_address.s_addr));
     }
     case quiche::IpAddressFamily::IP_V6: {
       in6_addr raw_address = address.GetIPv6();
-      return IPAddress(reinterpret_cast<const uint8_t*>(&raw_address),
-                       sizeof(raw_address));
+      return IPAddress(raw_address.s6_addr);
     }
     default:
       DCHECK_EQ(address.address_family(), quiche::IpAddressFamily::IP_UNSPEC);

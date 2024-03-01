@@ -5,6 +5,7 @@
 #include "chrome/services/sharing/nearby/platform/wifi_lan_medium.h"
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -126,8 +127,7 @@ std::unique_ptr<api::WifiLanSocket> WifiLanMedium::ConnectToService(
     const std::string& ip_address,
     int port,
     CancellationFlag* cancellation_flag) {
-  net::IPAddress ip(reinterpret_cast<const uint8_t*>(ip_address.data()),
-                    ip_address.length());
+  net::IPAddress ip(base::as_byte_span(ip_address));
   const net::AddressList address_list =
       net::AddressList::CreateFromIPAddress(ip, port);
 

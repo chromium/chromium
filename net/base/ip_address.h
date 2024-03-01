@@ -28,12 +28,12 @@ namespace net {
 class NET_EXPORT IPAddressBytes {
  public:
   IPAddressBytes();
-  IPAddressBytes(const uint8_t* data, size_t data_len);
+  explicit IPAddressBytes(base::span<const uint8_t> data);
   IPAddressBytes(const IPAddressBytes& other);
   ~IPAddressBytes();
 
-  // Copies |data_len| elements from |data| into this object.
-  void Assign(const uint8_t* data, size_t data_len);
+  // Copies elements from |data| into this object.
+  void Assign(base::span<const uint8_t> data);
 
   // Returns the number of elements in the underlying array.
   size_t size() const { return size_; }
@@ -76,8 +76,8 @@ class NET_EXPORT IPAddressBytes {
     bytes_[size_++] = val;
   }
 
-  // Appends the range [`first`, `last`) to the end and increments the size.
-  void Append(const uint8_t* first, const uint8_t* last);
+  // Appends `data` to the end and increments the size.
+  void Append(base::span<const uint8_t> data);
 
   // Returns a reference to the byte at index |pos|.
   uint8_t& operator[](size_t pos) {
@@ -125,12 +125,7 @@ class NET_EXPORT IPAddress {
 
   // Copies the input address to |ip_address_|. The input is expected to be in
   // network byte order.
-  explicit IPAddress(base::span<const uint8_t> address)
-      : IPAddress(address.data(), address.size()) {}
-
-  // Copies the input address to |ip_address_| taking an additional length
-  // parameter. The input is expected to be in network byte order.
-  IPAddress(const uint8_t* address, size_t address_len);
+  explicit IPAddress(base::span<const uint8_t> address);
 
   // Initializes |ip_address_| from the 4 bX bytes to form an IPv4 address.
   // The bytes are expected to be in network byte order.
