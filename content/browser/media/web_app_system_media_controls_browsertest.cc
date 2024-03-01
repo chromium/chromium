@@ -207,13 +207,8 @@ class WebAppSystemMediaControlsBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_SimpleOneBrowserTest DISABLED_SimpleOneBrowserTest
-#else
-#define MAYBE_SimpleOneBrowserTest SimpleOneBrowserTest
-#endif
 IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
-                       MAYBE_SimpleOneBrowserTest) {
+                       SimpleOneBrowserTest) {
   GURL http_url(https_server()->GetURL("/media/session/media-session.html"));
   EXPECT_TRUE(NavigateToURL(shell(), http_url));
 
@@ -221,6 +216,9 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
   StartPlaybackAndWait(shell(), "long-video-loop");
   // Check video is playing.
   EXPECT_TRUE(IsPlaying(shell(), "long-video-loop"));
+
+  bool is_for_pwa = WaitForStartWatchingMediaKey();
+  EXPECT_FALSE(is_for_pwa);
 
   // Hit pause via simulating SMTC pause.
   MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
