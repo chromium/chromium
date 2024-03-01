@@ -809,11 +809,6 @@ IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest,
 // load is handled by MimeHandlerView, and the plugin only gets the response.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithPartialLoading,
                        PartialRedirectsFailInPlugin) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   // Should match values used by `chrome_pdf::DocumentLoaderImpl`.
   constexpr size_t kDefaultRequestSize = 65536;
   constexpr size_t kChunkCloseDistance = 10;
@@ -2675,11 +2670,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionHitTestTest, ContextMenuCoordinates) {
 // The plugin document and the mime handler should both use the same background
 // color.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, BackgroundColor) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   // The background color for plugins is injected when the first response
   // is intercepted, at which point not all the plugins have loaded. This line
   // ensures that the PDF plugin has loaded and the right background color is
@@ -2699,11 +2689,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, BackgroundColor) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DefaultFocusForEmbeddedPDF) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   content::RenderFrameHost* extension_host =
       LoadPdfInFirstChildGetExtensionHost(
           embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
@@ -2719,11 +2704,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DefaultFocusForEmbeddedPDF) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DefaultFocusForNonEmbeddedPDF) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   content::RenderFrameHost* extension_host =
       LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(extension_host);
