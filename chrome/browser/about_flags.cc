@@ -8794,13 +8794,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebIdentityDigitalCredentialsName,
      flag_descriptions::kWebIdentityDigitalCredentialsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kWebIdentityDigitalCredentials)},
-    {"autofill-highlight-only-changed-value-in-preview-mode",
-     flag_descriptions::kAutofillHighlightOnlyChangedValuesInPreviewModeName,
-     flag_descriptions::
-         kAutofillHighlightOnlyChangedValuesInPreviewModeDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillHighlightOnlyChangedValuesInPreviewMode)},
 
     {"sanitizer-api", flag_descriptions::kSanitizerApiName,
      flag_descriptions::kSanitizerApiDescription, kOsAll,

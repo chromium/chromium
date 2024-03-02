@@ -406,9 +406,8 @@ bool ThemePainterDefault::PaintTextField(const Element& element,
       style.VisitedDependentColor(GetCSSPropertyBackgroundColor());
   text_field.background_color = background_color.Rgb();
   text_field.auto_complete_active =
-      DynamicTo<HTMLFormControlElement>(element)->HighlightAutofilled() ||
-      DynamicTo<HTMLFormControlElement>(element)->GetAutofillState() ==
-          WebAutofillState::kPreviewed;
+      DynamicTo<HTMLFormControlElement>(element)->IsAutofilled() ||
+      DynamicTo<HTMLFormControlElement>(element)->IsPreviewed();
 
   WebThemeEngine::ExtraParams extra_params(text_field);
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();

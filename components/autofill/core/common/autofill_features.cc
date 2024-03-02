@@ -346,12 +346,6 @@ BASE_FEATURE(kAutofillLocalHeuristicsOverrides,
              "AutofillLocalHeuristicsOverrides",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, only changed values are highlighted in preview mode.
-// TODO(crbug/1248585): Remove when launched.
-BASE_FEATURE(kAutofillHighlightOnlyChangedValuesInPreviewMode,
-             "AutofillHighlightOnlyChangedValuesInPreviewMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, all behaviours related to the on-device machine learning
 // model for field type predictions will be guarded.
 // TODO(crbug.com/1465926): Remove when launched.

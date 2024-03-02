@@ -1536,34 +1536,6 @@ std::vector<WebFormControlElement> GetUnownedFormControlElements(
   return form_control_elements;
 }
 
-// Calls SetPreventHighlightingOfAutofilledFields() on all form controls in the
-// document.
-//
-// The effect is that, if `prevent_highlighting == true`, already autofilled
-// values are not highlighted as such (with blue background). The intention is
-// during a preview to make the previewed fields stand out.
-void SetPreventHighlightingOfAutofilledFields(const WebDocument& document,
-                                              bool prevent_highlighting) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
-    return;
-  }
-  for (const WebFormElement& form :
-       base::FeatureList::IsEnabled(
-           blink::features::kAutofillIncludeFormElementsInShadowDom)
-           ? document.GetTopLevelForms()
-           : document.Forms()) {
-    for (WebFormControlElement& form_control : form.GetFormControlElements()) {
-      form_control.SetPreventHighlightingOfAutofilledFields(
-          prevent_highlighting);
-    }
-  }
-  for (WebFormControlElement& form_control :
-       document.UnassociatedFormControls()) {
-    form_control.SetPreventHighlightingOfAutofilledFields(prevent_highlighting);
-  }
-}
-
 }  // namespace
 
 std::vector<WebElement> GetWebElementsFromIdList(const WebDocument& document,
@@ -2224,13 +2196,6 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
     mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,
     FieldDataManager& field_data_manager) {
-  // If this is a preview, prevent already autofilled fields from being
-  // highlighted.
-  if (action_type == mojom::FormActionType::kFill &&
-      action_persistence == mojom::ActionPersistence::kPreview) {
-    SetPreventHighlightingOfAutofilledFields(document, true);
-  }
-
   // This container stores the FormFieldData::FillData* of `form.fields` that
   // will be filled into their corresponding blink elements.
   std::vector<std::pair<FieldRef, WebAutofillState>> filled_fields;
@@ -2289,19 +2254,14 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
     // In preview mode, only fill the field if it changes the fields value.
     // With this, the WebAutofillState is not changed from kAutofilled to
     // kPreviewed. This prevents the highlighting to change.
-    if (action_persistence == mojom::ActionPersistence::kFill ||
-        focused_field.data->value != focused_field.element.Value().Utf16() ||
-        !base::FeatureList::IsEnabled(
-            features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
-      filled_fields.emplace_back(focused_field.element,
-                                 focused_field.element.GetAutofillState());
-      if (action_persistence == mojom::ActionPersistence::kFill) {
-        FillFormField(*focused_field.data, /*is_initiating_node=*/true,
-                      focused_field.element, field_data_manager);
-      } else {
-        PreviewFormField(*focused_field.data, focused_field.element,
-                         field_data_manager);
-      }
+    filled_fields.emplace_back(focused_field.element,
+                               focused_field.element.GetAutofillState());
+    if (action_persistence == mojom::ActionPersistence::kFill) {
+      FillFormField(*focused_field.data, /*is_initiating_node=*/true,
+                    focused_field.element, field_data_manager);
+    } else {
+      PreviewFormField(*focused_field.data, focused_field.element,
+                       field_data_manager);
     }
   }
 
@@ -2344,10 +2304,6 @@ void ClearPreviewedElements(
     base::span<std::pair<WebFormControlElement, WebAutofillState>>
         previewed_elements,
     const WebFormControlElement& initiating_element) {
-  if (action_type == mojom::FormActionType::kFill) {
-    SetPreventHighlightingOfAutofilledFields(initiating_element.GetDocument(),
-                                             false);
-  }
   for (auto& [control_element, prior_autofill_state] : previewed_elements) {
     // We do not add null elements to `previewed_elements_` in AutofillAgent.
     DCHECK(!control_element.IsNull());

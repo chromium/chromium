@@ -113,17 +113,6 @@ void WebFormControlElement::SetAutofillState(WebAutofillState autofill_state) {
   Unwrap<HTMLFormControlElement>()->SetAutofillState(autofill_state);
 }
 
-void WebFormControlElement::SetPreventHighlightingOfAutofilledFields(
-    bool prevent_highlighting) {
-  Unwrap<HTMLFormControlElement>()->SetPreventHighlightingOfAutofilledFields(
-      prevent_highlighting);
-}
-
-bool WebFormControlElement::PreventHighlightingOfAutofilledFields() const {
-  return ConstUnwrap<HTMLFormControlElement>()
-      ->PreventHighlightingOfAutofilledFields();
-}
-
 WebString WebFormControlElement::AutofillSection() const {
   return ConstUnwrap<HTMLFormControlElement>()->AutofillSection();
 }

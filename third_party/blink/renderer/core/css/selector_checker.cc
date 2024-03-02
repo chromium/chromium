@@ -2069,7 +2069,7 @@ bool SelectorChecker::CheckPseudoAutofill(CSSSelector::PseudoType pseudo_type,
       return form_control_element->GetAutofillState() ==
              WebAutofillState::kPreviewed;
     case CSSSelector::kPseudoAutofillSelected:
-      return form_control_element->HighlightAutofilled();
+      return form_control_element->IsAutofilled();
     default:
       NOTREACHED();
   }
