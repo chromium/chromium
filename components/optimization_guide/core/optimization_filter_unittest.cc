@@ -114,8 +114,16 @@ TEST(OptimizationFilterTest, TestMatchesRegexpFragment) {
                                 /*exclusion_regexps=*/nullptr,
                                 /*skip_host_suffix_checking=*/false,
                                 proto::BLOOM_FILTER_FORMAT_PLAINTEXT);
-  // Fragments are not matched.
-  EXPECT_FALSE(opt_filter.Matches(GURL("https://shopping.com/#test")));
+  EXPECT_TRUE(opt_filter.Matches(GURL("https://shopping.com/#test")));
+}
+
+TEST(OptimizationFilterTest, TestMatchesRegexpClearsAuth) {
+  std::unique_ptr<RegexpList> regexps(CreateRegexps({"test"}));
+  OptimizationFilter opt_filter(/*bloom_filter=*/nullptr, std::move(regexps),
+                                /*exclusion_regexps=*/nullptr,
+                                /*skip_host_suffix_checking=*/false,
+                                proto::BLOOM_FILTER_FORMAT_PLAINTEXT);
+  EXPECT_FALSE(opt_filter.Matches(GURL("https://test:pwd@shopping.com/")));
 }
 
 TEST(OptimizationFilterTest, TestMatchesRegexpInvalid) {
