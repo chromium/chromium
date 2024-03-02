@@ -398,6 +398,27 @@ RunAttributionInteropSimulation(base::Value::Dict input,
   BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestBrowserContext browser_context;
+
+  // Ensure that `time_origin` has a whole number of seconds to make
+  // `AdjustEventLevelBody()` time calculations robust against
+  // sub-second-precision report times, which otherwise cannot be recovered
+  // because the `scheduled_report_time` field has second precision.
+  {
+    const base::Time with_millis = base::Time::Now();
+
+    base::Time::Exploded exploded;
+    with_millis.UTCExplode(&exploded);
+    DCHECK(exploded.HasValidValues());
+    exploded.millisecond = 0;
+
+    base::Time without_millis;
+    bool ok = base::Time::FromUTCExploded(exploded, &without_millis);
+    DCHECK(ok);
+
+    task_environment.FastForwardBy((without_millis + base::Seconds(1)) -
+                                   with_millis);
+  }
+
   const base::Time time_origin = base::Time::Now();
 
   ASSIGN_OR_RETURN(AttributionSimulationEvents events,
