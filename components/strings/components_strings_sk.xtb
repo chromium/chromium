@@ -1074,11 +1074,11 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3090667236485488075">Sklo</translation>
 <translation id="3095940652251934233">Výpis</translation>
 <translation id="3098513225387949945">Ignorované, pretože zoznam Deaktivovať obsahuje vzor, ktorý sa rovná hodnote „*“. Ide o ekvivalent deaktivácie pravidiel.</translation>
-<translation id="3100422601354996774">Po zavretí všetkých kariet inkognito v Chrome sa vaša aktivita v nich odstráni z tohto zariadenia:
+<translation id="3100422601354996774">Keď v Chrome zavriete všetky karty inkognito, z tohto zariadenia sa odstráni vaša aktivita v nich:
           <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />aktivita prehliadania<ph name="END_LIST_ITEM" />,
-            <ph name="LIST_ITEM" />história vyhľadávania<ph name="END_LIST_ITEM" />,
-            <ph name="LIST_ITEM" />informácie zadané vo formulároch<ph name="END_LIST_ITEM" />.
+            <ph name="LIST_ITEM" />aktivita prehliadania,<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />história vyhľadávania,<ph name="END_LIST_ITEM" />,
+            <ph name="LIST_ITEM" />informácie zadané do formulárov.<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
 <translation id="3103188521861412364">Akcie a dlhopisy</translation>
 <translation id="3105172416063519923">Identifikátor obsahu:</translation>
@@ -3013,11 +3013,11 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6897140037006041989">Používateľský agent</translation>
 <translation id="6898699227549475383">Organizácia (O)</translation>
 <translation id="6907458757809079309">Fitnes</translation>
-<translation id="6908168784986658395">Po zavretí všetkých kariet inkognito v prehliadači Chromium sa vaša aktivita v nich odstráni z tohto zariadenia:
+<translation id="6908168784986658395">Keď v prehliadači Chromium zavriete všetky karty inkognito, z tohto zariadenia sa odstráni vaša aktivita v nich:
           <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />aktivita prehliadania<ph name="END_LIST_ITEM" />,
-            <ph name="LIST_ITEM" />história vyhľadávania<ph name="END_LIST_ITEM" />,
-            <ph name="LIST_ITEM" />informácie zadané vo formulároch<ph name="END_LIST_ITEM" />.
+            <ph name="LIST_ITEM" />aktivita prehliadania,<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />história vyhľadávania,<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />informácie zadané do formulárov.<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
 <translation id="691024665142758461">Stiahnuť viacero súborov</translation>
 <translation id="6915804003454593391">Používateľ:</translation>
