@@ -135,6 +135,9 @@ class RemoteAppsProxyLacrosUnittest : public testing::Test {
   }
 
   void TearDown() override {
+    event_router_ = nullptr;
+    testing_profile_ = nullptr;
+    proxy_.reset();
     testing_profile_manager_.DeleteAllTestingProfiles();
     testing::Test::TearDown();
   }
