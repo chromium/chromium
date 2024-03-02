@@ -365480,14 +365480,6 @@
        "3d58e4ca095c228f05a5f6a0e4cc99aac54fd407",
        []
       ],
-      "popover-light-dismiss-flat-tree-expected.txt": [
-       "37a9b3001c645ea6e686b10c21a75fd3677b89a6",
-       []
-      ],
-      "popover-light-dismiss-flat-tree-nested-expected.txt": [
-       "d29b7bf3da17ebf4a3f231503c153afdb8c09719",
-       []
-      ],
       "popover-open-display-ref.html": [
        "144b81e6457614d4aceb4b7e71f91f77505f828a",
        []
@@ -365518,7 +365510,7 @@
         []
        ],
        "popover-utils.js": [
-        "bfc1f89ec1003bfaeca1a7aea115140858a85717",
+        "96ac7e03f0e7fc6bdd3c44ef400b243dba8b735d",
         []
        ]
       }
@@ -572719,6 +572711,20 @@
       }
      },
      "permission-element": {
+      "invalid-css-properties.html": [
+       "c7186563f0ae6d8c2c2a8ab2b1d2dcd6c5c9283d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "negative-offset-and-margin.html": [
+       "860e637e0a9f540bd786e4fcc1c3c1c3604cbfe0",
+       [
+        null,
+        {}
+       ]
+      ],
       "no-end-tag-no-contents.html": [
        "5fcce1421b6cd2abed01ab95c381aa7d29708e98",
        [
