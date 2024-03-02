@@ -6,6 +6,7 @@ import {CrRadioGroupElement} from '//resources/ash/common/cr_elements/cr_radio_g
 import {CrToggleElement} from '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {assert} from '//resources/js/assert.js';
+import {sendWithPromise} from '//resources/js/cr.js';
 import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeA11yOption} from '../components/oobe_a11y_option.js';
@@ -1121,6 +1122,8 @@ class ChoobeScreenTester extends ScreenElementApi {
   private drivePinningScreenButton: PolymerElementApi;
   private displaySizeScreenButton: PolymerElementApi;
   private themeSelectionScreenButton: PolymerElementApi;
+  private shouldSkipReceived: boolean;
+  private shouldBeSkipped: boolean;
 
   constructor() {
     super('choobe');
@@ -1135,10 +1138,38 @@ class ChoobeScreenTester extends ScreenElementApi {
         this.choobeScreensList, '#cr-button-display-size');
     this.themeSelectionScreenButton = new PolymerElementApi(
         this.choobeScreensList, '#cr-button-theme-selection');
+    this.shouldSkipReceived = false;
+    this.shouldBeSkipped = false;
+  }
+
+  requestShouldSkip(): void {
+    sendWithPromise('OobeTestApi.getShouldSkipChoobe')
+        .then(shouldBeSkipped => this.setShouldBeSkipped(shouldBeSkipped));
+  }
+
+  setShouldBeSkipped(shouldBeSkipped: boolean): void {
+    this.shouldSkipReceived = true;
+    this.shouldBeSkipped = shouldBeSkipped;
+  }
+
+  isShouldSkipReceived(): boolean {
+    return this.shouldSkipReceived;
   }
 
   override shouldSkip(): boolean {
     return loadTimeData.getBoolean('testapi_shouldSkipChoobe');
+  }
+
+  // TODO(b/327270907) To avoid breaking existing calls to `shouldSkip()`,
+  // `updatedShouldSkip()` is temporarily introduced. The code in
+  // `updatedShouldSkip()` should later be moved to `shouldSkip()` once the
+  // users of the API are migrated to the new logic.
+  updatedShouldSkip(): boolean {
+    assert(
+        this.isShouldSkipReceived(),
+        '`shouldSkip()` should only be called after `requestShouldSkip()`' +
+            'is called, and `isShouldSkippedReceived()` starts returning true');
+    return this.shouldBeSkipped;
   }
 
   isReadyForTesting(): boolean {
@@ -1229,13 +1260,44 @@ class ChoobeDrivePinningScreenTester extends ScreenElementApi {
 
 
 class ChoobeTouchpadScrollScreenTester extends ScreenElementApi {
+  private shouldSkipReceived: boolean;
+  private shouldBeSkipped: boolean;
+
   constructor() {
     super('touchpad-scroll');
     this.nextButton = new PolymerElementApi(this, '#nextButton');
+    this.shouldSkipReceived = false;
+    this.shouldBeSkipped = false;
+  }
+
+  requestShouldSkip(): void {
+    sendWithPromise('OobeTestApi.getShouldSkipTouchpadScroll')
+        .then(shouldBeSkipped => this.setShouldBeSkipped(shouldBeSkipped));
+  }
+
+  setShouldBeSkipped(shouldBeSkipped: boolean): void {
+    this.shouldSkipReceived = true;
+    this.shouldBeSkipped = shouldBeSkipped;
+  }
+
+  isShouldSkipReceived(): boolean {
+    return this.shouldSkipReceived;
   }
 
   override shouldSkip(): boolean {
     return loadTimeData.getBoolean('testapi_shouldSkipTouchpadScroll');
+  }
+
+  // TODO(b/327270907) To avoid breaking existing calls to `shouldSkip()`,
+  // `updatedShouldSkip()` is temporarily introduced. The code in
+  // `updatedShouldSkip()` should later be moved to `shouldSkip()` once the
+  // users of the API are migrated to the new logic.
+  updatedShouldSkip(): boolean {
+    assert(
+        this.isShouldSkipReceived(),
+        '`shouldSkip()` should only be called after `requestShouldSkip()`' +
+            'is called, and `isShouldSkippedReceived()` starts returning true');
+    return this.shouldBeSkipped;
   }
 
   isReadyForTesting(): boolean {

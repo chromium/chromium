@@ -68,6 +68,11 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
               &OobeTestAPIHandler::HandleGetPrimaryDisplayName);
   AddCallback("OobeTestApi.emulateDevicesForTesting",
               &OobeTestAPIHandler::EmulateDevicesConnectedForTesting);
+
+  AddCallback("OobeTestApi.getShouldSkipChoobe",
+              &OobeTestAPIHandler::HandleGetShouldSkipChoobe);
+  AddCallback("OobeTestApi.getShouldSkipTouchpadScroll",
+              &OobeTestAPIHandler::HandleGetShouldSkipTouchpadScroll);
 }
 
 void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
@@ -105,6 +110,7 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   bool skip_touchpad_scroll =
       !features::IsOobeTouchpadScrollEnabled() ||
       InputDeviceSettingsController::Get()->GetConnectedTouchpads().empty();
+  // TODO(b/327270907) Remove `testapi_shouldSkipTouchpadScroll`.
   dict->Set("testapi_shouldSkipTouchpadScroll", skip_touchpad_scroll);
 
   bool skip_display_size = !features::IsOobeDisplaySizeEnabled();
@@ -115,6 +121,7 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   // when display size Screen or touchpad scroll screen is skipped.
   bool skip_choobe = !features::IsOobeChoobeEnabled() || skip_touchpad_scroll ||
                      skip_display_size;
+  // TODO(b/327270907) Remove `testapi_shouldSkipChoobe`.
   dict->Set("testapi_shouldSkipChoobe", skip_choobe);
 
   dict->Set("testapi_shouldSkipGaiaInfoScreen",
@@ -241,6 +248,30 @@ void OobeTestAPIHandler::OnGetDisplayUnitInfoList(
   }
   ResolveJavascriptCallback(base::Value(callback_id),
                             base::Value(display_name));
+}
+
+void OobeTestAPIHandler::HandleGetShouldSkipChoobe(
+    const std::string& callback_id) {
+  // CHOOBE screen is only skipped if the number of optional screens is less
+  // than 3, since theme selection is always shown, CHOOBE should be skipped
+  // when display size Screen or touchpad scroll screen is skipped.
+  bool skip_touchpad_scroll =
+      !features::IsOobeTouchpadScrollEnabled() ||
+      InputDeviceSettingsController::Get()->GetConnectedTouchpads().empty();
+  bool skip_display_size = !features::IsOobeDisplaySizeEnabled();
+
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            !features::IsOobeChoobeEnabled() ||
+                                skip_touchpad_scroll || skip_display_size);
+}
+
+void OobeTestAPIHandler::HandleGetShouldSkipTouchpadScroll(
+    const std::string& callback_id) {
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            !features::IsOobeTouchpadScrollEnabled() ||
+                                InputDeviceSettingsController::Get()
+                                    ->GetConnectedTouchpads()
+                                    .empty());
 }
 
 }  // namespace ash

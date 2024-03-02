@@ -35,6 +35,8 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
   void LoginAsGuest();
   void ShowGaiaDialog();
   void HandleGetPrimaryDisplayName(const std::string& callback_id);
+  void HandleGetShouldSkipChoobe(const std::string& callback_id);
+  void HandleGetShouldSkipTouchpadScroll(const std::string& callback_id);
 
   // Emulate that a USB Mouse and a USB Keyboard are connected for testing.
   void EmulateDevicesConnectedForTesting();
