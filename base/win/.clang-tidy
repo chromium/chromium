@@ -2,6 +2,7 @@
 Checks: '-*,
          bugprone-argument-comment,
          bugprone-bool-pointer-implicit-conversion,
+         bugprone-forward-declaration-namespace,
          bugprone-unique-ptr-array-mismatch,
          bugprone-virtual-near-miss,
          google-build-namespaces,

@@ -6,6 +6,7 @@
                     bugprone-assert-side-effect,
                     bugprone-bool-pointer-implicit-conversion,
                     bugprone-dangling-handle,
+                    bugprone-forward-declaration-namespace,
                     bugprone-inaccurate-erase,
                     bugprone-string-constructor,
                     bugprone-string-integer-assignment,
