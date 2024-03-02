@@ -1196,11 +1196,6 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReportM2M(
     std::vector<StoredSource>& sources_to_attribute,
     const AttributionTrigger& trigger,
     std::vector<Partition>& partitions) {
-
-  // TODO(kelly): here cap the values somewhere
-  // const AttributionReport::AggregatableValues& aggregatable_cap_values = 
-  //     trigger_registration.aggregatable_cap_values;
-
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
   
