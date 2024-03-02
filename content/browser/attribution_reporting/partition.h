@@ -32,6 +32,11 @@ class CONTENT_EXPORT Partition {
   Partition(const Partition&);
   Partition(Partition&&);
 
+  double compute_sensitivity(const char* sensitivity_metric);
+
+  void null_report();
+
+
   const attribution_reporting::AttributionWindow attribution_window;
   const std::string attribution_logic;
   base::flat_map<std::string, ReportValuePair> report_value_pairs;

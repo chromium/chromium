@@ -2144,6 +2144,7 @@ void StorageHandler::OnTriggerHandled(const AttributionTrigger& trigger,
           .SetAggregatableCapValues(
               ToAggregatableValueEntries(registration.aggregatable_cap_values))
           .SetAttributionLogic(registration.attribution_logic)
+          .SetPartitioningLogic(registration.partitioning_logic)
           .Build();
 
   if (registration.debug_key.has_value()) {

@@ -71,7 +71,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   AttributionWindow attribution_window;
   AggregatableValues aggregatable_cap_values;
   std::string attribution_logic;
-  std::string partitioning;
+  std::string partitioning_logic;
 
 };
 

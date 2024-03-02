@@ -48,6 +48,7 @@ constexpr char kEventTriggerData[] = "event_trigger_data";
 constexpr char kAttributionWindow[] = "attribution_window";
 constexpr char kAggregatableCapValues[] = "aggregatable_cap_values";
 constexpr char kAttributionLogic[] = "attribution_logic";
+constexpr char kPartitioningLogic[] = "partitioning_logic";
 
 
 base::expected<std::optional<SuitableOrigin>, TriggerRegistrationError>
@@ -136,7 +137,7 @@ void RecordTriggerRegistrationError(TriggerRegistrationError error) {
   static_assert(
       TriggerRegistrationError::kMaxValue ==
           TriggerRegistrationError::
-              kAttributionLogicValueInvalid,
+              kAttributionOrPartitioningLogicValueInvalid,
       "Bump version of Conversions.TriggerRegistrationError9 histogram.");
   base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError9", error);
 }
@@ -186,7 +187,7 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
   auto parseStringLambda = [](base::Value& value) -> base::expected<std::string, TriggerRegistrationError> {
       const std::string* str = value.GetIfString();
       if (!str) {
-        return base::unexpected(TriggerRegistrationError::kAttributionLogicValueInvalid);
+        return base::unexpected(TriggerRegistrationError::kAttributionOrPartitioningLogicValueInvalid);
       }
       return *str;
   };
@@ -194,6 +195,10 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
   ASSIGN_OR_RETURN(
       registration.attribution_logic, 
       parseStringLambda(*dict.Find(kAttributionLogic)));
+  
+  ASSIGN_OR_RETURN(
+      registration.partitioning_logic, 
+      parseStringLambda(*dict.Find(kPartitioningLogic)));
 
   if (base::FeatureList::IsEnabled(
           aggregation_service::kAggregationServiceMultipleCloudProviders)) {
@@ -211,7 +216,6 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
   LOG(INFO) << "PARSE TRIGGER REGISTRATION" ;
   LOG(INFO) << registration.ToJson() ;
 
-  registration.partitioning = "";
   return registration;
 }
 
@@ -287,6 +291,7 @@ base::Value::Dict TriggerRegistration::ToJson() const {
   global_epsilon.Serialize(dict);
   dict.Set(kAttributionWindow, attribution_window.ToJson());
   dict.Set(kAttributionLogic, attribution_logic);
+  dict.Set(kPartitioningLogic, partitioning_logic);
   return dict;
 }
 

@@ -408,6 +408,11 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return trigger.attribution_logic;
   }
   
+  static std::string partitioning_logic(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.partitioning_logic;
+  }
+
   static bool Read(
       attribution_reporting::mojom::TriggerRegistrationDataView data,
       attribution_reporting::TriggerRegistration* out);

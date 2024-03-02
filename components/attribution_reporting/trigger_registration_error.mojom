@@ -58,5 +58,5 @@ enum TriggerRegistrationError {
   kAttributionWindowEndMissing = 44,
   kAttributionWindowListWrongType = 45,
 
-  kAttributionLogicValueInvalid = 46,
+  kAttributionOrPartitioningLogicValueInvalid = 46,
 };

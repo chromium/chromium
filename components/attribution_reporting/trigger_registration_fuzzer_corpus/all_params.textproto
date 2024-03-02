@@ -470,4 +470,12 @@ object_value {
       }
     }
   }
+  field {
+    name: "partitioning_logic"
+    value {
+      string_value {
+        "123"
+      }
+    }
+  }
 }

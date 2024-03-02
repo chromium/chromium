@@ -415,6 +415,10 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
   if (!data.ReadAttributionLogic(&out->attribution_logic)) {
     return false;
   }
+
+  if (!data.ReadPartitioningLogic(&out->partitioning_logic)) {
+    return false;
+  }
   
   return true;
 }

@@ -148,8 +148,6 @@ void AttributionLogicLastTouch(Partition& partition,
   // }
 }
 
-// using Keys = base::flat_map<std::string, absl::uint128>;
-
 void AttributionLogicUniform(Partition& partition,
         base::flat_map<std::string, std::vector<absl::uint128>>& trigger_keypieces_per_source) {
 

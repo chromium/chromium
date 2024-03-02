@@ -215,9 +215,11 @@ struct TriggerRegistration {
   // A map of aggregation key identifier and the corresponding cap value.
   map<string, uint32> aggregatable_cap_values;
 
-
   // The attribution logic
   string attribution_logic;
+  
+  // The partitioning logic
+  string partitioning_logic;
 
 };
 
