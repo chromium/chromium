@@ -188,12 +188,14 @@ class MEDIA_EXPORT VideoResourceUpdater
   viz::SharedImageFormat GetSoftwareOutputFormat(
       VideoPixelFormat input_frame_format,
       int bits_per_channel,
+      const gfx::ColorSpace& input_frame_color_space,
       bool& texture_needs_rgb_conversion_out);
 
   // Get the subplane shared image format used for creating
   // SoftwarePlaneResource per plane for multiplanar formats.
   std::optional<viz::SharedImageFormat> GetSoftwareSubplaneFormat(
       VideoPixelFormat input_frame_format,
+      const gfx::ColorSpace& input_frame_color_space,
       viz::SharedImageFormat output_si_format);
 
   // Transfer RGB pixels from the video frame to software resource through

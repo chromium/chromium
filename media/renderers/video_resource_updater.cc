@@ -489,8 +489,12 @@ bool CanUseRasterInterface() {
 #endif
 }
 
-bool UseMultiplanarSoftwarePixelUpload() {
-  return CanUseRasterInterface() && IsWritePixelsYUVEnabled();
+bool UseMultiplanarSoftwarePixelUpload(const gfx::ColorSpace& cs) {
+  // Multiplanar upload requires a valid SkYUVColorSpace -- which doesn't exist
+  // for all possible color space combinations.
+  SkYUVColorSpace unused;
+  return (!cs.IsValid() || cs.ToSkYUVColorSpace(&unused)) &&
+         CanUseRasterInterface() && IsWritePixelsYUVEnabled();
 }
 
 class CopyingSyncTokenClient : public VideoFrame::SyncTokenClient {
@@ -1299,6 +1303,7 @@ viz::SharedImageFormat VideoResourceUpdater::YuvSharedImageFormat(
 viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
     VideoPixelFormat input_frame_format,
     int bits_per_channel,
+    const gfx::ColorSpace& input_frame_color_space,
     bool& texture_needs_rgb_conversion_out) {
   viz::SharedImageFormat output_si_format;
   if (IsFrameFormat32BitRGB(input_frame_format)) {
@@ -1335,7 +1340,7 @@ viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
 
     // If it is multiplanar with RasterInterface support and does not need RGB
     // conversion, go through RasterDecoder WritePixelsYUV path.
-    if (UseMultiplanarSoftwarePixelUpload() &&
+    if (UseMultiplanarSoftwarePixelUpload(input_frame_color_space) &&
         !texture_needs_rgb_conversion_out) {
       // Get the supported channel format for the `output_si_format`'s first
       // plane.
@@ -1366,8 +1371,9 @@ viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
 std::optional<viz::SharedImageFormat>
 VideoResourceUpdater::GetSoftwareSubplaneFormat(
     VideoPixelFormat input_frame_format,
+    const gfx::ColorSpace& input_frame_color_space,
     viz::SharedImageFormat output_si_format) {
-  if (UseMultiplanarSoftwarePixelUpload()) {
+  if (UseMultiplanarSoftwarePixelUpload(input_frame_color_space)) {
     // Subplane format is not needed for multiplanar SI.
     return std::nullopt;
   }
@@ -1766,9 +1772,13 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
   SkYUVAInfo::Subsampling subsampling = ToSkYUVASubsampling(yuv_si_format);
 
   // TODO(crbug.com/828599): This should really default to rec709.
-  SkYUVColorSpace color_space = kRec601_SkYUVColorSpace;
-  video_frame->ColorSpace().ToSkYUVColorSpace(video_frame->BitDepth(),
-                                              &color_space);
+  SkYUVColorSpace color_space = kIdentity_SkYUVColorSpace;
+  if (video_frame->ColorSpace().IsValid()) {
+    // This feature is disabled for valid but unsupported color spaces, so we
+    // should always get a valid SkYUVColorSpace out by this point.
+    CHECK(video_frame->ColorSpace().ToSkYUVColorSpace(video_frame->BitDepth(),
+                                                      &color_space));
+  }
   SkYUVAInfo info =
       SkYUVAInfo(video_size, plane_config, subsampling, color_space);
   SkYUVAPixmaps yuv_pixmap = SkYUVAPixmaps::FromExternalPixmaps(info, pixmaps);
@@ -1788,9 +1798,11 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
 
   bool texture_needs_rgb_conversion = false;
   viz::SharedImageFormat output_si_format = GetSoftwareOutputFormat(
-      input_frame_format, bits_per_channel, texture_needs_rgb_conversion);
+      input_frame_format, bits_per_channel, video_frame->ColorSpace(),
+      texture_needs_rgb_conversion);
   std::optional<viz::SharedImageFormat> subplane_si_format =
-      GetSoftwareSubplaneFormat(input_frame_format, output_si_format);
+      GetSoftwareSubplaneFormat(input_frame_format, video_frame->ColorSpace(),
+                                output_si_format);
 
   gfx::ColorSpace output_color_space = video_frame->ColorSpace();
   size_t output_resource_count = VideoFrame::NumPlanes(input_frame_format);
@@ -1919,7 +1931,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
   }
 
   const auto yuv_si_format = output_si_format;
-  if (UseMultiplanarSoftwarePixelUpload()) {
+  if (UseMultiplanarSoftwarePixelUpload(video_frame->ColorSpace())) {
     CHECK_EQ(plane_resources.size(), 1u);
     HardwarePlaneResource* resource = plane_resources[0]->AsHardware();
     CHECK_EQ(resource->si_format(), yuv_si_format);
@@ -1979,7 +1991,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
         plane_resource->plane_resource_id()));
   }
 
-  if (UseMultiplanarSoftwarePixelUpload()) {
+  if (UseMultiplanarSoftwarePixelUpload(video_frame->ColorSpace())) {
     // With multiplanar shared images, a TextureDrawQuad is created instead of a
     // YUVDrawQuad.
     external_resources.type = VideoFrameResourceType::RGB;

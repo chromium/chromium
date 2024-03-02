@@ -500,6 +500,27 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGB) {
   }
 }
 
+TEST_F(VideoResourceUpdaterTest, SoftwareFrameYCOCG) {
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
+  scoped_refptr<VideoFrame> video_frame = CreateTestYUVVideoFrame();
+  video_frame->set_color_space(gfx::ColorSpace(
+      gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
+      gfx::ColorSpace::MatrixID::YCOCG, gfx::ColorSpace::RangeID::FULL));
+
+  // We should always get `VideoFrameResourceType::YUV` since Skia doesn't
+  // support YCoCg color spaces.
+
+  VideoFrameExternalResources resources =
+      updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+
+  // Setting to kSharedImageFormat, resources type should not change.
+  video_frame->set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormat);
+  resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+}
+
 // Ensure the visible data is where it's supposed to be.
 TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGBNonOrigin) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
