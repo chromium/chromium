@@ -356,6 +356,9 @@ void PaintOpReader::Read(
       case PaintOp::SerializedImageType::kImageData: {
         SkColorType color_type;
         Read(&color_type);
+        if (!valid_) {
+          return;
+        }
         // Color types requiring alignment larger than kDefaultAlignment is not
         // supported.
         if (static_cast<size_t>(SkColorTypeBytesPerPixel(color_type)) >
