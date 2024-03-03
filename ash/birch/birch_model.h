@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/birch/birch_client.h"
 #include "ash/birch/birch_item.h"
+#include "base/time/clock.h"
 #include "base/timer/timer.h"
 
 namespace ash {
@@ -65,6 +66,7 @@ class ASH_EXPORT BirchModel {
 
   void OverrideWeatherProviderForTest(
       std::unique_ptr<BirchClient> weather_provider);
+  void OverrideClockForTest(base::Clock* clock);
 
  private:
   // Timer and callback for a pending data fetch request.
@@ -83,6 +85,9 @@ class ASH_EXPORT BirchModel {
   // Runs data fetch callbacks after a data fetch request when all data items
   // have been refreshed.
   void MaybeRespondToDataFetchRequest();
+
+  // Get current time. The clock may be overridden for testing purposes.
+  base::Time GetTime() const;
 
   // Whether the calendar event data is freshly fetched.
   bool is_calendar_data_fresh_ = false;
@@ -125,6 +130,10 @@ class ASH_EXPORT BirchModel {
   raw_ptr<BirchClient> birch_client_ = nullptr;
 
   std::unique_ptr<BirchClient> weather_provider_;
+
+  // When set, this clock is used to ensure a consistent current time is used
+  // for testing.
+  raw_ptr<base::Clock> clock_override_ = nullptr;
 };
 
 }  // namespace ash

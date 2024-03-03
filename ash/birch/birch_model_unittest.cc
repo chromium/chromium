@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,6 +46,12 @@ class TestModelConsumer {
   std::vector<std::string> items_ready_responses_;
 };
 
+base::Time TimeFromString(const char* time_string) {
+  base::Time time;
+  CHECK(base::Time::FromString(time_string, &time));
+  return time;
+}
+
 }  // namespace
 
 class BirchModelTest : public AshTestBase {
@@ -63,6 +70,10 @@ class BirchModelTest : public AshTestBase {
     Shell::Get()->birch_model()->OverrideWeatherProviderForTest(
         std::make_unique<StubBirchClient>());
     Shell::Get()->birch_model()->SetClient(&stub_birch_client_);
+
+    // Set a test clock so that ranking uses a consistent time across test runs.
+    test_clock_.SetNow(TimeFromString("22 Feb 2024 4:00 UTC"));
+    Shell::Get()->birch_model()->OverrideClockForTest(&test_clock_);
   }
 
   void TearDown() override {
@@ -74,6 +85,7 @@ class BirchModelTest : public AshTestBase {
  protected:
   base::test::ScopedFeatureList feature_list_;
   StubBirchClient stub_birch_client_;
+  base::SimpleTestClock test_clock_;
 };
 
 class BirchModelWithoutWeatherTest : public AshTestBase {

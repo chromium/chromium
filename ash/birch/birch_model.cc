@@ -115,7 +115,7 @@ void BirchModel::RequestBirchDataFetch(base::OnceClosure callback) {
 std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   std::vector<std::unique_ptr<BirchItem>> all_items;
 
-  BirchRanker ranker(base::Time::Now());
+  BirchRanker ranker(GetTime());
   ranker.RankCalendarItems(&calendar_items_);
   ranker.RankAttachmentItems(&attachment_items_);
   ranker.RankFileSuggestItems(&file_suggest_items_);
@@ -234,6 +234,10 @@ void BirchModel::OverrideWeatherProviderForTest(
   weather_provider_ = std::move(weather_provider);
 }
 
+void BirchModel::OverrideClockForTest(base::Clock* clock) {
+  clock_override_ = clock;
+}
+
 void BirchModel::HandleRequestTimeout(size_t request_id) {
   auto request = pending_requests_.find(request_id);
   if (request == pending_requests_.end()) {
@@ -259,6 +263,13 @@ void BirchModel::MaybeRespondToDataFetchRequest() {
   for (auto& callback : callbacks) {
     std::move(callback).Run();
   }
+}
+
+base::Time BirchModel::GetTime() const {
+  if (clock_override_) {
+    return clock_override_->Now();
+  }
+  return base::Time::Now();
 }
 
 }  // namespace ash
