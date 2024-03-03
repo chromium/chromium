@@ -771,13 +771,19 @@ bool ChromeContentBrowserClientExtensionsPart::IsBuiltinComponent(
   const auto& extension_id = origin.host();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Check if the component is the ODFS external component extension.
+  // Check if the component is the ODFS extension.
   if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
-      extension_id == extension_misc::kODFSExtensionId &&
-      ExtensionRegistry::Get(browser_context)
-              ->GetInstalledExtension(extension_id)
-              ->location() == mojom::ManifestLocation::kExternalComponent) {
-    return true;
+      extension_id == extension_misc::kODFSExtensionId) {
+    // Check ODFS was loaded externally.
+    const Extension* extension = ExtensionRegistry::Get(browser_context)
+                                     ->GetInstalledExtension(extension_id);
+    if (!extension) {
+      // Occurs due to a race condition at startup where the ODFS is installed
+      // but does not yet appear in the extension registry.
+      LOG(ERROR) << "ODFS cannot be found in the extension registry";
+      return false;
+    }
+    return extension->location() == mojom::ManifestLocation::kExternalComponent;
   }
 #endif
 
