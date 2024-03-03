@@ -546,7 +546,7 @@ void ShapeResult::AddUnsafeToBreak(Iterator offsets_iter,
 #endif
   unsigned offset = *offsets_iter;
   for (const auto& run : runs_) {
-    unsigned run_offset = offset - run->StartIndex() - StartIndex();
+    unsigned run_offset = offset - run->StartIndex();
     if (run_offset >= run->num_characters_) {
       continue;
     }
@@ -557,7 +557,7 @@ void ShapeResult::AddUnsafeToBreak(Iterator offsets_iter,
           return;
         }
         offset = *offsets_iter;
-        run_offset = offset - run->StartIndex() - StartIndex();
+        run_offset = offset - run->StartIndex();
         if (run_offset >= run->num_characters_) {
           break;
         }
@@ -2127,12 +2127,6 @@ unsigned ShapeResult::CachedNextSafeToBreakOffset(unsigned offset) const {
   const unsigned adjusted_offset = offset - start_index_;
   const unsigned length = character_position_.size();
   DCHECK_LT(adjusted_offset, length);
-
-  // Assume it is always safe to break at the start. While not strictly correct
-  // the text has already been segmented at that offset. This also matches the
-  // non-CharacterPositionData implementation.
-  if (adjusted_offset == 0)
-    return start_index_;
 
   for (unsigned i = adjusted_offset; i < length; i++) {
     if (character_position_[i].safe_to_break_before) {

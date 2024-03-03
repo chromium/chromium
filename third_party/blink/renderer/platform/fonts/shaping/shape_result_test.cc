@@ -325,8 +325,10 @@ TEST_F(ShapeResultTest, AddUnsafeToBreakLtr) {
     EXPECT_EQ(result->NextSafeToBreakOffset(offset), offset);
   }
   result->AddUnsafeToBreak(offsets);
+  result->EnsurePositionData();
   for (const unsigned offset : offsets) {
     EXPECT_NE(result->NextSafeToBreakOffset(offset), offset);
+    EXPECT_NE(result->CachedNextSafeToBreakOffset(offset), offset);
   }
 }
 
@@ -338,8 +340,27 @@ TEST_F(ShapeResultTest, AddUnsafeToBreakRtl) {
     EXPECT_EQ(result->NextSafeToBreakOffset(offset), offset);
   }
   result->AddUnsafeToBreak(offsets);
+  result->EnsurePositionData();
   for (const unsigned offset : offsets) {
     EXPECT_NE(result->NextSafeToBreakOffset(offset), offset);
+    EXPECT_NE(result->CachedNextSafeToBreakOffset(offset), offset);
+  }
+}
+
+TEST_F(ShapeResultTest, AddUnsafeToBreakRange) {
+  const String string{u"0ABC\u3042DEFG"};
+  HarfBuzzShaper shaper(string);
+  ShapeResult* result = shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr,
+                                     1, string.length());
+  Vector<unsigned> offsets{2, 7};
+  for (const unsigned offset : offsets) {
+    EXPECT_EQ(result->NextSafeToBreakOffset(offset), offset);
+  }
+  result->AddUnsafeToBreak(offsets);
+  result->EnsurePositionData();
+  for (const unsigned offset : offsets) {
+    EXPECT_NE(result->NextSafeToBreakOffset(offset), offset);
+    EXPECT_NE(result->CachedNextSafeToBreakOffset(offset), offset);
   }
 }
 
