@@ -2120,6 +2120,42 @@ TEST_F(BrowserAutofillManagerTest,
   }
 }
 
+// Tests that Autocomplete suppression metrics are logged correctly even if the
+// focused field disappears while Autocomplete is retrieving suggestions.
+// Regression test for (b/327866993).
+TEST_F(BrowserAutofillManagerTest, AutocompleteSuppressionFieldDisappears) {
+  // Required to enable heuristics for small forms.
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableEmailHeuristicOnlyAddressForms};
+
+  // Clear profiles to avoid that Autofill takes precedence.
+  personal_data().ClearProfiles();
+  FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
+  FormsSeen({form});
+  ON_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+      .WillByDefault(
+          [&](const FormFieldData& field, const AutofillClient&,
+              SingleFieldFormFiller::OnSuggestionsReturnedCallback callback,
+              const SuggestionsContext&) {
+            browser_autofill_manager_->OnFormsSeen(
+                /*updated_forms=*/{}, /*removed_forms=*/{form.global_id()});
+            std::move(callback).Run(
+                field.global_id(),
+                {Suggestion(u"one"), Suggestion(u"test@foo.com")});
+            return true;
+          });
+
+  autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
+      "plus@plus.plus", signin::ConsentLevel::kSignin);
+  base::HistogramTester histogram_tester;
+  GetAutofillSuggestions(
+      form, form.fields[0],
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  histogram_tester.ExpectUniqueSample(
+      kAutocompleteSuppressionByPlusAddressUma,
+      AutocompleteSuppressionByPlusAddress::kSuppressedWithEmailResults, 1);
+}
+
 class BrowserAutofillManagerTestForMetadataCardSuggestions
     : public BrowserAutofillManagerTest,
       public testing::WithParamInterface<bool> {

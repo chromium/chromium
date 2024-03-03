@@ -273,7 +273,7 @@ bool IsSingleFieldFormFillerFillingProduct(FillingProduct filling_product) {
 void MaybeLogAutocompleteSuppressionByPlusAddresses(
     AutofillClient& client,
     base::span<const Suggestion> suggestions,
-    AutofillField* focused_field) {
+    FieldTypeGroup focused_field_type_group) {
   if (client.IsOffTheRecord()) {
     return;
   }
@@ -295,8 +295,7 @@ void MaybeLogAutocompleteSuppressionByPlusAddresses(
   // If the focused field is not classified as an email address, plus addresses
   // would never be shown.
   using enum AutocompleteSuppressionByPlusAddress;
-  if (!focused_field ||
-      focused_field->Type().group() != FieldTypeGroup::kEmail) {
+  if (focused_field_type_group != FieldTypeGroup::kEmail) {
     base::UmaHistogramEnumeration(kAutocompleteSuppressionByPlusAddressUma,
                                   kNotSuppressed);
     return;
@@ -1233,13 +1232,14 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
               base::BindRepeating(
                   [](base::WeakPtr<BrowserAutofillManager> self,
                      base::TimeTicks request_start_time,
-                     AutofillField* focused_field, FieldGlobalId field_id,
+                     FieldTypeGroup focused_field_type_group,
+                     FieldGlobalId field_id,
                      const std::vector<Suggestion>& suggestions) {
                     if (!self) {
                       return;
                     }
                     MaybeLogAutocompleteSuppressionByPlusAddresses(
-                        self->client(), suggestions, focused_field);
+                        self->client(), suggestions, focused_field_type_group);
                     LogTimeDelayForSingleFieldFormFill(
                         suggestions,
                         base::TimeTicks::Now() - request_start_time);
@@ -1247,7 +1247,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
                         field_id, suggestions);
                   },
                   weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
-                  context.focused_field),
+                  context.focused_field ? context.focused_field->Type().group()
+                                        : FieldTypeGroup::kNoGroup),
               context);
       if (handled_by_single_field_form_filler) {
         return false;
