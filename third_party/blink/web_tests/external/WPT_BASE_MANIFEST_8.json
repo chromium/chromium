@@ -356537,7 +356537,7 @@
         []
        ],
        "drawing-images-to-the-canvas.yaml": [
-        "93c556288d7125988f3190c0ecd8e3ce2e71f3fe",
+        "09e9e0018674e4946c98cbcce9bae150cf41559a",
         []
        ],
        "drawing-rectangles-to-the-canvas.yaml": [
@@ -534583,6 +534583,13 @@
        ],
        "2d.drawImage.composite.html": [
         "4ff2026aad549d6516a0b19cccc5416fdd846553",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.drawImage.detachedcanvas.html": [
+        "e301537330ea08534b70e4488d9aaaaef0029eda",
         [
          null,
          {}
