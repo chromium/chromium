@@ -223,7 +223,7 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   // |received_id_to_decoded_frame_map_| and we change the GpuMemoryBufferId of
   // the incoming buffer to guarantee its uniqueness within the GPU process (at
   // least among all clients of media::GetNextGpuMemoryBufferId()).
-  base::flat_map<gfx::GpuMemoryBufferId, scoped_refptr<VideoFrame>>
+  base::flat_map<gfx::GpuMemoryBufferId, scoped_refptr<FrameResource>>
       received_id_to_decoded_frame_map_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::flat_map<gfx::GenericSharedMemoryId, VideoFrame*>
       generated_id_to_decoded_frame_map_ GUARDED_BY_CONTEXT(sequence_checker_);

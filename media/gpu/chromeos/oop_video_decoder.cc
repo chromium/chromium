@@ -87,14 +87,14 @@ namespace {
 // The maximum size is chosen to be the same as in the VaapiVideoDecoder.
 constexpr size_t kTimestampCacheSize = 128;
 
-// Converts |mojo_frame| to a media::VideoFrame after performing some
+// Converts |mojo_frame| to a media::FrameResource after performing some
 // validation. The reason we do validation/conversion here and not in the mojo
 // traits is that we don't want every incoming stable::mojom::VideoFrame to
-// result in a media::VideoFrame: we'd like to re-use buffers based on the
+// result in a media::FrameResource: we'd like to re-use buffers based on the
 // incoming |mojo_frame|->gpu_memory_buffer_handle.id; if that incoming
 // |mojo_frame| is a frame that we already know about, we can re-use the
-// underlying buffer without creating a media::VideoFrame.
-scoped_refptr<VideoFrame> MojoVideoFrameToMediaVideoFrame(
+// underlying buffer without creating a media::FrameResource.
+scoped_refptr<FrameResource> MojoVideoFrameToFrameResource(
     stable::mojom::VideoFramePtr mojo_frame) {
   if (!VerifyGpuMemoryBufferHandle(mojo_frame->format, mojo_frame->coded_size,
                                    mojo_frame->gpu_memory_buffer_handle)) {
@@ -124,11 +124,11 @@ scoped_refptr<VideoFrame> MojoVideoFrameToMediaVideoFrame(
   }
 
   gpu::MailboxHolder dummy_mailbox[media::VideoFrame::kMaxPlanes];
-  scoped_refptr<media::VideoFrame> gmb_frame =
-      media::VideoFrame::WrapExternalGpuMemoryBuffer(
+  scoped_refptr<media::FrameResource> gmb_frame =
+      VideoFrameResource::Create(media::VideoFrame::WrapExternalGpuMemoryBuffer(
           mojo_frame->visible_rect, mojo_frame->natural_size,
           std::move(gpu_memory_buffer), dummy_mailbox, base::NullCallback(),
-          mojo_frame->timestamp);
+          mojo_frame->timestamp));
   if (!gmb_frame) {
     VLOGF(2) << "Could not create a GpuMemoryBuffer-backed VideoFrame";
     return nullptr;
@@ -983,7 +983,7 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
     }
   }
 
-  scoped_refptr<VideoFrame> frame_to_wrap;
+  scoped_refptr<FrameResource> frame_to_wrap;
   auto decoded_frame_it =
       received_id_to_decoded_frame_map_.find(received_gmb_id);
   if (decoded_frame_it != received_id_to_decoded_frame_map_.end()) {
@@ -994,22 +994,33 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
              GetRectSizeFromOrigin(visible_rect));
     CHECK_EQ(frame_to_wrap->metadata().hw_protected, metadata.hw_protected);
   } else {
-    scoped_refptr<VideoFrame> gmb_frame =
-        MojoVideoFrameToMediaVideoFrame(std::move(frame));
+    scoped_refptr<FrameResource> gmb_frame =
+        MojoVideoFrameToFrameResource(std::move(frame));
     if (!gmb_frame) {
       Stop();
       return;
     }
     received_id_to_decoded_frame_map_[received_gmb_id] = gmb_frame;
-    generated_id_to_decoded_frame_map_[GetSharedMemoryId(*gmb_frame)] =
-        gmb_frame.get();
+    // TODO(nhebert): Migrate |generated_id_to_decoded_frame_map_| to store
+    // a pointer to the FrameResource instead of to the underlying VideoFrame.
+    // |generated_id_to_decoded_frame_map_| is used for unwrapping the frame by
+    // the MailboxVideoFrameConverter in order to add a destruction observer to
+    // the original frame.
+    CHECK(gmb_frame->AsVideoFrameResource());
+    generated_id_to_decoded_frame_map_[gmb_frame->GetSharedMemoryId()] =
+        gmb_frame->AsVideoFrameResource()->GetMutableVideoFrame().get();
     frame_to_wrap = std::move(gmb_frame);
   }
 
-  scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
-      frame_to_wrap, format, visible_rect, natural_size);
+  // If |frame_to_wrap| was cached in |received_id_to_decoded_frame_map_|, then
+  // there is a possibility that |visible_rect| and |natural_size|, which are
+  // computed from |frame| are different than in |frame_to_wrap| and |frame|.
+  // Because of this, CreateWrappingFrame() is called with |visible_rect| and
+  // |natural_size|.
+  scoped_refptr<FrameResource> wrapped_frame =
+      frame_to_wrap->CreateWrappingFrame(visible_rect, natural_size);
   if (!wrapped_frame) {
-    VLOGF(2) << "Could not wrap the GpuMemoryBuffer-backed VideoFrame";
+    VLOGF(2) << "Could not wrap the GpuMemoryBuffer-backed frame";
     Stop();
     return;
   }
@@ -1029,7 +1040,7 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   can_read_without_stalling_ = can_read_without_stalling;
 
   if (output_cb_)
-    output_cb_.Run(VideoFrameResource::Create(std::move(wrapped_frame)));
+    output_cb_.Run(std::move(wrapped_frame));
 }
 
 void OOPVideoDecoder::OnWaiting(WaitingReason reason) {
