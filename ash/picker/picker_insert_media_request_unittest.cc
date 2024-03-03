@@ -286,20 +286,47 @@ TEST_P(PickerInsertMediaRequestTest, CallsFailureCallbackOnTimeout) {
 }
 
 TEST(PickerInsertMediaRequestUnsupportedTest,
-     InsertingUnsupportedImageCallsFailureCallback) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-  ui::FakeTextInputClient client(
-      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
+     InsertingImageIgnoresUnsupportedClients) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   InputMethodAsh input_method(nullptr);
+  ui::FakeTextInputClient unsupported_client(
+      &input_method,
+      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
+  ui::FakeTextInputClient supported_client(
+      &input_method,
+      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
 
   base::test::TestFuture<void> failure_future;
   PickerInsertMediaRequest request(
-      &input_method,
-      PickerImageMedia(GURL("http://foo.com"), gfx::Size(10, 10)),
+      &input_method, PickerImageMedia(GURL("http://foo.com")),
       /*insert_timeout=*/base::Seconds(1), failure_future.GetCallback());
-  input_method.SetFocusedTextInputClient(&client);
+  unsupported_client.Focus();
+  supported_client.Focus();
+  task_environment.FastForwardBy(base::Seconds(1));
 
-  EXPECT_TRUE(failure_future.Wait());
+  EXPECT_FALSE(failure_future.IsReady());
+  EXPECT_EQ(unsupported_client.last_inserted_image_url(), std::nullopt);
+  EXPECT_EQ(supported_client.last_inserted_image_url(), GURL("http://foo.com"));
+}
+
+TEST(PickerInsertMediaRequestUnsupportedTest,
+     InsertingUnsupportedImageCallsFailureCallbackAfterTimeout) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  InputMethodAsh input_method(nullptr);
+  ui::FakeTextInputClient client(
+      &input_method,
+      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
+
+  base::test::TestFuture<void> failure_future;
+  PickerInsertMediaRequest request(
+      &input_method, PickerImageMedia(GURL("http://foo.com")),
+      /*insert_timeout=*/base::Seconds(1), failure_future.GetCallback());
+  client.Focus();
+  task_environment.FastForwardBy(base::Seconds(1));
+
+  EXPECT_TRUE(failure_future.IsReady());
   EXPECT_EQ(client.last_inserted_image_url(), std::nullopt);
 }
 

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/picker_test_util.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/shell.h"
@@ -26,16 +27,6 @@
 
 namespace ash {
 namespace {
-
-std::u16string ReadHtmlFromClipboard(ui::Clipboard* clipboard) {
-  std::u16string data;
-  std::string url;
-  uint32_t fragment_start, fragment_end;
-
-  clipboard->ReadHTML(ui::ClipboardBuffer::kCopyPaste, nullptr, &data, &url,
-                      &fragment_start, &fragment_end);
-  return data;
-}
 
 class PickerControllerTest : public AshTestBase {
  public:
@@ -194,7 +185,8 @@ TEST_F(PickerControllerTest, InsertImageResultInsertsIntoInputFieldAfterFocus) {
             GURL("http://foo.com/fake.gif"));
 }
 
-TEST_F(PickerControllerTest, InsertUnsupportedImageResultCopiesToClipboard) {
+TEST_F(PickerControllerTest,
+       InsertUnsupportedImageResultTimeoutCopiesToClipboard) {
   PickerController controller;
   TestPickerClient client(&controller);
   controller.ToggleWidget();
@@ -211,6 +203,7 @@ TEST_F(PickerControllerTest, InsertUnsupportedImageResultCopiesToClipboard) {
       input_method,
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
   input_method->SetFocusedTextInputClient(&input_field);
+  task_environment()->FastForwardBy(PickerController::kInsertMediaTimeout);
 
   EXPECT_EQ(
       ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),

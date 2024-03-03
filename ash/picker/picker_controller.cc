@@ -64,9 +64,6 @@ constexpr std::string_view kPickerFeatureTestKeyHash(
     "\x00\x89",
     base::kSHA1Length);
 
-// Time from when the insert is issued and when we give up inserting.
-constexpr base::TimeDelta kInsertMediaTimeout = base::Seconds(2);
-
 // Time from when a start starts to when the first set of results are published.
 constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(200);
 

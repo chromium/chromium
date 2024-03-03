@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget_observer.h"
@@ -44,6 +45,9 @@ class ASH_EXPORT PickerController
 
   // Whether the provided feature key for Picker can enable the feature.
   static bool IsFeatureKeyMatched();
+
+  // Time from when the insert is issued and when we give up inserting.
+  static constexpr base::TimeDelta kInsertMediaTimeout = base::Seconds(2);
 
   // Sets the `client` used by this class and the widget to communicate with the
   // browser. `client` may be set to null, which will close the Widget if it's

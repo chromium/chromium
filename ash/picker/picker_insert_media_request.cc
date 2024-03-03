@@ -30,8 +30,13 @@ PickerInsertMediaRequest::~PickerInsertMediaRequest() = default;
 
 void PickerInsertMediaRequest::OnTextInputStateChanged(
     const ui::TextInputClient* client) {
+  // `OnTextInputStateChanged` can be called multiple times before the insert
+  // timeout. For each `client` change, attempt to insert the media. Only notify
+  // that the insert has failed when the insert has timed out.
   ui::TextInputClient* mutable_client =
       observation_.GetSource()->GetTextInputClient();
+
+  DCHECK_EQ(mutable_client, client);
   if (mutable_client == nullptr ||
       mutable_client->GetTextInputType() ==
           ui::TextInputType::TEXT_INPUT_TYPE_NONE ||
@@ -39,11 +44,8 @@ void PickerInsertMediaRequest::OnTextInputStateChanged(
     return;
   }
 
-  DCHECK_EQ(mutable_client, client);
   if (!InsertMediaToInputField(*media_to_insert_, mutable_client)) {
-    if (!insert_failed_callback_.is_null()) {
-      std::move(insert_failed_callback_).Run();
-    }
+    return;
   }
 
   media_to_insert_ = std::nullopt;
