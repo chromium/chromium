@@ -64,6 +64,8 @@ int GetAutocompleteProviderTypes(ash::PickerCategory category) {
     case ash::PickerCategory::kSymbols:
     case ash::PickerCategory::kEmoticons:
     case ash::PickerCategory::kGifs:
+    case ash::PickerCategory::kLocalFiles:
+    case ash::PickerCategory::kDriveFiles:
       DLOG(FATAL) << "Unexpected category for autocomplete: "
                   << static_cast<int>(category);
       return 0;
@@ -200,7 +202,11 @@ void PickerClientImpl::StartCrosSearch(
           query, app_list::SearchOptions(),
           base::BindRepeating(&PickerClientImpl::OnCrosSearchResultsUpdated,
                               weak_factory_.GetWeakPtr(), std::move(callback)));
-    }
+    } break;
+    case ash::PickerCategory::kDriveFiles:
+    case ash::PickerCategory::kLocalFiles:
+      // TODO: b/326839834 - Search only Drive or Local files.
+      break;
   }
 }
 

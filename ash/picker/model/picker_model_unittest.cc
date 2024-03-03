@@ -20,7 +20,8 @@ TEST(PickerModel, AvailableCategories) {
       ElementsAre(PickerCategory::kEmojis, PickerCategory::kSymbols,
                   PickerCategory::kEmoticons, PickerCategory::kGifs,
                   PickerCategory::kOpenTabs, PickerCategory::kBrowsingHistory,
-                  PickerCategory::kBookmarks));
+                  PickerCategory::kBookmarks, PickerCategory::kDriveFiles,
+                  PickerCategory::kLocalFiles));
 }
 
 }  // namespace

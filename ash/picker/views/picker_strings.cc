@@ -31,6 +31,10 @@ std::u16string GetLabelForPickerCategory(PickerCategory category) {
           IDS_PICKER_BROWSING_HISTORY_CATEGORY_LABEL);
     case PickerCategory::kBookmarks:
       return l10n_util::GetStringUTF16(IDS_PICKER_BOOKMARKS_CATEGORY_LABEL);
+    case PickerCategory::kDriveFiles:
+      return l10n_util::GetStringUTF16(IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL);
+    case PickerCategory::kLocalFiles:
+      return l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL);
   }
 }
 
@@ -58,6 +62,12 @@ std::u16string GetSearchFieldPlaceholderTextForPickerCategory(
     case PickerCategory::kBookmarks:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_BOOKMARKS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
+    case PickerCategory::kDriveFiles:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_DRIVE_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
+    case PickerCategory::kLocalFiles:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_LOCAL_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
   }
 }
 
@@ -70,6 +80,9 @@ std::u16string GetSectionTitleForPickerCategoryType(
     case PickerCategoryType::kLinks:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_LINKS_CATEGORY_TYPE_SECTION_TITLE);
+    case PickerCategoryType::kFiles:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_FILES_CATEGORY_TYPE_SECTION_TITLE);
   }
 }
 

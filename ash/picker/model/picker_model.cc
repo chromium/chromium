@@ -10,10 +10,11 @@ namespace ash {
 
 std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
   return std::vector<PickerCategory>{
-      PickerCategory::kEmojis,    PickerCategory::kSymbols,
-      PickerCategory::kEmoticons, PickerCategory::kGifs,
-      PickerCategory::kOpenTabs,  PickerCategory::kBrowsingHistory,
-      PickerCategory::kBookmarks,
+      PickerCategory::kEmojis,     PickerCategory::kSymbols,
+      PickerCategory::kEmoticons,  PickerCategory::kGifs,
+      PickerCategory::kOpenTabs,   PickerCategory::kBrowsingHistory,
+      PickerCategory::kBookmarks,  PickerCategory::kDriveFiles,
+      PickerCategory::kLocalFiles,
   };
 }
 

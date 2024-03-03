@@ -19,6 +19,9 @@ ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category) {
     case PickerCategory::kBrowsingHistory:
     case PickerCategory::kBookmarks:
       return PickerCategoryType::kLinks;
+    case PickerCategory::kDriveFiles:
+    case PickerCategory::kLocalFiles:
+      return PickerCategoryType::kFiles;
   }
 }
 

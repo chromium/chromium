@@ -18,6 +18,8 @@ enum class ASH_PUBLIC_EXPORT PickerCategory {
   kOpenTabs,
   kBrowsingHistory,
   kBookmarks,
+  kDriveFiles,
+  kLocalFiles
 };
 
 }  // namespace ash

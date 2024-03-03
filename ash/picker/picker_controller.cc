@@ -235,6 +235,9 @@ void PickerController::GetResultsForCategory(PickerCategory category,
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           GetIconForPickerCategory(category)));
       break;
+    case PickerCategory::kDriveFiles:
+    case PickerCategory::kLocalFiles:
+      break;
   }
   callback.Run({
       PickerSearchResultsSection(PickerSectionType::kRecentlyUsed,

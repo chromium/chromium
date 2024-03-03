@@ -45,7 +45,8 @@ TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
 
   EXPECT_THAT(view.section_views_for_testing(),
               ElementsAre(Key(PickerCategoryType::kExpressions),
-                          Key(PickerCategoryType::kLinks)));
+                          Key(PickerCategoryType::kLinks),
+                          Key(PickerCategoryType::kFiles)));
 }
 
 TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
