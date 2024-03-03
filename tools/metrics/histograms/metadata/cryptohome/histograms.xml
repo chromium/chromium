@@ -115,6 +115,16 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result of triggering disk cleanup.</summary>
 </histogram>
 
+<histogram name="Cryptohome.DownloadsBindMountMigrationStatus"
+    enum="CryptohomeDownloadsMigrationStatus" expires_after="2025-03-01">
+  <owner>wenbojie@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    This metric records events that happen during the migration of the
+    'Downloads' folder from ~/Downloads to ~/MyFiles/Downloads.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.Errors" enum="CryptohomeError"
     expires_after="2024-06-30">
   <owner>apronin@chromium.org</owner>

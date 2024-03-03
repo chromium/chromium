@@ -147,6 +147,32 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="CryptohomeDownloadsMigrationStatus">
+  <int value="0" label="Success">The migration just finished successfully</int>
+  <int value="1" label="Fix Xattr">
+    The migration was previously done, but the xattr was left as
+    &quot;migrating&quot;
+  </int>
+  <int value="2" label="Cannot Set Xattr To Migrating">
+    Cannot set the xattr to &quot;migrating&quot;
+  </int>
+  <int value="3" label="Cannot Clean Up">
+    Cannot clean up the old backup folder
+  </int>
+  <int value="4" label="Cannot Back Up">
+    Cannot back up the existing ~/MyFiles/Downloads folder
+  </int>
+  <int value="5" label="Cannot Restore">
+    Cannot restore the backup folder to ~/MyFiles/Downloads
+  </int>
+  <int value="6" label="Cannot Move To MyFiles">
+    Cannot move ~/Downloads to ~/MyFiles/Downloads
+  </int>
+  <int value="7" label="Cannot Set Xattr To Migrated">
+    Cannot set the xattr to &quot;migrated&quot;
+  </int>
+</enum>
+
 <enum name="CryptohomeError">
   <int value="1" label="TPM returned TPM_E_FAIL"/>
   <int value="2" label="TCS key load failed"/>
