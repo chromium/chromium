@@ -371,6 +371,16 @@ TEST_F(FindBufferTest, FindMatchInRange) {
   EXPECT_EQ(foo1, match);
 }
 
+// https://issues.chromium.org/issues/327017912
+TEST_F(FindBufferTest, FindMatchInRangeIgnoreNonSearchable) {
+  SetBodyContent(R"(
+    <div inert>Do not find me!</div>
+    <div style="display: none">Do not find me!</div>)");
+  EphemeralRangeInFlatTree match = FindBuffer::FindMatchInRange(
+      WholeDocumentRange(), "me", kCaseInsensitive);
+  EXPECT_TRUE(match.IsNull());
+}
+
 class FindBufferBlockTest : public FindBufferTest,
                             public testing::WithParamInterface<std::string> {};
 
