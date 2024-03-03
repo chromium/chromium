@@ -505537,7 +505537,7 @@
        ]
       ],
       "request-consume-empty.any.js": [
-       "034a86041a74f58c4d0310ef809f6170b09dbb05",
+       "0bf9672a7950570d8bee99fdec4307429b5ae786",
        [
         "fetch/api/request/request-consume-empty.any.html",
         {
@@ -505600,7 +505600,7 @@
        ]
       ],
       "request-consume.any.js": [
-       "aff5d65244a15e9fb7cbded180bcdb55ef65be2b",
+       "3db9e8f265713abd56ba6b9e4831ca41708e9c2c",
        [
         "fetch/api/request/request-consume.any.html",
         {
@@ -506439,7 +506439,7 @@
        ]
       ],
       "response-consume-empty.any.js": [
-       "0fa85ecbcb2d7b9093307b189c392aa9c528d9c7",
+       "a5df356258658957137d09ef38da6d71fd7ed488",
        [
         "fetch/api/response/response-consume-empty.any.html",
         {
