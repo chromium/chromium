@@ -189956,6 +189956,129 @@
         {}
        ]
       ],
+      "text-spacing-trim-span-001.html": [
+       "623abbf7c7f9c78188e89990ff7fc878ea9bf15f",
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-span-001.html?class=chws,htb",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-span-001-ref.html?class=chws,htb",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-span-001.html?class=chws,vrl",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-span-001-ref.html?class=chws,vrl",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-span-001.html?class=halt,htb",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-span-001-ref.html?class=halt,htb",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-span-001.html?class=halt,vrl",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-span-001-ref.html?class=halt,vrl",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-span-001.html?class=space-first,chws,htb",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-span-001-ref.html?class=space-first,chws,htb",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-span-001.html?class=space-first,chws,vrl",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-span-001-ref.html?class=space-first,chws,vrl",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-span-001.html?class=space-first,halt,htb",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-span-001-ref.html?class=space-first,halt,htb",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-span-001.html?class=space-first,halt,vrl",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-span-001-ref.html?class=space-first,halt,vrl",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-span-001.html?class=trim-start,chws,htb",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-span-001-ref.html?class=trim-start,chws,htb",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-span-001.html?class=trim-start,chws,vrl",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-span-001-ref.html?class=trim-start,chws,vrl",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-span-001.html?class=trim-start,halt,htb",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-span-001-ref.html?class=trim-start,halt,htb",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-span-001.html?class=trim-start,halt,vrl",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-span-001-ref.html?class=trim-start,halt,vrl",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-spacing-trim-start-001.html": [
        "f007245277b7c26bcc92ac5a70664b42b914a5fc",
        [
@@ -273634,6 +273757,71 @@
         ],
         {}
        ]
+      ],
+      "semantics-001.html": [
+       "63aa9a4da887a3271f2058a59c525ee46a2dcd46",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/mrow/semantics-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "semantics-002.html": [
+       "62028fb863ee2f1fb89556748501f9ccf226f680",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/mrow/semantics-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "semantics-003.html": [
+       "83572f4c8c3820e347a73dbcb5a130651b7627a0",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/mrow/semantics-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "semantics-004.html": [
+       "17f0f1ecd09419d55840424e27f11c35e21ff79b",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/mrow/semantics-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "semantics-005.html": [
+       "e4fe611c475d0caa28677019868cb54a1c9bb7b6",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/mrow/semantics-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "operators": {
@@ -274447,6 +274635,45 @@
       ]
      },
      "scripts": {
+      "mmultiscript-001.html": [
+       "e55a04e12864577004fe1cbfc2201bc91db4bb7b",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/scripts/mmultiscript-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "mmultiscript-002.html": [
+       "c5e426008f9f7517a858703416e84d17f78a4989",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/scripts/mmultiscript-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "mmultiscript-003.html": [
+       "7de3e98b8ab8a06ef5e66f52bb2fb4bcbce99da4",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/scripts/mmultiscript-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "mover-accent-dynamic-change.html": [
        "a744149e6061310a2df2461635fba4a69c116707",
        [
@@ -288279,7 +288506,7 @@
     ],
     "resources": {
      "helpers.js": [
-      "97a62309cd5b39c14ab9c31b9c1305b160ba5c7e",
+      "dd9e191c4dbcbe4ee53034310639bc76a9307285",
       []
      ]
     }
@@ -298828,10 +299055,6 @@
      ],
      "anchor-position-top-layer-ref.html": [
       "dc7f77f2b3441ebee25f3e40a9480b668ee79ea4",
-      []
-     ],
-     "idlharness-expected.txt": [
-      "2417c4417ca06db26face863e0a00d9b0dad0f5f",
       []
      ],
      "inset-area-inline-container-ref.html": [
@@ -329315,6 +329538,10 @@
       ],
       "text-spacing-trim-space-all-001-ref.html": [
        "d33e3b62edd31029751ac32bcbdb6178df90d563",
+       []
+      ],
+      "text-spacing-trim-span-001-ref.html": [
+       "072fd1e917f1af3567a387b0e3dee4146dab05f1",
        []
       ],
       "text-spacing-trim-start-001-ref.html": [
@@ -372762,6 +372989,26 @@
       "mrow-painting-order-ref.html": [
        "72694959a86f1917cbd3db13b7f1a8b71714b711",
        []
+      ],
+      "semantics-001-ref.html": [
+       "7d99e48c928d6c9d70c51e45bd01c280b972e76c",
+       []
+      ],
+      "semantics-002-ref.html": [
+       "8abdad93dea33dc5d678a225ff0094e3b3140564",
+       []
+      ],
+      "semantics-003-ref.html": [
+       "7b6e21a3eb85f236699ee4566a089126c033c87f",
+       []
+      ],
+      "semantics-004-ref.html": [
+       "855d887bbca7ee1d6d91b75a75709c7fe33f8e41",
+       []
+      ],
+      "semantics-005-ref.html": [
+       "cf722603e1debb82566e1c2f7a0cfb27e609f194",
+       []
       ]
      },
      "operators": {
@@ -373023,6 +373270,18 @@
       ]
      },
      "scripts": {
+      "mmultiscript-001-ref.html": [
+       "d814944f5317cfbb91107f4cd0441bbca2ae3e14",
+       []
+      ],
+      "mmultiscript-002-ref.html": [
+       "33f12d7cdfac270c43ba6731bfde3a9a24efd282",
+       []
+      ],
+      "mmultiscript-003-ref.html": [
+       "daac6b3346763b5c19292c7809c8b3c1bc86554b",
+       []
+      ],
       "mover-accent-dynamic-change-ref.html": [
        "a4f16aa07f969e43dee4be45c48f7252e5c109ca",
        []
@@ -391889,7 +392148,7 @@
       []
      ],
      "elementwise_logical.https.any-expected.txt": [
-      "257892f56f4b7a5332f3eb6df01ee3872b8f7748",
+      "b6b0a4962a4ecb081fbf59958f94c653714b75ec",
       []
      ],
      "elementwise_logical.https.any.worker-expected.txt": [
@@ -392345,11 +392604,11 @@
       ]
      },
      "utils.js": [
-      "002ddbd706c0c86d26036483de4b769bc825108f",
+      "8140698fb8742ca42fb0adaca472d0d33d633816",
       []
      ],
      "utils_validation.js": [
-      "10c704384f46107be234bcbd65d3beea034ba2bf",
+      "7f1d4a4a9457e6a782063a17c10ea601f765adee",
       []
      ]
     }
@@ -422763,15 +423022,6 @@
       }
      ]
     ],
-    "closewatcher-dialog-popover.html": [
-     "50d5cb7a4ca9425838f07d1ec916bb60e704b23a",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
     "esc-key.html": [
      "16fcce691730c686c4191318b819ba9b93756f04",
      [
@@ -422806,57 +423056,395 @@
       }
      ]
     ],
-    "popover-closewatcher-multiple-plus-free.html": [
-     "4913b1454ef80fb246983fa100998b2810bf17c6",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "popover-closewatcher.html": [
-     "b40ea2ec7c56a4ba3a79b7fd9cfe44eb0a4ffef5",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "user-activation-CloseWatcher.html": [
-     "70435993f54cddf6d2d68b5b0ffd7a81642c4f4f",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "user-activation-multiple-plus-free.html": [
-     "a94b47904a10a9116b69fbc87b8cd78f09d602d2",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "user-activation-shared.html": [
-     "77e748532a3309f16f2cd1203119b4a92ce24262",
-     [
-      "close-watcher/user-activation-shared.html?CloseWatcher",
-      {
-       "testdriver": true
-      }
+    "user-activation": {
+     "n-activate-preventDefault.html": [
+      "531ef425998cb3d88f82b29c5f875f68e8c86195",
+      [
+       "close-watcher/user-activation/n-activate-preventDefault.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/n-activate-preventDefault.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
      ],
-     [
-      "close-watcher/user-activation-shared.html?dialog",
-      {
-       "testdriver": true
-      }
+     "n-activate.html": [
+      "babcf54c3c160dd48a85919543b37fc0657b6741",
+      [
+       "close-watcher/user-activation/n-activate.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/n-activate.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "n-closerequest-n.html": [
+      "2424af7820e5ab442e314d7a82fbcddc60369913",
+      [
+       "close-watcher/user-activation/n-closerequest-n.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/n-closerequest-n.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "n-destroy-n.html": [
+      "c26f87dd6f81352bdc6f678015d3645ef33f61e3",
+      [
+       "close-watcher/user-activation/n-destroy-n.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/n-destroy-n.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "n.html": [
+      "fe04e0dc1b9efb91a131d5150641367d41b4d3fa",
+      [
+       "close-watcher/user-activation/n.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/n.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "nn-activate-CloseWatcher.html": [
+      "8045f30b482647d9364876d812e3eeb5b0cb9116",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "nn-activate-dialog.html": [
+      "5cc866044ce26cd7b94fb8bb3b125d0e651eb276",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "nn.html": [
+      "beb63f1b4f531cd68405e666480987c9a876c479",
+      [
+       "close-watcher/user-activation/nn.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/nn.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "nnn-CloseWatcher-dialog-popover.html": [
+      "f8b9061d019fae0191b4528978b1275a87efda03",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "nnn-popovers.html": [
+      "ed5d15598fcdd1f24880f133fcd0dc6d852f8add",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "nnn.html": [
+      "9b604e91db2dd2f4967551c9aadd323125e4dc51",
+      [
+       "close-watcher/user-activation/nnn.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/nnn.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "ny-activate-preventDefault.html": [
+      "5ffb64b1134b3e4741a05f1453a37bab77613e04",
+      [
+       "close-watcher/user-activation/ny-activate-preventDefault.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/ny-activate-preventDefault.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "ny.html": [
+      "226912233e21aeb6df69d652c53cd1fe22bacc98",
+      [
+       "close-watcher/user-activation/ny.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/ny.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "nyn-popovers.html": [
+      "b6df610ae03160db9b8fad37ef1b046dff624ef8",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "nyn.html": [
+      "ec5153c7674a1efd37e27eacbc15420ced861f13",
+      [
+       "close-watcher/user-activation/nyn.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/nyn.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "nynn-destroy.html": [
+      "8519c8a2a94067b89482e7374425757dd6bee83d",
+      [
+       "close-watcher/user-activation/nynn-destroy.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/nynn-destroy.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "nynn.html": [
+      "f6e74a0ba1104e065f2f1b90ca57af752a6abc06",
+      [
+       "close-watcher/user-activation/nynn.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/nynn.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "nyyn.html": [
+      "f3987c1a2145055b0405fc5c5e592936a00826b1",
+      [
+       "close-watcher/user-activation/nyyn.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/nyyn.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "nyyyn.html": [
+      "6cb8f3a4456925429c4ccfe2b4b06c108e8b2b92",
+      [
+       "close-watcher/user-activation/nyyyn.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/nyyyn.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "y.html": [
+      "ee58a92293ab9831c7d8e6c93ed89595155f858d",
+      [
+       "close-watcher/user-activation/y.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/y.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "yn-activate.html": [
+      "af7289aa28e14f05a02fdcdde251f001ddb23699",
+      [
+       "close-watcher/user-activation/yn-activate.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/yn-activate.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "yn.html": [
+      "8f7e90e2d85c8d847ec4e93a7252b39997caf5a1",
+      [
+       "close-watcher/user-activation/yn.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/yn.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "ynn.html": [
+      "8cc7f5bfb66c735780ee451c87f4dedb8173b33a",
+      [
+       "close-watcher/user-activation/ynn.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/ynn.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "yy.html": [
+      "0aa03cdd050ca8101714cc1b8e2c3fb2d240d281",
+      [
+       "close-watcher/user-activation/yy.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/yy.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "yyn.html": [
+      "b87cf7a7e342e7b9967bb1f429e95b79fb1a8fc7",
+      [
+       "close-watcher/user-activation/yyn.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/yyn.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "yyy-CloseWatcher-dialog-popover.html": [
+      "f0a1cb06d101cd7da389b11bab1d7fe7108addf2",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "yyy-activate-CloseWatcher-dialog-popover.html": [
+      "ed41d1bc3210c1ddcb07c31ce4ff3a55cbd8cdd3",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "yyy-popovers.html": [
+      "6f1b739465513605eb2e9667344cae8bacb96cda",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "yyy.html": [
+      "f16767a86bdfcf62b62d9ac69947fd93d084d1f4",
+      [
+       "close-watcher/user-activation/yyy.html?CloseWatcher",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "close-watcher/user-activation/yyy.html?dialog",
+       {
+        "testdriver": true
+       }
+      ]
      ]
-    ]
+    }
    },
    "compat": {
     "css-style-declaration-alias-enumeration.html": [
@@ -436906,6 +437494,13 @@
      ],
      "at-position-fallback-invalidation.html": [
       "68a0874931245741b7b35e2c517367f8733bc764",
+      [
+       null,
+       {}
+      ]
+     ],
+     "at-position-try-parse.html": [
+      "27f5c8687b29fc8ee4e174b439c8b0ea8f71c020",
       [
        null,
        {}
@@ -462154,6 +462749,13 @@
         {
          "timeout": "long"
         }
+       ]
+      ],
+      "scale-animation-math-functions-tentative.html": [
+       "2ad177469a434ab62aa9c411dce0b475b9f949c4",
+       [
+        null,
+        {}
        ]
       ],
       "scale-composition.html": [
@@ -588914,7 +589516,7 @@
        ]
       ],
       "legacy-mstyle-attributes.html": [
-       "2463c404765fe92e5925a38cba8f9c7fe0dec7d0",
+       "0b14ac5334b7dff99205f935b9f042a218111093",
        [
         null,
         {}
