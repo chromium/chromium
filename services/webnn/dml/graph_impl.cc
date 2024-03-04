@@ -1193,6 +1193,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
       // `DML_MAX_POOLING_OPERATOR_DESC` without dilations supported for best
       // compatibility.
       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_max_pooling_operator_desc.
+      // TODO(issues.chromium.org/327244278): Remove the workaround of using
+      // `DML_MAX_POOLING_OPERATOR_DESC` without dilations.
       if (dilations[0] == 1 && dilations[1] == 1) {
         DML_MAX_POOLING_OPERATOR_DESC max_pooling_desc = {
             .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
@@ -1889,11 +1891,11 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input_a_node_output =
       GetNodeOutputForOperand(id_to_node_output_map, gemm->a_operand_id);
-  const auto& input_a_tensor_desc = input_a_node_output->GetTensorDesc();
+  auto input_a_tensor_desc = input_a_node_output->GetTensorDesc();
 
   const NodeOutput* input_b_node_output =
       GetNodeOutputForOperand(id_to_node_output_map, gemm->b_operand_id);
-  const auto& input_b_tensor_desc = input_b_node_output->GetTensorDesc();
+  auto input_b_tensor_desc = input_b_node_output->GetTensorDesc();
 
   std::vector<const NodeOutput*> inputs{input_a_node_output,
                                         input_b_node_output};
@@ -1926,13 +1928,28 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
     }
   }
 
+  // Use 4D GEMM which is available since feature level 1.0 for best
+  // compatibility. There is no performance difference in the shader between
+  // 2D/3D/4D, as 2D is just a variant of 4D with a batch/channel size of 1.
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gemm_operator_desc.
+  // TODO(issues.chromium.org/327244277): Remove the workaround of coercing
+  // GEMM's tensors to 4D.
+  input_a_tensor_desc.EnsureMinimumRank(4, TensorDesc::Alignment::kTrailing);
+  input_b_tensor_desc.EnsureMinimumRank(4, TensorDesc::Alignment::kTrailing);
+  if (input_c_tensor_desc) {
+    input_c_tensor_desc->EnsureMinimumRank(4, TensorDesc::Alignment::kTrailing);
+  }
+  auto expanded_output_tensor_desc = output_tensor_desc;
+  expanded_output_tensor_desc.EnsureMinimumRank(
+      4, TensorDesc::Alignment::kTrailing);
+
   DML_GEMM_OPERATOR_DESC gemm_operator_desc{
       .ATensor = &input_a_tensor_desc.GetDMLTensorDesc(),
       .BTensor = &input_b_tensor_desc.GetDMLTensorDesc(),
       .CTensor = input_c_tensor_desc.has_value()
                      ? &input_c_tensor_desc->GetDMLTensorDesc()
                      : nullptr,
-      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &expanded_output_tensor_desc.GetDMLTensorDesc(),
       .TransA = (gemm->a_transpose) ? DML_MATRIX_TRANSFORM_TRANSPOSE
                                     : DML_MATRIX_TRANSFORM_NONE,
       .TransB = (gemm->b_transpose) ? DML_MATRIX_TRANSFORM_TRANSPOSE
@@ -2295,11 +2312,25 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
   CHECK_EQ(input_a_tensor_desc.GetDimensions().size(),
            output_tensor_dims.size());
 
+  // Use 4D GEMM which is available since feature level 1.0 for best
+  // compatibility. There is no performance difference in the shader between
+  // 2D/3D/4D, as 2D is just a variant of 4D with a batch/channel size of 1.
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gemm_operator_desc.
+  // TODO(issues.chromium.org/327244277): Remove the workaround of coercing
+  // GEMM's tensors to 4D.
+  auto expanded_output_tensor_desc = output_tensor_desc;
+  if (output_tensor_dims.size() < 4) {
+    input_a_tensor_desc.EnsureMinimumRank(4, TensorDesc::Alignment::kTrailing);
+    input_b_tensor_desc.EnsureMinimumRank(4, TensorDesc::Alignment::kTrailing);
+    expanded_output_tensor_desc.EnsureMinimumRank(
+        4, TensorDesc::Alignment::kTrailing);
+  }
+
   DML_GEMM_OPERATOR_DESC matmul_operator_desc{
       .ATensor = &input_a_tensor_desc.GetDMLTensorDesc(),
       .BTensor = &input_b_tensor_desc.GetDMLTensorDesc(),
       .CTensor = nullptr,
-      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &expanded_output_tensor_desc.GetDMLTensorDesc(),
       .TransA = DML_MATRIX_TRANSFORM_NONE,
       .TransB = DML_MATRIX_TRANSFORM_NONE,
       .Alpha = 1.0f,
