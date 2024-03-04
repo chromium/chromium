@@ -21,6 +21,8 @@ namespace apps {
 
 class AppInstallServiceAsh : public AppInstallService {
  public:
+  static base::OnceCallback<void(PackageId)>& InstallAppCallbackForTesting();
+
   explicit AppInstallServiceAsh(Profile& profile);
   AppInstallServiceAsh(const AppInstallServiceAsh&) = delete;
   AppInstallServiceAsh& operator=(const AppInstallServiceAsh&) = delete;

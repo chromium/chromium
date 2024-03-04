@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/url_constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -26,12 +27,8 @@ namespace {
 
 using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 
-using std::literals::string_view_literals::operator""sv;
-
-// For matching URIs of the form: almanac://install-app?package_id=<package id>
-constexpr std::string_view kAppInstallScheme = "almanac"sv;
-constexpr std::string_view kAppInstallPath = "//install-app"sv;
-constexpr std::string_view kAppInstallPackageIdParam = "package_id"sv;
+constexpr std::string_view kAppInstallPath = "//install-app";
+constexpr std::string_view kAppInstallPackageIdParam = "package_id";
 
 constexpr size_t kMaxDecodeLength = 2048;
 
@@ -96,7 +93,8 @@ ThrottleCheckResult AppInstallNavigationThrottle::WillRedirectRequest() {
 ThrottleCheckResult AppInstallNavigationThrottle::HandleRequest() {
   // TODO(b/304680258): Integration test this flow.
   const GURL& url = navigation_handle()->GetURL();
-  if (url.SchemeIs(kAppInstallScheme) && url.path_piece() == kAppInstallPath) {
+  if (url.SchemeIs(chromeos::kAppInstallUriScheme) &&
+      url.path_piece() == kAppInstallPath) {
     std::optional<PackageId> package_id = ExtractPackageId(url.query_piece());
     // TODO(b/303350800): Generalize to work with all app types.
     if (package_id.has_value() && package_id->app_type() == AppType::kWeb) {

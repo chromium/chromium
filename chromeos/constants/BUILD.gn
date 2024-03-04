@@ -14,6 +14,7 @@ component("constants") {
     "devicetype.h",
     "pkcs11_definitions.h",
     "pref_names.h",
+    "url_constants.h",
   ]
   deps = [
     "//base",

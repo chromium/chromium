@@ -23,11 +23,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
+#include "base/test/test_future.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_service_ash.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -59,6 +59,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/user_manager/user_names.h"
@@ -95,6 +96,7 @@ class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kUploadOfficeToCloud,
          features::kReleaseNotesNotificationAllChannels,
+         chromeos::features::kAppInstallServiceUri,
          features::kHelpAppLauncherSearch},
         {});
     https_server()->AddDefaultHandlers(GetChromeTestDataDir());
@@ -953,6 +955,26 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                    }));
   search_run_loop.Run();
 #endif
+}
+
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2CanOpenAlmanacScheme) {
+  WaitForTestSystemAppInstall();
+  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
+
+  base::test::TestFuture<apps::PackageId> future;
+  apps::AppInstallServiceAsh::InstallAppCallbackForTesting() =
+      future.GetCallback();
+  constexpr char kScript[] = R"(
+    (() => {
+      location.href = 'almanac://install-app?package_id=web:test';
+      return true;
+    })();
+  )";
+  EXPECT_EQ(true,
+            content::EvalJs(
+                SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
+  EXPECT_EQ(future.Get<apps::PackageId>(),
+            apps::PackageId::FromString("web:test"));
 }
 
 // Test that the Help App opens when Gesture help requested.

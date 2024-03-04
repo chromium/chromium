@@ -19,6 +19,8 @@ namespace apps {
 
 class PackageId;
 
+// Matches URIs of the form almanac://install-app?package_id=<package id> and
+// triggers an installation using app metadata from Almanac.
 class AppInstallNavigationThrottle : public content::NavigationThrottle {
  public:
   using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;

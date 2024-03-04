@@ -94,6 +94,12 @@ const GURL& GetIconUrl(const std::vector<AppInstallIcon>& icons) {
 
 }  // namespace
 
+base::OnceCallback<void(PackageId)>&
+AppInstallServiceAsh::InstallAppCallbackForTesting() {
+  static base::NoDestructor<base::OnceCallback<void(PackageId)>> callback;
+  return *callback;
+}
+
 AppInstallServiceAsh::AppInstallServiceAsh(Profile& profile)
     : profile_(profile),
       device_info_manager_(&*profile_),
@@ -104,6 +110,10 @@ AppInstallServiceAsh::~AppInstallServiceAsh() = default;
 void AppInstallServiceAsh::InstallApp(AppInstallSurface surface,
                                       PackageId package_id,
                                       base::OnceClosure callback) {
+  if (InstallAppCallbackForTesting()) {
+    std::move(InstallAppCallbackForTesting()).Run(package_id);
+  }
+
   // TODO(b/303350800): Generalize to work with all app types.
   CHECK_EQ(package_id.app_type(), AppType::kWeb);
 
