@@ -553,7 +553,7 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
         // - AccessibilityEventsSubtreeReparentedViaAriaOwns2/linux
         // TODO(crbug.com/1299031) Find out why this is necessary.
         object_cache_->MarkAXObjectDirtyWithCleanLayout(
-            original_parent->ParentObject());
+            original_parent->CachedParentObject());
       }
       // Now that we're replacing the parent, we need to update cached values
       // for the added child's subtree, because some cached values are inherited
