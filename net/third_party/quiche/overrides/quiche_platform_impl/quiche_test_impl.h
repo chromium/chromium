@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "base/test/gtest_util.h"
 #include "net/quic/platform/impl/quic_test_flags_utils.h"
 #include "net/test/scoped_disable_exit_on_dfatal.h"
 #include "net/test/test_with_task_environment.h"
@@ -51,6 +52,9 @@ std::string QuicheGetCommonSourcePathImpl();
   do {                                                     \
   } while (0)
 #endif
+
+#define EXPECT_QUICHE_DEATH_IMPL(condition, message) \
+  EXPECT_CHECK_DEATH_WITH(condition, message)
 
 #define QUICHE_TEST_DISABLED_IN_CHROME_IMPL(name) DISABLED_##name
 
