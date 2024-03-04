@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
@@ -161,6 +162,7 @@ class KioskBaseTest : public OobeBaseTest {
 
   std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
   std::unique_ptr<base::AutoReset<bool>> block_app_launch_override_;
+  std::unique_ptr<base::AutoReset<base::TimeDelta>> network_wait_time_override_;
 };
 
 }  // namespace ash

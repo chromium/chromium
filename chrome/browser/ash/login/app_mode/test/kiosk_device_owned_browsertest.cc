@@ -163,14 +163,6 @@ class KioskDeviceOwnedTest : public KioskBaseTest {
     login_manager_.AppendRegularUsers(1);
   }
 
-  void SetUp() override {
-    KioskBaseTest::SetUp();
-
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
-  }
-
   void SetUpOnMainThread() override {
     KioskBaseTest::SetUpOnMainThread();
 
@@ -189,8 +181,6 @@ class KioskDeviceOwnedTest : public KioskBaseTest {
     return CHECK_DEREF(static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get()));
   }
-
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, InstallAndLaunchApp) {

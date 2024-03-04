@@ -98,6 +98,9 @@ class NetworkUiController
   static std::unique_ptr<base::AutoReset<std::optional<bool>>>
   SetCanConfigureNetworkForTesting(bool can_configure_network);
 
+  static std::unique_ptr<base::AutoReset<base::TimeDelta>>
+      SetNetworkWaitTimeoutForTesting(base::TimeDelta);
+
  private:
   void OnNetworkStateChanged(bool online);
   void MaybeShowNetworkConfigureUI();

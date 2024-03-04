@@ -247,4 +247,12 @@ NetworkUiController::SetCanConfigureNetworkForTesting(
       &g_can_configure_network_for_testing, can_configure_network);
 }
 
+// static
+std::unique_ptr<base::AutoReset<base::TimeDelta>>
+NetworkUiController::SetNetworkWaitTimeoutForTesting(
+    base::TimeDelta new_timeout) {
+  return std::make_unique<base::AutoReset<base::TimeDelta>>(
+      &g_network_wait_time, new_timeout);
+}
+
 }  // namespace ash
