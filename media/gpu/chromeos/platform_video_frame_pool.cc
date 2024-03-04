@@ -151,14 +151,8 @@ scoped_refptr<FrameResource> PlatformVideoFramePool::GetFrame() {
   scoped_refptr<FrameResource> wrapped_frame =
       origin_frame->CreateWrappingFrame(visible_rect_, natural_size_);
   DCHECK(wrapped_frame);
-  // TODO(nhebert): Migrate |frames_in_use_| to store a pointer to the
-  // FrameResource instead of to the underlying VideoFrame. |frames_in_use_| is
-  // used for unwrapping the frame by the MailboxVideoFrameConverter in order to
-  // add a destruction observer to the original frame.
-  CHECK(origin_frame->AsVideoFrameResource());
-  frames_in_use_.emplace(
-      wrapped_frame->GetSharedMemoryId(),
-      origin_frame->AsVideoFrameResource()->GetMutableVideoFrame().get());
+  frames_in_use_.emplace(wrapped_frame->GetSharedMemoryId(),
+                         origin_frame.get());
   wrapped_frame->AddDestructionObserver(
       base::BindOnce(&PlatformVideoFramePool::OnFrameReleasedThunk, weak_this_,
                      parent_task_runner_, std::move(origin_frame)));
@@ -280,7 +274,7 @@ bool PlatformVideoFramePool::IsExhausted_Locked() {
   return free_frames_.empty() && GetTotalNumFrames_Locked() >= max_num_frames_;
 }
 
-VideoFrame* PlatformVideoFramePool::GetOriginalFrame(
+FrameResource* PlatformVideoFramePool::GetOriginalFrame(
     gfx::GenericSharedMemoryId frame_id) {
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);

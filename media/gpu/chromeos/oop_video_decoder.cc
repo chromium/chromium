@@ -1001,14 +1001,8 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
       return;
     }
     received_id_to_decoded_frame_map_[received_gmb_id] = gmb_frame;
-    // TODO(nhebert): Migrate |generated_id_to_decoded_frame_map_| to store
-    // a pointer to the FrameResource instead of to the underlying VideoFrame.
-    // |generated_id_to_decoded_frame_map_| is used for unwrapping the frame by
-    // the MailboxVideoFrameConverter in order to add a destruction observer to
-    // the original frame.
-    CHECK(gmb_frame->AsVideoFrameResource());
     generated_id_to_decoded_frame_map_[gmb_frame->GetSharedMemoryId()] =
-        gmb_frame->AsVideoFrameResource()->GetMutableVideoFrame().get();
+        gmb_frame.get();
     frame_to_wrap = std::move(gmb_frame);
   }
 
@@ -1020,7 +1014,7 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   scoped_refptr<FrameResource> wrapped_frame =
       frame_to_wrap->CreateWrappingFrame(visible_rect, natural_size);
   if (!wrapped_frame) {
-    VLOGF(2) << "Could not wrap the GpuMemoryBuffer-backed frame";
+    VLOGF(2) << "Could not wrap the GpuMemoryBuffer-backed FrameResource";
     Stop();
     return;
   }
@@ -1075,7 +1069,7 @@ void OOPVideoDecoder::AddLogRecord(const MediaLogRecord& event) {
   //   media_log_->AddLogRecord(std::make_unique<media::MediaLogRecord>(event));
 }
 
-VideoFrame* OOPVideoDecoder::GetOriginalFrame(
+FrameResource* OOPVideoDecoder::GetOriginalFrame(
     gfx::GenericSharedMemoryId frame_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

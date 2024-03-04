@@ -341,18 +341,15 @@ void MailboxVideoFrameConverter::ConvertFrame(
   DVLOGF(4);
 
   if (!frame ||
-      frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+      (frame->storage_type() != VideoFrame::STORAGE_DMABUFS &&
+       frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER)) {
     return OnError(FROM_HERE, "Invalid frame.");
   }
 
-  VideoFrame* origin_frame = nullptr;
-  if (!get_original_frame_cb_.is_null()) {
-    origin_frame = get_original_frame_cb_.Run(frame->GetSharedMemoryId());
-  } else {
-    // This is true because the frame pools are all still video frame based.
-    CHECK(frame->AsVideoFrameResource());
-    origin_frame = frame->AsVideoFrameResource()->GetMutableVideoFrame().get();
-  }
+  FrameResource* origin_frame =
+      !get_original_frame_cb_.is_null()
+          ? get_original_frame_cb_.Run(frame->GetSharedMemoryId())
+          : frame.get();
   if (!origin_frame)
     return OnError(FROM_HERE, "Failed to get origin frame.");
 
@@ -366,9 +363,9 @@ void MailboxVideoFrameConverter::ConvertFrame(
 
   // |frame| always carries a reference to |origin_frame|, directly or
   // indirectly. Therefore, |origin_frame| is guaranteed to be valid by carrying
-  // |frame|. Additionally, |origin_frame| owns the SharedImage, so as long as
-  // |frame| lives, |shared_image| is valid. Hence, it's safe to use
-  // base::Unretained here.
+  // |frame|. Maintaining a reference |origin_frame| also guarantees that
+  // |shared_image| is alive, so as long as |frame| lives, |shared_image| is
+  // valid. Hence, it's safe to use base::Unretained here.
   gpu_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MailboxVideoFrameConverter::ConvertFrameOnGPUThread,
@@ -377,7 +374,7 @@ void MailboxVideoFrameConverter::ConvertFrame(
 }
 
 void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
-    VideoFrame* origin_frame,
+    FrameResource* origin_frame,
     scoped_refptr<FrameResource> frame,
     const gpu::Mailbox& mailbox) {
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
@@ -466,11 +463,11 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
 }
 
 void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
-    VideoFrame* origin_frame,
+    FrameResource* origin_frame,
     scoped_refptr<FrameResource> frame,
     ScopedSharedImage* stored_shared_image) {
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
-  TRACE_EVENT1("media,gpu", "ConvertFrameOnGPUThread", "VideoFrame id",
+  TRACE_EVENT1("media,gpu", "ConvertFrameOnGPUThread", "FrameResource id",
                origin_frame->unique_id());
   const gfx::ColorSpace src_color_space = frame->ColorSpace();
   const gfx::Rect visible_rect = frame->visible_rect();
@@ -528,7 +525,7 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
 }
 
 bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
-    VideoFrame* origin_frame,
+    FrameResource* origin_frame,
     const gfx::ColorSpace& src_color_space,
     const gfx::Rect& destination_visible_rect,
     ScopedSharedImage* shared_image) {
@@ -550,7 +547,7 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
     return false;
   }
 
-  auto gpu_memory_buffer_handle = CreateGpuMemoryBufferHandle(origin_frame);
+  auto gpu_memory_buffer_handle = origin_frame->CreateGpuMemoryBufferHandle();
   DCHECK(!gpu_memory_buffer_handle.is_null());
   DCHECK_EQ(gpu_memory_buffer_handle.type, gfx::NATIVE_PIXMAP);
 
@@ -611,7 +608,7 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
 }
 
 void MailboxVideoFrameConverter::RegisterSharedImage(
-    VideoFrame* origin_frame,
+    FrameResource* origin_frame,
     std::unique_ptr<ScopedSharedImage> scoped_shared_image) {
   DVLOGF(4) << "frame: " << origin_frame->unique_id();
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());

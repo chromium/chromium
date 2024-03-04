@@ -59,7 +59,7 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   // Returns the original frame from a frame's shared memory ID. We need this
   // method to determine whether the frame returned by GetFrame() is the same
   // one after recycling, and bind destruction callback at original frames.
-  VideoFrame* GetOriginalFrame(gfx::GenericSharedMemoryId frame_id);
+  FrameResource* GetOriginalFrame(gfx::GenericSharedMemoryId frame_id);
 
   // Returns the number of frames in the pool for testing purposes.
   size_t GetPoolSizeForTesting();
@@ -120,7 +120,7 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   base::circular_deque<scoped_refptr<FrameResource>> free_frames_
       GUARDED_BY(lock_);
   // Mapping from the frame's shared memory ID to the original frame.
-  std::map<gfx::GenericSharedMemoryId, VideoFrame*> frames_in_use_
+  std::map<gfx::GenericSharedMemoryId, FrameResource*> frames_in_use_
       GUARDED_BY(lock_);
 
   // The maximum number of frames created by the pool.
