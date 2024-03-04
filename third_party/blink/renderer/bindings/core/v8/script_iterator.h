@@ -30,8 +30,7 @@ class ExecutionContext;
 // Usage:
 //   v8::Local<v8::Object> es_object = ...;
 //   auto script_iterator = ScriptIterator::FromIterable(
-//       isolate, es_object, exception_state,
-//       ScriptIterator::ConversionFailureMode::kDoNotThrowTypeError);
+//       isolate, es_object, exception_state);
 //   if (exception_state.HadException())
 //     return;
 //   if (!script_iterator.IsNull()) {
