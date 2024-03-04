@@ -10,6 +10,9 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/url_row.h"
+#include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
 
@@ -29,12 +32,31 @@ class SqlDatabase {
   SqlDatabase& operator=(const SqlDatabase&) = delete;
   ~SqlDatabase();
 
+  // Inserts or replaces `passages` keyed by `url_id`. `visit_id` and
+  // `visit_time` are needed too, to respect History deletions and expirations.
+  // If there are existing passages for `url_id`, they are replaced. Returns
+  // whether this operation was successful.
+  bool InsertOrReplacePassages(history::URLID url_id,
+                               history::VisitID visit_id,
+                               base::Time visit_time,
+                               const proto::PassagesValue& passages);
+
+  // Gets the passages associated with `url_id`. Returns nullopt if there's
+  // nothing available.
+  std::optional<proto::PassagesValue> GetPassages(history::URLID url_id);
+
  private:
   // Initializes the database, if it's not already initialized. Returns true if
   // the initialization was successful (or already succeeded in the past).
-  bool LazyInit(const base::FilePath& storage_dir);
+  bool LazyInit();
   // Helper function for LazyInit(). Should only be called by LazyInit().
   sql::InitStatus InitInternal(const base::FilePath& storage_dir);
+
+  // Callback for database errors.
+  void DatabaseErrorCallback(int extended_error, sql::Statement* statement);
+
+  // The directory storing the database.
+  const base::FilePath storage_dir_;
 
   // The underlying SQL database.
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);

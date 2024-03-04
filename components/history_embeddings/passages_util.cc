@@ -43,6 +43,10 @@ std::vector<uint8_t> PassagesProtoToBlob(
 
 std::optional<history_embeddings::proto::PassagesValue> PassagesBlobToProto(
     base::span<const uint8_t> passages_blob) {
+  if (passages_blob.empty()) {
+    return std::nullopt;
+  }
+
   // TODO(b/325524013): Add metrics to determine if this needs to be sent to a
   // separate sequence.
   std::string passages_blob_as_string(passages_blob.begin(),

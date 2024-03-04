@@ -18,6 +18,7 @@ static_library("history_embeddings") {
 
   deps = [
     "//base",
+    "//components/history/core/browser",
     "//components/history_embeddings/proto:history_embeddings_proto",
     "//components/keyed_service/core",
     "//components/os_crypt/sync",

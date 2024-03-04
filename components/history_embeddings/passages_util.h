@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_HISTORY_EMBEDDINGS_PASSAGES_UTIL_H_
 #define COMPONENTS_HISTORY_EMBEDDINGS_PASSAGES_UTIL_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
 
