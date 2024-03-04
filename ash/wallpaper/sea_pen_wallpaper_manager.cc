@@ -4,18 +4,33 @@
 
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
+#include "components/account_id/account_id.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 
 namespace ash {
+
+namespace {
+
+base::FilePath GetAccountSeaPenWallpaperDir(
+    const base::FilePath& storage_directory,
+    const AccountId& account_id) {
+  return storage_directory.Append(account_id.GetAccountIdKey());
+}
+
+}  // namespace
 
 SeaPenWallpaperManager::SeaPenWallpaperManager(
     WallpaperFileManager* wallpaper_file_manager)
@@ -23,22 +38,46 @@ SeaPenWallpaperManager::SeaPenWallpaperManager(
 
 SeaPenWallpaperManager::~SeaPenWallpaperManager() = default;
 
+void SeaPenWallpaperManager::SetStorageDirectory(
+    const base::FilePath& storage_directory) {
+  storage_directory_ = storage_directory;
+}
+
+base::FilePath SeaPenWallpaperManager::GetFilePathForImageId(
+    const AccountId& account_id,
+    const uint32_t image_id) const {
+  CHECK(account_id.HasAccountIdKey());
+  CHECK(!storage_directory_.empty());
+  return GetAccountSeaPenWallpaperDir(storage_directory_, account_id)
+      .Append(base::NumberToString(image_id))
+      .AddExtension(".jpg");
+}
+
 void SeaPenWallpaperManager::DecodeAndSaveSeaPenImage(
+    const AccountId& account_id,
     const SeaPenImage& sea_pen_image,
-    const base::FilePath& wallpaper_dir,
     const personalization_app::mojom::SeaPenQueryPtr& query,
     DecodeAndSaveSeaPenImageCallback callback) {
-  // TODO(b/307591556) also save metadata to a file.
+  CHECK(!storage_directory_.empty());
+  CHECK(account_id.HasAccountIdKey());
   image_util::DecodeImageData(
       base::BindOnce(&SeaPenWallpaperManager::SaveSeaPenImage,
-                     weak_factory_.GetWeakPtr(), sea_pen_image.id,
-                     wallpaper_dir, query.Clone(), std::move(callback)),
+                     weak_factory_.GetWeakPtr(), account_id, sea_pen_image.id,
+                     query.Clone(), std::move(callback)),
       data_decoder::mojom::ImageCodec::kDefault, sea_pen_image.jpg_bytes);
 }
 
+void SeaPenWallpaperManager::DeleteSeaPenImage(
+    const AccountId& account_id,
+    const uint32_t image_id,
+    DeleteRecentSeaPenImageCallback callback) {
+  wallpaper_file_manager_->RemoveImageFromDisk(
+      std::move(callback), GetFilePathForImageId(account_id, image_id));
+}
+
 void SeaPenWallpaperManager::SaveSeaPenImage(
-    uint32_t sea_pen_image_id,
-    const base::FilePath& wallpaper_dir,
+    const AccountId& account_id,
+    const uint32_t image_id,
     const personalization_app::mojom::SeaPenQueryPtr& query,
     DecodeAndSaveSeaPenImageCallback callback,
     const gfx::ImageSkia& image_skia) {
@@ -48,13 +87,13 @@ void SeaPenWallpaperManager::SaveSeaPenImage(
     return;
   }
   DVLOG(2) << __func__ << " image_skia.size()=" << image_skia.size().ToString();
-  std::string file_name = base::NumberToString(sea_pen_image_id) + ".jpg";
+  const base::FilePath file_path = GetFilePathForImageId(account_id, image_id);
   const std::string metadata = QueryDictToXmpString(SeaPenQueryToDict(query));
   auto on_saved = base::BindOnce(&SeaPenWallpaperManager::OnSeaPenImageSaved,
                                  weak_factory_.GetWeakPtr(), image_skia,
                                  std::move(callback));
   wallpaper_file_manager_->SaveWallpaperToDisk(
-      WallpaperType::kSeaPen, wallpaper_dir, file_name,
+      WallpaperType::kSeaPen, file_path.DirName(), file_path.BaseName().value(),
       WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, image_skia, metadata,
       std::move(on_saved));
 }
