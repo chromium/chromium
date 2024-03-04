@@ -1965,6 +1965,9 @@ function DOM_getAllBoundingClientRects() {
         elem.offset,
         transformMatrix
       );
+      if (left >= right || top >= bottom) {
+        return null;
+      }
 
       // Get all client rects.
       const clientRects = [...elem.raw.getClientRects()].map(r => {
@@ -1973,8 +1976,28 @@ function DOM_getAllBoundingClientRects() {
         return [left, top, right, bottom];
       });
 
-      if (left >= right || top >= bottom) {
+      const clipBounds = shiftRect(elem.clipBounds, elem.offset);
+      // ignore elements that are completely outside their clipBounds
+      if (
+        clipBounds.left > right ||
+        clipBounds.top > bottom ||
+        clipBounds.right < left ||
+        clipBounds.bottom < top
+      ) {
         return null;
+      }
+      // only return the clipBounds that actually affect this element
+      if (clipBounds.left === undefined || clipBounds.left <= left) {
+        delete clipBounds.left;
+      }
+      if (clipBounds.top === undefined || clipBounds.top <= top) {
+        delete clipBounds.top;
+      }
+      if (clipBounds.right === undefined || clipBounds.right >= right) {
+        delete clipBounds.right;
+      }
+      if (clipBounds.bottom === undefined || clipBounds.bottom >= bottom) {
+        delete clipBounds.bottom;
       }
 
       const v = {
@@ -1983,6 +2006,9 @@ function DOM_getAllBoundingClientRects() {
       };
       if (clientRects.length > 0) {
         v.rects = clientRects;
+      }
+      if (Object.keys(clipBounds).length > 0) {
+        v.clipBounds = clipBounds;
       }
       if (elem.style?.getPropertyValue("visibility") === "hidden") {
         v.visibility = "hidden";
@@ -2838,6 +2864,9 @@ StackingContext.prototype = {
 
   // Get the elements in this context ordered back-to-front.
   flatten() {
+    /**
+     * @type {StackingContextElement[]}
+     */
     const rv = [];
 
     const pushElements = (elems) => {
