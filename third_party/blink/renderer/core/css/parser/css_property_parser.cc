@@ -60,6 +60,8 @@ bool IsPropertyAllowedInRule(const CSSProperty& property,
       return property.IsValidForKeyframe();
     case StyleRule::kTry:
       return property.IsValidForPositionFallback();
+    case StyleRule::kPositionTry:
+      return property.IsValidForPositionFallback();
     default:
       NOTREACHED();
       return false;

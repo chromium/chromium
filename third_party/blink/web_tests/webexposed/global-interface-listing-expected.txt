@@ -863,6 +863,12 @@ interface CSSPositionFallbackRule : CSSGroupingRule
     attribute @@toStringTag
     getter name
     method constructor
+interface CSSPositionTryRule : CSSRule
+    attribute @@toStringTag
+    getter name
+    getter style
+    method constructor
+    setter style
 interface CSSPositionValue : CSSStyleValue
     attribute @@toStringTag
     getter x

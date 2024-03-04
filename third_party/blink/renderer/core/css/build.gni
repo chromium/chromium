@@ -227,6 +227,8 @@ blink_core_sources_css = [
   "css_pending_system_font_value.h",
   "css_position_fallback_rule.cc",
   "css_position_fallback_rule.h",
+  "css_position_try_rule.cc",
+  "css_position_try_rule.h",
   "css_primitive_value.cc",
   "css_primitive_value.h",
   "css_primitive_value_mappings.h",

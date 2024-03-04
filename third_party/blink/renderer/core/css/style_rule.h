@@ -76,6 +76,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kStartingStyle,
     kViewTransition,
     kFunction,
+    kPositionTry,
   };
 
   // Name of a cascade layer as given by an @layer rule, split at '.' into a
@@ -119,6 +120,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
            GetType() == kSupports || GetType() == kStartingStyle;
   }
   bool IsFunctionRule() const { return GetType() == kFunction; }
+  bool IsPositionTryRule() const { return GetType() == kPositionTry; }
 
   StyleRuleBase* Copy() const;
 

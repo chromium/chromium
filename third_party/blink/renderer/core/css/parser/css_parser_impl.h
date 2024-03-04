@@ -47,6 +47,7 @@ class StyleRuleMedia;
 class StyleRuleNamespace;
 class StyleRulePage;
 class StyleRulePositionFallback;
+class StyleRulePositionTry;
 class StyleRuleProperty;
 class StyleRuleSupports;
 class StyleRuleTry;
@@ -253,6 +254,7 @@ class CORE_EXPORT CSSParserImpl {
                                   StyleRule* parent_rule_for_nesting);
   StyleRulePositionFallback* ConsumePositionFallbackRule(CSSParserTokenStream&);
   StyleRuleTry* ConsumeTryRule(CSSParserTokenStream&);
+  StyleRulePositionTry* ConsumePositionTryRule(CSSParserTokenStream&);
 
   StyleRuleFunction* ConsumeFunctionRule(CSSParserTokenStream& stream);
   std::optional<Vector<StyleRuleFunction::Parameter>> ConsumeFunctionParameters(

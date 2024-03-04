@@ -473,6 +473,7 @@ void FrameSerializer::SerializeCSSRule(CSSRule* rule) {
     case CSSRule::kPositionFallbackRule:
     case CSSRule::kTryRule:
     case CSSRule::kViewTransitionRule:
+    case CSSRule::kPositionTryRule:
       break;
   }
 }

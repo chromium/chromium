@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
+#include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -828,6 +829,8 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
         return ConsumePositionFallbackRule(stream);
       case CSSAtRuleID::kCSSAtRuleFunction:
         return ConsumeFunctionRule(stream);
+      case CSSAtRuleID::kCSSAtRulePositionTry:
+        return ConsumePositionTryRule(stream);
       case CSSAtRuleID::kCSSAtRuleInvalid:
       case CSSAtRuleID::kCSSAtRuleCharset:
       case CSSAtRuleID::kCSSAtRuleImport:
@@ -1982,6 +1985,52 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(
                                                    std::move(rules));
 }
 
+StyleRulePositionTry* CSSParserImpl::ConsumePositionTryRule(
+    CSSParserTokenStream& stream) {
+  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
+  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream)) {
+    return nullptr;
+  }
+  CSSParserTokenStream::BlockGuard guard(stream);
+
+  const CSSParserToken& name_token = prelude.ConsumeIncludingWhitespace();
+  if (!prelude.AtEnd()) {
+    return nullptr;
+  }
+
+  // <dashed-ident>, and -internal-* for UA sheets only.
+  String name;
+  if (name_token.GetType() == kIdentToken) {
+    name = name_token.Value().ToString();
+    if (!name.StartsWith("--") &&
+        !(context_->Mode() == kUASheetMode && name.StartsWith("-internal-"))) {
+      return nullptr;
+    }
+  } else {
+    return nullptr;
+  }
+
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kPositionTry, prelude_offset_start);
+    observer_->EndRuleHeader(prelude_offset_end);
+    observer_->StartRuleBody(stream.Offset());
+  }
+
+  ConsumeDeclarationList(stream, StyleRule::kPositionTry, CSSNestingType::kNone,
+                         /*parent_rule_for_nesting=*/nullptr,
+                         /*child_rules=*/nullptr);
+
+  if (observer_) {
+    observer_->EndRuleBody(stream.Offset());
+  }
+
+  return MakeGarbageCollected<StyleRulePositionTry>(
+      AtomicString(name),
+      CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+}
+
 StyleRulePositionFallback* CSSParserImpl::ConsumePositionFallbackRule(
     CSSParserTokenStream& stream) {
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
@@ -2461,7 +2510,8 @@ void CSSParserImpl::ConsumeDeclarationList(
       rule_type == StyleRule::kCounterStyle ||
       rule_type == StyleRule::kFontPaletteValues ||
       rule_type == StyleRule::kKeyframe || rule_type == StyleRule::kScope ||
-      rule_type == StyleRule::kViewTransition || rule_type == StyleRule::kTry;
+      rule_type == StyleRule::kViewTransition || rule_type == StyleRule::kTry ||
+      rule_type == StyleRule::kPositionTry;
   bool use_observer = observer_ && is_observer_rule_type;
   if (use_observer) {
     observer_->StartRuleBody(stream.Offset());
@@ -2830,7 +2880,8 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
             ConsumeRestrictedPropertyValue(stream);
         important = RemoveImportantAnnotationIfPresent(tokenized_value);
         if (important && (rule_type == StyleRule::kKeyframe ||
-                          rule_type == StyleRule::kTry)) {
+                          rule_type == StyleRule::kTry ||
+                          rule_type == StyleRule::kPositionTry)) {
           return false;
         }
         if (stream.AtEnd()) {
@@ -2844,6 +2895,7 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   if (observer_ &&
       (rule_type == StyleRule::kStyle || rule_type == StyleRule::kKeyframe ||
        rule_type == StyleRule::kProperty || rule_type == StyleRule::kTry ||
+       rule_type == StyleRule::kPositionTry ||
        rule_type == StyleRule::kFontPaletteValues)) {
     if (!id) {
       // If we skipped the main call to ConsumeValue due to an invalid

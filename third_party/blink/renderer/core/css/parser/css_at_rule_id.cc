@@ -74,6 +74,12 @@ CSSAtRuleID CssAtRuleID(StringView name) {
     }
     return CSSAtRuleID::kCSSAtRuleInvalid;
   }
+  if (EqualIgnoringASCIICase(name, "position-try")) {
+    if (RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
+      return CSSAtRuleID::kCSSAtRulePositionTry;
+    }
+    return CSSAtRuleID::kCSSAtRuleInvalid;
+  }
   if (EqualIgnoringASCIICase(name, "property")) {
     return CSSAtRuleID::kCSSAtRuleProperty;
   }
@@ -185,6 +191,8 @@ StringView CssAtRuleIDToString(CSSAtRuleID id) {
       return "@page";
     case CSSAtRuleID::kCSSAtRulePositionFallback:
       return "@position-fallback";
+    case CSSAtRuleID::kCSSAtRulePositionTry:
+      return "@position-try";
     case CSSAtRuleID::kCSSAtRuleProperty:
       return "@property";
     case CSSAtRuleID::kCSSAtRuleContainer:
@@ -324,6 +332,7 @@ std::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
       return WebFeature::kCSSAtRuleSupports;
     case CSSAtRuleID::kCSSAtRulePositionFallback:
     case CSSAtRuleID::kCSSAtRuleTry:
+    case CSSAtRuleID::kCSSAtRulePositionTry:
       return WebFeature::kCSSAnchorPositioning;
     case CSSAtRuleID::kCSSAtRuleWebkitKeyframes:
       return WebFeature::kCSSAtRuleWebkitKeyframes;

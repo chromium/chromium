@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/css_namespace_rule.h"
 #include "third_party/blink/renderer/core/css/css_page_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
+#include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_rule.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_starting_style_rule.h"
@@ -177,6 +178,9 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
     case kFunction:
       To<StyleRuleFunction>(this)->TraceAfterDispatch(visitor);
       return;
+    case kPositionTry:
+      To<StyleRulePositionTry>(this)->TraceAfterDispatch(visitor);
+      return;
   }
   NOTREACHED();
 }
@@ -258,6 +262,9 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kFunction:
       To<StyleRuleFunction>(this)->~StyleRuleFunction();
       return;
+    case kPositionTry:
+      To<StyleRulePositionTry>(this)->~StyleRulePositionTry();
+      return;
   }
   NOTREACHED();
 }
@@ -315,6 +322,8 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRuleViewTransition>(this)->Copy();
     case kTry:
       return To<StyleRuleTry>(this)->Copy();
+    case kPositionTry:
+      return To<StyleRulePositionTry>(this)->Copy();
   }
   NOTREACHED();
   return nullptr;
@@ -411,6 +420,10 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
       // @try rules must be child rules of @position-fallback.
       CHECK(!parent_sheet);
       rule = MakeGarbageCollected<CSSTryRule>(To<StyleRuleTry>(self));
+      break;
+    case kPositionTry:
+      rule = MakeGarbageCollected<CSSPositionTryRule>(
+          To<StyleRulePositionTry>(self), parent_sheet);
       break;
     case kFontFeature:
     case kKeyframe:
@@ -631,6 +644,7 @@ void StyleRuleBase::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
     case kCharset:
     case kViewTransition:
     case kFunction:
+    case kPositionTry:
       // Cannot have any child rules.
       break;
   }

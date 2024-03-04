@@ -51,6 +51,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/css/css_namespace_rule.idl",
   "//third_party/blink/renderer/core/css/css_page_rule.idl",
   "//third_party/blink/renderer/core/css/css_position_fallback_rule.idl",
+  "//third_party/blink/renderer/core/css/css_position_try_rule.idl",
   "//third_party/blink/renderer/core/css/css_property_rule.idl",
   "//third_party/blink/renderer/core/css/css_rule.idl",
   "//third_party/blink/renderer/core/css/css_rule_list.idl",
