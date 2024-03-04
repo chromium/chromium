@@ -29,6 +29,9 @@ bool App::operator==(const App& other) const {
   if (this->publisher_id != other.publisher_id) {
     return false;
   }
+  if (this->installer_package_id != other.installer_package_id) {
+    return false;
+  }
   if (this->description != other.description) {
     return false;
   }
@@ -144,6 +147,7 @@ AppPtr App::Clone() const {
   app->install_reason = install_reason;
   app->install_source = install_source;
   app->policy_ids = policy_ids;
+  app->installer_package_id = installer_package_id;
   app->is_platform_app = is_platform_app;
   app->recommendable = recommendable;
   app->searchable = searchable;

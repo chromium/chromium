@@ -16,6 +16,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 
@@ -66,6 +67,12 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // this field contains the Android package name, and for web apps, it
   // contains the start URL.
   std::optional<std::string> publisher_id;
+
+  // An optional ID for the package that installed this app. In general, this
+  // will match the `app_type` and `publisher_id` of the app. However, this is
+  // permitted to diverge for alternate installation methods, e.g. web apps that
+  // are installed through the Play Store.
+  std::optional<PackageId> installer_package_id;
 
   std::optional<std::string> description;
   std::optional<std::string> version;

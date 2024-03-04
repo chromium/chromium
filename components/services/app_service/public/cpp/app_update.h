@@ -17,6 +17,7 @@
 #include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/permission.h"
 
 namespace apps {
@@ -109,6 +110,13 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   // considered as the canonical publisher ID.
   const std::string& PublisherId() const;
   bool PublisherIdChanged() const;
+
+  // An optional PackageId for the package that installed this app. In general,
+  // this will match the AppType() and PublisherId() of the app. However, this
+  // is permitted to diverge for alternate installation methods, e.g. web apps
+  // that are installed through the Play Store.
+  const std::optional<PackageId> InstallerPackageId() const;
+  bool InstallerPackageIdChanged() const;
 
   const std::string& Description() const;
   bool DescriptionChanged() const;

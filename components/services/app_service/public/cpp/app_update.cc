@@ -129,6 +129,7 @@ bool MergeWithoutIconKey(App* state, const App* delta) {
   SET_OPTIONAL_VALUE(name)
   SET_OPTIONAL_VALUE(short_name)
   SET_OPTIONAL_VALUE(publisher_id)
+  SET_OPTIONAL_VALUE(installer_package_id)
   SET_OPTIONAL_VALUE(description)
   SET_OPTIONAL_VALUE(version)
 
@@ -238,18 +239,19 @@ bool AppUpdate::IsChanged(const App* state, const App* delta) {
   AppUpdate update(state, delta, acount_id);
   return update.ReadinessChanged() || update.NameChanged() ||
          update.ShortNameChanged() || update.PublisherIdChanged() ||
-         update.DescriptionChanged() || update.VersionChanged() ||
-         update.AdditionalSearchTermsChanged() || update.IconKeyChanged() ||
-         update.LastLaunchTimeChanged() || update.InstallTimeChanged() ||
-         update.PermissionsChanged() || update.InstallReasonChanged() ||
-         update.InstallSourceChanged() || update.PolicyIdsChanged() ||
-         update.IsPlatformAppChanged() || update.RecommendableChanged() ||
-         update.SearchableChanged() || update.ShowInLauncherChanged() ||
-         update.ShowInShelfChanged() || update.ShowInSearchChanged() ||
-         update.ShowInManagementChanged() || update.HandlesIntentsChanged() ||
-         update.AllowUninstallChanged() || update.HasBadgeChanged() ||
-         update.PausedChanged() || update.IntentFiltersChanged() ||
-         update.ResizeLockedChanged() || update.WindowModeChanged() ||
+         update.InstallerPackageIdChanged() || update.DescriptionChanged() ||
+         update.VersionChanged() || update.AdditionalSearchTermsChanged() ||
+         update.IconKeyChanged() || update.LastLaunchTimeChanged() ||
+         update.InstallTimeChanged() || update.PermissionsChanged() ||
+         update.InstallReasonChanged() || update.InstallSourceChanged() ||
+         update.PolicyIdsChanged() || update.IsPlatformAppChanged() ||
+         update.RecommendableChanged() || update.SearchableChanged() ||
+         update.ShowInLauncherChanged() || update.ShowInShelfChanged() ||
+         update.ShowInSearchChanged() || update.ShowInManagementChanged() ||
+         update.HandlesIntentsChanged() || update.AllowUninstallChanged() ||
+         update.HasBadgeChanged() || update.PausedChanged() ||
+         update.IntentFiltersChanged() || update.ResizeLockedChanged() ||
+         update.WindowModeChanged() ||
          update.AllowWindowModeSelectionChanged() ||
          update.RunOnOsLoginChanged() || update.AllowCloseChanged() ||
          update.AppSizeInBytesChanged() || update.DataSizeInBytesChanged() ||
@@ -314,6 +316,14 @@ const std::string& AppUpdate::PublisherId() const {
 
 bool AppUpdate::PublisherIdChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(publisher_id)
+}
+
+const std::optional<PackageId> AppUpdate::InstallerPackageId() const {
+  GET_VALUE_WITH_FALLBACK(installer_package_id, std::nullopt)
+}
+
+bool AppUpdate::InstallerPackageIdChanged() const {
+  RETURN_OPTIONAL_VALUE_CHANGED(installer_package_id)
 }
 
 const std::string& AppUpdate::Description() const {
@@ -621,14 +631,18 @@ bool AppUpdate::ExtraChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(extra);
 }
 
-std::ostream&
-operator<<(std::ostream& out, const AppUpdate& app) {
+std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   out << "AppType: " << EnumToString(app.AppType()) << std::endl;
   out << "AppId: " << app.AppId() << std::endl;
   out << "Readiness: " << EnumToString(app.Readiness()) << std::endl;
   out << "Name: " << app.Name() << std::endl;
   out << "ShortName: " << app.ShortName() << std::endl;
   out << "PublisherId: " << app.PublisherId() << std::endl;
+  out << "InstallerPackageId: "
+      << (app.InstallerPackageId().has_value()
+              ? app.InstallerPackageId()->ToString()
+              : "null")
+      << std::endl;
   out << "Description: " << app.Description() << std::endl;
   out << "Version: " << app.Version() << std::endl;
 

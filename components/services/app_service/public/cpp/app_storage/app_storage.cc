@@ -167,6 +167,7 @@ bool AppStorage::IsAppChanged(const AppUpdate& update) {
   IS_APP_VALUE_CHANGED(name);
   IS_APP_VALUE_CHANGED(short_name);
   IS_APP_VALUE_CHANGED(publisher_id);
+  IS_APP_VALUE_CHANGED(installer_package_id);
   IS_APP_VALUE_CHANGED(description);
   IS_APP_VALUE_CHANGED(version);
 
