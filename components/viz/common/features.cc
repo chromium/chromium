@@ -319,7 +319,7 @@ BASE_FEATURE(kUseDisplaySDRMaxLuminanceNits,
 // cases in production.
 BASE_FEATURE(kInvalidateLocalSurfaceIdPreCommit,
              "InvalidateLocalSurfaceIdPreCommit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // On mac, when the RenderWidgetHostViewMac is hidden, also hide the
 // DelegatedFrameHost. Among other things, it unlocks the compositor frames,
