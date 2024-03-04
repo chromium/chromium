@@ -42,8 +42,8 @@ bool IsProfilePasswordSyncEnabled(PrefService* pref_service,
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // TODO(crbug.com/1464264): Migrate away from `ConsentLevel::kSync` on desktop
-  // platforms, including APIs that depend on sync-the-feature.
+  // TODO(crbug.com/40067058): Clean this up once Sync-the-feature is gone on
+  // all platforms.
   return password_manager::sync_util::IsSyncFeatureActiveIncludingPasswords(
       sync_service);
 }
