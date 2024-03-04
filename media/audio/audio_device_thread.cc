@@ -63,6 +63,7 @@ AudioDeviceThread::AudioDeviceThread(Callback* callback,
 }
 
 AudioDeviceThread::~AudioDeviceThread() {
+  in_shutdown_.Set();
   socket_.Shutdown();
   if (thread_handle_.is_null())
     return;
@@ -111,6 +112,10 @@ void AudioDeviceThread::ThreadMain() {
     size_t bytes_sent = socket_.Send(&buffer_index, sizeof(buffer_index));
     if (bytes_sent != sizeof(buffer_index))
       break;
+  }
+
+  if (!in_shutdown_.IsSet()) {
+    callback_->OnSocketError();
   }
 }
 

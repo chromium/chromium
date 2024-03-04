@@ -106,6 +106,10 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
                    "delay (ms)", delay.InMillisecondsF());
 }
 
+void AudioOutputDeviceThreadCallback::OnSocketError() {
+  render_callback_->OnRenderError();
+}
+
 bool AudioOutputDeviceThreadCallback::CurrentThreadIsAudioDeviceThread() {
   return thread_checker_.CalledOnValidThread();
 }

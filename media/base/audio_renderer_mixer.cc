@@ -115,6 +115,11 @@ void AudioRendererMixer::SetPauseDelayForTesting(base::TimeDelta delay) {
   pause_delay_ = delay;
 }
 
+bool AudioRendererMixer::HasSinkError() {
+  base::AutoLock auto_lock(lock_);
+  return sink_error_;
+}
+
 int AudioRendererMixer::Render(base::TimeDelta delay,
                                base::TimeTicks delay_timestamp,
                                const AudioGlitchInfo& glitch_info,
@@ -147,6 +152,7 @@ int AudioRendererMixer::Render(base::TimeDelta delay,
 void AudioRendererMixer::OnRenderError() {
   // Call each mixer input and signal an error.
   base::AutoLock auto_lock(lock_);
+  sink_error_ = true;
   for (auto* input : error_callbacks_)
     input->OnRenderError();
 }

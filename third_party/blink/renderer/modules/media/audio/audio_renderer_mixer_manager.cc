@@ -146,7 +146,7 @@ media::AudioRendererMixer* AudioRendererMixerManager::GetMixer(
   base::AutoLock auto_lock(mixers_lock_);
 
   auto it = mixers_.find(key);
-  if (it != mixers_.end()) {
+  if (it != mixers_.end() && !it->second.mixer->HasSinkError()) {
     auto new_count = ++it->second.ref_count;
     CHECK(new_count != std::numeric_limits<decltype(new_count)>::max());
 
@@ -161,6 +161,12 @@ media::AudioRendererMixer* AudioRendererMixerManager::GetMixer(
     sink->Stop();
 
     return it->second.mixer;
+  } else if (it != mixers_.end() && it->second.mixer->HasSinkError()) {
+    DVLOG(1) << "Not reusing mixer with errors: " << it->second.mixer;
+
+    // Move bad mixers out of the reuse map.
+    dead_mixers_[key] = it->second;
+    mixers_.erase(it);
   }
 
   const media::AudioParameters& mixer_output_params =
@@ -205,12 +211,31 @@ void AudioRendererMixerManager::ReturnMixer(media::AudioRendererMixer* mixer) {
       [](const std::pair<MixerKey, AudioRendererMixerReference>& val) {
         return val.second.mixer;
       });
-  DCHECK(it != mixers_.end());
+
+  // If a mixer isn't in the normal map, check the map for mixers w/ errors.
+  bool dead_mixer = false;
+  if (it == mixers_.end()) {
+    it = base::ranges::find(
+        dead_mixers_, mixer,
+        [](const std::pair<MixerKey, AudioRendererMixerReference>& val) {
+          return val.second.mixer;
+        });
+    DCHECK(it != dead_mixers_.end());
+    dead_mixer = true;
+  }
 
   // Only remove the mixer if AudioRendererMixerManager is the last owner.
   it->second.ref_count--;
   if (it->second.ref_count == 0) {
     delete it->second.mixer;
+    if (dead_mixer) {
+      dead_mixers_.erase(it);
+    } else {
+      mixers_.erase(it);
+    }
+  } else if (!dead_mixer && it->second.mixer->HasSinkError()) {
+    // Move bad mixers out of the reuse map.
+    dead_mixers_[it->first] = it->second;
     mixers_.erase(it);
   }
 }
