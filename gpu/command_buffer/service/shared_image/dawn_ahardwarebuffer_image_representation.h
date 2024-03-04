@@ -41,6 +41,7 @@ class DawnAHardwareBufferImageRepresentation : public DawnImageRepresentation {
   wgpu::Device device_;
   wgpu::TextureFormat format_;
   std::vector<wgpu::TextureFormat> view_formats_;
+  wgpu::SharedTextureMemory shared_texture_memory_;
 };
 
 }  // namespace gpu
