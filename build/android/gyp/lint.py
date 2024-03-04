@@ -73,10 +73,10 @@ def _SrcRelative(path):
   return os.path.relpath(path, build_utils.DIR_SOURCE_ROOT)
 
 
-def _GenerateProjectFile(lint_gen_dir,
-                         android_manifest,
+def _GenerateProjectFile(android_manifest,
                          android_sdk_root,
                          cache_dir,
+                         partials_dir,
                          sources=None,
                          classpath=None,
                          srcjar_sources=None,
@@ -102,8 +102,8 @@ def _GenerateProjectFile(lint_gen_dir,
   main_module.set('android', 'true')
   main_module.set('library', 'false')
   # Required to make lint-resources.xml be written to a per-target path.
-  # https://crbug.com/1515070
-  main_module.set('partial-results-dir', lint_gen_dir)
+  # https://crbug.com/1515070 and b/324598620
+  main_module.set('partial-results-dir', partials_dir)
   if android_sdk_version:
     main_module.set('compile_sdk_version', android_sdk_version)
   manifest = ElementTree.SubElement(main_module, 'manifest')
@@ -239,6 +239,12 @@ def _RunLint(custom_lint_jar_path,
     creating_baseline = False
     lint_xmx = '2G'
 
+  # Lint requires this directory to exist and be cleared.
+  # See b/324598620
+  partials_dir = os.path.join(lint_gen_dir, 'partials')
+  shutil.rmtree(partials_dir, ignore_errors=True)
+  os.makedirs(partials_dir)
+
   # All paths in lint are based off of relative paths from root with root as the
   # prefix. Path variable substitution is based off of prefix matching so custom
   # path variables need to match exactly in order to show up in baseline files.
@@ -336,7 +342,7 @@ def _RunLint(custom_lint_jar_path,
 
   logging.info('Generating project file')
   project_file_root = _GenerateProjectFile(
-      lint_gen_dir, lint_android_manifest_path, android_sdk_root, cache_dir,
+      lint_android_manifest_path, android_sdk_root, cache_dir, partials_dir,
       sources, classpath, srcjar_sources, resource_sources, custom_lint_jars,
       custom_annotation_zips, android_sdk_version, baseline)
 
@@ -381,11 +387,7 @@ def _RunLint(custom_lint_jar_path,
       shutil.rmtree(resource_root_dir, ignore_errors=True)
       shutil.rmtree(srcjar_root_dir, ignore_errors=True)
       os.unlink(project_xml_path)
-      # lint-resources.xml is meant to be used for caching, but is suspected
-      # to lead to crashes: b/324598620
-      lint_resources_xml = os.path.join(lint_gen_dir, 'lint-resources.xml')
-      if os.path.exists(lint_resources_xml):
-        os.unlink(lint_resources_xml)
+      shutil.rmtree(partials_dir, ignore_errors=True)
 
     if failed:
       print('- For more help with lint in Chrome:', _LINT_MD_URL)
