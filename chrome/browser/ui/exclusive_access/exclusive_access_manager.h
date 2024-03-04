@@ -89,6 +89,8 @@ class ExclusiveAccessManager {
   FullscreenController fullscreen_controller_;
   KeyboardLockController keyboard_lock_controller_;
   PointerLockController pointer_lock_controller_;
+  base::flat_set<raw_ptr<ExclusiveAccessControllerBase>>
+      exclusive_access_controllers_;
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_MANAGER_H_

@@ -48,7 +48,10 @@ ExclusiveAccessManager::ExclusiveAccessManager(
     : exclusive_access_context_(exclusive_access_context),
       fullscreen_controller_(this),
       keyboard_lock_controller_(this),
-      pointer_lock_controller_(this) {}
+      pointer_lock_controller_(this),
+      exclusive_access_controllers_({&fullscreen_controller_,
+                                     &keyboard_lock_controller_,
+                                     &pointer_lock_controller_}) {}
 
 ExclusiveAccessManager::~ExclusiveAccessManager() = default;
 
@@ -125,21 +128,24 @@ void ExclusiveAccessManager::RecordLockStateOnEnteringBrowserFullscreen()
 }
 
 void ExclusiveAccessManager::OnTabDeactivated(WebContents* web_contents) {
-  fullscreen_controller_.OnTabDeactivated(web_contents);
-  keyboard_lock_controller_.OnTabDeactivated(web_contents);
-  pointer_lock_controller_.OnTabDeactivated(web_contents);
+  for (raw_ptr<ExclusiveAccessControllerBase> controller :
+       exclusive_access_controllers_) {
+    controller->OnTabDeactivated(web_contents);
+  }
 }
 
 void ExclusiveAccessManager::OnTabDetachedFromView(WebContents* web_contents) {
-  fullscreen_controller_.OnTabDetachedFromView(web_contents);
-  keyboard_lock_controller_.OnTabDetachedFromView(web_contents);
-  pointer_lock_controller_.OnTabDetachedFromView(web_contents);
+  for (raw_ptr<ExclusiveAccessControllerBase> controller :
+       exclusive_access_controllers_) {
+    controller->OnTabDetachedFromView(web_contents);
+  }
 }
 
 void ExclusiveAccessManager::OnTabClosing(WebContents* web_contents) {
-  fullscreen_controller_.OnTabClosing(web_contents);
-  keyboard_lock_controller_.OnTabClosing(web_contents);
-  pointer_lock_controller_.OnTabClosing(web_contents);
+  for (raw_ptr<ExclusiveAccessControllerBase> controller :
+       exclusive_access_controllers_) {
+    controller->OnTabClosing(web_contents);
+  }
 }
 
 bool ExclusiveAccessManager::HandleUserKeyEvent(
@@ -157,9 +163,12 @@ bool ExclusiveAccessManager::HandleUserKeyEvent(
     return false;
 
   bool handled = false;
-  handled = fullscreen_controller_.HandleUserPressedEscape();
-  handled |= pointer_lock_controller_.HandleUserPressedEscape();
-  handled |= keyboard_lock_controller_.HandleUserPressedEscape();
+  for (raw_ptr<ExclusiveAccessControllerBase> controller :
+       exclusive_access_controllers_) {
+    if (controller->HandleUserPressedEscape()) {
+      handled = true;
+    }
+  }
   return handled;
 }
 
