@@ -766,6 +766,7 @@ Called by update_protocol_commands_enum.py.-->
       label="Console insight generation errored due to a server issue"/>
   <int value="132"
       label="Console insight generation errored while rendering Markdown"/>
+  <int value="133" label="Toggle Show Web Vitals"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
