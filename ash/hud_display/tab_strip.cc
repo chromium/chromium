@@ -14,7 +14,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/border.h"
-#include "ui/views/layout/layout_manager.h"
 
 namespace ash {
 namespace hud_display {
@@ -25,52 +24,6 @@ constexpr int kHUDTabOverlayWidth = 2 * kHUDTabOverlayCornerRadius / 3;
 
 // Border around tab text (the tab overlay width will be added to this).
 constexpr int kHUDTabTitleBorder = 3;
-
-class HUDTabStripLayout : public views::LayoutManager {
- public:
-  HUDTabStripLayout() = default;
-
-  HUDTabStripLayout(const HUDTabStripLayout&) = delete;
-  HUDTabStripLayout& operator=(const HUDTabStripLayout&) = delete;
-
-  ~HUDTabStripLayout() override = default;
-
-  // views::LayoutManager:
-  void Layout(views::View* host) override;
-  gfx::Size GetPreferredSize(const views::View* host) const override;
-};
-
-gfx::Size HUDTabStripLayout::GetPreferredSize(const views::View* host) const {
-  gfx::Size result;
-  for (const views::View* child : host->children()) {
-    const gfx::Size child_preferred = child->GetPreferredSize();
-    // Tab strip is always horizontal.
-    result.set_width(result.width() + child_preferred.width() -
-                     kHUDTabOverlayWidth);
-    result.set_height(std::max(result.height(), child_preferred.height()));
-  }
-  // Assume all children have equal left and right border, which is used to
-  // overlay the tabs. Add one overlay width to compensate one edge.
-  if (host->children().size())
-    result.set_width(result.width() + kHUDTabOverlayWidth);
-
-  // Add right padding equal to the padding of the settings icon.
-  result.set_width(result.width() + kHUDSettingsIconBorder);
-  return result;
-}
-
-void HUDTabStripLayout::Layout(views::View* host) {
-  // Assume all children have equal left and right border, which is used to
-  // overlay the tabs.
-  int left_offset = 0;
-  for (views::View* child : host->children()) {
-    const gfx::Size preferred = child->GetPreferredSize();
-    const gfx::Size child_size({preferred.width(), host->height()});
-    child->SetSize(child_size);
-    child->SetPosition({left_offset, 0});
-    left_offset += child_size.width() - kHUDTabOverlayWidth;
-  }
-}
 
 }  // namespace
 
@@ -86,8 +39,7 @@ HUDTabButton::HUDTabButton(Style style,
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetEnabledTextColors(kHUDDefaultColor);
   SetProperty(kHUDClickHandler, HTCLIENT);
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-      kHUDSettingsIconBorder, kHUDTabOverlayWidth + kHUDTabTitleBorder,
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
       kHUDSettingsIconBorder, kHUDTabOverlayWidth + kHUDTabTitleBorder)));
 
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
@@ -167,7 +119,8 @@ BEGIN_METADATA(HUDTabStrip)
 END_METADATA
 
 HUDTabStrip::HUDTabStrip(HUDDisplayView* hud) : hud_(hud) {
-  SetLayoutManager(std::make_unique<HUDTabStripLayout>());
+  SetBetweenChildSpacing(-kHUDTabOverlayWidth);
+  SetInsideBorderInsets(gfx::Insets::TLBR(0, 0, 0, kHUDSettingsIconBorder));
 }
 
 HUDTabStrip::~HUDTabStrip() = default;

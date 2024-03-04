@@ -11,14 +11,10 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/view.h"
+#include "ui/views/layout/box_layout_view.h"
 
 namespace gfx {
 class Canvas;
-}
-
-namespace views {
-class View;
 }
 
 namespace ash {
@@ -61,8 +57,8 @@ class HUDTabButton : public views::LabelButton {
   HUDDisplayMode display_mode_;
 };
 
-class HUDTabStrip : public views::View {
-  METADATA_HEADER(HUDTabStrip, views::View)
+class HUDTabStrip : public views::BoxLayoutView {
+  METADATA_HEADER(HUDTabStrip, views::BoxLayoutView)
 
  public:
   explicit HUDTabStrip(HUDDisplayView* hud);
