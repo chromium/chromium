@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithEditText;
@@ -112,6 +113,7 @@ public class HomepageSettingsUnitTest {
                     mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
                 });
         mActionTester = new UserActionTester();
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
     }
 
     @After

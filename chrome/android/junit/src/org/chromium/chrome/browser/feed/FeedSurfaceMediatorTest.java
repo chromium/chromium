@@ -530,6 +530,7 @@ public class FeedSurfaceMediatorTest {
     @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
     public void testObserveTemplateUrlService() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(true);
         doReturn(true).when(mUrlService).isDefaultSearchEngineGoogle();
 
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
@@ -554,16 +555,14 @@ public class FeedSurfaceMediatorTest {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         DseNewTabUrlManager.EEA_COUNTRY_ONLY.setForTesting(true);
         doReturn(false).when(mUrlService).isDefaultSearchEngineGoogle();
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, false);
+        DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(false);
 
         // Verifies that Feeds is enabled if the device isn't from an EEA country.
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         verify(mPrefService).setBoolean(eq(Pref.ENABLE_SNIPPETS_BY_DSE), eq(true));
 
         // Verifies that Feeds is disabled if the device is from an EEA country.
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, true);
+        DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(true);
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         verify(mPrefService).setBoolean(eq(Pref.ENABLE_SNIPPETS_BY_DSE), eq(false));
     }

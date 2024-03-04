@@ -597,7 +597,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sMultiInstanceApplicationStatusCleanup =
             newCachedFlag(MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP, false);
     public static final CachedFlag sNewTabSearchEngineUrlAndroid =
-            newCachedFlag(NEW_TAB_SEARCH_ENGINE_URL_ANDROID, false);
+            newCachedFlag(NEW_TAB_SEARCH_ENGINE_URL_ANDROID, true);
     public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, false);
     public static final CachedFlag sPrivacyGuideAndroid3 =
             newCachedFlag(PRIVACY_GUIDE_ANDROID_3, false);

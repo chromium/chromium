@@ -85,6 +85,7 @@ public class HomepageManagerTest {
         MockitoAnnotations.initMocks(this);
         ShadowPartnerBrowserCustomizations.setPartnerBrowserCustomizations(
                 mPartnerBrowserCustomizations);
+        DseNewTabUrlManager.resetIsEeaChoiceCountryForTesting();
     }
 
     @After
@@ -219,6 +220,7 @@ public class HomepageManagerTest {
     @Test
     @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
     public void testOverrideNtpHomepage() {
+        DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(true);
         ShadowHomepagePolicyManager.sHomepageUrl = GURL.emptyGURL();
         DseNewTabUrlManager.SWAP_OUT_NTP.setForTesting(true);
         Assert.assertTrue(DseNewTabUrlManager.SWAP_OUT_NTP.getValue());

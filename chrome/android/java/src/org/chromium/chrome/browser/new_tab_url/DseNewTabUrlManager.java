@@ -41,7 +41,7 @@ public class DseNewTabUrlManager {
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID,
                     EEA_COUNTRY_ONLY_PARAM,
-                    false);
+                    true);
 
     public DseNewTabUrlManager(ObservableSupplier<Profile> profileSupplier) {
         mProfileSupplier = profileSupplier;
@@ -184,5 +184,14 @@ public class DseNewTabUrlManager {
 
     public TemplateUrlService getTemplateUrlServiceForTesting() {
         return mTemplateUrlService;
+    }
+
+    public static void setIsEeaChoiceCountryForTesting(boolean isEeaChoiceCountry) {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, isEeaChoiceCountry);
+    }
+
+    public static void resetIsEeaChoiceCountryForTesting() {
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY);
     }
 }
