@@ -3,10 +3,9 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/utils.js"></script>
-<title>link rel=expect: base URL should be OK with relative URLs</title>
+<title>link rel=expect should allow relative URLs</title>
 
-<base href="dummy.html">
-<link rel=expect href="../render-blocking/element-render-blocking-035.tentative.html#second" blocking="render">
+<link rel=expect href="../render-blocking/element-render-blocking-034.html#second" blocking="render">
 <script>
 async_test((t) => {
   requestAnimationFrame(() => {
@@ -14,7 +13,7 @@ async_test((t) => {
     t.step(() => assert_false(!!document.getElementById("last")), "the second element should already unblock rendering");
     t.done();
   });
-}, "relative URLs that match this document are OK, regarless of <base>");
+}, "relative URLs that match this document are OK");
 </script>
 </head>
 <body>
