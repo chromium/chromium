@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -11,6 +13,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 using base::test::ios::kWaitForActionTimeout;
@@ -40,6 +43,28 @@ BOOL WaitForKeyboardToAppear() {
   return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
 }
 
+// Opens the address manual fill view and verifies that the address view
+// controller is visible afterwards.
+void OpenAddressManualFillView() {
+  id<GREYMatcher> button_to_tap;
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    button_to_tap = grey_accessibilityLabel(
+        l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA));
+  } else {
+    [[EarlGrey
+        selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
+    button_to_tap = ManualFallbackProfilesIconMatcher();
+  }
+
+  // Tap the button that'll open the address manual fill view.
+  [[EarlGrey selectElementWithMatcher:button_to_tap] performAction:grey_tap()];
+
+  // Verify the address table view controller is visible.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 }  // namespace
 
 // Integration Tests for Mannual Fallback Addresses View Controller.
@@ -47,6 +72,10 @@ BOOL WaitForKeyboardToAppear() {
 @end
 
 @implementation AddressViewControllerTestCase
+
+- (BOOL)shouldEnableKeyboardAccessoryUpgradeFeature {
+  return YES;
+}
 
 - (void)setUp {
   [super setUp];
@@ -64,6 +93,18 @@ BOOL WaitForKeyboardToAppear() {
   [super tearDown];
 }
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  if ([self shouldEnableKeyboardAccessoryUpgradeFeature]) {
+    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
+  } else {
+    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgrade);
+  }
+
+  return config;
+}
+
 // Tests that the addresses view controller appears on screen.
 // TODO(crbug.com/1116043): Flaky on ios simulator.
 #if TARGET_IPHONE_SIMULATOR
@@ -78,28 +119,26 @@ BOOL WaitForKeyboardToAppear() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
 
-  // Tap on the addresses icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
-      performAction:grey_tap()];
-
-  // Verify the address controller table view is visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Open the address manual fill view and verify that the address table view
+  // controller is visible.
+  OpenAddressManualFillView();
 }
 
 // Tests that the "Manage Addresses..." action works.
 - (void)testManageAddressesActionOpensAddressSettings {
+  // TODO(crbug.com/326405840): Adapt test once the "Manage Addresses..." action
+  // works with the Keyboard Accessory Upgrade feature.
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"The Manage Addresses... action does not yet work "
+                           @"with the Keyboard Accessory Upgrade feature.");
+  }
+
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
 
-  // Tap on the addresses icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
-      performAction:grey_tap()];
+  // Open the address manual fill view.
+  OpenAddressManualFillView();
 
   // Tap the "Manage Addresses..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
@@ -115,15 +154,19 @@ BOOL WaitForKeyboardToAppear() {
 // Tests that returning from "Manage Addresses..." leaves the icons and keyboard
 // in the right state.
 - (void)testAddressesStateAfterPresentingManageAddresses {
+  // TODO(crbug.com/326405840): Adapt test once the "Manage Addresses..." action
+  // works with the Keyboard Accessory Upgrade feature.
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"The Manage Addresses... action does not yet work "
+                           @"with the Keyboard Accessory Upgrade feature.");
+  }
+
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
 
-  // Tap on the addresses icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
-      performAction:grey_tap()];
+  // Open the address manual fill view.
+  OpenAddressManualFillView();
 
   // Verify the status of the icon.
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
@@ -165,23 +208,19 @@ BOOL WaitForKeyboardToAppear() {
 // Tests that the Address View Controller is dismissed when tapping the
 // keyboard icon.
 - (void)testKeyboardIconDismissAddressController {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // The keyboard icon is never present in iPads.
-    EARL_GREY_TEST_SKIPPED(@"Test is not applicable for iPad");
+  if ([ChromeEarlGrey isIPadIdiom] ||
+      [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"The keyboard icon is never present on iPads or when the Keyboard "
+        @"Accessory Upgrade feature is enabled.");
   }
+
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
 
-  // Tap on the addresses icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
-      performAction:grey_tap()];
-
-  // Verify the address controller table view is visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Open the address manual fill view.
+  OpenAddressManualFillView();
 
   // Tap on the keyboard icon.
   [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
@@ -205,15 +244,8 @@ BOOL WaitForKeyboardToAppear() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
 
-  // Tap on the addresses icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
-      performAction:grey_tap()];
-
-  // Verify the address controller table view is visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Open the address manual fill view.
+  OpenAddressManualFillView();
 
   // Tap on a point outside of the popover.
   // The way EarlGrey taps doesn't go through the window hierarchy. Because of
@@ -232,6 +264,11 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that the address icon is hidden when no addresses are available.
 - (void)testAddressIconIsNotVisibleWhenAddressStoreEmpty {
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the Keyboard "
+                           @"Accessory Upgrade feature is enabled.");
+  }
+
   // Delete the profile that is added on `-setUp`.
   [AutofillAppInterface clearProfilesStore];
 
@@ -263,6 +300,27 @@ BOOL WaitForKeyboardToAppear() {
       assertWithMatcher:grey_userInteractionEnabled()];
   [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+}
+
+@end
+
+// Rerun all the tests in this file but with kIOSKeyboardAccessoryUpgrade
+// disabled. This will be removed once that feature launches fully, but ensures
+// regressions aren't introduced in the meantime.
+@interface AddressViewControllerKeyboardAccessoryUpgradeDisabledTestCase
+    : AddressViewControllerTestCase
+
+@end
+
+@implementation AddressViewControllerKeyboardAccessoryUpgradeDisabledTestCase
+
+- (BOOL)shouldEnableKeyboardAccessoryUpgradeFeature {
+  return NO;
+}
+
+// This causes the test case to actually be detected as a test case. The actual
+// tests are all inherited from the parent class.
+- (void)testEmpty {
 }
 
 @end
