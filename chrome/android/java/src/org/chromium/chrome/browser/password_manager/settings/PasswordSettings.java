@@ -559,7 +559,9 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
                             (boolean) newValue);
                     // TODO(http://crbug.com/1371422): Remove method and manage evictions from
                     // native code as this is covered by chrome://password-manager-internals page.
-                    if ((boolean) newValue) PasswordManagerHelper.resetUpmUnenrollment();
+                    if ((boolean) newValue) {
+                        PasswordManagerHelper.getForProfile(getProfile()).resetUpmUnenrollment();
+                    }
                     return true;
                 });
         savePasswordsSwitch.setManagedPreferenceDelegate(

@@ -39,7 +39,6 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -107,7 +106,7 @@ public class PasswordCheckupLauncherTest {
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
         mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mMockPasswordManagerUtilBridgeJni);
 
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mMockUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
 
         SyncServiceFactory.setInstanceForTesting(mMockSyncService);

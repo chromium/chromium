@@ -106,7 +106,8 @@ bool TouchToFillController::Show(
       if (ttf_delegate_->ShouldTriggerSubmission()) {
         flags |= TouchToFillView::kTriggerSubmission;
       }
-      if (password_manager_launcher::CanManagePasswordsWhenPasskeysPresent()) {
+      if (password_manager_launcher::CanManagePasswordsWhenPasskeysPresent(
+              profile_)) {
         flags |= TouchToFillView::kCanManagePasswordsWhenPasskeysPresent;
       }
       if (ttf_delegate_->ShouldShowHybridOption()) {

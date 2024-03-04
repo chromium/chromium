@@ -39,12 +39,15 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
      * There is no need to hold on to a reference since the settings fragment's lifecycle is
      * observed and a reference is retained there.
      *
-     * @param settingsFragment An instance of {SafetyCheckSettingsFragment} to observe.
-     * @param updatesClient An instance implementing the {@SafetyCheckUpdatesDelegate} interface.
+     * @param settingsFragment An instance of {@link SafetyCheckSettingsFragment} to observe.
+     * @param updatesClient An instance implementing the {@link SafetyCheckUpdatesDelegate}
+     *     interface.
      * @param bridge An instances of {@link SafetyCheckBridge} to access C++ APIs.
-     * @param settingsLauncher An instance implementing the {@SettingsLauncher} interface.
-     * @param signinLauncher An instance implementing {@SigninActivityLauncher}.
-     * @param modalDialogManagerSupplier An supplier for the {@ModalDialogManager}.
+     * @param settingsLauncher An instance implementing the {@link SettingsLauncher} interface.
+     * @param signinLauncher An instance implementing {@link SyncConsentActivityLauncher}.
+     * @param modalDialogManagerSupplier An supplier for the {@link ModalDialogManager}.
+     * @param passwordManagerHelper An instance of {@link PasswordManagerHelper} that provides
+     *     access to password management capabilities.
      */
     public static void create(
             SafetyCheckSettingsFragment settingsFragment,
@@ -54,7 +57,8 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             SyncConsentActivityLauncher signinLauncher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SyncService syncService,
-            PrefService prefService) {
+            PrefService prefService,
+            PasswordManagerHelper passwordManagerHelper) {
         new SafetyCheckCoordinator(
                 settingsFragment,
                 updatesClient,
@@ -63,7 +67,8 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                 signinLauncher,
                 modalDialogManagerSupplier,
                 syncService,
-                prefService);
+                prefService,
+                passwordManagerHelper);
     }
 
     private SafetyCheckCoordinator(
@@ -74,7 +79,8 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             SyncConsentActivityLauncher signinLauncher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SyncService syncService,
-            PrefService prefService) {
+            PrefService prefService,
+            PasswordManagerHelper passwordManagerHelper) {
         mSettingsFragment = settingsFragment;
         mUpdatesClient = updatesClient;
         mSyncService = syncService;
@@ -118,6 +124,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                                                     signinLauncher,
                                                     syncService,
                                                     prefService,
+                                                    passwordManagerHelper,
                                                     modalDialogManagerSupplier);
                                 }
                             }

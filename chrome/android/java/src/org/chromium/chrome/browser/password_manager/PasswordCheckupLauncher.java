@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -40,11 +39,11 @@ public class PasswordCheckupLauncher {
         assert accountEmail == null || !accountEmail.isEmpty();
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
 
-        if (PasswordManagerHelper.canUseUpm()) {
-            PasswordManagerHelper.showPasswordCheckup(
+        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
+        if (passwordManagerHelper.canUseUpm()) {
+            passwordManagerHelper.showPasswordCheckup(
                     windowAndroid.getContext().get(),
                     passwordCheckReferrer,
-                    SyncServiceFactory.getForProfile(profile),
                     getModalDialogManagerSupplier(windowAndroid),
                     accountEmail);
             return;

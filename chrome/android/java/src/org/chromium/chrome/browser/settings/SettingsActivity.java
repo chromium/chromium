@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.password_check.PasswordCheckComponentUiFactor
 import org.chromium.chrome.browser.password_check.PasswordCheckFragmentView;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditUiFactory;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
 import org.chromium.chrome.browser.privacy_sandbox.ChromeTrackingProtectionDelegate;
@@ -533,7 +534,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     SyncConsentActivityLauncherImpl.get(),
                     getModalDialogManagerSupplier(),
                     SyncServiceFactory.getForProfile(mProfile),
-                    UserPrefs.get(mProfile));
+                    UserPrefs.get(mProfile),
+                    PasswordManagerHelper.getForProfile(mProfile));
         }
         if (fragment instanceof PasswordCheckFragmentView) {
             PasswordCheckComponentUiFactory.create(

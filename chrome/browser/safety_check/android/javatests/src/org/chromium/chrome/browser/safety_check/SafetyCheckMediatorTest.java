@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
 import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
@@ -64,7 +65,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.pwd_check_wrapper.FakePasswordCheckControllerFactory;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordCheckResult;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordStorageType;
@@ -217,6 +217,7 @@ public class SafetyCheckMediatorTest {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(
                 PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         configureMockSyncService();
 
         PasswordManagerBackendSupportHelper.setInstanceForTesting(mBackendSupportHelperMock);
@@ -231,7 +232,6 @@ public class SafetyCheckMediatorTest {
                 .thenReturn(mUseGmsApi);
 
         mJniMocker.mock(SafetyCheckBridgeJni.TEST_HOOKS, mSafetyCheckBridge);
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
 
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
@@ -261,6 +261,7 @@ public class SafetyCheckMediatorTest {
                             mPrefService,
                             mPasswordStoreBridge,
                             mPasswordCheckControllerFactory,
+                            PasswordManagerHelper.getForProfile(mProfile),
                             mHandler,
                             mModalDialogManagerSupplier);
         } else {
@@ -278,6 +279,7 @@ public class SafetyCheckMediatorTest {
                             mPrefService,
                             mPasswordStoreBridge,
                             mPasswordCheckControllerFactory,
+                            PasswordManagerHelper.getForProfile(mProfile),
                             mHandler,
                             mModalDialogManagerSupplier);
         }
@@ -809,6 +811,7 @@ public class SafetyCheckMediatorTest {
                         mPrefService,
                         mPasswordStoreBridge,
                         mPasswordCheckControllerFactory,
+                        PasswordManagerHelper.getForProfile(mProfile),
                         mHandler,
                         mModalDialogManagerSupplier);
 
@@ -860,6 +863,7 @@ public class SafetyCheckMediatorTest {
                         mPrefService,
                         mPasswordStoreBridge,
                         mPasswordCheckControllerFactory,
+                        PasswordManagerHelper.getForProfile(mProfile),
                         mHandler,
                         mModalDialogManagerSupplier);
 

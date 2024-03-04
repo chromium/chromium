@@ -15,10 +15,11 @@ public class PasswordCheckControllerFactory {
             SyncService syncService,
             PrefService prefService,
             PasswordStoreBridge passwordStoreBridge,
-            SettingsLauncher settingsLauncher) {
-        if (PasswordManagerHelper.canUseUpm()) {
+            SettingsLauncher settingsLauncher,
+            PasswordManagerHelper passwordManagerHelper) {
+        if (passwordManagerHelper.canUseUpm()) {
             return new GmsCorePasswordCheckController(
-                    syncService, prefService, passwordStoreBridge);
+                    syncService, prefService, passwordStoreBridge, passwordManagerHelper);
         }
         return new ChromeNativePasswordCheckController(settingsLauncher);
     }

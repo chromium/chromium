@@ -11,7 +11,6 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -37,13 +36,13 @@ public class PasswordManagerLauncher {
             boolean managePasskeys) {
         assert profile != null;
         Profile originalProfile = profile.getOriginalProfile();
-        PasswordManagerHelper.showPasswordSettings(
-                context,
-                referrer,
-                new SettingsLauncherImpl(),
-                SyncServiceFactory.getForProfile(originalProfile),
-                modalDialogManagerSupplier,
-                managePasskeys);
+        PasswordManagerHelper.getForProfile(originalProfile)
+                .showPasswordSettings(
+                        context,
+                        referrer,
+                        new SettingsLauncherImpl(),
+                        modalDialogManagerSupplier,
+                        managePasskeys);
     }
 
     @CalledByNative
@@ -62,7 +61,8 @@ public class PasswordManagerLauncher {
     }
 
     @CalledByNative
-    private static boolean canManagePasswordsWhenPasskeysPresent() {
-        return PasswordManagerHelper.canUseUpm() || !PasswordManagerHelper.canUseAccountSettings();
+    private static boolean canManagePasswordsWhenPasskeysPresent(Profile profile) {
+        return PasswordManagerHelper.getForProfile(profile).canUseUpm()
+                || !PasswordManagerHelper.canUseAccountSettings();
     }
 }
