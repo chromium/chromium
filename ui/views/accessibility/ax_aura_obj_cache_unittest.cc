@@ -283,7 +283,7 @@ TEST_F(AXAuraObjCacheTest, GetFocusIsUnignoredAncestor) {
   ASSERT_EQ(ax_child, cache.GetFocus());
 
   // Ignore should cause focus to move upwards.
-  child->GetViewAccessibility().OverrideIsIgnored(true);
+  child->GetViewAccessibility().SetIsIgnored(true);
   ASSERT_EQ(ax::mojom::Role::kTextField, GetData(cache.GetFocus()).role);
   ASSERT_EQ(ax_parent, cache.GetFocus());
 

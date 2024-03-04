@@ -143,7 +143,7 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
               .SetAccessibleName(message)
               .SetVisible(false)
               .CustomConfigure(base::BindOnce([](Textfield* prompt_field) {
-                prompt_field->GetViewAccessibility().OverrideIsIgnored(true);
+                prompt_field->GetViewAccessibility().SetIsIgnored(true);
               })),
           Builder<Checkbox>()
               .CopyAddressTo(&checkbox_)
@@ -237,7 +237,7 @@ void MessageBoxView::SetPromptField(const std::u16string& default_prompt) {
     return;
   prompt_field_->SetText(default_prompt);
   prompt_field_->SetVisible(true);
-  prompt_field_->GetViewAccessibility().OverrideIsIgnored(false);
+  prompt_field_->GetViewAccessibility().SetIsIgnored(false);
   // The same text visible in the message box is used as an accessible name for
   // the prompt. To prevent it from being announced twice, we hide the message
   // to ATs.
@@ -297,7 +297,7 @@ void MessageBoxView::ResetLayoutManager() {
 
   // Ignored views are not in the accessibility tree, but their children
   // still can be exposed. Leaf views have no accessible children.
-  checkbox_->GetViewAccessibility().OverrideIsIgnored(!checkbox_is_visible);
+  checkbox_->GetViewAccessibility().SetIsIgnored(!checkbox_is_visible);
   checkbox_->GetViewAccessibility().OverrideIsLeaf(!checkbox_is_visible);
 
   if (link_->GetVisible())

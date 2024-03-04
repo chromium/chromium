@@ -169,7 +169,7 @@ void AXAuraObjCache::GetTopLevelWindows(
 AXAuraObjWrapper* AXAuraObjCache::GetFocus() {
   View* focused_view = GetFocusedView();
   while (focused_view &&
-         (focused_view->GetViewAccessibility().IsIgnored() ||
+         (focused_view->GetViewAccessibility().GetIsIgnored() ||
           focused_view->GetViewAccessibility().propagate_focus_to_ancestor())) {
     focused_view = focused_view->parent();
   }

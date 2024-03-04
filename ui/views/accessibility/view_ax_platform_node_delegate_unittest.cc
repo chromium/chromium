@@ -633,16 +633,16 @@ TEST_F(ViewAXPlatformNodeDelegateTest, SetSizeAndPosition) {
   EXPECT_FALSE(view_accessibility(group_ids[4])->GetPosInSet().has_value());
 
   // Check if a View is ignored, it is not counted in SetSize or PosInSet
-  group_ids[1]->GetViewAccessibility().OverrideIsIgnored(true);
-  group_ids[2]->GetViewAccessibility().OverrideIsIgnored(true);
+  group_ids[1]->GetViewAccessibility().SetIsIgnored(true);
+  group_ids[2]->GetViewAccessibility().SetIsIgnored(true);
   EXPECT_EQ(view_accessibility(group_ids[0])->GetSetSize(), 1);
   EXPECT_EQ(view_accessibility(group_ids[0])->GetPosInSet(), 1);
   EXPECT_FALSE(view_accessibility(group_ids[1])->GetSetSize().has_value());
   EXPECT_FALSE(view_accessibility(group_ids[1])->GetPosInSet().has_value());
   EXPECT_FALSE(view_accessibility(group_ids[2])->GetSetSize().has_value());
   EXPECT_FALSE(view_accessibility(group_ids[2])->GetPosInSet().has_value());
-  group_ids[1]->GetViewAccessibility().OverrideIsIgnored(false);
-  group_ids[2]->GetViewAccessibility().OverrideIsIgnored(false);
+  group_ids[1]->GetViewAccessibility().SetIsIgnored(false);
+  group_ids[2]->GetViewAccessibility().SetIsIgnored(false);
 
   // Test Views with setSize/ posInSet override values set.
   View::Views overrides = SetUpExtraViews();
@@ -888,8 +888,8 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
   ViewAXPlatformNodeDelegate* child_view_4 = view_accessibility(extra_views[4]);
 
   // Mark the parent view and the second child view as ignored.
-  parent_view->OverrideIsIgnored(true);
-  child_view_2->OverrideIsIgnored(true);
+  parent_view->SetIsIgnored(true);
+  child_view_2->SetIsIgnored(true);
 
   EXPECT_EQ(contents_view->GetNativeObject(), parent_view->GetParent());
   EXPECT_EQ(3u, parent_view->GetChildCount());

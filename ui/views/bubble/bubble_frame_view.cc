@@ -135,7 +135,7 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
   progress_indicator->SetPreferredCornerRadii(std::nullopt);
   progress_indicator->SetBackgroundColor(SK_ColorTRANSPARENT);
   progress_indicator->SetVisible(false);
-  progress_indicator->GetViewAccessibility().OverrideIsIgnored(true);
+  progress_indicator->GetViewAccessibility().SetIsIgnored(true);
   progress_indicator->SetProperty(views::kElementIdentifierKey,
                                   kProgressIndicatorElementId);
   progress_indicator_ = AddChildView(std::move(progress_indicator));
@@ -310,13 +310,13 @@ void BubbleFrameView::ResetWindowControls() {
   bool close_is_visible =
       GetWidget()->widget_delegate()->ShouldShowCloseButton();
   close_->SetVisible(close_is_visible);
-  close_->GetViewAccessibility().OverrideIsIgnored(!close_is_visible);
+  close_->GetViewAccessibility().SetIsIgnored(!close_is_visible);
 
   // If the minimize button is not visible, marking it as "ignored" will cause
   // it to be removed from the accessibility tree.
   bool minimize_is_visible = GetWidget()->widget_delegate()->CanMinimize();
   minimize_->SetVisible(minimize_is_visible);
-  minimize_->GetViewAccessibility().OverrideIsIgnored(!minimize_is_visible);
+  minimize_->GetViewAccessibility().SetIsIgnored(!minimize_is_visible);
 }
 
 void BubbleFrameView::UpdateWindowIcon() {
@@ -455,7 +455,7 @@ void BubbleFrameView::UpdateMainImage() {
 void BubbleFrameView::SetProgress(std::optional<double> progress) {
   bool visible = progress.has_value();
   progress_indicator_->SetVisible(visible);
-  progress_indicator_->GetViewAccessibility().OverrideIsIgnored(!visible);
+  progress_indicator_->GetViewAccessibility().SetIsIgnored(!visible);
   if (progress) {
     progress_indicator_->SetValue(progress.value());
   }

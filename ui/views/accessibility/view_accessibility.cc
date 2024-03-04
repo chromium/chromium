@@ -275,8 +275,9 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   // in our platform specific subclass because subclasses determine if a node is
   // a leaf by (among other things) counting the number of unignored children,
   // which would create a circular definition of the ignored state.
-  if (is_ignored_ || data->IsIgnored() || ViewAccessibility::IsChildOfLeaf())
+  if (is_ignored_ || data->IsIgnored() || ViewAccessibility::IsChildOfLeaf()) {
     data->AddState(ax::mojom::State::kIgnored);
+  }
 
   if (ViewAccessibility::IsAccessibilityFocusable())
     data->AddState(ax::mojom::State::kFocusable);

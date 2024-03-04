@@ -967,7 +967,7 @@ void BubbleDialogModelHost::OnWidgetInitialized() {
         base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
                             base::Unretained(this)));
     // The banner is supposed to be purely decorative.
-    banner_view->GetViewAccessibility().OverrideIsIgnored(true);
+    banner_view->GetViewAccessibility().SetIsIgnored(true);
     GetBubbleFrameView()->SetHeaderView(std::move(banner_view));
     SizeToContents();
   }

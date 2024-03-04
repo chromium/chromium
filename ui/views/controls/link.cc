@@ -33,7 +33,7 @@ Link::Link(const std::u16string& title, int text_context, int text_style)
 
   SetAccessibilityProperties(ax::mojom::Role::kLink, title);
   // Prevent invisible links from being announced by screen reader.
-  GetViewAccessibility().OverrideIsIgnored(title.empty());
+  GetViewAccessibility().SetIsIgnored(title.empty());
 
   // Label() indirectly calls SetText(), but at that point our virtual override
   // will not be reached.  Call it explicitly here to configure focus.
@@ -183,7 +183,7 @@ void Link::SetFontList(const gfx::FontList& font_list) {
 void Link::SetText(const std::u16string& text) {
   Label::SetText(text);
   // Prevent invisible links from being announced by screen reader.
-  GetViewAccessibility().OverrideIsIgnored(text.empty());
+  GetViewAccessibility().SetIsIgnored(text.empty());
   ConfigureFocus();
 }
 

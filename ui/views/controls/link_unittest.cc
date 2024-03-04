@@ -148,7 +148,7 @@ TEST_F(LinkTest, AccessibleProperties) {
             u"TestLink");
   EXPECT_EQ(link()->GetAccessibleName(), u"TestLink");
   EXPECT_EQ(data.role, ax::mojom::Role::kLink);
-  EXPECT_FALSE(link()->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(link()->GetViewAccessibility().GetIsIgnored());
 
   // Setting the accessible name to a non-empty string should replace the name
   // from the link text.
@@ -160,7 +160,7 @@ TEST_F(LinkTest, AccessibleProperties) {
             accessible_name);
   EXPECT_EQ(link()->GetAccessibleName(), accessible_name);
   EXPECT_EQ(data.role, ax::mojom::Role::kLink);
-  EXPECT_FALSE(link()->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(link()->GetViewAccessibility().GetIsIgnored());
 
   // Setting the accessible name to an empty string should cause the link text
   // to be used as the name.
@@ -171,7 +171,7 @@ TEST_F(LinkTest, AccessibleProperties) {
             u"TestLink");
   EXPECT_EQ(link()->GetAccessibleName(), u"TestLink");
   EXPECT_EQ(data.role, ax::mojom::Role::kLink);
-  EXPECT_FALSE(link()->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(link()->GetViewAccessibility().GetIsIgnored());
 
   // Setting the link to an empty string without setting a new accessible
   // name should cause the view to become "ignored" again.
@@ -182,7 +182,7 @@ TEST_F(LinkTest, AccessibleProperties) {
             std::u16string());
   EXPECT_EQ(link()->GetAccessibleName(), std::u16string());
   EXPECT_EQ(data.role, ax::mojom::Role::kLink);
-  EXPECT_TRUE(link()->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(link()->GetViewAccessibility().GetIsIgnored());
 }
 
 }  // namespace views

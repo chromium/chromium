@@ -621,7 +621,7 @@ void View::SetVisible(bool visible) {
     // Notify the parent.
     if (parent_) {
       parent_->ChildVisibilityChanged(this);
-      if (!view_accessibility_ || !view_accessibility_->IsIgnored()) {
+      if (!view_accessibility_ || !view_accessibility_->GetIsIgnored()) {
         parent_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
                                           true);
       }

@@ -1001,8 +1001,8 @@ void ViewAXPlatformNodeDelegate::GetViewsInGroupForSet(
   view_to_check->GetViewsInGroup(group_id, views_in_group);
 
   // Remove any views that are ignored in the accessibility tree.
-  std::erase_if(*views_in_group, [](View* view) {
-    return view->GetViewAccessibility().IsIgnored();
+  base::EraseIf(*views_in_group, [](View* view) {
+    return view->GetViewAccessibility().GetIsIgnored();
   });
 }
 

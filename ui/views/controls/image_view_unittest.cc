@@ -177,7 +177,7 @@ TEST_P(ImageViewTest, AccessibleNameFromTooltipText) {
   EXPECT_EQ(image_view()->GetAccessibleName(), std::u16string());
   EXPECT_EQ(image_view()->GetTooltipText(), std::u16string());
   EXPECT_EQ(data.role, ax::mojom::Role::kImage);
-  EXPECT_TRUE(image_view()->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(image_view()->GetViewAccessibility().GetIsIgnored());
 
   // Setting the tooltip text when there is no accessible name should result in
   // the tooltip text being used for the accessible name and the "ignored" state
@@ -191,7 +191,7 @@ TEST_P(ImageViewTest, AccessibleNameFromTooltipText) {
   EXPECT_EQ(image_view()->GetAccessibleName(), tooltip_text);
   EXPECT_EQ(image_view()->GetTooltipText(), tooltip_text);
   EXPECT_EQ(data.role, ax::mojom::Role::kImage);
-  EXPECT_FALSE(image_view()->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(image_view()->GetViewAccessibility().GetIsIgnored());
 
   // Setting the accessible name to a non-empty string should replace the name
   // from the tooltip text.
@@ -204,7 +204,7 @@ TEST_P(ImageViewTest, AccessibleNameFromTooltipText) {
   EXPECT_EQ(image_view()->GetAccessibleName(), accessible_name);
   EXPECT_EQ(image_view()->GetTooltipText(), tooltip_text);
   EXPECT_EQ(data.role, ax::mojom::Role::kImage);
-  EXPECT_FALSE(image_view()->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(image_view()->GetViewAccessibility().GetIsIgnored());
 
   // Setting the accessible name to an empty string should cause the tooltip
   // text to be used as the name.
@@ -216,7 +216,7 @@ TEST_P(ImageViewTest, AccessibleNameFromTooltipText) {
   EXPECT_EQ(image_view()->GetAccessibleName(), tooltip_text);
   EXPECT_EQ(image_view()->GetTooltipText(), tooltip_text);
   EXPECT_EQ(data.role, ax::mojom::Role::kImage);
-  EXPECT_FALSE(image_view()->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(image_view()->GetViewAccessibility().GetIsIgnored());
 
   // Setting the tooltip to an empty string without setting a new accessible
   // name should cause the view to become "ignored" again.
@@ -228,7 +228,7 @@ TEST_P(ImageViewTest, AccessibleNameFromTooltipText) {
   EXPECT_EQ(image_view()->GetAccessibleName(), std::u16string());
   EXPECT_EQ(image_view()->GetTooltipText(), std::u16string());
   EXPECT_EQ(data.role, ax::mojom::Role::kImage);
-  EXPECT_TRUE(image_view()->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(image_view()->GetViewAccessibility().GetIsIgnored());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
