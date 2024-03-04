@@ -6923,3 +6923,6 @@ crbug.com/327468397 wpt_internal/dom/abort/abort-signal-memory-tests.https.any.h
 
 # Gardener 2024-02-29 (EMEA)
 crbug.com/327590879 [ Linux ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/clip-path-larger-than-border-box-on-child-of-named-element.html [ Failure Pass Timeout ]
+
+# Gardener 2024-03-04 (EMEA)
+crbug.com/327224061 [ Win ] external/wpt/scroll-to-text-fragment/iframe-scroll.sub.html [ Failure Pass ]
