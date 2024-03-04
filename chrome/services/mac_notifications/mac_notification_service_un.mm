@@ -5,12 +5,14 @@
 #import "chrome/services/mac_notifications/mac_notification_service_un.h"
 
 #import <Foundation/Foundation.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import <UserNotifications/UserNotifications.h>
 
 #include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -205,15 +207,22 @@ void MacNotificationServiceUN::DoDisplayNotification(
   if (!notification->icon.isNull()) {
     gfx::Image icon(notification->icon);
     base::FilePath path = image_retainer_.RegisterTemporaryImage(icon);
-    NSURL* url = [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
+    NSURL* url = base::apple::FilePathToNSURL(path);
     // When the files are saved using NotificationImageRetainer, they're saved
     // without the .png extension. So |options| here is used to tell the system
     // that the file is of type PNG, as NotificationImageRetainer converts files
     // to PNG before writing them.
-    NSDictionary* options = @{
-      UNNotificationAttachmentOptionsTypeHintKey :
-          (__bridge NSString*)kUTTypePNG
-    };
+    NSDictionary* options;
+    if (@available(macOS 11, *)) {
+      options =
+          @{UNNotificationAttachmentOptionsTypeHintKey : UTTypePNG.identifier};
+    } else {
+      options = @{
+        UNNotificationAttachmentOptionsTypeHintKey :
+            (__bridge NSString*)kUTTypePNG
+      };
+    }
+
     UNNotificationAttachment* attachment =
         [UNNotificationAttachment attachmentWithIdentifier:notification_id_ns
                                                        URL:url
@@ -679,11 +688,16 @@ void MacNotificationServiceUN::OnGotAuthorizationStatus(
              (void (^)(UNNotificationPresentationOptions options))
                  completionHandler {
   // Receiving a notification when the app is in the foreground.
-  UNNotificationPresentationOptions presentationOptions =
-      UNNotificationPresentationOptionSound |
-      UNNotificationPresentationOptionAlert |
-      UNNotificationPresentationOptionBadge;
-  completionHandler(presentationOptions);
+  if (@available(macOS 11, *)) {
+    completionHandler(UNNotificationPresentationOptionSound |
+                      UNNotificationPresentationOptionList |
+                      UNNotificationPresentationOptionBanner |
+                      UNNotificationPresentationOptionBadge);
+  } else {
+    completionHandler(UNNotificationPresentationOptionSound |
+                      UNNotificationPresentationOptionAlert |
+                      UNNotificationPresentationOptionBadge);
+  }
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
