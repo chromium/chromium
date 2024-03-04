@@ -130,9 +130,10 @@ void PinTextfield::OnThemeChanged() {
 }
 
 bool PinTextfield::HasCellFocus(int cell) const {
-  // TODO(rgod): Verify whether focus should stay on the last cell when it's
-  // typed or automatically move to the accept button.
-  return HasFocus() && cell == digits_typed_count_;
+  int cell_with_focus = digits_typed_count_ == pin_digits_count_
+                            ? pin_digits_count_ - 1
+                            : digits_typed_count_;
+  return HasFocus() && cell == cell_with_focus;
 }
 
 BEGIN_METADATA(PinTextfield)

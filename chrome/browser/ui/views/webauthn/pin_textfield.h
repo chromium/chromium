@@ -39,7 +39,8 @@ class PinTextfield : public views::Textfield {
   void OnThemeChanged() override;
 
  private:
-  // Returns true for the first empty cell when the whole view has focus.
+  // Returns true for the first empty cell or the last cell when the full pin is
+  // typed (when the whole view has focus).
   bool HasCellFocus(int cell) const;
 
   // Render text for each of the pin cells.
