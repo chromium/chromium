@@ -64,6 +64,7 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
   // views::LabelButton:
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
+  int GetHeightForWidth(int width) const override;
   void Layout(PassKey) override;
   void OnThemeChanged() override;
   void NotifyClick(const ui::Event& event) override;

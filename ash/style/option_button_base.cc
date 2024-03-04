@@ -72,6 +72,10 @@ gfx::Size OptionButtonBase::GetMinimumSize() const {
   return gfx::Size(min_width_, kButtonHeight);
 }
 
+int OptionButtonBase::GetHeightForWidth(int width) const {
+  return kButtonHeight;
+}
+
 void OptionButtonBase::SetLabelColorId(ui::ColorId color_id) {
   label()->SetEnabledColorId(color_id);
 }
