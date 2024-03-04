@@ -1214,13 +1214,29 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230522",
+                    "name": "Enabled",
                     "params": {
                         "block": "[]"
                     },
                     "enable_features": [
                         "AutocorrectByDefault"
                     ]
+                },
+                {
+                    "name": "Default",
+                    "params": {
+                        "block": "[]"
+                    },
+                    "enable_features": [
+                        "AutocorrectByDefault"
+                    ]
+                },
+                {
+                    "name": "Holdback",
+                    "params": {
+                        "block": "[]"
+                    },
+                    "enable_features": []
                 }
             ]
         }
