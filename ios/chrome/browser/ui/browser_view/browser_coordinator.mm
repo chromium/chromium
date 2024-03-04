@@ -1816,8 +1816,6 @@ enum class ToolbarKind {
 }
 
 - (void)showSendTabToSelfUI:(const GURL&)url title:(NSString*)title {
-  CHECK(!_sendTabToSelfCoordinator);
-
   _sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
