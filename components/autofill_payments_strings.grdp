@@ -11,6 +11,12 @@
     <message name="IDS_AUTOFILL_SAVE_IBAN_BUBBLE_SAVE_NO_THANKS" desc="The text label for `No thanks` button used in autofill prompt IBAN (International Bank Account Number) local save bubble on desktop.">
       No thanks
     </message>
+    <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_NO_THANKS" desc="Text for the cancel button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will not be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
+      No thanks
+    </message>
+    <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_ACCEPT" desc="Text for the accept button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
+      Turn on
+    </message>
   </if>
   <if expr="use_titlecase">
     <message name="IDS_AUTOFILL_NO_THANKS_DESKTOP_LOCAL_SAVE" desc="In Title Case: The label for cancel button used in autofill credit card local save bubble on desktop.">
@@ -21,6 +27,12 @@
     </message>
     <message name="IDS_AUTOFILL_SAVE_IBAN_BUBBLE_SAVE_NO_THANKS" desc="The text label for `No Thanks` button used in autofill prompt IBAN (International Bank Account Number) local save bubble on desktop.">
       No Thanks
+    </message>
+    <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_NO_THANKS" desc="Text for the cancel button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will not be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
+      No Thanks
+    </message>
+    <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_ACCEPT" desc="Text for the accept button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
+      Turn On
     </message>
   </if>
 
@@ -697,18 +709,19 @@
   </message>
 
   <!-- Mandatory Reauth related strings - start -->
-  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_NO_THANKS" desc="Text for the cancel button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will not be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
-    No thanks
-  </message>
-  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_ACCEPT" desc="Text for the accept button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
-    Yes
-  </message>
   <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_TITLE" desc="Title text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
-    Always verify?
+    Turn on manual verification?
   </message>
+  <if expr="_google_chrome">
   <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_EXPLANATION" desc="Explanation text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
-    For added security on shared devices, turn on verification every time you pay using autofill.
+    If you share this device, Chrome can ask you to verify every time you pay using autofill
   </message>
+  </if>
+  <if expr="not _google_chrome">
+  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_EXPLANATION" desc="Explanation text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
+    If you share this device, Chromium can ask you to verify every time you pay using autofill
+  </message>
+  </if>
   <message name="IDS_AUTOFILL_MANDATORY_REAUTH_ICON_TOOLTIP" desc="The tooltip message for the omnibox icon for the mandatory reauth opt-in bubble on Desktop. This bubble prompts users if they would like to enroll in mandatory reauth. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
     Enable mandatory re-authentication
   </message>
@@ -1043,7 +1056,7 @@
 
   <!-- Mandatory Reauth related strings -->
   <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_PAYMENT_METHOD_MANDATORY_REAUTH_LABEL" desc="Label for a settings page toggle that allows users to control whether or not to add mandatory reauth for payment methods filling." formatter_data="android_java">
-    Always verify when using autofill
+    Manually verify every time you pay using autofill
   </message>
   <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_PAYMENT_METHOD_MANDATORY_REAUTH_SUBLABEL" desc="Sublabel for a settings page toggle that allows users to control whether or not to add mandatory reauth for payment methods filling." formatter_data="android_java">
     When turned off, you may be asked occasionally to verify for security purposes
