@@ -68,6 +68,18 @@
     [_setUpListDisabled setObserver:nil];
     _setUpListDisabled = nil;
   }
+  if (_safetyCheckDisabled) {
+    [_safetyCheckDisabled setObserver:nil];
+    _safetyCheckDisabled = nil;
+  }
+  if (_tabResumptionDisabled) {
+    [_tabResumptionDisabled setObserver:nil];
+    _tabResumptionDisabled = nil;
+  }
+  if (_parcelTrackingDisabled) {
+    [_parcelTrackingDisabled setObserver:nil];
+    _parcelTrackingDisabled = nil;
+  }
 }
 
 - (void)setConsumer:(id<MagicStackHalfSheetConsumer>)consumer {

@@ -22,7 +22,9 @@
 #import "ios/chrome/browser/sessions/session_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -57,7 +59,8 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
 
 }  // namespace
 
-@interface TabResumptionMediator () <StartSurfaceRecentTabObserving,
+@interface TabResumptionMediator () <BooleanObserver,
+                                     StartSurfaceRecentTabObserving,
                                      SyncedSessionsObserver,
                                      IdentityManagerObserverBridgeDelegate,
                                      SyncObserverModelBridge,
@@ -101,6 +104,7 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
       _identityManagerObserverBridge;
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
       _syncedSessionsObserverBridge;
+  PrefBackedBoolean* _tabResumptionDisabled;
 }
 
 - (instancetype)initWithLocalState:(PrefService*)localState
@@ -117,6 +121,11 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
     _sceneState = _browser->GetSceneState();
     _webStateList = _browser->GetWebStateList();
     _isOffTheRecord = _browser->GetBrowserState()->IsOffTheRecord();
+
+    _tabResumptionDisabled = [[PrefBackedBoolean alloc]
+        initWithPrefService:_localState
+                   prefName:tab_resumption_prefs::kTabResumptioDisabledPref];
+    [_tabResumptionDisabled setObserver:self];
 
     ChromeBrowserState* browserState = _browser->GetBrowserState();
     _sessionSyncService =
@@ -155,6 +164,8 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
   _recentTabBrowserAgent = nullptr;
   _syncObserverModelBridge.reset();
   _identityManagerObserverBridge.reset();
+  [_tabResumptionDisabled setObserver:nil];
+  _tabResumptionDisabled = nil;
 }
 
 #pragma mark - Public methods
@@ -209,13 +220,20 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
 
 - (void)disableModule {
   tab_resumption_prefs::DisableTabResumption(_localState);
-  [self.delegate removeTabResumptionModule];
 }
 
 - (void)setDelegate:(id<TabResumptionHelperDelegate>)delegate {
   _delegate = delegate;
   if (_delegate) {
     [self fetchLastTabResumptionItem];
+  }
+}
+
+#pragma mark - Boolean Observer
+
+- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  if (observableBoolean == _tabResumptionDisabled && observableBoolean.value) {
+    [self.delegate removeTabResumptionModule];
   }
 }
 
