@@ -2307,7 +2307,10 @@ function registerCdpAsRrpCssRule(nodeObj, cdpRule) {
 
   // rulePreview
 
-  const startLine = (ruleRange || styleRange)?.startLine;
+  const maybeStartLine = (ruleRange || styleRange)?.startLine;
+
+  // Lines from CDB data are zero-based.
+  const startLine = maybeStartLine != null ? maybeStartLine + 1 : maybeStartLine;
   const startColumn = (ruleRange || styleRange)?.startColumn;
   // see https://static.replay.io/protocol/tot/CSS/#type-OriginalStyleSheetLocation
   const originalLocation = undefined; // TODO
@@ -2378,7 +2381,7 @@ function convertCdpToRrpCssRules(nodeObj, cdpMatchedStyles) {
     Array_push.call(appliedRules, appliedRule);
   }
 
-  for (const cdpRule of matchedRules) {
+  for (const cdpRule of matchedRules.reverse()) {
     addCdpRule(cdpRule.rule);
   }
 
@@ -2389,7 +2392,7 @@ function convertCdpToRrpCssRules(nodeObj, cdpMatchedStyles) {
       // pseudoIdentifier,
       matches
     } = pseudoMatch;
-    for (const match of matches) {
+    for (const match of matches.reverse()) {
       addCdpRule(match.rule, pseudoType);
     }
   }
