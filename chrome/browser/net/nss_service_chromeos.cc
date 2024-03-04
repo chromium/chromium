@@ -252,6 +252,16 @@ class NssService::NSSCertDatabaseChromeOSManager
 
     auto public_slot = crypto::GetPublicSlotForChromeOSUser(username_hash_);
 
+#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE)
+    if (!public_slot) {
+      // This is a "for testing" branch. The code below will intentionally crash
+      // when the public slot fails to load. By default prevent this from
+      // happening in tests that simply don't properly fake NSS. Consider using
+      // FakeNssService if a specific NSS behavior is required in tests.
+      public_slot = crypto::ScopedPK11Slot(PK11_GetInternalKeySlot());
+    }
+#endif
+
     // TODO(crbug.com/1163303): Remove when the bug is fixed.
     if (!public_slot) {
       Profile* profile = ProfileManager::GetActiveUserProfile();
