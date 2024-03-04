@@ -28,14 +28,24 @@ class EncryptedReportingClient;
 
 BASE_DECLARE_FEATURE(kEnableReportingFromUnmanagedDevices);
 
-// Singleton wrapper of a client used for uploading events to the reporting
-// server. Enables safe access to the client with an ability to detect when it
-// is disconnected. Currently implemented with ::policy::CloudPolicyClient;
-// later on we will switch it to a dedicated reporting client.
+// Singleton wrapper of a reporting server client used when uploading events
+// to the reporting server. Enables safe access to the cloud policy client with
+// an ability to detect when it is disconnected. Actual upload is implemented
+// with a dedicated reporting client.
 class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
  public:
   using ResponseCallback =
       base::OnceCallback<void(StatusOr<base::Value::Dict>)>;
+
+  class Observer {
+   public:
+    virtual ~Observer() = default;
+    virtual void OnConnected() = 0;
+    virtual void OnDisconnected() = 0;
+
+   protected:
+    Observer() = default;
+  };
 
   // RAII class for testing ReportingServerConnector - substitutes cloud policy
   // client instead of getting it from the cloud policy core. Resets client when
@@ -47,7 +57,7 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
       delete;
   ~ReportingServerConnector() override;
 
-  // Accesses singleton ReportingServerConnector instance.
+  // Accesses singleton `ReportingServerConnector` instance.
   static ReportingServerConnector* GetInstance();
 
   // Uploads a report containing `merging_payload` (merged into the default
@@ -59,6 +69,10 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
                                     std::vector<EncryptedRecord> records,
                                     ScopedReservation scoped_reservation,
                                     ResponseCallback callback);
+
+  // Adds/removes observer to the Connector.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
  private:
   friend struct base::DefaultSingletonTraits<ReportingServerConnector>;
@@ -99,6 +113,9 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
   raw_ptr<::policy::CloudPolicyClient> client_ = nullptr;
 
   std::unique_ptr<EncryptedReportingClient> encrypted_reporting_client_;
+
+  // Active observers list (to be updated on UI task runner only).
+  std::vector<raw_ptr<Observer>> observers_;
 };
 }  // namespace reporting
 

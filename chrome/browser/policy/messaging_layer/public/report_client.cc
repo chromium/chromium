@@ -21,6 +21,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/storage_selector/storage_selector.h"
 #include "chrome/browser/policy/messaging_layer/util/dm_token_retriever_provider.h"
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/reporting/client/dm_token_retriever.h"
 #include "components/reporting/client/report_queue_configuration.h"
@@ -75,9 +76,48 @@ ReportingClient::ReportingClient(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
               }),
           sequenced_task_runner) {
+  // Register itself as observer to connector.
+  ReportingServerConnector::GetInstance()->AddObserver(this);
 }
 
-ReportingClient::~ReportingClient() = default;
+ReportingClient::~ReportingClient() {
+  // Unregister itself as observer to connector.
+  ReportingServerConnector::GetInstance()->RemoveObserver(this);
+}
+
+void ReportingClient::OnConnected() {
+  // Immediately perform dummy upload that will retrieve encryption key, if
+  // `Storage` does not have it yet. This is done to provide the key for later
+  // events posting even in case the device goes offline very soon after
+  // enrollment - `Flush` tries to request encryption key from the server. It
+  // is expected to succeed, but even if it fails, later enqueue operations
+  // have a good chance to succeed if the server is available. Note that we
+  // cannot use Speculative Report Queue - as opposed to `Enqueue`, `Flush`
+  // does wait for the underlying actual queue to be created.
+  ReportQueueProvider::CreateQueue(
+      ReportQueueConfiguration::Create(
+          {
+              .destination = Destination::HEARTBEAT_EVENTS  // Unused
+          })
+          .Build()
+          .value(),
+      base::BindOnce([](StatusOr<std::unique_ptr<ReportQueue>> queue_result) {
+        if (!queue_result.has_value()) {
+          LOG(WARNING) << "Failed to create queue for initial flush";
+          return;
+        }
+        // Flush SECURITY queue since it is usually empty (events are uploaded
+        // immediately after they are posted).
+        queue_result.value()->Flush(
+            Priority::SECURITY, base::BindOnce([](Status status) {
+              LOG_IF(WARNING, !status.ok()) << "Initial flush error=" << status;
+            }));
+      }));
+}
+
+void ReportingClient::OnDisconnected() {
+  // No action required upon disconnect.
+}
 
 // static
 ReportQueueProvider::SmartPtr<ReportingClient> ReportingClient::Create(

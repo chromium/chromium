@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -52,7 +53,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#endif
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using ::policy::CloudPolicyClient;
 using ::policy::CloudPolicyCore;
@@ -66,10 +68,22 @@ BASE_FEATURE(kEnableReportingFromUnmanagedDevices,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 ReportingServerConnector::ReportingServerConnector()
-    : encrypted_reporting_client_(EncryptedReportingClient::Create()) {}
+    : encrypted_reporting_client_(EncryptedReportingClient::Create()) {
+  // Initialize `ReportingServerConnector` instance. For non-Ash configurations
+  // it is initialized on the first use, but for Ash we need it to be prepared
+  // for encryption key delivery early after enrollment.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::IgnoreResult(EnsureUsableClient());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 ReportingServerConnector::~ReportingServerConnector() {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  // Notify and remove observers.
+  for (auto ob : observers_) {
+    ob->OnDisconnected();
+  }
+  observers_.clear();
+
   if (core_) {
     core_->RemoveObserver(this);
     core_ = nullptr;
@@ -87,7 +101,13 @@ ReportingServerConnector* ReportingServerConnector::GetInstance() {
 // Called after the core is connected.
 void ReportingServerConnector::OnCoreConnected(CloudPolicyCore* core) {
   DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
-  client_ = core->client();
+  const auto client_status = EnsureUsableClient();
+  LOG_IF(WARNING, !client_status.ok()) << client_status;
+
+  // Notify observers.
+  for (auto ob : observers_) {
+    ob->OnConnected();
+  }
 }
 
 // Called after the refresh scheduler is started (unused here).
@@ -97,6 +117,12 @@ void ReportingServerConnector::OnRefreshSchedulerStarted(
 // Called before the core is disconnected.
 void ReportingServerConnector::OnCoreDisconnecting(CloudPolicyCore* core) {
   DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+
+  // Notify observers.
+  for (auto ob : observers_) {
+    ob->OnDisconnected();
+  }
+
   client_ = nullptr;
 }
 
@@ -198,6 +224,11 @@ ReportingServerConnector::GetUserCloudPolicyManager() {
   // Pointer to `policy::CloudPolicyManager` is retrieved differently
   // for ChromeOS-Ash, for Android and for all other cases.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!ash::InstallAttributes::IsInitialized()) {
+    CHECK_IS_TEST();
+    return base::unexpected(
+        Status(error::UNAVAILABLE, "InstallAttributes not initialized"));
+  }
   if (!g_browser_process || !g_browser_process->platform_part() ||
       !g_browser_process->platform_part()->browser_policy_connector_ash()) {
     return base::unexpected(
@@ -261,9 +292,10 @@ Status ReportingServerConnector::EnsureUsableClient() {
       return Status(error::NOT_FOUND, "No usable CloudPolicyClient found");
     }
 
-    // Core is now available, cache client.
+    // Client is now available, cache it.
     client_ = core_->client();
   }
+
   if (!client_->is_registered()) {
     return Status(error::FAILED_PRECONDITION,
                   "CloudPolicyClient is not in registered state");
@@ -271,5 +303,25 @@ Status ReportingServerConnector::EnsureUsableClient() {
 
   // Client is usable.
   return Status::StatusOK();
+}
+
+void ReportingServerConnector::AddObserver(Observer* observer) {
+  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK(observer);
+  for (auto ob : observers_) {
+    CHECK_NE(ob, observer) << "Observer cannot be registered more than once";
+  }
+  observers_.emplace_back(observer);
+}
+
+void ReportingServerConnector::RemoveObserver(Observer* observer) {
+  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  for (auto it = observers_.begin(); it != observers_.end();) {
+    if (it->get() == observer) {
+      it = observers_.erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 }  // namespace reporting

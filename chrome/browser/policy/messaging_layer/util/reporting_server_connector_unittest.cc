@@ -36,7 +36,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_init_params.h"
@@ -81,8 +81,7 @@ class ReportingServerConnectorTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::ScopedStubInstallAttributes install_attributes_ =
-      ash::ScopedStubInstallAttributes();
+  ash::ScopedStubInstallAttributes install_attributes_;
 #endif
 
   ReportingServerConnector::TestEnvironment test_env_;
