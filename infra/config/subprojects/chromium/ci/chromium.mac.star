@@ -354,6 +354,7 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    cpu = cpu.ARM64,
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "release|arm64",
