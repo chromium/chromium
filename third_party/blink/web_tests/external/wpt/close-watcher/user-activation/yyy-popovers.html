@@ -6,7 +6,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
-<script src="resources/helpers.js"></script>
+<script src="../resources/helpers.js"></script>
 
 <button id=b0>b0</button>
 
@@ -22,9 +22,11 @@
 
 <script>
 promise_test(async () => {
+  await test_driver.click(b0);
   p1.showPopover();
   await test_driver.click(b1);
   p2.showPopover();
+  await test_driver.click(b2);
   p3.showPopover();
   assert_true(p1.matches(':popover-open'), 'p1 should be open.');
   assert_true(p2.matches(':popover-open'), 'p2 should be open.');
@@ -32,12 +34,17 @@ promise_test(async () => {
 
   await sendCloseRequest();
   assert_true(p1.matches(':popover-open'), 'first escape: p1 should be open.');
-  assert_false(p2.matches(':popover-open'), 'first escape: p2 should be closed.');
+  assert_true(p2.matches(':popover-open'), 'first escape: p2 should be open.');
   assert_false(p3.matches(':popover-open'), 'first escape: p3 should be closed.');
 
   await sendCloseRequest();
-  assert_false(p1.matches(':popover-open'), 'second escape: p1 should be closed.');
+  assert_true(p1.matches(':popover-open'), 'second escape: p1 should be open.');
   assert_false(p2.matches(':popover-open'), 'second escape: p2 should be closed.');
   assert_false(p3.matches(':popover-open'), 'second escape: p3 should be closed.');
-}, 'Multiple popovers opened from a single user activation close together, but original popover closes separately.');
+
+  await sendCloseRequest();
+  assert_false(p1.matches(':popover-open'), 'third escape: p1 should be closed.');
+  assert_false(p2.matches(':popover-open'), 'third escape: p2 should be closed.');
+  assert_false(p3.matches(':popover-open'), 'third escape: p3 should be closed.');
+}, 'Create three popovers with user activation');
 </script>
