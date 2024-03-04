@@ -118,6 +118,7 @@ group = 'test'
 
 [crate.hex-literal]
 group = 'test'
+extra_input_roots = ['../README.md']
 
 [crate.libc]
 ban_features = [
@@ -180,3 +181,4 @@ build_script_outputs = [ "tables.rs" ]
 
 [crate.wycheproof]
 group = 'test'
+extra_input_roots = ['data']

@@ -8,6 +8,10 @@ if (is_chromeos_device) {
 }
 import("//build/config/rust.gni")
 
+assert(enable_rust, "Nearby Presence requires rust to be enabled")
+assert(enable_rust_boringssl,
+       "Nearby Presence requires boringssl to be enabled")
+
 # Nearby Config
 config("nearby_include_config") {
   include_dirs = [
@@ -24,10 +28,6 @@ config("nearby_include_config") {
 
 config("nearby_defines") {
   defines = [ "NEARBY_CHROMIUM=1" ]
-}
-
-config("nearby_rust_defines") {
-  defines = [ "USE_RUST_LDT" ]
 }
 
 ###############################################################################
@@ -1035,30 +1035,17 @@ source_set("presence_internal") {
     ":platform_public_comm",
     ":platform_public_logging",
     ":platform_public_types",
-    ":presence_ldt_stub",
     ":presence_mediums",
     ":presence_types",
     "//crypto:crypto",
     "//third_party/abseil-cpp:absl",
+    "//third_party/beto-core:ldt_np_adv_ffi",
     "//third_party/boringssl:boringssl",
   ]
-  if (enable_rust && enable_all_rust_features && enable_rust_boringssl) {
-    public_deps += [ "//third_party/beto-core:ldt_np_adv_ffi" ]
-    public_configs += [ ":nearby_rust_defines" ]
-  }
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-source_set("presence_ldt_stub") {
-  public_configs = [
-    ":nearby_include_config",
-    ":nearby_defines",
-  ]
-  sources = [ "src/presence/implementation/np_ldt.c" ]
-  public = [ "src/presence/implementation/np_ldt.h" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-}
+
 source_set("presence_sensor_fusion") {
   public_configs = [
     ":nearby_include_config",
