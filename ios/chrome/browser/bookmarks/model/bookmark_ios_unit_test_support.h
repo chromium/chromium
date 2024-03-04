@@ -21,6 +21,7 @@ class TestChromeBrowserState;
 
 namespace bookmarks {
 class BookmarkNode;
+class CoreBookmarkModel;
 class ManagedBookmarkService;
 }  // namespace bookmarks
 
@@ -57,6 +58,8 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
   raw_ptr<LegacyBookmarkModel> local_or_syncable_bookmark_model_;
   // Bookmark model for the account storage.
   raw_ptr<LegacyBookmarkModel> account_bookmark_model_;
+  // Bookmark model providing a merged view.
+  raw_ptr<bookmarks::CoreBookmarkModel> bookmark_model_;
   raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
 };
 

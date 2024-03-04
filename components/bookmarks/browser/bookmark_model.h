@@ -336,7 +336,7 @@ class BookmarkModel : public CoreBookmarkModel,
   // Return the set of bookmarked urls and their titles. This returns the unique
   // set of URLs. For example, if two bookmarks reference the same URL only one
   // entry is added not matter the titles are same or not.
-  [[nodiscard]] std::vector<UrlAndTitle> GetUniqueUrls() const;
+  [[nodiscard]] std::vector<UrlAndTitle> GetUniqueUrls() const override;
 
   // Returns the type of `folder` as represented in metrics.
   metrics::BookmarkFolderTypeForUMA GetFolderType(

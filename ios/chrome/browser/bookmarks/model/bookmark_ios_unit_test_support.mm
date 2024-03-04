@@ -59,12 +59,22 @@ void BookmarkIOSUnitTestSupport::SetUp() {
     bookmarks::test::WaitForBookmarkModelToLoad(
         local_or_syncable_bookmark_model_);
   }
+
   account_bookmark_model_ =
       ios::AccountBookmarkModelFactory::GetForBrowserState(
           chrome_browser_state_.get());
   if (wait_for_initialization_ && account_bookmark_model_) {
     bookmarks::test::WaitForBookmarkModelToLoad(account_bookmark_model_);
   }
+
+  bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
+      chrome_browser_state_.get());
+  if (wait_for_initialization_) {
+    // Waiting for the two underlying models, done earlier, should guarantee
+    // that the merged view is also loaded.
+    EXPECT_TRUE(bookmark_model_->loaded());
+  }
+
   browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 }
 

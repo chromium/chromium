@@ -14,11 +14,10 @@
 #import "base/task/single_thread_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
-#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/core_bookmark_model.h"
 #import "components/bookmarks/browser/url_and_title.h"
 #import "components/sessions/core/tab_restore_service.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -252,9 +251,8 @@ NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {
     }
   }
 
-  bookmarks::BookmarkModel* bookmark_model =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          browser_state_);
+  bookmarks::CoreBookmarkModel* bookmark_model =
+      ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
   // Check if the bookmark model is loaded.
   if (!bookmark_model || !bookmark_model->loaded())
     return referenced_external_files;

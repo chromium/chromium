@@ -4,14 +4,17 @@
 
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 
+#include <map>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/containers/extend.h"
 #include "base/no_destructor.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/core_bookmark_model.h"
 #include "components/bookmarks/browser/titled_url_match.h"
+#include "components/bookmarks/browser/url_and_title.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
@@ -24,6 +27,30 @@
 namespace ios {
 
 namespace {
+
+// Merges `list1` and `list2` to produce a third list where there is at most one
+// entry per URL. In case deduplication took place, the resulting title is
+// arbitrary.
+std::vector<bookmarks::UrlAndTitle> MergeTitlesByUniqueUrl(
+    std::vector<bookmarks::UrlAndTitle> list1,
+    std::vector<bookmarks::UrlAndTitle> list2) {
+  // This implementation is not the most efficient one, but performance is not
+  // particularly concerning given the current callers.
+  std::map<GURL, std::u16string> titles_per_url;
+  for (const bookmarks::UrlAndTitle& url_and_title : list1) {
+    titles_per_url.emplace(url_and_title.url, url_and_title.title);
+  }
+  for (const bookmarks::UrlAndTitle& url_and_title : list2) {
+    titles_per_url.emplace(url_and_title.url, url_and_title.title);
+  }
+
+  std::vector<bookmarks::UrlAndTitle> merged_list;
+  merged_list.reserve(titles_per_url.size());
+  for (const auto& url_and_title : titles_per_url) {
+    merged_list.emplace_back(url_and_title.first, url_and_title.second);
+  }
+  return merged_list;
+}
 
 // An implementation of CoreBookmarkModel that exposes a merged view of two
 // underlying BookmarkModel instances.
@@ -55,6 +82,12 @@ class MergedBookmarkModel : public bookmarks::CoreBookmarkModel {
     std::vector<std::u16string_view> titles = model1_->GetNodeTitlesByURL(url);
     base::Extend(titles, model2_->GetNodeTitlesByURL(url));
     return titles;
+  }
+
+  [[nodiscard]] std::vector<bookmarks::UrlAndTitle> GetUniqueUrls()
+      const override {
+    return MergeTitlesByUniqueUrl(model1_->GetUniqueUrls(),
+                                  model2_->GetUniqueUrls());
   }
 
   std::vector<bookmarks::TitledUrlMatch> GetBookmarksMatching(

@@ -20,6 +20,7 @@ enum class MatchingAlgorithm;
 namespace bookmarks {
 
 struct TitledUrlMatch;
+struct UrlAndTitle;
 
 // A minimal subset of BookmarkModel API, intended to allow migrating the ios/
 // codebase from having two BookmarkModel instances to having one. One
@@ -49,6 +50,11 @@ class CoreBookmarkModel : public KeyedService {
   // Returns the titles of the nodes with the specified URL.
   virtual std::vector<std::u16string_view> GetNodeTitlesByURL(
       const GURL& url) const = 0;
+
+  // Return the set of bookmarked urls and their titles. This returns the unique
+  // set of URLs. For example, if two bookmarks reference the same URL only one
+  // entry is added not matter the titles are same or not.
+  [[nodiscard]] virtual std::vector<UrlAndTitle> GetUniqueUrls() const = 0;
 
   // Returns up bookmarks containing each term from `query` in either the title,
   // URL, or the titles of ancestors. `matching_algorithm` determines the
