@@ -303,7 +303,6 @@
       name: "AOMAriaRelationshipProperties",
       public: true,
       status: "experimental",
-      base_feature: "none",
     },
     {
       name: "AppTitle",
