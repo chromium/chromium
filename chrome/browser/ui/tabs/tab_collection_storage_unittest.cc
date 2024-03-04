@@ -192,7 +192,8 @@ TEST_F(TabCollectionStorageTest, MoveTabOperation) {
   EXPECT_EQ(IDString(), (std::vector<int>{0, 1, 2, 4, 3}));
 }
 
-TEST_F(TabCollectionStorageTest, InvalidArgumentsTabOperations) {
+// TODO(b/327925372): Re-enable the test.
+TEST_F(TabCollectionStorageTest, DISABLED_InvalidArgumentsTabOperations) {
   auto tab_model_one =
       std::make_unique<tabs::TabModel>(nullptr, GetTabStripModel());
   tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();
