@@ -243,7 +243,10 @@ source_set("interactive_ui_tests") {
 if (is_chromeos_ash) {
   group("closure_compile") {
     testonly = true
-    deps = [ "chromeos:closure_compile" ]
+    deps = [
+      "chromeos:closure_compile",
+      "cr_components/chromeos:closure_compile",
+    ]
   }
 }
 

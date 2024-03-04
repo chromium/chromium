@@ -5,8 +5,8 @@
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import './routine_group.js';
 
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {ArcDnsResolutionProblem, ArcHttpProblem, ArcPingProblem, CaptivePortalProblem, DnsLatencyProblem, DnsResolutionProblem, DnsResolverPresentProblem, GatewayCanBePingedProblem, HasSecureWiFiConnectionProblem, HttpFirewallProblem, HttpsFirewallProblem, HttpsLatencyProblem, RoutineCallSource, RoutineProblems, RoutineType, RoutineVerdict, SignalStrengthProblem, VideoConferencingProblem} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 
 import {getNetworkDiagnosticsService} from './mojo_interface_provider.js';
@@ -19,12 +19,13 @@ import {Routine, RoutineGroup, RoutineResponse} from './network_diagnostics_type
 
 /**
  * Helper function to create a routine object.
+ * @param {string} name
+ * @param {!RoutineType} type
+ * @param {!RoutineGroup} group
+ * @param {!function()} func
+ * @return {!Routine} Routine object
  */
-function createRoutine(
-    name: string,
-    type: RoutineType,
-    group: RoutineGroup,
-    func: () => any): Routine {
+function createRoutine(name, type, group, func) {
   return {
     name: name,
     type: type,
@@ -37,11 +38,18 @@ function createRoutine(
   };
 }
 
-const NetworkDiagnosticsElementBase = I18nMixin(PolymerElement);
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NetworkDiagnosticsElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
+/** @polymer */
 export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
   static get is() {
-    return 'network-diagnostics' as const;
+    return 'network-diagnostics';
   }
 
   static get template() {
@@ -52,6 +60,7 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
     return {
       /**
        * List of Diagnostics Routines
+       * @private {!Array<!Routine>}
        */
       routines_: {
         type: Array,
@@ -197,7 +206,7 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
               ],
             },
           ];
-          const routines: Routine[] = [];
+          const routines = [];
 
           for (const group of routineGroups) {
             for (const routine of group.routines) {
@@ -209,24 +218,22 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
           return routines;
         },
       },
+
       /**
        * Enum of Routine Groups
+       * @private {Object}
        */
       RoutineGroup_: {
         type: Object,
         value: RoutineGroup,
       },
+
     };
   }
 
-  private routines_: Routine[];
-
-  // Disabling the naming convention rule since this property mirrors
-  // the exact value of the Setting enum.
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  private RoutineGroup_: RoutineGroup;
   /**
    * Runs all supported network diagnostics routines.
+   * @public
    */
   runAllRoutines() {
     for (const routine of this.routines_) {
@@ -236,25 +243,38 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
 
   /**
    * Runs all supported network diagnostics routines.
+   * @param {!PolymerDeepPropertyChange} routines
+   * @param {Number} group
+   * @return {!Array<!Routine>}
+   * @private
    */
-  private getRoutineGroup_(routines: { base: Routine[] }, group: RoutineGroup): Routine[] {
+  getRoutineGroup_(routines, group) {
     return routines.base.filter(r => r.group === group);
   }
 
-  private runRoutine_(type: RoutineType) {
-    this.set(`routines.${type}.running`, true);
-    this.set(`routines.${type}.resultMsg`, '');
-    this.set(`routines.${type}.result`, null);
+  /**
+   * @param {!RoutineType} type
+   * @private
+   */
+  runRoutine_(type) {
+    this.set(`routines_.${type}.running`, true);
+    this.set(`routines_.${type}.resultMsg`, '');
+    this.set(`routines_.${type}.result`, null);
     this.set(
-        `routines.${type}.ariaDescription`,
+        `routines_.${type}.ariaDescription`,
         this.i18n('NetworkDiagnosticsRunning'));
 
     this.routines_[type].func().then(
-      (result: RoutineResponse) => this.evaluateRoutine_(type, result));
+        result => this.evaluateRoutine_(type, result));
   }
 
-  private evaluateRoutine_(type: RoutineType, response: RoutineResponse) {
-    const routine = `routines.${type}`;
+  /**
+   * @param {!RoutineType} type
+   * @param {!RoutineResponse} response
+   * @private
+   */
+  evaluateRoutine_(type, response) {
+    const routine = `routines_.${type}`;
     this.set(routine + '.running', false);
     this.set(routine + '.result', response.result);
 
@@ -265,14 +285,12 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
 
   /**
    * Helper function to generate the routine result string.
+   * @param {Routine} routine
+   * @return {string}
+   * @private
    */
-  private getRoutineResult_(routine: Routine): string {
+  getRoutineResult_(routine) {
     let verdict = '';
-
-    if (routine.result === null) {
-      return '';
-    }
-
     switch (routine.result.verdict) {
       case RoutineVerdict.kNoProblem:
         verdict = this.i18n('NetworkDiagnosticsPassed');
@@ -283,10 +301,6 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
       case RoutineVerdict.kNotRun:
         verdict = this.i18n('NetworkDiagnosticsNotRun');
         break;
-    }
-
-    if (routine.result.problems === null) {
-      return '';
     }
 
     const problemStrings = this.getRoutineProblemsString_(
@@ -302,10 +316,18 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
     return '';
   }
 
-  private getRoutineProblemsString_(type: RoutineType, problems: RoutineProblems, translate: boolean) : string[] {
-    const getString = (s: string) => translate ? this.i18n(s) : s;
+  /**
+   * @param {!RoutineType} type The type of routine
+   * @param {!RoutineProblems} problems The list of
+   *     problems for the routine
+   * @param {boolean} translate Flag to return a translated string
+   * @return {!Array<string>} List of network diagnostic problem strings
+   * @private
+   */
+  getRoutineProblemsString_(type, problems, translate) {
+    const getString = s => translate ? this.i18n(s) : s;
 
-    let problemStrings : string[] = [];
+    let problemStrings = [];
     switch (type) {
       case RoutineType.kSignalStrength:
         if (!problems.signalStrengthProblems) {
@@ -565,7 +587,7 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
           break;
         }
         problemStrings = problemStrings.concat(
-            this.getArcPingProblemStringIds_(problems.arcPingProblems)
+            this.getArcPingProblemStringIds(problems.arcPingProblems)
                 .map(getString));
         break;
 
@@ -574,7 +596,7 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
           break;
         }
         problemStrings = problemStrings.concat(
-            this.getArcDnsProblemStringIds_(problems.arcDnsResolutionProblems)
+            this.getArcDnsProblemStringIds(problems.arcDnsResolutionProblems)
                 .map(getString));
         break;
 
@@ -583,7 +605,7 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
           break;
         }
         problemStrings = problemStrings.concat(
-            this.getArcHttpProblemStringIds_(problems.arcHttpProblems)
+            this.getArcHttpProblemStringIds(problems.arcHttpProblems)
                 .map(getString));
         break;
     }
@@ -593,8 +615,14 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
 
   /**
    * Converts a collection ArcPingProblem into string identifiers for display.
+   *
+   * @param {!Array<ArcPingProblem>} problems A collection of
+   *     ArcPingProblem.
+   * @returns {!Array<string>} A collection of string identifiers for each
+   *     problem in the input.
+   * @private
    */
-  private getArcPingProblemStringIds_(problems: ArcPingProblem[]) : string[] {
+  getArcPingProblemStringIds(problems) {
     const problemStringIds = [];
 
     for (const problem of problems) {
@@ -629,8 +657,14 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
   /**
    * Converts a collection ArcDnsResolutionProblem into string identifiers for
    * display.
+   *
+   * @param {!Array<ArcDnsResolutionProblem>} problems A
+   *     collection of ArcDnsResolutionProblem.
+   * @returns {!Array<string>} A collection of string identifiers for each
+   *     problem in the input.
+   * @private
    */
-  private getArcDnsProblemStringIds_(problems: ArcDnsResolutionProblem[]) : string[] {
+  getArcDnsProblemStringIds(problems) {
     const problemStringIds = [];
 
     for (const problem of problems) {
@@ -659,8 +693,14 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
 
   /**
    * Converts a collection ArcHttpProblem into string identifiers for display.
+   *
+   * @param {!Array<ArcHttpProblem>} problems A collection of
+   *     ArcHttpProblem.
+   * @returns {!Array<string>} A collection of string identifiers for each
+   *     problem in the input.
+   * @private
    */
-  private getArcHttpProblemStringIds_(problems: ArcHttpProblem[]) : string[] {
+  getArcHttpProblemStringIds(problems) {
     const problemStringIds = [];
 
     for (const problem of problems) {
@@ -686,7 +726,12 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
     return problemStringIds;
   }
 
-  private getRoutineVerdictRawString_(verdict: RoutineVerdict) : string {
+  /**
+   * @param {!RoutineVerdict} verdict
+   * @return {string} Untranslated string for a network diagnostic verdict
+   * @private
+   */
+  getRoutineVerdictRawString_(verdict) {
     switch (verdict) {
       case RoutineVerdict.kNoProblem:
         return 'Passed';
@@ -696,13 +741,6 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
         return 'Failed';
     }
     return 'Unknown';
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    [NetworkDiagnosticsElement.is]: NetworkDiagnosticsElement;
-
   }
 }
 

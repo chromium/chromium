@@ -1,0 +1,65 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos_ash, "Only ChromeOS components belong here.")
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args
+  deps = [
+    ":mojo_interface_provider",
+    ":network_diagnostics",
+    ":network_diagnostics_types",
+    ":network_health_container",
+    ":network_health_summary",
+    ":routine_group",
+  ]
+}
+
+js_library("mojo_interface_provider") {
+  deps = [ "//chromeos/services/network_health/public/mojom:mojom_webui_js" ]
+}
+
+js_library("network_health_summary") {
+  deps = [
+    "//ash/webui/common/resources:assert",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources/network:onc_mojo",
+    "//chromeos/services/network_health/public/mojom:mojom_webui_js",
+    "//chromeos/services/network_health/public/mojom:types_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("network_health_container") {
+  deps =
+      [ "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon" ]
+}
+
+js_library("network_diagnostics") {
+  deps = [
+    ":mojo_interface_provider",
+    ":network_diagnostics_types",
+    ":routine_group",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chromeos/services/network_health/public/mojom:mojom_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("network_diagnostics_types") {
+  deps = [ "//chromeos/services/network_health/public/mojom:mojom_webui_js" ]
+}
+
+js_library("routine_group") {
+  deps = [
+    ":network_diagnostics_types",
+    ":network_health_container",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chromeos/services/network_health/public/mojom:mojom_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}

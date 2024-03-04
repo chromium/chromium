@@ -73,10 +73,10 @@ ts_library("build_ts") {
     "network/network_select_test.js",
     "network/network_siminfo_test.js",
     "network/sim_lock_dialogs_test.js",
-    "network_health/fake_network_diagnostics_routines.ts",
-    "network_health/network_diagnostics_test.ts",
-    "network_health/network_health_test_utils.ts",
-    "network_health/routine_group_test.ts",
+    "network_health/fake_network_diagnostics_routines.js",
+    "network_health/network_diagnostics_test.js",
+    "network_health/network_health_test_utils.js",
+    "network_health/routine_group_test.js",
     "traffic_counters/traffic_counters_test.ts",
   ]
 
@@ -125,4 +125,8 @@ generate_grd("build_grdp") {
 
   manifest_files =
       filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
+}
+
+group("closure_compile") {
+  deps = [ "network_health:closure_compile" ]
 }

@@ -5,34 +5,42 @@
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/network/network_shared.css.js';
 
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {NetworkHealthService, NetworkHealthServiceRemote} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_health.mojom-webui.js';
 import {Network, NetworkHealthState, NetworkState, UInt32Value} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_health_types.mojom-webui.js';
 
-import {OncMojo} from '../network/onc_mojo.js';
 import {getTemplate} from './network_health_summary.html.js';
 
-enum TechnologyIcons {
-  CELLULAR = 'cellular_0.svg',
-  ETHERNET = 'ethernet.svg',
-  VPN = 'vpn.svg',
-  WIFI = 'wifi_0.svg',
-}
+const TechnologyIcons = {
+  CELLULAR: 'cellular_0.svg',
+  ETHERNET: 'ethernet.svg',
+  VPN: 'vpn.svg',
+  WIFI: 'wifi_0.svg',
+};
 
 /**
  * @fileoverview Polymer element for displaying NetworkHealth properties.
  */
 
-const NetworkHealthSummaryElementBase = I18nMixin(PolymerElement);
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NetworkHealthSummaryElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-export class NetworkHealthSummaryElement extends NetworkHealthSummaryElementBase {
+/** @polymer */
+class NetworkHealthSummaryElement extends NetworkHealthSummaryElementBase {
   static get is() {
-    return 'network-health-summary' as const;
+    return 'network-health-summary';
   }
 
-  static get template(): HTMLTemplateElement {
+  static get template() {
     return getTemplate();
   }
 
@@ -40,26 +48,44 @@ export class NetworkHealthSummaryElement extends NetworkHealthSummaryElementBase
     return {
       /**
        * Network Health State object.
+       * @private
+       * @type {NetworkHealthState}
        */
-      networkHealthState_: Object,
+      networkHealthState_: {
+        type: Object,
+      },
 
       /**
        * Network Health mojo remote.
+       * @private
+       * @type {?NetworkHealthServiceRemote}
        */
-      networkHealth_: Object,
+      networkHealth_: {
+        type: Object,
+        value: null,
+      },
 
       /**
        * Expanded state per network type.
+       * @private
+       * @type {!Array<boolean>}
        */
-      typeExpanded_: Array,
+      typeExpanded_: {
+        type: Array,
+        value: () => [],
+      },
     };
   }
 
-  private networkHealthState_: NetworkHealthState|null = null;
-  private networkHealth_: NetworkHealthServiceRemote|null = NetworkHealthService.getRemote();
-  private typeExpanded_: boolean[] = [];
+  /** @override */
+  constructor() {
+    super();
 
-  override connectedCallback() {
+    this.networkHealth_ = NetworkHealthService.getRemote();
+  }
+
+  /** @override */
+  connectedCallback() {
     super.connectedCallback();
 
     this.requestNetworkHealth_();
@@ -72,11 +98,9 @@ export class NetworkHealthSummaryElement extends NetworkHealthSummaryElementBase
 
   /**
    * Requests the NetworkHealthState and updates the page.
+   * @private
    */
-  private requestNetworkHealth_() {
-    if (this.networkHealth_ === null) {
-      return;
-    }
+  requestNetworkHealth_() {
     this.networkHealth_.getHealthSnapshot().then(result => {
       this.networkHealthState_ = result.state;
     });
@@ -84,8 +108,11 @@ export class NetworkHealthSummaryElement extends NetworkHealthSummaryElementBase
 
   /**
    * Returns a string for the given NetworkState.
+   * @private
+   * @param {NetworkState} state
+   * @return {string}
    */
-  private getNetworkStateString_(state : NetworkState) : string {
+  getNetworkStateString_(state) {
     switch (state) {
       case NetworkState.kUninitialized:
         return this.i18n('NetworkHealthStateUninitialized');
@@ -105,14 +132,18 @@ export class NetworkHealthSummaryElement extends NetworkHealthSummaryElementBase
         return this.i18n('NetworkHealthStateOnline');
     }
 
+    assertNotReached('Unexpected enum value');
     return '';
   }
 
   /**
    * Returns a boolean flag to show the PortalState attribute. The information
    * is not meaningful in all cases and should be hidden to prevent confusion.
+   * @private
+   * @param {Network} network
+   * @return {boolean}
    */
-  private showPortalState_(network : Network) : boolean {
+  showPortalState_(network) {
     if (network.state === NetworkState.kOnline &&
         network.portalState === PortalState.kOnline) {
       return false;
@@ -134,22 +165,31 @@ export class NetworkHealthSummaryElement extends NetworkHealthSummaryElementBase
 
   /**
    * Returns a string for the given PortalState.
+   * @private
+   * @param {PortalState} state
+   * @return {string}
    */
-  private getPortalStateString_(state: PortalState) : string {
+  getPortalStateString_(state) {
     return this.i18n('OncPortalState' + OncMojo.getPortalStateString(state));
   }
 
   /**
    * Returns a string for the given NetworkType.
+   * @private
+   * @param {NetworkType} type
+   * @return {string}
    */
-  private getNetworkTypeString_(type: NetworkType) : string {
+  getNetworkTypeString_(type) {
     return this.i18n('OncType' + OncMojo.getNetworkTypeString(type));
   }
 
   /**
    * Returns a icon for the given NetworkType.
+   * @private
+   * @param {NetworkType} type
+   * @return {string}
    */
-  private getNetworkTypeIcon_(type: NetworkType) : string {
+  getNetworkTypeIcon_(type) {
     switch (type) {
       case NetworkType.kEthernet:
         return TechnologyIcons.ETHERNET;
@@ -168,15 +208,21 @@ export class NetworkHealthSummaryElement extends NetworkHealthSummaryElementBase
 
   /**
    * Returns a string for the given signal strength.
+   * @private
+   * @param {?UInt32Value} signalStrength
+   * @return {string}
    */
-  private getSignalStrengthString_(signalStrength: UInt32Value|null) {
+  getSignalStrengthString_(signalStrength) {
     return signalStrength ? signalStrength.value.toString() : '';
   }
 
   /**
    * Returns a boolean flag if the open to settings link should be shown.
+   * @private
+   * @param {Network} network
+   * @return {boolean}
    */
-  private showSettingsLink_(network: Network) : boolean {
+  showSettingsLink_(network) {
     const validStates = [
       NetworkState.kConnected,
       NetworkState.kConnecting,
@@ -188,44 +234,49 @@ export class NetworkHealthSummaryElement extends NetworkHealthSummaryElementBase
 
   /**
    * Returns a URL for the network's settings page.
+   * @private
+   * @param {Network} network
+   * @return {string}
    */
-  private getNetworkUrl_(network: Network) : string {
+  getNetworkUrl_(network) {
     return 'chrome://os-settings/networkDetail?guid=' + network.guid;
   }
 
   /**
    * Returns a concatenated list of strings.
+   * @private
+   * @param {!Array<string>} addresses
+   * @return {string}
    */
-  private joinAddresses_(addresses: string[]) : string {
+  joinAddresses_(addresses) {
     return addresses.join(', ');
   }
 
   /**
    * Returns a boolean flag if the routine type should be expanded.
+   * @param {NetworkType} type
+   * @private
    */
-  private getTypeExpanded_(type: NetworkType) : boolean {
-    if (this.typeExpanded_[Number(type)] === undefined) {
+  getTypeExpanded_(type) {
+    if (this.typeExpanded_[type] === undefined) {
       this.set('typeExpanded_.' + type, false);
       return false;
     }
 
-    return this.typeExpanded_[Number(type)];
+    return this.typeExpanded_[type];
   }
 
   /**
    * Helper function to toggle the expanded properties when the network
    * container is toggled.
+   * @param {!Event} event
+   * @private
    */
-  private onToggleExpanded_(event: Event&{model: {network: Network}}) {
+  onToggleExpanded_(event) {
     const type = event.model.network.type;
-    this.set('typeExpanded_.' + type, !this.typeExpanded_[Number(type)]);
+    this.set('typeExpanded_.' + type, !this.typeExpanded_[type]);
   }
 }
 
-declare global {
-  interface HTMLElementTagNameMap {
-    [NetworkHealthSummaryElement.is]: NetworkHealthSummaryElement;
-  }
-}
-
-customElements.define(NetworkHealthSummaryElement.is, NetworkHealthSummaryElement);
+customElements.define(
+    NetworkHealthSummaryElement.is, NetworkHealthSummaryElement);
