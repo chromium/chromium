@@ -1421,7 +1421,6 @@
 <translation id="3740319564441798148">Алысқа қатынайтын автобус пен пойыз</translation>
 <translation id="3740447166056383374">Көшіру алдында қарап шығу қажет</translation>
 <translation id="374325029554577103">Технологиялық фитнес өнімдері</translation>
-<translation id="3743765582345153106">Автотолтыруды пайдаланған кезде әрқашан растау</translation>
 <translation id="3744111561329211289">Фондық синхрондау</translation>
 <translation id="3744212718085287312">Келесі жолы қауіпсіздікті виртуалдық картамен күшейту керек пе?</translation>
 <translation id="3744899669254331632">Қазір <ph name="SITE" /> сайтына кіру мүмкін емес, себебі веб-сайт Chromium өңдей алмайтын шифрланған есептік деректерді жіберді. Желі қателері мен шабуылдары әдетте уақытша болғандықтан, бұл бет кейінірек жұмыс істеуі мүмкін.</translation>
@@ -1744,6 +1743,7 @@
 <translation id="4358461427845829800">Төлем әдістерін басқару...</translation>
 <translation id="4359160567981085931">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chrome көмектесе алады. Құпия сөзді өзгертіп, Google-ға аккаунтқа төніп тұрған қауіп туралы хабарлау үшін "Аккаунтты қорғау" түймесін басыңыз.</translation>
 <translation id="4363222835916186793">Осы өнімге қатысты хабарландырулар өшірілді.</translation>
+<translation id="4363729811203340554">Бұл құрылғыны бөліссеңіз, автотолтыру функциясымен төлеген сайын, Chrome өзіңіздің растауыңызды сұрайды.</translation>
 <translation id="4366943895537458493">Пластина</translation>
 <translation id="437040971055499437">Қауіпсіздік іс-шарасы анықталды</translation>
 <translation id="4371591986692297148">Өшірілген</translation>
@@ -2009,6 +2009,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Іздеу үшін алдымен Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="4930153903256238152">Үлкен сыйымдылық</translation>
+<translation id="4930714375720679147">Қосу</translation>
 <translation id="4932035752129140860">Сіз қоятын немесе тіркейтін мәтін Google Cloud қызметіне немесе үшінші тараптарға талдау үшін жіберіледі. Мысалы, ол құпия деректерді немесе зиянды бағдарламаны анықтау үшін сканерленуі, компания саясаттарына сәйкес сақталуы және әкімшіге көрінуі мүмкін.</translation>
 <translation id="4934780484581617878">Терезені басқару</translation>
 <translation id="4936134414789135531">Енгізілген <ph name="VALUE_NAME" /> табылмады.</translation>
@@ -2267,6 +2268,7 @@
 <translation id="5447765697759493033">Бұл сайт аударылмайды</translation>
 <translation id="5452270690849572955">Бұл <ph name="HOST_NAME" /> бетін табу мүмкін емес</translation>
 <translation id="5455374756549232013">Саясат уақыт белгісі жарамсыз</translation>
+<translation id="5456839782162429664">Автотолтыру функциясымен төлеген сайын өз бетінше растау</translation>
 <translation id="5457113250005438886">Жарамсыз</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Құрылғылар ізделуде...</translation>
@@ -2364,6 +2366,7 @@
 <translation id="563324245173044180">Жалған контент бөгелді.</translation>
 <translation id="5633259641094592098">Культтік және инди фильмдер</translation>
 <translation id="563371367637259496">Мобильдік</translation>
+<translation id="5634725266554983459">Өз бетінше растау функциясын қосу керек пе?</translation>
 <translation id="5635237618724097525">Смартфондар</translation>
 <translation id="5635478143789726479">Сатушының шарттары мен талаптары</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -2463,6 +2466,7 @@
 <translation id="5847181246682413476">Қуат көздері</translation>
 <translation id="5851548754964597211">Қойындылар тізімі</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Қосу</translation>
 <translation id="5862579898803147654">8-жинастырушы</translation>
 <translation id="5863847714970149516">Бұл бет сізден ақшалай ақы алуға тырысуы мүмкін</translation>
 <translation id="5866257070973731571">Телефон нөмірін қосу</translation>
@@ -3041,6 +3045,7 @@
 <translation id="6973656660372572881">Бекітілген прокси серверлері мен .pac сценарий URL мекенжайы көрсетілген.</translation>
 <translation id="6973988895180423160">3,5 x 5 дюйм</translation>
 <translation id="6978236010531171013">Бәрібір бөлісу</translation>
+<translation id="6978722349058177832">Бұл құрылғыны бөліссеңіз, автотолтыру функциясымен төлеген сайын, Chromium өзіңіздің растауыңызды сұрайды.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">Шығарып алынған мәтін басы</translation>
 <translation id="6979440798594660689">Дыбысын өшіру (әдепкі)</translation>
@@ -3736,7 +3741,6 @@
 <translation id="8288320283441806607">Бұл функцияны пайдалану үшін "Іздеу және браузерді қолдану нәтижелерін жақсарту" параметрін қосыңыз</translation>
 <translation id="8288807391153049143">Сертификатты көрсету</translation>
 <translation id="8289355894181816810">Бұның нені білдіретінін білмесеңіз, желі әкімшісіне хабарласыңыз.</translation>
-<translation id="8292520987784410870">Әрқашан растау керек пе?</translation>
 <translation id="8293206222192510085">Бетбелгі қосу</translation>
 <translation id="829335040383910391">дыбыс</translation>
 <translation id="8294431847097064396">Дереккөз</translation>
@@ -3875,7 +3879,6 @@
 <translation id="8553387990086529628">Туристік бағыттар</translation>
 <translation id="8554010658308662631">Тағы жүктеу</translation>
 <translation id="8554181323880688938">Бағалы заттар</translation>
-<translation id="8554802735558319842">Ортақ құрылғыларда қосымша қауіпсіздік үшін автотолтыру көмегімен төлеген сайын растауды қосыңыз.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Рұқсатты бастапқы күйіне қайтару}other{Рұқсаттарды бастапқы күйіне қайтару}}</translation>
 <translation id="8555010941760982128">Төлеу кезінде осы коды пайдаланыңыз</translation>
 <translation id="8556297087315686325">Желіні бақылау және басқару</translation>

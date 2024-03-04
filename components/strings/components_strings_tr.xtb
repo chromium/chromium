@@ -1422,7 +1422,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3740319564441798148">Uzun mesafe otobüs ve demiryolu ulaşımı</translation>
 <translation id="3740447166056383374">Kopyalamadan önce dosyaların incelenmesi gerekir</translation>
 <translation id="374325029554577103">Fitness Teknoloji Ürünleri</translation>
-<translation id="3743765582345153106">Otomatik doldurmayı kullanırken her zaman doğrula</translation>
 <translation id="3744111561329211289">Arka plan senkronizasyonu</translation>
 <translation id="3744212718085287312">Bir dahaki sefere sanal kartla daha güvenli hale getirilsin mi?</translation>
 <translation id="3744899669254331632">Web sitesi Chromium'un işleyemediği karışık kimlik bilgileri gönderdiğinden <ph name="SITE" /> sitesini şu anda ziyaret edemezsiniz. Ağ hataları ve saldırılar genellikle geçici türdendir, dolayısıyla bu sayfa muhtemelen daha sonra çalışacaktır.</translation>
@@ -1745,6 +1744,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4358461427845829800">Ödeme yöntemlerini yönet...</translation>
 <translation id="4359160567981085931">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chrome yardım edebilir. Şifrenizi değiştirmek ve hesabınızın risk altında olabileceğini Google'a bildirmek için Hesabı Koru'yu tıklayın.</translation>
 <translation id="4363222835916186793">Bu ürünle ilgili uyarılar devre dışı bırakıldı</translation>
+<translation id="4363729811203340554">Bu cihazı başkalarıyla paylaşıyorsanız Chrome, otomatik doldurma özelliğini kullanarak her ödeme yaptığınızda işlemi doğrulamanızı isteyebilir</translation>
 <translation id="4366943895537458493">Plaka</translation>
 <translation id="437040971055499437">Güvenlik işlemi gerçekleşti</translation>
 <translation id="4371591986692297148">Etkin değil</translation>
@@ -2010,6 +2010,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, aramak için Sekme'ye, sonra Enter'a basın</translation>
 <translation id="4930153903256238152">Yüksek kapasite</translation>
+<translation id="4930714375720679147">Etkinleştir</translation>
 <translation id="4932035752129140860">Yapıştırdığınız veya eklediğiniz metin analiz amacıyla Google Cloud ve üçüncü taraflara gönderilir. Örneğin, hassas veriler içerip içermediği kontrol edilir ve şirket politikalarına bağlı olarak saklanıp yöneticiniz tarafından görülebilir.</translation>
 <translation id="4934780484581617878">Pencere yönetimi</translation>
 <translation id="4936134414789135531">Eklenen <ph name="VALUE_NAME" /> değeri bulunamadı.</translation>
@@ -2268,6 +2269,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5447765697759493033">Bu site çevrilmeyecek</translation>
 <translation id="5452270690849572955">Bu <ph name="HOST_NAME" /> sayfası bulunamıyor</translation>
 <translation id="5455374756549232013">Politika zaman damgası yanlış</translation>
+<translation id="5456839782162429664">Otomatik doldurma özelliğini kullanarak her ödeme yaptığınızda manuel olarak doğrulayın</translation>
 <translation id="5457113250005438886">Geçersiz</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> kişi daha}other{<ph name="CONTACT_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> kişi daha}}</translation>
 <translation id="5463625433003343978">Cihazlar bulunuyor...</translation>
@@ -2365,6 +2367,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="563324245173044180">Yanıltıcı içerik engellendi.</translation>
 <translation id="5633259641094592098">Kült ve bağımsız filmler</translation>
 <translation id="563371367637259496">Mobil</translation>
+<translation id="5634725266554983459">Manuel doğrulama etkinleştirilsin mi?</translation>
 <translation id="5635237618724097525">Akıllı telefonlar</translation>
 <translation id="5635478143789726479">Satıcıya ait Hükümler ve Koşullar</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -2464,6 +2467,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5847181246682413476">Güç Kaynakları</translation>
 <translation id="5851548754964597211">Sekme listesi</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Etkinleştir</translation>
 <translation id="5862579898803147654">Yığınlayıcı 8</translation>
 <translation id="5863847714970149516">Gireceğiniz sayfa sizden para almaya çalışabilir</translation>
 <translation id="5866257070973731571">Telefon Numarası Ekleyin</translation>
@@ -3042,6 +3046,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6973656660372572881">Hem sabit proxy sunucular hem de bir .pac komut dosyası URL'si belirtildi.</translation>
 <translation id="6973988895180423160">3,5 x 5 inç</translation>
 <translation id="6978236010531171013">Yine de paylaş</translation>
+<translation id="6978722349058177832">Bu cihazı başkalarıyla paylaşıyorsanız Chromium, otomatik doldurma özelliğini kullanarak her ödeme yaptığınızda işlemi doğrulamanızı isteyebilir</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">Çıkarılan metnin başı</translation>
 <translation id="6979440798594660689">Sesi kapat (varsayılan)</translation>
@@ -3737,7 +3742,6 @@ Ek ayrıntılar:
 <translation id="8288320283441806607">Bu özelliği kullanmak için Aramaları ve Göz Atmayı Daha İyi Yap ayarını açın</translation>
 <translation id="8288807391153049143">Sertifikayı göster</translation>
 <translation id="8289355894181816810">Bunun ne anlama geldiğini bilmiyorsanız ağ yöneticinizle bağlantı kurun.</translation>
-<translation id="8292520987784410870">Her zaman doğrulansın mı?</translation>
 <translation id="8293206222192510085">Yer İşareti Ekle</translation>
 <translation id="829335040383910391">ses</translation>
 <translation id="8294431847097064396">Kaynak</translation>
@@ -3876,7 +3880,6 @@ Ek ayrıntılar:
 <translation id="8553387990086529628">Turistik yerler</translation>
 <translation id="8554010658308662631">Daha fazla yükle</translation>
 <translation id="8554181323880688938">Lüks Mallar</translation>
-<translation id="8554802735558319842">Paylaşılan cihazlarda daha fazla güvenlik için otomatik doldurma özelliğini kullanarak her ödeme yapacağınız zaman doğrulamayı açın.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{İzni sıfırla}other{İzinleri sıfırla}}</translation>
 <translation id="8555010941760982128">Ödeme sırasında bu kodu kullanın</translation>
 <translation id="8556297087315686325">Ağ İzleme ve Yönetimi</translation>

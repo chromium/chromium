@@ -1422,7 +1422,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3740319564441798148">Langtursbus og -tog</translation>
 <translation id="3740447166056383374">Gennemgang er påkrævet før kopiering</translation>
 <translation id="374325029554577103">Tekniske fitnessprodukter</translation>
-<translation id="3743765582345153106">Verificer altid, når du bruger autofyld</translation>
 <translation id="3744111561329211289">Synkronisering i baggrunden</translation>
 <translation id="3744212718085287312">Vil du øge sikkerheden ved hjælp af et virtuelt kort næste gang?</translation>
 <translation id="3744899669254331632">Du kan ikke gå til <ph name="SITE" /> lige nu, da websitet sendte krypterede loginoplysninger, som Chromium ikke kan behandle. Netværksfejl og angreb er normalt midlertidige, så denne side vil sandsynligvis fungere igen senere.</translation>
@@ -1745,6 +1744,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4358461427845829800">Administrer betalingsmetoder...</translation>
 <translation id="4359160567981085931">Du har lige angivet din adgangskode på et vildledende website. Chrome kan hjælpe. Klik på Beskyt konto for at ændre din adgangskode og underrette Google om, at din konto muligvis er kompromitteret.</translation>
 <translation id="4363222835916186793">Underretninger for dette produkt er deaktiveret</translation>
+<translation id="4363729811203340554">Hvis du deler denne enhed, kan Chrome bede dig om verificering, hver gang du betaler ved hjælp af autofyld</translation>
 <translation id="4366943895537458493">Plade</translation>
 <translation id="437040971055499437">Forekomst af sikkerhedshændelse</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
@@ -2010,6 +2010,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at søge</translation>
 <translation id="4930153903256238152">Stor kapacitet</translation>
+<translation id="4930714375720679147">Aktivér</translation>
 <translation id="4932035752129140860">Tekst, du indsætter eller vedhæfter, sendes til Google Cloud eller tredjeparter, hvor den analyseres. Tekst kan f.eks. blive scannet for følsomme oplysninger, og det kan blive gemt i henhold til virksomhedspolitikker og være synligt for din administrator.</translation>
 <translation id="4934780484581617878">Vinduesstyring</translation>
 <translation id="4936134414789135531">Den indsatte <ph name="VALUE_NAME" /> blev ikke fundet.</translation>
@@ -2268,6 +2269,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5447765697759493033">Dette website kan ikke oversættes</translation>
 <translation id="5452270690849572955">Denne side fra <ph name="HOST_NAME" /> blev ikke fundet</translation>
 <translation id="5455374756549232013">Forkert tidsstempel for politik</translation>
+<translation id="5456839782162429664">Verificer manuelt, hver gang du betaler ved hjælp af autofyld</translation>
 <translation id="5457113250005438886">Ugyldig</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> anden}one{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> anden}other{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> andre}}</translation>
 <translation id="5463625433003343978">Finder enheder...</translation>
@@ -2365,6 +2367,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="563324245173044180">Vildledende indhold er blokeret.</translation>
 <translation id="5633259641094592098">Kult- og indiefilm</translation>
 <translation id="563371367637259496">Mobil</translation>
+<translation id="5634725266554983459">Vil du aktivere manuel verificering?</translation>
 <translation id="5635237618724097525">Smartphones</translation>
 <translation id="5635478143789726479">Sælgers vilkår og betingelser</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -2464,6 +2467,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5847181246682413476">Strømforsyningsenheder</translation>
 <translation id="5851548754964597211">Faneliste</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Aktivér</translation>
 <translation id="5862579898803147654">Stabler 8</translation>
 <translation id="5863847714970149516">Siden forude kan forsøge at opkræve dig penge</translation>
 <translation id="5866257070973731571">Tilføj telefonnummer</translation>
@@ -3042,6 +3046,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6973656660372572881">Både faste proxyservere og en webadresse for .pac-script angives.</translation>
 <translation id="6973988895180423160">3,5 x 5 tommer</translation>
 <translation id="6978236010531171013">Del alligevel</translation>
+<translation id="6978722349058177832">Hvis du deler denne enhed, kan Chromium bede dig om verificering, hver gang du betaler ved hjælp af autofyld</translation>
 <translation id="6979158407327259162">Google Drev</translation>
 <translation id="6979332652936434520">Start på udtrukket tekst</translation>
 <translation id="6979440798594660689">Slå lyden fra (standard)</translation>
@@ -3737,7 +3742,6 @@ Yderligere oplysninger:
 <translation id="8288320283441806607">Hvis du vil bruge denne funktion skal du aktivere Gør søgninger og browsing endnu bedre</translation>
 <translation id="8288807391153049143">Vis certifikat</translation>
 <translation id="8289355894181816810">Kontakt din netværksadministrator, hvis du ikke er sikker på, hvad det betyder.</translation>
-<translation id="8292520987784410870">Skal der altid kræves verificering?</translation>
 <translation id="8293206222192510085">Tilføj bogmærke</translation>
 <translation id="829335040383910391">lyd</translation>
 <translation id="8294431847097064396">Kilde</translation>
@@ -3876,7 +3880,6 @@ Yderligere oplysninger:
 <translation id="8553387990086529628">Turistmål</translation>
 <translation id="8554010658308662631">Indlæs flere</translation>
 <translation id="8554181323880688938">Luksusvarer</translation>
-<translation id="8554802735558319842">Af hensyn til sikkerheden på delte enheder kan du vælge, at der skal kræves verificering, hver gang du betaler ved hjælp af Autofyld.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Nulstil tilladelse}one{Nulstil tilladelse}other{Nulstil tilladelser}}</translation>
 <translation id="8555010941760982128">Angiv denne kode ved betalingen</translation>
 <translation id="8556297087315686325">Overvågning og administration af netværk</translation>

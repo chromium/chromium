@@ -1419,7 +1419,6 @@
 <translation id="3740319564441798148">ਲੰਮੀ ਦੂਰੀ ਲਈ ਬੱਸਾਂ ਅਤੇ ਰੇਲ ਗੱਡੀਆਂ</translation>
 <translation id="3740447166056383374">ਕਾਪੀ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਸਮੀਖਿਆ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="374325029554577103">ਫਿੱਟਨੈੱਸ ਤਕਨਾਲੋਜੀ ਸੰਬੰਧੀ ਉਤਪਾਦ</translation>
-<translation id="3743765582345153106">ਆਟੋਫਿਲ ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਸਮੇਂ ਹਮੇਸ਼ਾਂ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="3744111561329211289">ਬੈਕਗ੍ਰਾਊਂਡ ਸਿੰਕ</translation>
 <translation id="3744212718085287312">ਕੀ ਇਸਨੂੰ ਅਗਲੀ ਵਾਰ ਆਭਾਸੀ ਕਾਰਡ ਨਾਲ ਹੋਰ ਸੁਰੱਖਿਅਤ ਬਣਾਉਣਾ ਹੈ?</translation>
 <translation id="3744899669254331632">ਤੁਸੀਂ ਇਸ ਵੇਲੇ <ph name="SITE" /> ਤੇ ਵਿਜਿਟ ਨਹੀਂ ਕਰ ਸਕਦੇ ਕਿਉਂਕਿ ਵੈੱਬਸਾਈਟ ਨੇ ਸਕ੍ਰੈਂਬਲ ਕੀਤੇ ਕ੍ਰੈਡੈਂਸ਼ੀਅਲਸ ਭੇਜੇ ਸਨ ਜਿਹਨਾਂ ਨਾਲ Chromium ਪ੍ਰਕਿਰਿਆ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਨੈਟਵਰਕ ਅਸ਼ੁੱਧੀਆਂ ਅਤੇ ਹਮਲੇ ਆਮ ਤੌਰ ਤੇ ਅਸਥਾਈ ਹੁੰਦੇ ਹਨ, ਇਸਲਈ ਇਹ ਸਫ਼ਾ ਸ਼ਾਇਦ ਬਾਅਦ ਵਿੱਚ ਕੰਮ ਕਰੇਗਾ।</translation>
@@ -1742,6 +1741,7 @@
 <translation id="4358461427845829800">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ...</translation>
 <translation id="4359160567981085931">ਤੁਸੀਂ ਹੁਣੇ-ਹੁਣੇ ਕਿਸੇ ਭਰਮਪੂਰਨ ਸਾਈਟ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕੀਤਾ ਹੈ। Chrome ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ। ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲਣ ਅਤੇ ਆਪਣੇ ਖਾਤੇ ਦੇ ਜੋਖਮ ਵਿੱਚ ਹੋਣ ਬਾਰੇ Google ਨੂੰ ਸੂਚਿਤ ਕਰਨ ਲਈ, 'ਖਾਤੇ ਦੀ ਸੁਰੱਖਿਆ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="4363222835916186793">ਇਸ ਉਤਪਾਦ ਲਈ ਅਲਰਟਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
+<translation id="4363729811203340554">ਜੇ ਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਸਾਂਝਾ ਕਰਦੇ ਹੋ, ਤਾਂ ਆਟੋਫਿਲ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਭੁਗਤਾਨ ਕਰਨ ਵੇਲੇ, Chrome ਤੁਹਾਨੂੰ ਹਰ ਵਾਰ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਕਹਿ ਸਕਦਾ ਹੈ</translation>
 <translation id="4366943895537458493">ਪਲੇਟ</translation>
 <translation id="437040971055499437">ਸੁਰੱਖਿਆ ਇਵੈਂਟ ਹੋਣ 'ਤੇ</translation>
 <translation id="4371591986692297148">ਅਕਿਰਿਆਸ਼ੀਲ</translation>
@@ -2007,6 +2007,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ ਖੋਜ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="4930153903256238152">ਵੱਧ ਸਮਰੱਥਾ</translation>
+<translation id="4930714375720679147">ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4932035752129140860">ਤੁਹਾਡੇ ਵੱਲੋਂ ਪੇਸਟ ਜਾਂ ਨੱਥੀ ਕੀਤੀ ਲਿਖਤ ਨੂੰ ਵਿਸ਼ਲੇਸ਼ਣ ਲਈ Google ਕਲਾਊਡ ਜਾਂ ਤੀਜੀਆਂ ਧਿਰਾਂ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ। ਉਦਾਹਰਨ ਲਈ, ਉਨ੍ਹਾਂ ਨੂੰ ਸੰਵੇਦਨਸ਼ੀਲ ਡਾਟੇ ਲਈ ਸਕੈਨ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ ਅਤੇ ਕੰਪਨੀ ਦੀਆਂ ਨੀਤੀਆਂ ਦੇ ਆਧਾਰ 'ਤੇ ਸਟੋਰ ਅਤੇ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਲਈ ਦਿਖਾਈ ਦੇਣਯੋਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="4934780484581617878">ਵਿੰਡੋ ਪ੍ਰਬੰਧਨ</translation>
 <translation id="4936134414789135531">ਸ਼ਾਮਲ ਕੀਤਾ <ph name="VALUE_NAME" /> ਨਹੀਂ ਮਿਲ ਸਕਿਆ।</translation>
@@ -2265,6 +2266,7 @@
 <translation id="5447765697759493033">ਇਸ ਸਾਈਟ ਦਾ ਅਨੁਵਾਦ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="5452270690849572955">ਇਸ <ph name="HOST_NAME" /> ਪੰਨੇ ਨੂੰ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="5455374756549232013">ਖ਼ਰਾਬ ਨੀਤੀ ਟਾਈਮਸਟੈਂਪ</translation>
+<translation id="5456839782162429664">ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਆਟੋਫਿਲ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਭੁਗਤਾਨ ਕਰਦੇ ਹੋ, ਤਾਂ ਹਰ ਵਾਰ ਹੱਥੀਂ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="5457113250005438886">ਅਵੈਧ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ਹੋਰ}other{<ph name="CONTACT_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ਹੋਰ}}</translation>
 <translation id="5463625433003343978">ਡੀਵਾਈਸ ਲੱਭੇ ਜਾ ਰਹੇ ਹਨ...</translation>
@@ -2362,6 +2364,7 @@
 <translation id="563324245173044180">ਭਰਮਪੂਰਨ ਸਮੱਗਰੀ ਬਲਾਕ ਕੀਤੀ ਗਈ।</translation>
 <translation id="5633259641094592098">ਪ੍ਰਸਿੱਧ ਅਤੇ ਇੰਡੀ ਫ਼ਿਲਮਾਂ</translation>
 <translation id="563371367637259496">ਮੋਬਾਈਲ</translation>
+<translation id="5634725266554983459">ਕੀ ਹੱਥੀਂ ਪੁਸ਼ਟੀਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5635237618724097525">ਸਮਾਰਟ ਫ਼ੋਨ</translation>
 <translation id="5635478143789726479">ਵਿਕਰੇਤਾ ਦੇ ਨਿਯਮ ਅਤੇ ਸ਼ਰਤਾਂ</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />। <ph name="SECOND_STRING" /></translation>
@@ -2461,6 +2464,7 @@
 <translation id="5847181246682413476">ਪਾਵਰ ਸਪਲਾਈਆਂ</translation>
 <translation id="5851548754964597211">ਟੈਬ ਸੂਚੀ</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5862579898803147654">ਸਟੈਕਰ 8</translation>
 <translation id="5863847714970149516">ਅਗਲੇ ਪੰਨੇ 'ਤੇ ਜਾਣ ਨਾਲ ਤੁਹਾਡੇ ਤੋਂ ਖਰਚਾ ਲਿਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="5866257070973731571">ਫ਼ੋਨ ਨੰਬਰ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -3038,6 +3042,7 @@
 <translation id="6973656660372572881">ਦੋਵੇਂ ਸਥਿਰ ਪ੍ਰੌਕਸੀ ਸਰਵਰ ਅਤੇ ਇੱਕ .pac ਸਕ੍ਰਿਪਟ URL ਨਿਰਦਿਸ਼ਟ ਹਨ।</translation>
 <translation id="6973988895180423160">3.5 x 5 ਇੰਚ</translation>
 <translation id="6978236010531171013">ਫਿਰ ਵੀ ਸਾਂਝਾ ਕਰੋ</translation>
+<translation id="6978722349058177832">ਜੇ ਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਸਾਂਝਾ ਕਰਦੇ ਹੋ, ਤਾਂ ਆਟੋਫਿਲ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਭੁਗਤਾਨ ਕਰਨ ਵੇਲੇ, Chromium ਤੁਹਾਨੂੰ ਹਰ ਵਾਰ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਕਹਿ ਸਕਦਾ ਹੈ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">ਐਕਸਟ੍ਰੈਕਟ ਕੀਤੀ ਲਿਖਤ ਦੀ ਸ਼ੁਰੂਆਤ</translation>
 <translation id="6979440798594660689">ਮਿਊਟ ਕਰੋ (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
@@ -3733,7 +3738,6 @@
 <translation id="8288320283441806607">ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਵਰਤਣ ਲਈ, 'ਖੋਜਾਂ ਅਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਬਿਹਤਰ ਬਣਾਓ' ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8288807391153049143">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦਿਖਾਓ</translation>
 <translation id="8289355894181816810">ਜੇਕਰ ਤੁਸੀਂ ਨਿਸ਼ਚਿਤ ਨਹੀਂ ਹੋ ਕਿ ਇਸਦਾ ਕੀ ਮਤਲਬ ਹੈ ਤਾਂ ਆਪਣੇ ਨੈਟਵਰਕ ਪ੍ਰਬੰਧਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
-<translation id="8292520987784410870">ਕੀ ਹਮੇਸ਼ਾਂ ਪੁਸ਼ਟੀ ਕਰਨੀ ਹੈ?</translation>
 <translation id="8293206222192510085">ਬੁੱਕਮਾਰਕ ਸ਼ਾਮਿਲ ਕਰੋ</translation>
 <translation id="829335040383910391">ਧੁਨੀ</translation>
 <translation id="8294431847097064396">ਸ੍ਰੋਤ</translation>
@@ -3872,7 +3876,6 @@
 <translation id="8553387990086529628">ਘੁੰਮਣ-ਫਿਰਨ ਦੀਆਂ ਥਾਵਾਂ</translation>
 <translation id="8554010658308662631">ਹੋਰ ਲੋਡ ਕਰੋ</translation>
 <translation id="8554181323880688938">ਸੁਖ ਸਾਧਨ ਵਾਲੀਆਂ ਚੀਜ਼ਾਂ</translation>
-<translation id="8554802735558319842">ਸਾਂਝੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਾਧੂ ਸੁਰੱਖਿਆ ਲਈ, ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਆਟੋਫਿਲ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਭੁਗਤਾਨ ਕਰਦੇ ਹੋ, ਤਾਂ ਹਰ ਵਾਰ ਪੁਸ਼ਟੀਕਰਨ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{ਇਜਾਜ਼ਤ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ}one{ਇਜਾਜ਼ਤ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ}other{ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ}}</translation>
 <translation id="8555010941760982128">ਚੈੱਕ-ਆਊਟ 'ਤੇ ਇਸ ਕੋਡ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="8556297087315686325">ਨੈੱਟਵਰਕ ਨਿਗਰਾਨੀ ਅਤੇ ਪ੍ਰਬੰਧਨ</translation>

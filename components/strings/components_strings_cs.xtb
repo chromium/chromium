@@ -1418,7 +1418,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3740319564441798148">Dálkové autobusy a vlaky</translation>
 <translation id="3740447166056383374">Před zkopírováním je vyžadována kontrola</translation>
 <translation id="374325029554577103">Technologie pro fitness</translation>
-<translation id="3743765582345153106">Při použití automatického vyplňování vždy ověřit</translation>
 <translation id="3744111561329211289">Synchronizace na pozadí</translation>
 <translation id="3744212718085287312">Chcete příště zvýšit zabezpečení pomocí virtuální karty?</translation>
 <translation id="3744899669254331632">Web <ph name="SITE" /> teď nelze navštívit, protože tento web odeslal nesprávné identifikační údaje, které prohlížeč Chromium nedokáže zpracovat. Síťové chyby a útoky jsou obvykle dočasné, tato stránka pravděpodobně později bude fungovat.</translation>
@@ -1741,6 +1740,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4358461427845829800">Spravovat platební metody...</translation>
 <translation id="4359160567981085931">Právě jste své heslo zadali na klamavém webu. Chrome vám může pomoci. Chcete-li změnit heslo a oznámit Googlu, že váš účet může být ohrožen, klikněte na Ochránit účet.</translation>
 <translation id="4363222835916186793">Upozornění pro tento produkt byla vypnuta</translation>
+<translation id="4363729811203340554">Pokud toto zařízení sdílíte s dalšími lidmi, Chrome vás může při každé platbě pomocí automatického vyplňování požádat o ověření</translation>
 <translation id="4366943895537458493">Deska</translation>
 <translation id="437040971055499437">Událost týkající se zabezpečení</translation>
 <translation id="4371591986692297148">Neaktivní</translation>
@@ -2006,6 +2006,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, vyhledávat můžete stisknutím klávesy Tab a poté Enter</translation>
 <translation id="4930153903256238152">Velká kapacita</translation>
+<translation id="4930714375720679147">Zapnout</translation>
 <translation id="4932035752129140860">Text, který vložíte nebo připojíte, se odešle k analýze do služby Google Cloud nebo třetím stranám. Může se u něj například kontrolovat přítomnost citlivých údajů může být uchováván v souladu se zásadami společnosti a může k němu mít přístup váš administrátor.</translation>
 <translation id="4934780484581617878">Správa oken</translation>
 <translation id="4936134414789135531">Vloženou hodnotu <ph name="VALUE_NAME" /> se nepodařilo najít.</translation>
@@ -2264,6 +2265,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5447765697759493033">Tento web nebude přeložen</translation>
 <translation id="5452270690849572955">Tuto stránku na webu <ph name="HOST_NAME" /> nelze najít</translation>
 <translation id="5455374756549232013">Chybné časové razítko zásady</translation>
+<translation id="5456839782162429664">Při každé platbě pomocí automatického vyplňování požádat o ruční ověření</translation>
 <translation id="5457113250005438886">Neplatné</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}few{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}many{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalšího}other{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalších}}</translation>
 <translation id="5463625433003343978">Hledání zařízení…</translation>
@@ -2361,6 +2363,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="563324245173044180">Byl zablokován klamavý obsah.</translation>
 <translation id="5633259641094592098">Kultovní a nezávislé filmy</translation>
 <translation id="563371367637259496">Mobilní</translation>
+<translation id="5634725266554983459">Zapnout ruční ověření?</translation>
 <translation id="5635237618724097525">Chytré telefony</translation>
 <translation id="5635478143789726479">Obchodní podmínky prodejce</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -2460,6 +2463,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5847181246682413476">Dodávky elektrické energie</translation>
 <translation id="5851548754964597211">Seznam karet</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Zapnout</translation>
 <translation id="5862579898803147654">Stohovač 8</translation>
 <translation id="5863847714970149516">Následující stránka se vám může pokusit naúčtovat poplatky</translation>
 <translation id="5866257070973731571">Přidání telefonního čísla</translation>
@@ -3037,6 +3041,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6973656660372572881">Určeny jsou pevně dané servery proxy i adresa URL skriptu PAC.</translation>
 <translation id="6973988895180423160">3,5 × 5″</translation>
 <translation id="6978236010531171013">Přesto sdílet</translation>
+<translation id="6978722349058177832">Pokud toto zařízení sdílíte s dalšími lidmi, Chromium vás může při každé platbě pomocí automatického vyplňování požádat o ověření</translation>
 <translation id="6979158407327259162">Disk Google</translation>
 <translation id="6979332652936434520">Začátek extrahovaného textu</translation>
 <translation id="6979440798594660689">Ztlumit (výchozí)</translation>
@@ -3731,7 +3736,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8288320283441806607">Pokud tuto funkci chcete použít, zapněte možnost Vylepšit vyhledávání a procházení</translation>
 <translation id="8288807391153049143">Zobrazit certifikát</translation>
 <translation id="8289355894181816810">Pokud nevíte, co dělat, obraťte se na svého správce sítě.</translation>
-<translation id="8292520987784410870">Vždy ověřit?</translation>
 <translation id="8293206222192510085">Přidat záložku</translation>
 <translation id="829335040383910391">zvuk</translation>
 <translation id="8294431847097064396">Zdroj</translation>
@@ -3870,7 +3874,6 @@ Další podrobnosti:
 <translation id="8553387990086529628">Turistické destinace</translation>
 <translation id="8554010658308662631">Načíst další</translation>
 <translation id="8554181323880688938">Luxusní zboží</translation>
-<translation id="8554802735558319842">Pro lepší zabezpečení na sdílených zařízeních zapněte ověření při každé platbě s použitím automatického vyplňování.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Resetovat oprávnění}few{Resetovat oprávnění}many{Resetovat oprávnění}other{Resetovat oprávnění}}</translation>
 <translation id="8555010941760982128">Při placení použijte tento kód</translation>
 <translation id="8556297087315686325">Monitorování a správa sítě</translation>

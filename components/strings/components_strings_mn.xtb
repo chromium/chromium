@@ -1423,7 +1423,6 @@
 <translation id="3740319564441798148">Холын зайн автобус болон төмөр зам</translation>
 <translation id="3740447166056383374">Хуулахаас өмнө шалгах шаардлагатай</translation>
 <translation id="374325029554577103">Фитнесийн технологийн бүтээгдэхүүнүүд</translation>
-<translation id="3743765582345153106">Автоматаар бөглөх хэсгийг ашиглаж байх үед үргэлж баталгаажуулах</translation>
 <translation id="3744111561329211289">Дэвсгэрт синк хийх</translation>
 <translation id="3744212718085287312">Үүнийг дараагийн удаа виртуал картаар илүү аюулгүй болгох уу?</translation>
 <translation id="3744899669254331632">Сайтаас эргэлзээтэй мэдээлэл илгээсэн учраас та <ph name="SITE" /> руу орж болохгүй. Үүнээс болж Chromium нь  сүлжээний алдааг боловсруулж чадахгүй байна.  Иймэрхүү дайралтууд түр зуурын шинжтэй байдаг учраас энэ хуудас хэсэг хугацааны дараа хэвийн ажиллаж магадгүй.</translation>
@@ -1746,6 +1745,7 @@
 <translation id="4358461427845829800">Төлбөрийн хэрэгслийг удирдах...</translation>
 <translation id="4359160567981085931">Та дөнгөж сая сэжигтэй сайтад нууц үгээ орууллаа. Chrome туслах боломжтой. Нууц үгээ өөрчилж, таны бүртгэл эрсдэлд oрсон байж болзошгүй тухай Google-д мэдэгдэхийн тулд Бүртгэлийг хамгаалах гэснийг товшино уу.</translation>
 <translation id="4363222835916186793">Энэ бүтээгдэхүүний сэрэмжлүүлгийг унтраасан</translation>
+<translation id="4363729811203340554">Хэрэв та энэ төхөөрөмжийг дундаа ашигладаг бол Chrome таныг автоматаар бөглөх хэсгийг ашиглан төлөх бүрд баталгаажуулахыг хүснэ</translation>
 <translation id="4366943895537458493">Хавтан</translation>
 <translation id="437040971055499437">Аюулгүй байдлын үйлдэл тохиолдсон</translation>
 <translation id="4371591986692297148">Идэвхгүй</translation>
@@ -2011,6 +2011,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, хайхын тулд Таб дээр, дараа нь Enter дарна уу</translation>
 <translation id="4930153903256238152">Их багтаамжтай</translation>
+<translation id="4930714375720679147">Асаах</translation>
 <translation id="4932035752129140860">Таны буулгах эсвэл хавсаргах текстийг дүн шинжилгээ хийлгэхээр Google Cloud эсвэл гуравдагч талууд руу илгээдэг. Жишээ нь үүнд эмзэг өгөгдөл байгаа эсэхийг скан хийж, үүнийг компанийн бодлогод тулгуурлан хадгалж болох ба танай администратор харна.</translation>
 <translation id="4934780484581617878">Цонхны менежмент</translation>
 <translation id="4936134414789135531">Оруулсан <ph name="VALUE_NAME" />-г олж чадсангүй.</translation>
@@ -2269,6 +2270,7 @@
 <translation id="5447765697759493033">Энэ сайтыг орчуулахгүй</translation>
 <translation id="5452270690849572955">Энэ <ph name="HOST_NAME" /> хуудас олдсонгүй</translation>
 <translation id="5455374756549232013">Журмын кодлол сул байна</translation>
+<translation id="5456839782162429664">Таныг автоматаар бөглөх хэсгийг ашиглан төлөх бүрд гар аргаар баталгаажуулах</translation>
 <translation id="5457113250005438886">Хүчингүй</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Төхөөрөмжүүдийг хайж байна...</translation>
@@ -2366,6 +2368,7 @@
 <translation id="563324245173044180">Хуурамч агуулгыг блоклосон.</translation>
 <translation id="5633259641094592098">Тахин шүтэгдсэн, инди кино</translation>
 <translation id="563371367637259496">Мобайл</translation>
+<translation id="5634725266554983459">Гар аргаар баталгаажуулахыг асаах уу?</translation>
 <translation id="5635237618724097525">Ухаалаг утас</translation>
 <translation id="5635478143789726479">Борлуулагчийн үйлчилгээний ерөнхий нөхцөл</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -2465,6 +2468,7 @@
 <translation id="5847181246682413476">Эрчим хүчний хангамжууд</translation>
 <translation id="5851548754964597211">Цонхны жагсаалт</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Асаах</translation>
 <translation id="5862579898803147654">Гарах цаасыг зэрэгцүүлэх тавцан 8</translation>
 <translation id="5863847714970149516">Дараагийн хуудас танд төлбөр ногдуулж болзошгүй</translation>
 <translation id="5866257070973731571">Утасны дугаар нэмэх</translation>
@@ -3042,6 +3046,7 @@
 <translation id="6973656660372572881">Тогтмол прокси сервер болон а.pac бичвэрийн холбоосын аль алиныг нь зааж өгнө.</translation>
 <translation id="6973988895180423160">3.5 x 5 инч</translation>
 <translation id="6978236010531171013">Ямартай ч хуваалцах</translation>
+<translation id="6978722349058177832">Хэрэв та энэ төхөөрөмжийг дундаа ашигладаг бол Chromium таныг автоматаар бөглөх хэсгийг ашиглан төлөх бүрд баталгаажуулахыг хүснэ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">Задалсан текстийн эхлэл</translation>
 <translation id="6979440798594660689">Дууг хаах (өгөгдмөл)</translation>
@@ -3737,7 +3742,6 @@
 <translation id="8288320283441806607">Энэ онцлогийг ашиглахын тулд Хайлт болон үзэх явцыг сайжруулах тохиргоог асаана уу</translation>
 <translation id="8288807391153049143">Гэрчилгээг харуулах</translation>
 <translation id="8289355894181816810">Хэрэв та үүнийг юу гэсэн үг болохыг сайн мэдэхгүй байгаа бол сүлжээнийхээ админтай холбоо барина уу.</translation>
-<translation id="8292520987784410870">Үргэлж баталгаажуулах уу?</translation>
 <translation id="8293206222192510085">Хадгалагдсан хуудас нэмэх</translation>
 <translation id="829335040383910391">дуу чимээ</translation>
 <translation id="8294431847097064396">Эх сурвалж</translation>
@@ -3876,7 +3880,6 @@
 <translation id="8553387990086529628">Жуулчдын очих газар</translation>
 <translation id="8554010658308662631">Илүү ихийг ачаалах</translation>
 <translation id="8554181323880688938">Тансаг бараанууд</translation>
-<translation id="8554802735558319842">Дундын төхөөрөмжүүдийн нэмэлт аюулгүй байдлын үүднээс та автоматаар бөглөх хэсгийг ашиглан төлөх бүрдээ баталгаажуулахыг асаана уу.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Зөвшөөрлийг шинэчлэх}other{Зөвшөөрлүүдийг шинэчлэх}}</translation>
 <translation id="8555010941760982128">Тооцоо хийхдээ энэ кодыг ашиглаарай</translation>
 <translation id="8556297087315686325">Сүлжээний мониторинг болон менежмент</translation>

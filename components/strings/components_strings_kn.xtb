@@ -1419,7 +1419,6 @@
 <translation id="3740319564441798148">ದೀರ್ಘ ದೂರದ ಬಸ್ ಮತ್ತು ರೈಲು</translation>
 <translation id="3740447166056383374">ಕಾಪಿ ಮಾಡುವ ಮೊದಲು ಪರಿಶೀಲನೆಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="374325029554577103">ಫಿಟ್ನೆಸ್ ತಂತ್ರಜ್ಞಾನ ಉತ್ಪನ್ನಗಳು</translation>
-<translation id="3743765582345153106">ಆಟೋಫಿಲ್ ಬಳಸುವಾಗ ಯಾವಾಗಲೂ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="3744111561329211289">ಹಿನ್ನೆಲೆ ಸಿಂಕ್</translation>
 <translation id="3744212718085287312">ಮುಂದಿನ ಬಾರಿ ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ ಒಂದರ ಮೂಲಕ ಅದನ್ನು ಹೆಚ್ಚು ಸುರಕ್ಷಿತವಾಗಿರಿಸಬೇಕೇ?</translation>
 <translation id="3744899669254331632">ನೀವು ಇದೀಗ <ph name="SITE" /> ಗೆ ಭೇಟಿ ನೀಡಲು ಸಾಧ್ಯವಿಲ್ಲ ಏಕೆಂದರೆ ವೆಬ್‌ಸೈಟ್ Chromium ಗೆ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗದ ಅವ್ಯವಸ್ಥಿತ ರುಜುವಾತುಗಳನ್ನು ಕಳುಹಿಸಿದೆ. ನೆಟ್‌ವರ್ಕ್ ದೋಷಗಳು ಮತ್ತು ಆಕ್ರಮಣಗಳು ಸಾಮಾನ್ಯವಾಗಿ ತಾತ್ಕಾಲಿಕವಾಗಿರುತ್ತವೆ, ಆದ್ದರಿಂದ ಈ ಪುಟವು ಬಹುಶಃ ನಂತರ ಕಾರ್ಯನಿರ್ವಹಿಸಬಹುದು.</translation>
@@ -1742,6 +1741,7 @@
 <translation id="4358461427845829800">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ನಿರ್ವಹಿಸಿ...</translation>
 <translation id="4359160567981085931">ನೀವು ಈಗಷ್ಟೇ ವಂಚನೆ ಮಾಡುವ ಸೈಟ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿದ್ದೀರಿ. Chrome, ಸಹಾಯ ಮಾಡಬಹುದು. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಬದಲಿಸಲು ಮತ್ತು ನಿಮ್ಮ ಖಾತೆಗೆ ಅಪಾಯ ಉಂಟಾಗಿರಬಹುದು ಎಂದು Google ಗೆ ಸೂಚಿಸಲು, ಖಾತೆ ರಕ್ಷಿಸಿ ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="4363222835916186793">ಈ ಉತ್ಪನ್ನದ ಕುರಿತ ಅಲರ್ಟ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="4363729811203340554">ನೀವು ಈ ಸಾಧನವನ್ನು ಹಂಚಿಕೊಂಡಿದ್ದರೆ, ಆಟೋಫಿಲ್ ಬಳಸಿಕೊಂಡು ನೀವು ಪ್ರತಿ ಬಾರಿ ಪಾವತಿಸುವಾಗ Chrome ನಿಮಗೆ ಪರಿಶೀಲಿಸಲು ಕೇಳಬಹುದು</translation>
 <translation id="4366943895537458493">ಪ್ಲೇಟ್</translation>
 <translation id="437040971055499437">ಭದ್ರತಾ ಈವೆಂಟ್‌ ಸಂಭವಿಸುತ್ತದೆ</translation>
 <translation id="4371591986692297148">ನಿಷ್ಕ್ರಿಯವಾಗಿದೆ</translation>
@@ -2007,6 +2007,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಹುಡುಕಲು ಟ್ಯಾಬ್ ಒತ್ತಿ ನಂತರ ನಮೂದಿಸಿ</translation>
 <translation id="4930153903256238152">ದೊಡ್ಡ ಸಾಮರ್ಥ್ಯ</translation>
+<translation id="4930714375720679147">ಆನ್ ಮಾಡಿ</translation>
 <translation id="4932035752129140860">ನೀವು ಅಂಟಿಸುವ ಅಥವಾ ಲಗತ್ತಿಸುವ ಪಠ್ಯವನ್ನು ವಿಶ್ಲೇಷಣೆ ಮಾಡಲು, Google ಕ್ಲೌಡ್ ಅಥವಾ ಥರ್ಡ್ ಪಾರ್ಟಿಗಳಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಉದಾಹರಣೆಗೆ, ಸೂಕ್ಷ್ಮವಾದ ವೈಯಕ್ತಿಕ ಡೇಟಾಗಾಗಿ ಇದನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಬಹುದು ಮತ್ತು ಕಂಪನಿಯ ನೀತಿಗಳ ಆಧಾರದ ಮೇಲೆ ಸಂಗ್ರಹಿಸಬಹುದು ಮತ್ತು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ಗೋಚರಿಸಬಹುದು.</translation>
 <translation id="4934780484581617878">ವಿಂಡೋ ನಿರ್ವಹಣೆ</translation>
 <translation id="4936134414789135531">ಸೇರಿಸಲಾದ <ph name="VALUE_NAME" /> ಅನ್ನು ಕಂಡುಹಿಡಿಯಲಾಗಲಿಲ್ಲ.</translation>
@@ -2265,6 +2266,7 @@
 <translation id="5447765697759493033">ಈ ಸೈಟ್ ಅನ್ನು ಅನುವಾದಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5452270690849572955">ಈ <ph name="HOST_NAME" /> ಪುಟ ಕಂಡುಬರುವುದಿಲ್ಲ</translation>
 <translation id="5455374756549232013">ತಪ್ಪಾದ ನೀತಿಯ ಸಮಯಸ್ಟ್ಯಾಂಪ್</translation>
+<translation id="5456839782162429664">ನೀವು ಆಟೋಫಿಲ್ ಬಳಸಿಕೊಂಡು ಪ್ರತಿ ಬಾರಿ ಪಾವತಿಸಿದಾಗ ಹಸ್ತಚಾಲಿತವಾಗಿ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="5457113250005438886">ಅಮಾನ್ಯ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ಇನ್ನಷ್ಟು}one{<ph name="CONTACT_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ಇನ್ನಷ್ಟು}other{<ph name="CONTACT_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ಇನ್ನಷ್ಟು}}</translation>
 <translation id="5463625433003343978">ಸಾಧನಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
@@ -2362,6 +2364,7 @@
 <translation id="563324245173044180">ವಂಚನೀಯ ವಿಷಯವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="5633259641094592098">ಕಲ್ಟ್ ಮತ್ತು ಇಂಡೀ ಚಲನಚಿತ್ರಗಳು</translation>
 <translation id="563371367637259496">ಮೊಬೈಲ್</translation>
+<translation id="5634725266554983459">ಹಸ್ತಚಾಲಿತ ಪರಿಶೀಲನೆಯನ್ನು ಆನ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="5635237618724097525">ಸ್ಮಾರ್ಟ್ ಫೋನ್‌ಗಳು</translation>
 <translation id="5635478143789726479">ಮಾರಾಟಗಾರರ ನಿಯಮಗಳು ಮತ್ತು ನಿಬಂಧನೆಗಳು</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -2461,6 +2464,7 @@
 <translation id="5847181246682413476">ವಿದ್ಯುತ್ ಪೂರೈಕೆಗಳು</translation>
 <translation id="5851548754964597211">ಟ್ಯಾಬ್ ಪಟ್ಟಿ</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">ಆನ್ ಮಾಡಿ</translation>
 <translation id="5862579898803147654">ಸ್ಟ್ಯಾಕರ್ 8</translation>
 <translation id="5863847714970149516">ಮುಂದಿನ ಪುಟವು ನಿಮಗೆ ಶುಲ್ಕ ವಿಧಿಸಲು ಪ್ರಯತ್ನಿಸಬಹುದು</translation>
 <translation id="5866257070973731571">ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ಸೇರಿಸಿ</translation>
@@ -3039,6 +3043,7 @@
 <translation id="6973656660372572881">ಹೊಂದಿಸಿದ ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌ಗಳು ಮತ್ತು .pac ಸ್ಕ್ರಿಪ್ಟ್ URL ಎರಡನ್ನೂ ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿದೆ.</translation>
 <translation id="6973988895180423160">3.5 x 5 ಇಂಚು</translation>
 <translation id="6978236010531171013">ಹೇಗಾದರೂ ಹಂಚಿಕೊಳ್ಳಿ</translation>
+<translation id="6978722349058177832">ನೀವು ಈ ಸಾಧನವನ್ನು ಹಂಚಿಕೊಂಡಿದ್ದರೆ, ಆಟೋಫಿಲ್ ಬಳಸಿಕೊಂಡು ನೀವು ಪ್ರತಿ ಬಾರಿ ಪಾವತಿಸುವಾಗ Chromium ನಿಮಗೆ ಪರಿಶೀಲಿಸಲು ಕೇಳಬಹುದು</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">ಹೊರತೆಗೆಯಲಾದ ಪಠ್ಯದ ಪ್ರಾರಂಭ</translation>
 <translation id="6979440798594660689">ಮ್ಯೂಟ್ (ಡಿಫಾಲ್ಟ್)</translation>
@@ -3488,7 +3493,7 @@
 <translation id="7800977246388195491">ನಿಮ್ಮ ಇತ್ತೀಚಿನ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸದ ಆಧಾರದ ಮೇಲೆ ಆಸಕ್ತಿಯ ವಿಷಯಗಳನ್ನು Chrome ಗುರುತು ಹಾಕಿಕೊಳ್ಳುತ್ತದೆ. ಅಲ್ಲದೆ, ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್‌ಗಳು ನೀವು ಏನನ್ನು ಇಷ್ಟಪಡುವಿರೆಂಬುದನ್ನು ನಿರ್ಧರಿಸಬಹುದು. ನಂತರ, ನಿಮಗೆ ವೈಯಕ್ತೀಕರಿಸಿದ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು ಸೈಟ್‌ಗಳು ಈ ಮಾಹಿತಿಯನ್ನು ಕೇಳಬಹುದು. ನಿಮಗೆ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು ಯಾವ ವಿಷಯಗಳು ಮತ್ತು ಸೈಟ್‌ಗಳನ್ನು ಬಳಸಬೇಕು ಎಂಬುದನ್ನು ನೀವು ಆಯ್ಕೆ ಮಾಡಬಹುದು.</translation>
 <translation id="7802523362929240268">ಸೈಟ್‌ ಕಾನೂನುಬದ್ಧವಾಗಿದೆ</translation>
 <translation id="7802989406998618639">ಇದು ನೀವೇ ಎಂಬುದನ್ನು ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಪರಿಶೀಲಿಸಲು, <ph name="SIDE_OF_CARD" /> <ph name="NUMBER_OF_DIGITS" />-ಅಂಕಿಯ ಭದ್ರತಾ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
-<translation id="780301667611848630">ಬೇಡ, ಧನ್ಯವಾದಗಳು</translation>
+<translation id="780301667611848630">ಬೇಡ</translation>
 <translation id="7805768142964895445">ಸ್ಥಿತಿ</translation>
 <translation id="7805906048382884326">ಸಲಹೆ ಮುಚ್ಚಿರಿ</translation>
 <translation id="7810410097247356677">ಮುಂದಿನ ಬಾರಿ ವೇಗವಾಗಿ ಪಾವತಿಸಲು, ನಿಮ್ಮ ಕಾರ್ಡ್ ಮತ್ತು ಎನ್‌ಕ್ರಿಪ್ಟೆಡ್ ಭದ್ರತಾ ಕೋಡ್ ಅನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
@@ -3733,7 +3738,6 @@
 <translation id="8288320283441806607">ಈ ಫೀಚರ್ ಅನ್ನು ಬಳಸಲು, 'ಹುಡುಕಾಟಗಳು ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಉತ್ತಮಗೊಳಿಸಿ' ಆನ್ ಮಾಡಿ</translation>
 <translation id="8288807391153049143">ಪ್ರಮಾಣಪತ್ರವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8289355894181816810">ಇದರ ಅರ್ಥವೇನೆಂದು ನಿಮಗೆ ಖಚಿತವಾಗದಿದ್ದರೆ ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
-<translation id="8292520987784410870">ಯಾವಾಗಲೂ ದೃಢೀಕರಿಸಬೇಕೇ?</translation>
 <translation id="8293206222192510085">ಬುಕ್‌ಮಾರ್ಕ್ ಸೇರಿಸು</translation>
 <translation id="829335040383910391">ಶಬ್ದ</translation>
 <translation id="8294431847097064396">ಮೂಲ</translation>
@@ -3872,7 +3876,6 @@
 <translation id="8553387990086529628">ಪ್ರವಾಸಿ ತಾಣಗಳು</translation>
 <translation id="8554010658308662631">ಇನ್ನಷ್ಟು ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="8554181323880688938">ಐಷಾರಾಮಿ ವಸ್ತುಗಳು</translation>
-<translation id="8554802735558319842">ಹಂಚಿಕೊಂಡ ಸಾಧನಗಳಲ್ಲಿ ಹೆಚ್ಚುವರಿ ಸುರಕ್ಷತೆಗಾಗಿ, ನೀವು ಪ್ರತಿಬಾರಿ ಆಟೋಫಿಲ್ ಬಳಸಿ ಹಣ ಪಾವತಿಸಿದಾಗಲೂ ದೃಢೀಕರಣ ಬೇಕಾಗುವ ಆಯ್ಕೆಯನ್ನು ಆನ್ ಮಾಡಿ.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{ಅನುಮತಿಯನ್ನು ರೀಸೆಟ್ ಮಾಡಿ}one{ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಿ}other{ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಿ}}</translation>
 <translation id="8555010941760982128">ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ಈ ಕೋಡ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="8556297087315686325">ನೆಟ್‌ವರ್ಕ್ ಮಾನಿಟರಿಂಗ್ ಮತ್ತು ನಿರ್ವಹಣೆ</translation>

@@ -1422,7 +1422,6 @@
 <translation id="3740319564441798148">시외버스 및 철도</translation>
 <translation id="3740447166056383374">복사하기 전에 검토 필요</translation>
 <translation id="374325029554577103">피트니스 기술 제품</translation>
-<translation id="3743765582345153106">자동 완성 사용 시 항상 확인</translation>
 <translation id="3744111561329211289">백그라운드 동기화</translation>
 <translation id="3744212718085287312">다음번에는 가상 카드로 보안을 강화하시겠어요?</translation>
 <translation id="3744899669254331632">웹사이트가 Chromium이 처리할 수 없는 암호화된 사용자 인증 정보를 전송하였으므로 지금은 <ph name="SITE" />에 방문할 수 없습니다. 네트워크 오류와 공격은 대체로 일시적인 문제이기 때문에 이후에는 이 페이지가 제대로 작동할 가능성이 높습니다.</translation>
@@ -1745,6 +1744,7 @@
 <translation id="4358461427845829800">결제 수단 관리...</translation>
 <translation id="4359160567981085931">사기성 사이트에 비밀번호를 입력했습니다. Chrome이 계정 보호를 도와드립니다. 비밀번호를 변경하고 계정 보안 위험에 관해 Google에 알리려면 계정 보호를 클릭하세요.</translation>
 <translation id="4363222835916186793">제품 관련 알림이 사용 중지되었습니다.</translation>
+<translation id="4363729811203340554">이 기기를 공유하는 경우, 자동 완성으로 결제할 때마다 Chrome에서 인증을 요청할 수 있습니다.</translation>
 <translation id="4366943895537458493">플레이트</translation>
 <translation id="437040971055499437">보안 관련 활동 발생</translation>
 <translation id="4371591986692297148">비활성</translation>
@@ -2010,6 +2010,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 검색</translation>
 <translation id="4930153903256238152">대용량</translation>
+<translation id="4930714375720679147">사용 설정</translation>
 <translation id="4932035752129140860">붙여넣거나 첨부하는 텍스트는 분석을 위해 Google Cloud 또는 타사로 전송됩니다. 예를 들어, 민감한 정보를 찾기 위해 텍스트를 스캔할 수 있으며 회사 정책에 따라 보관되어 관리자가 볼 수도 있습니다.</translation>
 <translation id="4934780484581617878">창 관리</translation>
 <translation id="4936134414789135531">삽입된 <ph name="VALUE_NAME" />을(를) 찾을 수 없습니다.</translation>
@@ -2268,6 +2269,7 @@
 <translation id="5447765697759493033">이 사이트는 번역되지 않습니다.</translation>
 <translation id="5452270690849572955"><ph name="HOST_NAME" /> 페이지를 찾을 수 없음</translation>
 <translation id="5455374756549232013">잘못된 정책 타임스탬프</translation>
+<translation id="5456839782162429664">자동 완성으로 결제할 때마다 수동으로 인증</translation>
 <translation id="5457113250005438886">잘못된 데이터</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}other{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}}</translation>
 <translation id="5463625433003343978">기기를 찾는 중...</translation>
@@ -2365,6 +2367,7 @@
 <translation id="563324245173044180">사기성 콘텐츠 차단됨</translation>
 <translation id="5633259641094592098">컬트 및 독립 영화</translation>
 <translation id="563371367637259496">모바일</translation>
+<translation id="5634725266554983459">수동 인증을 사용 설정하시겠습니까?</translation>
 <translation id="5635237618724097525">스마트폰</translation>
 <translation id="5635478143789726479">판매자 이용약관</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -2464,6 +2467,7 @@
 <translation id="5847181246682413476">전원 공급 장치</translation>
 <translation id="5851548754964597211">탭 목록</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">사용</translation>
 <translation id="5862579898803147654">스태커 8</translation>
 <translation id="5863847714970149516">방문하려는 페이지에서 금액을 청구할 수 있습니다.</translation>
 <translation id="5866257070973731571">전화번호 추가</translation>
@@ -3042,6 +3046,7 @@
 <translation id="6973656660372572881">고정 프록시 서버와 .pac 스크립트 URL이 모두 지정되어 있습니다.</translation>
 <translation id="6973988895180423160">3.5x5인치</translation>
 <translation id="6978236010531171013">무시하고 공유</translation>
+<translation id="6978722349058177832">이 기기를 공유하는 경우, 자동 완성으로 결제할 때마다 Chromium에서 인증을 요청할 수 있습니다.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">추출된 텍스트의 시작</translation>
 <translation id="6979440798594660689">음소거(기본값)</translation>
@@ -3736,7 +3741,6 @@
 <translation id="8288320283441806607">이 기능을 사용하려면 검색 및 탐색 환경 개선을 사용 설정하세요</translation>
 <translation id="8288807391153049143">인증서 표시</translation>
 <translation id="8289355894181816810">잘 모르는 경우 네트워크 관리자에게 문의하시기 바랍니다.</translation>
-<translation id="8292520987784410870">항상 인증하시겠습니까?</translation>
 <translation id="8293206222192510085">북마크 추가</translation>
 <translation id="829335040383910391">소리</translation>
 <translation id="8294431847097064396">출처</translation>
@@ -3875,7 +3879,6 @@
 <translation id="8553387990086529628">관광지</translation>
 <translation id="8554010658308662631">더보기</translation>
 <translation id="8554181323880688938">사치품</translation>
-<translation id="8554802735558319842">공유 기기의 보안을 강화하려면 자동 완성으로 결제할 때마다 인증을 사용 설정하세요.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{권한 재설정}other{권한 재설정}}</translation>
 <translation id="8555010941760982128">결제 시 다음 코드를 사용하세요</translation>
 <translation id="8556297087315686325">네트워크 모니터링 및 관리</translation>

@@ -1419,7 +1419,6 @@
 <translation id="3740319564441798148">लामो दूरीका बस तथा रेल</translation>
 <translation id="3740447166056383374">कपी गर्नुअघि समीक्षा गर्नु पर्ने हुन्छ</translation>
 <translation id="374325029554577103">तन्दुरुस्ती प्रविधिसम्बन्धी उत्पादनहरू</translation>
-<translation id="3743765582345153106">अटोफिल प्रयोग गर्दा सधैँ पुष्टि गर्न लगाइयोस्</translation>
 <translation id="3744111561329211289">पृष्ठभूमिमा सिंक गर्ने सुविधा</translation>
 <translation id="3744212718085287312">अर्को पटक भर्चुअल कार्ड प्रयोग गरेर अझै सुरक्षित तरिकाले भुक्तानी गर्ने हो?</translation>
 <translation id="3744899669254331632">तपाईं अहिले <ph name="SITE" />को  भ्रमण गर्न सक्नुहुन्न किनकि क्रोमियमले प्रशोधन गर्न सक्दैन भन्नेवेबसाइटले अपत्यारिला प्रमाणहरू पठायो। सञ्जाल त्रुटि र आक्रमणहरू सामन्यतया: अस्थायी हुन्छन्, यसैले यो पृष्ठले पछि सायद  काम गर्ने छ।</translation>
@@ -1743,6 +1742,7 @@
 <translation id="4358461427845829800">भुक्तानी विधिहरू व्यवस्थित गर्नुहोस्...</translation>
 <translation id="4359160567981085931">तपाईंले भर्खरै कुनै भ्रामक साइटमा आफ्नो पासवर्ड प्रविष्टि गर्नुभएको छ। Chrome ले मद्दत गर्न सक्छ। आफ्नो पासवर्ड परिवर्तन गर्न र आफ्नो खाता जोखिममा हुन सक्छ भनेर Google लाई सूचित गर्न खाता सेभ गर्नुहोस् नामक विकल्पमा क्लिक गर्नुहोस्।</translation>
 <translation id="4363222835916186793">यो उत्पादनका हकमा अलर्ट पठाउने सुविधा अफ गरिएको छ</translation>
+<translation id="4363729811203340554">तपाईं यो डिभाइस साझा रूपमा प्रयोग गर्नुहुन्छ भने अटोफिल सुविधा प्रयोग गरी भुक्तानीसम्बन्धी जानकारी हाल्दा Chrome ले हरेक पटक तपाईंलाई आफ्नो पहिचान पुष्टि गर्न लगाउन सक्छ</translation>
 <translation id="4366943895537458493">प्लेट</translation>
 <translation id="437040971055499437">सुरक्षासम्बन्धी घटना हुँदा</translation>
 <translation id="4371591986692297148">निष्क्रिय</translation>
@@ -2008,6 +2008,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, खोज्नका लागि Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="4930153903256238152">धेरै क्षमता भएको</translation>
+<translation id="4930714375720679147">अन गर्नुहोस्</translation>
 <translation id="4932035752129140860">तपाईंले पेस्ट वा एट्याच गर्ने टेक्स्ट विश्लेषण गर्ने प्रयोजनका लागि Google क्लाउडमा वा तेस्रो पक्षकहाँ पठाइन्छ। उदाहरणका लागि, उक्त फाइलमा संवेदनशील डेटा वा मालवेयर छन् कि छैनन् भनी जाँच गरिन सक्छ र कम्पनीका नीतिका आधारमा फाइल भण्डारण गरिन सक्छ र ती फाइलहरू एडमिनले हेर्न मिल्छ।</translation>
 <translation id="4934780484581617878">विन्डो व्यवस्थापन</translation>
 <translation id="4936134414789135531">हालिएको <ph name="VALUE_NAME" /> भेट्टाउन सकिएन।</translation>
@@ -2266,6 +2267,7 @@
 <translation id="5447765697759493033">यो साइटलाई अनुवाद गरिने छैन</translation>
 <translation id="5452270690849572955">यो <ph name="HOST_NAME" /> को पृष्ठ फेला पार्न सक्दैन</translation>
 <translation id="5455374756549232013">खराब नीति टाइमस्ट्याम्प</translation>
+<translation id="5456839782162429664">हरेक पटक अटोफिल सुविधा प्रयोग गरी भुक्तानी गर्दा म्यानुअल तरिकाले पुष्टि गर्नुहोस्</translation>
 <translation id="5457113250005438886">अवैध</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">यन्त्रहरू पत्ता लगाइँदै छ...</translation>
@@ -2363,6 +2365,7 @@
 <translation id="563324245173044180">भ्रामक सामग्रीमाथि रोक लगाइयो।</translation>
 <translation id="5633259641094592098">प्रशंसकको जमात भएका तथा इन्डी चलचित्रहरू</translation>
 <translation id="563371367637259496">मोबाइल</translation>
+<translation id="5634725266554983459">म्यानुअल तरिकाले पुष्टि गर्ने सुविधा अन गर्ने हो?</translation>
 <translation id="5635237618724097525">स्मार्टफोन</translation>
 <translation id="5635478143789726479">विक्रेताका सर्तहरू</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />। <ph name="SECOND_STRING" /></translation>
@@ -2462,6 +2465,7 @@
 <translation id="5847181246682413476">विद्युत आपूर्ति</translation>
 <translation id="5851548754964597211">ट्याब सूची</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">अन गर्नुहोस्</translation>
 <translation id="5862579898803147654">स्ट्याकर ८</translation>
 <translation id="5863847714970149516">अगाडि आउने पृष्ठले तपाईंलाई पैसा तिराउने प्रयास गर्न सक्छ</translation>
 <translation id="5866257070973731571">फोन नम्बर थप्नुहोस्</translation>
@@ -3040,6 +3044,7 @@
 <translation id="6973656660372572881">दुवै तय प्रोक्सी सर्भर र एक .Pac स्क्रिप्ट यूआरएल निर्दिष्ट गरिएको छ।</translation>
 <translation id="6973988895180423160">३.५ x ५ इन्च</translation>
 <translation id="6978236010531171013">जे भए तापनि सेयर गर्नुहोस्</translation>
+<translation id="6978722349058177832">तपाईं यो डिभाइस साझा रूपमा प्रयोग गर्नुहुन्छ भने अटोफिल सुविधा प्रयोग गरी भुक्तानीसम्बन्धी जानकारी हाल्दा Chromium ले हरेक पटक तपाईंलाई आफ्नो पहिचान पुष्टि गर्न लगाउन सक्छ</translation>
 <translation id="6979158407327259162">Google ड्राइभ</translation>
 <translation id="6979332652936434520">निकालिएको टेक्स्टको सुरुको भाग</translation>
 <translation id="6979440798594660689">म्युट गरियोस् (डिफल्ट)</translation>
@@ -3735,7 +3740,6 @@
 <translation id="8288320283441806607">यो सुविधा प्रयोग गर्न "खोज्ने तथा ब्राउज गर्ने प्रक्रिया अझ सरल बनाइयोस्" सेटिङ अन गर्नुहोस्</translation>
 <translation id="8288807391153049143">प्रमाणपत्र देखाउनुहोस्</translation>
 <translation id="8289355894181816810">यसको अर्थ के हो भनेर निश्चित हुन नसकेमा तपाईंको नेटवर्क प्रशासकलाई सम्पर्क गर्नुहोस् ।</translation>
-<translation id="8292520987784410870">सधैँ पुष्टि गर्ने हो?</translation>
 <translation id="8293206222192510085">बुकमार्क थप्नुहोस्</translation>
 <translation id="829335040383910391">ध्वनि</translation>
 <translation id="8294431847097064396">स्रोत</translation>
@@ -3874,7 +3878,6 @@
 <translation id="8553387990086529628">पर्यटकीय गन्तव्यहरू</translation>
 <translation id="8554010658308662631">थप लोड गर्नुहोस्</translation>
 <translation id="8554181323880688938">विलासी वस्तुहरू</translation>
-<translation id="8554802735558319842">साझा डिभाइसहरूमा सुरक्षाको अतिरिक्त तह थप्न तपाईंले हरेक पटक अटोफिल सुविधा प्रयोग गरी भुक्तानी गर्दा पुष्टि गर्नु पर्ने बनाउनुहोस्।</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{अनुमति रिसेट गर्नुहोस्}other{अनुमति रिसेट गर्नुहोस्}}</translation>
 <translation id="8555010941760982128">चेक आउट गर्दा यो कोड प्रयोग गर्नुहोस्</translation>
 <translation id="8556297087315686325">नेटवर्कको निगरानी र व्यवस्थापन</translation>

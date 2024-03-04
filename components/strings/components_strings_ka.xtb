@@ -1422,7 +1422,6 @@
 <translation id="3740319564441798148">საქალაქთაშორისო ავტობუსები და რკინიგზა</translation>
 <translation id="3740447166056383374">კოპირებამდე საჭიროა შემოწმება</translation>
 <translation id="374325029554577103">ფიტნესის ტექნოლოგიური პროდუქტები</translation>
-<translation id="3743765582345153106">ყოველთვის დაადასტურეთ ავტომატური შევსების გამოყენებისას</translation>
 <translation id="3744111561329211289">ფონური სინქრონიზაცია</translation>
 <translation id="3744212718085287312">გსურთ, ის შემდგომში მეტად დაიცვათ ვირტუალური ბარათის მეშვეობით?</translation>
 <translation id="3744899669254331632"><ph name="SITE" /> საიტის ნახვა ამჟამად შეუძლებელია, რადგან ვებსაიტმა გამოგზავნა დაშიფრული ავტორიზაციის მონაცემები, რომელთა დამუშავება Chromium-ს არ შეუძლია. ქსელის შეცდომები და თავდასხმები, როგორც წესი, დროებითია, ამიტომ ეს გვერდი, შესაძლოა, მოგვიანებით ამუშავდეს.</translation>
@@ -1745,6 +1744,7 @@
 <translation id="4358461427845829800">გადახდის მეთოდების მართვა…</translation>
 <translation id="4359160567981085931">თქვენ ეს-ესაა შეიყვანეთ პაროლი შეცდომაში შემყვან საიტზე. Chrome-ს შეუძლია თქვენი დახმარება. პაროლის შესაცვლელად და თქვენი ანგარიშის საფრთხეში ყოფნის შესახებ Google-ის საქმის კურსში ჩასაყენებლად, დაწკაპუნებით აირჩიეთ „ანგარიშის დაცვა“.</translation>
 <translation id="4363222835916186793">ამ პროდუქტთან დაკავშირებული გაფრთხილებები გამოირთო</translation>
+<translation id="4363729811203340554">თუ ეს მოწყობილობა საზიაროა, Chrome-ს შეუძლია, გთხოვოთ დადასტურება ავტომატური შევსებით ყოველი გადახდისას</translation>
 <translation id="4366943895537458493">თეფში</translation>
 <translation id="437040971055499437">უსაფრთხოებასთან დაკავშირებული მოვლენა</translation>
 <translation id="4371591986692297148">არააქტიური</translation>
@@ -2010,6 +2010,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" />-დან</translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, მოსაძიებლად დააჭირეთ Tab-ს, შემდეგ Enter-ს</translation>
 <translation id="4930153903256238152">დიდი მოცულობის</translation>
+<translation id="4930714375720679147">ჩართვა</translation>
 <translation id="4932035752129140860">თქვენ მიერ ჩასმული ან დართული ტექსტი გასაანალიზებლად გაეგზავნება Google Cloud-ს ან მესამე მხარეს. მაგალითად, შესაძლოა, შესრულდეს მისი სკანირება სენსიტიური მონაცემების გამოსავლენად. ამასთან, ის შეიძლება შეინახოს კომპანიის წესების შესაბამისად და ხილული იყოს თქვენი ადმინისტრატორისთვის.</translation>
 <translation id="4934780484581617878">ფანჯრების მართვა</translation>
 <translation id="4936134414789135531">ჩასმული <ph name="VALUE_NAME" /> ვერ მოიძებნა.</translation>
@@ -2268,6 +2269,7 @@
 <translation id="5447765697759493033">ეს გვერდი არ ითარგმნება</translation>
 <translation id="5452270690849572955"><ph name="HOST_NAME" />-ზე ეს გვერდი ვერ მოიძებნა</translation>
 <translation id="5455374756549232013">ცუდი წესის დროის აღნიშვნა</translation>
+<translation id="5456839782162429664">ხელით დადასტურება ავტომატური შევსებით ყოველი გადახდისას</translation>
 <translation id="5457113250005438886">არასწორი</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> სხვა}other{<ph name="CONTACT_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> სხვა}}</translation>
 <translation id="5463625433003343978">მიმდინარეობს მოწყობილობების პოვნა…</translation>
@@ -2365,6 +2367,7 @@
 <translation id="563324245173044180">შეცდომაში შემყვანი კონტენტი დაბლოკილია.</translation>
 <translation id="5633259641094592098">საკულტო და ინდი ფილმები</translation>
 <translation id="563371367637259496">მობილური</translation>
+<translation id="5634725266554983459">ჩაირთოს ხელით დადასტურება?</translation>
 <translation id="5635237618724097525">სმარტფონები</translation>
 <translation id="5635478143789726479">გამყიდველის მომსახურების პირობები</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -2464,6 +2467,7 @@
 <translation id="5847181246682413476">ელექტროენერგიით მომარაგება</translation>
 <translation id="5851548754964597211">ჩანართების სია</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">ჩართვა</translation>
 <translation id="5862579898803147654">სტეკერი 8</translation>
 <translation id="5863847714970149516">გვერდმა, რომელზე გადასვლასაც აპირებთ, შეიძლება დაგაკისროთ თანხის გადახდა</translation>
 <translation id="5866257070973731571">დაამატეთ ტელეფონის ნომერი</translation>
@@ -3042,6 +3046,7 @@
 <translation id="6973656660372572881">ფიქსირებული პროქსი სერვერები და .pac სკრიპტის URL მითითებულია.</translation>
 <translation id="6973988895180423160">3.5 x 5 დუიმი</translation>
 <translation id="6978236010531171013">მაინც გაზიარება</translation>
+<translation id="6978722349058177832">თუ ეს მოწყობილობა საზიაროა, Chromium-ს შეუძლია, გთხოვოთ დადასტურება ავტომატური შევსებით ყოველი გადახდისას</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">ამოღებული ტექსტის დასაწყისი</translation>
 <translation id="6979440798594660689">დადუმება (ნაგულისხმევი)</translation>
@@ -3737,7 +3742,6 @@
 <translation id="8288320283441806607">ამ ფუნქციის გამოსაყენებლად ჩართეთ ძიებისა და ვებსაიტების დათვალიერების პროცესების გაუმჯობესების პარამეტრი</translation>
 <translation id="8288807391153049143">სერტიფიკატის ჩვენება</translation>
 <translation id="8289355894181816810">დაუკავშირდით ქსელის ადმინისტრატორს, თუ არ ხართ დარწმუნებული, რას ნიშნავს ეს.</translation>
-<translation id="8292520987784410870">გსურთ ყოველთვის დადასტურება?</translation>
 <translation id="8293206222192510085">სანიშნის დამატება</translation>
 <translation id="829335040383910391">ხმა</translation>
 <translation id="8294431847097064396">წყარო</translation>
@@ -3876,7 +3880,6 @@
 <translation id="8553387990086529628">ტურისტული მიმართულებები</translation>
 <translation id="8554010658308662631">მეტის ჩატვირთვა</translation>
 <translation id="8554181323880688938">ლუქს-კლასის საქონელი</translation>
-<translation id="8554802735558319842">საზიარო მოწყობილობებზე დამატებითი უსაფრთხოების მიზნით, ჩართეთ ავტომატური შევსებისას ყოველთვის დადასტურების ფუნქცია.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{ნებართვის გადაყენება}other{ნებართვების გადაყენება}}</translation>
 <translation id="8555010941760982128">გამოიყენეთ ეს კოდი შეკვეთის გაფორმებისას</translation>
 <translation id="8556297087315686325">ქსელების მონიტორინგი და მართვა</translation>

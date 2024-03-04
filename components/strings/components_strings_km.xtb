@@ -1425,7 +1425,6 @@
 <translation id="3740319564441798148">រថភ្លើង និង​រថយន្តក្រុង​ដែលរត់ចម្ងាយឆ្ងាយ</translation>
 <translation id="3740447166056383374">តម្រូវឱ្យ​ពិនិត្យមើល មុនពេល​ចម្លង</translation>
 <translation id="374325029554577103">ផលិតផលបច្ចេកវិទ្យាលំហាត់ប្រាណ</translation>
-<translation id="3743765582345153106">ផ្ទៀងផ្ទាត់​ជានិច្ច នៅពេលប្រើ​មុខងារបំពេញ​ស្វ័យប្រវត្តិ</translation>
 <translation id="3744111561329211289">សមកាលកម្មផ្ទៃខាងក្រោយ</translation>
 <translation id="3744212718085287312">ធ្វើឱ្យកាន់តែ​មានសុវត្ថិភាព​ដោយប្រើកាតនិម្មិតនៅពេលក្រោយឬ?</translation>
 <translation id="3744899669254331632">អ្នកមិនអាចទៅកាន់ <ph name="SITE" /> ទេឥឡូវនេះ ពីព្រោះគេហទំព័របានផ្ញើអត្តសញ្ញាណសម្គាល់មិនច្បាស់លាស់ ដែល Chromium មិនអាចដំណើរការបាន។ កំហុស និងការវាយប្រហារបណ្តាញជាធម្មតាកើតមានជាបណ្តោះអាសន្នទេ ដូច្នេះទំព័រនេះប្រហែលជាអាចដំណើរការវិញនាពេលក្រោយ។</translation>
@@ -1748,6 +1747,7 @@
 <translation id="4358461427845829800">គ្រប់គ្រង​វិធីបង់ប្រាក់...</translation>
 <translation id="4359160567981085931">អ្នកទើបតែ​បានបញ្ចូល​ពាក្យសម្ងាត់​របស់អ្នក​នៅលើ​គេហទំព័របញ្ឆោត។ Chrome អាចជួយបាន។ ដើម្បី​ប្ដូរ​ពាក្យសម្ងាត់​របស់អ្នក និងជូនដំណឹង​ដល់ Google ថាគណនី​របស់អ្នក​អាច​ប្រឈម​នឹង​ហានិភ័យ សូមចុច "ការពារ​គណនី"។</translation>
 <translation id="4363222835916186793">ការជូនដំណឹង​សម្រាប់​ផលិតផល​នេះ​ត្រូវបាន​បិទ</translation>
+<translation id="4363729811203340554">ប្រសិនបើអ្នក​ចែករំលែក​ឧបករណ៍​នេះ Chrome អាចស្នើសុំឱ្យអ្នកផ្ទៀងផ្ទាត់ រាល់ពេលដែលអ្នកបង់ប្រាក់ដោយប្រើការបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="4366943895537458493">បន្ទះ</translation>
 <translation id="437040971055499437">ព្រឹត្តិការណ៍​ទាក់ទងនឹង​សុវត្ថិភាព​កើតឡើង</translation>
 <translation id="4371591986692297148">អសកម្ម​</translation>
@@ -2014,6 +2014,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, សូមចុច Tab បន្ទាប់មក Enter ដើម្បីស្វែងរក</translation>
 <translation id="4930153903256238152">ទំហំផ្ទុកធំ</translation>
+<translation id="4930714375720679147">បើក</translation>
 <translation id="4932035752129140860">ខ្លឹមសារជាអក្សរ​ដែលអ្នក​ដាក់ចូល ឬ​ភ្ជាប់​ត្រូវបានផ្ញើ​ទៅ Google Cloud ឬ​ភាគីទីបី​ដើម្បី​វិភាគ។ ឧទាហរណ៍ វា​អាចត្រូវបាន​ស្កេន ដើម្បីរកមើល​ទិន្នន័យ​រសើប និង​អាច​ត្រូវបាន​រក្សាទុក​ដោយផ្អែកតាម​គោលការណ៍​របស់ក្រុមហ៊ុន ហើយអ្នកគ្រប់គ្រងរបស់អ្នកអាចមើលឃើញវា។</translation>
 <translation id="4934780484581617878">ការគ្រប់គ្រងវិនដូ</translation>
 <translation id="4936134414789135531">រកមិនឃើញ <ph name="VALUE_NAME" /> ដែលបានបញ្ចូល​ទេ។</translation>
@@ -2272,6 +2273,7 @@
 <translation id="5447765697759493033">ទំព័រ​នេះ​នឹង​មិនត្រូវ​បានបកប្រែទេ</translation>
 <translation id="5452270690849572955">រកមិនឃើញទំព័រ <ph name="HOST_NAME" /> នេះទេ</translation>
 <translation id="5455374756549232013">តែមពេលវេលាគោលការណ៍មិនល្អ</translation>
+<translation id="5456839782162429664">ផ្ទៀងផ្ទាត់ដោយផ្ទាល់ដៃ រាល់ពេលដែលអ្នកបង់ប្រាក់ដោយប្រើការបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="5457113250005438886">គ្មានសុពលភាព</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> និង <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ទៀត}other{<ph name="CONTACT_PREVIEW" /> និង <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ទៀត}}</translation>
 <translation id="5463625433003343978">កំពុង​ស្វែងរក​ឧបករណ៍...</translation>
@@ -2369,6 +2371,7 @@
 <translation id="563324245173044180">បានទប់ស្កាត់​ខ្លឹមសារបញ្ឆោត។</translation>
 <translation id="5633259641094592098">ភាពយន្ត​អ៊ីនឌី និង​​វប្បធម៌</translation>
 <translation id="563371367637259496">ចល័ត</translation>
+<translation id="5634725266554983459">បើកការផ្ទៀងផ្ទាត់ដោយផ្ទាល់ដៃឬ?</translation>
 <translation id="5635237618724097525">ទូរសព្ទ​ឆ្លាតវៃ</translation>
 <translation id="5635478143789726479">លក្ខខណ្ឌ​របស់​អ្នកលក់</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />។ <ph name="SECOND_STRING" /></translation>
@@ -2468,6 +2471,7 @@
 <translation id="5847181246682413476">ប្រភព​ផ្គត់ផ្គង់​ថាមពល</translation>
 <translation id="5851548754964597211">បញ្ជីផ្ទាំង</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">បើក</translation>
 <translation id="5862579898803147654">ទម្រគំនរ​ទី 8</translation>
 <translation id="5863847714970149516">ទំព័រ​ខាងមុខ​អាច​ព្យាយាម​គិតប្រាក់​ពីអ្នក</translation>
 <translation id="5866257070973731571">បញ្ចូល​លេខ​ទូរសព្ទ</translation>
@@ -3046,6 +3050,7 @@
 <translation id="6973656660372572881">ទាំងម៉ាស៊ីនមេប្រូកស៊ីថេរ និង URL ស្គ្រីបផេកត្រូវបានបញ្ជាក់់។</translation>
 <translation id="6973988895180423160">3.5 x 5 in</translation>
 <translation id="6978236010531171013">មិនអីទេ ចែករំលែកចុះ</translation>
+<translation id="6978722349058177832">ប្រសិនបើអ្នក​ចែករំលែក​ឧបករណ៍​នេះ Chromium អាចស្នើសុំឱ្យអ្នកផ្ទៀងផ្ទាត់ រាល់ពេលដែលអ្នកបង់ប្រាក់ដោយប្រើការបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">ចំណុចចាប់ផ្ដើមនៃអក្សរដែលបានស្រង់យក</translation>
 <translation id="6979440798594660689">បិទសំឡេង (លំនាំដើម)</translation>
@@ -3743,7 +3748,6 @@
 <translation id="8288320283441806607">ដើម្បីប្រើ​មុខងារនេះ សូម​បើក "ធ្វើឱ្យ​ការស្វែងរក និង​ការរុករក​ប្រសើរ​ជាងមុន"</translation>
 <translation id="8288807391153049143">បង្ហាញវិញ្ញាបនបត្រ</translation>
 <translation id="8289355894181816810">ទំនាក់ទំនងអ្នកគ្រប់គ្រងបណ្តាញរបស់អ្នក ប្រសិនបើអ្នកមិនប្រាកដថាមានន័យដូចម្តេច។</translation>
-<translation id="8292520987784410870">ផ្ទៀងផ្ទាត់​ជានិច្ចឬ?</translation>
 <translation id="8293206222192510085">បន្ថែមចំណាំ</translation>
 <translation id="829335040383910391">សំឡេង</translation>
 <translation id="8294431847097064396">ប្រភព</translation>
@@ -3882,7 +3886,6 @@
 <translation id="8553387990086529628">គោលដៅ​ទេសចរណ៍</translation>
 <translation id="8554010658308662631">ផ្ទុកច្រើនទៀត</translation>
 <translation id="8554181323880688938">ទំនិញ​ប្រណីត</translation>
-<translation id="8554802735558319842">ដើម្បី​សុវត្ថិភាព​បន្ថែម​នៅលើ​ឧបករណ៍​រួម សូមបើក​ការផ្ទៀងផ្ទាត់ រាល់ពេល​ដែលអ្នកបង់ប្រាក់​ដោយប្រើ​ការបំពេញ​ស្វ័យប្រវត្តិ។</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{កំណត់ការអនុញ្ញាតឡើងវិញ}other{កំណត់ការអនុញ្ញាតឡើងវិញ}}</translation>
 <translation id="8555010941760982128">ប្រើប្រាស់លេខ​កូដ​នេះ​នៅ​ពេល​គិត​លុយ</translation>
 <translation id="8556297087315686325">ការគ្រប់គ្រង និង​ការត្រួត​ពិនិត្យ​បណ្ដាញ</translation>

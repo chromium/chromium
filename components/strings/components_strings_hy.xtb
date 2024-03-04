@@ -1428,7 +1428,6 @@
 <translation id="3740319564441798148">Միջքաղաքային ավտոբուսներ և գնացքներ</translation>
 <translation id="3740447166056383374">Նախքան պատճենելը ստուգեք ֆայլերը</translation>
 <translation id="374325029554577103">Ֆիթնեսի գաջեթներ</translation>
-<translation id="3743765582345153106">Ինքնալրացում օգտագործելիս միշտ հաստատել</translation>
 <translation id="3744111561329211289">Ֆոնային համաժամացում</translation>
 <translation id="3744212718085287312">Ուզո՞ւմ եք, որ հաջորդ անգամ այն ավելի ապահով լինի վիրտուալ քարտի շնորհիվ</translation>
 <translation id="3744899669254331632">Դուք չեք կարող այցելել <ph name="SITE" /> հենց հիմա, քանի որ կայքն ուղարկել է գաղտնագրված հավատարմագրեր, որոնք Chromium-ը չի կարող մշակել: Ցանցային սխալներն ու հարձակումները սովորաբար ժամանակավոր են, այնպես որ այս էջը, հավանաբար, կաշխատի ավելի ուշ:</translation>
@@ -1753,6 +1752,7 @@
 <translation id="4358461427845829800">Վճարման եղանակների կառավարում...</translation>
 <translation id="4359160567981085931">Դուք հենց նոր մուտքագրեցիք ձեր գաղտնաբառը կասկածելի կայքում։ Chrome-ը կարող է օգնել։ Որպեսզի գաղտնաբառը փոխեք և Google-ին տեղեկացնեք, որ ձեր հաշիվը վտանգված է, սեղմեք «Պաշտպանել հաշիվը»։</translation>
 <translation id="4363222835916186793">Այս ապրանքի մասին ծանուցումներն անջատված են</translation>
+<translation id="4363729811203340554">Եթե այս սարքից օգտվում եք այլ օգտատերերի հետ համատեղ, Chrome-ը կարող է խնդրել ձեզ հաստատել ամեն անգամ, երբ վճարում եք ինքնալրացման միջոցով</translation>
 <translation id="4366943895537458493">Ափսե</translation>
 <translation id="437040971055499437">Անվտանգությանը սպառնացող գործողություն է տեղի ունենում</translation>
 <translation id="4371591986692297148">Ակտիվ չէ</translation>
@@ -2018,6 +2018,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Որոնելու համար սեղմեք Tab, ապա՝ Enter</translation>
 <translation id="4930153903256238152">Մեծ տարողություն</translation>
+<translation id="4930714375720679147">Միացնել</translation>
 <translation id="4932035752129140860">Ձեր տեղադրած կամ կցած տեքստերը ուղարկվում են Google Cloud կամ գործընկեր կազմակերպություններին՝ վերլուծության նպատակով։ Օրինակ՝ դրանցում կարող է ստուգվել զգայուն տվյալների առկայությունը, և դրանք կարող են պահվել կազմակերպության կանոններին համաձայն ու տեսանելի լինել ձեր ադմինիստրատորին։</translation>
 <translation id="4934780484581617878">Պատուհանների կառավարում</translation>
 <translation id="4936134414789135531">Մուտքագրված «<ph name="VALUE_NAME" />» արժեքը չի գտնվել։</translation>
@@ -2279,6 +2280,7 @@
 <translation id="5447765697759493033">Այս կայքը չի թարգմանվի</translation>
 <translation id="5452270690849572955">Այս <ph name="HOST_NAME" /> էջը չհաջողվեց գտնել</translation>
 <translation id="5455374756549232013">Կանոնի սխալ ժամադրոշմ</translation>
+<translation id="5456839782162429664">Ձեռքով հաստատել ամեն անգամ, երբ վճարում եք ինքնալրացման միջոցով</translation>
 <translation id="5457113250005438886">Անվավեր</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}one{<ph name="CONTACT_PREVIEW" /> ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}other{<ph name="CONTACT_PREVIEW" /> ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}}</translation>
 <translation id="5463625433003343978">Սարքերի որոնում…</translation>
@@ -2376,6 +2378,7 @@
 <translation id="563324245173044180">Խարդախություն պարունակող բովանդակությունն արգելափակված է</translation>
 <translation id="5633259641094592098">Կուլտային և հեղինակային ֆիլմեր</translation>
 <translation id="563371367637259496">Բջջային</translation>
+<translation id="5634725266554983459">Միացնե՞լ ձեռքով հաստատումը</translation>
 <translation id="5635237618724097525">Սմարթֆոններ</translation>
 <translation id="5635478143789726479">Վաճառողի օգտագործման պայմաններ</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />։ <ph name="SECOND_STRING" /></translation>
@@ -2475,6 +2478,7 @@
 <translation id="5847181246682413476">Սնուցման աղբյուրներ</translation>
 <translation id="5851548754964597211">Ներդիրների ցանկ</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Միացնել</translation>
 <translation id="5862579898803147654">Շեղջիչ 8</translation>
 <translation id="5863847714970149516">Հաջորդ էջում հնարավոր է ձեզնից գումար գանձելու փորձ արվի</translation>
 <translation id="5866257070973731571">Ավելացրեք հեռախոսահամար</translation>
@@ -3053,6 +3057,7 @@
 <translation id="6973656660372572881">Նշված են և ֆիքսված պրոքսի-սերվերները, և PAC սկրիպտների URL-ը:</translation>
 <translation id="6973988895180423160">3,5 x 5 դյույմ</translation>
 <translation id="6978236010531171013">Կիսվել</translation>
+<translation id="6978722349058177832">Եթե այս սարքից օգտվում եք այլ օգտատերերի հետ համատեղ, Chromium-ը կարող է խնդրել ձեզ հաստատել ամեն անգամ, երբ վճարում եք ինքնալրացման միջոցով</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">Արտահանվող տեքստի սկիզբ</translation>
 <translation id="6979440798594660689">Անձայն (կանխադրված)</translation>
@@ -3748,7 +3753,6 @@
 <translation id="8288320283441806607">Այս գործառույթն օգտագործելու համար միացրեք «Բարելավել որոնումն ու էջերի դիտումը» պարամետրը</translation>
 <translation id="8288807391153049143">Ցուցադրել հավաստագիրը</translation>
 <translation id="8289355894181816810">Ճշտեք տեղեկությունները ցանցի ադմինիստրատորի հետ:</translation>
-<translation id="8292520987784410870">Մի՞շտ ստուգել</translation>
 <translation id="8293206222192510085">Էջանիշի հավելում</translation>
 <translation id="829335040383910391">ձայն</translation>
 <translation id="8294431847097064396">Աղբյուր</translation>
@@ -3887,7 +3891,6 @@
 <translation id="8553387990086529628">Ճամփորդական ուղղություններ</translation>
 <translation id="8554010658308662631">Բեռնել ավելին</translation>
 <translation id="8554181323880688938">Շքեղության ապրանքներ</translation>
-<translation id="8554802735558319842">Լրացուցիչ անվտանգության համար ընդհանուր սարքերում միացրեք հաստատումը ամեն անգամ, երբ վճարում եք կատարում ինքնալրացման միջոցով։</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Զրոյացնել թույլտվությունները}one{Զրոյացնել թույլտվությունները}other{Զրոյացնել թույլտվությունները}}</translation>
 <translation id="8555010941760982128">Օգտագործեք այս կոդը վճարման ժամանակ</translation>
 <translation id="8556297087315686325">Ցանցի մոնիտորինգ և կառավարում</translation>

@@ -1424,7 +1424,6 @@
 <translation id="3740319564441798148">حافلات وقطارات للمسافات الطويلة</translation>
 <translation id="3740447166056383374">يجب مراجعة الملفات قبل نسخها</translation>
 <translation id="374325029554577103">منتجات تكنولوجية للّياقة البدنية</translation>
-<translation id="3743765582345153106">التحقُّق دائمًا من بيانات طرق الدفع عند استخدام ميزة "الملء التلقائي"</translation>
 <translation id="3744111561329211289">المزامنة في الخلفية</translation>
 <translation id="3744212718085287312">هل تريد تعزيز أمان حسابك باستخدام بطاقة افتراضية في المرة القادمة؟</translation>
 <translation id="3744899669254331632">‏لا يمكنك زيارة <ph name="SITE" /> في الوقت الحالي لأن الموقع أرسل اعتمادات مختلطة حيث لا يستطيع Chromium المعالجة. أخطاء الشبكة وهجماتها عادةً ما تكون مؤقتة، لذلك من المحتمل أن تعمل هذه الصفحة في وقت لاحق.</translation>
@@ -1748,6 +1747,7 @@
 <translation id="4358461427845829800">إدارة طرق الدفع...</translation>
 <translation id="4359160567981085931">‏لقد أدخلت للتو كلمة مرورك في موقع إلكتروني مريب. يمكن لـ Chrome مساعدتك. لتغيير كلمة مرورك وإشعار Google أن حسابك قد يكون معرّضًا للخطر، انقر على "حماية الحساب".</translation>
 <translation id="4363222835916186793">تم إيقاف التنبيهات لهذا المنتج.</translation>
+<translation id="4363729811203340554">‏في حال مشاركة هذا الجهاز، يمكن أن يطلب متصفِّح Chrome منك إثبات هويتك في كل مرة تستخدِم فيها ميزة "الملء التلقائي" لإتمام عملية الدفع.</translation>
 <translation id="4366943895537458493">صحن</translation>
 <translation id="437040971055499437">وقوع حدث أمني</translation>
 <translation id="4371591986692297148">غير مفعّلة</translation>
@@ -2015,6 +2015,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101">‏<ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter للبحث.</translation>
 <translation id="4930153903256238152">سِعة كبيرة</translation>
+<translation id="4930714375720679147">تفعيل</translation>
 <translation id="4932035752129140860">‏يتم إرسال النص الذي تلصقه أو ترفقه إلى Google Cloud أو جهات خارجية لتحليله. على سبيل المثال، قد يتم فحص هذا النص بحثًا عن بيانات حسّاسة وتخزينه استنادًا إلى سياسات الشركة، وقد يظهر للمشرف.</translation>
 <translation id="4934780484581617878">إدارة النوافذ</translation>
 <translation id="4936134414789135531">تعذَّر العثور على قيمة <ph name="VALUE_NAME" /> التي تم إدراجها.</translation>
@@ -2273,6 +2274,7 @@
 <translation id="5447765697759493033">لن تتم ترجمة هذا الموقع</translation>
 <translation id="5452270690849572955">لا يمكن العثور على صفحة <ph name="HOST_NAME" /> هذه.</translation>
 <translation id="5455374756549232013">الطابع الزمني للسياسة سيئ</translation>
+<translation id="5456839782162429664">إثبات الهوية يدويًا في كل مرة تستخدم فيها ميزة "الملء التلقائي" لإتمام عملية الدفع</translation>
 <translation id="5457113250005438886">غير صالحة</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> وجهة اتصال <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> أخرى}two{<ph name="CONTACT_PREVIEW" /> وجهتا اتصال (<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />) أخريان}few{<ph name="CONTACT_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهات اتصال أخرى}many{<ph name="CONTACT_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهة اتصال أخرى}other{<ph name="CONTACT_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهة اتصال أخرى}}</translation>
 <translation id="5463625433003343978">جارٍ البحث عن أجهزة...</translation>
@@ -2370,6 +2372,7 @@
 <translation id="563324245173044180">تم حظر المحتوى المُضلّل.</translation>
 <translation id="5633259641094592098">أفلام مستقلة وأفلام شعبية</translation>
 <translation id="563371367637259496">الجوّال</translation>
+<translation id="5634725266554983459">هل تريد تفعيل خيار إثبات الهوية يدويًا؟</translation>
 <translation id="5635237618724097525">هواتف ذكية</translation>
 <translation id="5635478143789726479">الأحكام والشروط لدى البائع</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -2469,6 +2472,7 @@
 <translation id="5847181246682413476">مصادر طاقة</translation>
 <translation id="5851548754964597211">قائمة علامات التبويب</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">تفعيل</translation>
 <translation id="5862579898803147654">المكدِّس 8</translation>
 <translation id="5863847714970149516">قد تحاول الصفحة التالية تحصيل رسوم منك</translation>
 <translation id="5866257070973731571">إضافة رقم الهاتف</translation>
@@ -3047,6 +3051,7 @@
 <translation id="6973656660372572881">‏تم تحديد كل من الخوادم الوكيلة الثابتة وعنوان URL للنص البرمجي pac.</translation>
 <translation id="6973988895180423160">3.5 × 5 بوصة</translation>
 <translation id="6978236010531171013">المشاركة على أي حال</translation>
+<translation id="6978722349058177832">‏في حال مشاركة هذا الجهاز، يمكن أن يطلب Chromium منك إثبات هويتك في كل مرة تستخدِم فيها ميزة "الملء التلقائي" لإتمام عملية الدفع.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">بداية النص المُستخرَج</translation>
 <translation id="6979440798594660689">كتم الصوت (تلقائي)</translation>
@@ -3743,7 +3748,6 @@
 <translation id="8288320283441806607">تفعيل إعداد "تحسين عمليات البحث والتصفُّح" لاستخدام هذه الميزة</translation>
 <translation id="8288807391153049143">عرض الشهادة</translation>
 <translation id="8289355894181816810">اتصل بمشرف الشبكة إذا لم تكن متأكدًا مما يعنيه هذا.</translation>
-<translation id="8292520987784410870">هل تريد إثبات هويتك دائمًا؟</translation>
 <translation id="8293206222192510085">إضافة إشارة مرجعية</translation>
 <translation id="829335040383910391">الصوت</translation>
 <translation id="8294431847097064396">المصدر</translation>
@@ -3883,7 +3887,6 @@
 <translation id="8553387990086529628">وجهات سياحية</translation>
 <translation id="8554010658308662631">تحميل المزيد</translation>
 <translation id="8554181323880688938">سلع فاخرة</translation>
-<translation id="8554802735558319842">لمزيد من الأمان على الأجهزة المشتركة، يمكنك إثبات هويتك في كل مرة تستخدم فيها ميزة الملء التلقائي لإتمام عملية الدفع.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{إعادة ضبط الإذن}zero{إعادة ضبط الأذونات}two{إعادة ضبط الإذنَين}few{إعادة ضبط الأذونات}many{إعادة ضبط الأذونات}other{إعادة ضبط الأذونات}}</translation>
 <translation id="8555010941760982128">استخدام هذا الرمز عند الدفع</translation>
 <translation id="8556297087315686325">مراقبة شبكات وإدارتها</translation>

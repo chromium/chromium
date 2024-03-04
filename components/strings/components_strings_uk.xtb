@@ -1422,7 +1422,6 @@
 <translation id="3740319564441798148">Міжміські автобуси й потяги</translation>
 <translation id="3740447166056383374">Перевірте файли, перш ніж копіювати їх</translation>
 <translation id="374325029554577103">Товари для фітнесу</translation>
-<translation id="3743765582345153106">Завжди перевіряти під час використання автозаповнення</translation>
 <translation id="3744111561329211289">Фонова синхронізація</translation>
 <translation id="3744212718085287312">Бажаєте наступного разу захистити свої дані за допомогою віртуальної картки?</translation>
 <translation id="3744899669254331632">Зараз не можна перейти на сторінку <ph name="SITE" />, оскільки веб-сайт надіслав зашифровані облікові дані, які Chromium не може обробити. Помилки мережі й атаки зазвичай є тимчасовими, тому ця сторінка може працювати пізніше.</translation>
@@ -1745,6 +1744,7 @@
 <translation id="4358461427845829800">Керувати способами оплати…</translation>
 <translation id="4359160567981085931">Щойно ви ввели пароль на оманливому сайті. Chrome може допомогти. Щоб змінити пароль і повідомити Google про можливу небезпеку для облікового запису, натисніть "Захистити обліковий запис".</translation>
 <translation id="4363222835916186793">Сповіщення для цього товару вимкнено</translation>
+<translation id="4363729811203340554">Якщо ви користуєтеся цим пристроєм спільно з іншими людьми, Chrome може просити вас підтверджувати особу щоразу, коли ви оплачуєте покупки за допомогою автозаповнення</translation>
 <translation id="4366943895537458493">Друкарська форма</translation>
 <translation id="437040971055499437">Трапляється подія системи безпеки</translation>
 <translation id="4371591986692297148">неактивна</translation>
@@ -2010,6 +2010,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" /> з <ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб шукати</translation>
 <translation id="4930153903256238152">Велика місткість</translation>
+<translation id="4930714375720679147">Увімкнути</translation>
 <translation id="4932035752129140860">Текст, який ви вставляєте або долучаєте, надсилається на платформу Google Cloud або стороннім сервісам на аналіз. Наприклад, його можуть сканувати на наявність конфіденційних даних, а також зберігати відповідно до правил компанії. Крім того, його може переглядати адміністратор.</translation>
 <translation id="4934780484581617878">Керування вікнами</translation>
 <translation id="4936134414789135531">Вставлене значення <ph name="VALUE_NAME" /> не знайдено.</translation>
@@ -2268,6 +2269,7 @@
 <translation id="5447765697759493033">Цей сайт не буде перекладено</translation>
 <translation id="5452270690849572955">Сторінку хосту <ph name="HOST_NAME" /> не знайдено</translation>
 <translation id="5455374756549232013">Недійсна мітка часу правила</translation>
+<translation id="5456839782162429664">Вручну підтверджувати особу щоразу, коли ви сплачуєте за допомогою автозаповнення</translation>
 <translation id="5457113250005438886">Недійсні дані</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Пошук пристроїв…</translation>
@@ -2365,6 +2367,7 @@
 <translation id="563324245173044180">Заблоковано оманливий вміст.</translation>
 <translation id="5633259641094592098">Культові й альтернативні фільми</translation>
 <translation id="563371367637259496">Мобільна</translation>
+<translation id="5634725266554983459">Увімкнути підтвердження вручну?</translation>
 <translation id="5635237618724097525">Смартфони</translation>
 <translation id="5635478143789726479">Умови використання продавця</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -2464,6 +2467,7 @@
 <translation id="5847181246682413476">Джерела живлення</translation>
 <translation id="5851548754964597211">Список вкладок</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Увімкнути</translation>
 <translation id="5862579898803147654">Накопичувач 8</translation>
 <translation id="5863847714970149516">Наступна сторінка може спробувати стягнути плату</translation>
 <translation id="5866257070973731571">Додайте номер телефону</translation>
@@ -3042,6 +3046,7 @@
 <translation id="6973656660372572881">Указано фіксовані проксі-сервери та URL-адреса сценарію .pac.</translation>
 <translation id="6973988895180423160">3,5 x 5 дюйм.</translation>
 <translation id="6978236010531171013">Усе одно поділитися</translation>
+<translation id="6978722349058177832">Якщо ви користуєтеся цим пристроєм спільно з іншими людьми, Chromium може просити вас підтверджувати особу щоразу, коли ви оплачуєте покупки за допомогою автозаповнення</translation>
 <translation id="6979158407327259162">Диск Google</translation>
 <translation id="6979332652936434520">Початок видобутого тексту</translation>
 <translation id="6979440798594660689">Без звуку (за умовчанням)</translation>
@@ -3737,7 +3742,6 @@
 <translation id="8288320283441806607">Щоб користуватися цією функцією, увімкніть налаштування "Покращувати пошук і веб-перегляд"</translation>
 <translation id="8288807391153049143">Показати сертифікат</translation>
 <translation id="8289355894181816810">Зверніться до адміністратора своєї мережі, якщо ви не знаєте, що це означає.</translation>
-<translation id="8292520987784410870">Завжди підтверджувати?</translation>
 <translation id="8293206222192510085">Додати закладку</translation>
 <translation id="829335040383910391">звук</translation>
 <translation id="8294431847097064396">Джерело</translation>
@@ -3876,7 +3880,6 @@
 <translation id="8553387990086529628">Туристичні райони</translation>
 <translation id="8554010658308662631">Більше</translation>
 <translation id="8554181323880688938">Предмети розкоші</translation>
-<translation id="8554802735558319842">Щоб посилити безпеку спільних пристроїв, увімкніть підтвердження щоразу, коли ви сплачуєте за допомогою автозаповнення.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Скинути дозвіл}one{Скинути дозволи}few{Скинути дозволи}many{Скинути дозволи}other{Скинути дозволи}}</translation>
 <translation id="8555010941760982128">Використайте цей код під час оплати</translation>
 <translation id="8556297087315686325">Відстеження мережі й керування нею</translation>

@@ -1424,7 +1424,6 @@
 <translation id="3740319564441798148">لمبے سفر کے لیے بس اور ٹرین</translation>
 <translation id="3740447166056383374">کاپی کرنے سے پہلے جائزہ لینا ضروری ہے</translation>
 <translation id="374325029554577103">تندرستی ٹیکنالوجی کے پروڈکٹس</translation>
-<translation id="3743765582345153106">آٹو فل استعمال کرتے ہوئے ہمیشہ توثیق کریں</translation>
 <translation id="3744111561329211289">پس منظر کی مطابقت پذیری</translation>
 <translation id="3744212718085287312">اگلی بار ورچوئل کارڈ کے ساتھ اسے مزید محفوظ بنائیں؟</translation>
 <translation id="3744899669254331632">‏آپ ابھی <ph name="SITE" /> ملاحظہ نہیں کر سکتے ہیں کیونکہ ویب سائٹ نے جلد بازی والی اسنادات بھیجی ہیں جس پر Chromium کارروائی نہیں کر سکتا ہے۔ نیٹ ورک کی خرابیاں اور حملے عموماً عارضی ہوتے ہیں لہذا یہ صفحہ شاید بعد میں کام کرے گا۔</translation>
@@ -1747,6 +1746,7 @@
 <translation id="4358461427845829800">ادائیگیوں کے طریقوں کا نظم کریں...</translation>
 <translation id="4359160567981085931">‏آپ نے ابھی ایک پُرفریب سائٹ پر اپنا پاس ورڈ درج کیا ہے۔ Chrome مدد کر سکتا ہے۔ اپنا پاس ورڈ تبدیل کرنے اور Google کو یہ مطلع کرنے کے لیے کہ آپ کا اکاؤنٹ خطرے میں ہو سکتا ہے، 'اکاؤنٹ کا تحفظ کریں' پر کلک کریں۔</translation>
 <translation id="4363222835916186793">اس پروڈکٹ کے لیے الرٹس کو آف کر دیا گیا ہے</translation>
+<translation id="4363729811203340554">‏اگر آپ اس آلے کا اشتراک کرتے ہیں تو جب بھی آپ آٹو فل کا استعمال کرتے ہوئے ادائیگی کرتے ہیں تو Chrome آپ سے توثیق کرنے کو کہہ سکتا ہے</translation>
 <translation id="4366943895537458493">پلیٹ</translation>
 <translation id="437040971055499437">سیکیورٹی ایونٹ ہوتا ہے</translation>
 <translation id="4371591986692297148">غیر فعال ہے</translation>
@@ -2012,6 +2012,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101">‏<ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />، تلاش کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="4930153903256238152">بڑی گنجائش</translation>
+<translation id="4930714375720679147">آن کریں</translation>
 <translation id="4932035752129140860">‏جو ٹیکسٹ آپ پیسٹ یا منسلک کرتے ہیں اسے تجزیہ کیلئے Google کلاؤڈ یا فریقین ثالث کو بھیجا جاتا ہے۔ مثال کے طور پر، اسے حساس ڈیٹا کے لیے اسکین کیا جا سکتا ہے اور کمپنی کی پالیسیوں کی بنیاد پر اسٹور کیا جا سکتا ہے اور یہ آپ کے منتظم کو دکھائی دے سکتا ہے۔</translation>
 <translation id="4934780484581617878">ونڈو کا نظم و نسق</translation>
 <translation id="4936134414789135531">داخل کردہ <ph name="VALUE_NAME" /> نہیں مل سکا۔</translation>
@@ -2270,6 +2271,7 @@
 <translation id="5447765697759493033">اس سائٹ کا ترجمہ نہیں ہوگا</translation>
 <translation id="5452270690849572955">یہ <ph name="HOST_NAME" /> صفحہ تلاش نہیں کیا جا سکتا ہے</translation>
 <translation id="5455374756549232013">غلط پالیسی ٹائم اسٹامپ</translation>
+<translation id="5456839782162429664">جب بھی آپ آٹو فل کا استعمال کرتے ہوئے ادائیگی کرتے ہیں تو دستی طور پر توثیق کریں</translation>
 <translation id="5457113250005438886">غلط</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}other{<ph name="CONTACT_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}}</translation>
 <translation id="5463625433003343978">آلات تلاش کئے جا رہے ہیں...</translation>
@@ -2367,6 +2369,7 @@
 <translation id="563324245173044180">پُر فریب مواد مسدود ہے۔</translation>
 <translation id="5633259641094592098">مخصوص پسند کی اور انڈی فلمیں</translation>
 <translation id="563371367637259496">موبائل</translation>
+<translation id="5634725266554983459">دستی توثیق آن کریں؟</translation>
 <translation id="5635237618724097525">اسمارٹ فونز</translation>
 <translation id="5635478143789726479">فروخت کنندہ کی شرائط و ضوابط</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />۔ <ph name="SECOND_STRING" /></translation>
@@ -2466,6 +2469,7 @@
 <translation id="5847181246682413476">پاور سپلائیز</translation>
 <translation id="5851548754964597211">ٹیب کی فہرست</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">آن کریں</translation>
 <translation id="5862579898803147654">اسٹیکر 8</translation>
 <translation id="5863847714970149516">آگے کا صفحہ آپ سے رقم چارج کرنے کی کوشش کر سکتا ہے</translation>
 <translation id="5866257070973731571">فون نمبر شامل کریں</translation>
@@ -3045,6 +3049,7 @@
 <translation id="6973656660372572881">‏فکس کردہ پراکسی سرورز اور ‎.pac اسکرپٹ URL دونوں کا تعین کیا گیا ہے۔</translation>
 <translation id="6973988895180423160">‏‎3.5 x 5 انچ</translation>
 <translation id="6978236010531171013">بہر حال اشتراک کریں</translation>
+<translation id="6978722349058177832">‏اگر آپ اس آلے کا اشتراک کرتے ہیں تو جب بھی آپ آٹو فل کا استعمال کرتے ہوئے ادائیگی کرتے ہیں تو Chromium آپ سے توثیق کرنے کے لیے کہہ سکتا ہے</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">نکالے گئے ٹیکسٹ کا آغاز</translation>
 <translation id="6979440798594660689">خاموش کریں (ڈیفالٹ)</translation>
@@ -3740,7 +3745,6 @@
 <translation id="8288320283441806607">اس خصوصیت کا استعمال کرنے کے لیے، تلاشوں اور براؤزنگ کو بہتر بنائیں آن کریں</translation>
 <translation id="8288807391153049143">سرٹیفیکیٹ دکھائیں</translation>
 <translation id="8289355894181816810">اگر آپ کو اس کا مطلب یقینی طور پر معلوم نہیں ہے تو نیٹ ورک کے منتظم سے رابطہ کریں۔</translation>
-<translation id="8292520987784410870">ہمیشہ تصدیق کریں؟</translation>
 <translation id="8293206222192510085">بُک مارک شامل کریں</translation>
 <translation id="829335040383910391">آواز</translation>
 <translation id="8294431847097064396">ماخذ</translation>
@@ -3879,7 +3883,6 @@
 <translation id="8553387990086529628">سیاحتی مقامات</translation>
 <translation id="8554010658308662631">مزید لوڈ کریں</translation>
 <translation id="8554181323880688938">لگژری اشیاء</translation>
-<translation id="8554802735558319842">مشترکہ آلات پر اضافی سیکیورٹی کیلئے، جب بھی آپ آٹو فل کا استعمال کر کے ادائیگی کریں تو تصدیق کو آن کریں۔</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{اجازت ری سیٹ کریں}other{اجازتیں ری سیٹ کریں}}</translation>
 <translation id="8555010941760982128">چیک آؤٹ پر یہ کوڈ استعمال کریں</translation>
 <translation id="8556297087315686325">نیٹ ورک مانیٹرنگ اور مینیجمنٹ</translation>

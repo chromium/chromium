@@ -1422,7 +1422,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3740319564441798148">Kaugreisid bussi ja rongiga</translation>
 <translation id="3740447166056383374">Enne kopeerimist on ülevaatus nõutav</translation>
 <translation id="374325029554577103">Treeningu- ja tervisejälgimisseadmed</translation>
-<translation id="3743765582345153106">Automaattäite kasutamisel kontrolli alati</translation>
 <translation id="3744111561329211289">Taustal sünkroonimine</translation>
 <translation id="3744212718085287312">Kas soovite selle muuta järgmisel korral virtuaalkaardiga veelgi turvalisemaks?</translation>
 <translation id="3744899669254331632">Te ei saa saiti <ph name="SITE" /> praegu külastada, sest veebisait saatis tagasi arusaamatud mandaadid, mida Chromium ei saa töödelda. Võrguvead ja -rünnakud on tavaliselt ajutised, nii et leht tõenäoliselt hiljem töötab.</translation>
@@ -1745,6 +1744,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4358461427845829800">Halda makseviise …</translation>
 <translation id="4359160567981085931">Sisestasite äsja oma parooli petturlikule saidile. Chrome saab teid aidata. Oma parooli muutmiseks ja Google'i teavitamiseks sellest, et teie konto võib olla ohus, klõpsake valikul Konto kaitsmine.</translation>
 <translation id="4363222835916186793">Selle toote teavitused on välja lülitatud</translation>
+<translation id="4363729811203340554">Kui jagate seda seadet, võib Chrome teilt paluda kinnitust iga kord, kui kasutate maksmiseks automaattäidet</translation>
 <translation id="4366943895537458493">Plaat</translation>
 <translation id="437040971055499437">Esineb turvalisusega seotud sündmus</translation>
 <translation id="4371591986692297148">Mitteaktiivne</translation>
@@ -2010,6 +2010,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage otsimiseks tabulaatorit ja siis sisestusklahvi</translation>
 <translation id="4930153903256238152">Suur mahutavus</translation>
+<translation id="4930714375720679147">Lülita sisse</translation>
 <translation id="4932035752129140860">Teie kleebitud või manustatud tekst saadetakse Google Cloudi või kolmandatele osapooltele analüüsimiseks. Näiteks võidakse seda skannida tundlike andmete tuvastamiseks ja talletada teie ettevõtte eeskirjade alusel ja need võivad olla teie administraatorile nähtavad.</translation>
 <translation id="4934780484581617878">Akende haldamine</translation>
 <translation id="4936134414789135531">Sisestatud väärtust (<ph name="VALUE_NAME" />) ei leitud.</translation>
@@ -2268,6 +2269,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5447765697759493033">Seda saiti ei tõlgita</translation>
 <translation id="5452270690849572955">Hosti <ph name="HOST_NAME" /> lehte ei leita</translation>
 <translation id="5455374756549232013">Reegli ajatempel on sobimatu</translation>
+<translation id="5456839782162429664">Käsitsi kinnitamine iga kord, kui kasutate maksmisel automaattäidet</translation>
 <translation id="5457113250005438886">Kehtetu</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Seadmete otsimine …</translation>
@@ -2365,6 +2367,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="563324245173044180">Petlik sisu blokeeriti.</translation>
 <translation id="5633259641094592098">Kultus- ja indie-filmid</translation>
 <translation id="563371367637259496">Mobiil</translation>
+<translation id="5634725266554983459">Kas lülitada sisse käsitsi kinnitamine?</translation>
 <translation id="5635237618724097525">Nutitelefonid</translation>
 <translation id="5635478143789726479">Müüja nõuded ja tingimused</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -2464,6 +2467,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5847181246682413476">Toiteallikad</translation>
 <translation id="5851548754964597211">Vahelehtede loend</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Lülita sisse</translation>
 <translation id="5862579898803147654">Virnastaja 8</translation>
 <translation id="5863847714970149516">Järgmisel lehel võidakse teilt üritada tasu võtta</translation>
 <translation id="5866257070973731571">Telefoninumbri lisamine</translation>
@@ -3042,6 +3046,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6973656660372572881">Määratud on nii fikseeritud puhverserverid kui ka pac-skriptiga URL.</translation>
 <translation id="6973988895180423160">3,5 × 5 tolli</translation>
 <translation id="6978236010531171013">Jaga ikkagi</translation>
+<translation id="6978722349058177832">Kui jagate seda seadet, võib Chromium teilt paluda kinnitust iga kord, kui kasutate maksmiseks automaattäidet</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">Ekstraktitud teksti algus</translation>
 <translation id="6979440798594660689">Vaigista (vaikeseade)</translation>
@@ -3737,7 +3742,6 @@ Lisateave:
 <translation id="8288320283441806607">Selle funktsiooni kasutamiseks lülitage seade „Otsingute ja sirvimise paremaks muutmine“ sisse</translation>
 <translation id="8288807391153049143">Kuva sertifikaat</translation>
 <translation id="8289355894181816810">Kui te pole kindel, mida see tähendab, võtke ühendust oma võrguadministraatoriga.</translation>
-<translation id="8292520987784410870">Kas kontrollida alati?</translation>
 <translation id="8293206222192510085">Lisa järjehoidja</translation>
 <translation id="829335040383910391">heli</translation>
 <translation id="8294431847097064396">Allikas</translation>
@@ -3876,7 +3880,6 @@ Lisateave:
 <translation id="8553387990086529628">Turismisihtkohad</translation>
 <translation id="8554010658308662631">Laadi rohkem</translation>
 <translation id="8554181323880688938">Luksustooted</translation>
-<translation id="8554802735558319842">Ühiskasutuses seadmetes turvalisuse parandamiseks lülitage kontrollimine sisse igaks korraks, kui kasutate maksmisel automaattäidet.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Lähtesta luba}other{Lähtesta load}}</translation>
 <translation id="8555010941760982128">Kasutage seda koodi kassas</translation>
 <translation id="8556297087315686325">Võrguseire ja -haldus</translation>

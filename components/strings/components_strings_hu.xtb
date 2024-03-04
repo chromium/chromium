@@ -1420,7 +1420,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3740319564441798148">Távolsági busz- és vonatközlekedés</translation>
 <translation id="3740447166056383374">Másolás előtt ellenőrzés szükséges</translation>
 <translation id="374325029554577103">Fitnesztechnikai termékek</translation>
-<translation id="3743765582345153106">Mindig ellenőrizze az automatikus kitöltés használatakor</translation>
 <translation id="3744111561329211289">Szinkronizálás a háttérben</translation>
 <translation id="3744212718085287312">Szeretné legközelebb növelni a biztonságot egy virtuális kártyával?</translation>
 <translation id="3744899669254331632">Most nem keresheti fel a(z) <ph name="SITE" /> webhelyet, mert az zavaros, a Chromium által nem feldolgozható hitelesítő adatokat küldött. A hálózati hibák és támadások általában ideiglenesek, úgyhogy az oldal később valószínűleg megfelelően fog működni.</translation>
@@ -1743,6 +1742,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4358461427845829800">Fizetési módok kezelése…</translation>
 <translation id="4359160567981085931">Megtévesztő webhelyen adta meg jelszavát. A Chrome segíthet. Ha módosítani szeretné jelszavát, és értesíteni szeretné a Google-t arról, hogy fiókja veszélyben lehet, kattintson a Fiók védelme gombra.</translation>
 <translation id="4363222835916186793">A termékhez tartozó értesítések ki vannak kapcsolva</translation>
+<translation id="4363729811203340554">Ha Ön másokkal is megosztja ezt az eszközt, a Chrome automatikus kitöltéssel való fizetés esetén minden alkalommal igazolást kérhet.</translation>
 <translation id="4366943895537458493">Lemez</translation>
 <translation id="437040971055499437">Biztonsági esemény történik</translation>
 <translation id="4371591986692297148">Inaktív</translation>
@@ -2008,6 +2008,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4926340098269537727"><ph name="TOTAL_MATCHCOUNT" />/<ph name="ACTIVE_MATCH" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, a kereséshez nyomja le a Tab, majd az Enter gombot</translation>
 <translation id="4930153903256238152">Nagy kapacitás</translation>
+<translation id="4930714375720679147">Bekapcsolás</translation>
 <translation id="4932035752129140860">A böngésző elemzés céljából a Google Cloudnak vagy harmadik feleknek továbbítja a beillesztett és a csatolt szövegeket. Például előfordulhat, hogy bizalmas adatokat keresnek, a vállalati irányelvek alapján tárolják majd őket, illetve láthatók lesznek a rendszergazda számára.</translation>
 <translation id="4934780484581617878">Ablakkezelés</translation>
 <translation id="4936134414789135531">A beillesztett <ph name="VALUE_NAME" /> nem található.</translation>
@@ -2266,6 +2267,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5447765697759493033">Nem fordítjuk le ezt a webhelyet</translation>
 <translation id="5452270690849572955">Ez a(z) <ph name="HOST_NAME" /> oldal nem található</translation>
 <translation id="5455374756549232013">Hibás az irányelv időbélyege</translation>
+<translation id="5456839782162429664">Manuális ellenőrzés minden alkalommal, amikor automatikus kitöltés használatával fizet</translation>
 <translation id="5457113250005438886">Érvénytelen</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Eszközök keresése…</translation>
@@ -2363,6 +2365,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="563324245173044180">Megtévesztő tartalom letiltva.</translation>
 <translation id="5633259641094592098">Kult- és független filmek</translation>
 <translation id="563371367637259496">Mobil</translation>
+<translation id="5634725266554983459">Bekapcsolja a manuális ellenőrzést?</translation>
 <translation id="5635237618724097525">Okostelefonok</translation>
 <translation id="5635478143789726479">Az eladó általános szerződési feltételei</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -2462,6 +2465,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5847181246682413476">Tápegységek</translation>
 <translation id="5851548754964597211">Laplista</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Bekapcsolás</translation>
 <translation id="5862579898803147654">8. kötegelő</translation>
 <translation id="5863847714970149516">Előfordulhat, hogy a következő oldal megpróbál pénzt felszámolni Önnek</translation>
 <translation id="5866257070973731571">Telefonszám hozzáadása</translation>
@@ -3040,6 +3044,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6973656660372572881">Mindkét fix proxyszerver és egy .Pac típusú szkript URL-címe meg van adva.</translation>
 <translation id="6973988895180423160">3,5 × 5 hüvelyk</translation>
 <translation id="6978236010531171013">Megosztás mindenképp</translation>
+<translation id="6978722349058177832">Ha Ön másokkal is megosztja ezt az eszközt, a Chromium automatikus kitöltéssel való fizetés esetén minden alkalommal igazolást kérhet.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">Kinyert szöveg eleje</translation>
 <translation id="6979440798594660689">Némítás (alapértelmezett)</translation>
@@ -3735,7 +3740,6 @@ További részletek:
 <translation id="8288320283441806607">A funkció használatához kapcsolja be A keresések és a böngészés javítása beállítást</translation>
 <translation id="8288807391153049143">Tanúsítvány megjelenítése</translation>
 <translation id="8289355894181816810">Forduljon a hálózati rendszergazdához, ha nem tudja, hogy ez mit jelent.</translation>
-<translation id="8292520987784410870">Mindig legyen ellenőrzés?</translation>
 <translation id="8293206222192510085">Könyvjelző hozzáadása</translation>
 <translation id="829335040383910391">hang</translation>
 <translation id="8294431847097064396">Forrás</translation>
@@ -3874,7 +3878,6 @@ További részletek:
 <translation id="8553387990086529628">Turisztikai látnivalók</translation>
 <translation id="8554010658308662631">Továbbiak betöltése</translation>
 <translation id="8554181323880688938">Luxuscikkek</translation>
-<translation id="8554802735558319842">A közösen használt eszközök biztonságának fokozása érdekében kérje az ellenőrzést mindig, amikor automatikus kitöltés használatával fizet.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Engedély visszaállítása}other{Engedélyek visszaállítása}}</translation>
 <translation id="8555010941760982128">Adja meg ezt a kódot a fizetésnél:</translation>
 <translation id="8556297087315686325">Hálózatfelügyelet és -kezelés</translation>

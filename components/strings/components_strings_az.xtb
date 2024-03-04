@@ -1418,7 +1418,6 @@
 <translation id="3740319564441798148">Uzun məsafəli avtobus və dəmir yolu</translation>
 <translation id="3740447166056383374">Kopyalamazdan əvvəl nəzərdən keçirilməlidir</translation>
 <translation id="374325029554577103">Fitnes texnologiyası məhsulları</translation>
-<translation id="3743765582345153106">Avto doldurma zamanı yoxlansın</translation>
 <translation id="3744111561329211289">Arxa fon sinx</translation>
 <translation id="3744212718085287312">Növbəti dəfə virtual kart ilə təhlükəsizlik artırılsın?</translation>
 <translation id="3744899669254331632">Sayt güvənsiz kredensiallar göndərdiyi üçün <ph name="SITE" /> ünvanına girə bilməzsiniz.</translation>
@@ -1741,6 +1740,7 @@
 <translation id="4358461427845829800">Ödəniş üsullarını idarə edin...</translation>
 <translation id="4359160567981085931">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chrome yardım edə bilər. Parolunuzu dəyişmək və Google'a hesabınızın təhlükədə ola biləcəyini bildirmək üçün "Hesabı Qoruyun" seçiminə toxunun.</translation>
 <translation id="4363222835916186793">Bu məhsul üçün xəbərdarlıqlar deaktiv edilib</translation>
+<translation id="4363729811203340554">Bu cihazı paylaşsanız, avto doldurma istifadə edərək hər dəfə ödəniş etdiyiniz zaman Chrome doğrulamağınızı istəyə bilər</translation>
 <translation id="4366943895537458493">Lövhə</translation>
 <translation id="437040971055499437">Güvənlik tədbiri baş verir</translation>
 <translation id="4371591986692297148">Fəaliyyətsiz</translation>
@@ -2006,6 +2006,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq axtarış edin</translation>
 <translation id="4930153903256238152">Böyük tutum</translation>
+<translation id="4930714375720679147">Aktiv Edin</translation>
 <translation id="4932035752129140860">Əlavə etdiyiniz mətn təhlil üçün Google Cloud və ya üçüncü tərəflərə göndərilir. O, həssas data ilə bağlı skanlana, şirkət siyasətinə əsasən saxlana və administratora görünə bilər.</translation>
 <translation id="4934780484581617878">Pəncərə idarəetməsi</translation>
 <translation id="4936134414789135531">Daxil edilən <ph name="VALUE_NAME" /> tapılmadı.</translation>
@@ -2264,6 +2265,7 @@
 <translation id="5447765697759493033">Bu sayt tərcümə edilməyəcək</translation>
 <translation id="5452270690849572955"><ph name="HOST_NAME" /> səhifəsi tapılmadı</translation>
 <translation id="5455374756549232013">Uğursuz qaydalar zaman ştampı</translation>
+<translation id="5456839782162429664">Avto doldurma istifadə edərək ödəniş etdiyiniz zaman manual qaydada doğrulayın</translation>
 <translation id="5457113250005438886">Yanlış</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Cihazlar axtarılır...</translation>
@@ -2361,6 +2363,7 @@
 <translation id="563324245173044180">Aldadıcı kontent blok edildi.</translation>
 <translation id="5633259641094592098">Kult və müstəqil filmlər</translation>
 <translation id="563371367637259496">Mobil</translation>
+<translation id="5634725266554983459">Manual doğrulama yandırılsın?</translation>
 <translation id="5635237618724097525">Smartfonlar</translation>
 <translation id="5635478143789726479">Satıcının şərt və qaydaları</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -2460,6 +2463,7 @@
 <translation id="5847181246682413476">Enerji ləvazimatları</translation>
 <translation id="5851548754964597211">Panel siyahısı</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Aktiv edin</translation>
 <translation id="5862579898803147654">Yığıcı 8</translation>
 <translation id="5863847714970149516">Növbəti səhifədə Sizdən ödəniş tutula bilər</translation>
 <translation id="5866257070973731571">Telefon Nömrəsi Əlavə Edin</translation>
@@ -3038,6 +3042,7 @@
 <translation id="6973656660372572881">Fiskə edilmiş proksi serverlər və .pac skript URL-lər göstərilib.</translation>
 <translation id="6973988895180423160">3,5 x 5 düym</translation>
 <translation id="6978236010531171013">İstənilən halda paylaşın</translation>
+<translation id="6978722349058177832">Bu cihazı paylaşsanız, avto doldurma istifadə edərək hər dəfə ödəniş etdiyiniz zaman Chromium doğrulamağınızı istəyə bilər</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6979332652936434520">Çıxarılmış mətnin əvvəli</translation>
 <translation id="6979440798594660689">Səssiz edin (defolt)</translation>
@@ -3733,7 +3738,6 @@
 <translation id="8288320283441806607">Bu funksiyadan istifadə üçün Axtarış edin və Daha yaxşı axtarışı aktiv edin</translation>
 <translation id="8288807391153049143">Sertifikatı göstərin</translation>
 <translation id="8289355894181816810">Bunun mənasını bilmirsinizsə, şəbəkə administratorunuz ilə əlaqə saxlayın.</translation>
-<translation id="8292520987784410870">Həmişə doğrulansın?</translation>
 <translation id="8293206222192510085">Əlfəcin əlavə edin</translation>
 <translation id="829335040383910391">səs</translation>
 <translation id="8294431847097064396">Mənbə</translation>
@@ -3872,7 +3876,6 @@
 <translation id="8553387990086529628">Turistik məkanlar</translation>
 <translation id="8554010658308662631">Davamı</translation>
 <translation id="8554181323880688938">Lüks mallar</translation>
-<translation id="8554802735558319842">Paylaşılan cihazlarda təhlükəsizliyi artırmaq üçün avto doldurma ilə hər ödənişdə doğrulamanı aktiv edin.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{İcazəni sıfırlayın}other{İcazələri sıfırlayın}}</translation>
 <translation id="8555010941760982128">Ödəniş zamanı bu koddan istifadə edin</translation>
 <translation id="8556297087315686325">Şəbəkə monitorinqi və idarəetməsi</translation>

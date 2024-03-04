@@ -1422,7 +1422,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3740319564441798148">Xe buýt và tàu đường dài</translation>
 <translation id="3740447166056383374">Bạn cần xem xét trước khi sao chép</translation>
 <translation id="374325029554577103">Sản phẩm công nghệ tập thể hình</translation>
-<translation id="3743765582345153106">Luôn xác minh khi sử dụng tính năng tự động điền</translation>
 <translation id="3744111561329211289">Đồng bộ hoá trong nền</translation>
 <translation id="3744212718085287312">Tăng cường bảo mật bằng một thẻ ảo vào lần tới?</translation>
 <translation id="3744899669254331632">Bạn không thể truy cập <ph name="SITE" /> ngay bây giờ vì trang web này đã gửi thông tin đăng nhập hỗn độn mà Chromium không thể xử lý. Lỗi mạng và các cuộc tấn công thường chỉ diễn ra tạm thời nên trang này có thể sẽ hoạt động sau.</translation>
@@ -1745,6 +1744,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4358461427845829800">Quản lý phương thức thanh toán...</translation>
 <translation id="4359160567981085931">Bạn vừa nhập mật khẩu vào một trang web lừa đảo. Chrome có thể trợ giúp bạn. Để đổi mật khẩu và thông báo cho Google biết rằng tài khoản của bạn có thể gặp nguy hiểm, hãy nhấp vào Bảo vệ tài khoản.</translation>
 <translation id="4363222835916186793">Đã tắt thông báo về sản phẩm này</translation>
+<translation id="4363729811203340554">Nếu bạn dùng chung thiết bị này, Chrome có thể yêu cầu bạn xác minh bằng tính năng tự động điền mỗi lần bạn thanh toán</translation>
 <translation id="4366943895537458493">Bản in</translation>
 <translation id="437040971055499437">Xảy ra sự kiện bảo mật</translation>
 <translation id="4371591986692297148">Không hoạt động</translation>
@@ -2010,6 +2010,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn Enter để tìm kiếm</translation>
 <translation id="4930153903256238152">Dung tích lớn</translation>
+<translation id="4930714375720679147">Bật</translation>
 <translation id="4932035752129140860">Văn bản bạn dán hoặc đính kèm được gửi đến Google Cloud hoặc bên thứ ba để phân tích. Ví dụ: văn bản đó có thể được quét để tìm dữ liệu nhạy cảm và có thể được lưu trữ dựa trên chính sách của công ty. Quản trị viên cũng có thể thấy văn bản này.</translation>
 <translation id="4934780484581617878">Quản lý cửa sổ</translation>
 <translation id="4936134414789135531">Không tìm thấy <ph name="VALUE_NAME" /> đã chèn.</translation>
@@ -2268,6 +2269,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5447765697759493033">Trang web này sẽ không được dịch</translation>
 <translation id="5452270690849572955">Không thể tìm thấy trang <ph name="HOST_NAME" /> này</translation>
 <translation id="5455374756549232013">Dấu thời gian chính sách không hợp lệ</translation>
+<translation id="5456839782162429664">Xác minh theo cách thủ công bằng tính năng tự động điền mỗi lần bạn thanh toán</translation>
 <translation id="5457113250005438886">Không hợp lệ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> và <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> liên hệ khác}other{<ph name="CONTACT_PREVIEW" /> và <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> liên hệ khác}}</translation>
 <translation id="5463625433003343978">Đang tìm thiết bị...</translation>
@@ -2365,6 +2367,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="563324245173044180">Đã chặn nội dung lừa đảo.</translation>
 <translation id="5633259641094592098">Phim indie và phim kinh điển</translation>
 <translation id="563371367637259496">Di động</translation>
+<translation id="5634725266554983459">Bật tính năng xác minh theo cách thủ công?</translation>
 <translation id="5635237618724097525">Điện thoại thông minh</translation>
 <translation id="5635478143789726479">Điều khoản và điều kiện của người bán</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -2464,6 +2467,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5847181246682413476">Nguồn điện</translation>
 <translation id="5851548754964597211">Danh sách thẻ</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Bật</translation>
 <translation id="5862579898803147654">Khay xếp chồng 8</translation>
 <translation id="5863847714970149516">Trang phía trước có thể tìm cách tính phí bạn</translation>
 <translation id="5866257070973731571">Thêm số điện thoại</translation>
@@ -3042,6 +3046,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6973656660372572881">Cả hai máy chủ proxy cố định và URL tập lệnh .pac đều được chỉ định.</translation>
 <translation id="6973988895180423160">3,5 x 5 inch</translation>
 <translation id="6978236010531171013">Vẫn chia sẻ</translation>
+<translation id="6978722349058177832">Nếu bạn dùng chung thiết bị này, Chromium có thể yêu cầu bạn xác minh bằng tính năng tự động điền mỗi lần bạn thanh toán</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">Bắt đầu văn bản được trích xuất</translation>
 <translation id="6979440798594660689">Tắt tiếng (mặc định)</translation>
@@ -3737,7 +3742,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8288320283441806607">Để sử dụng tính năng này, hãy bật chế độ cài đặt Cải thiện tính năng tìm kiếm và duyệt web</translation>
 <translation id="8288807391153049143">Hiển thị chứng chỉ</translation>
 <translation id="8289355894181816810">Hãy liên hệ với quản trị viên mạng của bạn nếu bạn không chắc chắn về điều này có ý nghĩa gì.</translation>
-<translation id="8292520987784410870">Luôn xác minh?</translation>
 <translation id="8293206222192510085">Thêm Dấu trang</translation>
 <translation id="829335040383910391">âm thanh</translation>
 <translation id="8294431847097064396">Nguồn</translation>
@@ -3876,7 +3880,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8553387990086529628">Điểm đến du lịch</translation>
 <translation id="8554010658308662631">Tải thêm</translation>
 <translation id="8554181323880688938">Xa xỉ phẩm</translation>
-<translation id="8554802735558319842">Để tăng cường bảo mật cho thiết bị dùng chung, hãy bật tính năng xác minh mỗi khi bạn thanh toán bằng tính năng tự động điền.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Đặt lại quyền}other{Đặt lại quyền}}</translation>
 <translation id="8555010941760982128">Sử dụng mã này khi thanh toán</translation>
 <translation id="8556297087315686325">Quản lý và giám sát mạng</translation>

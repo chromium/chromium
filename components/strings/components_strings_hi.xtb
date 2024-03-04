@@ -1422,7 +1422,6 @@
 <translation id="3740319564441798148">लंबी दूरी के लिए परिवहन सेवाएं</translation>
 <translation id="3740447166056383374">कॉपी करने से पहले, समीक्षा करना ज़रूरी है</translation>
 <translation id="374325029554577103">फ़िटनेस टेक्नोलॉजी प्रॉडक्ट</translation>
-<translation id="3743765582345153106">जानकारी ऑटोमैटिक भरने की सुविधा का इस्तेमाल करते समय, हमेशा पुष्टि करें</translation>
 <translation id="3744111561329211289">बैकग्राउंड सिंक</translation>
 <translation id="3744212718085287312">क्या अगली बार वर्चुअल कार्ड का इस्तेमाल करके, इसे और सुरक्षित बनाना है?</translation>
 <translation id="3744899669254331632">आप इस समय <ph name="SITE" /> पर नहीं जा सकते क्‍योंकि वेबसाइट ने ऐसे अव्‍यवस्‍थित क्रेडेंशियल भेजे थे जिन्‍हें क्रोमियम प्रोसेस नहीं कर सकता. नेटवर्क की गड़बड़ी और हमले आमतौर पर कुछ समय के लिए होते हैं, इसलिए हो सकता है कि यह पेज बाद में काम करेगा.</translation>
@@ -1745,6 +1744,7 @@
 <translation id="4358461427845829800">भुगतान विधियां प्रबंधित करें...</translation>
 <translation id="4359160567981085931">आपने अभी-अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. Chrome इसमें आपकी मदद कर सकता है. अपना पासवर्ड बदलने और Google को यह बताने के लिए कि आपका खाता सुरक्षित नहीं है, 'खाता सुरक्षित करें' पर क्लिक करें.</translation>
 <translation id="4363222835916186793">इस प्रॉडक्ट के लिए, सूचनाएं पाने की सुविधा बंद कर दी गई है</translation>
+<translation id="4363729811203340554">अगर आपने इस डिवाइस को शेयर किया, तो ऑटोमैटिक भरने की सुविधा का इस्तेमाल करके पेमेंट करने पर, Chrome आपसे हर बार पुष्टि करने के लिए कह सकता है</translation>
 <translation id="4366943895537458493">प्लेट</translation>
 <translation id="437040971055499437">सुरक्षा से जुड़ी गतिविधि होती है</translation>
 <translation id="4371591986692297148">चालू नहीं है</translation>
@@ -2010,6 +2010,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, खोजने के लिए Tab के बाद Enter दबाएं</translation>
 <translation id="4930153903256238152">ज़्यादा क्षमता</translation>
+<translation id="4930714375720679147">चालू करें</translation>
 <translation id="4932035752129140860">आपके चिपकाए गए या अटैच किए गए टेक्स्ट को, विश्लेषण के लिए 'Google क्लाउड' या तीसरे पक्षों को भेजा जाता है. उदाहरण के लिए, संवेदनशील जानकारी के लिए इसे स्कैन किया जा सकता है. साथ ही, इसे कंपनी की नीतियों के हिसाब से सेव किया जा सकता है और यह आपके एडमिन को दिख सकता है.</translation>
 <translation id="4934780484581617878">विंडो मैनेजमेंट</translation>
 <translation id="4936134414789135531">डाला गया <ph name="VALUE_NAME" /> नहीं मिला.</translation>
@@ -2268,6 +2269,7 @@
 <translation id="5447765697759493033">इस साइट का अनुवाद नहीं किया जाएगा</translation>
 <translation id="5452270690849572955">यह <ph name="HOST_NAME" /> पेज नहीं पाया जा सकता</translation>
 <translation id="5455374756549232013">खराब नीति टाइमस्टैम्प</translation>
+<translation id="5456839782162429664">ऑटोमैटिक भरने की सुविधा का इस्तेमाल करके पेमेंट करने पर, हर बार मैन्युअल तरीके से पुष्टि करें</translation>
 <translation id="5457113250005438886">अमान्य</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}one{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}other{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}}</translation>
 <translation id="5463625433003343978">डिवाइस ढूंढे जा रहे हैं...</translation>
@@ -2365,6 +2367,7 @@
 <translation id="563324245173044180">भ्रामक सामग्री ब्लॉक की गई.</translation>
 <translation id="5633259641094592098">कल्ट और इंडी फ़िल्में</translation>
 <translation id="563371367637259496">मोबाइल</translation>
+<translation id="5634725266554983459">क्या आपको मैन्युअल तरीके से पुष्टि करने की सुविधा चालू करनी है?</translation>
 <translation id="5635237618724097525">स्मार्टफ़ोन</translation>
 <translation id="5635478143789726479">विक्रेता के नियम और शर्तें</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -2464,6 +2467,7 @@
 <translation id="5847181246682413476">पावर सप्लाई</translation>
 <translation id="5851548754964597211">टैब सूची</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">चालू करें</translation>
 <translation id="5862579898803147654">स्टैकर 8</translation>
 <translation id="5863847714970149516">आगे आने वाला पेज आपसे शुल्क लेने की कोशिश कर सकता है</translation>
 <translation id="5866257070973731571">फ़ोन नंबर जोड़ें</translation>
@@ -3042,6 +3046,7 @@
 <translation id="6973656660372572881">फ़िक्‍स्‍ड प्रॉक्‍सी सर्वर और .pac स्‍क्रिप्‍ट URL दोनों ही बताए गए हैं.</translation>
 <translation id="6973988895180423160">3.5 x 5 इंच</translation>
 <translation id="6978236010531171013">फिर भी शेयर करें</translation>
+<translation id="6978722349058177832">अगर आपने इस डिवाइस को शेयर किया, तो ऑटोमैटिक भरने की सुविधा का इस्तेमाल करके पेमेंट करने पर, Chromium आपसे हर बार पुष्टि करने के लिए कह सकता है</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">निकाले गए टेक्स्ट का शुरुआती हिस्सा</translation>
 <translation id="6979440798594660689">म्यूट करें (डिफ़ॉल्ट)</translation>
@@ -3737,7 +3742,6 @@
 <translation id="8288320283441806607">इस सुविधा का इस्तेमाल करने के लिए, 'खोजों और ब्राउज़िंग को बेहतर बनाएं' सुविधा को चालू करें</translation>
 <translation id="8288807391153049143">प्रमाणपत्र दिखाएं</translation>
 <translation id="8289355894181816810">अगर आप पक्का नहीं हैं कि इसका क्या मतलब है, तो अपने नेटवर्क व्यवस्थापक से संपर्क करें.</translation>
-<translation id="8292520987784410870">क्या आपको हमेशा पुष्टि करनी है?</translation>
 <translation id="8293206222192510085">बुकमार्क जोड़ें</translation>
 <translation id="829335040383910391">आवाज़</translation>
 <translation id="8294431847097064396">स्रोत</translation>
@@ -3876,7 +3880,6 @@
 <translation id="8553387990086529628">पर्यटकों के घूमने-फिरने की जगह</translation>
 <translation id="8554010658308662631">ज़्यादा लोड करें</translation>
 <translation id="8554181323880688938">लग्ज़री सामान</translation>
-<translation id="8554802735558319842">ऑटोमैटिक भरने की सुविधा का इस्तेमाल करके, पेमेंट करने पर हर बार पुष्टि करने की प्रोसेस चालू करें, ताकि शेयर किए गए डिवाइसों पर सुरक्षा की अतिरिक्त लेयर जोड़ी जा सके.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{अनुमति रीसेट करें}one{अनुमति रीसेट करें}other{अनुमतियां रीसेट करें}}</translation>
 <translation id="8555010941760982128">चेकआउट के समय इस कोड का इस्तेमाल करें</translation>
 <translation id="8556297087315686325">नेटवर्क को मॉनिटर और मैनेज करें</translation>

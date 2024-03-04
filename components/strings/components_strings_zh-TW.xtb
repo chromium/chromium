@@ -1420,7 +1420,6 @@
 <translation id="3740319564441798148">長途公車與鐵路</translation>
 <translation id="3740447166056383374">複製檔案前請務必確認</translation>
 <translation id="374325029554577103">健身科技產品</translation>
-<translation id="3743765582345153106">使用自動填入功能時一律驗證</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3744212718085287312">下次要使用更加安全的虛擬卡片嗎？</translation>
 <translation id="3744899669254331632"><ph name="SITE" /> 傳送的憑證受到干擾，造成 Chromium 無法處理，因此你目前無法造訪該網站。網路錯誤和攻擊通常是暫時性狀態，因此這個網頁可能稍後就會恢復正常運作。</translation>
@@ -1743,6 +1742,7 @@
 <translation id="4358461427845829800">管理付款方式...</translation>
 <translation id="4359160567981085931">你剛才在詐騙網站上輸入了密碼。Chrome 能夠幫助你。如要變更密碼並通知 Google 你的帳戶可能面臨風險，請按一下 [保護帳戶]。</translation>
 <translation id="4363222835916186793">這項產品的快訊已關閉</translation>
+<translation id="4363729811203340554">如果這是共用裝置，Chrome 可以在每次透過自動填入功能付款時，要求你驗證身分</translation>
 <translation id="4366943895537458493">印版</translation>
 <translation id="437040971055499437">發生安全性事件</translation>
 <translation id="4371591986692297148">未啟用</translation>
@@ -2008,6 +2008,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵再按下 Enter 鍵即可搜尋</translation>
 <translation id="4930153903256238152">大容量</translation>
+<translation id="4930714375720679147">開啟</translation>
 <translation id="4932035752129140860">你貼上或附加的文字會傳送到 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描內容，檢查是否含有敏感資料，也可能會依據公司政策儲存這些資料，並通知系統管理員查看。</translation>
 <translation id="4934780484581617878">視窗管理</translation>
 <translation id="4936134414789135531">找不到插入的<ph name="VALUE_NAME" />。</translation>
@@ -2266,6 +2267,7 @@
 <translation id="5447765697759493033">系統不會翻譯這個網站</translation>
 <translation id="5452270690849572955">找不到 <ph name="HOST_NAME" /> 網頁</translation>
 <translation id="5455374756549232013">政策時間戳記有誤</translation>
+<translation id="5456839782162429664">每次透過自動填入功能付款都要手動驗證身分</translation>
 <translation id="5457113250005438886">無效</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資訊}other{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資訊}}</translation>
 <translation id="5463625433003343978">正在尋找裝置…</translation>
@@ -2363,6 +2365,7 @@
 <translation id="563324245173044180">已封鎖欺騙性內容。</translation>
 <translation id="5633259641094592098">另類與獨立電影</translation>
 <translation id="563371367637259496">行動網路</translation>
+<translation id="5634725266554983459">要啟用手動驗證嗎？</translation>
 <translation id="5635237618724097525">智慧型手機</translation>
 <translation id="5635478143789726479">賣家的條款及細則</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />。<ph name="SECOND_STRING" /></translation>
@@ -2462,6 +2465,7 @@
 <translation id="5847181246682413476">電源供應器</translation>
 <translation id="5851548754964597211">分頁清單</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">啟用</translation>
 <translation id="5862579898803147654">堆疊出紙器 8</translation>
 <translation id="5863847714970149516">你要瀏覽的網頁可能會向你收取費用</translation>
 <translation id="5866257070973731571">新增電話號碼</translation>
@@ -3040,6 +3044,7 @@
 <translation id="6973656660372572881">已指定固定的 Proxy 伺服器和 .pac 指令碼網址。</translation>
 <translation id="6973988895180423160">3.5 x 5 吋</translation>
 <translation id="6978236010531171013">一律分享</translation>
+<translation id="6978722349058177832">如果這是共用裝置，Chromium 可以在每次透過自動填入功能付款時，要求你驗證身分</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6979332652936434520">擷取的文字內容開頭</translation>
 <translation id="6979440798594660689">靜音 (預設)</translation>
@@ -3735,7 +3740,6 @@
 <translation id="8288320283441806607">如要使用這項功能，請開啟「改善搜尋和瀏覽體驗」</translation>
 <translation id="8288807391153049143">顯示憑證</translation>
 <translation id="8289355894181816810">如果你不確定這代表什麼意思，請與網路管理員聯絡。</translation>
-<translation id="8292520987784410870">一律驗證？</translation>
 <translation id="8293206222192510085">新增書籤</translation>
 <translation id="829335040383910391">音訊</translation>
 <translation id="8294431847097064396">來源</translation>
@@ -3874,7 +3878,6 @@
 <translation id="8553387990086529628">旅遊勝地</translation>
 <translation id="8554010658308662631">載入更多</translation>
 <translation id="8554181323880688938">貴重物品</translation>
-<translation id="8554802735558319842">為了提升共用裝置的的安全性，請設定系統在每次透過自動填入功能付款時都進行驗證。</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{重設權限}other{重設權限}}</translation>
 <translation id="8555010941760982128">結帳時請使用這個促銷代碼</translation>
 <translation id="8556297087315686325">網路監控與管理</translation>

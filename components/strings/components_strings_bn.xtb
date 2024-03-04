@@ -1423,7 +1423,6 @@
 <translation id="3740319564441798148">দূরপাল্লার বাস ও রেল</translation>
 <translation id="3740447166056383374">কপি করার আগে পর্যালোচনা করা প্রয়োজন</translation>
 <translation id="374325029554577103">ফিটনেস প্রযুক্তির প্রোডাক্ট</translation>
-<translation id="3743765582345153106">অটোফিল ব্যবহার করলে যাচাই করুন</translation>
 <translation id="3744111561329211289">পটভূমি সিঙ্ক</translation>
 <translation id="3744212718085287312">পরবর্তী সময় ভার্চুয়াল কার্ডের মাধ্যমে এটি আরও সুরক্ষিত করতে চান?</translation>
 <translation id="3744899669254331632">এই মূহুর্তে আপনি <ph name="SITE" />-এ যেতে পারবেন না কারণ ওয়েবসাইটি অসংলগ্ন ক্রেডেনশিয়াল পাঠিয়েছে যা Chromium প্রসেস করতে পারেনা৷ নেটওয়ার্ক সমস্যা এবং আক্রমণ সাধারণত অস্থায়ী, তাই এই পৃষ্ঠাটি সম্ভবত পরে কাজ করবে৷</translation>
@@ -1746,6 +1745,7 @@
 <translation id="4358461427845829800">পেমেন্ট পদ্ধতিগুলি পরিচালনা করুন...</translation>
 <translation id="4359160567981085931">আপনি এখনই প্রতারণামূলক একটি সাইটে আপনার পাসওয়ার্ড লিখেছেন। Chrome সাহায্য করবে। আপনার অ্যাকাউন্টের নিরাপত্তা লঙ্ঘনের সম্ভাবনা এড়ানোর জন্য পাসওয়ার্ড পরিবর্তন করতে এবং Google-কে বিজ্ঞপ্তি দিয়ে জানাতে 'অ্যাকাউন্ট সুরক্ষিত রাখুন' বিকল্পে ক্লিক করুন।</translation>
 <translation id="4363222835916186793">এই প্রোডাক্টের জন্য বিজ্ঞপ্তি বন্ধ করা হয়েছে</translation>
+<translation id="4363729811203340554">আপনি এই ডিভাইস শেয়ার করলে, Chrome আপনাকে অটোফিল ব্যবহার করে প্রত্যেকবার পেমেন্ট করার সময় যাচাই করার জন্য বলবে</translation>
 <translation id="4366943895537458493">প্লেট</translation>
 <translation id="437040971055499437">নিরাপত্তা সংক্রান্ত ঘটনা ঘটেছে</translation>
 <translation id="4371591986692297148">চালু নেই</translation>
@@ -2011,6 +2011,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, সার্চ করতে ট্যাব টিপে এন্টার টিপুন</translation>
 <translation id="4930153903256238152">অধিক ক্ষমতা সম্পন্ন</translation>
+<translation id="4930714375720679147">চালু করুন</translation>
 <translation id="4932035752129140860">আপনার পেস্ট বা অ্যাটাচ করা টেক্সট, Google Cloud-এ বা থার্ড-পার্টির কাছে বিশ্লেষণ করার জন্য পাঠানো হয়। যেমন, সংবেদনশীল ব্যক্তিগত তথ্য রয়েছে কিনা তা জানার জন্য এটি স্ক্যান করা হতে পারে এবং কোম্পানির নীতির উপরে ভিত্তি করে সেভ করা হতে পারে ও আপনার অ্যাডমিনিস্ট্রেটর তা দেখতে পেতে পারেন।</translation>
 <translation id="4934780484581617878">উইন্ডো ম্যানেজমেন্ট</translation>
 <translation id="4936134414789135531">যোগ করা <ph name="VALUE_NAME" /> পাওয়া যায়নি।</translation>
@@ -2269,6 +2270,7 @@
 <translation id="5447765697759493033">এই সাইটটি অনুবাদ করা হবে না</translation>
 <translation id="5452270690849572955">এই <ph name="HOST_NAME" /> পৃষ্ঠাটি পাওয়া যাচ্ছে না</translation>
 <translation id="5455374756549232013">ত্রুটিপূর্ণ নীতি টাইমস্ট্যাম্প</translation>
+<translation id="5456839782162429664">অটোফিল ব্যবহার করে প্রত্যেকবার পেমেন্ট করার সময় ম্যানুযালি যাচাই করুন</translation>
 <translation id="5457113250005438886">ভুল</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টি}one{<ph name="CONTACT_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টি}other{<ph name="CONTACT_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টি}}</translation>
 <translation id="5463625433003343978">ডিভাইস খোঁজা হচ্ছে...</translation>
@@ -2366,6 +2368,7 @@
 <translation id="563324245173044180">প্রতারণামূলক কন্টেন্ট ব্লক করা হয়েছে।</translation>
 <translation id="5633259641094592098">কাল্ট এবং ইন্ডি সিনেমা</translation>
 <translation id="563371367637259496">মোবাইল</translation>
+<translation id="5634725266554983459">ম্যানুয়ালি যাচাই করার সুবিধা চালু করবেন?</translation>
 <translation id="5635237618724097525">স্মার্ট ফোন</translation>
 <translation id="5635478143789726479">বিক্রেতার নিয়ম ও শর্তাবলী</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />। <ph name="SECOND_STRING" /></translation>
@@ -2465,6 +2468,7 @@
 <translation id="5847181246682413476">ইলেকট্রিক সাপ্লাই</translation>
 <translation id="5851548754964597211">ট্যাব তালিকা</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">চালু করুন</translation>
 <translation id="5862579898803147654">স্ট্যাকার ৮</translation>
 <translation id="5863847714970149516">পরের পৃষ্ঠাতে আপনাকে চার্জ করা হতে পারে</translation>
 <translation id="5866257070973731571">ফোন নম্বর যোগ করুন</translation>
@@ -3042,6 +3046,7 @@
 <translation id="6973656660372572881">স্থির প্রক্সি সার্ভার এবং .pac স্ক্রিপ্ট URL-এর উভয়ই নির্দিষ্ট আছে৷</translation>
 <translation id="6973988895180423160">৩.৫ x ৫ ইঞ্চি</translation>
 <translation id="6978236010531171013">তবুও শেয়ার করুন</translation>
+<translation id="6978722349058177832">আপনি এই ডিভাইস শেয়ার করলে, Chromium আপনাকে অটোফিল ব্যবহার করে প্রত্যেকবার পেমেন্ট করার সময় যাচাই করার জন্য বলবে</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">এক্সট্র্যাক্ট করা টেক্সটের শুরুর অংশ</translation>
 <translation id="6979440798594660689">মিউট (ডিফল্ট)</translation>
@@ -3737,7 +3742,6 @@
 <translation id="8288320283441806607">এই ফিচার ব্যবহার করতে 'সার্চ এবং নেভিগেশন আরও ভালো করুন' সেটিং চালু করুন</translation>
 <translation id="8288807391153049143">সার্টিফিকেট দেখান</translation>
 <translation id="8289355894181816810">যদি আপনি এর অর্থের ব্যাপারে নিশ্চিত না হন তাহলে আপনার নেটওয়ার্ক প্রশাসকের সঙ্গে যোগাযোগ করুন৷</translation>
-<translation id="8292520987784410870">সব সময় যাচাই করবেন?</translation>
 <translation id="8293206222192510085">বুকমার্ক যুক্ত করুন</translation>
 <translation id="829335040383910391">সাউন্ড</translation>
 <translation id="8294431847097064396">উৎস</translation>
@@ -3876,7 +3880,6 @@
 <translation id="8553387990086529628">পর্যটন স্থান</translation>
 <translation id="8554010658308662631">আরও লোড করুন</translation>
 <translation id="8554181323880688938">লাক্সারি প্রোডাক্ট</translation>
-<translation id="8554802735558319842">শেয়ার করা ডিভাইসে অতিরিক্ত সুরক্ষার জন্য, প্রত্যেকবার অটোফিল ব্যবহার করে পেমেন্ট করার সময় যাচাইকরণ চালু করুন।</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{অনুমতি রিসেট করুন}one{অনুমতি রিসেট করুন}other{অনুমতি রিসেট করুন}}</translation>
 <translation id="8555010941760982128">চেকআউটের সময় এই কোড ব্যবহার করুন</translation>
 <translation id="8556297087315686325">নেটওয়ার্ক মনিটর করা ও ম্যানেজমেন্ট</translation>

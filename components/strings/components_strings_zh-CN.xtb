@@ -1418,7 +1418,6 @@
 <translation id="3740319564441798148">长途大巴与铁路</translation>
 <translation id="3740447166056383374">复制前需要检查</translation>
 <translation id="374325029554577103">健身技术产品</translation>
-<translation id="3743765582345153106">使用自动填充时，一律进行验证</translation>
 <translation id="3744111561329211289">后台同步</translation>
 <translation id="3744212718085287312">下次使用虚拟卡以提高安全性？</translation>
 <translation id="3744899669254331632">您目前无法访问 <ph name="SITE" />，因为此网站发送了 Chromium 无法处理的杂乱凭据。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
@@ -1741,6 +1740,7 @@
 <translation id="4358461427845829800">管理付款方式…</translation>
 <translation id="4359160567981085931">您刚刚在一个诈骗网站中输入了密码。Chrome 可以为您提供帮助。若要更改密码并让 Google 知晓您的账号可能处于危险状态，请点击“保护账号”。</translation>
 <translation id="4363222835916186793">针对此商品的提醒已被关闭</translation>
+<translation id="4363729811203340554">如果您与他人共用此设备，在您每次使用自动填充功能付款时，Chrome 都会要求您进行验证</translation>
 <translation id="4366943895537458493">印版</translation>
 <translation id="437040971055499437">发生了安全性事件</translation>
 <translation id="4371591986692297148">已停用</translation>
@@ -2006,6 +2006,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Tab 键再按 Enter 键可进行搜索</translation>
 <translation id="4930153903256238152">大容量</translation>
+<translation id="4930714375720679147">开启</translation>
 <translation id="4932035752129140860">系统会将您粘贴或附加的文字发送给 Google Cloud 或第三方以供分析。例如，这些文字可能会被扫描以确定其是否包含敏感数据，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="4934780484581617878">窗口管理</translation>
 <translation id="4936134414789135531">找不到插入的<ph name="VALUE_NAME" />。</translation>
@@ -2264,6 +2265,7 @@
 <translation id="5447765697759493033">系统不会翻译此网站</translation>
 <translation id="5452270690849572955">找不到 <ph name="HOST_NAME" /> 的网页</translation>
 <translation id="5455374756549232013">策略时间戳无效</translation>
+<translation id="5456839782162429664">每次使用自动填充功能付款时都手动验证</translation>
 <translation id="5457113250005438886">无效</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 名联系人}other{<ph name="CONTACT_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 名联系人}}</translation>
 <translation id="5463625433003343978">正在查找设备…</translation>
@@ -2361,6 +2363,7 @@
 <translation id="563324245173044180">欺骗性内容已被拦截。</translation>
 <translation id="5633259641094592098">邪典电影与独立电影</translation>
 <translation id="563371367637259496">移动网络</translation>
+<translation id="5634725266554983459">要启用手动验证功能？</translation>
 <translation id="5635237618724097525">智能手机</translation>
 <translation id="5635478143789726479">卖家的条款及条件</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />。<ph name="SECOND_STRING" /></translation>
@@ -2460,6 +2463,7 @@
 <translation id="5847181246682413476">电力供应</translation>
 <translation id="5851548754964597211">标签列表</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">启用</translation>
 <translation id="5862579898803147654">堆叠出纸器 8</translation>
 <translation id="5863847714970149516">即将进入的页面可能会向您收取费用</translation>
 <translation id="5866257070973731571">添加电话号码</translation>
@@ -3037,6 +3041,7 @@
 <translation id="6973656660372572881">固定代理服务器和 .pac 脚本网址均已指定。</translation>
 <translation id="6973988895180423160">3.5 x 5 英寸</translation>
 <translation id="6978236010531171013">仍然共享</translation>
+<translation id="6978722349058177832">如果您与他人共用此设备，在您每次使用自动填充功能付款时，Chromium 都会要求您进行验证</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6979332652936434520">已提取文本的开头</translation>
 <translation id="6979440798594660689">静音（默认）</translation>
@@ -3732,7 +3737,6 @@
 <translation id="8288320283441806607">要使用此功能，请开启“改善搜索和浏览体验”功能</translation>
 <translation id="8288807391153049143">显示证书</translation>
 <translation id="8289355894181816810">如果您不确定这是什么意思，请与您的网络管理员联系。</translation>
-<translation id="8292520987784410870">一律验证？</translation>
 <translation id="8293206222192510085">添加书签</translation>
 <translation id="829335040383910391">声音</translation>
 <translation id="8294431847097064396">来源</translation>
@@ -3871,7 +3875,6 @@
 <translation id="8553387990086529628">旅游目的地</translation>
 <translation id="8554010658308662631">加载更多</translation>
 <translation id="8554181323880688938">奢侈品</translation>
-<translation id="8554802735558319842">为了提高共享设备的安全性，请开启此设置让系统在您每次使用自动填充功能付款时都进行验证。</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{重置这项权限}other{重置这些权限}}</translation>
 <translation id="8555010941760982128">结账时请使用此促销代码</translation>
 <translation id="8556297087315686325">网络监控与管理</translation>

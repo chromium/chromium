@@ -1422,7 +1422,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3740319564441798148">Autobusos i trens de llarga distància</translation>
 <translation id="3740447166056383374">Abans de copiar-los, cal dur a terme una revisió</translation>
 <translation id="374325029554577103">Productes tecnològics de fitnes</translation>
-<translation id="3743765582345153106">Verifica sempre quan s'utilitzi Emplenament automàtic</translation>
 <translation id="3744111561329211289">Sincronització en segon pla</translation>
 <translation id="3744212718085287312">Vols augmentar la seguretat amb una targeta virtual la pròxima vegada?</translation>
 <translation id="3744899669254331632">En aquest moments no podeu visitar la pàgina <ph name="SITE" /> perquè el lloc web ha enviat credencials aleatòries que Chromium no pot processar. Els atacs i els errors de xarxa acostumen a ser temporals, o sigui que probablement la pàgina funcionarà més endavant.</translation>
@@ -1745,6 +1744,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4358461427845829800">Gestiona les formes de pagament...</translation>
 <translation id="4359160567981085931">Acabes d'introduir la contrasenya en un lloc web enganyós. Chrome pot ajudar-te. Per canviar la contrasenya i notificar a Google que el compte pot estar en perill, fes clic a Protegeix el compte.</translation>
 <translation id="4363222835916186793">Les alertes d'aquest producte s'han desactivat</translation>
+<translation id="4363729811203340554">Si comparteixes aquest dispositiu, Chrome et pot demanar que el verifiquis cada vegada que paguis amb l'emplenament automàtic</translation>
 <translation id="4366943895537458493">Làmina</translation>
 <translation id="437040971055499437">Es produeix un esdeveniment de seguretat</translation>
 <translation id="4371591986692297148">inactiu</translation>
@@ -2010,6 +2010,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, prem el tabulador i després Retorn per fer una cerca</translation>
 <translation id="4930153903256238152">Gran capacitat</translation>
+<translation id="4930714375720679147">Activa</translation>
 <translation id="4932035752129140860">El text que enganxes o adjuntes s'envia a Google Cloud o a tercers perquè s'analitzi. Per exemple, pot ser que s'analitzi per detectar-hi dades sensibles, que s'emmagatzemi d'acord amb les polítiques de l'empresa i que el teu administrador el pugui veure.</translation>
 <translation id="4934780484581617878">Gestió de finestres</translation>
 <translation id="4936134414789135531">No s'ha pogut trobar el valor <ph name="VALUE_NAME" /> inserit.</translation>
@@ -2268,6 +2269,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5447765697759493033">Aquest lloc web no es traduirà</translation>
 <translation id="5452270690849572955">No s'ha trobat aquesta pàgina de <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Marca de temps de la política incorrecta</translation>
+<translation id="5456839782162429664">Verifica manualment cada vegada que es pagui utilitzant l'emplenament automàtic</translation>
 <translation id="5457113250005438886">No vàlides</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> més}other{<ph name="CONTACT_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> més}}</translation>
 <translation id="5463625433003343978">S'estan cercant dispositius...</translation>
@@ -2365,6 +2367,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="563324245173044180">S'ha bloquejat el contingut enganyós.</translation>
 <translation id="5633259641094592098">Pel·lícules de culte i independents</translation>
 <translation id="563371367637259496">Mòbil</translation>
+<translation id="5634725266554983459">Vols activar la verificació manual?</translation>
 <translation id="5635237618724097525">Telèfons intel·ligents</translation>
 <translation id="5635478143789726479">Termes i condicions del venedor</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" />.</translation>
@@ -2464,6 +2467,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5847181246682413476">Fonts d'alimentació</translation>
 <translation id="5851548754964597211">Llista de pestanyes</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Activa</translation>
 <translation id="5862579898803147654">Apiladora 8</translation>
 <translation id="5863847714970149516">És possible que aquesta pàgina provi de fer-te algun càrrec</translation>
 <translation id="5866257070973731571">Afegeix un número de telèfon</translation>
@@ -3042,6 +3046,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6973656660372572881">S'especifiquen tant els servidors intermediaris fixos com un URL de script .pac.</translation>
 <translation id="6973988895180423160">3,5 x 5 polzades</translation>
 <translation id="6978236010531171013">Comparteix igualment</translation>
+<translation id="6978722349058177832">Si comparteixes aquest dispositiu, Chromium et pot demanar que el verifiquis cada vegada que paguis amb l'emplenament automàtic</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">Inici del text extret</translation>
 <translation id="6979440798594660689">Silencia (opció predeterminada)</translation>
@@ -3737,7 +3742,6 @@ Detalls addicionals:
 <translation id="8288320283441806607">Per utilitzar aquesta funció, activa l'opció Millora les cerques i la navegació</translation>
 <translation id="8288807391153049143">Mostra el certificat</translation>
 <translation id="8289355894181816810">Si no esteu segur de què significa això, contacteu amb l'administrador de la xarxa.</translation>
-<translation id="8292520987784410870">Vols fer una verificació sempre?</translation>
 <translation id="8293206222192510085">Afegeix una adreça d'interès</translation>
 <translation id="829335040383910391">so</translation>
 <translation id="8294431847097064396">Font</translation>
@@ -3876,7 +3880,6 @@ Detalls addicionals:
 <translation id="8553387990086529628">Destinacions turístiques</translation>
 <translation id="8554010658308662631">Carrega'n més</translation>
 <translation id="8554181323880688938">Productes de luxe</translation>
-<translation id="8554802735558319842">Per millorar la seguretat en dispositius compartits, activa la verificació cada vegada que paguis amb l'emplenament automàtic.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Restableix el permís}other{Restableix els permisos}}</translation>
 <translation id="8555010941760982128">Utilitza aquest codi en el moment de tramitar la compra</translation>
 <translation id="8556297087315686325">Supervisió i gestió de xarxes</translation>
