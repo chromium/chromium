@@ -405,8 +405,7 @@ StringKeyframeVector ConvertArrayForm(Element* element,
   Vector<Vector<std::pair<String, String>>> processed_properties;
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   while (iterator.Next(execution_context, exception_state)) {
-    if (exception_state.HadException())
-      return {};
+    CHECK(!exception_state.HadException());
 
     // The value should already be non-empty, as guaranteed by the call to Next
     // and the exception_state check above.
