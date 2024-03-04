@@ -18,6 +18,7 @@ import shutil
 import subprocess
 import sys
 import time
+from typing import List
 
 _SRC_PATH = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
@@ -59,21 +60,6 @@ def _DownloadFromCloudStorage(bucket, sha1_file_name):
   process.wait()
   if process.returncode != 0:
     raise Exception('Exception executing command %s' % ' '.join(cmd))
-
-
-def _SimulateSwipe(device, x1, y1, x2, y2):
-  """Simulates a swipe on a device from (x1, y1) to (x2, y2).
-
-  Coordinates are in (device dependent) pixels, and the origin is at the upper
-  left corner.
-  The simulated swipe will take 300ms.
-
-  Args:
-    device: (device_utils.DeviceUtils) device to run the command on.
-    x1, y1, x2, y2: (int) Coordinates.
-  """
-  args = [str(x) for x in (x1, y1, x2, y2)]
-  device.RunShellCommand(['input', 'swipe'] + args)
 
 
 class WprManager:
@@ -192,27 +178,27 @@ class AndroidProfileTool:
       os.path.dirname(__file__), 'memory_top_10_mobile_000.wprgo')
 
   def __init__(self,
-               output_directory,
-               host_profile_root,
-               use_wpr,
-               urls,
-               simulate_user,
-               device,
+               output_directory: str,
+               host_profile_root: str,
+               use_wpr: bool,
+               urls: List[str],
+               simulate_user: bool,
+               device: device_utils.DeviceUtils,
                debug=False,
                verbosity=0):
     """Constructor.
 
     Args:
-      output_directory: (str) Chrome build directory.
-      host_profile_root: (str) Where to store the profiles on the host.
-      use_wpr: (bool) Whether to use Web Page Replay.
-      urls: (str) URLs to load. Have to be contained in the WPR archive if
+      output_directory: Chrome build directory.
+      host_profile_root: Where to store the profiles on the host.
+      use_wpr: Whether to use Web Page Replay.
+      urls: URLs to load. Have to be contained in the WPR archive if
                   use_wpr is True.
-      simulate_user: (bool) Whether to simulate a user.
-      device: (DeviceUtils) Android device selected to be used to
+      simulate_user: Whether to simulate a user.
+      device: Android device selected to be used to
                             generate orderfile.
-      debug: (bool) Use simpler, non-representative debugging profile.
-      verbosity: (int) The number of -v to pass to telemetry calls.
+      debug: Use simpler, non-representative debugging profile.
+      verbosity: The number of -v to pass to telemetry calls.
     """
     assert device, 'Expected a valid device'
     self._device = device
@@ -228,14 +214,14 @@ class AndroidProfileTool:
     self._pregenerated_profiles = None
 
 
-  def SetPregeneratedProfiles(self, files):
+  def SetPregeneratedProfiles(self, files: List[str]):
     """Set pregenerated profiles.
 
     The pregenerated files will be returned as profile data instead of running
     an actual profiling step.
 
     Args:
-      files: ([str]) List of pregenerated files.
+      files: List of pregenerated files.
     """
     logging.info('Using pregenerated profiles')
     self._pregenerated_profiles = files
@@ -258,7 +244,7 @@ class AndroidProfileTool:
       return 1
     return 0
 
-  def CollectSystemHealthProfile(self, apk):
+  def CollectSystemHealthProfile(self, apk: str):
     """Run the orderfile system health benchmarks and collect log files.
 
     Args:
@@ -291,7 +277,7 @@ class AndroidProfileTool:
     self._DeleteDeviceData()
     return data
 
-  def CollectWebViewStartupProfile(self, apk):
+  def CollectWebViewStartupProfile(self, apk: str):
     """Run the given benchmark and collect the generated profiles.
 
     Args:
@@ -329,7 +315,7 @@ class AndroidProfileTool:
     return data
 
   @staticmethod
-  def _GetBrowserFromApk(apk):
+  def _GetBrowserFromApk(apk: str):
     browser = 'android-webview'
     apk_name = os.path.basename(apk)
     if 'TrichromeWebView' in apk_name:
@@ -339,7 +325,7 @@ class AndroidProfileTool:
     return browser
 
   @classmethod
-  def _RunCommand(cls, command):
+  def _RunCommand(cls, command: List[str]):
     """Run a command from current build directory root.
 
     Args:
@@ -354,53 +340,10 @@ class AndroidProfileTool:
     process.wait()
     return process.returncode
 
-  def _RunProfileCollection(self, package_info, simulate_user):
-    """Runs the profile collection tasks.
-
-    If |simulate_user| is True, then try to simulate a real user, with swiping.
-    Also do a first load of the page instead of about:blank, in order to
-    exercise the cache. This is not desirable with a page that only contains
-    cachable resources, as in this instance the network code will not be called.
-
-    Args:
-      package_info: Which Chrome package to use.
-      simulate_user: (bool) Whether to try to simulate a user interacting with
-                     the browser.
-    """
-    initial_url = self._urls[0] if simulate_user else 'about:blank'
-    # Start up chrome once with a page, just to get the one-off
-    # activities out of the way such as apk resource extraction and profile
-    # creation.
-    self._StartChrome(package_info, initial_url)
-    time.sleep(15)
-    self._KillChrome(package_info)
-    self._SetUpDeviceFolders()
-    for url in self._urls:
-      self._StartChrome(package_info, url)
-      time.sleep(15)
-      if simulate_user:
-        # Down, down, up, up.
-        _SimulateSwipe(self._device, 200, 700, 200, 300)
-        _SimulateSwipe(self._device, 200, 700, 200, 300)
-        _SimulateSwipe(self._device, 200, 700, 200, 1000)
-        _SimulateSwipe(self._device, 200, 700, 200, 1000)
-      time.sleep(30)
-      self._AssertRunning(package_info)
-      self._KillChrome(package_info)
-
   def Cleanup(self):
     """Delete all local and device files left over from profiling. """
     self._DeleteDeviceData()
     self._DeleteHostData(self._host_profile_root)
-
-  def _Install(self, apk):
-    """Installs Chrome.apk on the device.
-
-    Args:
-      apk: The location of the chrome apk to profile.
-    """
-    print('Installing apk...')
-    self._device.Install(apk)
 
   def _SetUpDevice(self):
     """When profiling, files are output to the disk by every process.  This
@@ -420,7 +363,7 @@ class AndroidProfileTool:
       logging.error(str(e))
 
   @staticmethod
-  def _GetPackageInfo(apk_path):
+  def _GetPackageInfo(apk_path: str):
     apk = apk_helper.ApkHelper(apk_path)
     for _, p in constants.PACKAGE_INFO.items():
       if p.package == apk.GetPackageName():
@@ -452,23 +395,6 @@ class AndroidProfileTool:
       self._device.RunShellCommand(
           ['rm', '-rf', str(profile_dir)],
           check_return=True)
-
-  def _StartChrome(self, package_info, url):
-    print('Launching chrome...')
-    self._device.StartActivity(
-        intent.Intent(package=package_info.package,
-                      activity=package_info.activity,
-                      data=url,
-                      extras={'create_new_tab': True}),
-        blocking=True, force_stop=True)
-
-  def _AssertRunning(self, package_info):
-    assert self._device.GetApplicationPids(package_info.package), (
-        'Expected at least one pid associated with {} but found none'.format(
-            package_info.package))
-
-  def _KillChrome(self, package_info):
-    self._device.ForceStop(package_info.package)
 
   def _DeleteHostData(self, host_profile_dir):
     """Clears out profile storage locations on the host."""

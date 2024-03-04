@@ -27,6 +27,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from typing import Dict
 
 import cluster
 import cyglog_to_orderfile
@@ -41,11 +42,8 @@ from devil.android.sdk import version_codes
 
 sys.path.append(str(_SRC_PATH / 'build/android'))
 import devil_chromium
-from pylib import constants
 
-# Needs to happen early for GetOutDirectory() to work correctly.
-constants.SetBuildType('Release')
-
+_OUT_PATH = _SRC_PATH / 'out'
 
 # Architecture specific GN args. Trying to build an orderfile for an
 # architecture not listed here will eventually throw.
@@ -101,59 +99,6 @@ def _GetFileExtension(file_name):
   return None
 
 
-def _StashOutputDirectory(buildpath):
-  """Takes the output directory and stashes it in the default output directory.
-
-  This allows it to be used for incremental builds next time (after unstashing)
-  by keeping it in a place that isn't deleted normally, while also ensuring
-  that it is properly clobbered when appropriate.
-
-  This is a dirty hack to deal with the needs of clobbering while also handling
-  incremental builds and the hardcoded relative paths used in some of the
-  project files.
-
-  Args:
-    buildpath: The path where the building happens.  If this corresponds to the
-               default output directory, no action is taken.
-  """
-  if os.path.abspath(buildpath) == os.path.abspath(os.path.dirname(
-      constants.GetOutDirectory())):
-    return
-  name = os.path.basename(buildpath)
-  stashpath = os.path.join(constants.GetOutDirectory(), name)
-  if not os.path.exists(buildpath):
-    return
-  if os.path.exists(stashpath):
-    shutil.rmtree(stashpath, ignore_errors=True)
-  shutil.move(buildpath, stashpath)
-
-
-def _UnstashOutputDirectory(buildpath):
-  """Inverse of _StashOutputDirectory.
-
-  Moves the output directory stashed within the default output directory
-  (out/Release) to the position where the builds can actually happen.
-
-  This is a dirty hack to deal with the needs of clobbering while also handling
-  incremental builds and the hardcoded relative paths used in some of the
-  project files.
-
-  Args:
-    buildpath: The path where the building happens.  If this corresponds to the
-               default output directory, no action is taken.
-  """
-  if os.path.abspath(buildpath) == os.path.abspath(os.path.dirname(
-      constants.GetOutDirectory())):
-    return
-  name = os.path.basename(buildpath)
-  stashpath = os.path.join(constants.GetOutDirectory(), name)
-  if not os.path.exists(stashpath):
-    return
-  if os.path.exists(buildpath):
-    shutil.rmtree(buildpath, ignore_errors=True)
-  shutil.move(stashpath, buildpath)
-
-
 class StepRecorder:
   """Records steps and timings."""
 
@@ -207,8 +152,7 @@ class StepRecorder:
     """True if FailStep has been called."""
     return self._error_recorded
 
-  def RunCommand(self, cmd, cwd=constants.DIR_SOURCE_ROOT, raise_on_error=True,
-                 stdout=None):
+  def RunCommand(self, cmd, cwd=_SRC_PATH, raise_on_error=True, stdout=None):
     """Execute a shell command.
 
     Args:
@@ -246,8 +190,8 @@ class NativeLibraryBuildVariant:
 class ClankCompiler:
   """Handles compilation of clank."""
 
-  def __init__(self, out_dir, step_recorder, options, orderfile_location,
-               native_library_build_variant):
+  def __init__(self, out_dir: pathlib.Path, step_recorder, options,
+               orderfile_location, native_library_build_variant):
     self._out_dir = out_dir
     self._step_recorder = step_recorder
     self._options = options
@@ -264,17 +208,15 @@ class ClankCompiler:
     # WebView targets
     self._webview_target, webview_apk = self._GetWebViewTargetAndApk(
         native_library_build_variant, options.public, options.arch)
-    self.webview_apk_path = os.path.join(out_dir, 'Release', 'apks',
-                                         webview_apk)
+    self.webview_apk_path = out_dir / 'apks' / webview_apk
 
     # Chrome targets
     self._chrome_target, chrome_apk = self._GetChromeTargetAndApk(
         options.public)
-    self.chrome_apk_path = os.path.join(out_dir, 'Release', 'apks', chrome_apk)
+    self.chrome_apk_path = out_dir / 'apks' / chrome_apk
 
     self._libchrome_target = self._GetLibchromeTarget(options.arch)
-    self.lib_chrome_so = os.path.join(out_dir, 'Release', 'lib.unstripped',
-                                      '{}.so'.format(self._libchrome_target))
+    self.lib_chrome_so = out_dir / f'lib.unstripped/{self._libchrome_target}.so'
 
   def _GenerateGnArgs(self, instrumented, use_call_graph):
     assert not use_call_graph or instrumented, ('You can not enable call graph '
@@ -300,8 +242,7 @@ class ClankCompiler:
 
     if self._options.public and os.path.exists(self._orderfile_location):
       # GN needs the orderfile path to be source-absolute.
-      src_abs_orderfile = os.path.relpath(self._orderfile_location,
-                                          constants.DIR_SOURCE_ROOT)
+      src_abs_orderfile = os.path.relpath(self._orderfile_location, _SRC_PATH)
       gn_args += ['chrome_orderfile_path="//{}"'.format(src_abs_orderfile)]
     return gn_args
 
@@ -315,12 +256,11 @@ class ClankCompiler:
     """
     self._step_recorder.BeginStep('Compile %s' % target)
     gn_args = self._GenerateGnArgs(instrumented, use_call_graph)
-    self._step_recorder.RunCommand([
-        'gn', 'gen',
-        os.path.join(self._out_dir, 'Release'), '--args=' + ' '.join(gn_args)
-    ])
     self._step_recorder.RunCommand(
-        self._ninja_command + [os.path.join(self._out_dir, 'Release'), target])
+        ['gn', 'gen',
+         str(self._out_dir), '--args=' + ' '.join(gn_args)])
+    self._step_recorder.RunCommand(self._ninja_command +
+                                   [str(self._out_dir), target])
 
   def _ForceRelink(self):
     """Forces libmonochrome.so to be re-linked.
@@ -330,10 +270,9 @@ class ClankCompiler:
     re-extracted from a combined library). To be safe, touch a source file
     instead. See http://crbug.com/972701 for more explanation.
     """
-    file_to_touch = os.path.join(constants.DIR_SOURCE_ROOT, 'chrome', 'browser',
-                              'chrome_browser_main_android.cc')
-    assert os.path.exists(file_to_touch)
-    self._step_recorder.RunCommand(['touch', file_to_touch])
+    file_to_touch = _SRC_PATH / 'chrome/browser/chrome_browser_main_android.cc'
+    assert file_to_touch.exists()
+    self._step_recorder.RunCommand(['touch', str(file_to_touch)])
 
   def CompileWebViewApk(self, instrumented, use_call_graph, force_relink=False):
     """Builds a SystemWebView.apk either with or without order_profiling on.
@@ -519,12 +458,7 @@ class OrderfileGenerator:
   Builds an instrumented binary, profiles a run of the application, and
   generates an updated orderfile.
   """
-  _CHECK_ORDERFILE_SCRIPT = os.path.join(
-      constants.DIR_SOURCE_ROOT, 'tools', 'cygprofile', 'check_orderfile.py')
-  # Normally /path/to/src/out.
-  _OUT_DIR = os.path.abspath(os.path.dirname(constants.GetOutDirectory()))
-  # Normally /path/to/src.
-  _BUILD_ROOT = os.path.dirname(_OUT_DIR)
+  _CHECK_ORDERFILE_SCRIPT = _SRC_PATH / 'tools/cygprofile/check_orderfile.py'
 
   # Previous orderfile_generator debug files would be overwritten.
   _DIRECTORY_FOR_DEBUG_FILES = '/tmp/orderfile_generator_debug_files'
@@ -533,18 +467,11 @@ class OrderfileGenerator:
 
   def _PrepareOrderfilePaths(self):
     if self._options.public:
-      self._clank_dir = os.path.join(constants.DIR_SOURCE_ROOT,
-                                     '')
-      if not os.path.exists(os.path.join(self._clank_dir, 'orderfiles')):
-        os.makedirs(os.path.join(self._clank_dir, 'orderfiles'))
+      self._clank_dir = _SRC_PATH
     else:
-      self._clank_dir = os.path.join(constants.DIR_SOURCE_ROOT,
-                                     'clank')
-
-    self._unpatched_orderfile_filename = os.path.join(
-        self._clank_dir, 'orderfiles', 'unpatched_orderfile.%s')
-    self._path_to_orderfile = os.path.join(
-        self._clank_dir, 'orderfiles', 'orderfile.%s.out')
+      self._clank_dir = _SRC_PATH / 'clank'
+    self._orderfiles_dir = self._clank_dir / 'orderfiles'
+    self._orderfiles_dir.mkdir(exist_ok=True)
 
   def _GetPathToOrderfile(self):
     """Gets the path to the architecture-specific orderfile."""
@@ -558,11 +485,12 @@ class OrderfileGenerator:
     # architecture. Fake it, otherwise the orderfile we generate here is not
     # going to be picked up by builds.
     orderfile_fake_arch = 'arm'
-    return self._path_to_orderfile % orderfile_fake_arch
+    return str(self._orderfiles_dir / f'orderfile.{orderfile_fake_arch}.out')
 
   def _GetUnpatchedOrderfileFilename(self):
     """Gets the path to the architecture-specific unpatched orderfile."""
-    return self._unpatched_orderfile_filename % self._options.arch
+    arch = self._options.arch
+    return str(self._orderfiles_dir / f'unpatched_orderfile.{arch}.out')
 
   def _SetDevice(self):
     """ Selects the device to be used by the script.
@@ -595,10 +523,6 @@ class OrderfileGenerator:
     self._native_library_build_variant = NativeLibraryBuildVariant.TRICHROME
     if options.native_lib_variant == 'monochrome':
       self._native_library_build_variant = NativeLibraryBuildVariant.MONOCHROME
-    self._instrumented_out_dir = os.path.join(
-        self._BUILD_ROOT, self._options.arch + '_instrumented_out')
-    if self._options.use_call_graph:
-      self._instrumented_out_dir += '_call_graph'
     if options.use_common_out_dir_for_instrumented:
       assert options.buildbot, ('--use-common-out-dir-for-instrumented is only '
                                 'meant to be used with --buildbot, otherwise '
@@ -607,21 +531,20 @@ class OrderfileGenerator:
       # only save the instrumented out dir since it is needed to deobfuscate the
       # stack trace. The uninstrumented build is used to compare performance on
       # Speedometer with/without orderfile, which is less likely to fail.
-      if os.path.exists(self._instrumented_out_dir):
-        # Clean up any old leftover instrumented dirs.
-        shutil.rmtree(self._instrumented_out_dir, ignore_errors=True)
-      self._instrumented_out_dir = self._OUT_DIR
+      self._instrumented_out_dir = _OUT_PATH / 'Release'
+    else:
+      self._instrumented_out_dir = (
+          _OUT_PATH / f'orderfile_{self._options.arch}_instrumented_out')
 
-    self._uninstrumented_out_dir = os.path.join(
-        self._BUILD_ROOT, self._options.arch + '_uninstrumented_out')
-    self._no_orderfile_out_dir = os.path.join(
-        self._BUILD_ROOT, self._options.arch + '_no_orderfile_out')
+    self._uninstrumented_out_dir = (
+        _OUT_PATH / f'orderfile_{self._options.arch}_uninstrumented_out')
+    self._no_orderfile_out_dir = (
+        _OUT_PATH / f'orderfile_{self._options.arch}_no_orderfile_out')
 
     self._PrepareOrderfilePaths()
 
     if options.profile:
-      output_directory = os.path.join(self._instrumented_out_dir, 'Release')
-      self._host_profile_root = os.path.join(self._BUILD_ROOT, 'profile_data')
+      self._host_profile_root = _SRC_PATH / 'profile_data'
       urls = [profile_android_startup.AndroidProfileTool.TEST_URL]
       use_wpr = True
       simulate_user = False
@@ -630,8 +553,8 @@ class OrderfileGenerator:
       simulate_user = options.simulate_user
       device = self._SetDevice()
       self._profiler = profile_android_startup.AndroidProfileTool(
-          output_directory,
-          self._host_profile_root,
+          str(self._instrumented_out_dir),
+          str(self._host_profile_root),
           use_wpr,
           urls,
           simulate_user,
@@ -658,7 +581,7 @@ class OrderfileGenerator:
     assert issubclass(orderfile_updater_class, OrderfileUpdater)
     self._orderfile_updater = orderfile_updater_class(self._clank_dir,
                                                       self._step_recorder)
-    assert os.path.isdir(constants.DIR_SOURCE_ROOT), 'No src directory found'
+    assert _SRC_PATH.is_dir(), 'No src directory found'
 
   @staticmethod
   def _RemoveBlanks(src_file, dest_file):
@@ -696,11 +619,13 @@ class OrderfileGenerator:
       if os.path.exists(self._options.profile_save_dir):
         raise Exception('Profile save directory must not pre-exist')
 
+    assert self._compiler is not None, (
+        'A valid compiler is needed to generate profiles.')
     files = self._profiler.CollectSystemHealthProfile(
-        self._compiler.chrome_apk_path)
+        str(self._compiler.chrome_apk_path))
     if self._options.profile_webview_startup:
       files += self._profiler.CollectWebViewStartupProfile(
-          self._compiler.webview_apk_path)
+          str(self._compiler.webview_apk_path))
     self._MaybeSaveProfile()
     try:
       self._ProcessPhasedOrderfile(files)
@@ -754,12 +679,11 @@ class OrderfileGenerator:
 
   def _VerifySymbolOrder(self):
     self._step_recorder.BeginStep('Verify Symbol Order')
-    return_code = self._step_recorder.RunCommand([
-        self._CHECK_ORDERFILE_SCRIPT, self._compiler.lib_chrome_so,
+    cmd = [
+        str(self._CHECK_ORDERFILE_SCRIPT), self._compiler.lib_chrome_so,
         self._GetPathToOrderfile()
-    ],
-                                                 constants.DIR_SOURCE_ROOT,
-                                                 raise_on_error=False)
+    ]
+    return_code = self._step_recorder.RunCommand(cmd, raise_on_error=False)
     if return_code:
       self._step_recorder.FailStep('Orderfile check returned %d.' % return_code)
 
@@ -829,10 +753,10 @@ class OrderfileGenerator:
       self._orderfile_updater.UploadToCloudStorage(
           file_name, use_debug_location=False)
 
-  def _WebViewStartupBenchmark(self, apk):
+  def _WebViewStartupBenchmark(self, apk: str):
     """Runs system_health.webview_startup benchmark.
     Args:
-      apk: (str) Path to the apk.
+      apk: Path to the apk.
     """
     self._step_recorder.BeginStep("Running system_health.webview_startup")
     try:
@@ -869,11 +793,11 @@ class OrderfileGenerator:
     finally:
       shutil.rmtree(out_dir)
 
-  def _NativeCodeMemoryBenchmark(self, apk):
+  def _NativeCodeMemoryBenchmark(self, apk: str):
     """Runs system_health.memory_mobile to assess native code memory footprint.
 
     Args:
-      apk: (str) Path to the apk.
+      apk: Path to the apk.
 
     Returns:
       results: ([int]) Values of native code memory footprint in bytes from the
@@ -962,7 +886,9 @@ class OrderfileGenerator:
       shutil.rmtree(out_dir)
 
 
-  def RunBenchmark(self, out_directory, no_orderfile=False):
+  def RunBenchmark(self,
+                   out_directory: pathlib.Path,
+                   no_orderfile: bool = False) -> Dict:
     """Builds chrome apk and runs performance and memory benchmarks.
 
     Builds a non-instrumented version of chrome.
@@ -971,15 +897,14 @@ class OrderfileGenerator:
     Runs system_health.memory_mobile to evaluate memory footprint.
 
     Args:
-      out_directory: (str) Path to out directory for this build.
-      no_orderfile: (bool) True if chrome to be built without orderfile.
+      out_directory: Path to out directory for this build.
+      no_orderfile: True if chrome to be built without orderfile.
 
     Returns:
-      benchmark_results: (dict) Results extracted from benchmarks.
+      benchmark_results: Results extracted from benchmarks.
     """
     benchmark_results = {}
     try:
-      _UnstashOutputDirectory(out_directory)
       self._compiler = ClankCompiler(out_directory, self._step_recorder,
                                      self._options, self._GetPathToOrderfile(),
                                      self._native_library_build_variant)
@@ -997,14 +922,14 @@ class OrderfileGenerator:
       benchmark_results['Speedometer2.0'] = self._PerformanceBenchmark(
           self._compiler.chrome_apk_path)
       benchmark_results['orderfile.memory_mobile'] = (
-          self._NativeCodeMemoryBenchmark(self._compiler.chrome_apk_path))
+          self._NativeCodeMemoryBenchmark(str(self._compiler.chrome_apk_path)))
       if self._options.profile_webview_startup:
         self._compiler.CompileWebViewApk(instrumented=False,
                                          use_call_graph=False,
                                          force_relink=True)
         benchmark_results[
             'system_health.webview_startup'] = self._WebViewStartupBenchmark(
-                self._compiler.webview_apk_path)
+                str(self._compiler.webview_apk_path))
 
     except Exception as e:
       benchmark_results['Error'] = str(e)
@@ -1012,7 +937,6 @@ class OrderfileGenerator:
     finally:
       if no_orderfile and os.path.exists(backup_orderfile):
         shutil.move(backup_orderfile, orderfile_path)
-      _StashOutputDirectory(out_directory)
 
     return benchmark_results
 
@@ -1021,34 +945,29 @@ class OrderfileGenerator:
     assert (bool(self._options.profile) ^
             bool(self._options.manual_symbol_offsets))
 
-    if self._options.profile:
-      try:
-        if not self._options.use_common_out_dir_for_instrumented:
-          _UnstashOutputDirectory(self._instrumented_out_dir)
-        else:
-          # Clean up any old leftover out/Release stuff.
-          if os.path.exists(self._instrumented_out_dir):
-            shutil.rmtree(self._instrumented_out_dir, ignore_errors=True)
+    if self._options.clobber:
+      assert self._options.buildbot, '--clobber is intended for the buildbot.'
+      # This is useful on the bot when we need to start from scratch to rebuild.
+      if _OUT_PATH.exists():
+        shutil.rmtree(_OUT_PATH, ignore_errors=True)
+        _OUT_PATH.mkdir()
 
-        self._compiler = ClankCompiler(self._instrumented_out_dir,
-                                       self._step_recorder, self._options,
-                                       self._GetPathToOrderfile(),
-                                       self._native_library_build_variant)
-        if not self._options.pregenerated_profiles:
-          # If there are pregenerated profiles, the instrumented build should
-          # not be changed to avoid invalidating the pregenerated profile
-          # offsets.
-          self._compiler.CompileChromeApk(instrumented=True,
-                                          use_call_graph=
-                                          self._options.use_call_graph)
-          if self._options.profile_webview_startup:
-            self._compiler.CompileWebViewApk(
-                instrumented=True, use_call_graph=self._options.use_call_graph)
-        self._GenerateAndProcessProfile()
-        self._MaybeArchiveOrderfile(self._GetUnpatchedOrderfileFilename())
-      finally:
-        if not self._options.use_common_out_dir_for_instrumented:
-          _StashOutputDirectory(self._instrumented_out_dir)
+    if self._options.profile:
+      self._compiler = ClankCompiler(self._instrumented_out_dir,
+                                     self._step_recorder, self._options,
+                                     self._GetPathToOrderfile(),
+                                     self._native_library_build_variant)
+      if not self._options.pregenerated_profiles:
+        # If there are pregenerated profiles, the instrumented build should
+        # not be changed to avoid invalidating the pregenerated profile
+        # offsets.
+        self._compiler.CompileChromeApk(
+            instrumented=True, use_call_graph=self._options.use_call_graph)
+        if self._options.profile_webview_startup:
+          self._compiler.CompileWebViewApk(
+              instrumented=True, use_call_graph=self._options.use_call_graph)
+      self._GenerateAndProcessProfile()
+      self._MaybeArchiveOrderfile(self._GetUnpatchedOrderfileFilename())
     elif self._options.manual_symbol_offsets:
       assert self._options.manual_libname
       assert self._options.manual_objdir
@@ -1069,28 +988,25 @@ class OrderfileGenerator:
       if self._options.profile:
         self._RemoveBlanks(self._GetUnpatchedOrderfileFilename(),
                            self._GetPathToOrderfile())
-      try:
-        _UnstashOutputDirectory(self._uninstrumented_out_dir)
-        self._compiler = ClankCompiler(self._uninstrumented_out_dir,
-                                       self._step_recorder, self._options,
-                                       self._GetPathToOrderfile(),
-                                       self._native_library_build_variant)
+      self._compiler = ClankCompiler(self._uninstrumented_out_dir,
+                                     self._step_recorder, self._options,
+                                     self._GetPathToOrderfile(),
+                                     self._native_library_build_variant)
 
-        self._compiler.CompileLibchrome(instrumented=False,
-                                        use_call_graph=False)
-        self._PatchOrderfile()
-        # Because identical code folding is a bit different with and without
-        # the orderfile build, we need to re-patch the orderfile with code
-        # folding as close to the final version as possible.
-        self._compiler.CompileLibchrome(instrumented=False,
-                                        use_call_graph=False, force_relink=True)
-        self._PatchOrderfile()
-        self._compiler.CompileLibchrome(instrumented=False,
-                                        use_call_graph=False, force_relink=True)
-        self._VerifySymbolOrder()
-        self._MaybeArchiveOrderfile(self._GetPathToOrderfile())
-      finally:
-        _StashOutputDirectory(self._uninstrumented_out_dir)
+      self._compiler.CompileLibchrome(instrumented=False, use_call_graph=False)
+      self._PatchOrderfile()
+      # Because identical code folding is a bit different with and without
+      # the orderfile build, we need to re-patch the orderfile with code
+      # folding as close to the final version as possible.
+      self._compiler.CompileLibchrome(instrumented=False,
+                                      use_call_graph=False,
+                                      force_relink=True)
+      self._PatchOrderfile()
+      self._compiler.CompileLibchrome(instrumented=False,
+                                      use_call_graph=False,
+                                      force_relink=True)
+      self._VerifySymbolOrder()
+      self._MaybeArchiveOrderfile(self._GetPathToOrderfile())
 
     if self._options.benchmark:
       self._output_data['orderfile_benchmark_results'] = self.RunBenchmark(
@@ -1228,6 +1144,12 @@ def CreateArgumentParser():
                       action='store_true',
                       help='Use out/Release for the instrumented out dir so '
                       'that the stack tool works on the bot.')
+  parser.add_argument('--clobber',
+                      action='store_true',
+                      default=False,
+                      help='Set this to clear the entire out/ directory prior '
+                      'to running any builds. This helps to clear the build '
+                      'cache and restart with empty build dirs.')
   parser.add_argument('-v',
                       '--verbose',
                       dest='verbosity',
