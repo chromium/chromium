@@ -201,6 +201,13 @@ class AutofillWebDataService : public WebDataServiceBase {
   WebDataServiceBase::Handle GetCreditCardBenefits(
       WebDataServiceConsumer* consumer);
 
+  // Initiates the request for masked bank accounts. The method
+  // OnWebDataServiceRequestDone() of `consumer` gets called when the request is
+  // finished, with the masked bank accounts included in the argument `result`.
+  // The consumer owns the data.
+  WebDataServiceBase::Handle GetMaskedBankAccounts(
+      WebDataServiceConsumer* consumer);
+
   void ClearAllServerData();
   void ClearAllLocalData();
 

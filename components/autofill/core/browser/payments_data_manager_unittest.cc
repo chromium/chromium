@@ -28,6 +28,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -1485,5 +1486,57 @@ TEST_F(PaymentsDataManagerTest, GetExpiredCreditCardBenefits) {
                        instrument_id_for_merchant_benefit,
                        merchant_origin_for_merchant_benefit));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_ExpOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+  BankAccount bank_account1 = test::CreatePixBankAccount(1234L);
+  BankAccount bank_account2 = test::CreatePixBankAccount(5678L);
+  ASSERT_TRUE(GetServerDataTable()->SetMaskedBankAccounts(
+      {bank_account1, bank_account2}));
+  std::vector<BankAccount> bank_accounts =
+      personal_data_->GetMaskedBankAccounts();
+  // Since the PersonalDataManager was initialized before adding the masked
+  // bank accounts to the WebDatabase, we expect GetMaskedBankAccounts to return
+  // an empty list.
+  EXPECT_EQ(0u, bank_accounts.size());
+
+  // Refresh the PersonalDataManager. Under normal circumstances with the flag
+  // on, this step would load the bank accounts from the WebDatabase.
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+
+  // Verify that no bank accounts are loaded into PersonalDataManager because
+  // the experiment is turned off.
+  bank_accounts = personal_data_->GetMaskedBankAccounts();
+  EXPECT_EQ(0u, bank_accounts.size());
+}
+
+TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_DatabaseUpdated) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+  BankAccount bank_account1 = test::CreatePixBankAccount(1234L);
+  BankAccount bank_account2 = test::CreatePixBankAccount(5678L);
+  ASSERT_TRUE(GetServerDataTable()->SetMaskedBankAccounts(
+      {bank_account1, bank_account2}));
+
+  // Since the PersonalDataManager was initialized before adding the masked
+  // bank accounts to the WebDatabase, we expect GetMaskedBankAccounts to return
+  // an empty list.
+  std::vector<BankAccount> bank_accounts =
+      personal_data_->GetMaskedBankAccounts();
+  EXPECT_EQ(0u, bank_accounts.size());
+
+  // We need to call `Refresh()` to ensure that the BankAccounts are loaded
+  // again from the WebDatabase.
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+
+  bank_accounts = personal_data_->GetMaskedBankAccounts();
+  EXPECT_EQ(2u, bank_accounts.size());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill

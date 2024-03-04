@@ -30,6 +30,7 @@
 namespace autofill {
 
 class AutofillImageFetcherBase;
+class BankAccount;
 struct CreditCardArtImage;
 class PaymentsDatabaseHelper;
 class PersonalDataManager;
@@ -123,6 +124,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // prefix, suffix, and length as any existing server IBAN will be considered a
   // duplicate IBAN. These duplicate IBANs will not be returned in the list.
   virtual std::vector<const Iban*> GetIbansToSuggest() const;
+
+  // Returns the masked bank accounts that can be suggested to the user.
+  const std::vector<BankAccount> GetMaskedBankAccounts() const;
 
   // Returns the Payments customer data. Returns nullptr if no data is present.
   virtual PaymentsCustomerData* GetPaymentsCustomerData() const;
@@ -255,6 +259,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Loads the saved IBANs from the web database.
   void LoadIbans();
 
+  // Loads the masked bank accounts from the web database.
+  void LoadMaskedBankAccounts();
+
   // Loads the payments customer data from the web database.
   void LoadPaymentsCustomerData();
 
@@ -292,6 +299,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Cached versions of the local and server IBANs.
   std::vector<std::unique_ptr<Iban>> local_ibans_;
   std::vector<std::unique_ptr<Iban>> server_ibans_;
+
+  // Cached versions of the masked bank accounts.
+  std::vector<std::unique_ptr<BankAccount>> masked_bank_accounts_;
 
   // Cached version of the CreditCardCloudTokenData obtained from the database.
   std::vector<std::unique_ptr<CreditCardCloudTokenData>>
@@ -344,6 +354,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
         return true;
       }) const;
 
+  // Whether MaskedBankAccounts are supported for the platform OS.
+  bool AreBankAccountsSupported() const;
+
   // Decides which database type to use for server and local cards.
   std::unique_ptr<PaymentsDatabaseHelper> database_helper_;
 
@@ -356,6 +369,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       0;
   WebDataServiceBase::Handle pending_local_ibans_query_ = 0;
   WebDataServiceBase::Handle pending_server_ibans_query_ = 0;
+  WebDataServiceBase::Handle pending_masked_bank_accounts_query_ = 0;
   WebDataServiceBase::Handle pending_customer_data_query_ = 0;
   WebDataServiceBase::Handle pending_offer_data_query_ = 0;
   WebDataServiceBase::Handle pending_virtual_card_usage_data_query_ = 0;

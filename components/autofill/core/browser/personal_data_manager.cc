@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -717,6 +718,14 @@ const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest()
     return std::vector<CreditCard*>{};
   }
   return payments_data_manager_->GetCreditCardsToSuggest();
+}
+
+const std::vector<BankAccount> PersonalDataManager::GetMaskedBankAccounts()
+    const {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return std::vector<BankAccount>{};
+  }
+  return payments_data_manager_->GetMaskedBankAccounts();
 }
 
 bool PersonalDataManager::IsAutofillEnabled() const {

@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
@@ -865,6 +866,16 @@ AutofillWebDataBackendImpl::GetCreditCardBenefits(WebDatabase* db) {
       &credit_card_benefits);
   return std::make_unique<WDResult<std::vector<CreditCardBenefit>>>(
       CREDIT_CARD_BENEFIT_RESULT, std::move(credit_card_benefits));
+}
+
+std::unique_ptr<WDTypedResult>
+AutofillWebDataBackendImpl::GetMaskedBankAccounts(WebDatabase* db) {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  std::vector<std::unique_ptr<BankAccount>> masked_bank_accounts;
+  PaymentsAutofillTable::FromWebDatabase(db)->GetMaskedBankAccounts(
+      masked_bank_accounts);
+  return std::make_unique<WDResult<std::vector<std::unique_ptr<BankAccount>>>>(
+      MASKED_BANK_ACCOUNTS_RESULT, std::move(masked_bank_accounts));
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::ClearAllServerData(

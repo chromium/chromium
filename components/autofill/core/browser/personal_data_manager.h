@@ -457,6 +457,9 @@ class PersonalDataManager : public KeyedService,
   // vector.
   const std::vector<CreditCard*> GetCreditCardsToSuggest() const;
 
+  // Returns the masked bank accounts that can be suggested to the user.
+  const std::vector<BankAccount> GetMaskedBankAccounts() const;
+
   // Re-loads profiles, credit cards, and IBANs from the WebDatabase
   // asynchronously. In the general case, this is a no-op and will re-create
   // the same in-memory model as existed prior to the call.  If any change

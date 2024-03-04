@@ -226,6 +226,9 @@ class AutofillWebDataBackendImpl
   // Returns all Credit Card Benefits from the database.
   std::unique_ptr<WDTypedResult> GetCreditCardBenefits(WebDatabase* db);
 
+  // Returns a vector of masked bank accounts from the web database.
+  std::unique_ptr<WDTypedResult> GetMaskedBankAccounts(WebDatabase* db);
+
   WebDatabase::State ClearAllServerData(WebDatabase* db);
   WebDatabase::State ClearAllLocalData(WebDatabase* db);
 

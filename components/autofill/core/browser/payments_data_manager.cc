@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_shared_storage_handler.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
@@ -279,12 +280,7 @@ void PaymentsDataManager::OnAutofillChangedBySync(
 void PaymentsDataManager::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle h,
     std::unique_ptr<WDTypedResult> result) {
-  DCHECK(pending_creditcards_query_ || pending_server_creditcards_query_ ||
-         pending_server_creditcard_cloud_token_data_query_ ||
-         pending_local_ibans_query_ || pending_server_ibans_query_ ||
-         pending_customer_data_query_ || pending_offer_data_query_ ||
-         pending_virtual_card_usage_data_query_ ||
-         pending_credit_card_benefit_query_);
+  DCHECK(HasPendingPaymentQueries());
 
   if (!result) {
     // Error from the web database.
@@ -306,6 +302,9 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
       pending_virtual_card_usage_data_query_ = 0;
     } else if (h == pending_credit_card_benefit_query_) {
       pending_credit_card_benefit_query_ = 0;
+    } else if (h == pending_masked_bank_accounts_query_) {
+      CHECK(AreBankAccountsSupported());
+      pending_masked_bank_accounts_query_ = 0;
     }
   } else {
     switch (result->GetType()) {
@@ -371,6 +370,14 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
                               &pending_credit_card_benefit_query_,
                               &credit_card_benefits_);
         break;
+      case MASKED_BANK_ACCOUNTS_RESULT:
+        CHECK(AreBankAccountsSupported());
+        DCHECK_EQ(h, pending_masked_bank_accounts_query_)
+            << "received masked bank accounts from invalid request.";
+        ReceiveLoadedDbValues(h, result.get(),
+                              &pending_masked_bank_accounts_query_,
+                              &masked_bank_accounts_);
+        break;
       default:
         NOTREACHED();
     }
@@ -400,6 +407,9 @@ void PaymentsDataManager::Refresh() {
   pdm_->LoadCreditCards();
   pdm_->LoadCreditCardCloudTokenData();
   pdm_->LoadIbans();
+  if (AreBankAccountsSupported()) {
+    LoadMaskedBankAccounts();
+  }
   pdm_->LoadPaymentsCustomerData();
   pdm_->LoadAutofillOffers();
   pdm_->LoadVirtualCardUsageData();
@@ -587,6 +597,17 @@ std::vector<const Iban*> PaymentsDataManager::GetIbansToSuggest() const {
   });
 
   return ibans_to_suggest;
+}
+
+const std::vector<BankAccount> PaymentsDataManager::GetMaskedBankAccounts()
+    const {
+  std::vector<BankAccount> bank_accounts;
+  bank_accounts.reserve(masked_bank_accounts_.size());
+  for (const std::unique_ptr<BankAccount>& bank_account :
+       masked_bank_accounts_) {
+    bank_accounts.push_back(*bank_account);
+  }
+  return bank_accounts;
 }
 
 PaymentsCustomerData* PaymentsDataManager::GetPaymentsCustomerData() const {
@@ -1079,6 +1100,9 @@ void PaymentsDataManager::CancelPendingServerQueries() {
   CancelPendingServerQuery(&pending_offer_data_query_);
   CancelPendingServerQuery(&pending_virtual_card_usage_data_query_);
   CancelPendingServerQuery(&pending_credit_card_benefit_query_);
+  if (AreBankAccountsSupported()) {
+    CancelPendingServerQuery(&pending_masked_bank_accounts_query_);
+  }
 }
 
 void PaymentsDataManager::LoadCreditCards() {
@@ -1124,6 +1148,17 @@ void PaymentsDataManager::LoadIbans() {
     pending_server_ibans_query_ =
         database_helper_->GetServerDatabase()->GetServerIbans(this);
   }
+}
+
+void PaymentsDataManager::LoadMaskedBankAccounts() {
+  if (!database_helper_->GetServerDatabase()) {
+    return;
+  }
+
+  CancelPendingServerQuery(&pending_masked_bank_accounts_query_);
+
+  pending_masked_bank_accounts_query_ =
+      database_helper_->GetServerDatabase()->GetMaskedBankAccounts(this);
 }
 
 void PaymentsDataManager::LoadAutofillOffers() {
@@ -1222,7 +1257,19 @@ bool PaymentsDataManager::HasPendingPaymentQueries() const {
          pending_server_creditcard_cloud_token_data_query_ != 0 ||
          pending_customer_data_query_ != 0 || pending_offer_data_query_ != 0 ||
          pending_virtual_card_usage_data_query_ != 0 ||
-         pending_credit_card_benefit_query_ != 0;
+         pending_credit_card_benefit_query_ != 0 ||
+         pending_local_ibans_query_ != 0 || pending_server_ibans_query_ != 0 ||
+         (AreBankAccountsSupported() &&
+          pending_masked_bank_accounts_query_ != 0);
+}
+
+bool PaymentsDataManager::AreBankAccountsSupported() const {
+#if BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void PaymentsDataManager::OnCardArtImagesFetched(

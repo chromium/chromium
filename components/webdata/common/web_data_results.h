@@ -46,6 +46,8 @@ typedef enum {
                                      //     VirtualCardUsageData>>>
   CREDIT_CARD_BENEFIT_RESULT,        // WDResult<std::vector<std::unique_ptr<
                                      //     CreditCardBenefit>>>
+  MASKED_BANK_ACCOUNTS_RESULT,       // WDResult<std::vector<std::unique_ptr<
+                                     // BankAccount>>>
 #if BUILDFLAG(USE_BLINK)         //
   PAYMENT_WEB_APP_MANIFEST,      // WDResult<std::vector<
                                  //     mojom::WebAppManifestSectionPtr>>
