@@ -98,6 +98,7 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static std::u16string GetShutDownButtonLabel();
   static gfx::Rect GetShutDownButtonTargetBounds();
   static gfx::Rect GetShutDownButtonMirroredBounds();
+  static std::string GetAppsButtonClassName();
 
   static void SetPinRequestWidgetShownCallback(
       base::RepeatingClosure on_pin_request_widget_shown);

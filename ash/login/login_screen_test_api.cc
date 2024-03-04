@@ -5,6 +5,7 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -82,6 +83,15 @@ views::View* GetShutDownButton() {
   }
 
   return shelf_view->GetViewByID(LoginShelfView::kShutdown);
+}
+
+views::View* GetAppsButton() {
+  LoginShelfView* shelf_view = GetLoginShelfView();
+  if (!shelf_view) {
+    return nullptr;
+  }
+
+  return shelf_view->GetViewByID(LoginShelfView::kApps);
 }
 
 LoginBigUserView* GetBigUserView(const AccountId& account_id) {
@@ -850,6 +860,16 @@ gfx::Rect LoginScreenTestApi::GetShutDownButtonMirroredBounds() {
   }
 
   return button->GetMirroredBounds();
+}
+
+// static
+std::string LoginScreenTestApi::GetAppsButtonClassName() {
+  views::View* button = GetAppsButton();
+  if (!button) {
+    return "";
+  }
+
+  return button->GetClassName();
 }
 
 // static
