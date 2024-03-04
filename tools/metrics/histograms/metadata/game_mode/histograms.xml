@@ -10,7 +10,7 @@ found in the LICENSE file.
 
 <histogram name="GameMode.Result.Borealis" enum="GameModeResult"
     expires_after="2024-09-01">
-  <owner>lqu@google.com</owner>
+  <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/game_mode/OWNERS</owner>
   <summary>
     Records events of two types, when they occur. `Attempted` indicates game
