@@ -585,10 +585,6 @@ extern const char kNativeFindInPageDescription[];
 extern const char kNewNTPOmniboxLayoutName[];
 extern const char kNewNTPOmniboxLayoutDescription[];
 
-// Title and description for the flag to enable the new overflow menu.
-extern const char kNewOverflowMenuName[];
-extern const char kNewOverflowMenuDescription[];
-
 // Title and description for the flag to enable overflow menu customization
 extern const char kOverflowMenuCustomizationName[];
 extern const char kOverflowMenuCustomizationDescription[];
