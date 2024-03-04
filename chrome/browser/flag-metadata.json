@@ -3385,11 +3385,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "enable-pwas-default-offline-page",
-    "owners": [ "finnur@google.com", "beverloo@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-quic",
     "owners": [ "//net/quic/OWNERS" ],
     // This flag is used by network administrators to debug

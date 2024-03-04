@@ -2972,10 +2972,6 @@ const char kPullToRefreshDescription[] =
     "Pull-to-refresh gesture in response to vertical overscroll.";
 const char kPullToRefreshEnabledTouchscreen[] = "Enabled for touchscreen only";
 
-const char kPWAsDefaultOfflinePageName[] = "Default offline page for PWAs";
-const char kPWAsDefaultOfflinePageDescription[] =
-    "Shows customised default offline page when web app is offline.";
-
 const char kPwaUpdateDialogForAppIconName[] =
     "Enable PWA install update dialog for icon changes";
 const char kPwaUpdateDialogForAppIconDescription[] =

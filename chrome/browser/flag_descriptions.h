@@ -1724,9 +1724,6 @@ extern const char kPullToRefreshName[];
 extern const char kPullToRefreshDescription[];
 extern const char kPullToRefreshEnabledTouchscreen[];
 
-extern const char kPWAsDefaultOfflinePageName[];
-extern const char kPWAsDefaultOfflinePageDescription[];
-
 extern const char kPwaUpdateDialogForAppIconName[];
 extern const char kPwaUpdateDialogForAppIconDescription[];
 
