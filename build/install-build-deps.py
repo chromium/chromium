@@ -170,8 +170,8 @@ def check_distro(options):
 
 def check_architecture():
   architecture = subprocess.check_output(["uname", "-m"]).decode().strip()
-  if architecture not in ["i686", "x86_64"]:
-    print("Only x86 architectures are currently supported", file=sys.stderr)
+  if architecture not in ["i686", "x86_64", 'aarch64']:
+    print("Only x86 and ARM64 architectures are currently supported", file=sys.stderr)
     sys.exit(1)
 
 
@@ -327,7 +327,6 @@ def dev_list():
 # List of required run-time libraries
 def lib_list():
   packages = [
-      "lib32z1",
       "libasound2",
       "libatk1.0-0",
       "libatspi2.0-0",
@@ -385,6 +384,10 @@ def lib_list():
       "libpulse0",
       "libbz2-1.0",
   ]
+
+  # May not exist (e.g. ARM64)
+  if package_exists("lib32z1"):
+    packages.append("lib32z1")
 
   if package_exists("libffi8"):
     packages.append("libffi8")
