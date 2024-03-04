@@ -5322,6 +5322,37 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowWithUnknownLoginStatus) {
   RunAuthDontWaitForCallback(parameters, configuration);
 }
 
+// Test that button flow can skip the mismatch UI.
+TEST_F(FederatedAuthRequestImplTest, ButtonFlowSkipsMismatchUI) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmButtonMode);
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kInvalidResponseError;
+
+  auto dialog_controller =
+      std::make_unique<TestDialogController>(configuration);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+  // Check that the pop-up window is displayed.
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog(_, _))
+      .WillOnce(Return(nullptr));
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kButton;
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RunAuthDontWaitForCallback(parameters, configuration);
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+}
+
 TEST_F(FederatedAuthRequestImplTest, CloseModalDialogView) {
 #if BUILDFLAG(IS_ANDROID)
   auto dialog_controller =

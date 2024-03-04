@@ -1673,6 +1673,12 @@ void FederatedAuthRequestImpl::OnIdpMismatch(
     return;
   }
 
+  if (rp_mode_ == RpMode::kButton) {
+    MaybeShowButtonModeModalDialog(
+        idp_config_url, idp_infos_[idp_config_url]->metadata.idp_login_url);
+    return;
+  }
+
   ShowSingleIdpFailureDialog();
 }
 
