@@ -474,36 +474,22 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // Start recording field trial info.
   [[PreviousSessionInfo sharedInstance] beginRecordingFieldTrials];
 
-  // TODO(crbug.com/325254941):  Remove this use of GetLastUsedBrowserState(),
-  // and instead initialize every loaded browser state.
-  ChromeBrowserState* chromeBrowserState = GetApplicationContext()
-                                               ->GetChromeBrowserStateManager()
-                                               ->GetLastUsedBrowserState();
-  DCHECK(chromeBrowserState);
-
-  // Initialize and set the main browser state.
-  [self initializeBrowserState:chromeBrowserState];
   // TODO(crbug.com/324417250): Remove mainBrowserState from appState.
-  self.appState.mainBrowserState = chromeBrowserState;
+  self.appState.mainBrowserState = GetApplicationContext()
+                                       ->GetChromeBrowserStateManager()
+                                       ->GetLastUsedBrowserState();
+
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  // Initialize and set all loaded browser states.
+  for (ChromeBrowserState* chromeBrowserState : loadedBrowserStates) {
+    [self initializeBrowserState:chromeBrowserState];
+  }
 
   // Give tests a chance to prepare for testing.
   tests_hook::SetUpTestsIfPresent();
-
-  // Force an obvious initialization of the AuthenticationService. This must
-  // be done before creation of the UI to ensure the service is initialised
-  // before use (it is a security issue, so accessing the service CHECKs if
-  // this is not the case). It is important to do this during background
-  // initialization when the app is cold started directly into the background
-  // because it is used by the DiscoverFeedService, which is started in the
-  // background to perform background refresh. There is no downside to doing
-  // this during background initialization when the app is launched into the
-  // foreground.
-  // TODO(crbug.com/325254941): Move this into -initializeBrowserState:, which
-  // will initialze all browser states.
-  AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-      chromeBrowserState,
-      std::make_unique<MainControllerAuthenticationServiceDelegate>(
-          chromeBrowserState, self));
 
   // Initialize the provider UI global state.
   ios::provider::InitializeUI();
@@ -532,6 +518,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [NSURLCache setSharedURLCache:[EmptyNSURLCache emptyNSURLCache]];
 
   // TODO(crbug.com/325616341): Update PostRestoreAppAgent for multi-identity.
+  ChromeBrowserState* chromeBrowserState = self.appState.mainBrowserState;
   [self.appState
       addAgent:
           [[PostRestoreAppAgent alloc]
@@ -706,6 +693,20 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   DCHECK(!browserState->IsOffTheRecord());
   search_engines::UpdateSearchEngineCountryCodeIfNeeded(
       browserState->GetPrefs());
+
+  // Force an obvious initialization of the AuthenticationService. This must
+  // be done before creation of the UI to ensure the service is initialised
+  // before use (it is a security issue, so accessing the service CHECKs if
+  // this is not the case). It is important to do this during background
+  // initialization when the app is cold started directly into the background
+  // because it is used by the DiscoverFeedService, which is started in the
+  // background to perform background refresh. There is no downside to doing
+  // this during background initialization when the app is launched into the
+  // foreground.
+  AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+      browserState,
+      std::make_unique<MainControllerAuthenticationServiceDelegate>(
+          browserState, self));
 }
 
 #pragma mark - AppStateObserver
