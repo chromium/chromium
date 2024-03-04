@@ -2326,6 +2326,7 @@ static_library("browser") {
     "//components/permissions/prediction_service",
     "//components/permissions/prediction_service:prediction_service_messages_proto",
     "//components/plus_addresses",
+    "//components/plus_addresses/webdata",
     "//components/policy:generated",
     "//components/policy/content:safe_sites_navigation_throttle",
     "//components/policy/content/",

@@ -8,6 +8,8 @@ source_set("webdata") {
   sources = [
     "plus_address_table.cc",
     "plus_address_table.h",
+    "plus_address_webdata_service.cc",
+    "plus_address_webdata_service.h",
   ]
   public_deps = [
     "//base",

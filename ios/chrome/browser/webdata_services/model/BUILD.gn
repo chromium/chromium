@@ -12,6 +12,7 @@ source_set("model") {
     "//components/autofill/core/browser",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//components/plus_addresses/webdata",
     "//components/search_engines",
     "//components/signin/public/webdata",
     "//components/webdata_services",

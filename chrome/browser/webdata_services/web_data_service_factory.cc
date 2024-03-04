@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/sql_init_error_message_ids.h"
 #include "chrome/browser/ui/profiles/profile_error_dialog.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/signin/public/webdata/token_web_data.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
@@ -43,6 +44,9 @@ ProfileErrorType ProfileErrorFromWebDataServiceWrapperError(
 
     case WebDataServiceWrapper::ERROR_LOADING_PAYMENT_MANIFEST:
       return ProfileErrorType::DB_PAYMENT_MANIFEST_WEB_DATA;
+
+    case WebDataServiceWrapper::ERROR_LOADING_PLUS_ADDRESS:
+      return ProfileErrorType::DB_WEB_DATA;
 
     default:
       NOTREACHED() << "Unknown WebDataServiceWrapper::ErrorType: "
@@ -122,6 +126,19 @@ WebDataServiceFactory::GetKeywordWebDataForProfile(
   // |wrapper| can be null in Incognito mode.
   return wrapper ? wrapper->GetKeywordWebData()
                  : scoped_refptr<KeywordWebDataService>(nullptr);
+}
+
+// static
+scoped_refptr<plus_addresses::PlusAddressWebDataService>
+WebDataServiceFactory::GetPlusAddressWebDataForProfile(
+    Profile* profile,
+    ServiceAccessType access_type) {
+  WebDataServiceWrapper* wrapper =
+      WebDataServiceFactory::GetForProfile(profile, access_type);
+  // |wrapper| can be null in Incognito mode.
+  return wrapper ? wrapper->GetPlusAddressWebData()
+                 : scoped_refptr<plus_addresses::PlusAddressWebDataService>(
+                       nullptr);
 }
 
 // static

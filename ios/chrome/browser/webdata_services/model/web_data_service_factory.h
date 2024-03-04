@@ -21,6 +21,10 @@ namespace autofill {
 class AutofillWebDataService;
 }
 
+namespace plus_addresses {
+class PlusAddressWebDataService;
+}
+
 namespace ios {
 // Singleton that owns all WebDataServiceWrappers and associates them with
 // ChromeBrowserState.
@@ -49,6 +53,11 @@ class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
   static scoped_refptr<KeywordWebDataService> GetKeywordWebDataForBrowserState(
       ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
+
+  // Returns the PlusAddressWebDataService associated with `browser_state`.
+  static scoped_refptr<plus_addresses::PlusAddressWebDataService>
+  GetPlusAddressWebDataForBrowserState(ChromeBrowserState* browser_state,
+                                       ServiceAccessType access_type);
 
   // Returns the TokenWebData associated with `browser_state`.
   static scoped_refptr<TokenWebData> GetTokenWebDataForBrowserState(
