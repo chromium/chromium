@@ -1,7 +1,3 @@
-# Copyright 2024 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
 # Defines the configuration of Remote Build Execution (RBE).
 
 declare_args() {
@@ -77,13 +73,3 @@ if (is_mac || is_ios) {
     use_remoteexec_links = false
   }
 }
-
-# TODO(crbug.com/326584510): Reclient does not upload `inputs` from C/C++
-# targets. This file is added to `inputs` for all C targets in
-# //build/config/BUILDCONFIG.gn. We work around the bug in Reclient by
-# specifying the file here.
-#
-# This is a comma-delimited list of paths relative to the source tree root. The
-# leading space is important, if the string is non-empty. :)
-rbe_bug_326584510_missing_inputs =
-    " -inputs=build/config/unsafe_buffers_paths.txt"

@@ -386,9 +386,8 @@ if (is_android) {
 
 if (is_clang && !is_nacl) {
   default_compiler_configs += [
-    "//build/config/clang:extra_warnings",
     "//build/config/clang:find_bad_constructs",
-    "//build/config/clang:unsafe_buffers",
+    "//build/config/clang:extra_warnings",
   ]
 }
 
@@ -518,29 +517,6 @@ TESTONLY_AND_VISIBILITY = [
   "visibility",
 ]
 
-# Sets default dependencies for static_library and source_set targets.
-foreach(_target_type,
-        [
-          "static_library",
-          "source_set",
-        ]) {
-  template(_target_type) {
-    target(_target_type, target_name) {
-      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      if (!defined(inputs)) {
-        inputs = []
-      }
-
-      # Consumed by the unsafe-buffers plugin during compile.
-      #
-      # TODO(crbug.com/326584510): Reclient doesn't respect this variable, see
-      # rbe_bug_326584510_missing_inputs in //build/config/rbe.gni.
-      inputs += [ "//build/config/unsafe_buffers_paths.txt" ]
-    }
-  }
-}
-
 # Sets default dependencies for executable and shared_library targets.
 #
 # Variables
@@ -562,15 +538,6 @@ foreach(_target_type,
                              "*",
                              TESTONLY_AND_VISIBILITY + [ "no_default_deps" ])
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      if (!defined(inputs)) {
-        inputs = []
-      }
-
-      # Consumed by the unsafe-buffers plugin during compile.
-      #
-      # TODO(crbug.com/326584510): Reclient doesn't respect this variable, see
-      # rbe_bug_326584510_missing_inputs in //build/config/rbe.gni.
-      inputs += [ "//build/config/unsafe_buffers_paths.txt" ]
       if (!defined(deps)) {
         deps = []
       }
