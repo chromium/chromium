@@ -458,6 +458,7 @@ public class TabGroupModelFilterUnitTest {
         Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, null, TAB1_ID);
         doReturn(TabLaunchType.FROM_TAB_GROUP_UI).when(newTab).getLaunchType();
 
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
         Token tabGroupId = new Token(93L, 42L);
         when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);
 
@@ -466,16 +467,19 @@ public class TabGroupModelFilterUnitTest {
         assertThat(newTab.getRootId(), equalTo(TAB1_ROOT_ID));
         assertEquals(mTab1.getTabGroupId(), tabGroupId);
         assertEquals(mTab1.getTabGroupId(), newTab.getTabGroupId());
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(3));
     }
 
     @Test
     public void addTab_TabLaunchedFromLongPressBackgroundInGroup() {
         Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, null, TAB1_ID);
         doReturn(TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP).when(newTab).getLaunchType();
+        assertNull(mTab1.getTabGroupId());
+        assertNull(newTab.getTabGroupId());
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
 
         Token tabGroupId = new Token(93L, 42L);
         when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);
-
         addTabToTabModel(POSITION1 + 1, newTab);
 
         assertThat(newTab.getRootId(), equalTo(TAB1_ROOT_ID));
@@ -483,6 +487,30 @@ public class TabGroupModelFilterUnitTest {
         assertEquals(mTab1.getTabGroupId(), newTab.getTabGroupId());
 
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(TAB1_ID, mTabGroupModelFilter);
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(3));
+    }
+
+    @Test
+    public void addTab_TabLaunchedFromLongPressBackgroundInGroupToExistingGroup() {
+        Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, null, TAB1_ID);
+        doReturn(TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP).when(newTab).getLaunchType();
+
+        Token tabGroupId = new Token(93L, 42L);
+        when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
+        mTabGroupModelFilter.createSingleTabGroup(mTab1, true);
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(3));
+        verify(mTabGroupModelFilterObserver).didCreateNewGroup(TAB1_ID, mTabGroupModelFilter);
+
+        addTabToTabModel(POSITION1 + 1, newTab);
+
+        assertThat(newTab.getRootId(), equalTo(TAB1_ROOT_ID));
+        assertEquals(mTab1.getTabGroupId(), tabGroupId);
+        assertEquals(mTab1.getTabGroupId(), newTab.getTabGroupId());
+
+        // Verify this isn't called a second time.
+        verify(mTabGroupModelFilterObserver).didCreateNewGroup(TAB1_ID, mTabGroupModelFilter);
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(3));
     }
 
     @Test
@@ -786,7 +814,10 @@ public class TabGroupModelFilterUnitTest {
 
         Token tabGroupId = new Token(374893L, 83942L);
         when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
         mTabGroupModelFilter.createSingleTabGroup(mTab1, true);
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(3));
+
         assertEquals(mTab1.getTabGroupId(), tabGroupId);
         verify(mTabGroupModelFilterObserver)
                 .didCreateNewGroup(mTab1.getRootId(), mTabGroupModelFilter);
@@ -809,6 +840,7 @@ public class TabGroupModelFilterUnitTest {
         verify(mTabGroupModelFilterObserver).didMoveTabOutOfGroup(mTab1, POSITION1);
         assertArrayEquals(mTabs.toArray(), expectedTabModelBeforeUngroup.toArray());
         assertNull(mTab1.getTabGroupId());
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
     }
 
     @Test
@@ -1340,7 +1372,9 @@ public class TabGroupModelFilterUnitTest {
 
         Token tabGroupId = new Token(91234L, 84567L);
         when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
         mTabGroupModelFilter.createSingleTabGroup(mTab4, false);
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(3));
         verify(mTabGroupModelFilterObserver)
                 .didCreateNewGroup(mTab4.getRootId(), mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab4, mTab4.getId());
@@ -1365,6 +1399,7 @@ public class TabGroupModelFilterUnitTest {
         assertThat(mTab1.getRootId(), equalTo(TAB1_ROOT_ID));
         assertNull(mTab1.getTabGroupId());
         assertThat(mTabGroupModelFilter.indexOf(mTab1), equalTo(0));
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(3));
     }
 
     @Test
@@ -1374,7 +1409,9 @@ public class TabGroupModelFilterUnitTest {
 
         Token tabGroupId = new Token(91234L, 84567L);
         when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
         mTabGroupModelFilter.createSingleTabGroup(mTab1, true);
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(3));
 
         assertThat(mTab1.getTabGroupId(), equalTo(tabGroupId));
 
@@ -1394,6 +1431,7 @@ public class TabGroupModelFilterUnitTest {
         assertThat(mTab4.getRootId(), equalTo(TAB4_ROOT_ID));
         assertNull(mTab4.getTabGroupId());
         assertThat(mTabGroupModelFilter.indexOf(mTab4), equalTo(2));
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(3));
     }
 
     @Test

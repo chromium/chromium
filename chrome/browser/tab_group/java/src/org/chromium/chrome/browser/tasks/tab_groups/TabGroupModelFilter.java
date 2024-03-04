@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_groups;
 
-import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +29,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -49,7 +49,7 @@ public class TabGroupModelFilter extends TabModelFilter {
     private Map<Integer, Integer> mRootIdToGroupIndexMap = new HashMap<>();
     private Map<Integer, TabGroup> mRootIdToGroupMap = new HashMap<>();
     private int mCurrentGroupIndex = TabList.INVALID_TAB_INDEX;
-    // The number of groups with at least 2 tabs.
+    // The number of tab groups with 2 tabs or a token based tab group ID.
     private int mActualGroupCount;
     private Tab mAbsentSelectedTab;
     private boolean mShouldRecordUma = true;
@@ -122,6 +122,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         assert ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled();
         assert tab.getTabGroupId() == null;
         tab.setTabGroupId(Token.createRandom());
+        mActualGroupCount++;
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             observer.didCreateNewGroup(tab.getRootId(), this);
@@ -387,6 +388,12 @@ public class TabGroupModelFilter extends TabModelFilter {
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.willMoveTabOutOfGroup(sourceTab, sourceTab.getRootId());
             }
+            // When moving the last tab out of a tab group of size 1 we should decremement the
+            // number of tab groups.
+            if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()
+                    && sourceTab.getTabGroupId() != null) {
+                mActualGroupCount--;
+            }
             sourceTab.setTabGroupId(null);
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didMoveTabOutOfGroup(sourceTab, prevFilterIndex);
@@ -591,20 +598,18 @@ public class TabGroupModelFilter extends TabModelFilter {
         return Collections.unmodifiableList(tabs);
     }
 
-    private Pair<Integer, Token> getParentIds(Tab tab) {
-        if (isTabModelRestored()
+    private boolean shouldUseParentIds(Tab tab) {
+        return isTabModelRestored()
                 && !mIsResetting
                 && ((tab.getLaunchType() == TabLaunchType.FROM_TAB_GROUP_UI
                         || tab.getLaunchType() == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
                         // TODO(https://crbug.com/1194287): Investigates a better solution
                         // without adding the TabLaunchType.FROM_START_SURFACE.
-                        || tab.getLaunchType() == TabLaunchType.FROM_START_SURFACE))) {
-            Tab parentTab = TabModelUtils.getTabById(getTabModel(), tab.getParentId());
-            if (parentTab != null) {
-                return new Pair<>(parentTab.getRootId(), getOrCreateTabGroupId(parentTab));
-            }
-        }
-        return new Pair<>(TabGroup.INVALID_ROOT_ID, null);
+                        || tab.getLaunchType() == TabLaunchType.FROM_START_SURFACE));
+    }
+
+    private Tab getParentTab(Tab tab) {
+        return TabModelUtils.getTabById(getTabModel(), tab.getParentId());
     }
 
     @Override
@@ -613,18 +618,29 @@ public class TabGroupModelFilter extends TabModelFilter {
             throw new IllegalStateException("Attempting to open tab in the wrong model");
         }
 
-        Pair<Integer, Token> parentIds = getParentIds(tab);
-        if (parentIds.first != Tab.INVALID_TAB_ID) {
-            tab.setRootId(parentIds.first);
-            tab.setTabGroupId(parentIds.second);
+        boolean didCreateNewGroup = false;
+        if (shouldUseParentIds(tab)) {
+            Tab parentTab = getParentTab(tab);
+            if (parentTab != null) {
+                Token oldTabGroupId = parentTab.getTabGroupId();
+                Token newTabGroupId = getOrCreateTabGroupId(parentTab);
+                if (!Objects.equals(oldTabGroupId, newTabGroupId)) {
+                    didCreateNewGroup = true;
+                }
+                tab.setRootId(parentTab.getRootId());
+                tab.setTabGroupId(newTabGroupId);
+            }
         }
 
         int rootId = tab.getRootId();
         if (mRootIdToGroupMap.containsKey(rootId)) {
-            boolean wasGroupSizeOfOne = mRootIdToGroupMap.get(rootId).size() == 1;
+            TabGroup group = mRootIdToGroupMap.get(rootId);
+            if (!ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
+                didCreateNewGroup = group.size() == 1;
+            }
             mRootIdToGroupMap.get(rootId).addTab(tab.getId(), getTabModel());
 
-            if (wasGroupSizeOfOne) {
+            if (didCreateNewGroup) {
                 mActualGroupCount++;
                 // TODO(crbug.com/1188370): Update UMA for Context menu creation.
                 if (tab.getLaunchType() == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP) {
@@ -652,6 +668,9 @@ public class TabGroupModelFilter extends TabModelFilter {
                 // index should be based on tab model order. This will offset all other groups
                 // resulting in the index map needing to be regenerated.
                 resetRootIdToGroupIndexMap();
+            }
+            if (isTabInTabGroup(tab)) {
+                mActualGroupCount++;
             }
         }
 
@@ -685,7 +704,11 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         TabGroup group = mRootIdToGroupMap.get(rootId);
         group.removeTab(tab.getId());
-        if (group.size() == 1) mActualGroupCount--;
+        if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
+            if (group.size() == 0) mActualGroupCount--;
+        } else {
+            if (group.size() == 1) mActualGroupCount--;
+        }
         if (group.size() == 0) {
             updateRootIdToGroupIndexMapAfterGroupClosed(rootId);
             mRootIdToGroupIndexMap.remove(rootId);
@@ -920,9 +943,15 @@ public class TabGroupModelFilter extends TabModelFilter {
 
     @Override
     public int getValidPosition(Tab tab, int proposedPosition) {
-        Pair<Integer, Token> parentIds = getParentIds(tab);
-        final int rootId =
-                parentIds.first == Tab.INVALID_TAB_ID ? tab.getRootId() : parentIds.first;
+        int rootId = Tab.INVALID_TAB_ID;
+        if (shouldUseParentIds(tab)) {
+            Tab parentTab = getParentTab(tab);
+            if (parentTab != null) {
+                rootId = parentTab.getRootId();
+            }
+        } else {
+            rootId = tab.getRootId();
+        }
         int newPosition = proposedPosition;
         // If the tab is not in the model and won't be part of a group ensure it is positioned
         // outside any other groups.
