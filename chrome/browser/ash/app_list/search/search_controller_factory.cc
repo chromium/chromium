@@ -44,6 +44,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
+#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
@@ -58,16 +59,6 @@ namespace {
 // Maximum number of results to show for the given type.
 constexpr size_t kMaxAppShortcutResults = 4;
 constexpr size_t kMaxPlayStoreResults = 12;
-
-int AutocompleteProviderTypes() {
-  // We use all the default providers except for the document provider, which
-  // suggests Drive files on enterprise devices. This is disabled to avoid
-  // duplication with search results from DriveFS.
-  int providers = AutocompleteClassifier::DefaultOmniboxProviders() &
-                  ~AutocompleteProvider::TYPE_DOCUMENT;
-  providers |= AutocompleteProvider::TYPE_OPEN_TAB;
-  return providers;
-}
 
 }  // namespace
 
@@ -93,7 +84,7 @@ std::unique_ptr<SearchController> CreateSearchController(
         profile, list_controller, crosapi::CrosapiManager::Get()));
   } else {
     controller->AddProvider(std::make_unique<OmniboxProvider>(
-        profile, list_controller, AutocompleteProviderTypes()));
+        profile, list_controller, crosapi::ProviderTypes()));
   }
 
   controller->AddProvider(std::make_unique<AssistantTextSearchProvider>());
