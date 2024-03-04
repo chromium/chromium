@@ -176,9 +176,6 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   virtual bool ShouldUseGpuMemoryBuffersForVideoFrames(
       bool for_media_stream) const = 0;
 
-  // The GLContextLock must be taken when calling this.
-  virtual unsigned ImageTextureTarget(gfx::BufferFormat format) = 0;
-
   // Pixel format of the hardware video frames created when GpuMemoryBuffers
   // video frames are enabled.
   virtual OutputFormat VideoFrameOutputFormat(

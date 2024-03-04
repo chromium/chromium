@@ -288,14 +288,6 @@ bool GpuVideoAcceleratorFactoriesImpl::ShouldUseGpuMemoryBuffersForVideoFrames(
                           : enable_video_gpu_memory_buffers_;
 }
 
-unsigned GpuVideoAcceleratorFactoriesImpl::ImageTextureTarget(
-    gfx::BufferFormat format) {
-  DCHECK(context_provider_);
-  return gpu::GetBufferTextureTarget(gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-                                     format,
-                                     context_provider_->ContextCapabilities());
-}
-
 media::GpuVideoAcceleratorFactories::OutputFormat
 GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormat(
     media::VideoPixelFormat pixel_format) {

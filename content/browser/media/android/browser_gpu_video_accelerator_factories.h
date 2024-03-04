@@ -57,7 +57,6 @@ class BrowserGpuVideoAcceleratorFactories
       gfx::BufferUsage usage) override;
   bool ShouldUseGpuMemoryBuffersForVideoFrames(
       bool for_media_stream) const override;
-  unsigned ImageTextureTarget(gfx::BufferFormat format) override;
   media::GpuVideoAcceleratorFactories::OutputFormat VideoFrameOutputFormat(
       media::VideoPixelFormat pixel_format) override;
   gpu::SharedImageInterface* SharedImageInterface() override;

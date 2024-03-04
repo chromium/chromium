@@ -156,11 +156,6 @@ bool BrowserGpuVideoAcceleratorFactories::
   return false;
 }
 
-unsigned BrowserGpuVideoAcceleratorFactories::ImageTextureTarget(
-    gfx::BufferFormat format) {
-  return -1;
-}
-
 media::GpuVideoAcceleratorFactories::OutputFormat
 BrowserGpuVideoAcceleratorFactories::VideoFrameOutputFormat(
     media::VideoPixelFormat pixel_format) {
