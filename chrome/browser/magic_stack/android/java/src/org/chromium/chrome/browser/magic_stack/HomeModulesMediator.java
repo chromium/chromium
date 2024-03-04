@@ -306,6 +306,10 @@ public class HomeModulesMediator {
     @VisibleForTesting
     void append(@NonNull SimpleRecyclerViewAdapter.ListItem item) {
         mModel.add(item);
+
+        HomeModulesMetricsUtils.recordModuleBuiltPosition(
+                mHostSurface, item.type, mModel.size() - 1);
+
         if (mModel.size() == 1) {
             mSetVisibilityCallback.onResult(true);
 

@@ -73,6 +73,8 @@ public class HomeModulesMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_CONFIGURATION_TURN_OFF_MODULE = "Settings.TurnOffModule";
 
+    @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE_BUILD = ".Module.Build.";
+
     private static final String HOME_MODULES_SHOW_ALL_MODULES_PARAM = "show_all_modules";
     public static final BooleanCachedFieldTrialParameter HOME_MODULES_SHOW_ALL_MODULES =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
@@ -268,8 +270,12 @@ public class HomeModulesMetricsUtils {
         } else {
             umaName = HISTOGRAM_MAGIC_STACK_NOT_SCROLLABLE;
         }
-        RecordHistogram.recordCount1MHistogram(
-                HISTOGRAM_OS_PREFIX + BrowserUiUtils.getHostName(hostSurface) + umaName, 1);
+        StringBuilder builder = new StringBuilder();
+        builder.append(HISTOGRAM_OS_PREFIX);
+        builder.append(BrowserUiUtils.getHostName(hostSurface));
+        builder.append(umaName);
+        String name = builder.toString();
+        RecordHistogram.recordCount1MHistogram(name, 1);
     }
 
     /**
@@ -281,15 +287,20 @@ public class HomeModulesMetricsUtils {
      */
     public static void recordModuleClickedPosition(
             @HostSurface int hostSurface, @ModuleType int moduleType, int modulePosition) {
-        assert 0 <= modulePosition && modulePosition < ModuleType.NUM_ENTRIES;
-        RecordHistogram.recordCount1MHistogram(
-                HISTOGRAM_OS_PREFIX
-                        + BrowserUiUtils.getHostName(hostSurface)
-                        + HISTOGRAM_MAGIC_STACK_MODULE_CLICK
-                        + getModuleName(moduleType)
-                        + "."
-                        + modulePosition,
-                1);
+        recordUma(hostSurface, HISTOGRAM_MAGIC_STACK_MODULE_CLICK, moduleType, modulePosition);
+    }
+
+    /**
+     * Records the type and position of the module when the home modules are added to the magic
+     * stack.
+     *
+     * @param hostSurface The type of the host surface of the magic stack.
+     * @param moduleType The type of module.
+     * @param modulePosition The position of the module when it is built in home modules.
+     */
+    public static void recordModuleBuiltPosition(
+            @HostSurface int hostSurface, @ModuleType int moduleType, int modulePosition) {
+        recordUma(hostSurface, HISTOGRAM_MAGIC_STACK_MODULE_BUILD, moduleType, modulePosition);
     }
 
     /**
@@ -310,25 +321,49 @@ public class HomeModulesMetricsUtils {
     }
 
     private static void recordUma(
+            @HostSurface int hostSurface,
+            String umaName,
+            @ModuleType int moduleType,
+            int modulePosition) {
+        assert 0 <= modulePosition && modulePosition < ModuleType.NUM_ENTRIES;
+        StringBuilder builder = new StringBuilder();
+        builder.append(HISTOGRAM_OS_PREFIX);
+        builder.append(BrowserUiUtils.getHostName(hostSurface));
+        builder.append(umaName);
+        builder.append(getModuleName(moduleType));
+        builder.append(".");
+        builder.append(modulePosition);
+        String name = builder.toString();
+        RecordHistogram.recordCount1MHistogram(name, 1);
+    }
+
+    private static void recordUma(
             @HostSurface int hostSurface, @ModuleType int moduleType, String umaName) {
-        RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_OS_PREFIX + BrowserUiUtils.getHostName(hostSurface) + umaName,
-                moduleType,
-                ModuleType.NUM_ENTRIES);
+        StringBuilder builder = new StringBuilder();
+        builder.append(HISTOGRAM_OS_PREFIX);
+        builder.append(BrowserUiUtils.getHostName(hostSurface));
+        builder.append(umaName);
+        String name = builder.toString();
+        RecordHistogram.recordEnumeratedHistogram(name, moduleType, ModuleType.NUM_ENTRIES);
     }
 
     private static void recordUma(@HostSurface int hostSurface, String umaName, long timeMs) {
-        RecordHistogram.recordTimesHistogram(
-                HISTOGRAM_OS_PREFIX + BrowserUiUtils.getHostName(hostSurface) + umaName, timeMs);
+        StringBuilder builder = new StringBuilder();
+        builder.append(HISTOGRAM_OS_PREFIX);
+        builder.append(BrowserUiUtils.getHostName(hostSurface));
+        builder.append(umaName);
+        String name = builder.toString();
+        RecordHistogram.recordTimesHistogram(name, timeMs);
     }
 
     private static void recordUma(
             @HostSurface int hostSurface, @ModuleType int moduleType, String umaName, long timeMs) {
-        RecordHistogram.recordTimesHistogram(
-                HISTOGRAM_OS_PREFIX
-                        + BrowserUiUtils.getHostName(hostSurface)
-                        + umaName
-                        + getModuleName(moduleType),
-                timeMs);
+        StringBuilder builder = new StringBuilder();
+        builder.append(HISTOGRAM_OS_PREFIX);
+        builder.append(BrowserUiUtils.getHostName(hostSurface));
+        builder.append(umaName);
+        builder.append(getModuleName(moduleType));
+        String name = builder.toString();
+        RecordHistogram.recordTimesHistogram(name, timeMs);
     }
 }
