@@ -121,10 +121,16 @@ class CONTENT_EXPORT PreloadingData {
   // is passed by the caller to verify that both predicted and navigated URLs
   // match. `confidence` signifies the confidence percentage of correct
   // predictor's preloading prediction.
+  //
+  // `triggering_primary_page_source_id` is a UKM source ID of the page that
+  // triggered preloading. This is used for recording the metrics for user
+  // visible primary pages (Preloading_Prediction_PreviousPrimaryPage) to
+  // measure the impact of PreloadingPrediction on the page user is viewing.
   virtual void AddPreloadingPrediction(
       PreloadingPredictor predictor,
       int64_t confidence,
-      PreloadingURLMatchCallback url_match_predicate) = 0;
+      PreloadingURLMatchCallback url_match_predicate,
+      ukm::SourceId triggering_primary_page_source_id) = 0;
 
   // To calculate the recall score of the `predictor`, we need to know if the
   // `predictor` is potentially responsible for predicting the next navigation

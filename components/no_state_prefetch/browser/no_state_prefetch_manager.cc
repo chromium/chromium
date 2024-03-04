@@ -245,12 +245,15 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
     int64_t confidence = 100;
 
     // Create PreloadingPrediction and PreloadingAttempt for NoStatePrefetch.
+    ukm::SourceId triggered_primary_page_source_id =
+        source_web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
     preloading_data->AddPreloadingPrediction(
-        content::preloading_predictor::kLinkRel, confidence, same_url_matcher);
+        content::preloading_predictor::kLinkRel, confidence, same_url_matcher,
+        triggered_primary_page_source_id);
     attempt = preloading_data->AddPreloadingAttempt(
         content::preloading_predictor::kLinkRel,
         content::PreloadingType::kNoStatePrefetch, same_url_matcher,
-        source_web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId());
+        triggered_primary_page_source_id);
   }
   return StartPrefetchingWithPreconnectFallback(
       origin, url, referrer, initiator_origin, gfx::Rect(size),

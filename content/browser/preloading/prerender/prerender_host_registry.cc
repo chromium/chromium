@@ -1305,11 +1305,14 @@ void PrerenderHostRegistry::BackNavigationLikely(
 
   PreloadingURLMatchCallback same_url_matcher =
       PreloadingData::GetSameURLMatcher(back_url);
+  ukm::SourceId triggered_primary_page_source_id =
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   preloading_data->AddPreloadingPrediction(predictor, /*confidence=*/100,
-                                           same_url_matcher);
+                                           same_url_matcher,
+                                           triggered_primary_page_source_id);
   PreloadingAttempt* attempt = preloading_data->AddPreloadingAttempt(
       predictor, PreloadingType::kPrerender, same_url_matcher,
-      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+      triggered_primary_page_source_id);
 
   if (back_entry->GetMainFrameDocumentSequenceNumber() ==
       controller.GetLastCommittedEntry()

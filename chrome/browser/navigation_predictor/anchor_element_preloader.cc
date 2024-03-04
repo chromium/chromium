@@ -67,13 +67,15 @@ void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
   // For now we add a prediction with a confidence of 100. In the future we will
   // likely compute the confidence by looking at different factors (e.g. anchor
   // element dimensions, last time since scroll, etc.).
+  ukm::SourceId triggered_primary_page_source_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   preloading_data->AddPreloadingPrediction(
       chrome_preloading_predictor::kPointerDownOnAnchor,
-      /*confidence=*/100, match_callback);
+      /*confidence=*/100, match_callback, triggered_primary_page_source_id);
   content::PreloadingAttempt* attempt = preloading_data->AddPreloadingAttempt(
       chrome_preloading_predictor::kPointerDownOnAnchor,
       content::PreloadingType::kPreconnect, match_callback,
-      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId());
+      triggered_primary_page_source_id);
 
   if (content::PreloadingEligibility eligibility =
           prefetch::IsSomePreloadingEnabled(

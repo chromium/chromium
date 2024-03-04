@@ -133,9 +133,12 @@ void PreloadingDecider::AddPreloadingPrediction(const GURL& url,
       WebContents::FromRenderFrameHost(&render_frame_host());
   auto* preloading_data =
       PreloadingData::GetOrCreateForWebContents(web_contents);
+  ukm::SourceId triggered_primary_page_source_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   preloading_data->AddPreloadingPrediction(
       predictor,
-      /*confidence=*/100, PreloadingData::GetSameURLMatcher(url));
+      /*confidence=*/100, PreloadingData::GetSameURLMatcher(url),
+      triggered_primary_page_source_id);
 }
 
 void PreloadingDecider::OnPointerDown(const GURL& url) {
@@ -344,12 +347,30 @@ void PreloadingDecider::UpdateSpeculationCandidates(
 
     // TODO(crbug.com/1341019): Pass the action requested by speculation rules
     // to PreloadingPrediction.
-    PreloadingTriggerType trigger_type =
-        PreloadingTriggerTypeFromSpeculationInjectionType(
-            candidate->injection_type);
-    PreloadingPredictor predictor =
-        GetPredictorForPreloadingTriggerType(trigger_type);
-    AddPreloadingPrediction(candidate->url, std::move(predictor));
+    // A new web contents will be created for the case of prerendering into a
+    // new tab, so recording PreloadingPrediction is delayed until
+    // PrerenderNewTabHandle::StartPrerendering.
+    bool add_preloading_prediction = false;
+    switch (candidate->action) {
+      case blink::mojom::SpeculationAction::kPrefetch:
+      case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
+        add_preloading_prediction = true;
+        break;
+      case blink::mojom::SpeculationAction::kPrerender:
+        add_preloading_prediction =
+            candidate->target_browsing_context_name_hint !=
+            blink::mojom::SpeculationTargetHint::kBlank;
+        break;
+    }
+
+    if (add_preloading_prediction) {
+      PreloadingTriggerType trigger_type =
+          PreloadingTriggerTypeFromSpeculationInjectionType(
+              candidate->injection_type);
+      PreloadingPredictor predictor =
+          GetPredictorForPreloadingTriggerType(trigger_type);
+      AddPreloadingPrediction(candidate->url, std::move(predictor));
+    }
 
     return false;
   };

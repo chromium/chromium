@@ -206,6 +206,8 @@ using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
 using ukm::builders::Preloading_Attempt;
 using ukm::builders::Preloading_Attempt_PreviousPrimaryPage;
 using ukm::builders::Preloading_Prediction;
+using ukm::builders::Preloading_Prediction_PreviousPrimaryPage;
+
 static const auto kMockElapsedTime =
     base::ScopedMockElapsedTimersForTest::kMockElapsedTime;
 
@@ -258,6 +260,32 @@ class PreloadingAttemptPreviousPrimaryPageUkmEntryBuilder {
       metrics.insert({Preloading_Attempt::kSpeculationEagernessName,
                       static_cast<int64_t>(eagerness.value())});
     }
+    return UkmEntry{source_id, std::move(metrics)};
+  }
+
+ private:
+  PreloadingPredictor predictor_;
+};
+
+// Utility class to make building expected
+// TestUkmRecorder::HumanReadableUkmEntry for EXPECT_EQ for
+// PreloadingPredictionPreviousPrimaryPage.
+class PreloadingPredictionPreviousPrimaryPageUkmEntryBuilder {
+ public:
+  explicit PreloadingPredictionPreviousPrimaryPageUkmEntryBuilder(
+      PreloadingPredictor predictor)
+      : predictor_(predictor) {}
+
+  // Unlike PreloadingPredictionUkmEntryBuilder, this method assumes a
+  // navigation has not occurred thus `TimeToNextNavigation` is not set.
+  ukm::TestUkmRecorder::HumanReadableUkmEntry
+  BuildEntry(ukm::SourceId source_id, int confidence, bool accurate) const {
+    std::map<std::string, int64_t> metrics = {
+        {Preloading_Prediction::kConfidenceName,
+         static_cast<int64_t>(confidence)},
+        {Preloading_Attempt::kPreloadingPredictorName,
+         static_cast<int64_t>(predictor_.ukm_value())},
+        {Preloading_Prediction::kAccuratePredictionName, accurate ? 1 : 0}};
     return UkmEntry{source_id, std::move(metrics)};
   }
 
@@ -336,6 +364,9 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     prediction_ukm_entry_builder_ =
         std::make_unique<test::PreloadingPredictionUkmEntryBuilder>(
             PredictorToExpectInUkm());
+    prediction_previous_ukm_entry_builder_ = std::make_unique<
+        PreloadingPredictionPreviousPrimaryPageUkmEntryBuilder>(
+        PredictorToExpectInUkm());
     ssl_server_.AddDefaultHandlers(GetTestDataFilePath());
     ssl_server_.SetSSLConfig(
         net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -542,6 +573,11 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     return *prediction_ukm_entry_builder_;
   }
 
+  const PreloadingPredictionPreviousPrimaryPageUkmEntryBuilder&
+  prediction_previous_ukm_entry_builder() {
+    return *prediction_previous_ukm_entry_builder_;
+  }
+
   void ExpectPreloadingAttemptUkm(
       const std::vector<UkmEntry>& expected_attempt_entries) {
     test::ExpectPreloadingAttemptUkm(*test_ukm_recorder(),
@@ -563,6 +599,17 @@ class PrerenderBrowserTest : public ContentBrowserTest,
       const std::vector<UkmEntry>& expected_prediction_entries) {
     test::ExpectPreloadingPredictionUkm(*test_ukm_recorder(),
                                         expected_prediction_entries);
+  }
+
+  void ExpectPreloadingPredictioPreviousPrimaryPageUkm(
+      const UkmEntry& expected_prediction_entry) {
+    auto prediction_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Prediction_PreviousPrimaryPage::kEntryName,
+        test::kPreloadingPredictionUkmMetrics);
+    ASSERT_EQ(prediction_entries.size(), 1u);
+    EXPECT_EQ(prediction_entries[0], expected_prediction_entry)
+        << test::ActualVsExpectedUkmEntryToString(prediction_entries[0],
+                                                  expected_prediction_entry);
   }
 
   void TestHostPrerenderingState(const GURL& prerender_url) {
@@ -769,6 +816,8 @@ class PrerenderBrowserTest : public ContentBrowserTest,
       attempt_previous_ukm_entry_builder_;
   std::unique_ptr<test::PreloadingPredictionUkmEntryBuilder>
       prediction_ukm_entry_builder_;
+  std::unique_ptr<PreloadingPredictionPreviousPrimaryPageUkmEntryBuilder>
+      prediction_previous_ukm_entry_builder_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
   // Disable sampling of UKM preloading logs.
@@ -1437,6 +1486,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       /*ready_time=*/kMockElapsedTime,
       blink::mojom::SpeculationEagerness::kEager)});
 
+  ExpectPreloadingPredictionUkm({prediction_ukm_entry_builder().BuildEntry(
+      ukm_source_id,
+      /*confidence=*/100,
+      /*accurate_prediction=*/true)});
+
   // The navigation occurred in a new WebContents, so the original WebContents
   // should still be showing the initial trigger page.
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
@@ -1529,6 +1583,11 @@ IN_PROC_BROWSER_TEST_F(
       /*accurate=*/true,
       /*ready_time=*/kMockElapsedTime,
       blink::mojom::SpeculationEagerness::kEager)});
+
+  ExpectPreloadingPredictionUkm({prediction_ukm_entry_builder().BuildEntry(
+      ukm_source_id,
+      /*confidence=*/100,
+      /*accurate_prediction=*/true)});
 
   // The navigation occurred in a new WebContents, so the original WebContents
   // should still be showing the initial trigger page.
@@ -1649,6 +1708,11 @@ IN_PROC_BROWSER_TEST_F(
           /*accurate=*/false,
           /*ready_time=*/kMockElapsedTime,
           blink::mojom::SpeculationEagerness::kEager));
+  ExpectPreloadingPredictioPreviousPrimaryPageUkm(
+      {prediction_previous_ukm_entry_builder().BuildEntry(
+          triggering_primary_page_source_id,
+          /*confidence=*/100,
+          /*accurate=*/false)});
 }
 
 // Tests that window.open() annotated with "_blank" and "noopener" can activate

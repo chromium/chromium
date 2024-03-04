@@ -82,6 +82,11 @@ int PrerenderNewTabHandle::StartPrerendering(
       static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
           preloading_predictor, PreloadingType::kPrerender,
           std::move(same_url_matcher), triggered_primary_page_source_id));
+  preloading_data->AddPreloadingPrediction(
+      preloading_predictor,
+      /*confidence=*/100,
+      PreloadingData::GetSameURLMatcher(attributes_.prerendering_url),
+      triggered_primary_page_source_id);
   CHECK(attributes_.eagerness.has_value());
   preloading_attempt->SetSpeculationEagerness(attributes_.eagerness.value());
 

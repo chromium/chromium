@@ -76,7 +76,8 @@ class CONTENT_EXPORT PreloadingDataImpl
   void AddPreloadingPrediction(
       PreloadingPredictor predictor,
       int64_t confidence,
-      PreloadingURLMatchCallback url_match_predicate) override;
+      PreloadingURLMatchCallback url_match_predicate,
+      ukm::SourceId triggering_primary_page_source_id) override;
   void SetIsNavigationInDomainCallback(
       PreloadingPredictor predictor,
       PredictorDomainCallback is_navigation_in_domain_callback) override;

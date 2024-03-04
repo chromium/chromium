@@ -120,7 +120,8 @@ PreloadingAttempt* PreloadingDataImpl::AddPreloadingAttempt(
 void PreloadingDataImpl::AddPreloadingPrediction(
     PreloadingPredictor predictor,
     int64_t confidence,
-    PreloadingURLMatchCallback url_match_predicate) {
+    PreloadingURLMatchCallback url_match_predicate,
+    ukm::SourceId triggering_primary_page_source_id) {
   // Cross-check that we set confidence percentage in the limits.
   DCHECK(confidence >= 0 && confidence <= 100);
 
@@ -128,11 +129,8 @@ void PreloadingDataImpl::AddPreloadingPrediction(
   // impact of PreloadingPredictions on the page user is viewing.
   // TODO(crbug.com/1330783): Extend this for non-primary page and inner
   // WebContents preloading predictions.
-  ukm::SourceId triggered_primary_page_source_id =
-      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-
   auto prediction = std::make_unique<PreloadingPrediction>(
-      predictor, confidence, triggered_primary_page_source_id,
+      predictor, confidence, triggering_primary_page_source_id,
       std::move(url_match_predicate));
   preloading_predictions_.push_back(std::move(prediction));
 }
