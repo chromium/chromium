@@ -465,10 +465,6 @@ void InProcessBrowserTest::Initialize() {
   launch_browser_for_testing_ =
       std::make_unique<ash::full_restore::ScopedLaunchBrowserForTesting>();
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  CertDbInitializerFactory::GetInstance()
-      ->SetCreateWithBrowserContextForTesting(/*should_create=*/false);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 InProcessBrowserTest::~InProcessBrowserTest() {

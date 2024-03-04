@@ -333,6 +333,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
   std::set<std::string> guest_active_services {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     "CastNotificationControllerLacros",
+    "CertDbInitializerFactory",
     "CleanupManagerLacros",
     "ClipboardAPI",
     "ExternalLogoutRequestEventHandler",

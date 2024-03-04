@@ -32,8 +32,6 @@ CertDbInitializerFactory::CertDbInitializerFactory()
           "CertDbInitializerFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
@@ -61,8 +59,4 @@ CertDbInitializerFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<CertDbInitializerImpl>(profile);
   result->Start();
   return result;
-}
-
-bool CertDbInitializerFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }
