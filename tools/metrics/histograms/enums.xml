@@ -18710,6 +18710,7 @@ from previous Chrome versions.
   <int value="-977476498" label="disable-eol-notification"/>
   <int value="-975787829" label="AutofillProfileServerValidation:enabled"/>
   <int value="-974882918" label="WebXRIncubations:disabled"/>
+  <int value="-974749863" label="LiveCaptionMultiLanguage:disabled"/>
   <int value="-974461595" label="OmniboxPreserveLongerShortcutsText:enabled"/>
   <int value="-974378602" label="WebAuthenticationCable:disabled"/>
   <int value="-973714709"
@@ -21391,6 +21392,7 @@ from previous Chrome versions.
   <int value="264609083" label="PasswordDomainCapabilitiesFetching:disabled"/>
   <int value="264896911"
       label="AutofillEnableCardBenefitsForAmericanExpress:disabled"/>
+  <int value="264973493" label="CrosExpandSodaLanguages:disabled"/>
   <int value="265140282" label="Prerender2:disabled"/>
   <int value="265449858" label="WebBluetoothRequestLargerMtu:enabled"/>
   <int value="265830810" label="BackgroundTaskComponentUpdate:enabled"/>
@@ -23319,6 +23321,7 @@ from previous Chrome versions.
   <int value="1142788238" label="FontCacheScaling:disabled"/>
   <int value="1142970266"
       label="SignedExchangePrefetchCacheForNavigations:disabled"/>
+  <int value="1146944555" label="CrosExpandSodaLanguages:enabled"/>
   <int value="1147703885" label="SecondaryGoogleAccountUsage:enabled"/>
   <int value="1147924185" label="enable-navigation-predictor-renderer-warmup"/>
   <int value="1148284632" label="NewTabPageUIMd:disabled"/>
@@ -25265,6 +25268,7 @@ from previous Chrome versions.
   <int value="2009362691" label="AllowStartingServiceManagerOnly:enabled"/>
   <int value="2009697597"
       label="DownloadServiceForegroundSessionIOSFeature:disabled"/>
+  <int value="2011873998" label="LiveCaptionMultiLanguage:enabled"/>
   <int value="2013589943" label="CrOSLateBootCrOSSOUL:disabled"/>
   <int value="2013593624"
       label="HappinessTrackingSurveysForDesktopDemo:enabled"/>

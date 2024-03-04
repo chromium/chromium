@@ -4732,6 +4732,16 @@ const char kEnableAccessibilityLiveCaptionDescription[] =
     "media playing in Chrome. Turn the feature on in "
     "chrome://settings/accessibility.";
 
+const char kEnableLiveCaptionMultilangName[] = "Multilingual Live Caption";
+const char kEnableLiveCaptionMultilangDescription[] =
+    "Enables the multilingual Live Caption Feature which allows "
+    "for many language choices and automated language choices.";
+
+const char kEnableCrOSSodaLanguagesName[] = "SODA language expansion";
+const char kEnableCrOSSodaLanguagesDescription[] =
+    "Enable language expansion for SODA on device to "
+    "impact dictation and Live Captions.";
+
 const char kEnableMantaServiceName[] = "Enable Manta Service";
 const char kEnableMantaServiceDescription[] =
     "Enables the profile keyed Manta service at startup.";

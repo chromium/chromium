@@ -2749,6 +2749,12 @@ extern const char kEnablePolicyTestPageDescription[];
 extern const char kEnableAccessibilityLiveCaptionName[];
 extern const char kEnableAccessibilityLiveCaptionDescription[];
 
+extern const char kEnableLiveCaptionMultilangName[];
+extern const char kEnableLiveCaptionMultilangDescription[];
+
+extern const char kEnableCrOSSodaLanguagesName[];
+extern const char kEnableCrOSSodaLanguagesDescription[];
+
 extern const char kEnableMantaServiceName[];
 extern const char kEnableMantaServiceDescription[];
 

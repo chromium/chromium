@@ -2276,6 +2276,10 @@
     "owners": [ "tbansal@chromium.org", "chrome-intelligence-core@chromium.org"],
     "expiry_milestone":120
   },
+  {"name": "enable-chromeos-soda-languages",
+   "owners": ["robsc@chromium.org", "amoylan@chromium.org"],
+   "expiry_milestone": 140
+  },
   {
     "name": "enable-cloud-identifiers",
     "owners": ["hendrich@chromium.org", "asully@chromium.org"],
@@ -3094,6 +3098,10 @@
     // Used for testing libinput to check if it works better than the gestures
     // library to handle touchpad.
     "expiry_milestone": -1
+  },
+  {"name": "enable-live-caption-multilang",
+   "owners": ["evliu@google.com", "robsc@chromium.org", "amoylan@chromium.org"],
+   "expiry_milestone": 140
   },
   {
     "name": "enable-lock-screen-notification",

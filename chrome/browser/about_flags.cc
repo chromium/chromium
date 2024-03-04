@@ -157,6 +157,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/site_isolation/features.h"
+#include "components/soda/soda_features.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/sync/base/command_line_switches.h"
@@ -7059,6 +7060,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAccessibilityLiveCaptionName,
      flag_descriptions::kEnableAccessibilityLiveCaptionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kLiveCaption)},
+    {"enable-live-caption-multilang",
+     flag_descriptions::kEnableLiveCaptionMultilangName,
+     flag_descriptions::kEnableLiveCaptionMultilangDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kLiveCaptionMultiLanguage)},
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-chromeos-soda-languages",
+     flag_descriptions::kEnableCrOSSodaLanguagesName,
+     flag_descriptions::kEnableCrOSSodaLanguagesDescription,
+     kOsCrOS | kOsLacros, FEATURE_VALUE_TYPE(speech::kCrosExpandSodaLanguages)},
+#endif
 
     {"read-anything", flag_descriptions::kReadAnythingName,
      flag_descriptions::kReadAnythingDescription, kOsDesktop,
