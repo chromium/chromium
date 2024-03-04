@@ -155,8 +155,8 @@ ChromeLabsItemView::ChromeLabsItemView(
   // descriptions when the bubble first opens. Experiment name and description
   // will be read out when a user enters the grouping.
   // See crbug.com/1145666 Accessibility review.
-  experiment_name_->GetViewAccessibility().OverrideIsIgnored(true);
-  experiment_description->GetViewAccessibility().OverrideIsIgnored(true);
+  experiment_name_->GetViewAccessibility().SetIsIgnored(true);
+  experiment_description->GetViewAccessibility().SetIsIgnored(true);
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
   if (!lab.visible_name.empty())
     GetViewAccessibility().SetName(lab.visible_name,

@@ -590,7 +590,7 @@ void PaymentHandlerWebFlowViewController::LoadProgressChanged(double progress) {
 
     // The progress bar is accessibility-visible while loading, and then ignored
     // once it just serves as a separator.
-    progress_bar_->GetViewAccessibility().OverrideIsIgnored(progress == 1.0);
+    progress_bar_->GetViewAccessibility().SetIsIgnored(progress == 1.0);
     progress_bar_->GetViewAccessibility().OverrideIsLeaf(progress == 1.0);
   } else {
     progress_bar_->SetValue(progress);

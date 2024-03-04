@@ -135,7 +135,7 @@ class SheetView : public views::BoxLayoutView, public views::FocusTraversable {
     // Screen readers do not ignore invisible elements, so force the screen
     // reader to skip invisible sheet views by making it an ignored leaf node in
     // the accessibility tree.
-    GetViewAccessibility().OverrideIsIgnored(!visible);
+    GetViewAccessibility().SetIsIgnored(!visible);
     GetViewAccessibility().OverrideIsLeaf(!visible);
   }
 

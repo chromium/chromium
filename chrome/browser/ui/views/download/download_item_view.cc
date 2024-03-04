@@ -307,7 +307,7 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
   file_name_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   file_name_label_->SetTextContext(CONTEXT_DOWNLOAD_SHELF);
   file_name_label_->SetAutoColorReadabilityEnabled(false);
-  file_name_label_->GetViewAccessibility().OverrideIsIgnored(true);
+  file_name_label_->GetViewAccessibility().SetIsIgnored(true);
   const std::u16string filename = ElidedFilename(*file_name_label_);
   file_name_label_->SetText(filename);
   file_name_label_->SetCanProcessEventsWithinSubtree(false);
@@ -801,7 +801,7 @@ void DownloadItemView::UpdateLabels() {
     const auto text_and_style = GetStatusTextAndStyle();
     status_label_->SetText(text_and_style.first);
     status_label_->SetTextStyle(text_and_style.second);
-    status_label_->GetViewAccessibility().OverrideIsIgnored(
+    status_label_->GetViewAccessibility().SetIsIgnored(
         status_label_->GetText().empty());
   }
 

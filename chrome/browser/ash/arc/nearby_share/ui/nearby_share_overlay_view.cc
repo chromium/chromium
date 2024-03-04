@@ -41,7 +41,7 @@ void NearbyShareOverlayView::AddedToWidget() {
     return;
 
   auto& view_ax = GetWidget()->GetRootView()->GetViewAccessibility();
-  view_ax.OverrideIsIgnored(true);
+  view_ax.SetIsIgnored(true);
 }
 
 NearbyShareOverlayView::NearbyShareOverlayView(views::View* child_view)

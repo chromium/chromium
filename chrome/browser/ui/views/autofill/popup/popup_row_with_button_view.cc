@@ -168,7 +168,7 @@ PopupRowWithButtonView::PopupRowWithButtonView(
   button_placeholder_->SetPreferredSize(button->GetPreferredSize());
   button_ = button_placeholder_->AddChildView(std::move(button));
   button_->SetVisible(ShouldButtonBeVisible());
-  button_->GetViewAccessibility().OverrideIsIgnored(true);
+  button_->GetViewAccessibility().SetIsIgnored(true);
   button_->SetButtonController(std::make_unique<ButtonController>(
       button_, this,
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(

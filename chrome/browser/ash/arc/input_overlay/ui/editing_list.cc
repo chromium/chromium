@@ -128,7 +128,7 @@ class EditingList::AddContainerButton : public views::Button {
     // Add `add_button_` and apply design style.
     add_button_ = AddChildView(std::make_unique<views::LabelButton>(callback));
     // Ignore `add_button_` for the screen reader.
-    add_button_->GetViewAccessibility().OverrideIsIgnored(true);
+    add_button_->GetViewAccessibility().SetIsIgnored(true);
     add_button_->SetBackground(views::CreateThemedRoundedRectBackground(
         cros_tokens::kCrosSysPrimary, kAddButtonCornerRadius));
     add_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(6, 6)));

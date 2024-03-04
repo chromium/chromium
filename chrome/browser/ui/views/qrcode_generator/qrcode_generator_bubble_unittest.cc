@@ -116,7 +116,7 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
 
   bool ErrorLabelHiddenAndA11yIgnored() {
     return !error_label()->GetVisible() &&
-           error_label()->GetViewAccessibility().IsIgnored();
+           error_label()->GetViewAccessibility().GetIsIgnored();
   }
 
  private:

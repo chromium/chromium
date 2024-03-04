@@ -177,12 +177,12 @@ void QRCodeGeneratorBubble::DisplayError(qr_code_generator::Error error) {
       ShrinkAndHideDisplay(center_error_label_);
       DisplayPlaceholderImage();
       bottom_error_label_->SetVisible(true);
-      bottom_error_label_->GetViewAccessibility().OverrideIsIgnored(false);
+      bottom_error_label_->GetViewAccessibility().SetIsIgnored(false);
       break;
     case qr_code_generator::Error::kUnknownError:
       ShrinkAndHideDisplay(qr_code_image_);
       bottom_error_label_->SetVisible(false);
-      bottom_error_label_->GetViewAccessibility().OverrideIsIgnored(true);
+      bottom_error_label_->GetViewAccessibility().SetIsIgnored(true);
       center_error_label_->SetPreferredSize(GetQRCodeImageSize());
       center_error_label_->SetVisible(true);
       break;
@@ -192,7 +192,7 @@ void QRCodeGeneratorBubble::DisplayError(qr_code_generator::Error error) {
 void QRCodeGeneratorBubble::HideErrors(bool enable_button) {
   ShrinkAndHideDisplay(center_error_label_);
   bottom_error_label_->SetVisible(false);
-  bottom_error_label_->GetViewAccessibility().OverrideIsIgnored(true);
+  bottom_error_label_->GetViewAccessibility().SetIsIgnored(true);
   copy_button_->SetEnabled(enable_button);
   download_button_->SetEnabled(enable_button);
 }
@@ -284,7 +284,7 @@ void QRCodeGeneratorBubble::Init() {
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   bottom_error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   bottom_error_label->SetVisible(false);
-  bottom_error_label->GetViewAccessibility().OverrideIsIgnored(true);
+  bottom_error_label->GetViewAccessibility().SetIsIgnored(true);
   auto* bottom_error_container = AddChildView(std::make_unique<views::View>());
   bottom_error_container->SetUseDefaultFillLayout(true);
   bottom_error_label_ =

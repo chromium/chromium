@@ -133,7 +133,7 @@ void PaymentRequestDialogView::ShowErrorMessage() {
 void PaymentRequestDialogView::ShowProcessingSpinner() {
   throbber_->Start();
   throbber_overlay_->SetVisible(true);
-  throbber_overlay_->GetViewAccessibility().OverrideIsIgnored(false);
+  throbber_overlay_->GetViewAccessibility().SetIsIgnored(false);
   throbber_overlay_->GetViewAccessibility().OverrideIsLeaf(false);
   if (observer_for_testing_)
     observer_for_testing_->OnProcessingSpinnerShown();
@@ -421,7 +421,7 @@ void PaymentRequestDialogView::HideProcessingSpinner() {
   // Screen readers do not ignore invisible elements, so force the screen
   // reader to skip the invisible throbber by making it an ignored leaf node in
   // the accessibility tree.
-  throbber_overlay_->GetViewAccessibility().OverrideIsIgnored(true);
+  throbber_overlay_->GetViewAccessibility().SetIsIgnored(true);
   throbber_overlay_->GetViewAccessibility().OverrideIsLeaf(true);
   if (observer_for_testing_)
     observer_for_testing_->OnProcessingSpinnerHidden();

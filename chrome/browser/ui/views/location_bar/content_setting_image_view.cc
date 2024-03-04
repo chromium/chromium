@@ -139,14 +139,14 @@ void ContentSettingImageView::Update() {
 
   if (!content_setting_image_model_->is_visible()) {
     SetVisible(false);
-    GetViewAccessibility().OverrideIsIgnored(true);
+    GetViewAccessibility().SetIsIgnored(true);
     critical_promo_bubble_.reset();
     return;
   }
   DCHECK(web_contents);
   UpdateImage();
   SetVisible(true);
-  GetViewAccessibility().OverrideIsIgnored(false);
+  GetViewAccessibility().SetIsIgnored(false);
   // An alert role is required in order to fire the alert event.
   SetAccessibleRole(ax::mojom::Role::kAlert);
 

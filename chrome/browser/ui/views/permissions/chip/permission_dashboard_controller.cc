@@ -149,7 +149,7 @@ bool PermissionDashboardController::Update(
     indicator_chip->SetTheme(PermissionChipTheme::kInUseActivityIndicator);
   }
 
-  indicator_chip->GetViewAccessibility().OverrideIsIgnored(false);
+  indicator_chip->GetViewAccessibility().SetIsIgnored(false);
   indicator_chip->SetTooltipText(indicator_model->get_tooltip());
 
   if (request_chip_controller_->is_confirmation_showing()) {
@@ -228,7 +228,7 @@ void PermissionDashboardController::HideIndicators() {
 
   permission_dashboard_view_->GetIndicatorChip()
       ->GetViewAccessibility()
-      .OverrideIsIgnored(true);
+      .SetIsIgnored(true);
   permission_dashboard_view_->GetIndicatorChip()->SetVisible(false);
   permission_dashboard_view_->GetDividerView()->SetVisible(false);
   if (permission_dashboard_view_->GetRequestChip()->GetVisible()) {
