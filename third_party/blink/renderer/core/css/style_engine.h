@@ -612,7 +612,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // after all.
   void UpdateStyleForNonEligibleContainer(Element& container);
   // Updates the style of `element`, and descendants if needed.
-  // The provided `try_set` represents the declaration block from a @try rule.
+  // The provided `try_set` represents the declaration block from a
+  // @position-try rule.
   void UpdateStyleForOutOfFlow(Element& element,
                                const CSSPropertyValueSet* try_set,
                                Length::AnchorEvaluator*);

@@ -146,6 +146,15 @@ selectlist::-internal-selectlist-listbox,
 selectlist > listbox {
   min-block-size: 1lh;
   position-fallback: -internal-selectlist-listbox-default-fallbacks;
+  position-try-options:
+    -internal-selectlist-listbox-default,
+    -internal-selectlist-listbox-reverse-block,
+    -internal-selectlist-listbox-reverse-inline,
+    -internal-selectlist-listbox-reverse-both,
+    -internal-selectlist-listbox-default-fill,
+    -internal-selectlist-listbox-reverse-block-fill,
+    -internal-selectlist-listbox-reverse-inline-fill,
+    -internal-selectlist-listbox-reverse-both-fill;
 }
 
 /* TODO(crbug.com/40279608): Use automatic fallbacks */
@@ -197,9 +206,59 @@ selectlist > listbox {
   }
 }
 
+/* Fallbacks without vertical scrolling */
+@position-try -internal-selectlist-listbox-default {
+  inset-block-start: anchor(self-end);
+  inset-inline-start: anchor(self-start);
+}
+@position-try -internal-selectlist-listbox-reverse-block {
+  /* Reverse block axis */
+  inset-block-end: anchor(self-start);
+  inset-inline-start: anchor(self-start);
+}
+@position-try -internal-selectlist-listbox-reverse-inline {
+  /* Reverse inline axis */
+  inset-block-start: anchor(self-end);
+  inset-inline-end: anchor(self-end);
+}
+@position-try -internal-selectlist-listbox-reverse-both {
+  /* Reverse both axes */
+  inset-block-end: anchor(self-start);
+  inset-inline-end: anchor(self-end);
+}
+/* Fallbacks with vertical scrolling */
+@position-try -internal-selectlist-listbox-default-fill {
+  inset-block-start: anchor(self-end);
+  inset-inline-start: anchor(self-start);
+  block-size: -webkit-fill-available;
+}
+@position-try -internal-selectlist-listbox-reverse-block-fill {
+  /* Reverse block axis */
+  inset-block-end: anchor(self-start);
+  inset-inline-start: anchor(self-start);
+  block-size: -webkit-fill-available;
+}
+@position-try -internal-selectlist-listbox-reverse-inline-fill {
+  /* Reverse inline axis */
+  inset-block-start: anchor(self-end);
+  inset-inline-end: anchor(self-end);
+  block-size: -webkit-fill-available;
+}
+@position-try -internal-selectlist-listbox-reverse-both-fill {
+  /* Reverse both axes */
+  inset-block-end: anchor(self-start);
+  inset-inline-end: anchor(self-end);
+  block-size: -webkit-fill-available;
+}
+
 selectlist::-internal-selectlist-preview {
   min-block-size: anchor-size(self-block);
   position-fallback: -internal-selectlist-preview-default-fallbacks;
+  position-try-options:
+    -internal-selectlist-preview-default,
+    -internal-selectlist-preview-reverse-block,
+    -internal-selectlist-preview-reverse-inline,
+    -internal-selectlist-preview-reverse-both;
   background-color: light-dark(#E8F0FE, rgba(70, 90, 126, 0.4));
 }
 
@@ -224,6 +283,26 @@ selectlist::-internal-selectlist-preview {
     inset-block-end: anchor(self-end);
     inset-inline-end: anchor(self-end);
   }
+}
+
+@position-try -internal-selectlist-preview-default {
+  inset-block-start: anchor(self-start);
+  inset-inline-start: anchor(self-start);
+}
+@position-try -internal-selectlist-preview-reverse-block {
+  /* Reverse block axis */
+  inset-block-end: anchor(self-end);
+  inset-inline-start: anchor(self-start);
+}
+@position-try -internal-selectlist-preview-reverse-inline {
+  /* Reverse inline axis */
+  inset-block-start: anchor(self-start);
+  inset-inline-end: anchor(self-end);
+}
+@position-try -internal-selectlist-preview-reverse-both {
+  /* Reverse both axes */
+  inset-block-end: anchor(self-end);
+  inset-inline-end: anchor(self-end);
 }
 
 /* this is a copy of the [popover] styles from html.css. When this gets

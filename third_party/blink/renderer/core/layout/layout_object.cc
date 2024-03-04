@@ -5150,7 +5150,7 @@ void LayoutObject::SetSVGSelfOrDescendantHasViewportDependency() {
   } while (object && !object->IsSVGRoot());
 }
 
-void LayoutObject::InvalidateSubtreePositionFallback(bool mark_style_dirty) {
+void LayoutObject::InvalidateSubtreePositionTry(bool mark_style_dirty) {
   NOT_DESTROYED();
 
   bool invalidate = StyleRef().PositionFallback() != nullptr;
@@ -5177,7 +5177,7 @@ void LayoutObject::InvalidateSubtreePositionFallback(bool mark_style_dirty) {
 
   for (LayoutObject* child = SlowFirstChild(); child;
        child = child->NextSibling()) {
-    child->InvalidateSubtreePositionFallback(mark_style_dirty);
+    child->InvalidateSubtreePositionTry(mark_style_dirty);
   }
 }
 

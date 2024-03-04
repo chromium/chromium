@@ -23,7 +23,7 @@ class CORE_EXPORT OutOfFlowData final
     : public GarbageCollected<OutOfFlowData>,
       public ElementRareDataField {
  public:
-  // Speculative @try styling: the last @try rule chosen by
+  // Speculative @position-try styling: the last @position-try rule chosen by
   // layout/OOFCandidateStyleIterator is stored on the element, and subsequent
   // style resolutions will continue to use this set until told otherwise by
   // OOFCandidateStyleIterator, or until the element stops being
@@ -40,7 +40,7 @@ class CORE_EXPORT OutOfFlowData final
   void Trace(Visitor*) const override;
 
  private:
-  // Contains the declaration block of a @try rule.
+  // Contains the declaration block of a @position-try rule.
   //
   // During calls to StyleResolver::ResolveStyle, the CSSPropertyValueSet
   // present here will be added to the cascade in the author origin

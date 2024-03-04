@@ -711,8 +711,7 @@ void StyleEngine::InvalidatePositionTryStyles() {
   }
   position_try_styles_dirty_ = false;
   const bool mark_style_dirty = true;
-  GetDocument().GetLayoutView()->InvalidateSubtreePositionFallback(
-      mark_style_dirty);
+  GetDocument().GetLayoutView()->InvalidateSubtreePositionTry(mark_style_dirty);
 }
 
 void StyleEngine::UpdateViewport() {

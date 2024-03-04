@@ -131,17 +131,17 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
   // Storing the old style is only relevant if we risk computing the style
   // more than once for the same element. This can happen if we are currently
   // inside a size query container, or doing multiple style resolutions for
-  // @position-fallback.
+  // position-try-options.
   //
   // If we are not inside a size query container or an element with
-  // position-fallback, we can fall back to the default behavior (in
+  // position-try-options, we can fall back to the default behavior (in
   // CSSAnimations) of using the current style on Element as the old style.
   //
   // TODO(crbug.com/40943044): We also need to check whether we are a descendant
-  // of an element with position-fallback to cover the case where the descendant
-  // explicitly inherits insets or other valid @try properties from the element
-  // with position-fallback. This applies to descendants of elements with
-  // anchor queries as well.
+  // of an element with position-try-options to cover the case where the
+  // descendant explicitly inherits insets or other valid @position-try
+  // properties from the element with position-try-options. This applies to
+  // descendants of elements with anchor queries as well.
   return (style_recalc_context.container ||
           state.StyleBuilder().HasAnchorFunctions() ||
           (RuntimeEnabledFeatures::
