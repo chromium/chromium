@@ -13,61 +13,23 @@
 
 namespace optimization_guide {
 
-namespace {
+Redactor::Rule::Rule(std::unique_ptr<re2::RE2> re,
+                     proto::RedactBehavior behavior,
+                     std::string replacement_string,
+                     int matching_group,
+                     size_t min_pattern_length,
+                     size_t max_pattern_length)
+    : re_(std::move(re)),
+      behavior_(behavior),
+      replacement_string_(replacement_string),
+      matching_group_(matching_group),
+      min_pattern_length_(min_pattern_length),
+      max_pattern_length_(max_pattern_length) {}
+Redactor::Rule::Rule(Rule&& r) = default;
+Redactor::Rule::~Rule() = default;
 
-std::vector<Rule> ExtractRedactRules(const proto::RedactRules& proto_rules) {
-  std::vector<Rule> rules;
-  if (proto_rules.rules_size()) {
-    for (const auto& rule : proto_rules.rules()) {
-      if (rule.has_regex() && rule.has_behavior()) {
-        rules.push_back(Rule());
-        rules.back().regex = rule.regex();
-        rules.back().behavior = rule.behavior();
-        if (rule.has_replacement_string()) {
-          rules.back().replacement_string = rule.replacement_string();
-        }
-        if (rule.has_min_pattern_length()) {
-          rules.back().min_pattern_length = rule.min_pattern_length();
-        }
-        if (rule.has_max_pattern_length()) {
-          rules.back().max_pattern_length = rule.max_pattern_length();
-        }
-        if (rule.has_group_index()) {
-          rules.back().matching_group = rule.group_index();
-        }
-      }
-    }
-  }
-  return rules;
-}
-
-}  // namespace
-
-Rule::Rule() = default;
-Rule::Rule(const Rule& r) = default;
-Rule::~Rule() = default;
-
-Redactor::CachedRule::CachedRule() = default;
-
-Redactor::CachedRule::~CachedRule() = default;
-
-Redactor::Redactor(const std::vector<Rule>& rules) {
-  for (const auto& rule : rules) {
-    if (rule.behavior == proto::RedactBehavior::REDACT_BEHAVIOR_UNSPECIFIED) {
-      continue;
-    }
-    auto cached_rule = std::make_unique<CachedRule>();
-    cached_rule->re = std::make_unique<re2::RE2>(rule.regex);
-    if (cached_rule->re->ok() && rule.matching_group.value_or(0) >= 0 &&
-        rule.min_pattern_length.value_or(0) >= 0 &&
-        rule.max_pattern_length.value_or(0) >= 0 &&
-        rule.matching_group.value_or(0) >= 0 &&
-        cached_rule->re->NumberOfCapturingGroups() >=
-            rule.matching_group.value_or(0)) {
-      cached_rule->rule = rule;
-      rules_.push_back(std::move(cached_rule));
-    }
-  }
+Redactor::Redactor(std::vector<Rule>&& rules) {
+  rules_.swap(rules);
 }
 
 Redactor::~Redactor() = default;
@@ -75,39 +37,55 @@ Redactor::~Redactor() = default;
 // static
 std::unique_ptr<Redactor> Redactor::FromProto(
     const proto::RedactRules& proto_rules) {
-  return base::WrapUnique(new Redactor(ExtractRedactRules(proto_rules)));
+  std::vector<Redactor::Rule> rules;
+  for (const auto& proto_rule : proto_rules.rules()) {
+    if (proto_rule.regex().empty() ||
+        proto_rule.behavior() ==
+            proto::RedactBehavior::REDACT_BEHAVIOR_UNSPECIFIED ||
+        proto_rule.group_index() < 0 || proto_rule.min_pattern_length() < 0 ||
+        proto_rule.max_pattern_length() < 0) {
+      continue;
+    }
+    auto re = std::make_unique<re2::RE2>(proto_rule.regex());
+    if (!re->ok() || re->NumberOfCapturingGroups() < proto_rule.group_index()) {
+      continue;
+    }
+    rules.emplace_back(
+        std::move(re), proto_rule.behavior(), proto_rule.replacement_string(),
+        proto_rule.group_index(), proto_rule.min_pattern_length(),
+        proto_rule.max_pattern_length());
+  }
+  return base::WrapUnique(new Redactor(std::move(rules)));
 }
 
 RedactResult Redactor::Redact(const std::string& input,
                               std::string& output) const {
   for (auto& rule : rules_) {
-    if (ProcessRule(*rule, input, output) == RedactResult::kReject) {
+    if (rule.Process(input, output) == RedactResult::kReject) {
       return RedactResult::kReject;
     }
   }
   return RedactResult::kContinue;
 }
 
-RedactResult Redactor::ProcessRule(const CachedRule& cached_rule,
-                                   const std::string& input,
-                                   std::string& output) const {
+RedactResult Redactor::Rule::Process(const std::string& input,
+                                     std::string& output) const {
   std::string_view output_view(output);
-  const int group = cached_rule.rule.matching_group.value_or(0);
+  const int group = matching_group_;
   // The first match gives the whole region.
   std::string_view matches[group + 1];
   size_t last_match_start = 0;
   std::string new_output;
   size_t next_start_offset = 0;
   while (next_start_offset < output_view.length() &&
-         cached_rule.re->Match(output_view, next_start_offset,
-                               output_view.length(), re2::RE2::UNANCHORED,
-                               matches, group + 1)) {
+         re_->Match(output_view, next_start_offset, output_view.length(),
+                    re2::RE2::UNANCHORED, matches, group + 1)) {
     const std::string_view& match(matches[group]);
-    if (IsValidMatchForRule(cached_rule.rule, match)) {
-      if (cached_rule.rule.behavior == proto::RedactBehavior::REJECT) {
+    if (IsValidMatch(match)) {
+      if (behavior_ == proto::RedactBehavior::REJECT) {
         return RedactResult::kReject;
       }
-      if (cached_rule.rule.behavior == proto::RedactBehavior::REDACT_ALWAYS ||
+      if (behavior_ == proto::RedactBehavior::REDACT_ALWAYS ||
           input.find(match) == std::string::npos) {
         const size_t match_start_offset_in_output =
             match.data() - output_view.data();
@@ -115,7 +93,7 @@ RedactResult Redactor::ProcessRule(const CachedRule& cached_rule,
             base::StrCat({std::string_view(output).substr(
                               last_match_start,
                               match_start_offset_in_output - last_match_start),
-                          GetReplacementString(cached_rule.rule, match)});
+                          GetReplacementString(match)});
         last_match_start = match_start_offset_in_output + match.length();
       }
     }
@@ -137,11 +115,9 @@ RedactResult Redactor::ProcessRule(const CachedRule& cached_rule,
   return RedactResult::kContinue;
 }
 
-// static
-std::string Redactor::GetReplacementString(const Rule& rule,
-                                           std::string_view match) {
-  if (rule.replacement_string.has_value()) {
-    return *rule.replacement_string;
+std::string Redactor::Rule::GetReplacementString(std::string_view match) const {
+  if (!replacement_string_.empty()) {
+    return replacement_string_;
   }
   std::string replacement(match.length() + 2, '#');
   replacement[0] = '[';
@@ -149,19 +125,14 @@ std::string Redactor::GetReplacementString(const Rule& rule,
   return replacement;
 }
 
-// static
-bool Redactor::IsValidMatchForRule(const Rule& rule,
-                                   const std::string_view& match) {
+bool Redactor::Rule::IsValidMatch(const std::string_view& match) const {
   if (match.empty()) {
     return false;
   }
-
-  if (match.length() <
-      static_cast<size_t>(rule.min_pattern_length.value_or(0))) {
+  if (match.length() < min_pattern_length_) {
     return false;
   }
-  if (rule.max_pattern_length &&
-      match.length() > static_cast<size_t>(*rule.max_pattern_length)) {
+  if (max_pattern_length_ && match.length() > max_pattern_length_) {
     return false;
   }
   return true;

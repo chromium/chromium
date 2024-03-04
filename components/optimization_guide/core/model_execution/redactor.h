@@ -18,20 +18,6 @@ class RE2;
 
 namespace optimization_guide {
 
-// This structure matches the proto (RedactRule), see it for details.
-struct Rule {
-  Rule();
-  Rule(const Rule& r);
-  ~Rule();
-
-  std::string regex;
-  proto::RedactBehavior behavior;
-  std::optional<std::string> replacement_string;
-  std::optional<int> matching_group;
-  std::optional<int> min_pattern_length;
-  std::optional<int> max_pattern_length;
-};
-
 enum RedactResult {
   // Used if there was at least one rule that matched with a behavior of reject.
   kReject,
@@ -54,29 +40,38 @@ class Redactor final {
   RedactResult Redact(const std::string& input, std::string& output) const;
 
  private:
-  explicit Redactor(const std::vector<Rule>& rules);
+  // A validated and compiled proto::RedactRule, see it for details.
+  class Rule final {
+   public:
+    Rule(std::unique_ptr<re2::RE2> re,
+         proto::RedactBehavior behavior,
+         std::string replacement_string,
+         int matching_group,
+         size_t min_pattern_length,
+         size_t max_pattern_length);
+    Rule(Rule&&);
+    ~Rule();
 
-  struct CachedRule {
-    CachedRule();
-    ~CachedRule();
+    // Apply this rule, redacting `output`.
+    RedactResult Process(const std::string& input, std::string& output) const;
 
-    Rule rule;
-    std::unique_ptr<re2::RE2> re;
+   private:
+    // Returns true if a match should be considered valid.
+    bool IsValidMatch(const std::string_view& match) const;
+
+    std::string GetReplacementString(std::string_view match) const;
+
+    std::unique_ptr<re2::RE2> re_;
+    proto::RedactBehavior behavior_;
+    std::string replacement_string_;
+    int matching_group_;
+    size_t min_pattern_length_;
+    size_t max_pattern_length_;
   };
 
-  static std::string GetReplacementString(const Rule& rule,
-                                          std::string_view match);
+  explicit Redactor(std::vector<Rule>&& rules);
 
-  // Processes a single regex, applying any redactions to `output`.
-  RedactResult ProcessRule(const CachedRule& cached_rule,
-                           const std::string& input,
-                           std::string& output) const;
-
-  // Returns true if a match should be considered valid.
-  static bool IsValidMatchForRule(const Rule& rule,
-                                  const std::string_view& match);
-
-  std::vector<std::unique_ptr<CachedRule>> rules_;
+  std::vector<Rule> rules_;
 };
 
 }  // namespace optimization_guide
