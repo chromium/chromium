@@ -27,13 +27,13 @@ void EnsureCorrectResolutionSettings() {
   }
 
   NSString* const kHighResolutionCapable = @"NSHighResolutionCapable";
-  base::FilePath info_plist = GetInfoPlistPath();
-  NSMutableDictionary* info_dict = [[NSMutableDictionary alloc]
-      initWithContentsOfFile:base::apple::FilePathToNSString(info_plist)];
+  NSURL* info_plist = base::apple::FilePathToNSURL(GetInfoPlistPath());
+  NSMutableDictionary* info_dict =
+      [[NSMutableDictionary alloc] initWithContentsOfURL:info_plist error:nil];
 
   bool running_web_tests = switches::IsRunWebTestsSwitchPresent();
   NSNumber* high_resolution_capable_from_info_dict =
-      [info_dict objectForKey:kHighResolutionCapable];
+      info_dict[kHighResolutionCapable];
   bool not_high_resolution_capable =
       high_resolution_capable_from_info_dict &&
       !high_resolution_capable_from_info_dict.boolValue;
@@ -42,9 +42,8 @@ void EnsureCorrectResolutionSettings() {
   }
 
   // We need to update our Info.plist before we can continue.
-  [info_dict setObject:@(!running_web_tests) forKey:kHighResolutionCapable];
-  CHECK([info_dict writeToFile:base::apple::FilePathToNSString(info_plist)
-                    atomically:YES]);
+  info_dict[kHighResolutionCapable] = @(!running_web_tests);
+  CHECK([info_dict writeToURL:info_plist error:nil]);
 
   const base::CommandLine::StringVector& original_argv =
       base::CommandLine::ForCurrentProcess()->argv();
