@@ -351,6 +351,16 @@ bool SharedContextState::IsUsingGL() const {
          gr_context_type_ == GrContextType::kNone;
 }
 
+bool SharedContextState::IsGraphiteDawnMetal() const {
+#if BUILDFLAG(SKIA_USE_DAWN)
+  return gr_context_type_ == GrContextType::kGraphiteDawn &&
+         dawn_context_provider_ &&
+         dawn_context_provider_->backend_type() == wgpu::BackendType::Metal;
+#else
+  return false;
+#endif
+}
+
 bool SharedContextState::IsGraphiteDawnVulkan() const {
 #if BUILDFLAG(SKIA_USE_DAWN)
   return gr_context_type_ == GrContextType::kGraphiteDawn &&
