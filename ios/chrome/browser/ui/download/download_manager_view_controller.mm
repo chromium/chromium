@@ -106,6 +106,7 @@ UIButton* CreateActionButton(NSString* title,
       setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
                                       forAxis:UILayoutConstraintAxisHorizontal];
   button.accessibilityIdentifier = accessibility_identifier;
+  button.pointerInteractionEnabled = YES;
   return button;
 }
 
