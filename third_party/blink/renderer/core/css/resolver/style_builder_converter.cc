@@ -379,8 +379,8 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
 
   if (const auto* system_font =
           DynamicTo<cssvalue::CSSPendingSystemFontValue>(value)) {
-    desc.family = FontFamily(system_font->ResolveFontFamily(),
-                             FontFamily::Type::kFamilyName);
+    desc.family.SetFamily(system_font->ResolveFontFamily(),
+                          FontFamily::Type::kFamilyName);
     return desc;
   }
 
@@ -410,8 +410,10 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
     // Take the previous value and wrap it in a `SharedFontFamily` adding to
     // the linked list.
     if (has_value) {
-      next =
-          SharedFontFamily::Create(family_name, family_type, std::move(next));
+      scoped_refptr<SharedFontFamily> shared = SharedFontFamily::Create();
+      shared->SetFamily(family_name, family_type);
+      shared->AppendFamily(next);
+      next = shared;
     }
     family_name = next_family_name;
     family_type = is_generic ? FontFamily::Type::kGenericFamily
@@ -442,7 +444,8 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
   }
 #endif
 
-  desc.family = FontFamily(family_name, family_type, std::move(next));
+  desc.family.SetFamily(family_name, family_type);
+  desc.family.AppendFamily(next);
   return desc;
 }
 

@@ -195,6 +195,7 @@ class PLATFORM_EXPORT FontDescription {
   FamilyDescription GetFamilyDescription() const {
     return FamilyDescription(GenericFamily(), Family());
   }
+  FontFamily& FirstFamily() { return family_list_; }
   const FontFamily& FirstFamily() const { return family_list_; }
   Size GetSize() const {
     return Size(KeywordSize(), SpecifiedSize(), IsAbsoluteSize());
@@ -448,6 +449,10 @@ class PLATFORM_EXPORT FontDescription {
 
   bool SubpixelAscentDescent() const {
     return fields_.subpixel_ascent_descent_;
+  }
+
+  void SetHashCategory(HashCategory category) {
+    fields_.hash_category_ = category;
   }
 
   HashCategory GetHashCategory() const {

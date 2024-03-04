@@ -144,9 +144,10 @@ TEST_F(HanKerningTest, FontDataSizeError) {
     bool is_antialiased_text_enabled_;
   } enable_antialias_text;
 
+  FontFamily family;
+  family.SetFamily(AtomicString("Yu Gothic"), FontFamily::Type::kFamilyName);
   FontDescription font_description;
-  font_description.SetFamily(
-      FontFamily(AtomicString("Yu Gothic"), FontFamily::Type::kFamilyName));
+  font_description.SetFamily(family);
   const float specified_size = 16.f * 1.03f;
   font_description.SetSpecifiedSize(specified_size);
   const float computed_size = specified_size * 1.25f;

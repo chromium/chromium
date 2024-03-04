@@ -39,18 +39,16 @@ class PLATFORM_EXPORT FontFamily {
   DISALLOW_NEW();
 
  public:
-  // https://drafts.csswg.org/css-fonts/#font-family-prop
-  enum class Type : uint8_t { kFamilyName, kGenericFamily };
-
-  FontFamily(const AtomicString& family_name,
-             Type family_type,
-             scoped_refptr<SharedFontFamily> next = nullptr)
-      : family_name_(family_name),
-        next_(std::move(next)),
-        family_type_(family_type) {}
   FontFamily() = default;
   ~FontFamily();
 
+  // https://drafts.csswg.org/css-fonts/#font-family-prop
+  enum class Type : uint8_t { kFamilyName, kGenericFamily };
+
+  void SetFamily(const AtomicString& family_name, Type family_type) {
+    family_name_ = family_name;
+    family_type_ = family_type;
+  }
   // Return this font family's name. Note that it is never quoted nor escaped.
   // For web-exposed serialization, please rely instead on the functions
   // ComputedStyleUtils::ValueForFontFamily(const FontFamily&) and
@@ -59,8 +57,13 @@ class PLATFORM_EXPORT FontFamily {
   const AtomicString& FamilyName() const { return family_name_; }
   bool FamilyIsGeneric() const { return family_type_ == Type::kGenericFamily; }
 
+  // Returns number of linked `FontFamily` including `this`, so return value is
+  // greater than or equal to 1. When `Next()` is `nullptr`, return value is 1.
+  wtf_size_t CountNames() const;
   const FontFamily* Next() const;
 
+  void AppendFamily(scoped_refptr<SharedFontFamily>);
+  void AppendFamily(AtomicString family_name, Type family_type);
   scoped_refptr<SharedFontFamily> ReleaseNext();
 
   bool IsPrewarmed() const { return is_prewarmed_; }
@@ -93,19 +96,12 @@ class PLATFORM_EXPORT SharedFontFamily : public FontFamily,
   SharedFontFamily(const SharedFontFamily&) = delete;
   SharedFontFamily& operator=(const SharedFontFamily&) = delete;
 
-  static scoped_refptr<SharedFontFamily> Create(
-      const AtomicString& family_name,
-      Type family_type,
-      scoped_refptr<SharedFontFamily> next = nullptr) {
-    return base::AdoptRef(
-        new SharedFontFamily(family_name, family_type, std::move(next)));
+  static scoped_refptr<SharedFontFamily> Create() {
+    return base::AdoptRef(new SharedFontFamily);
   }
 
  private:
-  SharedFontFamily(const AtomicString& family_name,
-                   Type family_type,
-                   scoped_refptr<SharedFontFamily> next)
-      : FontFamily(family_name, family_type, std::move(next)) {}
+  SharedFontFamily() = default;
 };
 
 PLATFORM_EXPORT bool operator==(const FontFamily&, const FontFamily&);
@@ -123,6 +119,10 @@ inline FontFamily::~FontFamily() {
 
 inline const FontFamily* FontFamily::Next() const {
   return next_.get();
+}
+
+inline void FontFamily::AppendFamily(scoped_refptr<SharedFontFamily> family) {
+  next_ = std::move(family);
 }
 
 inline scoped_refptr<SharedFontFamily> FontFamily::ReleaseNext() {

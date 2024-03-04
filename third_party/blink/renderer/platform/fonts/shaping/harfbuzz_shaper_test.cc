@@ -96,10 +96,21 @@ class HarfBuzzShaperTest : public FontTestBase {
   void TearDown() override {}
 
   void SelectDevanagariFont() {
-    font_description.SetFamily(
-        FontFamily(AtomicString("Nirmala UI"), FontFamily::Type::kFamilyName,
-                   SharedFontFamily::Create(AtomicString("ITF Devanagari"),
-                                            FontFamily::Type::kFamilyName)));
+    FontFamily devanagari_family;
+    // Windows 10
+    devanagari_family.SetFamily(AtomicString("Nirmala UI"),
+                                FontFamily::Type::kFamilyName);
+    // Windows 7
+    devanagari_family.AppendFamily(AtomicString("Mangal"),
+                                   FontFamily::Type::kFamilyName);
+    // Linux
+    devanagari_family.AppendFamily(AtomicString("Lohit Devanagari"),
+                                   FontFamily::Type::kFamilyName);
+    // Mac
+    devanagari_family.AppendFamily(AtomicString("ITF Devanagari"),
+                                   FontFamily::Type::kFamilyName);
+
+    font_description.SetFamily(devanagari_family);
   }
 
   Font CreateAhem(float size) {
@@ -1863,8 +1874,9 @@ TEST_F(HarfBuzzShaperTest,
   //
   // [1] RoundHarfBuzzPosition() @harfbuzz_shaper.cc
   FontDescription font_description_copy(font_description);
-  font_description_copy.SetFamily(
-      FontFamily(font_family_names::kArial, FontFamily::Type::kFamilyName));
+  FontFamily family;
+  family.SetFamily(font_family_names::kArial, FontFamily::Type::kFamilyName);
+  font_description_copy.SetFamily(family);
   Font font = Font(font_description_copy);
 
   String string(u"AVOID");
@@ -2054,8 +2066,9 @@ TEST_F(HarfBuzzShaperTest, UnorderedClusterIndex) {
   // Setting the font family is not strictly necessary as fonts automatically
   // fallback, but it helps keeping the whole string in a run (i.e., shapes
   // surrounding characters with the same font.)
-  font_description.SetFamily(
-      FontFamily(AtomicString("Geneva"), FontFamily::Type::kFamilyName));
+  FontFamily family;
+  family.SetFamily(AtomicString("Geneva"), FontFamily::Type::kFamilyName);
+  font_description.SetFamily(family);
   Font font(font_description);
 
   HarfBuzzShaper shaper(string);

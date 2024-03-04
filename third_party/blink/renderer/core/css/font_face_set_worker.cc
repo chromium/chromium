@@ -84,10 +84,13 @@ bool FontFaceSetWorker::ResolveFontStyle(const String& font_string,
     return false;
   }
 
-  FontDescription default_font_description;
-  default_font_description.SetFamily(FontFamily(
+  FontFamily font_family;
+  font_family.SetFamily(
       FontFaceSet::DefaultFontFamily(),
-      FontFamily::InferredTypeFor(FontFaceSet::DefaultFontFamily())));
+      FontFamily::InferredTypeFor(FontFaceSet::DefaultFontFamily()));
+
+  FontDescription default_font_description;
+  default_font_description.SetFamily(font_family);
   default_font_description.SetSpecifiedSize(FontFaceSet::kDefaultFontSize);
   default_font_description.SetComputedSize(FontFaceSet::kDefaultFontSize);
 
