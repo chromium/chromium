@@ -230,6 +230,7 @@ source_set("app_metrics_app_state_agent") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/app",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
