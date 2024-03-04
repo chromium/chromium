@@ -697,6 +697,11 @@ void RuleSet::AddPositionFallbackRule(StyleRulePositionFallback* rule) {
   position_fallback_rules_.push_back(rule);
 }
 
+void RuleSet::AddPositionTryRule(StyleRulePositionTry* rule) {
+  need_compaction_ = true;
+  position_try_rules_.push_back(rule);
+}
+
 void RuleSet::AddFunctionRule(StyleRuleFunction* rule) {
   need_compaction_ = true;
   function_rules_.push_back(rule);
@@ -756,6 +761,10 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                    DynamicTo<StyleRulePositionFallback>(rule)) {
       position_fallback_rule->SetCascadeLayer(cascade_layer);
       AddPositionFallbackRule(position_fallback_rule);
+    } else if (auto* position_try_rule =
+                   DynamicTo<StyleRulePositionTry>(rule)) {
+      position_try_rule->SetCascadeLayer(cascade_layer);
+      AddPositionTryRule(position_try_rule);
     } else if (auto* function_rule = DynamicTo<StyleRuleFunction>(rule)) {
       // TODO(sesse): Set the cascade layer here?
       AddFunctionRule(function_rule);
@@ -1284,6 +1293,7 @@ void RuleSet::CompactRules() {
   property_rules_.shrink_to_fit();
   counter_style_rules_.shrink_to_fit();
   position_fallback_rules_.shrink_to_fit();
+  position_try_rules_.shrink_to_fit();
   layer_intervals_.shrink_to_fit();
   view_transition_rules_.shrink_to_fit();
   bloom_hash_backing_.shrink_to_fit();
@@ -1403,6 +1413,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(property_rules_);
   visitor->Trace(counter_style_rules_);
   visitor->Trace(position_fallback_rules_);
+  visitor->Trace(position_try_rules_);
   visitor->Trace(function_rules_);
   visitor->Trace(root_element_rules_);
   visitor->Trace(media_query_set_results_);
