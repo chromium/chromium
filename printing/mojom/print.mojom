@@ -79,7 +79,7 @@ struct PageSizeMargins {
 enum PageOrientation { kUpright, kRotateLeft, kRotateRight };
 
 // Describes whether to reduce/enlarge/retain the print contents to fit the
-// printable area. (This is used only by plugin printing).
+// printable area.
 enum PrintScalingOption {
   // Prints the upper left of a page without scaling. Crop the page contents
   // that don't fit on the paper.

@@ -68,7 +68,7 @@ struct WebPrintParams {
   bool rasterize_pdf = false;
 
   // Specifies whether to reduce/enlarge/retain the print contents to fit the
-  // printable area. (This is used only by plugin printing).
+  // printable area.
   printing::mojom::PrintScalingOption print_scaling_option =
       printing::mojom::PrintScalingOption::kFitToPrintableArea;
 
