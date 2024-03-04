@@ -692,6 +692,7 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Windows-11",
+            "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -711,6 +712,7 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Windows-11",
+            "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -730,6 +732,7 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Windows-11",
+            "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -746,6 +749,7 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Windows-11",
+            "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -762,6 +766,7 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Windows-11",
+            "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -787,6 +792,7 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Windows-11",
+            "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -815,6 +821,7 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Windows-11",
+            "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -842,6 +849,7 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Windows-11",
+            "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"

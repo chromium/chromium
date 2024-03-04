@@ -6724,7 +6724,8 @@
           'ondevice_model_example',
         ],
         'mixins': [
-          'win-arm64'
+          'chrome-swarming-pool',
+          'win-arm64',
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_desktop_gtests',
