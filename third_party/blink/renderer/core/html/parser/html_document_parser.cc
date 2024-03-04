@@ -456,6 +456,8 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
       scheduler_(sync_policy == kAllowDeferredParsing
                      ? Thread::Current()->Scheduler()
                      : nullptr) {
+  TRACE_EVENT_WITH_FLOW0("blink", "HTMLDocumentParser::HTMLDocumentParser",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
   // Make sure the preload scanner thread will be ready when needed.
   if (ThreadedPreloadScannerEnabled() && !task_runner_state_->IsSynchronous())
     GetPreloadScannerThread();
@@ -487,7 +489,10 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
     preloader_ = MakeGarbageCollected<HTMLResourcePreloader>(document);
 }
 
-HTMLDocumentParser::~HTMLDocumentParser() = default;
+HTMLDocumentParser::~HTMLDocumentParser() {
+  TRACE_EVENT_WITH_FLOW0("blink", "HTMLDocumentParser::~HTMLDocumentParser",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
+}
 
 void HTMLDocumentParser::Trace(Visitor* visitor) const {
   visitor->Trace(reentry_permit_);
@@ -536,8 +541,10 @@ void HTMLDocumentParser::StopParsing() {
 // This kicks off "Once the user agent stops parsing" as described by:
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#the-end
 void HTMLDocumentParser::PrepareToStopParsing() {
-  TRACE_EVENT1("blink", "HTMLDocumentParser::PrepareToStopParsing", "parser",
-               (void*)this);
+  TRACE_EVENT_WITH_FLOW1("blink", "HTMLDocumentParser::PrepareToStopParsing",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "parser", (void*)this);
   base::ElapsedTimer timer;
   DCHECK(!HasInsertionPoint());
 
@@ -607,9 +614,11 @@ void HTMLDocumentParser::DeferredPumpTokenizerIfPossible(
   DCHECK(task_runner_state_->GetState() ==
              HTMLDocumentParserState::DeferredParserState::kNotScheduled ||
          !IsDetached());
-  TRACE_EVENT2("blink", "HTMLDocumentParser::DeferredPumpTokenizerIfPossible",
-               "parser", (void*)this, "state",
-               task_runner_state_->GetStateAsString());
+  TRACE_EVENT_WITH_FLOW2(
+      "blink", "HTMLDocumentParser::DeferredPumpTokenizerIfPossible",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "parser",
+      (void*)this, "state", task_runner_state_->GetStateAsString());
 
   if (metrics_reporter_ && from_finish_append && !did_pump_tokenizer_) {
     base::UmaHistogramCustomMicrosecondsTimes(
@@ -645,8 +654,10 @@ void HTMLDocumentParser::DeferredPumpTokenizerIfPossible(
 void HTMLDocumentParser::PumpTokenizerIfPossible() {
   // This method is called synchronously, builds the HTML document up to
   // the current budget, and optionally completes.
-  TRACE_EVENT1("blink", "HTMLDocumentParser::PumpTokenizerIfPossible", "parser",
-               (void*)this);
+  TRACE_EVENT_WITH_FLOW1("blink", "HTMLDocumentParser::PumpTokenizerIfPossible",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "parser", (void*)this);
 
   bool yielded = false;
   CheckIfBlockingStylesheetAdded();
@@ -678,8 +689,11 @@ void HTMLDocumentParser::PumpTokenizerIfPossible() {
 }
 
 void HTMLDocumentParser::RunScriptsForPausedTreeBuilder() {
-  TRACE_EVENT1("blink", "HTMLDocumentParser::RunScriptsForPausedTreeBuilder",
-               "parser", (void*)this);
+  TRACE_EVENT_WITH_FLOW1("blink",
+                         "HTMLDocumentParser::RunScriptsForPausedTreeBuilder",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "parser", (void*)this);
   DCHECK(ScriptingContentIsAllowed(GetParserContentPolicy()));
 
   TextPosition script_start_position = TextPosition::BelowRangePosition();
@@ -877,7 +891,9 @@ bool HTMLDocumentParser::PumpTokenizer() {
 }
 
 void HTMLDocumentParser::SchedulePumpTokenizer(bool from_finish_append) {
-  TRACE_EVENT0("blink", "HTMLDocumentParser::SchedulePumpTokenizer");
+  TRACE_EVENT_WITH_FLOW0("blink", "HTMLDocumentParser::SchedulePumpTokenizer",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   DCHECK(!IsStopped());
   DCHECK(!task_runner_state_->InPumpSession());
   DCHECK(!task_runner_state_->ShouldComplete());
@@ -902,7 +918,9 @@ void HTMLDocumentParser::SchedulePumpTokenizer(bool from_finish_append) {
 }
 
 void HTMLDocumentParser::ScheduleEndIfDelayed() {
-  TRACE_EVENT0("blink", "HTMLDocumentParser::ScheduleEndIfDelayed");
+  TRACE_EVENT_WITH_FLOW0("blink", "HTMLDocumentParser::ScheduleEndIfDelayed",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   DCHECK(!IsStopped());
   DCHECK(!task_runner_state_->InPumpSession());
   DCHECK(!task_runner_state_->ShouldComplete());
@@ -950,8 +968,10 @@ void HTMLDocumentParser::insert(const String& source) {
   if (IsStopped() || source.empty())
     return;
 
-  TRACE_EVENT2("blink", "HTMLDocumentParser::insert", "source_length",
-               source.length(), "parser", (void*)this);
+  TRACE_EVENT_WITH_FLOW2(
+      "blink", "HTMLDocumentParser::insert", TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "source_length",
+      source.length(), "parser", (void*)this);
 
   SegmentedString excluded_line_number_source(source);
   excluded_line_number_source.SetExcludeLineNumbers();
@@ -980,8 +1000,10 @@ void HTMLDocumentParser::insert(const String& source) {
 }
 
 void HTMLDocumentParser::Append(const String& input_source) {
-  TRACE_EVENT2("blink", "HTMLDocumentParser::append", "size",
-               input_source.length(), "parser", (void*)this);
+  TRACE_EVENT_WITH_FLOW2("blink", "HTMLDocumentParser::append",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "size", input_source.length(), "parser", (void*)this);
 
   if (IsStopped())
     return;
@@ -1050,7 +1072,9 @@ void HTMLDocumentParser::Append(const String& input_source) {
 }
 
 void HTMLDocumentParser::FinishAppend() {
-  TRACE_EVENT0("blink", "HTMLDocumentParser::FinishAppend");
+  TRACE_EVENT_WITH_FLOW0("blink", "HTMLDocumentParser::FinishAppend",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   if (ShouldPumpTokenizerNowForFinishAppend())
     PumpTokenizerIfPossible();
   else
@@ -1058,7 +1082,9 @@ void HTMLDocumentParser::FinishAppend() {
 }
 
 void HTMLDocumentParser::CommitPreloadedData() {
-  TRACE_EVENT0("blink", "HTMLDocumentParser::CommitPreloadedData");
+  TRACE_EVENT_WITH_FLOW0("blink", "HTMLDocumentParser::CommitPreloadedData",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   if (!IsPreloading())
     return;
 
@@ -1096,8 +1122,10 @@ bool HTMLDocumentParser::ShouldDelayEnd() const {
 void HTMLDocumentParser::AttemptToEnd() {
   // finish() indicates we will not receive any more data. If we are waiting on
   // an external script to load, we can't finish parsing quite yet.
-  TRACE_EVENT1("blink", "HTMLDocumentParser::AttemptToEnd", "parser",
-               (void*)this);
+  TRACE_EVENT_WITH_FLOW1("blink", "HTMLDocumentParser::AttemptToEnd",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "parser", (void*)this);
   DCHECK(task_runner_state_->ShouldAttemptToEndOnEOF());
   AttemptToEndForbiddenScope should_not_attempt_to_end(task_runner_state_);
   // We should only be in this state once after calling Finish.
@@ -1111,8 +1139,10 @@ void HTMLDocumentParser::AttemptToEnd() {
 }
 
 void HTMLDocumentParser::EndIfDelayed() {
-  TRACE_EVENT1("blink", "HTMLDocumentParser::EndIfDelayed", "parser",
-               (void*)this);
+  TRACE_EVENT_WITH_FLOW1("blink", "HTMLDocumentParser::EndIfDelayed",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "parser", (void*)this);
   ShouldCompleteScope should_complete(task_runner_state_);
   EndIfDelayedForbiddenScope should_not_end_if_delayed(task_runner_state_);
   // If we've already been detached, don't bother ending.
@@ -1201,8 +1231,10 @@ bool HTMLDocumentParser::IsWaitingForScripts() const {
 
 void HTMLDocumentParser::ResumeParsingAfterPause() {
   // This function runs after a parser-blocking script has completed.
-  TRACE_EVENT1("blink", "HTMLDocumentParser::ResumeParsingAfterPause", "parser",
-               (void*)this);
+  TRACE_EVENT_WITH_FLOW1("blink", "HTMLDocumentParser::ResumeParsingAfterPause",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "parser", (void*)this);
   DCHECK(!IsExecutingScript());
   DCHECK(!IsPaused());
 
@@ -1222,10 +1254,12 @@ void HTMLDocumentParser::ResumeParsingAfterPause() {
 }
 
 void HTMLDocumentParser::AppendCurrentInputStreamToPreloadScannerAndScan() {
-  TRACE_EVENT1(
+  TRACE_EVENT_WITH_FLOW1(
       "blink",
       "HTMLDocumentParser::AppendCurrentInputStreamToPreloadScannerAndScan",
-      "parser", (void*)this);
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "parser",
+      (void*)this);
   if (preload_scanner_) {
     DCHECK(preloader_);
     preload_scanner_->AppendToEnd(input_.Current());
@@ -1234,8 +1268,10 @@ void HTMLDocumentParser::AppendCurrentInputStreamToPreloadScannerAndScan() {
 }
 
 void HTMLDocumentParser::NotifyScriptLoaded() {
-  TRACE_EVENT1("blink", "HTMLDocumentParser::NotifyScriptLoaded", "parser",
-               (void*)this);
+  TRACE_EVENT_WITH_FLOW1("blink", "HTMLDocumentParser::NotifyScriptLoaded",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "parser", (void*)this);
   DCHECK(script_runner_);
   DCHECK(!IsExecutingScript());
 
@@ -1290,8 +1326,10 @@ void HTMLDocumentParser::FlushPreloadScannerThreadForTesting() {
 }
 
 void HTMLDocumentParser::ExecuteScriptsWaitingForResources() {
-  TRACE_EVENT0("blink",
-               "HTMLDocumentParser::ExecuteScriptsWaitingForResources");
+  TRACE_EVENT_WITH_FLOW0(
+      "blink", "HTMLDocumentParser::ExecuteScriptsWaitingForResources",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   if (IsStopped())
     return;
 
@@ -1366,8 +1404,10 @@ void HTMLDocumentParser::ParseDocumentFragment(
 }
 
 void HTMLDocumentParser::AppendBytes(const char* data, size_t length) {
-  TRACE_EVENT2("blink", "HTMLDocumentParser::appendBytes", "size",
-               (unsigned)length, "parser", (void*)this);
+  TRACE_EVENT_WITH_FLOW2("blink", "HTMLDocumentParser::appendBytes",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "size", (unsigned)length, "parser", (void*)this);
 
   DCHECK(IsMainThread());
 
@@ -1378,7 +1418,10 @@ void HTMLDocumentParser::AppendBytes(const char* data, size_t length) {
 }
 
 void HTMLDocumentParser::Flush() {
-  TRACE_EVENT1("blink", "HTMLDocumentParser::Flush", "parser", (void*)this);
+  TRACE_EVENT_WITH_FLOW1("blink", "HTMLDocumentParser::Flush",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "parser", (void*)this);
   // If we've got no decoder, we never received any data.
   if (IsDetached() || NeedsDecoder())
     return;
@@ -1391,7 +1434,10 @@ void HTMLDocumentParser::SetDecoder(
 }
 
 void HTMLDocumentParser::DocumentElementAvailable() {
-  TRACE_EVENT0("blink,loading", "HTMLDocumentParser::DocumentElementAvailable");
+  TRACE_EVENT_WITH_FLOW0("blink,loading",
+                         "HTMLDocumentParser::DocumentElementAvailable",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   Document* document = GetDocument();
   DCHECK(document);
   DCHECK(document->documentElement());
@@ -1431,7 +1477,9 @@ std::unique_ptr<HTMLPreloadScanner> HTMLDocumentParser::CreatePreloadScanner(
 }
 
 void HTMLDocumentParser::ScanAndPreload(HTMLPreloadScanner* scanner) {
-  TRACE_EVENT0("blink", "HTMLDocumentParser::ScanAndPreload");
+  TRACE_EVENT_WITH_FLOW0("blink", "HTMLDocumentParser::ScanAndPreload",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   CHECK(preloader_);
   base::ElapsedTimer timer_before_scan;
   std::unique_ptr<PendingPreloadData> preload_data =
@@ -1481,7 +1529,10 @@ void HTMLDocumentParser::ProcessPreloadData(
     }
     if (task_runner_state_->NeedsLinkHeaderPreloadsDispatch()) {
       {
-        TRACE_EVENT0("blink", "HTMLDocumentParser::DispatchLinkHeaderPreloads");
+        TRACE_EVENT_WITH_FLOW0(
+            "blink", "HTMLDocumentParser::DispatchLinkHeaderPreloads",
+            TRACE_ID_LOCAL(this),
+            TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
         GetDocument()->Loader()->DispatchLinkHeaderPreloads(
             base::OptionalToPtr(preload_data->viewport),
             PreloadHelper::LoadLinksFromHeaderMode::
@@ -1489,15 +1540,20 @@ void HTMLDocumentParser::ProcessPreloadData(
       }
       if (base::FeatureList::IsEnabled(
               blink::features::kLCPPFontURLPredictor)) {
-        TRACE_EVENT0("blink", "HTMLDocumentParser::DispatchLcppFontPreloads");
+        TRACE_EVENT_WITH_FLOW0(
+            "blink", "HTMLDocumentParser::DispatchLcppFontPreloads",
+            TRACE_ID_LOCAL(this),
+            TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
         GetDocument()->Loader()->DispatchLcppFontPreloads(
             base::OptionalToPtr(preload_data->viewport),
             PreloadHelper::LoadLinksFromHeaderMode::
                 kSubresourceNotFromMemoryCache);
       }
       if (GetDocument()->Loader()->GetPrefetchedSignedExchangeManager()) {
-        TRACE_EVENT0("blink",
-                     "HTMLDocumentParser::DispatchSignedExchangeManager");
+        TRACE_EVENT_WITH_FLOW0(
+            "blink", "HTMLDocumentParser::DispatchSignedExchangeManager",
+            TRACE_ID_LOCAL(this),
+            TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
         // Link header preloads for prefetched signed exchanges won't be started
         // until StartPrefetchedLinkHeaderPreloads() is called. See the header
         // comment of PrefetchedSignedExchangeManager.
@@ -1550,8 +1606,10 @@ void HTMLDocumentParser::ProcessPreloadData(
 
 void HTMLDocumentParser::FetchQueuedPreloads() {
   DCHECK(preloader_);
-  TRACE_EVENT0("blink,devtools.timeline",
-               "HTMLDocumentParser::FetchQueuedPreloads");
+  TRACE_EVENT_WITH_FLOW0("blink,devtools.timeline",
+                         "HTMLDocumentParser::FetchQueuedPreloads",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   if (!queued_preloads_.empty()) {
     base::ElapsedTimer timer;

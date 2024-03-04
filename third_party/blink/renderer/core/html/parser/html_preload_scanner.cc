@@ -31,6 +31,7 @@
 #include <optional>
 
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
@@ -1195,11 +1196,20 @@ HTMLPreloadScanner::HTMLPreloadScanner(
                std::move(locators)),
       tokenizer_(std::move(tokenizer)),
       script_token_scanner_(std::move(script_token_scanner)),
-      take_preload_(std::move(take_preload)) {}
+      take_preload_(std::move(take_preload)) {
+  TRACE_EVENT_WITH_FLOW0("blink", "HTMLPreloadScanner::HTMLPreloadScanner",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
+}
 
-HTMLPreloadScanner::~HTMLPreloadScanner() = default;
+HTMLPreloadScanner::~HTMLPreloadScanner() {
+  TRACE_EVENT_WITH_FLOW0("blink", "HTMLPreloadScanner::~HTMLPreloadScanner",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
+}
 
 void HTMLPreloadScanner::AppendToEnd(const SegmentedString& source) {
+  TRACE_EVENT_WITH_FLOW0("blink", "HTMLPreloadScanner::AppendToEnd",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   source_.Append(source);
 }
 
@@ -1207,8 +1217,10 @@ std::unique_ptr<PendingPreloadData> HTMLPreloadScanner::Scan(
     const KURL& starting_base_element_url) {
   auto pending_data = std::make_unique<PendingPreloadData>();
 
-  TRACE_EVENT1("blink", "HTMLPreloadScanner::scan", "source_length",
-               source_.length());
+  TRACE_EVENT_WITH_FLOW1("blink", "HTMLPreloadScanner::scan",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "source_length", source_.length());
 
   // When we start scanning, our best prediction of the baseElementURL is the
   // real one!
@@ -1258,6 +1270,9 @@ std::unique_ptr<PendingPreloadData> HTMLPreloadScanner::Scan(
 void HTMLPreloadScanner::ScanInBackground(
     const String& source,
     const KURL& document_base_element_url) {
+  TRACE_EVENT_WITH_FLOW0("blink", "HTMLPreloadScanner::ScanInBackground",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   source_.Append(source);
   take_preload_.Run(Scan(document_base_element_url));
 }

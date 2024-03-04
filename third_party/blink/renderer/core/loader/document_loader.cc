@@ -554,6 +554,8 @@ DocumentLoader::DocumentLoader(
       modified_runtime_features_(std::move(params_->modified_runtime_features)),
       cookie_deprecation_label_(params_->cookie_deprecation_label),
       content_settings_(std::move(params_->content_settings)) {
+  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::DocumentLoader",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
   DCHECK(frame_);
   DCHECK(params_);
 
@@ -724,6 +726,8 @@ LocalFrameClient& DocumentLoader::GetLocalFrameClient() const {
 }
 
 DocumentLoader::~DocumentLoader() {
+  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::~DocumentLoader",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
   DCHECK(!frame_);
   DCHECK_EQ(state_, kSentDidFinishLoad);
 }
@@ -1189,7 +1193,9 @@ DocumentLoader::TakeProcessBackgroundDataCallback() {
 }
 
 void DocumentLoader::BodyDataReceivedImpl(BodyData& data) {
-  TRACE_EVENT0("loading", "DocumentLoader::BodyDataReceived");
+  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::BodyDataReceivedImpl",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   base::span<const char> encoded_data = data.EncodedData();
   if (encoded_data.size()) {
     GetFrameLoader().Progress().IncrementProgress(main_resource_identifier_,
@@ -1199,8 +1205,10 @@ void DocumentLoader::BodyDataReceivedImpl(BodyData& data) {
                           encoded_data.size());
   }
 
-  TRACE_EVENT1("loading", "DocumentLoader::HandleData", "length",
-               encoded_data.size());
+  TRACE_EVENT_WITH_FLOW1("loading", "DocumentLoader::HandleData",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "length", encoded_data.size());
 
   DCHECK(!frame_->GetPage()->Paused());
   time_of_last_data_received_ = clock_->NowTicks();
@@ -1223,7 +1231,9 @@ void DocumentLoader::BodyLoadingFinished(
     int64_t total_encoded_body_length,
     int64_t total_decoded_body_length,
     const std::optional<WebURLError>& error) {
-  TRACE_EVENT0("loading", "DocumentLoader::BodyLoadingFinished");
+  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::BodyLoadingFinished",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   DCHECK(frame_);
   if (!error) {
@@ -1307,6 +1317,9 @@ void DocumentLoader::LoadFailed(const ResourceError& error) {
 }
 
 void DocumentLoader::FinishedLoading(base::TimeTicks finish_time) {
+  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::FinishedLoading",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   body_loader_.reset();
   virtual_time_pauser_.UnpauseVirtualTime();
 
@@ -1462,8 +1475,10 @@ void DocumentLoader::HandleResponse() {
 }
 
 void DocumentLoader::CommitData(BodyData& data) {
-  TRACE_EVENT1("loading", "DocumentLoader::CommitData", "length",
-               data.EncodedData().size());
+  TRACE_EVENT_WITH_FLOW1("loading", "DocumentLoader::CommitData",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "length", data.EncodedData().size());
 
   // This can happen if document.close() is called by an event handler while
   // there's still pending incoming data.
@@ -1888,7 +1903,9 @@ void DocumentLoader::StartLoadingInternal() {
 }
 
 void DocumentLoader::StartLoadingResponse() {
-  TRACE_EVENT0("loading", "DocumentLoader::StartLoadingResponse");
+  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::StartLoadingResponse",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   // TODO(dcheng): Clean up the null checks in this helper.
   if (!frame_)
     return;
@@ -1964,6 +1981,9 @@ void DocumentLoader::StartLoadingResponse() {
 }
 
 void DocumentLoader::DidInstallNewDocument(Document* document) {
+  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::DidInstallNewDocument",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   // This was called already during `InitializeWindow`, but it could be that we
   // didn't have a Document then (which happens when `InitializeWindow` reuses
   // the window and calls `LocalDOMWindow::ClearForReuse()`). This is
@@ -2347,6 +2367,9 @@ bool DocumentLoader::IsSameOriginInitiator() const {
 }
 
 void DocumentLoader::InitializeWindow(Document* owner_document) {
+  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::InitializeWindow",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   // Javascript URLs and XSLT committed document must not pass a new
   // policy_container_, since they must keep the previous document one.
   DCHECK((commit_reason_ != CommitReason::kJavascriptUrl &&
@@ -2584,7 +2607,9 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 }
 
 void DocumentLoader::CommitNavigation() {
-  TRACE_EVENT0("loading", "DocumentLoader::CommitNavigation");
+  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::CommitNavigation",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   base::ElapsedTimer timer;
   DCHECK_LT(state_, kCommitted);
   DCHECK(frame_->GetPage());
@@ -2909,7 +2934,9 @@ void DocumentLoader::CommitNavigation() {
 }
 
 void DocumentLoader::CreateParserPostCommit() {
-  TRACE_EVENT0("loading", "DocumentLoader::CreateParserPostCommit");
+  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::CreateParserPostCommit",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   base::ElapsedTimer timer;
   SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
       response_, *frame_->DomWindow());
@@ -3144,6 +3171,10 @@ void DocumentLoader::RecordParentAndChildContentLanguageMetric() {
 }
 
 void DocumentLoader::RecordUseCountersForCommit() {
+  TRACE_EVENT_WITH_FLOW0("loading",
+                         "DocumentLoader::RecordUseCountersForCommit",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   // Pre-commit state, count usage the use counter associated with "this"
   // (provisional document loader) instead of frame_'s document loader.
   if (response_.DidServiceWorkerNavigationPreload())
