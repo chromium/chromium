@@ -107,9 +107,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     return flags_ & kValidForFormattedTextRun;
   }
   bool IsValidForKeyframe() const { return flags_ & kValidForKeyframe; }
-  bool IsValidForPositionFallback() const {
-    return flags_ & kValidForPositionFallback;
-  }
+  bool IsValidForPositionTry() const { return flags_ & kValidForPositionTry; }
   bool IsSurrogate() const { return flags_ & kSurrogate; }
   bool AffectsFont() const { return flags_ & kAffectsFont; }
   bool IsBackground() const { return flags_ & kBackground; }
@@ -259,8 +257,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kLegacyOverlapping = 1 << 28,
     // See valid_for_keyframes in css_properties.json5
     kValidForKeyframe = 1 << 29,
-    // See valid_for_position_fallback in css_properties.json5
-    kValidForPositionFallback = 1 << 30,
+    // See valid_for_position_try in css_properties.json5
+    kValidForPositionTry = 1 << 30,
     // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
     kValidForHighlight = 1ull << 31,
     // See accepts_numeric_literal in css_properties.json5.

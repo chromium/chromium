@@ -743,11 +743,11 @@
       valid_type: "bool",
     },
 
-    // - valid_for_position_fallback: true
+    // - valid_for_position_try: true
     //
-    // Whether the property can be used in a @try rule of @position-fallback
+    // Whether the property can be used in a @position-try rule
     // https://drafts.csswg.org/css-anchor-1/#fallback-rule
-    valid_for_position_fallback: {
+    valid_for_position_try: {
       default: false,
       valid_type: "bool",
     },
@@ -1722,7 +1722,7 @@
       default_value: "StyleContentAlignmentData(ContentPosition::kNormal, ContentDistributionType::kDefault, OverflowAlignment::kDefault)",
       type_name: "StyleContentAlignmentData",
       converter: "ConvertContentAlignmentData",
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
     },
     {
       name: "align-items",
@@ -1733,7 +1733,7 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kNormal, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
     },
     {
       name: "alignment-baseline",
@@ -1755,7 +1755,7 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kAuto, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -2461,7 +2461,7 @@
         resolver: "bottom",
       },
       supports_incremental_style: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -3205,7 +3205,7 @@
       },
       supports_incremental_style: true,
       valid_for_formatted_text: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -3332,7 +3332,7 @@
       default_value: "StyleContentAlignmentData(ContentPosition::kNormal, ContentDistributionType::kDefault, OverflowAlignment::kDefault)",
       type_name: "StyleContentAlignmentData",
       converter: "ConvertContentAlignmentData",
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
     },
     {
       name: "justify-items",
@@ -3343,7 +3343,7 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kLegacy, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
     },
     {
       name: "justify-self",
@@ -3354,7 +3354,7 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kAuto, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -3374,7 +3374,7 @@
         resolver: "left",
       },
       supports_incremental_style: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -3481,7 +3481,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       logical_property_group: {
         name: "margin",
         resolver: "bottom",
@@ -3502,7 +3502,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       logical_property_group: {
         name: "margin",
         resolver: "left",
@@ -3523,7 +3523,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       logical_property_group: {
         name: "margin",
         resolver: "right",
@@ -3544,7 +3544,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       logical_property_group: {
         name: "margin",
         resolver: "top",
@@ -3655,7 +3655,7 @@
         resolver: "vertical",
       },
       supports_incremental_style: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -3674,7 +3674,7 @@
         resolver: "horizontal",
       },
       supports_incremental_style: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -3692,7 +3692,7 @@
         resolver: "vertical",
       },
       supports_incremental_style: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -3710,7 +3710,7 @@
         resolver: "horizontal",
       },
       supports_incremental_style: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -4391,7 +4391,7 @@
         resolver: "right",
       },
       supports_incremental_style: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -5461,7 +5461,7 @@
         resolver: "top",
       },
       supports_incremental_style: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -6523,7 +6523,7 @@
       },
       supports_incremental_style: true,
       valid_for_formatted_text: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       affected_by_zoom: true,
       valid_for_permission_element: true,
     },
@@ -6588,7 +6588,7 @@
       },
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -6601,7 +6601,7 @@
       },
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -6612,7 +6612,7 @@
         resolver: "inline",
       },
       typedom_types: ["Length", "Percentage"],
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
     },
     {
       name: "min-block-size",
@@ -6622,7 +6622,7 @@
         resolver: "block",
       },
       typedom_types: ["Length", "Percentage"],
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -6634,7 +6634,7 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -6646,7 +6646,7 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -6660,7 +6660,7 @@
       typedom_types: ["Length", "Percentage"],
       keywords: ["auto"],
       valid_for_first_letter: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -6674,7 +6674,7 @@
       typedom_types: ["Length", "Percentage"],
       keywords: ["auto"],
       valid_for_first_letter: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -6688,7 +6688,7 @@
       typedom_types: ["Length", "Percentage"],
       keywords: ["auto"],
       valid_for_first_letter: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -6702,7 +6702,7 @@
       typedom_types: ["Length", "Percentage"],
       keywords: ["auto"],
       valid_for_first_letter: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -6869,7 +6869,7 @@
         resolver: "inline-start",
       },
       typedom_types: ["Length", "Percentage"],
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       layout_dependent: true,
       valid_for_permission_element: true,
     },
@@ -6881,7 +6881,7 @@
         resolver: "inline-end",
       },
       typedom_types: ["Length", "Percentage"],
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       layout_dependent: true,
       valid_for_permission_element: true,
     },
@@ -6893,7 +6893,7 @@
         resolver: "block-start",
       },
       typedom_types: ["Length", "Percentage"],
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       layout_dependent: true,
       valid_for_permission_element: true,
     },
@@ -6905,7 +6905,7 @@
         resolver: "block-end",
       },
       typedom_types: ["Length", "Percentage"],
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       layout_dependent: true,
       valid_for_permission_element: true,
     },
@@ -7216,7 +7216,7 @@
         "y-start", "y-end", "start", "end", "self-start", "self-end", "all"
       ],
       typedom_types: ["Keyword"],
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       runtime_flag: "CSSAnchorPositioning",
       valid_for_permission_element: true,
     },
@@ -7645,21 +7645,21 @@
       name: "inset",
       longhands: ["top", "right", "bottom", "left"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       layout_dependent: true,
     },
     {
       name: "inset-block",
       longhands: ["inset-block-start", "inset-block-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       layout_dependent: true,
     },
     {
       name: "inset-inline",
       longhands: ["inset-inline-start", "inset-inline-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       layout_dependent: true,
     },
     {
@@ -7672,7 +7672,7 @@
       longhands: ["margin-top", "margin-right", "margin-bottom", "margin-left"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
       valid_for_permission_element: true,
     },
     {
@@ -7680,14 +7680,14 @@
       longhands: ["margin-block-start", "margin-block-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
     },
     {
       name: "margin-inline",
       longhands: ["margin-inline-start", "margin-inline-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
-      valid_for_position_fallback: true,
+      valid_for_position_try: true,
     },
     {
       name: "marker",

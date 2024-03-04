@@ -399,7 +399,7 @@ void ElementRuleCollector::AddTryStyleProperties(
   result_.AddMatchedProperties(
       property_set, CascadeOrigin::kAuthor,
       {.link_match_type = AdjustLinkMatchType(inside_link_, link_match_type),
-       .valid_property_filter = ValidPropertyFilter::kPositionFallback,
+       .valid_property_filter = ValidPropertyFilter::kPositionTry,
        .is_fallback_style = true});
   result_.SetIsCacheable(false);
 }

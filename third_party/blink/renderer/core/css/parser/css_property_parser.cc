@@ -59,9 +59,8 @@ bool IsPropertyAllowedInRule(const CSSProperty& property,
     case StyleRule::kKeyframe:
       return property.IsValidForKeyframe();
     case StyleRule::kTry:
-      return property.IsValidForPositionFallback();
     case StyleRule::kPositionTry:
-      return property.IsValidForPositionFallback();
+      return property.IsValidForPositionTry();
     default:
       NOTREACHED();
       return false;

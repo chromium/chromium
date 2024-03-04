@@ -3210,7 +3210,7 @@ const ComputedStyle* StyleResolver::ResolvePositionFallbackStyle(
   STACK_UNINITIALIZED StyleCascade cascade(state);
   cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(*tree_scope);
   AddMatchedPropertiesOptions options;
-  options.valid_property_filter = ValidPropertyFilter::kPositionFallback;
+  options.valid_property_filter = ValidPropertyFilter::kPositionTry;
   cascade.MutableMatchResult().AddMatchedProperties(
       &properties, CascadeOrigin::kAuthor, options);
   cascade.Apply();

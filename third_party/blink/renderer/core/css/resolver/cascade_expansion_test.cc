@@ -482,7 +482,7 @@ TEST_F(CascadeExpansionTest, FilterPositionFallback) {
       ParseDeclarationBlock("display:inline;position:static;left:auto"),
       CascadeOrigin::kAuthor,
       {
-          .valid_property_filter = ValidPropertyFilter::kPositionFallback,
+          .valid_property_filter = ValidPropertyFilter::kPositionTry,
       });
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(1u, e.size());

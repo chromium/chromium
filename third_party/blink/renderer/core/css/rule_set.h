@@ -86,9 +86,9 @@ enum class ValidPropertyFilter : unsigned {
   // ::target-text. Only properties listed in
   // https://drafts.csswg.org/css-pseudo-4/#highlight-styling are valid.
   kHighlight,
-  // Defined in @try block of a @position-fallback rule. Only properties listed
-  // in https://drafts.csswg.org/css-anchor-position-1/#fallback-rule are valid.
-  kPositionFallback,
+  // Defined in a @position-try rule. Only properties listed in
+  // https://drafts.csswg.org/css-anchor-position-1/#fallback-rule are valid.
+  kPositionTry,
 };
 
 class CSSSelector;
