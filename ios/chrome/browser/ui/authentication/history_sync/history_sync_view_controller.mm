@@ -79,7 +79,7 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(200);
       _userVisibileLatency = std::make_unique<base::ElapsedTimer>();
 
       // Notify audience.
-      [self.audience viewAppearedWithHiddenButtons];
+      [self.audience viewAppearedWithHiddenButtonsWithCompletion:nil];
     }
   }
 }

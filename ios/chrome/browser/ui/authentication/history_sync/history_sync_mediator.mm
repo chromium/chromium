@@ -123,7 +123,8 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
   syncUserSettings->SetSelectedType(syncer::UserSelectableType::kTabs, true);
 }
 
-- (void)startFetchingCapabilities {
+- (void)startFetchingCapabilitiesWithCompletion:
+    (ProcessCapabilityCompletionCallback)completion {
   if (![self useMinorModeRestrictions]) {
     return;
   }
@@ -139,10 +140,10 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
       _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   AccountInfo accountInfo =
       _identityManager->FindExtendedAccountInfo(primaryAccount);
-  [self
-      processCanShowUnrestrictedOptInsCapability:
-          accountInfo.capabilities
-              .can_show_history_sync_opt_ins_without_minor_mode_restrictions()];
+  [self processCanShowUnrestrictedOptInsCapability:
+            accountInfo.capabilities
+                .can_show_history_sync_opt_ins_without_minor_mode_restrictions()
+                                        completion:completion];
 
   if (!_actionButtonsUpdated) {
     // AccountInfo::capabilities is not immediately avaiable and might be
@@ -157,14 +158,16 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
         ->CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
             identity, base::BindOnce(^(SystemIdentityCapabilityResult result) {
               [weakSelf processCanShowUnrestrictedOptInsCapability:
-                            signin::TriboolFromCapabilityResult(result)];
+                            signin::TriboolFromCapabilityResult(result)
+                                                        completion:completion];
             }));
   }
 }
 
 #pragma mark - HistorySyncViewControllerAudience
 
-- (void)viewAppearedWithHiddenButtons {
+- (void)viewAppearedWithHiddenButtonsWithCompletion:
+    (ProcessCapabilityCompletionCallback)completion {
   // Set timeout with fallback capability value corresponding to fallback button
   // style.
   __weak __typeof(self) weakSelf = self;
@@ -173,7 +176,8 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
       base::Milliseconds(switches::kMinorModeRestrictionsFetchDeadlineMs.Get()),
       base::BindOnce(^{
         [weakSelf processCanShowUnrestrictedOptInsCapability:
-                      kCanShowUnrestrictedOptInsFallbackValue];
+                      kCanShowUnrestrictedOptInsFallbackValue
+                                                  completion:completion];
       }));
 }
 
@@ -230,7 +234,8 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
     [self
         processCanShowUnrestrictedOptInsCapability:
             info.capabilities
-                .can_show_history_sync_opt_ins_without_minor_mode_restrictions()];
+                .can_show_history_sync_opt_ins_without_minor_mode_restrictions()
+                                        completion:nil];
   } else {
     _accountCapabilitiesLatencyTracker->OnExtendedAccountInfoUpdated(info);
   }
@@ -256,7 +261,11 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
 
 // Process the capability given by either the SystemIdentityManager,
 // the IdentityManagerObserverBridge, or a fallback value.
-- (void)processCanShowUnrestrictedOptInsCapability:(Tribool)capability {
+- (void)
+    processCanShowUnrestrictedOptInsCapability:(Tribool)capability
+                                    completion:
+                                        (ProcessCapabilityCompletionCallback)
+                                            completion {
   // With known capability value, update buttons visibility if not already
   // updated.
   if (capability != Tribool::kUnknown && !_actionButtonsUpdated) {
@@ -266,6 +275,9 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
     // Equally weighted buttons are used for the restricted opt-in screen.
     BOOL isRestricted = (capability == Tribool::kFalse);
     [self.consumer displayButtonsWithRestrictionStatus:isRestricted];
+  }
+  if (completion) {
+    completion(_actionButtonsUpdated);
   }
 }
 

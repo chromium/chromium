@@ -181,7 +181,7 @@
   _viewController.audience = _mediator;
 
   // Fetch minor mode restriction capabilities to update the viewController.
-  [_mediator startFetchingCapabilities];
+  [_mediator startFetchingCapabilitiesWithCompletion:nil];
 
   if (_firstRun) {
     _viewController.modalInPresentation = YES;

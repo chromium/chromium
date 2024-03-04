@@ -5,11 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_HISTORY_SYNC_HISTORY_SYNC_VIEW_CONTROLLER_AUDIENCE_H_
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_HISTORY_SYNC_HISTORY_SYNC_VIEW_CONTROLLER_AUDIENCE_H_
 
+typedef void (^ProcessCapabilityCompletionCallback)(BOOL actionButtonsUpdated);
+
 // Audience for the History Sync view controller.
 @protocol HistorySyncViewControllerAudience <NSObject>
 
 // Notifies that the view appeared with hidden action buttons.
-- (void)viewAppearedWithHiddenButtons;
+- (void)viewAppearedWithHiddenButtonsWithCompletion:
+    (ProcessCapabilityCompletionCallback)completion;
 
 @end
 

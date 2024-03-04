@@ -55,7 +55,8 @@ class SyncService;
 - (void)enableHistorySyncOptin;
 
 // Starts fetching capabilities to determine minor mode restriction status.
-- (void)startFetchingCapabilities;
+- (void)startFetchingCapabilitiesWithCompletion:
+    (ProcessCapabilityCompletionCallback)completion;
 
 @end
 
