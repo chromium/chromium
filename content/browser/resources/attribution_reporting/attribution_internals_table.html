@@ -1,10 +1,10 @@
 <style>
   div {
+    border: 1px solid var(--border-color);
     overflow: auto;
   }
 
   table {
-    border: 1px solid var(--border-color);
     border-collapse: collapse;
     /* Per
      * https://limebrains.com/blog/2021-03-02T13:00-heigh-100-inside-table-td
@@ -26,6 +26,15 @@
 
   tbody tr, tfoot tr {
     border-top: 1px solid var(--border-color);
+  }
+
+  tbody > tr[aria-selected="false"]:hover {
+    background: var(--data-hover-background);
+    cursor: pointer;
+  }
+
+  tbody > tr[aria-selected="true"] {
+    background: var(--data-selected-background);
   }
 
   tfoot {

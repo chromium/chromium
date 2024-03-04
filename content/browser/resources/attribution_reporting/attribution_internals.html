@@ -40,28 +40,28 @@ found in the LICENSE file.
     </attribution-internals-table>
   </div>
   <div slot="panel" role=tabpanel aria-labelledby=tab-source-registrations id=source-registration-panel>
-    <attribution-internals-table id="sourceRegistrationTable">
-    </attribution-internals-table>
+    <attribution-internals-table></attribution-internals-table>
+    <attribution-detail-table></attribution-detail-table>
   </div>
   <div slot="panel" role=tabpanel aria-labelledby=tab-trigger-registrations id=trigger-registration-panel>
-    <attribution-internals-table id="triggerTable">
-    </attribution-internals-table>
+    <attribution-internals-table></attribution-internals-table>
+    <attribution-detail-table></attribution-detail-table>
   </div>
   <div slot="panel" role=tabpanel aria-labelledby=tab-event-level-reports id="event-level-report-panel">
-    <div class="controls">
-      <button disabled>Send Selected Pending Event-Level Reports</button>
-    </div>
     <attribution-internals-table></attribution-internals-table>
+    <attribution-detail-table>
+      <button slot=button>Send</button>
+    </attribution-detail-table>
   </div>
   <div slot="panel" role=tabpanel aria-labelledby=tab-aggregatable-reports id="aggregatable-report-panel">
-    <div class="controls">
-      <button disabled>Send Selected Pending Aggregatable Reports</button>
-    </div>
     <attribution-internals-table></attribution-internals-table>
+    <attribution-detail-table>
+      <button slot=button>Send</button>
+    </attribution-detail-table>
   </div>
   <div slot="panel" role=tabpanel aria-labelledby=tab-debug-reports id=debug-report-panel>
-    <attribution-internals-table id="debugReportTable">
-    </attribution-internals-table>
+    <attribution-internals-table></attribution-internals-table>
+    <attribution-detail-table></attribution-detail-table>
   </div>
   <div slot="panel" role=tabpanel aria-labelledby=tab-os-registrations id=os-registration-panel>
     <attribution-internals-table id="osRegistrationTable">

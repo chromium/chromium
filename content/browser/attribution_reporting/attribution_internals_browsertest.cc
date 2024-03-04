@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
     const table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tbody');
-    const regTable = document.querySelector('#sourceRegistrationTable')
+    const regTable = document.querySelector('#source-registration-panel attribution-internals-table')
         .shadowRoot.querySelector('tbody');
 
     const setTitleIfDone = (_, obs) => {
@@ -406,15 +406,15 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.rows[1].cells[1]?.innerText === 'Attributable' &&
           table.rows[2].cells[1]?.innerText === 'Attributable: reached event-level attribution limit' &&
           table.rows[3].cells[1]?.innerText === 'Unattributable: noised with fake reports' &&
-          regTable.rows[0].cells[4]?.innerText === '' &&
-          regTable.rows[0].cells[6]?.innerText === 'Success' &&
-          regTable.rows[1].cells[6]?.innerText === 'Rejected: internal error' &&
-          regTable.rows[2].cells[6]?.innerText === 'Rejected: insufficient source capacity' &&
-          regTable.rows[2].cells[4]?.innerText === '987' &&
-          regTable.rows[3].cells[5]?.innerText === 'Navigation' &&
-          regTable.rows[3].cells[6]?.innerText === 'Rejected: insufficient unique destination capacity' &&
-          regTable.rows[4].cells[5]?.innerText === 'Event' &&
-          regTable.rows[4].cells[6]?.innerText === 'Rejected: excessive reporting origins') {
+          regTable.rows[0].cells[3]?.innerText === '' &&
+          regTable.rows[0].cells[5]?.innerText === 'Success' &&
+          regTable.rows[1].cells[5]?.innerText === 'Rejected: internal error' &&
+          regTable.rows[2].cells[5]?.innerText === 'Rejected: insufficient source capacity' &&
+          regTable.rows[2].cells[3]?.innerText === '987' &&
+          regTable.rows[3].cells[4]?.innerText === 'Navigation' &&
+          regTable.rows[3].cells[5]?.innerText === 'Rejected: insufficient unique destination capacity' &&
+          regTable.rows[4].cells[4]?.innerText === 'Event' &&
+          regTable.rows[4].cells[5]?.innerText === 'Rejected: excessive reporting origins') {
         if (obs) {
           obs.disconnect();
         }
@@ -684,22 +684,22 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .shadowRoot.querySelector('tbody');
       const setTitleIfDone = (_, obs) => {
         if (table.rows.length === 5 &&
-            table.rows[0].cells[2]?.innerText ===
+            table.rows[0].cells[1]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-event-attribution' &&
-            table.rows[0].cells[5]?.innerText === '13' &&
-            table.rows[0].cells[6]?.innerText === 'true' &&
-            table.rows[0].cells[1]?.innerText === 'Pending' &&
-            table.rows[1].cells[5]?.innerText === '11' &&
-            table.rows[1].cells[1]?.innerText ===
+            table.rows[0].cells[4]?.innerText === '13' &&
+            table.rows[0].cells[5]?.innerText === 'true' &&
+            table.rows[0].cells[0]?.innerText === 'Pending' &&
+            table.rows[1].cells[4]?.innerText === '11' &&
+            table.rows[1].cells[0]?.innerText ===
               'Replaced by higher-priority report: 21abd97f-73e8-4b88-9389-a9fee6abda5e' &&
-            table.rows[2].cells[5]?.innerText === '0' &&
-            table.rows[2].cells[6]?.innerText === 'false' &&
-            table.rows[2].cells[1]?.innerText === 'Sent: HTTP 200' &&
-            !table.rows[2].cells[1]?.classList.contains('send-error') &&
-            table.rows[3].cells[1]?.innerText === 'Prohibited by browser policy' &&
-            !table.rows[3].cells[1]?.classList.contains('send-error') &&
-            table.rows[4].cells[1]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED' &&
-            table.rows[4].cells[1]?.classList.contains('send-error')) {
+            table.rows[2].cells[4]?.innerText === '0' &&
+            table.rows[2].cells[5]?.innerText === 'false' &&
+            table.rows[2].cells[0]?.innerText === 'Sent: HTTP 200' &&
+            !table.rows[2].cells[0]?.classList.contains('send-error') &&
+            table.rows[3].cells[0]?.innerText === 'Prohibited by browser policy' &&
+            !table.rows[3].cells[0]?.classList.contains('send-error') &&
+            table.rows[4].cells[0]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED' &&
+            table.rows[4].cells[0]?.classList.contains('send-error')) {
           if (obs) {
             obs.disconnect();
           }
@@ -731,19 +731,19 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .shadowRoot.querySelector('tbody');
       const setTitleIfDone = (_, obs) => {
         if (table.rows.length === 5 &&
-            table.rows[4].cells[2]?.innerText ===
+            table.rows[4].cells[1]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-event-attribution' &&
-            table.rows[4].cells[5]?.innerText === '13' &&
-            table.rows[4].cells[6]?.innerText === 'true' &&
-            table.rows[4].cells[1]?.innerText === 'Pending' &&
-            table.rows[3].cells[5]?.innerText === '11' &&
-            table.rows[3].cells[1]?.innerText ===
+            table.rows[4].cells[4]?.innerText === '13' &&
+            table.rows[4].cells[5]?.innerText === 'true' &&
+            table.rows[4].cells[0]?.innerText === 'Pending' &&
+            table.rows[3].cells[4]?.innerText === '11' &&
+            table.rows[3].cells[0]?.innerText ===
               'Replaced by higher-priority report: 21abd97f-73e8-4b88-9389-a9fee6abda5e' &&
-            table.rows[2].cells[5]?.innerText === '0' &&
-            table.rows[2].cells[6]?.innerText === 'false' &&
-            table.rows[2].cells[1]?.innerText === 'Sent: HTTP 200' &&
-            table.rows[1].cells[1]?.innerText === 'Prohibited by browser policy' &&
-            table.rows[0].cells[1]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED') {
+            table.rows[2].cells[4]?.innerText === '0' &&
+            table.rows[2].cells[5]?.innerText === 'false' &&
+            table.rows[2].cells[0]?.innerText === 'Sent: HTTP 200' &&
+            table.rows[1].cells[0]?.innerText === 'Prohibited by browser policy' &&
+            table.rows[0].cells[0]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED') {
           if (obs) {
             obs.disconnect();
           }
@@ -763,7 +763,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     // Sort by priority ascending.
     ASSERT_TRUE(ExecJsInWebUI(R"(
       document.querySelector('#event-level-report-panel attribution-internals-table')
-        .shadowRoot.querySelector('th:nth-child(6) button').click();
+        .shadowRoot.querySelector('th:nth-child(5) button').click();
     )"));
     ASSERT_EQ(kCompleteTitle2, title_watcher.WaitAndGetTitle());
   }
@@ -774,19 +774,19 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .shadowRoot.querySelector('tbody');
       const setTitleIfDone = (_, obs) => {
         if (table.rows.length === 5 &&
-            table.rows[0].cells[2]?.innerText ===
+            table.rows[0].cells[1]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-event-attribution' &&
-            table.rows[0].cells[5]?.innerText === '13' &&
-            table.rows[0].cells[6]?.innerText === 'true' &&
-            table.rows[0].cells[1]?.innerText === 'Pending' &&
-            table.rows[1].cells[5]?.innerText === '11' &&
-            table.rows[1].cells[1]?.innerText ===
+            table.rows[0].cells[4]?.innerText === '13' &&
+            table.rows[0].cells[5]?.innerText === 'true' &&
+            table.rows[0].cells[0]?.innerText === 'Pending' &&
+            table.rows[1].cells[4]?.innerText === '11' &&
+            table.rows[1].cells[0]?.innerText ===
               'Replaced by higher-priority report: 21abd97f-73e8-4b88-9389-a9fee6abda5e' &&
-            table.rows[2].cells[5]?.innerText === '0' &&
-            table.rows[2].cells[6]?.innerText === 'false' &&
-            table.rows[2].cells[1]?.innerText === 'Sent: HTTP 200' &&
-            table.rows[3].cells[1]?.innerText === 'Prohibited by browser policy' &&
-            table.rows[4].cells[1]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED') {
+            table.rows[2].cells[4]?.innerText === '0' &&
+            table.rows[2].cells[5]?.innerText === 'false' &&
+            table.rows[2].cells[0]?.innerText === 'Sent: HTTP 200' &&
+            table.rows[3].cells[0]?.innerText === 'Prohibited by browser policy' &&
+            table.rows[4].cells[0]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED') {
           if (obs) {
             obs.disconnect();
           }
@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     // Sort by priority descending.
     ASSERT_TRUE(ExecJsInWebUI(R"(
       document.querySelector('#event-level-report-panel attribution-internals-table')
-        .shadowRoot.querySelector('th:nth-child(6) button').click();
+        .shadowRoot.querySelector('th:nth-child(5) button').click();
     )"));
     ASSERT_EQ(kCompleteTitle3, title_watcher.WaitAndGetTitle());
   }
@@ -856,8 +856,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
     const setTitleIfDone = (_, obs) => {
       if (table.rows.length === 2 &&
-          table.rows[0].cells[5]?.innerText === '7' &&
-          table.rows[1].cells[1]?.innerText === 'Sent: HTTP 200') {
+          table.rows[0].cells[4]?.innerText === '7' &&
+          table.rows[1].cells[0]?.innerText === 'Sent: HTTP 200') {
         if (obs) {
           obs.disconnect();
         }
@@ -924,13 +924,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char kScript[] = R"(
     const table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tbody');
-    const regTable = document.querySelector('#sourceRegistrationTable')
+    const regTable = document.querySelector('#source-registration-panel attribution-internals-table')
         .shadowRoot.querySelector('tbody');
     const setTitleIfDone = (_, obs) => {
       if (table.rows.length === 1 &&
           regTable.rows.length === 1 &&
           table.rows[0].cells[0]?.innerText === '5' &&
-          regTable.rows[0].cells[6]?.innerText === 'Rejected: internal error') {
+          regTable.rows[0].cells[5]?.innerText === 'Rejected: internal error') {
         if (obs) {
           obs.disconnect();
         }
@@ -958,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char kObserveEmptySourcesTableScript[] = R"(
     const table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tfoot');
-    const regTable = document.querySelector('#sourceRegistrationTable')
+    const regTable = document.querySelector('#source-registration-panel attribution-internals-table')
         .shadowRoot.querySelector('tfoot');
     const setTitleIfDone = (_, obs) => {
       if (table.querySelector('td')?.innerText === '0' &&
@@ -1008,7 +1008,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
     const setTitleIfDone = (_, obs) => {
       if (table.rows.length === 1 &&
-          table.rows[0].cells[5]?.innerText === '7') {
+          table.rows[0].cells[4]?.innerText === '7') {
           if (obs) {
             obs.disconnect();
           }
@@ -1035,7 +1035,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   ASSERT_TRUE(ExecJsInWebUI(R"(
     document.querySelector('#event-level-report-panel attribution-internals-table')
-     .shadowRoot.querySelector('input[type="checkbox"]').click();
+     .shadowRoot.querySelector('tbody td').click();
     document.querySelector('#event-level-report-panel button').click();
   )"));
 
@@ -1137,20 +1137,20 @@ IN_PROC_BROWSER_TEST_F(
           .shadowRoot.querySelector('tbody');
       const setTitleIfDone = (_, obs) => {
         if (table.rows.length === 6 &&
-            table.rows[0].cells[2]?.innerText ===
+            table.rows[0].cells[1]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-aggregate-attribution' &&
-            table.rows[0].cells[1]?.innerText === 'Pending' &&
-            table.rows[0].cells[5]?.innerText === '[ {  "key": "0x1",  "value": 2 }]' &&
-            table.rows[0].cells[6]?.innerText === '' &&
-            table.rows[0].cells[7]?.innerText === 'https://aws.example.test' &&
-            table.rows[0].cells[8]?.innerText === 'false' &&
-            table.rows[1].cells[1]?.innerText === 'Sent: HTTP 200' &&
-            table.rows[1].cells[6]?.innerText === 'abc' &&
-            table.rows[2].cells[1]?.innerText === 'Prohibited by browser policy' &&
-            table.rows[3].cells[1]?.innerText === 'Dropped due to assembly failure' &&
-            table.rows[4].cells[1]?.innerText === 'Network error: ERR_INVALID_REDIRECT' &&
-            table.rows[5].cells[5]?.innerText === '[ {  "key": "0x0",  "value": 0 }]' &&
-            table.rows[5].cells[8]?.innerText === 'true') {
+            table.rows[0].cells[0]?.innerText === 'Pending' &&
+            table.rows[0].cells[4]?.innerText === '[ {  "key": "0x1",  "value": 2 }]' &&
+            table.rows[0].cells[5]?.innerText === '' &&
+            table.rows[0].cells[6]?.innerText === 'https://aws.example.test' &&
+            table.rows[0].cells[7]?.innerText === 'false' &&
+            table.rows[1].cells[0]?.innerText === 'Sent: HTTP 200' &&
+            table.rows[1].cells[5]?.innerText === 'abc' &&
+            table.rows[2].cells[0]?.innerText === 'Prohibited by browser policy' &&
+            table.rows[3].cells[0]?.innerText === 'Dropped due to assembly failure' &&
+            table.rows[4].cells[0]?.innerText === 'Network error: ERR_INVALID_REDIRECT' &&
+            table.rows[5].cells[4]?.innerText === '[ {  "key": "0x0",  "value": 0 }]' &&
+            table.rows[5].cells[7]?.innerText === 'true') {
           if (obs) {
             obs.disconnect();
           }
@@ -1193,18 +1193,17 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       '<dl><dt>Token</dt><dd>def</dd>' +
       '<dt>Report ID</dt><dd>bbab30b9-d664-4dfc-a9db-85f9729b9a30</dd></dl>';
 
-    const table = document.querySelector('#triggerTable')
+    const table = document.querySelector('#trigger-registration-panel attribution-internals-table')
         .shadowRoot.querySelector('tbody');
     const setTitleIfDone = (_, obs) => {
       if (table.rows.length === 2 &&
+          table.rows[0].cells[4]?.innerText === 'Success: Report stored' &&
           table.rows[0].cells[5]?.innerText === 'Success: Report stored' &&
-          table.rows[0].cells[6]?.innerText === 'Success: Report stored' &&
           table.rows[0].cells[1]?.innerText === 'https://d.test' &&
           table.rows[0].cells[2]?.innerText === 'https://r.test' &&
-          table.rows[0].cells[3]?.innerText.includes('{') &&
-          table.rows[0].cells[4]?.innerText === '' &&
-          table.rows[1].cells[4]?.innerText === '123' &&
-          table.rows[1].cells[7]?.innerHTML === expectedVerification) {
+          table.rows[0].cells[3]?.innerText === '' &&
+          table.rows[1].cells[3]?.innerText === '123' &&
+          table.rows[1].cells[6]?.innerHTML === expectedVerification) {
         if (obs) {
           obs.disconnect();
         }
@@ -1333,7 +1332,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   ASSERT_TRUE(ExecJsInWebUI(R"(
     document.querySelector('#aggregatable-report-panel attribution-internals-table')
-      .shadowRoot.querySelectorAll('input[type="checkbox"]')[1].click();
+      .shadowRoot.querySelector('tbody td').click();
     document.querySelector('#aggregatable-report-panel button').click();
   )"));
 
@@ -1355,7 +1354,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(report);
 
   static constexpr char kScript[] = R"(
-    const table = document.querySelector('#debugReportTable')
+    const table = document.querySelector('#debug-report-panel attribution-internals-table')
         .shadowRoot.querySelector('tbody');
 
     const url0 = 'https://report.test/.well-known/attribution-reporting/debug/verbose';
@@ -1366,7 +1365,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       if (table.rows.length === 3 &&
           table.rows[0].cells[1]?.innerText === url0 &&
           table.rows[0].cells[2]?.innerText === 'HTTP 200' &&
-          table.rows[0].cells[3]?.innerText.includes('source-unknown-error') &&
           table.rows[1].cells[1]?.innerText === url1 &&
           table.rows[2].cells[1]?.innerText === url2
       ) {
@@ -1409,7 +1407,37 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       SendResult(SendResult::Status::kTransientFailure,
                  net::ERR_INTERNET_DISCONNECTED));
 
-  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+  ASSERT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+
+  const std::u16string kDetailedTitle = u"Detailed";
+  TitleWatcher detailed_title_watcher(shell()->web_contents(), kDetailedTitle);
+
+  ASSERT_TRUE(ExecJsInWebUI(JsReplace(R"(
+    const table = document.querySelector('#debug-report-panel attribution-detail-table')
+        .shadowRoot.querySelector('tbody');
+
+    const setTitleIfDone = (_, obs) => {
+      if (table.rows[0]?.cells[1]?.innerText.includes('source-unknown-error')) {
+        if (obs) {
+          obs.disconnect();
+        }
+        document.title = $1;
+        return true;
+      }
+      return false;
+    };
+
+    document.querySelector('#debug-report-panel attribution-internals-table')
+        .shadowRoot.querySelector('tbody').rows[0].cells[0].click();
+
+    if (!setTitleIfDone()) {
+      const obs = new MutationObserver(setTitleIfDone);
+      obs.observe(table, {childList: true, subtree: true, characterData: true});
+    }
+  )",
+                                      kDetailedTitle)));
+
+  ASSERT_EQ(kDetailedTitle, detailed_title_watcher.WaitAndGetTitle());
 }
 
 }  // namespace content

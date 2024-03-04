@@ -1,0 +1,65 @@
+<style>
+div, td, th, header {
+  border-color: var(--border-color);
+  border-style: solid;
+}
+
+div {
+  border-width: 0 1px 1px 1px;
+  overflow: auto;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+header {
+  background: var(--header-background);
+  border-width: 1px 1px 0 1px;
+  display: flex;
+}
+
+header > nav {
+  margin-left: auto;
+}
+
+td, th {
+  font-weight: normal;
+  text-align: left;
+  vertical-align: top;
+}
+
+td {
+  border-width: 1px 0 0 0;
+}
+
+th {
+  background: var(--header-background);
+  border-width: 1px 1px 0 0;
+  left: 0;
+  position: sticky;
+  z-index: 1;
+}
+
+header, td, th {
+  padding-inline: var(--cell-padding);
+}
+
+pre {
+  margin: 0;
+}
+</style>
+<header>
+  Details for Selected Row
+  <nav>
+    <slot name=button></slot>
+    <button>Close</button>
+  </nav>
+</header>
+<div>
+  <table>
+    <tbody></tbody>
+  </table>
+</div>

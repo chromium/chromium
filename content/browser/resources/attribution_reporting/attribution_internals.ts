@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
+import './attribution_detail_table.js';
 import './attribution_internals_table.js';
 
 import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
@@ -10,6 +11,7 @@ import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.
 import {AggregatableResult} from './aggregatable_result.mojom-webui.js';
 import type {TriggerVerification} from './attribution.mojom-webui.js';
 import {AttributionSupport} from './attribution.mojom-webui.js';
+import type {AttributionDetailTableElement} from './attribution_detail_table.js';
 import type {HandlerInterface, ObserverInterface, ReportID, ReportStatus, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISourceRegistration, WebUITrigger} from './attribution_internals.mojom-webui.js';
 import {Factory, HandlerRemote, ObserverReceiver, WebUISource_Attributability} from './attribution_internals.mojom-webui.js';
 import type {AttributionInternalsTableElement, CompareFunc, DataColumn, RenderFunc} from './attribution_internals_table.js';
@@ -313,17 +315,30 @@ class Registration {
 }
 
 function initRegistrationTableModel<T extends Registration>(
-    t: AttributionInternalsTableElement<T>, contextOriginTitle: string,
+    panel: HTMLElement, contextOriginTitle: string,
     cols: Iterable<DataColumn<T>>): AttributionInternalsTableElement<T> {
-  t.init([
-    valueColumn('Time', 'time', asDate, /*defaultSort=*/ true),
-    valueColumn(contextOriginTitle, 'contextOrigin', asUrl),
-    valueColumn('Reporting Origin', 'reportingOrigin', asUrl),
-    valueColumn('Registration JSON', 'registrationJson', asCode),
-    valueColumn(
-        'Cleared Debug Key', 'clearedDebugKey', allowingUndefined(asNumber)),
-    ...cols,
-  ]);
+  const t = panel.querySelector<AttributionInternalsTableElement<T>>(
+      'attribution-internals-table')!;
+
+  const d = panel.querySelector<AttributionDetailTableElement<T>>(
+      'attribution-detail-table')!;
+
+  t.init(
+      [
+        valueColumn('Time', 'time', asDate, /*defaultSort=*/ true),
+        valueColumn(contextOriginTitle, 'contextOrigin', asUrl),
+        valueColumn('Reporting Origin', 'reportingOrigin', asUrl),
+        valueColumn(
+            'Cleared Debug Key', 'clearedDebugKey',
+            allowingUndefined(asNumber)),
+        ...cols,
+      ],
+      {isSelectable: true});
+
+  d.init([valueColumn('Registration JSON', 'registrationJson', asCode)]);
+
+  bindInternalsAndDetailTables(t, d);
+
   return t;
 }
 
@@ -355,9 +370,9 @@ const reportVerificationColumn: DataColumn<Trigger> = {
   },
 };
 
-function initTriggerTable(t: AttributionInternalsTableElement<Trigger>):
+function initTriggerTable(panel: HTMLElement):
     AttributionInternalsTableElement<Trigger> {
-  return initRegistrationTableModel(t, 'Destination', [
+  return initRegistrationTableModel(panel, 'Destination', [
     valueColumn('Event-Level Result', 'eventLevelResult', asStringOrBool),
     valueColumn('Aggregatable Result', 'aggregatableResult', asStringOrBool),
     reportVerificationColumn,
@@ -375,10 +390,9 @@ class SourceRegistration extends Registration {
   }
 }
 
-function initSourceRegistrationTable(
-    t: AttributionInternalsTableElement<SourceRegistration>):
+function initSourceRegistrationTable(panel: HTMLElement):
     AttributionInternalsTableElement<SourceRegistration> {
-  return initRegistrationTableModel(t, 'Source Origin', [
+  return initRegistrationTableModel(panel, 'Source Origin', [
     valueColumn('Type', 'type', asStringOrBool),
     valueColumn('Status', 'status', asStringOrBool),
   ]);
@@ -483,11 +497,26 @@ class AggregatableReport extends Report {
   }
 }
 
+function bindInternalsAndDetailTables<T>(
+    t: AttributionInternalsTableElement<T>, d: AttributionDetailTableElement<T>,
+    onSelectionChange: (data: T|undefined) => void = () => {}): void {
+  t.addEventListener(
+      'selection-change', (e: CustomEvent<{data: T | undefined}>) => {
+        onSelectionChange(e.detail.data);
+        d.update(e.detail.data);
+      });
+
+  d.addEventListener('close', () => t.clearSelection());
+}
+
 function initReportTable<T extends Report>(
     panel: HTMLElement, handler: HandlerInterface,
     cols: Iterable<DataColumn<T>>): AttributionInternalsTableElement<T> {
   const t = panel.querySelector<AttributionInternalsTableElement<T>>(
       'attribution-internals-table')!;
+
+  const d = panel.querySelector<AttributionDetailTableElement<T>>(
+      'attribution-detail-table')!;
 
   t.init(
       [
@@ -496,25 +525,26 @@ function initReportTable<T extends Report>(
         valueColumn('Trigger Time', 'triggerTime', asDate),
         valueColumn('Report Time', 'reportTime', asDate, /*defaultSort=*/ true),
         ...cols,
-        valueColumn('Body', 'reportBody', asCode),
       ],
       {
         // Prevent sent/dropped reports from being removed by returning
         // undefined.
         getId: (report, updated) =>
             (report.isPending() || updated) ? report.id.value : undefined,
-        isSelectable: report => report.isPending(),
+        isSelectable: true,
       },
   );
+
+  d.init([valueColumn('Body', 'reportBody', asCode)]);
 
   const sendReportsButton = panel.querySelector('button')!;
 
   sendReportsButton.addEventListener(
       'click', () => sendReports(t, sendReportsButton, handler));
 
-  t.addEventListener(
-      'selection-change',
-      e => sendReportsButton.disabled = !e.detail.anySelected);
+  bindInternalsAndDetailTables(t, d, (report: T|undefined) => {
+    sendReportsButton.disabled = !(report?.isPending());
+  });
 
   return t;
 }
@@ -529,8 +559,8 @@ function initReportTable<T extends Report>(
 function sendReports<T extends Report>(
     t: AttributionInternalsTableElement<T>,
     sendReportsButton: HTMLButtonElement, handler: HandlerInterface): void {
-  const ids: ReportID[] = Array.from(t.selectedData(), report => report.id);
-  if (ids.length === 0) {
+  const id = t.selectedData()?.id;
+  if (id === undefined) {
     return;
   }
 
@@ -539,7 +569,7 @@ function sendReports<T extends Report>(
   sendReportsButton.disabled = true;
   sendReportsButton.innerText = 'Sending...';
 
-  handler.sendReports(ids).then(() => {
+  handler.sendReports([id]).then(() => {
     sendReportsButton.innerText = previousText;
   });
 }
@@ -640,14 +670,26 @@ function attributionSuccessDebugReport(mojo: WebUIReport): DebugReport {
   };
 }
 
-function initDebugReportTable(t: AttributionInternalsTableElement<DebugReport>):
+function initDebugReportTable(panel: HTMLElement):
     AttributionInternalsTableElement<DebugReport> {
-  t.init([
-    valueColumn('Time', 'time', asDate, /*defaultSort=*/ true),
-    valueColumn('URL', 'url', asUrl),
-    reportStatusColumn,
-    valueColumn('Body', 'body', asCode),
-  ]);
+  const t = panel.querySelector<AttributionInternalsTableElement<DebugReport>>(
+      'attribution-internals-table')!;
+
+  const d = panel.querySelector<AttributionDetailTableElement<DebugReport>>(
+      'attribution-detail-table')!;
+
+  t.init(
+      [
+        valueColumn('Time', 'time', asDate, /*defaultSort=*/ true),
+        valueColumn('URL', 'url', asUrl),
+        reportStatusColumn,
+      ],
+      {isSelectable: true});
+
+  d.init([valueColumn('Body', 'body', asCode)]);
+
+  bindInternalsAndDetailTables(t, d);
+
   return t;
 }
 
@@ -821,12 +863,13 @@ class AttributionInternals implements ObserverInterface {
     this.sources = initSourceTable(document.querySelector('#sourceTable')!);
 
     this.sourceRegistrations = initSourceRegistrationTable(
-        document.querySelector('#sourceRegistrationTable')!);
+        document.querySelector('#source-registration-panel')!);
 
-    this.triggers = initTriggerTable(document.querySelector('#triggerTable')!);
+    this.triggers = initTriggerTable(
+        document.querySelector('#trigger-registration-panel')!);
 
     this.debugReports =
-        initDebugReportTable(document.querySelector('#debugReportTable')!);
+        initDebugReportTable(document.querySelector('#debug-report-panel')!);
 
     this.osRegistrations = initOsRegistrationTable(
         document.querySelector('#osRegistrationTable')!);

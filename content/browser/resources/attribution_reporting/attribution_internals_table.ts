@@ -21,25 +21,11 @@ export interface DataColumn<T> {
   readonly defaultSort?: boolean;
 }
 
-function renderSelection(td: HTMLElement, selectable: boolean): void {
-  if (!selectable) {
-    td.parentElement!.ariaSelected = 'undefined';
-    td.replaceChildren();
-  } else if (!td.querySelector('input')) {
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.title = 'Select';
-    td.replaceChildren(input);
-  }
-}
-
 export type GetIdFunc<T> = (data: T, updated: boolean) => bigint|undefined;
-
-export type IsSelectableFunc<T> = (data: T) => boolean;
 
 export interface InitOpts<T> {
   readonly getId?: GetIdFunc<T>;
-  readonly isSelectable?: IsSelectableFunc<T>;
+  readonly isSelectable?: boolean;
 }
 
 export class AttributionInternalsTableElement<T> extends CustomElement {
@@ -50,6 +36,7 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
   private cols_?: Array<RenderFunc<T>>;
   private compare_?: CompareFunc<T>;
   private getId_?: GetIdFunc<T>;
+  private styleNewRow_?: (tr: DataRowElement<T>) => void;
 
   init(dataCols: Iterable<DataColumn<T>>, {
     getId,
@@ -71,21 +58,13 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
     };
 
     if (isSelectable) {
-      const selectAll = document.createElement('input');
-      selectAll.type = 'checkbox';
-      selectAll.title = 'Select All';
-      selectAll.disabled = true;
+      this.$('tbody')!.addEventListener('click', e => this.onTbodyClick(e));
 
-      selectAll.addEventListener(
-          'change', () => this.onSelectAllChange_(selectAll));
+      this.addEventListener(
+          'rows-change',
+          () => this.dispatchSelectionChange_(this.selectedData()));
 
-      const listener = () => this.onSelectionChange_(selectAll);
-      this.$('tbody')!.addEventListener('change', listener);
-      this.addEventListener('rows-change', listener);
-
-      this.$('table')!.ariaMultiSelectable = 'true';
-
-      addTh(selectAll, (td, data) => renderSelection(td, isSelectable(data)));
+      this.styleNewRow_ = tr => tr.ariaSelected = 'false';
     }
 
     for (const col of dataCols) {
@@ -166,6 +145,9 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
     const tr = new DataRowElement(data);
     for (const render of this.cols_!) {
       render(tr.insertCell(), data);
+    }
+    if (this.styleNewRow_) {
+      this.styleNewRow_(tr);
     }
     return tr;
   }
@@ -261,47 +243,40 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
     this.dispatchRowsChange_();
   }
 
-  * selectedData(): Iterable<T> {
-    for (const tr of this.$all<DataRowElement<T>>(
-             'tbody > tr[aria-selected="true"]')) {
-      yield tr.data;
+  private selectedRow_(): DataRowElement<T>|null {
+    return this.$('tbody > tr[aria-selected="true"]');
+  }
+
+  selectedData(): T|undefined {
+    return this.selectedRow_()?.data;
+  }
+
+  clearSelection(): void {
+    const tr = this.selectedRow_();
+    if (tr) {
+      tr.ariaSelected = 'false';
+      this.dispatchSelectionChange_(undefined);
     }
   }
 
-  private selectionInputs_(): NodeListOf<HTMLInputElement> {
-    return this.$all('tbody > tr > td:first-child > input');
+  private dispatchSelectionChange_(data: T|undefined): void {
+    this.dispatchEvent(new CustomEvent('selection-change', {detail: {data}}));
   }
 
-  private dispatchSelectionChange_(anySelected: boolean): void {
-    this.dispatchEvent(
-        new CustomEvent('selection-change', {detail: {anySelected}}));
-  }
-
-  private onSelectAllChange_(selectAll: HTMLInputElement): void {
-    for (const input of this.selectionInputs_()) {
-      input.checked = selectAll.checked;
-      input.closest('tr')!.ariaSelected = selectAll.checked.toString();
+  private onTbodyClick(e: Event): void {
+    if (!(e.target instanceof HTMLElement)) {
+      return;
     }
-    this.dispatchSelectionChange_(selectAll.checked);
-  }
-
-  private onSelectionChange_(selectAll: HTMLInputElement): void {
-    let anySelected = false;
-    let anyUnselected = false;
-    for (const input of this.selectionInputs_()) {
-      input.closest('tr')!.ariaSelected = input.checked.toString();
-      if (input.checked) {
-        anySelected = true;
-      } else {
-        anyUnselected = true;
-      }
+    const tr = e.target.closest('tr');
+    const selectedTr = this.selectedRow_();
+    if (!(tr instanceof DataRowElement) || tr === selectedTr) {
+      return;
     }
-
-    selectAll.disabled = !anySelected && !anyUnselected;
-    selectAll.checked = anySelected && !anyUnselected;
-    selectAll.indeterminate = anySelected && anyUnselected;
-
-    this.dispatchSelectionChange_(anySelected);
+    if (selectedTr) {
+      selectedTr.ariaSelected = 'false';
+    }
+    tr.ariaSelected = 'true';
+    this.dispatchSelectionChange_(tr.data);
   }
 }
 
@@ -330,6 +305,6 @@ customElements.define(
 declare global {
   interface HTMLElementEventMap {
     'rows-change': CustomEvent<{rowCount: number}>;
-    'selection-change': CustomEvent<{anySelected: boolean}>;
+    'selection-change': CustomEvent<{data: any | undefined}>;
   }
 }
