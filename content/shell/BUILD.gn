@@ -665,7 +665,7 @@ if (is_android) {
 
   if (ios_deployment_target == "17.4" &&
       current_toolchain == default_toolchain) {
-    _extension_toolchain = "${current_toolchain}_app_ext"
+    _extension_toolchain = "${current_toolchain}_blink_app_ext"
     extension2_bundle_data("content_process_bundle") {
       extension_name = "content_process.appex"
       extension_target =

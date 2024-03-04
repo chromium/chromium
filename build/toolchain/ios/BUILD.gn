@@ -53,6 +53,23 @@ template("ios_app_ext_toolchain") {
   }
 }
 
+# Specialisation of the ios_toolchain template to declare the toolchain
+# and its tools to build application extension for iOS platform.
+template("ios_blink_app_ext_toolchain") {
+  assert(defined(invoker.toolchain_args),
+         "Toolchains must declare toolchain_args")
+
+  ios_toolchain(target_name) {
+    forward_variables_from(invoker, "*", [ "toolchain_args" ])
+
+    toolchain_args = {
+      forward_variables_from(invoker.toolchain_args, "*")
+
+      ios_is_app_extension = true
+    }
+  }
+}
+
 ios_toolchain("ios_clang_arm64") {
   toolchain_args = {
     current_cpu = "arm64"
@@ -80,6 +97,13 @@ ios_toolchain("ios_clang_x86") {
 ios_app_ext_toolchain("ios_clang_arm64_app_ext") {
   toolchain_args = {
     current_cpu = "arm64"
+  }
+}
+
+ios_blink_app_ext_toolchain("ios_clang_arm64_blink_app_ext") {
+  toolchain_args = {
+    current_cpu = "arm64"
+    use_blink = true
   }
 }
 
