@@ -37,6 +37,7 @@ MediaDeviceInfo::MediaDeviceInfo() {
   content::GetAudioService().BindSystemInfo(
       audio_system_info_.BindNewPipeAndPassReceiver());
   audio_system_info_.reset_on_disconnect();
+  video_source_provider_.reset_on_disconnect();
 
   // Initialize the device lists. `base::SystemMonitor` only calls observers for
   // changes that happen after they start observing.

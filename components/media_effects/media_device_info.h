@@ -21,7 +21,7 @@ std::optional<std::string> GetRealDefaultDeviceId(
 // This class manages a cache of device infos for currently connected audio and
 // video capture devices. It is similar to `MediaCaptureDevicesImpl` from
 // content, but it holds the media::types instead of blink::MediaStreamDevice.
-// It allows usages within chrome chrome to access the full device information.
+// It allows usages within chrome to access the full device information.
 class MediaDeviceInfo : public base::SystemMonitor::DevicesChangedObserver {
  public:
   class Observer : public base::CheckedObserver {
