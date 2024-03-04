@@ -1,6 +1,6 @@
 # Omnibox Bug Triage Process
 
-*last update: 2024/02/05*
+*last update: 2024/03/04*
 
 *The current triage process owner is `jdonnelly@`.*
 
@@ -21,9 +21,9 @@ Hotlisted as *Needs-Feedback* or *Needs-TestConfirmation*.
 
 ### Non-goals
 
-* Ensure high priority bugs or regressions are making progress / ping bug owners
-  for progress updates on other important bugs.  (Trust your teammates to work
-  on assigned bugs.)
+Ensure high priority bugs or regressions are making progress / ping bug owners
+for progress updates on other important bugs.  (Trust your teammates to work on
+assigned bugs.)
 
 ## Process
 
@@ -33,36 +33,58 @@ Chromium has migrated to Buganizer. Googlers familiar with Monorail
 should read the Quick Start Guide ([go/cob-quick-start](https://goto.google.com/cob-quick-start))
 and save the two Chrome-wide bookmark groups.
 
-The new Component ID for Omnibox is: 73681.
+TODO: Delete this section after 02/2025, after the migration is old news.
 
-And here are some relevant Hotlist IDs:
+### Quick reference
+
+Component IDs:
+
+ - 1457180: Chromium > UI > Browser > Omnibox
+ - 1457335: Chromium > UI > Browser > Search
+
+Hotlist IDs:
+
  - 5438642: Available
  - 5432513: Needs-Bisect
  - 5433459: Needs-Feedback
  - 5432926: Needs-TestConfirmation
 
-TODO: Delete this section after 02/2025, after the migration is old news.
-
 ### Weekly process
 
-* Every Monday, Wednesday and Friday, the triage engineer looks over
-  [all untriaged omnibox bugs](https://issues.chromium.org/issues?q=componentid:1457180%20-componentid:1456767%20status:new%20-hotlistid:(5438642%20%7C%205432513%20%7C%205433459%20%7C%205432926))
-  and triages them. Untriaged bugs in Buganizer are defined as having
+* Every Monday, Wednesday and Friday, the triage engineer looks over all
+  untriaged bugs is both the
+  [Omnibox](https://issues.chromium.org/issues?q=componentid:1457180%2b%20-componentid:1456767%20status:new%20-hotlistid:(5438642%20%7C%205432513%20%7C%205433459%20%7C%205432926)) and
+  [Search](https://issues.chromium.org/issues?q=componentid:1457335%2b%20status:new%20-hotlistid:(5438642%20%7C%205432513%20%7C%205433459%20%7C%205432926))
+  components (and their sub-components - that's what the "+" after the component
+  ID in the URL does) and triages them. Untriaged bugs are defined as having
   *status:new* and are NOT Hotlisted as *Available* or
   *Needs-(Bisect|Feedback|TestConfirmation)*.
-* Every week on Tuesday, the triage engineer looks over [all untriaged bugs filed that aren’t categorized as omnibox yet have relevant
-  terms](https://issues.chromium.org/issues?q=-componentid:1457180%20status:new%20-hotlistid:(5438642%20%7C%205432513%20%7C%205433459%20%7C%205432926)%20(omnibox%20%7C%20omnibar%20%7C%20"omni%20bar"%20%7C%20locationbar%20%7C%20"location%20bar"%20%7C%20addressbar%20%7C%20"address%20bar"))
-  to see if any should be moved to the omnibox component and triaged.  [This
-  scan can be limited to those filed in the last week, i.e., since the last
-  check.](https://issues.chromium.org/issues?q=-componentid:1457180%20status:new%20-hotlistid:(5438642%20%7C%205432513%20%7C%205433459%20%7C%205432926)%20(omnibox%20%7C%20omnibar%20%7C%20%22omni%20bar%22%20%7C%20locationbar%20%7C%20%22location%20bar%22%20%7C%20addressbar%20%7C%20%22address%20bar%22)%20modified:14d)
-* Every week on Tuesday, the triage engineer should also
-  look over [all bugs with Hotlist *Needs-Feedback*](https://issues.chromium.org/issues?q=componentid:1457180%20-componentid:1456767%20status:open%20hotlistid:5433459)
-  and should take action on those that have been sitting for too long.
-  * If there's been no feedback over a week since the Hotlist was added, ping
-    the reporter (or whoever's being asked for feedback) and politely ask them
-    to provide feedback.
-  * If there's been no feedback for over a week since the last ping, and no one
-    can reproduce the issue, close it as WontFix.
+    * Note: The Search component often receives reports from users about issues
+      with the search box on google.com or just Google search generally
+      ([example](https://crbug.com/40777343)). In these cases, you can just
+      close the issue as Won't fix (Infeasible), though you should consider
+      filing an internal bug first, especially if you can reproduce it.
+    * Note: The Search component has a significant number of untriaged issues,
+      due to the fact that this component was not properly triaged for a period
+      of time. As part of the triage process, you must triage all issues in this
+      component that have been modified in the past week. Please also try to
+      triage a couple of older issues as well so we can eventually catch up.
+      TODO: Remove this note once we've caught up.
+* Every week on Tuesday, the triage engineer looks over
+[all untriaged bugs that aren’t categorized as omnibox yet have relevant terms](https://issues.chromium.org/issues?q=-componentid:1457180%20status:new%20-hotlistid:(5438642%20%7C%205432513%20%7C%205433459%20%7C%205432926)%20(omnibox%20%7C%20omnibar%20%7C%20%22omni%20bar%22%20%7C%20locationbar%20%7C%20%22location%20bar%22%20%7C%20addressbar%20%7C%20%22address%20bar%22)%20created:8d)
+to see if any should be moved to the omnibox component and triaged. This search
+is limited to issues created in the past 8 days (the time since the previous
+triage engineer's check plus a small margin of error).
+* Every week on Tuesday, the triage engineer should also look over all bugs
+with Hotlist *Needs-Feedback* in the
+[Omnibox](https://issues.chromium.org/issues?q=componentid:1457180%2b%20-componentid:1456767%20status:open%20hotlistid:5433459) and
+[Search](https://issues.chromium.org/issues?q=componentid:1457335%2b%20status:open%20hotlistid:5433459)
+  components and take action on those that have been sitting for too long.
+    * If there's been no feedback over a week since the Hotlist was added, ping
+      the reporter (or whoever's being asked for feedback) and politely ask them
+      to provide feedback.
+    * If there's been no feedback for over a week since the last ping, and no
+      one can reproduce the issue, close it as WontFix.
 * Every week on Thursday, the triage engineer looks over all alerts sent to
   [chrome-omnibox-team-alerts@](https://groups.google.com/a/google.com/forum/#!forum/chrome-omnibox-team-alerts)
   and, for each, either files a bug or replies to the message indicating why
@@ -72,7 +94,7 @@ TODO: Delete this section after 02/2025, after the migration is old news.
   [below](#How-to-triage-alerts).
 
 Other team members are welcome to triage a bug if they see it before the the
-triage engineer.  The triager owner will cycle among team members by
+triage engineer.  The triage engineer will cycle among team members by
 arrangement.
 
 ## How to triage chromium bugs
@@ -127,7 +149,7 @@ taken:
   root cause as another bug and will certainly be fixed simultaneously.
 * *WontFix*: Anything working by design.  Also applies to old non-reproducible
   bugs or bugs lacking feedback per
-  [standard Chromium policies](http://www.chromium.org/getting-involved/bug-triage#TOC-Cleaning-up-old-bugs).
+  [standard Chromium policies](https://www.chromium.org/getting-involved/bug-triage#TOC-Cleaning-up-old-bugs).
 * *Unconfirmed* or *Untriaged*:  These labels are generally only appropriate
   if you labeled the bug with *Needs-Feedback* or *Needs-TestConfirmation*,
   otherwise in effect you're kicking the can down the road to the next triage
@@ -254,7 +276,7 @@ When filing the bug about an alert:
 
 ### Investigating an Alert
 
-The [timeline dashboard](http://go/uma-timeline) is your friend,
+The [timeline dashboard](https://goto.google.com/uma-timeline) is your friend,
 especially the split by channel, split by platform, split by milestone, and
 split by version features.  Some tips on how to investigate using the timeline
 dashboard:
@@ -335,7 +357,7 @@ Example request:
 
 # References
 
-[General Chromium bug triage guidelines](http://www.chromium.org/getting-involved/bug-triage)
+[General Chromium bug triage guidelines](https://www.chromium.org/getting-involved/bug-triage)
 
 [Omnibox bugs that we intend/hope to tackle this year](https://bugs.chromium.org/p/chromium/issues/list?can=1&q=component:UI%3EBrowser%3EOmnibox%20-component:UI%3EBrowser%3EOmnibox%3ESecurityIndicators%20status:Available,Assigned,Started%20NextAction%3C2018/1/1%20OR%20component:UI%3EBrowser%3EOmnibox%20-component:UI%3EBrowser%3EOmnibox%3ESecurityIndicators%20status:Available,Assigned,Started%20-has:NextAction%20&sort=pri&colspec=ID%20Pri%20M%20Stars%20ReleaseBlock%20Component%20Status%20Owner%20Summary%20OS%20Modified),
 broken down:
