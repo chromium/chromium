@@ -179,20 +179,24 @@ OnDeviceModelServiceController::CreateSession(
           OnDeviceModelEligibilityReason::kSafetyConfigNotAvailableForFeature);
       return nullptr;
     }
-    model_paths.ts_data =
-        *(safety_model_info_->model_info.GetAdditionalFileWithBaseName(
-            kTsDataFile));
-    model_paths.ts_sp_model =
-        *(safety_model_info_->model_info.GetAdditionalFileWithBaseName(
-            kTsSpModelFile));
 
-    if (!safety_config->allowed_languages().empty()) {
-      if (language_detection_model_path_) {
-        model_paths.language_detection_model = *language_detection_model_path_;
-      } else if (features::GetOnDeviceModelMustUseSafetyModel()) {
-        logger.set_reason(OnDeviceModelEligibilityReason::
-                              kLanguageDetectionModelNotAvailable);
-        return nullptr;
+    if (safety_config) {
+      model_paths.ts_data =
+          *(safety_model_info_->model_info.GetAdditionalFileWithBaseName(
+              kTsDataFile));
+      model_paths.ts_sp_model =
+          *(safety_model_info_->model_info.GetAdditionalFileWithBaseName(
+              kTsSpModelFile));
+
+      if (!safety_config->allowed_languages().empty()) {
+        if (language_detection_model_path_) {
+          model_paths.language_detection_model =
+              *language_detection_model_path_;
+        } else if (features::GetOnDeviceModelMustUseSafetyModel()) {
+          logger.set_reason(OnDeviceModelEligibilityReason::
+                                kLanguageDetectionModelNotAvailable);
+          return nullptr;
+        }
       }
     }
   }

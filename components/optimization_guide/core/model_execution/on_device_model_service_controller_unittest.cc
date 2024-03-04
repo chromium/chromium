@@ -1214,6 +1214,59 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
   EXPECT_TRUE(ts_log.response().text_safety_model_response().is_unsafe());
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkModeNoFeatureConfig) {
+  Initialize();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_must_use_safety_model", "false"},
+       {"on_device_retract_unsafe_content", "false"}});
+
+  proto::TextSafetyModelMetadata model_metadata;
+  auto* other_feature_safety_config =
+      model_metadata.add_feature_text_safety_configurations();
+  other_feature_safety_config->set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
+  auto* threshold1 =
+      other_feature_safety_config->add_safety_category_thresholds();
+  threshold1->set_output_index(0);
+  threshold1->set_threshold(0.5);
+  auto* threshold2 =
+      other_feature_safety_config->add_safety_category_thresholds();
+  threshold2->set_output_index(1);
+  threshold2->set_threshold(0.5);
+  proto::Any any;
+  any.set_type_url(
+      "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
+  model_metadata.SerializeToString(any.mutable_value());
+  std::unique_ptr<optimization_guide::ModelInfo> model_info =
+      TestModelInfoBuilder()
+          .SetAdditionalFiles(
+              {temp_dir().Append(kTsDataFile),
+               temp_dir().Append(base::FilePath(kTsSpModelFile))})
+          .SetModelMetadata(any)
+          .Build();
+  test_controller_->MaybeUpdateSafetyModel(*model_info);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing(),
+                                                 &logger_, nullptr);
+  EXPECT_TRUE(session);
+
+  ExecuteModel(*session, "foo");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_received_);
+  EXPECT_FALSE(response_error_);
+
+  // T&S should not be passed through or logged.
+  ASSERT_TRUE(log_entry_received_);
+  const auto logged_on_device_model_execution_info =
+      log_entry_received_->log_ai_data_request()
+          ->model_execution_info()
+          .on_device_model_execution_info();
+  for (const auto& execution_info :
+       logged_on_device_model_execution_info.execution_infos()) {
+    EXPECT_FALSE(execution_info.request().has_text_safety_model_request());
+  }
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
   Initialize();
   base::test::ScopedFeatureList feature_list;
