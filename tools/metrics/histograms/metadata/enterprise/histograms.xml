@@ -47,6 +47,22 @@ chromium-metrics-reviews@google.com.
   <variant name="WebApp" summary="Handler for web apps"/>
 </variants>
 
+<variants name="ContentAnalysisProtocol">
+  <variant name="Multipart"
+      summary="Content analysis of user action is done with the Multipart
+               protocol."/>
+  <variant name="Resumable"
+      summary="Content analysis of user action is done with the Resumable
+               protocol."/>
+</variants>
+
+<variants name="ContentAnalysisRequestType">
+  <variant name="File"
+      summary="Content analysis of uploaded or downloaded files."/>
+  <variant name="Print" summary="Content analysis of printed pages."/>
+  <variant name="Text" summary="Content analysis of pasted text."/>
+</variants>
+
 <variants name="ContentAnalysisType">
   <variant name="Cloud"
       summary="Content analysis of user action is done in the cloud."/>
@@ -2992,6 +3008,22 @@ chromium-metrics-reviews@google.com.
   <summary>
     The status code (exit code or signal) from VPD update operation (Chrome OS).
   </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.{ContentAnalysisProtocol}Request.{ContentAnalysisRequestType}.Duration"
+    units="ms" expires_after="2025-02-28">
+  <owner>nancylanxiao@google.com</owner>
+  <owner>domfc@chromium.org</owner>
+  <owner>dpr-eng@google.com</owner>
+  <summary>
+    Records the duration of scanning requests, parametrized by the protocol used
+    and the type of content that's uploaded. Is is logged once per user action
+    that would trigger this Connector.
+  </summary>
+  <token key="ContentAnalysisProtocol" variants="ContentAnalysisProtocol"/>
+  <token key="ContentAnalysisRequestType"
+      variants="ContentAnalysisRequestType"/>
 </histogram>
 
 <histogram name="EnterpriseCheck.AzureADJoinStatusCheckTime" units="ms"
