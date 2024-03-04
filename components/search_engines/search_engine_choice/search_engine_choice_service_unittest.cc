@@ -775,6 +775,42 @@ TEST_F(SearchEngineChoiceServiceTest,
 }
 
 TEST_F(SearchEngineChoiceServiceTest,
+       DoNotShowChoiceScreenIfUserHasCustomSearchEngineSetAsDefault_Skip3p) {
+  feature_list()->Reset();
+  feature_list()->InitAndEnableFeatureWithParameters(
+      switches::kSearchEngineChoiceTrigger,
+      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
+        "false"},
+       {switches::kSearchEngineChoiceTriggerSkipFor3p.name, "true"}});
+
+  // A custom search engine will have a `prepopulate_id` of 0.
+  const int kCustomSearchEnginePrepopulateId = 0;
+  TemplateURLData template_url_data;
+  template_url_data.prepopulate_id = kCustomSearchEnginePrepopulateId;
+  template_url_data.SetURL("https://www.example.com/?q={searchTerms}");
+  template_url_service().SetUserSelectedDefaultSearchProvider(
+      template_url_service().Add(
+          std::make_unique<TemplateURL>(template_url_data)));
+
+  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+  EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
+                policy_service(), /*is_regular_profile=*/true,
+                template_url_service()),
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
+#else
+  EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
+                policy_service(), /*is_regular_profile=*/true,
+                template_url_service()),
+            SearchEngineChoiceScreenConditions::kEligible);
+  EXPECT_EQ(search_engine_choice_service().GetDynamicChoiceScreenConditions(
+                template_url_service()),
+            SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine);
+#endif
+}
+
+TEST_F(SearchEngineChoiceServiceTest,
        DoNotShowChoiceScreenForDefaultDistributionCustomSearchEngine) {
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(

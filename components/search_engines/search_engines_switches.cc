@@ -58,6 +58,6 @@ const base::FeatureParam<std::string> kSearchEngineChoiceTriggerRepromptParams{
 const base::FeatureParam<bool> kSearchEngineChoiceTriggerSkipFor3p{
     &kSearchEngineChoiceTrigger,
     /*name=*/"skip_for_3p",
-    /*default_value=*/false};
+    /*default_value=*/true};
 
 }  // namespace switches

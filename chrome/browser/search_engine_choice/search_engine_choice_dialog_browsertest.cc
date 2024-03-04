@@ -59,6 +59,9 @@
 #include "ui/base/window_open_disposition.h"
 
 using testing::_;
+using testing::TestParamInfo;
+using testing::ValuesIn;
+using testing::WithParamInterface;
 using EntryPoint = SearchEngineChoiceDialogService::EntryPoint;
 
 namespace {
@@ -862,9 +865,27 @@ IN_PROC_BROWSER_TEST_F(TaggedOnlySearchEngineChoiceDialogBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+struct RepromptTestParam {
+  const std::string test_suffix;
+  const bool tagged_profiles_only = false;
+  const bool select_google_in_pre = true;
+  const bool skip_for_3p = false;
+};
+
+const RepromptTestParam kTestParams[] = {
+    {.test_suffix = "AllProfiles"},
+    {.test_suffix = "TaggedProfilesOnly", .tagged_profiles_only = true},
+    {.test_suffix = "Skip3p",
+     .select_google_in_pre = false,
+     .skip_for_3p = true},
+    {.test_suffix = "Skip3pButPickGoogle",
+     .select_google_in_pre = true,
+     .skip_for_3p = true},
+};
+
 class SearchEngineRepromptBrowserTest
     : public SearchEngineChoiceDialogBrowserTest,
-      public testing::WithParamInterface<bool> {
+      public WithParamInterface<RepromptTestParam> {
  public:
   SearchEngineRepromptBrowserTest()
       : SearchEngineChoiceDialogBrowserTest(
@@ -885,11 +906,21 @@ class SearchEngineRepromptBrowserTest
           [switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name] =
               "false";
     }
+    if (skip_for_3p()) {
+      field_trial_params[switches::kSearchEngineChoiceTriggerSkipFor3p.name] =
+          "true";
+    } else {
+      field_trial_params[switches::kSearchEngineChoiceTriggerSkipFor3p.name] =
+          "false";
+    }
+
     feature_list_.InitAndEnableFeatureWithParameters(
         switches::kSearchEngineChoiceTrigger, std::move(field_trial_params));
   }
 
-  bool tagged_profiles_only() const { return GetParam(); }
+  bool tagged_profiles_only() const { return GetParam().tagged_profiles_only; }
+  bool skip_for_3p() const { return GetParam().skip_for_3p; }
+  bool select_google_in_pre() const { return GetParam().select_google_in_pre; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -914,6 +945,12 @@ IN_PROC_BROWSER_TEST_P(SearchEngineRepromptBrowserTest, PRE_Reprompt) {
   // Make a choice by grabbing the ID for one of the search engines in the
   // displayed list.
   int prepopulate_id = service->GetSearchEngines().at(0)->prepopulate_id();
+  if (select_google_in_pre()) {
+    prepopulate_id = TemplateURLPrepopulateData::google.id;
+  } else if (prepopulate_id == TemplateURLPrepopulateData::google.id) {
+    // The first item was Google, pick the second then.
+    prepopulate_id = service->GetSearchEngines().at(1)->prepopulate_id();
+  }
   service->NotifyChoiceMade(prepopulate_id, EntryPoint::kDialog);
 
   // Choice prefs have been written.
@@ -946,7 +983,16 @@ IN_PROC_BROWSER_TEST_P(SearchEngineRepromptBrowserTest, Reprompt) {
       browser(), GURL(chrome::kChromeUINewTabPageURL),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_TRUE(service->IsShowingDialog(browser()));
+  if (skip_for_3p() && !select_google_in_pre()) {
+    EXPECT_FALSE(service->IsShowingDialog(browser()));
+  } else {
+    EXPECT_TRUE(service->IsShowingDialog(browser()));
+  }
 }
 
-INSTANTIATE_TEST_SUITE_P(, SearchEngineRepromptBrowserTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(,
+                         SearchEngineRepromptBrowserTest,
+                         ValuesIn(kTestParams),
+                         [](const TestParamInfo<RepromptTestParam>& info) {
+                           return info.param.test_suffix;
+                         });

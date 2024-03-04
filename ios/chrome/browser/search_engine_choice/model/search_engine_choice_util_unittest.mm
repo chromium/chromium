@@ -66,6 +66,8 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
 
   TemplateURLService& template_url_service() { return *template_url_service_; }
 
+  base::test::ScopedFeatureList& feature_list() { return feature_list_; }
+
   search_engines::SearchEngineChoiceService& search_engine_choice_service() {
     return CHECK_DEREF(search_engine_choice_service_.get());
   }
@@ -103,6 +105,13 @@ TEST_F(SearchEngineChoiceUtilTest, ShowChoiceScreenIfPoliciesAreNotSet) {
 
 TEST_F(SearchEngineChoiceUtilTest,
        DoNotShowChoiceScreenIfUserHasCustomSearchEngineSetAsDefault) {
+  feature_list().Reset();
+  feature_list().InitAndEnableFeatureWithParameters(
+      switches::kSearchEngineChoiceTrigger,
+      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
+        "false"},
+       {switches::kSearchEngineChoiceTriggerSkipFor3p.name, "false"}});
+
   // A custom search engine will have a `prepopulate_id` of 0.
   const int kCustomSearchEnginePrepopulateId = 0;
   TemplateURLData template_url_data;
@@ -118,6 +127,34 @@ TEST_F(SearchEngineChoiceUtilTest,
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
       search_engines::SearchEngineChoiceScreenConditions::
           kHasCustomSearchEngine,
+      1);
+  return;
+}
+
+TEST_F(SearchEngineChoiceUtilTest,
+       DoNotShowChoiceScreenIfUserHasNonGoogleSearchEngineSetAsDefault) {
+  feature_list().Reset();
+  feature_list().InitAndEnableFeatureWithParameters(
+      switches::kSearchEngineChoiceTrigger,
+      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
+        "false"},
+       {switches::kSearchEngineChoiceTriggerSkipFor3p.name, "true"}});
+
+  // A custom search engine will have a `prepopulate_id` of 0.
+  const int kCustomSearchEnginePrepopulateId = 0;
+  TemplateURLData template_url_data;
+  template_url_data.prepopulate_id = kCustomSearchEnginePrepopulateId;
+  template_url_data.SetURL("https://www.example.com/?q={searchTerms}");
+  template_url_service().SetUserSelectedDefaultSearchProvider(
+      template_url_service().Add(
+          std::make_unique<TemplateURL>(template_url_data)));
+
+  EXPECT_FALSE(ShouldDisplaySearchEngineChoiceScreen(
+      browser_state(), search_engines::ChoicePromo::kDialog));
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
+      search_engines::SearchEngineChoiceScreenConditions::
+          kHasNonGoogleSearchEngine,
       1);
   return;
 }

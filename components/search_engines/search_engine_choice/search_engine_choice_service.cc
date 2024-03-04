@@ -231,6 +231,11 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
   // TODO(b/319050536): Remove the function declaration on these platforms.
   return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
 #else
+  // Don't show the dialog if the choice has already been made.
+  if (IsSearchEngineChoiceCompleted(*profile_prefs_)) {
+    return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
+  }
+
   // Don't show the dialog if the default search engine is set by an extension.
   if (template_url_service.IsExtensionControlledDefaultSearch()) {
     return SearchEngineChoiceScreenConditions::kExtensionControlled;
@@ -280,10 +285,6 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
     RecordUnexpectedSearchProvider(default_search_engine->data());
     return SearchEngineChoiceScreenConditions::
         kHasRemovedPrepopulatedSearchEngine;
-  }
-
-  if (IsSearchEngineChoiceCompleted(*profile_prefs_)) {
-    return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
   }
 
   return SearchEngineChoiceScreenConditions::kEligible;
