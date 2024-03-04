@@ -767,15 +767,10 @@ TEST_F(AutofillStructuredAddress, TestGetValueForComparisonForType) {
           .empty());
 }
 
-// Tests the logging of which street name (old or new) was chosen during merging
-// when the feature `kAutofillConvergeToExtremeLengthStreetAddress` is enabled.
+// Tests that when merging two equivalent street addresses, the longer one is
+// preferred in merging.
 TEST_F(AutofillStructuredAddress,
-       NewerAndLongerStreetAddressHasPrecedenceInMerging) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillConvergeToExtremeLengthStreetAddress,
-      {{features::kAutofillConvergeToLonger.name, "true"}});
-
+       LongerEquivalentStreetAddressHasPrecedenceInMerging) {
   AddressComponentsStore old_address_1 =
       i18n_model_definition::CreateAddressComponentModel();
   AddressComponentsStore old_address_2 =

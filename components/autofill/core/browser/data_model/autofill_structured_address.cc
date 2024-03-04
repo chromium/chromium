@@ -137,22 +137,10 @@ bool StreetAddressNode::HasNewerValuePrecedenceInMerging(
     }
     const int old_length = GetValue().size();
     const int new_length = newer_component.GetValue().size();
-    // By default, we prefer the newer street address over the old one in case
-    // of a tie between verification statuses.
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillConvergeToExtremeLengthStreetAddress)) {
-      return true;
-    }
-    // If street lengths are equal, prefer the old value. This is to avoid
+    // Only prefer the newer address if it increased in length. This is to avoid
     // constantly asking the user to update his profile just for formatting
     // purposes, which can negatively impact the Autofill experience.
-    if (old_length == new_length) {
-      return false;
-    }
-    // Otherwise, prefer the longer or shorter street address depending on the
-    // feature `kAutofillConvergeToExtremeLengthStreetAddress` parameterization.
-    return features::kAutofillConvergeToLonger.Get() ? old_length < new_length
-                                                     : old_length > new_length;
+    return old_length < new_length;
   }
   return false;
 }

@@ -330,15 +330,6 @@ BASE_FEATURE(kAutofillUploadVotesForFieldsWithEmail,
 // Changes Autofill Clear Form into Undo Autofill.
 BASE_FEATURE(kAutofillUndo, "AutofillUndo", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables converging towards the longer or shorter street address in profile
-// merging.
-BASE_FEATURE(kAutofillConvergeToExtremeLengthStreetAddress,
-             "AutofillConvergeToExtremeLengthStreetAddress",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kAutofillConvergeToLonger{
-    &kAutofillConvergeToExtremeLengthStreetAddress, "converge_to_longer", true};
-
 // When enabled, some local heuristic predictions will take precedence over the
 // autocomplete attribute and server predictions, when determining a field's
 // overall type.
