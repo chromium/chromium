@@ -23,7 +23,7 @@ export class FakeReadingMode {
   colorTheme: number = 0;
 
   // Current audio settings values.
-  speechRate: number = 0;
+  speechRate: number = 1;
   highlightGranularity: number = 0;
 
   // Enum values for various visual theme changes.

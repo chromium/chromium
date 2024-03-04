@@ -5,20 +5,21 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_too
 
 import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('RateSelection', () => {
-  let app: ReadAnythingElement;
   let toolbar: ReadAnythingToolbarElement;
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let rateButton: CrIconButtonElement;
+  let rateEmitted: number;
 
   setup(() => {
+    suppressInnocuousErrors();
     testBrowserProxy = new TestColorUpdaterBrowserProxy();
     BrowserProxy.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -26,17 +27,20 @@ suite('RateSelection', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.isReadAloudEnabled = true;
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
-    toolbar = app.$.toolbar;
+    toolbar = document.createElement('read-anything-toolbar');
+    document.body.appendChild(toolbar);
     rateButton =
         toolbar.shadowRoot!.querySelector<CrIconButtonElement>('#rate')!;
+    rateEmitted = -1;
+    document.addEventListener('rate-change', event => {
+      rateEmitted = (event as CustomEvent).detail.rate;
+    });
   });
 
   suite('by default', () => {
     test('uses 1x', () => {
       assertEquals(rateButton.ironIcon, 'voice-rate:1');
-      assertEquals(app.rate, 1);
+      assertEquals(chrome.readingMode.speechRate, 1);
     });
 
     test('menu is not open', () => {
@@ -66,7 +70,7 @@ suite('RateSelection', () => {
       let previousRate = -1;
       options.forEach((option) => {
         option.click();
-        const newRate = app.rate;
+        const newRate = rateEmitted;
         assertGT(newRate, previousRate);
         previousRate = newRate;
       });
@@ -85,8 +89,8 @@ suite('RateSelection', () => {
       });
 
       test('updates rate', () => {
-        assertEquals(app.rate, rateValue);
         assertEquals(chrome.readingMode.speechRate, rateValue);
+        assertEquals(rateEmitted, rateValue);
       });
 
       test('updates icon on toolbar', () => {

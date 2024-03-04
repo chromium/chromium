@@ -606,18 +606,26 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private propagateFontChange_(fontName: string) {
     chrome.readingMode.onFontChange(fontName);
-    if (this.contentPage) {
-      this.contentPage.updateFont(fontName);
-    }
+    this.dispatchEvent(new CustomEvent('font-change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        fontName,
+      },
+    }));
     this.style.fontFamily = validatedFontName(fontName);
   }
 
   private onRateClick_(event: DomRepeatEvent<number>) {
     chrome.readingMode.onSpeechRateChange(event.model.item);
-    if (this.contentPage) {
-      this.contentPage.onSpeechRateChange(event.model.item);
-      this.setRateIcon_(event.model.item);
-    }
+    this.dispatchEvent(new CustomEvent('rate-change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        rate: event.model.item,
+      },
+    }));
+    this.setRateIcon_(event.model.item);
     this.setCheckMarkForMenu_(this.$.rateMenu, event.model.index);
 
     this.closeMenus_();
@@ -687,9 +695,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
         ReadAnythingSettingsChange.COUNT);
     chrome.readingMode.onFontSizeChanged(increase);
-    if (this.contentPage) {
-      this.contentPage.updateFontSize();
-    }
+    this.emitFontSizeChange_();
     // Don't close the menu
   }
 
@@ -698,12 +704,17 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
         ReadAnythingSettingsChange.COUNT);
     chrome.readingMode.onFontSizeReset();
-    if (this.contentPage) {
-      this.contentPage.updateFontSize();
-    }
+    this.emitFontSizeChange_();
   }
 
-  onPlayPauseClick() {
+  private emitFontSizeChange_() {
+    this.dispatchEvent(new CustomEvent('font-size-change', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private onPlayPauseClick_() {
     this.dispatchEvent(new CustomEvent('play-pause-click', {
       bubbles: true,
       composed: true,

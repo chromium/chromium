@@ -583,7 +583,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  onSpeechRateChange(rate: number) {
+  private onSpeechRateChange_(event: CustomEvent<{rate: number}>) {
+    this.updateSpeechRate_(event.detail.rate);
+  }
+
+  private updateSpeechRate_(rate: number) {
     this.rate = rate;
     this.resetSpeechPostSettingChange_();
   }
@@ -1160,13 +1164,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   restoreSettingsFromPrefs() {
     if (this.isReadAloudEnabled_) {
-      this.onSpeechRateChange(chrome.readingMode.speechRate);
+      this.updateSpeechRate_(chrome.readingMode.speechRate);
       this.restoreVoiceFromPrefs_();
     }
     this.updateLineSpacing(chrome.readingMode.lineSpacing);
     this.updateLetterSpacing(chrome.readingMode.letterSpacing);
-    this.updateFont(chrome.readingMode.fontName);
-    this.updateFontSize();
+    this.updateFont_(chrome.readingMode.fontName);
+    this.updateFontSize_();
     let colorSuffix: string|undefined;
     switch (chrome.readingMode.colorTheme) {
       case chrome.readingMode.defaultTheme:
@@ -1232,14 +1236,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     });
   }
 
-  updateFont(fontName: string) {
+  private onFontChange_(event: CustomEvent<{fontName: string}>) {
+    this.updateFont_(event.detail.fontName);
+  }
+
+  private updateFont_(fontName: string) {
     const validFontName = validatedFontName(fontName);
     this.updateStyles({
       '--font-family': validFontName,
     });
   }
 
-  updateFontSize() {
+  private updateFontSize_() {
     this.updateStyles({
       '--font-size': chrome.readingMode.fontSize + 'em',
     });

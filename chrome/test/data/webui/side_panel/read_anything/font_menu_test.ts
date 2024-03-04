@@ -9,6 +9,7 @@ import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/c
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
@@ -17,6 +18,7 @@ suite('FontMenu', () => {
   let toolbar: ReadAnythingToolbarElement;
   let menuButton: CrIconButtonElement|null;
   let fontSelect: HTMLSelectElement|null;
+  let fontEmitted: string;
 
   setup(() => {
     suppressInnocuousErrors();
@@ -26,29 +28,13 @@ suite('FontMenu', () => {
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.supportedFonts = [];
+    fontEmitted = '';
+    document.addEventListener('font-change', event => {
+      fontEmitted = (event as CustomEvent).detail.fontName;
+    });
   });
 
-  /**
-   * Suppresses harmless ResizeObserver errors due to a browser bug.
-   * yaqs/2300708289911980032
-   */
-  function suppressInnocuousErrors() {
-    const onerror = window.onerror;
-    window.onerror = (message, url, lineNumber, column, error) => {
-      if ([
-            'ResizeObserver loop limit exceeded',
-            'ResizeObserver loop completed with undelivered notifications.',
-          ].includes(message.toString())) {
-        console.info('Suppressed ResizeObserver error: ', message);
-        return;
-      }
-      if (onerror) {
-        onerror.apply(window, [message, url, lineNumber, column, error]);
-      }
-    };
-  }
-
-  function createApp(): void {
+  function createToolbar(): void {
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
     menuButton =
@@ -68,7 +54,7 @@ suite('FontMenu', () => {
 
     setup(() => {
       chrome.readingMode.isReadAloudEnabled = true;
-      createApp();
+      createToolbar();
     });
 
     function udpateFonts(supportedFonts: string[]): void {
@@ -124,6 +110,7 @@ suite('FontMenu', () => {
           option.click();
           const expectedFont = chrome.readingMode.supportedFonts[index]!;
           assertFontsEqual(chrome.readingMode.fontName, expectedFont);
+          assertFontsEqual(fontEmitted, expectedFont);
         });
       });
 
@@ -148,7 +135,7 @@ suite('FontMenu', () => {
   suite('without read aloud', () => {
     setup(() => {
       chrome.readingMode.isReadAloudEnabled = false;
-      createApp();
+      createToolbar();
     });
 
     function udpateFonts(supportedFonts: string[]): void {
@@ -177,6 +164,7 @@ suite('FontMenu', () => {
           fontSelect!.selectedIndex = index;
           fontSelect!.dispatchEvent(new Event('change'));
           assertFontsEqual(chrome.readingMode.fontName, expectedFont);
+          assertFontsEqual(fontEmitted, expectedFont);
         });
       });
 

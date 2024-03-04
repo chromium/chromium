@@ -8,6 +8,7 @@ import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/c
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 
 suite('FontSize', () => {
@@ -15,33 +16,17 @@ suite('FontSize', () => {
   let menuButton: CrIconButtonElement|null;
   let increaseButton: CrIconButtonElement|null;
   let decreaseButton: CrIconButtonElement|null;
+  let fontSizeEmitted: boolean;
 
   setup(() => {
     suppressInnocuousErrors();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-  });
 
-  /**
-   * Suppresses harmless ResizeObserver errors due to a browser bug.
-   * yaqs/2300708289911980032
-   */
-  function suppressInnocuousErrors() {
-    const onerror = window.onerror;
-    window.onerror = (message, url, lineNumber, column, error) => {
-      if ([
-            'ResizeObserver loop limit exceeded',
-            'ResizeObserver loop completed with undelivered notifications.',
-          ].includes(message.toString())) {
-        console.info('Suppressed ResizeObserver error: ', message);
-        return;
-      }
-      if (onerror) {
-        onerror.apply(window, [message, url, lineNumber, column, error]);
-      }
-    };
-  }
+    fontSizeEmitted = false;
+    document.addEventListener('font-size-change', () => fontSizeEmitted = true);
+  });
 
   function createToolbar(): void {
     toolbar = document.createElement('read-anything-toolbar');
@@ -70,6 +55,7 @@ suite('FontSize', () => {
           .querySelector<CrIconButtonElement>('#font-size-increase')!.click();
 
       assertGT(chrome.readingMode.fontSize, startingFontSize);
+      assertTrue(fontSizeEmitted);
     });
 
     test('decrease clicked decreases container font size', () => {
@@ -80,6 +66,7 @@ suite('FontSize', () => {
           .querySelector<CrIconButtonElement>('#font-size-decrease')!.click();
 
       assertGT(startingFontSize, chrome.readingMode.fontSize);
+      assertTrue(fontSizeEmitted);
     });
 
     test('reset clicked returns font size to starting size', () => {
@@ -95,6 +82,7 @@ suite('FontSize', () => {
       toolbar.$.fontSizeMenu
           .querySelector<CrIconButtonElement>('#font-size-reset')!.click();
       assertEquals(startingFontSize, chrome.readingMode.fontSize);
+      assertTrue(fontSizeEmitted);
     });
   });
 
@@ -121,12 +109,14 @@ suite('FontSize', () => {
       const startingFontSize = chrome.readingMode.fontSize;
       increaseButton!.click();
       assertGT(chrome.readingMode.fontSize, startingFontSize);
+      assertTrue(fontSizeEmitted);
     });
 
     test('decrease clicked decreases container font size', () => {
       const startingFontSize = chrome.readingMode.fontSize;
       decreaseButton!.click();
       assertGT(startingFontSize, chrome.readingMode.fontSize);
+      assertTrue(fontSizeEmitted);
     });
   });
 });
