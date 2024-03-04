@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
@@ -175,14 +176,19 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
 
 class MockAttributionHost : public mojom::blink::AttributionHost {
  public:
-  explicit MockAttributionHost(blink::AssociatedInterfaceProvider* provider) {
-    provider->OverrideBinderForTesting(
+  explicit MockAttributionHost(blink::AssociatedInterfaceProvider* provider)
+      : provider_(provider) {
+    provider_->OverrideBinderForTesting(
         mojom::blink::AttributionHost::Name_,
         WTF::BindRepeating(&MockAttributionHost::BindReceiver,
                            WTF::Unretained(this)));
   }
 
-  ~MockAttributionHost() override = default;
+  ~MockAttributionHost() override {
+    CHECK(provider_);
+    provider_->OverrideBinderForTesting(mojom::blink::AttributionHost::Name_,
+                                        base::NullCallback());
+  }
 
   void WaitUntilBoundAndFlush() {
     if (receiver_.is_bound()) {
@@ -222,6 +228,7 @@ class MockAttributionHost : public mojom::blink::AttributionHost {
 
   mojo::AssociatedReceiver<mojom::blink::AttributionHost> receiver_{this};
   base::OnceClosure quit_;
+  blink::AssociatedInterfaceProvider* provider_;
 
   std::unique_ptr<MockDataHost> mock_data_host_;
 };
@@ -237,21 +244,16 @@ class AttributionSrcLoaderTest : public PageTestBase {
     PageTestBase::SetupPageWithClients(nullptr, client_);
 
     SecurityContext& security_context =
-        GetDocument().GetFrame()->DomWindow()->GetSecurityContext();
+        GetFrame().DomWindow()->GetSecurityContext();
     security_context.SetSecurityOriginForTesting(nullptr);
     security_context.SetSecurityOrigin(
         SecurityOrigin::CreateFromString("https://example.com"));
 
     attribution_src_loader_ =
-        MakeGarbageCollected<AttributionSrcLoader>(GetDocument().GetFrame());
+        MakeGarbageCollected<AttributionSrcLoader>(&GetFrame());
   }
 
   void TearDown() override {
-    GetFrame()
-        .GetRemoteNavigationAssociatedInterfaces()
-        ->OverrideBinderForTesting(
-            mojom::blink::AttributionHost::Name_,
-            WTF::BindRepeating([](mojo::ScopedInterfaceEndpointHandle) {}));
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
     PageTestBase::TearDown();
   }
