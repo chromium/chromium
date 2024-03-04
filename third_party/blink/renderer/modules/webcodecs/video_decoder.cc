@@ -176,8 +176,8 @@ void ParseVpxKeyFrame(const media::DecoderBuffer& buffer,
   vpx_codec_stream_info_t stream_info = {0};
   stream_info.sz = sizeof(vpx_codec_stream_info_t);
   auto status = vpx_codec_peek_stream_info(
-      codec == media::VideoCodec::kVP8 ? &vpx_codec_vp8_dx_algo
-                                       : &vpx_codec_vp9_dx_algo,
+      codec == media::VideoCodec::kVP8 ? vpx_codec_vp8_dx()
+                                       : vpx_codec_vp9_dx(),
       buffer.data(), static_cast<uint32_t>(buffer.data_size()), &stream_info);
   *is_key_frame = (status == VPX_CODEC_OK) && stream_info.is_kf;
 #endif
