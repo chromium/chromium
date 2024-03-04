@@ -223,6 +223,12 @@ config("default_libs") {
   }
 }
 
+_toolchain_marker_name =
+    "toolchain_marker_" + get_label_info(current_toolchain, "name")
+group(_toolchain_marker_name) {
+  # Can be used as an assert_no_deps target (assert_no_deps ignores toolchains).
+}
+
 group("common_deps") {
   visibility = [
     ":executable_deps",
@@ -232,7 +238,7 @@ group("common_deps") {
 
   # WARNING: This group is a dependency of **every executable and shared
   # library**.  Please be careful adding new dependencies here.
-  public_deps = []
+  public_deps = [ ":$_toolchain_marker_name" ]
 
   if (using_sanitizer) {
     public_deps += [ "//build/config/sanitizers:deps" ]
