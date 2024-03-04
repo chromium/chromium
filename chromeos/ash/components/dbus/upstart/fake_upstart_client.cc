@@ -117,18 +117,6 @@ void FakeUpstartClient::StopMediaAnalytics(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-void FakeUpstartClient::StartWilcoDtcService(
-    chromeos::VoidDBusMethodCallback callback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
-}
-
-void FakeUpstartClient::StopWilcoDtcService(
-    chromeos::VoidDBusMethodCallback callback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
-}
-
 void FakeUpstartClient::StartRecordingUpstartOperations() {
   if (is_recording_) {
     LOG(WARNING) << "Already recording Upstart operations";
