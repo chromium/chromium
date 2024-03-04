@@ -240,7 +240,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   _cancelButton = [[NSButton alloc] init];
   _cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
   _cancelButton.buttonType = NSButtonTypeMomentaryPushIn;
-  _cancelButton.bezelStyle = NSBezelStyleRegularSquare;
+  _cancelButton.bezelStyle = NSBezelStyleFlexiblePush;
   _cancelButton.title =
       l10n_util::GetNSString(IDS_MAC_PERMISSION_WIZARD_CANCEL_BUTTON);
   _cancelButton.keyEquivalent = @"\e";
@@ -250,7 +250,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   _launchA11yButton = [[NSButton alloc] init];
   _launchA11yButton.translatesAutoresizingMaskIntoConstraints = NO;
   _launchA11yButton.buttonType = NSButtonTypeMomentaryPushIn;
-  _launchA11yButton.bezelStyle = NSBezelStyleRegularSquare;
+  _launchA11yButton.bezelStyle = NSBezelStyleFlexiblePush;
   _launchA11yButton.title =
       l10n_util::GetNSString(IDS_ACCESSIBILITY_PERMISSION_DIALOG_OPEN_BUTTON);
   _launchA11yButton.action = @selector(onLaunchA11y:);
@@ -259,7 +259,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   _launchScreenRecordingButton = [[NSButton alloc] init];
   _launchScreenRecordingButton.translatesAutoresizingMaskIntoConstraints = NO;
   _launchScreenRecordingButton.buttonType = NSButtonTypeMomentaryPushIn;
-  _launchScreenRecordingButton.bezelStyle = NSBezelStyleRegularSquare;
+  _launchScreenRecordingButton.bezelStyle = NSBezelStyleFlexiblePush;
   _launchScreenRecordingButton.title = l10n_util::GetNSString(
       IDS_SCREEN_RECORDING_PERMISSION_DIALOG_OPEN_BUTTON);
   _launchScreenRecordingButton.action = @selector(onLaunchScreenRecording:);
@@ -268,7 +268,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   _nextButton = [[NSButton alloc] init];
   _nextButton.translatesAutoresizingMaskIntoConstraints = NO;
   _nextButton.buttonType = NSButtonTypeMomentaryPushIn;
-  _nextButton.bezelStyle = NSBezelStyleRegularSquare;
+  _nextButton.bezelStyle = NSBezelStyleFlexiblePush;
   _nextButton.title =
       l10n_util::GetNSString(IDS_MAC_PERMISSION_WIZARD_NEXT_BUTTON);
   _nextButton.keyEquivalent = @"\r";
@@ -278,7 +278,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   _okButton = [[NSButton alloc] init];
   _okButton.translatesAutoresizingMaskIntoConstraints = NO;
   _okButton.buttonType = NSButtonTypeMomentaryPushIn;
-  _okButton.bezelStyle = NSBezelStyleRegularSquare;
+  _okButton.bezelStyle = NSBezelStyleFlexiblePush;
   _okButton.title = l10n_util::GetNSString(IDS_MAC_PERMISSION_WIZARD_OK_BUTTON);
   _okButton.keyEquivalent = @"\r";
   _okButton.action = @selector(onOk:);
