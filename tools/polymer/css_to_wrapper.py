@@ -279,6 +279,10 @@ def main(argv):
       content = _extract_content(path.join(wrapper_in_folder, in_file),
                                  metadata, args.minify)
 
+    if not content:
+      assert metadata['type'] == 'style-lit' and metadata['include'], \
+          'Unexpected empty CSS file found: ' + in_file
+
     # Extract the URL scheme that should be used for absolute URL imports.
     scheme = None
     if metadata['scheme'] in ['default', 'chrome']:

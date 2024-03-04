@@ -41,15 +41,7 @@ async function processFile(inputFile, outputFile) {
     // If this is a CSS file, remove the <style>...</style> wrapper that was
     // added above.
     const match = result.match(REGEX);
-
-    if (match === null) {
-      // If this is a '_lit.css' file, allow it to be an empty file, since it is
-      // handled specially by the parent script, css_to_wrapper.py.
-      assert.ok(inputFile.endsWith('_lit.css'));
-      result = '';
-    } else {
-      result = match.groups['content'];
-    }
+    result = match === null ? '' : match.groups['content'];
   }
 
   // Save result.
