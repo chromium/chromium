@@ -388,7 +388,7 @@
   {
     "name": "arc-window-predictor",
     "owners": [ "sstan@chromium.org" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 130
   },
   {
     "name": "arc-xdg-mode",
