@@ -24,6 +24,7 @@
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/session_state_animator_impl.h"
 #include "ash/wm/window_restore/window_restore_util.h"
@@ -141,16 +142,25 @@ void MaybeAppendTestCallback(Callback& callback,
 // Returns true if the pine screenshot should be taken on shutdown.
 bool ShouldTakePineScreeshot(aura::Window* active_desk) {
   auto* shell = Shell::Get();
-  // Do not take the pine screenshot if it is in overview mode, lock screen or
-  // in the home launcher page.
+  // Do not take the pine screenshot if it is in overview mode, lock screen,
+  // home launcher or there is no windows inside the active desk.
   if (shell->overview_controller()->InOverviewSession() ||
       shell->session_controller()->IsScreenLocked() ||
-      shell->app_list_controller()->IsHomeScreenVisible()) {
+      shell->app_list_controller()->IsHomeScreenVisible() ||
+      active_desk->children().empty()) {
     return false;
   }
 
-  // Do not take the pine screenshot if the active desk has no windows.
-  return !active_desk->children().empty();
+  for (aura::Window* window :
+       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
+    if (!WindowState::Get(window)->IsMinimized()) {
+      return true;
+    }
+  }
+
+  // Do not take the pine screenshot if all the windows inside the active desk
+  // are minimized.
+  return false;
 }
 
 }  // namespace

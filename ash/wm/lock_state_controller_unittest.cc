@@ -1061,6 +1061,14 @@ class LockStateControllerPineTest : public LockStateControllerTest {
     LockStateControllerTest::TearDown();
   }
 
+  void RequestShutdown() {
+    base::RunLoop run_loop;
+    lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
+    lock_state_controller_->RequestShutdown(
+        ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
+    run_loop.Run();
+  }
+
   const base::FilePath& file_path() const { return file_path_; }
 
  private:
@@ -1074,12 +1082,7 @@ class LockStateControllerPineTest : public LockStateControllerTest {
 TEST_F(LockStateControllerPineTest, ShutdownWithWindows) {
   std::unique_ptr<aura::Window> window = CreateTestWindow();
 
-  base::RunLoop run_loop;
-  lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
-  lock_state_controller_->RequestShutdown(
-      ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
-  run_loop.Run();
-
+  RequestShutdown();
   // The pine image was taken and not empty.
   EXPECT_TRUE(base::PathExists(file_path()));
   int64_t file_size = 0;
@@ -1102,12 +1105,7 @@ TEST_F(LockStateControllerPineTest, ShutdownWithoutWindows) {
   // Create an empty file to simulate an old pine image.
   ASSERT_TRUE(base::WriteFile(file_path(), ""));
 
-  base::RunLoop run_loop;
-  lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
-  lock_state_controller_->RequestShutdown(
-      ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
-  run_loop.Run();
-
+  RequestShutdown();
   // Existing pine image was deleted.
   EXPECT_FALSE(base::PathExists(file_path()));
 }
@@ -1120,12 +1118,7 @@ TEST_F(LockStateControllerPineTest, ShutdownInOverview) {
   CreateTestWindow();
   EnterOverview();
 
-  base::RunLoop run_loop;
-  lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
-  lock_state_controller_->RequestShutdown(
-      ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
-  run_loop.Run();
-
+  RequestShutdown();
   // The pine image should not be taken if it is in overview when shutting down.
   // The existing pine image should be deleted as well.
   EXPECT_FALSE(base::PathExists(file_path()));
@@ -1140,12 +1133,7 @@ TEST_F(LockStateControllerPineTest, ShutdownInLockScreen) {
   GetSessionControllerClient()->LockScreen();
   EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
 
-  base::RunLoop run_loop;
-  lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
-  lock_state_controller_->RequestShutdown(
-      ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
-  run_loop.Run();
-
+  RequestShutdown();
   // The pine image should not be taken if it is in the lock screen. The
   // existing pine image should be deleted as well.
   EXPECT_FALSE(base::PathExists(file_path()));
@@ -1164,14 +1152,24 @@ TEST_F(LockStateControllerPineTest, ShutdownInHomeLauncher) {
   ASSERT_TRUE(app_list_controller->IsHomeScreenVisible());
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
 
-  base::RunLoop run_loop;
-  lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
-  lock_state_controller_->RequestShutdown(
-      ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
-  run_loop.Run();
-
+  RequestShutdown();
   // The pine image should not be taken if it is in the home launcher page when
   // shutting down. The existing image should be deleted as well.
+  EXPECT_FALSE(base::PathExists(file_path()));
+}
+
+TEST_F(LockStateControllerPineTest, AllWindowsMinimized) {
+  // Create an empty file to simulate an old pine image.
+  ASSERT_TRUE(base::WriteFile(file_path(), ""));
+
+  std::unique_ptr<aura::Window> window1(CreateTestWindow());
+  std::unique_ptr<aura::Window> window2(CreateTestWindow());
+  WindowState::Get(window1.get())->Minimize();
+  WindowState::Get(window2.get())->Minimize();
+
+  RequestShutdown();
+  // The pine image should not be taken if all the windows inside the active
+  // desk are minimized. The existing image should be deleted as well.
   EXPECT_FALSE(base::PathExists(file_path()));
 }
 
