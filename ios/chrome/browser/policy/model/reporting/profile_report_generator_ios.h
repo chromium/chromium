@@ -18,7 +18,7 @@ class FilePath;
 }
 
 namespace policy {
-class MachineLevelUserCloudPolicyManager;
+class CloudPolicyManager;
 }
 
 class ChromeBrowserState;
@@ -44,9 +44,10 @@ class ProfileReportGeneratorIOS : public ProfileReportGenerator::Delegate {
       enterprise_management::ChromeUserProfileInfo* report) override;
   void GetExtensionRequest(
       enterprise_management::ChromeUserProfileInfo* report) override;
-  std::unique_ptr<policy::PolicyConversionsClient> MakePolicyConversionsClient()
-      override;
-  policy::MachineLevelUserCloudPolicyManager* GetCloudPolicyManager() override;
+  std::unique_ptr<policy::PolicyConversionsClient> MakePolicyConversionsClient(
+      bool is_machine_scope) override;
+  policy::CloudPolicyManager* GetCloudPolicyManager(
+      bool is_machine_scope) override;
 
  private:
   raw_ptr<ChromeBrowserState> browser_state_;

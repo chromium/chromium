@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/policy/core/browser/policy_conversions.h"
+#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -180,7 +181,7 @@ TEST_F(PolicyInfoTest, ExtensionPolicy) {
 TEST_F(PolicyInfoTest, MachineLevelUserCloudPolicyFetchTimestamp) {
   em::ChromeUserProfileInfo profile_info;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  AppendMachineLevelUserCloudPolicyFetchTimestamp(
+  AppendCloudPolicyFetchTimestamp(
       &profile_info, g_browser_process->browser_policy_connector()
                          ->machine_level_user_cloud_policy_manager());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

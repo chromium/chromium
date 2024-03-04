@@ -2193,6 +2193,8 @@ message ExtensionPolicy {
 // Cloud policy last fetch time.
 message PolicyFetchTimestamp {
   // The type of cloud policy.
+  // TODO(b/327655459): This field is deprecated, delete once server
+  // side references are all removed.
   optional string type = 1;
   // The last time the policies where fetched for the policy type.
   // [timestamp] is milliseconds since Epoch in UTC timezone (Java time).

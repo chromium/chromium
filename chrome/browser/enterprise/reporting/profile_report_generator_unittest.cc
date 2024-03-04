@@ -110,7 +110,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
   void InitPolicyMap() {
     policy_map_.Set("kPolicyName1", policy::POLICY_LEVEL_MANDATORY,
                     policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-                    base::Value(base::Value::List()), nullptr);
+                    base::Value(true), nullptr);
     policy_map_.Set("kPolicyName2", policy::POLICY_LEVEL_RECOMMENDED,
                     policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_MERGED,
                     base::Value(true), nullptr);
@@ -232,7 +232,6 @@ TEST_F(ProfileReportGeneratorTest, ProfileIdObfuscate) {
   EXPECT_NE(report->id(), report3->id());
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(ProfileReportGeneratorTest, PoliciesDisabled) {
   // Users' profile info is collected by default.
   std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
@@ -250,6 +249,26 @@ TEST_F(ProfileReportGeneratorTest, PoliciesDisabled) {
   EXPECT_EQ(2, report->chrome_policies_size());
 }
 
+TEST_F(ProfileReportGeneratorTest, PoliciesHidden) {
+  std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
+
+  for (const auto& policy : report->chrome_policies()) {
+    EXPECT_EQ("true", policy.value());
+  }
+
+  generator_.set_is_machine_scope(false);
+  report = GenerateReport();
+
+  for (const auto& policy : report->chrome_policies()) {
+    if (policy.scope() == em::Policy_PolicyScope_SCOPE_MACHINE) {
+      EXPECT_EQ("\"********\"", policy.value());
+    } else {
+      EXPECT_EQ("true", policy.value());
+    }
+  }
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(ProfileReportGeneratorTest, PendingRequest) {
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kCloudExtensionRequestEnabled,

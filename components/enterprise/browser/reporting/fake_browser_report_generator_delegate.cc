@@ -23,7 +23,7 @@ class BrowserReport;
 
 namespace policy {
 class PolicyConversionsClient;
-class MachineLevelUserCloudPolicyManager;
+class CloudPolicyManager;
 }  // namespace policy
 
 namespace enterprise_reporting::test {
@@ -44,12 +44,14 @@ void FakeProfileReportGeneratorDelegate::GetExtensionRequest(
     enterprise_management::ChromeUserProfileInfo* report) {}
 
 std::unique_ptr<policy::PolicyConversionsClient>
-FakeProfileReportGeneratorDelegate::MakePolicyConversionsClient() {
+FakeProfileReportGeneratorDelegate::MakePolicyConversionsClient(
+    bool is_machine_scope) {
   return nullptr;
 }
 
-policy::MachineLevelUserCloudPolicyManager*
-FakeProfileReportGeneratorDelegate::GetCloudPolicyManager() {
+policy::CloudPolicyManager*
+FakeProfileReportGeneratorDelegate::GetCloudPolicyManager(
+    bool is_machine_scope) {
   return nullptr;
 }
 

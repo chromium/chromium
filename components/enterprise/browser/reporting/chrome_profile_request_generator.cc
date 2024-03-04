@@ -22,7 +22,9 @@ ChromeProfileRequestGenerator::ChromeProfileRequestGenerator(
     : profile_path_(profile_path),
       profile_name_(profile_name),
       browser_report_generator_(delegate_factory),
-      profile_report_generator_(delegate_factory) {}
+      profile_report_generator_(delegate_factory) {
+  profile_report_generator_.set_is_machine_scope(false);
+}
 
 ChromeProfileRequestGenerator::~ChromeProfileRequestGenerator() = default;
 

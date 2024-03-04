@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/browser/policy_conversions.h"
+#import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/policy_conversions_client_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -61,12 +62,16 @@ void ProfileReportGeneratorIOS::GetExtensionRequest(
 }
 
 std::unique_ptr<policy::PolicyConversionsClient>
-ProfileReportGeneratorIOS::MakePolicyConversionsClient() {
+ProfileReportGeneratorIOS::MakePolicyConversionsClient(bool is_machine_scope) {
+  // Note that profile reporting is not supported on iOS yet, hence we igore
+  // `is_machine_scope` value.
   return std::make_unique<PolicyConversionsClientIOS>(browser_state_);
 }
 
-policy::MachineLevelUserCloudPolicyManager*
-ProfileReportGeneratorIOS::GetCloudPolicyManager() {
+policy::CloudPolicyManager* ProfileReportGeneratorIOS::GetCloudPolicyManager(
+    bool is_machine_scope) {
+  // Note that profile reporting is not supported on iOS yet, hence we igore
+  // `is_machine_scope` value.
   return GetApplicationContext()
       ->GetBrowserPolicyConnector()
       ->machine_level_user_cloud_policy_manager();
