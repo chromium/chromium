@@ -79,7 +79,7 @@ provide more info about that crash.
 While the crash server has most of the information we need to solve issues, it
 is helpful if you can provide additional details in a bug report, such as steps
 to reproduce the crash. To do so press the "File bug report" button which will
-open [crbug.com](https://bugs.chromium.org/p/chromium/issues/entry?template=Webview+Bugs)
+open https://issues.chromium.org/issues/new?component=1456456&template=1923373
 in the browser. You can use the bug report template to provide additional info
 about the crash for the WebView engineering team. Make sure to fill all the
 relevant fields in the bug report and leave the crash upload ID in the bug
@@ -131,7 +131,7 @@ or "Disabled" in the UI; "Default" means WebView will pick up the random field
 trial experiment.
 
 If you find an experiment is the root cause for app breakage, please [file a
-bug](https://bugs.chromium.org/p/chromium/issues/entry?template=Webview+Bugs),
+bug](https://issues.chromium.org/issues/new?component=1456456&template=1923373),
 mention which experiment, and link to your app's Play Store page for our team to
 investigate.
 
@@ -235,7 +235,7 @@ You can file general bug reports for the WebView engineering team. Launch
 WebView DevTools, open the three-dotted menu, and select "Report WebView Bug."
 Similar to filing bug reports for crashes, this will open the system browser to
 [our bug
-tracker](https://bugs.chromium.org/p/chromium/issues/entry?template=Webview+Bugs&labels=Via-WebView-DevTools)
+tracker](https://issues.chromium.org/issues/new?component=1456456&template=1923373)
 (requires sign-in), where you can describe the issue.
 
 ### Check for WebView updates
