@@ -28,6 +28,7 @@ source_set("network_health_resource_provider") {
   ]
 
   deps = [
+    "//ash/constants",
     "//ash/webui/common/resources:resources_grit",
     "//chromeos/strings/",
     "//content/public/browser",
