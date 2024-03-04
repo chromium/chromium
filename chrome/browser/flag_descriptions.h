@@ -4315,6 +4315,9 @@ extern const char kCrosPrivacyHubDescription[];
 extern const char kCrosPrivacyHubAppPermissionsName[];
 extern const char kCrosPrivacyHubAppPermissionsDescription[];
 
+extern const char kCrosPrivacyHubAppPermissionsV2Name[];
+extern const char kCrosPrivacyHubAppPermissionsV2Description[];
+
 extern const char kCrosPrivacyHubV0Name[];
 extern const char kCrosPrivacyHubV0Description[];
 

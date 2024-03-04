@@ -7522,6 +7522,12 @@ const char kCrosPrivacyHubAppPermissionsDescription[] =
     "When enabled, the user will be able to see the list of apps, sites and "
     "system services affected by the privacy hub toggles.";
 
+const char kCrosPrivacyHubAppPermissionsV2Name[] =
+    "Add privacy controls to app specific subpages";
+const char kCrosPrivacyHubAppPermissionsV2Description[] =
+    "When enabled, the user will be able to manage system access of sensors "
+    "from the app specific subpages under the OS Apps section.";
+
 const char kCrosPrivacyHubV0Name[] =
     "Enable ChromeOS Privacy Hub without the location switch.";
 const char kCrosPrivacyHubV0Description[] =

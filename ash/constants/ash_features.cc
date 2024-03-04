@@ -478,9 +478,15 @@ BASE_FEATURE(kCrosPrivacyHub,
              "CrosPrivacyHub",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables app permissions view inside Priacy Hub.
+// Enables app permissions view inside Privacy Hub.
 BASE_FEATURE(kCrosPrivacyHubAppPermissions,
              "CrosPrivacyHubAppPermissions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Adds controls to the OS Apps subpages for managing sensor system access and
+// more.
+BASE_FEATURE(kCrosPrivacyHubAppPermissionsV2,
+             "CrosPrivacyHubAppPermissionsV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Privacy Hub with only the camera and the microphone access control.
@@ -3247,6 +3253,11 @@ bool IsConsumerAutoUpdateToggleAllowed() {
 
 bool IsCrosPrivacyHubAppPermissionsEnabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHubAppPermissions) &&
+         IsCrosPrivacyHubV0Enabled();
+}
+
+bool IsCrosPrivacyHubAppPermissionsV2Enabled() {
+  return base::FeatureList::IsEnabled(kCrosPrivacyHubAppPermissionsV2) &&
          IsCrosPrivacyHubV0Enabled();
 }
 

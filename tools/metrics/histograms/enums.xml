@@ -16465,6 +16465,7 @@ from previous Chrome versions.
       label="AutofillEnablePasswordInfoBarAccountIndicationFooter:enabled"/>
   <int value="-1987283524" label="OmniboxExpandedStateShape:disabled"/>
   <int value="-1986313133" label="InstantHotspotRebrand:enabled"/>
+  <int value="-1986196882" label="CrosPrivacyHubAppPermissionsV2:enabled"/>
   <int value="-1985452239" label="SmartDim20190221:disabled"/>
   <int value="-1985239289" label="AutofillRichMetadataQueries:enabled"/>
   <int value="-1985145145" label="TpcdHeuristicsGrants:enabled"/>
@@ -21698,6 +21699,7 @@ from previous Chrome versions.
   <int value="382131467"
       label="GridTabSwitcherLandscapeAspectRatioPhones:enabled"/>
   <int value="382478170" label="SemanticColorDebugOverride:disabled"/>
+  <int value="383974622" label="CrosPrivacyHubAppPermissionsV2:disabled"/>
   <int value="384054552" label="EnableDrDcVulkan:disabled"/>
   <int value="384677240" label="AssistMultiWordLacrosSupport:enabled"/>
   <int value="385339273" label="TextBasedAudioDescription:disabled"/>
