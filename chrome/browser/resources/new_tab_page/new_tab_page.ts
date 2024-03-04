@@ -9,6 +9,7 @@
  * things tests need.
  */
 
+export {RealboxElement} from 'chrome://resources/cr_components/omnibox/realbox.js';
 export {RealboxBrowserProxy} from 'chrome://resources/cr_components/omnibox/realbox_browser_proxy.js';
 export {RealboxIconElement} from 'chrome://resources/cr_components/omnibox/realbox_icon.js';
 export {RealboxMatchElement} from 'chrome://resources/cr_components/omnibox/realbox_match.js';
@@ -27,7 +28,6 @@ export {ProcessedFile, processFile} from './image_processor.js';
 export {LogoElement} from './logo.js';
 export {recordDuration, recordLoadDuration, recordOccurence, recordPerdecage} from './metrics_utils.js';
 export {NewTabPageProxy} from './new_tab_page_proxy.js';
-export {RealboxElement} from './realbox/realbox.js';
 export {checkTransparency, isBMP, isPNG, isWebP} from './transparency.js';
 export {$$, createScrollBorders, decodeString16, mojoString16} from './utils.js';
 export {Action as VoiceAction, Error as VoiceError} from './voice_search_overlay.js';

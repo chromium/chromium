@@ -9,6 +9,7 @@ assert(!is_android && !is_ios)
 build_webui("build") {
   grd_prefix = "cr_components_omnibox"
   web_component_files = [
+    "realbox.ts",
     "realbox_action.ts",
     "realbox_dropdown.ts",
     "realbox_icon.ts",

@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_components/omnibox/realbox_dropdown.js';
-import 'chrome://resources/cr_components/omnibox/realbox_icon.js';
+import './realbox_dropdown.js';
+import './realbox_icon.js';
 
-import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
-import {NavigationPredictor, SideType} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
-import {RealboxBrowserProxy} from 'chrome://resources/cr_components/omnibox/realbox_browser_proxy.js';
-import type {RealboxDropdownElement} from 'chrome://resources/cr_components/omnibox/realbox_dropdown.js';
-import type {RealboxIconElement} from 'chrome://resources/cr_components/omnibox/realbox_icon.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
-import {hasKeyModifiers} from 'chrome://resources/js/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
+import {hasKeyModifiers} from '//resources/js/util.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-import {decodeString16, mojoString16} from '../utils.js';
-
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from './omnibox.mojom-webui.js';
+import {NavigationPredictor, SideType} from './omnibox.mojom-webui.js';
 import {getTemplate} from './realbox.html.js';
+import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
+import type {RealboxDropdownElement} from './realbox_dropdown.js';
+import type {RealboxIconElement} from './realbox_icon.js';
+import {decodeString16, mojoString16} from './utils.js';
 
 // 900px ~= 561px (max value for --ntp-search-box-width) * 1.5 + some margin.
 const canShowSecondarySideMediaQueryList =
@@ -45,8 +46,10 @@ export interface RealboxElement {
   };
 }
 
+const RealboxElementBase = I18nMixin(WebUiListenerMixin(PolymerElement));
+
 /** A real search box that behaves just like the Omnibox. */
-export class RealboxElement extends PolymerElement {
+export class RealboxElement extends RealboxElementBase {
   static get is() {
     return 'ntp-realbox';
   }
@@ -219,13 +222,13 @@ export class RealboxElement extends PolymerElement {
 
       widthBehavior_: {
         type: String,
-        value: loadTimeData.getString('realboxWidthBehavior'),
+        value: () => loadTimeData.getString('realboxWidthBehavior'),
         reflectToAttribute: true,
       },
 
       isTall_: {
         type: Boolean,
-        value: loadTimeData.getBoolean('realboxIsTall'),
+        value: () => loadTimeData.getBoolean('realboxIsTall'),
         reflectToAttribute: true,
       },
     };
@@ -726,9 +729,9 @@ export class RealboxElement extends PolymerElement {
     if (newInputValue.trim() && needsSelectionUpdate) {
       // If the cursor is to be moved to the end (implies selection should not
       // be perserved), set the selection start to same as the selection end.
-      this.$.input.selectionStart = preserveSelection ?
-          oldSelectionStart :
-          update.moveCursorToEnd ? newInputValue.length : newInput.text.length;
+      this.$.input.selectionStart = preserveSelection ? oldSelectionStart :
+          update.moveCursorToEnd                      ? newInputValue.length :
+                                                        newInput.text.length;
       this.$.input.selectionEnd =
           preserveSelection ? oldSelectionEnd : newInputValue.length;
     }

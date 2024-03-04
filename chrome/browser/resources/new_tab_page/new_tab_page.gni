@@ -34,7 +34,6 @@ all_web_component_files = [
                             "logo.ts",
                             "middle_slot_promo.ts",
                             "mini_page.ts",
-                            "realbox/realbox.ts",
                             "voice_search_overlay.ts",
                           ] + modules_web_component_files
 

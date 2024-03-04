@@ -280,10 +280,10 @@
 </style>
 <div id="inputWrapper" on-focusout=onInputWrapperFocusout_
     on-keydown="onInputWrapperKeydown_">
-  <input id="input" class="truncate" type="search" autocomplete="off" 
+  <input id="input" class="truncate" type="search" autocomplete="off"
       spellcheck="false" aria-live="[[inputAriaLive_]]" role="combobox"
       aria-expanded="[[dropdownIsVisible]]" aria-controls="matches"
-      placeholder="$i18n{searchBoxHint}" on-copy="onInputCutCopy_"
+      placeholder="[[i18n('searchBoxHint')]]" on-copy="onInputCutCopy_"
       on-cut="onInputCutCopy_" on-focus="onInputFocus_"
       on-input="onInputInput_" on-keydown="onInputKeydown_"
       on-keyup="onInputKeyup_" on-mousedown="onInputMouseDown_"
@@ -294,24 +294,26 @@
   <div class="realbox-icon-button-container voice"
       hidden="[[!realboxChromeRefreshTheming]]">
     <button id="voiceSearchButton" class="realbox-icon-button"
-        on-click="onVoiceSearchClick_" title="$i18n{voiceSearchButtonLabel}">
+        on-click="onVoiceSearchClick_"
+        title="[[i18n('voiceSearchButtonLabel')]]">
     </button>
   </div>
   <div class="realbox-icon-button-container lens"
       hidden="[[!realboxChromeRefreshTheming]]">
     <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
       <button id="lensSearchButton" class="realbox-icon-button"
-          on-click="onLensSearchClick_" title="$i18n{lensSearchButtonLabel}">
+          on-click="onLensSearchClick_"
+          title="[[i18n('lensSearchButtonLabel')]]">
       </button>
     </template>
   </div>
   <button id="voiceSearchButton" class="realbox-icon-button"
-      on-click="onVoiceSearchClick_" title="$i18n{voiceSearchButtonLabel}"
+      on-click="onVoiceSearchClick_" title="[[i18n('voiceSearchButtonLabel')]]"
       hidden="[[realboxChromeRefreshTheming]]">
   </button>
   <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
     <button id="lensSearchButton" class="realbox-icon-button"
-        on-click="onLensSearchClick_" title="$i18n{lensSearchButtonLabel}"
+        on-click="onLensSearchClick_" title="[[i18n('lensSearchButtonLabel')]]"
         hidden="[[realboxChromeRefreshTheming]]">
     </button>
   </template>
