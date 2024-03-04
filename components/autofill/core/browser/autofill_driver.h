@@ -35,6 +35,9 @@ class AutofillManager;
 // through mojom::AutofillDriver on non-iOS, and directly to AutofillManager on
 // iOS.
 //
+// Events for browser-internal communication do *NOT* belong here. Use
+// AutofillManager::Observer instead.
+//
 // An AutofillDriver corresponds to a frame, rather than a document, in the
 // sense that it may survive navigations.
 //
@@ -87,6 +90,9 @@ class AutofillDriver {
   // in the document. In the main frame the permission is enabled by default.
   // The main frame may pass it on to its children.
   virtual bool HasSharedAutofillPermission() const = 0;
+
+  // Returns the IsolationInfo of the associated frame.
+  virtual net::IsolationInfo IsolationInfo() = 0;
 
   // Returns true iff a popup can be shown on the behalf of the associated
   // frame.
@@ -207,6 +213,7 @@ class AutofillDriver {
   // Tells the renderer to clear the currently previewed Autofill results.
   virtual void RendererShouldClearPreviewedForm() = 0;
 
+  // Tells the renderer to trigger a AskForValuesToFill() event.
   virtual void RendererShouldTriggerSuggestions(
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source) = 0;
@@ -220,8 +227,6 @@ class AutofillDriver {
 
   // Informs the renderer that the popup has been hidden.
   virtual void PopupHidden() = 0;
-
-  virtual net::IsolationInfo IsolationInfo() = 0;
 
   // Query's the DOM for four digit combinations that could potentially be of a
   // card number.
