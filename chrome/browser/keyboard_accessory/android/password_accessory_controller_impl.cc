@@ -113,7 +113,8 @@ password_manager::PasswordManagerDriver* GetPasswordManagerDriver(
   password_manager::ContentPasswordManagerDriverFactory* factory =
       password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
           web_contents);
-  return factory->GetDriverForFrame(web_contents->GetFocusedFrame());
+  content::RenderFrameHost* rfh = web_contents->GetFocusedFrame();
+  return factory && rfh ? factory->GetDriverForFrame(rfh) : nullptr;
 }
 
 ShouldShowAction ShouldShowCredManReentryAction(
