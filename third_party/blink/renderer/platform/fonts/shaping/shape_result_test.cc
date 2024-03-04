@@ -352,7 +352,7 @@ TEST_F(ShapeResultTest, AddUnsafeToBreakRange) {
   HarfBuzzShaper shaper(string);
   ShapeResult* result = shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr,
                                      1, string.length());
-  Vector<unsigned> offsets{2, 7};
+  Vector<unsigned> offsets{2, 5, 7};
   for (const unsigned offset : offsets) {
     EXPECT_EQ(result->NextSafeToBreakOffset(offset), offset);
   }

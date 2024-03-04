@@ -489,7 +489,7 @@ unsigned ShapeResult::NextSafeToBreakOffset(unsigned index) const {
     unsigned run_start = run->start_index_;
     if (index >= run_start) {
       unsigned offset = index - run_start;
-      if (offset <= run->num_characters_) {
+      if (offset < run->num_characters_) {
         return run->NextSafeToBreakOffset(offset) + run_start;
       }
       if (IsRtl()) {

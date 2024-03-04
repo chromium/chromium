@@ -1679,7 +1679,7 @@ TEST_P(ShapeParameterTest, SafeToBreakMissingRun) {
   EXPECT_EQ(3u, result->NextSafeToBreakOffset(3));
   EXPECT_EQ(4u, result->NextSafeToBreakOffset(4));
   EXPECT_EQ(6u, result->NextSafeToBreakOffset(5));
-  EXPECT_EQ(6u, result->NextSafeToBreakOffset(6));
+  EXPECT_EQ(8u, result->NextSafeToBreakOffset(6));
   EXPECT_EQ(8u, result->NextSafeToBreakOffset(7));
   EXPECT_EQ(8u, result->NextSafeToBreakOffset(8));
   EXPECT_EQ(10u, result->NextSafeToBreakOffset(9));
