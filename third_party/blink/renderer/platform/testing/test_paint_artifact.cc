@@ -72,9 +72,7 @@ TestPaintArtifact& TestPaintArtifact::ScrollHitTest(
 TestPaintArtifact& TestPaintArtifact::ForeignLayer(
     scoped_refptr<cc::Layer> layer,
     const gfx::Point& offset) {
-  DEFINE_STATIC_LOCAL(
-      Persistent<LiteralDebugNameClient>, client,
-      (MakeGarbageCollected<LiteralDebugNameClient>("ForeignLayer")));
+  DEFINE_STATIC_DISPLAY_ITEM_CLIENT(client, "ForeignLayer");
   paint_artifact_->GetDisplayItemList()
       .AllocateAndConstruct<ForeignLayerDisplayItem>(
           client->Id(), DisplayItem::kForeignLayerFirst, std::move(layer),

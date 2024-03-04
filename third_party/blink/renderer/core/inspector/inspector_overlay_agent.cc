@@ -314,14 +314,12 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
     // so the size of the layer also needs to be scaled.
     layer_->SetBounds(
         gfx::ScaleToCeiledSize(size, overlay_->EmulationScaleFactor()));
-    DEFINE_STATIC_LOCAL(
-        Persistent<LiteralDebugNameClient>, debug_name_client,
-        (MakeGarbageCollected<LiteralDebugNameClient>("InspectorOverlay")));
+    DEFINE_STATIC_DISPLAY_ITEM_CLIENT(client, "InspectorOverlay");
     // The overlay layer needs to be in the root property tree state (instead of
     // the default FrameOverlay state which is under the emulation scale
     // transform node) because the emulation scale is baked in the layer.
     const auto* property_tree_state = &PropertyTreeState::Root();
-    RecordForeignLayer(graphics_context, *debug_name_client,
+    RecordForeignLayer(graphics_context, *client,
                        DisplayItem::kForeignLayerDevToolsOverlay, layer_,
                        gfx::Point(), property_tree_state);
   }

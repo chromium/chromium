@@ -1169,10 +1169,8 @@ void VisualViewport::Paint(GraphicsContext& context) const {
   if (scroll_layer_) {
     auto state = parent_property_tree_state_;
     state.SetTransform(*scroll_translation_node_);
-    DEFINE_STATIC_LOCAL(Persistent<LiteralDebugNameClient>, debug_name_client,
-                        (MakeGarbageCollected<LiteralDebugNameClient>(
-                            "Inner Viewport Scroll Layer")));
-    RecordForeignLayer(context, *debug_name_client,
+    DEFINE_STATIC_DISPLAY_ITEM_CLIENT(client, "Inner Viewport Scroll Layer");
+    RecordForeignLayer(context, *client,
                        DisplayItem::kForeignLayerViewportScroll, scroll_layer_,
                        gfx::Point(), &state);
   }
@@ -1180,25 +1178,22 @@ void VisualViewport::Paint(GraphicsContext& context) const {
   if (scrollbar_layer_horizontal_) {
     auto state = parent_property_tree_state_;
     state.SetEffect(*horizontal_scrollbar_effect_node_);
-    DEFINE_STATIC_LOCAL(Persistent<LiteralDebugNameClient>, debug_name_client,
-                        (MakeGarbageCollected<LiteralDebugNameClient>(
-                            "Inner Viewport Horizontal Scrollbar")));
-    RecordForeignLayer(context, *debug_name_client,
-                       DisplayItem::kForeignLayerViewportScrollbar,
-                       scrollbar_layer_horizontal_,
-                       gfx::Point(0, size_.height() - ScrollbarThickness()),
-                       &state);
+    DEFINE_STATIC_DISPLAY_ITEM_CLIENT(client,
+                                      "Inner Viewport Horizontal Scrollbar");
+    RecordForeignLayer(
+        context, *client, DisplayItem::kForeignLayerViewportScrollbar,
+        scrollbar_layer_horizontal_,
+        gfx::Point(0, size_.height() - ScrollbarThickness()), &state);
   }
 
   if (scrollbar_layer_vertical_) {
     auto state = parent_property_tree_state_;
     state.SetEffect(*vertical_scrollbar_effect_node_);
-    DEFINE_STATIC_LOCAL(Persistent<LiteralDebugNameClient>, debug_name_client,
-                        (MakeGarbageCollected<LiteralDebugNameClient>(
-                            "Inner Viewport Vertical Scrollbar")));
+    DEFINE_STATIC_DISPLAY_ITEM_CLIENT(client,
+                                      "Inner Viewport Vertical Scrollbar");
     RecordForeignLayer(
-        context, *debug_name_client,
-        DisplayItem::kForeignLayerViewportScrollbar, scrollbar_layer_vertical_,
+        context, *client, DisplayItem::kForeignLayerViewportScrollbar,
+        scrollbar_layer_vertical_,
         gfx::Point(size_.width() - ScrollbarThickness(), 0), &state);
   }
 }

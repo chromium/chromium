@@ -49,7 +49,7 @@ PaintRecord LayoutSVGResourceMasker::CreatePaintRecord() {
   if (cached_paint_record_)
     return *cached_paint_record_;
 
-  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+  PaintRecordBuilder builder;
   for (const SVGElement& child_element :
        Traversal<SVGElement>::ChildrenOf(*GetElement())) {
     const LayoutObject* layout_object = child_element.GetLayoutObject();
@@ -59,10 +59,10 @@ PaintRecord LayoutSVGResourceMasker::CreatePaintRecord() {
         layout_object->StyleRef().Display() == EDisplay::kNone)
       continue;
     SVGObjectPainter(*layout_object, nullptr)
-        .PaintResourceSubtree(builder->Context(), PaintFlag::kPaintingSVGMask);
+        .PaintResourceSubtree(builder.Context(), PaintFlag::kPaintingSVGMask);
   }
 
-  cached_paint_record_ = builder->EndRecording();
+  cached_paint_record_ = builder.EndRecording();
   return *cached_paint_record_;
 }
 

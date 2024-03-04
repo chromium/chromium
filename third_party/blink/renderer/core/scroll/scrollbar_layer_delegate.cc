@@ -23,13 +23,13 @@ class ScopedScrollbarPainter {
 
  public:
   explicit ScopedScrollbarPainter(cc::PaintCanvas& canvas) : canvas_(canvas) {}
-  ~ScopedScrollbarPainter() { canvas_.drawPicture(builder_->EndRecording()); }
+  ~ScopedScrollbarPainter() { canvas_.drawPicture(builder_.EndRecording()); }
 
-  GraphicsContext& Context() { return builder_->Context(); }
+  GraphicsContext& Context() { return builder_.Context(); }
 
  private:
   cc::PaintCanvas& canvas_;
-  PaintRecordBuilder* builder_ = MakeGarbageCollected<PaintRecordBuilder>();
+  PaintRecordBuilder builder_;
 };
 
 }  // namespace

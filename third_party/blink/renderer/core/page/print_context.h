@@ -39,6 +39,7 @@ class Element;
 class GraphicsContext;
 class LocalFrame;
 class Node;
+class PropertyTreeStateOrAlias;
 
 class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
  public:
@@ -78,7 +79,9 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
  protected:
   friend class PrintContextTest;
 
-  void OutputLinkedDestinations(GraphicsContext&, const gfx::Rect& page_rect);
+  void OutputLinkedDestinations(GraphicsContext&,
+                                const PropertyTreeStateOrAlias&,
+                                const gfx::Rect& page_rect);
   bool IsFrameValid() const;
 
   Member<LocalFrame> frame_;

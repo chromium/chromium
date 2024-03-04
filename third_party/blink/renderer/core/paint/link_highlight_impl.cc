@@ -345,13 +345,10 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
       layer->SetNeedsDisplay();
     }
 
-    DEFINE_STATIC_LOCAL(
-        Persistent<LiteralDebugNameClient>, debug_name_client,
-        (MakeGarbageCollected<LiteralDebugNameClient>("LinkHighlight")));
-
+    DEFINE_STATIC_DISPLAY_ITEM_CLIENT(client, "LinkHighlight");
     auto property_tree_state = fragment->LocalBorderBoxProperties().Unalias();
     property_tree_state.SetEffect(Effect());
-    RecordForeignLayer(context, *debug_name_client,
+    RecordForeignLayer(context, *client,
                        DisplayItem::kForeignLayerLinkHighlight, layer,
                        bounding_rect.origin(), &property_tree_state);
   }

@@ -58,20 +58,20 @@ BoxReflection BoxReflectionForPaintLayer(const PaintLayer& layer,
   PhysicalRect mask_bounding_rect(mask_rect);
   mask_bounding_rect.Expand(style.ImageOutsets(mask_nine_piece));
 
-  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+  PaintRecordBuilder builder;
   {
-    GraphicsContext& context = builder->Context();
+    GraphicsContext& context = builder.Context();
     DrawingRecorder recorder(context, layer.GetLayoutObject(),
                              DisplayItem::kReflectionMask);
     Node* node = nullptr;
     const LayoutObject* layout_object = &layer.GetLayoutObject();
     for (; layout_object && !node; layout_object = layout_object->Parent())
       node = layout_object->GeneratingNode();
-    NinePieceImagePainter::Paint(builder->Context(), layer.GetLayoutObject(),
+    NinePieceImagePainter::Paint(builder.Context(), layer.GetLayoutObject(),
                                  layer.GetLayoutObject().GetDocument(), node,
                                  mask_rect, style, mask_nine_piece);
   }
-  return BoxReflection(direction, offset, builder->EndRecording(),
+  return BoxReflection(direction, offset, builder.EndRecording(),
                        gfx::RectF(mask_bounding_rect));
 }
 

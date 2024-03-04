@@ -105,9 +105,9 @@ TEST_P(FrameOverlayTest, AcceleratedCompositing) {
               onDrawRect(SkRect::MakeWH(kViewportWidth, kViewportHeight),
                          Property(&SkPaint::getColor, SK_ColorYELLOW)));
 
-  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
-  frame_overlay->Paint(builder->Context());
-  builder->EndRecording().Playback(&canvas);
+  PaintRecordBuilder builder;
+  frame_overlay->Paint(builder.Context());
+  builder.EndRecording().Playback(&canvas);
   frame_overlay->Destroy();
 }
 

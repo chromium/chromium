@@ -1184,9 +1184,9 @@ std::unique_ptr<DragImage> DragController::DragImageForSelection(
   PaintFlags paint_flags =
       PaintFlag::kSelectionDragImageOnly | PaintFlag::kOmitCompositingInfo;
 
-  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+  PaintRecordBuilder builder;
   frame.View()->PaintOutsideOfLifecycle(
-      builder->Context(), paint_flags,
+      builder.Context(), paint_flags,
       CullRect(gfx::ToEnclosingRect(painting_rect)));
 
   auto property_tree_state = frame.View()
@@ -1196,7 +1196,7 @@ std::unique_ptr<DragImage> DragController::DragImageForSelection(
                                  .Unalias();
   return DataTransfer::CreateDragImageForFrame(
       frame, opacity, painting_rect.size(), painting_rect.OffsetFromOrigin(),
-      *builder, property_tree_state);
+      builder, property_tree_state);
 }
 
 namespace {

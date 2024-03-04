@@ -32,6 +32,8 @@
 #include "third_party/blink/renderer/core/layout/physical_fragment_link.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
@@ -178,8 +180,17 @@ void PrintContext::CollectLinkedDestinations(Node* node) {
   }
 }
 
-void PrintContext::OutputLinkedDestinations(GraphicsContext& context,
-                                            const gfx::Rect& page_rect) {
+void PrintContext::OutputLinkedDestinations(
+    GraphicsContext& context,
+    const PropertyTreeStateOrAlias& property_tree_state,
+    const gfx::Rect& page_rect) {
+  DEFINE_STATIC_DISPLAY_ITEM_CLIENT(client, "PrintedLinkedDestinations");
+  ScopedPaintChunkProperties scoped_paint_chunk_properties(
+      context.GetPaintController(), property_tree_state, *client,
+      DisplayItem::kPrintedContentDestinationLocations);
+  DrawingRecorder line_boundary_recorder(
+      context, *client, DisplayItem::kPrintedContentDestinationLocations);
+
   if (!linked_destinations_valid_) {
     // Collect anchors in the top-level frame only because our PrintContext
     // supports only one namespace for the anchors.
