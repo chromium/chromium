@@ -89,6 +89,9 @@ def __step_config(ctx, step_config):
                 "name": "clang/cxx",
                 "action": "(.*_)?cxx",
                 "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang++",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/clang++",
+                ],
                 "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang",
                 "remote": True,
@@ -98,6 +101,9 @@ def __step_config(ctx, step_config):
                 "name": "clang/cc",
                 "action": "(.*_)?cc",
                 "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/clang",
+                ],
                 "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang",
                 "remote": True,
@@ -107,6 +113,9 @@ def __step_config(ctx, step_config):
                 "name": "clang/objcxx",
                 "action": "(.*_)?objcxx",
                 "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang++",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/clang++",
+                ],
                 "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang",
                 "remote": True,
@@ -117,6 +126,9 @@ def __step_config(ctx, step_config):
                 "name": "clang/objc",
                 "action": "(.*_)?objc",
                 "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/clang",
+                ],
                 "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang",
                 "remote": True,

@@ -45,6 +45,18 @@ __input_deps = {
     "third_party/libc++/src/include": [
         "buildtools/third_party/libc++:headers",
     ],
+    "third_party/llvm-build/Release+Asserts/bin/clang": [
+        "build/config/unsafe_buffers_paths.txt",
+    ],
+    "third_party/llvm-build/Release+Asserts/bin/clang++": [
+        "build/config/unsafe_buffers_paths.txt",
+    ],
+    "third_party/llvm-build/Release+Asserts/bin/clang-cl": [
+        "build/config/unsafe_buffers_paths.txt",
+    ],
+    "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe": [
+        "build/config/unsafe_buffers_paths.txt",
+    ],
 }
 
 clang_all = module(
