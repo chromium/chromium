@@ -2878,7 +2878,7 @@
   {
     "name": "enable-gamepad-trigger-rumble",
     "owners": [ "gabrielbrito@microsoft.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 129
   },
   {
     "name": "enable-generic-sensor-extra-classes",
