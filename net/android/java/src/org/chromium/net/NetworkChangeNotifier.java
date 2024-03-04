@@ -183,10 +183,14 @@ public class NetworkChangeNotifier {
 
     /**
      * Registers to receive network change notification based on the provided registration policy.
+     * By default, queries current network state from the system after creating the
+     * NetworkChangeNotifierAutoDetect instance. Callers can override this by passing
+     * forceUpdateNetworkState = false to speed up the execution.
      */
     public static void setAutoDetectConnectivityState(
-            NetworkChangeNotifierAutoDetect.RegistrationPolicy policy) {
-        getInstance().setAutoDetectConnectivityStateInternal(true, policy);
+            NetworkChangeNotifierAutoDetect.RegistrationPolicy policy,
+            boolean forceUpdateNetworkState) {
+        getInstance().setAutoDetectConnectivityStateInternal(true, policy, forceUpdateNetworkState);
     }
 
     private void destroyAutoDetector() {
@@ -198,6 +202,14 @@ public class NetworkChangeNotifier {
 
     private void setAutoDetectConnectivityStateInternal(
             boolean shouldAutoDetect, NetworkChangeNotifierAutoDetect.RegistrationPolicy policy) {
+        setAutoDetectConnectivityStateInternal(
+                shouldAutoDetect, policy, /* forceUpdateNetworkState= */ true);
+    }
+
+    private void setAutoDetectConnectivityStateInternal(
+            boolean shouldAutoDetect,
+            NetworkChangeNotifierAutoDetect.RegistrationPolicy policy,
+            boolean forceUpdateNetworkState) {
         try (ScopedSysTraceEvent event =
                 ScopedSysTraceEvent.scoped(
                         "NetworkChangeNotifier.setAutoDetectConnectivityStateInternal")) {
@@ -246,15 +258,17 @@ public class NetworkChangeNotifier {
                                         }
                                     },
                                     policy);
-                    mAutoDetector.updateCurrentNetworkState();
+                    if (forceUpdateNetworkState) mAutoDetector.updateCurrentNetworkState();
+
                     final NetworkChangeNotifierAutoDetect.NetworkState networkState =
                             mAutoDetector.getCurrentNetworkState();
+
                     updateCurrentConnectionType(networkState.getConnectionType());
                     updateCurrentConnectionCost(networkState.getConnectionCost());
                     notifyObserversOfConnectionSubtypeChange(networkState.getConnectionSubtype());
+                } else {
+                    destroyAutoDetector();
                 }
-            } else {
-                destroyAutoDetector();
             }
         }
     }

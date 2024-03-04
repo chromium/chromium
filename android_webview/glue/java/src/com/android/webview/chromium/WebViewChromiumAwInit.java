@@ -26,6 +26,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwDarkMode;
+import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.AwLocaleConfig;
 import org.chromium.android_webview.AwNetworkChangeNotifierRegistrationPolicy;
 import org.chromium.android_webview.AwProxyController;
@@ -36,6 +37,7 @@ import org.chromium.android_webview.HttpAuthDatabase;
 import org.chromium.android_webview.ProductConfig;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwResource;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
@@ -171,7 +173,8 @@ public class WebViewChromiumAwInit {
             PathService.override(DIR_RESOURCE_PAKS_ANDROID, "/system/framework/webview/paks");
 
             initPlatSupportLibrary();
-            doNetworkInitializations(context);
+            AwContentsStatics.setCheckClearTextPermitted(
+                    context.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.O);
 
             waitUntilSetUpResources();
 
@@ -219,6 +222,7 @@ public class WebViewChromiumAwInit {
 
             AwBrowserProcess.start();
             AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
+            doNetworkInitializations(context);
 
             // This has to be done after variations are initialized, so components could be
             // registered or not depending on the variations flags.
@@ -411,6 +415,9 @@ public class WebViewChromiumAwInit {
     private void doNetworkInitializations(Context applicationContext) {
         try (ScopedSysTraceEvent e =
                 ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.doNetworkInitializations")) {
+            boolean forceUpdateNetworkState =
+                    !AwFeatureMap.isEnabled(
+                            AwFeatures.WEBVIEW_USE_INITIAL_NETWORK_STATE_AT_STARTUP);
             if (applicationContext.checkPermission(
                             Manifest.permission.ACCESS_NETWORK_STATE,
                             Process.myPid(),
@@ -418,12 +425,8 @@ public class WebViewChromiumAwInit {
                     == PackageManager.PERMISSION_GRANTED) {
                 NetworkChangeNotifier.init();
                 NetworkChangeNotifier.setAutoDetectConnectivityState(
-                        new AwNetworkChangeNotifierRegistrationPolicy());
+                        new AwNetworkChangeNotifierRegistrationPolicy(), forceUpdateNetworkState);
             }
-
-            AwContentsStatics.setCheckClearTextPermitted(
-                    applicationContext.getApplicationInfo().targetSdkVersion
-                            >= Build.VERSION_CODES.O);
         }
     }
 

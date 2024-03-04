@@ -904,6 +904,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "AllowDatapipeDrainedAsBytesConsumerInBFCache",
                 "When enabled, allow pages with drained datapipe into bfcache."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_USE_INITIAL_NETWORK_STATE_AT_STARTUP,
+                "Use initial network state at startup"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

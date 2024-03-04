@@ -226,6 +226,12 @@ BASE_FEATURE(kWebViewUmaUploadQualityOfServiceSetToDefault,
              "WebViewUmaUploadQualityOfServiceSetToDefault",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether to use initial network state during initialization to speed up
+// startup.
+BASE_FEATURE(kWebViewUseInitialNetworkStateAtStartup,
+             "WebViewUseInitialNetworkStateAtStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This enables zoom keyboard shortcuts for zoom-in, zoom-out and zoom reset.
 BASE_FEATURE(kWebViewZoomKeyboardShortcuts,
              "WebViewZoomKeyboardShortcuts",

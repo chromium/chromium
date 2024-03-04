@@ -43,6 +43,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewMediaIntegrityApi,
     &safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
     &features::kWebViewMuteAudio,
+    &features::kWebViewUseInitialNetworkStateAtStartup,
 };
 
 // static

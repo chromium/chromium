@@ -53,6 +53,7 @@ BASE_DECLARE_FEATURE(kWebViewXRequestedWithHeaderControl);
 extern const base::FeatureParam<int> kWebViewXRequestedWithHeaderMode;
 BASE_DECLARE_FEATURE(kWebViewXRequestedWithHeaderManifestAllowList);
 BASE_DECLARE_FEATURE(kWebViewUmaUploadQualityOfServiceSetToDefault);
+BASE_DECLARE_FEATURE(kWebViewUseInitialNetworkStateAtStartup);
 BASE_DECLARE_FEATURE(kWebViewZoomKeyboardShortcuts);
 
 }  // namespace features
