@@ -195,6 +195,7 @@ class Buffer::Texture : public viz::ContextLostObserver {
   void Released();
   void ScheduleWaitForRelease(base::TimeDelta delay);
   void WaitForRelease();
+  const void* GetBufferId() const;
 
   const raw_ptr<gfx::GpuMemoryBuffer, DanglingUntriaged> gpu_memory_buffer_;
   const gfx::Size size_;
@@ -351,8 +352,7 @@ gpu::SyncToken Buffer::Texture::UpdateSharedImage(
     sii->UpdateSharedImage(gpu::SyncToken(), std::move(acquire_fence),
                            shared_image_->mailbox());
     sync_token = sii->GenUnverifiedSyncToken();
-    TRACE_EVENT_ASYNC_STEP_INTO0("exo", kBufferInUse, gpu_memory_buffer_,
-                                 "bound");
+    TRACE_EVENT_ASYNC_STEP_INTO0("exo", kBufferInUse, GetBufferId(), "bound");
   }
   return sync_token;
 }
@@ -433,7 +433,7 @@ void Buffer::Texture::ReleaseWhenQueryResultIsAvailable(
   release_callback_ = std::move(callback);
   wait_for_release_time_ = base::TimeTicks::Now() + wait_for_release_delay_;
   ScheduleWaitForRelease(wait_for_release_delay_);
-  TRACE_EVENT_ASYNC_STEP_INTO0("exo", kBufferInUse, gpu_memory_buffer_,
+  TRACE_EVENT_ASYNC_STEP_INTO0("exo", kBufferInUse, GetBufferId(),
                                "pending_query");
   context_provider_->ContextSupport()->SignalQuery(
       query_id_, base::BindOnce(&Buffer::Texture::Released,
@@ -487,6 +487,10 @@ void Buffer::Texture::WaitForRelease() {
   }
 
   std::move(callback).Run();
+}
+
+const void* Buffer::Texture::GetBufferId() const {
+  return static_cast<const void*>(gpu_memory_buffer_);
 }
 
 Buffer::BufferRelease::BufferRelease(
@@ -589,7 +593,7 @@ bool Buffer::ProduceTransferableResource(
     ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
     PerCommitExplicitReleaseCallback per_commit_explicit_release_callback) {
   TRACE_EVENT1("exo", "Buffer::ProduceTransferableResource", "buffer_id",
-               static_cast<const void*>(gfx_buffer()));
+               GetBufferId());
   DCHECK(attach_count_);
   next_commit_id_++;
 
@@ -643,9 +647,8 @@ bool Buffer::ProduceTransferableResource(
   Texture* contents_texture = contents_texture_.get();
 
   if (release_contents_callback_.IsCancelled()) {
-    TRACE_EVENT_ASYNC_BEGIN1("exo", kBufferInUse, gpu_memory_buffer_.get(),
-                             "buffer_id",
-                             static_cast<const void*>(gfx_buffer()));
+    TRACE_EVENT_ASYNC_BEGIN1("exo", kBufferInUse, GetBufferId(), "buffer_id",
+                             GetBufferId());
   }
 
   // Cancel pending contents release callback.
@@ -749,15 +752,15 @@ void Buffer::SkipLegacyRelease() {
 void Buffer::OnAttach() {
   DLOG_IF(WARNING, attach_count_ && !legacy_release_skippable_)
       << "Reattaching a buffer that is already attached to another surface.";
-  TRACE_EVENT2("exo", "Buffer::OnAttach", "buffer_id",
-               static_cast<const void*>(gfx_buffer()), "count", attach_count_);
+  TRACE_EVENT2("exo", "Buffer::OnAttach", "buffer_id", GetBufferId(), "count",
+               attach_count_);
   ++attach_count_;
 }
 
 void Buffer::OnDetach() {
   DCHECK_GT(attach_count_, 0u);
-  TRACE_EVENT2("exo", "Buffer::OnAttach", "buffer_id",
-               static_cast<const void*>(gfx_buffer()), "count", attach_count_);
+  TRACE_EVENT2("exo", "Buffer::OnAttach", "buffer_id", GetBufferId(), "count",
+               attach_count_);
   --attach_count_;
 
   // Release buffer if no longer attached to a surface and content has been
@@ -773,6 +776,13 @@ gfx::Size Buffer::GetSize() const {
 
 gfx::BufferFormat Buffer::GetFormat() const {
   return gpu_memory_buffer_->GetFormat();
+}
+
+// TODO(vikassoni): Note that once MappableSI is fully landed, direct use of
+// GMBs will go away and clients will end up using either GMBHandle or Mappable
+// shared image. Below method will be updated accordingly.
+const void* Buffer::GetBufferId() const {
+  return static_cast<const void*>(gpu_memory_buffer_.get());
 }
 
 SkColor4f Buffer::GetColor() const {
@@ -792,7 +802,7 @@ bool Buffer::NeedsHardwareProtection() {
 // Buffer, private:
 
 void Buffer::Release() {
-  TRACE_EVENT_ASYNC_END0("exo", kBufferInUse, gpu_memory_buffer_.get());
+  TRACE_EVENT_ASYNC_END0("exo", kBufferInUse, GetBufferId());
 
   // Run release callback to notify the client that buffer has been released.
   if (!release_callback_.is_null() && !legacy_release_skippable_) {
@@ -817,14 +827,13 @@ void Buffer::ReleaseContentsTexture(std::unique_ptr<Texture> texture,
 }
 
 void Buffer::ReleaseContents() {
-  TRACE_EVENT1("exo", "Buffer::ReleaseContents", "buffer_id",
-               static_cast<const void*>(gfx_buffer()));
+  TRACE_EVENT1("exo", "Buffer::ReleaseContents", "buffer_id", GetBufferId());
 
   // Cancel callback to indicate that buffer has been released.
   release_contents_callback_.Cancel();
 
   if (attach_count_) {
-    TRACE_EVENT_ASYNC_STEP_INTO0("exo", kBufferInUse, gpu_memory_buffer_.get(),
+    TRACE_EVENT_ASYNC_STEP_INTO0("exo", kBufferInUse, GetBufferId(),
                                  "attached");
   } else {
     // Release buffer if not attached to surface.

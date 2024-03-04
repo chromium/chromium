@@ -420,10 +420,9 @@ void Surface::Attach(Buffer* buffer) {
 }
 
 void Surface::Attach(Buffer* buffer, gfx::Vector2d offset) {
-  TRACE_EVENT2(
-      "exo", "Surface::Attach", "buffer_id",
-      buffer ? static_cast<const void*>(buffer->gfx_buffer()) : nullptr,
-      "app_id", GetApplicationId(window_.get()));
+  TRACE_EVENT2("exo", "Surface::Attach", "buffer_id",
+               buffer ? buffer->GetBufferId() : nullptr, "app_id",
+               GetApplicationId(window_.get()));
   has_pending_contents_ = true;
   if (!pending_state_.buffer.has_value())
     pending_state_.buffer.emplace();
@@ -926,7 +925,7 @@ void Surface::Commit() {
       "exo", "Surface::Commit", "buffer_id",
       static_cast<const void*>(
           pending_state_.buffer.has_value() && pending_state_.buffer->buffer()
-              ? pending_state_.buffer->buffer()->gfx_buffer()
+              ? pending_state_.buffer->buffer()->GetBufferId()
               : nullptr));
 
   for (auto& observer : observers_)
@@ -2000,11 +1999,9 @@ Buffer* Surface::GetBuffer() {
 }
 
 std::string Surface::DumpDebugInfo() const {
-  const gfx::GpuMemoryBuffer* gfx_buffer = nullptr;
-  if (state_.buffer.has_value() && state_.buffer->buffer().get() &&
-      state_.buffer->buffer()->gfx_buffer()) {
-    gfx_buffer = state_.buffer->buffer()->gfx_buffer();
-  }
+  bool has_buffer = state_.buffer.has_value() &&
+                    state_.buffer->buffer().get() &&
+                    state_.buffer->buffer()->GetBufferId();
 
   auto blend_mode_str = [](SkBlendMode mode) -> std::string {
     switch (mode) {
@@ -2023,9 +2020,12 @@ std::string Surface::DumpDebugInfo() const {
          blend_mode_str(state_.basic_state.blend_mode) +
          +" opaque-region=" + state_.basic_state.opaque_region.ToString() +
          " " +
-         (gfx_buffer ? ("format=" + FormatToString(gfx_buffer->GetFormat()) +
-                        (FormatHasAlpha(gfx_buffer->GetFormat()) ? "(a)" : ""))
-                     : "");
+         (has_buffer
+              ? ("format=" +
+                 FormatToString(state_.buffer->buffer()->GetFormat()) +
+                 (FormatHasAlpha(state_.buffer->buffer()->GetFormat()) ? "(a)"
+                                                                       : ""))
+              : "");
 }
 
 }  // namespace exo

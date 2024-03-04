@@ -67,10 +67,6 @@ class Buffer {
       gpu::SurfaceHandle surface_handle,
       base::WaitableEvent* shutdown_event);
 
-  const gfx::GpuMemoryBuffer* gfx_buffer() const {
-    return gpu_memory_buffer_.get();
-  }
-
   // Set the callback to run when the buffer is no longer used by the
   // compositor. The client is free to re-use or destroy this buffer and
   // its backing storage after this has been called.
@@ -109,6 +105,10 @@ class Buffer {
 
   // Returns the format of the buffer.
   gfx::BufferFormat GetFormat() const;
+
+  // Returns the |gpu_memory_buffer_| pointer to be used as id. It can also be
+  // used as a bool to identify if |gpu_memory_buffer_| is null or not.
+  const void* GetBufferId() const;
 
   // The default color to be used should transferable resource production fail.
   virtual SkColor4f GetColor() const;
