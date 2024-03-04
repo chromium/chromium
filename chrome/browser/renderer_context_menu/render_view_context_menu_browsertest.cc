@@ -2686,6 +2686,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
                        RegionSearchContextMenuDoesNotOpenRegionSearch) {
+  bool run = false;
   OpenContextMenuAndClickRegionSearchEntrypoint(
       // Callback that will be called after the context menu item is clicked.
       base::BindLambdaForTesting([&](RenderViewContextMenu* menu) {
@@ -2693,8 +2694,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
         lens::LensRegionSearchController* controller =
             menu->GetLensRegionSearchControllerForTesting();
         ASSERT_EQ(controller, nullptr);
+        run = true;
       }));
-  base::RunLoop().RunUntilIdle();
+
+  // Verify the callback above finished running before finishing the test.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return run == true; }));
 }
 
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
