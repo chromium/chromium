@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../../lib/cjs/utils",
-  },
+    "outDir": "../../lib/cjs/utils"
+  }
 }

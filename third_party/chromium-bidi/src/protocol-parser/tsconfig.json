@@ -1,10 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../../lib/cjs/protocol-parser",
+    "outDir": "../../lib/cjs/protocol-parser"
   },
   "references": [
     {"path": "../protocol/tsconfig.json"},
-    {"path": "../utils/tsconfig.json"},
-  ],
+    {"path": "../utils/tsconfig.json"}
+  ]
 }

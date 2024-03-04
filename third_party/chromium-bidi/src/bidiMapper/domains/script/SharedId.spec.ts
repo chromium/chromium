@@ -32,19 +32,23 @@ describe('SharedId', () => {
   };
   const SHARED_ID = 'f.frame_id.d.document_id.e.42';
   const LEGACY_SHARED_ID = 'document_id_element_42';
+
   describe('parseSharedId', () => {
     it('should parse proper formatted string', () => {
       expect(parseSharedId(SHARED_ID)).to.deep.equal(PARSED_SHARED_ID);
     });
+
     it('should parse legacy sharedId', () => {
       expect(parseSharedId(LEGACY_SHARED_ID)).to.deep.equal(
         PARSED_LEGACY_SHARED_ID
       );
     });
+
     it('should not parse incorrectly formatted string', () => {
       expect(parseSharedId('some_incorrectly_formatted_string')).to.be.null;
     });
   });
+
   describe('getSharedId', () => {
     it('should generate new format', () => {
       expect(
@@ -57,6 +61,7 @@ describe('SharedId', () => {
       ).to.equal(SHARED_ID);
     });
   });
+
   describe('getLegacySharedId(', () => {
     it('should generate legacy format', () => {
       expect(

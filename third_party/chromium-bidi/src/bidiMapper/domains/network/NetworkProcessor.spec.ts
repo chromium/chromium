@@ -31,6 +31,7 @@ describe('NetworkProcessor', () => {
         .throw;
     });
   });
+
   describe('parse url patterns', () => {
     it('invalid string', () => {
       expect(() =>

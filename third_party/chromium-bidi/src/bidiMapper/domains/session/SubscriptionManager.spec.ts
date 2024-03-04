@@ -502,6 +502,7 @@ describe('SubscriptionManager', () => {
         )
       ).to.equal(true);
     });
+
     it('should return true specific context subscription', () => {
       subscriptionManager.subscribe(
         ChromiumBidi.Network.EventNames.ResponseCompleted,
@@ -516,6 +517,7 @@ describe('SubscriptionManager', () => {
         )
       ).to.equal(true);
     });
+
     it('should return true for module subscription', () => {
       subscriptionManager.subscribe(
         ChromiumBidi.BiDiModule.Network,
@@ -545,6 +547,7 @@ describe('SubscriptionManager', () => {
         )
       ).to.equal(true);
     });
+
     it('should return false for nested context when subscribed to another context', () => {
       subscriptionManager.subscribe(
         ChromiumBidi.BiDiModule.Network,
@@ -559,6 +562,7 @@ describe('SubscriptionManager', () => {
         )
       ).to.equal(false);
     });
+
     it('should return false with no subscriptions', () => {
       expect(
         subscriptionManager.isSubscribedToModule(

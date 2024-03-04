@@ -56,6 +56,7 @@ describe('NetworkStorage', () => {
 
     return processedEvents.get(name);
   }
+
   beforeEach(() => {
     processedEvents = new Map();
     const browsingContextStorage = new BrowsingContextStorage();
@@ -209,6 +210,7 @@ describe('NetworkStorage', () => {
       const event = await getEvent('network.responseStarted');
       expect(event).to.exist;
     });
+
     it('should work for normal order no extraInfo', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
 
@@ -218,6 +220,7 @@ describe('NetworkStorage', () => {
       const event = await getEvent('network.responseStarted');
       expect(event).to.exist;
     });
+
     it('should work for reverse order', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
 
@@ -232,6 +235,7 @@ describe('NetworkStorage', () => {
       event = await getEvent('network.responseStarted');
       expect(event).to.exist;
     });
+
     it('should work interception', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
       const interception = await networkStorage.addIntercept({
@@ -253,6 +257,7 @@ describe('NetworkStorage', () => {
         intercepts: [interception],
       });
     });
+
     it('should work non blocking interception', async () => {
       await networkStorage.addIntercept({
         urlPatterns: [{type: 'string', pattern: 'http://not.correct.com'}],

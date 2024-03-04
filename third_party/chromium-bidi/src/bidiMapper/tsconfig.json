@@ -1,12 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../../lib/cjs/bidiMapper",
+    "outDir": "../../lib/cjs/bidiMapper"
   },
   "references": [
     {"path": "../protocol/tsconfig.json"},
     {"path": "../protocol-parser/tsconfig.json"},
     {"path": "../cdp/tsconfig.json"},
-    {"path": "../utils/tsconfig.json"},
-  ],
+    {"path": "../utils/tsconfig.json"}
+  ]
 }

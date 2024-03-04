@@ -400,6 +400,7 @@ describe('NetworkUtils', () => {
           )
         ).to.be.true;
       });
+
       it('negative match', () => {
         const test = [
           ['https://example.com/', 'https://some.other.host/'],
