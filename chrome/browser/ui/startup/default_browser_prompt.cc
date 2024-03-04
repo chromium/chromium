@@ -136,3 +136,7 @@ void DefaultBrowserPromptDeclined(Profile* profile) {
 void ResetDefaultBrowserPrompt(Profile* profile) {
   profile->GetPrefs()->ClearPref(prefs::kDefaultBrowserLastDeclined);
 }
+
+void ShowPromptForTesting() {
+  ShowPrompt();
+}

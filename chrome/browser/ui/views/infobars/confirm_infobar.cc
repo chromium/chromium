@@ -19,8 +19,11 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ConfirmInfoBar, kInfoBarElementId);
+
 ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
     : InfoBarView(std::move(delegate)) {
+  SetProperty(views::kElementIdentifierKey, kInfoBarElementId);
   auto* delegate_ptr = GetDelegate();
   label_ = AddChildView(CreateLabel(delegate_ptr->GetMessageText()));
   label_->SetElideBehavior(delegate_ptr->GetMessageElideBehavior());

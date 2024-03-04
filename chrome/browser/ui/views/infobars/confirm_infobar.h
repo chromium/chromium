@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
+#include "ui/base/interaction/element_identifier.h"
 
 namespace views {
 class Label;
@@ -19,6 +20,8 @@ class MdTextButton;
 // "Would you like to do X?  [Yes]  [No]  [<custom button>]    _Learn More_ [x]"
 class ConfirmInfoBar : public InfoBarView {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInfoBarElementId);
+
   explicit ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate);
 
   ConfirmInfoBar(const ConfirmInfoBar&) = delete;
