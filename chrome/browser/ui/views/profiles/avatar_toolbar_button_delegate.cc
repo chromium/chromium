@@ -42,6 +42,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -123,6 +124,7 @@ enum class ButtonState {
   // An error in sync-the-feature or sync-the-transport or SyncPaused (use
   // `IsErrorSyncPaused()` to differentiate).
   kSyncError,
+  kSigninPaused,
   // Includes Work and School.
   kManagement,
   kNormal
@@ -503,6 +505,52 @@ class SyncErrorStateProvider : public StateProvider,
       sync_service_observation_{this};
 };
 
+class SigninPausedStateProvider : public StateProvider,
+                                  public signin::IdentityManager::Observer {
+ public:
+  explicit SigninPausedStateProvider(StateObserver& state_observer,
+                                     Profile* profile)
+      : StateProvider(state_observer),
+        identity_manager_(*IdentityManagerFactory::GetForProfile(profile)) {
+    identity_manager_observation_.Observe(&identity_manager_.get());
+  }
+
+  // StateProvider:
+  bool IsActive() const override {
+    CoreAccountId primary_account_id =
+        identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+    if (primary_account_id.empty()) {
+      return false;
+    }
+
+    return identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+        primary_account_id);
+  }
+
+ private:
+  // signin::IdentityManager::Observer:
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error) override {
+    if (account_info != identity_manager_->GetPrimaryAccountInfo(
+                            signin::ConsentLevel::kSignin)) {
+      return;
+    }
+
+    RequestUpdate(ElementToUpdate::kAll);
+  }
+
+  void OnIdentityManagerShutdown(signin::IdentityManager*) override {
+    identity_manager_observation_.Reset();
+  }
+
+  raw_ref<signin::IdentityManager> identity_manager_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+};
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class ManagementStateProvider : public StateProvider,
                                 public ProfileAttributesStorage::Observer,
@@ -648,6 +696,14 @@ class StateManager : public StateObserver {
                 /*state_observer=*/*this, *profile, avatar_toolbar_button);
       }
 #endif
+
+      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+              switches::ExplicitBrowserSigninPhase::kFull)) {
+        states_[ButtonState::kSigninPaused] =
+            std::make_unique<SigninPausedStateProvider>(
+                /*state_observer=*/*this, profile);
+      }
+
     } else if (profile->IsGuestSession()) {
       // This state is always active.
       states_[ButtonState::kGuestSession] =
@@ -939,6 +995,10 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
         text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_ERROR);
       }
       break;
+    case ButtonState::kSigninPaused:
+      color = color_provider->GetColor(kColorAvatarButtonHighlightSigninPaused);
+      text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED);
+      break;
     case ButtonState::kGuestSession: {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       // On ChromeOS all windows are either Guest or not Guest and the Guest
@@ -973,39 +1033,33 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
   return {text, color};
 }
 
-std::optional<SkColor> AvatarToolbarButtonDelegate::GetHighlightTextColor(
+SkColor AvatarToolbarButtonDelegate::GetHighlightTextColor(
     const ui::ColorProvider* const color_provider) const {
-  std::optional<SkColor> color;
   switch (ComputeState()) {
     case ButtonState::kIncognitoProfile:
-      color = color_provider->GetColor(
+      return color_provider->GetColor(
           kColorAvatarButtonHighlightIncognitoForeground);
-      break;
     case ButtonState::kSyncError:
       if (IsErrorSyncPaused(profile_)) {
-        color = color_provider->GetColor(
+        return color_provider->GetColor(
             kColorAvatarButtonHighlightNormalForeground);
       } else {
-        color = color_provider->GetColor(
+        return color_provider->GetColor(
             kColorAvatarButtonHighlightSyncErrorForeground);
       }
-      break;
     case ButtonState::kGuestSession:
     case ButtonState::kExplicitTextShowing:
     case ButtonState::kShowIdentityName:
-      color = color_provider->GetColor(
+      return color_provider->GetColor(
           kColorAvatarButtonHighlightDefaultForeground);
-      break;
     case ButtonState::kManagement:
-      color =
-          color_provider->GetColor(kColorAvatarButtonHighlightNormalForeground);
-      break;
+    case ButtonState::kSigninPaused:
+      return color_provider->GetColor(
+          kColorAvatarButtonHighlightNormalForeground);
     case ButtonState::kNormal:
-      color = color_provider->GetColor(
+      return color_provider->GetColor(
           kColorAvatarButtonHighlightDefaultForeground);
-      break;
   }
-  return color;
 }
 
 std::u16string AvatarToolbarButtonDelegate::GetAvatarTooltipText() const {
@@ -1027,6 +1081,7 @@ std::u16string AvatarToolbarButtonDelegate::GetAvatarTooltipText() const {
               IdentityManagerFactory::GetForProfile(profile_)
                   ->HasPrimaryAccount(signin::ConsentLevel::kSync)));
     }
+    case ButtonState::kSigninPaused:
     case ButtonState::kExplicitTextShowing:
     case ButtonState::kManagement:
     case ButtonState::kNormal:
@@ -1056,6 +1111,7 @@ AvatarToolbarButtonDelegate::GetInkdropColors() const {
       case ButtonState::kShowIdentityName:
         break;
       case ButtonState::kManagement:
+      case ButtonState::kSigninPaused:
         ripple_color_id = kColorAvatarButtonNormalRipple;
         break;
       case ButtonState::kNormal:
@@ -1084,6 +1140,7 @@ ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
     // should be different.
     case ButtonState::kSyncError:
     case ButtonState::kManagement:
+    case ButtonState::kSigninPaused:
     case ButtonState::kNormal:
       return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
           GetProfileAvatarImage(icon_size), icon_size, icon_size,
@@ -1100,6 +1157,7 @@ bool AvatarToolbarButtonDelegate::ShouldPaintBorder() const {
     case ButtonState::kIncognitoProfile:
     case ButtonState::kExplicitTextShowing:
     case ButtonState::kManagement:
+    case ButtonState::kSigninPaused:
     case ButtonState::kSyncError:
       return false;
   }

@@ -39,6 +39,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -188,6 +189,31 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
     signin::SimulateAccountImageFetch(
         GetIdentityManager(), account_id, std::string(),
         gfx::Image(gfx::test::CreateImageSkia(96, 96)));
+  }
+
+  // Sign in and wait for the name to stop showing.
+  AccountInfo SigninAndWait(const std::u16string& email) {
+    AccountInfo account_info = Signin(email, u"");
+
+    AvatarToolbarButtonTestObserver observer(GetAvatarToolbarButton(browser()));
+    AddImage(account_info.account_id);
+    observer.WaitForShowNameEnded();
+
+    return account_info;
+  }
+
+  void SimulateSigninError() {
+    ASSERT_TRUE(
+        GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+    signin::SetInvalidRefreshTokenForPrimaryAccount(GetIdentityManager());
+  }
+
+  void ClearSigninError() {
+    ASSERT_TRUE(
+        GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+    signin::SetRefreshTokenForPrimaryAccount(GetIdentityManager());
   }
 
   // Enables sync for account with `email` and set the `name` to the account
@@ -844,3 +870,27 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 }
 #endif
+
+class AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest
+    : public AvatarToolbarButtonBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+};
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
+                       SigninPaused) {
+  SigninAndWait(u"test@gmail.com");
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+
+  SimulateSigninError();
+
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+
+  ClearSigninError();
+
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+}

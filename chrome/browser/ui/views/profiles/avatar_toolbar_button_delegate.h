@@ -56,7 +56,7 @@ class AvatarToolbarButtonDelegate {
   // These info are based on the `ButtonState`.
   std::pair<std::u16string, std::optional<SkColor>> GetTextAndColor(
       const ui::ColorProvider* const color_provider) const;
-  std::optional<SkColor> GetHighlightTextColor(
+  SkColor GetHighlightTextColor(
       const ui::ColorProvider* const color_provider) const;
   std::u16string GetAvatarTooltipText() const;
   std::pair<ChromeColorIds, ChromeColorIds> GetInkdropColors() const;
