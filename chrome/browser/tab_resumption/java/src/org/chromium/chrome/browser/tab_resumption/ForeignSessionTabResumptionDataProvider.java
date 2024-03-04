@@ -7,151 +7,85 @@ package org.chromium.chrome.browser.tab_resumption;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.SyncService.SyncStateChangedListener;
+import org.chromium.chrome.browser.tab_resumption.ForeignSessionTabResumptionDataSource.DataChangedObserver;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-/** TabResumptionDataProvider using ForeignSession data. */
+/**
+ * TabResumptionDataProvider that uses ForeignSessionTabResumptionDataSource data, while supporting
+ * the following update requirements:
+ *
+ * <pre>
+ * 1. Get initial suggestions quickly so Magic stack can decide whether to show or hide the module.
+ * 2. Get up-to-date suggestions that needs a more time to fetch, and may be unavailable if the data
+ *    (1) is already up to date.
+ * 3. Stabilize suggestion data beyond a certain time threshold.
+ * 4. Handle suggestion (and module) removal if the permission changes.
+ * </pre>
+ *
+ * The callback passed by fetchSuggestions() is single-use. To refresh data, the caller will need to
+ * use setStatusChangedCallback() and call fetchSuggestions() again.
+ */
 public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataProvider
-        implements SignInStateObserver, SyncStateChangedListener {
-    // Suggestions older than 24h are considered stale, and rejected.
-    private static final long STALENESS_THRESHOLD_MS = 24L * 60L * 60L * 1000L;
+        implements DataChangedObserver {
+    // Duration after initial suggestion for which non-permission data changes will be ignored,
+    // thus allowing enforcing data stability.
+    private static final long STABLE_THRESHOLD_MS = TimeUnit.SECONDS.toMillis(10);
 
-    private final SigninManager mSigninManager;
-    private final SyncService mSyncService;
-    private final ForeignSessionHelper mForeignSessionHelper;
+    private final ForeignSessionTabResumptionDataSource mDataSource;
+    private final Runnable mCleanupCallback;
 
-    /** 0 means to use actual time. */
-    private final long mForcedCurrentTimeMs;
-
-    private boolean mIsSignedIn;
-    private boolean mIsSynced;
+    // State to enforce suggestions stability.
+    private long mLastWriteTimeMs;
 
     /**
-     * @param signinManager To observe signin state changes.
-     * @param identityManager To get initial signin state.
-     * @param syncService To observe sync state changes.
-     * @param foreignSessionHelper To fetch ForenSession data.
-     * @param forcedCurrentTimeMs To override current time (in ms since the epoch) for testing. 0L
-     *     specifies that actual time should be used.
+     * @param dataSource Non-owned data source instance that may be shared.
+     * @param cleanupCallback To be invoked in destroy() for potential cleanup of external data.
      */
     @VisibleForTesting
-    protected ForeignSessionTabResumptionDataProvider(
-            SigninManager signinManager,
-            IdentityManager identityManager,
-            SyncService syncService,
-            ForeignSessionHelper foreignSessionHelper,
-            long forcedCurrentTimeMs) {
+    public ForeignSessionTabResumptionDataProvider(
+            ForeignSessionTabResumptionDataSource dataSource, Runnable cleanupCallback) {
         super();
-        mSigninManager = signinManager;
-        mSyncService = syncService;
-        mForeignSessionHelper = foreignSessionHelper;
-        mForcedCurrentTimeMs = forcedCurrentTimeMs;
-
-        mSigninManager.addSignInStateObserver(this);
-        mSyncService.addSyncStateChangedListener(this);
-        mIsSignedIn = identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
-        mIsSynced = mSyncService.hasKeepEverythingSynced();
-    }
-
-    public static ForeignSessionTabResumptionDataProvider createFromProfile(Profile profile) {
-        return new ForeignSessionTabResumptionDataProvider(
-                /* signinManager= */ IdentityServicesProvider.get().getSigninManager(profile),
-                /* identityManager= */ IdentityServicesProvider.get().getIdentityManager(profile),
-                /* syncService= */ SyncServiceFactory.getForProfile(profile),
-                /* foreignSessionHelper= */ new ForeignSessionHelper(profile),
-                /* forcedCurrentTimeMs= */ 0L);
+        mDataSource = dataSource;
+        mCleanupCallback = cleanupCallback;
+        mDataSource.addObserver(this);
     }
 
     /** Implements {@link TabResumptionDataProvider} */
     @Override
     public void destroy() {
-        mSyncService.removeSyncStateChangedListener(this);
-        mSigninManager.removeSignInStateObserver(this);
-        mForeignSessionHelper.destroy();
-    }
-
-    private boolean isForeignSessionTabUsable(ForeignSessionTab tab, long currentTimeMs) {
-        if (currentTimeMs - tab.lastActiveTime > STALENESS_THRESHOLD_MS) return false;
-        String scheme = tab.url.getScheme();
-        return scheme.equals(UrlConstants.HTTP_SCHEME) || scheme.equals(UrlConstants.HTTPS_SCHEME);
-    }
-
-    private void updateFromForeignSessions(Callback<List<SuggestionEntry>> suggestionsCallback) {
-        ArrayList<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
-        long currentTimeMs =
-                (mForcedCurrentTimeMs == 0) ? System.currentTimeMillis() : mForcedCurrentTimeMs;
-
-        List<ForeignSession> foreignSessions = mForeignSessionHelper.getForeignSessions();
-        for (ForeignSession session : foreignSessions) {
-            for (ForeignSessionWindow window : session.windows) {
-                for (ForeignSessionTab tab : window.tabs) {
-                    if (isForeignSessionTabUsable(tab, currentTimeMs)) {
-                        suggestions.add(
-                                new SuggestionEntry(
-                                        session.name,
-                                        tab.url,
-                                        tab.title,
-                                        tab.lastActiveTime,
-                                        tab.id));
-                    }
-                }
-            }
-        }
-        Collections.sort(suggestions);
-
-        suggestionsCallback.onResult(suggestions);
+        mDataSource.removeObserver(this);
+        mCleanupCallback.run();
     }
 
     /** Implements {@link TabResumptionDataProvider} */
     @Override
     public void fetchSuggestions(Callback<List<SuggestionEntry>> suggestionsCallback) {
-        boolean canFetch = mIsSignedIn && mIsSynced;
-        if (!canFetch) {
-            suggestionsCallback.onResult(null);
+        if (!mDataSource.canUseData()) {
+            suggestionsCallback.onResult(new ArrayList<SuggestionEntry>());
             return;
         }
 
-        mForeignSessionHelper.triggerSessionSync();
-        updateFromForeignSessions(suggestionsCallback);
+        List<SuggestionEntry> suggestions = mDataSource.getSuggestions();
+        assert suggestions != null;
+
+        // Results may be empty.
+        suggestionsCallback.onResult(suggestions);
+        mLastWriteTimeMs = mDataSource.getCurrentTimeMs();
     }
 
-    /** Implements {@link SignInStateObserver} */
+    /** Implements {@link ForeignSessionTabResumptionDataSource.DataChangedObserver} */
     @Override
-    public void onSignedIn() {
-        mIsSignedIn = true;
-        dispatchStatusChangedCallback();
-    }
-
-    /** Implements {@link SignInStateObserver} */
-    @Override
-    public void onSignedOut() {
-        mIsSignedIn = false;
-        dispatchStatusChangedCallback();
-    }
-
-    /** Implements {@link SyncStateChangedListener} */
-    @Override
-    public void syncStateChanged() {
-        boolean oldHasKeepEverythingSynced = mIsSynced;
-        mIsSynced = mSyncService.hasKeepEverythingSynced();
-        if (oldHasKeepEverythingSynced != mIsSynced) {
+    public void onForeignSessionDataChanged(boolean isPermissionUpdate) {
+        if (isPermissionUpdate || !shouldEnforceStability()) {
             dispatchStatusChangedCallback();
         }
+    }
+
+    private boolean shouldEnforceStability() {
+        long currentTimeMs = mDataSource.getCurrentTimeMs();
+        return mLastWriteTimeMs != 0 && currentTimeMs - mLastWriteTimeMs > STABLE_THRESHOLD_MS;
     }
 }
