@@ -323,7 +323,8 @@ bool VulkanInstance::CollectBasicInfo(
     result = vkEnumerateInstanceExtensionProperties(
         layer_name, &num_instance_exts, nullptr);
     if (VK_SUCCESS != result) {
-      LOG(ERROR) << "vkEnumerateInstanceExtensionProperties(" << layer_name
+      LOG(ERROR) << "vkEnumerateInstanceExtensionProperties("
+                 << (layer_name ? layer_name : "nullptr")
                  << ") failed: " << result;
       return false;
     }
@@ -336,7 +337,8 @@ bool VulkanInstance::CollectBasicInfo(
         layer_name, &num_instance_exts,
         &vulkan_info_.instance_extensions.data()[previous_extension_count]);
     if (VK_SUCCESS != result) {
-      LOG(ERROR) << "vkEnumerateInstanceExtensionProperties(" << layer_name
+      LOG(ERROR) << "vkEnumerateInstanceExtensionProperties("
+                 << (layer_name ? layer_name : "nullptr")
                  << ") failed: " << result;
       return false;
     }
