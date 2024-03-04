@@ -34,6 +34,7 @@ group("resources") {
       "hats:resources",
       "history:resources",
       "identity_internals:resources",
+      "lens:untrusted_resources",
       "management:resources",
       "new_tab_page:resources",
       "new_tab_page_instant:resources",
@@ -67,7 +68,6 @@ group("resources") {
     if (is_chrome_branded) {
       public_deps += [
         "lens:resources",
-        "lens:untrusted_resources",
         "media_router/cast_feedback:resources",
       ]
     }
