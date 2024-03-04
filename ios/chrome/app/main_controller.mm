@@ -530,19 +530,13 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                                         chromeBrowserState)
                          localState:GetApplicationContext()->GetLocalState()]];
 
-  // TODO(crbug.com/325616923): Update DockingPromoAppAgent for multiple browser
-  // states.
   if (IsDockingPromoEnabled()) {
     switch (DockingPromoExperimentTypeEnabled()) {
       case DockingPromoDisplayTriggerArm::kDuringFRE:
         break;
       case DockingPromoDisplayTriggerArm::kAfterFRE:
       case DockingPromoDisplayTriggerArm::kAppLaunch:
-        [self.appState
-            addAgent:[[DockingPromoAppAgent alloc]
-                         initWithPromosManager:PromosManagerFactory::
-                                                   GetForBrowserState(
-                                                       chromeBrowserState)]];
+        [self.appState addAgent:[[DockingPromoAppAgent alloc] init]];
     }
   }
 

@@ -7,15 +7,8 @@
 
 #import "ios/chrome/app/application_delegate/app_state_agent.h"
 
-class PromosManager;
-
 // App agent that displays the Docking Promo when needed.
-// TODO(crbug.com/325616923): Update DockingPromoAppAgent for multiple browser
-// states.
 @interface DockingPromoAppAgent : NSObject <AppStateAgent>
-
-- (instancetype)initWithPromosManager:(PromosManager*)promosManager;
-
 @end
 
 #endif  // IOS_CHROME_APP_DOCKING_PROMO_APP_AGENT_H_
