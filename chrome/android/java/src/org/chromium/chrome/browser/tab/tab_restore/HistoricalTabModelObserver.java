@@ -78,14 +78,50 @@ public class HistoricalTabModelObserver implements TabModelObserver {
             String title = TabGroupTitleUtils.getTabGroupTitle(rootId);
             List<Tab> groupTabs = new ArrayList<Tab>();
             groupTabs.add(tab);
-            // Single entry groups are collapsed to tabs in HistoricalTabSaver.
             HistoricalEntry historicalGroup =
                     new HistoricalEntry(rootId, tab.getTabGroupId(), title, groupTabs);
             entries.add(historicalGroup);
             idToGroup.put(rootId, historicalGroup);
         }
 
-        mHistoricalTabSaver.createHistoricalBulkClosure(entries);
+        // If only a subset of tabs in the tab group are closing tabs should be saved individually
+        // so that a duplicate of the tab group isn't created on restore.
+        // TODO(crbug/327166316): Wire up tab group IDs when saving in native so that the tabs
+        // can be restored into their prior group if it still exists.
+        List<HistoricalEntry> groupAdjustedEntries = new ArrayList<>();
+        for (HistoricalEntry entry : entries) {
+            if (shouldSaveSeparateTabs(entry)) {
+                for (Tab tab : entry.getTabs()) {
+                    groupAdjustedEntries.add(new HistoricalEntry(tab));
+                }
+            } else {
+                groupAdjustedEntries.add(entry);
+            }
+        }
+
+        mHistoricalTabSaver.createHistoricalBulkClosure(groupAdjustedEntries);
+    }
+
+    private boolean shouldSaveSeparateTabs(HistoricalEntry entry) {
+        if (entry.getRootId() == Tab.INVALID_TAB_ID) return false;
+
+        int rootId = entry.getRootId();
+        boolean groupExists = mTabGroupModelFilter.tabGroupExistsForRootId(rootId);
+        if (groupExists
+                && entry.getTabs().size()
+                        != mTabGroupModelFilter.getRelatedTabCountForRootId(rootId)) {
+            // Case: Group information not lost yet (non-undoable closure). Rely on whether all the
+            // tabs in the group are closing.
+            return true;
+        } else if (!groupExists) {
+            // Case: Group information already lost (undoable closure). Rely on whether any unclosed
+            // tabs share a root ID with the closing group.
+            TabList comprehensiveModel = mTabGroupModelFilter.getTabModel().getComprehensiveModel();
+            for (int i = 0; i < comprehensiveModel.getCount(); i++) {
+                if (rootId == comprehensiveModel.getTabAt(i).getRootId()) return true;
+            }
+        }
+        return false;
     }
 
     private boolean isTabGroupWithOneTab(Tab tab) {

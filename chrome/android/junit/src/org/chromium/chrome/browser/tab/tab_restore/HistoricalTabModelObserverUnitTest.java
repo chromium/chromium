@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab.tab_restore;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -203,6 +204,33 @@ public class HistoricalTabModelObserverUnitTest {
             assertEquals(1, entry.getTabs().size());
             assertEquals(tabList[i], entry.getTabs().get(0));
         }
+    }
+
+    @Test
+    public void testSubsetOfGroup() {
+        MockTab mockTab0 = createMockTab(0);
+        MockTab mockTab1 = createMockTab(1);
+        MockTab mockTab2 = createMockTab(2);
+
+        final String title = "foo";
+        MockTab[] tabList = new MockTab[] {mockTab0, mockTab1, mockTab2};
+        Token tabGroupId = new Token(1L, 243L);
+        createGroup(tabGroupId, title, tabList);
+
+        List<Tab> closingTabList = List.of(mockTab1, mockTab2);
+        mObserver.onFinishingMultipleTabClosure(closingTabList);
+
+        ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
+        verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
+        List<HistoricalEntry> entries = arg.getValue();
+
+        assertEquals(2, entries.size());
+        HistoricalEntry entryTab1 = entries.get(0);
+        HistoricalEntry entryTab2 = entries.get(1);
+        assertTrue(entryTab1.isSingleTab());
+        assertTrue(entryTab2.isSingleTab());
+        assertEquals(mockTab1, entryTab1.getTabs().get(0));
+        assertEquals(mockTab2, entryTab2.getTabs().get(0));
     }
 
     @Test
