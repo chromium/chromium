@@ -39,14 +39,6 @@ class DownloadControllerImpl : public DownloadController,
   ~DownloadControllerImpl() override;
 
   // DownloadController overrides:
-  void CreateDownloadTask(WebState* web_state,
-                          NSString* identifier,
-                          const GURL& original_url,
-                          NSString* http_method,
-                          const std::string& content_disposition,
-                          int64_t total_bytes,
-                          const std::string& mime_type) override;
-
   void CreateNativeDownloadTask(WebState* web_state,
                                 NSString* identifier,
                                 const GURL& original_url,

@@ -1536,51 +1536,6 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   return YES;
 }
 
-// Creates DownloadTask for the given navigation response. Headers are passed
-// as argument to avoid extra NSDictionary -> net::HttpResponseHeaders
-// conversion.
-- (void)createDownloadTaskForResponse:(WKNavigationResponse*)WKResponse
-                          HTTPHeaders:(net::HttpResponseHeaders*)headers {
-  const GURL responseURL = net::GURLWithNSURL(WKResponse.response.URL);
-  const int64_t contentLength = WKResponse.response.expectedContentLength;
-  const std::string MIMEType =
-      base::SysNSStringToUTF8(WKResponse.response.MIMEType);
-
-  std::string contentDisposition;
-  if (headers) {
-    headers->GetNormalizedHeader("content-disposition", &contentDisposition);
-  }
-
-  NSString* HTTPMethod = @"GET";
-  if (WKResponse.forMainFrame) {
-    web::NavigationContextImpl* context =
-        [self contextForPendingMainFrameNavigationWithURL:responseURL];
-    // Context lookup fails in rare cases (f.e. after certain redirects,
-    // when WKWebView.URL did not change to redirected page inside
-    // webView:didReceiveServerRedirectForProvisionalNavigation:
-    // as happened in crbug.com/820375). In that case it's not possible
-    // to locate correct context to update `HTTPMethod` and call
-    // WebStateObserver::DidFinishNavigation. Download will fail with incorrect
-    // HTTPMethod, which is better than a crash on null pointer dereferencing.
-    // Missing DidFinishNavigation for download navigation does not cause any
-    // major issues, and it's also better than a crash.
-    if (context) {
-      context->SetIsDownload(true);
-      context->ReleaseItem();
-      if (context->IsPost()) {
-        HTTPMethod = @"POST";
-      }
-      // Navigation callbacks can only be called for the main frame.
-      self.webStateImpl->OnNavigationFinished(context);
-    }
-  }
-  web::DownloadController::FromBrowserState(
-      self.webStateImpl->GetBrowserState())
-      ->CreateDownloadTask(self.webStateImpl, [NSUUID UUID].UUIDString,
-                           responseURL, HTTPMethod, contentDisposition,
-                           contentLength, MIMEType);
-}
-
 // WKNavigation objects are used as a weak key to store web::NavigationContext.
 // WKWebView manages WKNavigation lifetime and destroys them after the
 // navigation is finished. However for window opening navigations WKWebView
