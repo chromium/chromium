@@ -80,6 +80,9 @@ gpu::GpuFeatureStatus GetFakeFeatureStatus(bool enabled) {
                  : gpu::kGpuFeatureStatusDisabled;
 }
 
+// `force_disabled` should only be true when the feature status from
+// `gpu_feature_info` is missing information. In general this should be avoided
+// and GpuFeatureInfo should be made to be correct.
 gpu::GpuFeatureStatus SafeGetFeatureStatus(
     const gpu::GpuFeatureInfo& gpu_feature_info,
     gpu::GpuFeatureType feature,
@@ -118,23 +121,7 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
       "canvas_oop_rasterization",
       SafeGetFeatureStatus(
           gpu_feature_info, gpu::GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION,
-          !features::IsCanvasOopRasterizationEnabled() ||
-              command_line.HasSwitch(switches::kDisableAccelerated2dCanvas)),
-#if 0
-     // TODO(crbug.com/1240756): Remove the "#if 0" once OOPR-Canvas is fully
-     // launched.
-     DisableInfo::Problem(
-         "Canvas out-of-process rasterization has been disabled, either via "
-         "blocklist, the command line, about:flags, because out-of-process "
-         "rasterization is disabled, or because 2D canvas is not GPU-"
-         "accelerated."
-     ),
-#else
-      // As long as the Finch experiment is running, having the feature
-      // disabled is not a "problem".
-      DisableInfo::NotProblem(),
-#endif
-      /*fallback_to_software=*/false);
+          command_line.HasSwitch(switches::kDisableAccelerated2dCanvas)));
   features.emplace_back(
       "gpu_compositing",
       // TODO(rivr): Replace with a check to see which backend is used for
@@ -185,9 +172,8 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
       true);
   features.emplace_back(
       "rasterization",
-      SafeGetFeatureStatus(
-          gpu_feature_info, gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION,
-          command_line.HasSwitch(switches::kDisableGpuRasterization)),
+      SafeGetFeatureStatus(gpu_feature_info,
+                           gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION),
       DisableInfo::Problem(
           "Accelerated rasterization has been disabled, either via blocklist, "
           "about:flags or the command line."),
@@ -198,9 +184,7 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
 #if BUILDFLAG(ENABLE_VULKAN)
   features.emplace_back(
       "vulkan",
-      SafeGetFeatureStatus(gpu_feature_info, gpu::GPU_FEATURE_TYPE_VULKAN,
-                           !::features::IsUsingVulkan() &&
-                               !command_line.HasSwitch(switches::kUseVulkan)));
+      SafeGetFeatureStatus(gpu_feature_info, gpu::GPU_FEATURE_TYPE_VULKAN));
 #endif
   features.emplace_back(
       "multiple_raster_threads",
@@ -209,11 +193,7 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
   features.emplace_back(
       "surface_control",
       SafeGetFeatureStatus(gpu_feature_info,
-                           gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL,
-                           !features::IsAndroidSurfaceControlEnabled()),
-      DisableInfo::Problem("Surface Control has been disabled by Finch trial "
-                           "or command line."),
-      false);
+                           gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL));
 #endif
   features.emplace_back(
       "webgl2",
