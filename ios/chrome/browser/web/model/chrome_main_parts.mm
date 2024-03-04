@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/allocator/partition_alloc_support.h"
 #import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/files/file_path.h"
@@ -332,6 +333,13 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 
   segmentation_platform::UkmDatabaseClientHolder::GetClientInstance(nullptr)
       .StartObservation();
+
+#if BUILDFLAG(USE_PARTITION_ALLOC)
+  base::allocator::PartitionAllocSupport::Get()
+      ->ReconfigureAfterFeatureListInit("");
+  base::allocator::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
+      "");
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
 #if BUILDFLAG(ENABLE_RLZ)
   // Init the RLZ library. This just schedules a task on the file thread to be

@@ -4,6 +4,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/allocator/partition_alloc_support.h"
 #import "base/at_exit.h"
 #import "base/debug/crash_logging.h"
 #import "base/strings/sys_string_conversions.h"
@@ -98,6 +99,10 @@ int main(int argc, char* argv[]) {
 
   // Register Chrome path providers.
   RegisterPathProviders();
+
+#if BUILDFLAG(USE_PARTITION_ALLOC)
+  base::allocator::PartitionAllocSupport::Get()->ReconfigureEarlyish("");
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
   return RunUIApplicationMain(argc, argv);
 }
