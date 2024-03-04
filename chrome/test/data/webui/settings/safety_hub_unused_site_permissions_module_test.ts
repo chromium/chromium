@@ -13,7 +13,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import type {SettingsSafetyHubUnusedSitePermissionsModuleElement, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
 import {ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
 import type {SettingsRoutes} from 'chrome://settings/settings.js';
-import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckUnusedSitePermissionsModuleInteractions, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckUnusedSitePermissionsModuleInteractions as Interactions, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -44,13 +44,14 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
         expiration: '13317004800000000',  // Represents 2023-01-01T00:00:00.
       }));
 
-  function assertEqualsMockData(siteList: UnusedSitePermissions[]) {
+  function assertEqualsMockData(
+      siteList: UnusedSitePermissions[], mockDataLength: number) {
     // |siteList| coming from WebUI may have the additional property |detail|,
     // so assertDeepEquals doesn't work to compare it with |mockData|. We care
     // about origins and associated permissions being equal.
-    assertEquals(siteList.length, mockData.length);
+    assertEquals(mockDataLength, siteList.length);
     for (const [i, site] of siteList.entries()) {
-      assertEquals(site!.origin, mockData[i]!.origin);
+      assertEquals(mockData[i]!.origin, site!.origin);
       assertDeepEquals(site!.permissions, mockData[i]!.permissions);
     }
   }
@@ -58,11 +59,18 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   function assertInitialUi() {
     const expectedSiteCount = mockData.length;
     assertEquals(getSiteList().length, expectedSiteCount);
-    assertToast(false);
+    assertUndoToast(false);
   }
 
-  /** Assert visibility and content of the undo toast. */
-  function assertToast(shouldBeOpen: boolean, expectedText?: string) {
+  /**
+   * Asserts the Undo toast is shown with a correct origin-containing string.
+   * @param stringId The id to retrieve the correct toast string. Provided only
+   *     if shouldBeOpen is true.
+   * @param index The index of the element whose origin is in the toast string.
+   *     Provided only if shouldBeOpen is true. The default value is 0.
+   */
+  function assertUndoToast(
+      shouldBeOpen: boolean, stringId?: string, index?: number) {
     const undoToast = testElement.$.undoToast;
     if (!shouldBeOpen) {
       assertFalse(undoToast.open);
@@ -70,7 +78,11 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     }
     assertTrue(undoToast.open);
 
-    if (expectedText !== undefined) {
+    if (stringId) {
+      if (!index) {
+        index = 0;
+      }
+      const expectedText = testElement.i18n(stringId, mockData[index]!.origin);
       const actualText = undoToast.querySelector('div')!.textContent!.trim();
       assertEquals(expectedText, actualText);
     }
@@ -108,6 +120,63 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     await flushTasks();
   }
 
+  /**
+   * Sets up the unused site permissions list with a single entry.
+   * @param index The index of the child element to include in the list. The
+   *     default value is 0.
+   */
+  async function setupSingleEntry(index?: number) {
+    if (!index) {
+      index = 0;
+    }
+    webUIListenerCallback(
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
+        mockData.slice(index, 1));
+    await flushTasks();
+  }
+
+  /**
+   * Asserts a correct browser call is done for the given origin.
+   * @param index The index of the child element used for the browser call. The
+   *     default value is 0.
+   */
+  async function assertAllowAgain(index?: number) {
+    if (!index) {
+      index = 0;
+    }
+    const [origin] =
+        await browserProxy.whenCalled('allowPermissionsAgainForUnusedSite');
+    assertEquals(mockData[index]!.origin, origin);
+  }
+
+  /**
+   * Asserts a correct browser call is done for the given origin.
+   * @param index The index of the element for whose origin the call is done.
+   *     The default value is 0.
+   */
+  async function assertUndoAllowAgain(index?: number) {
+    if (!index) {
+      index = 0;
+    }
+    const [unusedSitePermissions] =
+        await browserProxy.whenCalled('undoAllowPermissionsAgainForUnusedSite');
+    assertEquals(mockData[index]!.origin, unusedSitePermissions.origin);
+    assertDeepEquals(
+        unusedSitePermissions.permissions, mockData[index]!.permissions);
+    browserProxy.resetResolver('undoAllowPermissionsAgainForUnusedSite');
+  }
+
+  /**
+   * Asserts a correct action was recorded into
+   * recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram histogram.
+   */
+  async function assertInteractionMetricRecorded(action: Interactions) {
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram');
+    assertEquals(action, result);
+    metricsBrowserProxy.reset();
+  }
+
   setup(async function() {
     browserProxy = new TestSafetyHubBrowserProxy();
     browserProxy.setUnusedSitePermissions(mockData);
@@ -132,11 +201,12 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     // Check that the text describing the permissions is correct.
     assertEquals(
         mockData[0]!.origin,
-        siteList[0]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
+        getSiteList()[0]!.querySelector(
+                             '.site-representation')!.textContent!.trim());
     assertEquals(
         'Removed location',
-        siteList[0]!.querySelector('.cr-secondary-text')!.textContent!.trim());
+        getSiteList()[0]!.querySelector(
+                             '.cr-secondary-text')!.textContent!.trim());
 
     assertEquals(
         mockData[1]!.origin,
@@ -171,56 +241,35 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   });
 
   test('Allow Again Click', async function() {
-    const siteList = getSiteList();
-    siteList[0]!.querySelector('cr-icon-button')!.click();
+    // User clicks Allow Again.
+    getSiteList()[0]!.querySelector('cr-icon-button')!.click();
 
-    // Ensure the browser proxy call is done.
-    const expectedOrigin =
-        siteList[0]!.querySelector('.site-representation')!.textContent!.trim();
-    const [origin] =
-        await browserProxy.whenCalled('allowPermissionsAgainForUnusedSite');
-    assertEquals(origin, expectedOrigin);
+    // Ensure the correctness of the browser proxy call and the undo toast.
+    await assertAllowAgain();
+    assertUndoToast(true, 'safetyCheckUnusedSitePermissionsToastLabel');
 
     // Ensure the metric for 'Allow Again' action is recorded.
-    const result = await metricsBrowserProxy.whenCalled(
-        'recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram');
-    assertEquals(
-        SafetyCheckUnusedSitePermissionsModuleInteractions.ALLOW_AGAIN, result);
+    await assertInteractionMetricRecorded(Interactions.ALLOW_AGAIN);
   });
 
   test('Undo Allow Again', async function() {
     for (const [i, site] of getSiteList().entries()) {
-      browserProxy.resetResolver('undoAllowPermissionsAgainForUnusedSite');
+      // User clicks Allow Again and then Undo.
       site!.querySelector('cr-icon-button')!.click();
-      const expectedOrigin =
-          site!.querySelector('.site-representation')!.textContent!.trim();
-
-      // Ensure the toast behaves correctly.
-      const expectedToastText = testElement.i18n(
-          'safetyCheckUnusedSitePermissionsToastLabel', expectedOrigin);
-      assertToast(true, expectedToastText);
-
-      // Reset the action captured by clicking the allow again button.
       metricsBrowserProxy.reset();
-
-      // Ensure proxy call for undo is sent correctly.
       testElement.$.toastUndoButton.click();
-      const [unusedSitePermissions] = await browserProxy.whenCalled(
-          'undoAllowPermissionsAgainForUnusedSite');
-      assertEquals(unusedSitePermissions.origin, expectedOrigin);
-      assertDeepEquals(
-          unusedSitePermissions.permissions, mockData[i]!.permissions);
+
+      // Ensure the browser proxy call is done and no undo toast is shown.
+      await assertUndoAllowAgain(i);
+      assertUndoToast(false);
+
       // UI should be back to its initial state.
       webUIListenerCallback(
           SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
       flush();
 
       // Ensure the metric for 'Undo Allow Again' action is recorded.
-      const result = await metricsBrowserProxy.whenCalled(
-          'recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram');
-      assertEquals(
-          SafetyCheckUnusedSitePermissionsModuleInteractions.UNDO_ALLOW_AGAIN,
-          result);
+      await assertInteractionMetricRecorded(Interactions.UNDO_ALLOW_AGAIN);
 
       assertInitialUi();
     }
@@ -228,109 +277,128 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
 
   test('Undo Allow Again via Ctrl+Z', async function() {
     for (const [i, site] of getSiteList().entries()) {
+      // User clicks Allow Again and then Ctrl+Z.
       assertTrue(!!site);
-      browserProxy.resetResolver('undoAllowPermissionsAgainForUnusedSite');
       const allowAgainButton = site.querySelector('cr-icon-button');
       assertTrue(!!allowAgainButton);
       allowAgainButton.click();
-      const expectedOrigin =
-          site!.querySelector('.site-representation')!.textContent!.trim();
-
-      // Reset the action captured by pressing Ctrl+Z.
       metricsBrowserProxy.reset();
-
-      // Ensure the toast behaves correctly.
-      const expectedToastText = testElement.i18n(
-          'safetyCheckUnusedSitePermissionsToastLabel', expectedOrigin);
-      assertToast(true, expectedToastText);
-      // Ensure proxy call for undo is sent correctly after pressing Ctrl+Z.
       keyDownOn(document.documentElement, 0, isMac ? 'meta' : 'ctrl', 'z');
-      const [unusedSitePermissions] = await browserProxy.whenCalled(
-          'undoAllowPermissionsAgainForUnusedSite');
-      assertEquals(unusedSitePermissions.origin, expectedOrigin);
-      assertDeepEquals(
-          unusedSitePermissions.permissions, mockData[i]!.permissions);
+
+      // Ensure the browser proxy call is done and no undo toast is shown.
+      await assertUndoAllowAgain(i);
+
       // UI should be back to its initial state.
       webUIListenerCallback(
           SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
       flush();
 
       // Ensure the metric for 'Undo Allow Again' action is recorded.
-      const result = await metricsBrowserProxy.whenCalled(
-          'recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram');
-      assertEquals(
-          SafetyCheckUnusedSitePermissionsModuleInteractions.UNDO_ALLOW_AGAIN,
-          result);
+      await assertInteractionMetricRecorded(Interactions.UNDO_ALLOW_AGAIN);
 
       assertInitialUi();
     }
   });
 
   test('Got It Click', async function() {
+    // User clicks Got It.
     testElement.$.gotItButton.click();
     await flushTasks();
 
-    // Ensure the browser proxy call is done.
+    // Ensure the browser proxy call is done and no undo toast is shown.
     await browserProxy.whenCalled(
         'acknowledgeRevokedUnusedSitePermissionsList');
+    assertUndoToast(false);
+
+    // UI should be in a completion state.
+    webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
+    await flushTasks();
+
+    // Check visibility of buttons
+    assertFalse(isVisible(testElement.$.gotItButton));
+    assertTrue(isVisible(testElement.$.bulkUndoButton));
 
     // Ensure the metric for 'Acknowledge All' action is recorded.
-    const result = await metricsBrowserProxy.whenCalled(
-        'recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram');
-    assertEquals(
-        SafetyCheckUnusedSitePermissionsModuleInteractions.ACKNOWLEDGE_ALL,
-        result);
+    await assertInteractionMetricRecorded(Interactions.ACKNOWLEDGE_ALL);
   });
 
   test('Undo Got It', async function() {
+    // User clicks Got It and then Bulk Undo.
     testElement.$.gotItButton.click();
-    // Ensure the toast behaves correctly.
-    await assertPluralString(
-        'safetyCheckUnusedSitePermissionsToastBulkLabel', mockData.length, 2);
-    assertToast(true);
-    // Ensure proxy call is sent correctly for undo.
-
-    // Reset the action captured by clicking the Got It button.
     metricsBrowserProxy.reset();
-
     testElement.$.bulkUndoButton.click();
+
+    // Ensure the browser proxy call is done and no undo toast is shown.
     const [unusedSitePermissionsList] = await browserProxy.whenCalled(
         'undoAcknowledgeRevokedUnusedSitePermissionsList');
-    assertEqualsMockData(unusedSitePermissionsList);
+    assertEqualsMockData(unusedSitePermissionsList, mockData.length);
+    assertUndoToast(false);
+
     // UI should be back to its initial state.
     webUIListenerCallback(
         SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
     assertInitialUi();
+
     // Check visibility of buttons
     assertTrue(isVisible(testElement.$.gotItButton));
     assertFalse(isVisible(testElement.$.bulkUndoButton));
 
     // Ensure the metric for 'Undo Acknowledge All' action is recorded.
-    const result = await metricsBrowserProxy.whenCalled(
-        'recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram');
-    assertEquals(
-        SafetyCheckUnusedSitePermissionsModuleInteractions.UNDO_ACKNOWLEDGE_ALL,
-        result);
+    await assertInteractionMetricRecorded(Interactions.UNDO_ACKNOWLEDGE_ALL);
   });
 
-  test('Got It Toast Strings', async function() {
-    // Check plural version of the string.
-    testElement.$.gotItButton.click();
-    await flushTasks();
-    await assertPluralString(
-        'safetyCheckUnusedSitePermissionsToastBulkLabel', mockData.length, 2);
-    assertToast(true);
+  test('Allow Again Click and Undo - single entry', async function() {
+    await setupSingleEntry();
 
-    // Check singular version of the string.
-    const oneElementMockData = mockData.slice(0, 1);
-    browserProxy.setUnusedSitePermissions(oneElementMockData);
-    await createPage();
-    assertToast(false);
+    // User clicks Allow Again.
+    getSiteList()[0]!.querySelector('cr-icon-button')!.click();
+
+    // Ensure the browser proxy call is done and no undo toast is shown.
+    await assertAllowAgain();
+    assertUndoToast(false);
+
+    // Ensure the metric for 'Allow Again' action is recorded.
+    await assertInteractionMetricRecorded(Interactions.ALLOW_AGAIN);
+
+    // User clicks Undo.
+    metricsBrowserProxy.reset();
+    testElement.$.toastUndoButton.click();
+
+    // Ensure the browser proxy call is done and no undo toast is shown.
+    await assertUndoAllowAgain();
+    assertUndoToast(false);
+
+    // Ensure the metric for 'Undo Allow Again' action is recorded.
+    await assertInteractionMetricRecorded(Interactions.UNDO_ALLOW_AGAIN);
+  });
+
+  test('Got It Click and Undo - single entry', async function() {
+    await setupSingleEntry();
+
+    // User clicks Got It.
     testElement.$.gotItButton.click();
     await flushTasks();
-    await assertPluralString(
-        'safetyCheckUnusedSitePermissionsToastBulkLabel', 1, 2);
-    assertToast(true);
+
+    // Ensure the browser proxy call is done and no undo toast is shown.
+    await browserProxy.whenCalled(
+        'acknowledgeRevokedUnusedSitePermissionsList');
+    assertUndoToast(false);
+
+    // Ensure the metric for 'Got It' action is recorded.
+    await assertInteractionMetricRecorded(Interactions.ACKNOWLEDGE_ALL);
+
+    // User clicks Bulk Undo.
+    metricsBrowserProxy.reset();
+    testElement.$.bulkUndoButton.click();
+
+    // Ensure the browser proxy call is done and no undo toast is shown.
+    const [unusedSitePermissionsList] = await browserProxy.whenCalled(
+        'undoAcknowledgeRevokedUnusedSitePermissionsList');
+    assertEqualsMockData(unusedSitePermissionsList, 1);
+    assertUndoToast(false);
+
+    // Ensure the metric for 'Undo Acknowledge All' action is recorded.
+    await assertInteractionMetricRecorded(Interactions.UNDO_ACKNOWLEDGE_ALL);
   });
 
   test('Header Strings', async function() {
@@ -349,18 +417,34 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     assertEquals(1, entries.length);
     await assertPluralString('safetyCheckUnusedSitePermissionsPrimaryLabel', 1);
 
-    // Check header string for completion case.
+    // Check the header string for a completion case after Got It action
+    // (single entry in review).
+    webUIListenerCallback(
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData.slice(0, 1));
+    await flushTasks();
+    testElement.$.gotItButton.click();
+    await assertPluralString(
+        'safetyCheckUnusedSitePermissionsToastBulkLabel', 1, 2);
+
+    // Check the header string for a completion case after Got It action
+    // (multiple entries in review).
+    webUIListenerCallback(
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
+    await flushTasks();
+    testElement.$.gotItButton.click();
+    await assertPluralString(
+        'safetyCheckUnusedSitePermissionsToastBulkLabel', 4, 2);
+
+    // Check the header string for a completion case after Allow Again action.
+    webUIListenerCallback(
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData.slice(0, 1));
+    await flushTasks();
+    getSiteList()[0]!.querySelector('cr-icon-button')!.click();
     webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
     await flushTasks();
-
-    const expectedCompletionHeader =
-        testElement.i18n('safetyCheckUnusedSitePermissionsDoneLabel');
-    assertEquals(expectedCompletionHeader, testElement.$.module.header);
-    assertEquals('', testElement.$.module.subheader);
-
-    // Check visibility of buttons
-    assertFalse(isVisible(testElement.$.gotItButton));
-    assertTrue(isVisible(testElement.$.bulkUndoButton));
+    const expectedHeaderString = testElement.i18n(
+        'safetyCheckUnusedSitePermissionsToastLabel', mockData[0]!.origin);
+    assertEquals(expectedHeaderString, testElement.$.module.header);
   });
 
   test('More Actions Button in Header', async function() {
@@ -377,10 +461,27 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     assertEquals(routes.SITE_SETTINGS, Router.getInstance().getCurrentRoute());
 
     // Ensure the metric for 'Go To Settings' action is recorded.
-    const result = await metricsBrowserProxy.whenCalled(
-        'recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram');
-    assertEquals(
-        SafetyCheckUnusedSitePermissionsModuleInteractions.GO_TO_SETTINGS,
-        result);
+    await assertInteractionMetricRecorded(Interactions.GO_TO_SETTINGS);
+  });
+
+  /**
+   * Tests that previously shown undo tast does not affect the next action's
+   * undo toast.
+   */
+  test('Undo toast behaviour', async function() {
+    // Click Allow Again for the first item in review to trigger an undo toast
+    // to appear.
+    getSiteList()[0]!.querySelector('cr-icon-button')!.click();
+    assertUndoToast(true, 'safetyCheckUnusedSitePermissionsToastLabel', 0);
+
+    // Click Allow Again for the second item. This hides the existing toast and
+    // shows a new one.
+    getSiteList()[1]!.querySelector('cr-icon-button')!.click();
+    assertUndoToast(true, 'safetyCheckUnusedSitePermissionsToastLabel', 1);
+
+    // Click Got It which hides the existing toast and does not show a new one.
+    testElement.$.gotItButton.click();
+    await flushTasks();
+    assertUndoToast(false);
   });
 });

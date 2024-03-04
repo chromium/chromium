@@ -224,14 +224,31 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     }
   }
 
-  private onAllowAgainClick_(event: CustomEvent<UnusedSitePermissions>) {
+  /** Clears all the changes made by a previous action. */
+  private resetValues(event: Event) {
     event.stopPropagation();
+    this.$.undoToast.hide();
+  }
+
+  private onAllowAgainClick_(event: CustomEvent<UnusedSitePermissions>) {
+    this.resetValues(event);
+
+    // Set values needed for the action.
     const item = event.detail;
     this.lastUserAction_ = Action.ALLOW_AGAIN;
     this.lastUnusedSitePermissionsAllowedAgain_ = item;
 
-    this.showUndoToast_(
-        this.i18n('safetyCheckUnusedSitePermissionsToastLabel', item.origin));
+    // Update the toastText_ that isused both as an undo toast text and as a
+    // header text.
+    this.toastText_ =
+        this.i18n('safetyCheckUnusedSitePermissionsToastLabel', item.origin);
+    // Only show Undo toast if there are multiple sites to review. Otherwise,
+    // once the single site is reviewed, the completion state with a permanent
+    // Undo button in the header will be shown.
+    if (this.sites_!.length > 1) {
+      this.$.undoToast.show();
+    }
+
     this.$.module.animateHide(
         item.origin,
         this.browserProxy_.allowPermissionsAgainForUnusedSite.bind(
@@ -243,18 +260,21 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
   }
 
   private async onGotItClick_(e: Event) {
-    e.stopPropagation();
+    this.resetValues(e);
+
+    // Set values needed for the action.
     assert(this.sites_ !== null);
     this.lastUserAction_ = Action.GOT_IT;
     this.lastUnusedSitePermissionsListAcknowledged_ = this.sites_;
+
+    // Update the toastText_ that is also used as a header text.
+    this.toastText_ = await PluralStringProxyImpl.getInstance().getPluralString(
+        'safetyCheckUnusedSitePermissionsToastBulkLabel', this.sites_.length);
 
     this.$.module.animateHide(
         /* all origins */ null,
         this.browserProxy_.acknowledgeRevokedUnusedSitePermissionsList.bind(
             this.browserProxy_));
-    const toastText = await PluralStringProxyImpl.getInstance().getPluralString(
-        'safetyCheckUnusedSitePermissionsToastBulkLabel', this.sites_.length);
-    this.showUndoToast_(toastText);
 
     this.metricsBrowserProxy_
         .recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
@@ -286,9 +306,8 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
   }
 
   private setHeaderToCompletionState_() {
-    this.headerString_ = this.toastText_ ?
-        this.toastText_ :
-        this.i18n('safetyCheckUnusedSitePermissionsDoneLabel');
+    assert(this.headerString_);
+    this.headerString_ = this.toastText_!;
     this.subheaderString_ = '';
     this.headerIconString_ = 'cr:check';
   }
@@ -371,11 +390,6 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
       this.undoLastAction_();
       e.stopPropagation();
     }
-  }
-
-  private showUndoToast_(text: string) {
-    this.toastText_ = text;
-    this.$.undoToast.show();
   }
 
   // TODO(crbug.com/1443466): Move common functionality between
