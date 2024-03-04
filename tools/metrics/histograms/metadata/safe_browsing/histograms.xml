@@ -69,10 +69,9 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="RealTimeUrlCheckUserCategory">
-  <variant name="" summary="consumer or enterprise"/>
-  <variant name=".Consumer" summary="consumer"/>
-  <variant name=".Enterprise" summary="enterprise"/>
-  <variant name=".None" summary="neither consumer nor enterprise"/>
+  <variant name="" summary="Applies both to consumer and enterprise checks."/>
+  <variant name=".Consumer" summary="Applies only to consumer checks."/>
+  <variant name=".Enterprise" summary="Applies only to enterprise checks."/>
 </variants>
 
 <variants name="RequestedSkippedOrChecked">
@@ -2022,15 +2021,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.BackoffState" enum="BooleanBackoff"
-    expires_after="2024-07-21">
+<histogram name="SafeBrowsing.RT.BackoffState{UserCategory}"
+    enum="BooleanBackoff" expires_after="2024-07-21">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs if the real time URL lookup service is currently in backoff state due
     to previous errors. Logs whenever a real time URL request is about to be
     attempted, which will not go through if the service is in backoff mode.
+
+    {UserCategory}
   </summary>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
 <histogram name="SafeBrowsing.RT.CacheManager.CleanUpTime" units="ms"
@@ -2076,7 +2078,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.EventUrlReferrerChainFetchSucceeded"
+<histogram
+    name="SafeBrowsing.RT.EventUrlReferrerChainFetchSucceeded{UserCategory}"
     enum="BooleanSuccess" expires_after="2024-08-21">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -2085,7 +2088,10 @@ chromium-metrics-reviews@google.com.
     to find a matching navigation event, so the referrer chain is fetched for
     non-pending event URLs instead as a fallback. Logs true if the fallback
     fetch returns a non-empty chain.
+
+    {UserCategory}
   </summary>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
 <histogram name="SafeBrowsing.RT.GetCache.FallbackThreatType"
@@ -2101,7 +2107,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.GetCache.Time" units="ms"
+<histogram name="SafeBrowsing.RT.GetCache.Time{UserCategory}" units="ms"
     expires_after="2025-01-22">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -2109,10 +2115,13 @@ chromium-metrics-reviews@google.com.
     Logs the latency between the start of getting a result from the cache and
     when the cache is actually obtained. The time includes bouncing between IO
     and UI threads. This is an indicator of the efficiency of loading the cache.
+
+    {UserCategory}
   </summary>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.GetCacheResult"
+<histogram name="SafeBrowsing.RT.GetCacheResult{UserCategory}"
     enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2024-06-30">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -2121,7 +2130,10 @@ chromium-metrics-reviews@google.com.
     VERDICT_TYPE_UNSPECIFIED, that means cache miss and a ping will be sent
     afterwards. Otherwise, ping won't be sent. This is an indicator of cache hit
     rate.
+
+    {UserCategory}
   </summary>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
 <histogram name="SafeBrowsing.RT.GetToken.Time" units="ms"
@@ -2146,15 +2158,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.HasTokenInRequest" enum="BooleanHasToken"
-    expires_after="2024-10-12">
+<histogram name="SafeBrowsing.RT.HasTokenInRequest{UserCategory}"
+    enum="BooleanHasToken" expires_after="2024-10-12">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs whether a token is attached when a URL lookup request is sent. Logged
     each time a URL lookup request is sent. It shows the percentage of URL
     lookup requests that are attached with tokens.
+
+    {UserCategory}
   </summary>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
 <histogram name="SafeBrowsing.RT.IsLookupServiceFound" enum="BooleanFound"
@@ -2166,17 +2181,6 @@ chromium-metrics-reviews@google.com.
     check is needed. The real time URL lookup service is available if it is not
     nullptr. Logged when real time URL check is enabled and the URL doesn't
     match the allowlist.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.RT.IsLookupSuccessful" enum="BooleanSuccess"
-    expires_after="2024-07-07">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs whether the response of the real time URL lookup is successful. Logged
-    on each resource check for which a lookup request is sent to the server. A
-    failure can be either a network error or a parsing error.
   </summary>
 </histogram>
 
@@ -2196,44 +2200,36 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.LocalMatch.Result"
+<histogram name="SafeBrowsing.RT.IsLookupSuccessful{UserCategory}"
+    enum="BooleanSuccess" expires_after="2024-07-07">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether the response of the real time URL lookup is successful. Logged
+    on each resource check for which a lookup request is sent to the server. A
+    failure can be either a network error or a parsing error.
+
+    {UserCategory}
+  </summary>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.LocalMatch.Result{UserCategory}"
     enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2024-07-28">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the result of checking the URL against the local Safe Browsing high
-    confidence allowlist. Logged each time a top frame URL navigation happens
-    for users who have the real time URL lookups enabled.
-  </summary>
-</histogram>
+    confidence allowlist for real time URL check request. Logged each time a top
+    frame URL navigation happens for users who have the real time URL lookups
+    enabled.
 
-<histogram name="SafeBrowsing.RT.LocalMatch.Result.{UserCategory}"
-    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2024-07-14">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the result of checking the URL against the local Safe Browsing high
-    confidence allowlist for {UserCategory} real time URL check request. Logged
-    each time a top frame URL navigation happens for users who have the real
-    time URL lookups enabled. It can also be logged for non-mainframe URL hits
-    for EnhancedProtection users.
+    {UserCategory}
 
     Until M117, this was being logged twice each time for iOS. Bucket ratios
     were still correct, just not total counts.
   </summary>
   <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
-</histogram>
-
-<histogram name="SafeBrowsing.RT.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-07-07">
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Response or error codes from SafeBrowsing real time URL lookups. Logged on
-    each resource check for which a lookup request is sent to the server.
-    Starting M92, the ERR_HTTP_RESPONSE_CODE_FAILURE net error is matched to the
-    actual HTTP response code.
-  </summary>
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Network.Result.{ReportType}"
@@ -2251,7 +2247,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.Network.Time" units="ms"
+<histogram name="SafeBrowsing.RT.Network.Result{UserCategory}"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-07-07">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Response or error codes from SafeBrowsing real time URL lookups. Logged on
+    each resource check for which a lookup request is sent to the server.
+    Starting M92, the ERR_HTTP_RESPONSE_CODE_FAILURE net error is matched to the
+    actual HTTP response code.
+
+    {UserCategory}
+  </summary>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.Network.Time{UserCategory}" units="ms"
     expires_after="2024-07-14">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -2259,7 +2270,10 @@ chromium-metrics-reviews@google.com.
     Logs the roundtrip time it took to perform a Safe Browsing real time URL
     lookup. Logged on each resource check for which a lookup request is sent to
     the server.
+
+    {UserCategory}
   </summary>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Request.HadCookie.{RequestType}{UserType}"
@@ -2286,24 +2300,29 @@ chromium-metrics-reviews@google.com.
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Logs the length of the referrer chain in a {UserCategory} real time URL
-    check request. Logged on each resource check for which a lookup request is
-    sent to the server.
+    Logs the length of the referrer chain in a real time URL check request.
+    Logged on each resource check for which a lookup request is sent to the
+    server.
+
+    {UserCategory}
   </summary>
   <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.Request.Size" units="bytes"
+<histogram name="SafeBrowsing.RT.Request.Size{UserCategory}" units="bytes"
     expires_after="2024-06-30">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The size of a real time URL check request in bytes. Logged on each resource
     check for which a lookup request is sent to the server.
+
+    {UserCategory}
   </summary>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.Request.UserPopulation"
+<histogram name="SafeBrowsing.RT.Request.UserPopulation{UserCategory}"
     enum="SafeBrowsingUserPopulation" expires_after="2024-08-16">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -2311,7 +2330,10 @@ chromium-metrics-reviews@google.com.
     Logs the user population that was checked by Safe Browsing real time URL
     lookup. Logged on each resource check for which a lookup request is sent to
     the server.
+
+    {UserCategory}
   </summary>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
 <histogram name="SafeBrowsing.RT.RequestDestinations.Requested"
@@ -2321,16 +2343,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs the request destination that was requested to be checked by Safe
     Browsing real time URL lookup. Logged on each resource check.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.RT.Response.VerdictType"
-    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2024-06-30">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the verdict type of the response from real time URL check. Logged each
-    time a response is received and the threat info size is greater than 0.
   </summary>
 </histogram>
 
@@ -2352,6 +2364,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="SafeBrowsing.RT.Response.VerdictType{UserCategory}"
+    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2024-06-30">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the verdict type of the response from real time URL check. Logged each
+    time a response is received and the threat info size is greater than 0.
+
+    {UserCategory}
+  </summary>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
+</histogram>
+
 <histogram name="SafeBrowsing.RT.SampledRequestSent" enum="Boolean"
     expires_after="2024-06-30">
   <owner>zackhan@chromium.org</owner>
@@ -2364,7 +2389,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.ThreatInfoSize" units="verdicts"
+<histogram name="SafeBrowsing.RT.ThreatInfoSize{UserCategory}" units="verdicts"
     expires_after="2024-06-30">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -2372,7 +2397,10 @@ chromium-metrics-reviews@google.com.
     Logs the number of verdicts received in the real time URL check response.
     Logged on each resource check for which a lookup request is sent to the
     server.
+
+    {UserCategory}
   </summary>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
 <histogram base="true" name="SafeBrowsing.Settings.UserAction"

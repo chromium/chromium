@@ -3731,26 +3731,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Network.Shill.WiFi.SessionLength"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SafeBrowsing_RT_LookupMode" separator=".">
-  <suffix name="Consumer"
-      label="Records metrics for consumer real time URL lookup service."/>
-  <suffix name="Enterprise"
-      label="Records metrics for enterprise real time URL lookup service."/>
-  <affected-histogram name="SafeBrowsing.RT.BackoffState"/>
-  <affected-histogram
-      name="SafeBrowsing.RT.EventUrlReferrerChainFetchSucceeded"/>
-  <affected-histogram name="SafeBrowsing.RT.GetCache.Time"/>
-  <affected-histogram name="SafeBrowsing.RT.GetCacheResult"/>
-  <affected-histogram name="SafeBrowsing.RT.HasTokenInRequest"/>
-  <affected-histogram name="SafeBrowsing.RT.IsLookupSuccessful"/>
-  <affected-histogram name="SafeBrowsing.RT.Network.Result"/>
-  <affected-histogram name="SafeBrowsing.RT.Network.Time"/>
-  <affected-histogram name="SafeBrowsing.RT.Request.Size"/>
-  <affected-histogram name="SafeBrowsing.RT.Request.UserPopulation"/>
-  <affected-histogram name="SafeBrowsing.RT.Response.VerdictType"/>
-  <affected-histogram name="SafeBrowsing.RT.ThreatInfoSize"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SafeBrowsing_Settings_AccessPoint" separator=".">
   <suffix name="Default"
       label="The user enters the Safe Browsing settings page from a default
