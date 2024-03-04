@@ -547,14 +547,14 @@ TEST_F(ViewAXPlatformNodeDelegateTest, SetNameAndDescription) {
   // Set the label's View as the name source of the accessible button.
   // This should cause the previously-set name to be replaced with the
   // accessible name of the label.
-  button_accessibility()->OverrideLabelledBy(label_);
+  button_accessibility()->SetName(*label_);
   EXPECT_EQ(button_accessibility()->GetName(), "Label's Name");
   EXPECT_EQ(button_accessibility()->GetNameFrom(),
             ax::mojom::NameFrom::kRelatedElement);
 
   // Setting the labelledby View to itself should trigger a DCHECK.
-  EXPECT_DCHECK_DEATH_WITH(button_accessibility()->OverrideLabelledBy(button_),
-                           "Check failed: labelled_by_view != view_");
+  EXPECT_DCHECK_DEATH_WITH(button_accessibility()->SetName(*button_),
+                           "Check failed: view_ != &naming_view");
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, SetIsSelected) {

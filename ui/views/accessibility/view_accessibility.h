@@ -219,6 +219,8 @@ class VIEWS_EXPORT ViewAccessibility {
   // kTitle implies that the source of the name will be presented as a tooltip,
   // such as would result from the HTML 'title' attribute or the SVG <title>
   // element.
+  // Deprecated. Use ViewAccessibility::SetName(View&) instead.
+  // See https://crbug.com/324485311.
   void OverrideLabelledBy(const View* labelled_by_view,
                           const ax::mojom::NameFrom name_from =
                               ax::mojom::NameFrom::kRelatedElement);

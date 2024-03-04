@@ -459,11 +459,27 @@ void ViewAccessibility::SetName(const std::u16string& name,
 void ViewAccessibility::SetName(View& naming_view) {
   DCHECK_NE(view_, &naming_view);
 
-  const std::string& name =
-      naming_view.GetViewAccessibility().GetViewAccessibilityName();
-  DCHECK(!name.empty());
+  // TODO(javiercon): This is a temporary workaround to avoid the DCHECK below
+  // in the scenario where the View's accessible name is being set through
+  // either the GetAccessibleNodeData override pipeline or the SetAccessibleName
+  // pipeline, which would make the call to `GetViewAccessibilityName` return an
+  // empty string. (this is the case for `Label` view). Once these are migrated
+  // we can remove this `if`, otherwise we must retrieve the name from there if
+  // needed.
+  if (naming_view.GetViewAccessibility().GetViewAccessibilityName().empty()) {
+    ui::AXNodeData label_data;
+    const_cast<View&>(naming_view).GetAccessibleNodeData(&label_data);
+    const std::string& name =
+        label_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+    DCHECK(!name.empty());
+    SetName(name, ax::mojom::NameFrom::kRelatedElement);
+  } else {
+    const std::string& name =
+        naming_view.GetViewAccessibility().GetViewAccessibilityName();
+    DCHECK(!name.empty());
+    SetName(name, ax::mojom::NameFrom::kRelatedElement);
+  }
 
-  SetName(name, ax::mojom::NameFrom::kRelatedElement);
   data_.AddIntListAttribute(
       ax::mojom::IntListAttribute::kLabelledbyIds,
       {naming_view.GetViewAccessibility().GetUniqueId().Get()});

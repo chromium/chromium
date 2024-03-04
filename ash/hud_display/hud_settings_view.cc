@@ -312,7 +312,7 @@ AnimationSpeedControl::AnimationSpeedControl() {
   // Because the slider is focusable, it needs to have an accessible name so
   // that the screen reader knows what to announce. Indicating the slider is
   // labelled by the title will cause ViewAccessibility to set the name.
-  slider_->GetViewAccessibility().OverrideLabelledBy(title);
+  slider_->GetViewAccessibility().SetName(*title);
 }
 
 AnimationSpeedControl::~AnimationSpeedControl() = default;
