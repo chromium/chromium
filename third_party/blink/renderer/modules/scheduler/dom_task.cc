@@ -79,7 +79,7 @@ void AbortPostTaskCallbackTraceEventData(perfetto::TracedValue trace_context,
 
 }  // namespace
 
-DOMTask::DOMTask(ScriptPromiseResolver* resolver,
+DOMTask::DOMTask(ScriptPromiseResolverTyped<IDLAny>* resolver,
                  V8SchedulerPostTaskCallback* callback,
                  AbortSignal* abort_source,
                  DOMTaskSignal* priority_source,
@@ -205,7 +205,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
 
   ScriptValue result;
   if (callback_->Invoke(nullptr).To(&result)) {
-    resolver_->Resolve(result.V8Value());
+    resolver_->Resolve(result);
   } else if (try_catch.HasCaught()) {
     resolver_->Reject(try_catch.Exception());
   }

@@ -82,7 +82,7 @@ class ModulatorImplBase : public Modulator {
                               String* failure_reason) final;
   void ResolveDynamically(const ModuleRequest& module_request,
                           const ReferrerScriptInfo&,
-                          ScriptPromiseResolver*) override;
+                          ScriptPromiseResolverTyped<IDLAny>*) override;
 
   ModuleImportMeta HostGetImportMetaProperties(
       v8::Local<v8::Module>) const override;

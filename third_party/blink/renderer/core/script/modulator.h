@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/script/import_map_error.h"
@@ -37,7 +38,6 @@ class ReferrerScriptInfo;
 class ResourceFetcher;
 class ModuleRecordResolver;
 class ScriptFetchOptions;
-class ScriptPromiseResolver;
 class ScriptState;
 enum class ModuleType;
 
@@ -178,7 +178,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // https://tc39.github.io/proposal-dynamic-import/#sec-hostimportmoduledynamically
   virtual void ResolveDynamically(const ModuleRequest& module_request,
                                   const ReferrerScriptInfo&,
-                                  ScriptPromiseResolver*) = 0;
+                                  ScriptPromiseResolverTyped<IDLAny>*) = 0;
 
   // Import maps. https://github.com/WICG/import-maps
 

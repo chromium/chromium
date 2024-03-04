@@ -33,12 +33,14 @@
 
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/crypto_result.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
+class ScriptPromiseResolver;
 
 MODULES_EXPORT ExceptionCode WebCryptoErrorToExceptionCode(WebCryptoErrorType);
 
@@ -53,9 +55,11 @@ MODULES_EXPORT ExceptionCode WebCryptoErrorToExceptionCode(WebCryptoErrorType);
 //    another thread.
 //  * One of the CompleteWith***() functions must be called, or the
 //    |resolver_| will be leaked until the ExecutionContext is destroyed.
-class MODULES_EXPORT CryptoResultImpl final : public CryptoResult {
+class MODULES_EXPORT CryptoResultImpl final
+    : public CryptoResult,
+      public ExecutionContextLifecycleObserver {
  public:
-  explicit CryptoResultImpl(ScriptState*);
+  CryptoResultImpl(ScriptState*, ScriptPromiseResolver*);
   ~CryptoResultImpl() override;
 
   void CompleteWithError(WebCryptoErrorType, const WebString&) override;
@@ -71,21 +75,18 @@ class MODULES_EXPORT CryptoResultImpl final : public CryptoResult {
 
   void CompleteWithError(ExceptionState&);
 
-  // If called after completion (including cancellation) will return an empty
-  // ScriptPromise.
-  ScriptPromise Promise();
-
   WebCryptoResult Result() { return WebCryptoResult(this, cancel_.get()); }
+
+  // ExecutionContextLifecycleObserver override:
+  void ContextDestroyed() override { Cancel(); }
 
   void Trace(Visitor*) const override;
 
  private:
-  class Resolver;
-
   void Cancel();
   void ClearResolver();
 
-  Member<Resolver> resolver_;
+  Member<ScriptPromiseResolver> resolver_;
 
   // Separately communicate cancellation to WebCryptoResults so as to
   // allow this result object, which will be on the Oilpan heap, to be

@@ -118,7 +118,7 @@ bool DummyModulator::HasValidContext() {
 
 void DummyModulator::ResolveDynamically(const ModuleRequest& module_request,
                                         const ReferrerScriptInfo&,
-                                        ScriptPromiseResolver*) {
+                                        ScriptPromiseResolverTyped<IDLAny>*) {
   NOTREACHED();
 }
 

@@ -7,6 +7,6 @@
 [
     Exposed=(Window,Worker)
 ] interface SyncManager {
-    [MeasureAs=BackgroundSyncRegister,CallWith=ScriptState,RaisesException,ImplementedAs=registerFunction] Promise<void> register(DOMString tag);
+    [MeasureAs=BackgroundSyncRegister,CallWith=ScriptState,RaisesException,ImplementedAs=registerFunction] Promise<undefined> register(DOMString tag);
     [CallWith=ScriptState] Promise<sequence<DOMString>> getTags();
 };
