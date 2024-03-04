@@ -87,8 +87,8 @@ void PageResourceDataUse::SetIsMainFrameResource(bool is_main_frame_resource) {
   is_main_frame_resource_ = is_main_frame_resource;
 }
 
-int PageResourceDataUse::CalculateNewlyReceivedBytes() {
-  int newly_received_bytes = total_received_bytes_ - last_update_bytes_;
+int64_t PageResourceDataUse::CalculateNewlyReceivedBytes() {
+  int64_t newly_received_bytes = total_received_bytes_ - last_update_bytes_;
   last_update_bytes_ = total_received_bytes_;
   DCHECK_GE(newly_received_bytes, 0);
   return newly_received_bytes;

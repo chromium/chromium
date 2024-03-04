@@ -73,14 +73,14 @@ class PageResourceDataUse {
  private:
   // Calculates the difference between |total_received_bytes_| and
   // |last_update_bytes_|, returns it, and updates |last_update_bytes_|.
-  int CalculateNewlyReceivedBytes();
+  int64_t CalculateNewlyReceivedBytes();
 
   int resource_id_ = kUnknownResourceId;
 
-  uint64_t total_received_bytes_ = 0;
-  uint64_t last_update_bytes_ = 0;
-  uint64_t encoded_body_length_ = 0;
-  uint64_t decoded_body_length_ = 0;
+  int64_t total_received_bytes_ = 0;
+  int64_t last_update_bytes_ = 0;
+  int64_t encoded_body_length_ = 0;
+  int64_t decoded_body_length_ = 0;
 
   bool is_complete_ = false;
   bool is_canceled_ = false;
