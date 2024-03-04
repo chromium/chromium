@@ -73,7 +73,7 @@ void BluetoothRemoteGATTServer::Trace(Visitor* visitor) const {
 }
 
 void BluetoothRemoteGATTServer::ConnectCallback(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<BluetoothRemoteGATTServer>* resolver,
     mojom::blink::WebBluetoothResult result) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
@@ -87,19 +87,20 @@ void BluetoothRemoteGATTServer::ConnectCallback(
   }
 }
 
-ScriptPromise BluetoothRemoteGATTServer::connect(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+ScriptPromiseTyped<BluetoothRemoteGATTServer>
+BluetoothRemoteGATTServer::connect(ScriptState* script_state,
+                                   ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<BluetoothRemoteGATTServer>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   if (!device_->GetBluetooth()->IsServiceBound()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNetworkError,
         BluetoothError::CreateNotConnectedExceptionMessage(
             BluetoothOperation::kServicesRetrieval));
-    return ScriptPromise();
+    return ScriptPromiseTyped<BluetoothRemoteGATTServer>();
   }
 
   mojom::blink::WebBluetoothService* service =

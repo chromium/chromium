@@ -20,7 +20,8 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
-
+class BluetoothDevice;
+class BluetoothLEScan;
 class BluetoothLEScanOptions;
 class ExceptionState;
 class RequestDeviceOptions;
@@ -46,13 +47,12 @@ class Bluetooth final : public EventTarget,
   ScriptPromiseTyped<IDLBoolean> getAvailability(ScriptState*, ExceptionState&);
   ScriptPromiseTyped<IDLSequence<BluetoothDevice>> getDevices(ScriptState*,
                                                               ExceptionState&);
-  ScriptPromise requestDevice(ScriptState*,
-                              const RequestDeviceOptions*,
-                              ExceptionState&);
+  ScriptPromiseTyped<BluetoothDevice> requestDevice(ScriptState*,
+                                                    const RequestDeviceOptions*,
+                                                    ExceptionState&);
 
-  ScriptPromise requestLEScan(ScriptState*,
-                              const BluetoothLEScanOptions*,
-                              ExceptionState&);
+  ScriptPromiseTyped<BluetoothLEScan>
+  requestLEScan(ScriptState*, const BluetoothLEScanOptions*, ExceptionState&);
 
   bool IsServiceBound() const { return service_.is_bound(); }
   mojom::blink::WebBluetoothService* Service() { return service_.get(); }
@@ -87,12 +87,12 @@ class Bluetooth final : public EventTarget,
       ScriptPromiseResolverTyped<IDLSequence<BluetoothDevice>>*,
       Vector<mojom::blink::WebBluetoothDevicePtr>);
 
-  void RequestDeviceCallback(ScriptPromiseResolver*,
+  void RequestDeviceCallback(ScriptPromiseResolverTyped<BluetoothDevice>*,
                              mojom::blink::WebBluetoothResult,
                              mojom::blink::WebBluetoothDevicePtr);
 
   void RequestScanningCallback(
-      ScriptPromiseResolver*,
+      ScriptPromiseResolverTyped<BluetoothLEScan>*,
       mojo::ReceiverId,
       mojom::blink::WebBluetoothRequestLEScanOptionsPtr,
       mojom::blink::WebBluetoothResult);

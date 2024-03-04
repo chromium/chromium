@@ -69,7 +69,8 @@ class BluetoothRemoteGATTServer
   // IDL exposed interface:
   BluetoothDevice* device() { return device_.Get(); }
   bool connected() { return connected_; }
-  ScriptPromise connect(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<BluetoothRemoteGATTServer> connect(ScriptState*,
+                                                        ExceptionState&);
   void disconnect(ScriptState*, ExceptionState&);
   ScriptPromiseTyped<BluetoothRemoteGATTService> getPrimaryService(
       ScriptState* script_state,
@@ -88,7 +89,7 @@ class BluetoothRemoteGATTServer
                               mojom::blink::WebBluetoothGATTQueryQuantity,
                               String service_uuid = String());
 
-  void ConnectCallback(ScriptPromiseResolver*,
+  void ConnectCallback(ScriptPromiseResolverTyped<BluetoothRemoteGATTServer>*,
                        mojom::blink::WebBluetoothResult);
   void GetPrimaryServicesCallback(
       const String& requested_service_uuid,

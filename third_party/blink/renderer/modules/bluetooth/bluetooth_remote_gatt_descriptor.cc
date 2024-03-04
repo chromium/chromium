@@ -24,7 +24,7 @@ BluetoothRemoteGATTDescriptor::BluetoothRemoteGATTDescriptor(
     : descriptor_(std::move(descriptor)), characteristic_(characteristic) {}
 
 void BluetoothRemoteGATTDescriptor::ReadValueCallback(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<DOMDataView>* resolver,
     mojom::blink::WebBluetoothResult result,
     const std::optional<Vector<uint8_t>>& value) {
   if (!resolver->GetExecutionContext() ||
@@ -49,7 +49,7 @@ void BluetoothRemoteGATTDescriptor::ReadValueCallback(
   }
 }
 
-ScriptPromise BluetoothRemoteGATTDescriptor::readValue(
+ScriptPromiseTyped<DOMDataView> BluetoothRemoteGATTDescriptor::readValue(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!GetGatt()->connected() || !GetBluetooth()->IsServiceBound()) {
@@ -57,18 +57,19 @@ ScriptPromise BluetoothRemoteGATTDescriptor::readValue(
         DOMExceptionCode::kNetworkError,
         BluetoothError::CreateNotConnectedExceptionMessage(
             BluetoothOperation::kGATT));
-    return ScriptPromise();
+    return ScriptPromiseTyped<DOMDataView>();
   }
 
   if (!GetGatt()->device()->IsValidDescriptor(descriptor_->instance_id)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       CreateInvalidDescriptorErrorMessage());
-    return ScriptPromise();
+    return ScriptPromiseTyped<DOMDataView>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<DOMDataView>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
   GetGatt()->AddToActiveAlgorithms(resolver);
   GetBluetooth()->Service()->RemoteDescriptorReadValue(
       descriptor_->instance_id,

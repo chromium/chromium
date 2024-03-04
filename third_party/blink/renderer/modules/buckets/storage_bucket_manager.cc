@@ -98,13 +98,15 @@ StorageBucketManager* StorageBucketManager::storageBuckets(
   return supplement;
 }
 
-ScriptPromise StorageBucketManager::open(ScriptState* script_state,
-                                         const String& name,
-                                         const StorageBucketOptions* options,
-                                         ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<StorageBucket> StorageBucketManager::open(
+    ScriptState* script_state,
+    const String& name,
+    const StorageBucketOptions* options,
+    ExceptionState& exception_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<StorageBucket>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->GetSecurityOrigin()->CanAccessStorageBuckets()) {
@@ -199,7 +201,7 @@ mojom::blink::BucketManagerHost* StorageBucketManager::GetBucketManager(
 }
 
 void StorageBucketManager::DidOpen(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<StorageBucket>* resolver,
     const String& name,
     mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote,
     mojom::blink::BucketError error) {

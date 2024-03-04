@@ -50,14 +50,15 @@ namespace {
 const char kEmptyRequestSequenceErrorMessage[] =
     "At least one request must be given.";
 
-ScriptPromise RejectWithTypeError(ScriptState* script_state,
-                                  const KURL& request_url,
-                                  const String& reason,
-                                  ExceptionState& exception_state) {
+ScriptPromiseTyped<BackgroundFetchRegistration> RejectWithTypeError(
+    ScriptState* script_state,
+    const KURL& request_url,
+    const String& reason,
+    ExceptionState& exception_state) {
   exception_state.ThrowTypeError("Refused to fetch '" +
                                  request_url.ElidedString() + "' because " +
                                  reason + ".");
-  return ScriptPromise();
+  return ScriptPromiseTyped<BackgroundFetchRegistration>();
 }
 
 // Returns whether the |request_url| should be blocked by the CSP. Must be
@@ -132,7 +133,7 @@ BackgroundFetchManager::BackgroundFetchManager(
   bridge_ = BackgroundFetchBridge::From(registration_);
 }
 
-ScriptPromise BackgroundFetchManager::fetch(
+ScriptPromiseTyped<BackgroundFetchRegistration> BackgroundFetchManager::fetch(
     ScriptState* script_state,
     const String& id,
     const V8UnionRequestInfoOrRequestOrUSVStringSequence* requests,
@@ -141,7 +142,7 @@ ScriptPromise BackgroundFetchManager::fetch(
   if (!registration_->active()) {
     exception_state.ThrowTypeError(
         "No active registration available on the ServiceWorkerRegistration.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<BackgroundFetchRegistration>();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -149,13 +150,13 @@ ScriptPromise BackgroundFetchManager::fetch(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "backgroundFetch is not allowed in fenced frames.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<BackgroundFetchRegistration>();
   }
 
   Vector<mojom::blink::FetchAPIRequestPtr> fetch_api_requests =
       CreateFetchAPIRequestVector(script_state, requests, exception_state);
   if (exception_state.HadException()) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<BackgroundFetchRegistration>();
   }
 
   // Based on security steps from https://fetch.spec.whatwg.org/#main-fetch
@@ -213,9 +214,10 @@ ScriptPromise BackgroundFetchManager::fetch(
     }
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<BackgroundFetchRegistration>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   // Pick the best icon, and load it.
   // Inability to load them should not be fatal to the fetch.
@@ -244,7 +246,7 @@ void BackgroundFetchManager::DidLoadIcons(
     Vector<mojom::blink::FetchAPIRequestPtr> requests,
     mojom::blink::BackgroundFetchOptionsPtr options,
     BackgroundFetchIconLoader* loader,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<BackgroundFetchRegistration>* resolver,
     const SkBitmap& icon,
     int64_t ideal_to_chosen_icon_size) {
   if (loader)
@@ -259,7 +261,7 @@ void BackgroundFetchManager::DidLoadIcons(
 }
 
 void BackgroundFetchManager::DidFetch(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<BackgroundFetchRegistration>* resolver,
     mojom::blink::BackgroundFetchError error,
     BackgroundFetchRegistration* registration) {
   ScriptState* script_state = resolver->GetScriptState();
@@ -310,32 +312,36 @@ void BackgroundFetchManager::DidFetch(
   NOTREACHED();
 }
 
-ScriptPromise BackgroundFetchManager::get(ScriptState* script_state,
-                                          const String& id,
-                                          ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLNullable<BackgroundFetchRegistration>>
+BackgroundFetchManager::get(ScriptState* script_state,
+                            const String& id,
+                            ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLNullable<BackgroundFetchRegistration>>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+
   // Creating a Background Fetch registration requires an activated worker, so
   // if |registration_| has not been activated we can skip the Mojo roundtrip.
-  if (!registration_->active())
-    return ScriptPromise::CastUndefined(script_state);
+  if (!registration_->active()) {
+    resolver->Resolve();
+    return promise;
+  }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsInFencedFrame()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "backgroundFetch is not allowed in fenced frames.");
-    return ScriptPromise();
+    return promise;
   }
 
   ScriptState::Scope scope(script_state);
 
   if (id.empty()) {
     exception_state.ThrowTypeError("The provided id is invalid.");
-    return ScriptPromise();
+    return promise;
   }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
 
   bridge_->GetRegistration(
       id,
@@ -416,7 +422,8 @@ BackgroundFetchManager::CreateFetchAPIRequestVector(
 }
 
 void BackgroundFetchManager::DidGetRegistration(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLNullable<BackgroundFetchRegistration>>*
+        resolver,
     mojom::blink::BackgroundFetchError error,
     BackgroundFetchRegistration* registration) {
   ScriptState* script_state = resolver->GetScriptState();
@@ -429,7 +436,7 @@ void BackgroundFetchManager::DidGetRegistration(
       return;
     case mojom::blink::BackgroundFetchError::INVALID_ID:
       DCHECK(!registration);
-      resolver->Resolve(v8::Undefined(script_state->GetIsolate()));
+      resolver->Resolve();
       return;
     case mojom::blink::BackgroundFetchError::STORAGE_ERROR:
       DCHECK(!registration);

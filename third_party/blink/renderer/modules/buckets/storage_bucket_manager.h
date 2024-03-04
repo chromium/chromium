@@ -35,10 +35,10 @@ class MODULES_EXPORT StorageBucketManager final
   explicit StorageBucketManager(NavigatorBase& navigator);
   ~StorageBucketManager() override = default;
 
-  ScriptPromise open(ScriptState* script_state,
-                     const String& name,
-                     const StorageBucketOptions* options,
-                     ExceptionState& exception_state);
+  ScriptPromiseTyped<StorageBucket> open(ScriptState* script_state,
+                                         const String& name,
+                                         const StorageBucketOptions* options,
+                                         ExceptionState& exception_state);
   ScriptPromiseTyped<IDLSequence<IDLString>> keys(
       ScriptState* script_state,
       ExceptionState& exception_state);
@@ -56,7 +56,7 @@ class MODULES_EXPORT StorageBucketManager final
  private:
   mojom::blink::BucketManagerHost* GetBucketManager(ScriptState* script_state);
 
-  void DidOpen(ScriptPromiseResolver* resolver,
+  void DidOpen(ScriptPromiseResolverTyped<StorageBucket>* resolver,
                const String& name,
                mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote,
                mojom::blink::BucketError error);
