@@ -18,6 +18,7 @@ message CastLogsProto {
   message CastDeviceInfo {
     // The product type of Cast device sent from Cast-enabled devices.
     // Next tag: 14
+
     enum CastProductType {
       CAST_PRODUCT_TYPE_UNKNOWN = 0;
       CAST_PRODUCT_TYPE_CHROMECAST = 1;
@@ -34,6 +35,7 @@ message CastLogsProto {
       CAST_PRODUCT_TYPE_ANDROID_AUTOMOTIVE = 12;
       CAST_PRODUCT_TYPE_ANDROID = 13;
     }
+
     optional CastProductType type = 1;
 
     // The hardware revision of each product.

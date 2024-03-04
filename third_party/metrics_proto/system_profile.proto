@@ -57,7 +57,6 @@ message SystemProfileProto {
   // Windows, Mac, iOS, and CrOS clients may have a brand code.
   optional string brand_code = 12;
 
-  // The possible channels for an installation, from least to most stable.
   enum Channel {
     CHANNEL_UNKNOWN = 0;  // Unknown channel -- perhaps an unofficial build?
     CHANNEL_CANARY = 1;
@@ -1095,6 +1094,7 @@ message SystemProfileProto {
     THIRD_PARTY_MODULE_LIST = 61;
     TRUST_TOKEN_KEY_COMMITMENTS = 62;
     THIRD_PARTY_COOKIE_DEPRECATION_METADATA = 63;
+    GROWTH_CAMPAIGNS = 64;
   }
 
   // Information about what Chrome components are registered and at which
