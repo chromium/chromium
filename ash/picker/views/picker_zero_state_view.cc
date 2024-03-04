@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/picker/model/picker_model.h"
+#include "ash/picker/picker_clipboard_provider.h"
 #include "ash/picker/views/picker_caps_nudge_view.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_icons.h"
@@ -19,8 +20,10 @@
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_strings.h"
 #include "ash/public/cpp/picker/picker_category.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
@@ -31,7 +34,8 @@ namespace ash {
 
 PickerZeroStateView::PickerZeroStateView(
     int picker_view_width,
-    SelectCategoryCallback select_category_callback) {
+    SelectCategoryCallback select_category_callback,
+    SelectSearchResultCallback select_result_callback) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
@@ -39,8 +43,21 @@ PickerZeroStateView::PickerZeroStateView(
       AddChildView(std::make_unique<PickerCapsNudgeView>(base::BindRepeating(
           &PickerZeroStateView::ClearCapsNudge, base::Unretained(this))));
 
+  suggested_section_view_ =
+      AddChildView(std::make_unique<PickerSectionView>(picker_view_width));
+  suggested_section_view_->AddTitleLabel(
+      l10n_util::GetStringUTF16(IDS_PICKER_SUGGESTED_SECTION_TITLE));
+  suggested_section_view_->SetVisible(false);
+
+  clipboard_provider_ = std::make_unique<PickerClipboardProvider>(
+      std::move(select_result_callback));
+  clipboard_provider_->FetchResult(
+      base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResult,
+                          weak_ptr_factory_.GetWeakPtr()));
+
   section_list_view_ =
       AddChildView(std::make_unique<PickerSectionListView>(picker_view_width));
+
   for (auto category : PickerModel().GetAvailableCategories()) {
     auto item_view = std::make_unique<PickerListItemView>(
         base::BindRepeating(select_category_callback, category));
@@ -173,6 +190,12 @@ void PickerZeroStateView::ScrollPseudoFocusedItemToVisible() {
     // Otherwise, just ensure the item is visible.
     pseudo_focused_item_->ScrollViewToVisible();
   }
+}
+
+void PickerZeroStateView::OnFetchSuggestedResult(
+    std::unique_ptr<PickerListItemView> item_view) {
+  suggested_section_view_->AddListItem(std::move(item_view));
+  suggested_section_view_->SetVisible(true);
 }
 
 BEGIN_METADATA(PickerZeroStateView)

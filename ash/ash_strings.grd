@@ -7039,6 +7039,12 @@ New install
       <message name="IDS_PICKER_FILES_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains files categories, e.g. Drive files and local files">
         Files
       </message>
+      <message name="IDS_PICKER_SUGGESTED_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains suggested items.">
+        You may want to insert
+      </message>
+      <message name="IDS_PICKER_FROM_CLIPBOARD_TEXT" translateable="false" desc="Secondary text of the suggested items from the clipboard history.">
+        From clipboard
+      </message>
 
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">

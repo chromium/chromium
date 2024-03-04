@@ -6,6 +6,7 @@
 #define ASH_PICKER_VIEWS_PICKER_ZERO_STATE_VIEW_H_
 
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -15,12 +16,16 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
 class PickerCapsNudgeView;
+class PickerClipboardProvider;
 class PickerItemView;
+class PickerListItemView;
+class PickerSearchResult;
 class PickerSectionListView;
 class PickerSectionView;
 
@@ -32,8 +37,14 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   using SelectCategoryCallback =
       base::RepeatingCallback<void(PickerCategory category)>;
 
-  explicit PickerZeroStateView(int picker_view_width,
-                               SelectCategoryCallback select_category_callback);
+  // Indicates the user has selected a result.
+  using SelectSearchResultCallback =
+      base::RepeatingCallback<void(const PickerSearchResult& result)>;
+
+  explicit PickerZeroStateView(
+      int picker_view_width,
+      SelectCategoryCallback select_category_callback,
+      SelectSearchResultCallback select_result_callback);
   PickerZeroStateView(const PickerZeroStateView&) = delete;
   PickerZeroStateView& operator=(const PickerZeroStateView&) = delete;
   ~PickerZeroStateView() override;
@@ -54,6 +65,10 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
     return caps_nudge_view_;
   }
 
+  PickerSectionView* SuggestedSectionForTesting() const {
+    return suggested_section_view_;
+  }
+
  private:
   void ClearCapsNudge();
 
@@ -63,6 +78,8 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   void SetPseudoFocusedItem(PickerItemView* item);
 
   void ScrollPseudoFocusedItemToVisible();
+
+  void OnFetchSuggestedResult(std::unique_ptr<PickerListItemView> item_view);
 
   // The section list view, contains the section views.
   raw_ptr<PickerSectionListView> section_list_view_ = nullptr;
@@ -74,6 +91,11 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   // The currently pseudo focused item, which responds to user actions that
   // trigger `DoPseudoFocusedAction`.
   raw_ptr<PickerItemView> pseudo_focused_item_ = nullptr;
+
+  raw_ptr<PickerSectionView> suggested_section_view_;
+  std::unique_ptr<PickerClipboardProvider> clipboard_provider_;
+
+  base::WeakPtrFactory<PickerZeroStateView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

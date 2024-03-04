@@ -6,12 +6,16 @@
 
 #include <memory>
 
+#include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/test_support/clipboard_history_item_builder.h"
+#include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/picker_caps_nudge_view.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "ash/test/view_drawn_waiter.h"
@@ -20,6 +24,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard_data.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
@@ -41,7 +46,7 @@ class PickerZeroStateViewTest : public views::ViewsTestBase {
 };
 
 TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
-  PickerZeroStateView view(kPickerWidth, base::DoNothing());
+  PickerZeroStateView view(kPickerWidth, base::DoNothing(), base::DoNothing());
 
   EXPECT_THAT(view.section_views_for_testing(),
               ElementsAre(Key(PickerCategoryType::kExpressions),
@@ -54,7 +59,7 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   widget->SetFullscreen(true);
   base::test::TestFuture<PickerCategory> future;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      kPickerWidth, future.GetRepeatingCallback()));
+      kPickerWidth, future.GetRepeatingCallback(), base::DoNothing()));
   widget->Show();
   ASSERT_THAT(view->section_views_for_testing(),
               Contains(Key(PickerCategoryType::kExpressions)));
@@ -77,7 +82,7 @@ TEST_F(PickerZeroStateViewTest, ClickingOkInCapsNudgeHidesCapsNudge) {
   widget->SetFullscreen(true);
   base::test::TestFuture<PickerCategory> future;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      kPickerWidth, future.GetRepeatingCallback()));
+      kPickerWidth, future.GetRepeatingCallback(), base::DoNothing()));
   widget->Show();
 
   auto* caps_nudge_view = view->CapsNudgeViewForTesting();
@@ -86,6 +91,41 @@ TEST_F(PickerZeroStateViewTest, ClickingOkInCapsNudgeHidesCapsNudge) {
   LeftClickOn(*caps_nudge_view->GetOkButtonForTesting());
 
   EXPECT_EQ(caps_nudge_view->parent(), nullptr);
+}
+
+TEST_F(PickerZeroStateViewTest, HidesSuggestedSectionWhenEmpty) {
+  PickerZeroStateView view(kPickerWidth, base::DoNothing(), base::DoNothing());
+
+  EXPECT_FALSE(view.SuggestedSectionForTesting()->GetVisible());
+}
+
+TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
+  testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
+
+  EXPECT_CALL(mock_clipboard, GetHistoryValues)
+      .WillOnce(
+          [](ClipboardHistoryController::GetHistoryValuesCallback callback) {
+            ClipboardHistoryItemBuilder builder;
+            builder.SetFormat(ui::ClipboardInternalFormat::kText);
+            builder.SetText("xyz");
+            std::move(callback).Run({builder.Build()});
+          });
+
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  widget->SetFullscreen(true);
+  base::test::TestFuture<const PickerSearchResult&> future;
+  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
+      kPickerWidth, base::DoNothing(), future.GetRepeatingCallback()));
+  widget->Show();
+
+  EXPECT_TRUE(view->SuggestedSectionForTesting()->GetVisible());
+  PickerItemView* item_view =
+      view->SuggestedSectionForTesting()->item_views_for_testing()[0];
+
+  ViewDrawnWaiter().Wait(item_view);
+  LeftClickOn(*item_view);
+
+  EXPECT_EQ(future.Get(), PickerSearchResult::Text(u"xyz"));
 }
 
 }  // namespace
