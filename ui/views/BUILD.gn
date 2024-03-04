@@ -1149,12 +1149,6 @@ source_set("test_support") {
       "win/test_support/fake_ipen_device.h",
       "win/test_support/fake_ipen_device_statics.cc",
       "win/test_support/fake_ipen_device_statics.h",
-      "win/test_support/fake_ipen_pointer_point_statics.cc",
-      "win/test_support/fake_ipen_pointer_point_statics.h",
-      "win/test_support/fake_ipointer_point.cc",
-      "win/test_support/fake_ipointer_point.h",
-      "win/test_support/fake_ipointer_point_properties.cc",
-      "win/test_support/fake_ipointer_point_properties.h",
     ]
   }
   if (is_mac) {
