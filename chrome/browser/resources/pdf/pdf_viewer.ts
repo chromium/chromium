@@ -365,6 +365,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
 
     this.embedded_ = this.browserApi!.getStreamInfo().embedded;
+
+    if (this.pdfOopifEnabled && !this.embedded_) {
+      // Give the full page PDF viewer focus so it can handle keyboard events
+      // immediately.
+      window.focus();
+    }
   }
 
   handleKeyEvent(e: KeyboardEvent) {

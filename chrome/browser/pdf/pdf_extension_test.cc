@@ -196,31 +196,15 @@ class PDFExtensionTestWithPartialLoading : public PDFExtensionTest {
   }
 };
 
-// This test is a re-implementation of
-// WebPluginContainerTest.PluginDocumentPluginIsFocused, which was introduced
-// for https://crbug.com/536637. The original implementation checked that the
-// BrowserPlugin hosting the pdf extension was focused; in this re-write, we
-// make sure the guest view's WebContents has focus.
-IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfInMainFrameHasFocus) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
+// Historically, https://crrev.com/352991 focused the PDF embed element when it
+// was created. To preserve this behavior, make sure the extension frame has
+// focus for a full page PDF viewer on creation.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, FullPagePdfHasFocus) {
+  // Load test PDF, and verify the text area has focus.
+  content::RenderFrameHost* extension_host =
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
 
-  // Load test HTML, and verify the text area has focus.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-  auto* primary_main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
-
-  // Verify the pdf has loaded.
-  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
-  ASSERT_TRUE(guest_view);
-  ASSERT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
-  TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
-
-  // Make sure the guest WebContents has focus.
-  ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(),
-            guest_view->GetGuestMainFrame());
+  ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(), extension_host);
 }
 
 // For GuestView PDF, this test verifies that when a PDF is loaded, the embedder
@@ -1381,18 +1365,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowDownUp) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SelectAllShortcut) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest);
+  content::RenderFrameHost* extension_host =
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(extension_host);
 
   content::RenderFrameHost* frame =
-      pdf_frame_util::FindPdfChildFrame(guest->GetGuestMainFrame());
-  ASSERT_TRUE(frame);
+      pdf_frame_util::FindPdfChildFrame(extension_host);
   content::RenderWidgetHostView* view = frame->GetView();
   EXPECT_THAT(view->GetSelectedText(), IsEmpty());
 
