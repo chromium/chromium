@@ -31,6 +31,7 @@
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
@@ -463,10 +464,10 @@ void V4L2VideoDecodeAccelerator::AssignPictureBuffersTask(
 
     // We move the buffer into output_wait_map_, so get a reference to
     // its video frame if we need it to create the native pixmap for import.
-    scoped_refptr<VideoFrame> video_frame;
+    scoped_refptr<FrameResource> frame;
     if (output_mode_ == Config::OutputMode::kAllocate &&
         !image_processor_device_)
-      video_frame = buffer.GetVideoFrame();
+      frame = buffer.GetFrameResource();
 
     // The buffer will remain here until ImportBufferForPicture is called,
     // either by the client, or by ourselves, if we are allocating.
@@ -479,9 +480,13 @@ void V4L2VideoDecodeAccelerator::AssignPictureBuffersTask(
       // If we are using an image processor, the DMABufs that we need to import
       // are those of the image processor's buffers, not the decoders. So
       // pass an empty native pixmap in that case.
-      if (!image_processor_device_)
+      if (!image_processor_device_) {
+        // TODO(nhebert): drop usage of CreateGpuMemoryBufferHandle(), which
+        // duplicates FD's, when a NativePixmap-based FrameResource is
+        // available.
         native_pixmap =
-            CreateGpuMemoryBufferHandle(video_frame.get()).native_pixmap_handle;
+            frame->CreateGpuMemoryBufferHandle().native_pixmap_handle;
+      }
 
       ImportBufferForPictureTask(output_record.picture_id,
                                  std::move(native_pixmap));
@@ -714,12 +719,12 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPictureTask(
     DVLOGF(3) << "Change state to kDecoding";
   }
 
-  // If we are importing, create the output VideoFrame that we will render
+  // If we are importing, create the output FrameResource that we will render
   // into.
   if (output_mode_ == Config::OutputMode::kImport) {
     DCHECK_GT(handle.planes.size(), 0u);
     DCHECK(!iter->output_frame);
-    // Duplicate the buffer FDs for the VideoFrame instance.
+    // Duplicate the buffer FDs for the output frame.
     std::vector<base::ScopedFD> duped_fds;
     std::vector<ColorPlaneLayout> color_planes;
     for (const gfx::NativePixmapPlane& plane : handle.planes) {
@@ -743,9 +748,12 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPictureTask(
       return;
     }
 
-    iter->output_frame = VideoFrame::WrapExternalDmabufs(
-        *layout, gfx::Rect(visible_size_), visible_size_, std::move(duped_fds),
-        base::TimeDelta());
+    // TODO(nhebert): switch to NativePixmap-based FrameResource when it is
+    // available.
+    iter->output_frame =
+        VideoFrameResource::Create(VideoFrame::WrapExternalDmabufs(
+            *layout, gfx::Rect(visible_size_), visible_size_,
+            std::move(duped_fds), base::TimeDelta()));
   }
 
   if (iter->texture_id != 0) {
@@ -2457,8 +2465,9 @@ bool V4L2VideoDecodeAccelerator::ProcessFrame(int32_t bitstream_buffer_id,
       return false;
     }
 
-    scoped_refptr<VideoFrame> mapped_output_frame = output_frame_mapper->Map(
-        output_record.output_frame, PROT_READ | PROT_WRITE);
+    scoped_refptr<FrameResource> mapped_output_frame =
+        VideoFrameResource::Create(output_frame_mapper->MapFrame(
+            output_record.output_frame, PROT_READ | PROT_WRITE));
     if (!mapped_output_frame) {
       LOG(ERROR) << "Failed to map MT21 frame!";
       NOTIFY_ERROR(PLATFORM_FAILURE);
@@ -2481,7 +2490,7 @@ bool V4L2VideoDecodeAccelerator::ProcessFrame(int32_t bitstream_buffer_id,
   }
 #endif
 
-  scoped_refptr<VideoFrame> input_frame = buf->GetVideoFrame();
+  scoped_refptr<FrameResource> input_frame = buf->GetFrameResource();
   if (!input_frame) {
     VLOGF(1) << "Could not get the input frame for the image processor!";
     return false;
@@ -2506,8 +2515,8 @@ bool V4L2VideoDecodeAccelerator::ProcessFrame(int32_t bitstream_buffer_id,
     VLOGF(1) << "The natural size is too large!";
     return false;
   }
-  scoped_refptr<VideoFrame> cropped_input_frame = VideoFrame::WrapVideoFrame(
-      input_frame, input_frame->format(), visible_rect, natural_size);
+  scoped_refptr<FrameResource> cropped_input_frame =
+      input_frame->CreateWrappingFrame(visible_rect, natural_size);
   if (!cropped_input_frame) {
     VLOGF(1) << "Could not wrap the input frame for the image processor!";
     return false;
@@ -2518,13 +2527,13 @@ bool V4L2VideoDecodeAccelerator::ProcessFrame(int32_t bitstream_buffer_id,
   // FrameReadyCB is executed.
   if (image_processor_->output_mode() == ImageProcessor::OutputMode::IMPORT) {
     image_processor_->Process(
-        cropped_input_frame, output_record.output_frame,
+        std::move(cropped_input_frame), output_record.output_frame,
         base::BindOnce(&V4L2VideoDecodeAccelerator::FrameProcessed,
                        base::Unretained(this), bitstream_buffer_id,
                        buf->BufferId()));
   } else {
     image_processor_->Process(
-        cropped_input_frame,
+        std::move(cropped_input_frame),
         base::BindOnce(&V4L2VideoDecodeAccelerator::FrameProcessed,
                        base::Unretained(this), bitstream_buffer_id));
   }
@@ -2640,7 +2649,7 @@ void V4L2VideoDecodeAccelerator::SendBufferToClient(
     size_t output_buffer_index,
     int32_t bitstream_buffer_id,
     V4L2ReadableBufferRef vda_buffer,
-    scoped_refptr<VideoFrame> frame) {
+    scoped_refptr<FrameResource> frame) {
   DCHECK(decoder_thread_.task_runner()->BelongsToCurrentThread());
   DCHECK_GE(bitstream_buffer_id, 0);
   OutputRecord& output_record = output_buffer_map_[output_buffer_index];
@@ -2716,7 +2725,7 @@ void V4L2VideoDecodeAccelerator::PictureCleared() {
 void V4L2VideoDecodeAccelerator::FrameProcessed(
     int32_t bitstream_buffer_id,
     size_t ip_buffer_index,
-    scoped_refptr<VideoFrame> frame) {
+    scoped_refptr<FrameResource> frame) {
   DVLOGF(4) << "ip_buffer_index=" << ip_buffer_index
             << ", bitstream_buffer_id=" << bitstream_buffer_id;
   DCHECK(decoder_thread_.task_runner()->BelongsToCurrentThread());
@@ -2759,13 +2768,15 @@ void V4L2VideoDecodeAccelerator::FrameProcessed(
   if (ip_output_record.texture_id != 0 && !ip_output_record.cleared) {
     DCHECK(frame->HasDmaBufs());
 
+    // TODO(nhebert): drop usage of CreateGpuMemoryBufferHandle(), which
+    // duplicates FD's, when a NativePixmap-based FrameResource is available.
     child_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &V4L2VideoDecodeAccelerator::CreateEGLImageFor, weak_this_,
             image_processor_device_, ip_buffer_index,
             ip_output_record.picture_id,
-            CreateGpuMemoryBufferHandle(frame.get()).native_pixmap_handle,
+            frame->CreateGpuMemoryBufferHandle().native_pixmap_handle,
             ip_output_record.texture_id, visible_size_,
             *egl_image_format_fourcc_));
   }

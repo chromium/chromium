@@ -216,7 +216,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
     bool cleared;           // Whether the texture is cleared and safe to render
                             // from. See TextureManager for details.
     // Output frame. Used only when OutputMode is IMPORT.
-    scoped_refptr<VideoFrame> output_frame;
+    scoped_refptr<FrameResource> output_frame;
   };
 
   //
@@ -424,7 +424,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   void SendBufferToClient(size_t buffer_index,
                           int32_t bitstream_buffer_id,
                           V4L2ReadableBufferRef vda_buffer,
-                          scoped_refptr<VideoFrame> frame = nullptr);
+                          scoped_refptr<FrameResource> frame = nullptr);
 
   //
   // Methods run on child thread.
@@ -441,7 +441,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   // image processor.
   void FrameProcessed(int32_t bitstream_buffer_id,
                       size_t output_buffer_index,
-                      scoped_refptr<VideoFrame> frame);
+                      scoped_refptr<FrameResource> frame);
 
   // Image processor notifies an error.
   void ImageProcessorError();
@@ -567,13 +567,14 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   std::queue<std::pair<int32_t, V4L2ReadableBufferRef>> buffers_at_ip_;
   // Keeps decoded buffers out of the free list until the client returns them.
   // First element is the VDA buffer, second is the (optional) IP buffer.
-  std::map<int32_t, std::pair<V4L2ReadableBufferRef, scoped_refptr<VideoFrame>>>
+  std::map<int32_t,
+           std::pair<V4L2ReadableBufferRef, scoped_refptr<FrameResource>>>
       buffers_at_client_;
   // Queue of buffers that have been returned by the client, but which fence
   // hasn't been signaled yet. Keeps both the VDA and (optional) IP buffer.
   std::queue<
       std::pair<std::unique_ptr<gl::GLFenceEGL>,
-                std::pair<V4L2ReadableBufferRef, scoped_refptr<VideoFrame>>>>
+                std::pair<V4L2ReadableBufferRef, scoped_refptr<FrameResource>>>>
       buffers_awaiting_fence_;
 
   // Mapping of int index to output buffer record.
