@@ -73,17 +73,16 @@ void DecorationLinePainter::DrawLineForText(
     context.DrawLine(start, end, styled_stroke, auto_dark_mode, true,
                      paint_flags);
   } else {
-    // Avoid anti-aliasing lines. Currently, these are always horizontal. Round
-    // to nearest pixel to match text and other content.
-    line_rect = SnapYAxis(line_rect);
-
     if (paint_flags) {
-      // In SVG, we don't round down the thickness to an integer for better
-      // scaling behavior.  See crbug.com/1270336.
-      line_rect.set_height(styled_stroke.Thickness());
+      // In SVG (inferred by a non-null `paint_flags`), we don't snap the line
+      // to get better scaling behavior. See crbug.com/1270336.
       context.DrawRect(gfx::RectFToSkRect(line_rect), *paint_flags,
                        auto_dark_mode);
     } else {
+      // Avoid anti-aliasing lines. Currently, these are always horizontal.
+      // Round to nearest pixel to match text and other content.
+      line_rect = SnapYAxis(line_rect);
+
       cc::PaintFlags flags = context.FillFlags();
       // Text lines are drawn using the stroke color.
       flags.setColor(context.StrokeFlags().getColor4f());
