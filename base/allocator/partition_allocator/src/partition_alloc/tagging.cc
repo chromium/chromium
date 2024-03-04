@@ -45,6 +45,9 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "partition_alloc/partition_alloc_base/files/file_path.h"
 #include "partition_alloc/partition_alloc_base/native_library.h"
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#include <malloc.h>
+#endif  // BUILDFLAGS(HAS_MEMORY_TAGGING)
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace partition_alloc {
