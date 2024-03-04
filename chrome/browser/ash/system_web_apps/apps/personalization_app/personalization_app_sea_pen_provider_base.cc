@@ -106,16 +106,23 @@ void PersonalizationAppSeaPenProviderBase::SelectSeaPenThumbnail(
     return;
   }
 
-  auto* sea_pen_fetcher = GetOrCreateSeaPenFetcher();
-  CHECK(sea_pen_fetcher);
-  // |last_query_| is set when calling SearchWallpaper() to fetch thumbnails. It
-  // should not be null when a thumbnail is selected.
-  CHECK(last_query_);
-  sea_pen_fetcher->FetchWallpaper(
-      feature_name_, it->second, last_query_,
-      base::BindOnce(
-          &PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  // In case of CHROMEOS_WALLPAPER, we need to send a second query.
+  if (feature_name_ == manta::proto::FeatureName::CHROMEOS_WALLPAPER) {
+    auto* sea_pen_fetcher = GetOrCreateSeaPenFetcher();
+    CHECK(sea_pen_fetcher);
+    // |last_query_| is set when calling SearchWallpaper() to fetch thumbnails.
+    // It should not be null when a thumbnail is selected.
+    CHECK(last_query_);
+    sea_pen_fetcher->FetchWallpaper(
+        feature_name_, it->second, last_query_,
+        base::BindOnce(
+            &PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  } else {
+    // In case of CHROMEOS_VC_BACKGROUNDS, we use image stored already.
+    OnFetchWallpaperDone(std::move(callback),
+                         SeaPenImage(it->second.jpg_bytes, it->second.id));
+  }
 }
 
 void PersonalizationAppSeaPenProviderBase::SelectRecentSeaPenImage(

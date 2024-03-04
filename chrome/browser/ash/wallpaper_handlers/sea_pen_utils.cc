@@ -74,10 +74,14 @@ manta::proto::Request CreateMantaRequest(
       request_config.set_generation_seed(*generation_seed);
     }
 
-    manta::proto::ImageDimensions& image_dimensions =
-        *request_config.mutable_image_dimensions();
-    image_dimensions.set_width(size.width());
-    image_dimensions.set_height(size.height());
+    // Ignore image_dimensions for CHROMEOS_VC_BACKGROUNDS, since
+    // CHROMEOS_VC_BACKGROUNDS returns with default size.
+    if (feature_name != manta::proto::FeatureName::CHROMEOS_VC_BACKGROUNDS) {
+      manta::proto::ImageDimensions& image_dimensions =
+          *request_config.mutable_image_dimensions();
+      image_dimensions.set_width(size.width());
+      image_dimensions.set_height(size.height());
+    }
 
     request_config.set_num_outputs(num_outputs);
   }
