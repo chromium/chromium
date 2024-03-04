@@ -120,7 +120,7 @@
   DCHECK(webContentsHandler);
   ITunesUrlsHandlerTabHelper::GetOrCreateForWebState(webState)
       ->SetWebContentsHandler(webContentsHandler);
-  PassKitTabHelper::FromWebState(webState)->SetWebContentsHandler(
+  PassKitTabHelper::GetOrCreateForWebState(webState)->SetWebContentsHandler(
       webContentsHandler);
 
   DCHECK(_baseViewController);

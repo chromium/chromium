@@ -232,7 +232,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   }
   DownloadManagerTabHelper::CreateForWebState(web_state);
   SafariDownloadTabHelper::CreateForWebState(web_state);
-  PassKitTabHelper::CreateForWebState(web_state);
+  if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    PassKitTabHelper::GetOrCreateForWebState(web_state);
+  }
   VcardTabHelper::CreateForWebState(web_state);
 
   // Drive tab helper.
