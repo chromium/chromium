@@ -43,7 +43,11 @@ std::u16string MahiManagerImpl::GetContentTitle() {
 }
 
 gfx::ImageSkia MahiManagerImpl::GetContentIcon() {
-  return gfx::ImageSkia();
+  int test_size_px = 128;
+  SkBitmap test_bitmap;
+  test_bitmap.allocN32Pixels(test_size_px, test_size_px);
+  test_bitmap.eraseColor(SK_ColorGREEN);
+  return gfx::ImageSkia::CreateFrom1xBitmap(test_bitmap);
 }
 
 void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {

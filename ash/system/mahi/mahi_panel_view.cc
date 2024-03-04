@@ -14,6 +14,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/summary_outlines_section.h"
@@ -25,12 +26,15 @@
 #include "chromeos/components/mahi/public/cpp/views/experiment_badge.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/scroll_view.h"
@@ -53,6 +57,8 @@ constexpr int kPanelCornerRadius = 16;
 constexpr gfx::Insets kPanelPadding = gfx::Insets(16);
 constexpr int kPanelChildSpacing = 8;
 constexpr int kHeaderRowSpacing = 8;
+constexpr gfx::Insets kSourceRowPadding = gfx::Insets::TLBR(6, 12, 6, 14);
+constexpr int kSourceRowSpacing = 8;
 constexpr float kScrollerViewCornerRadius = 16;
 
 }  // namespace
@@ -122,6 +128,32 @@ MahiPanelView::MahiPanelView() {
   header_row->AddChildView(std::move(close_button));
 
   AddChildView(std::move(header_row));
+
+  auto* const mahi_manager = chromeos::MahiManager::Get();
+
+  // Add the content icon and title.
+  AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetBackground(StyleUtil::CreateThemedFullyRoundedRectBackground(
+              cros_tokens::kCrosSysSystemOnBase1))
+          .SetBorder(views::CreateEmptyBorder(kSourceRowPadding))
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetBetweenChildSpacing(kSourceRowSpacing)
+          .AddChildren(
+              views::Builder<views::ImageView>()
+                  .SetID(mahi_constants::kContentIcon)
+                  .SetImage(ui::ImageModel::FromImageSkia(
+                      mahi_manager->GetContentIcon()))
+                  .SetImageSize(mahi_constants::kContentIconSize),
+              views::Builder<views::Label>()
+                  .SetID(mahi_constants::kContentTitle)
+                  .SetText(mahi_manager->GetContentTitle())
+                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
+                  .CustomConfigure(base::BindOnce([](views::Label* self) {
+                    TypographyProvider::Get()->StyleLabel(
+                        TypographyToken::kCrosAnnotation2, *self);
+                  })))
+          .Build());
 
   // Scrollable contents, which should contain the summary outline section and
   // the Q&A section.

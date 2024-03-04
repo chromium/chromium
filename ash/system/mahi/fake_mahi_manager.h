@@ -39,11 +39,21 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
       crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override {
   }
 
-  void set_summary_text(std::u16string summary_text) {
+  void set_content_title(const std::u16string& content_title) {
+    content_title_ = content_title;
+  }
+
+  void set_content_icon(const gfx::ImageSkia& content_icon) {
+    content_icon_ = content_icon;
+  }
+
+  void set_summary_text(const std::u16string& summary_text) {
     summary_text_ = summary_text;
   }
 
  private:
+  std::u16string content_title_;
+  gfx::ImageSkia content_icon_;
   std::u16string summary_text_;
 
   // The widget contains the Mahi main panel.

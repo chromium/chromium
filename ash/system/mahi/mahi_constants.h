@@ -5,16 +5,23 @@
 #ifndef ASH_SYSTEM_MAHI_MAHI_CONSTANTS_H_
 #define ASH_SYSTEM_MAHI_MAHI_CONSTANTS_H_
 
+#include "ui/gfx/geometry/size.h"
+
 namespace ash::mahi_constants {
 
 // The view ids that will be used for all children views within the Mahi panel.
 enum ViewId {
   kCloseButton = 1,
+  kContentTitle,
+  kContentIcon,
   kSummaryLabel,
   kThumbsUpButton,
   kThumbsDownButton,
   kLearnMoreLink,
 };
+
+// The size of the icon that appears in the panel's source row.
+inline constexpr gfx::Size kContentIconSize = gfx::Size(16, 16);
 
 inline constexpr char kMahiFeedbackHistogramName[] = "Ash.Mahi.Feedback";
 

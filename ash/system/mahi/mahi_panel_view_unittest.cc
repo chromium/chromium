@@ -15,7 +15,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/widget/widget.h"
@@ -84,6 +86,46 @@ class MahiPanelViewTest : public AshTestBase {
   raw_ptr<MockNewWindowDelegate> new_window_delegate_;
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
+
+// Verifies that the content title is correct when the panel is created.
+TEST_F(MahiPanelViewTest, ContentTitle) {
+  auto* test_title1 = u"test content title 1";
+  fake_mahi_manager()->set_content_title(test_title1);
+  auto mahi_view1 = std::make_unique<MahiPanelView>();
+  auto* content_title_label1 = static_cast<views::Label*>(
+      mahi_view1->GetViewByID(mahi_constants::ViewId::kContentTitle));
+  EXPECT_EQ(content_title_label1->GetText(), test_title1);
+
+  auto* test_title2 = u"test content title 2";
+  fake_mahi_manager()->set_content_title(test_title2);
+  auto mahi_view2 = std::make_unique<MahiPanelView>();
+  auto* content_title_label2 = static_cast<views::Label*>(
+      mahi_view2->GetViewByID(mahi_constants::ViewId::kContentTitle));
+  EXPECT_EQ(content_title_label2->GetText(), test_title2);
+}
+
+// Verifies that the content icon is correct when the panel is created.
+TEST_F(MahiPanelViewTest, ContentIcon) {
+  auto test_icon1 = gfx::test::CreateImageSkia(128, SK_ColorRED);
+  fake_mahi_manager()->set_content_icon(test_icon1);
+  auto mahi_view1 = std::make_unique<MahiPanelView>();
+  auto* content_icon1 = static_cast<views::ImageView*>(
+      mahi_view1->GetViewByID(mahi_constants::ViewId::kContentIcon));
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(*content_icon1->GetImage().bitmap(),
+                                         *test_icon1.bitmap()));
+  EXPECT_EQ(content_icon1->GetPreferredSize(),
+            mahi_constants::kContentIconSize);
+
+  auto test_icon2 = gfx::test::CreateImageSkia(128, SK_ColorBLUE);
+  fake_mahi_manager()->set_content_icon(test_icon2);
+  auto mahi_view2 = std::make_unique<MahiPanelView>();
+  auto* content_icon2 = static_cast<views::ImageView*>(
+      mahi_view2->GetViewByID(mahi_constants::ViewId::kContentIcon));
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(*content_icon2->GetImage().bitmap(),
+                                         *test_icon2.bitmap()));
+  EXPECT_EQ(content_icon2->GetPreferredSize(),
+            mahi_constants::kContentIconSize);
+}
 
 // Makes sure that the summary text is set correctly in ctor with different
 // texts.

@@ -12,9 +12,9 @@
 
 namespace ash {
 
-FakeMahiManager::FakeMahiManager() {
-  set_summary_text(u"This is a fake summary text");
-}
+FakeMahiManager::FakeMahiManager()
+    : content_title_(u"fake content title"),
+      summary_text_(u"fake summary text") {}
 
 FakeMahiManager::~FakeMahiManager() {
   mahi_panel_widget_.reset();
@@ -26,11 +26,11 @@ void FakeMahiManager::OpenMahiPanel(int64_t display_id) {
 }
 
 std::u16string FakeMahiManager::GetContentTitle() {
-  return u"fake content title";
+  return content_title_;
 }
 
 gfx::ImageSkia FakeMahiManager::GetContentIcon() {
-  return gfx::ImageSkia();
+  return content_icon_;
 }
 
 void FakeMahiManager::GetSummary(MahiSummaryCallback callback) {
