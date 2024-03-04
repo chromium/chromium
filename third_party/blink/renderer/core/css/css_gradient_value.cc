@@ -687,7 +687,8 @@ void CSSGradientValue::AddStops(
         }
         stops[i].offset = (gradient_length > 0) ? length / gradient_length : 0;
       } else if (stop.offset_->IsAngle()) {
-        stops[i].offset = stop.offset_->ComputeDegrees() / 360.0f;
+        stops[i].offset =
+            stop.offset_->ComputeDegrees(conversion_data) / 360.0f;
       } else {
         NOTREACHED();
         stops[i].offset = 0;
@@ -1024,7 +1025,10 @@ String CSSLinearGradientValue::CustomCSSText() const {
 
     bool wrote_something = false;
 
-    if (angle_ && angle_->ComputeDegrees() != 180) {
+    if (angle_ &&
+        (angle_->IsMathFunctionValue() ||
+         (angle_->IsNumericLiteralValue() &&
+          To<CSSNumericLiteralValue>(*angle_).ComputeDegrees() != 180))) {
       result.Append(angle_->CssText());
       wrote_something = true;
     } else if ((first_x_ || first_y_) &&
@@ -1147,7 +1151,7 @@ scoped_refptr<Gradient> CSSLinearGradientValue::CreateGradient(
   gfx::PointF first_point;
   gfx::PointF second_point;
   if (angle_) {
-    float angle = angle_->ComputeDegrees();
+    float angle = angle_->ComputeDegrees(conversion_data);
     EndPointsFromAngle(angle, size, first_point, second_point, gradient_type_);
   } else {
     switch (gradient_type_) {
@@ -1837,7 +1841,8 @@ scoped_refptr<Gradient> CSSConicGradientValue::CreateGradient(
     const ComputedStyle& style) const {
   DCHECK(!size.IsEmpty());
 
-  const float angle = from_angle_ ? from_angle_->ComputeDegrees() : 0;
+  const float angle =
+      from_angle_ ? from_angle_->ComputeDegrees(conversion_data) : 0;
 
   const gfx::PointF position(
       x_ ? PositionFromValue(x_, conversion_data, size, true)
