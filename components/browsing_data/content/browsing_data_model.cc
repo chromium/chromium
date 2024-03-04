@@ -31,6 +31,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/storage_usage_info.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_util.h"
@@ -115,6 +116,7 @@ GetDataOwner::GetOwningOriginOrHost<blink::StorageKey>(
     case BrowsingDataModel::StorageType::kQuotaStorage:
     case BrowsingDataModel::StorageType::kSharedStorage:
     case BrowsingDataModel::StorageType::kLocalStorage:
+    case BrowsingDataModel::StorageType::kCdmStorage:
       return GetOwnerBasedOnScheme(data_key.origin());
     default:
       NOTREACHED() << "Unexpected StorageType: "
@@ -276,6 +278,15 @@ void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
     helper->storage_partition_->GetDOMStorageContext()->DeleteLocalStorage(
         storage_key, helper->GetCompleteCallback());
   }
+
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  if (types.Has(BrowsingDataModel::StorageType::kCdmStorage)) {
+    helper->storage_partition_->GetCdmStorageDataModel()
+        ->DeleteDataForStorageKey(storage_key,
+                                  base::BindOnce(base::IgnoreArgs<bool>(
+                                      helper->GetCompleteCallback())));
+  }
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 }
 
 template <>
@@ -544,6 +555,18 @@ void OnDelegateDataLoaded(
   }
   std::move(loaded_callback).Run();
 }
+
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+void OnCdmStorageLoaded(BrowsingDataModel* model,
+                        base::OnceClosure loaded_callback,
+                        const CdmStorageKeyUsageSize& usage_for_storage_keys) {
+  for (const auto& [storage_key, usage] : usage_for_storage_keys) {
+    model->AddBrowsingData(storage_key,
+                           BrowsingDataModel::StorageType::kCdmStorage, usage);
+  }
+  std::move(loaded_callback).Run();
+}
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 // If `data_key` represents a non-1P partition, returns the site on which it
 // is partitioned, std::nullopt otherwise.
@@ -875,6 +898,7 @@ bool BrowsingDataModel::IsStorageTypeCookieLike(
     case BrowsingDataModel::StorageType::kSessionStorage:
     case BrowsingDataModel::StorageType::kSharedWorker:
     case BrowsingDataModel::StorageType::kCookie:
+    case BrowsingDataModel::StorageType::kCdmStorage:
       return true;
     case BrowsingDataModel::StorageType::kExtendedDelegateRange:
       NOTREACHED_NORETURN();
@@ -913,6 +937,12 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
       base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi);
   bool is_cookies_tree_model_deprecated = base::FeatureList::IsEnabled(
       browsing_data::features::kDeprecateCookiesTreeModel);
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  bool is_cdm_storage_database_enabled =
+      base::FeatureList::IsEnabled(features::kCdmStorageDatabase);
+  bool is_cdm_migration_enabled =
+      base::FeatureList::IsEnabled(features::kCdmStorageDatabaseMigration);
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
   base::RepeatingClosure completion =
       base::BindRepeating([](const base::OnceClosure&) {},
@@ -967,6 +997,13 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
     storage_partition_->GetCookieManagerForBrowserProcess()->GetAllCookies(
         base::BindOnce(&OnCookiesLoaded, this, completion));
   }
+
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  if (is_cdm_storage_database_enabled && !is_cdm_migration_enabled) {
+    storage_partition_->GetCdmStorageDataModel()->GetUsagePerAllStorageKeys(
+        base::BindOnce(&OnCdmStorageLoaded, this, completion));
+  }
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
   // Data loaded from non-components storage types via the delegate.
   if (delegate_) {

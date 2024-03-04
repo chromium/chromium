@@ -5,9 +5,14 @@
 #ifndef CONTENT_PUBLIC_BROWSER_CDM_STORAGE_DATA_MODEL_H_
 #define CONTENT_PUBLIC_BROWSER_CDM_STORAGE_DATA_MODEL_H_
 
+#include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+
+using CdmStorageKeyUsageSize =
+    std::vector<std::pair<blink::StorageKey, uint64_t>>;
 
 namespace content {
 
@@ -22,9 +27,7 @@ class CONTENT_EXPORT CdmStorageDataModel {
   virtual ~CdmStorageDataModel() = default;
 
   virtual void GetUsagePerAllStorageKeys(
-      base::OnceCallback<
-          void(const std::vector<std::pair<blink::StorageKey, uint64_t>>&)>
-          callback) = 0;
+      base::OnceCallback<void(const CdmStorageKeyUsageSize&)> callback) = 0;
 
   virtual void DeleteDataForStorageKey(
       const blink::StorageKey& storage_key,

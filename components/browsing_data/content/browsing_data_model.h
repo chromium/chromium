@@ -16,6 +16,7 @@
 #include "components/browsing_data/content/shared_worker_info.h"
 #include "components/webid/federated_identity_data_model.h"
 #include "content/public/browser/attribution_data_model.h"
+#include "content/public/browser/cdm_storage_data_model.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/session_storage_usage_info.h"
@@ -57,9 +58,10 @@ class BrowsingDataModel {
     kSharedDictionary,
     kSharedWorker,
     kCookie,
+    kCdmStorage,
 
     kFirstType = kTrustTokens,
-    kLastType = kCookie,
+    kLastType = kCdmStorage,
     kExtendedDelegateRange =
         63,  // This is needed to include delegate values when adding delegate
              // browsing data to the model.

@@ -622,6 +622,8 @@ TEST_F(BrowsingDataModelTest, ThirdPartyCookieTypes) {
            partitioned_storage_key},
           {BrowsingDataModel::StorageType::kQuotaStorage,
            partitioned_storage_key},
+          {BrowsingDataModel::StorageType::kCdmStorage,
+           partitioned_storage_key},
           {BrowsingDataModel::StorageType::kSessionStorage,
            partitioned_session_storage_usage},
           {BrowsingDataModel::StorageType::kSharedWorker,

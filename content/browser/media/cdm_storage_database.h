@@ -9,11 +9,13 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/sequence_checker.h"
 #include "content/browser/media/cdm_storage_common.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/cdm_storage_data_model.h"
 #include "media/cdm/cdm_type.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -48,19 +50,21 @@ class CONTENT_EXPORT CdmStorageDatabase {
 
   std::optional<uint64_t> GetSizeForStorageKey(
       const blink::StorageKey& storage_key,
-      const base::Time begin,
-      const base::Time end);
+      const base::Time begin = base::Time::Min(),
+      const base::Time end = base::Time::Max());
 
   std::optional<uint64_t> GetSizeForTimeFrame(const base::Time begin,
                                               const base::Time end);
+
+  CdmStorageKeyUsageSize GetUsagePerAllStorageKeys();
 
   bool DeleteFile(const blink::StorageKey& storage_key,
                   const media::CdmType& cdm_type,
                   const std::string& file_name);
 
   bool DeleteDataForStorageKey(const blink::StorageKey& storage_key,
-                               const base::Time begin,
-                               const base::Time end);
+                               const base::Time begin = base::Time::Min(),
+                               const base::Time end = base::Time::Max());
 
   bool DeleteDataForTimeFrame(const base::Time begin, const base::Time end);
 

@@ -466,6 +466,10 @@ class BrowsingDataModelBrowserTest
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back({media::kExternalClearKeyForTesting, {}});
+    enabled_features.push_back({features::kCdmStorageDatabase, {}});
+    // Refer to b/325351177 for more information on why this feature is
+    // disabled.
+    disabled_features.push_back(features::kCdmStorageDatabaseMigration);
 #endif
 
     if (IsDeprecateCookiesTreeModelEnabled()) {
@@ -986,10 +990,6 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   std::vector<std::string> quota_storage_data_types = {
       "ServiceWorker", "IndexedDb", "FileSystem", "WebSql"};
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  quota_storage_data_types.push_back("MediaLicense");
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
-
   for (auto data_type : quota_storage_data_types) {
     SetDataForType(data_type, web_contents());
     ASSERT_TRUE(HasDataForType(data_type, web_contents()));
@@ -1000,15 +1000,6 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
     // Validate that quota data is fetched to browsing data model.
     url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
     auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
-    if (data_type == "MediaLicense") {
-      ValidateBrowsingDataEntries(
-          browsing_data_model.get(),
-          {{kTestHost,
-            data_key,
-            {{BrowsingDataModel::StorageType::kQuotaStorage},
-             /*storage_size=*/0,
-             /*cookie_count=*/0}}});
-    } else {
       ValidateBrowsingDataEntriesNonZeroUsage(
           browsing_data_model.get(),
           {{kTestHost,
@@ -1016,7 +1007,6 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
             {{BrowsingDataModel::StorageType::kQuotaStorage},
              /*storage_size=*/0,
              /*cookie_count=*/0}}});
-    }
 
     ASSERT_EQ(browsing_data_model->size(), 1u);
 
@@ -1187,10 +1177,6 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   // affecting other quota storage types test.
   std::vector<std::string> quota_storage_data_types = {
       "IndexedDb", "FileSystem", "WebSql", "ServiceWorker"};
-
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  quota_storage_data_types.push_back("MediaLicense");
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
   for (auto data_type : quota_storage_data_types) {
     // Re-Navigate to the page for every data type, to prevent any cached data
@@ -1787,6 +1773,39 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   browsing_data_model = BuildBrowsingDataModel();
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }
+
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+                       CdmStorageHandledCorrectly) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
+  // Ensure that there isn't any data fetched.
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+  ASSERT_EQ(browsing_data_model->size(), 0u);
+
+  SetDataForType("MediaLicense", web_contents());
+  browsing_data_model = BuildBrowsingDataModel();
+
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  auto storage_key = blink::StorageKey::CreateFirstParty(testOrigin);
+
+  ValidateBrowsingDataEntries(browsing_data_model.get(),
+                              {{kTestHost,
+                                storage_key,
+                                {{BrowsingDataModel::StorageType::kCdmStorage},
+                                 /*storage_size=*/112,
+                                 /*cookie_count=*/0}}});
+
+  RemoveBrowsingDataForDataOwner(browsing_data_model.get(), kTestHost);
+
+  // Rebuild browsing data model and verify entries are empty.
+  browsing_data_model = BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+}
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 // Enable/disable `kDeprecateCookiesTreeModel` feature.
 INSTANTIATE_TEST_SUITE_P(All, BrowsingDataModelBrowserTest, ::testing::Bool());

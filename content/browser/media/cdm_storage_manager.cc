@@ -89,10 +89,11 @@ void CdmStorageManager::Open(const std::string& file_name,
 }
 
 void CdmStorageManager::GetUsagePerAllStorageKeys(
-    base::OnceCallback<void(
-        const std::vector<std::pair<blink::StorageKey, uint64_t>>&)> callback) {
-  // stub until implementation.
-  std::move(callback).Run({});
+    base::OnceCallback<void(const CdmStorageKeyUsageSize&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  db_.AsyncCall(&CdmStorageDatabase::GetUsagePerAllStorageKeys)
+      .Then(std::move(callback));
 }
 
 void CdmStorageManager::DeleteDataForStorageKey(

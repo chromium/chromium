@@ -37,9 +37,7 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage,
 
   // CdmStorageDataModel implementation.
   void GetUsagePerAllStorageKeys(
-      base::OnceCallback<void(
-          const std::vector<std::pair<blink::StorageKey, uint64_t>>&)> callback)
-      final;
+      base::OnceCallback<void(const CdmStorageKeyUsageSize&)> callback) final;
   void DeleteDataForStorageKey(const blink::StorageKey& storage_key,
                                base::OnceCallback<void(bool)> callback) final;
 

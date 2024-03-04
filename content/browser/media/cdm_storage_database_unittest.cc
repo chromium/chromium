@@ -553,6 +553,25 @@ TEST_F(CdmStorageDatabaseInMemoryTest,
                 kPopulatedFileValueThree.size());
 }
 
+TEST_F(CdmStorageDatabaseInMemoryTest, GetUsagePerAllStorageKeys) {
+  EXPECT_TRUE(cdm_storage_database_->WriteFile(kTestStorageKey, kCdmType,
+                                               kFileName, kPopulatedFileValue));
+  EXPECT_TRUE(cdm_storage_database_->WriteFile(
+      kTestStorageKeyTwo, kCdmType, kFileNameTwo, kPopulatedFileValueTwo));
+
+  EXPECT_TRUE(cdm_storage_database_->WriteFile(
+      kTestStorageKeyTwo, kCdmType, kFileName, kPopulatedFileValueThree));
+
+  auto storage_keys = cdm_storage_database_->GetUsagePerAllStorageKeys();
+
+  const CdmStorageKeyUsageSize& expected_storage_keys = {
+      {kTestStorageKey, kPopulatedFileValue.size()},
+      {kTestStorageKeyTwo,
+       kPopulatedFileValueTwo.size() + kPopulatedFileValueThree.size()}};
+
+  EXPECT_EQ(storage_keys, expected_storage_keys);
+}
+
 TEST_F(CdmStorageDatabaseValidPathTest, EnsureOpenWithoutErrors) {
   auto error = cdm_storage_database_->EnsureOpen();
 
@@ -838,6 +857,25 @@ TEST_F(CdmStorageDatabaseValidPathTest,
                                                        base::Time::Max()),
             kPopulatedFileValue.size() + kPopulatedFileValueTwo.size() +
                 kPopulatedFileValueThree.size());
+}
+
+TEST_F(CdmStorageDatabaseValidPathTest, GetUsagePerAllStorageKeys) {
+  EXPECT_TRUE(cdm_storage_database_->WriteFile(kTestStorageKey, kCdmType,
+                                               kFileName, kPopulatedFileValue));
+  EXPECT_TRUE(cdm_storage_database_->WriteFile(
+      kTestStorageKeyTwo, kCdmType, kFileNameTwo, kPopulatedFileValueTwo));
+
+  EXPECT_TRUE(cdm_storage_database_->WriteFile(
+      kTestStorageKeyTwo, kCdmType, kFileName, kPopulatedFileValueThree));
+
+  auto storage_keys = cdm_storage_database_->GetUsagePerAllStorageKeys();
+
+  const CdmStorageKeyUsageSize& expected_storage_keys = {
+      {kTestStorageKey, kPopulatedFileValue.size()},
+      {kTestStorageKeyTwo,
+       kPopulatedFileValueTwo.size() + kPopulatedFileValueThree.size()}};
+
+  EXPECT_EQ(storage_keys, expected_storage_keys);
 }
 
 }  // namespace content

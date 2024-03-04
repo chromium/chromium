@@ -255,6 +255,35 @@ std::optional<uint64_t> CdmStorageDatabase::GetSizeForTimeFrame(
   return statement.ColumnInt64(0);
 }
 
+CdmStorageKeyUsageSize CdmStorageDatabase::GetUsagePerAllStorageKeys() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CdmStorageKeyUsageSize usage_per_storage_keys;
+
+  if (OpenDatabase() != CdmStorageOpenError::kOk) {
+    return usage_per_storage_keys;
+  }
+
+  static constexpr char kSelectStorageKeySql[] =
+      "SELECT DISTINCT storage_key FROM cdm_storage";
+
+  sql::Statement get_all_storage_keys_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectStorageKeySql));
+
+  while (get_all_storage_keys_statement.Step()) {
+    std::optional<blink::StorageKey> maybe_storage_key =
+        blink::StorageKey::Deserialize(
+            get_all_storage_keys_statement.ColumnString(0));
+    if (maybe_storage_key) {
+      auto storage_key = maybe_storage_key.value();
+      usage_per_storage_keys.emplace_back(
+          storage_key, GetSizeForStorageKey(storage_key).value_or(0));
+    }
+  }
+
+  return usage_per_storage_keys;
+}
+
 bool CdmStorageDatabase::DeleteFile(const blink::StorageKey& storage_key,
                                     const media::CdmType& cdm_type,
                                     const std::string& file_name) {
