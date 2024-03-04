@@ -1684,8 +1684,6 @@ void InspectorNetworkAgent::DidFailLoading(
     return;
   }
 
-  resources_data_->ClearData(request_id);
-
   bool canceled = error.IsCancellation();
 
   protocol::Maybe<String> blocked_reason = BuildBlockedReason(error);
