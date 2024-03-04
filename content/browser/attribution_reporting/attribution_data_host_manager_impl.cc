@@ -50,7 +50,6 @@
 #include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-shared.h"
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -94,6 +93,10 @@ using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SourceType;
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 using ::blink::mojom::AttributionReportingIssueType;
+using AttributionReportingOsReportType =
+    ::content::ContentBrowserClient::AttributionReportingOsReportType;
+using AttributionReportingOsReportTypes =
+    ::content::ContentBrowserClient::AttributionReportingOsReportTypes;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -446,6 +449,10 @@ class AttributionDataHostManagerImpl::RegistrationContext {
     return suitable_context_.last_input_event();
   }
 
+  AttributionReportingOsReportTypes os_report_types() const {
+    return suitable_context_.os_report_types();
+  }
+
   std::optional<int64_t> navigation_id() const { return navigation_id_; }
 
   void SetNavigation(int64_t navigation_id) {
@@ -560,6 +567,10 @@ class AttributionDataHostManagerImpl::Registrations {
 
   GlobalRenderFrameHostId render_frame_id() const {
     return context_.render_frame_id();
+  }
+
+  AttributionReportingOsReportTypes os_report_types() const {
+    return context_.os_report_types();
   }
 
   const std::optional<std::string>& devtools_request_id() const {
@@ -1033,11 +1044,15 @@ void AttributionDataHostManagerImpl::ParseHeader(
   }
 
   const bool is_source = pending_decode.GetType() == RegistrationType::kSource;
+  const bool client_os_disabled =
+      is_source ? it->os_report_types().source_report_type ==
+                      AttributionReportingOsReportType::kDisabled
+                : it->os_report_types().trigger_report_type ==
+                      AttributionReportingOsReportType::kDisabled;
 
   network::mojom::AttributionSupport attribution_support =
-      AttributionManager::GetAttributionSupport(
-          content::WebContents::FromRenderFrameHost(
-              RenderFrameHost::FromID(it->render_frame_id())));
+      AttributionManager::GetAttributionSupport(client_os_disabled);
+
   switch (registrar) {
     case Registrar::kWeb:
       if (!network::HasAttributionWebSupport(attribution_support)) {
@@ -1187,14 +1202,19 @@ void AttributionDataHostManagerImpl::HandlePreferredPlatform(
     std::optional<Registrar> preferred_platform) {
   DCHECK(it != registrations_.end());
 
+  const bool is_source =
+      pending_registration_data.headers.type == RegistrationType::kSource;
+  const bool client_os_disabled =
+      is_source ? it->os_report_types().source_report_type ==
+                      AttributionReportingOsReportType::kDisabled
+                : it->os_report_types().trigger_report_type ==
+                      AttributionReportingOsReportType::kDisabled;
+
   auto registrar_info = attribution_reporting::RegistrarInfo::Get(
       pending_registration_data.headers.web_header.has_value(),
-      pending_registration_data.headers.os_header.has_value(),
-      pending_registration_data.headers.type == RegistrationType::kSource,
+      pending_registration_data.headers.os_header.has_value(), is_source,
       preferred_platform,
-      AttributionManager::GetAttributionSupport(
-          content::WebContents::FromRenderFrameHost(
-              RenderFrameHost::FromID(it->render_frame_id()))));
+      AttributionManager::GetAttributionSupport(client_os_disabled));
 
   pending_registration_data.headers.LogIssues(
       *it, pending_registration_data.reporting_url, registrar_info.issues);
@@ -2217,7 +2237,8 @@ void AttributionDataHostManagerImpl::SubmitOsRegistrations(
       std::move(items),
       /*top_level_origin=*/registration_context.context_origin(),
       std::move(input_event), registration_context.is_within_fenced_frame(),
-      registration_context.render_frame_id()));
+      registration_context.render_frame_id(),
+      registration_context.os_report_types()));
 }
 
 }  // namespace content

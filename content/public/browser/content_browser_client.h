@@ -952,7 +952,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Web, Os, both or none
   virtual network::mojom::AttributionSupport GetAttributionSupport(
       AttributionReportingOsApiState state,
-      content::WebContents* web_contents);
+      bool client_os_disabled);
 
   enum class AttributionReportingOperation {
     kSource,
@@ -1002,15 +1002,33 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin* reporting_origin,
       bool* can_bypass);
 
-  // Allows the embedder to control if an OS source event should register as
-  // a Web OS or OS (App) source.
-  virtual bool ShouldUseOsWebSourceAttributionReporting(
-      content::RenderFrameHost* rfh);
+  // Specifies whether an OS attribution event should be logged
+  // against the top level origin (web) or the app (OS) or if
+  // OS attribution is disabled.
+  enum class AttributionReportingOsReportType {
+    kWeb,
+    kOs,
+    kDisabled,
+  };
 
-  // Allows the embedder to control if an OS trigger event should register as
-  // a Web OS or OS (App) trigger.
-  virtual bool ShouldUseOsWebTriggerAttributionReporting(
-      content::RenderFrameHost* rfh);
+  // Attribution reporting generates source and trigger events.
+  // An embedder can specify whether OS attribution source/trigger events
+  // should register against the top level origin (web) or the app (OS) or if
+  // OS attribution is disabled. The behaviour can be the same or different
+  // for source and trigger events so this struct is used to hold the behaviour
+  // for the different event types.
+  struct AttributionReportingOsReportTypes {
+    AttributionReportingOsReportType source_report_type;
+    AttributionReportingOsReportType trigger_report_type;
+
+    auto operator<=>(const AttributionReportingOsReportTypes&) const = default;
+  };
+
+  // Allows the embedder to control if OS attribution source/trigger events
+  // should register against the top level origin (web) or the app (OS) or if
+  // OS attribution is disabled.
+  virtual AttributionReportingOsReportTypes
+  GetAttributionReportingOsReportTypes(WebContents* web_contents);
 
   // Allows the embedder to control if Shared Storage API operations can happen
   // in a given context.

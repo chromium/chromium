@@ -41,6 +41,7 @@
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
@@ -409,11 +410,12 @@ bool FencedFrameReporter::SendReport(
 
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(request_initiator_frame);
-  if (web_contents &&
-      network::HasAttributionSupport(
-          AttributionManager::GetAttributionSupport(web_contents))) {
-    if (auto suitable_context =
-            AttributionSuitableContext::Create(request_initiator_frame);
+  if (web_contents) {
+    network::mojom::AttributionSupport attribution_reporting_support =
+        static_cast<WebContentsImpl*>(web_contents)->GetAttributionSupport();
+    auto suitable_context =
+        AttributionSuitableContext::Create(request_initiator_frame);
+    if (network::HasAttributionSupport(attribution_reporting_support) &&
         suitable_context.has_value()) {
       BeaconId beacon_id(unique_id_counter.GetNext());
 
@@ -426,6 +428,7 @@ bool FencedFrameReporter::SendReport(
       attribution_reporting_data.emplace(AttributionReportingData{
           .beacon_id = beacon_id,
           .is_automatic_beacon = navigation_id.has_value(),
+          .attribution_reporting_support = attribution_reporting_support,
           .attribution_reporting_runtime_features =
               attribution_reporting_runtime_features,
       });
@@ -682,8 +685,7 @@ bool FencedFrameReporter::SendReportInternal(
             : network::mojom::AttributionReportingEligibility::kEventSource;
 
     request->attribution_reporting_support =
-        AttributionManager::GetAttributionSupport(
-            WebContents::FromFrameTreeNodeId(initiator_frame_tree_node_id));
+        attribution_reporting_data->attribution_reporting_support;
 
     request->attribution_reporting_runtime_features =
         attribution_reporting_data->attribution_reporting_runtime_features;

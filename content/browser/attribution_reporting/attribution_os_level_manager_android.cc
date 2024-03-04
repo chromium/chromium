@@ -38,7 +38,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/global_routing_id.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -48,6 +47,7 @@ namespace content {
 namespace {
 
 using ApiState = ContentBrowserClient::AttributionReportingOsApiState;
+using OsReportType = ContentBrowserClient::AttributionReportingOsReportType;
 
 int GetDeletionMode(bool delete_rate_limit_data) {
   // See
@@ -145,7 +145,7 @@ void AttributionOsLevelManagerAndroid::Register(
   JNIEnv* env = base::android::AttachCurrentThread();
 
   attribution_reporting::mojom::RegistrationType type = registration.GetType();
-  GlobalRenderFrameHostId render_frame_id = registration.render_frame_id;
+  OsReportType report_type = registration.report_type;
   std::vector<base::android::ScopedJavaLocalRef<jobject>> registration_urls;
   base::ranges::transform(
       registration.registration_items, std::back_inserter(registration_urls),
@@ -161,44 +161,60 @@ void AttributionOsLevelManagerAndroid::Register(
       request_id, base::BindOnce(std::move(callback), std::move(registration)));
 
   switch (type) {
-    case attribution_reporting::mojom::RegistrationType::kSource:
+    case attribution_reporting::mojom::RegistrationType::kSource: {
       DCHECK(input_event.has_value());
-      if (AttributionOsLevelManager::ShouldUseOsWebSource(render_frame_id)) {
-        auto sources = Java_AttributionOsLevelManager_createWebSourceParamsList(
-            env, is_debug_key_allowed.size());
-        for (size_t i = 0; i < is_debug_key_allowed.size(); ++i) {
-          Java_AttributionOsLevelManager_addWebSourceParams(
-              env, sources, registration_urls[i], is_debug_key_allowed[i]);
+      switch (report_type) {
+        case OsReportType::kWeb: {
+          auto sources =
+              Java_AttributionOsLevelManager_createWebSourceParamsList(
+                  env, is_debug_key_allowed.size());
+          for (size_t i = 0; i < is_debug_key_allowed.size(); ++i) {
+            Java_AttributionOsLevelManager_addWebSourceParams(
+                env, sources, registration_urls[i], is_debug_key_allowed[i]);
+          }
+          Java_AttributionOsLevelManager_registerWebAttributionSource(
+              env, jobj_, request_id, sources, top_level_origin,
+              input_event->input_event);
+          break;
         }
-        Java_AttributionOsLevelManager_registerWebAttributionSource(
-            env, jobj_, request_id, sources, top_level_origin,
-            input_event->input_event);
-      } else {
-        Java_AttributionOsLevelManager_registerAttributionSource(
-            env, jobj_, request_id,
-            url::GURLAndroid::ToJavaArrayOfGURLs(env, registration_urls),
-            input_event->input_event);
+        case OsReportType::kOs: {
+          Java_AttributionOsLevelManager_registerAttributionSource(
+              env, jobj_, request_id,
+              url::GURLAndroid::ToJavaArrayOfGURLs(env, registration_urls),
+              input_event->input_event);
+          break;
+        }
+        case OsReportType::kDisabled:
+          return;
       }
       break;
-    case attribution_reporting::mojom::RegistrationType::kTrigger:
-      if (AttributionOsLevelManager::ShouldUseOsWebTrigger(render_frame_id)) {
-        auto triggers =
-            Java_AttributionOsLevelManager_createWebTriggerParamsList(
-                env, is_debug_key_allowed.size());
-        for (size_t i = 0; i < is_debug_key_allowed.size(); ++i) {
-          Java_AttributionOsLevelManager_addWebTriggerParams(
-              env, triggers, registration_urls[i], is_debug_key_allowed[i]);
+    }
+    case attribution_reporting::mojom::RegistrationType::kTrigger: {
+      switch (report_type) {
+        case OsReportType::kWeb: {
+          auto triggers =
+              Java_AttributionOsLevelManager_createWebTriggerParamsList(
+                  env, is_debug_key_allowed.size());
+          for (size_t i = 0; i < is_debug_key_allowed.size(); ++i) {
+            Java_AttributionOsLevelManager_addWebTriggerParams(
+                env, triggers, registration_urls[i], is_debug_key_allowed[i]);
+          }
+          Java_AttributionOsLevelManager_registerWebAttributionTrigger(
+              env, jobj_, request_id, triggers, top_level_origin);
+          break;
         }
-        Java_AttributionOsLevelManager_registerWebAttributionTrigger(
-            env, jobj_, request_id, triggers, top_level_origin);
-
-      } else {
-        for (const auto& registration_url : registration_urls) {
-          Java_AttributionOsLevelManager_registerAttributionTrigger(
-              env, jobj_, request_id, registration_url);
+        case OsReportType::kOs: {
+          for (const auto& registration_url : registration_urls) {
+            Java_AttributionOsLevelManager_registerAttributionTrigger(
+                env, jobj_, request_id, registration_url);
+          }
+          break;
         }
+        case OsReportType::kDisabled:
+          return;
       }
       break;
+    }
   }
 }
 

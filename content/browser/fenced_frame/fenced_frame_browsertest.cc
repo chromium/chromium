@@ -6355,7 +6355,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
       browser_client,
       GetAttributionSupport(
           ContentBrowserClient::AttributionReportingOsApiState::kDisabled,
-          testing::_))
+          /*client_os_disabled=*/false))
       .WillRepeatedly(
           testing::Return(network::mojom::AttributionSupport::kNone));
   ON_CALL(browser_client, IsPrivacySandboxReportingDestinationAttested)

@@ -13,6 +13,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace content {
@@ -37,6 +38,9 @@ class CONTENT_EXPORT AttributionSuitableContext {
       GlobalRenderFrameHostId root_render_frame_id,
       int64_t last_navigation_id,
       AttributionInputEvent last_input_event = AttributionInputEvent(),
+      ContentBrowserClient::AttributionReportingOsReportTypes os_report_types =
+          {ContentBrowserClient::AttributionReportingOsReportType::kWeb,
+           ContentBrowserClient::AttributionReportingOsReportType::kWeb},
       AttributionDataHostManager* attribution_data_host_manager = nullptr);
 
   bool operator==(const AttributionSuitableContext& other) const;
@@ -60,6 +64,10 @@ class CONTENT_EXPORT AttributionSuitableContext {
   const AttributionInputEvent& last_input_event() const {
     return last_input_event_;
   }
+  ContentBrowserClient::AttributionReportingOsReportTypes os_report_types()
+      const {
+    return os_report_types_;
+  }
 
   AttributionDataHostManager* data_host_manager() const {
     return attribution_data_host_manager_.get();
@@ -72,6 +80,7 @@ class CONTENT_EXPORT AttributionSuitableContext {
       GlobalRenderFrameHostId root_render_frame_id,
       int64_t last_navigation_id,
       AttributionInputEvent last_input_event,
+      ContentBrowserClient::AttributionReportingOsReportTypes,
       base::WeakPtr<AttributionDataHostManager>);
 
   attribution_reporting::SuitableOrigin context_origin_;
@@ -79,6 +88,7 @@ class CONTENT_EXPORT AttributionSuitableContext {
   GlobalRenderFrameHostId root_render_frame_id_;
   int64_t last_navigation_id_;
   AttributionInputEvent last_input_event_;
+  ContentBrowserClient::AttributionReportingOsReportTypes os_report_types_;
 
   base::WeakPtr<AttributionDataHostManager> attribution_data_host_manager_;
 };

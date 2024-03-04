@@ -62,6 +62,7 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
@@ -82,6 +83,9 @@ namespace {
 using ::attribution_reporting::mojom::RegistrationType;
 
 constexpr int64_t kNavigationId(-1);
+const ContentBrowserClient::AttributionReportingOsReportTypes kOsReportTypes = {
+    ContentBrowserClient::AttributionReportingOsReportType::kWeb,
+    ContentBrowserClient::AttributionReportingOsReportType::kWeb};
 
 const aggregation_service::TestHpkeKey kHpkeKey;
 
@@ -286,7 +290,7 @@ class AttributionEventHandler {
                   /*is_nested_within_fenced_frame=*/false,
                   GlobalRenderFrameHostId(),
                   /*last_navigation_id=*/kNavigationId,
-                  /*last_input_event=*/AttributionInputEvent(),
+                  /*last_input_event=*/AttributionInputEvent(), kOsReportTypes,
                   attribution_data_host_manager),
               attribution_src_token,
               /*navigation_id=*/kNavigationId, /*devtools_request_id=*/"");
@@ -302,7 +306,7 @@ class AttributionEventHandler {
                   /*is_nested_within_fenced_frame=*/false,
                   GlobalRenderFrameHostId(),
                   /*last_navigation_id=*/kNavigationId,
-                  /*last_input_event=*/AttributionInputEvent(),
+                  /*last_input_event=*/AttributionInputEvent(), kOsReportTypes,
                   attribution_data_host_manager),
               attribution_reporting::mojom::RegistrationEligibility::
                   kSourceOrTrigger);
@@ -330,7 +334,7 @@ class AttributionEventHandler {
             event.context_origin,
             /*is_nested_within_fenced_frame=*/false, GlobalRenderFrameHostId(),
             /*last_navigation_id=*/kNavigationId,
-            /*last_input_event=*/AttributionInputEvent(),
+            /*last_input_event=*/AttributionInputEvent(), kOsReportTypes,
             manager_->GetDataHostManager()),
         attribution_reporting::mojom::RegistrationEligibility::
             kSourceOrTrigger);

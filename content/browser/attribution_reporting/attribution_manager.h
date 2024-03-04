@@ -42,7 +42,7 @@ class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
   static AttributionManager* FromBrowserContext(BrowserContext*);
 
   static network::mojom::AttributionSupport GetAttributionSupport(
-      WebContents* web_contents);
+      bool client_os_disabled);
 
   ~AttributionManager() override = default;
 

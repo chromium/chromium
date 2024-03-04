@@ -19,6 +19,7 @@
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -950,7 +951,9 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
               AttributionInputEvent(),
               /*is_within_fenced_frame=*/false,
-              /*render_frame_id=*/GlobalRenderFrameHostId()),
+              /*render_frame_id=*/GlobalRenderFrameHostId(),
+              {ContentBrowserClient::AttributionReportingOsReportType::kWeb,
+               ContentBrowserClient::AttributionReportingOsReportType::kWeb}),
           R"json([{
             "body": {
               "context_site": "https://b.test",
@@ -966,7 +969,9 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
                                   /*debug_reporting=*/true)},
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
               /*input_event=*/std::nullopt, /*is_within_fenced_frame=*/false,
-              /*render_frame_id=*/GlobalRenderFrameHostId()),
+              /*render_frame_id=*/GlobalRenderFrameHostId(),
+              {ContentBrowserClient::AttributionReportingOsReportType::kWeb,
+               ContentBrowserClient::AttributionReportingOsReportType::kWeb}),
           R"json([{
             "body": {
               "context_site": "https://b.test",
@@ -982,7 +987,9 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
                                   /*debug_reporting=*/false)},
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
               /*input_event=*/std::nullopt, /*is_within_fenced_frame=*/false,
-              /*render_frame_id=*/GlobalRenderFrameHostId()),
+              /*render_frame_id=*/GlobalRenderFrameHostId(),
+              {ContentBrowserClient::AttributionReportingOsReportType::kWeb,
+               ContentBrowserClient::AttributionReportingOsReportType::kWeb}),
           nullptr,
       },
       {
@@ -992,7 +999,9 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
                                   /*debug_reporting=*/true)},
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
               /*input_event=*/std::nullopt, /*is_within_fenced_frame=*/true,
-              /*render_frame_id=*/GlobalRenderFrameHostId()),
+              /*render_frame_id=*/GlobalRenderFrameHostId(),
+              {ContentBrowserClient::AttributionReportingOsReportType::kWeb,
+               ContentBrowserClient::AttributionReportingOsReportType::kWeb}),
           nullptr,
       },
       {
@@ -1002,7 +1011,9 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
                                   /*debug_reporting=*/true)},
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
               /*input_event=*/std::nullopt, /*is_within_fenced_frame=*/false,
-              /*render_frame_id=*/GlobalRenderFrameHostId()),
+              /*render_frame_id=*/GlobalRenderFrameHostId(),
+              {ContentBrowserClient::AttributionReportingOsReportType::kWeb,
+               ContentBrowserClient::AttributionReportingOsReportType::kWeb}),
           nullptr,
       },
   };

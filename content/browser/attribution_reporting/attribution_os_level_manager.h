@@ -26,7 +26,7 @@ class Origin;
 namespace content {
 
 struct OsRegistration;
-struct GlobalRenderFrameHostId;
+class WebContents;
 
 // Interface between the browser's Attribution Reporting implementation and the
 // operating system's.
@@ -53,6 +53,9 @@ class CONTENT_EXPORT AttributionOsLevelManager {
   static ApiState GetApiState();
   static void SetApiState(std::optional<ApiState>);
 
+  [[nodiscard]] static ContentBrowserClient::AttributionReportingOsReportTypes
+  GetAttributionReportingOsReportTypes(WebContents*);
+
   virtual ~AttributionOsLevelManager() = default;
 
   using RegisterCallback =
@@ -75,10 +78,6 @@ class CONTENT_EXPORT AttributionOsLevelManager {
 
  protected:
   [[nodiscard]] static bool ShouldInitializeApiState();
-  [[nodiscard]] static bool ShouldUseOsWebSource(
-      GlobalRenderFrameHostId render_frame_id);
-  [[nodiscard]] static bool ShouldUseOsWebTrigger(
-      GlobalRenderFrameHostId render_frame_id);
 };
 
 class CONTENT_EXPORT NoOpAttributionOsLevelManager

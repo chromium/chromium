@@ -45,6 +45,7 @@
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
@@ -264,8 +265,9 @@ void AttributionInternalsHandlerImpl::IsAttributionReportingEnabled(
   bool debug_mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAttributionReportingDebugMode);
 
-  std::move(callback).Run(attribution_reporting_enabled, debug_mode,
-                          AttributionManager::GetAttributionSupport(contents));
+  std::move(callback).Run(
+      attribution_reporting_enabled, debug_mode,
+      static_cast<WebContentsImpl*>(contents)->GetAttributionSupport());
 }
 
 void AttributionInternalsHandlerImpl::GetActiveSources(

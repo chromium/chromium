@@ -19,6 +19,7 @@
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -97,6 +98,8 @@ std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
       initiator_frame->IsNestedWithinFencedFrame(),
       initiator_root_frame->GetGlobalId(), initiator_frame->navigation_id(),
       attribution_host->GetMostRecentNavigationInputEvent(),
+      AttributionOsLevelManager::GetAttributionReportingOsReportTypes(
+          web_contents),
       data_host_manager->AsWeakPtr());
 }
 
@@ -107,10 +110,12 @@ AttributionSuitableContext AttributionSuitableContext::CreateForTesting(
     GlobalRenderFrameHostId root_render_frame_id,
     int64_t last_navigation_id,
     AttributionInputEvent last_input_event,
+    ContentBrowserClient::AttributionReportingOsReportTypes os_report_types,
     AttributionDataHostManager* attribution_data_host_manager) {
   return AttributionSuitableContext(
       std::move(context_origin), is_nested_within_fenced_frame,
       root_render_frame_id, last_navigation_id, last_input_event,
+      os_report_types,
       attribution_data_host_manager ? attribution_data_host_manager->AsWeakPtr()
                                     : nullptr);
 }
@@ -133,12 +138,14 @@ AttributionSuitableContext::AttributionSuitableContext(
     GlobalRenderFrameHostId root_render_frame_id,
     int64_t last_navigation_id,
     AttributionInputEvent last_input_event,
+    ContentBrowserClient::AttributionReportingOsReportTypes os_report_types,
     base::WeakPtr<AttributionDataHostManager> attribution_data_host_manager)
     : context_origin_(std::move(context_origin)),
       is_nested_within_fenced_frame_(is_nested_within_fenced_frame),
       root_render_frame_id_(root_render_frame_id),
       last_navigation_id_(last_navigation_id),
       last_input_event_(std::move(last_input_event)),
+      os_report_types_(os_report_types),
       attribution_data_host_manager_(attribution_data_host_manager) {}
 
 AttributionSuitableContext::AttributionSuitableContext(

@@ -56,6 +56,7 @@
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/browser_plugin/browser_plugin_embedder.h"
@@ -271,6 +272,8 @@ BASE_FEATURE(kCrashOnDanglingBrowserContext,
 
 using LifecycleState = RenderFrameHost::LifecycleState;
 using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
+using AttributionReportingOsReportType =
+    ContentBrowserClient::AttributionReportingOsReportType;
 
 base::LazyInstance<base::RepeatingCallbackList<void(WebContents*)>>::
     DestructorAtExit g_created_callbacks = LAZY_INSTANCE_INITIALIZER;
@@ -10617,7 +10620,14 @@ void WebContentsImpl::SetOverscrollNavigationEnabled(bool enabled) {
 }
 
 network::mojom::AttributionSupport WebContentsImpl::GetAttributionSupport() {
-  return AttributionManager::GetAttributionSupport(this);
+  ContentBrowserClient::AttributionReportingOsReportTypes reportTypes =
+      AttributionOsLevelManager::GetAttributionReportingOsReportTypes(this);
+
+  return AttributionManager::GetAttributionSupport(
+      reportTypes.source_report_type ==
+          AttributionReportingOsReportType::kDisabled &&
+      reportTypes.trigger_report_type ==
+          AttributionReportingOsReportType::kDisabled);
 }
 
 void WebContentsImpl::UpdateAttributionSupportRenderer() {

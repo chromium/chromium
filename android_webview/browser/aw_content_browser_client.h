@@ -268,7 +268,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   void OnDisplayInsecureContent(content::WebContents* web_contents) override;
   network::mojom::AttributionSupport GetAttributionSupport(
       AttributionReportingOsApiState state,
-      content::WebContents* web_contents) override;
+      bool client_os_disabled) override;
   // Allows the embedder to control if Attribution Reporting API operations can
   // happen in a given context.
   // For WebView Browser Attribution is explicitly disabled.
@@ -280,10 +280,8 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin* destination_origin,
       const url::Origin* reporting_origin,
       bool* can_bypass) override;
-  bool ShouldUseOsWebSourceAttributionReporting(
-      content::RenderFrameHost* rfh) override;
-  bool ShouldUseOsWebTriggerAttributionReporting(
-      content::RenderFrameHost* rfh) override;
+  AttributionReportingOsReportTypes GetAttributionReportingOsReportTypes(
+      content::WebContents* web_contents) override;
   blink::mojom::OriginTrialsSettingsPtr GetOriginTrialsSettings() override;
   network::mojom::IpProtectionProxyBypassPolicy
   GetIpProtectionProxyBypassPolicy() override;

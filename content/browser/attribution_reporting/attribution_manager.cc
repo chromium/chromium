@@ -33,9 +33,9 @@ AttributionManager* AttributionManager::FromBrowserContext(
 
 // static
 network::mojom::AttributionSupport AttributionManager::GetAttributionSupport(
-    WebContents* web_contents) {
+    bool client_os_disabled) {
   return GetContentClient()->browser()->GetAttributionSupport(
-      AttributionOsLevelManager::GetApiState(), web_contents);
+      AttributionOsLevelManager::GetApiState(), client_os_disabled);
 }
 
 }  // namespace content

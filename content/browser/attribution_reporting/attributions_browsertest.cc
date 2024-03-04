@@ -1067,7 +1067,7 @@ IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
       browser_client,
       GetAttributionSupport(
           ContentBrowserClient::AttributionReportingOsApiState::kDisabled,
-          testing::_))
+          /*client_os_disabled=*/false))
       .WillRepeatedly(Return(network::mojom::AttributionSupport::kNone));
 
   auto register_response =

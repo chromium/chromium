@@ -17,8 +17,7 @@
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 
 namespace content {
@@ -43,24 +42,6 @@ const base::SequenceChecker& GetSequenceChecker() {
 std::optional<ApiState> g_state GUARDED_BY_CONTEXT(GetSequenceChecker());
 
 }  // namespace
-
-// static
-bool AttributionOsLevelManager::ShouldUseOsWebSource(
-    GlobalRenderFrameHostId render_frame_id) {
-  return GetContentClient()
-      ->browser()
-      ->ShouldUseOsWebSourceAttributionReporting(
-          RenderFrameHost::FromID(render_frame_id));
-}
-
-// static
-bool AttributionOsLevelManager::ShouldUseOsWebTrigger(
-    GlobalRenderFrameHostId render_frame_id) {
-  return GetContentClient()
-      ->browser()
-      ->ShouldUseOsWebTriggerAttributionReporting(
-          RenderFrameHost::FromID(render_frame_id));
-}
 
 // static
 bool AttributionOsLevelManager::ShouldInitializeApiState() {
@@ -94,6 +75,14 @@ void AttributionOsLevelManager::SetApiState(std::optional<ApiState> state) {
   }
 
   WebContentsImpl::UpdateAttributionSupportAllRenderers();
+}
+
+// static
+ContentBrowserClient::AttributionReportingOsReportTypes
+AttributionOsLevelManager::GetAttributionReportingOsReportTypes(
+    WebContents* web_contents) {
+  return GetContentClient()->browser()->GetAttributionReportingOsReportTypes(
+      web_contents);
 }
 
 ScopedApiStateForTesting::ScopedApiStateForTesting(

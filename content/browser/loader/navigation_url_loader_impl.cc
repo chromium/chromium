@@ -45,6 +45,7 @@
 #include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_getter.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_request_handler.h"
@@ -330,10 +331,12 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->has_storage_access =
       request_info.begin_params->has_storage_access;
 
+  WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
+      WebContents::FromFrameTreeNodeId(frame_tree_node->frame_tree_node_id()));
   new_request->attribution_reporting_support =
-      AttributionManager::GetAttributionSupport(
-          WebContents::FromFrameTreeNodeId(
-              frame_tree_node->frame_tree_node_id()));
+      web_contents ? web_contents->GetAttributionSupport()
+                   : AttributionManager::GetAttributionSupport(
+                         /*client_os_disabled=*/false);
 
   new_request->attribution_reporting_eligibility =
       request_info.begin_params->impression.has_value()

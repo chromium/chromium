@@ -41,6 +41,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -471,11 +472,14 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
 
   manager()->NotifyOsRegistration(
-      OsRegistration({OsRegistrationItem(GURL("https://a.test"),
-                                         /*debug_reporting=*/false)},
-                     url::Origin::Create(GURL("https://b.test")),
-                     AttributionInputEvent(), /*is_within_fenced_frame=*/false,
-                     /*render_frame_id=*/GlobalRenderFrameHostId()),
+      OsRegistration(
+          {OsRegistrationItem(GURL("https://a.test"),
+                              /*debug_reporting=*/false)},
+          url::Origin::Create(GURL("https://b.test")), AttributionInputEvent(),
+          /*is_within_fenced_frame=*/false,
+          /*render_frame_id=*/GlobalRenderFrameHostId(),
+          {ContentBrowserClient::AttributionReportingOsReportType::kWeb,
+           ContentBrowserClient::AttributionReportingOsReportType::kWeb}),
       /*is_debug_key_allowed=*/false,
       attribution_reporting::mojom::OsRegistrationResult::kPassedToOs);
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());

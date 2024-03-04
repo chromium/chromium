@@ -25,7 +25,7 @@ class MockAttributionReportingContentBrowserClientBase : public SuperClass {
   MOCK_METHOD(network::mojom::AttributionSupport,
               GetAttributionSupport,
               (ContentBrowserClient::AttributionReportingOsApiState state,
-               content::WebContents* web_contents),
+               bool client_os_disabled),
               (override));
 
   MOCK_METHOD(bool,
@@ -37,16 +37,6 @@ class MockAttributionReportingContentBrowserClientBase : public SuperClass {
                const url::Origin* destination_origin,
                const url::Origin* reporting_origin,
                bool* can_bypass),
-              (override));
-
-  MOCK_METHOD(bool,
-              ShouldUseOsWebSourceAttributionReporting,
-              (RenderFrameHost*),
-              (override));
-
-  MOCK_METHOD(bool,
-              ShouldUseOsWebTriggerAttributionReporting,
-              (RenderFrameHost*),
               (override));
 
   MOCK_METHOD(bool,

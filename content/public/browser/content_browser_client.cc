@@ -88,6 +88,9 @@
 #include "content/public/browser/tts_environment_android.h"
 #endif
 
+using AttributionReportType =
+    content::ContentBrowserClient::AttributionReportingOsReportType;
+
 namespace content {
 
 std::unique_ptr<BrowserMainParts> ContentBrowserClient::CreateBrowserMainParts(
@@ -543,12 +546,13 @@ void ContentBrowserClient::OnAuctionComplete(
 
 network::mojom::AttributionSupport ContentBrowserClient::GetAttributionSupport(
     AttributionReportingOsApiState state,
-    content::WebContents* web_contents) {
+    bool client_os_disabled) {
   switch (state) {
     case AttributionReportingOsApiState::kDisabled:
       return network::mojom::AttributionSupport::kWeb;
     case AttributionReportingOsApiState::kEnabled:
-      return network::mojom::AttributionSupport::kWebAndOs;
+      return client_os_disabled ? network::mojom::AttributionSupport::kWeb
+                                : network::mojom::AttributionSupport::kWebAndOs;
   }
 }
 
@@ -563,14 +567,10 @@ bool ContentBrowserClient::IsAttributionReportingOperationAllowed(
   return true;
 }
 
-bool ContentBrowserClient::ShouldUseOsWebSourceAttributionReporting(
-    content::RenderFrameHost* rfh) {
-  return true;
-}
-
-bool ContentBrowserClient::ShouldUseOsWebTriggerAttributionReporting(
-    content::RenderFrameHost* rfh) {
-  return true;
+ContentBrowserClient::AttributionReportingOsReportTypes
+ContentBrowserClient::GetAttributionReportingOsReportTypes(
+    WebContents* web_contents) {
+  return {AttributionReportType::kWeb, AttributionReportType::kWeb};
 }
 
 bool ContentBrowserClient::IsSharedStorageAllowed(
