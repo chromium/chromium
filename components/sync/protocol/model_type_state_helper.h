@@ -15,12 +15,6 @@ bool IsInitialSyncDone(sync_pb::ModelTypeState::InitialSyncState state);
 bool IsInitialSyncAtLeastPartiallyDone(
     sync_pb::ModelTypeState::InitialSyncState state);
 
-// Migrates `model_type_state` in-place from the deprecated `initial_sync_done`
-// flag to the new `initial_sync_state` enum. Returns whether a migration
-// actually happened and `model_type_state` was modified.
-bool MigrateLegacyInitialSyncDone(sync_pb::ModelTypeState& model_type_state,
-                                  ModelType type);
-
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_PROTOCOL_MODEL_TYPE_STATE_HELPER_H_

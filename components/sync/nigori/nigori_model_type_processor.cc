@@ -323,8 +323,6 @@ void NigoriModelTypeProcessor::ModelReadyToSync(
     return;
   }
 
-  MigrateLegacyInitialSyncDone(nigori_metadata.model_type_state, NIGORI);
-
   if (IsInitialSyncDone(
           nigori_metadata.model_type_state.initial_sync_state()) &&
       nigori_metadata.entity_metadata) {
