@@ -1394,55 +1394,6 @@ void AttributionManagerImpl::HandleOsRegistration(OsRegistration registration) {
                                      OsRegistrationResult::kUnsupported);
     return;
   }
-  registration.registration_items.erase(
-      base::ranges::remove_if(
-          registration.registration_items,
-          [&, now = base::Time::Now()](const OsRegistrationItem& item) {
-            const auto registration_origin = url::Origin::Create(item.url);
-            if (registration_origin.opaque()) {
-              NotifyOsRegistration(
-                  now, item, registration.top_level_origin,
-                  /*is_debug_key_allowed=*/false, registration.GetType(),
-                  OsRegistrationResult::kInvalidRegistrationUrl);
-              return true;
-            }
-
-            ContentBrowserClient::AttributionReportingOperation operation;
-            const url::Origin* source_origin;
-            const url::Origin* destination_origin;
-            switch (registration.GetType()) {
-              case RegistrationType::kSource:
-                operation = ContentBrowserClient::
-                    AttributionReportingOperation::kOsSource;
-                source_origin = &registration.top_level_origin;
-                destination_origin = nullptr;
-                break;
-              case RegistrationType::kTrigger:
-                operation = ContentBrowserClient::
-                    AttributionReportingOperation::kOsTrigger;
-                source_origin = nullptr;
-                destination_origin = &registration.top_level_origin;
-                break;
-            }
-            if (!IsOperationAllowed(
-                    *storage_partition_, operation,
-                    RenderFrameHost::FromID(registration.render_frame_id),
-                    source_origin, destination_origin, &registration_origin)) {
-              NotifyOsRegistration(
-                  now, item, registration.top_level_origin,
-                  /*is_debug_key_allowed=*/false, registration.GetType(),
-                  OsRegistrationResult::kProhibitedByBrowserPolicy);
-              return true;
-            }
-
-            return false;
-          }),
-      registration.registration_items.end());
-
-  if (registration.registration_items.empty()) {
-    return;
-  }
-
   const size_t size_before_push = pending_os_events_.size();
 
   // Avoid unbounded memory growth with adversarial input.
@@ -1473,7 +1424,57 @@ void AttributionManagerImpl::PrepareNextOsEvent() {
     return;
   }
 
-  const OsRegistration& event = pending_os_events_.front();
+  OsRegistration& event = pending_os_events_.front();
+  event.registration_items.erase(
+      base::ranges::remove_if(
+          event.registration_items,
+          [&, now = base::Time::Now()](const OsRegistrationItem& item) {
+            const auto registration_origin = url::Origin::Create(item.url);
+            if (registration_origin.opaque()) {
+              NotifyOsRegistration(
+                  now, item, event.top_level_origin,
+                  /*is_debug_key_allowed=*/false, event.GetType(),
+                  OsRegistrationResult::kInvalidRegistrationUrl);
+              return true;
+            }
+
+            ContentBrowserClient::AttributionReportingOperation operation;
+            const url::Origin* source_origin;
+            const url::Origin* destination_origin;
+            switch (event.GetType()) {
+              case RegistrationType::kSource:
+                operation = ContentBrowserClient::
+                    AttributionReportingOperation::kOsSource;
+                source_origin = &event.top_level_origin;
+                destination_origin = nullptr;
+                break;
+              case RegistrationType::kTrigger:
+                operation = ContentBrowserClient::
+                    AttributionReportingOperation::kOsTrigger;
+                source_origin = nullptr;
+                destination_origin = &event.top_level_origin;
+                break;
+            }
+            if (!IsOperationAllowed(
+                    *storage_partition_, operation,
+                    RenderFrameHost::FromID(event.render_frame_id),
+                    source_origin, destination_origin, &registration_origin)) {
+              NotifyOsRegistration(
+                  now, item, event.top_level_origin,
+                  /*is_debug_key_allowed=*/false, event.GetType(),
+                  OsRegistrationResult::kProhibitedByBrowserPolicy);
+              return true;
+            }
+
+            return false;
+          }),
+      event.registration_items.end());
+
+  if (event.registration_items.empty()) {
+    pending_os_events_.pop_front();
+    return PrepareNextOsEvent();
+  }
+
   std::vector<bool> allowed(event.registration_items.size());
 
   struct ToCheck {
