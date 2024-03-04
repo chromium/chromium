@@ -154,6 +154,16 @@ unsigned AudioNodeOutput::RenderingFanOutCount() const {
   return rendering_fan_out_count_;
 }
 
+unsigned AudioNodeOutput::RenderingParamFanOutCount() const {
+  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  return rendering_param_fan_out_count_;
+}
+
+bool AudioNodeOutput::IsConnectedDuringRendering() const {
+  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  return RenderingFanOutCount() > 0 || RenderingParamFanOutCount() > 0;
+}
+
 void AudioNodeOutput::DisconnectAllInputs() {
   GetDeferredTaskHandler().AssertGraphOwner();
 
