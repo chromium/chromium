@@ -1516,6 +1516,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "cros-mall",
+    "owners": [
+      "tsergeant@chromium.org",
+      "crosdev-commerce-eng@google.com"
+    ],
+    "expiry_milestone": 129
+  },
+  {
     "name": "cros-omnibox-install-dialog",
     "owners": [ "loubrett@google.com", "cros-apps-platform-core@google.com" ],
     "expiry_milestone": 130

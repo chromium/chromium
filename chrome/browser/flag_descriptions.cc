@@ -7519,6 +7519,10 @@ const char kAudioFlexibleLoopbackForSystemLoopbackDescription[] =
     "Request a FLEXIBLE_LOOPBACK instead of POST_MIX_LOOPBACK for system "
     "loopback";
 
+const char kCrosMallName[] = "ChromeOS App Mall";
+const char kCrosMallDescription[] =
+    "Enables an app to discover and install other apps.";
+
 const char kCrosPrivacyHubName[] = "Enable ChromeOS Privacy Hub";
 const char kCrosPrivacyHubDescription[] = "Enables ChromeOS Privacy Hub.";
 

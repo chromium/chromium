@@ -18611,6 +18611,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentJogTextfieldOnPopup:enabled"/>
   <int value="-1018983714" label="FedCm:enabled"/>
   <int value="-1018454657" label="SharingPeerConnectionReceiver:enabled"/>
+  <int value="-1017686690" label="CrosMall:enabled"/>
   <int value="-1016669222" label="CloudPrinterHandler:enabled"/>
   <int value="-1016202433" label="disable-add-to-shelf"/>
   <int value="-1016196171"
@@ -22737,6 +22738,7 @@ from previous Chrome versions.
   <int value="863493664" label="LacrosMoveProfileMigration:disabled"/>
   <int value="863584992" label="ExtensionsFSPInServiceWorkers:enabled"/>
   <int value="864024033" label="IsolatePrerendersMustProbeOrigin:enabled"/>
+  <int value="865096806" label="CrosMall:disabled"/>
   <int value="865952257" label="CrOSLateBootBluetoothTelephony:disabled"/>
   <int value="866536801" label="PDFViewerUpdate:disabled"/>
   <int value="867512869" label="mark-non-secure-as"/>

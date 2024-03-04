@@ -11030,6 +11030,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLinkedServicesSettingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kLinkedServicesSetting)},
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"cros-mall", flag_descriptions::kCrosMallName,
+     flag_descriptions::kCrosMallDescription, kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(chromeos::features::kCrosMall)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
