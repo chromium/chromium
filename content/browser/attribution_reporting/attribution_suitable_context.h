@@ -37,7 +37,7 @@ class CONTENT_EXPORT AttributionSuitableContext {
       GlobalRenderFrameHostId root_render_frame_id,
       int64_t last_navigation_id,
       AttributionInputEvent last_input_event = AttributionInputEvent(),
-      AttributionDataHostManager* Attribution_data_host_manager = nullptr);
+      AttributionDataHostManager* attribution_data_host_manager = nullptr);
 
   bool operator==(const AttributionSuitableContext& other) const;
 
