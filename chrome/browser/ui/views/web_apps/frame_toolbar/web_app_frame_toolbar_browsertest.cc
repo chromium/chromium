@@ -1353,7 +1353,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 
 #if BUILDFLAG(IS_WIN)
   views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
+      views::test::AnyWidgetTestPasskey{}, "FindBarHost");
   // Press Ctrl+F to open find bar.
   content::NativeWebKeyboardEvent event(
       blink::WebKeyboardEvent::Type::kRawKeyDown,

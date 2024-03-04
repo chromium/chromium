@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 
     {
       views::NamedWidgetShownWaiter shown_waiter(
-          views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
+          views::test::AnyWidgetTestPasskey{}, "FindBarHost");
       chrome::Find(browser());
       std::ignore = shown_waiter.WaitIfNeededAndGet();
       EXPECT_GT(controller->GetMinimumContentOffset(), 0);
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
     ScopedAlwaysShowToolbar scoped_always_show(browser(), true);
     {
       views::NamedWidgetShownWaiter shown_waiter(
-          views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
+          views::test::AnyWidgetTestPasskey{}, "FindBarHost");
       chrome::Find(browser());
       std::ignore = shown_waiter.WaitIfNeededAndGet();
       EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 
   // Open the find bar
   views::NamedWidgetShownWaiter shown_waiter(
-      views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
+      views::test::AnyWidgetTestPasskey{}, "FindBarHost");
   chrome::Find(browser());
   views::Widget* find_bar = shown_waiter.WaitIfNeededAndGet();
 

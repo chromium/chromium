@@ -154,8 +154,7 @@ FindBarHost::FindBarHost(BrowserView* browser_view)
   host_ = std::make_unique<ThemeCopyingWidget>(browser_view_->GetWidget());
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_CONTROL);
   params.delegate = this;
-  /// FIXME: FindBarHost
-  params.name = "DropdownBarHost";
+  params.name = "FindBarHost";
   params.parent = browser_view_->GetWidgetForAnchoring()->GetNativeView();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 #if BUILDFLAG(IS_MAC)
