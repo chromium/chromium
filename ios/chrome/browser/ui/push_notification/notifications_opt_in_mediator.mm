@@ -60,17 +60,25 @@
   // TODO(crbug.com/41492138): record metrics.
   std::vector<PushNotificationClientId> selectedClientIds;
   std::vector<PushNotificationClientId> deselectedClientIds;
+  std::string gaiaID = base::SysNSStringToUTF8([self primaryIdentity].gaiaID);
+
   for (auto [item, selection] : _selected) {
     std::vector<PushNotificationClientId> clientIDs =
         [self clientIDsForItem:item];
-    if (selection) {
+    BOOL enabled = push_notification_settings::
+        GetMobileNotificationPermissionStatusForMultipleClients(clientIDs,
+                                                                gaiaID);
+    // Only add the clientId if there has been a change from the original opt-in
+    // status.
+    if (selection && !enabled) {
       selectedClientIds.insert(selectedClientIds.end(), clientIDs.begin(),
                                clientIDs.end());
-    } else {
+    } else if (!selection && enabled) {
       deselectedClientIds.insert(deselectedClientIds.end(), clientIDs.begin(),
                                  clientIDs.end());
     }
   }
+
   [self disableNotifications:deselectedClientIds];
   [self.presenter presentNotificationsAlertForClientIds:selectedClientIds];
 }
