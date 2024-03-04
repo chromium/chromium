@@ -337,6 +337,12 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jobject>& jiban);
 
+  // Checks if `jiban_value` is a valid IBAN.
+  static jboolean IsValidIban(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& unused_obj,
+      const base::android::JavaParamRef<jstring>& jiban_value);
+
  private:
   ~PersonalDataManagerAndroid() override;
 

@@ -879,6 +879,12 @@ public class PersonalDataManager {
                 .addOrUpdateLocalIban(mPersonalDataManagerAndroid, PersonalDataManager.this, iban);
     }
 
+    public boolean isValidIban(String ibanValue) {
+        ThreadUtils.assertOnUiThread();
+        return PersonalDataManagerJni.get()
+                .isValidIban(mPersonalDataManagerAndroid, PersonalDataManager.this, ibanValue);
+    }
+
     /**
      * Records the use of the profile associated with the specified {@code guid}. Effectively
      * increments the use count of the profile and sets its use date to the current time. Also logs
@@ -1337,5 +1343,10 @@ public class PersonalDataManager {
 
         String addOrUpdateLocalIban(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, Iban iban);
+
+        boolean isValidIban(
+                long nativePersonalDataManagerAndroid,
+                PersonalDataManager caller,
+                String ibanValue);
     }
 }

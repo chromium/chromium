@@ -18,6 +18,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 
 public class AutofillLocalIbanEditor extends AutofillEditorBase {
     // This class creates a view for adding a local IBAN. A local IBAN gets saved to the
@@ -25,6 +26,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase {
     protected Button mDoneButton;
     protected EditText mNickname;
     protected TextInputLayout mNicknameLabel;
+    protected EditText mValue;
 
     @UsedByReflection("AutofillPaymentMethodsFragment.java")
     public AutofillLocalIbanEditor() {}
@@ -38,6 +40,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase {
         mDoneButton = (Button) v.findViewById(R.id.button_primary);
         mNickname = (EditText) v.findViewById(R.id.iban_nickname_edit);
         mNicknameLabel = (TextInputLayout) v.findViewById(R.id.iban_nickname_label);
+        mValue = (EditText) v.findViewById(R.id.iban_value_edit);
 
         mNickname.setOnFocusChangeListener(
                 (view, hasFocus) -> mNicknameLabel.setCounterEnabled(hasFocus));
@@ -79,9 +82,15 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase {
         // TODO(b/309163615): User can delete existing IBANs from settings page.
     }
 
+    @Override
+    protected void initializeButtons(View v) {
+        super.initializeButtons(v);
+        mValue.addTextChangedListener(this);
+    }
+
     private void updateSaveButtonEnabled() {
         // Enable save button if IBAN value is valid.
-        // TODO(b/321120072): Verify IBAN value and enable the save button appropriately.
-        mDoneButton.setEnabled(false);
+        mDoneButton.setEnabled(
+                PersonalDataManager.getInstance().isValidIban(mValue.getText().toString()));
     }
 }

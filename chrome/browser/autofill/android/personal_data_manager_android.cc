@@ -729,6 +729,13 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::AddOrUpdateLocalIban(
   return ConvertUTF8ToJavaString(env, guid);
 }
 
+jboolean PersonalDataManagerAndroid::IsValidIban(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& unused_obj,
+    const JavaParamRef<jstring>& jiban_value) {
+  return Iban::IsValid(ConvertJavaStringToUTF16(env, jiban_value));
+}
+
 // Returns whether the Autofill feature is managed.
 static jboolean JNI_PersonalDataManager_IsAutofillManaged(JNIEnv* env) {
   return prefs::IsAutofillManaged(GetPrefs());
