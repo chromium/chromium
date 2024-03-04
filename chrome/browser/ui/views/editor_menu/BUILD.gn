@@ -8,10 +8,14 @@ assert(is_chromeos)
 
 source_set("utils") {
   sources = [
+    "utils/editor_types.cc",
+    "utils/editor_types.h",
     "utils/focus_search.cc",
     "utils/focus_search.h",
     "utils/icon.cc",
     "utils/icon.h",
+    "utils/mojo.cc",
+    "utils/mojo.h",
     "utils/pre_target_handler.cc",
     "utils/pre_target_handler.h",
     "utils/pre_target_handler_view.cc",
@@ -25,6 +29,7 @@ source_set("utils") {
   deps = [
     "//base",
     "//chrome/browser/ui/views/editor_menu/vector_icons",
+    "//chromeos/crosapi/mojom",
     "//components/vector_icons",
     "//ui/aura",
     "//ui/display",
@@ -36,6 +41,9 @@ source_set("utils") {
 
 source_set("editor_menu") {
   sources = [
+    "editor_manager.h",
+    "editor_manager_factory.cc",
+    "editor_manager_factory.h",
     "editor_menu_controller_impl.cc",
     "editor_menu_controller_impl.h",
   ]
@@ -54,10 +62,20 @@ source_set("editor_menu") {
   ]
 
   if (is_chromeos_ash) {
+    sources += [
+      "editor_manager_ash.cc",
+      "editor_manager_ash.h",
+    ]
+
     deps += [ "//chrome/browser/ash" ]
   }
 
   if (is_chromeos_lacros) {
+    sources += [
+      "editor_manager_lacros.cc",
+      "editor_manager_lacros.h",
+    ]
+
     deps += [ "//chromeos/lacros" ]
   }
 }

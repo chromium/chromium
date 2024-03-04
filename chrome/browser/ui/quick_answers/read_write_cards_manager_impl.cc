@@ -15,11 +15,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
+#include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -58,38 +58,26 @@ void ReadWriteCardsManagerImpl::FetchController(
     std::move(callback).Run({});
     return;
   }
-  if (editor_menu_controller_) {
-    auto* panel_manager =
-        editor_menu_controller_->GetEditorPanelManager(context);
-    if (panel_manager && params.is_editable) {
-      panel_manager->GetEditorPanelContext(base::BindOnce(
-          &ReadWriteCardsManagerImpl::OnEditorPanelContextCallback,
-          weak_factory_.GetWeakPtr(), params, std::move(callback), context));
-      return;
-    }
+  if (editor_menu_controller_ && params.is_editable) {
+    editor_menu_controller_->SetBrowserContext(context);
+    editor_menu_controller_->GetEditorMode(base::BindOnce(
+        &ReadWriteCardsManagerImpl::OnGetEditorModeResult,
+        weak_factory_.GetWeakPtr(), params, std::move(callback)));
+    return;
   }
 
   std::move(callback).Run(GetMahiOrQuickAnswerControllersIfEligible(params));
 }
 
-void ReadWriteCardsManagerImpl::OnEditorPanelContextCallback(
+void ReadWriteCardsManagerImpl::OnGetEditorModeResult(
     const content::ContextMenuParams& params,
     editor_menu::FetchControllersCallback callback,
-    content::BrowserContext* context,
-    const crosapi::mojom::EditorPanelContextPtr editor_panel_context) {
-  if (editor_menu_controller_) {
-    if (editor_panel_context->editor_panel_mode !=
-        crosapi::mojom::EditorPanelMode::kBlocked) {
-      editor_menu_controller_->SetBrowserContext(context);
-      std::move(callback).Run({editor_menu_controller_->GetWeakPtr()});
-      return;
-    }
-    auto* panel_manager =
-        editor_menu_controller_->GetEditorPanelManager(context);
-    if (panel_manager) {
-      panel_manager->LogEditorMode(crosapi::mojom::EditorPanelMode::kBlocked);
-    }
+    editor_menu::EditorMode editor_mode) {
+  if (editor_mode != editor_menu::EditorMode::kBlocked) {
+    std::move(callback).Run({editor_menu_controller_->GetWeakPtr()});
+    return;
   }
+  editor_menu_controller_->LogEditorMode(editor_menu::EditorMode::kBlocked);
   std::move(callback).Run(GetMahiOrQuickAnswerControllersIfEligible(params));
 }
 

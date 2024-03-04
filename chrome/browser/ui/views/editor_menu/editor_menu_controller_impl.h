@@ -11,9 +11,10 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/views/editor_menu/editor_manager.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
+#include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
-#include "chromeos/crosapi/mojom/editor_panel.mojom-forward.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -48,21 +49,16 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
       views::Widget::ClosedReason closed_reason) override;
   void OnEditorMenuVisibilityChanged(bool visible) override;
 
-  // As the name suggests this method is used to set the active browser context
-  // instance. This method must be invoked prior to showing either of the
-  // editor widgets.
   void SetBrowserContext(content::BrowserContext* context);
+  void LogEditorMode(const EditorMode& editor_mode);
+  void GetEditorMode(base::OnceCallback<void(const EditorMode)> callback);
 
   views::Widget* editor_menu_widget_for_testing() {
     return editor_menu_widget_.get();
   }
 
-  void OnGetEditorPanelContextResultForTesting(
-      const gfx::Rect& anchor_bounds,
-      crosapi::mojom::EditorPanelContextPtr context);
-
-  crosapi::mojom::EditorPanelManager* GetEditorPanelManager(
-      content::BrowserContext* browser_context);
+  void OnGetEditorPanelContextResultForTesting(const gfx::Rect& anchor_bounds,
+                                               EditorContext context);
 
   base::WeakPtr<EditorMenuControllerImpl> GetWeakPtr();
 
@@ -73,13 +69,18 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
   // shown to the user. The session ends when the card is dismissed from the
   // user's view.
   struct EditorCardSession {
+    explicit EditorCardSession(std::unique_ptr<EditorManager> editor_manager);
+    ~EditorCardSession();
+
     // Provides access to the core editor backend.
-    crosapi::mojom::EditorPanelManager& panel_manager;
+    std::unique_ptr<EditorManager> manager;
   };
 
-  void OnGetEditorPanelContextResult(
-      const gfx::Rect& anchor_bounds,
-      crosapi::mojom::EditorPanelContextPtr context);
+  void OnGetEditorModeResult(
+      base::OnceCallback<void(const EditorMode)> callback,
+      EditorContext context);
+  void OnGetEditorPanelContextResult(const gfx::Rect& anchor_bounds,
+                                     EditorContext context);
 
   // This method is fired whenever the EditorPromoCard, or EditorMenu cards are
   // hidden from the user's view.

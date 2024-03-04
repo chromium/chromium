@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_cards_manager.h"
-#include "chromeos/crosapi/mojom/editor_panel.mojom-forward.h"
 
 class QuickAnswersControllerImpl;
 
@@ -54,11 +54,9 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
  private:
   friend class ReadWriteCardsManagerImplTest;
 
-  void OnEditorPanelContextCallback(
-      const content::ContextMenuParams& params,
-      editor_menu::FetchControllersCallback callback,
-      content::BrowserContext* context,
-      const crosapi::mojom::EditorPanelContextPtr editor_panel_context);
+  void OnGetEditorModeResult(const content::ContextMenuParams& params,
+                             editor_menu::FetchControllersCallback callback,
+                             editor_menu::EditorMode editor_mode);
 
   std::vector<base::WeakPtr<chromeos::ReadWriteCardController>>
   GetMahiOrQuickAnswerControllersIfEligible(

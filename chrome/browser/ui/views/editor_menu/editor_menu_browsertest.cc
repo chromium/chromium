@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
 
 #include <string_view>
+#include <vector>
 
 #include "base/check.h"
 #include "base/test/scoped_feature_list.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/quick_answers/read_write_cards_manager_impl.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_promo_card_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
+#include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
@@ -26,51 +28,30 @@
 
 namespace {
 
+using chromeos::editor_menu::EditorContext;
+using chromeos::editor_menu::EditorMode;
+using chromeos::editor_menu::PresetQueryCategory;
+using chromeos::editor_menu::PresetTextQuery;
 using ::testing::ElementsAre;
 using ::testing::IsNull;
 using ::testing::Not;
 using ::testing::Property;
 using ::testing::SizeIs;
 
-crosapi::mojom::EditorPanelPresetTextQueryPtr CreateTestPresetTextQuery(
-    const std::string& text_query_id,
-    const std::string& name,
-    crosapi::mojom::EditorPanelPresetQueryCategory category) {
-  auto query = crosapi::mojom::EditorPanelPresetTextQuery::New();
-  query->text_query_id = text_query_id;
-  query->name = name;
-  query->category = category;
-  return query;
+EditorContext CreateTestEditorPanelContext(EditorMode editor_panel_mode) {
+  return EditorContext(editor_panel_mode, std::vector<PresetTextQuery>{});
 }
 
-crosapi::mojom::EditorPanelContextPtr CreateTestEditorPanelContext(
-    crosapi::mojom::EditorPanelMode editor_panel_mode) {
-  auto context = crosapi::mojom::EditorPanelContext::New();
-  context->editor_panel_mode = editor_panel_mode;
-
-  return context;
-}
-
-crosapi::mojom::EditorPanelContextPtr
-CreateTestEditorPanelContextWithQueries() {
-  auto context =
-      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite);
-  context->preset_text_queries.push_back(CreateTestPresetTextQuery(
-      "ID1", "Rephrase",
-      crosapi::mojom::EditorPanelPresetQueryCategory::kRephrase));
-  context->preset_text_queries.push_back(CreateTestPresetTextQuery(
-      "ID2", "Emojify",
-      crosapi::mojom::EditorPanelPresetQueryCategory::kEmojify));
-  context->preset_text_queries.push_back(CreateTestPresetTextQuery(
-      "ID3", "Shorten",
-      crosapi::mojom::EditorPanelPresetQueryCategory::kShorten));
-  context->preset_text_queries.push_back(CreateTestPresetTextQuery(
-      "ID4", "Elaborate",
-      crosapi::mojom::EditorPanelPresetQueryCategory::kElaborate));
-  context->preset_text_queries.push_back(CreateTestPresetTextQuery(
-      "ID5", "Formalize",
-      crosapi::mojom::EditorPanelPresetQueryCategory::kFormalize));
-  return context;
+EditorContext CreateTestEditorPanelContextWithQueries() {
+  return EditorContext(
+      EditorMode::kRewrite,
+      std::vector<PresetTextQuery>{
+          PresetTextQuery("ID1", u"Rephrase", PresetQueryCategory::kRephrase),
+          PresetTextQuery("ID2", u"Emojify", PresetQueryCategory::kEmojify),
+          PresetTextQuery("ID3", u"Shorten", PresetQueryCategory::kShorten),
+          PresetTextQuery("ID4", u"Elaborate", PresetQueryCategory::kElaborate),
+          PresetTextQuery("ID5", u"Formalize", PresetQueryCategory::kFormalize),
+      });
 }
 
 auto ChildrenSizeIs(int n) {
@@ -152,8 +133,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest, CanShowEditorMenu) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds,
-      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
+      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kRewrite));
 
   EXPECT_TRUE(views::IsViewClass<EditorMenuView>(GetEditorMenuView()));
 
@@ -198,8 +178,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest, CanShowPromoCard) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds, CreateTestEditorPanelContext(
-                         crosapi::mojom::EditorPanelMode::kPromoCard));
+      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kPromoCard));
 
   EXPECT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
 
@@ -211,8 +190,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds,
-      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kBlocked));
+      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kBlocked));
 
   EXPECT_EQ(GetControllerImpl()->editor_menu_widget_for_testing(), nullptr);
 }
@@ -223,8 +201,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   EXPECT_NE(nullptr, GetControllerImpl());
 
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds,
-      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
+      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kRewrite));
   const gfx::Rect& bounds = GetEditorMenuView()->GetBoundsInScreen();
 
   // View is vertically left aligned with anchor.
@@ -241,8 +218,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   EXPECT_NE(nullptr, GetControllerImpl());
 
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBoundsTop,
-      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
+      kAnchorBoundsTop, CreateTestEditorPanelContext(EditorMode::kRewrite));
 
   const gfx::Rect& bounds = GetEditorMenuView()->GetBoundsInScreen();
 
@@ -264,8 +240,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   const gfx::Rect anchor_bounds = gfx::Rect(screen_right - 80, 250, 70, 160);
 
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      anchor_bounds,
-      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
+      anchor_bounds, CreateTestEditorPanelContext(EditorMode::kRewrite));
 
   // Editor menu should be right aligned with anchor.
   EXPECT_EQ(GetEditorMenuView()->GetBoundsInScreen().right(),
@@ -282,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   constexpr int kAnchorWidth = 401;
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
       gfx::Rect(200, 300, kAnchorWidth, 50),
-      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
+      CreateTestEditorPanelContext(EditorMode::kRewrite));
 
   // Editor menu width should match anchor width.
   EXPECT_EQ(GetEditorMenuView()->GetBoundsInScreen().width(), kAnchorWidth);
@@ -297,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   // Show editor menu.
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
       gfx::Rect(200, 300, 408, 50),
-      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
+      CreateTestEditorPanelContext(EditorMode::kRewrite));
   constexpr int kNewAnchorWidth = 365;
   GetControllerImpl()->OnAnchorBoundsChanged(
       gfx::Rect(200, 300, kNewAnchorWidth, 50));
@@ -314,8 +289,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
 
   // Show editor menu.
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds,
-      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
+      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kRewrite));
   const gfx::Rect initial_editor_menu_bounds =
       GetEditorMenuView()->GetBoundsInScreen();
   // Adjust anchor bounds (this can happen e.g. when the context menu adjusts
@@ -337,8 +311,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   ASSERT_NE(GetControllerImpl(), nullptr);
 
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds,
-      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
+      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kRewrite));
 
   ASSERT_NE(GetEditorMenuView()->GetWidget(), nullptr);
   GetEditorMenuView()->GetWidget()->GetFocusManager()->ProcessAccelerator(

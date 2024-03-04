@@ -16,10 +16,11 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/editor_menu/editor_manager_factory.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_promo_card_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
+#include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
-#include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_utils.h"
@@ -30,47 +31,9 @@
 #include "chromeos/lacros/lacros_service.h"
 #else
 #include "ash/public/cpp/new_window_delegate.h"
-#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
-#include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos::editor_menu {
-
-namespace {
-
-using crosapi::mojom::EditorPanelMode;
-using crosapi::mojom::EditorPanelPresetTextQuery;
-using crosapi::mojom::EditorPanelPresetTextQueryPtr;
-
-PresetQueryCategory GetPresetQueryCategory(
-    const crosapi::mojom::EditorPanelPresetQueryCategory category) {
-  switch (category) {
-    case crosapi::mojom::EditorPanelPresetQueryCategory::kUnknown:
-      return PresetQueryCategory::kUnknown;
-    case crosapi::mojom::EditorPanelPresetQueryCategory::kShorten:
-      return PresetQueryCategory::kShorten;
-    case crosapi::mojom::EditorPanelPresetQueryCategory::kElaborate:
-      return PresetQueryCategory::kElaborate;
-    case crosapi::mojom::EditorPanelPresetQueryCategory::kRephrase:
-      return PresetQueryCategory::kRephrase;
-    case crosapi::mojom::EditorPanelPresetQueryCategory::kFormalize:
-      return PresetQueryCategory::kFormalize;
-    case crosapi::mojom::EditorPanelPresetQueryCategory::kEmojify:
-      return PresetQueryCategory::kEmojify;
-  }
-}
-
-PresetTextQueries GetPresetTextQueries(
-    const std::vector<EditorPanelPresetTextQueryPtr>& preset_text_queries) {
-  PresetTextQueries queries;
-  for (const auto& query : preset_text_queries) {
-    queries.emplace_back(query->text_query_id, base::UTF8ToUTF16(query->name),
-                         GetPresetQueryCategory(query->category));
-  }
-  return queries;
-}
-
-}  // namespace
 
 EditorMenuControllerImpl::EditorMenuControllerImpl() = default;
 
@@ -86,7 +49,7 @@ void EditorMenuControllerImpl::OnTextAvailable(
     return;
   }
 
-  card_session_->panel_manager.GetEditorPanelContext(
+  card_session_->manager->GetEditorPanelContext(
       base::BindOnce(&EditorMenuControllerImpl::OnGetEditorPanelContextResult,
                      weak_factory_.GetWeakPtr(), anchor_bounds));
 }
@@ -137,7 +100,7 @@ void EditorMenuControllerImpl::OnChipButtonPressed(
   }
 
   DisableEditorMenu();
-  card_session_->panel_manager.StartEditingFlowWithPreset(
+  card_session_->manager->StartEditingFlowWithPreset(
       std::string(text_query_id));
 }
 
@@ -148,8 +111,7 @@ void EditorMenuControllerImpl::OnTextfieldArrowButtonPressed(
   }
 
   DisableEditorMenu();
-  card_session_->panel_manager.StartEditingFlowWithFreeform(
-      base::UTF16ToUTF8(text));
+  card_session_->manager->StartEditingFlowWithFreeform(base::UTF16ToUTF8(text));
 }
 
 void EditorMenuControllerImpl::OnPromoCardWidgetClosed(
@@ -160,13 +122,13 @@ void EditorMenuControllerImpl::OnPromoCardWidgetClosed(
 
   switch (closed_reason) {
     case views::Widget::ClosedReason::kAcceptButtonClicked:
-      card_session_->panel_manager.StartEditingFlow();
+      card_session_->manager->StartEditingFlow();
       break;
     case views::Widget::ClosedReason::kCloseButtonClicked:
-      card_session_->panel_manager.OnPromoCardDeclined();
+      card_session_->manager->OnPromoCardDeclined();
       break;
     default:
-      card_session_->panel_manager.OnPromoCardDismissed();
+      card_session_->manager->OnPromoCardDismissed();
       break;
   }
 
@@ -178,7 +140,7 @@ void EditorMenuControllerImpl::OnEditorMenuVisibilityChanged(bool visible) {
     return;
   }
 
-  card_session_->panel_manager.OnEditorMenuVisibilityChanged(visible);
+  card_session_->manager->OnEditorMenuVisibilityChanged(visible);
 
   if (!visible) {
     OnEditorCardHidden();
@@ -187,55 +149,73 @@ void EditorMenuControllerImpl::OnEditorMenuVisibilityChanged(bool visible) {
 
 void EditorMenuControllerImpl::SetBrowserContext(
     content::BrowserContext* context) {
-  if (auto* panel_manager = GetEditorPanelManager(context);
-      panel_manager != nullptr) {
-    // A card session can only be initialized if we are able to connect
-    // successfully to the backend panel manager.
-    card_session_ = std::make_unique<EditorCardSession>(*panel_manager);
+  card_session_ =
+      std::make_unique<EditorCardSession>(CreateEditorManager(context));
+}
+
+void EditorMenuControllerImpl::LogEditorMode(const EditorMode& editor_mode) {
+  if (!card_session_) {
+    return;
   }
+  card_session_->manager->LogEditorMode(editor_mode);
+}
+
+void EditorMenuControllerImpl::GetEditorMode(
+    base::OnceCallback<void(const EditorMode)> callback) {
+  if (!card_session_) {
+    return;
+  }
+  card_session_->manager->GetEditorPanelContext(
+      base::BindOnce(&EditorMenuControllerImpl::OnGetEditorModeResult,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void EditorMenuControllerImpl::OnGetEditorPanelContextResultForTesting(
     const gfx::Rect& anchor_bounds,
-    crosapi::mojom::EditorPanelContextPtr context) {
+    EditorContext context) {
   OnGetEditorPanelContextResult(anchor_bounds, std::move(context));
+}
+
+void EditorMenuControllerImpl::OnGetEditorModeResult(
+    base::OnceCallback<void(const EditorMode)> callback,
+    EditorContext context) {
+  std::move(callback).Run(context.mode);
 }
 
 void EditorMenuControllerImpl::OnGetEditorPanelContextResult(
     const gfx::Rect& anchor_bounds,
-    crosapi::mojom::EditorPanelContextPtr context) {
-  auto editor_panel_mode = context->editor_panel_mode;
-  switch (editor_panel_mode) {
-    case EditorPanelMode::kBlocked:
+    EditorContext context) {
+  switch (context.mode) {
+    case EditorMode::kBlocked:
       break;
-    case EditorPanelMode::kWrite:
+    case EditorMode::kWrite:
       editor_menu_widget_ = EditorMenuView::CreateWidget(
           EditorMenuMode::kWrite, PresetTextQueries(), anchor_bounds, this);
       editor_menu_widget_->ShowInactive();
       break;
-    case EditorPanelMode::kRewrite:
+    case EditorMode::kRewrite:
       editor_menu_widget_ = EditorMenuView::CreateWidget(
-          EditorMenuMode::kRewrite,
-          GetPresetTextQueries(context->preset_text_queries), anchor_bounds,
+          EditorMenuMode::kRewrite, context.preset_queries, anchor_bounds,
           this);
       editor_menu_widget_->ShowInactive();
       break;
-    case EditorPanelMode::kPromoCard:
+    case EditorMode::kPromoCard:
       editor_menu_widget_ =
           EditorMenuPromoCardView::CreateWidget(anchor_bounds, this);
       editor_menu_widget_->ShowInactive();
       break;
   }
-  if (card_session_ != nullptr &&
-      editor_panel_mode != EditorPanelMode::kBlocked) {
-    card_session_->panel_manager.LogEditorMode(editor_panel_mode);
+  if (card_session_ != nullptr && context.mode != EditorMode::kBlocked) {
+    card_session_->manager->LogEditorMode(context.mode);
   }
 }
 
 void EditorMenuControllerImpl::OnEditorCardHidden() {
   // The currently visible card is closing and being removed from the user's
   // view, the EditorCardSession has ended.
-  card_session_ = nullptr;
+  if (card_session_) {
+    card_session_.reset();
+  }
 }
 
 void EditorMenuControllerImpl::DisableEditorMenu() {
@@ -245,28 +225,14 @@ void EditorMenuControllerImpl::DisableEditorMenu() {
   }
 }
 
-crosapi::mojom::EditorPanelManager*
-EditorMenuControllerImpl::GetEditorPanelManager(
-    content::BrowserContext* browser_context) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* const lacros_service =
-      chromeos::LacrosService::Get();
-  CHECK(lacros_service->IsAvailable<crosapi::mojom::EditorPanelManager>());
-  auto& panel_manager =
-      lacros_service->GetRemote<crosapi::mojom::EditorPanelManager>();
-  return (panel_manager.is_bound() && panel_manager.is_connected())
-             ? panel_manager.get()
-             : nullptr;
-#else
-  ash::input_method::EditorMediator* editor_mediator =
-      ash::input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
-          Profile::FromBrowserContext(browser_context));
-  return editor_mediator ? editor_mediator->panel_manager() : nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}
-
 base::WeakPtr<EditorMenuControllerImpl> EditorMenuControllerImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
+
+EditorMenuControllerImpl::EditorCardSession::EditorCardSession(
+    std::unique_ptr<EditorManager> editor_manager)
+    : manager(std::move(editor_manager)) {}
+
+EditorMenuControllerImpl::EditorCardSession::~EditorCardSession() = default;
 
 }  // namespace chromeos::editor_menu
