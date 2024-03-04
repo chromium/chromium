@@ -993,6 +993,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                               placeholderContext:context];
     }
   }
+  [self.delegate gridViewControllerDragSessionDidEnd:self];
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
