@@ -22,7 +22,11 @@ import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {NetworkProcessor} from '../network/NetworkProcessor.js';
-import {bidiToCdpCookie, cdpToBiDiCookie} from '../network/NetworkUtils.js';
+import {
+  bidiToCdpCookie,
+  cdpToBiDiCookie,
+  deserializeByteValue,
+} from '../network/NetworkUtils.js';
 
 /**
  * Responsible for handling the `storage` domain.
@@ -219,8 +223,8 @@ export class StorageProcessor {
       (filter.name === undefined || filter.name === cookie.name) &&
       // `value` contains fields `type` and `value`.
       (filter.value === undefined ||
-        (filter.value.type === cookie.value.type &&
-          filter.value.value === cookie.value.value)) &&
+        deserializeByteValue(filter.value) ===
+          deserializeByteValue(cookie.value)) &&
       (filter.path === undefined || filter.path === cookie.path) &&
       (filter.size === undefined || filter.size === cookie.size) &&
       (filter.httpOnly === undefined || filter.httpOnly === cookie.httpOnly) &&

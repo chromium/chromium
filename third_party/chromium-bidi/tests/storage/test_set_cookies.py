@@ -13,6 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import base64
 from datetime import datetime, timedelta
 
 import pytest
@@ -42,6 +43,41 @@ async def test_cookie_set_required_fields(websocket, context_id):
                     'value': {
                         'type': 'string',
                         'value': SOME_COOKIE_VALUE
+                    },
+                    'domain': SOME_DOMAIN,
+                }
+            }
+        })
+    assert resp == {'partitionKey': {}}
+
+    resp = await execute_command(websocket, {
+        'method': 'storage.getCookies',
+        'params': {}
+    })
+    assert resp == {
+        'cookies': [
+            AnyExtending(
+                get_bidi_cookie(SOME_COOKIE_NAME,
+                                SOME_COOKIE_VALUE,
+                                SOME_DOMAIN,
+                                secure=False))
+        ],
+        'partitionKey': {}
+    }
+
+
+@pytest.mark.asyncio
+async def test_cookie_set_base64_value(websocket, context_id):
+    resp = await execute_command(
+        websocket, {
+            'method': 'storage.setCookie',
+            'params': {
+                'cookie': {
+                    'name': SOME_COOKIE_NAME,
+                    'value': {
+                        'type': 'base64',
+                        'value': base64.b64encode(
+                            SOME_COOKIE_VALUE.encode('ascii')).decode('ascii')
                     },
                     'domain': SOME_DOMAIN,
                 }

@@ -13,6 +13,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import base64
+
 import pytest
 from anys import ANY_DICT
 from storage import get_bidi_cookie, set_cookie
@@ -243,13 +245,24 @@ async def test_cookies_get_params_filter(websocket, context_id):
     await assert_cookie_filter(websocket, context_id,
                                {'name': SOME_COOKIE_NAME}, some_cookie)
 
-    # Filter by value.
+    # Filter by string value.
     await assert_cookie_filter(
         websocket, context_id,
         {'value': {
             'type': 'string',
             'value': ANOTHER_COOKIE_VALUE
         }}, another_cookie)
+
+    # Filter by base64 value.
+    await assert_cookie_filter(
+        websocket, context_id, {
+            'value': {
+                'type': 'base64',
+                'value': base64.b64encode(ANOTHER_COOKIE_VALUE.encode('ascii')
+                                          ).decode('ascii')
+            }
+        }, another_cookie)
+
     # TODO: test other filters.
 
 

@@ -21,11 +21,9 @@
  */
 import type {Protocol} from 'devtools-protocol';
 
-import {
-  InvalidArgumentException,
-  UnsupportedOperationException,
-} from '../../../protocol/ErrorResponse.js';
+import {InvalidArgumentException} from '../../../protocol/ErrorResponse.js';
 import {Network, type Storage} from '../../../protocol/protocol.js';
+import {base64ToString} from '../../../utils/Base64.js';
 import {URLPattern} from '../../../utils/UrlPattern.js';
 
 export function computeHeadersSize(headers: Network.Header[]): number {
@@ -152,6 +150,18 @@ export function cdpToBiDiCookie(
 }
 
 /**
+ * Decodes a byte value to a string.
+ * @param {Network.BytesValue} value
+ * @return {string}
+ */
+export function deserializeByteValue(value: Network.BytesValue): string {
+  if (value.type === 'base64') {
+    return base64ToString(value.value);
+  }
+  return value.value;
+}
+
+/**
  * Converts from BiDi set network cookie params to CDP Network domain cookie.
  * * https://w3c.github.io/webdriver-bidi/#type-network-Cookie
  * * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-CookieParam
@@ -160,13 +170,7 @@ export function bidiToCdpCookie(
   params: Storage.SetCookieParameters,
   partitionKey: Storage.PartitionKey
 ): Protocol.Network.CookieParam {
-  if (params.cookie.value.type !== 'string') {
-    // CDP supports only string values in cookies.
-    throw new UnsupportedOperationException(
-      'Only string cookie values are supported'
-    );
-  }
-  const deserializedValue = params.cookie.value.value;
+  const deserializedValue = deserializeByteValue(params.cookie.value);
   const result: Protocol.Network.CookieParam = {
     name: params.cookie.name,
     value: deserializedValue,
