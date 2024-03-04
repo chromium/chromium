@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/common/ruleset_dealer.h"
+#include "components/subresource_filter/core/common/ruleset_dealer.h"
 
 #include <memory>
 #include <vector>

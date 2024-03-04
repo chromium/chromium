@@ -23,6 +23,8 @@ static_library("common") {
     "load_policy.h",
     "memory_mapped_ruleset.cc",
     "memory_mapped_ruleset.h",
+    "ruleset_dealer.cc",
+    "ruleset_dealer.h",
     "scoped_timers.h",
     "time_measurements.h",
     "unindexed_ruleset.cc",
@@ -71,6 +73,7 @@ source_set("unit_tests") {
     "first_party_origin_unittest.cc",
     "indexed_ruleset_unittest.cc",
     "load_policy_unittest.cc",
+    "ruleset_dealer_unittest.cc",
     "scoped_timers_unittest.cc",
     "unindexed_ruleset_unittest.cc",
   ]

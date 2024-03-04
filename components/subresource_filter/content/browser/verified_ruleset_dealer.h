@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/subresource_filter/content/common/ruleset_dealer.h"
+#include "components/subresource_filter/core/common/ruleset_dealer.h"
 
 namespace base {
 class File;

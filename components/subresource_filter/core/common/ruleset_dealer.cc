@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/common/ruleset_dealer.h"
+#include "components/subresource_filter/core/common/ruleset_dealer.h"
 
 #include "base/check.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
@@ -29,8 +29,9 @@ bool RulesetDealer::IsRulesetFileAvailable() const {
 
 scoped_refptr<const MemoryMappedRuleset> RulesetDealer::GetRuleset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!ruleset_file_.IsValid())
+  if (!ruleset_file_.IsValid()) {
     return nullptr;
+  }
 
   scoped_refptr<const MemoryMappedRuleset> strong_ruleset_ref;
   if (weak_cached_ruleset_) {

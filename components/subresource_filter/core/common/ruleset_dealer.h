@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_COMMON_RULESET_DEALER_H_
-#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_COMMON_RULESET_DEALER_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_RULESET_DEALER_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_RULESET_DEALER_H_
 
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"
@@ -46,7 +46,7 @@ class RulesetDealer {
   bool IsRulesetFileAvailable() const;
 
   // Returns the set |ruleset_file|. Normally, the same instance is used by all
-  // call sites in a given process. That intance is mapped lazily and umapped
+  // call sites in a given process. That instance is mapped lazily and unmapped
   // eagerly as soon as the last reference to it is dropped.
   virtual scoped_refptr<const MemoryMappedRuleset> GetRuleset();
 
@@ -69,4 +69,4 @@ class RulesetDealer {
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_COMMON_RULESET_DEALER_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_RULESET_DEALER_H_
