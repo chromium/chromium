@@ -17,6 +17,7 @@
 
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/android/orderfile/orderfile_buildflags.h"
+#include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -26,7 +27,6 @@
 #if BUILDFLAG(DEVTOOLS_INSTRUMENTATION_DUMPING)
 #include <sstream>
 
-#include "base/command_line.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"   // no-presubmit-check
 #include "base/trace_event/memory_dump_provider.h"  // no-presubmit-check
@@ -48,11 +48,9 @@ namespace {
 constexpr int kDelayInSeconds = 30;
 constexpr int kInitialDelayInSeconds = kPhases == 1 ? kDelayInSeconds : 5;
 
-#if BUILDFLAG(DEVTOOLS_INSTRUMENTATION_DUMPING)
 // This is defined in content/public/common/content_switches.h, which is not
 // accessible in ::base.
 constexpr const char kProcessTypeSwitch[] = "type";
-#endif  // BUILDFLAG(DEVTOOLS_INSTRUMENTATION_DUMPING)
 
 // These are large overestimates, which is not an issue, as the data is
 // allocated in .bss, and on linux doesn't take any actual memory when it's not
@@ -272,10 +270,11 @@ NO_INSTRUMENT_FUNCTION void SanityChecks() {
 
 NO_INSTRUMENT_FUNCTION bool SwitchToNextPhaseOrDump(
     int pid,
-    uint64_t start_ns_since_epoch) {
+    uint64_t start_ns_since_epoch,
+    const std::string& tag) {
   int before = g_data_index.fetch_add(1, std::memory_order_relaxed);
   if (before + 1 == kPhases) {
-    StopAndDumpToFile(pid, start_ns_since_epoch, "");
+    StopAndDumpToFile(pid, start_ns_since_epoch, tag);
     return true;
   }
   return false;
@@ -290,6 +289,8 @@ NO_INSTRUMENT_FUNCTION void StartDelayedDump() {
   uint64_t start_ns_since_epoch =
       static_cast<uint64_t>(ts.tv_sec) * 1000 * 1000 * 1000 + ts.tv_nsec;
   int pid = getpid();
+  std::string tag = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      kProcessTypeSwitch);
 
 #if BUILDFLAG(DEVTOOLS_INSTRUMENTATION_DUMPING)
   static auto* g_orderfile_memory_dump_hook = new OrderfileMemoryDumpHook();
@@ -297,17 +298,16 @@ NO_INSTRUMENT_FUNCTION void StartDelayedDump() {
       g_orderfile_memory_dump_hook, "Orderfile", nullptr);
 #endif  // BUILDFLAG(DEVTOOLS_INSTRUMENTATION_DUMPING)
 
-  std::thread([pid, start_ns_since_epoch]() {
+  std::thread([pid, start_ns_since_epoch, tag]() {
     sleep(kInitialDelayInSeconds);
 #if BUILDFLAG(DEVTOOLS_INSTRUMENTATION_DUMPING)
-    SwitchToNextPhaseOrDump(pid, start_ns_since_epoch);
+    SwitchToNextPhaseOrDump(pid, start_ns_since_epoch, tag);
 // Return, letting devtools tracing handle any post-startup phases.
 #else
-    while (!SwitchToNextPhaseOrDump(pid, start_ns_since_epoch))
+    while (!SwitchToNextPhaseOrDump(pid, start_ns_since_epoch, tag))
       sleep(kDelayInSeconds);
 #endif  // BUILDFLAG(DEVTOOLS_INSTRUMENTATION_DUMPING)
-  })
-      .detach();
+  }).detach();
 }
 
 NO_INSTRUMENT_FUNCTION void Dump(const std::string& tag) {
