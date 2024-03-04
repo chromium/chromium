@@ -17,7 +17,6 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/net/io_buffer_pool.h"
-#include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/socket/socket.h"
 
@@ -35,44 +34,50 @@ constexpr size_t kMax2ByteSize = std::numeric_limits<uint16_t>::max();
 
 }  // namespace
 
-class SmallMessageSocket::BufferWrapper : public ::net::IOBuffer {
- public:
-  void SetUnderlyingBuffer(scoped_refptr<IOBuffer> base, size_t size) {
-    base_ = std::move(base);
-    size_ = size;
-    used_ = 0;
-    data_ = base_->data();
-  }
+SmallMessageSocket::BufferWrapper::BufferWrapper() = default;
+SmallMessageSocket::BufferWrapper::~BufferWrapper() {
+  // The `data_` pointer in the base class is pointing into the buffer in the
+  // `buffer_` field. Stop pointing into the field before its buffer is freed.
+  data_ = nullptr;
+}
 
-  scoped_refptr<IOBuffer> TakeUnderlyingBuffer() { return std::move(base_); }
+void SmallMessageSocket::BufferWrapper::SetUnderlyingBuffer(
+    scoped_refptr<IOBuffer> buffer,
+    size_t capacity) {
+  CHECK_LE(capacity, static_cast<size_t>(buffer->size()));
 
-  void ClearUnderlyingBuffer() {
-    data_ = nullptr;
-    base_.reset();
-  }
+  buffer_ = std::move(buffer);
+  used_ = 0;
+  capacity_ = capacity;
 
-  void DidConsume(size_t bytes) {
-    used_ += bytes;
-    data_ = base_->data() + used_;
-  }
+  size_ = capacity_;
+  data_ = buffer_->data();
+}
 
-  char* StartOfBuffer() const {
-    DCHECK(base_);
-    return base_->data();
-  }
+scoped_refptr<net::IOBuffer>
+SmallMessageSocket::BufferWrapper::TakeUnderlyingBuffer() {
+  return std::move(buffer_);
+}
 
-  size_t used() const { return used_; }
-  size_t remaining() const {
-    DCHECK_GE(static_cast<size_t>(size_), used_);
-    return size_ - used_;
-  }
+void SmallMessageSocket::BufferWrapper::ClearUnderlyingBuffer() {
+  data_ = nullptr;
+  buffer_.reset();
+}
 
- private:
-  ~BufferWrapper() override { data_ = nullptr; }
+void SmallMessageSocket::BufferWrapper::DidConsume(size_t bytes) {
+  CHECK(buffer_);
+  CHECK_LE(bytes, static_cast<size_t>(size_));
 
-  scoped_refptr<IOBuffer> base_;
-  size_t used_ = 0;
-};
+  size_ -= bytes;
+  used_ += bytes;
+  data_ += bytes;
+  CHECK_EQ(data_, buffer_->data() + used_);
+}
+
+char* SmallMessageSocket::BufferWrapper::StartOfBuffer() const {
+  CHECK(buffer_);
+  return buffer_->data();
+}
 
 SmallMessageSocket::SmallMessageSocket(Delegate* delegate,
                                        std::unique_ptr<net::Socket> socket)
@@ -146,7 +151,7 @@ void SmallMessageSocket::RemoveBufferPool() {
 }
 
 void* SmallMessageSocket::PrepareSend(size_t message_size) {
-  if (write_buffer_->remaining()) {
+  if (write_buffer_->size()) {
     send_blocked_ = true;
     return nullptr;
   }
@@ -167,7 +172,7 @@ void* SmallMessageSocket::PrepareSend(size_t message_size) {
 
 bool SmallMessageSocket::SendBuffer(scoped_refptr<net::IOBuffer> data,
                                     size_t size) {
-  if (write_buffer_->remaining()) {
+  if (write_buffer_->size()) {
     send_blocked_ = true;
     return false;
   }
@@ -198,7 +203,7 @@ size_t SmallMessageSocket::WriteSizeData(char* ptr, size_t message_size) {
 void SmallMessageSocket::Send() {
   for (int i = 0; i < kMaxIOLoop; ++i) {
     int result =
-        socket_->Write(write_buffer_.get(), write_buffer_->remaining(),
+        socket_->Write(write_buffer_.get(), write_buffer_->size(),
                        base::BindOnce(&SmallMessageSocket::OnWriteComplete,
                                       base::Unretained(this)),
                        MISSING_TRAFFIC_ANNOTATION);
@@ -232,7 +237,7 @@ bool SmallMessageSocket::HandleWriteResult(int result) {
   }
 
   write_buffer_->DidConsume(result);
-  if (write_buffer_->remaining()) {
+  if (write_buffer_->size()) {
     return true;
   }
 
@@ -273,7 +278,7 @@ void SmallMessageSocket::Read() {
     int size;
     if (buffer_pool_) {
       buffer = read_buffer_.get();
-      size = read_buffer_->remaining();
+      size = read_buffer_->size();
     } else {
       buffer = read_storage_.get();
       size = read_storage_->RemainingCapacity();
@@ -416,7 +421,7 @@ bool SmallMessageSocket::HandleCompletedMessageBuffers() {
     }
     size_t total_size = data_offset + message_size;
 
-    if (static_cast<size_t>(read_buffer_->size()) < total_size) {
+    if (read_buffer_->capacity() < total_size) {
       // Current buffer is not big enough.
       auto new_buffer =
           base::MakeRefCounted<::net::IOBufferWithSize>(total_size);

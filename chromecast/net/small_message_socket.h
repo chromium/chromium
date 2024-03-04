@@ -9,14 +9,13 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "net/base/io_buffer.h"
 
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
 namespace net {
-class GrowableIOBuffer;
-class IOBuffer;
 class Socket;
 }  // namespace net
 
@@ -129,7 +128,46 @@ class SmallMessageSocket {
   void ReceiveMessagesSynchronously();
 
  private:
-  class BufferWrapper;
+  friend class SmallMessageSocketTest;
+
+  // This class wraps the IOBuffer and controls its range to point into
+  // `buffer_` but allowing it to be a subset of `buffer_` that can shrink as
+  // bytes are consumed from the front. The base IOBuffer is passed in from
+  // SetUnderlyingBuffer.
+  class BufferWrapper : public net::IOBuffer {
+   public:
+    BufferWrapper();
+
+    // Set the base buffer. `capacity` is the total size of `base`.
+    void SetUnderlyingBuffer(scoped_refptr<net::IOBuffer> base,
+                             size_t capacity);
+    scoped_refptr<net::IOBuffer> TakeUnderlyingBuffer();
+    void ClearUnderlyingBuffer();
+
+    // Offset the next available bytes in the buffer.
+    void DidConsume(size_t bytes);
+
+    // A pointer to the very start of the buffer. The `span()` returned will
+    // move as DidConsume() is called and moves the start of the buffer forward.
+    // But this will always return the absolute beginning of the buffer.
+    // TODO(328018028): This should return a span.
+    char* StartOfBuffer() const;
+
+    size_t used() const { return used_; }
+    size_t capacity() const { return capacity_; }
+
+   private:
+    ~BufferWrapper() override;
+
+    // The buffer that actually holds the memory.
+    scoped_refptr<net::IOBuffer> buffer_;
+
+    // Size of the used bytes in previous operations.
+    size_t used_ = 0;
+
+    // Total size of `buffer_`.
+    size_t capacity_ = 0;
+  };
 
   void OnWriteComplete(int result);
   bool HandleWriteResult(int result);

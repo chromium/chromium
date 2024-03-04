@@ -145,6 +145,11 @@ class SmallMessageSocketTest : public ::testing::Test {
   ~SmallMessageSocketTest() override = default;
 
  protected:
+  static scoped_refptr<SmallMessageSocket::BufferWrapper>
+  CreateBufferWrapper() {
+    return base::MakeRefCounted<SmallMessageSocket::BufferWrapper>();
+  }
+
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<TestSocket> socket_1_;
@@ -291,6 +296,25 @@ TEST_F(SmallMessageSocketTest, SwapPoolUse) {
   EXPECT_EQ(socket_2_->message_history()[0], kDefaultMessageSize * 2 + 1);
   EXPECT_EQ(socket_2_->message_history()[1], kDefaultMessageSize - 5);
   EXPECT_EQ(socket_2_->message_history()[2], kDefaultMessageSize);
+}
+
+TEST_F(SmallMessageSocketTest, BufferWrapper) {
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(10);
+  base::span<const char> buffer_data = buffer->span();
+  auto wrapper = CreateBufferWrapper();
+  wrapper->SetUnderlyingBuffer(std::move(buffer), 9);
+  EXPECT_EQ(wrapper->data(), &buffer_data[0u]);
+  EXPECT_EQ(wrapper->size(), 9);
+  EXPECT_EQ(wrapper->capacity(), 9u);
+  EXPECT_EQ(wrapper->used(), 0u);
+  EXPECT_EQ(wrapper->StartOfBuffer(), &buffer_data[0u]);
+
+  wrapper->DidConsume(3);
+  EXPECT_EQ(wrapper->data(), &buffer_data[3u]);
+  EXPECT_EQ(wrapper->size(), 6);
+  EXPECT_EQ(wrapper->capacity(), 9u);
+  EXPECT_EQ(wrapper->used(), 3u);
+  EXPECT_EQ(wrapper->StartOfBuffer(), &buffer_data[0u]);
 }
 
 }  // namespace chromecast
