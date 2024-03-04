@@ -17,6 +17,13 @@ import java.util.List;
 
 /** The Mediator for the tab resumption module. */
 public class TabResumptionModuleMediator {
+
+    @interface ModuleState {
+        int INIT = 0;
+        int SHOWN = 1;
+        int GONE = 2;
+    }
+
     private static final int MAX_TILES_NUMBER = 2;
 
     private final Context mContext;
@@ -26,7 +33,7 @@ public class TabResumptionModuleMediator {
     protected final UrlImageProvider mUrlImageProvider;
     protected final SuggestionClickCallback mSuggestionClickCallback;
 
-    private boolean mHasPreviousLoad;
+    private @ModuleState int mModuleState;
 
     public TabResumptionModuleMediator(
             Context context,
@@ -41,6 +48,7 @@ public class TabResumptionModuleMediator {
         mDataProvider = dataProvider;
         mUrlImageProvider = urlImageProvider;
         mSuggestionClickCallback = suggestionClickCallback;
+        mModuleState = ModuleState.INIT;
 
         mModel.set(TabResumptionModuleProperties.URL_IMAGE_PROVIDER, mUrlImageProvider);
         mModel.set(TabResumptionModuleProperties.CLICK_CALLBACK, mSuggestionClickCallback);
@@ -58,47 +66,49 @@ public class TabResumptionModuleMediator {
      * available then hides the module.
      */
     void loadModule() {
-        // Abort if the module has already loaded but is hidden.
-        if (mHasPreviousLoad && !mModel.get(TabResumptionModuleProperties.IS_VISIBLE)) {
-            return;
-        }
+        if (mModuleState == ModuleState.GONE) return;
 
         mDataProvider.fetchSuggestions(
                 (List<SuggestionEntry> suggestions) -> {
-                    SuggestionBundle bundle = null;
-                    if (suggestions != null) {
-                        if (suggestions.size() == 0) {
-                            // TODO(crbug.com/1515325): Record metrics here.
-                        } else {
-                            bundle = makeSuggestionBundle(suggestions);
-                        }
-                    }
-                    // On first load, send load status to Magic Stack to help it decide whether to
-                    // show or to hide the module.
-                    if (!mHasPreviousLoad) {
-                        if (bundle != null) {
+                    int nextModuleState =
+                            (suggestions != null && suggestions.size() > 0)
+                                    ? ModuleState.SHOWN
+                                    : ModuleState.GONE;
+
+                    if (mModuleState == ModuleState.INIT) {
+                        // On initial load, send load status to Magic Stack to help it decide
+                        // whether to show or to hide the module.
+                        if (nextModuleState == ModuleState.SHOWN) {
                             mModuleDelegate.onDataReady(getModuleType(), mModel);
                         } else {
                             mModuleDelegate.onDataFetchFailed(getModuleType());
                         }
-                        mHasPreviousLoad = true;
+                    } else if (mModuleState == ModuleState.SHOWN
+                            && nextModuleState == ModuleState.GONE) {
+                        // Transition from SHOWN to GONE is permanent.
+                        mModuleDelegate.removeModule(getModuleType());
                     }
 
-                    mModel.set(
-                            TabResumptionModuleProperties.SUGGESTION_BUNDLE,
-                            bundle); // Triggers render.
-                    mModel.set(TabResumptionModuleProperties.IS_VISIBLE, bundle != null);
-                    if (bundle != null) {
+                    if (nextModuleState == ModuleState.SHOWN) {
                         // TODO(crbug.com/1515325): Record metrics here.
                         Resources res = mContext.getResources();
+                        SuggestionBundle bundle = makeSuggestionBundle(suggestions);
                         String title =
                                 res.getQuantityString(
                                         R.plurals.home_modules_tab_resumption_title,
                                         bundle.entries.size());
+                        // Trigger render.
+                        mModel.set(TabResumptionModuleProperties.SUGGESTION_BUNDLE, bundle);
                         mModel.set(TabResumptionModuleProperties.TITLE, title);
+                        mModel.set(TabResumptionModuleProperties.IS_VISIBLE, true);
                     } else {
+                        // Trigger render.
+                        mModel.set(TabResumptionModuleProperties.SUGGESTION_BUNDLE, null);
                         mModel.set(TabResumptionModuleProperties.TITLE, null);
+                        mModel.set(TabResumptionModuleProperties.IS_VISIBLE, false);
                     }
+
+                    mModuleState = nextModuleState;
                 });
     }
 
