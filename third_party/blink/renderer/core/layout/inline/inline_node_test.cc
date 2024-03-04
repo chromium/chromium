@@ -82,7 +82,7 @@ class InlineNodeForTest : public InlineNode {
   void SegmentText() {
     InlineNodeData* data = MutableData();
     data->is_bidi_enabled_ = true;
-    InlineNode::SegmentText(data);
+    InlineNode::SegmentText(data, nullptr);
   }
 
   void CollectInlines() { InlineNode::CollectInlines(MutableData()); }

@@ -162,8 +162,8 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
                       InlineNodeData* previous_data = nullptr) const;
   const SvgTextChunkOffsets* FindSvgTextChunks(LayoutBlockFlow& block,
                                                InlineNodeData& data) const;
-  void SegmentText(InlineNodeData*) const;
-  void SegmentScriptRuns(InlineNodeData*) const;
+  void SegmentText(InlineNodeData*, InlineNodeData* previous_data) const;
+  void SegmentScriptRuns(InlineNodeData*, InlineNodeData* previous_data) const;
   void SegmentFontOrientation(InlineNodeData*) const;
   void SegmentBidiRuns(InlineNodeData*) const;
   void ShapeText(InlineItemsData*,

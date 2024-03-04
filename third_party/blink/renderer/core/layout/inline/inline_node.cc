@@ -593,7 +593,7 @@ void InlineNode::PrepareLayout(InlineNodeData* previous_data) const {
   InlineNodeData* data = MutableData();
   DCHECK(data);
   CollectInlines(data, previous_data);
-  SegmentText(data);
+  SegmentText(data, previous_data);
   ShapeTextIncludingFirstLine(
       data, previous_data ? &previous_data->text_content : nullptr, nullptr);
 
@@ -947,7 +947,7 @@ bool InlineNode::SetTextWithOffset(LayoutText* layout_text,
   builder.DidFinishCollectInlines(data);
   // Relocates |ShapeResult| in |previous_data| after |offset|+|length|
   editor.Run();
-  node.SegmentText(data);
+  node.SegmentText(data, nullptr);
   node.ShapeTextIncludingFirstLine(data, &previous_data->text_content,
                                    &previous_data->items);
   node.AssociateItemsWithInlines(data);
@@ -1119,20 +1119,47 @@ const SvgTextChunkOffsets* InlineNode::FindSvgTextChunks(
              : nullptr;
 }
 
-void InlineNode::SegmentText(InlineNodeData* data) const {
+void InlineNode::SegmentText(InlineNodeData* data,
+                             InlineNodeData* previous_data) const {
   SegmentBidiRuns(data);
-  SegmentScriptRuns(data);
+  SegmentScriptRuns(data, previous_data);
   SegmentFontOrientation(data);
   if (data->segments)
     data->segments->ComputeItemIndex(data->items);
 }
 
 // Segment InlineItem by script, Emoji, and orientation using RunSegmenter.
-void InlineNode::SegmentScriptRuns(InlineNodeData* data) const {
+void InlineNode::SegmentScriptRuns(InlineNodeData* data,
+                                   InlineNodeData* previous_data) const {
   String& text_content = data->text_content;
   if (text_content.empty()) {
     data->segments = nullptr;
     return;
+  }
+
+  if (RuntimeEnabledFeatures::LayoutSegmentationCacheEnabled() &&
+      previous_data && text_content == previous_data->text_content) {
+    if (!previous_data->segments) {
+      const auto it = base::ranges::find_if(
+          previous_data->items,
+          [](const auto& item) { return item.Type() == InlineItem::kText; });
+      if (it != previous_data->items.end()) {
+        unsigned previous_packed_segment = it->segment_data_;
+        for (auto& item : data->items) {
+          if (item.Type() == InlineItem::kText) {
+            item.segment_data_ = previous_packed_segment;
+          }
+        }
+        data->segments = nullptr;
+        return;
+      }
+    } else if (GetLayoutBlockFlow()->IsHorizontalWritingMode()) {
+      // We can reuse InlineNodeData::segments only in horizontal writing modes
+      // because we might update it by SegmentFontOrientation() in vertical
+      // writing modes.
+      data->segments = std::move(previous_data->segments);
+      return;
+    }
   }
 
   if (text_content.Is8Bit() && !data->is_bidi_enabled_) {
