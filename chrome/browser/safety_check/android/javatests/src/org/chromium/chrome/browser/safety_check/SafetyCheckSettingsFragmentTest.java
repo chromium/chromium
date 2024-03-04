@@ -27,6 +27,7 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
@@ -206,6 +207,10 @@ public class SafetyCheckSettingsFragmentTest {
 
     @Test
     @MediumTest
+    @DisabledTest(
+            message =
+                    "crbug.com/41496704 flaky. Fails to bind views due to access from wrong"
+                            + " thread.")
     public void testNullStateDisplayedCorrectlySyncOnNoUsingSplitStores() {
         verifyNullStateDisplayedCorrectly(/* isSyncEnabled= */ true, /* usesSplitStores= */ false);
     }
