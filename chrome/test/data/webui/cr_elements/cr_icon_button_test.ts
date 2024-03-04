@@ -31,28 +31,37 @@ suite('cr-icon-button', function() {
     await flushTasks();
   });
 
-  test('enabled/disabled', () => {
+  test('enabled/disabled', async () => {
     assertEquals('0', button.getAttribute('tabindex'));
     assertEquals('false', button.getAttribute('aria-disabled'));
     button.disabled = true;
+    await button.updateComplete;
+
     assertEquals('-1', button.getAttribute('tabindex'));
     assertEquals('true', button.getAttribute('aria-disabled'));
   });
 
-  test('iron-icon is created, reused and removed based on |ironIcon|', () => {
+  test('iron-icon created, reused, removed based on |ironIcon|', async () => {
     assertFalse(!!button.shadowRoot!.querySelector('iron-icon'));
     button.ironIcon = 'icon-key';
+    await button.updateComplete;
+
     assertTrue(!!button.shadowRoot!.querySelector('iron-icon'));
     button.shadowRoot!.querySelector('iron-icon')!.icon = 'icon-key';
     button.ironIcon = 'another-icon-key';
+    await button.updateComplete;
+
     assertEquals(1, button.shadowRoot!.querySelectorAll('iron-icon').length);
     button.shadowRoot!.querySelector('iron-icon')!.icon = 'another-icon-key';
     button.ironIcon = '';
+    await button.updateComplete;
+
     assertFalse(!!button.shadowRoot!.querySelector('iron-icon'));
   });
 
-  test('iron-icon children svg and img elements have role set to none', () => {
+  test('iron-icon children svg and img elements role set to none', async () => {
     button.ironIcon = 'cr:clear';
+    await button.updateComplete;
     assertTrue(!!button.shadowRoot);
     const ironIcons = button.shadowRoot!.querySelectorAll('iron-icon');
     assertEquals(1, ironIcons.length);
@@ -61,16 +70,16 @@ suite('cr-icon-button', function() {
     assertEquals(iconChildren[0]!.getAttribute('role'), 'none');
   });
 
-  test('enter emits click event', async () => {
+  test('enter emits click event', () => {
     const wait = eventToPromise('click', button);
     pressAndReleaseKeyOn(button, -1, [], 'Enter');
-    await wait;
+    return wait;
   });
 
-  test('space emits click event', async () => {
+  test('space emits click event', () => {
     const wait = eventToPromise('click', button);
     pressAndReleaseKeyOn(button, -1, [], ' ');
-    await wait;
+    return wait;
   });
 
   test('space up does not click without space down', () => {
@@ -136,17 +145,19 @@ suite('cr-icon-button', function() {
     assertEquals('-1', button.getAttribute('tabindex'));
   });
 
-  test('tabindex update', () => {
+  test('tabindex update', async () => {
     button = document.createElement('cr-icon-button')!;
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(button);
     assertEquals('0', button.getAttribute('tabindex'));
     button.customTabIndex = 1;
+    await button.updateComplete;
     assertEquals('1', button.getAttribute('tabindex'));
   });
 
-  test('multiple iron icons', () => {
+  test('multiple iron icons', async () => {
     button.ironIcon = 'icon1,icon2';
+    await button.updateComplete;
     const elements = button.shadowRoot!.querySelectorAll('iron-icon');
     assertEquals(2, elements.length);
     assertEquals('icon1', elements[0]!.icon);

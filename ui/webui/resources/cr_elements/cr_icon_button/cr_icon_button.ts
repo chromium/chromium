@@ -44,13 +44,15 @@
  * the |ironIcon| property to a comma-delimited list of keys.
  */
 
-import '../cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_icon_button.html.js';
+import {CrPaperRippleMixin} from '../cr_paper_ripple_mixin.js';
+
+import {getCss} from './cr_icon_button.css.js';
+import {getHtml} from './cr_icon_button.html.js';
 
 export interface CrIconButtonElement {
   $: {
@@ -58,24 +60,26 @@ export interface CrIconButtonElement {
   };
 }
 
-const CrIconbuttonElementBase = PaperRippleMixin(PolymerElement);
+const CrIconbuttonElementBase = CrPaperRippleMixin(CrLitElement);
 
 export class CrIconButtonElement extends CrIconbuttonElementBase {
   static get is() {
     return 'cr-icon-button';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       disabled: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-        observer: 'disabledChanged_',
+        reflect: true,
       },
 
       /**
@@ -83,26 +87,24 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
        */
       customTabIndex: {
         type: Number,
-        observer: 'applyTabIndex_',
       },
 
       ironIcon: {
         type: String,
-        observer: 'onIronIconChanged_',
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       multipleIcons_: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  disabled: boolean;
-  customTabIndex: number;
-  ironIcon: string;
-  private multipleIcons_: boolean;
+  disabled: boolean = false;
+  customTabIndex?: number;
+  ironIcon?: string;
+  private multipleIcons_: boolean = false;
 
   /**
    * It is possible to activate a tab when the space key is pressed down. When
@@ -127,9 +129,16 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
     }
   }
 
-  override ready() {
-    super.ready();
-    this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('ironIcon')) {
+      const icons = (this.ironIcon || '').split(',');
+      this.multipleIcons_ = icons.length > 1;
+    }
+  }
+
+  override firstUpdated() {
     if (!this.hasAttribute('role')) {
       this.setAttribute('role', 'button');
     }
@@ -138,19 +147,24 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
     }
   }
 
-  toggleClass(className: string) {
-    this.classList.toggle(className);
-  }
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
 
-  private disabledChanged_(newValue: boolean, oldValue?: boolean) {
-    if (!newValue && oldValue === undefined) {
-      return;
+    if (changedProperties.has('disabled')) {
+      this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
+      if (this.disabled) {
+        this.blur();
+      }
     }
-    if (this.disabled) {
-      this.blur();
+
+    if (changedProperties.has('disabled') ||
+        changedProperties.has('customTabIndex')) {
+      this.applyTabIndex_();
     }
-    this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
-    this.applyTabIndex_();
+
+    if (changedProperties.has('ironIcon')) {
+      this.onIronIconChanged_();
+    }
   }
 
   /**
@@ -180,7 +194,6 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
       return;
     }
     const icons = (this.ironIcon || '').split(',');
-    this.multipleIcons_ = icons.length > 1;
     icons.forEach(icon => {
       const ironIcon = document.createElement('iron-icon');
       ironIcon.icon = icon;

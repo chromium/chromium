@@ -16,7 +16,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksApiProxy} from '../test_bookmarks_api_proxy.js';
 
@@ -380,8 +380,9 @@ suite('SidePanelShoppingListTest', () => {
   });
 
   test('UntrackedItemsResetsWithProductInfos', async () => {
-    let actionButton = getProductElements(shoppingList)[0]!.querySelector(
-                           '.action-button')! as HTMLElement;
+    let actionButton =
+        getProductElements(shoppingList)[0]!.querySelector('cr-icon-button');
+    assertTrue(!!actionButton);
     actionButton.click();
     const id = await shoppingServiceApi.whenCalled('untrackPriceForBookmark');
     assertEquals(id, products[0]!.bookmarkId);
@@ -391,9 +392,11 @@ suite('SidePanelShoppingListTest', () => {
     // untracked items list should be reset to empty.
     shoppingList.productInfos = [];
     shoppingList.productInfos = products.slice();
+    await microtasksFinished();
 
-    actionButton = getProductElements(shoppingList)[0]!.querySelector(
-                       '.action-button')! as HTMLElement;
+    actionButton =
+        getProductElements(shoppingList)[0]!.querySelector('cr-icon-button');
+    assertTrue(!!actionButton);
     checkActionButtonStatus(actionButton, true);
   });
 

@@ -4,9 +4,9 @@
 
 import '//resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
+import {assert} from '//resources/js/assert.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PaperRippleElement} from '//resources/polymer/v3_0/paper-ripple/paper-ripple.js';
-import {assert} from 'chrome://resources/js/assert.js';
 
 /**
  * `CrPaperRippleMixin` exposes methods to dynamically create a paper-ripple

@@ -117,6 +117,7 @@ build_webui("build") {
       "cr_dialog/cr_dialog.css",
       "cr_drawer/cr_drawer.css",
       "cr_expand_button/cr_expand_button.css",
+      "cr_icon_button/cr_icon_button.css",
       "cr_input/cr_input.css",
       "cr_input/cr_input_style.css",
       "cr_input/cr_input_style_lit.css",
