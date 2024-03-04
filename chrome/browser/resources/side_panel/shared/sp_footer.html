@@ -5,19 +5,14 @@
   }
 
   :host([pinned]) {
-    border-top: var(--cr-hairline);
+    border-top: 0;
     box-sizing: border-box;
     display: block;
     flex-shrink: 0;
-    height: 48px;
+    height: 56px;
     margin-block-start: auto;
     padding: 8px;
     position: relative;
-  }
-
-  :host-context([chrome-refresh-2023]):host([pinned]) {
-    border-top: 0;
-    height: 56px;
   }
 </style>
 <slot></slot>

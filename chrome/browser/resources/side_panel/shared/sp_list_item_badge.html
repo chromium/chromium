@@ -1,25 +1,15 @@
 <style>
   :host {
-    background: var(--google-grey-100);
-    border-radius: 100px;
-    color: var(--cr-secondary-text-color);
-    display: inline-flex;
-    flex-direction: row;
-    font-size: 12px;
-    gap: 4px;
-    line-height: 16px;
-    padding: 2px 8px 2px 6px;
-  }
-
-  :host-context([chrome-refresh-2023]):host {
+    height: 20px;
     align-items: center;
     background: var(--color-side-panel-badge-background);
+    border-radius: 100px;
     box-sizing: border-box;
     color: var(--color-side-panel-badge-foreground);
+    display: inline-flex;
+    flex-direction: row;
     font-size: 11px;
     gap: 0;
-    height: 20px;
-    /* Normal line-height results in more vertically centered text in Roboto. */
     line-height: normal;
     padding: 4px 8px 4px 6px;
   }
@@ -30,12 +20,6 @@
   }
 
   :host([updated]) {
-    background: var(--google-green-50);
-    color: var(--google-green-800);
-    font-weight: 500;
-  }
-
-  :host-context([chrome-refresh-2023]):host([updated]) {
     background: var(--color-side-panel-badge-background-updated);
     color: var(--color-side-panel-badge-foreground-updated);
     font-weight: 400;
@@ -50,20 +34,13 @@
     color: inherit;
     height: 12px;
     width: 12px;
-  }
-
-  :host-context([chrome-refresh-2023]) ::slotted(iron-icon) {
     padding-inline-end: 4px;
   }
 
   ::slotted([slot=previous-badge]) {
-    color: var(--cr-secondary-text-color);
+    color: var(--color-side-panel-badge-foreground);
     font-weight: 400;
     text-decoration: line-through;
-  }
-
-  :host-context([chrome-refresh-2023]) ::slotted([slot=previous-badge]) {
-    color: var(--color-side-panel-badge-foreground);
     padding-inline-start: 2px;
   }
 

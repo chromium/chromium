@@ -9,10 +9,6 @@
  * #css_wrapper_metadata_end */
 
 .sp-card {
-  display: contents;
-}
-
-:host-context([chrome-refresh-2023]) .sp-card {
   background: var(--color-side-panel-card-background);
   border-radius: 12px;
   display: block;
@@ -20,47 +16,40 @@
   padding: var(--sp-card-block-padding) 0;
 }
 
-:host-context([chrome-refresh-2023]) .sp-card sp-heading {
+.sp-card sp-heading {
   margin: 0;
   padding: 0 var(--sp-card-inline-padding);
 }
 
 .sp-scroller {
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-:host-context([chrome-refresh-2023]) .sp-scroller {
   display: block;
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-gutter: stable;
 }
 
-:host-context([chrome-refresh-2023]) .sp-scroller::-webkit-scrollbar {
+.sp-scroller::-webkit-scrollbar {
   background: transparent;
   width: var(--sp-body-padding);
 }
 
-:host-context([chrome-refresh-2023]) .sp-scroller::-webkit-scrollbar-thumb {
+.sp-scroller::-webkit-scrollbar-thumb {
   background: var(--color-side-panel-scrollbar-thumb);
   background-clip: content-box;
   border: solid 1.5px transparent;
   border-radius: 100px;
 }
 
-:host-context([chrome-refresh-2023])
-    .sp-scroller-top-of-page::-webkit-scrollbar-track {
+.sp-scroller-top-of-page::-webkit-scrollbar-track {
   margin-block-start: var(--sp-body-padding);
 }
 
-:host-context([chrome-refresh-2023])
-    .sp-scroller-bottom-of-page::-webkit-scrollbar-track {
+.sp-scroller-bottom-of-page::-webkit-scrollbar-track {
   margin-block-end: var(--sp-body-padding);
 }
 
-:host-context([chrome-refresh-2023]) .sp-scroller .sp-card,
-:host-context([chrome-refresh-2023]):host-context(.sp-scroller) .sp-card {
+.sp-scroller .sp-card,
+:host-context(.sp-scroller) .sp-card {
   margin-inline-end: 0; /* sp-scroller's scrollbar takes the space instead. */
 }
 
@@ -79,23 +68,13 @@
 }
 
 .sp-hr {
-  background: var(--google-grey-300);
+  background: var(--color-side-panel-divider);
   border: none;
   height: 1px;
   width: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  .sp-hr {
-    background: var(--google-grey-700);
-  }
-}
-
-:host-context([chrome-refresh-2023]) .sp-hr {
-  background: var(--color-side-panel-divider);
-}
-
-:host-context([chrome-refresh-2023]) .sp-cards-separator {
+.sp-cards-separator {
   border: 0;
   flex-shrink: 0;
   height: 8px;
@@ -103,7 +82,7 @@
   width: 100%;
 }
 
-:host-context([chrome-refresh-2023]) cr-dialog {
+cr-dialog {
   --cr-dialog-background-color: var(--color-side-panel-dialog-background);
   --cr-primary-text-color: var(--color-side-panel-dialog-primary-foreground);
   --cr-secondary-text-color: var(
@@ -113,7 +92,7 @@
   font-weight: 500;
 }
 
-:host-context([chrome-refresh-2023]) cr-dialog::part(dialog) {
+cr-dialog::part(dialog) {
   --scroll-border-color: var(--color-side-panel-dialog-divider);
   border-radius: 12px;
   box-shadow: var(--cr-elevation-3);
