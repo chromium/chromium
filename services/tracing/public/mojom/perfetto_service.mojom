@@ -4,6 +4,7 @@
 
 module tracing.mojom;
 
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
@@ -125,8 +126,8 @@ struct DataSourceConfig {
   ChromeConfig chrome_config;
   InterceptorConfig? interceptor_config;
   string legacy_config;
-  string track_event_config_raw;
-  string etw_config_raw;
+  mojo_base.mojom.ByteString track_event_config_raw;
+  mojo_base.mojom.ByteString etw_config_raw;
 };
 
 struct DataSourceRegistration {

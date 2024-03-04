@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "mojo/public/cpp/base/byte_string_mojom_traits.h"
 #include "services/tracing/public/mojom/chrome_config_mojom_traits.h"
 #include "services/tracing/public/mojom/interceptor_config_mojom_traits.h"
 
