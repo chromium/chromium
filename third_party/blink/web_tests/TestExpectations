@@ -6926,3 +6926,4 @@ crbug.com/327590879 [ Linux ] virtual/view-transition-mpa-serialization/external
 
 # Gardener 2024-03-04 (EMEA)
 crbug.com/327224061 [ Win ] external/wpt/scroll-to-text-fragment/iframe-scroll.sub.html [ Failure Pass ]
+crbug.com/40253082 [ Linux ] fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Crash Pass ]
