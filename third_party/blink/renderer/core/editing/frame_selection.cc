@@ -430,6 +430,12 @@ bool FrameSelection::Modify(SelectionModifyAlteration alter,
           DispatchEventResult::kNotCanceled) {
     return false;
   }
+
+  // |DispatchSelectStart()| can change document hosted by |frame_|.
+  if (!IsAvailable()) {
+    return false;
+  }
+
   if (!modified) {
     if (set_selection_by == SetSelectionBy::kSystem)
       return false;
