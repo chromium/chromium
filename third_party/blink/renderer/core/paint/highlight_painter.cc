@@ -483,14 +483,6 @@ void HighlightPainter::Paint(Phase phase) {
         marker->GetType()));
 
     switch (marker->GetType()) {
-      case DocumentMarker::kSpelling:
-      case DocumentMarker::kGrammar:
-        if (phase == kForeground) {
-          PaintOneSpellingGrammarDecoration(
-              marker->GetType(), text, paint_start_offset, paint_end_offset);
-        }
-        break;
-
       case DocumentMarker::kTextMatch: {
         const Document& document = node_->GetDocument();
         if (!document.GetFrame()->GetEditor().MarkedTextMatchesAreHighlighted())
@@ -554,37 +546,8 @@ void HighlightPainter::Paint(Phase phase) {
         }
       } break;
 
-      case DocumentMarker::kTextFragment:
-      case DocumentMarker::kCustomHighlight: {
-        const auto& highlight_pseudo_marker =
-            To<HighlightPseudoMarker>(*marker);
-        const Document& document = node_->GetDocument();
-
-        // Paint background
-        if (phase == kBackground) {
-          Color background_color =
-              HighlightStyleUtils::HighlightBackgroundColor(
-                  document, originating_style_, node_, std::nullopt,
-                  highlight_pseudo_marker.GetPseudoId(),
-                  highlight_pseudo_marker.GetPseudoArgument());
-
-          PaintRect(
-              paint_info_.context,
-              ComputeBackgroundRect(text, paint_start_offset, paint_end_offset),
-              background_color, background_auto_dark_mode_);
-          break;
-        }
-
-        DCHECK_EQ(phase, kForeground);
-        Color text_color =
-            originating_style_.VisitedDependentColor(GetCSSPropertyColor());
-        PaintDecoratedText(text, text_color, paint_start_offset,
-                           paint_end_offset,
-                           highlight_pseudo_marker.GetPseudoId(),
-                           highlight_pseudo_marker.GetPseudoArgument());
-      } break;
-
       default:
+        // Spelling, Grammar, TextFragment and Custom
         NOTREACHED();
         break;
     }
