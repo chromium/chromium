@@ -5805,16 +5805,20 @@ void NavigationRequest::AddOldPageInfoToCommitParamsIfNeeded() {
 }
 
 bool NavigationRequest::ShouldDispatchPageSwapEvent() const {
+  const bool feature_enabled =
+      base::FeatureList::IsEnabled(blink::features::kPageSwapEvent) ||
+      base::FeatureList::IsEnabled(
+          blink::features::kViewTransitionOnNavigation);
+  if (!feature_enabled) {
+    return false;
+  }
+
   if (early_render_frame_host_swap_type_ !=
       EarlyRenderFrameHostSwapType::kNone) {
     return false;
   }
 
   if (IsSameDocument()) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(blink::features::kPageSwapEvent)) {
     return false;
   }
 

@@ -1468,4 +1468,17 @@ TEST_F(NavigationRequestResponseBodyTest, PipeClosed) {
   EXPECT_EQ(std::string(), response_body());
 }
 
+TEST_F(NavigationRequestTest, ViewTransitionForceEnablesPageSwap) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({blink::features::kViewTransitionOnNavigation},
+                                {});
+
+  GURL main_url = GURL("https://main.com");
+  auto main_navigation =
+      NavigationSimulatorImpl::CreateBrowserInitiated(main_url, contents());
+  main_navigation->Start();
+  ASSERT_TRUE(
+      main_navigation->GetNavigationHandle()->ShouldDispatchPageSwapEvent());
+}
+
 }  // namespace content
