@@ -713,7 +713,7 @@ constexpr base::FeatureParam<int> kInspireMeAdditionalRelatedQueries(
 constexpr base::FeatureParam<int> kInspireMeAdditionalTrendingQueries(
     &omnibox::kInspireMe,
     "AdditionalTrendingQueries",
-    0);
+    5);
 
 constexpr base::FeatureParam<int> kInspireMePsuggestQueries(
     &omnibox::kInspireMe,

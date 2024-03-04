@@ -60,7 +60,7 @@ BASE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard,
 // autocomplete_grouper_sections.h) to limit and group (but not sort) matches.
 BASE_FEATURE(kGroupingFrameworkForZPS,
              "OmniboxGroupingFrameworkForZPS",
-             enabled_by_default_desktop_android);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, uses the grouping framework with prefixed suggestions (i.e.
 // autocomplete_grouper_sections.h) to limit and group (but not sort) matches.
@@ -173,7 +173,7 @@ BASE_FEATURE(kZeroSuggestInMemoryCaching,
 // Enables on-focus zero-prefix suggestions on the NTP for signed-out users.
 BASE_FEATURE(kZeroSuggestOnNTPForSignedOutUsers,
              "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
-             enabled_by_default_desktop_android);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables prefetching of the zero prefix suggestions for eligible users on NTP.
 BASE_FEATURE(kZeroSuggestPrefetching,
@@ -481,7 +481,7 @@ BASE_FEATURE(kUrlScoringModel,
 
 // If enabled, appends additional Trending and Recent Search Related Queries to
 // the suggestion list on the NTP and SRP.
-BASE_FEATURE(kInspireMe, "OmniboxInspireMe", enabled_by_default_android_only);
+BASE_FEATURE(kInspireMe, "OmniboxInspireMe", enabled_by_default_android_ios);
 
 // Actions in Suggest is a data-driven feature; it's considered enabled when the
 // data is available.

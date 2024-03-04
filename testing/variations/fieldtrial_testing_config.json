@@ -11813,27 +11813,6 @@
             ]
         }
     ],
-    "OmniboxInspireMeIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled25_total_5_TRENDS",
-                    "params": {
-                        "AdditionalTrendingQueries": "5",
-                        "PersonalizedSuggestQueries": "20"
-                    },
-                    "enable_features": [
-                        "OmniboxGroupingFrameworkForZPS",
-                        "OmniboxInspireMe",
-                        "OmniboxTrendingZeroPrefixSuggestionsOnNTP"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxInspireMePhase2": [
         {
             "platforms": [
