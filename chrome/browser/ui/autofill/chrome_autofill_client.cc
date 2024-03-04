@@ -1366,12 +1366,6 @@ Profile* ChromeAutofillClient::GetProfile() const {
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 
-bool ChromeAutofillClient::IsMultipleAccountUser() {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile());
-  return identity_manager->GetAccountsWithRefreshTokens().size() > 1;
-}
-
 std::u16string ChromeAutofillClient::GetAccountHolderName() {
   Profile* profile = GetProfile();
   if (!profile)
@@ -1381,21 +1375,8 @@ std::u16string ChromeAutofillClient::GetAccountHolderName() {
   if (!identity_manager)
     return std::u16string();
   AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   return base::UTF8ToUTF16(primary_account_info.full_name);
-}
-
-std::u16string ChromeAutofillClient::GetAccountHolderEmail() {
-  Profile* profile = GetProfile();
-  if (!profile)
-    return std::u16string();
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager)
-    return std::u16string();
-  AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
-  return base::UTF8ToUTF16(primary_account_info.email);
 }
 
 #if BUILDFLAG(IS_ANDROID)

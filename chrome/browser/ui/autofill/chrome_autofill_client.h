@@ -294,9 +294,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
 
  private:
   Profile* GetProfile() const;
-  bool IsMultipleAccountUser();
   std::u16string GetAccountHolderName();
-  std::u16string GetAccountHolderEmail();
   bool SupportsConsentlessExecution(const url::Origin& origin);
 #if BUILDFLAG(IS_ANDROID)
   AutofillSaveCardBottomSheetBridge*
