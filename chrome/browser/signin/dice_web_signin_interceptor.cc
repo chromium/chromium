@@ -204,7 +204,7 @@ std::optional<bool> EnterpriseSeparationMaybeRequired(
   // Enforce separation for new accounts or re-auth of existing secondary
   // accounts.
   if ((is_new_account_interception ||
-       primary_core_account_info.email != email) &&
+       !gaia::AreEmailsSame(primary_core_account_info.email, email)) &&
       !signin_util::IsAccountExemptedFromEnterpriseProfileSeparation(profile,
                                                                      email)) {
     return true;
