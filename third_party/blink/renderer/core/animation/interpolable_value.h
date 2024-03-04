@@ -127,6 +127,7 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
   bool IsNumber() const final { return true; }
   bool Equals(const InterpolableValue& other) const final;
   void Scale(double scale) final;
+  void Scale(const InterpolableNumber& other);
   void Add(const InterpolableValue& other) final;
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 

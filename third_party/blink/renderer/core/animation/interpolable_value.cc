@@ -166,6 +166,19 @@ void InterpolableNumber::Scale(double scale) {
           expression_, NumberNode(scale), CSSMathOperator::kMultiply));
 }
 
+void InterpolableNumber::Scale(const InterpolableNumber& other) {
+  if (IsDoubleValue()) {
+    SetExpression(
+        *CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+            &other.AsExpression(), NumberNode(value_.Value()),
+            CSSMathOperator::kMultiply));
+    return;
+  }
+  SetExpression(
+      *CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+          expression_, &other.AsExpression(), CSSMathOperator::kMultiply));
+}
+
 void InterpolableList::Scale(double scale) {
   for (wtf_size_t i = 0; i < length(); i++)
     values_[i]->Scale(scale);
