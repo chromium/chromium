@@ -211,6 +211,11 @@ BruschettaInstallerView::~BruschettaInstallerView() {
     installer_->Cancel();
   }
   observation_.Reset();
+  ash::DarkLightModeController* dark_light_controller =
+      ash::DarkLightModeController::Get();
+  if (dark_light_controller) {
+    dark_light_controller->RemoveObserver(this);
+  }
   g_bruschetta_installer_view = nullptr;
 }
 
