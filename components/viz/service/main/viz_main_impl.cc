@@ -228,11 +228,14 @@ void VizMainImpl::CreateGpuService(
     delegate_->OnGpuServiceConnection(gpu_service_.get());
 }
 
-void VizMainImpl::SetSubpixelRendering(
-    gfx::FontRenderParams::SubpixelRendering subpixel_rendering) {
-  skia::LegacyDisplayGlobals::SetCachedPixelGeometry(
+void VizMainImpl::SetRenderParams(
+    gfx::FontRenderParams::SubpixelRendering subpixel_rendering,
+    float text_contrast,
+    float text_gamma) {
+  skia::LegacyDisplayGlobals::SetCachedParams(
       gfx::FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
-          subpixel_rendering));
+          subpixel_rendering),
+      text_contrast, text_gamma);
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -658,7 +658,8 @@ void GpuHostImpl::AddChildWindow(gpu::SurfaceHandle parent_window,
 
 void GpuHostImpl::MaybeSendFontRenderParams() {
   if (const auto& params = GetFontRenderParams().Get()) {
-    viz_main_->SetSubpixelRendering(params->subpixel_rendering);
+    viz_main_->SetRenderParams(params->subpixel_rendering,
+                               params->text_contrast, params->text_gamma);
   } else {
     GetFontRenderParams().SetGpuHostImpl(this);
   }

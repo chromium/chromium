@@ -121,8 +121,10 @@ class VizMainImpl : public mojom::VizMain {
           discardable_memory::mojom::DiscardableSharedMemoryManager>
           discardable_memory_manager,
       base::UnsafeSharedMemoryRegion use_shader_cache_shm_region) override;
-  void SetSubpixelRendering(
-      gfx::FontRenderParams::SubpixelRendering subpixel_rendering) override;
+  void SetRenderParams(
+      gfx::FontRenderParams::SubpixelRendering subpixel_rendering,
+      float text_contrast,
+      float text_gamma) override;
 #if BUILDFLAG(IS_WIN)
   void CreateInfoCollectionGpuService(
       mojo::PendingReceiver<mojom::InfoCollectionGpuService> pending_receiver)

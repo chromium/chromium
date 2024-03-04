@@ -3343,9 +3343,10 @@ void WebViewImpl::UpdateBaseBackgroundColor() {
 
 void WebViewImpl::UpdateFontRenderingFromRendererPrefs() {
 #if !BUILDFLAG(IS_MAC)
-  skia::LegacyDisplayGlobals::SetCachedPixelGeometry(
+  skia::LegacyDisplayGlobals::SetCachedParams(
       gfx::FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
-          renderer_preferences_.subpixel_rendering));
+          renderer_preferences_.subpixel_rendering),
+      renderer_preferences_.text_contrast, renderer_preferences_.text_gamma);
 #if BUILDFLAG(IS_WIN)
   // Cache the system font metrics in blink.
   WebFontRendering::SetMenuFontMetrics(

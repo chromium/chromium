@@ -11,6 +11,8 @@ namespace skia {
 
 namespace {
 SkPixelGeometry g_pixel_geometry = kRGB_H_SkPixelGeometry;
+float g_text_contrast = SK_GAMMA_CONTRAST;
+float g_text_gamma = SK_GAMMA_EXPONENT;
 
 // Lock to prevent data races between setting and getting values. It is
 // not ideal to have mismatched `SkSurfaceProps` between threads, but it
@@ -22,10 +24,13 @@ base::Lock& GetLock() {
 }
 
 // static
-void LegacyDisplayGlobals::SetCachedPixelGeometry(
-    SkPixelGeometry pixel_geometry) {
+void LegacyDisplayGlobals::SetCachedParams(SkPixelGeometry pixel_geometry,
+                                           float text_contrast,
+                                           float text_gamma) {
   base::AutoLock lock(GetLock());
   g_pixel_geometry = pixel_geometry;
+  g_text_contrast = text_contrast;
+  g_text_gamma = text_gamma;
 }
 
 // static

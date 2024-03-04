@@ -48,7 +48,11 @@ interface VizMain {
           discardable_memory_manager,
       mojo_base.mojom.UnsafeSharedMemoryRegion? use_shader_cache_shm_count);
 
-  SetSubpixelRendering(gfx.mojom.SubpixelRendering subpixel_rendering);
+  // Sets parameters necessary for rendering.
+  SetRenderParams(
+      gfx.mojom.SubpixelRendering subpixel_rendering,
+      float text_contrast,
+      float text_gamma);
 
   // Create a GPU info collection service provided by the info-collection GPU
   // process.

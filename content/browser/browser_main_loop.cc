@@ -996,9 +996,10 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
 
   auto font_render_params =
       gfx::GetFontRenderParams(gfx::FontRenderParamsQuery(), nullptr);
-  skia::LegacyDisplayGlobals::SetCachedPixelGeometry(
+  skia::LegacyDisplayGlobals::SetCachedParams(
       gfx::FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
-          font_render_params.subpixel_rendering));
+          font_render_params.subpixel_rendering),
+      font_render_params.text_contrast, font_render_params.text_gamma);
   viz::GpuHostImpl::InitFontRenderParams(font_render_params);
 
 #if BUILDFLAG(IS_ANDROID)
