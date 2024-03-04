@@ -555,10 +555,12 @@ void ProcessedLocalAudioSource::OnCaptureStarted() {
   started_callback_.Run(this, mojom::blink::MediaStreamRequestResult::OK, "");
 }
 
-void ProcessedLocalAudioSource::Capture(const media::AudioBus* audio_bus,
-                                        base::TimeTicks audio_capture_time,
-                                        double volume,
-                                        bool key_pressed) {
+void ProcessedLocalAudioSource::Capture(
+    const media::AudioBus* audio_bus,
+    base::TimeTicks audio_capture_time,
+    const media::AudioGlitchInfo& glitch_info,
+    double volume,
+    bool key_pressed) {
   TRACE_EVENT1("audio", "ProcessedLocalAudioSource::Capture", "capture-time",
                audio_capture_time);
   // Maximum number of channels used by the sinks.

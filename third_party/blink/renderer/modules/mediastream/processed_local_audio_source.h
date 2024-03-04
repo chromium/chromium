@@ -108,6 +108,7 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   void OnCaptureStarted() override;
   void Capture(const media::AudioBus* audio_source,
                base::TimeTicks audio_capture_time,
+               const media::AudioGlitchInfo& glitch_info,
                double volume,
                bool key_pressed) override;
   void OnCaptureError(media::AudioCapturerSource::ErrorCode code,

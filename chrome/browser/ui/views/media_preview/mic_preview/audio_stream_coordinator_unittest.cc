@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -80,6 +81,7 @@ TEST_F(AudioStreamCoordinatorTest, ConnectToAudioCaptuerAndReceiveBuses) {
     coordinator_->GetAudioCapturerForTest()->Capture(
         audio_bus.get(),
         /*audio_capture_time=*/base::TimeTicks::Now(),
+        /*glitch_info=*/{},
         /*volume=*/1.0,
         /*key_pressed=*/true);
   }

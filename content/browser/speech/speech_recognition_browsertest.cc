@@ -35,6 +35,7 @@
 #include "content/shell/browser/shell.h"
 #include "media/audio/audio_system.h"
 #include "media/base/audio_capturer_source.h"
+#include "media/base/audio_glitch_info.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -256,7 +257,7 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
     audio_bus->FromInterleaved<media::SignedInt16SampleTypeTraits>(
         reinterpret_cast<int16_t*>(&audio_buffer.get()[0]),
         audio_bus->frames());
-    capture_callback->Capture(audio_bus.get(), base::TimeTicks::Now(), 0.0,
+    capture_callback->Capture(audio_bus.get(), base::TimeTicks::Now(), {}, 0.0,
                               false);
   }
 

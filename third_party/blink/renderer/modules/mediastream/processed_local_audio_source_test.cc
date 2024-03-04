@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
@@ -243,12 +244,13 @@ TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   double volume = 0.9;
   const base::TimeTicks capture_time =
       base::TimeTicks::Now() + base::Milliseconds(delay_ms);
+  const media::AudioGlitchInfo glitch_info;
   std::unique_ptr<media::AudioBus> audio_bus =
       media::AudioBus::Create(2, expected_source_buffer_size_);
   audio_bus->Zero();
   EXPECT_CALL(*sink, OnDataCallback()).Times(AtLeast(1));
-  capture_source_callback()->Capture(audio_bus.get(), capture_time, volume,
-                                     key_pressed);
+  capture_source_callback()->Capture(audio_bus.get(), capture_time, glitch_info,
+                                     volume, key_pressed);
 
   // Expect the ProcessedLocalAudioSource to auto-stop the MockCapturerSource
   // when the track is stopped.

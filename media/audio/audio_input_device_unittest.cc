@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "media/base/audio_glitch_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,9 +54,10 @@ class MockCaptureCallback : public AudioCapturerSource::CaptureCallback {
   ~MockCaptureCallback() override = default;
 
   MOCK_METHOD0(OnCaptureStarted, void());
-  MOCK_METHOD4(Capture,
+  MOCK_METHOD5(Capture,
                void(const AudioBus* audio_source,
                     base::TimeTicks audio_capture_time,
+                    const AudioGlitchInfo& glitch_info,
                     double volume,
                     bool key_pressed));
 
@@ -65,18 +67,23 @@ class MockCaptureCallback : public AudioCapturerSource::CaptureCallback {
   MOCK_METHOD1(OnCaptureMuted, void(bool is_muted));
 };
 
-// Verifies that the capture time passed to Capture() are correct.
+// Verifies that the capture time and glitch info passed to Capture() are
+// correct.
 class AssertingCaptureCallback : public AudioCapturerSource::CaptureCallback {
  public:
-  explicit AssertingCaptureCallback(base::TimeTicks expected_capture_time)
-      : expected_capture_time_(expected_capture_time) {}
+  AssertingCaptureCallback() = default;
   ~AssertingCaptureCallback() override = default;
+
+  MOCK_METHOD2(VerifyCapture,
+               void(base::TimeTicks audio_capture_time,
+                    const AudioGlitchInfo& glitch_info));
 
   void Capture(const AudioBus* audio_source,
                base::TimeTicks audio_capture_time,
+               const AudioGlitchInfo& glitch_info,
                double volume,
                bool key_pressed) override {
-    EXPECT_EQ(audio_capture_time, expected_capture_time_);
+    VerifyCapture(audio_capture_time, glitch_info);
     capture_called_event_.Signal();
   }
 
@@ -89,7 +96,6 @@ class AssertingCaptureCallback : public AudioCapturerSource::CaptureCallback {
   MOCK_METHOD1(OnCaptureMuted, void(bool is_muted));
 
  private:
-  base::TimeTicks expected_capture_time_;
   base::WaitableEvent capture_called_event_;
 };
 
@@ -118,11 +124,7 @@ class AudioInputDeviceTest
         base::WrapUnique(input_ipc), AudioInputDevice::Purpose::kUserInput,
         AudioInputDeviceTest::GetParam());
 
-    const base::TimeTicks capture_time =
-        base::TimeTicks() + base::Microseconds(123);
-    // The AssertingCaptureCallback will check that the capture time is correct
-    // upon the call to Capture().
-    capture_callback_.emplace(capture_time);
+    capture_callback_.emplace();
     device_->Initialize(params, &capture_callback_.value());
 
     EXPECT_CALL(*input_ipc, CreateStream(_, _, _, _))
@@ -142,9 +144,9 @@ class AudioInputDeviceTest
     AudioInputBuffer* buffer = reinterpret_cast<AudioInputBuffer*>(ptr);
     buffer->params.id = 0;
     buffer->params.capture_time_us =
-        (capture_time - base::TimeTicks()).InMicroseconds();
-    buffer->params.glitch_duration_us = 0;
-    buffer->params.glitch_count = 0;
+        (capture_time_ - base::TimeTicks()).InMicroseconds();
+    buffer->params.glitch_duration_us = glitch_info_.duration.InMicroseconds();
+    buffer->params.glitch_count = glitch_info_.count;
   }
 
   base::MappedReadOnlyRegion shared_memory_;
@@ -152,6 +154,10 @@ class AudioInputDeviceTest
   CancelableSyncSocket renderer_socket_;
   std::optional<AssertingCaptureCallback> capture_callback_;
   scoped_refptr<AudioInputDevice> device_;
+  const base::TimeTicks capture_time_ =
+      base::TimeTicks() + base::Microseconds(123);
+  const AudioGlitchInfo glitch_info_{.duration = base::Microseconds(20000),
+                                     .count = 2};
 };
 
 // Regular construction.
@@ -205,6 +211,7 @@ TEST_P(AudioInputDeviceTest, CaptureCallback) {
   browser_socket_.Send(&buffer_index, sizeof(buffer_index));
 
   EXPECT_CALL(*capture_callback_, OnCaptureError(_, _)).Times(0);
+  EXPECT_CALL(*capture_callback_, VerifyCapture(capture_time_, glitch_info_));
 
   device_->Start();
   ste.RunUntilIdle();
