@@ -13,7 +13,7 @@ BASE_FEATURE(kAppStoreRating,
 
 BASE_FEATURE(kAppStoreRatingDBExclusionJan2024,
              "AppStoreRatingDBExclusionJan2024",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAppStoreRatingEnabled() {
   return base::FeatureList::IsEnabled(kAppStoreRating);
