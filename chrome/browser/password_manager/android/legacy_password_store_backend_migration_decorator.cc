@@ -40,8 +40,11 @@ LegacyPasswordStoreBackendMigrationDecorator::
       android_backend_(android_backend.get()),
       prefs_(prefs),
       sync_settings_helper_(prefs) {
-  DCHECK(built_in_backend_);
-  DCHECK(android_backend_);
+  // LegacyPasswordStoreBackendMigrationDecorator should not be created after
+  // stores split under any circumstances.
+  CHECK(!password_manager::UsesSplitStoresAndUPMForLocal(prefs_));
+  CHECK(built_in_backend_);
+  CHECK(android_backend_);
   active_backend_ = std::make_unique<PasswordStoreProxyBackend>(
       std::move(built_in_backend), std::move(android_backend), prefs_,
       password_manager::kProfileStore);
@@ -89,12 +92,7 @@ void LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
   password_sync_configured_setting_ =
       sync_util::IsSyncFeatureEnabledIncludingPasswords(sync);
 
-  // TODO(crbug.com/1445497): Re-evaluate migration code for local passwords.
-  bool upm_for_local_active =
-      password_manager::UsesSplitStoresAndUPMForLocal(prefs_);
-
-  if (password_sync_configured_setting_ != password_sync_applied_setting_ &&
-      !upm_for_local_active) {
+  if (password_sync_configured_setting_ != password_sync_applied_setting_) {
     prefs_->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, true);
   } else {
     // The setting was changed back and forth, the migration is not needed.
