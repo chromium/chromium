@@ -28,6 +28,7 @@
 #include <optional>
 
 #include "base/auto_reset.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -445,7 +446,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
            ResourceType,
            const ResourceLoaderOptions&);
 
-  virtual void NotifyDataReceived(const char* data, size_t size);
+  virtual void NotifyDataReceived(base::span<const char> data);
   virtual void NotifyFinished();
 
   void MarkClientFinished(ResourceClient*);

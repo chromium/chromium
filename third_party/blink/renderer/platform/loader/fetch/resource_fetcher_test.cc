@@ -737,7 +737,7 @@ class ServeRequestsOnCompleteClient final
   void CachedMetadataReceived(Resource*, mojo_base::BigBuffer) override {
     ASSERT_TRUE(false);
   }
-  void DataReceived(Resource*, const char*, size_t) override {
+  void DataReceived(Resource*, base::span<const char>) override {
     ASSERT_TRUE(false);
   }
   bool RedirectReceived(Resource*,

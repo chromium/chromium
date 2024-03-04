@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/load_timing_info.mojom.h"
@@ -46,9 +47,9 @@ namespace blink {
 namespace {
 
 using testing::_;
+using testing::ElementsAre;
 using testing::InSequence;
 using testing::InvokeWithoutArgs;
-using testing::StrEq;
 using testing::Truly;
 using Checkpoint = testing::StrictMock<testing::MockFunction<void(int)>>;
 
@@ -61,7 +62,7 @@ class MockThreadableLoaderClient final
   MockThreadableLoaderClient() = default;
   MOCK_METHOD2(DidSendData, void(uint64_t, uint64_t));
   MOCK_METHOD2(DidReceiveResponse, void(uint64_t, const ResourceResponse&));
-  MOCK_METHOD2(DidReceiveData, void(const char*, unsigned));
+  MOCK_METHOD1(DidReceiveData, void(base::span<const char>));
   MOCK_METHOD1(DidReceiveCachedMetadata, void(mojo_base::BigBuffer));
   MOCK_METHOD1(DidFinishLoading, void(uint64_t));
   MOCK_METHOD2(DidFail, void(uint64_t, const ResourceError&));
@@ -305,7 +306,7 @@ TEST_F(ThreadableLoaderTest, CancelInDidReceiveData) {
 
   EXPECT_CALL(GetCheckpoint(), Call(2));
   EXPECT_CALL(*Client(), DidReceiveResponse(_, _));
-  EXPECT_CALL(*Client(), DidReceiveData(_, _))
+  EXPECT_CALL(*Client(), DidReceiveData(_))
       .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelLoader));
   EXPECT_CALL(*Client(), DidFail(_, Truly(IsCancellation)));
 
@@ -322,7 +323,7 @@ TEST_F(ThreadableLoaderTest, CancelAndClearInDidReceiveData) {
 
   EXPECT_CALL(GetCheckpoint(), Call(2));
   EXPECT_CALL(*Client(), DidReceiveResponse(_, _));
-  EXPECT_CALL(*Client(), DidReceiveData(_, _))
+  EXPECT_CALL(*Client(), DidReceiveData(_))
       .WillOnce(
           InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelAndClearLoader));
   EXPECT_CALL(*Client(), DidFail(_, Truly(IsCancellation)));
@@ -340,7 +341,7 @@ TEST_F(ThreadableLoaderTest, DidFinishLoading) {
 
   EXPECT_CALL(GetCheckpoint(), Call(2));
   EXPECT_CALL(*Client(), DidReceiveResponse(_, _));
-  EXPECT_CALL(*Client(), DidReceiveData(StrEq("fox"), 4));
+  EXPECT_CALL(*Client(), DidReceiveData(ElementsAre('f', 'o', 'x', '\0')));
   EXPECT_CALL(*Client(), DidFinishLoading(_));
 
   StartLoader(SuccessURL());
@@ -356,7 +357,7 @@ TEST_F(ThreadableLoaderTest, CancelInDidFinishLoading) {
 
   EXPECT_CALL(GetCheckpoint(), Call(2));
   EXPECT_CALL(*Client(), DidReceiveResponse(_, _));
-  EXPECT_CALL(*Client(), DidReceiveData(_, _));
+  EXPECT_CALL(*Client(), DidReceiveData(_));
   EXPECT_CALL(*Client(), DidFinishLoading(_))
       .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelLoader));
 
@@ -373,7 +374,7 @@ TEST_F(ThreadableLoaderTest, ClearInDidFinishLoading) {
 
   EXPECT_CALL(GetCheckpoint(), Call(2));
   EXPECT_CALL(*Client(), DidReceiveResponse(_, _));
-  EXPECT_CALL(*Client(), DidReceiveData(_, _));
+  EXPECT_CALL(*Client(), DidReceiveData(_));
   EXPECT_CALL(*Client(), DidFinishLoading(_))
       .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::ClearLoader));
 
@@ -434,7 +435,7 @@ TEST_F(ThreadableLoaderTest, RedirectDidFinishLoading) {
 
   EXPECT_CALL(GetCheckpoint(), Call(2));
   EXPECT_CALL(*Client(), DidReceiveResponse(_, _));
-  EXPECT_CALL(*Client(), DidReceiveData(StrEq("fox"), 4));
+  EXPECT_CALL(*Client(), DidReceiveData(ElementsAre('f', 'o', 'x', '\0')));
   EXPECT_CALL(*Client(), DidFinishLoading(_));
 
   StartLoader(RedirectURL());
@@ -450,7 +451,7 @@ TEST_F(ThreadableLoaderTest, CancelInRedirectDidFinishLoading) {
 
   EXPECT_CALL(GetCheckpoint(), Call(2));
   EXPECT_CALL(*Client(), DidReceiveResponse(_, _));
-  EXPECT_CALL(*Client(), DidReceiveData(StrEq("fox"), 4));
+  EXPECT_CALL(*Client(), DidReceiveData(ElementsAre('f', 'o', 'x', '\0')));
   EXPECT_CALL(*Client(), DidFinishLoading(_))
       .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelLoader));
 
@@ -467,7 +468,7 @@ TEST_F(ThreadableLoaderTest, ClearInRedirectDidFinishLoading) {
 
   EXPECT_CALL(GetCheckpoint(), Call(2));
   EXPECT_CALL(*Client(), DidReceiveResponse(_, _));
-  EXPECT_CALL(*Client(), DidReceiveData(StrEq("fox"), 4));
+  EXPECT_CALL(*Client(), DidReceiveData(ElementsAre('f', 'o', 'x', '\0')));
   EXPECT_CALL(*Client(), DidFinishLoading(_))
       .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::ClearLoader));
 

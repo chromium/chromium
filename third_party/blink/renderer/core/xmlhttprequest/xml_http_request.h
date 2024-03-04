@@ -186,7 +186,7 @@ class CORE_EXPORT XMLHttpRequest final
                    uint64_t total_bytes_to_be_sent) override;
   void DidReceiveResponse(uint64_t identifier,
                           const ResourceResponse&) override;
-  void DidReceiveData(const char* data, unsigned data_length) override;
+  void DidReceiveData(base::span<const char> data) override;
   // When responseType is set to "blob", didDownloadData() is called instead
   // of didReceiveData().
   void DidDownloadData(uint64_t data_length) override;

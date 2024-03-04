@@ -34,6 +34,7 @@
 
 #include <memory>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -304,12 +305,12 @@ void EventSource::DidReceiveResponse(uint64_t identifier,
   }
 }
 
-void EventSource::DidReceiveData(const char* data, unsigned length) {
+void EventSource::DidReceiveData(base::span<const char> data) {
   DCHECK_EQ(kOpen, state_);
   DCHECK(loader_);
   DCHECK(parser_);
 
-  parser_->AddBytes(data, length);
+  parser_->AddBytes(data.data(), base::checked_cast<uint32_t>(data.size()));
 }
 
 void EventSource::DidFinishLoading(uint64_t) {

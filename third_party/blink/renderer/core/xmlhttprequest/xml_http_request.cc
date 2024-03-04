@@ -28,7 +28,9 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "net/base/mime_util.h"
 #include "services/network/public/cpp/header_util.h"
@@ -244,7 +246,7 @@ class XMLHttpRequest::BlobLoader final
   }
   FileErrorCode DidReceiveData(const char* data, unsigned length) override {
     DCHECK_LE(length, static_cast<unsigned>(INT_MAX));
-    xhr_->DidReceiveData(data, length);
+    xhr_->DidReceiveData(base::span(data, length));
     return FileErrorCode::kOK;
   }
   void DidFinishLoading() override { xhr_->DidFinishLoadingFromBlob(); }
@@ -1934,7 +1936,7 @@ std::unique_ptr<TextResourceDecoder> XMLHttpRequest::CreateDecoder() const {
   return nullptr;
 }
 
-void XMLHttpRequest::DidReceiveData(const char* data, unsigned len) {
+void XMLHttpRequest::DidReceiveData(base::span<const char> data) {
   if (error_)
     return;
 
@@ -1948,11 +1950,13 @@ void XMLHttpRequest::DidReceiveData(const char* data, unsigned len) {
   if (error_)
     return;
 
-  if (!len)
+  if (data.empty()) {
     return;
+  }
 
+  unsigned len = base::checked_cast<unsigned>(data.size());
   if (response_type_code_ == kResponseTypeDocument && ResponseIsHTML()) {
-    ParseDocumentChunk(data, len);
+    ParseDocumentChunk(data.data(), len);
   } else if (response_type_code_ == kResponseTypeDefault ||
              response_type_code_ == kResponseTypeText ||
              response_type_code_ == kResponseTypeJSON ||
@@ -1965,7 +1969,7 @@ void XMLHttpRequest::DidReceiveData(const char* data, unsigned len) {
         response_text_overflow_ = true;
         response_text_.Clear();
       } else {
-        response_text_.Append(decoder_->Decode(data, len));
+        response_text_.Append(decoder_->Decode(data.data(), len));
       }
       ReportMemoryUsageToV8();
     }
@@ -1974,7 +1978,7 @@ void XMLHttpRequest::DidReceiveData(const char* data, unsigned len) {
     // Buffer binary data.
     if (!binary_response_builder_)
       binary_response_builder_ = SharedBuffer::Create();
-    binary_response_builder_->Append(data, len);
+    binary_response_builder_->Append(data.data(), len);
     ReportMemoryUsageToV8();
   }
 

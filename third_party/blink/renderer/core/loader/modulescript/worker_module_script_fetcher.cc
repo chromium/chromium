@@ -199,18 +199,20 @@ void WorkerModuleScriptFetcher::NotifyClient(
       cache_handler, response_referrer_policy));
 }
 
-void WorkerModuleScriptFetcher::DidReceiveData(base::span<const char> span) {
+void WorkerModuleScriptFetcher::DidReceiveDataWorkerMainScript(
+    base::span<const char> span) {
   if (!decoder_) {
     decoder_ = std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
         TextResourceDecoderOptions::kPlainTextContent,
         worker_main_script_loader_->GetScriptEncoding()));
   }
-  if (!span.size())
+  if (!span.size()) {
     return;
+  }
   source_text_.Append(decoder_->Decode(span.data(), span.size()));
 }
 
-void WorkerModuleScriptFetcher::OnStartLoadingBody(
+void WorkerModuleScriptFetcher::OnStartLoadingBodyWorkerMainScript(
     const ResourceResponse& resource_response) {
   if (!MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
           resource_response.HttpContentType())) {

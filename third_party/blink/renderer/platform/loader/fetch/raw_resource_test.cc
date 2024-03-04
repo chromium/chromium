@@ -88,8 +88,8 @@ class DummyClient final : public GarbageCollected<DummyClient>,
   void NotifyFinished(Resource* resource) override { called_ = true; }
   String DebugName() const override { return "DummyClient"; }
 
-  void DataReceived(Resource*, const char* data, size_t length) override {
-    data_.Append(data, base::checked_cast<wtf_size_t>(length));
+  void DataReceived(Resource*, base::span<const char> data) override {
+    data_.Append(data.data(), base::checked_cast<wtf_size_t>(data.size()));
   }
 
   bool RedirectReceived(Resource*,

@@ -56,7 +56,7 @@ class WorkerMainScriptLoaderTest : public testing::Test {
 
    public:
     // Implements WorkerMainScriptLoaderClient.
-    void DidReceiveData(base::span<const char> data) override {
+    void DidReceiveDataWorkerMainScript(base::span<const char> data) override {
       if (!data_)
         data_ = SharedBuffer::Create(data.data(), data.size());
       else

@@ -129,7 +129,7 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   // ThreadableLoaderClient
   void DidReceiveResponse(uint64_t /*identifier*/,
                           const ResourceResponse&) override;
-  void DidReceiveData(const char* data, unsigned data_length) override;
+  void DidReceiveData(base::span<const char> data) override;
   void DidReceiveCachedMetadata(mojo_base::BigBuffer) override;
   void DidFinishLoading(uint64_t identifier) override;
   void DidFail(uint64_t, const ResourceError&) override;
@@ -138,7 +138,7 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   // WorkerMainScriptLoaderClient
   // These will be called for dedicated workers (when PlzDedicatedWorker is
   // enabled) and shared workers.
-  void DidReceiveData(base::span<const char> span) override;
+  void DidReceiveDataWorkerMainScript(base::span<const char> span) override;
   void OnFinishedLoadingWorkerMainScript() override;
   void OnFailedLoadingWorkerMainScript() override;
 

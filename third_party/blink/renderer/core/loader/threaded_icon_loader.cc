@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -159,10 +160,10 @@ void ThreadedIconLoader::DidReceiveResponse(uint64_t,
   response_mime_type_ = response.MimeType();
 }
 
-void ThreadedIconLoader::DidReceiveData(const char* data, unsigned length) {
+void ThreadedIconLoader::DidReceiveData(base::span<const char> data) {
   if (!data_)
     data_ = SharedBuffer::Create();
-  data_->Append(data, length);
+  data_->Append(data.data(), data.size());
 }
 
 void ThreadedIconLoader::DidFinishLoading(uint64_t resource_identifier) {

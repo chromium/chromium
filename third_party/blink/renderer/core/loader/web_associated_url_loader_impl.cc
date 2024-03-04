@@ -36,6 +36,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/request_mode.h"
@@ -117,7 +118,7 @@ class WebAssociatedURLLoaderImpl::ClientAdapter final
                    uint64_t /*totalBytesToBeSent*/) override;
   void DidReceiveResponse(uint64_t, const ResourceResponse&) override;
   void DidDownloadData(uint64_t /*dataLength*/) override;
-  void DidReceiveData(const char*, unsigned /*dataLength*/) override;
+  void DidReceiveData(base::span<const char> /*data*/) override;
   void DidFinishLoading(uint64_t /*identifier*/) override;
   void DidFail(uint64_t /*identifier*/, const ResourceError&) override;
   void DidFailRedirectCheck(uint64_t /*identifier*/) override;
@@ -253,14 +254,12 @@ void WebAssociatedURLLoaderImpl::ClientAdapter::DidDownloadData(
 }
 
 void WebAssociatedURLLoaderImpl::ClientAdapter::DidReceiveData(
-    const char* data,
-    unsigned data_length) {
-  if (!client_)
+    base::span<const char> data) {
+  if (!client_) {
     return;
+  }
 
-  CHECK_LE(data_length, static_cast<unsigned>(std::numeric_limits<int>::max()));
-
-  client_->DidReceiveData(data, data_length);
+  client_->DidReceiveData(data.data(), base::checked_cast<int>(data.size()));
 }
 
 void WebAssociatedURLLoaderImpl::ClientAdapter::DidFinishLoading(

@@ -76,8 +76,7 @@ void TextTrackLoader::CancelLoad() {
 }
 
 void TextTrackLoader::DataReceived(Resource* resource,
-                                   const char* data,
-                                   size_t length) {
+                                   base::span<const char> data) {
   DCHECK_EQ(GetResource(), resource);
 
   if (state_ == kFailed)
@@ -88,7 +87,7 @@ void TextTrackLoader::DataReceived(Resource* resource,
         this, GetDocument());
   }
 
-  cue_parser_->ParseBytes(data, length);
+  cue_parser_->ParseBytes(data.data(), data.size());
 }
 
 void TextTrackLoader::NotifyFinished(Resource* resource) {

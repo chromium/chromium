@@ -60,9 +60,10 @@ void ManifestFetcher::DidReceiveResponse(uint64_t,
   response_ = response;
 }
 
-void ManifestFetcher::DidReceiveData(const char* data, unsigned length) {
-  if (!length)
+void ManifestFetcher::DidReceiveData(base::span<const char> data) {
+  if (data.empty()) {
     return;
+  }
 
   if (!decoder_) {
     String encoding = response_.TextEncodingName();
@@ -71,7 +72,7 @@ void ManifestFetcher::DidReceiveData(const char* data, unsigned length) {
         encoding.empty() ? UTF8Encoding() : WTF::TextEncoding(encoding)));
   }
 
-  data_.Append(decoder_->Decode(data, length));
+  data_.Append(decoder_->Decode(data.data(), data.size()));
 }
 
 void ManifestFetcher::DidFinishLoading(uint64_t) {
