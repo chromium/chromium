@@ -63,6 +63,9 @@ extern const base::FeatureParam<std::string> kPlusAddressErrorReportUrl;
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<bool> kDisableForForbiddenUsers;
 
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+BASE_DECLARE_FEATURE(kPlusAddressFallbackFromContextMenu);
+
 }  // namespace plus_addresses::features
 
 #endif  // COMPONENTS_PLUS_ADDRESSES_FEATURES_H_

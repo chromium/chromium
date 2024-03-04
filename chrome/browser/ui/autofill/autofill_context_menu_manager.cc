@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
 
+#include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -27,6 +30,9 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/variations/service/variations_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -137,15 +143,28 @@ bool IsLikelyDogfoodClient() {
   return variations_service->IsLikelyDogfoodClient();
 }
 
+bool ShouldAddPlusAddressManualFallbackItem(ContentAutofillDriver& driver) {
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(driver.render_frame_host());
+  const plus_addresses::PlusAddressService* plus_address_service =
+      PlusAddressServiceFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext());
+  return plus_address_service && plus_address_service->is_enabled() &&
+         base::FeatureList::IsEnabled(
+             plus_addresses::features::kPlusAddressFallbackFromContextMenu);
+}
+
 }  // namespace
 
 // static
 bool AutofillContextMenuManager::IsAutofillCustomCommandId(
     CommandId command_id) {
-  const int id = command_id.value();
-  return id == IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK ||
-         id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS ||
-         id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS;
+  static constexpr auto kAutofillCommands = base::MakeFixedFlatSet<int>(
+      {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS,
+       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS,
+       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS,
+       IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK});
+  return kAutofillCommands.contains(command_id.value());
 }
 
 AutofillContextMenuManager::AutofillContextMenuManager(
@@ -230,6 +249,11 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
     ExecuteFallbackForPaymentsCommand(manager);
     return;
   }
+
+  if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS) {
+    // TODO(b/327568061): Implement.
+    return;
+  }
 }
 
 void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
@@ -291,18 +315,26 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems(
     // Autofill entries are only available in input or text area fields
     return;
   }
+  const bool add_plus_address_fallback =
+      ShouldAddPlusAddressManualFallbackItem(driver);
   const bool add_address_fallback = ShouldAddAddressManualFallbackItem(driver);
   const bool add_payments_fallback =
       !personal_data_manager_->GetCreditCardsToSuggest().empty() &&
       base::FeatureList::IsEnabled(
           features::kAutofillForUnclassifiedFieldsAvailable);
 
-  if (!add_address_fallback && !add_payments_fallback) {
+  if (!add_plus_address_fallback && !add_address_fallback &&
+      !add_payments_fallback) {
     return;
   }
   menu_model_->AddTitle(
       l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE));
 
+  if (add_plus_address_fallback) {
+    menu_model_->AddItemWithStringId(
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS,
+        IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU);
+  }
   if (add_address_fallback) {
     menu_model_->AddItemWithStringId(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS,
@@ -313,6 +345,7 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS,
         IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS);
   }
+  // TODO(b/327566698): Log metrics for plus address fallbacks, too.
   LogManualFallbackContextMenuEntryShown(driver, add_address_fallback,
                                          add_payments_fallback);
   menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);

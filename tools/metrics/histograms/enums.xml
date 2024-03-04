@@ -30494,6 +30494,7 @@ Called by update_net_error_codes.py.-->
   <int value="142" label="IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME"/>
   <int value="143" label="IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME"/>
   <int value="144" label="IDC_CONTENT_CONTEXT_OPENLINKPREVIEW"/>
+  <int value="145" label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS"/>
 </enum>
 
 <enum name="ReportProcessingResult">

@@ -234,7 +234,7 @@ void PlusAddressService::ConfirmPlusAddress(
 }
 
 std::u16string PlusAddressService::GetCreateSuggestionLabel() const {
-  // TODO(crbug.com/1467623): once ready, use standard
+  // TODO(crbug.com/1467623): Once ready, use standard
   // `l10n_util::GetStringUTF16` instead of using feature params.
   return base::UTF8ToUTF16(
       features::kEnterprisePlusAddressSuggestionLabelOverride.Get());

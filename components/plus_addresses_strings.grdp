@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
     <!-- Experimental enterprise plus_addresses feature strings -->
+    <!-- Fallback strings -->
+    <message name="IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU" desc="Label for the context menu entry that serves as a fallback to trigger plus address suggestions on a field." translateable="false">
+      Lorem Ipsum
+    </message>
     <!-- Modal strings -->
     <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">
       Lorem Ipsum

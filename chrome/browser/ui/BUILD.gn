@@ -576,6 +576,7 @@ static_library("ui") {
     "//components/performance_manager",
     "//components/permissions",
     "//components/plus_addresses",
+    "//components/plus_addresses:features",
     "//components/policy/content",
     "//components/policy/core/browser",
     "//components/pref_registry",

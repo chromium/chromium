@@ -12,6 +12,7 @@
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -26,6 +27,7 @@
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/plus_addresses/features.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -92,6 +94,19 @@ MATCHER(OnlyPaymentsFallbackAdded, "") {
          arg->GetLabelAt(1) ==
              l10n_util::GetStringUTF16(
                  IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS) &&
+         arg->GetTypeAt(2) == ui::MenuModel::ItemType::TYPE_SEPARATOR;
+}
+
+// Checks if the context menu model contains the plus address manual fallback
+// entries with correct UI strings. `arg` must be of type ui::SimpleMenuModel.
+MATCHER(OnlyPlusAddressFallbackAdded, "") {
+  EXPECT_EQ(arg->GetItemCount(), 3u);
+  return arg->GetTypeAt(0) == ui::MenuModel::ItemType::TYPE_TITLE &&
+         arg->GetLabelAt(0) ==
+             l10n_util::GetStringUTF16(
+                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE) &&
+         arg->GetCommandIdAt(1) ==
+             IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS &&
          arg->GetTypeAt(2) == ui::MenuModel::ItemType::TYPE_SEPARATOR;
 }
 
@@ -696,5 +711,49 @@ INSTANTIATE_TEST_SUITE_P(
          }})),
     [](const ::testing::TestParamInfo<ManualFallbackMetricsTest::ParamType>&
            info) { return info.param.test_name; });
+
+class PlusAddressContextMenuManagerTest
+    : public SigninBrowserTestBaseT<BaseAutofillContextMenuManagerTest> {
+ public:
+  PlusAddressContextMenuManagerTest() {
+    // TODO(b/327562692): Create and use a `PlusAddressTestEnvironment`.
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{plus_addresses::features::kFeature,
+          {{"server-url", "https://foo.bar"}}},
+         {plus_addresses::features::kPlusAddressFallbackFromContextMenu, {}}},
+        /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    SigninBrowserTestBaseT<
+        BaseAutofillContextMenuManagerTest>::SetUpOnMainThread();
+    identity_test_env()->MakePrimaryAccountAvailable(
+        "plus@plus.plus", signin::ConsentLevel::kSignin);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that Plus Address fallbacks are added to unclassified forms.
+IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, UnclassifiedForm) {
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), OnlyPlusAddressFallbackAdded());
+}
+
+// Tests that Plus Address fallbacks are added to classified forms.
+IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, ClassifiedForm) {
+  FormData form = CreateAndAttachClassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), OnlyPlusAddressFallbackAdded());
+}
 
 }  // namespace autofill
