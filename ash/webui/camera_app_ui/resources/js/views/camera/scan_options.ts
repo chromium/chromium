@@ -59,6 +59,9 @@ export class ScanOptions implements CameraUI {
         await this.checkDocumentModeReadiness();
       });
 
+  private readonly documentModeOptionWrapper =
+      dom.get('#scan-document-option', HTMLDivElement);
+
   constructor(private readonly cameraManager: CameraManager) {
     this.cameraManager.registerCameraUI(this);
 
@@ -73,7 +76,7 @@ export class ScanOptions implements CameraUI {
     void (async () => {
       const supported =
           await ChromeHelper.getInstance().isDocumentScannerSupported();
-      dom.get('#scan-document-option', HTMLElement).hidden = !supported;
+      this.documentModeOptionWrapper.hidden = !supported;
     })();
 
     for (const option of this.scanOptions) {
@@ -90,23 +93,24 @@ export class ScanOptions implements CameraUI {
     }
   }
 
-  async checkDocumentModeReadiness(): Promise<boolean> {
+  async checkDocumentModeReadiness(): Promise<void> {
     const isLoaded =
         await ChromeHelper.getInstance().checkDocumentModeReadiness();
     if (isLoaded) {
       this.onDocumentModeReady();
     }
-    return isLoaded;
   }
 
   onDocumentModeReady(): void {
-    const docModeOption = dom.get('#scan-document-option', HTMLDivElement);
-    docModeOption.classList.remove('disabled');
-
-    const docBtn = dom.get('#scan-document', HTMLInputElement);
-    docBtn.disabled = false;
+    if (this.documentModeEnabled()) {
+      return;
+    }
+    this.documentModeOptionWrapper.classList.remove('disabled');
+    const inputElement = getElementFromScanType(ScanType.DOCUMENT);
+    inputElement.disabled = false;
+    // Avoid UI jump when in Scan mode.
     if (!state.get(Mode.SCAN)) {
-      docBtn.checked = true;
+      inputElement.checked = true;
     }
   }
 
@@ -143,7 +147,9 @@ export class ScanOptions implements CameraUI {
       this.detachPreview();
     })();
     await this.switchToScanType(scanType);
-    this.updateDocumentModeStatus();
+    if (!this.documentModeEnabled()) {
+      this.updateDocumentModeStatus();
+    }
   }
 
   /**
@@ -206,5 +212,11 @@ export class ScanOptions implements CameraUI {
       this.barcodeScanner = null;
     }
     this.documentCornerOverlay.detach();
+  }
+
+  private documentModeEnabled(): boolean {
+    const disabled =
+        this.documentModeOptionWrapper.classList.contains('disabled');
+    return !disabled;
   }
 }
