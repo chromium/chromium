@@ -264,7 +264,7 @@ bool UseForcedColors(const Document& document,
 
 // Paired cascade: when we encounter any highlight colors, we make all other
 // highlight color properties default to initial, rather than the UA default.
-// https://drafts.csswg.org/css-pseudo-4/#highlight-cascade
+// https://drafts.csswg.org/css-pseudo-4/#paired-defaults
 bool UseDefaultHighlightColors(const ComputedStyle* pseudo_style,
                                PseudoId pseudo,
                                const CSSProperty& property) {
@@ -364,7 +364,6 @@ Color HighlightStyleUtils::HighlightBackgroundColor(
   Color result =
       ResolveColor(document, style, pseudo_style, pseudo,
                    GetCSSPropertyBackgroundColor(), current_layer_color);
-
   if (pseudo == kPseudoIdSelection) {
     if (NodeIsReplaced(node)) {
       // Avoid that ::selection full obscures selected replaced elements like
@@ -374,15 +373,19 @@ Color HighlightStyleUtils::HighlightBackgroundColor(
     if (result.IsFullyTransparent()) {
       return Color::kTransparent;
     }
-    // If the text color ends up being the same as the selection background,
-    // invert the selection background.
-    if (current_layer_color && *current_layer_color == result) {
-      if (node) {
-        UseCounter::Count(node->GetDocument(),
-                          WebFeature::kSelectionBackgroundColorInversion);
+    if (!RuntimeEnabledFeatures::SelectionRespectsColorsEnabled() ||
+        (UseDefaultHighlightColors(pseudo_style, pseudo,
+                                   GetCSSPropertyColor()) &&
+         UseDefaultHighlightColors(pseudo_style, pseudo,
+                                   GetCSSPropertyBackgroundColor()))) {
+      // If the text color ends up being the same as the selection background
+      // and we are using default colors, invert the background color. We do not
+      // do this when the author has requested colors in a ::selection pseudo
+      // (unless the flag is disabled).
+      if (current_layer_color && *current_layer_color == result) {
+        return Color(0xff - result.Red(), 0xff - result.Green(),
+                     0xff - result.Blue());
       }
-      return Color(0xff - result.Red(), 0xff - result.Green(),
-                   0xff - result.Blue());
     }
   }
   return result;

@@ -72,6 +72,97 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextInputShadow) {
   EXPECT_TRUE(paint_style.shadow);
 }
 
+TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
+  ScopedSelectionRespectsColorsForTest selection_respects_color_enabled(true);
+  // Test that we respect the author's colors in ::selection
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+
+  LoadURL("https://example.com/test.html");
+
+  Color default_highlight_background =
+      LayoutTheme::GetTheme().InactiveSelectionBackgroundColor(
+          mojom::blink::ColorScheme::kLight);
+  String html_content =
+      R"HTML(
+      <!doctype html>
+      <style>
+        #div1::selection {
+          background-color: green;
+          color: green;
+        }
+        #div2::selection {
+          color: )HTML" +
+      default_highlight_background.SerializeAsCSSColor() + R"HTML(;
+        }
+        #div3 {
+          color: )HTML" +
+      default_highlight_background.SerializeAsCSSColor() + R"HTML(;
+        }
+      }
+      </style>
+      <div id="div1">Green text selection color and background</div>
+      <div id="div2">Foreground matches default background color</div>
+      <div id="div3">No selection pseudo colors matching text color</div>
+    )HTML";
+  main_resource.Complete(html_content);
+
+  Compositor().BeginFrame();
+
+  std::unique_ptr<PaintController> controller{
+      std::make_unique<PaintController>()};
+  GraphicsContext context(*controller);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
+  TextPaintStyle paint_style;
+  Color background_color;
+
+  auto* div1_text =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("#div1")))
+          ->firstChild();
+  const ComputedStyle& div1_style = div1_text->GetLayoutObject()->StyleRef();
+  paint_style = HighlightStyleUtils::HighlightPaintingStyle(
+      GetDocument(), div1_style, div1_text, kPseudoIdSelection, paint_style,
+      paint_info);
+  background_color = HighlightStyleUtils::HighlightBackgroundColor(
+      GetDocument(), div1_style, div1_text, std::nullopt, kPseudoIdSelection);
+  EXPECT_EQ(Color(0, 128, 0), paint_style.fill_color);
+  EXPECT_EQ(Color(0, 128, 0), background_color);
+
+  auto* div2_text =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("#div2")))
+          ->firstChild();
+  const ComputedStyle& div2_style = div1_text->GetLayoutObject()->StyleRef();
+  paint_style = HighlightStyleUtils::HighlightPaintingStyle(
+      GetDocument(), div2_style, div2_text, kPseudoIdSelection, paint_style,
+      paint_info);
+  background_color = HighlightStyleUtils::HighlightBackgroundColor(
+      GetDocument(), div2_style, div2_text, std::nullopt, kPseudoIdSelection);
+  EXPECT_EQ(default_highlight_background, paint_style.current_color);
+  // Paired defaults means this is transparent
+  EXPECT_EQ(Color(0, 0, 0, 0), background_color);
+
+  auto* div3_text =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("#div3")))
+          ->firstChild();
+  const ComputedStyle& div3_style = div1_text->GetLayoutObject()->StyleRef();
+  paint_style = HighlightStyleUtils::HighlightPaintingStyle(
+      GetDocument(), div3_style, div3_text, kPseudoIdSelection, paint_style,
+      paint_info);
+  std::optional<Color> current_layer_color = default_highlight_background;
+  background_color = HighlightStyleUtils::HighlightBackgroundColor(
+      GetDocument(), div3_style, div3_text, current_layer_color,
+      kPseudoIdSelection);
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(default_highlight_background, paint_style.current_color);
+  EXPECT_EQ(Color(255, 255, 255), background_color);
+#else
+  Color default_highlight_foreground =
+      LayoutTheme::GetTheme().InactiveSelectionForegroundColor(
+          mojom::blink::ColorScheme::kLight);
+  EXPECT_EQ(default_highlight_foreground, paint_style.current_color);
+  EXPECT_EQ(Color(92, 92, 92), background_color);
+#endif
+}
+
 TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
   ScopedHighlightInheritanceForTest highlight_inheritance_enabled(true);
   SimRequest main_resource("https://example.com/test.html", "text/html");

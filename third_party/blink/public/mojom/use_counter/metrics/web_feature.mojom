@@ -3239,7 +3239,7 @@ enum WebFeature {
   kOBSOLETE_DocumentTransition = 3931,
   kSpeculationRules = 3932,
   kV8AbortSignal_Abort_Method = 3933,
-  kSelectionBackgroundColorInversion = 3934,
+  kOBSOLETE_SelectionBackgroundColorInversion = 3934,
   kOBSOLETE_RTCPeerConnectionPlanBThrewAnException = 3935,
   kHTMLRootContained = 3936,
   kHTMLBodyContained = 3937,

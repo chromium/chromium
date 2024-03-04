@@ -40,10 +40,10 @@ Color GetSystemColor(MacSystemColorID color_id,
   // here instead if forced colors mode is enabled.
 
   // In tests, a WebSandboxSupport may not be set up. Just return a dummy
-  // color, in this case, black.
+  // color, in this case opaque black.
   auto* sandbox_support = Platform::Current()->GetSandboxSupport();
   if (!sandbox_support)
-    return Color();
+    return Color(0, 0, 0, 255);
   return Color::FromSkColor(
       sandbox_support->GetSystemColor(color_id, color_scheme));
 }
