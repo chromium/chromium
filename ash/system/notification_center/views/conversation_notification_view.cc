@@ -79,6 +79,9 @@ void ConversationNotificationView::ToggleExpand() {
   collapsed_preview_container_->SetVisible(!expanded_);
   expand_button_->SetExpanded(expanded_);
   actions_view_->SetExpanded(expanded_);
+  // Updates expand state to message center, and let notification delegate
+  // handle the state update.
+  SetExpanded(expanded_);
 
   PreferredSizeChanged();
 }
