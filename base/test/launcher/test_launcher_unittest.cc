@@ -944,7 +944,7 @@ TEST_F(UnitTestLauncherDelegateTester, GetCommandLine) {
   const int size = 2048;
   std::string content;
   ASSERT_TRUE(ReadFileToStringWithMaxSize(
-      cmd_line.GetSwitchValuePath("gtest_flagfile"), &content, size));
+      cmd_line.GetSwitchValuePath("flagfile"), &content, size));
   EXPECT_EQ(content.find("--gtest_filter="), 0u);
   base::ReplaceSubstringsAfterOffset(&content, 0, "--gtest_filter=", "");
   std::vector<std::string> gtest_filter_tests =
