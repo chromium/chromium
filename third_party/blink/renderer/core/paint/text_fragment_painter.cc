@@ -408,8 +408,8 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
           ? text_combine->AdjustTextTopForPaint(physical_box.offset.top)
           : physical_box.offset.top + ascent};
 
-  TextPainter text_painter(context, font, visual_rect, text_origin,
-                           is_horizontal);
+  TextPainter text_painter(context, paint_info.GetSvgContextPaints(), font,
+                           visual_rect, text_origin, is_horizontal);
   TextDecorationPainter decoration_painter(text_painter, inline_context_,
                                            paint_info, style, text_style,
                                            rotated_box, selection);

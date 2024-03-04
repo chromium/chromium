@@ -264,6 +264,16 @@ static bool WriteSVGPaint(WTF::TextStream& ts,
     ts << "[type=SOLID] [color=" << color << "]";
     return true;
   }
+  if (paint.type == SVGPaintType::kContextFill) {
+    ts << " [" << paint_name << "={" << s;
+    ts << "[type=CONTEXT-FILL]";
+    return true;
+  }
+  if (paint.type == SVGPaintType::kContextStroke) {
+    ts << " [" << paint_name << "={" << s;
+    ts << "[type=CONTEXT-STROKE]";
+    return true;
+  }
   return false;
 }
 

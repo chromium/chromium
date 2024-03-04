@@ -3361,6 +3361,10 @@ CSSValue* ComputedStyleUtils::ValueForSVGPaint(const SVGPaint& paint,
     case SVGPaintType::kUri:
       return MakeGarbageCollected<cssvalue::CSSURIValue>(
           CSSUrlData(paint.GetUrl()));
+    case SVGPaintType::kContextFill:
+      return CSSIdentifierValue::Create(CSSValueID::kContextFill);
+    case SVGPaintType::kContextStroke:
+      return CSSIdentifierValue::Create(CSSValueID::kContextStroke);
   }
 }
 

@@ -2241,6 +2241,14 @@ class ComputedStyle final : public ComputedStyleBase {
       const Longhand& color_property,
       bool* is_current_color = nullptr) const;
 
+  // Used to resolve 'context-fill' and 'context-stroke' paints
+  CORE_EXPORT blink::Color VisitedDependentContextFill(
+      const SVGPaint& context_paint,
+      const ComputedStyle& context_style) const;
+  CORE_EXPORT blink::Color VisitedDependentContextStroke(
+      const SVGPaint& context_paint,
+      const ComputedStyle& context_style) const;
+
   // A faster version of VisitedDependentColor() that specializes on the
   // concrete property class; for the common case of not being inside a link,
   // can inline the question in function directly. However, it uses more code
@@ -2525,6 +2533,10 @@ class ComputedStyle final : public ComputedStyleBase {
       bool* is_current_color = nullptr) const;
   blink::Color GetInternalForcedVisitedCurrentColor(
       bool* is_current_color = nullptr) const;
+
+  blink::Color VisitedDependentContextPaint(
+      const SVGPaint& context_paint,
+      const SVGPaint& context_visited_paint) const;
 
   // Helper for resolving a StyleColor which may contain currentColor or a
   // system color keyword. This is intended for cases where a given property

@@ -563,10 +563,6 @@ crbug.com/1295445 external/wpt/css/filter-effects/css-filters-animation-combined
 crbug.com/910537 external/wpt/svg/painting/marker-006.svg [ Failure ]
 crbug.com/910537 external/wpt/svg/painting/marker-005.svg [ Failure ]
 
-# We don't yet implement context-fill and context-stroke
-crbug.com/367737 external/wpt/svg/painting/reftests/paint-context-001.svg [ Failure ]
-crbug.com/367737 external/wpt/svg/painting/reftests/paint-context-002.svg [ Failure ]
-
 # See: https://bugzilla.mozilla.org/show_bug.cgi?id=1834644
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-003.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-004.html [ Failure ]

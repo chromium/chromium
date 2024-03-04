@@ -7069,8 +7069,13 @@ CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
 
 CSSValue* ConsumeSVGPaint(CSSParserTokenRange& range,
                           const CSSParserContext& context) {
-  if (range.Peek().Id() == CSSValueID::kNone) {
-    return ConsumeIdent(range);
+  switch (range.Peek().Id()) {
+    case CSSValueID::kNone:
+    case CSSValueID::kContextFill:
+    case CSSValueID::kContextStroke:
+      return ConsumeIdent(range);
+    default:
+      break;
   }
   cssvalue::CSSURIValue* url = ConsumeUrl(range, context);
   if (url) {

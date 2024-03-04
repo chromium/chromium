@@ -71,7 +71,8 @@ TEST_P(HighlightPainterTest, FastSpellingGrammarPaintCase) {
     LineRelativeRect rotated_rect =
         LineRelativeRect::CreateFromLineBox(physical_rect, true);
     TextPainter text_painter(
-        graphics_context, text_item.ScaledFont(), rect,
+        graphics_context, /*svg_context_paints*/ nullptr,
+        text_item.ScaledFont(), rect,
         LineRelativeOffset::CreateFromBoxOrigin(physical_offset), true);
     TextDecorationPainter decoration_painter(text_painter, &inline_context,
                                              paint_info, style, text_style,

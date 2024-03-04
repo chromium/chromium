@@ -1827,5 +1827,9 @@
     "grid-rows",
     "grid-columns",
     "grid-order",
+
+    // fill / stroke
+    "context-fill",
+    "context-stroke"
   ],
 }

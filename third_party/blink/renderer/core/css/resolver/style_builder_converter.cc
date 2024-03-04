@@ -2430,11 +2430,29 @@ SVGPaint StyleBuilderConverter::ConvertSVGPaint(StyleResolverState& state,
     paint.resource = ConvertElementReference(state, *local_value);
   } else {
     auto* local_identifier_value = DynamicTo<CSSIdentifierValue>(local_value);
-    if (local_identifier_value &&
-        local_identifier_value->GetValueID() == CSSValueID::kNone) {
-      paint.type =
-          !paint.resource ? SVGPaintType::kNone : SVGPaintType::kUriNone;
-    } else {
+    if (local_identifier_value) {
+      switch (local_identifier_value->GetValueID()) {
+        case CSSValueID::kNone:
+          paint.type =
+              !paint.resource ? SVGPaintType::kNone : SVGPaintType::kUriNone;
+          break;
+        case CSSValueID::kContextFill:
+          // context-fill cannot be use as a uri fallback
+          DCHECK(!paint.resource);
+          paint.type = SVGPaintType::kContextFill;
+          break;
+        case CSSValueID::kContextStroke:
+          // context-stroke cannot be use as a uri fallback
+          DCHECK(!paint.resource);
+          paint.type = SVGPaintType::kContextStroke;
+          break;
+        default:
+          // For all other keywords, try to parse as a color.
+          local_identifier_value = nullptr;
+          break;
+      }
+    }
+    if (!local_identifier_value) {
       // TODO(fs): Pass along |for_visited_link|.
       paint.color = ConvertStyleColor(state, *local_value);
       paint.type =

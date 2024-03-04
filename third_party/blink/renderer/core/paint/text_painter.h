@@ -65,11 +65,13 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
   };
 
   TextPainter(GraphicsContext& context,
+              const SvgContextPaints* svg_context_paints,
               const Font& font,
               const gfx::Rect& visual_rect,
               const LineRelativeOffset& text_origin,
               bool horizontal)
       : TextPainterBase(context, font, text_origin, horizontal),
+        svg_context_paints_(svg_context_paints),
         visual_rect_(visual_rect) {}
   ~TextPainter() = default;
 
@@ -112,6 +114,7 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
                             DOMNodeId node_id,
                             const AutoDarkMode& auto_dark_mode);
 
+  const SvgContextPaints* svg_context_paints_;
   const gfx::Rect visual_rect_;
   std::optional<SvgTextPaintState> svg_text_paint_state_;
 };

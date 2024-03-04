@@ -38,7 +38,15 @@ namespace blink {
 
 class StyleSVGResource;
 
-enum class SVGPaintType { kColor, kNone, kUriNone, kUriColor, kUri };
+enum class SVGPaintType {
+  kColor,
+  kNone,
+  kContextFill,
+  kContextStroke,
+  kUriNone,
+  kUriColor,
+  kUri
+};
 
 struct SVGPaint {
   DISALLOW_NEW();
