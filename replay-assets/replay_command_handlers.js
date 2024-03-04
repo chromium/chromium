@@ -1315,33 +1315,36 @@ ProtocolObjectPreview.prototype = {
   },
 
   /**
-   * Limit the amount of props we get back.
+   * Limit the amount of props we get back from CDP Runtime.getProperties.
    * @see https://linear.app/replay/issue/RUN-1315/very-bad-command-performance-getallframes-wandb#comment-f8f54931
    */
   get pageSize() {
-    // The +5 is a heuristic to force overflow.
-    // We theoretically only want to add +1 but we might end up not getting
-    // enough props to determine overflow, so +5 is slightly safer.
-    // If +5 is not enough, we will loop and do a lot more work.
     if (this.pageSizeForTesting) {
       return this.pageSizeForTesting;
     }
     if (this.unlimitedItems) {
+      // 0 == no limit.  we'll only do a single fetch in the loop in fill().
       return 0;
     }
-    return this.nRequestedItems + 5;
+
+    return this.nRequestedItems;
   },
 
   /**
    * Ignore certain prototype props.
    */
   shouldAddProp(cdpProp) {
-    // The debugger provides all prototype props on top of the object's own props.
-    // This heuristic happens to keep only what we want:
-    //    Own props and prototype getters.
-    // See: https://linear.app/replay/issue/RUN-1592#comment-4011cec0
-    return (cdpProp.isOwn || (cdpProp.configurable && cdpProp.enumerable)) &&
-      this.checkAddProperty(this.cdpObj, cdpProp.name);
+    if (isBlinkObject(this.raw, this.cdpObj)) {
+      // for native objects we've explicitly asked for more than just ownProperties,
+      // so we further filter them here.
+      if (!cdpProp.isOwn && !(cdpProp.configurable && cdpProp.enumerable)) {
+        // the property is both not our own, and it's also not on a prototype and configurable + enumerable.
+        // XXX(toshok) do we really want to exclude non-configurable props?
+        return false;
+      }
+    }
+
+    return this.checkAddProperty(this.cdpObj, cdpProp.name);
   },
 
   fill() {
@@ -1358,69 +1361,51 @@ ProtocolObjectPreview.prototype = {
     if (this.level === 'noProperties') {
       cdpProperties = { result: [] };
     } else {
-      // Loop until we have as many items as requested. We need to loop because
-      // the debugger, for some reason, also returns many unwanted prototype
-      // props, which might wash out the actual props that we want.
-      // See |shouldAddProp| for reference.
-      let pageSize = 0;
-      let nReturnedProperties = 0;
+      const propertiesToFetch = this.pageSize;
 
-      do {
-        // Note: Often, we get more properties than we asked for.
-        pageSize = nReturnedProperties + this.pageSize;
-
-        // WARNING: we manage possible divergences caused by `Runtime.getProperties` evaluating native getter
-        //    in V8's |doesAttributeHaveObservableSideEffectOnGet|.
-        //    see: https://github.com/replayio/chromium-v8/pull/115/files#diff-72ee0a91d32565577bd78ed94b034ae3b4bf51676c5d42165e9363cad18dccf9R1328
-        try {
-          cdpProperties = sendCDPMessage("Runtime.getProperties", {
-            objectId: this.cdpObj.objectId,
-            ownProperties: false,
-            generatePreview: false,
-            pageIndex: 0, // Warning: NYI
-            pageSize,
-            objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
-          });
-        } catch (e) {
-          // No available context group; this can happen, so just return nothing.
-          if (e.code == CDPERROR_MISSINGCONTEXT) {
-            warning(`[RUN-2600] JS ProtocolObjectPreview.fill has no context.`);
-            cdpProperties = { result: [] };
-            break;
-          } else {
-            throw e;
-          }
+      // WARNING: we manage possible divergences caused by `Runtime.getProperties` evaluating native getter
+      //    in V8's |doesAttributeHaveObservableSideEffectOnGet|.
+      //    see: https://github.com/replayio/chromium-v8/pull/115/files#diff-72ee0a91d32565577bd78ed94b034ae3b4bf51676c5d42165e9363cad18dccf9R1328
+      try {
+        cdpProperties = sendCDPMessage("Runtime.getProperties", {
+          objectId: this.cdpObj.objectId,
+          ownProperties: !isBlinkObject(this.raw, this.cdpObj),
+          generatePreview: false,
+          pageIndex: 0, // Warning: NYI
+          pageSize: this.unlimitedItems ? 0 : (propertiesToFetch + 1), // +1 so we can detect overflow
+          objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
+        });
+      } catch (e) {
+        // No available context group; this can happen, so just return nothing.
+        if (e.code == CDPERROR_MISSINGCONTEXT) {
+          warning(`[RUN-2600] JS ProtocolObjectPreview.fill has no context.`);
+          cdpProperties = { result: [] };
+        } else {
+          throw e;
         }
+      }
 
-        if (!cdpProperties.result) {
-          return {
-            prototypeId: undefined
-          };
+      if (!cdpProperties.result) {
+        return {
+          prototypeId: undefined
+        };
+      }
+
+      /**
+       * @see https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-PropertyDescriptor
+       */
+      for (let i = 0; i < cdpProperties.result.length; ++i) {
+        const cdpProp = cdpProperties.result[i];
+        const { name: propKey } = cdpProp;
+        if (propKey === "__proto__" || foundProps.has(propKey)) {
+          continue;
         }
-        nReturnedProperties = cdpProperties.result.length;
-
-        /**
-         * @see https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-PropertyDescriptor
-         */
-        for (let i = 0; i < cdpProperties.result.length; ++i) {
-          const cdpProp = cdpProperties.result[i];
-          const { name: propKey } = cdpProp;
-          if (propKey === "__proto__" || foundProps.has(propKey)) {
-            continue;
-          }
-          if (this.shouldAddProp(cdpProp)) {
-            foundProps.add(propKey);
-          }
+        if (this.shouldAddProp(cdpProp)) {
+          foundProps.add(propKey);
         }
+      }
 
-        // Keep going if we did not get enough items but the query returned as many items as requested.
-        // Note: Go to +1 for the `overflow` flag.
-        // log(`DDBG fill() C ${[foundProps.size, this.unlimitedItems, this.nRequestedItems, nReturnedProperties, pageSize].join(", ")}`);
-      } while (
-        !this.unlimitedItems &&
-        foundProps.size <= (this.nRequestedItems + 1) &&
-        nReturnedProperties >= pageSize
-      );
+      // log(`************** DDBG fill() C ${[this.unlimitedItems, cdpProperties.result.length, propertiesToFetch].join(", ")}`);
     }
     
     for (const cdpProp of cdpProperties.result) {
