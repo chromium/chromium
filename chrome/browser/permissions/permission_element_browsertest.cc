@@ -15,11 +15,12 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 namespace {
+
+const base::TimeDelta kDefaultDisableTimeout = base::Milliseconds(1000);
 
 // Simulates a click on an element with the given |id|.
 void ClickElementWithId(content::WebContents* web_contents,
@@ -52,10 +53,7 @@ void ClickElementWithId(content::WebContents* web_contents,
 class PermissionElementBrowserTest : public InProcessBrowserTest {
  public:
   PermissionElementBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kPermissionElement,
-         blink::features::kDisablePEPCSecurityForTesting},
-        {});
+    feature_list_.InitAndEnableFeature(features::kPermissionElement);
   }
 
   PermissionElementBrowserTest(const PermissionElementBrowserTest&) = delete;
@@ -70,6 +68,11 @@ class PermissionElementBrowserTest : public InProcessBrowserTest {
         browser(),
         embedded_test_server()->GetURL("/permissions/permission_element.html"),
         1));
+    // Delay a short time to make sure all <permission> elements are clickable.
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), kDefaultDisableTimeout);
+    run_loop.Run();
   }
 
   content::WebContents* web_contents() {

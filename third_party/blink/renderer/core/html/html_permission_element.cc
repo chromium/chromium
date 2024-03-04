@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
@@ -436,12 +435,6 @@ bool HTMLPermissionElement::IsClickingEnabled() {
   // element was not able to be registered from browser process.
   if (permission_descriptors_.empty()) {
     return false;
-  }
-
-  // Do not check click-disabling reasons if the PEPC validation feature is
-  // disabled. This should only occur in testing scenarios.
-  if (RuntimeEnabledFeatures::DisablePEPCSecurityForTestingEnabled()) {
-    return true;
   }
 
   // Remove expired reasons. If a non-expired reason is found, then clicking is

@@ -21,14 +21,14 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/controls/label.h"
 #include "url/origin.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPEPCVisibleEvent);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementReadyEvent);
+const WebContentsInteractionTestUtil::DeepQuery kReadyElementQuery = {"#ready"};
 }  // namespace
 
 class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
@@ -36,11 +36,12 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
   EmbeddedPermissionPromptInteractiveTest() {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
-    feature_list_.InitWithFeatures(
-        {features::kPermissionElement,
-         permissions::features::kOneTimePermission,
-         blink::features::kDisablePEPCSecurityForTesting},
-        {});
+    feature_list_.InitWithFeatures({features::kPermissionElement,
+                                    permissions::features::kOneTimePermission},
+                                   {});
+    ready_element_visible_.where = kReadyElementQuery;
+    ready_element_visible_.type = StateChange::Type::kExists;
+    ready_element_visible_.event = kElementReadyEvent;
   }
 
   ~EmbeddedPermissionPromptInteractiveTest() override = default;
@@ -82,12 +83,9 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
   }
 
   auto ClickOnPEPCElement(const std::string& element_id) {
-    StateChange pepc_visible;
-    pepc_visible.where = DeepQuery{"#" + element_id};
-    pepc_visible.type = StateChange::Type::kExists;
-    pepc_visible.event = kPEPCVisibleEvent;
     return Steps(
-        WaitForStateChange(kWebContentsElementId, pepc_visible),
+        WaitForStateChange(kWebContentsElementId, ready_element_visible_),
+        EnsurePresent(kWebContentsElementId, DeepQuery{"#" + element_id}),
         MoveMouseTo(kWebContentsElementId, DeepQuery{"#" + element_id}),
         ClickMouse());
   }
@@ -255,6 +253,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList feature_list_;
+  StateChange ready_element_visible_;
 };
 
 // Failing on Windows, though manual testing of the same flow does not reproduce
