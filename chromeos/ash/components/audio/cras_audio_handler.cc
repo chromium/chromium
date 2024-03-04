@@ -577,6 +577,22 @@ void CrasAudioHandler::GetAudioDevices(AudioDeviceList* device_list) const {
   }
 }
 
+AudioDeviceList CrasAudioHandler::GetSimpleUsageAudioDevices(
+    bool is_input) const {
+  AudioDeviceList device_list;
+  for (const auto& item : audio_devices_) {
+    const AudioDevice& device = item.second;
+    // Do not count non simple usage devices.
+    if (!device.is_for_simple_usage()) {
+      continue;
+    }
+    if (device.is_input == is_input) {
+      device_list.push_back(device);
+    }
+  }
+  return device_list;
+}
+
 bool CrasAudioHandler::GetPrimaryActiveOutputDevice(AudioDevice* device) const {
   const AudioDevice* active_device = GetDeviceFromId(active_output_node_id_);
   if (!active_device || !device) {
@@ -1169,8 +1185,9 @@ void CrasAudioHandler::ResetSystemSwitchTimestamp(bool is_input) {
   }
 }
 
-void CrasAudioHandler::MaybeRecordSystemSwitchDecision(bool is_input,
-                                                       bool is_switched) {
+void CrasAudioHandler::MaybeRecordSystemSwitchDecisionAndContext(
+    bool is_input,
+    bool is_switched) {
   if (is_input) {
     // Do not record if there is only one audio device since it will definitely
     // be activated. The metric aims to measure how well the system selection
@@ -1184,6 +1201,14 @@ void CrasAudioHandler::MaybeRecordSystemSwitchDecision(bool is_input,
     }
 
     base::UmaHistogramBoolean(kSystemSwitchInputAudio, is_switched);
+
+    AudioDeviceList input_devices =
+        GetSimpleUsageAudioDevices(/*is_input=*/true);
+    // Record the number of audio devices at the moment.
+    base::UmaHistogramExactLinear(is_switched
+                                      ? kSystemSwitchInputAudioDeviceCount
+                                      : kSystemNotSwitchInputAudioDeviceCount,
+                                  input_devices.size(), kMaxAudioDevicesCount);
 
     // Set up timestamp. Make sure setting one timestamp will reset the other,
     // since only one decision can be made either switching or not switching.
@@ -1201,6 +1226,14 @@ void CrasAudioHandler::MaybeRecordSystemSwitchDecision(bool is_input,
 
     base::UmaHistogramBoolean(kSystemSwitchOutputAudio, is_switched);
 
+    AudioDeviceList output_devices =
+        GetSimpleUsageAudioDevices(/*is_input=*/false);
+    // Record the number of audio devices at the moment.
+    base::UmaHistogramExactLinear(is_switched
+                                      ? kSystemSwitchOutputAudioDeviceCount
+                                      : kSystemNotSwitchOutputAudioDeviceCount,
+                                  output_devices.size(), kMaxAudioDevicesCount);
+
     // Set up timestamp. Make sure setting one timestamp will reset the other,
     // same as above.
     output_switched_by_system_at_ =
@@ -1216,8 +1249,8 @@ void CrasAudioHandler::SetActiveDevice(const AudioDevice& active_device,
   if (activate_by == ACTIVATE_BY_USER) {
     RecordUserSwitchAudioDevice(active_device.is_input);
   } else {
-    MaybeRecordSystemSwitchDecision(active_device.is_input,
-                                    /*is_switched=*/true);
+    MaybeRecordSystemSwitchDecisionAndContext(active_device.is_input,
+                                              /*is_switched=*/true);
   }
 
   // Update *_selected_by_user_.
@@ -1913,7 +1946,8 @@ void CrasAudioHandler::SwitchToDevice(const AudioDevice& device,
   if (!ChangeActiveDevice(device)) {
     // Record the decision of system not switching active device.
     if (activate_by != ACTIVATE_BY_USER) {
-      MaybeRecordSystemSwitchDecision(device.is_input, /*is_switched=*/false);
+      MaybeRecordSystemSwitchDecisionAndContext(device.is_input,
+                                                /*is_switched=*/false);
     }
     return;
   }
@@ -2104,7 +2138,8 @@ void CrasAudioHandler::HandleNonHotplugNodesChange(
       if (!active_device_removed && has_current_active_node) {
         // Removed a non-active device, keep the current active device.
         // Record the decision of system not switching active device.
-        MaybeRecordSystemSwitchDecision(is_input, /*is_switched=*/false);
+        MaybeRecordSystemSwitchDecisionAndContext(is_input,
+                                                  /*is_switched=*/false);
         return;
       }
 
@@ -2178,8 +2213,8 @@ void CrasAudioHandler::HandleHotPlugDeviceByUserPriority(
     return;
   } else {
     // Record the decision of system not switching active device.
-    MaybeRecordSystemSwitchDecision(hotplug_device.is_input,
-                                    /*is_switched=*/false);
+    MaybeRecordSystemSwitchDecisionAndContext(hotplug_device.is_input,
+                                              /*is_switched=*/false);
   }
 
   // Do not active the hotplug device. The hotplug device is not the top

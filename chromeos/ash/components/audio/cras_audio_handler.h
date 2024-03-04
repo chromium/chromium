@@ -108,6 +108,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   static constexpr int32_t kSystemAecGroupIdNotAvailable = -1;
 
+  // Maximum number of connected input or output audio devices to record
+  // histogram metrics.
+  static constexpr uint32_t kMaxAudioDevicesCount = 10;
+
   enum class InputMuteChangeMethod {
     kKeyboardButton,
     kPhysicalShutter,
@@ -168,6 +172,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       "ChromeOS.AudioSelection.Input.UserOverrideSystemNotSwitchTimeElapsed";
   static constexpr char kUserOverrideSystemNotSwitchOutputAudio[] =
       "ChromeOS.AudioSelection.Output.UserOverrideSystemNotSwitchTimeElapsed";
+
+  // A series of histogram metrics to record the audio device count when the
+  // system selection decision is made after audio device has changed.
+  static constexpr char kSystemSwitchInputAudioDeviceCount[] =
+      "ChromeOS.AudioSelection.Input.SystemSwitchAudio.AudioDeviceCount";
+  static constexpr char kSystemNotSwitchInputAudioDeviceCount[] =
+      "ChromeOS.AudioSelection.Input.SystemNotSwitchAudio.AudioDeviceCount";
+  static constexpr char kSystemSwitchOutputAudioDeviceCount[] =
+      "ChromeOS.AudioSelection.Output.SystemSwitchAudio.AudioDeviceCount";
+  static constexpr char kSystemNotSwitchOutputAudioDeviceCount[] =
+      "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio.AudioDeviceCount";
 
   class AudioObserver {
    public:
@@ -382,6 +397,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Gets the audio devices back in |device_list|.
   void GetAudioDevices(AudioDeviceList* device_list) const;
+
+  // Gets the simple usage input or output audio devices.
+  AudioDeviceList GetSimpleUsageAudioDevices(bool is_input) const;
 
   // Gets the primary active output device in |device|.
   // Returns true if the primary active output device is successfully obtained.
@@ -953,7 +971,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Record the histogram of system decision of switching or not switching after
   // audio device is added or removed. Only record if there are more than one
   // available devices.
-  void MaybeRecordSystemSwitchDecision(bool is_input, bool is_switched);
+  void MaybeRecordSystemSwitchDecisionAndContext(bool is_input,
+                                                 bool is_switched);
 
   // Clear the timer of system switch/not switch decision.
   void ResetSystemSwitchTimestamp(bool is_input);

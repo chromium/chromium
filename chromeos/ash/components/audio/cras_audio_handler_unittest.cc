@@ -5529,4 +5529,61 @@ TEST_P(CrasAudioHandlerTest, AudioSurveyBluetooth) {
   EXPECT_EQ(test_observer_->survey_triggerd_recv().data().size(), 0u);
 }
 
+TEST_P(CrasAudioHandlerTest, SimpleUsageAudioDevices) {
+  // Set up initial audio devices, only with internal speaker and mic.
+  AudioNodeList audio_nodes =
+      GenerateAudioNodeList({kInternalSpeaker, kInternalMic});
+  SetUpCrasAudioHandler(audio_nodes);
+  uint32_t init_input_count = 1u;
+  uint32_t init_output_count = 1u;
+
+  // Verify the audio devices size.
+  AudioDeviceList input_devices =
+      cras_audio_handler_->GetSimpleUsageAudioDevices(
+          /*is_input=*/true);
+  AudioDeviceList output_devices =
+      cras_audio_handler_->GetSimpleUsageAudioDevices(
+          /*is_input=*/false);
+  EXPECT_EQ(init_input_count, input_devices.size());
+  EXPECT_EQ(init_output_count, output_devices.size());
+
+  // Plug the headphone.
+  audio_nodes = GenerateAudioNodeList(
+      {kInternalSpeaker, kInternalMic, kHeadphone, kMicJack});
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify the audio devices size.
+  input_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      /*is_input=*/true);
+  output_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      /*is_input=*/false);
+  EXPECT_EQ(++init_input_count, input_devices.size());
+  EXPECT_EQ(++init_output_count, output_devices.size());
+
+  // Unplug the headphone.
+  audio_nodes = GenerateAudioNodeList({kInternalSpeaker, kInternalMic});
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify the audio devices size.
+  input_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      /*is_input=*/true);
+  output_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      /*is_input=*/false);
+  EXPECT_EQ(--init_input_count, input_devices.size());
+  EXPECT_EQ(--init_output_count, output_devices.size());
+
+  // Plug a non simple usage device, which should not be counted.
+  audio_nodes =
+      GenerateAudioNodeList({kInternalSpeaker, kInternalMic, kKeyboardMic});
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify the audio devices size.
+  input_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      /*is_input=*/true);
+  output_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      /*is_input=*/false);
+  EXPECT_EQ(init_input_count, input_devices.size());
+  EXPECT_EQ(init_output_count, output_devices.size());
+}
+
 }  // namespace ash
