@@ -410,14 +410,19 @@ public class BookmarkToolbarMediatorTest {
         assertTrue(mMediator.onMenuIdClick(R.id.create_new_folder_menu_id));
         verify(mBookmarkAddNewFolderCoordinator).show(any());
 
-        // TODO(crbug.com/1501998): Add account reading list folder support here.
         doReturn(mBookmarkId).when(mBookmarkModel).getLocalOrSyncableReadingListFolder();
         mMediator.onFolderStateSet(mBookmarkId);
         assertTrue(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
         assertFalse(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_ENABLED));
 
-        // TODO(crbug.com/1501998): Add account reading list folder support here.
         doReturn(null).when(mBookmarkModel).getLocalOrSyncableReadingListFolder();
+        doReturn(mBookmarkId).when(mBookmarkModel).getAccountReadingListFolder();
+        mMediator.onFolderStateSet(mBookmarkId);
+        assertTrue(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_ENABLED));
+
+        doReturn(null).when(mBookmarkModel).getLocalOrSyncableReadingListFolder();
+        doReturn(null).when(mBookmarkModel).getAccountReadingListFolder();
         doReturn(mBookmarkId).when(mBookmarkModel).getPartnerFolderId();
         mMediator.onFolderStateSet(mBookmarkId);
         assertTrue(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
@@ -561,8 +566,15 @@ public class BookmarkToolbarMediatorTest {
                 R.id.sort_by_manual, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
         assertTrue(mModel.get(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED));
 
-        // TODO(crbug.com/1501998): Add account reading list folder support here.
         doReturn(mBookmarkId).when(mBookmarkModel).getLocalOrSyncableReadingListFolder();
+        mMediator.onFolderStateSet(mBookmarkId);
+        assertFalse(mModel.get(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED));
+        assertEquals(
+                R.id.sort_by_newest, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        verify(mBookmarkUiPrefs, times(0)).setBookmarkRowSortOrder(anyInt());
+
+        doReturn(null).when(mBookmarkModel).getLocalOrSyncableReadingListFolder();
+        doReturn(mBookmarkId).when(mBookmarkModel).getAccountReadingListFolder();
         mMediator.onFolderStateSet(mBookmarkId);
         assertFalse(mModel.get(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED));
         assertEquals(
@@ -571,6 +583,7 @@ public class BookmarkToolbarMediatorTest {
 
         // Verify  we go back to manual sort order and don't actually update the sorting prefs.
         doReturn(null).when(mBookmarkModel).getLocalOrSyncableReadingListFolder();
+        doReturn(null).when(mBookmarkModel).getAccountReadingListFolder();
         mMediator.onFolderStateSet(mBookmarkId);
         assertTrue(mModel.get(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED));
         assertEquals(

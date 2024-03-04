@@ -845,10 +845,11 @@ public class BookmarkUtils {
      * added to the reading list.
      */
     public static boolean canAddFolderToParent(BookmarkModel bookmarkModel, BookmarkId parentId) {
-        if (!canAddBookmarkToParent(bookmarkModel, parentId)) return false;
-        // TODO(crbug.com/1501998): Add account reading list folder support here.
-        if (Objects.equals(parentId, bookmarkModel.getLocalOrSyncableReadingListFolder())
-                || Objects.equals(parentId, bookmarkModel.getAccountReadingListFolder())) {
+        if (!canAddBookmarkToParent(bookmarkModel, parentId)) {
+            return false;
+        }
+
+        if (isReadingListFolder(bookmarkModel, parentId)) {
             return false;
         }
 
@@ -906,6 +907,16 @@ public class BookmarkUtils {
             return AppCompatResources.getColorStateList(
                     context, R.color.default_icon_color_secondary_tint_list);
         }
+    }
+
+    /** Return whether the given BookmarkId is a reading list folder. */
+    public static boolean isReadingListFolder(BookmarkModel boomkarkModel, BookmarkId bookmarkId) {
+        if (bookmarkId == null) {
+            return false;
+        }
+
+        return Objects.equals(bookmarkId, boomkarkModel.getLocalOrSyncableReadingListFolder())
+                || Objects.equals(bookmarkId, boomkarkModel.getAccountReadingListFolder());
     }
 
     private static int getDisplayTextSize(Resources resources) {

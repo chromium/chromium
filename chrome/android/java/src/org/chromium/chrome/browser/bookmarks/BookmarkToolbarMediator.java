@@ -34,7 +34,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /** Responsible for the business logic for the BookmarkManagerToolbar. */
 class BookmarkToolbarMediator
@@ -365,10 +364,8 @@ class BookmarkToolbarMediator
             // Special behavior in reading list:
             // - Select CHRONOLOGICAL as sort order.
             // - Disable sort menu items.
-            // TODO(crbug.com/1501998): Add account reading list folder support here.
             boolean inReadingList =
-                    Objects.equals(
-                            mCurrentFolder, mBookmarkModel.getLocalOrSyncableReadingListFolder());
+                    BookmarkUtils.isReadingListFolder(mBookmarkModel, mCurrentFolder);
             mModel.set(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED, !inReadingList);
             if (inReadingList) {
                 // Reading list items are always sorted by date added.

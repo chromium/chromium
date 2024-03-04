@@ -260,7 +260,6 @@ public class BookmarkFolderPickerMediatorTest {
         doReturn(mRootFolderId).when(mBookmarkModel).getRootFolderId();
         doReturn(mRootFolderItem).when(mBookmarkModel).getBookmarkById(mRootFolderId);
         // Reading list folder
-        // TODO(crbug.com/1501998): Add account reading list folder support here.
         doReturn(mReadingListFolderId).when(mBookmarkModel).getLocalOrSyncableReadingListFolder();
         doReturn(mReadingListFolderItem).when(mBookmarkModel).getBookmarkById(mReadingListFolderId);
         // Mobile bookmarks folder

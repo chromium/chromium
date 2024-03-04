@@ -1639,12 +1639,9 @@ class BookmarkManagerMediator
     private void updateSearchBoxShoppingFilterVisibility(PropertyModel searchBoxPropertyModel) {
         // We purposefully hide the shopping filter in reading list even though search is
         // global to avoid confusing users.
-        // TODO(crbug.com/1501998): Add account reading list folder support here.
         boolean filterVisible =
                 mShoppingFilterAvailable
-                        && !Objects.equals(
-                                mBookmarkModel.getLocalOrSyncableReadingListFolder(),
-                                getCurrentFolderId());
+                        && !BookmarkUtils.isReadingListFolder(mBookmarkModel, getCurrentFolderId());
         searchBoxPropertyModel.set(
                 BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, filterVisible);
         Set<PowerBookmarkType> powerFilter = mCurrentPowerFilter;
