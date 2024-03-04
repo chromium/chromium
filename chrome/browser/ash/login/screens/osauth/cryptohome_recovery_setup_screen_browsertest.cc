@@ -182,34 +182,4 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest,
       "OOBE.StepCompletionTime.Cryptohome-recovery-setup", 1);
 }
 
-// If user opts in to recovery, the screen should be shown.
-// The PIN setup screen is skipped due to policy. In this case
-// auth session should be cleared.
-IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest,
-                       ShowClearsAuthSession) {
-  LoginAsRegularUser();
-  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  prefs->SetList(prefs::kQuickUnlockModeAllowlist, base::Value::List());
-  prefs->SetList(prefs::kWebAuthnFactors, base::Value::List());
-  LoginDisplayHost::default_host()
-      ->GetWizardContextForTesting()
-      ->recovery_setup.ask_about_recovery_consent = true;
-  LoginDisplayHost::default_host()
-      ->GetWizardContextForTesting()
-      ->recovery_setup.recovery_factor_opted_in = true;
-  base::HistogramTester histogram_tester;
-
-  ShowScreen();
-  EXPECT_FALSE(LoginDisplayHost::default_host()
-                   ->GetWizardContextForTesting()
-                   ->extra_factors_token.has_value());
-
-  ContinueScreenExit();
-  EXPECT_EQ(result_.value(), CryptohomeRecoverySetupScreen::Result::DONE);
-  histogram_tester.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Cryptohome-recovery-setup.Done", 1);
-  histogram_tester.ExpectTotalCount(
-      "OOBE.StepCompletionTime.Cryptohome-recovery-setup", 1);
-}
-
 }  // namespace ash

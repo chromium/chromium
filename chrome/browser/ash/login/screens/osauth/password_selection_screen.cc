@@ -113,6 +113,11 @@ void PasswordSelectionScreen::InspectContext(UserContext* user_context) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return;
   }
+  // In reauthentication flow we don't always request AuthFactorsConfiguration.
+  if (context()->knowledge_factor_setup.auth_setup_flow ==
+      WizardContext::AuthChangeFlow::kReauthentication) {
+    return;
+  }
   CHECK(user_context->HasAuthFactorsConfiguration());
   auth_factors_config_ = user_context->GetAuthFactorsConfiguration();
   has_online_password_ = user_context->GetOnlinePassword().has_value();

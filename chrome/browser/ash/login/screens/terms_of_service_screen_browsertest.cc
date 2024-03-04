@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
@@ -341,6 +342,10 @@ class ManagedUserTosScreenTest : public OobeBaseTest {
     original_callback_ = screen->get_exit_callback_for_testing();
     screen->set_exit_callback_for_testing(base::BindRepeating(
         &ManagedUserTosScreenTest::HandleScreenExit, base::Unretained(this)));
+    LoginDisplayHost::default_host()
+        ->GetWizardContext()
+        ->knowledge_factor_setup.auth_setup_flow =
+        WizardContext::AuthChangeFlow::kReauthentication;
   }
 
   void WaitForScreenShown() {
