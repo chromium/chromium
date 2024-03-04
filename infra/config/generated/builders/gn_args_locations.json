@@ -719,7 +719,6 @@
   "tryserver.chromium.fuchsia": {
     "fuchsia-arm64-cast-receiver-rel": "try/fuchsia-arm64-cast-receiver-rel/gn-args.json",
     "fuchsia-binary-size": "try/fuchsia-binary-size/gn-args.json",
-    "fuchsia-binary-size-siso": "try/fuchsia-binary-size-siso/gn-args.json",
     "fuchsia-code-coverage": "try/fuchsia-code-coverage/gn-args.json",
     "fuchsia-compile-x64-dbg": "try/fuchsia-compile-x64-dbg/gn-args.json",
     "fuchsia-deterministic-dbg": "try/fuchsia-deterministic-dbg/gn-args.json",

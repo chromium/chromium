@@ -639,9 +639,6 @@ as required builders.
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
   * [`//ui/gl/features.gni`](https://cs.chromium.org/search?q=+file:ui/gl/features.gni)
 
-* [fuchsia-binary-size-siso](https://ci.chromium.org/p/chromium/builders/try/fuchsia-binary-size-siso) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-binary-size-siso""))
-  * Experiment percentage: 10.0
-
 * [linux_chromium_asan_siso_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_siso_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_asan_siso_rel_ng""))
   * Experiment percentage: 10.0
 
