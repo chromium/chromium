@@ -193,7 +193,9 @@ void WorkerThread::Start(
       CrossThreadBindOnce(&WorkerThread::InitializeOnWorkerThread,
                           CrossThreadUnretained(this),
                           std::move(global_scope_creation_params),
-                          thread_startup_data, std::move(devtools_params)));
+                          IsOwningBackingThread() ?
+                              thread_startup_data : std::nullopt,
+                          std::move(devtools_params)));
 }
 
 void WorkerThread::EvaluateClassicScript(

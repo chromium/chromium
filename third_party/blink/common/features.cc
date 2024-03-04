@@ -157,6 +157,11 @@ BASE_FEATURE(kAudioWorkletThreadRealtimePriority,
              "AudioWorkletThreadRealtimePriority",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// A thread pool system for effective usage of RealtimeAudioWorkletThread
+// instances.
+BASE_FEATURE(kAudioWorkletThreadPool, "AudioWorkletThreadPool",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, extraction of unassociated listed elements includes elements
 // inside Shadow DOM.
 BASE_FEATURE(kAutofillIncludeShadowDomInUnassociatedListedElements,

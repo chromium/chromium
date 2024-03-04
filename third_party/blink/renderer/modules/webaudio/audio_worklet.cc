@@ -80,7 +80,8 @@ WorkletGlobalScopeProxy* AudioWorklet::CreateGlobalScope() {
       MakeGarbageCollected<AudioWorkletMessagingProxy>(GetExecutionContext(),
                                                        this);
   proxy->Initialize(MakeGarbageCollected<WorkerClients>(),
-                    ModuleResponsesMap());
+                    ModuleResponsesMap(),
+                    WorkerBackingThreadStartupData::CreateDefault());
   return proxy;
 }
 

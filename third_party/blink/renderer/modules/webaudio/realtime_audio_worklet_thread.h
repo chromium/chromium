@@ -13,10 +13,11 @@ namespace blink {
 
 class WorkerReportingProxy;
 
-// RealtimeAudioWorkletThread is a per-AudioWorkletGlobalScope object that has
-// a reference count to the backing thread that performs AudioWorklet tasks.
-// The backing thread uses kRealtimeAudio type and the associated AudioWorklet
-// MUST be spawned from the top-level (main) frame.
+// RealtimeAudioWorkletThread is a per-AudioWorklet object that has a hybrid
+// threading management system. Up to 3 instances of AudioWorklet, this class
+// provides a dedicated backing thread for more performant audio processing,
+// but starting from the 4th and subsequent instances will use a shared
+// backing thread managed with reference counting.
 class MODULES_EXPORT RealtimeAudioWorkletThread final : public WorkerThread {
  public:
   explicit RealtimeAudioWorkletThread(WorkerReportingProxy&);
@@ -24,15 +25,18 @@ class MODULES_EXPORT RealtimeAudioWorkletThread final : public WorkerThread {
 
   WorkerBackingThread& GetWorkerBackingThread() final;
 
-  static void ClearSharedBackingThread();
-
- private:
+  private:
   WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(
       std::unique_ptr<GlobalScopeCreationParams>) final;
-  bool IsOwningBackingThread() const final { return false; }
+  bool IsOwningBackingThread() const final {
+    return worker_backing_thread_ != nullptr;
+  }
   ThreadType GetThreadType() const final {
     return ThreadType::kRealtimeAudioWorkletThread;
   }
+
+  // For the instance that uses a shared backing thread, this is nullptr.
+  std::unique_ptr<WorkerBackingThread> worker_backing_thread_;
 };
 
 }  // namespace blink

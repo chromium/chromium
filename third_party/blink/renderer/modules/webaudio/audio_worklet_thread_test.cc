@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
+#include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
@@ -57,7 +58,7 @@ class AudioWorkletThreadTest : public PageTestBase, public ModuleTestBase {
 
   void TearDown() override {
     OfflineAudioWorkletThread::ClearSharedBackingThread();
-    RealtimeAudioWorkletThread::ClearSharedBackingThread();
+    WorkletThreadHolder<RealtimeAudioWorkletThread>::ClearInstance();
     SemiRealtimeAudioWorkletThread::ClearSharedBackingThread();
     ModuleTestBase::TearDown();
   }
@@ -69,7 +70,7 @@ class AudioWorkletThreadTest : public PageTestBase, public ModuleTestBase {
             *reporting_proxy_,
             has_realtime_constraint,
             is_top_level_frame);
-    StartBackingThread(thread.get());
+    StartBackingThreadAndWaitUntilInit(thread.get());
     return thread;
   }
 
@@ -87,7 +88,7 @@ class AudioWorkletThreadTest : public PageTestBase, public ModuleTestBase {
   }
 
  private:
-  void StartBackingThread(WorkerThread* thread) {
+  void StartBackingThreadAndWaitUntilInit(WorkerThread* thread) {
     LocalDOMWindow* window = GetFrame().DomWindow();
     thread->Start(
         std::make_unique<GlobalScopeCreationParams>(
@@ -110,7 +111,17 @@ class AudioWorkletThreadTest : public PageTestBase, public ModuleTestBase {
             BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
             window->GetAgentClusterID(), ukm::kInvalidSourceId,
             window->GetExecutionContextToken()),
-        std::nullopt, std::make_unique<WorkerDevToolsParams>());
+        std::optional(WorkerBackingThreadStartupData::CreateDefault()),
+        std::make_unique<WorkerDevToolsParams>());
+
+    // Wait until the cross-thread initialization is completed.
+    base::WaitableEvent completion_event;
+    PostCrossThreadTask(
+        *thread->GetWorkerBackingThread().BackingThread().GetTaskRunner(),
+        FROM_HERE,
+        CrossThreadBindOnce(&base::WaitableEvent::Signal,
+                            CrossThreadUnretained(&completion_event)));
+    completion_event.Wait();
   }
 
   void ExecuteScriptInWorklet(WorkerThread* thread,
@@ -215,36 +226,41 @@ class AudioWorkletThreadInteractionTest
 
 TEST_P(AudioWorkletThreadInteractionTest, CreateSecondAndTerminateFirst) {
   // Create the first worklet and wait until it is initialized.
-    std::unique_ptr<WorkerThread> first_worklet_thread =
-        CreateAudioWorkletThread(has_realtime_constraint_, is_top_level_frame_);
-    Thread* first_backing_thread =
-        &first_worklet_thread->GetWorkerBackingThread().BackingThread();
-    CheckWorkletCanExecuteScript(first_worklet_thread.get());
-    v8::Isolate* first_isolate = first_worklet_thread->GetIsolate();
-    ASSERT_TRUE(first_isolate);
+  std::unique_ptr<WorkerThread> first_worklet_thread =
+      CreateAudioWorkletThread(has_realtime_constraint_, is_top_level_frame_);
+  Thread* first_backing_thread =
+      &first_worklet_thread->GetWorkerBackingThread().BackingThread();
+  CheckWorkletCanExecuteScript(first_worklet_thread.get());
+  v8::Isolate* first_isolate = first_worklet_thread->GetIsolate();
+  ASSERT_TRUE(first_isolate);
 
-    // Create the second worklet and immediately destroy the first worklet.
-    std::unique_ptr<WorkerThread> second_worklet_thread =
-        CreateAudioWorkletThread(has_realtime_constraint_, is_top_level_frame_);
-    // We don't use terminateAndWait here to avoid forcible termination.
-    first_worklet_thread->Terminate();
-    first_worklet_thread->WaitForShutdownForTesting();
+  // Create the second worklet and immediately destroy the first worklet.
+  std::unique_ptr<WorkerThread> second_worklet_thread =
+      CreateAudioWorkletThread(has_realtime_constraint_, is_top_level_frame_);
+  Thread* second_backing_thread =
+      &second_worklet_thread->GetWorkerBackingThread().BackingThread();
+  CheckWorkletCanExecuteScript(second_worklet_thread.get());
+  v8::Isolate* second_isolate = second_worklet_thread->GetIsolate();
+  ASSERT_TRUE(second_isolate);
 
-    // Wait until the second worklet is initialized. Verify that the second
-    // worklet is using the same thread and Isolate as the first worklet.
-    Thread* second_backing_thread =
-        &second_worklet_thread->GetWorkerBackingThread().BackingThread();
+  // We don't use terminateAndWait here to avoid forcible termination.
+  first_worklet_thread->Terminate();
+  first_worklet_thread->WaitForShutdownForTesting();
+
+  // Wait until the second worklet is initialized. Verify the equality of the
+  // thread and the isolate of two instances; if it's for a real-time
+  // BaseAudioContext and it's from a top-level frame, it should use different,
+  // dedicated backing threads.
+  if (has_realtime_constraint_ && is_top_level_frame_) {
+    ASSERT_NE(first_backing_thread, second_backing_thread);
+    ASSERT_NE(first_isolate, second_isolate);
+  } else {
     ASSERT_EQ(first_backing_thread, second_backing_thread);
+    ASSERT_EQ(first_isolate, second_isolate);
+  }
 
-    v8::Isolate* second_isolate = second_worklet_thread->GetIsolate();
-    ASSERT_TRUE(second_isolate);
-    EXPECT_EQ(first_isolate, second_isolate);
-
-    // Verify that the worklet can still successfully execute script.
-    CheckWorkletCanExecuteScript(second_worklet_thread.get());
-
-    second_worklet_thread->Terminate();
-    second_worklet_thread->WaitForShutdownForTesting();
+  second_worklet_thread->Terminate();
+  second_worklet_thread->WaitForShutdownForTesting();
 }
 
 TEST_P(AudioWorkletThreadInteractionTest, TerminateFirstAndCreateSecond) {
@@ -264,41 +280,103 @@ TEST_P(AudioWorkletThreadInteractionTest, TerminateFirstAndCreateSecond) {
       CreateAudioWorkletThread(has_realtime_constraint_, is_top_level_frame_);
   Thread* second_backing_thread =
       &worklet_thread->GetWorkerBackingThread().BackingThread();
-  EXPECT_EQ(first_backing_thread, second_backing_thread);
   CheckWorkletCanExecuteScript(worklet_thread.get());
+
+  if (has_realtime_constraint_ && is_top_level_frame_) {
+    ASSERT_NE(first_backing_thread, second_backing_thread);
+  } else {
+    ASSERT_EQ(first_backing_thread, second_backing_thread);
+  }
 
   worklet_thread->Terminate();
   worklet_thread->WaitForShutdownForTesting();
 }
 
 TEST_P(AudioWorkletThreadInteractionTest,
-       CreatingSecondDuringTerminationOfFirst) {
-  // Tests that v8::Isolate and WebThread are correctly set-up if a worklet is
-  // created while another is terminating.
-  std::unique_ptr<WorkerThread> first_worklet_thread =
-      CreateAudioWorkletThread(has_realtime_constraint_, is_top_level_frame_);
-  CheckWorkletCanExecuteScript(first_worklet_thread.get());
-  v8::Isolate* first_isolate = first_worklet_thread->GetIsolate();
-  ASSERT_TRUE(first_isolate);
+       ThreadManagementSystemForRealtimeAndTopLevelFrame) {
+  // Creates 5 AudioWorkletThreads; based on the configuration (RT constraint,
+  // frame level) they could be either RealtimeAudioWorkletThread,
+  // SemiRealtimeAudioWorkletThread, or OfflineAudioWorkletThread with
+  // different backing threads.
+  constexpr int number_of_threads = 5;
+  std::unique_ptr<WorkerThread> worklet_threads[number_of_threads];
+  Thread* worklet_backing_threads[number_of_threads];
+  for (int i = 0; i < number_of_threads; i++) {
+    worklet_threads[i] =
+        CreateAudioWorkletThread(has_realtime_constraint_, is_top_level_frame_);
+    worklet_backing_threads[i] =
+        &worklet_threads[i]->GetWorkerBackingThread().BackingThread();
+  }
 
-  // Request termination of the first worklet and create the second worklet
-  // as soon as possible. We don't wait for its termination.
-  // Note: We rely on the assumption that the termination steps don't run
-  // on the worklet thread so quickly. This could be a source of flakiness.
-  first_worklet_thread->Terminate();
+  if (has_realtime_constraint_ && is_top_level_frame_) {
+    // For realtime contexts on a top-level frame, the first 3 worklet backing
+    // threads are unique and do not share a backing thread.
+    ASSERT_NE(worklet_backing_threads[0], worklet_backing_threads[1]);
+    ASSERT_NE(worklet_backing_threads[0], worklet_backing_threads[2]);
+    ASSERT_NE(worklet_backing_threads[1], worklet_backing_threads[2]);
+    // They also differ from the 4th worklet backing thread, which is shared by
+    // all subsequent AudioWorklet instances.
+    ASSERT_NE(worklet_backing_threads[0], worklet_backing_threads[3]);
+    ASSERT_NE(worklet_backing_threads[1], worklet_backing_threads[3]);
+    ASSERT_NE(worklet_backing_threads[2], worklet_backing_threads[3]);
+  } else {
+    // For all other cases, a single worklet backing thread is shared by
+    // multiple AudioWorklets.
+    ASSERT_EQ(worklet_backing_threads[0], worklet_backing_threads[1]);
+    ASSERT_EQ(worklet_backing_threads[0], worklet_backing_threads[2]);
+    ASSERT_EQ(worklet_backing_threads[0], worklet_backing_threads[3]);
+  }
 
-  std::unique_ptr<WorkerThread> second_worklet_thread =
-      CreateAudioWorkletThread(has_realtime_constraint_, is_top_level_frame_);
-  v8::Isolate* second_isolate = second_worklet_thread->GetIsolate();
-  ASSERT_TRUE(second_isolate);
+  // In any case, all AudioWorklets after 4th instance will shared a single
+  // backing thread.
+  ASSERT_EQ(worklet_backing_threads[3], worklet_backing_threads[4]);
 
-  ASSERT_EQ(first_isolate, second_isolate);
+  if (has_realtime_constraint_ && is_top_level_frame_) {
+    // Shut down the 3rd thread and verify 2 other dedicated threads are still
+    // running.
+    worklet_backing_threads[2] = nullptr;
+    worklet_threads[2]->Terminate();
+    worklet_threads[2]->WaitForShutdownForTesting();
+    worklet_threads[2].reset();
 
-  // Verify that the isolate can run some scripts correctly in the second
-  // worklet.
-  CheckWorkletCanExecuteScript(second_worklet_thread.get());
-  second_worklet_thread->Terminate();
-  second_worklet_thread->WaitForShutdownForTesting();
+    ASSERT_EQ(worklet_threads[0]->GetExitCodeForTesting(),
+              WorkerThread::ExitCode::kNotTerminated);
+    ASSERT_EQ(worklet_threads[1]->GetExitCodeForTesting(),
+              WorkerThread::ExitCode::kNotTerminated);
+
+    // Create a new thread and verify if 3 dedicated threads are running.
+    std::unique_ptr<WorkerThread> new_worklet_thread =
+        CreateAudioWorkletThread(has_realtime_constraint_, is_top_level_frame_);
+    Thread* new_worklet_backing_thread =
+          &new_worklet_thread->GetWorkerBackingThread().BackingThread();
+
+    ASSERT_NE(worklet_backing_threads[0], new_worklet_backing_thread);
+    ASSERT_NE(worklet_backing_threads[1], new_worklet_backing_thread);
+
+    // It also should be different from a shared backing thread.
+    ASSERT_NE(worklet_backing_threads[3], new_worklet_backing_thread);
+
+    new_worklet_thread->Terminate();
+    new_worklet_thread->WaitForShutdownForTesting();
+  }
+
+  // Shutting down one of worklet threads on a shared backing thread should not
+  // affect other worklet threads.
+  worklet_backing_threads[4] = nullptr;
+  worklet_threads[4]->Terminate();
+  worklet_threads[4]->WaitForShutdownForTesting();
+  worklet_threads[4].reset();
+
+  ASSERT_EQ(worklet_threads[3]->GetExitCodeForTesting(),
+            WorkerThread::ExitCode::kNotTerminated);
+
+  // Cleaning up remaining worklet threads.
+  for (auto& worklet_thread : worklet_threads) {
+    if (worklet_thread.get()) {
+      worklet_thread->Terminate();
+      worklet_thread->WaitForShutdownForTesting();
+    }
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(AudioWorkletThreadInteractionTestGroup,
