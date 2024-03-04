@@ -564,6 +564,37 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testUpdateDividers_InReorderModeWithTabGroups_TabGroupIndicators() {
+        // Setup with 5 tabs. Select 2nd tab.
+        initializeTest(false, false, true, 1, 5);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        // group 2nd and 3rd tab.
+        groupTabs(1, 3);
+
+        // Start reorder mode at 2nd tab
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(1);
+        // Trigger update to set divider values.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        // Verify only 4th and 5th tab's start divider is visible.
+        assertFalse(
+                "First start divider should always be hidden.", tabs[0].isStartDividerVisible());
+        assertFalse("Start divider should be hidden.", tabs[1].isStartDividerVisible());
+        assertFalse("Start divider should be hidden.", tabs[2].isStartDividerVisible());
+        assertTrue("Start divider should be hidden.", tabs[3].isStartDividerVisible());
+        assertTrue("Start divider should be visible.", tabs[4].isStartDividerVisible());
+
+        // Verify end divider visible for 1st, 3rd and 5th tab.
+        assertTrue("End divider should be visible.", tabs[0].isEndDividerVisible());
+        assertFalse("End divider should be hidden.", tabs[1].isEndDividerVisible());
+        assertTrue("End divider should be visible.", tabs[2].isEndDividerVisible());
+        assertFalse("End divider should be hidden.", tabs[3].isEndDividerVisible());
+        assertTrue("End divider should be visible.", tabs[4].isEndDividerVisible());
+    }
+
+    @Test
     public void testUpdateForegroundTabContainers() {
         // Setup with 5 tabs. Select tab 2.
         initializeTest(false, false, 2);
@@ -1848,6 +1879,52 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testReorder_SetSelectedTabGroupContainersVisible_TabGroupIndicators() {
+        // Mock 5 tabs. Group the first two tabs.
+        initializeTest(false, false, true, 2, 5);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        groupTabs(0, 2);
+
+        // Start reorder mode on third tab. Drag to hover over the tab group.
+        // -100 < -marginWidth = -95
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(2);
+        float dragDistance = -100f;
+        float startX = mStripLayoutHelper.getLastReorderXForTesting();
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
+
+        // Verify hovered group tab containers are not visible for Tab Group Indicator.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        float expectedHidden = StripLayoutHelper.TAB_OPACITY_HIDDEN;
+        float expectedVisibleForeground = StripLayoutHelper.TAB_OPACITY_VISIBLE_FOREGROUND;
+        assertEquals(
+                "Container in hovered group should not be visible.",
+                expectedHidden,
+                tabs[0].getContainerOpacity(),
+                EPSILON);
+        assertEquals(
+                "Container in hovered group should not be visible.",
+                expectedHidden,
+                tabs[1].getContainerOpacity(),
+                EPSILON);
+        assertEquals(
+                "Selected container should be visible.",
+                expectedVisibleForeground,
+                tabs[2].getContainerOpacity(),
+                EPSILON);
+        assertEquals(
+                "Background containers should not be visible.",
+                expectedHidden,
+                tabs[3].getContainerOpacity(),
+                EPSILON);
+        assertEquals(
+                "Background containers should not be visible.",
+                expectedHidden,
+                tabs[4].getContainerOpacity(),
+                EPSILON);
+    }
+
+    @Test
     @Feature("Tab Groups on Tab Strip")
     public void testReorder_HapticFeedback() {
         // Mock 5 tabs.
@@ -2008,6 +2085,32 @@ public class StripLayoutHelperTest {
         // Verify interacting tab was merged into group at the second index.
         tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         assertEquals("Third tab should now be second tab.", thirdTab, tabs[1]);
+        verify(mTabGroupModelFilter)
+                .mergeTabsToGroup(eq(thirdTab.getId()), eq(oldSecondTabId), eq(true));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testReorder_MergeToGroup_TabGroupIndicators() {
+        // Mock 5 tabs. Group the first two tabs.
+        initializeTest(false, false, true, 0, 5);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        StripLayoutTab thirdTab = tabs[2];
+        int oldSecondTabId = tabs[1].getId();
+        groupTabs(0, 2);
+
+        // Start reorder mode on third tab. Drag between tabs in group.
+        // -300 < -(tabWidth + marginWidth) = -(190 + 95) = -285
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(2);
+        float dragDistance = -200f;
+        float startX = mStripLayoutHelper.getLastReorderXForTesting();
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
+
+        // Verify interacting tab was merged into group at the third index immediately without
+        // hovering for the required time.
+        tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        assertEquals("Third tab should still be the third tab.", thirdTab, tabs[2]);
         verify(mTabGroupModelFilter)
                 .mergeTabsToGroup(eq(thirdTab.getId()), eq(oldSecondTabId), eq(true));
     }
