@@ -113,6 +113,20 @@ const base::FeatureParam<std::string> kLimitAImageReaderMaxSizeToOneBlocklist{
     &kLimitAImageReaderMaxSizeToOne, "LimitAImageReaderMaxSizeToOneBlocklist",
     "MIBOX|*ODROID*"};
 
+// Used to relax the limit of AImageReader max queue size to 1 for Android Tvs.
+// Currently for all android tv except the ones in this list will have max
+// queue size of 1 image.
+BASE_FEATURE(kRelaxLimitAImageReaderMaxSizeToOne,
+             "RelaxLimitAImageReaderMaxSizeToOne",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// List of devices on which to relax the restriction of max queue size of 1 for
+// AImageReader. This list is based on manufacturer name.
+const base::FeatureParam<std::string>
+    kRelaxLimitAImageReaderMaxSizeToOneBlocklist{
+        &kRelaxLimitAImageReaderMaxSizeToOne,
+        "RelaxLimitAImageReaderMaxSizeToOneBlocklist", "*Broadcom*"};
+
 // Increase number of buffers and pipeline depth for high frame rate devices.
 BASE_FEATURE(kIncreaseBufferCountForHighFrameRate,
              "IncreaseBufferCountForHighFrameRate",
@@ -779,8 +793,19 @@ bool IsAndroidSurfaceControlEnabled() {
 bool LimitAImageReaderMaxSizeToOne() {
   // Always limit image reader to 1 frame for Android TV. Many TVs doesn't work
   // with more than 1 frame and it's very hard to localize which models do.
-  if (base::android::BuildInfo::GetInstance()->is_tv())
+  if (base::android::BuildInfo::GetInstance()->is_tv()) {
+    // For the android Tvs which are in the below list, we are relaxing this
+    // restrictions as those are able to create AImageReader with more than 1
+    // images. This helps in removing the flickering seen which can happen with
+    // only 1 image.
+    // https://buganizer.corp.google.com/issues/266571065
+    if (FieldIsInBlocklist(
+            base::android::BuildInfo::GetInstance()->manufacturer(),
+            kRelaxLimitAImageReaderMaxSizeToOneBlocklist.Get())) {
+      return false;
+    }
     return true;
+  }
 
   return (FieldIsInBlocklist(base::android::BuildInfo::GetInstance()->model(),
                              kLimitAImageReaderMaxSizeToOneBlocklist.Get()));
