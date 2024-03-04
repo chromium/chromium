@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "url/url_util.h"
@@ -95,7 +97,7 @@ bool HasOsScheme(const GURL& url) {
                           base::CompareCase::INSENSITIVE_ASCII);
 }
 
-bool IsOsScheme(const base::StringPiece& scheme) {
+bool IsOsScheme(std::string_view scheme) {
   return base::EqualsCaseInsensitiveASCII(scheme, kOsScheme);
 }
 

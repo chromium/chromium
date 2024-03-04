@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_CROSAPI_CPP_GURL_OS_HANDLER_UTILS_H_
 #define CHROMEOS_CROSAPI_CPP_GURL_OS_HANDLER_UTILS_H_
 
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "url/gurl.h"
 
 // Utility functions for handling Lacros's system URLs and converting them to
@@ -46,7 +46,7 @@ bool IsAshUrlInList(const GURL& url, const std::vector<GURL>& list);
 COMPONENT_EXPORT(CROSAPI) bool HasOsScheme(const GURL& url);
 
 // Returns true when the passed scheme string matches the "os" scheme.
-COMPONENT_EXPORT(CROSAPI) bool IsOsScheme(const base::StringPiece& scheme);
+COMPONENT_EXPORT(CROSAPI) bool IsOsScheme(std::string_view scheme);
 
 }  // namespace gurl_os_handler_utils
 

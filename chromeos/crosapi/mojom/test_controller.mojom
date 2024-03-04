@@ -456,7 +456,7 @@ interface TestController {
   SetSelectedSharesheetApp@21(string app_id) => ();
 
   // Returns the version of ash-chrome, e.g. "103.0.5029.0". The returned string
-  // is intended to be compatible with the base::Version(StringPiece)
+  // is intended to be compatible with the base::Version(std::string_view)
   // constructor.
   // Consider using the convenience wrapper
   // lacros_test_helper.h:IsAshVersionAtLeastForTesting instead.
