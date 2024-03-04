@@ -195,9 +195,9 @@ class WebKioskInstallerLacrosTest : public testing::Test {
   apps::AppServiceTest app_service_test_;
 
   FakeWebKioskService web_kiosk_service_;
-  std::unique_ptr<WebKioskInstallerLacros> installer_;
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
+  std::unique_ptr<WebKioskInstallerLacros> installer_;
   raw_ptr<TestingProfile> profile_;
   KioskSessionServiceLacros kiosk_session_service_lacros_;
 };
