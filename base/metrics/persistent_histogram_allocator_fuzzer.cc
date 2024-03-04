@@ -15,15 +15,19 @@ struct Environment {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
 
+  // Copy data into a non-const vector.
+  std::vector<uint8_t> data_copy(data, data + size);
+
   // PersistentMemoryAllocator segments must be aligned and an acceptable size.
   if (!base::PersistentMemoryAllocator::IsMemoryAcceptable(
-          data, size, /*page_size=*/0, /*readonly=*/false)) {
+          data_copy.data(), data_copy.size(), /*page_size=*/0,
+          /*readonly=*/false)) {
     return 0;
   }
 
   std::unique_ptr<base::PersistentMemoryAllocator> memory_allocator =
       std::make_unique<base::PersistentMemoryAllocator>(
-          const_cast<uint8_t*>(data), size, /*page_size=*/0, /*id=*/0,
+          data_copy.data(), data_copy.size(), /*page_size=*/0, /*id=*/0,
           /*name=*/"",
           /*access_mode=*/
           base::FilePersistentMemoryAllocator::kReadWriteExisting);
