@@ -69,8 +69,8 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
     }
 
     public void maybeCreateMinimizationManager(ObservableSupplier<Profile> profileSupplier) {
-        if (MinimizedFeatureUtils.isMinimizedCustomTabAvailable(
-                mActivity, mFeatureOverridesManager)) {
+        if (MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mActivity, mFeatureOverridesManager)
+                && !MinimizedFeatureUtils.isWebApp(mIntentDataProvider)) {
             mIPHController =
                     new MinimizedCustomTabIPHController(
                             mActivity,

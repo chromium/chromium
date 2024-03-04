@@ -9,6 +9,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ActivityType.CUSTOM_TAB;
+import static org.chromium.chrome.browser.flags.ActivityType.TRUSTED_WEB_ACTIVITY;
+import static org.chromium.chrome.browser.flags.ActivityType.WEBAPP;
+import static org.chromium.chrome.browser.flags.ActivityType.WEB_APK;
+
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -32,7 +37,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils.MinimizedFeatureAvailability;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtilsUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -64,7 +69,7 @@ public class MinimizedFeatureUtilsUnitTest {
     @Mock private Context mContext;
     @Mock private PackageManager mPackageManager;
     @Mock private AppOpsManager mAppOpsManager;
-    @Mock private CustomTabFeatureOverridesManager mFeatureOverridesManager;
+    @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
 
     private final ApplicationInfo mApplicationInfo = new ApplicationInfo();
 
@@ -128,5 +133,20 @@ public class MinimizedFeatureUtilsUnitTest {
                         HISTOGRAM, MinimizedFeatureAvailability.UNAVAILABLE_PIP_PERMISSION)) {
             assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext, null));
         }
+    }
+
+    @Test
+    public void testIsWebApp() {
+        when(mIntentDataProvider.getActivityType()).thenReturn(CUSTOM_TAB);
+        assertFalse(MinimizedFeatureUtils.isWebApp(mIntentDataProvider));
+
+        when(mIntentDataProvider.getActivityType()).thenReturn(TRUSTED_WEB_ACTIVITY);
+        assertTrue(MinimizedFeatureUtils.isWebApp(mIntentDataProvider));
+
+        when(mIntentDataProvider.getActivityType()).thenReturn(WEBAPP);
+        assertTrue(MinimizedFeatureUtils.isWebApp(mIntentDataProvider));
+
+        when(mIntentDataProvider.getActivityType()).thenReturn(WEB_APK);
+        assertTrue(MinimizedFeatureUtils.isWebApp(mIntentDataProvider));
     }
 }

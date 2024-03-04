@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTabHeightStrategy;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBottomSheetStrategy;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
@@ -278,6 +279,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         toolbar.setCloseButtonPosition(mIntentDataProvider.get().getCloseButtonPosition());
         if (mMinimizeDelegateSupplier.hasValue()) {
             toolbar.setMinimizeDelegate(mMinimizeDelegateSupplier.get());
+        }
+        if (MinimizedFeatureUtils.isWebApp(mIntentDataProvider.get())) {
+            toolbar.setMinimizeButtonEnabled(false);
         }
         if (mIntentDataProvider.get().isPartialCustomTab()) {
             Callback<Runnable> softInputCallback;
