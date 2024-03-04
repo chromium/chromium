@@ -5,3 +5,16 @@ declare_args() {
 }
 
 import(gn_configs_path)
+
+if (!defined(fuchsia_arch_root)) {
+  if (current_cpu != "") {
+    # According to
+    # https://gn.googlesource.com/gn/+/main/docs/cross_compiles.md#as-a-build_gn-author,
+    # current_cpu is preferred.
+    fuchsia_arch_root = current_cpu
+  } else {
+    fuchsia_arch_root = target_cpu
+  }
+  fuchsia_arch_root =
+      "${fuchsia_sdk}/obj/${fuchsia_arch_root}-api-${fuchsia_target_api_level}"
+}

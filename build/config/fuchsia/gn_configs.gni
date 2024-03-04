@@ -22,20 +22,15 @@ declare_args() {
   fuchsia_sdk_id = ""
 }
 
-declare_args() {
-  # The SDK manifest file. This is useful to include as a dependency
-  # for some targets in order to cause a rebuild when the version of the
-  # SDK is changed.
-  fuchsia_sdk_manifest_file = "$fuchsia_sdk/meta/manifest.json"
+# The SDK manifest file. This is useful to include as a dependency
+# for some targets in order to cause a rebuild when the version of the
+# SDK is changed.
+fuchsia_sdk_manifest_file = "${fuchsia_sdk}/meta/manifest.json"
 
-  # fuchsia_tool_dir is used to specify the directory in the SDK to locate
-  # tools for the host cpu architecture. If the host_cpu is not recognized,
-  # then tool dir defaults to x64.
-  fuchsia_tool_dir = "${fuchsia_sdk}/tools/x64"
-  if (host_cpu == "arm64") {
-    fuchsia_tool_dir = "${fuchsia_sdk}/tools/arm64"
-  }
-}
+# fuchsia_tool_dir is used to specify the directory in the SDK to locate
+# tools for the host cpu architecture. If the host_cpu is not recognized,
+# then tool dir defaults to x64.
+fuchsia_tool_dir = "${fuchsia_sdk}/tools/${host_cpu}"
 
 if (fuchsia_sdk_id == "") {
   # Note: If we need to expose more than just the id in the future,
@@ -55,3 +50,10 @@ declare_args() {
     fuchsia_sdk_readelf_exec = ""
   }
 }
+
+# Copy from third_party/fuchsia-gn-sdk/src/gn_configs.gni to avoid importing
+# files from //third_party/ in //build/.
+# Note, `current_cpu` should always exist in the //build/ tree, so the
+# `target_cpu` fallback has been removed.
+fuchsia_arch_root =
+    "${fuchsia_sdk}/obj/${target_cpu}-api-${fuchsia_target_api_level}"

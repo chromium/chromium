@@ -75,8 +75,7 @@ group("deployment_resources") {
 
 # Copy the loader to place it at the expected path in the final package.
 copy("sysroot_asan_libs") {
-  sources =
-      [ "${fuchsia_sdk}/arch/${target_cpu}/sysroot/dist/lib/asan/ld.so.1" ]
+  sources = [ "${fuchsia_arch_root}/sysroot/dist/lib/asan/ld.so.1" ]
   outputs = [ "${root_out_dir}/lib/asan/{{source_file_part}}" ]
 }
 

@@ -73,8 +73,7 @@ if (sysroot == "") {
     import("//build/config/ios/ios_sdk.gni")
     sysroot = ios_sdk_path
   } else if (is_fuchsia) {
-    if (current_cpu == "arm64" || current_cpu == "x64") {
-      sysroot = "//third_party/fuchsia-sdk/sdk/arch/$current_cpu/sysroot"
-    }
+    import("//build/config/fuchsia/gn_configs.gni")
+    sysroot = "${fuchsia_arch_root}/sysroot"
   }
 }
