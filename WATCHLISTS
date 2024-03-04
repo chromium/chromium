@@ -667,6 +667,14 @@
     'browser_compositor': {
       'filepath': 'ui/compositor/'
     },
+    'browser_manager': {
+      'filepath': 'chrome/browser/ash/crosapi/browser_manager' \
+                  '|chrome/browser/ash/crosapi/browser_loader' \
+                  '|chrome/browser/ash/crosapi/lacros_selection_loader' \
+                  '|chrome/browser/ash/crosapi/rootfs_lacros_loader' \
+                  '|chrome/browser/ash/crosapi/stateful_lacros_loader' \
+                  '|chrome/browser/ash/crosapi/browser_launcher'
+    },
     'browser_params': {
       'filepath': 'chromeos/startup/browser_init_params'\
                   '|chromeos/startup/browser_params_proxy'\
@@ -2665,6 +2673,7 @@
                   'mdjones+watch@chromium.org'],
     'browser_components': ['browser-components-watch@chromium.org'],
     'browser_compositor': ['vollick@chromium.org'],
+    'browser_manager': ['elkurin+watch@chromium.org'],
     'browser_params': ['andreaorru+watch@chromium.org'],
     'browser_scheduler': ['scheduler-bugs+browser@chromium.org'],
     'browsing_data': ['dullweber+watch@chromium.org',
