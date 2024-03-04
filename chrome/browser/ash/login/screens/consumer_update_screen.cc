@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/logging.h"
@@ -57,6 +58,13 @@ const double kInsufficientBatteryPercent = 50;
 constexpr base::TimeDelta kUmaMinUpdateTime = base::Milliseconds(1);
 constexpr base::TimeDelta kUmaMaxUpdateTime = base::Hours(2);
 constexpr int kUmaUpdateTimeBuckets = 50;
+
+// Passing "--quick-start-test-consumer-update" on the command line will
+// simulate the "Consumer Update" flow. This is for testing only and will not
+// install an actual update. If this switch is present, the Chromebook reboots
+// and attempts to automatically resume the Quick Start connection after reboot.
+constexpr char kQuickStartTestConsumerUpdateSwitch[] =
+    "quick-start-test-consumer-update";
 
 void RecordUpdateTime(base::TimeDelta update_time, bool is_mandatory) {
   if (is_mandatory) {
@@ -405,6 +413,25 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
         ConsumerUpdateScreenView::UIState::kCellularPermission);
     return;
   }
+
+  // For testing resuming Quick Start after an update with the
+  // kQuickStartTestConsumerUpdateSwitch only.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kQuickStartTestConsumerUpdateSwitch) &&
+      context()->quick_start_setup_ongoing) {
+    // Remove switch to avoid update loop.
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        kQuickStartTestConsumerUpdateSwitch);
+    WizardController::default_controller()
+        ->quick_start_controller()
+        ->PrepareForUpdate();
+    view_->SetUpdateState(ConsumerUpdateScreenView::UIState::kUpdateInProgress);
+    wait_reboot_timer_.Start(FROM_HERE, wait_before_reboot_time_,
+                             version_updater_.get(),
+                             &VersionUpdater::RebootAfterUpdate);
+    return;
+  }
+
   switch (status.current_operation()) {
     case update_engine::Operation::CHECKING_FOR_UPDATE:
       view_->SetUpdateState(
