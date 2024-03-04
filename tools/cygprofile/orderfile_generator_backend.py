@@ -27,7 +27,7 @@ import subprocess
 import sys
 import tempfile
 import time
-from typing import Dict
+from typing import Dict, List
 
 import cluster
 import cyglog_to_orderfile
@@ -152,7 +152,11 @@ class StepRecorder:
     """True if FailStep has been called."""
     return self._error_recorded
 
-  def RunCommand(self, cmd, cwd=_SRC_PATH, raise_on_error=True, stdout=None):
+  def RunCommand(self,
+                 cmd: List[str],
+                 cwd: pathlib.Path = _SRC_PATH,
+                 raise_on_error: bool = True,
+                 stdout=None):
     """Execute a shell command.
 
     Args:
@@ -208,15 +212,16 @@ class ClankCompiler:
     # WebView targets
     self._webview_target, webview_apk = self._GetWebViewTargetAndApk(
         native_library_build_variant, options.public, options.arch)
-    self.webview_apk_path = out_dir / 'apks' / webview_apk
+    self.webview_apk_path = str(out_dir / 'apks' / webview_apk)
 
     # Chrome targets
     self._chrome_target, chrome_apk = self._GetChromeTargetAndApk(
         options.public)
-    self.chrome_apk_path = out_dir / 'apks' / chrome_apk
+    self.chrome_apk_path = str(out_dir / 'apks' / chrome_apk)
 
     self._libchrome_target = self._GetLibchromeTarget(options.arch)
-    self.lib_chrome_so = out_dir / f'lib.unstripped/{self._libchrome_target}.so'
+    self.lib_chrome_so = str(out_dir /
+                             f'lib.unstripped/{self._libchrome_target}.so')
 
   def _GenerateGnArgs(self, instrumented, use_call_graph):
     assert not use_call_graph or instrumented, ('You can not enable call graph '
@@ -622,10 +627,10 @@ class OrderfileGenerator:
     assert self._compiler is not None, (
         'A valid compiler is needed to generate profiles.')
     files = self._profiler.CollectSystemHealthProfile(
-        str(self._compiler.chrome_apk_path))
+        self._compiler.chrome_apk_path)
     if self._options.profile_webview_startup:
       files += self._profiler.CollectWebViewStartupProfile(
-          str(self._compiler.webview_apk_path))
+          self._compiler.webview_apk_path)
     self._MaybeSaveProfile()
     try:
       self._ProcessPhasedOrderfile(files)
@@ -647,6 +652,7 @@ class OrderfileGenerator:
       file: Profile files pulled locally.
     """
     self._step_recorder.BeginStep('Process Phased Orderfile')
+    assert self._compiler is not None
     profiles = process_profiles.ProfileManager(files)
     processor = process_profiles.SymbolOffsetProcessor(
         self._compiler.lib_chrome_so)
@@ -673,12 +679,14 @@ class OrderfileGenerator:
   def _PatchOrderfile(self):
     """Patches the orderfile using clean version of libchrome.so."""
     self._step_recorder.BeginStep('Patch Orderfile')
+    assert self._compiler is not None
     patch_orderfile.GeneratePatchedOrderfile(
         self._GetUnpatchedOrderfileFilename(), self._compiler.lib_chrome_so,
         self._GetPathToOrderfile(), self._order_outlined_functions)
 
   def _VerifySymbolOrder(self):
     self._step_recorder.BeginStep('Verify Symbol Order')
+    assert self._compiler is not None
     cmd = [
         str(self._CHECK_ORDERFILE_SCRIPT), self._compiler.lib_chrome_so,
         self._GetPathToOrderfile()
@@ -700,7 +708,7 @@ class OrderfileGenerator:
     print('File: %s, saved in: %s, sha1sum: %s' %
           (file_name, self._DIRECTORY_FOR_DEBUG_FILES, file_sha1))
 
-  def _SaveForDebugging(self, filename):
+  def _SaveForDebugging(self, filename: str):
     """Uploads the file to cloud storage or saves to a temporary location."""
     file_sha1 = _GenerateHash(filename)
     if not self._options.buildbot:
@@ -922,14 +930,14 @@ class OrderfileGenerator:
       benchmark_results['Speedometer2.0'] = self._PerformanceBenchmark(
           self._compiler.chrome_apk_path)
       benchmark_results['orderfile.memory_mobile'] = (
-          self._NativeCodeMemoryBenchmark(str(self._compiler.chrome_apk_path)))
+          self._NativeCodeMemoryBenchmark(self._compiler.chrome_apk_path))
       if self._options.profile_webview_startup:
         self._compiler.CompileWebViewApk(instrumented=False,
                                          use_call_graph=False,
                                          force_relink=True)
         benchmark_results[
             'system_health.webview_startup'] = self._WebViewStartupBenchmark(
-                str(self._compiler.webview_apk_path))
+                self._compiler.webview_apk_path)
 
     except Exception as e:
       benchmark_results['Error'] = str(e)

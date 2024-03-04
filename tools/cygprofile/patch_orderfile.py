@@ -195,15 +195,17 @@ def ReadOrderfile(orderfile):
         yield line
 
 
-def GeneratePatchedOrderfile(unpatched_orderfile, native_lib_filename,
-                             output_filename, order_outlined=False):
+def GeneratePatchedOrderfile(unpatched_orderfile: str,
+                             native_lib_filename: str,
+                             output_filename: str,
+                             order_outlined: bool = False):
   """Writes a patched orderfile.
 
   Args:
-    unpatched_orderfile: (str) Path to the unpatched orderfile.
-    native_lib_filename: (str) Path to the native library.
-    output_filename: (str) Path to the patched orderfile.
-    order_outlined: (bool) If outlined function symbols are present in the
+    unpatched_orderfile: Path to the unpatched orderfile.
+    native_lib_filename: Path to the native library.
+    output_filename: Path to the patched orderfile.
+    order_outlined: If outlined function symbols are present in the
       native library, then add ordering of them to the orderfile. If there
       are no outlined function symbols present then this flag has no effect.
   """
