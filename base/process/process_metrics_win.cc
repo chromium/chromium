@@ -120,6 +120,27 @@ struct SYSTEM_PERFORMANCE_INFORMATION {
   ULONG SystemCalls;
 };
 
+TimeDelta GetImpreciseCumulativeCPUUsage(const win::ScopedHandle& process) {
+  FILETIME creation_time;
+  FILETIME exit_time;
+  FILETIME kernel_time;
+  FILETIME user_time;
+
+  if (!process.is_valid()) {
+    return TimeDelta();
+  }
+
+  if (!GetProcessTimes(process.get(), &creation_time, &exit_time, &kernel_time,
+                       &user_time)) {
+    // This should never fail when the handle is valid.
+    NOTREACHED(NotFatalUntil::M125);
+    return TimeDelta();
+  }
+
+  return TimeDelta::FromFileTime(kernel_time) +
+         TimeDelta::FromFileTime(user_time);
+}
+
 }  // namespace
 
 size_t GetMaxFds() {
@@ -140,42 +161,22 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
 }
 
 TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
-  FILETIME creation_time;
-  FILETIME exit_time;
-  FILETIME kernel_time;
-  FILETIME user_time;
-
-  if (!process_.is_valid()) {
-    return TimeDelta();
-  }
-
-  if (!GetProcessTimes(process_.get(), &creation_time, &exit_time, &kernel_time,
-                       &user_time)) {
-    // This should never fail when the handle is valid.
-    NOTREACHED(NotFatalUntil::M125);
-    return TimeDelta();
-  }
-
-  return TimeDelta::FromFileTime(kernel_time) +
-         TimeDelta::FromFileTime(user_time);
-}
-
-TimeDelta ProcessMetrics::GetPreciseCumulativeCPUUsage() {
 #if defined(ARCH_CPU_ARM64)
   // Precise CPU usage is not available on Arm CPUs because they don't support
   // constant rate TSC.
-  return GetCumulativeCPUUsage();
+  return GetImpreciseCumulativeCPUUsage(process_);
 #else   // !defined(ARCH_CPU_ARM64)
-  if (!time_internal::HasConstantRateTSC())
-    return GetCumulativeCPUUsage();
+  if (!time_internal::HasConstantRateTSC()) {
+    return GetImpreciseCumulativeCPUUsage(process_);
+  }
 
   const double tsc_ticks_per_second = time_internal::TSCTicksPerSecond();
   if (tsc_ticks_per_second == 0) {
     // TSC is only initialized once TSCTicksPerSecond() is called twice 50 ms
-    // apart on the same thread to get a baseline. This often doesn't happen in
-    // unit tests, and theoretically may happen in production if
-    // GetPreciseCumulativeCPUUsage() is called before any uses of ThreadTicks.
-    return GetCumulativeCPUUsage();
+    // apart on the same thread to get a baseline. In unit tests, it is frequent
+    // for the initialization not to be complete. In production, it can also
+    // theoretically happen.
+    return GetImpreciseCumulativeCPUUsage(process_);
   }
 
   if (!process_.is_valid()) {
@@ -238,8 +239,9 @@ size_t GetSystemCommitCharge() {
 bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
   MEMORYSTATUSEX mem_status;
   mem_status.dwLength = sizeof(mem_status);
-  if (!::GlobalMemoryStatusEx(&mem_status))
+  if (!::GlobalMemoryStatusEx(&mem_status)) {
     return false;
+  }
 
   meminfo->total = saturated_cast<int>(mem_status.ullTotalPhys / 1024);
   meminfo->avail_phys = saturated_cast<int>(mem_status.ullAvailPhys / 1024);

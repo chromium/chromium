@@ -128,34 +128,6 @@ double ProcessMetrics::GetPlatformIndependentCPUUsage() {
 }
 #endif
 
-#if BUILDFLAG(IS_WIN)
-double ProcessMetrics::GetPreciseCPUUsage(TimeDelta cumulative_cpu) {
-  TimeTicks time = TimeTicks::Now();
-
-  if (last_precise_cumulative_cpu_.is_zero()) {
-    // First call, just set the last values.
-    last_precise_cumulative_cpu_ = cumulative_cpu;
-    last_cpu_time_for_precise_cpu_usage_ = time;
-    return 0;
-  }
-
-  TimeDelta cpu_time_delta = cumulative_cpu - last_precise_cumulative_cpu_;
-  TimeDelta time_delta = time - last_cpu_time_for_precise_cpu_usage_;
-  DCHECK(!time_delta.is_zero());
-  if (time_delta.is_zero())
-    return 0;
-
-  last_precise_cumulative_cpu_ = cumulative_cpu;
-  last_cpu_time_for_precise_cpu_usage_ = time;
-
-  return 100.0 * cpu_time_delta / time_delta;
-}
-
-double ProcessMetrics::GetPreciseCPUUsage() {
-  return GetPreciseCPUUsage(GetPreciseCumulativeCPUUsage());
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)
 int ProcessMetrics::CalculateIdleWakeupsPerSecond(
