@@ -9,11 +9,6 @@
     :host {
       --edit-footer-background: var(--google-grey-900-white-4-percent);
     }
-
-    :host-context(html:not([chrome-refresh-2023])):host {
-      --cr-toolbar-search-field-background:
-          var(--google-grey-900-white-4-percent);
-    }
   }
 
   :host([drop-position='into']) power-bookmark-row {
@@ -42,12 +37,8 @@
 
   cr-toolbar-search-field {
     flex-shrink: 0;
-    margin: 14px;
-    width: auto;
-  }
-
-  :host-context([chrome-refresh-2023]) cr-toolbar-search-field {
     margin: var(--sp-body-padding);
+    width: auto;
   }
 
   hr {
@@ -60,7 +51,7 @@
     width: var(--icon-size);
   }
 
-  :host-context([chrome-refresh-2023]) sp-list-item-badge iron-icon {
+  sp-list-item-badge iron-icon {
     --icon-size: 12px;
   }
 
@@ -109,29 +100,24 @@
     margin: 8px 14px;
   }
 
-  :host-context([chrome-refresh-2023]) sp-heading {
-    padding: var(--sp-card-block-padding) var(--sp-card-inline-padding);
-  }
-
-  :host-context([chrome-refresh-2023]) .card-top {
+  .card-top {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     padding-block-end: 0;
   }
 
-  :host-context([chrome-refresh-2023]) .card-bottom:not([is-full-card]) {
+  .card-bottom:not([is-full-card]) {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     padding-block-start: 0;
   }
 
-  :host-context([chrome-refresh-2023]) .sp-scroller:has([is-full-card]) {
+  .sp-scroller:has([is-full-card]) {
     border-bottom: solid 1px transparent;
     padding-bottom: var(--sp-body-padding);
   }
 
-  :host-context([chrome-refresh-2023])
-      .sp-scroller:has([is-full-card])::-webkit-scrollbar-track {
+  .sp-scroller:has([is-full-card])::-webkit-scrollbar-track {
     margin-block-end: var(--sp-body-padding);
   }
 
@@ -147,15 +133,11 @@
     display: flex;
     flex-direction: row;
     gap: 4px;
-    margin: 0 14px;
+    margin: 4px var(--sp-body-padding) var(--sp-card-gap);
   }
 
   .label-row[header-hidden] {
     margin-bottom: 14px;
-  }
-
-  :host-context([chrome-refresh-2023]) .label-row {
-    margin: 4px var(--sp-body-padding) var(--sp-card-gap);
   }
 
   .new-folder-icon-container {
@@ -170,19 +152,12 @@
 
   .new-folder-row[compact] > .new-folder-icon-container {
     background-color: transparent;
-    height: 16px;
-    width: 16px;
-  }
-
-  :host-context([chrome-refresh-2023])
-  .new-folder-row > .new-folder-icon-container {
-    background-color: var(--color-list-item-url-favicon-background);
-  }
-
-  :host-context([chrome-refresh-2023])
-  .new-folder-row[compact] > .new-folder-icon-container {
     height: 24px;
     width: 24px;
+  }
+
+  .new-folder-row > .new-folder-icon-container {
+    background-color: var(--color-list-item-url-favicon-background);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -198,6 +173,8 @@
     color: var(--cr-primary-text-color);
     display: flex;
     font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
     gap: 16px;
     height: 41px;
     padding: 6px 16px;
@@ -205,22 +182,13 @@
   }
 
   .new-folder-row[compact] {
-    gap: 12px;
+    gap: 8px;
     height: 32px;
     padding: 6px 14px;
   }
 
   .new-folder-row[disabled] {
     color: var(--google-grey-400);
-  }
-
-  :host-context([chrome-refresh-2023]) .new-folder-row {
-    font-size: 12px;
-    font-weight: 500;
-  }
-
-  :host-context([chrome-refresh-2023]) .new-folder-row[compact] {
-    gap: 8px;
   }
 
   .new-folder-row:not([disabled]):hover {
@@ -247,26 +215,19 @@
     width: 24px;
   }
 
-  @media (prefers-color-scheme: dark) {
-    cr-toolbar-selection-overlay {
-      background: var(--google-grey-900-white-4-percent);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]) cr-toolbar-selection-overlay {
+  cr-toolbar-selection-overlay {
     background: transparent;
     border: 0;
     font-size: 12px;
     font-weight: 500;
   }
 
-  :host-context([chrome-refresh-2023])
-      cr-toolbar-selection-overlay::part(clearIcon) {
+  cr-toolbar-selection-overlay::part(clearIcon) {
     margin-inline-end: 0;
     margin-inline-start: -4px;
   }
 
-  :host-context([chrome-refresh-2023]):host(:not([has-scrollbars_]))
+  :host(:not([has-scrollbars_]))
       sp-footer:has(cr-toolbar-selection-overlay[show]) {
     border-top: solid 1px var(--color-side-panel-edit-footer-border);
   }

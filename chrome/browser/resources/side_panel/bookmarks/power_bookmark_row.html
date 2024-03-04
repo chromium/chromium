@@ -20,34 +20,21 @@
   }
 
   cr-input {
-    --cr-input-error-display: none;
-    width: 100%;
-  }
-
-  :host-context(html:not([chrome-refresh-2023])) cr-input {
     --cr-input-background-color: transparent;
     --cr-input-border-bottom: 1px solid var(--cr-secondary-text-color);
     --cr-input-border-radius: 0;
     --cr-input-padding-start: 0;
+    --cr-input-error-display: none;
+    width: 100%;
   }
 
   iron-icon {
-    --iron-icon-fill-color: var(--google-grey-700);
+    --iron-icon-fill-color: currentColor;
     height: 16px;
     width: 16px;
   }
 
-  @media (prefers-color-scheme: dark) {
-    iron-icon {
-      --iron-icon-fill-color: var(--google-grey-100);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]) iron-icon {
-    --iron-icon-fill-color: currentColor;
-  }
-
-  :host-context([chrome-refresh-2023]) cr-input.stroked:hover {
+  cr-input.stroked:hover {
     --cr-input-hover-background-color: transparent;
   }
 </style>

@@ -322,11 +322,9 @@ export class PowerBookmarksListElement extends PolymerElement {
                 this.onBookmarkPriceUntracked_(product)),
     );
 
-    if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
-      this.shownBookmarksResizeObserver_ =
-          new ResizeObserver(this.onShownBookmarksResize_.bind(this));
-      this.shownBookmarksResizeObserver_.observe(this.$.bookmarks);
-    }
+    this.shownBookmarksResizeObserver_ =
+        new ResizeObserver(this.onShownBookmarksResize_.bind(this));
+    this.shownBookmarksResizeObserver_.observe(this.$.bookmarks);
 
     this.updateListScrollOffset_();
 
@@ -339,10 +337,8 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.shoppingListenerIds_.forEach(
         id => this.shoppingServiceApi_.getCallbackRouter().removeListener(id));
 
-    if (this.shownBookmarksResizeObserver_) {
-      this.shownBookmarksResizeObserver_.disconnect();
-      this.shownBookmarksResizeObserver_ = undefined;
-    }
+    this.shownBookmarksResizeObserver_!.disconnect();
+    this.shownBookmarksResizeObserver_ = undefined;
 
     this.bookmarksDragManager_.stopObserving();
   }

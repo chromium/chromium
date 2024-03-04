@@ -28,60 +28,34 @@
     background-color: var(--cr-hover-background-color);
   }
 
-  :host-context([chrome-refresh-2023]) .folder-row:focus-visible {
+  .folder-row:focus-visible {
     outline-color: var(--cr-focus-outline-color);
   }
 
   .folder-row[selected] {
-    background-color: var(--google-blue-50);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .folder-row[selected] {
-      background-color: var(--google-blue-300);
-    }
-
-    .folder-row[selected] > .cr-icon {
-      background-color: var(--google-grey-900);
-    }
-
-    .folder-row[selected] > .folder-title {
-      color: var(--google-grey-900);
-    }
-
-    .folder-row[selected] > .subpage-arrow {
-      --cr-icon-button-fill-color: var(--google-grey-900);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]) .folder-row[selected] {
     background-color: var(
         --color-side-panel-bookmarks-selected-folder-background);
   }
 
-  :host-context([chrome-refresh-2023]) .folder-row[selected] > .cr-icon {
+  .folder-row[selected] > .cr-icon {
     background-color: var(--color-side-panel-bookmarks-selected-folder-icon);
   }
 
-  :host-context([chrome-refresh-2023]) .folder-row[selected] > .folder-title {
+  .folder-row[selected] > .folder-title {
     color: var(--color-side-panel-bookmarks-selected-folder-foreground);
   }
 
-  :host-context([chrome-refresh-2023]) .folder-row[selected] > .subpage-arrow {
+  .folder-row[selected] > .subpage-arrow {
     --cr-icon-button-fill-color: var(
         --color-side-panel-bookmarks-selected-folder-icon);
   }
 
   .folder-selector {
-    border: 1px solid var(--scrollable-border-color);
+    border: 1px solid var(--color-side-panel-dialog-divider);
     border-radius: 2px;
     height: 160px;
     margin-top: 8px;
     overflow: auto;
-  }
-
-  :host-context([chrome-refresh-2023]) .folder-selector {
-    border-color: var(--color-side-panel-dialog-divider);
   }
 
   .folder-title {
@@ -95,9 +69,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  :host-context([chrome-refresh-2023]) .input-label {
     font-size: 13px;
     color: var(--cr-primary-text-color);
   }
@@ -113,18 +84,12 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-  }
-
-  :host-context([chrome-refresh-2023]) .input-section {
     margin-bottom: 16px;
   }
 
   .name-input {
-    --cr-input-error-display: none;
-  }
-
-  :host-context([chrome-refresh-2023]) .cr-icon {
     --cr-icon-color: var(--cr-secondary-text-color);
+    --cr-input-error-display: none;
   }
 </style>
 
