@@ -35,12 +35,6 @@ using Logger = autofill::SavePasswordProgressLogger;
 using password_manager_util::GetMatchType;
 using GetLoginMatchType = password_manager_util::GetLoginMatchType;
 
-// Controls whether we should suppress the account storage promos for when the
-// credentials service is disabled.
-BASE_FEATURE(kSuppressAccountStoragePromosWhenCredentialServiceDisabled,
-             "SuppressAccountStoragePromosWhenCredentialServiceDisabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool PreferredRealmIsFromAndroid(const PasswordFormFillData& fill_data) {
   return FacetURI::FromPotentiallyInvalidSpec(fill_data.preferred_login.realm)
       .IsValidAndroidFacetURI();
@@ -139,14 +133,8 @@ LikelyFormFilling SendFillInformationToRenderer(
   }
 
   if (best_matches.empty() && !webauthn_suggestions_available) {
-
-    bool should_suppress_popup_due_to_disabled_saving_and_filling =
-        base::FeatureList::IsEnabled(
-            kSuppressAccountStoragePromosWhenCredentialServiceDisabled) &&
-        !client->IsSavingAndFillingEnabled(observed_form.url);
-
     bool should_show_popup_without_passwords =
-        !should_suppress_popup_due_to_disabled_saving_and_filling &&
+        client->IsSavingAndFillingEnabled(observed_form.url) &&
         (client->GetPasswordFeatureManager()->ShouldShowAccountStorageOptIn() ||
          client->GetPasswordFeatureManager()->ShouldShowAccountStorageReSignin(
              client->GetLastCommittedURL()));
