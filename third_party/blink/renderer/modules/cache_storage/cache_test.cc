@@ -62,10 +62,10 @@ class ScopedFetcherForTests final
  public:
   ScopedFetcherForTests() = default;
 
-  ScriptPromise Fetch(ScriptState* script_state,
-                      const V8RequestInfo* request_info,
-                      const RequestInit*,
-                      ExceptionState& exception_state) override {
+  ScriptPromiseTyped<Response> Fetch(ScriptState* script_state,
+                                     const V8RequestInfo* request_info,
+                                     const RequestInit*,
+                                     ExceptionState& exception_state) override {
     ++fetch_count_;
     if (expected_url_) {
       switch (request_info->GetContentType()) {
@@ -79,16 +79,11 @@ class ScopedFetcherForTests final
     }
 
     if (response_) {
-      auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-          script_state, exception_state.GetContext());
-      const ScriptPromise promise = resolver->Promise();
-      resolver->Resolve(response_);
-      response_ = nullptr;
-      return promise;
+      return ToResolvedPromise<Response>(script_state, response_);
     }
     exception_state.ThrowTypeError(
         "Unexpected call to fetch, no response available.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<Response>();
   }
 
   // This does not take ownership of its parameter. The provided sample object

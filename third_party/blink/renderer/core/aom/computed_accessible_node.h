@@ -27,7 +27,7 @@ class ComputedAccessibleNodePromiseResolver final
   ComputedAccessibleNodePromiseResolver(ScriptState*, Element&);
   ~ComputedAccessibleNodePromiseResolver() {}
 
-  ScriptPromise Promise();
+  ScriptPromiseTyped<ComputedAccessibleNode> Promise();
   void ComputeAccessibleNode();
   void EnsureUpToDate();
   void Trace(Visitor*) const;
@@ -42,7 +42,7 @@ class ComputedAccessibleNodePromiseResolver final
   Member<Element> element_;
   AXID ax_id_;
 
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverTyped<ComputedAccessibleNode>> resolver_;
   bool resolve_with_node_ = false;
   std::unique_ptr<AXContext> ax_context_;
 };
@@ -97,7 +97,7 @@ class ComputedAccessibleNode : public ScriptWrappable {
   ComputedAccessibleNode* previousSibling() const;
   ComputedAccessibleNode* nextSibling() const;
 
-  ScriptPromise ensureUpToDate(ScriptState*);
+  ScriptPromiseTyped<ComputedAccessibleNode> ensureUpToDate(ScriptState*);
 
  private:
   Document* GetDocument() const;

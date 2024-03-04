@@ -149,10 +149,11 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   // ImageBitmapSource implementation
   static constexpr uint64_t kCpuEfficientFrameSize = 320u * 240u;
   gfx::Size BitmapSourceSize() const override;
-  ScriptPromise CreateImageBitmap(ScriptState*,
-                                  std::optional<gfx::Rect> crop_rect,
-                                  const ImageBitmapOptions*,
-                                  ExceptionState&) override;
+  ScriptPromiseTyped<ImageBitmap> CreateImageBitmap(
+      ScriptState*,
+      std::optional<gfx::Rect> crop_rect,
+      const ImageBitmapOptions*,
+      ExceptionState&) override;
 
   // Underlying frame
   scoped_refptr<VideoFrameHandle> handle_;

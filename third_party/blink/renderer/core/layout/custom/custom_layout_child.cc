@@ -30,7 +30,7 @@ CustomLayoutChild::CustomLayoutChild(const CSSLayoutDefinition& definition,
           definition.ChildNativeInvalidationProperties(),
           definition.ChildCustomInvalidationProperties())) {}
 
-ScriptPromise CustomLayoutChild::intrinsicSizes(
+ScriptPromiseTyped<CustomIntrinsicSizes> CustomLayoutChild::intrinsicSizes(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   // A layout child may be invalid if it has been removed from the tree (it is
@@ -39,11 +39,12 @@ ScriptPromise CustomLayoutChild::intrinsicSizes(
   if (!node_ || !token_->IsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidLayoutChild);
-    return ScriptPromise();
+    return ScriptPromiseTyped<CustomIntrinsicSizes>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<CustomIntrinsicSizes>>(
+          script_state, exception_state.GetContext());
   CustomLayoutScope::Current()->Queue()->emplace_back(
       MakeGarbageCollected<CustomLayoutWorkTask>(
           this, token_, resolver,
@@ -51,7 +52,7 @@ ScriptPromise CustomLayoutChild::intrinsicSizes(
   return resolver->Promise();
 }
 
-ScriptPromise CustomLayoutChild::layoutNextFragment(
+ScriptPromiseTyped<CustomLayoutFragment> CustomLayoutChild::layoutNextFragment(
     ScriptState* script_state,
     const CustomLayoutConstraintsOptions* options,
     ExceptionState& exception_state) {
@@ -61,7 +62,7 @@ ScriptPromise CustomLayoutChild::layoutNextFragment(
   if (!node_ || !token_->IsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidLayoutChild);
-    return ScriptPromise();
+    return ScriptPromiseTyped<CustomLayoutFragment>();
   }
 
   // Serialize the provided data if needed.
@@ -80,12 +81,13 @@ ScriptPromise CustomLayoutChild::layoutNextFragment(
           exception_state);
 
       if (exception_state.HadException())
-        return ScriptPromise();
+        return ScriptPromiseTyped<CustomLayoutFragment>();
     }
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<CustomLayoutFragment>>(
+          script_state, exception_state.GetContext());
   CustomLayoutScope::Current()->Queue()->emplace_back(
       MakeGarbageCollected<CustomLayoutWorkTask>(
           this, token_, resolver, options, std::move(constraint_data),

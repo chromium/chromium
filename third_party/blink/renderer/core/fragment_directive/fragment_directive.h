@@ -14,6 +14,7 @@ namespace blink {
 
 class Document;
 class ScriptState;
+class SelectorDirective;
 class V8UnionRangeOrSelection;
 
 // This class implements the `window.fragmentDirective` web API and serves as a
@@ -54,8 +55,9 @@ class FragmentDirective : public ScriptWrappable {
 
   // Web-exposed FragmentDirective interface.
   const HeapVector<Member<Directive>>& items() const;
-  ScriptPromise createSelectorDirective(ScriptState*,
-                                        const V8UnionRangeOrSelection*);
+  ScriptPromiseTyped<SelectorDirective> createSelectorDirective(
+      ScriptState*,
+      const V8UnionRangeOrSelection*);
 
  private:
   void ParseDirectives(const String& fragment_directive);

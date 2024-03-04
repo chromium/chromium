@@ -123,10 +123,10 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
 
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const override { return Size(); }
-  ScriptPromise CreateImageBitmap(ScriptState*,
-                                  std::optional<gfx::Rect>,
-                                  const ImageBitmapOptions*,
-                                  ExceptionState&) override;
+  ScriptPromiseTyped<ImageBitmap> CreateImageBitmap(ScriptState*,
+                                                    std::optional<gfx::Rect>,
+                                                    const ImageBitmapOptions*,
+                                                    ExceptionState&) override;
 
   struct ParsedOptions {
     bool flip_y = false;

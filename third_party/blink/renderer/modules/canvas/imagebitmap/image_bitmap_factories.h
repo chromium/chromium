@@ -55,6 +55,7 @@ namespace blink {
 
 class Blob;
 class ExecutionContext;
+class ImageBitmap;
 class ImageBitmapSource;
 class ScriptState;
 
@@ -67,21 +68,23 @@ class MODULES_EXPORT ImageBitmapFactories final
 
   explicit ImageBitmapFactories(ExecutionContext& context);
 
-  static ScriptPromise CreateImageBitmap(ScriptState*,
-                                         const V8ImageBitmapSource*,
-                                         const ImageBitmapOptions*,
-                                         ExceptionState&);
-  static ScriptPromise CreateImageBitmap(ScriptState*,
-                                         const V8ImageBitmapSource*,
-                                         int sx,
-                                         int sy,
-                                         int sw,
-                                         int sh,
-                                         const ImageBitmapOptions*,
-                                         ExceptionState&);
+  static ScriptPromiseTyped<ImageBitmap> CreateImageBitmap(
+      ScriptState*,
+      const V8ImageBitmapSource*,
+      const ImageBitmapOptions*,
+      ExceptionState&);
+  static ScriptPromiseTyped<ImageBitmap> CreateImageBitmap(
+      ScriptState*,
+      const V8ImageBitmapSource*,
+      int sx,
+      int sy,
+      int sw,
+      int sh,
+      const ImageBitmapOptions*,
+      ExceptionState&);
 
   // window.createImageBitmap()
-  static ScriptPromise createImageBitmap(
+  static ScriptPromiseTyped<ImageBitmap> createImageBitmap(
       ScriptState* script_state,
       LocalDOMWindow&,
       const V8ImageBitmapSource* bitmap_source,
@@ -90,7 +93,7 @@ class MODULES_EXPORT ImageBitmapFactories final
     return CreateImageBitmap(script_state, bitmap_source, options,
                              exception_state);
   }
-  static ScriptPromise createImageBitmap(
+  static ScriptPromiseTyped<ImageBitmap> createImageBitmap(
       ScriptState* script_state,
       LocalDOMWindow&,
       const V8ImageBitmapSource* bitmap_source,
@@ -105,7 +108,7 @@ class MODULES_EXPORT ImageBitmapFactories final
   }
 
   // worker.createImageBitmap()
-  static ScriptPromise createImageBitmap(
+  static ScriptPromiseTyped<ImageBitmap> createImageBitmap(
       ScriptState* script_state,
       WorkerGlobalScope&,
       const V8ImageBitmapSource* bitmap_source,
@@ -114,7 +117,7 @@ class MODULES_EXPORT ImageBitmapFactories final
     return CreateImageBitmap(script_state, bitmap_source, options,
                              exception_state);
   }
-  static ScriptPromise createImageBitmap(
+  static ScriptPromiseTyped<ImageBitmap> createImageBitmap(
       ScriptState* script_state,
       WorkerGlobalScope&,
       const V8ImageBitmapSource* bitmap_source,
@@ -136,11 +139,12 @@ class MODULES_EXPORT ImageBitmapFactories final
   }
 
  private:
-  static ScriptPromise CreateImageBitmap(ScriptState*,
-                                         ImageBitmapSource*,
-                                         std::optional<gfx::Rect> crop_rect,
-                                         const ImageBitmapOptions*,
-                                         ExceptionState&);
+  static ScriptPromiseTyped<ImageBitmap> CreateImageBitmap(
+      ScriptState*,
+      ImageBitmapSource*,
+      std::optional<gfx::Rect> crop_rect,
+      const ImageBitmapOptions*,
+      ExceptionState&);
 
   class ImageBitmapLoader final : public GarbageCollected<ImageBitmapLoader>,
                                   public ExecutionContextLifecycleObserver,
@@ -160,7 +164,7 @@ class MODULES_EXPORT ImageBitmapFactories final
                       const ImageBitmapOptions*);
 
     void LoadBlobAsync(Blob*);
-    ScriptPromise Promise() { return resolver_->Promise(); }
+    ScriptPromiseTyped<ImageBitmap> Promise() { return resolver_->Promise(); }
 
     void Trace(Visitor*) const override;
 
@@ -189,13 +193,13 @@ class MODULES_EXPORT ImageBitmapFactories final
 
     Member<FileReaderLoader> loader_;
     Member<ImageBitmapFactories> factory_;
-    Member<ScriptPromiseResolver> resolver_;
+    Member<ScriptPromiseResolverTyped<ImageBitmap>> resolver_;
     std::optional<gfx::Rect> crop_rect_;
     Member<const ImageBitmapOptions> options_;
   };
 
   static ImageBitmapFactories& From(ExecutionContext&);
-  static ScriptPromise CreateImageBitmapFromBlob(
+  static ScriptPromiseTyped<ImageBitmap> CreateImageBitmapFromBlob(
       ScriptState*,
       ImageBitmapSource*,
       std::optional<gfx::Rect> crop_rect,

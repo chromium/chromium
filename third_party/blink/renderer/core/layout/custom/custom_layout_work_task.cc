@@ -143,9 +143,10 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
       parent_space.GetWritingDirection(),
       To<PhysicalBoxFragment>(result->GetPhysicalFragment()));
 
-  resolver_->Resolve(MakeGarbageCollected<CustomLayoutFragment>(
-      child_, token_, std::move(result), fragment.Size(),
-      fragment.FirstBaseline(), resolver_->GetScriptState()->GetIsolate()));
+  resolver_->DowncastTo<CustomLayoutFragment>()->Resolve(
+      MakeGarbageCollected<CustomLayoutFragment>(
+          child_, token_, std::move(result), fragment.Size(),
+          fragment.FirstBaseline(), resolver_->GetScriptState()->GetIsolate()));
 }
 
 void CustomLayoutWorkTask::RunIntrinsicSizesTask(
@@ -164,8 +165,9 @@ void CustomLayoutWorkTask::RunIntrinsicSizesTask(
 
   MinMaxSizesResult result = ComputeMinAndMaxContentContribution(
       parent_style, To<BlockNode>(child), space);
-  resolver_->Resolve(MakeGarbageCollected<CustomIntrinsicSizes>(
-      child_, token_, result.sizes.min_size, result.sizes.max_size));
+  resolver_->DowncastTo<CustomIntrinsicSizes>()->Resolve(
+      MakeGarbageCollected<CustomIntrinsicSizes>(
+          child_, token_, result.sizes.min_size, result.sizes.max_size));
 
   if (child_depends_on_block_constraints)
     *child_depends_on_block_constraints |= result.depends_on_block_constraints;

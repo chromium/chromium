@@ -160,10 +160,10 @@ class CORE_EXPORT OffscreenCanvas final
 
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const final;
-  ScriptPromise CreateImageBitmap(ScriptState*,
-                                  std::optional<gfx::Rect>,
-                                  const ImageBitmapOptions*,
-                                  ExceptionState&) final;
+  ScriptPromiseTyped<ImageBitmap> CreateImageBitmap(ScriptState*,
+                                                    std::optional<gfx::Rect>,
+                                                    const ImageBitmapOptions*,
+                                                    ExceptionState&) final;
 
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(

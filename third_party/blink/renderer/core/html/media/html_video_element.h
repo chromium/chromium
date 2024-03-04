@@ -131,10 +131,11 @@ class CORE_EXPORT HTMLVideoElement final
 
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const override;
-  ScriptPromise CreateImageBitmap(ScriptState*,
-                                  std::optional<gfx::Rect> crop_rect,
-                                  const ImageBitmapOptions*,
-                                  ExceptionState&) override;
+  ScriptPromiseTyped<ImageBitmap> CreateImageBitmap(
+      ScriptState*,
+      std::optional<gfx::Rect> crop_rect,
+      const ImageBitmapOptions*,
+      ExceptionState&) override;
 
   // WebMediaPlayerClient implementation.
   void OnRequestVideoFrameCallback() final;

@@ -285,7 +285,7 @@ gfx::Size OffscreenCanvas::BitmapSourceSize() const {
   return Size();
 }
 
-ScriptPromise OffscreenCanvas::CreateImageBitmap(
+ScriptPromiseTyped<ImageBitmap> OffscreenCanvas::CreateImageBitmap(
     ScriptState* script_state,
     std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
@@ -294,7 +294,7 @@ ScriptPromise OffscreenCanvas::CreateImageBitmap(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "`createImageBitmap()` cannot be called with open layers.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<ImageBitmap>();
   }
   if (context_) {
     context_->FinalizeFrame(FlushReason::kCreateImageBitmap);

@@ -1117,10 +1117,11 @@ gfx::Size ImageBitmap::Size() const {
   return image_->PreferredDisplaySize();
 }
 
-ScriptPromise ImageBitmap::CreateImageBitmap(ScriptState* script_state,
-                                             std::optional<gfx::Rect> crop_rect,
-                                             const ImageBitmapOptions* options,
-                                             ExceptionState& exception_state) {
+ScriptPromiseTyped<ImageBitmap> ImageBitmap::CreateImageBitmap(
+    ScriptState* script_state,
+    std::optional<gfx::Rect> crop_rect,
+    const ImageBitmapOptions* options,
+    ExceptionState& exception_state) {
   return ImageBitmapSource::FulfillImageBitmap(
       script_state, MakeGarbageCollected<ImageBitmap>(this, crop_rect, options),
       options, exception_state);

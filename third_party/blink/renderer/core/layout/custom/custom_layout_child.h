@@ -14,7 +14,9 @@
 namespace blink {
 
 class CSSLayoutDefinition;
+class CustomIntrinsicSizes;
 class CustomLayoutConstraintsOptions;
+class CustomLayoutFragment;
 class CustomLayoutToken;
 class ExceptionState;
 
@@ -37,10 +39,12 @@ class CustomLayoutChild : public ScriptWrappable {
   PrepopulatedComputedStylePropertyMap* styleMap() const {
     return style_map_.Get();
   }
-  ScriptPromise intrinsicSizes(ScriptState*, ExceptionState&);
-  ScriptPromise layoutNextFragment(ScriptState*,
-                                   const CustomLayoutConstraintsOptions*,
-                                   ExceptionState&);
+  ScriptPromiseTyped<CustomIntrinsicSizes> intrinsicSizes(ScriptState*,
+                                                          ExceptionState&);
+  ScriptPromiseTyped<CustomLayoutFragment> layoutNextFragment(
+      ScriptState*,
+      const CustomLayoutConstraintsOptions*,
+      ExceptionState&);
 
   const LayoutInputNode& GetLayoutNode() const {
     DCHECK(node_);

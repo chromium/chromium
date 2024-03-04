@@ -53,7 +53,9 @@ ComputedAccessibleNodePromiseResolver::ComputedAccessibleNodePromiseResolver(
     Document& document,
     AXID ax_id)
     : ax_id_(ax_id),
-      resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
+      resolver_(MakeGarbageCollected<
+                ScriptPromiseResolverTyped<ComputedAccessibleNode>>(
+          script_state)),
       ax_context_(std::make_unique<AXContext>(document, ui::kAXModeComplete)) {
   DCHECK(ax_id);
 }
@@ -62,11 +64,14 @@ ComputedAccessibleNodePromiseResolver::ComputedAccessibleNodePromiseResolver(
     ScriptState* script_state,
     Element& element)
     : element_(element),
-      resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
+      resolver_(MakeGarbageCollected<
+                ScriptPromiseResolverTyped<ComputedAccessibleNode>>(
+          script_state)),
       ax_context_(std::make_unique<AXContext>(element.GetDocument(),
                                               ui::kAXModeComplete)) {}
 
-ScriptPromise ComputedAccessibleNodePromiseResolver::Promise() {
+ScriptPromiseTyped<ComputedAccessibleNode>
+ComputedAccessibleNodePromiseResolver::Promise() {
   return resolver_->Promise();
 }
 
@@ -223,13 +228,13 @@ std::optional<float> ComputedAccessibleNode::valueNow() const {
   return GetFloatAttribute(WebAOMFloatAttribute::AOM_ATTR_VALUE_NOW);
 }
 
-ScriptPromise ComputedAccessibleNode::ensureUpToDate(
-    ScriptState* script_state) {
+ScriptPromiseTyped<ComputedAccessibleNode>
+ComputedAccessibleNode::ensureUpToDate(ScriptState* script_state) {
   if (!GetDocument())
-    return ScriptPromise();  // Empty promise.
+    return ScriptPromiseTyped<ComputedAccessibleNode>();  // Empty promise.
   auto* resolver = MakeGarbageCollected<ComputedAccessibleNodePromiseResolver>(
       script_state, *GetDocument(), ax_id_);
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   resolver->EnsureUpToDate();
   return promise;
 }

@@ -78,18 +78,19 @@ void RejectWithCode(ScriptPromiseResolver* resolver,
 }
 }  // namespace
 
-ScriptPromise FragmentDirective::createSelectorDirective(
-    ScriptState* state,
-    const V8UnionRangeOrSelection* arg) {
+ScriptPromiseTyped<SelectorDirective>
+FragmentDirective::createSelectorDirective(ScriptState* state,
+                                           const V8UnionRangeOrSelection* arg) {
   if (ExecutionContext::From(state)->IsContextDestroyed())
-    return ScriptPromise();
+    return ScriptPromiseTyped<SelectorDirective>();
 
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<SelectorDirective>>(
+          state);
 
   // Access the promise first to ensure it is created so that the proper state
   // can be changed when it is resolved or rejected.
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   Range* range = nullptr;
 
@@ -136,7 +137,7 @@ ScriptPromise FragmentDirective::createSelectorDirective(
   generator->Generate(
       *range_in_flat_tree,
       WTF::BindOnce(
-          [](ScriptPromiseResolver* resolver,
+          [](ScriptPromiseResolverTyped<SelectorDirective>* resolver,
              TextFragmentSelectorGenerator* generator,
              const RangeInFlatTree* range, const TextFragmentSelector& selector,
              shared_highlighting::LinkGenerationError error) {

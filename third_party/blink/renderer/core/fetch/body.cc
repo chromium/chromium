@@ -239,7 +239,7 @@ ScriptPromiseTyped<typename Consumer::ResolveType> Body::LoadAndConvertBody(
 ScriptPromiseTyped<DOMArrayBuffer> Body::arrayBuffer(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  auto on_no_body = [](ScriptPromiseResolver* resolver) {
+  auto on_no_body = [](ScriptPromiseResolverTyped<DOMArrayBuffer>* resolver) {
     resolver->Resolve(DOMArrayBuffer::Create(size_t{0}, size_t{0}));
   };
 
@@ -255,7 +255,7 @@ ScriptPromiseTyped<Blob> Body::blob(ScriptState* script_state,
     return FetchDataLoader::CreateLoaderAsBlobHandle(
         MimeType(), context->GetTaskRunner(TaskType::kNetworking));
   };
-  auto on_no_body = [this](ScriptPromiseResolver* resolver) {
+  auto on_no_body = [this](ScriptPromiseResolverTyped<Blob>* resolver) {
     auto blob_data = std::make_unique<BlobData>();
     blob_data->SetContentType(MimeType());
     resolver->Resolve(MakeGarbageCollected<Blob>(
@@ -294,9 +294,10 @@ ScriptPromiseTyped<FormData> Body::formData(ScriptState* script_state,
     on_no_body_reject(resolver);
     return promise;
   } else if (parsed_type == "application/x-www-form-urlencoded") {
-    auto on_no_body_resolve = [](ScriptPromiseResolver* resolver) {
-      resolver->Resolve(MakeGarbageCollected<FormData>());
-    };
+    auto on_no_body_resolve =
+        [](ScriptPromiseResolverTyped<FormData>* resolver) {
+          resolver->Resolve(MakeGarbageCollected<FormData>());
+        };
     // According to https://fetch.spec.whatwg.org/#concept-body-package-data
     // application/x-www-form-urlencoded FormData bytes are parsed using
     // https://url.spec.whatwg.org/#concept-urlencoded-parser
@@ -327,8 +328,8 @@ ScriptPromiseTyped<IDLAny> Body::json(ScriptState* script_state,
 
 ScriptPromiseTyped<IDLUSVString> Body::text(ScriptState* script_state,
                                             ExceptionState& exception_state) {
-  auto on_no_body = [](ScriptPromiseResolver* resolver) {
-    resolver->DowncastTo<IDLUSVString>()->Resolve(String());
+  auto on_no_body = [](ScriptPromiseResolverTyped<IDLUSVString>* resolver) {
+    resolver->Resolve(String());
   };
   return LoadAndConvertBody<BodyTextConsumer>(
       script_state, &CreateLoaderAsStringWithUTF8Decode, on_no_body,

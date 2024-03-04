@@ -24,10 +24,11 @@ class CORE_EXPORT ImageBitmapSource {
 
  public:
   virtual gfx::Size BitmapSourceSize() const { return gfx::Size(); }
-  virtual ScriptPromise CreateImageBitmap(ScriptState*,
-                                          std::optional<gfx::Rect>,
-                                          const ImageBitmapOptions*,
-                                          ExceptionState&);
+  virtual ScriptPromiseTyped<ImageBitmap> CreateImageBitmap(
+      ScriptState*,
+      std::optional<gfx::Rect>,
+      const ImageBitmapOptions*,
+      ExceptionState&);
 
   virtual bool IsBlob() const { return false; }
 
@@ -35,10 +36,11 @@ class CORE_EXPORT ImageBitmapSource {
   // deprecated. A deprecation warning will be shown to developers when it is
   // used. Adding |options| temporarily here to verify if 'none' is used, which
   // will be removed in the next milestone.
-  static ScriptPromise FulfillImageBitmap(ScriptState*,
-                                          ImageBitmap*,
-                                          const ImageBitmapOptions* options,
-                                          ExceptionState&);
+  static ScriptPromiseTyped<ImageBitmap> FulfillImageBitmap(
+      ScriptState*,
+      ImageBitmap*,
+      const ImageBitmapOptions* options,
+      ExceptionState&);
 
  protected:
   virtual ~ImageBitmapSource() = default;

@@ -6,13 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SELECTOR_DIRECTIVE_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/frame/directive.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
-
+class Range;
 class RangeInFlatTree;
-class ScriptPromiseResolver;
 class ScriptState;
 
 // Provides the JavaScript-exposed SelectorDirective base class. Selector
@@ -36,14 +36,14 @@ class SelectorDirective : public Directive {
   void Trace(Visitor*) const override;
 
   // Web-exposed SelectorDirective interface.
-  ScriptPromise getMatchingRange(ScriptState*) const;
+  ScriptPromiseTyped<Range> getMatchingRange(ScriptState*) const;
 
  private:
   void ResolvePromise() const;
 
   // Mutable since it's only used to resolve the promise returned from
   // getMatchingRange and not part of this object's state.
-  mutable Member<ScriptPromiseResolver> matching_range_resolver_;
+  mutable Member<ScriptPromiseResolverTyped<Range>> matching_range_resolver_;
 
   // We'll cache the resulting range so that future calls to getMatchingRange
   // resolve immediately.

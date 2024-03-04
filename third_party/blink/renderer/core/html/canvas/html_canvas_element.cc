@@ -1677,7 +1677,7 @@ gfx::Size HTMLCanvasElement::BitmapSourceSize() const {
   return Size();
 }
 
-ScriptPromise HTMLCanvasElement::CreateImageBitmap(
+ScriptPromiseTyped<ImageBitmap> HTMLCanvasElement::CreateImageBitmap(
     ScriptState* script_state,
     std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
@@ -1686,7 +1686,7 @@ ScriptPromise HTMLCanvasElement::CreateImageBitmap(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "`createImageBitmap()` cannot be called with open layers.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<ImageBitmap>();
   }
   return ImageBitmapSource::FulfillImageBitmap(
       script_state, MakeGarbageCollected<ImageBitmap>(this, crop_rect, options),

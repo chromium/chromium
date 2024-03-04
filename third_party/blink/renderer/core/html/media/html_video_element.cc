@@ -574,7 +574,7 @@ gfx::Size HTMLVideoElement::BitmapSourceSize() const {
   return gfx::Size(videoWidth(), videoHeight());
 }
 
-ScriptPromise HTMLVideoElement::CreateImageBitmap(
+ScriptPromiseTyped<ImageBitmap> HTMLVideoElement::CreateImageBitmap(
     ScriptState* script_state,
     std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
@@ -583,13 +583,13 @@ ScriptPromise HTMLVideoElement::CreateImageBitmap(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The provided element has not retrieved data.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<ImageBitmap>();
   }
   if (!HasAvailableVideoFrame()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The provided element's player has no current data.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<ImageBitmap>();
   }
 
   return ImageBitmapSource::FulfillImageBitmap(

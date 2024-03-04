@@ -31,9 +31,10 @@ void RejectWithCode(ScriptPromiseResolver* resolver,
 }
 }  // namespace
 
-ScriptPromise SelectorDirective::getMatchingRange(ScriptState* state) const {
+ScriptPromiseTyped<Range> SelectorDirective::getMatchingRange(
+    ScriptState* state) const {
   if (ExecutionContext::From(state)->IsContextDestroyed())
-    return ScriptPromise();
+    return ScriptPromiseTyped<Range>();
 
   // TODO(bokan): This method needs to be able to initiate the search since
   // author code can construct a TextDirective; if it then calls this method
@@ -41,11 +42,12 @@ ScriptPromise SelectorDirective::getMatchingRange(ScriptState* state) const {
   // TODO(bokan): If this method can initiate a search, it'd probably be more
   // straightforward to avoid caching and have each call start a new search.
   // That way this is more resilient to changes in the DOM.
-  matching_range_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(state);
+  matching_range_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<Range>>(state);
 
   // Access the promise first to ensure it is created so that the proper state
   // can be changed when it is resolved or rejected.
-  ScriptPromise promise = matching_range_resolver_->Promise();
+  auto promise = matching_range_resolver_->Promise();
 
   if (matching_finished_)
     ResolvePromise();

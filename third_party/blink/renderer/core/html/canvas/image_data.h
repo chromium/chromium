@@ -196,10 +196,11 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
 
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const override { return size_; }
-  ScriptPromise CreateImageBitmap(ScriptState*,
-                                  std::optional<gfx::Rect> crop_rect,
-                                  const ImageBitmapOptions*,
-                                  ExceptionState&) override;
+  ScriptPromiseTyped<ImageBitmap> CreateImageBitmap(
+      ScriptState*,
+      std::optional<gfx::Rect> crop_rect,
+      const ImageBitmapOptions*,
+      ExceptionState&) override;
 
   void Trace(Visitor*) const override;
 

@@ -150,13 +150,13 @@ inline ImageBitmapSource* ToImageBitmapSourceInternal(
   return nullptr;
 }
 
-ScriptPromise ImageBitmapFactories::CreateImageBitmapFromBlob(
+ScriptPromiseTyped<ImageBitmap> ImageBitmapFactories::CreateImageBitmapFromBlob(
     ScriptState* script_state,
     ImageBitmapSource* bitmap_source,
     std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options) {
   if (!script_state->ContextIsValid()) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<ImageBitmap>();
   }
 
   // imageOrientation: 'from-image' will be used to replace imageOrientation:
@@ -178,7 +178,7 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmapFromBlob(
   return loader->Promise();
 }
 
-ScriptPromise ImageBitmapFactories::CreateImageBitmap(
+ScriptPromiseTyped<ImageBitmap> ImageBitmapFactories::CreateImageBitmap(
     ScriptState* script_state,
     const V8ImageBitmapSource* bitmap_source,
     const ImageBitmapOptions* options,
@@ -188,12 +188,12 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmap(
   ImageBitmapSource* bitmap_source_internal =
       ToImageBitmapSourceInternal(bitmap_source, options, false);
   if (!bitmap_source_internal)
-    return ScriptPromise();
+    return ScriptPromiseTyped<ImageBitmap>();
   return CreateImageBitmap(script_state, bitmap_source_internal, std::nullopt,
                            options, exception_state);
 }
 
-ScriptPromise ImageBitmapFactories::CreateImageBitmap(
+ScriptPromiseTyped<ImageBitmap> ImageBitmapFactories::CreateImageBitmap(
     ScriptState* script_state,
     const V8ImageBitmapSource* bitmap_source,
     int sx,
@@ -207,13 +207,13 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmap(
   ImageBitmapSource* bitmap_source_internal =
       ToImageBitmapSourceInternal(bitmap_source, options, true);
   if (!bitmap_source_internal)
-    return ScriptPromise();
+    return ScriptPromiseTyped<ImageBitmap>();
   gfx::Rect crop_rect = NormalizedCropRect(sx, sy, sw, sh);
   return CreateImageBitmap(script_state, bitmap_source_internal, crop_rect,
                            options, exception_state);
 }
 
-ScriptPromise ImageBitmapFactories::CreateImageBitmap(
+ScriptPromiseTyped<ImageBitmap> ImageBitmapFactories::CreateImageBitmap(
     ScriptState* script_state,
     ImageBitmapSource* bitmap_source,
     std::optional<gfx::Rect> crop_rect,
@@ -222,7 +222,7 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmap(
   if (crop_rect && (crop_rect->width() == 0 || crop_rect->height() == 0)) {
     exception_state.ThrowRangeError(String::Format(
         "The crop rect %s is 0.", crop_rect->width() ? "height" : "width"));
-    return ScriptPromise();
+    return ScriptPromiseTyped<ImageBitmap>();
   }
 
   if (bitmap_source->IsBlob()) {
@@ -237,7 +237,7 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmap(
         String::Format(
             "The source image %s is 0.",
             bitmap_source->BitmapSourceSize().width() ? "height" : "width"));
-    return ScriptPromise();
+    return ScriptPromiseTyped<ImageBitmap>();
   }
 
   return bitmap_source->CreateImageBitmap(script_state, crop_rect, options,
@@ -283,7 +283,8 @@ ImageBitmapFactories::ImageBitmapLoader::ImageBitmapLoader(
           this,
           GetExecutionContext()->GetTaskRunner(TaskType::kFileReading))),
       factory_(&factory),
-      resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
+      resolver_(MakeGarbageCollected<ScriptPromiseResolverTyped<ImageBitmap>>(
+          script_state)),
       crop_rect_(crop_rect),
       options_(options) {}
 

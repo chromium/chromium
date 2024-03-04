@@ -17,6 +17,7 @@ class LocalDOMWindow;
 class NavigatorBase;
 class RequestInit;
 class DeferredRequestInit;
+class Response;
 class ScriptState;
 class WorkerGlobalScope;
 class FetchLaterResult;
@@ -29,10 +30,10 @@ class CORE_EXPORT GlobalFetch {
    public:
     virtual ~ScopedFetcher();
 
-    virtual ScriptPromise Fetch(ScriptState*,
-                                const V8RequestInfo*,
-                                const RequestInit*,
-                                ExceptionState&) = 0;
+    virtual ScriptPromiseTyped<Response> Fetch(ScriptState*,
+                                               const V8RequestInfo*,
+                                               const RequestInit*,
+                                               ExceptionState&) = 0;
 
     virtual FetchLaterResult* FetchLater(ScriptState*,
                                          const V8RequestInfo*,
@@ -50,16 +51,16 @@ class CORE_EXPORT GlobalFetch {
     void Trace(Visitor*) const override;
   };
 
-  static ScriptPromise fetch(ScriptState* script_state,
-                             LocalDOMWindow& window,
-                             const V8RequestInfo* input,
-                             const RequestInit* init,
-                             ExceptionState& exception_state);
-  static ScriptPromise fetch(ScriptState* script_state,
-                             WorkerGlobalScope& worker,
-                             const V8RequestInfo* input,
-                             const RequestInit* init,
-                             ExceptionState& exception_state);
+  static ScriptPromiseTyped<Response> fetch(ScriptState* script_state,
+                                            LocalDOMWindow& window,
+                                            const V8RequestInfo* input,
+                                            const RequestInit* init,
+                                            ExceptionState& exception_state);
+  static ScriptPromiseTyped<Response> fetch(ScriptState* script_state,
+                                            WorkerGlobalScope& worker,
+                                            const V8RequestInfo* input,
+                                            const RequestInit* init,
+                                            ExceptionState& exception_state);
 
   static FetchLaterResult* fetchLater(ScriptState* script_state,
                                       LocalDOMWindow& window,
