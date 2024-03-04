@@ -41,19 +41,14 @@ public class IdentityErrorCardPreference extends Preference
     }
 
     /**
-     * Initialize the dependencies for the IdentityErrorCardPreference.
-     *
-     * <p>Must be called before the preference is attached, which is called from the containing
-     * settings screen's onViewCreated method.
+     * Initialize the dependencies for the IdentityErrorCardPreference and update the error card.
      */
     public void initialize(SyncService syncService, Listener listener) {
+        assert getParent() != null : "Not attached to any parent.";
+
         mSyncService = syncService;
         mListener = listener;
-    }
 
-    @Override
-    public void onAttached() {
-        super.onAttached();
         if (mSyncService != null) {
             mSyncService.addSyncStateChangedListener(this);
         }
