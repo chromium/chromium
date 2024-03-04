@@ -7,11 +7,14 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
 namespace {
@@ -115,6 +118,72 @@ TEST_F(BirchItemTest, Tab_PerformAction_EmptyUrl) {
                     /*favicon_url=*/GURL(), /*session_name=*/"");
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// The icon downloader requires ash::Shell, so use AshTestBase.
+class BirchItemIconTest : public AshTestBase {
+ public:
+  TestImageDownloader image_downloader_;
+};
+
+TEST_F(BirchItemIconTest, Calendar_LoadIcon) {
+  BirchCalendarItem item(u"item");
+
+  // TODO(jamescook): Update this when BirchCalendarItem provides icons.
+  item.LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon) { EXPECT_TRUE(icon.IsEmpty()); }));
+}
+
+TEST_F(BirchItemIconTest, Attachment_LoadIcon) {
+  BirchAttachmentItem item(u"item");
+  item.icon_url = GURL("http://icon.com/");
+
+  item.LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
+}
+
+TEST_F(BirchItemIconTest, Attachment_LoadIcon_InvalidUrl) {
+  BirchAttachmentItem item(u"item");
+  item.icon_url = GURL("invalid-url");
+
+  item.LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon) { EXPECT_TRUE(icon.IsEmpty()); }));
+}
+
+TEST_F(BirchItemIconTest, Tab_LoadIcon) {
+  BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
+                    /*timestamp=*/base::Time(),
+                    /*favicon_url=*/GURL("http://icon.com/"),
+                    /*session_name=*/"");
+  item.LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
+}
+
+TEST_F(BirchItemIconTest, Tab_LoadIcon_InvalidUrl) {
+  BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
+                    /*timestamp=*/base::Time(),
+                    /*favicon_url=*/GURL("invalid-url"),
+                    /*session_name=*/"");
+  item.LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon) { EXPECT_TRUE(icon.IsEmpty()); }));
+}
+
+TEST_F(BirchItemIconTest, Weather_LoadIcon) {
+  gfx::ImageSkia image = gfx::test::CreateImageSkia(10);
+  BirchWeatherItem item(u"Sunny", u"72 deg",
+                        ui::ImageModel::FromImageSkia(image));
+
+  item.LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
+}
+
+TEST_F(BirchItemIconTest, Weather_LoadIcon_NoIcon) {
+  BirchWeatherItem item(u"Sunny", u"72 deg", ui::ImageModel());
+
+  item.LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon) { EXPECT_TRUE(icon.IsEmpty()); }));
 }
 
 }  // namespace

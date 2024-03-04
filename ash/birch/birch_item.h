@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
@@ -17,7 +18,7 @@ namespace ash {
 
 // The base item which is stored by the birch model.
 struct ASH_EXPORT BirchItem {
-  BirchItem(const std::u16string& title, const ui::ImageModel icon);
+  explicit BirchItem(const std::u16string& title);
   BirchItem(BirchItem&&);
   BirchItem& operator=(BirchItem&&);
   BirchItem(const BirchItem&);
@@ -26,7 +27,6 @@ struct ASH_EXPORT BirchItem {
   bool operator==(const BirchItem& rhs) const;
 
   std::u16string title;
-  ui::ImageModel icon;
   float ranking;  // Lower is better.
 
   virtual const char* GetItemType() const = 0;
@@ -36,6 +36,11 @@ struct ASH_EXPORT BirchItem {
 
   // Perform the action associated with this item (e.g. open a document).
   virtual void PerformAction() = 0;
+
+  // Loads the icon for this image. This may invoke the callback immediately
+  // (e.g. with a local icon) or there may be a delay for a network fetch.
+  using LoadIconCallback = base::OnceCallback<void(const ui::ImageModel&)>;
+  virtual void LoadIcon(LoadIconCallback callback) = 0;
 };
 
 // A birch item which contains calendar event information.
@@ -52,8 +57,8 @@ struct ASH_EXPORT BirchCalendarItem : public BirchItem {
   const char* GetItemType() const override;
   std::string ToString() const override;
   void PerformAction() override;
+  void LoadIcon(LoadIconCallback callback) override;
 
-  GURL icon_url;
   base::Time start_time;
   base::Time end_time;
   // Link to the event in the Google Calendar UI.
@@ -79,6 +84,7 @@ struct ASH_EXPORT BirchAttachmentItem : public BirchItem {
   const char* GetItemType() const override;
   std::string ToString() const override;
   void PerformAction() override;
+  void LoadIcon(LoadIconCallback callback) override;
 
   GURL file_url;          // Link to the file.
   GURL icon_url;          // Link to the file's icon's art asset.
@@ -104,6 +110,7 @@ struct ASH_EXPORT BirchFileItem : public BirchItem {
   const char* GetItemType() const override;
   std::string ToString() const override;
   void PerformAction() override;
+  void LoadIcon(LoadIconCallback callback) override;
 };
 
 // A birch item which contains tab and session information.
@@ -130,6 +137,7 @@ struct ASH_EXPORT BirchTabItem : public BirchItem {
   const char* GetItemType() const override;
   std::string ToString() const override;
   void PerformAction() override;
+  void LoadIcon(LoadIconCallback callback) override;
 };
 
 struct ASH_EXPORT BirchWeatherItem : public BirchItem {
@@ -143,6 +151,7 @@ struct ASH_EXPORT BirchWeatherItem : public BirchItem {
   ~BirchWeatherItem() override;
 
   std::u16string temperature;
+  ui::ImageModel icon;
 
   static constexpr char kItemType[] = "WeatherItem";
 
@@ -150,6 +159,7 @@ struct ASH_EXPORT BirchWeatherItem : public BirchItem {
   const char* GetItemType() const override;
   std::string ToString() const override;
   void PerformAction() override;
+  void LoadIcon(LoadIconCallback callback) override;
 };
 
 }  // namespace ash

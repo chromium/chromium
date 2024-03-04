@@ -8,17 +8,51 @@
 #include <sstream>
 #include <string>
 
+#include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "ui/base/models/image_model.h"
 
 namespace ash {
+namespace {
 
-BirchItem::BirchItem(const std::u16string& title, ui::ImageModel icon)
-    : title(title),
-      icon(std::move(icon)),
-      ranking(std::numeric_limits<float>::max()) {}
+// Handles when an `image` is downloaded, by converting it to a ui::ImageModel
+// and running `callback`.
+void OnImageDownloaded(base::OnceCallback<void(const ui::ImageModel&)> callback,
+                       const gfx::ImageSkia& image) {
+  std::move(callback).Run(ui::ImageModel::FromImageSkia(image));
+}
+
+// Downloads an image from `url` and invokes `callback` with the image. If the
+// `url` is invalid, invokes `callback` with an empty image.
+void DownloadImageFromUrl(
+    const GURL& url,
+    base::OnceCallback<void(const ui::ImageModel&)> callback) {
+  if (!url.is_valid()) {
+    std::move(callback).Run(ui::ImageModel());
+    return;
+  }
+
+  const UserSession* active_user_session =
+      Shell::Get()->session_controller()->GetUserSession(0);
+  CHECK(active_user_session);
+
+  // TODO(b/328088919): Update MISSING_TRAFFIC_ANNOTATION with real annotation.
+  ImageDownloader::Get()->Download(
+      url, MISSING_TRAFFIC_ANNOTATION,
+      active_user_session->user_info.account_id,
+      base::BindOnce(&OnImageDownloaded, std::move(callback)));
+}
+
+}  // namespace
+
+BirchItem::BirchItem(const std::u16string& title)
+    : title(title), ranking(std::numeric_limits<float>::max()) {}
 
 BirchItem::BirchItem(BirchItem&&) = default;
 
@@ -35,7 +69,7 @@ bool BirchItem::operator==(const BirchItem& rhs) const = default;
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchCalendarItem::BirchCalendarItem(const std::u16string& title)
-    : BirchItem(title, ui::ImageModel()) {}
+    : BirchItem(title) {}
 
 BirchCalendarItem::BirchCalendarItem(BirchCalendarItem&&) = default;
 
@@ -54,7 +88,7 @@ std::string BirchCalendarItem::ToString() const {
   std::stringstream ss;
   using base::UTF16ToUTF8;
   ss << "Calendar item: {ranking: " << ranking
-     << ", title: " << UTF16ToUTF8(title) << ", icon_url: " << icon_url.spec()
+     << ", title: " << UTF16ToUTF8(title)
      << ", start: " << UTF16ToUTF8(base::TimeFormatShortDateAndTime(start_time))
      << ", end: " << UTF16ToUTF8(base::TimeFormatShortDateAndTime(end_time))
      << ", conference_url: " << conference_url.spec() << "}";
@@ -78,10 +112,16 @@ void BirchCalendarItem::PerformAction() {
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
+void BirchCalendarItem::LoadIcon(LoadIconCallback callback) {
+  // TODO(jamescook): Supply a static icon. The Google Calendar API does not
+  // provide an icon for calendar events.
+  std::move(callback).Run(ui::ImageModel());
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchAttachmentItem::BirchAttachmentItem(const std::u16string& title)
-    : BirchItem(title, ui::ImageModel()) {}
+    : BirchItem(title) {}
 
 BirchAttachmentItem::BirchAttachmentItem(BirchAttachmentItem&&) = default;
 
@@ -120,12 +160,15 @@ void BirchAttachmentItem::PerformAction() {
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
+void BirchAttachmentItem::LoadIcon(LoadIconCallback callback) {
+  DownloadImageFromUrl(icon_url, std::move(callback));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchFileItem::BirchFileItem(const base::FilePath& file_path,
                              base::Time timestamp)
-    : BirchItem(base::UTF8ToUTF16(file_path.BaseName().value()),
-                ui::ImageModel()),
+    : BirchItem(base::UTF8ToUTF16(file_path.BaseName().value())),
       file_path(file_path),
       timestamp(timestamp) {}
 
@@ -156,13 +199,19 @@ void BirchFileItem::PerformAction() {
   NewWindowDelegate::GetInstance()->OpenFile(file_path);
 }
 
+void BirchFileItem::LoadIcon(LoadIconCallback callback) {
+  // TODO(jamescook): Figure out how to show the file icon based on its type.
+  std::move(callback).Run(ui::ImageModel());
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchWeatherItem::BirchWeatherItem(const std::u16string& weather_description,
                                    const std::u16string& temperature,
                                    ui::ImageModel icon)
-    : BirchItem(weather_description, std::move(icon)),
-      temperature(temperature) {}
+    : BirchItem(weather_description),
+      temperature(temperature),
+      icon(std::move(icon)) {}
 
 BirchWeatherItem::BirchWeatherItem(BirchWeatherItem&&) = default;
 
@@ -195,6 +244,10 @@ void BirchWeatherItem::PerformAction() {
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
+void BirchWeatherItem::LoadIcon(LoadIconCallback callback) {
+  std::move(callback).Run(icon);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchTabItem::BirchTabItem(const std::u16string& title,
@@ -202,7 +255,7 @@ BirchTabItem::BirchTabItem(const std::u16string& title,
                            const base::Time& timestamp,
                            const GURL& favicon_url,
                            const std::string& session_name)
-    : BirchItem(title, ui::ImageModel()),
+    : BirchItem(title),
       url(url),
       timestamp(timestamp),
       favicon_url(favicon_url),
@@ -239,6 +292,10 @@ void BirchTabItem::PerformAction() {
   NewWindowDelegate::GetInstance()->OpenUrl(
       url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
+void BirchTabItem::LoadIcon(LoadIconCallback callback) {
+  DownloadImageFromUrl(favicon_url, std::move(callback));
 }
 
 }  // namespace ash
