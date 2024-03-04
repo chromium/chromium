@@ -37,7 +37,8 @@ class PermissionDialogModelFactory {
                                 ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
                                 UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS);
         if (delegate.canShowEphemeralOption()) {
-            builder.with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+            builder.with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true)
+                    .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                     .with(
                             ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST,
                             new ModalDialogProperties.ModalDialogButtonSpec[] {

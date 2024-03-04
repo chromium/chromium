@@ -29,7 +29,9 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.widget.ButtonCompat;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /** Generic dialog view for app modal or tab modal alert dialogs. */
@@ -40,7 +42,9 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
 
     private static long sCurrentTimeMsForTesting;
 
-    private FadingEdgeScrollView mScrollView;
+    private FadingEdgeScrollView mTitleScrollView;
+
+    private FadingEdgeScrollView mModalDialogScrollView;
     private ViewGroup mTitleContainer;
     private TextView mTitleView;
     private ImageView mTitleIcon;
@@ -54,6 +58,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private Button mNegativeButton;
     private Callback<Integer> mOnButtonClickedCallback;
     private boolean mTitleScrollable;
+    private boolean mShouldWrapCustomViewScrollable;
     private boolean mFilterTouchForSecurity;
     private Runnable mOnTouchFilteredCallback;
     private final Set<View> mTouchFilterableViews = new HashSet<>();
@@ -74,13 +79,14 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mScrollView = findViewById(R.id.modal_dialog_scroll_view);
+        mTitleScrollView = findViewById(R.id.modal_dialog_title_scroll_view);
+        mModalDialogScrollView = findViewById(R.id.modal_dialog_scroll_view);
         mTitleContainer = findViewById(R.id.title_container);
         mTitleView = mTitleContainer.findViewById(R.id.title);
         mTitleIcon = mTitleContainer.findViewById(R.id.title_icon);
         mMessageParagraph1 = findViewById(R.id.message_paragraph_1);
         mMessageParagraph2 = findViewById(R.id.message_paragraph_2);
-        mCustomViewContainer = findViewById(R.id.custom);
+        mCustomViewContainer = findViewById(R.id.custom_view_not_in_scrollable);
         mCustomButtonBarViewContainer = findViewById(R.id.custom_button_bar);
         mButtonBar = findViewById(R.id.button_bar);
         mPositiveButton = findViewById(R.id.positive_button);
@@ -101,7 +107,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         // If the scroll view can not be scrolled, make the scroll view not focusable so that the
         // focusing behavior for hardware keyboard is less confusing.
         // See https://codereview.chromium.org/2939883002.
-        mScrollView.addOnLayoutChangeListener(
+        mTitleScrollView.addOnLayoutChangeListener(
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     boolean isScrollable = v.canScrollVertically(-1) || v.canScrollVertically(1);
                     v.setFocusable(isScrollable);
@@ -116,8 +122,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private @ButtonType int getButtonTypeForTag(Object tag) {
         assert tag instanceof String;
         String tagString = (String) tag;
-        Integer buttonType =
-                Integer.parseInt(tagString.substring(TAG_PREFIX.length(), tagString.length()));
+        Integer buttonType = Integer.parseInt(tagString.substring(TAG_PREFIX.length()));
         assert buttonType != null;
         return buttonType;
     }
@@ -219,15 +224,39 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         if (titleScrollable) {
             layoutParams.height = LayoutParams.WRAP_CONTENT;
             layoutParams.weight = 0;
-            mScrollView.setEdgeVisibility(
+            mTitleScrollView.setEdgeVisibility(
                     FadingEdgeScrollView.EdgeType.FADING, FadingEdgeScrollView.EdgeType.FADING);
         } else {
             layoutParams.height = 0;
             layoutParams.weight = 1;
-            mScrollView.setEdgeVisibility(
+            mTitleScrollView.setEdgeVisibility(
                     FadingEdgeScrollView.EdgeType.NONE, FadingEdgeScrollView.EdgeType.NONE);
         }
         mCustomViewContainer.setLayoutParams(layoutParams);
+    }
+
+    void setWrapCustomViewInScrollable(boolean shouldWrapCustomViewInScrollable) {
+        if (mShouldWrapCustomViewScrollable == shouldWrapCustomViewInScrollable) return;
+        mShouldWrapCustomViewScrollable = shouldWrapCustomViewInScrollable;
+
+        List<View> storedChildViews = new ArrayList<>();
+        int wasVisible = mCustomViewContainer.getVisibility();
+        for (int i = 0; i < mCustomViewContainer.getChildCount(); i++) {
+            storedChildViews.add(mCustomViewContainer.getChildAt(0));
+        }
+
+        mCustomViewContainer.setVisibility(View.GONE);
+        mCustomViewContainer =
+                findViewById(
+                        mShouldWrapCustomViewScrollable
+                                ? R.id.custom_view_in_scrollable
+                                : R.id.custom_view_not_in_scrollable);
+        mCustomViewContainer.removeAllViews();
+        for (View view : storedChildViews) {
+            UiUtils.removeViewFromParent(view);
+            mCustomViewContainer.addView(view);
+        }
+        mCustomViewContainer.setVisibility(wasVisible);
     }
 
     /**
@@ -266,10 +295,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         view.setFilterTouchesWhenObscured(true);
         view.setOnTouchListener(
                 (View v, MotionEvent ev) -> {
-                    boolean shouldBlockTouchEvent = false;
-                    if ((ev.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0) {
-                        shouldBlockTouchEvent = true;
-                    }
+                    boolean shouldBlockTouchEvent =
+                            (ev.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0;
                     if (shouldBlockTouchEvent
                             && mOnTouchFilteredCallback != null
                             && ev.getAction() == MotionEvent.ACTION_DOWN) {
@@ -315,6 +342,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
             setFilterTouchForSecurityIfNecessary(button);
             mButtonGroup.addView(button);
         }
+        updateContentVisibility();
     }
 
     /** @param message The message in the dialog content. */
@@ -436,13 +464,17 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
                         || messageParagraph1Visibile
                         || messageParagraph2Visible;
         boolean footerMessageVisible = !TextUtils.isEmpty(mFooterMessageView.getText());
+        boolean modalDialogScrollViewVisible =
+                mShouldWrapCustomViewScrollable || mButtonGroup.getVisibility() == View.VISIBLE;
 
         mTitleView.setVisibility(titleVisible ? View.VISIBLE : View.GONE);
         mTitleIcon.setVisibility(titleIconVisible ? View.VISIBLE : View.GONE);
         mTitleContainer.setVisibility(titleContainerVisible ? View.VISIBLE : View.GONE);
         mMessageParagraph1.setVisibility(messageParagraph1Visibile ? View.VISIBLE : View.GONE);
-        mScrollView.setVisibility(scrollViewVisible ? View.VISIBLE : View.GONE);
+        mTitleScrollView.setVisibility(scrollViewVisible ? View.VISIBLE : View.GONE);
         mMessageParagraph2.setVisibility(messageParagraph2Visible ? View.VISIBLE : View.GONE);
+        mModalDialogScrollView.setVisibility(
+                modalDialogScrollViewVisible ? View.VISIBLE : View.GONE);
         mFooterContainer.setVisibility(footerMessageVisible ? View.VISIBLE : View.GONE);
     }
 
