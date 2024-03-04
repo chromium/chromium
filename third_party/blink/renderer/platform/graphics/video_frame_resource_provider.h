@@ -25,6 +25,10 @@ class CompositorRenderPass;
 class RasterContextProvider;
 }
 
+namespace gpu {
+class ClientSharedImageInterface;
+}
+
 namespace blink {
 
 // VideoFrameResourceProvider obtains required GPU resources for the video
@@ -41,8 +45,10 @@ class PLATFORM_EXPORT VideoFrameResourceProvider {
 
   virtual ~VideoFrameResourceProvider();
 
-  virtual void Initialize(viz::RasterContextProvider* media_context_provider,
-                          viz::SharedBitmapReporter* shared_bitmap_reporter);
+  virtual void Initialize(
+      viz::RasterContextProvider* media_context_provider,
+      viz::SharedBitmapReporter* shared_bitmap_reporter,
+      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface);
   virtual void AppendQuads(viz::CompositorRenderPass*,
                            scoped_refptr<media::VideoFrame>,
                            media::VideoTransformation,

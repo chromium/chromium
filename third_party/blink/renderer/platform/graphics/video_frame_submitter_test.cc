@@ -26,6 +26,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/test/fake_external_begin_frame_source.h"
 #include "components/viz/test/test_context_provider.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -135,10 +136,11 @@ class MockVideoFrameResourceProvider
  public:
   MockVideoFrameResourceProvider(
       viz::RasterContextProvider* context_provider,
-      viz::SharedBitmapReporter* shared_bitmap_reporter)
+      viz::SharedBitmapReporter* shared_bitmap_reporter,
+      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface)
       : blink::VideoFrameResourceProvider(cc::LayerTreeSettings(), false) {
-    blink::VideoFrameResourceProvider::Initialize(context_provider,
-                                                  shared_bitmap_reporter);
+    blink::VideoFrameResourceProvider::Initialize(
+        context_provider, shared_bitmap_reporter, shared_image_interface);
   }
   MockVideoFrameResourceProvider(const MockVideoFrameResourceProvider&) =
       delete;
@@ -146,8 +148,11 @@ class MockVideoFrameResourceProvider
       const MockVideoFrameResourceProvider&) = delete;
   ~MockVideoFrameResourceProvider() override = default;
 
-  MOCK_METHOD2(Initialize,
-               void(viz::RasterContextProvider*, viz::SharedBitmapReporter*));
+  MOCK_METHOD3(Initialize,
+               void(viz::RasterContextProvider*,
+                    viz::SharedBitmapReporter*,
+                    scoped_refptr<gpu::ClientSharedImageInterface>
+                        shared_image_interface));
   MOCK_METHOD4(AppendQuads,
                void(viz::CompositorRenderPass*,
                     scoped_refptr<media::VideoFrame>,
@@ -190,7 +195,7 @@ class VideoFrameSubmitterTest : public testing::Test,
   void MakeSubmitter(
       cc::VideoPlaybackRoughnessReporter::ReportingCallback reporting_cb) {
     resource_provider_ = new StrictMock<MockVideoFrameResourceProvider>(
-        context_provider_.get(), nullptr);
+        context_provider_.get(), nullptr, nullptr);
     submitter_ = std::make_unique<VideoFrameSubmitter>(
         base::DoNothing(), reporting_cb,
         base::WrapUnique<MockVideoFrameResourceProvider>(
@@ -237,9 +242,11 @@ class VideoFrameSubmitterTest : public testing::Test,
 
   void OnReceivedContextProvider(
       bool use_gpu_compositing,
-      scoped_refptr<viz::RasterContextProvider> context_provider) {
+      scoped_refptr<viz::RasterContextProvider> context_provider,
+      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface) {
     submitter_->OnReceivedContextProvider(use_gpu_compositing,
-                                          std::move(context_provider));
+                                          std::move(context_provider),
+                                          std::move(shared_image_interface));
   }
 
   void AckSubmittedFrame() {
@@ -729,14 +736,14 @@ TEST_P(VideoFrameSubmitterTest, RecreateCompositorFrameSinkAfterContextLost) {
       mock_embedded_frame_sink_provider.CreateScopedOverrideMojoInterface(
           embedded_frame_sink_provider_receivers);
 
-  EXPECT_CALL(*resource_provider_, Initialize(_, _));
+  EXPECT_CALL(*resource_provider_, Initialize(_, _, _));
   EXPECT_CALL(mock_embedded_frame_sink_provider, ConnectToEmbedder(_, _))
       .Times(0);
   EXPECT_CALL(mock_embedded_frame_sink_provider, CreateCompositorFrameSink_(_))
       .Times(1);
   EXPECT_CALL(*video_frame_provider_, OnContextLost()).Times(1);
   submitter_->OnContextLost();
-  OnReceivedContextProvider(true, context_provider_);
+  OnReceivedContextProvider(true, context_provider_, nullptr);
   task_environment_.RunUntilIdle();
 }
 
@@ -751,14 +758,14 @@ TEST_P(VideoFrameSubmitterTest,
       mock_embedded_frame_sink_provider.CreateScopedOverrideMojoInterface(
           embedded_frame_sink_provider_receivers);
 
-  EXPECT_CALL(*resource_provider_, Initialize(_, _));
+  EXPECT_CALL(*resource_provider_, Initialize(_, _, _));
   EXPECT_CALL(mock_embedded_frame_sink_provider, ConnectToEmbedder(_, _))
       .Times(0);
   EXPECT_CALL(mock_embedded_frame_sink_provider, CreateCompositorFrameSink_(_))
       .Times(1);
   EXPECT_CALL(*video_frame_provider_, OnContextLost()).Times(1);
   submitter_->OnContextLost();
-  OnReceivedContextProvider(false, nullptr);
+  OnReceivedContextProvider(false, nullptr, nullptr);
   task_environment_.RunUntilIdle();
 }
 

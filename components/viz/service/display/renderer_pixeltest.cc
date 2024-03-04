@@ -53,6 +53,7 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/renderers/video_resource_updater.h"
@@ -1954,11 +1955,13 @@ class IntersectingMultiplanarVideoQuadPixelTest : public VizPixelTestWithParam {
 
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
         this->child_context_provider_.get(), nullptr,
-        this->child_resource_provider_.get(), kUseStreamVideoDrawQuad,
+        this->child_resource_provider_.get(),
+        /*shared_image_interface=*/nullptr, kUseStreamVideoDrawQuad,
         kUseGpuMemoryBufferResources, kMaxResourceSize);
     video_resource_updater2_ = std::make_unique<media::VideoResourceUpdater>(
         this->child_context_provider_.get(), nullptr,
-        this->child_resource_provider_.get(), kUseStreamVideoDrawQuad,
+        this->child_resource_provider_.get(),
+        /*shared_image_interface=*/nullptr, kUseStreamVideoDrawQuad,
         kUseGpuMemoryBufferResources, kMaxResourceSize);
   }
 
@@ -2430,8 +2433,8 @@ class VideoRendererPixelTestBase : public VizPixelTest {
     constexpr int kMaxResourceSize = 10000;
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
         child_context_provider_.get(), nullptr, child_resource_provider_.get(),
-        kUseStreamVideoDrawQuad, kUseGpuMemoryBufferResources,
-        kMaxResourceSize);
+        /*shared_image_interface=*/nullptr, kUseStreamVideoDrawQuad,
+        kUseGpuMemoryBufferResources, kMaxResourceSize);
   }
 
   void TearDown() override {

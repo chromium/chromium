@@ -14,6 +14,7 @@ include_rules = [
   "+gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h",
   "+gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h",
   "+gpu/ipc/common/surface_handle.h",
+  "+gpu/ipc/client/client_shared_image_interface.h",
   "+services/video_capture/public",
   "+services/viz/privileged/mojom/compositing",
 ]

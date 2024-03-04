@@ -23,6 +23,7 @@
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -484,10 +485,12 @@ void VideoFrameSubmitter::DidDeleteSharedBitmap(const viz::SharedBitmapId& id) {
 
 void VideoFrameSubmitter::OnReceivedContextProvider(
     bool use_gpu_compositing,
-    scoped_refptr<viz::RasterContextProvider> context_provider) {
+    scoped_refptr<viz::RasterContextProvider> context_provider,
+    scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!use_gpu_compositing) {
-    resource_provider_->Initialize(nullptr, this);
+    shared_image_interface_ = std::move(shared_image_interface);
+    resource_provider_->Initialize(nullptr, this, shared_image_interface_);
     if (frame_sink_id_.is_valid())
       StartSubmitting();
     return;
@@ -507,7 +510,8 @@ void VideoFrameSubmitter::OnReceivedContextProvider(
   }
 
   context_provider_->AddObserver(this);
-  resource_provider_->Initialize(context_provider_.get(), nullptr);
+  resource_provider_->Initialize(context_provider_.get(), nullptr,
+                                 /*shared_image_interface*/ nullptr);
 
   if (frame_sink_id_.is_valid())
     StartSubmitting();

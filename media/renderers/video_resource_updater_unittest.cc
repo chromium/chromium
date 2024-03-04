@@ -20,6 +20,7 @@
 #include "components/viz/test/test_gles2_interface.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "skia/ext/skcolorspace_primaries.h"
@@ -175,14 +176,16 @@ class VideoResourceUpdaterTest : public testing::Test {
       bool use_stream_video_draw_quad = false) {
     return std::make_unique<VideoResourceUpdater>(
         context_provider_.get(), nullptr, resource_provider_.get(),
-        use_stream_video_draw_quad, /*use_gpu_memory_buffer_resources=*/false,
+        /*shared_image_interface=*/nullptr, use_stream_video_draw_quad,
+        /*use_gpu_memory_buffer_resources=*/false,
         /*max_resource_size=*/10000);
   }
 
   std::unique_ptr<VideoResourceUpdater> CreateUpdaterForSoftware() {
     return std::make_unique<VideoResourceUpdater>(
         /*context_provider=*/nullptr, &shared_bitmap_reporter_,
-        resource_provider_.get(), /*use_stream_video_draw_quad=*/false,
+        resource_provider_.get(), /*shared_image_interface=*/nullptr,
+        /*use_stream_video_draw_quad=*/false,
         /*use_gpu_memory_buffer_resources=*/false, /*max_resource_size=*/10000);
   }
 

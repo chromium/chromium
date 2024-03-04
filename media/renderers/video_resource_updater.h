@@ -30,6 +30,7 @@
 namespace gfx {
 class Rect;
 class Transform;
+class MaskFilterInfo;
 }  // namespace gfx
 
 namespace viz {
@@ -39,9 +40,9 @@ class CompositorRenderPass;
 class SharedBitmapReporter;
 }  // namespace viz
 
-namespace gfx {
-class MaskFilterInfo;
-}
+namespace gpu {
+class ClientSharedImageInterface;
+}  // namespace gpu
 
 namespace media {
 class PaintCanvasVideoRenderer;
@@ -88,12 +89,14 @@ class MEDIA_EXPORT VideoResourceUpdater
   // For GPU compositing |context_provider| should be provided and for software
   // compositing |shared_bitmap_reporter| should be provided. If there is a
   // non-null |context_provider| we assume GPU compositing.
-  VideoResourceUpdater(viz::RasterContextProvider* context_provider,
-                       viz::SharedBitmapReporter* shared_bitmap_reporter,
-                       viz::ClientResourceProvider* resource_provider,
-                       bool use_stream_video_draw_quad,
-                       bool use_gpu_memory_buffer_resources,
-                       int max_resource_size);
+  VideoResourceUpdater(
+      viz::RasterContextProvider* context_provider,
+      viz::SharedBitmapReporter* shared_bitmap_reporter,
+      viz::ClientResourceProvider* resource_provider,
+      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface,
+      bool use_stream_video_draw_quad,
+      bool use_gpu_memory_buffer_resources,
+      int max_resource_size);
 
   VideoResourceUpdater(const VideoResourceUpdater&) = delete;
   VideoResourceUpdater& operator=(const VideoResourceUpdater&) = delete;
@@ -130,6 +133,7 @@ class MEDIA_EXPORT VideoResourceUpdater
       scoped_refptr<VideoFrame> video_frame);
 
   viz::SharedImageFormat YuvSharedImageFormat(int bits_per_channel);
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface() const;
 
  private:
   class PlaneResource;
@@ -251,6 +255,7 @@ class MEDIA_EXPORT VideoResourceUpdater
 
   const raw_ptr<viz::RasterContextProvider> context_provider_;
   const raw_ptr<viz::SharedBitmapReporter> shared_bitmap_reporter_;
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
   const raw_ptr<viz::ClientResourceProvider, DanglingUntriaged>
       resource_provider_;
   const bool use_stream_video_draw_quad_;

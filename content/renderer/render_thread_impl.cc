@@ -110,6 +110,7 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/ipc_channel_handle.h"
@@ -1066,8 +1067,9 @@ RenderThreadImpl::GetVideoFrameCompositorContextProvider(
 
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_host =
       EstablishGpuChannelSync();
-  if (!gpu_channel_host)
+  if (!gpu_channel_host) {
     return nullptr;
+  }
 
   // This context is only used to create textures and mailbox them, so
   // use lower limits than the default.
@@ -1095,6 +1097,27 @@ RenderThreadImpl::GetVideoFrameCompositorContextProvider(
       viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR,
       kGpuStreamIdMedia, kGpuStreamPriorityMedia);
   return video_frame_compositor_context_provider_;
+}
+
+scoped_refptr<gpu::ClientSharedImageInterface>
+RenderThreadImpl::GetVideoFrameCompositorSharedImageInterface() {
+  if (shared_image_interface_ &&
+      !shared_image_interface_->gpu_channel()->IsLost()) {
+    return shared_image_interface_;
+  }
+
+  shared_image_interface_.reset();
+
+  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host =
+      EstablishGpuChannelSync();
+  if (!gpu_channel_host) {
+    return nullptr;
+  }
+
+  shared_image_interface_ =
+      gpu_channel_host->CreateClientSharedImageInterface();
+
+  return shared_image_interface_;
 }
 
 scoped_refptr<viz::ContextProviderCommandBuffer>

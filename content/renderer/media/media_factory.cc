@@ -35,6 +35,7 @@
 #include "content/renderer/media/renderer_web_media_player_delegate.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/demuxer.h"
@@ -193,16 +194,35 @@ void PostContextProviderToCallback(
   main_task_runner->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(
-          [](scoped_refptr<viz::RasterContextProvider>
+          [](scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+             scoped_refptr<viz::RasterContextProvider>
                  unwanted_context_provider,
              blink::WebSubmitterConfigurationCallback cb) {
             auto* rti = content::RenderThreadImpl::current();
             auto context_provider = rti->GetVideoFrameCompositorContextProvider(
                 std::move(unwanted_context_provider));
-            std::move(cb).Run(!rti->IsGpuCompositingDisabled(),
-                              std::move(context_provider));
+            bool is_gpu_composition_disabled = rti->IsGpuCompositingDisabled();
+            scoped_refptr<gpu::ClientSharedImageInterface>
+                shared_image_interface;
+            if (is_gpu_composition_disabled) {
+              shared_image_interface =
+                  rti->GetVideoFrameCompositorSharedImageInterface();
+              if (!shared_image_interface) {
+                // Delay for 150 ms and retry.
+                base::OnceClosure task =
+                    base::BindOnce(&PostContextProviderToCallback,
+                                   main_task_runner, nullptr, std::move(cb));
+                main_task_runner->PostDelayedTask(FROM_HERE, std::move(task),
+                                                  base::Milliseconds(150));
+                return;
+              }
+            }
+
+            std::move(cb).Run(!is_gpu_composition_disabled,
+                              std::move(context_provider),
+                              std::move(shared_image_interface));
           },
-          unwanted_context_provider,
+          main_task_runner, unwanted_context_provider,
           base::BindPostTaskToCurrentDefault(
               std::move(set_context_provider_callback))),
       base::BindOnce([](scoped_refptr<viz::RasterContextProvider>
