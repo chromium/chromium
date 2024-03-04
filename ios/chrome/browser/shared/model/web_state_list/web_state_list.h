@@ -168,6 +168,28 @@ class WebStateList {
       return start_ <= index && index < start_ + count_;
     }
 
+    // Updates the range by moving it by one in a given direction.
+    constexpr void moveLeft() {
+      CHECK_GT(start_, 0);
+      --start_;
+    }
+    constexpr void moveRight() { ++start_; }
+
+    // Updates the range by expanding/contracting by one in a given direction.
+    constexpr void expandLeft() {
+      moveLeft();
+      expandRight();
+    }
+    constexpr void expandRight() { ++count_; }
+    constexpr void contractLeft() {
+      moveRight();
+      contractRight();
+    }
+    constexpr void contractRight() {
+      CHECK_GT(count_, 0);
+      --count_;
+    }
+
     constexpr bool operator==(const Range& other) const = default;
     constexpr bool operator!=(const Range& other) const = default;
 

@@ -836,8 +836,7 @@ const TabGroup* WebStateList::CreateGroupImpl(
     if (old_group) {
       auto it = groups_.find(old_group);
       DCHECK(it != groups_.end());
-      Range prior_range = it->second;
-      it->second = Range(prior_range.start(), prior_range.count() - 1);
+      it->second.contractRight();
     }
 
     web::WebState* web_state = GetWebStateAt(to_index);
@@ -900,16 +899,14 @@ const TabGroup* WebStateList::CreateGroupImpl(
     {
       auto it = groups_.find(new_group);
       DCHECK(it != groups_.end());
-      Range range = it->second;
-      it->second = Range(range.start(), range.count() + 1);
+      it->second.expandRight();
     }
 
     // Update the old group range.
     if (old_group) {
       auto it = groups_.find(old_group);
       DCHECK(it != groups_.end());
-      Range prior_range = it->second;
-      it->second = Range(prior_range.start() + 1, prior_range.count() - 1);
+      it->second.contractLeft();
     }
 
     // Notify the changes to the observers.

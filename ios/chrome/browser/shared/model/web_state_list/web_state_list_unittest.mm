@@ -304,12 +304,14 @@ class TestWebStateListDelegate final : public WebStateListDelegate {
 
 using WebStateListRangeTest = PlatformTest;
 
+// Tests properties of the invalid range.
 TEST_F(WebStateListRangeTest, InvalidRange) {
   WebStateList::Range range = WebStateList::Range::InvalidRange();
 
   EXPECT_FALSE(range.IsValid());
 }
 
+// Tests properties of the zero range.
 TEST_F(WebStateListRangeTest, ZeroRange) {
   WebStateList::Range range(0, 0);
 
@@ -329,6 +331,7 @@ TEST_F(WebStateListRangeTest, ZeroRange) {
   EXPECT_NE(WebStateList::Range::InvalidRange(), range);
 }
 
+// Tests properties of a non-particular range.
 TEST_F(WebStateListRangeTest, SomeRange) {
   WebStateList::Range range(1, 2);
 
@@ -349,6 +352,42 @@ TEST_F(WebStateListRangeTest, SomeRange) {
   EXPECT_NE(WebStateList::Range(1, 1), range);
   EXPECT_EQ(WebStateList::Range(1, 2), range);
   EXPECT_NE(WebStateList::Range::InvalidRange(), range);
+}
+
+// Tests that moving a range moves the start but not the count.
+TEST_F(WebStateListRangeTest, Move) {
+  WebStateList::Range range(1, 2);
+
+  range.moveLeft();
+  EXPECT_EQ(WebStateList::Range(0, 2), range);
+
+  range.moveRight();
+  EXPECT_EQ(WebStateList::Range(1, 2), range);
+
+  range.moveRight();
+  EXPECT_EQ(WebStateList::Range(2, 2), range);
+}
+
+// Tests that expanding a range moves the count and potentially the start.
+TEST_F(WebStateListRangeTest, Expand) {
+  WebStateList::Range range(1, 2);
+
+  range.expandLeft();
+  EXPECT_EQ(WebStateList::Range(0, 3), range);
+
+  range.expandRight();
+  EXPECT_EQ(WebStateList::Range(0, 4), range);
+}
+
+// Tests that contracting a range moves the count and potentially the start.
+TEST_F(WebStateListRangeTest, Contract) {
+  WebStateList::Range range(1, 2);
+
+  range.contractLeft();
+  EXPECT_EQ(WebStateList::Range(2, 1), range);
+
+  range.contractRight();
+  EXPECT_EQ(WebStateList::Range(2, 0), range);
 }
 
 class WebStateListTest : public PlatformTest {
