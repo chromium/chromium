@@ -17,5 +17,6 @@ def CheckTryjobFooters(input_api, output_api):
       "\nPlease add the following fields to run Siso tryjobs.\n\n"
       "Cq-Include-Trybots: luci.chromium.try:fuchsia-binary-size-siso\n"
       "Cq-Include-Trybots: luci.chromium.try:linux_chromium_asan_siso_rel_ng\n"
+      "Cq-Include-Trybots: luci.chromium.try:linux_chromium_tsan_siso_rel_ng\n"
   )
   return [output_api.PresubmitPromptWarning(message)]
