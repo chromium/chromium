@@ -89,13 +89,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineRoot {
  private:
   PartitionRoot& allocator_root_;
   std::atomic_size_t capacity_in_bytes_;
-
-  // Number of quarantined entries.
-  std::atomic_size_t count_ = 0;
   // Total size of quarantined entries, capped by `capacity_in_bytes`.
   std::atomic_size_t size_in_bytes_ = 0;
 
   // Stats.
+  std::atomic_size_t count_ = 0;  // Number of quarantined entries
   std::atomic_size_t cumulative_count_ = 0;
   std::atomic_size_t cumulative_size_in_bytes_ = 0;
   std::atomic_size_t quarantine_miss_count_ = 0;
