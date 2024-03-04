@@ -122,7 +122,7 @@ TEST_P(WebSocketDeflateParametersInitializeTest, Initialize) {
 
   if (expected) {
     EXPECT_TRUE(actual);
-    EXPECT_TRUE(extension.Equals(parameters.AsExtension()));
+    EXPECT_TRUE(extension.Equivalent(parameters.AsExtension()));
   } else {
     EXPECT_FALSE(actual);
   }

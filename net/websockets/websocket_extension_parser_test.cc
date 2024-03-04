@@ -27,7 +27,7 @@ TEST(WebSocketExtensionParserTest, ParseSimple) {
   EXPECT_TRUE(parser.Parse("foo"));
 
   ASSERT_EQ(1U, parser.extensions().size());
-  EXPECT_TRUE(expected.Equals(parser.extensions()[0]));
+  EXPECT_TRUE(expected.Equivalent(parser.extensions()[0]));
 }
 
 TEST(WebSocketExtensionParserTest, ParseMoreThanOnce) {
@@ -36,14 +36,14 @@ TEST(WebSocketExtensionParserTest, ParseMoreThanOnce) {
 
   EXPECT_TRUE(parser.Parse("foo"));
   ASSERT_EQ(1U, parser.extensions().size());
-  EXPECT_TRUE(expected.Equals(parser.extensions()[0]));
+  EXPECT_TRUE(expected.Equivalent(parser.extensions()[0]));
 
   EXPECT_FALSE(parser.Parse(""));
   EXPECT_EQ(0U, parser.extensions().size());
 
   EXPECT_TRUE(parser.Parse("foo"));
   ASSERT_EQ(1U, parser.extensions().size());
-  EXPECT_TRUE(expected.Equals(parser.extensions()[0]));
+  EXPECT_TRUE(expected.Equivalent(parser.extensions()[0]));
 }
 
 TEST(WebSocketExtensionParserTest, ParseOneExtensionWithOneParamWithoutValue) {
@@ -54,7 +54,7 @@ TEST(WebSocketExtensionParserTest, ParseOneExtensionWithOneParamWithoutValue) {
   EXPECT_TRUE(parser.Parse("\tfoo ; bar"));
 
   ASSERT_EQ(1U, parser.extensions().size());
-  EXPECT_TRUE(expected.Equals(parser.extensions()[0]));
+  EXPECT_TRUE(expected.Equivalent(parser.extensions()[0]));
 }
 
 TEST(WebSocketExtensionParserTest, ParseOneExtensionWithOneParamWithValue) {
@@ -65,7 +65,7 @@ TEST(WebSocketExtensionParserTest, ParseOneExtensionWithOneParamWithValue) {
   EXPECT_TRUE(parser.Parse("foo ; bar= baz\t"));
 
   ASSERT_EQ(1U, parser.extensions().size());
-  EXPECT_TRUE(expected.Equals(parser.extensions()[0]));
+  EXPECT_TRUE(expected.Equivalent(parser.extensions()[0]));
 }
 
 TEST(WebSocketExtensionParserTest, ParseOneExtensionWithParams) {
@@ -77,7 +77,7 @@ TEST(WebSocketExtensionParserTest, ParseOneExtensionWithParams) {
   EXPECT_TRUE(parser.Parse("foo ; bar= baz;\t \thoge\t\t=fuga"));
 
   ASSERT_EQ(1U, parser.extensions().size());
-  EXPECT_TRUE(expected.Equals(parser.extensions()[0]));
+  EXPECT_TRUE(expected.Equivalent(parser.extensions()[0]));
 }
 
 TEST(WebSocketExtensionParserTest, ParseTwoExtensions) {
@@ -93,8 +93,8 @@ TEST(WebSocketExtensionParserTest, ParseTwoExtensions) {
 
   ASSERT_EQ(2U, parser.extensions().size());
 
-  EXPECT_TRUE(expected0.Equals(parser.extensions()[0]));
-  EXPECT_TRUE(expected1.Equals(parser.extensions()[1]));
+  EXPECT_TRUE(expected0.Equivalent(parser.extensions()[0]));
+  EXPECT_TRUE(expected1.Equivalent(parser.extensions()[1]));
 }
 
 TEST(WebSocketExtensionParserTest, InvalidPatterns) {
@@ -157,7 +157,7 @@ TEST(WebSocketExtensionParserTest, QuotedParameterValue) {
   EXPECT_TRUE(parser.Parse("foo; bar = \"ba\\z\" "));
 
   ASSERT_EQ(1U, parser.extensions().size());
-  EXPECT_TRUE(expected.Equals(parser.extensions()[0]));
+  EXPECT_TRUE(expected.Equivalent(parser.extensions()[0]));
 }
 
 // This is a regression test for crbug.com/647156

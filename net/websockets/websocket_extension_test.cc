@@ -11,31 +11,42 @@ namespace net {
 
 namespace {
 
-TEST(WebSocketExtensionTest, EqualityTest1) {
+TEST(WebSocketExtensionTest, EquivalenceTest1) {
   WebSocketExtension e1("hello");
   WebSocketExtension e2("world");
-  EXPECT_FALSE(e1.Equals(e2));
-  EXPECT_FALSE(e2.Equals(e1));
+  EXPECT_FALSE(e1.Equivalent(e2));
+  EXPECT_FALSE(e2.Equivalent(e1));
 }
 
-TEST(WebSocketExtensionTest, EqualityTest2) {
+TEST(WebSocketExtensionTest, EquivalenceTest2) {
   WebSocketExtension e1("world");
   WebSocketExtension e2("world");
   e1.Add(WebSocketExtension::Parameter("foo", "bar"));
   e2.Add(WebSocketExtension::Parameter("foo"));
-  EXPECT_FALSE(e1.Equals(e2));
-  EXPECT_FALSE(e2.Equals(e1));
+  EXPECT_FALSE(e1.Equivalent(e2));
+  EXPECT_FALSE(e2.Equivalent(e1));
 }
 
-TEST(WebSocketExtensionTest, EqualityTest3) {
+TEST(WebSocketExtensionTest, EquivalenceTest3) {
   WebSocketExtension e1("world");
   WebSocketExtension e2("world");
   e1.Add(WebSocketExtension::Parameter("foo", "bar"));
   e1.Add(WebSocketExtension::Parameter("bar", "baz"));
   e2.Add(WebSocketExtension::Parameter("bar", "baz"));
   e2.Add(WebSocketExtension::Parameter("foo", "bar"));
-  EXPECT_TRUE(e1.Equals(e2));
-  EXPECT_TRUE(e2.Equals(e1));
+  EXPECT_TRUE(e1.Equivalent(e2));
+  EXPECT_TRUE(e2.Equivalent(e1));
+}
+
+TEST(WebSocketExtensionTest, ValueOrderMattersToEquivalence) {
+  WebSocketExtension e1("world");
+  WebSocketExtension e2("world");
+  e1.Add(WebSocketExtension::Parameter("foo", "1"));
+  e1.Add(WebSocketExtension::Parameter("foo", "2"));
+  e1.Add(WebSocketExtension::Parameter("foo", "2"));
+  e1.Add(WebSocketExtension::Parameter("foo", "1"));
+  EXPECT_FALSE(e1.Equivalent(e2));
+  EXPECT_FALSE(e2.Equivalent(e1));
 }
 
 TEST(WebSocketExtensionTest, EmptyToString) {

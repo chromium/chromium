@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
 #include "net/http/http_util.h"
 
 namespace net {
@@ -24,9 +25,8 @@ WebSocketExtension::Parameter::Parameter(const std::string& name,
   DCHECK(HttpUtil::IsToken(value));
 }
 
-bool WebSocketExtension::Parameter::Equals(const Parameter& other) const {
-  return name_ == other.name_ && value_ == other.value_;
-}
+bool WebSocketExtension::Parameter::operator==(const Parameter& other) const =
+    default;
 
 WebSocketExtension::WebSocketExtension() = default;
 
@@ -38,18 +38,21 @@ WebSocketExtension::WebSocketExtension(const WebSocketExtension& other) =
 
 WebSocketExtension::~WebSocketExtension() = default;
 
-bool WebSocketExtension::Equals(const WebSocketExtension& other) const {
+bool WebSocketExtension::Equivalent(const WebSocketExtension& other) const {
   if (name_ != other.name_) return false;
   if (parameters_.size() != other.parameters_.size()) return false;
 
-  std::multimap<std::string, std::string> this_parameters, other_parameters;
-  for (const auto& p : parameters_) {
-    this_parameters.emplace(p.name(), p.value());
-  }
-  for (const auto& p : other.parameters_) {
-    other_parameters.emplace(p.name(), p.value());
-  }
-  return this_parameters == other_parameters;
+  // Take copies in order to sort.
+  std::vector<Parameter> mine_sorted = parameters_;
+  std::vector<Parameter> other_sorted = other.parameters_;
+
+  auto comparator = std::less<std::string>();
+  auto extract_name = [](const Parameter& param) { return param.name(); };
+  // Sort by key, preserving order of values.
+  base::ranges::stable_sort(mine_sorted, comparator, extract_name);
+  base::ranges::stable_sort(other_sorted, comparator, extract_name);
+
+  return mine_sorted == other_sorted;
 }
 
 std::string WebSocketExtension::ToString() const {
