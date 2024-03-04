@@ -120,12 +120,11 @@ class GPU_EXPORT ClientSharedImage
   uint32_t GetTextureTarget(gfx::BufferUsage usage, gfx::BufferFormat format);
 
   // Similar to the above, but for usage if the client did not explicitly create
-  // this SharedImage from a native buffer. Returns GL_TEXTURE_2D if the client
-  // did not specify that this SI may be used as an overlay (i.e., it does not
-  // have SCANOUT in its usage), as in that case this SI will not be backed
-  // by a native buffer. Otherwise, uses this instance's SharedImageFormat
-  // (which must be a single-planar format) to compute the BufferFormat and
-  // returns the result of the above GetTextureTarget() call.
+  // this SharedImage from a native buffer. Returns GL_TEXTURE_2D if the set of
+  // usages that the client specified do not result in this SharedImage being
+  // backed by a native buffer. Otherwise, uses this instance's
+  // SharedImageFormat (which must be a single-planar format) to compute the
+  // BufferFormat and returns the result of the above GetTextureTarget() call.
   uint32_t GetTextureTarget(gfx::BufferUsage usage);
 
   base::trace_event::MemoryAllocatorDumpGuid GetGUIDForTracing() {

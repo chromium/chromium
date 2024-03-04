@@ -147,13 +147,20 @@ uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage,
 }
 
 uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage) {
-  // See the comment on this function in the header file.
-  if (!(this->usage() & SHARED_IMAGE_USAGE_SCANOUT)) {
-    return GL_TEXTURE_2D;
-  }
+  uint32_t usages_forcing_native_buffer = SHARED_IMAGE_USAGE_SCANOUT;
+#if BUILDFLAG(IS_MAC)
+  // On Mac, WebGPU usage results in SharedImages being backed by IOSurfaces.
+  usages_forcing_native_buffer = usages_forcing_native_buffer |
+                                 SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                 SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+#endif
 
-  return GetTextureTarget(
-      usage, viz::SinglePlaneSharedImageFormatToBufferFormat(metadata_.format));
+  bool uses_native_buffer = this->usage() & usages_forcing_native_buffer;
+  return uses_native_buffer
+             ? GetTextureTarget(usage,
+                                viz::SinglePlaneSharedImageFormatToBufferFormat(
+                                    metadata_.format))
+             : GL_TEXTURE_2D;
 }
 
 ExportedSharedImage ClientSharedImage::Export() {
