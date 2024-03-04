@@ -803,9 +803,9 @@ bool UpdateAppShortcutsSubdirLocalizedName(
   std::string locale = l10n_util::NormalizeLocale(
       l10n_util::GetApplicationLocale(std::string()));
 
-  NSString* strings_path =
-      base::apple::FilePathToNSString(localized.Append(locale + ".strings"));
-  [strings_dict writeToFile:strings_path atomically:YES];
+  NSURL* strings_url =
+      base::apple::FilePathToNSURL(localized.Append(locale + ".strings"));
+  [strings_dict writeToURL:strings_url error:nil];
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&GetImageResourcesOnUIThread,
@@ -843,10 +843,17 @@ std::list<BundleInfoPlist> SearchForBundlesById(const std::string& bundle_id) {
   std::list<BundleInfoPlist> infos;
 
   // First search using LaunchServices.
-  NSArray* bundle_urls =
-      base::apple::CFToNSOwnershipCast(LSCopyApplicationURLsForBundleIdentifier(
-          base::SysUTF8ToCFStringRef(bundle_id).get(), /*outError=*/nullptr));
-  for (NSURL* url : bundle_urls) {
+  NSArray* bundle_urls;
+  if (@available(macOS 12.0, *)) {
+    bundle_urls = [NSWorkspace.sharedWorkspace
+        URLsForApplicationsWithBundleIdentifier:base::SysUTF8ToNSString(
+                                                    bundle_id)];
+  } else {
+    bundle_urls = base::apple::CFToNSOwnershipCast(
+        LSCopyApplicationURLsForBundleIdentifier(
+            base::SysUTF8ToCFStringRef(bundle_id).get(), /*outError=*/nullptr));
+  }
+  for (NSURL* url in bundle_urls) {
     base::FilePath bundle_path = base::apple::NSURLToFilePath(url);
     BundleInfoPlist info(bundle_path);
     if (!info.IsForCurrentUserDataDir())
@@ -1778,9 +1785,9 @@ bool WebAppShortcutCreator::UpdateDisplayName(
     app_mode::kCFBundleDisplayNameKey : display_name
   };
 
-  NSString* localized_path = base::apple::FilePathToNSString(
-      localized_dir.Append("InfoPlist.strings"));
-  return [strings_plist writeToFile:localized_path atomically:YES];
+  NSURL* localized_url =
+      base::apple::FilePathToNSURL(localized_dir.Append("InfoPlist.strings"));
+  return [strings_plist writeToURL:localized_url error:nil];
 }
 
 bool WebAppShortcutCreator::UpdateIcon(const base::FilePath& app_path) const {
