@@ -4755,6 +4755,11 @@ const char kForceSigninFlowInProfilePickerDescription[] =
     "Profile Picker, to the regular sign in flow within the Profile Picker "
     "with adaptation to the policy settings";
 
+const char kPressAndHoldEscToExitBrowserFullscreenName[] =
+    "Holding Esc to exit browser fullscreen";
+const char kPressAndHoldEscToExitBrowserFullscreenDescription[] =
+    "Allows users to press and hold Esc key to exit browser fullscreen.";
+
 const char kReadAnythingName[] = "Reading Mode";
 const char kReadAnythingDescription[] =
     "Enables the Reading Mode feature which generates a reader-friendly view "

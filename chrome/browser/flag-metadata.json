@@ -6558,6 +6558,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "press-and-hold-esc-to-exit-browser-fullscreen",
+    "owners": ["muyaoxu@google.com", "takumif@chromium.org"],
+    "expiry_milestone": 134
+  },
+  {
     "name": "price-change-module",
     "owners": [ "yuezhanggg@chromium.org", "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 125

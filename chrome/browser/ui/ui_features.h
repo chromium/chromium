@@ -86,6 +86,10 @@ enum class PreloadTopChromeWebUIMode {
 extern const base::FeatureParam<PreloadTopChromeWebUIMode>
     kPreloadTopChromeWebUIMode;
 
+#if !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen);
+#endif
+
 BASE_DECLARE_FEATURE(kResponsiveToolbar);
 
 BASE_DECLARE_FEATURE(kScrollableTabStrip);
