@@ -341,6 +341,8 @@ export async function testConvertVolumeEntryToFileData(done: () => void) {
   const downloadsEntry = new VolumeEntry(downloadsVolumeInfo);
   const got = convertEntryToFileData(downloadsEntry);
   const want: FileData = {
+    key: downloadsEntry.toURL(),
+    fullPath: downloadsEntry.fullPath,
     entry: downloadsEntry,
     icon: ICON_TYPES.MY_FILES,
     type: EntryType.VOLUME_ROOT,
@@ -381,6 +383,8 @@ export async function testGenericIconInDocumentsProviderFileData(
   const documentsProviderEntry = new VolumeEntry(documentsProviderVolumeInfo);
   const got = convertEntryToFileData(documentsProviderEntry);
   const want: FileData = {
+    key: documentsProviderEntry.toURL(),
+    fullPath: documentsProviderEntry.fullPath,
     entry: documentsProviderEntry,
     icon: ICON_TYPES.GENERIC,
     type: EntryType.VOLUME_ROOT,
@@ -406,6 +410,8 @@ export async function testConvertEntryListToFileData(done: () => void) {
   const myFilesEntryList = new EntryList('My files', RootType.MY_FILES);
   const got = convertEntryToFileData(myFilesEntryList);
   const want: FileData = {
+    key: myFilesEntryList.toURL(),
+    fullPath: myFilesEntryList.fullPath,
     entry: myFilesEntryList,
     icon: ICON_TYPES.MY_FILES,
     type: EntryType.ENTRY_LIST,
@@ -432,6 +438,8 @@ export async function testConvertFakeEntryToFileData(done: () => void) {
       'Android files', 0, chrome.fileManagerPrivate.VmType.ARCVM);
   const got = convertEntryToFileData(androidFakeEntry);
   const want: FileData = {
+    key: androidFakeEntry.toURL(),
+    fullPath: androidFakeEntry.fullPath,
     entry: androidFakeEntry,
     icon: ICON_TYPES.ANDROID_FILES,
     type: EntryType.PLACEHOLDER,
@@ -457,6 +465,8 @@ export async function testConvertNativeFileEntryToFileData(done: () => void) {
   const fileEntry = fileSystem.entries['/dir-2/file-1.txt']!;
   const got = convertEntryToFileData(fileEntry);
   const want: FileData = {
+    key: fileEntry.toURL(),
+    fullPath: fileEntry.fullPath,
     entry: fileEntry,
     icon: 'text',
     type: EntryType.FS_API,
@@ -483,6 +493,8 @@ export async function testConvertNativeDirectoryEntryToFileData(
   const directoryEntry = fileSystem.entries['/dir-1']!;
   const got = convertEntryToFileData(directoryEntry);
   const want: FileData = {
+    key: directoryEntry.toURL(),
+    fullPath: directoryEntry.fullPath,
     entry: directoryEntry,
     icon: ICON_TYPES.FOLDER,
     type: EntryType.FS_API,

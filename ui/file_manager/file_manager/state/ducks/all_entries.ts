@@ -275,6 +275,8 @@ export function convertEntryToFileData(entry: Entry|FilesAppEntry): FileData {
       {} as MetadataItem;
 
   return {
+    key: entry.toURL(),
+    fullPath: entry.fullPath,
     entry,
     icon,
     type: getEntryType(entry),
@@ -325,6 +327,7 @@ function appendEntry(state: State, entry: Entry|FilesAppEntry) {
     canExpand: existingFileData.canExpand ?? fileData.canExpand,
     // Keep children to prevent sudden removal of the children items on the UI.
     children: existingFileData.children ?? fileData.children,
+    key,
   };
 
   state.allEntries = allEntries;
@@ -345,6 +348,7 @@ export function updateFileDataInPlace(
   const newFileData = {
     ...state.allEntries[key]!,
     ...changes,
+    key,
   };
   state.allEntries[key] = newFileData;
   return newFileData;
@@ -420,6 +424,7 @@ function updateMetadataReducer(currentState: State, payload: {
     currentState.allEntries[key] = {
       ...fileData,
       metadata,
+      key,
     };
   }
   if (!currentState.currentDirectory) {
@@ -870,6 +875,7 @@ function updateFileDataReducer(currentState: State, payload: {
   currentState.allEntries[key] = {
     ...fileData,
     ...partialFileData,
+    key,
   };
   return {...currentState};
 }
