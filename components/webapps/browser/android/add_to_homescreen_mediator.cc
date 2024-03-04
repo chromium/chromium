@@ -110,7 +110,8 @@ void AddToHomescreenMediator::AddToHomescreen(
   AppType selected_app_type = static_cast<AppType>(j_app_type);
   if (params_->app_type != selected_app_type) {
     CHECK(selected_app_type == AppType::SHORTCUT &&
-          params_->app_type == AppType::WEBAPK);
+          (params_->app_type == AppType::WEBAPK ||
+           params_->app_type == AppType::WEBAPK_DIY));
     params_->app_type = selected_app_type;
   }
 
