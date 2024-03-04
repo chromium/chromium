@@ -50,7 +50,7 @@ def CheckNamespaces():
 
 def main():
   doc = merge_xml.MergeFiles(histogram_paths.ALL_XMLS,
-                             should_expand_owners=True)
+                             should_expand_owners=False)
   _, errors = extract_histograms.ExtractHistogramsFromDom(doc)
   errors = errors or CheckNamespaces()
   sys.exit(errors)
