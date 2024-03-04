@@ -419,7 +419,7 @@ void SetPlatformPolicies(const base::Value::Dict& values) {
     ASSERT_TRUE([[NSDictionary dictionaryWithObject:all_policies
                                              forKey:@"updatePolicies"]
         writeToURL:managed_preferences_url
-        atomically:YES])
+             error:nil])
         << "Failed to write " << managed_preferences_url;
   }
   ASSERT_TRUE(CFPreferencesSynchronize(domain, kCFPreferencesAnyUser,

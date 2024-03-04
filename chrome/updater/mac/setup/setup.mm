@@ -135,7 +135,8 @@ bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
     // If the file is unchanged, avoid a spammy notification by not touching it.
     if (previousPlistExists &&
         [contents isEqualToDictionary:[NSDictionary
-                                          dictionaryWithContentsOfURL:url]]) {
+                                          dictionaryWithContentsOfURL:url
+                                                                error:nil]]) {
       VLOG(2) << "Skipping unnecessary update to " << path;
       return true;
     }
@@ -184,8 +185,14 @@ bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
     }
 
     // Overwrite the plist.
-    if (![contents writeToURL:url atomically:YES]) {
-      VLOG(1) << "Failed to write " << url;
+    NSData* data = [NSPropertyListSerialization
+        dataWithPropertyList:contents
+                      format:NSPropertyListXMLFormat_v1_0
+                     options:0
+                       error:nil];
+    NSError* error;
+    if (![data writeToURL:url options:NSDataWritingAtomic error:&error]) {
+      VLOG(1) << "Failed to write " << url << " error " << error.description;
       return false;
     }
 
