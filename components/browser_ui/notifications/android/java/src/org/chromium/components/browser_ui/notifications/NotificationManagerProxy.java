@@ -6,7 +6,6 @@ package org.chromium.components.browser_ui.notifications;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
-import android.app.NotificationChannelGroup;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
@@ -28,9 +27,6 @@ public interface NotificationManagerProxy extends BaseNotificationManagerProxy {
 
     @RequiresApi(Build.VERSION_CODES.O)
     List<NotificationChannel> getNotificationChannels();
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    List<NotificationChannelGroup> getNotificationChannelGroups();
 
     @Deprecated
     void notify(int id, Notification notification);

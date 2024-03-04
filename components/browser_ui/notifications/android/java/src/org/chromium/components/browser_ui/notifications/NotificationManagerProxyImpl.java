@@ -14,8 +14,11 @@ import android.service.notification.StatusBarNotification;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -92,11 +95,22 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Override
-    public List<NotificationChannelGroup> getNotificationChannelGroups() {
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    public void getNotificationChannels(Callback<List<NotificationChannel>> callback) {
+        try (TraceEvent e =
+                TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannels")) {
+            List<NotificationChannel> channels = mNotificationManager.getNotificationChannels();
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(channels));
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Override
+    public void getNotificationChannelGroups(Callback<List<NotificationChannelGroup>> callback) {
         try (TraceEvent e =
                 TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannelGroups")) {
-            return mNotificationManager.getNotificationChannelGroups();
+            List<NotificationChannelGroup> groups =
+                    mNotificationManager.getNotificationChannelGroups();
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(groups));
         }
     }
 

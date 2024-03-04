@@ -12,6 +12,8 @@ import android.os.Build;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.Callback;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -161,8 +163,14 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
 
     @Override
     @RequiresApi(Build.VERSION_CODES.O)
-    public List<NotificationChannelGroup> getNotificationChannelGroups() {
-        return null;
+    public void getNotificationChannelGroups(Callback<List<NotificationChannelGroup>> callback) {
+        callback.onResult(null);
+    }
+
+    @Override
+    @RequiresApi(Build.VERSION_CODES.O)
+    public void getNotificationChannels(Callback<List<NotificationChannel>> callback) {
+        callback.onResult(null);
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

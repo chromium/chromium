@@ -17,6 +17,7 @@ import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
+import android.os.Looper;
 
 import androidx.annotation.RequiresApi;
 
@@ -24,16 +25,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskRunner;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
 import org.chromium.chrome.browser.notifications.R;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
 import java.util.ArrayList;
@@ -44,15 +49,19 @@ import java.util.List;
 /** Robolectric tests for ChannelsInitializer, using ChromeChannelDefinitions. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChannelsInitializerTest {
+
     private ChannelsInitializer mChannelsInitializer;
-    private NotificationManagerProxy mNotificationManagerProxy;
+    private BaseNotificationManagerProxy mNotificationManagerProxy;
     private Context mContext;
+    private TaskRunner mTaskQueue;
 
     @Before
     @RequiresApi(Build.VERSION_CODES.O)
     public void setUp() {
+        mTaskQueue = PostTask.createSingleThreadTaskRunner(TaskTraits.UI_DEFAULT);
         mContext = RuntimeEnvironment.getApplication();
-        mNotificationManagerProxy = new NotificationManagerProxyImpl(mContext);
+        mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create(mContext);
+
         mChannelsInitializer =
                 new ChannelsInitializer(
                         mNotificationManagerProxy,
@@ -62,15 +71,22 @@ public class ChannelsInitializerTest {
         // Delete any channels and channel groups that may already have been initialized. Cleaning
         // up here rather than in tearDown in case tests running before these ones caused channels
         // to be created.
-        for (NotificationChannel channel : mNotificationManagerProxy.getNotificationChannels()) {
-            if (!channel.getId().equals(NotificationChannel.DEFAULT_CHANNEL_ID)) {
-                mNotificationManagerProxy.deleteNotificationChannel(channel.getId());
-            }
-        }
-        for (NotificationChannelGroup group :
-                mNotificationManagerProxy.getNotificationChannelGroups()) {
-            mNotificationManagerProxy.deleteNotificationChannelGroup(group.getId());
-        }
+        mNotificationManagerProxy.getNotificationChannels(
+                (channels) -> {
+                    for (NotificationChannel channel : channels) {
+                        if (!channel.getId().equals(NotificationChannel.DEFAULT_CHANNEL_ID)) {
+                            mNotificationManagerProxy.deleteNotificationChannel(channel.getId());
+                        }
+                    }
+                });
+
+        mNotificationManagerProxy.getNotificationChannelGroups(
+                (channelGroups) -> {
+                    for (NotificationChannelGroup group : channelGroups) {
+                        mNotificationManagerProxy.deleteNotificationChannelGroup(group.getId());
+                    }
+                });
+        runUntilIdle();
     }
 
     @Test
@@ -116,10 +132,14 @@ public class ChannelsInitializerTest {
     @Feature({"Browser", "Notifications"})
     public void testInitializeStartupChannels_groupCreated() {
         mChannelsInitializer.initializeStartupChannels();
-        assertThat(mNotificationManagerProxy.getNotificationChannelGroups(), hasSize(1));
-        assertThat(
-                mNotificationManagerProxy.getNotificationChannelGroups().get(0).getId(),
-                is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
+        mNotificationManagerProxy.getNotificationChannelGroups(
+                (channelGroups) -> {
+                    assertThat(channelGroups, hasSize(1));
+                    assertThat(
+                            channelGroups.get(0).getId(),
+                            is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
+                });
+        runUntilIdle();
     }
 
     @Test
@@ -138,6 +158,32 @@ public class ChannelsInitializerTest {
         mNotificationManagerProxy.createNotificationChannel(channel);
         mContext = RuntimeEnvironment.getApplication();
         mChannelsInitializer.updateLocale(mContext.getResources());
+    }
+
+    @Test
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Feature({"Browser", "Notifications"})
+    public void testdeleteLegacyChannelDuringUpdateLocale_channelWillBeDeleted() {
+        NotificationChannelGroup group =
+                ChromeChannelDefinitions.getInstance()
+                        .getChannelGroup(ChromeChannelDefinitions.ChannelGroupId.GENERAL)
+                        .toNotificationChannelGroup(mContext.getResources());
+        NotificationChannel channel =
+                new NotificationChannel(
+                        ChromeChannelDefinitions.ChannelId.SITES,
+                        "Sites",
+                        NotificationManager.IMPORTANCE_LOW);
+        channel.setGroup(ChromeChannelDefinitions.ChannelGroupId.GENERAL);
+        mNotificationManagerProxy.createNotificationChannelGroup(group);
+        mNotificationManagerProxy.createNotificationChannel(channel);
+        mContext = RuntimeEnvironment.getApplication();
+        mChannelsInitializer.updateLocale(mContext.getResources());
+
+        mChannelsInitializer.deleteLegacyChannels();
+
+        runUntilIdle();
+        assertThat(getChannelsIgnoringDefault(), hasSize(0));
     }
 
     @Test
@@ -425,11 +471,20 @@ public class ChannelsInitializerTest {
      */
     @RequiresApi(Build.VERSION_CODES.O)
     private List<NotificationChannel> getChannelsIgnoringDefault() {
-        List<NotificationChannel> channels = mNotificationManagerProxy.getNotificationChannels();
+        List<NotificationChannel> channels = new ArrayList<>();
+        mNotificationManagerProxy.getNotificationChannels(
+                (notificationChannels) -> {
+                    channels.addAll(notificationChannels);
+                });
+        runUntilIdle();
         for (Iterator<NotificationChannel> it = channels.iterator(); it.hasNext(); ) {
             NotificationChannel channel = it.next();
             if (channel.getId().equals(NotificationChannel.DEFAULT_CHANNEL_ID)) it.remove();
         }
         return channels;
+    }
+
+    private static void runUntilIdle() {
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
     }
 }

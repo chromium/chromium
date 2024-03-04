@@ -10,6 +10,10 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.Callback;
+
+import java.util.List;
+
 /**
  * Base interface for NofificationManagerProxy that only supports simple functionalities. Remove
  * this once AsyncNofificationManagerProxy is set to default.
@@ -75,4 +79,20 @@ public interface BaseNotificationManagerProxy {
      */
     @RequiresApi(Build.VERSION_CODES.O)
     void deleteNotificationChannelGroup(String groupId);
+
+    /**
+     * @see <a
+     *     href="https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannelGroups()">
+     *     https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannelGroups()</a>
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    void getNotificationChannelGroups(Callback<List<NotificationChannelGroup>> callback);
+
+    /**
+     * @see <a
+     *     href="https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannels()">
+     *     https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannels()</a>
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    void getNotificationChannels(Callback<List<NotificationChannel>> callback);
 }

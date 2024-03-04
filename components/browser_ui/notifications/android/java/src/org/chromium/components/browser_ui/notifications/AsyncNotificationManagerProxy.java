@@ -5,14 +5,11 @@
 package org.chromium.components.browser_ui.notifications;
 
 import android.app.NotificationChannel;
-import android.app.NotificationChannelGroup;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
-
-import java.util.List;
 
 /**
  * A proxy for making asynchronous calls to Android Notification Manager. This avoids an issue that
@@ -26,22 +23,6 @@ public interface AsyncNotificationManagerProxy extends BaseNotificationManagerPr
      *     https://developer.android.com/reference/android/app/NotificationManager#areNotificationsEnabled()</a>
      */
     void areNotificationsEnabled(Callback<Boolean> callback);
-
-    /**
-     * @see <a
-     *     href="https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannels()">
-     *     https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannels()</a>
-     */
-    @RequiresApi(Build.VERSION_CODES.O)
-    void getNotificationChannels(Callback<List<NotificationChannel>> callback);
-
-    /**
-     * @see <a
-     *     href="https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannelGroups()">
-     *     https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannelGroups()</a>
-     */
-    @RequiresApi(Build.VERSION_CODES.O)
-    void getNotificationChannelGroups(Callback<List<NotificationChannelGroup>> callback);
 
     /**
      * @see <a
