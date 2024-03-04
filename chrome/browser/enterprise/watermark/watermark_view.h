@@ -35,8 +35,10 @@ class WatermarkView : public views::View {
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:
-  std::string text_;
+  std::vector<std::string> text_lines_;
   SkColor background_color_;
+  int block_width_;
+  int block_height_;
 };
 
 }  // namespace enterprise_watermark
