@@ -366,6 +366,17 @@ gpu_mac_builder(
 )
 
 gpu_mac_builder(
+    name = "gpu-fyi-try-mac-arm64-apple-m2-exp",
+    description_html = "Runs standard GPU tests on experimental M2 configs",
+    mirrors = [
+        "ci/GPU FYI Mac arm64 Builder",
+        "ci/Mac FYI Experimental Retina Release (Apple M2)",
+    ],
+    gn_args = "ci/GPU FYI Mac arm64 Builder",
+    pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
+)
+
+gpu_mac_builder(
     name = "gpu-fyi-try-mac-arm64-apple-m2-retina-rel",
     mirrors = [
         "ci/GPU FYI Mac arm64 Builder",

@@ -1031,6 +1031,21 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "mac_arm64_apple_m2_retina_gpu_experimental",
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "arm64",
+            "gpu": "apple:m2",
+            "mac_model": "Mac14,7",
+            "os": "Mac-14.3.1",
+            "pool": "chromium.tests.gpu",
+            "display_attached": "1",
+            "hidpi": "1",
+        },
+    ),
+)
+
+targets.mixin(
     name = "mac_arm64_apple_m2_retina_gpu_stable",
     swarming = targets.swarming(
         dimensions = {
