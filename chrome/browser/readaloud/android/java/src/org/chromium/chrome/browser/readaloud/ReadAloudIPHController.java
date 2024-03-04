@@ -76,22 +76,23 @@ public class ReadAloudIPHController {
     /**
      * If the current tab is readable, requests to show a "Listen to this page" IPH for the app menu
      * and turns on the highlight for the ReadAloud item in the menu.
+     *
+     * @param url URL the readability check returns
      */
-    public void maybeShowReadAloudAppMenuIPH() {
-        if (!shouldShowIPH()) {
-            return;
+    public void maybeShowReadAloudAppMenuIPH(String url) {
+        if (shouldShowIPH(url)) {
+            mUserEducationHelper.requestShowIPH(
+                    new IPHCommandBuilder(
+                                    mToolbarMenuButton.getContext().getResources(),
+                                    FeatureConstants.READ_ALOUD_APP_MENU_FEATURE,
+                                    R.string.menu_listen_to_this_page_iph,
+                                    R.string.menu_listen_to_this_page_iph)
+                            .setAnchorView(mToolbarMenuButton)
+                            .setOnShowCallback(
+                                    () -> turnOnHighlightForMenuItem(R.id.readaloud_menu_id))
+                            .setOnDismissCallback(this::turnOffHighlightForMenuItem)
+                            .build());
         }
-
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
-                                mToolbarMenuButton.getContext().getResources(),
-                                FeatureConstants.READ_ALOUD_APP_MENU_FEATURE,
-                                R.string.menu_listen_to_this_page_iph,
-                                R.string.menu_listen_to_this_page_iph)
-                        .setAnchorView(mToolbarMenuButton)
-                        .setOnShowCallback(() -> turnOnHighlightForMenuItem(R.id.readaloud_menu_id))
-                        .setOnDismissCallback(this::turnOffHighlightForMenuItem)
-                        .build());
     }
 
     private void turnOnHighlightForMenuItem(int highlightMenuItemId) {
@@ -102,24 +103,28 @@ public class ReadAloudIPHController {
         mAppMenuHandler.clearMenuHighlight();
     }
 
-    protected boolean shouldShowIPH() {
-        if (mCurrentTabSupplier.get() == null || !mCurrentTabSupplier.get().getUrl().isValid()) {
+    protected boolean shouldShowIPH(String url) {
+        if (mCurrentTabSupplier.get() == null
+                || !mCurrentTabSupplier.get().getUrl().isValid()
+                || mReadAloudControllerSupplier.get() == null) {
             return false;
         }
-        return mReadAloudControllerSupplier.get().isReadable(mCurrentTabSupplier.get());
+        if (mCurrentTabSupplier.get().getUrl().getSpec().equals(url)) {
+            return mReadAloudControllerSupplier.get().isReadable(mCurrentTabSupplier.get());
+        }
+        return false;
     }
 
     void readAloudControllerReady(@Nullable ReadAloudController readAloudController) {
         if (readAloudController != null) {
-            readAloudController.addReadabilityUpdateListener(this::maybeShowReadAloudAppMenuIPH);
+            mReadAloudReadabilitySupplier = readAloudController.getReadabilitySupplier();
+            mReadAloudReadabilitySupplier.addObserver(this::maybeShowReadAloudAppMenuIPH);
         }
     }
 
     public void destroy() {
-        if (mReadAloudControllerSupplier.get() != null) {
-            mReadAloudControllerSupplier
-                    .get()
-                    .removeReadabilityUpdateListener(this::maybeShowReadAloudAppMenuIPH);
+        if (mReadAloudReadabilitySupplier != null) {
+            mReadAloudReadabilitySupplier.removeObserver(this::maybeShowReadAloudAppMenuIPH);
         }
     }
 }
