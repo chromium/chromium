@@ -6861,7 +6861,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6266532094411434237">Ansluter till <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Välj ett certifikat för att styrka din identitet för <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Öppna med <ph name="APP" /></translation>
-<translation id="6270309713620950855">Ignorera puff</translation>
+<translation id="6270309713620950855">Påminnelse om att mikrofonen är avstängd</translation>
 <translation id="6270391203985052864">Webbplatser får be om tillåtelse att skicka aviseringar</translation>
 <translation id="6270486800167535228">Tillägget har fästs. Välj för att visa fler alternativ</translation>
 <translation id="6270770586500173387">Skicka <ph name="BEGIN_LINK1" />system- och appinformation<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />statistik<ph name="END_LINK2" /></translation>

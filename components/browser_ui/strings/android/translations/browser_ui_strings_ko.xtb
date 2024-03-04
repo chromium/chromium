@@ -407,7 +407,7 @@
 <translation id="7781829728241885113">어제</translation>
 <translation id="7791543448312431591">추가</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{이 탭으로 계속}other{이 탭으로 계속}}</translation>
-<translation id="780301667611848630">취소</translation>
+<translation id="780301667611848630">사용 안함</translation>
 <translation id="7804248752222191302">사이트에서 카메라 사용 중</translation>
 <translation id="7807060072011926525">Google 제공</translation>
 <translation id="7822573154188733812">Chrome에서는 사이트가 서드 파티 쿠키를 사용하여 사용자의 탐색 활동을 추적하지 못하도록 차단합니다. 설정으로 이동하여 <ph name="BEGIN_LINK" />추적 보호 조치를 관리<ph name="END_LINK" />하세요.</translation>

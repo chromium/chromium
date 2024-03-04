@@ -3520,7 +3520,7 @@
 <translation id="7800977246388195491">Chrome では、ユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します。また、アクセスしたウェブサイトの情報からユーザーの好みを決定します。その後、ユーザーが訪れた別のウェブサイトにてパーソナライズド広告を表示させるために、これらの情報が求められます。ユーザーは、その際に提供するトピックやウェブサイトの情報を選択できます。</translation>
 <translation id="7802523362929240268">正規のサイトです</translation>
 <translation id="7802989406998618639">カード発行会社による本人確認のため、<ph name="SIDE_OF_CARD" />に記載されている <ph name="NUMBER_OF_DIGITS" /> 桁のセキュリティ コードを入力してください</translation>
-<translation id="780301667611848630">いいえ</translation>
+<translation id="780301667611848630">キャンセル</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7805906048382884326">ヒントを閉じる</translation>
 <translation id="7810410097247356677">カードと暗号化したセキュリティ コードをデバイスに保存すると、次回のお支払いが簡単になります</translation>
