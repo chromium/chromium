@@ -154,6 +154,21 @@ class PersonalDataManager : public KeyedService,
       AutofillImageFetcherBase* image_fetcher,
       std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler);
 
+  // The (Address|Payments)DataManager classes are responsible for handling
+  // address/payments specific functionality. All new address or payments
+  // specific code should go through them.
+  // TODO(b/322170538): Migrate existing callers.
+  AddressDataManager& address_data_manager() { return *address_data_manager_; }
+  const AddressDataManager& address_data_manager() const {
+    return *address_data_manager_;
+  }
+  PaymentsDataManager& payments_data_manager() {
+    return *payments_data_manager_;
+  }
+  const PaymentsDataManager& payments_data_manager() const {
+    return *payments_data_manager_;
+  }
+
   // KeyedService:
   void Shutdown() override;
 

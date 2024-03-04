@@ -643,7 +643,7 @@ TEST_F(PersonalDataManagerTest, AddAndGetCreditCardArtImage) {
   std::vector<std::unique_ptr<CreditCardArtImage>> images;
   images.push_back(std::move(credit_card_art_image));
 
-  personal_data_->payments_data_manager_->OnCardArtImagesFetched(
+  personal_data_->payments_data_manager().OnCardArtImagesFetched(
       std::move(images));
 
   gfx::Image* actual_image = personal_data_->GetCreditCardArtImageForUrl(
