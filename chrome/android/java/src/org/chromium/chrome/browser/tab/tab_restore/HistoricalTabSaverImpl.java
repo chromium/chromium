@@ -10,7 +10,9 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -30,11 +32,11 @@ import java.util.List;
 @JNINamespace("historical_tab_saver")
 public class HistoricalTabSaverImpl implements HistoricalTabSaver {
     private static final List<String> UNSUPPORTED_SCHEMES =
-            new ArrayList<>(
-                    Arrays.asList(
-                            UrlConstants.CHROME_SCHEME,
-                            UrlConstants.CHROME_NATIVE_SCHEME,
-                            ContentUrlConstants.ABOUT_SCHEME));
+            Arrays.asList(
+                    UrlConstants.CHROME_SCHEME,
+                    UrlConstants.CHROME_NATIVE_SCHEME,
+                    ContentUrlConstants.ABOUT_SCHEME);
+
     private final TabModel mTabModel;
     private boolean mIgnoreUrlSchemesForTesting;
 
@@ -88,6 +90,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
 
         // Distinct group IDs that will be saved - one per group.
         List<Integer> rootIds = new ArrayList<>();
+        List<Token> tabGroupIds = new ArrayList<>();
         // Titles corresponding to each element in rootIds.
         List<String> groupTitles = new ArrayList<>();
 
@@ -107,6 +110,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
             }
 
             rootIds.add(entry.getRootId());
+            tabGroupIds.add(entry.getTabGroupId());
             groupTitles.add(entry.getGroupTitle() == null ? "" : entry.getGroupTitle());
             for (Tab tab : entry.getTabs()) {
                 WebContentsState tabWebContentsState = getWebContentsState(tab);
@@ -132,6 +136,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
             HistoricalTabSaverImplJni.get()
                     .createHistoricalGroup(
                             mTabModel,
+                            tabGroupIds.get(0),
                             groupTitles.get(0),
                             allTabs.toArray(new Tab[0]),
                             byteBuffers.toArray(new ByteBuffer[0]),
@@ -139,7 +144,6 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
             return;
         }
 
-        // IDs are passed only to group tabs. New IDs are generated when saving.
         RecordHistogram.recordEnumeratedHistogram(
                 "Tabs.RecentlyClosed.HistoricalSaverCloseType",
                 HistoricalSaverCloseType.BULK,
@@ -148,6 +152,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                 .createHistoricalBulkClosure(
                         mTabModel,
                         CollectionUtil.integerCollectionToIntArray(rootIds),
+                        tabGroupIds.toArray(new Token[0]),
                         groupTitles.toArray(new String[0]),
                         CollectionUtil.integerCollectionToIntArray(perTabRootId),
                         allTabs.toArray(new Tab[0]),
@@ -207,7 +212,6 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
     /**
      * Generate a valid list of {@link HistoricalEntry}s.
      * - Filter out {@link Tab}s that do not pass the {@link #shouldSave(Tab)}.
-     * - Remove title and id from a single tab entry.
      * - Drop {@link HistoricalEntry} if empty after validation.
      */
     private List<HistoricalEntry> getValidatedEntries(List<HistoricalEntry> entries) {
@@ -216,12 +220,20 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
             List<Tab> validTabs = getValidatedTabs(entry.getTabs());
             if (validTabs.isEmpty()) continue;
 
-            if (validTabs.size() == 1) {
+            boolean saveAsSingleTab = validTabs.size() == 1;
+            if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
+                saveAsSingleTab &= entry.getTabGroupId() == null;
+            }
+            if (saveAsSingleTab) {
                 validatedEntries.add(new HistoricalEntry(validTabs.get(0)));
                 continue;
             }
             validatedEntries.add(
-                    new HistoricalEntry(entry.getRootId(), entry.getGroupTitle(), validTabs));
+                    new HistoricalEntry(
+                            entry.getRootId(),
+                            entry.getTabGroupId(),
+                            entry.getGroupTitle(),
+                            validTabs));
         }
         return validatedEntries;
     }
@@ -247,6 +259,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
 
         void createHistoricalGroup(
                 TabModel model,
+                Token token,
                 String title,
                 Tab[] tabs,
                 ByteBuffer[] byteBuffers,
@@ -255,6 +268,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         void createHistoricalBulkClosure(
                 TabModel model,
                 int[] rootIds,
+                Token[] tabGroupIds,
                 String[] titles,
                 int[] perTabRootId,
                 Tab[] tabs,

@@ -692,7 +692,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             // For saving non-incognito tab closures for Recent Tabs.
             mHistoricalTabModelObserver =
-                    new HistoricalTabModelObserver(mTabModelSelector.getModel(false));
+                    new HistoricalTabModelObserver(
+                            mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false));
 
             // Defer initialization of this helper so it triggers after TabModelFilter
             // observers.

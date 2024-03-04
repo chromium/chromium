@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.tab.tab_restore;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -14,22 +17,31 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.Nullable;
+
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,12 +50,16 @@ import java.util.List;
 
 /** Unit tests for {@link HistoricalTabModelObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@EnableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
 public class HistoricalTabModelObserverUnitTest {
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mFeatureProcessor = new Features.JUnitProcessor();
+
     private Context mContext;
     @Mock private SharedPreferences mSharedPreferences;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private Profile mProfile;
     @Mock private HistoricalTabSaver mHistoricalTabSaver;
@@ -52,10 +68,13 @@ public class HistoricalTabModelObserverUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(false);
+        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(-1);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModel.getComprehensiveModel()).thenReturn(mTabModel);
 
-        mObserver = new HistoricalTabModelObserver(mTabModel, mHistoricalTabSaver);
-        verify(mTabModel, times(1)).addObserver(mObserver);
+        mObserver = new HistoricalTabModelObserver(mTabGroupModelFilter, mHistoricalTabSaver);
+        verify(mTabModel).addObserver(mObserver);
 
         mContext = spy(ContextUtils.getApplicationContext());
         when(mContext.getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE))
@@ -66,7 +85,7 @@ public class HistoricalTabModelObserverUnitTest {
     @After
     public void tearDown() {
         mObserver.destroy();
-        verify(mTabModel, times(1)).removeObserver(mObserver);
+        verify(mTabModel).removeObserver(mObserver);
     }
 
     @Test
@@ -82,7 +101,88 @@ public class HistoricalTabModelObserverUnitTest {
 
         mObserver.onFinishingMultipleTabClosure(Collections.singletonList(mockTab));
 
-        verify(mHistoricalTabSaver, times(1)).createHistoricalTab(eq(mockTab));
+        verify(mHistoricalTabSaver).createHistoricalTab(eq(mockTab));
+    }
+
+    @Test
+    public void testTabGroupWithSingleTab_NotUndoable() {
+        int rootId = 123;
+        MockTab mockTab = createMockTab(rootId);
+        Token tabGroupId = new Token(1L, 2L);
+        String title = "bar";
+        createGroup(tabGroupId, title, new MockTab[] {mockTab});
+
+        mObserver.onFinishingMultipleTabClosure(Collections.singletonList(mockTab));
+
+        ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
+        verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
+        List<HistoricalEntry> entries = arg.getValue();
+
+        assertEquals(1, entries.size());
+        HistoricalEntry group = entries.get(0);
+        assertFalse(group.isSingleTab());
+        assertEquals(1, group.getTabs().size());
+        assertEquals(rootId, group.getRootId());
+        assertEquals(tabGroupId, group.getTabGroupId());
+        assertEquals(title, group.getGroupTitle());
+        assertEquals(mockTab, group.getTabs().get(0));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
+    public void testTabGroupWithSingleTab_NotSupported_NotUndoable() {
+        int rootId = 123;
+        MockTab mockTab = createMockTab(rootId);
+        String title = "bar";
+        createGroup(null, title, new MockTab[] {mockTab});
+        when(mTabGroupModelFilter.isTabInTabGroup(mockTab)).thenReturn(false);
+
+        mObserver.onFinishingMultipleTabClosure(Collections.singletonList(mockTab));
+
+        verify(mHistoricalTabSaver).createHistoricalTab(eq(mockTab));
+    }
+
+    @Test
+    public void testTabGroupWithSingleTab_Undoable() {
+        int rootId = 123;
+        MockTab mockTab = createMockTab(rootId);
+        Token tabGroupId = new Token(1L, 2L);
+        String title = "bar";
+        createGroup(tabGroupId, title, new MockTab[] {mockTab});
+        when(mTabGroupModelFilter.getRelatedTabCountForRootId(rootId)).thenReturn(1);
+        when(mTabGroupModelFilter.tabGroupExistsForRootId(rootId)).thenReturn(false);
+        when(mTabGroupModelFilter.isTabInTabGroup(mockTab)).thenReturn(false);
+
+        mObserver.onFinishingMultipleTabClosure(Collections.singletonList(mockTab));
+
+        ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
+        verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
+        List<HistoricalEntry> entries = arg.getValue();
+
+        assertEquals(1, entries.size());
+        HistoricalEntry group = entries.get(0);
+        assertFalse(group.isSingleTab());
+        assertEquals(1, group.getTabs().size());
+        assertEquals(rootId, group.getRootId());
+        assertEquals(tabGroupId, group.getTabGroupId());
+        assertEquals(title, group.getGroupTitle());
+        assertEquals(mockTab, group.getTabs().get(0));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
+    public void testTabGroupWithSingleTab_NotSupported_Undoable() {
+        int rootId = 123;
+        MockTab mockTab = createMockTab(rootId);
+        String title = "bar";
+        createGroup(null, title, new MockTab[] {mockTab});
+        when(mTabGroupModelFilter.getRelatedTabCountForRootId(rootId)).thenReturn(1);
+        when(mTabGroupModelFilter.tabGroupExistsForRootId(rootId)).thenReturn(false);
+        when(mTabGroupModelFilter.isTabInTabGroup(mockTab)).thenReturn(false);
+
+        mObserver.onFinishingMultipleTabClosure(Collections.singletonList(mockTab));
+
+        verify(mHistoricalTabSaver).createHistoricalTab(eq(mockTab));
     }
 
     @Test
@@ -95,13 +195,13 @@ public class HistoricalTabModelObserverUnitTest {
         mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
 
         ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
-        verify(mHistoricalTabSaver, times(1)).createHistoricalBulkClosure(arg.capture());
+        verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
         List<HistoricalEntry> entries = arg.getValue();
-        Assert.assertEquals(tabList.length, entries.size());
+        assertEquals(tabList.length, entries.size());
         for (int i = 0; i < tabList.length; i++) {
             HistoricalEntry entry = entries.get(i);
-            Assert.assertEquals(1, entry.getTabs().size());
-            Assert.assertEquals(tabList[i], entry.getTabs().get(0));
+            assertEquals(1, entry.getTabs().size());
+            assertEquals(tabList[i], entry.getTabs().get(0));
         }
     }
 
@@ -113,24 +213,26 @@ public class HistoricalTabModelObserverUnitTest {
 
         final String title = "foo";
         MockTab[] tabList = new MockTab[] {mockTab0, mockTab1, mockTab2};
-        final int rootId = createGroup(title, tabList);
+        Token tabGroupId = new Token(1L, 243L);
+        final int rootId = createGroup(tabGroupId, title, tabList);
 
         mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
 
         // HistoricalTabModelObserver relies on HistoricalTabSaver to simplify to a single group
         // entry.
         ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
-        verify(mHistoricalTabSaver, times(1)).createHistoricalBulkClosure(arg.capture());
+        verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
         List<HistoricalEntry> entries = arg.getValue();
 
-        Assert.assertEquals(1, entries.size());
+        assertEquals(1, entries.size());
         HistoricalEntry group = entries.get(0);
-        Assert.assertFalse(group.isSingleTab());
-        Assert.assertEquals(tabList.length, group.getTabs().size());
-        Assert.assertEquals(rootId, group.getRootId());
-        Assert.assertEquals(title, group.getGroupTitle());
+        assertFalse(group.isSingleTab());
+        assertEquals(tabList.length, group.getTabs().size());
+        assertEquals(rootId, group.getRootId());
+        assertEquals(tabGroupId, group.getTabGroupId());
+        assertEquals(title, group.getGroupTitle());
         for (int i = 0; i < tabList.length; i++) {
-            Assert.assertEquals(tabList[i], group.getTabs().get(i));
+            assertEquals(tabList[i], group.getTabs().get(i));
         }
     }
 
@@ -140,7 +242,8 @@ public class HistoricalTabModelObserverUnitTest {
         MockTab mockTab1 = createMockTab(1);
 
         final String title = "foo";
-        final int rootId = createGroup(title, new MockTab[] {mockTab1});
+        Token tabGroupId = new Token(3L, 4L);
+        final int rootId = createGroup(tabGroupId, title, new MockTab[] {mockTab1});
 
         when(mSharedPreferences.getString(String.valueOf(rootId), null)).thenReturn(title);
 
@@ -150,17 +253,18 @@ public class HistoricalTabModelObserverUnitTest {
         // HistoricalTabModelObserver relies on HistoricalTabSaver to simplify to a single tab
         // entry.
         ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
-        verify(mHistoricalTabSaver, times(1)).createHistoricalBulkClosure(arg.capture());
+        verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
         List<HistoricalEntry> entries = arg.getValue();
-        Assert.assertEquals(2, entries.size());
+        assertEquals(2, entries.size());
 
         HistoricalEntry tab0 = entries.get(0);
-        Assert.assertEquals(1, tab0.getTabs().size());
-        Assert.assertEquals(mockTab0, tab0.getTabs().get(0));
+        assertEquals(1, tab0.getTabs().size());
+        assertEquals(mockTab0, tab0.getTabs().get(0));
 
         HistoricalEntry tab1 = entries.get(1);
-        Assert.assertEquals(1, tab0.getTabs().size());
-        Assert.assertEquals(mockTab1, tab1.getTabs().get(0));
+        assertEquals(1, tab1.getTabs().size());
+        assertEquals(tabGroupId, tab1.getTabGroupId());
+        assertEquals(mockTab1, tab1.getTabs().get(0));
     }
 
     @Test
@@ -172,13 +276,15 @@ public class HistoricalTabModelObserverUnitTest {
         MockTab mockTab4 = createMockTab(4);
         MockTab mockTab5 = createMockTab(5);
 
-        final String group1Title = "foo";
-        MockTab[] group1Tabs = new MockTab[] {mockTab3, mockTab5};
-        final int group1Id = createGroup(group1Title, group1Tabs);
+        final String groupTitle1 = "foo";
+        MockTab[] groupTabs1 = new MockTab[] {mockTab3, mockTab5};
+        Token tabGroupId1 = new Token(3L, 4L);
+        final int rootId1 = createGroup(tabGroupId1, groupTitle1, groupTabs1);
 
-        final String group2Title = "Bar";
-        MockTab[] group2Tabs = new MockTab[] {mockTab1, mockTab2};
-        final int group2Id = createGroup(group2Title, group2Tabs);
+        final String groupTitle2 = "Bar";
+        MockTab[] groupTabs2 = new MockTab[] {mockTab1, mockTab2};
+        Token tabGroupId2 = new Token(3L, 4L);
+        final int rootId2 = createGroup(tabGroupId2, groupTitle2, groupTabs2);
 
         Tab[] tabList = new Tab[] {mockTab0, mockTab2, mockTab3, mockTab4, mockTab1, mockTab5};
         mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
@@ -186,37 +292,39 @@ public class HistoricalTabModelObserverUnitTest {
         // HistoricalTabModelObserver relies on HistoricalTabSaver to simplify to a single group
         // entry.
         ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
-        verify(mHistoricalTabSaver, times(1)).createHistoricalBulkClosure(arg.capture());
+        verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
         List<HistoricalEntry> entries = arg.getValue();
-        Assert.assertEquals(4, entries.size());
+        assertEquals(4, entries.size());
 
         // First tab in list is ungrouped mockTab0.
         HistoricalEntry historicalTab0 = entries.get(0);
-        Assert.assertEquals(1, historicalTab0.getTabs().size());
-        Assert.assertEquals(mockTab0, historicalTab0.getTabs().get(0));
+        assertEquals(1, historicalTab0.getTabs().size());
+        assertEquals(mockTab0, historicalTab0.getTabs().get(0));
 
         // Second tab in list is mockTab2 for tabGroup2. This grabs mockTab1 to this position.
         HistoricalEntry historicalGroup2 = entries.get(1);
-        Assert.assertFalse(historicalGroup2.isSingleTab());
-        Assert.assertEquals(2, historicalGroup2.getTabs().size());
-        Assert.assertEquals(group2Id, historicalGroup2.getRootId());
-        Assert.assertEquals(group2Title, historicalGroup2.getGroupTitle());
-        Assert.assertEquals(mockTab2, historicalGroup2.getTabs().get(0));
-        Assert.assertEquals(mockTab1, historicalGroup2.getTabs().get(1));
+        assertFalse(historicalGroup2.isSingleTab());
+        assertEquals(2, historicalGroup2.getTabs().size());
+        assertEquals(rootId2, historicalGroup2.getRootId());
+        assertEquals(tabGroupId2, historicalGroup2.getTabGroupId());
+        assertEquals(groupTitle2, historicalGroup2.getGroupTitle());
+        assertEquals(mockTab2, historicalGroup2.getTabs().get(0));
+        assertEquals(mockTab1, historicalGroup2.getTabs().get(1));
 
         // Third tab in list is mockTab3 for tabGroup1. This grabs mockTab5 to this position.
         HistoricalEntry historicalGroup1 = entries.get(2);
-        Assert.assertFalse(historicalGroup1.isSingleTab());
-        Assert.assertEquals(2, historicalGroup1.getTabs().size());
-        Assert.assertEquals(group1Id, historicalGroup1.getRootId());
-        Assert.assertEquals(group1Title, historicalGroup1.getGroupTitle());
-        Assert.assertEquals(mockTab3, historicalGroup1.getTabs().get(0));
-        Assert.assertEquals(mockTab5, historicalGroup1.getTabs().get(1));
+        assertFalse(historicalGroup1.isSingleTab());
+        assertEquals(2, historicalGroup1.getTabs().size());
+        assertEquals(rootId1, historicalGroup1.getRootId());
+        assertEquals(tabGroupId1, historicalGroup1.getTabGroupId());
+        assertEquals(groupTitle1, historicalGroup1.getGroupTitle());
+        assertEquals(mockTab3, historicalGroup1.getTabs().get(0));
+        assertEquals(mockTab5, historicalGroup1.getTabs().get(1));
 
         // Fourth tab in list is ungrouped mockTab4.
         HistoricalEntry historicalTab4 = entries.get(3);
-        Assert.assertEquals(1, historicalTab4.getTabs().size());
-        Assert.assertEquals(mockTab4, historicalTab4.getTabs().get(0));
+        assertEquals(1, historicalTab4.getTabs().size());
+        assertEquals(mockTab4, historicalTab4.getTabs().get(0));
     }
 
     private MockTab createMockTab(int id) {
@@ -227,17 +335,23 @@ public class HistoricalTabModelObserverUnitTest {
 
     /**
      * Creates a group.
+     *
+     * @param tabGroupId The tab group id.
      * @param title Group title.
      * @param tabList List of tabs in group.
      * @return ID of the group.
      */
-    private int createGroup(String title, MockTab[] tabList) {
+    private int createGroup(@Nullable Token tabGroupId, @Nullable String title, MockTab[] tabList) {
         assert tabList.length != 0;
 
         final int rootId = tabList[0].getId();
         when(mSharedPreferences.getString(String.valueOf(rootId), null)).thenReturn(title);
+        when(mTabGroupModelFilter.getRelatedTabCountForRootId(rootId)).thenReturn(tabList.length);
+        when(mTabGroupModelFilter.tabGroupExistsForRootId(rootId)).thenReturn(true);
         for (MockTab tab : tabList) {
             tab.setRootId(rootId);
+            tab.setTabGroupId(tabGroupId);
+            when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
         }
         return rootId;
     }
