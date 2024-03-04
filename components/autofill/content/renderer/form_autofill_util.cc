@@ -1304,7 +1304,10 @@ bool IsVisibleIframe(const WebElement& element) {
 // For further details, see crbug.com/1117028#c8 and crbug.com/1245631.
 bool IsRelevantChildFrame(const WebElement& element) {
   DCHECK(element.HasHTMLTagName(GetWebString<kIframe>()));
-  return IsVisibleIframe(element) || !IsAdIframe(element);
+  return !IsAdIframe(element) ||
+         (!base::FeatureList::IsEnabled(
+              features::kAutofillExtractOnlyNonAdFrames) &&
+          IsVisibleIframe(element));
 }
 
 // Returns the <iframe> elements that are

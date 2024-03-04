@@ -274,6 +274,16 @@ BASE_FEATURE(kAutofillEnableSupportForPhoneNumberTrunkTypes,
              "AutofillEnableSupportForPhoneNumberTrunkTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, only non-ad frames are extracted.
+// Otherwise, non-ad frames as well as *visible* ad frames are extracted.
+// "Extracted" means that FormFieldData::child_frames is populated, which is
+// necessary for flattening these forms.
+// The forms in those frames are extracted either way.
+// TODO(crbug.com/40196220): Remove once launched.
+BASE_FEATURE(kAutofillExtractOnlyNonAdFrames,
+             "AutofillExtractOnlyNonAdFrames",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Changes the mechanisms of FormTracker and the requirements for firing
 // submission on formless elements.
 BASE_FEATURE(kAutofillImproveSubmissionDetection,
