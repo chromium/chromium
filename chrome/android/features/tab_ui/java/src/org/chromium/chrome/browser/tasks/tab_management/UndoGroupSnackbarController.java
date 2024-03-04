@@ -176,16 +176,21 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
                         .getCurrentTabModelFilter()
                         .getRelatedTabIds(tabUndoInfo.get(0).tab.getId())
                         .size();
-        assert mergedGroupSize > 1;
 
         String content = String.format(Locale.getDefault(), "%d", mergedGroupSize);
+        String templateText;
+        if (mergedGroupSize == 1) {
+            templateText = mContext.getString(R.string.undo_bar_group_tab_message);
+        } else {
+            templateText = mContext.getString(R.string.undo_bar_group_tabs_message);
+        }
         mSnackbarManager.showSnackbar(
                 Snackbar.make(
                                 content,
                                 this,
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_TAB_GROUP_MANUAL_CREATION_UNDO)
-                        .setTemplateText(mContext.getString(R.string.undo_bar_group_tabs_message))
+                        .setTemplateText(templateText)
                         .setAction(mContext.getString(R.string.undo), tabUndoInfo));
     }
 

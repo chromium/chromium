@@ -187,8 +187,11 @@
       </message>
 
       <!-- Undo Bar -->
-      <message name="IDS_UNDO_BAR_GROUP_TABS_MESSAGE" desc="Message shown or announced when a group has been created.">
-        <ph name="TAB_COUNT">%1$s<ex>3</ex></ph> tabs grouped
+      <message name="IDS_UNDO_BAR_GROUP_TAB_MESSAGE" desc="Message shown or announced when a group has been created with a single tab.">
+        <ph name="TABS_COUNT_ONE">%1$s<ex>1</ex></ph> tab grouped
+      </message>
+      <message name="IDS_UNDO_BAR_GROUP_TABS_MESSAGE" desc="Message shown or announced when a group has been created with multiple tabs.">
+        <ph name="TABS_COUNT_MANY">%1$s<ex>3</ex></ph> tabs grouped
       </message>
 
       <!-- Bottom Tab Grid strings -->
