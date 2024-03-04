@@ -12,6 +12,7 @@
 #include <optional>
 #include <queue>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check_is_test.h"
@@ -308,8 +309,8 @@ bool ShouldIncludePublicKey(SECKEYPublicKey* public_key) {
     return false;
   }
 
-  base::StringPiece cka_id_str(reinterpret_cast<char*>(cka_id->data),
-                               cka_id->len);
+  std::string_view cka_id_str(reinterpret_cast<char*>(cka_id->data),
+                              cka_id->len);
 
   // Only keys generated/stored by extensions/Chrome should be visible to
   // extensions. Oemcrypto stores its key in the TPM, but that should not
