@@ -113,5 +113,26 @@ TEST_F(RootfsLacrosLoaderTest, LoadRootfsLacrosSelectedByPolicy) {
             rootfs_lacros_loader_->GetState());
 }
 
+TEST_F(RootfsLacrosLoaderTest, UnloadRequestedOnVersionReady) {
+  EXPECT_EQ(RootfsLacrosLoader::State::kNotLoaded,
+            rootfs_lacros_loader_->GetState());
+
+  // First, request loader to get version and stops at
+  // `kVersionReadyButNotLoaded`.
+  base::test::TestFuture<const base::Version&> future1;
+  rootfs_lacros_loader_->GetVersion(
+      future1.GetCallback<const base::Version&>());
+  EXPECT_EQ(base::Version(version_str), future1.Get<0>());
+  EXPECT_EQ(RootfsLacrosLoader::State::kVersionReadyButNotLoaded,
+            rootfs_lacros_loader_->GetState());
+
+  // Simulate the case that stateful is selected by compatibility check so that
+  // it requests rootfs lacros loader to unload.
+  base::test::TestFuture<void> future2;
+  rootfs_lacros_loader_->Unload(future2.GetCallback());
+  EXPECT_EQ(RootfsLacrosLoader::State::kUnloaded,
+            rootfs_lacros_loader_->GetState());
+}
+
 }  // namespace
 }  // namespace crosapi

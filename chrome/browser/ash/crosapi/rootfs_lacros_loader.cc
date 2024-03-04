@@ -76,6 +76,7 @@ void RootfsLacrosLoader::Unload(base::OnceClosure callback) {
     case State::kVersionReadyButNotLoaded:
     case State::kUnloaded:
       // Nothing to unload if it's not loaded or already unloaded.
+      state_ = State::kUnloaded;
       std::move(callback).Run();
       break;
     case State::kReadingVersion:

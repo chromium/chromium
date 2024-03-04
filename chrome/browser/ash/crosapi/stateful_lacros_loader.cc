@@ -172,8 +172,8 @@ void StatefulLacrosLoader::Unload(base::OnceClosure callback) {
     case State::kNotLoaded:
     case State::kUnloaded:
       // Nothing to unload if it's not loaded or already unloaded.
-      std::move(callback).Run();
       state_ = State::kUnloaded;
+      std::move(callback).Run();
       break;
     case State::kLoading:
     case State::kUnloading:
