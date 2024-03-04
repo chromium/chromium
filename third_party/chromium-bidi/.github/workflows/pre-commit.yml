@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Set up Node.js
-        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version-file: '.nvmrc'
           cache: npm
@@ -34,7 +34,7 @@ jobs:
         with:
           python-version: '3.11'
           cache: pip
-      - uses: pre-commit/action@646c83fcd040023954eafda54b4db0192ce70507 #v3.0.0
+      - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd #v3.0.1
         with:
           # We need --all-files as this overrides the defaults
           extra_args: --hook-stage manual --all-files
