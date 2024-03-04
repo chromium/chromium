@@ -307,6 +307,7 @@ void AutofillAgent::DidCommitProvisionalLoad(ui::PageTransition transition) {
       unsafe_render_frame()
           ? std::make_unique<FormCache>(unsafe_render_frame()->GetWebFrame())
           : nullptr;
+  is_dom_content_loaded_ = false;
   ResetLastInteractedElements();
   OnFormNoLongerSubmittable();
 }

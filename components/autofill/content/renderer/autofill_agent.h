@@ -242,6 +242,14 @@ class AutofillAgent : public content::RenderFrameObserver,
       const blink::WebElement&,
       blink::WebFormRelatedChangeType) override;
 
+  // content::RenderFrameObserver:
+  void DidCommitProvisionalLoad(ui::PageTransition transition) override;
+  void DidDispatchDOMContentLoadedEvent() override;
+  void DidChangeScrollOffset() override;
+  void FocusedElementChanged(const blink::WebElement& element) override;
+  void AccessibilityModeChanged(const ui::AXMode& mode) override;
+  void OnDestruct() override;
+
  private:
   class DeferringAutofillDriver;
   friend class AutofillAgentTestApi;
@@ -265,7 +273,6 @@ class AutofillAgent : public content::RenderFrameObserver,
     // currently focused node (with no setting it to a new one).
     void ResetFocus();
 
-   private:
     mojom::FocusedFieldType GetFieldType(
         const blink::WebFormControlElement& node);
     void NotifyIfChanged(mojom::FocusedFieldType new_focused_field_type,
@@ -276,14 +283,6 @@ class AutofillAgent : public content::RenderFrameObserver,
         mojom::FocusedFieldType::kUnknown;
     const raw_ref<AutofillAgent> agent_;
   };
-
-  // content::RenderFrameObserver:
-  void DidCommitProvisionalLoad(ui::PageTransition transition) override;
-  void DidDispatchDOMContentLoadedEvent() override;
-  void DidChangeScrollOffset() override;
-  void FocusedElementChanged(const blink::WebElement& element) override;
-  void AccessibilityModeChanged(const ui::AXMode& mode) override;
-  void OnDestruct() override;
 
   // The RenderFrame* is nullptr while the AutofillAgent is pending deletion,
   // between OnDestruct() and ~AutofillAgent().
@@ -490,7 +489,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   base::OneShotTimer process_forms_form_extraction_timer_;
   base::OneShotTimer process_forms_form_extraction_with_response_timer_;
 
-  // True iff DidDispatchDOMContentLoadedEvent() fired.
+  // True iff DidDispatchDOMContentLoadedEvent() fired since the last
+  // navigation.
   bool is_dom_content_loaded_ = false;
 
   // Will be set when accessibility mode changes, depending on what the new mode

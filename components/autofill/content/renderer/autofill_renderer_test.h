@@ -14,6 +14,8 @@
 
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
+#include "components/autofill/content/renderer/password_autofill_agent.h"
+#include "components/autofill/content/renderer/password_generation_agent.h"
 #include "content/public/test/render_view_test.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
@@ -109,6 +111,13 @@ class AutofillRendererTest : public content::RenderViewTest {
   // content::RenderViewTest:
   void SetUp() override;
   void TearDown() override;
+
+  virtual std::unique_ptr<AutofillAgent> CreateAutofillAgent(
+      content::RenderFrame* render_frame,
+      const AutofillAgent::Config& config,
+      std::unique_ptr<PasswordAutofillAgent> password_autofill_agent,
+      std::unique_ptr<PasswordGenerationAgent> password_generation_agent,
+      blink::AssociatedInterfaceRegistry* associated_interfaces);
 
   // Simulates a click on the element with id `element_id` and, if, successful,
   // runs until the task environment is idle. Waits until the `TaskEnvironment`

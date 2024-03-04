@@ -57,6 +57,16 @@ using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::SizeIs;
 
+class MockAutofillAgent : public AutofillAgent {
+ public:
+  using AutofillAgent::AutofillAgent;
+  MOCK_METHOD(void, DidDispatchDOMContentLoadedEvent, (), (override));
+
+  void OverriddenDidDispatchDOMContentLoadedEvent() {
+    AutofillAgent::DidDispatchDOMContentLoadedEvent();
+  }
+};
+
 class MockFormTracker : public FormTracker {
  public:
   using FormTracker::FormTracker;
@@ -989,6 +999,39 @@ TEST_F(AutofillAgentTest,
   ExecuteJavaScriptForTests(R"(document.getElementById('form').remove();)");
   autofill_agent().OnInferredFormSubmission(
       mojom::SubmissionSource::XHR_SUCCEEDED);
+}
+
+class AutofillAgentTestNavigationReset : public AutofillAgentTest {
+ public:
+  std::unique_ptr<AutofillAgent> CreateAutofillAgent(
+      content::RenderFrame* render_frame,
+      const AutofillAgent::Config& config,
+      std::unique_ptr<PasswordAutofillAgent> password_autofill_agent,
+      std::unique_ptr<PasswordGenerationAgent> password_generation_agent,
+      blink::AssociatedInterfaceRegistry* associated_interfaces) override {
+    return std::make_unique<MockAutofillAgent>(
+        render_frame, config, std::move(password_autofill_agent),
+        std::move(password_generation_agent), associated_interfaces);
+  }
+
+  MockAutofillAgent& autofill_agent() {
+    return static_cast<MockAutofillAgent&>(AutofillAgentTest::autofill_agent());
+  }
+};
+
+TEST_F(AutofillAgentTestNavigationReset, NavigationResetsIsDomContentLoaded) {
+  std::vector<bool> is_dom_content_loaded;
+  EXPECT_CALL(autofill_agent(), DidDispatchDOMContentLoadedEvent)
+      .WillRepeatedly([&]() {
+        is_dom_content_loaded.push_back(
+            test_api(autofill_agent()).is_dom_content_loaded());
+        autofill_agent().OverriddenDidDispatchDOMContentLoadedEvent();
+        is_dom_content_loaded.push_back(
+            test_api(autofill_agent()).is_dom_content_loaded());
+      });
+  LoadHTML(R"(Hello world)");
+  LoadHTML(R"(Hello world)");
+  EXPECT_THAT(is_dom_content_loaded, ElementsAre(false, true, false, true));
 }
 
 }  // namespace
