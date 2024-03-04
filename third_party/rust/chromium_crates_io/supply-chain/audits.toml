@@ -4,6 +4,7 @@
 [criteria.crypto-safe]
 description = """
 All crypto algorithms in this crate have been reviewed by a relevant expert.
+
 **Note**: If a crate does not implement crypto, use `does-not-implement-crypto`,
 which implies `crypto-safe`, but does not require expert review in order to
 audit for."""
@@ -12,6 +13,7 @@ audit for."""
 description = """
 Inspection reveals that the crate in question does not attempt to implement any
 cryptographic algorithms on its own.
+
 Note that certification of this does not require an expert on all forms of
 cryptography: it's expected for crates we import to be \"good enough\" citizens,
 so they'll at least be forthcoming if they try to implement something
