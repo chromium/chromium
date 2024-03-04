@@ -925,6 +925,22 @@ chromium-metrics-reviews@google.com.
   <summary>Emitted on every notification received from FCM service.</summary>
 </histogram>
 
+<histogram name="Network.Cellular.CarrierLock.Initialization.{Trigger}"
+    units="count" expires_after="2024-06-30">
+  <owner>michamazur@google.com</owner>
+  <owner>cros-cellular-core@google.com</owner>
+  <summary>
+    Emitted every time the Initialization step is triggered. Reports number of
+    events from each trigger group.
+  </summary>
+  <token key="Trigger">
+    <variant name="FirstRun"/>
+    <variant name="Network"/>
+    <variant name="RetryStep"/>
+    <variant name="Scheduler"/>
+  </token>
+</histogram>
+
 <histogram name="Network.Cellular.CarrierLock.LockState"
     enum="CellularCarrierLockLockState" expires_after="2024-06-30">
   <owner>michamazur@google.com</owner>

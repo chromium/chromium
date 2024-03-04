@@ -304,6 +304,7 @@ void CarrierLockManager::OnSessionStateChanged() {
   // Once the OOBE is over, disable observer and wait for network connectivity.
   session_manager_->RemoveObserver(this);
   session_manager_ = nullptr;
+  trigger_first_run_++;
   network_state_handler_->AddObserver(this, FROM_HERE);
   DefaultNetworkChanged(nullptr);
 }
@@ -400,6 +401,11 @@ void CarrierLockManager::Initialize() {
 }
 
 void CarrierLockManager::DefaultNetworkChanged(const NetworkState* network) {
+  if (!network) {
+    network = network_state_handler_->DefaultNetwork();
+  } else {
+    trigger_network_++;
+  }
   if (retry_backoff_.ShouldRejectRequest()) {
     // Ignore this event.
     VLOG(2) << "Change of default network skipped because of backoff timer.";
@@ -409,10 +415,6 @@ void CarrierLockManager::DefaultNetworkChanged(const NetworkState* network) {
     // Modem configuration is complete.
     return;
   }
-
-  if (!network) {
-    network = network_state_handler_->DefaultNetwork();
-  }
   if (!network || !network->IsConnectedState()) {
     VLOG(2) << "No network connectivity.";
     return;
@@ -421,6 +423,14 @@ void CarrierLockManager::DefaultNetworkChanged(const NetworkState* network) {
   if (configuration_state_ == ConfigurationState::kNone) {
     // Ready to start configuration process.
     configuration_state_ = ConfigurationState::kInitialize;
+    base::UmaHistogramCounts10000(kInitializationTriggerFirstRun,
+                                  trigger_first_run_);
+    base::UmaHistogramCounts10000(kInitializationTriggerNetwork,
+                                  trigger_network_);
+    base::UmaHistogramCounts10000(kInitializationTriggerRetryStep,
+                                  trigger_retry_step_);
+    base::UmaHistogramCounts10000(kInitializationTriggerScheduler,
+                                  trigger_scheduler_);
     RunStep(configuration_state_);
     return;
   }
@@ -428,6 +438,7 @@ void CarrierLockManager::DefaultNetworkChanged(const NetworkState* network) {
   retry_backoff_.InformOfRequest(/*succeeded=*/false);
   VLOG(2) << "Network connection was interrupted. Restart setup in "
           << retry_backoff_.GetTimeUntilRelease().InSeconds() << " seconds.";
+  trigger_scheduler_++;
 
   // Call this function after delay to check if configuration process
   // failed and restart it from initial step.
@@ -532,6 +543,8 @@ bool CarrierLockManager::RetryStep() {
     LOG(ERROR) << "Step "
                << ConfigurationStateToStringView(configuration_state_)
                << " failed " << (kMaxRetries + 1) << " times. Exiting...";
+    trigger_retry_step_++;
+
     // Wait for new connection and retry...
     configuration_state_ = ConfigurationState::kNone;
     return false;
@@ -586,12 +599,17 @@ void CarrierLockManager::CheckState() {
   const DeviceState* cellular_device =
       network_state_handler_->GetDeviceStateByType(
           ash::NetworkTypePattern::Cellular());
-  if (cellular_device) {
-    imei_ = cellular_device->imei();
-  }
-  if (!cellular_device || imei_.empty()) {
+  if (!cellular_device) {
     LOG(ERROR) << "Cellular device not found or invalid.";
     LogError(Result::kModemNotFound);
+    RetryStep();
+    return;
+  }
+
+  imei_ = cellular_device->imei();
+  if (imei_.empty()) {
+    LOG(ERROR) << "Cellular device has invalid IMEI.";
+    LogError(Result::kInvalidImei);
     RetryStep();
     return;
   }
@@ -855,15 +873,20 @@ void CarrierLockManager::FcmNotification(bool is_from_topic) {
   // in order to request new configuration in case of failure or reboot.
   local_state_->SetTime(kLastConfigTimePref, base::Time::Now() - kFcmTimeout);
 
-  base::UmaHistogramEnumeration(
-      kFcmNotificationType, (is_from_topic ? FcmNotification::kUpdateProfile
-                                           : FcmNotification::kUnlockDevice));
-
   if (configuration_state_ == ConfigurationState::kNone) {
+    base::UmaHistogramEnumeration(
+        kFcmNotificationType,
+        (is_from_topic ? FcmNotification::kUpdateProfileBeforeInit
+                       : FcmNotification::kUnlockDeviceBeforeInit));
     // Configuration process will start from beginning.
     return;
   }
   if (configuration_state_ < ConfigurationState::kDeviceLocked) {
+    base::UmaHistogramEnumeration(
+        kFcmNotificationType,
+        (is_from_topic ? FcmNotification::kUpdateProfileWhileBusy
+                       : FcmNotification::kUnlockDeviceWhileBusy));
+
     // Wait until the configuration process is completed.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
@@ -872,6 +895,10 @@ void CarrierLockManager::FcmNotification(bool is_from_topic) {
         kConfigDelay);
     return;
   }
+
+  base::UmaHistogramEnumeration(
+      kFcmNotificationType, (is_from_topic ? FcmNotification::kUpdateProfile
+                                           : FcmNotification::kUnlockDevice));
 
   // Call to RunStep is delayed to workaround racing issue: b/265987223
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

@@ -153,6 +153,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK) CarrierLockManager
   std::string model_;
   int error_counter_ = 0;
   bool is_first_setup_ = true;
+  size_t trigger_first_run_ = 0;
+  size_t trigger_network_ = 0;
+  size_t trigger_retry_step_ = 0;
+  size_t trigger_scheduler_ = 0;
 
   raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
   raw_ptr<Network3gppHandler> modem_handler_ = nullptr;

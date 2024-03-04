@@ -20,7 +20,11 @@ enum class ConfigurationResult {
 enum class FcmNotification {
   kUpdateProfile = 0,
   kUnlockDevice = 1,
-  kMaxValue = kUnlockDevice
+  kUpdateProfileBeforeInit = 2,
+  kUnlockDeviceBeforeInit = 3,
+  kUpdateProfileWhileBusy = 4,
+  kUnlockDeviceWhileBusy = 5,
+  kMaxValue = kUnlockDeviceWhileBusy
 };
 
 enum class FcmResult {
@@ -60,6 +64,15 @@ enum class LockState {
   kIncorrectlyLocked = 4,
   kMaxValue = kIncorrectlyLocked
 };
+
+const char kInitializationTriggerFirstRun[] =
+    "Network.Cellular.CarrierLock.Initialization.FirstRun";
+const char kInitializationTriggerNetwork[] =
+    "Network.Cellular.CarrierLock.Initialization.Network";
+const char kInitializationTriggerRetryStep[] =
+    "Network.Cellular.CarrierLock.Initialization.RetryStep";
+const char kInitializationTriggerScheduler[] =
+    "Network.Cellular.CarrierLock.Initialization.Scheduler";
 
 const char kConfigurationStateAfterInitialization[] =
     "Network.Cellular.CarrierLock.ConfigurationStateAfterInitialization";

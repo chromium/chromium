@@ -108,6 +108,10 @@ chromium-metrics-reviews@google.com.
 <enum name="CellularCarrierLockFcmNotification">
   <int value="0" label="UpdateProfile"/>
   <int value="1" label="UnlockDevice"/>
+  <int value="2" label="UpdateProfileBeforeInit"/>
+  <int value="3" label="UnlockDeviceBeforeInit"/>
+  <int value="4" label="UpdateProfileWhileBusy"/>
+  <int value="5" label="UnlockDeviceWhileBusy"/>
 </enum>
 
 <enum name="CellularCarrierLockFcmResult">
