@@ -102,8 +102,8 @@ public class HistorySyncRenderTest {
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.SERVICES_SIGN_IN)
-                    .setRevision(2)
-                    .setDescription("Update button stacking")
+                    .setRevision(1)
+                    .setDescription("New landscape layout")
                     .build();
 
     @Mock private SyncService mSyncServiceMock;
@@ -129,7 +129,7 @@ public class HistorySyncRenderTest {
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
-        when(mHistorySyncDelegateMock.isLargeScreen()).thenReturn(false);
+        when(mHistorySyncDelegateMock.canUseLandscapeLayout()).thenReturn(true);
         mActivityTestRule.launchActivity(null);
         mSigninTestRule.addTestAccountThenSignin();
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);

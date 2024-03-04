@@ -14,15 +14,14 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.ui.signin.R;
-import org.chromium.components.browser_ui.widget.DualControlLayout;
+import org.chromium.ui.widget.ButtonCompat;
 
 /** View that wraps history sync consent screen and caches references to UI elements. */
 class HistorySyncView extends LinearLayout {
     private ImageView mAccountImage;
     private Button mDeclineButton;
     private Button mMoreButton;
-    private Button mAcceptButton;
-    private DualControlLayout mButtonBar;
+    private ButtonCompat mAcceptButton;
 
     public HistorySyncView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -36,15 +35,9 @@ class HistorySyncView extends LinearLayout {
         mAccountImage = findViewById(R.id.account_image);
         TextView title = findViewById(R.id.sync_consent_title);
         TextView subtitle = findViewById(R.id.sync_consent_subtitle);
-
-        mAcceptButton = findViewById(R.id.positive_button);
         mDeclineButton = findViewById(R.id.negative_button);
-        if (mAcceptButton == null) {
-            // The landscape layout does not have accept and decline buttons. Create the button bar.
-            createButtonBar();
-        }
-
         mMoreButton = findViewById(R.id.more_button);
+        mAcceptButton = findViewById(R.id.positive_button);
         TextView detailsDescription = findViewById(R.id.sync_consent_details_description);
 
         // TODO(crbug.com/1520791): Confirm that these are the correct title and subtitle strings.
@@ -69,29 +62,7 @@ class HistorySyncView extends LinearLayout {
         return mMoreButton;
     }
 
-    Button getAcceptButton() {
+    ButtonCompat getAcceptButton() {
         return mAcceptButton;
-    }
-
-    void createButtonBarForTablets() {
-        mAcceptButton.setVisibility(GONE);
-        mDeclineButton.setVisibility(GONE);
-        createButtonBar();
-        mDeclineButton.setText(R.string.no_thanks);
-        mAcceptButton.setText(R.string.signin_accept_button);
-        mButtonBar.setVisibility(VISIBLE);
-    }
-
-    private void createButtonBar() {
-        mAcceptButton =
-                DualControlLayout.createButtonForLayout(
-                        getContext(), DualControlLayout.ButtonType.PRIMARY_FILLED, "", null);
-        mDeclineButton =
-                DualControlLayout.createButtonForLayout(
-                        getContext(), DualControlLayout.ButtonType.SECONDARY, "", null);
-        mButtonBar = findViewById(R.id.dual_control_button_bar);
-        mButtonBar.addView(mAcceptButton);
-        mButtonBar.addView(mDeclineButton);
-        mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.END);
     }
 }

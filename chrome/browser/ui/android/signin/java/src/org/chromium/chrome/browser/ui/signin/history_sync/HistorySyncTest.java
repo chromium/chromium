@@ -13,7 +13,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
 import android.view.LayoutInflater;
 
@@ -76,7 +75,6 @@ public class HistorySyncTest {
         mActivityTestRule.launchActivity(null);
         mSigninTestRule.addTestAccountThenSignin();
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
-        when(mHistorySyncDelegateMock.isLargeScreen()).thenReturn(false);
     }
 
     @After

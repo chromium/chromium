@@ -75,8 +75,8 @@ public class HistorySyncFirstRunFragment extends Fragment
     }
 
     @Override
-    public boolean isLargeScreen() {
-        return !getPageDelegate().canUseLandscapeLayout();
+    public boolean canUseLandscapeLayout() {
+        return getPageDelegate().canUseLandscapeLayout();
     }
 
     private void createCoordinatorAndAddToFragment() {

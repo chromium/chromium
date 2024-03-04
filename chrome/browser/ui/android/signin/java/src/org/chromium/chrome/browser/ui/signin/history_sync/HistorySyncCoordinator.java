@@ -19,7 +19,7 @@ public class HistorySyncCoordinator {
     public interface HistorySyncDelegate {
         void dismiss();
 
-        boolean isLargeScreen();
+        boolean canUseLandscapeLayout();
     }
 
     private final HistorySyncMediator mMediator;
@@ -55,21 +55,15 @@ public class HistorySyncCoordinator {
     private HistorySyncView inflateView(LayoutInflater inflater, HistorySyncDelegate delegate) {
         Configuration configuration = inflater.getContext().getResources().getConfiguration();
         boolean useLandscapeLayout =
-                !delegate.isLargeScreen()
+                delegate.canUseLandscapeLayout()
                         && configuration.orientation == Configuration.ORIENTATION_LANDSCAPE;
 
-        HistorySyncView view =
-                (HistorySyncView)
-                        inflater.inflate(
-                                useLandscapeLayout
-                                        ? R.layout.history_sync_landscape_view
-                                        : R.layout.history_sync_portrait_view,
-                                null,
-                                false);
-
-        if (delegate.isLargeScreen()) {
-            view.createButtonBarForTablets();
-        }
-        return view;
+        return (HistorySyncView)
+                inflater.inflate(
+                        useLandscapeLayout
+                                ? R.layout.history_sync_landscape_view
+                                : R.layout.history_sync_portrait_view,
+                        null,
+                        false);
     }
 }
