@@ -5,6 +5,7 @@
 package org.chromium.testing;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import androidx.test.internal.runner.listener.InstrumentationRunListener;
 
@@ -14,7 +15,6 @@ import org.json.JSONObject;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
-import org.junit.runners.model.InitializationError;
 
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A RunListener that captures the list of tests along with annotation information (AndroidX's
@@ -38,6 +39,7 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
     private final boolean mRequireBaseRunner;
     private Failure mFirstFailure;
     private Class<?> mActiveTestClass;
+    private final Set<String> mClassesWithWrongRunner = new TreeSet<>();
 
     public TestListInstrumentationRunListener() {
         this(false);
@@ -79,16 +81,19 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
             // BaseJUnit4ClassRunner only fires testFinished(), so a call to
             // testStarted means a different runner is active, and the test is
             // actually being executed rather than just listed.
-            throw new InitializationError(
-                    "All tests must use @RunWith(BaseJUnit4ClassRunner.class) or a subclass"
-                            + " thereof. Found that this test does not: "
-                            + desc.getTestClass());
+            mClassesWithWrongRunner.add(desc.getClassName());
         }
     }
 
     @Override
     public void instrumentationRunFinished(
             PrintStream streamResult, Bundle resultBundle, Result junitResults) {
+        if (!mClassesWithWrongRunner.isEmpty()) {
+            throw new RuntimeException(
+                    "All tests must use @RunWith(BaseJUnit4ClassRunner.class) or a subclass"
+                            + " thereof. These tests did not:\n  * "
+                            + TextUtils.join("\n  * ", mClassesWithWrongRunner));
+        }
         if (mFirstFailure != null) {
             throw new RuntimeException(
                     "Failed on " + mFirstFailure.getDescription(), mFirstFailure.getException());
