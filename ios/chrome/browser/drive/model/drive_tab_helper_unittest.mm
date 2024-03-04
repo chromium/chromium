@@ -28,11 +28,10 @@ class DriveTabHelperTest : public PlatformTest {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(browser_state_.get());
-    DriveTabHelper::CreateForWebState(web_state_.get());
     download_task_ =
         std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
     download_task_->SetWebState(web_state_.get());
-    helper_ = DriveTabHelper::FromWebState(web_state_.get());
+    helper_ = DriveTabHelper::GetOrCreateForWebState(web_state_.get());
   }
 
   base::test::TaskEnvironment task_environment;

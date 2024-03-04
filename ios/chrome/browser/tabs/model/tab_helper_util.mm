@@ -239,7 +239,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   // Drive tab helper.
   if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
-    DriveTabHelper::CreateForWebState(web_state);
+    if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+      DriveTabHelper::GetOrCreateForWebState(web_state);
+    }
     DocumentDownloadTabHelper::CreateForWebState(web_state);
   }
 

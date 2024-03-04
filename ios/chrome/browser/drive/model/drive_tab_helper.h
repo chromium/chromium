@@ -8,8 +8,8 @@
 #import "base/scoped_observation.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/download/download_task_observer.h"
+#import "ios/web/public/lazy_web_state_user_data.h"
 #import "ios/web/public/web_state_observer.h"
-#import "ios/web/public/web_state_user_data.h"
 
 class DriveUploadTask;
 @protocol SystemIdentity;
@@ -21,7 +21,7 @@ class UploadTask;
 // downloaded file to Drive, etc.
 // - 2 - observes the `DownloadTask` and uploads the downloaded file using the
 // Drive service upon completion of the task.
-class DriveTabHelper : public web::WebStateUserData<DriveTabHelper>,
+class DriveTabHelper : public web::LazyWebStateUserData<DriveTabHelper>,
                        public web::DownloadTaskObserver {
  public:
   DriveTabHelper(const DriveTabHelper&) = delete;
@@ -36,7 +36,7 @@ class DriveTabHelper : public web::WebStateUserData<DriveTabHelper>,
   UploadTask* GetUploadTaskForDownload(web::DownloadTask* task);
 
  private:
-  friend class web::WebStateUserData<DriveTabHelper>;
+  friend class web::LazyWebStateUserData<DriveTabHelper>;
   explicit DriveTabHelper(web::WebState* web_state);
 
   // web::DownloadTaskObserver overrides:

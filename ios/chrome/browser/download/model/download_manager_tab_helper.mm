@@ -161,7 +161,7 @@ bool DownloadManagerTabHelper::WillDownloadTaskBeSavedToDrive() const {
     return false;
   }
   DriveTabHelper* drive_tab_helper =
-      DriveTabHelper::FromWebState(task_->GetWebState());
+      DriveTabHelper::GetOrCreateForWebState(task_->GetWebState());
   UploadTask* upload_task =
       drive_tab_helper->GetUploadTaskForDownload(task_.get());
   return upload_task && !upload_task->IsDone();

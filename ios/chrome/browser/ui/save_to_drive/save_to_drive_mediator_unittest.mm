@@ -65,7 +65,7 @@ class SaveToDriveMediatorTest : public PlatformTest {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(browser_state_.get());
-    DriveTabHelper::CreateForWebState(web_state_.get());
+    DriveTabHelper::GetOrCreateForWebState(web_state_.get());
     FakeDownloadManagerTabHelper::CreateForWebState(web_state_.get());
     download_task_ =
         std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
@@ -98,7 +98,7 @@ class SaveToDriveMediatorTest : public PlatformTest {
   }
 
   DriveTabHelper* GetDriveTabHelper() const {
-    return DriveTabHelper::FromWebState(web_state_.get());
+    return DriveTabHelper::GetOrCreateForWebState(web_state_.get());
   }
 
   drive::TestDriveService* GetTestDriveService() {

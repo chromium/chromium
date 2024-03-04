@@ -299,7 +299,8 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   // upload the file, add the download task to the Drive tab helper, start the
   // task through the Download Manager tab helper and hide the account picker
   // view.
-  DriveTabHelper* driveTabHelper = DriveTabHelper::FromWebState(_webState);
+  DriveTabHelper* driveTabHelper =
+      DriveTabHelper::GetOrCreateForWebState(_webState);
   driveTabHelper->AddDownloadToSaveToDrive(_downloadTask,
                                            _fileUploader->GetIdentity());
   DownloadManagerTabHelper* downloadManagerTabHelper =
