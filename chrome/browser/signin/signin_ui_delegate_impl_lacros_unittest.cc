@@ -139,8 +139,8 @@ class SigninUiDelegateImplLacrosTest : public ::testing::TestWithParam<bool> {
 
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
-  raw_ptr<FakeAccountManagerUI> fake_account_manager_ui_;
   std::unique_ptr<ScopedAshAccountManagerForTests> scoped_account_manager_;
+  raw_ptr<FakeAccountManagerUI> fake_account_manager_ui_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   raw_ptr<Profile> profile_;

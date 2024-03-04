@@ -78,10 +78,10 @@ class AccountManagerFacadeFactoryLacros {
   void Reset() {
     // AccountManagerFacade depends on AccountManagerMojoService.
     account_manager_facade_.reset();
+    account_manager_ui_ = nullptr;
     // AccountManagerMojoService depends on AccountManager.
     account_manager_mojo_service_.reset();
     ash_account_manager_.reset();
-    account_manager_ui_ = nullptr;
   }
 
  private:
