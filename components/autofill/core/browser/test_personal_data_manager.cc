@@ -57,12 +57,12 @@ void TestPersonalDataManager::RecordUseOfIban(Iban& iban) {
       iban.record_type() == Iban::kLocalIban
           ? payments_data_manager_->local_ibans_
           : payments_data_manager_->server_ibans_;
-  auto it =
-      base::ranges::find(container,
-                         iban.record_type() == Iban::kLocalIban
-                             ? GetIbanByGUID(iban.guid())
-                             : GetIbanByInstrumentId(iban.instrument_id()),
-                         &std::unique_ptr<Iban>::get);
+  auto it = base::ranges::find(
+      container,
+      iban.record_type() == Iban::kLocalIban
+          ? payments_data_manager().GetIbanByGUID(iban.guid())
+          : payments_data_manager().GetIbanByInstrumentId(iban.instrument_id()),
+      &std::unique_ptr<Iban>::get);
   if (it != container.end()) {
     it->get()->RecordAndLogUse();
   }
@@ -95,7 +95,7 @@ void TestPersonalDataManager::RemoveByGuidWithoutNotifications(
                            credit_card, &std::unique_ptr<CreditCard>::get));
   } else if (GetProfileByGUID(guid)) {
     address_data_manager_->RemoveProfile(guid);
-  } else if (const Iban* iban = GetIbanByGUID(guid)) {
+  } else if (const Iban* iban = payments_data_manager().GetIbanByGUID(guid)) {
     payments_data_manager_->local_ibans_.erase(
         base::ranges::find(payments_data_manager_->local_ibans_, iban,
                            &std::unique_ptr<Iban>::get));
@@ -128,7 +128,7 @@ std::string TestPersonalDataManager::AddAsLocalIban(Iban iban) {
 }
 
 std::string TestPersonalDataManager::UpdateIban(const Iban& iban) {
-  const Iban* old_iban = GetIbanByGUID(iban.guid());
+  const Iban* old_iban = payments_data_manager().GetIbanByGUID(iban.guid());
   CHECK(old_iban);
   payments_data_manager_->local_ibans_.push_back(std::make_unique<Iban>(iban));
   RemoveByGUID(old_iban->guid());

@@ -571,15 +571,6 @@ void PersonalDataManager::RemoveByGUID(const std::string& guid) {
   }
 }
 
-const Iban* PersonalDataManager::GetIbanByGUID(const std::string& guid) const {
-  return payments_data_manager_->GetIbanByGUID(guid);
-}
-
-const Iban* PersonalDataManager::GetIbanByInstrumentId(
-    int64_t instrument_id) const {
-  return payments_data_manager_->GetIbanByInstrumentId(instrument_id);
-}
-
 CreditCard* PersonalDataManager::GetCreditCardByGUID(const std::string& guid) {
   return payments_data_manager_->GetCreditCardByGUID(guid);
 }
@@ -597,29 +588,6 @@ CreditCard* PersonalDataManager::GetCreditCardByInstrumentId(
 CreditCard* PersonalDataManager::GetCreditCardByServerId(
     const std::string& server_id) {
   return payments_data_manager_->GetCreditCardByServerId(server_id);
-}
-
-std::optional<CreditCardFlatRateBenefit>
-PersonalDataManager::GetFlatRateBenefitByInstrumentId(
-    const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id) const {
-  return payments_data_manager_->GetFlatRateBenefitByInstrumentId(
-      instrument_id);
-}
-
-std::optional<CreditCardCategoryBenefit>
-PersonalDataManager::GetCategoryBenefitByInstrumentIdAndCategory(
-    const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
-    const CreditCardCategoryBenefit::BenefitCategory benefit_category) const {
-  return payments_data_manager_->GetCategoryBenefitByInstrumentIdAndCategory(
-      instrument_id, benefit_category);
-}
-
-std::optional<CreditCardMerchantBenefit>
-PersonalDataManager::GetMerchantBenefitByInstrumentIdAndOrigin(
-    const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
-    const url::Origin& merchant_origin) const {
-  return payments_data_manager_->GetMerchantBenefitByInstrumentIdAndOrigin(
-      instrument_id, merchant_origin);
 }
 
 bool PersonalDataManager::IsDataLoaded() const {

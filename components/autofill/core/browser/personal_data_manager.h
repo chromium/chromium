@@ -349,14 +349,6 @@ class PersonalDataManager : public KeyedService,
   // TODO(1426498): rewrite tests that rely on this method to use Init instead.
   void SetSyncServiceForTest(syncer::SyncService* sync_service);
 
-  // Returns the IBAN with the specified `guid`, or nullptr if there is no IBAN
-  // with the specified `guid`.
-  const Iban* GetIbanByGUID(const std::string& guid) const;
-
-  // Returns the IBAN if any cached IBAN in `server_ibans_` has the same
-  // `instrument_id` as the given `instrument_id`, otherwise returns nullptr.
-  const Iban* GetIbanByInstrumentId(int64_t instrument_id) const;
-
   // Returns the credit card with the specified |guid|, or nullptr if there is
   // no credit card with the specified |guid|.
   virtual CreditCard* GetCreditCardByGUID(const std::string& guid);
@@ -372,27 +364,6 @@ class PersonalDataManager : public KeyedService,
   // Returns the credit card with the given server id, or nullptr if there is no
   // match.
   CreditCard* GetCreditCardByServerId(const std::string& server_id);
-
-  // Return the first valid flat rate benefit linked with the card with the
-  // specific `instrument_id`.
-  std::optional<CreditCardFlatRateBenefit> GetFlatRateBenefitByInstrumentId(
-      CreditCardBenefitBase::LinkedCardInstrumentId instrument_id) const;
-
-  // Return the first valid category benefit for the specific
-  // `benefit_category` and linked with the card with the specific
-  // `instrument_id`.
-  std::optional<CreditCardCategoryBenefit>
-  GetCategoryBenefitByInstrumentIdAndCategory(
-      CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
-      CreditCardCategoryBenefit::BenefitCategory benefit_category) const;
-
-  // Return the first valid merchant benefit for the specific
-  // `merchant_origin` and linked with the card with the specific
-  // `instrument_id`.
-  std::optional<CreditCardMerchantBenefit>
-  GetMerchantBenefitByInstrumentIdAndOrigin(
-      CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
-      const url::Origin& merchant_origin) const;
 
   // Add the credit-card-linked benefit to local cache for tests. This does
   // not affect data in the real database.

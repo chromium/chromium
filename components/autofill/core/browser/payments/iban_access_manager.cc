@@ -38,8 +38,9 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
   Suggestion::BackendId backend_id =
       suggestion.GetPayload<Suggestion::BackendId>();
   if (Suggestion::Guid* guid = absl::get_if<Suggestion::Guid>(&backend_id)) {
-    const Iban* iban =
-        client_->GetPersonalDataManager()->GetIbanByGUID(guid->value());
+    const Iban* iban = client_->GetPersonalDataManager()
+                           ->payments_data_manager()
+                           .GetIbanByGUID(guid->value());
     if (iban) {
       Iban iban_copy = *iban;
       client_->GetPersonalDataManager()->RecordUseOfIban(iban_copy);
@@ -68,8 +69,9 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
   // The suggestion is now presumed to be a masked server IBAN.
   // If there are no server IBANs in the PersonalDataManager that have the same
   // instrument ID as the provided BackendId, then abort the operation.
-  if (!client_->GetPersonalDataManager()->GetIbanByInstrumentId(
-          instrument_id)) {
+  if (!client_->GetPersonalDataManager()
+           ->payments_data_manager()
+           .GetIbanByInstrumentId(instrument_id)) {
     return;
   }
 
@@ -80,8 +82,9 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
 
   // Construct `UnmaskIbanRequestDetails` and send `UnmaskIban` to fetch the
   // full value of the server IBAN.
-  const Iban* iban =
-      client_->GetPersonalDataManager()->GetIbanByInstrumentId(instrument_id);
+  const Iban* iban = client_->GetPersonalDataManager()
+                         ->payments_data_manager()
+                         .GetIbanByInstrumentId(instrument_id);
   if (!iban) {
     return;
   }

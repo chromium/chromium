@@ -701,8 +701,9 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetIbanByGuid(
     JNIEnv* env,
     const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jguid) {
-  const Iban* iban = personal_data_manager_->GetIbanByGUID(
-      ConvertJavaStringToUTF8(env, jguid));
+  const Iban* iban =
+      personal_data_manager_->payments_data_manager().GetIbanByGUID(
+          ConvertJavaStringToUTF8(env, jguid));
   if (!iban) {
     return ScopedJavaLocalRef<jobject>();
   }

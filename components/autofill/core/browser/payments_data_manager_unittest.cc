@@ -1349,25 +1349,27 @@ TEST_F(PaymentsDataManagerTest, GetActiveCreditCardBenefits) {
 
   // Match getter results with the search criteria.
   EXPECT_TRUE(personal_data_->IsAutofillPaymentMethodsEnabled());
-  EXPECT_EQ(personal_data_
-                ->GetFlatRateBenefitByInstrumentId(
-                    instrument_id_for_flat_rate_benefit)
-                ->linked_card_instrument_id(),
-            instrument_id_for_flat_rate_benefit);
+  EXPECT_EQ(
+      personal_data_->payments_data_manager()
+          .GetFlatRateBenefitByInstrumentId(instrument_id_for_flat_rate_benefit)
+          ->linked_card_instrument_id(),
+      instrument_id_for_flat_rate_benefit);
 
   std::optional<CreditCardCategoryBenefit> category_benefit_result =
-      personal_data_->GetCategoryBenefitByInstrumentIdAndCategory(
-          instrument_id_for_category_benefit,
-          benefit_category_for_category_benefit);
+      personal_data_->payments_data_manager()
+          .GetCategoryBenefitByInstrumentIdAndCategory(
+              instrument_id_for_category_benefit,
+              benefit_category_for_category_benefit);
   EXPECT_EQ(category_benefit_result->linked_card_instrument_id(),
             instrument_id_for_category_benefit);
   EXPECT_EQ(category_benefit_result->benefit_category(),
             benefit_category_for_category_benefit);
 
   std::optional<CreditCardMerchantBenefit> merchant_benefit_result =
-      personal_data_->GetMerchantBenefitByInstrumentIdAndOrigin(
-          instrument_id_for_merchant_benefit,
-          merchant_origin_for_merchant_benefit);
+      personal_data_->payments_data_manager()
+          .GetMerchantBenefitByInstrumentIdAndOrigin(
+              instrument_id_for_merchant_benefit,
+              merchant_origin_for_merchant_benefit);
   EXPECT_EQ(merchant_benefit_result->linked_card_instrument_id(),
             instrument_id_for_merchant_benefit);
   EXPECT_TRUE(merchant_benefit_result->merchant_domains().contains(
@@ -1375,14 +1377,17 @@ TEST_F(PaymentsDataManagerTest, GetActiveCreditCardBenefits) {
 
   // Disable autofill credit card pref. Check that no benefits are returned.
   prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
-  EXPECT_FALSE(personal_data_->GetFlatRateBenefitByInstrumentId(
-      instrument_id_for_flat_rate_benefit));
-  EXPECT_FALSE(personal_data_->GetCategoryBenefitByInstrumentIdAndCategory(
-      instrument_id_for_category_benefit,
-      benefit_category_for_category_benefit));
-  EXPECT_FALSE(personal_data_->GetMerchantBenefitByInstrumentIdAndOrigin(
-      instrument_id_for_merchant_benefit,
-      merchant_origin_for_merchant_benefit));
+  EXPECT_FALSE(
+      personal_data_->payments_data_manager().GetFlatRateBenefitByInstrumentId(
+          instrument_id_for_flat_rate_benefit));
+  EXPECT_FALSE(personal_data_->payments_data_manager()
+                   .GetCategoryBenefitByInstrumentIdAndCategory(
+                       instrument_id_for_category_benefit,
+                       benefit_category_for_category_benefit));
+  EXPECT_FALSE(personal_data_->payments_data_manager()
+                   .GetMerchantBenefitByInstrumentIdAndOrigin(
+                       instrument_id_for_merchant_benefit,
+                       merchant_origin_for_merchant_benefit));
 }
 
 // Tests benefit getters will not return inactive benefits.
@@ -1420,14 +1425,17 @@ TEST_F(PaymentsDataManagerTest, GetInactiveCreditCardBenefits) {
   personal_data_->AddCreditCardBenefitForTest(std::move(merchant_benefit));
 
   // Should not return any benefits as no benefit is currently active.
-  EXPECT_FALSE(personal_data_->GetFlatRateBenefitByInstrumentId(
-      instrument_id_for_flat_rate_benefit));
-  EXPECT_FALSE(personal_data_->GetCategoryBenefitByInstrumentIdAndCategory(
-      instrument_id_for_category_benefit,
-      benefit_category_for_category_benefit));
-  EXPECT_FALSE(personal_data_->GetMerchantBenefitByInstrumentIdAndOrigin(
-      instrument_id_for_merchant_benefit,
-      merchant_origin_for_merchant_benefit));
+  EXPECT_FALSE(
+      personal_data_->payments_data_manager().GetFlatRateBenefitByInstrumentId(
+          instrument_id_for_flat_rate_benefit));
+  EXPECT_FALSE(personal_data_->payments_data_manager()
+                   .GetCategoryBenefitByInstrumentIdAndCategory(
+                       instrument_id_for_category_benefit,
+                       benefit_category_for_category_benefit));
+  EXPECT_FALSE(personal_data_->payments_data_manager()
+                   .GetMerchantBenefitByInstrumentIdAndOrigin(
+                       instrument_id_for_merchant_benefit,
+                       merchant_origin_for_merchant_benefit));
 }
 
 // Tests benefit getters will not return expired benefits.
@@ -1465,14 +1473,17 @@ TEST_F(PaymentsDataManagerTest, GetExpiredCreditCardBenefits) {
   personal_data_->AddCreditCardBenefitForTest(std::move(merchant_benefit));
 
   // Should not return any benefits as all of the benefits are expired.
-  EXPECT_FALSE(personal_data_->GetFlatRateBenefitByInstrumentId(
-      instrument_id_for_flat_rate_benefit));
-  EXPECT_FALSE(personal_data_->GetCategoryBenefitByInstrumentIdAndCategory(
-      instrument_id_for_category_benefit,
-      benefit_category_for_category_benefit));
-  EXPECT_FALSE(personal_data_->GetMerchantBenefitByInstrumentIdAndOrigin(
-      instrument_id_for_merchant_benefit,
-      merchant_origin_for_merchant_benefit));
+  EXPECT_FALSE(
+      personal_data_->payments_data_manager().GetFlatRateBenefitByInstrumentId(
+          instrument_id_for_flat_rate_benefit));
+  EXPECT_FALSE(personal_data_->payments_data_manager()
+                   .GetCategoryBenefitByInstrumentIdAndCategory(
+                       instrument_id_for_category_benefit,
+                       benefit_category_for_category_benefit));
+  EXPECT_FALSE(personal_data_->payments_data_manager()
+                   .GetMerchantBenefitByInstrumentIdAndOrigin(
+                       instrument_id_for_merchant_benefit,
+                       merchant_origin_for_merchant_benefit));
 }
 
 }  // namespace autofill

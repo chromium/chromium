@@ -2103,8 +2103,10 @@ AutofillSuggestionGenerator::GetCreditCardBenefitSuggestionLabel(
 
   // 1. Check merchant benefit.
   std::optional<CreditCardMerchantBenefit> merchant_benefit =
-      personal_data().GetMerchantBenefitByInstrumentIdAndOrigin(
-          benefit_instrument_id, origin);
+      personal_data()
+          .payments_data_manager()
+          .GetMerchantBenefitByInstrumentIdAndOrigin(benefit_instrument_id,
+                                                     origin);
   if (merchant_benefit && merchant_benefit->IsActiveBenefit()) {
     return GetBenefitTextWithTermsAppended(
         merchant_benefit->benefit_description());
@@ -2118,8 +2120,10 @@ AutofillSuggestionGenerator::GetCreditCardBenefitSuggestionLabel(
   if (category_benefit_type !=
       CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory) {
     std::optional<CreditCardCategoryBenefit> category_benefit =
-        personal_data().GetCategoryBenefitByInstrumentIdAndCategory(
-            benefit_instrument_id, category_benefit_type);
+        personal_data()
+            .payments_data_manager()
+            .GetCategoryBenefitByInstrumentIdAndCategory(benefit_instrument_id,
+                                                         category_benefit_type);
     if (category_benefit && category_benefit->IsActiveBenefit()) {
       return GetBenefitTextWithTermsAppended(
           category_benefit->benefit_description());
@@ -2128,7 +2132,8 @@ AutofillSuggestionGenerator::GetCreditCardBenefitSuggestionLabel(
 
   // 3. Check flat rate benefit.
   std::optional<CreditCardFlatRateBenefit> flat_rate_benefit =
-      personal_data().GetFlatRateBenefitByInstrumentId(benefit_instrument_id);
+      personal_data().payments_data_manager().GetFlatRateBenefitByInstrumentId(
+          benefit_instrument_id);
   if (flat_rate_benefit && flat_rate_benefit->IsActiveBenefit()) {
     return GetBenefitTextWithTermsAppended(
         flat_rate_benefit->benefit_description());

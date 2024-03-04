@@ -252,7 +252,10 @@ TEST_F(IbanAccessManagerTest, LocalIban_LogUsageMetric) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.DaysSinceLastUse.StoredIban.Local", kDaysSinceLastUsed, 1);
-  EXPECT_EQ(personal_data().GetIbanByGUID(local_iban.guid())->use_count(),
+  EXPECT_EQ(personal_data()
+                .payments_data_manager()
+                .GetIbanByGUID(local_iban.guid())
+                ->use_count(),
             kDefaultUseCount + 1);
 }
 
@@ -275,6 +278,7 @@ TEST_F(IbanAccessManagerTest, ServerIban_LogUsageMetric) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.DaysSinceLastUse.StoredIban.Server", kDaysSinceLastUsed, 1);
   EXPECT_EQ(personal_data()
+                .payments_data_manager()
                 .GetIbanByInstrumentId(server_iban.instrument_id())
                 ->use_count(),
             kDefaultUseCount + 1);

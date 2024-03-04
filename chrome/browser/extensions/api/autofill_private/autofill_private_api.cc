@@ -466,7 +466,7 @@ ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
   if (!personal_data || !personal_data->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
 
-  if (personal_data->GetIbanByGUID(parameters->guid)) {
+  if (personal_data->payments_data_manager().GetIbanByGUID(parameters->guid)) {
     base::RecordAction(base::UserMetricsAction("AutofillIbanDeleted"));
   } else if (autofill::CreditCard* credit_card =
                  personal_data->GetCreditCardByGUID(parameters->guid)) {
@@ -674,7 +674,8 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
   // The IBAN guid is specified if the user tries to update an existing IBAN via
   // the Chrome payment settings page.
   if (iban_entry->guid.has_value() && !iban_entry->guid->empty()) {
-    existing_iban = personal_data->GetIbanByGUID(*iban_entry->guid);
+    existing_iban =
+        personal_data->payments_data_manager().GetIbanByGUID(*iban_entry->guid);
     CHECK(existing_iban);
   }
 
