@@ -544,10 +544,12 @@ void HighlightPainter::Paint(Phase phase) {
           PaintDecoratedText(text, styleable_marker.TextColor(),
                              paint_start_offset, paint_end_offset);
         }
-      } break;
-
-      default:
-        // Spelling, Grammar, TextFragment and Custom
+        break;
+      }
+      case DocumentMarker::kSpelling:
+      case DocumentMarker::kGrammar:
+      case DocumentMarker::kTextFragment:
+      case DocumentMarker::kCustomHighlight:
         NOTREACHED();
         break;
     }
