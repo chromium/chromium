@@ -370124,12 +370124,6 @@
      []
     ]
    },
-   "inert": {
-    "inert-and-find-expected.txt": [
-     "fb44460e22c36819e5c470eed740b24764e47a14",
-     []
-    ]
-   },
    "infrastructure": {
     "DIR_METADATA": [
      "b19504342dfe64050a6372808f15f3e792a79218",
@@ -375523,7 +375517,7 @@
       []
      ],
      "helpers.js": [
-      "8c30173336eed990dba215bd441801ac0e2b1ac9",
+      "ca44e32f7f4921011226b9647bc4ba5d76495980",
       []
      ],
      "icon.png": [
@@ -375532,6 +375526,10 @@
      ],
      "shownotification-sw.js": [
       "63a1569460d302bd72011675d4dabed7013b49d0",
+      []
+     ],
+     "shownotification-window-iframe.html": [
+      "2a45e794656fcbe20d7dcd741b37bffcc9630851",
       []
      ]
     }
@@ -597621,8 +597619,17 @@
       {}
      ]
     ],
+    "shownotification-window.https.html": [
+     "b21a5621df75d540379fe24d82734de521b0f82a",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "shownotification-without-permission.https.window.js": [
-     "37b3dbbef662380c6d1b7b36755653dda5606682",
+     "b09c0460fbd5ba19ef03a4c29d72c9d86eb1e9d0",
      [
       "notifications/shownotification-without-permission.https.window.html",
       {
