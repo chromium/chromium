@@ -82,6 +82,11 @@
     padding-inline-end: 0px;
     padding-inline-start: 0px;
     padding-top: 0;
+    display: none;
+  }
+
+  :host-context(.vertical) .actions.inlined {
+    display: flex;
   }
 
   :host([has-action]) .actions.inlined {
@@ -197,8 +202,8 @@
     margin-inline-end: 1px;
   }
 
-  :host-context(.primary-side) .container:hover #remove,
-  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])):host-context(.primary-side) #remove {
+  :host-context(.vertical) .container:hover #remove,
+  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])):host-context(.vertical) #remove {
     display: inline-flex;
   }
 
@@ -284,26 +289,24 @@
     <span id="separator" class="dim">[[separatorText_]]</span>
     <span id="description" inner-h-t-m-l="[[descriptionHtml_]]"></span>
   </div>
-  <template is="dom-if" if="[[showActionsInlined_()]]">
-    <div class="actions container inlined" aria-hidden="true">
-      <template is="dom-repeat" items="[[match.actions]]">
-        <template is="dom-if" if="[[expandedStateIconsChromeRefresh]]">
-          <div id="actions-focus-border">
-            <cr-realbox-action id="action" action="[[item]]"
-              action-index="[[actionIndex_(item)]]"
-              on-execute-action="onExecuteAction_" tabindex="1">
-            </cr-realbox-action>
-          </div>
-        </template>
-        <template is="dom-if" if="[[!expandedStateIconsChromeRefresh]]">
+  <div class="actions container inlined" aria-hidden="true">
+    <template is="dom-repeat" items="[[match.actions]]">
+      <template is="dom-if" if="[[expandedStateIconsChromeRefresh]]">
+        <div id="actions-focus-border">
           <cr-realbox-action id="action" action="[[item]]"
             action-index="[[actionIndex_(item)]]"
             on-execute-action="onExecuteAction_" tabindex="1">
           </cr-realbox-action>
+        </div>
       </template>
+      <template is="dom-if" if="[[!expandedStateIconsChromeRefresh]]">
+        <cr-realbox-action id="action" action="[[item]]"
+          action-index="[[actionIndex_(item)]]"
+          on-execute-action="onExecuteAction_" tabindex="1">
+        </cr-realbox-action>
       </template>
-    </div>
-  </template>
+    </template>
+  </div>
   <cr-icon-button id="remove" class="action-icon icon-clear"
     aria-label="[[removeButtonAriaLabel_]]"
     on-click="onRemoveButtonClick_" on-mousedown="onRemoveButtonMouseDown_"

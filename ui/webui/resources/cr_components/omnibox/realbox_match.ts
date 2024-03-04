@@ -13,8 +13,8 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {ACMatchClassification, Action, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface} from './omnibox.mojom-webui.js';
-import {NavigationPredictor, SelectionLineState, SideType} from './omnibox.mojom-webui.js';
+import type {ACMatchClassification, Action, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface, SideType} from './omnibox.mojom-webui.js';
+import {NavigationPredictor, SelectionLineState} from './omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import type {RealboxIconElement} from './realbox_icon.js';
 import {getTemplate} from './realbox_match.html.js';
@@ -392,12 +392,6 @@ export class RealboxMatchElement extends PolymerElement {
     return this.match && decodeString16(this.match.description) ?
         loadTimeData.getString('realboxSeparator') :
         '';
-  }
-
-  private showActionsInlined_(): boolean {
-    // Always show inlined div when feature is enabled, so that it will
-    // grow and push other elements like remove button to the right.
-    return this.sideType === SideType.kDefaultPrimary;
   }
 
   /**
