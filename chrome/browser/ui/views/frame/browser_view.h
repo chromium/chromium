@@ -725,6 +725,10 @@ class BrowserView : public BrowserWindow,
 
   // content::WebContentsObserver:
   void DidFirstVisuallyNonEmptyPaint() override;
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+#endif
 
   // views::ClientView:
   views::CloseRequestResult OnWindowCloseRequested() override;
@@ -1058,6 +1062,10 @@ class BrowserView : public BrowserWindow,
   // prevent policy from incorrectly allowing the browser to enter fullscreen
   // when it should not be able to.
   void UpdateFullscreenAllowedFromPolicy(bool allowed_without_policy);
+
+  // Apply data protection settings based on the verdict received by
+  // safe-browsing's realtime lookup service.
+  void ApplyDataProtectionSettings(const std::string& watermark_text);
 
   // The BrowserFrame that hosts this view.
   raw_ptr<BrowserFrame, DanglingUntriaged> frame_ = nullptr;

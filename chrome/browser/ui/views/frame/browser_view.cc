@@ -340,6 +340,7 @@
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
+#include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
 #include "chrome/browser/enterprise/watermark/watermark_view.h"
 #endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
@@ -1790,6 +1791,14 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   if (AppUsesBorderlessMode() && !old_contents) {
     SetWindowManagementPermissionSubscriptionForBorderlessMode(new_contents);
   }
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  enterprise_data_protection::DataProtectionNavigationObserver::
+      GetDataProtectionSettings(
+          GetProfile(), web_contents(),
+          base::BindOnce(&BrowserView::ApplyDataProtectionSettings,
+                         weak_ptr_factory_.GetWeakPtr()));
+#endif
 }
 
 void BrowserView::OnTabDetached(content::WebContents* contents,
@@ -2714,6 +2723,17 @@ void BrowserView::TouchModeChanged() {
   MaybeInitializeWebUITabStrip();
   MaybeShowWebUITabStripIPH();
 }
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+void BrowserView::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  enterprise_data_protection::DataProtectionNavigationObserver::
+      CreateForNavigationIfNeeded(
+          GetProfile(), navigation_handle,
+          base::BindOnce(&BrowserView::ApplyDataProtectionSettings,
+                         weak_ptr_factory_.GetWeakPtr()));
+}
+#endif
 
 void BrowserView::MaybeShowWebUITabStripIPH() {
   if (!webui_tab_strip_)
@@ -5427,6 +5447,11 @@ void BrowserView::UpdateFullscreenAllowedFromPolicy(
         allowed_without_policy &&
         GetProfile()->GetPrefs()->GetBoolean(fullscreen_pref_path));
   }
+}
+
+void BrowserView::ApplyDataProtectionSettings(
+    const std::string& watermark_text) {
+  SetWatermarkString(watermark_text);
 }
 
 BEGIN_METADATA(BrowserView)

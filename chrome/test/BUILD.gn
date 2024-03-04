@@ -10240,6 +10240,14 @@ test("unit_tests") {
     deps += [ "../browser/enterprise/data_controls:unit_tests" ]
   }
 
+  if (enterprise_watermark) {
+    sources += [
+      "../browser/enterprise/data_protection/data_protection_navigation_observer_unittest.cc",
+      "../browser/enterprise/data_protection/data_protection_page_user_data_unittest.cc",
+    ]
+    deps += [ "//components/safe_browsing/core/browser/realtime:url_lookup_service_base" ]
+  }
+
   if (!is_android) {
     sources += [ "../browser/promos/promos_utils_unittest.cc" ]
 

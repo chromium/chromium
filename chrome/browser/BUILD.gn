@@ -6329,6 +6329,16 @@ static_library("browser") {
     deps += [ "//chrome/browser/enterprise/data_controls" ]
   }
 
+  if (enterprise_watermark) {
+    sources += [
+      "//chrome/browser/enterprise/data_protection/data_protection_navigation_observer.cc",
+      "//chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h",
+      "//chrome/browser/enterprise/data_protection/data_protection_page_user_data.cc",
+      "//chrome/browser/enterprise/data_protection/data_protection_page_user_data.h",
+    ]
+    deps += [ "//components/safe_browsing/core/browser/realtime:url_lookup_service_base" ]
+  }
+
   if (enterprise_client_certificates) {
     sources += [
       "enterprise/client_certificates/certificate_provisioning_service_factory.cc",
