@@ -841,6 +841,9 @@ crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-03
 crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-042.html [ Failure ]
 crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-043.html [ Failure ]
 
+##### This one passes only when it includes an iframe. Removing the iframe makes the test fail.
+crbug.com/327723279 external/wpt/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-033.html [ Failure ]
+
 # This one fails a DCHECK on Chromium infra but passes on wpt.fyi
 
 crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-001.html [ Failure ]

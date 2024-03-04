@@ -453,8 +453,12 @@ suite('NewTabPageLogoTest', () => {
       description: '',
       image: null,
     });
-    const transitionend = eventToPromise('transitionend', $$(logo, '#iframe')!);
 
+    // Wait for one frame, to ensure the transition starts after the iframe has
+    // been rendered.
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+    const transitionend = eventToPromise('transitionend', $$(logo, '#iframe')!);
     // Act.
     window.postMessage(
         {

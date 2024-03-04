@@ -806,6 +806,17 @@ unsigned Internals::layoutCountForTesting(
   return context_frame->View()->LayoutCountForTesting();
 }
 
+bool Internals::nodeNeedsStyleRecalc(Node* node,
+                                     ExceptionState& exception_state) const {
+  if (!node) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidNodeTypeError,
+                                      "Not a node");
+    return false;
+  }
+
+  return node->NeedsStyleRecalc();
+}
+
 unsigned Internals::hitTestCount(Document* doc,
                                  ExceptionState& exception_state) const {
   if (!doc) {
