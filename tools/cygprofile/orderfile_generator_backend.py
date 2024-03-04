@@ -21,6 +21,7 @@ import json
 import glob
 import logging
 import os
+import pathlib
 import shutil
 import subprocess
 import sys
@@ -33,20 +34,16 @@ import patch_orderfile
 import process_profiles
 import profile_android_startup
 
-_SRC_PATH = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
-sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
+_SRC_PATH = pathlib.Path(__file__).resolve().parents[2]
+sys.path.append(str(_SRC_PATH / 'third_party/catapult/devil'))
 from devil.android import device_utils
 from devil.android.sdk import version_codes
 
-
-_SRC_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                         os.pardir, os.pardir)
-sys.path.append(os.path.join(_SRC_PATH, 'build', 'android'))
+sys.path.append(str(_SRC_PATH / 'build/android'))
 import devil_chromium
 from pylib import constants
 
-
-# Needs to happen early for GetBuildType()/GetOutDirectory() to work correctly
+# Needs to happen early for GetOutDirectory() to work correctly.
 constants.SetBuildType('Release')
 
 
@@ -54,8 +51,10 @@ constants.SetBuildType('Release')
 # architecture not listed here will eventually throw.
 _ARCH_GN_ARGS = {
     'arm': ['target_cpu="arm"'],
+    # Does not work on the bot: https://crbug.com/41490637
     'arm64': ['target_cpu="arm64"'],
     'x86': ['target_cpu="x86"'],
+    # Telemetry does not work with x64 yet: https://crbug.com/327791269
     'x64': ['target_cpu="x64"'],
 }
 
@@ -258,8 +257,8 @@ class ClankCompiler:
     self._ninja_command = ['autoninja']
     if options.ninja_path:
       self._ninja_command = [options.ninja_path]
-    if self._options.ninja_j:
-      self._ninja_command += ['-j', options.ninja_j]
+      if self._options.ninja_j:
+        self._ninja_command += ['-j', options.ninja_j]
     self._ninja_command += ['-C']
 
     # WebView targets
