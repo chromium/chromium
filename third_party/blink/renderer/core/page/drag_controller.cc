@@ -512,7 +512,7 @@ static bool SetSelectionToDragCaret(LocalFrame* frame,
                                     const SelectionInDOMTree& drag_caret,
                                     Range*& range,
                                     const PhysicalOffset& point) {
-  frame->Selection().SetSelectionAndEndTyping(drag_caret);
+  frame->Selection().SetSelection(drag_caret, SetSelectionOptions());
   // TODO(editing-dev): The use of
   // UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
@@ -527,8 +527,9 @@ static bool SetSelectionToDragCaret(LocalFrame* frame,
   if (!position.IsConnected())
     return false;
 
-  frame->Selection().SetSelectionAndEndTyping(
-      SelectionInDOMTree::Builder().Collapse(position).Build());
+  frame->Selection().SetSelection(
+      SelectionInDOMTree::Builder().Collapse(position).Build(),
+      SetSelectionOptions());
   // TODO(editing-dev): The use of
   // UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
@@ -682,10 +683,11 @@ bool DragController::ConcludeEditDrag(DragData* drag_data) {
         return false;
       }
 
-      inner_frame->Selection().SetSelectionAndEndTyping(
+      inner_frame->Selection().SetSelection(
           SelectionInDOMTree::Builder()
               .SetBaseAndExtent(EphemeralRange(range))
-              .Build());
+              .Build(),
+          SetSelectionOptions());
       if (inner_frame->Selection().IsAvailable()) {
         DCHECK(document_under_mouse_);
         if (!inner_frame->GetEditor().ReplaceSelectionAfterDraggingWithEvents(
@@ -943,10 +945,11 @@ static void PrepareDataTransferForImageDrag(LocalFrame* source,
     // TODO(editing-dev): We should use |EphemeralRange| instead of |Range|.
     Range* range = source->GetDocument()->createRange();
     range->selectNode(node, ASSERT_NO_EXCEPTION);
-    source->Selection().SetSelectionAndEndTyping(
+    source->Selection().SetSelection(
         SelectionInDOMTree::Builder()
             .SetBaseAndExtent(EphemeralRange(range))
-            .Build());
+            .Build(),
+        SetSelectionOptions());
   }
   data_transfer->DeclareAndWriteDragImage(node, link_url, image_url, label);
 }
@@ -1212,8 +1215,9 @@ void SelectEnclosingAnchorIfContentEditable(LocalFrame* frame) {
             frame->Selection()
                 .ComputeVisibleSelectionInDOMTreeDeprecated()
                 .Anchor())) {
-      frame->Selection().SetSelectionAndEndTyping(
-          SelectionInDOMTree::Builder().SelectAllChildren(*anchor).Build());
+      frame->Selection().SetSelection(
+          SelectionInDOMTree::Builder().SelectAllChildren(*anchor).Build(),
+          SetSelectionOptions());
     }
   }
 }

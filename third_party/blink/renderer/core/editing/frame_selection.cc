@@ -740,11 +740,12 @@ void FrameSelection::SelectFrameElementInParentIfFullySelected() {
   if (!owner_element->isConnected() ||
       owner_element->GetDocument() != parent_local_frame->GetDocument())
     return;
-  parent_local_frame->Selection().SetSelectionAndEndTyping(
+  parent_local_frame->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position::BeforeNode(*owner_element),
                             Position::AfterNode(*owner_element))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 }
 
 // Returns a shadow tree node for legacy shadow trees, a child of the
@@ -1142,9 +1143,10 @@ void FrameSelection::SetSelectionFromNone() {
     return;
   if (HTMLBodyElement* body =
           Traversal<HTMLBodyElement>::FirstChild(*document_element)) {
-    SetSelectionAndEndTyping(SelectionInDOMTree::Builder()
-                                 .Collapse(FirstPositionInOrBeforeNode(*body))
-                                 .Build());
+    SetSelection(SelectionInDOMTree::Builder()
+                     .Collapse(FirstPositionInOrBeforeNode(*body))
+                     .Build(),
+                 SetSelectionOptions());
   }
 }
 
