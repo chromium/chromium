@@ -4,10 +4,13 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/ios_buildflags.h"
 #include "ui/display/display.h"
+#include "ui/display/display_features.h"
 #include "ui/display/screen_base.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -36,7 +39,14 @@ class ScreenNotification {
                       selector:@selector(mainScreenChanged)
                           name:UIDeviceOrientationDidChangeNotification
                         object:nil];
+    if (display::features::IsScreenIosRefactorEnabled()) {
+      [defaultCenter addObserver:self
+                        selector:@selector(mainScreenChanged)
+                            name:UIWindowDidBecomeKeyNotification
+                          object:nil];
+    }
   }
+
   return self;
 }
 
@@ -67,10 +77,16 @@ class ScreenIos : public ScreenBase, public ScreenNotification {
   ScreenIos& operator=(const ScreenIos&) = delete;
 
   void ScreenChanged() override {
-    UIScreen* mainScreen = [UIScreen mainScreen];
-    CHECK(mainScreen);
-    Display display(0, gfx::Rect(mainScreen.bounds));
-    CGFloat scale = [mainScreen scale];
+    UIScreen* screen = GetAllActiveScreens().firstObject;
+    if (!display::features::IsScreenIosRefactorEnabled()) {
+      CHECK(screen);
+    } else if (!screen) {
+      return;
+    }
+
+    Display display(0, gfx::Rect(screen.bounds));
+    CGFloat scale = [screen scale];
+
     if (Display::HasForceDeviceScaleFactor()) {
       scale = Display::GetForcedDeviceScaleFactor();
     }
@@ -94,15 +110,32 @@ class ScreenIos : public ScreenBase, public ScreenNotification {
   }
 
   int GetNumDisplays() const override {
-#if TARGET_IPHONE_SIMULATOR
-    // UIScreen does not reliably return correct results on the simulator.
-    return 1;
-#else
-    return [[UIScreen screens] count];
-#endif
+    return std::max(static_cast<int>([GetAllActiveScreens() count]), 1);
   }
 
  private:
+  // Return all screens associated with scenes of the application.
+  NSArray<UIScreen*>* GetAllActiveScreens() const {
+#if BUILDFLAG(IS_IOS_APP_EXTENSION)
+    return [NSArray<UIScreen*> array];
+#else
+    if (display::features::IsScreenIosRefactorEnabled()) {
+      NSMutableSet<UIScreen*>* screens = [NSMutableSet set];
+      for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+        UIWindowScene* windowScene =
+            base::apple::ObjCCastStrict<UIWindowScene>(scene);
+        UIScreen* screen = windowScene.keyWindow.screen;
+        if (screen) {
+          [screens addObject:screen];
+        }
+      }
+      return [screens allObjects];
+    }
+
+    return [UIScreen screens];
+#endif
+  }
+
   ScreenObserver* __strong observer_;
 };
 

@@ -51,6 +51,11 @@ COMPONENT_EXPORT(DISPLAY_FEATURES) BASE_DECLARE_FEATURE(kTiledDisplaySupport);
 
 COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsTiledDisplaySupportEnabled();
 
+#if BUILDFLAG(IS_IOS)
+BASE_DECLARE_FEATURE(kScreenIosRefactor);
+COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsScreenIosRefactorEnabled();
+#endif
+
 }  // namespace features
 }  // namespace display
 

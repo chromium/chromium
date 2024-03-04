@@ -125,6 +125,10 @@ component("display") {
     "//ui/gfx/geometry",
   ]
 
+  if (is_ios) {
+    deps += [ "//build:ios_buildflags" ]
+  }
+
   if (is_win) {
     # Don't conflict with Windows' "display.dll".
     output_name = "ui_display"

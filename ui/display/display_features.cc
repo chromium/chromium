@@ -98,5 +98,19 @@ bool IsTiledDisplaySupportEnabled() {
   return base::FeatureList::IsEnabled(kTiledDisplaySupport);
 }
 
+#if BUILDFLAG(IS_IOS)
+
+// A kill-switch that guards refactoring ScreenIos to stop calling
+// into deprecated methods on UIScreen.
+BASE_FEATURE(kScreenIosRefactor,
+             "ScreenIosRefactor",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsScreenIosRefactorEnabled() {
+  return base::FeatureList::IsEnabled(kScreenIosRefactor);
+}
+
+#endif
+
 }  // namespace features
 }  // namespace display
