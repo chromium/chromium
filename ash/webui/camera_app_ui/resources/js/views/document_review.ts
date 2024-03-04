@@ -113,7 +113,6 @@ export class DocumentReview extends View {
 
   constructor(protected readonly resultSaver: ResultSaver) {
     super(ViewName.DOCUMENT_REVIEW, {
-      dismissByEsc: true,
       defaultFocusSelector: '.show .primary',
     });
     this.pagesElement =
@@ -134,14 +133,13 @@ export class DocumentReview extends View {
         return;
       }
       const index = Array.from(this.pagesElement.children).indexOf(pageElement);
-      await this.waitForUpdatingPage();
       const clickOnDeleteButton =
           target.closest(DELETE_PAGE_BUTTON_SELECTOR) !== null;
       if (clickOnDeleteButton) {
         await this.onDeletePage(index);
         return;
       }
-      await this.selectPage(index);
+      await this.onSelectPage(index);
     });
 
     const pagesElementMutationObserver = new MutationObserver((mutations) => {
@@ -391,6 +389,7 @@ export class DocumentReview extends View {
    * The handler called when users delete a page.
    */
   private async onDeletePage(index: number): Promise<void> {
+    await this.waitForUpdatingPage();
     sendDocScanEvent(DocScanActionType.DELETE_PAGE);
     await this.deletePage(index);
     speakMessage(getI18nMessage(I18nString.DELETE_PAGE_MESSAGE, index + 1));
@@ -492,7 +491,7 @@ export class DocumentReview extends View {
                                                this.selectedIndex - 1;
       // TODO(b/301360817): Revisit which operations should be on the same
       // queue.
-      void this.selectPage(index);
+      void this.onSelectPage(index);
       return true;
     } else if (key === 'ArrowDown') {
       const index = this.selectedIndex === this.pages.length - 1 ?
@@ -500,7 +499,7 @@ export class DocumentReview extends View {
           this.selectedIndex + 1;
       // TODO(b/301360817): Revisit which operations should be on the same
       // queue.
-      void this.selectPage(index);
+      void this.onSelectPage(index);
       return true;
     } else if (key === 'Delete') {
       // TODO(b/301360817): Revisit which operations should be on the same
@@ -546,5 +545,13 @@ export class DocumentReview extends View {
       deleteButton.setAttribute(
           'aria-label', getI18nMessage(I18nString.DELETE_PAGE_BUTTON, i + 1));
     }
+  }
+
+  /**
+   * The handler called when users select a page.
+   */
+  private async onSelectPage(index: number) {
+    await this.waitForUpdatingPage();
+    await this.selectPage(index);
   }
 }
