@@ -4,6 +4,8 @@
 
 #include "components/soda/soda_installer_impl_chromeos.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
@@ -167,7 +169,7 @@ TEST_F(SodaInstallerImplChromeOSTest, MultipleLangsAvailableInExperiment) {
   std::map<std::string, std::string> params;
   params.insert({"available_languages",
                  "it-IT:libsoda-chickenface,ja-JP:libsoda-moo,de-IT:"
-                 "incorrectprefix,wr-on:libsoda-wrong-language"});
+                 "incorrectprefix,wr-on:libsoda-wrong-language,de-DE:"});
   scoped_feature_list_internal.InitAndEnableFeatureWithParameters(
       ::speech::kCrosExpandSodaLanguages, params);
   // explicit delete first to make the single instance enforcement happy.
@@ -176,7 +178,9 @@ TEST_F(SodaInstallerImplChromeOSTest, MultipleLangsAvailableInExperiment) {
   std::vector<std::string> actual_langs =
       GetInstance()->GetAvailableLanguages();
   EXPECT_THAT(actual_langs,
-              ::testing::UnorderedElementsAre("ja-JP", "it-IT", "en-US"));
+              ::testing::IsSupersetOf({"ja-JP", "it-IT", "en-US"}));
+  EXPECT_TRUE(std::find(actual_langs.begin(), actual_langs.end(), "de-DE") ==
+              actual_langs.end());
 }
 
 TEST_F(SodaInstallerImplChromeOSTest, IsAnyLanguagePackInstalled) {

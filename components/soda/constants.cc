@@ -23,7 +23,7 @@
 
 namespace speech {
 const constexpr char* const kDefaultEnabledLanguages[] = {"fr-FR", "it-IT",
-                                                          "de-DE"};
+                                                          "de-DE", "en-US"};
 
 const char kUsEnglishLocale[] = "en-US";
 
