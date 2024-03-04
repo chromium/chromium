@@ -41,6 +41,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/url_conversion.h"
@@ -2687,6 +2688,13 @@ void TraverseDomForFourDigitCombinations(
 
 bool IsVisibleIframeForTesting(const WebElement& iframe_element) {
   return IsVisibleIframe(iframe_element);
+}
+
+WebFormElement GetFormElementForPasswordInput(const WebInputElement& element) {
+  return base::FeatureList::IsEnabled(
+             password_manager::features::kShadowDomSupport)
+             ? form_util::GetOwningForm(element)
+             : element.Form();
 }
 
 }  // namespace autofill::form_util

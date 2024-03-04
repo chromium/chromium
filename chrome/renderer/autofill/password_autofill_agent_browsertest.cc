@@ -920,6 +920,24 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
         .DidFinishSameDocumentNavigation();
   }
 
+  ::testing::AssertionResult UpdateFormElementsForFormHostingShadowDom() {
+    username_element_ = GetElementByID("un_host")
+                            .ShadowRoot()
+                            .FirstChild()
+                            .To<WebInputElement>();
+    if (username_element_.IsNull()) {
+      return ::testing::AssertionFailure() << "Username element is null.";
+    }
+    password_element_ = GetElementByID("pw_host")
+                            .ShadowRoot()
+                            .FirstChild()
+                            .To<WebInputElement>();
+    if (password_element_.IsNull()) {
+      return ::testing::AssertionFailure() << "Password element is null.";
+    }
+    return ::testing::AssertionSuccess();
+  }
+
   FakeMojoPasswordManagerDriver fake_driver_;
   testing::NiceMock<FakePasswordGenerationDriver> fake_pw_client_;
 
@@ -4788,19 +4806,11 @@ TEST_F(PasswordAutofillAgentTest,
 // DOM tree starts between the <form> and <input> tags.
 TEST_F(PasswordAutofillAgentTest,
        PasswordSuggestionFillingWhenFormTagHostsShadowDom) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kShadowDomSupport);
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kShadowDomSupport};
 
   LoadHTML(kFormTagHostsShadowDomInputs);
-
-  // Identify username and password elements.
-  username_element_ =
-      GetElementByID("un_host").ShadowRoot().FirstChild().To<WebInputElement>();
-  ASSERT_FALSE(username_element_.IsNull());
-  password_element_ =
-      GetElementByID("pw_host").ShadowRoot().FirstChild().To<WebInputElement>();
-  ASSERT_FALSE(password_element_.IsNull());
+  ASSERT_TRUE(UpdateFormElementsForFormHostingShadowDom());
 
   // Propagate fill data for filling on manual fallback.
   UpdateRendererIDsInFillData();
@@ -4815,6 +4825,44 @@ TEST_F(PasswordAutofillAgentTest,
   password_autofill_agent_->FillPasswordSuggestion(kAliceUsername16,
                                                    kAlicePassword16);
   CheckTextFieldsDOMState(kAliceUsername, true, kAlicePassword, true);
+}
+
+// Tests that password generation works when a Shadow DOM tree starts between
+// the <form> and <input> tags.
+TEST_F(PasswordAutofillAgentTest, PasswordGenerationWhenFormTagHostsShadowDom) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kShadowDomSupport};
+
+  LoadHTML(kFormTagHostsShadowDomInputs);
+  ASSERT_TRUE(UpdateFormElementsForFormHostingShadowDom());
+
+#if BUILDFLAG(IS_ANDROID)
+  // Ensure TTF isn't shown when the user focuses the password field.
+  autofill_agent_->FormControlElementClicked(password_element_);
+  password_autofill_agent_->KeyboardReplacingSurfaceClosed(
+      /*show_virtual_keyboard=*/false);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Propagate fill data for filling on manual fallback.
+  UpdateRendererIDsInFillData();
+  fill_data_.wait_for_username = true;
+  SimulateOnFillPasswordForm(fill_data_);
+
+  // Simulate focusing the field and triggering password generation.
+  autofill_agent_->FormControlElementClicked(password_element_);
+  base::test::TestFuture<const std::optional<
+      ::autofill::password_generation::PasswordGenerationUIData>&>
+      future_for_waiting;
+  password_generation_->TriggeredGeneratePassword(
+      future_for_waiting.GetCallback());
+  EXPECT_TRUE(future_for_waiting.Wait());
+
+  const std::u16string kPassword = u"GeneratedPass24";
+  EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(kPassword)));
+  password_generation_->GeneratedPasswordAccepted(kPassword);
+
+  // Check that the generated password is filled into form.
+  EXPECT_EQ(password_element_.Value().Utf16(), kPassword);
 }
 
 #if BUILDFLAG(IS_ANDROID)

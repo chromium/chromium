@@ -450,6 +450,11 @@ void TraverseDomForFourDigitCombinations(
 
 bool IsVisibleIframeForTesting(const blink::WebElement& iframe_element);
 
+// Returns the owning form element for a given input.
+// TODO: b/41490287 - Delete the method after ShadowDomSupport launch.
+blink::WebFormElement GetFormElementForPasswordInput(
+    const blink::WebInputElement& element);
+
 }  // namespace form_util
 }  // namespace autofill
 
