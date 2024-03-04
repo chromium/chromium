@@ -71,6 +71,9 @@ NSString* const kLastTimeUserInteractedWithFullscreenPromo =
 // Test key in storage for counting past default browser promo interactions.
 NSString* const kGenericPromoInteractionCount = @"genericPromoInteractionCount";
 
+// Test Key in storage for counting all past default browser promo displays.
+NSString* const kDisplayedFullscreenPromoCount = @"displayedPromoCount";
+
 class DefaultBrowserUtilsTest : public PlatformTest {
  protected:
   void SetUp() override { ClearDefaultBrowserPromoData(); }
@@ -79,13 +82,16 @@ class DefaultBrowserUtilsTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Overwrite local storage with the provided interaction information.
 void SimulateUserInteractionWithFullscreenPromo(const base::TimeDelta& timeAgo,
-                                                int count) {
+                                                int count,
+                                                int totalCount) {
   NSDictionary<NSString*, NSObject*>* values = @{
     kUserHasInteractedWithFullscreenPromo : @YES,
     kLastTimeUserInteractedWithFullscreenPromo : (base::Time::Now() - timeAgo)
         .ToNSDate(),
-    kGenericPromoInteractionCount : [NSNumber numberWithInt:count]
+    kGenericPromoInteractionCount : [NSNumber numberWithInt:count],
+    kDisplayedFullscreenPromoCount : [NSNumber numberWithInt:totalCount]
   };
   SetValuesInStorage(values);
 }
@@ -360,23 +366,29 @@ TEST_F(DefaultBrowserUtilsTest,
                                  {/*disabled=*/feature_engagement::
                                       kDefaultBrowserEligibilitySlidingWindow});
 
-  // Test with multiple interactions.
+  // Test when there are no interaction recorded yet.
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(kMoreThan6Hours, 1);
+
+  // Test that logging first run doesn't affect it.
+  LogUserInteractionWithFirstRunPromo(true);
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+
+  // Test with multiple interactions.
+  SimulateUserInteractionWithFullscreenPromo(kMoreThan6Hours, 1, 2);
   EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(kMoreThan14Days, 2);
+  SimulateUserInteractionWithFullscreenPromo(kMoreThan14Days, 2, 3);
   EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
 
   // Test with a single, more distant interaction.
   ClearDefaultBrowserPromoData();
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k6Months, 1);
+  SimulateUserInteractionWithFullscreenPromo(k6Months, 1, 2);
   EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
 
   // Test with a single, even more distant interaction.
   ClearDefaultBrowserPromoData();
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k2Years, 1);
+  SimulateUserInteractionWithFullscreenPromo(k2Years, 1, 2);
   EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
 }
 
@@ -391,37 +403,65 @@ TEST_F(DefaultBrowserUtilsTest,
       feature_engagement::kDefaultBrowserEligibilitySlidingWindow,
       feature_params);
 
-  // Test with multiple interactions.
+  // Test when there are no interaction recorded yet.
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(kMoreThan6Hours, 1);
+
+  // Test that logging first run doesn't affect it.
+  LogUserInteractionWithFirstRunPromo(true);
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+
+  // Test with multiple interactions.
+  SimulateUserInteractionWithFullscreenPromo(kMoreThan6Hours, 1, 2);
   EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(kMoreThan14Days, 2);
+  SimulateUserInteractionWithFullscreenPromo(kMoreThan14Days, 2, 3);
   EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
 
   // Test with a single, more distant interaction (but still within the sliding
   // window limit).
   ClearDefaultBrowserPromoData();
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k6Months, 1);
+  SimulateUserInteractionWithFullscreenPromo(k6Months, 1, 2);
   EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
 
   // Test with a single interaction that's outside the sliding window limit.
   ClearDefaultBrowserPromoData();
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k2Years, 1);
+  SimulateUserInteractionWithFullscreenPromo(k2Years, 1, 2);
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
 
   // Test with multiple interactions, some within and some outside the sliding
   // window limit.
   ClearDefaultBrowserPromoData();
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k5Years, 1);
+  SimulateUserInteractionWithFullscreenPromo(k5Years, 1, 2);
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k2Years, 2);
+  SimulateUserInteractionWithFullscreenPromo(k2Years, 2, 3);
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k6Months, 3);
+  SimulateUserInteractionWithFullscreenPromo(k6Months, 3, 4);
   EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(kMoreThan14Days, 4);
+  SimulateUserInteractionWithFullscreenPromo(kMoreThan14Days, 4, 5);
+  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
+}
+
+// Tests that sliding window experiment doesn't not affect the cooldown from
+// FRE.
+TEST_F(DefaultBrowserUtilsTest, CooldownFromFRESlidingWindowEnabled) {
+  base::FieldTrialParams feature_params;
+  feature_params["sliding-window-days"] = "365";
+  feature_list_.InitAndEnableFeatureWithParameters(
+      feature_engagement::kDefaultBrowserEligibilitySlidingWindow,
+      feature_params);
+
+  // Test when there are no interaction recorded yet.
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+
+  // Test that logging first run doesn't affect it.
+  LogUserInteractionWithFirstRunPromo(true);
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+
+  // Test that logging a generic promo interaction will affect it.
+  LogUserInteractionWithFullscreenPromo();
+  LogFullscreenDefaultBrowserPromoDisplayed();
   EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
 }
 
