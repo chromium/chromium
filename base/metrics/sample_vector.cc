@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/leak_annotations.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_span.h"
@@ -672,6 +673,7 @@ PersistentSampleVector::CreateCountsStorageWhileLocked() {
     // There will be no sharing or persistence but worse things are already
     // happening.
     auto array = HeapArray<HistogramBase::AtomicCount>::WithSize(counts_size());
+    ANNOTATE_LEAKING_OBJECT_PTR(array.data());
     return std::move(array).leak();
   }
 
