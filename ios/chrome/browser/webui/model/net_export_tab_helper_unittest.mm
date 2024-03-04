@@ -53,8 +53,8 @@ class NetExportTabHelperTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    NetExportTabHelper::CreateForWebState(web_state());
-    NetExportTabHelper::FromWebState(web_state())->SetDelegate(delegate_);
+    NetExportTabHelper::GetOrCreateForWebState(web_state())
+        ->SetDelegate(delegate_);
   }
 
   web::WebState* web_state() { return web_state_.get(); }
@@ -68,7 +68,8 @@ class NetExportTabHelperTest : public PlatformTest {
 
 // Verifies the initial state of the NetExportTabHelper and its delegate.
 TEST_F(NetExportTabHelperTest, TestInitialState) {
-  NetExportTabHelper* helper = NetExportTabHelper::FromWebState(web_state());
+  NetExportTabHelper* helper =
+      NetExportTabHelper::GetOrCreateForWebState(web_state());
 
   EXPECT_TRUE(helper);
   // `lastContext` should not exist yet, as
@@ -79,7 +80,8 @@ TEST_F(NetExportTabHelperTest, TestInitialState) {
 // Verifies that the delegate is instructed to show the mail composer with the
 // correct context object when the NetExportTabHelper is told to do so.
 TEST_F(NetExportTabHelperTest, TestShowMailComposer) {
-  NetExportTabHelper* helper = NetExportTabHelper::FromWebState(web_state());
+  NetExportTabHelper* helper =
+      NetExportTabHelper::GetOrCreateForWebState(web_state());
   ShowMailComposerContext* context =
       [[ShowMailComposerContext alloc] initWithToRecipients:nil
                                                     subject:@"subject"

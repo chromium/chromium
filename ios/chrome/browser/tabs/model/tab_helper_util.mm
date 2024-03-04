@@ -296,7 +296,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   PermissionsTabHelper::CreateForWebState(web_state);
 
   RepostFormTabHelper::CreateForWebState(web_state);
-  NetExportTabHelper::CreateForWebState(web_state);
+  if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    NetExportTabHelper::GetOrCreateForWebState(web_state);
+  }
 
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsOnlyMode) ||
