@@ -8,7 +8,6 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/gfx/image/image.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
 namespace lens {
@@ -23,12 +22,6 @@ class LensUntrustedUI : public ui::UntrustedWebUIController {
   ~LensUntrustedUI() override;
 
  private:
-  void StartLoadScreenshot(
-      const std::string& resource_path,
-      content::WebUIDataSource::GotDataCallback got_data_callback);
-
-  gfx::Image image_;
-
   base::WeakPtrFactory<LensUntrustedUI> weak_factory_{this};
 };
 
