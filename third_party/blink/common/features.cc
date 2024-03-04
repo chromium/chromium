@@ -1315,6 +1315,16 @@ const base::FeatureParam<double> kLCPPFontURLPredictorFrequencyThreshold{
 const base::FeatureParam<int> kLCPPFontURLPredictorMaxPreloadCount{
     &kLCPPFontURLPredictor, "lcpp_max_font_url_to_preload", 5};
 
+const base::FeatureParam<bool> kLCPPFontURLPredictorEnablePrefetch{
+    &kLCPPFontURLPredictor, "lcpp_enable_font_prefetch", false};
+
+// Since there should be some spaces to run prefetch, the default value
+// has been decided for 4G LTE. We found that browsers on desktops often
+// show "4g" as its effectiveType, and we expect the value is good to
+// prospect a stable connection.
+const base::FeatureParam<double> kLCPPFontURLPredictorPrefetchThresholdInMbps{
+    &kLCPPFontURLPredictor, "lcpp_font_prefetch_threshold", 5.0};
+
 BASE_FEATURE(kLCPPLazyLoadImagePreload,
              "LCPPLazyLoadImagePreload",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1330,9 +1340,6 @@ const base::FeatureParam<LcppPreloadLazyLoadImageType>
     kLCPCriticalPathPredictorPreloadLazyLoadImageType{
         &kLCPPLazyLoadImagePreload, "lcpp_preload_lazy_load_image_type",
         LcppPreloadLazyLoadImageType::kNone, &lcpp_preload_lazy_load_image};
-
-const base::FeatureParam<bool> kLCPPFontURLPredictorEnablePrefetch{
-    &kLCPPFontURLPredictor, "lcpp_enable_font_prefetch", false};
 
 BASE_FEATURE(kHttpDiskCachePrewarming,
              "HttpDiskCachePrewarming",

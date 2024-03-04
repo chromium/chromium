@@ -20,6 +20,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/origin_util.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_change_notifier.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -238,8 +239,16 @@ bool LoadingPredictor::PrepareForPageLoad(
   // LCPP: set fonts to be prefetched to prefetch_requests.
   // TODO(crbug.com/1493768): make prefetch work for platforms without the
   // optimization guide.
+  double max_bandwidth_mbps;
+  net::NetworkChangeNotifier::ConnectionType connection_type;
+  net::NetworkChangeNotifier::GetMaxBandwidthAndConnectionType(
+      &max_bandwidth_mbps, &connection_type);
   if (base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor) &&
       blink::features::kLCPPFontURLPredictorEnablePrefetch.Get() &&
+      connection_type !=
+          net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN &&
+      max_bandwidth_mbps >
+          blink::features::kLCPPFontURLPredictorPrefetchThresholdInMbps.Get() &&
       base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) &&
       features::kLoadingPredictorPrefetchSubresourceType.Get() ==
           features::PrefetchSubresourceType::kAll) {

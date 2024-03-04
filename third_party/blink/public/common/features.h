@@ -778,6 +778,15 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kLCPPFontURLPredictorMaxPreloadCount;
 
+// Enables prefetch using the LCPP font URL predictor.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLCPPFontURLPredictorEnablePrefetch;
+
+// Enables prefetch if upper limit bandwidth for the network is larger
+// than this value.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
+    kLCPPFontURLPredictorPrefetchThresholdInMbps;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPLazyLoadImagePreload);
 
 // The type of preloading for LCP images which are loaded lazily.
@@ -797,10 +806,6 @@ enum class LcppPreloadLazyLoadImageType {
 BLINK_COMMON_EXPORT extern const base::FeatureParam<
     LcppPreloadLazyLoadImageType>
     kLCPCriticalPathPredictorPreloadLazyLoadImageType;
-
-// Enables prefetch using the LCPP font URL predictor.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLCPPFontURLPredictorEnablePrefetch;
 
 // If enabled, prewarm HTTP disk cache based on the previous navigation.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHttpDiskCachePrewarming);
