@@ -28,7 +28,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
-#include "base/trace_event/named_trigger.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -121,7 +120,6 @@ void DocumentLoadTiming::MarkNavigationStart() {
       GetFrameIdForTracing(GetFrame()), "data", [&](perfetto::TracedValue ctx) {
         WriteNavigationStartDataIntoTracedValue(std::move(ctx));
       });
-  base::trace_event::EmitNamedTrigger("navigation-start");
   NotifyDocumentTimingChanged();
 }
 

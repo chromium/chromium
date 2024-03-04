@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
@@ -301,7 +302,13 @@ UmaPageLoadMetricsObserver::UmaPageLoadMetricsObserver()
       was_no_store_main_resource_(false),
       cache_bytes_(0),
       network_bytes_(0),
-      network_bytes_including_headers_(0) {}
+      network_bytes_including_headers_(0) {
+  // Emit a trigger to allow trace collection tied to navigations. For
+  // simplicity, this signal happens during `WillStartRequest`, which is a bit
+  // later than the `navigation_start` timestamp used in
+  // `PageLoad.PaintTiming.NavigationToFirstContentfulPaint`.
+  base::trace_event::EmitNamedTrigger("navigation-start");
+}
 
 UmaPageLoadMetricsObserver::~UmaPageLoadMetricsObserver() {}
 
