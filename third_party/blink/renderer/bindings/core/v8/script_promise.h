@@ -53,8 +53,11 @@ class ScriptPromiseTyped;
 
 // ScriptPromise is the class for representing Promise values in C++ world.
 // ScriptPromise holds a Promise.
-// So holding a ScriptPromise as a member variable in DOM object causes
-// memory leaks since it has a reference from C++ to V8.
+// Holding a `ScriptPromise` is rarely needed — typically you hold a
+// `ScriptPromiseResolver` when creating a Promise and passing it *to*
+// JavaScript — but is necessary when holding a promise received *from*
+// JavaScript. If a promise is exposed as an attribute in IDL and you need to
+// return the same promise on multiple invocations, use ScriptPromiseProperty.
 //
 // There are cases where promises cannot work (e.g., where the thread is being
 // terminated). In such cases operations will silently fail, so you should not
