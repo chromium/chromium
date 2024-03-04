@@ -17,7 +17,8 @@ namespace enterprise_watermark {
 
 WatermarkView::WatermarkView() : WatermarkView(std::string("")) {}
 
-WatermarkView::WatermarkView(std::string text) : text_(std::move(text)) {
+WatermarkView::WatermarkView(std::string text)
+    : text_(std::move(text)), background_color_(SkColorSetARGB(0, 0, 0, 0)) {
   SetCanProcessEventsWithinSubtree(false);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -71,6 +72,17 @@ void WatermarkView::OnPaint(gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(SkColorSetARGB(0x20, 0x0, 0x0, 0x0));
   sk_canvas->drawTextBlob(blob, x, y, flags);
+
+  // Draw BG
+  cc::PaintFlags bgflags;
+  bgflags.setColor(background_color_);
+  bgflags.setStyle(cc::PaintFlags::kFill_Style);
+  canvas->DrawRect(GetLocalBounds(), bgflags);
+}
+
+void WatermarkView::SetBackgroundColor(SkColor background_color) {
+  background_color_ = background_color;
+  SchedulePaint();
 }
 
 BEGIN_METADATA(WatermarkView)

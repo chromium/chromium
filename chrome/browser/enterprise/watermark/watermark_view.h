@@ -25,6 +25,10 @@ class WatermarkView : public views::View {
   explicit WatermarkView(std::string text);
   ~WatermarkView() override;
 
+  // Set this to a translucent value for testing. Useful for visualizing the
+  // view's bounds when performing transformations.
+  void SetBackgroundColor(SkColor color);
+
   void SetString(const std::string& text);
 
   // views::View
@@ -32,6 +36,7 @@ class WatermarkView : public views::View {
 
  private:
   std::string text_;
+  SkColor background_color_;
 };
 
 }  // namespace enterprise_watermark
