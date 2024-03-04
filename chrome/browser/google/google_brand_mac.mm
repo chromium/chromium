@@ -19,8 +19,11 @@ namespace google_brand {
 namespace {
 
 std::string ReadBrandFile(NSString* path) {
-  return base::SysNSStringToUTF8(base::apple::ObjCCast<NSString>(
-      [NSDictionary dictionaryWithContentsOfFile:path][@"KSBrandID"]));
+  NSURL* path_url = [NSURL fileURLWithPath:path];
+  NSDictionary* brand_dictionary =
+      [NSDictionary dictionaryWithContentsOfURL:path_url error:nil];
+  return base::SysNSStringToUTF8(
+      base::apple::ObjCCast<NSString>(brand_dictionary[@"KSBrandID"]));
 }
 
 std::string GetBrandInternal() {
