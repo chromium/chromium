@@ -40,7 +40,6 @@ class ProfileOAuth2TokenService;
 
 namespace signin_metrics {
 enum class ProfileSignout;
-enum class SignoutDelete;
 }  // namespace signin_metrics
 
 class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
@@ -136,21 +135,19 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // account (also cancels all auth in progress).
   // It removes all accounts from the identity manager by revoking all refresh
   // tokens.
-  void ClearPrimaryAccount(signin_metrics::ProfileSignout signout_source_metric,
-                           signin_metrics::SignoutDelete signout_delete_metric);
+  void ClearPrimaryAccount(
+      signin_metrics::ProfileSignout signout_source_metric);
   // Clears the primary account, erasing all keys associated with the primary
   // account (also cancels all auth in progress).
   // It keeps all accounts in the identity manager.
   void RemovePrimaryAccountButKeepTokens(
-      signin_metrics::ProfileSignout signout_source_metric,
-      signin_metrics::SignoutDelete signout_delete_metric);
+      signin_metrics::ProfileSignout signout_source_metric);
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Rovokes the sync consent but leaves the primary account and the rest of
   // the accounts untouched.
-  void RevokeSyncConsent(signin_metrics::ProfileSignout signout_source_metric,
-                         signin_metrics::SignoutDelete signout_delete_metric);
+  void RevokeSyncConsent(signin_metrics::ProfileSignout signout_source_metric);
 
   // Adds and removes observers.
   void AddObserver(Observer* observer);
@@ -198,13 +195,11 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
 
   // Starts the sign out process.
   void StartSignOut(signin_metrics::ProfileSignout signout_source_metric,
-                    signin_metrics::SignoutDelete signout_delete_metric,
                     RemoveAccountsOption remove_option);
 
   // The sign out process which is started by SigninClient::PreSignOut()
   void OnSignoutDecisionReached(
       signin_metrics::ProfileSignout signout_source_metric,
-      signin_metrics::SignoutDelete signout_delete_metric,
       RemoveAccountsOption remove_option,
       SigninClient::SignoutDecision signout_decision);
 

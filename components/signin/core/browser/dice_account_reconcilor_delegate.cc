@@ -56,7 +56,7 @@ void RevokeAllSecondaryTokens(
   if (should_revoke_primary_account) {
     // The primary account should be revoked by calling |ClearPrimaryAccount|.
     identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-        maybe_signout_source, signin_metrics::SignoutDelete::kIgnoreMetric);
+        maybe_signout_source);
     DCHECK(identity_manager->GetAccountsWithRefreshTokens().empty());
     return;
   }

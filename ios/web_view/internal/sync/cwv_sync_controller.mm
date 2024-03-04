@@ -161,8 +161,7 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
 - (void)stopSyncAndClearIdentity {
   auto* primaryAccountMutator = _identityManager->GetPrimaryAccountMutator();
   primaryAccountMutator->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
 }
 
 - (BOOL)unlockWithPassphrase:(NSString*)passphrase {

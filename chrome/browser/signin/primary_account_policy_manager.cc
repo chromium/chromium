@@ -249,9 +249,7 @@ void PrimaryAccountPolicyManager::EnsurePrimaryAccountAllowedForProfile(
     // out is allowed.
     auto* primary_account_mutator =
         identity_manager->GetPrimaryAccountMutator();
-    primary_account_mutator->ClearPrimaryAccount(
-        clear_primary_account_source,
-        signin_metrics::SignoutDelete::kIgnoreMetric);
+    primary_account_mutator->ClearPrimaryAccount(clear_primary_account_source);
   } else {
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
       // Force remove the profile if sign out is not allowed and if the

@@ -420,8 +420,7 @@ void AuthenticationService::SignOut(
   // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
   DCHECK(account_mutator);
 
-  account_mutator->ClearPrimaryAccount(
-      signout_source, signin_metrics::SignoutDelete::kIgnoreMetric);
+  account_mutator->ClearPrimaryAccount(signout_source);
   crash_keys::SetCurrentlySignedIn(false);
   cached_mdm_errors_.clear();
 

@@ -277,8 +277,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, NoReauthAfterSignout) {
         IdentityManagerFactory::GetForProfile(profile)
             ->GetPrimaryAccountMutator();
     primary_account_mutator->RevokeSyncConsent(
-        signin_metrics::ProfileSignout::kForceSignoutAlwaysAllowedForTest,
-        signin_metrics::SignoutDelete::kDeleted);
+        signin_metrics::ProfileSignout::kForceSignoutAlwaysAllowedForTest);
 
     // Even with a refresh token available, no reauth happens if the profile
     // is signed out.

@@ -1755,16 +1755,6 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.SignoutDeleteProfile" enum="BooleanDeletedOrNot"
-    expires_after="M85">
-  <owner>skym@chromium.org</owner>
-  <summary>
-    If the user chose to delete their profile or not when signing out of an
-    unmanaged account. When the user is not given a choice this metric is not
-    recorded.
-  </summary>
-</histogram>
-
 <histogram name="Signin.SignoutProfile" enum="SigninSignoutProfile"
     expires_after="never">
 <!-- expires-never: This reports how a profile gets signed out and needs to be

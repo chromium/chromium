@@ -322,8 +322,7 @@ void RevokeSyncConsent(IdentityManager* identity_manager) {
       },
       &run_loop));
   identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
-      signin_metrics::ProfileSignout::kTest,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+      signin_metrics::ProfileSignout::kTest);
   run_loop.Run();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -350,8 +349,7 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
       },
       &run_loop));
   identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kTest,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+      signin_metrics::ProfileSignout::kTest);
 
   run_loop.Run();
 #endif

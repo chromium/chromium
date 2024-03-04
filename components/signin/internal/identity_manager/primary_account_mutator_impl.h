@@ -36,14 +36,11 @@ class PrimaryAccountMutatorImpl : public PrimaryAccountMutator {
       signin_metrics::AccessPoint access_point,
       base::OnceClosure prefs_committed_callback) override;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  void RevokeSyncConsent(signin_metrics::ProfileSignout source_metric,
-                         signin_metrics::SignoutDelete delete_metric) override;
+  void RevokeSyncConsent(signin_metrics::ProfileSignout source_metric) override;
   bool ClearPrimaryAccount(
-      signin_metrics::ProfileSignout source_metric,
-      signin_metrics::SignoutDelete delete_metric) override;
+      signin_metrics::ProfileSignout source_metric) override;
   bool RemovePrimaryAccountButKeepTokens(
-      signin_metrics::ProfileSignout source_metric,
-      signin_metrics::SignoutDelete delete_metric) override;
+      signin_metrics::ProfileSignout source_metric) override;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:

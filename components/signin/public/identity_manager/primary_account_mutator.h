@@ -12,7 +12,6 @@
 
 namespace signin_metrics {
 enum class ProfileSignout;
-enum class SignoutDelete;
 }  // namespace signin_metrics
 
 struct CoreAccountId;
@@ -106,22 +105,19 @@ class PrimaryAccountMutator {
   //
   // Note: This method expects that the user already consented for sync.
   virtual void RevokeSyncConsent(
-      signin_metrics::ProfileSignout source_metric,
-      signin_metrics::SignoutDelete delete_metric) = 0;
+      signin_metrics::ProfileSignout source_metric) = 0;
 
   // Clears the primary account, removes all accounts and revokes the sync
   // consent. Returns true if the action was successful and false if there
   // was no primary account set.
   virtual bool ClearPrimaryAccount(
-      signin_metrics::ProfileSignout source_metric,
-      signin_metrics::SignoutDelete delete_metric) = 0;
+      signin_metrics::ProfileSignout source_metric) = 0;
 
   // Removes the primary account and revokes the sync consent, but keep the
   // accounts signed in to the web and the tokens. Returns true if the action
   // was successful and false if there was no primary account set.
   virtual bool RemovePrimaryAccountButKeepTokens(
-      signin_metrics::ProfileSignout source_metric,
-      signin_metrics::SignoutDelete delete_metric) = 0;
+      signin_metrics::ProfileSignout source_metric) = 0;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 };
 

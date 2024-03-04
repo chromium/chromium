@@ -195,13 +195,11 @@ void RunRevokeConsentTest(
   switch (action) {
     case RevokeConsentAction::kRevokeSyncConsent:
       primary_account_mutator->RevokeSyncConsent(
-          signin_metrics::ProfileSignout::kTest,
-          signin_metrics::SignoutDelete::kIgnoreMetric);
+          signin_metrics::ProfileSignout::kTest);
       break;
     case RevokeConsentAction::kClearPrimaryAccount:
       primary_account_mutator->ClearPrimaryAccount(
-          signin_metrics::ProfileSignout::kTest,
-          signin_metrics::SignoutDelete::kIgnoreMetric);
+          signin_metrics::ProfileSignout::kTest);
       break;
   }
   run_loop.Run();
@@ -296,8 +294,7 @@ void RunClearPrimaryAccountTestForSigninOnly() {
                             secondary_account_info.account_id));
 
   primary_account_mutator->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kTest,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+      signin_metrics::ProfileSignout::kTest);
   run_loop.Run();
 
   EXPECT_FALSE(
@@ -641,8 +638,7 @@ TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount_NotSignedIn) {
   EXPECT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   EXPECT_FALSE(primary_account_mutator->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kTest,
-      signin_metrics::SignoutDelete::kIgnoreMetric));
+      signin_metrics::ProfileSignout::kTest));
 }
 
 // Test that ClearPrimaryAccount() clears the primary account, revokes the

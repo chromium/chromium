@@ -579,45 +579,37 @@ void PrimaryAccountManager::RemoveObserver(Observer* observer) {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void PrimaryAccountManager::ClearPrimaryAccount(
-    signin_metrics::ProfileSignout signout_source_metric,
-    signin_metrics::SignoutDelete signout_delete_metric) {
-  StartSignOut(signout_source_metric, signout_delete_metric,
-               RemoveAccountsOption::kRemoveAllAccounts);
+    signin_metrics::ProfileSignout signout_source_metric) {
+  StartSignOut(signout_source_metric, RemoveAccountsOption::kRemoveAllAccounts);
 }
 
 void PrimaryAccountManager::RemovePrimaryAccountButKeepTokens(
-    signin_metrics::ProfileSignout signout_source_metric,
-    signin_metrics::SignoutDelete signout_delete_metric) {
-  StartSignOut(signout_source_metric, signout_delete_metric,
+    signin_metrics::ProfileSignout signout_source_metric) {
+  StartSignOut(signout_source_metric,
                RemoveAccountsOption::kKeepAllAccountsAndClearPrimary);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void PrimaryAccountManager::RevokeSyncConsent(
-    signin_metrics::ProfileSignout signout_source_metric,
-    signin_metrics::SignoutDelete signout_delete_metric) {
-  StartSignOut(signout_source_metric, signout_delete_metric,
-               RemoveAccountsOption::kKeepAllAccounts);
+    signin_metrics::ProfileSignout signout_source_metric) {
+  StartSignOut(signout_source_metric, RemoveAccountsOption::kKeepAllAccounts);
 }
 
 void PrimaryAccountManager::StartSignOut(
     signin_metrics::ProfileSignout signout_source_metric,
-    signin_metrics::SignoutDelete signout_delete_metric,
     RemoveAccountsOption remove_option) {
   VLOG(1) << "StartSignOut: " << static_cast<int>(signout_source_metric) << ", "
-          << static_cast<int>(signout_delete_metric) << ", "
           << static_cast<int>(remove_option);
   client_->PreSignOut(
       base::BindOnce(&PrimaryAccountManager::OnSignoutDecisionReached,
                      base::Unretained(this), signout_source_metric,
-                     signout_delete_metric, remove_option),
+                     remove_option),
       signout_source_metric, HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 void PrimaryAccountManager::OnSignoutDecisionReached(
     signin_metrics::ProfileSignout signout_source_metric,
-    signin_metrics::SignoutDelete signout_delete_metric,
     RemoveAccountsOption remove_option,
     SigninClient::SignoutDecision signout_decision) {
   VLOG(1) << "OnSignoutDecisionReached: "
@@ -643,7 +635,7 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
     return;
   }
 
-  signin_metrics::LogSignout(signout_source_metric, signout_delete_metric);
+  signin_metrics::LogSignout(signout_source_metric);
   PrimaryAccountChangeEvent::State previous_state = GetPrimaryAccountState();
 
   // Revoke all tokens before sending signed_out notification, because there

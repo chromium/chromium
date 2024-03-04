@@ -688,8 +688,7 @@ void TurnSyncOnHelper::FinishSyncSetupAndDelete(
       if (signin_util::IsForceSigninEnabled() &&
           !chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
         primary_account_mutator->ClearPrimaryAccount(
-            signin_metrics::ProfileSignout::kAbortSignin,
-            signin_metrics::SignoutDelete::kIgnoreMetric);
+            signin_metrics::ProfileSignout::kAbortSignin);
       }
 
       // No explicit action when the ui gets closed. No final callback is sent.
@@ -783,12 +782,10 @@ void TurnSyncOnHelper::RemoveAccount() {
     if (signin_aborted_mode_ == SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY) {
       primary_account_mutator->RemovePrimaryAccountButKeepTokens(
           signin_metrics::ProfileSignout::
-              kCancelSyncConfirmationOnWebOnlySignedIn,
-          signin_metrics::SignoutDelete::kIgnoreMetric);
+              kCancelSyncConfirmationOnWebOnlySignedIn);
     } else {
       primary_account_mutator->ClearPrimaryAccount(
-          signin_metrics::ProfileSignout::kCancelSyncConfirmationRemoveAccount,
-          signin_metrics::SignoutDelete::kIgnoreMetric);
+          signin_metrics::ProfileSignout::kCancelSyncConfirmationRemoveAccount);
     }
     return;
   }

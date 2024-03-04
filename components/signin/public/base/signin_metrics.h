@@ -380,16 +380,6 @@ enum class SigninAccountType : int {
   kMaxValue = kManaged,
 };
 
-// When the user is give a choice of deleting their profile or not when signing
-// out, the |kDeleted| or |kKeeping| metric should be used. If the user is not
-// given any option, then use the |kIgnoreMetric| value should be used.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
-enum class SignoutDelete : int {
-  kDeleted = 0,
-  kKeeping,
-  kIgnoreMetric,
-};
-
 // This is the relationship between the account used to sign into chrome, and
 // the account(s) used to sign into the content area/cookie jar. This enum
 // gets messy because we're trying to capture quite a few things, if there was
@@ -527,7 +517,7 @@ void LogSigninAccountReconciliationDuration(base::TimeDelta duration,
                                             bool successful);
 
 // Track a profile signout.
-void LogSignout(ProfileSignout source_metric, SignoutDelete delete_metric);
+void LogSignout(ProfileSignout source_metric);
 
 // Tracks whether the external connection results were all fetched before
 // the gaia cookie manager service tried to use them with merge session.

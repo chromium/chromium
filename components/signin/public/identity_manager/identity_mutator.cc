@@ -46,26 +46,20 @@ jint JniIdentityMutator::SetPrimaryAccount(
   return static_cast<jint>(error);
 }
 
-bool JniIdentityMutator::ClearPrimaryAccount(JNIEnv* env,
-                                             jint source_metric,
-                                             jint delete_metric) {
+bool JniIdentityMutator::ClearPrimaryAccount(JNIEnv* env, jint source_metric) {
   PrimaryAccountMutator* primary_account_mutator =
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
   return primary_account_mutator->ClearPrimaryAccount(
-      static_cast<signin_metrics::ProfileSignout>(source_metric),
-      static_cast<signin_metrics::SignoutDelete>(delete_metric));
+      static_cast<signin_metrics::ProfileSignout>(source_metric));
 }
 
-void JniIdentityMutator::RevokeSyncConsent(JNIEnv* env,
-                                           jint source_metric,
-                                           jint delete_metric) {
+void JniIdentityMutator::RevokeSyncConsent(JNIEnv* env, jint source_metric) {
   PrimaryAccountMutator* primary_account_mutator =
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
   return primary_account_mutator->RevokeSyncConsent(
-      static_cast<signin_metrics::ProfileSignout>(source_metric),
-      static_cast<signin_metrics::SignoutDelete>(delete_metric));
+      static_cast<signin_metrics::ProfileSignout>(source_metric));
 }
 
 void JniIdentityMutator::ReloadAllAccountsFromSystemWithPrimaryAccount(

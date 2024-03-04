@@ -409,15 +409,14 @@ void RunCallbacks(std::vector<base::OnceCallback<void(Profile*)>>& callbacks,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 void ClearPrimaryAccountForProfile(
     base::WeakPtr<Profile> weak_profile,
-    signin_metrics::ProfileSignout signout_source_metric,
-    signin_metrics::SignoutDelete signout_delete_metric) {
+    signin_metrics::ProfileSignout signout_source_metric) {
   Profile* profile = weak_profile.get();
   if (!profile)
     return;
 
   IdentityManagerFactory::GetForProfile(profile)
       ->GetPrimaryAccountMutator()
-      ->ClearPrimaryAccount(signout_source_metric, signout_delete_metric);
+      ->ClearPrimaryAccount(signout_source_metric);
 }
 #endif
 
@@ -1999,8 +1998,7 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
             base::BindOnce(&ClearPrimaryAccountForProfile,
                            profile->GetWeakPtr(),
                            signin_metrics::ProfileSignout::
-                               kAuthenticationFailedWithForceSignin,
-                           signin_metrics::SignoutDelete::kIgnoreMetric));
+                               kAuthenticationFailedWithForceSignin));
       }
 #endif
       return;

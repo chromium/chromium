@@ -50,7 +50,6 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
 import org.chromium.components.signin.identitymanager.PrimaryAccountError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -566,11 +565,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                         ? SignOutState.DataWipeAction.WIPE_SYNC_DATA_ONLY
                         : SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY);
 
-        mIdentityMutator.revokeSyncConsent(
-                signoutSource,
-                // Always use IGNORE_METRIC as Chrome Android has just a single-profile which is
-                // never deleted.
-                SignoutDelete.IGNORE_METRIC);
+        mIdentityMutator.revokeSyncConsent(signoutSource);
 
         notifySignOutAllowedChanged();
         disableSyncAndWipeData(this::finishSignOut);
@@ -608,12 +603,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                         ? SignOutState.DataWipeAction.WIPE_ALL_PROFILE_DATA
                         : SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY);
 
-        mIdentityMutator.clearPrimaryAccount(
-                signoutSource,
-                // Always use IGNORE_METRIC for the profile deletion argument. Chrome
-                // Android has just a single-profile which is never deleted upon
-                // sign-out.
-                SignoutDelete.IGNORE_METRIC);
+        mIdentityMutator.clearPrimaryAccount(signoutSource);
 
         notifySignOutAllowedChanged();
         disableSyncAndWipeData(this::finishSignOut);

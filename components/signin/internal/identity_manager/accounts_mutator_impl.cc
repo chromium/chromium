@@ -134,8 +134,7 @@ void AccountsMutatorImpl::MoveAccount(AccountsMutator* target,
     // and the refresh token will be removed from the profile after being moved
     // to the new profile later in this function.
     primary_account_manager_->RemovePrimaryAccountButKeepTokens(
-        signin_metrics::ProfileSignout::kMovePrimaryAccount,
-        signin_metrics::SignoutDelete::kIgnoreMetric);
+        signin_metrics::ProfileSignout::kMovePrimaryAccount);
   }
   AccountInfo account_info =
       account_tracker_service_->GetAccountInfo(account_id);

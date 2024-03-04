@@ -155,8 +155,7 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
     signin_metrics::ProfileSignout source =
         signin_metrics::ProfileSignout::kSigninManagerUpdateUPA;
 #endif
-    identity_manager_->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-        source, signin_metrics::SignoutDelete::kIgnoreMetric);
+    identity_manager_->GetPrimaryAccountMutator()->ClearPrimaryAccount(source);
   }
 }
 

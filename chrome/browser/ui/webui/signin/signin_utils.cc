@@ -74,8 +74,7 @@ void ClearProfileWithManagedAccounts(Profile* profile) {
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (!primary_account_id.empty()) {
     identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-        signin_metrics::ProfileSignout::kAbortSignin,
-        signin_metrics::SignoutDelete::kIgnoreMetric);
+        signin_metrics::ProfileSignout::kAbortSignin);
   }
 }
 #endif

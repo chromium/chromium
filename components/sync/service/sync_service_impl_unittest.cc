@@ -513,9 +513,7 @@ TEST_F(SyncServiceImplTest, EarlySignOut) {
   signin::PrimaryAccountMutator* account_mutator =
       identity_manager()->GetPrimaryAccountMutator();
   DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
-  account_mutator->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kTest,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+  account_mutator->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
   // Wait for SyncServiceImpl to be notified.
   base::RunLoop().RunUntilIdle();
 
@@ -547,9 +545,7 @@ TEST_F(SyncServiceImplTest, SignOutDisablesSyncTransportAndSyncFeature) {
   signin::PrimaryAccountMutator* account_mutator =
       identity_manager()->GetPrimaryAccountMutator();
   DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
-  account_mutator->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kTest,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+  account_mutator->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
   // Wait for SyncServiceImpl to be notified.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::DisableReasonSet(
@@ -576,9 +572,7 @@ TEST_F(SyncServiceImplTest,
   signin::PrimaryAccountMutator* account_mutator =
       identity_manager()->GetPrimaryAccountMutator();
   DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
-  account_mutator->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kTest,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+  account_mutator->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
   // Wait for SyncServiceImpl to be notified.
   base::RunLoop().RunUntilIdle();
   // These are specific to sync-the-feature and should be cleared.
@@ -620,9 +614,7 @@ TEST_F(SyncServiceImplTest,
   signin::PrimaryAccountMutator* account_mutator =
       identity_manager()->GetPrimaryAccountMutator();
   DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
-  account_mutator->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kTest,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+  account_mutator->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
   // Wait for SyncServiceImpl to be notified.
   base::RunLoop().RunUntilIdle();
 
@@ -946,9 +938,7 @@ TEST_F(SyncServiceImplTest, SignOutRevokeAccessToken) {
   // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
   DCHECK(account_mutator);
 
-  account_mutator->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kTest,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+  account_mutator->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
   EXPECT_TRUE(service()->GetAccessTokenForTest().empty());
 }
 #endif

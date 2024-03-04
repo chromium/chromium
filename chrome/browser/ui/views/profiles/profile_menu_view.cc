@@ -310,8 +310,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
       // This error means that the Sync engine failed to initialize. Shutdown
       // Sync engine by revoking sync consent.
       identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
-          signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
-          signin_metrics::SignoutDelete::kIgnoreMetric);
+          signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
       GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
       // Re-enable sync with the same primary account.
       signin_ui_util::EnableSyncFromSingleAccountPromo(
@@ -407,14 +406,12 @@ void ProfileMenuView::OnSignoutButtonClicked() {
     // not in the Gaia cookie on next reconciliation.
     identity_manager->GetPrimaryAccountMutator()
         ->RemovePrimaryAccountButKeepTokens(
-            signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
-            signin_metrics::SignoutDelete::kIgnoreMetric);
+            signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu);
   }
 #else
   CHECK(!browser()->profile()->IsMainProfile());
   identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+      signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu);
 #endif
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)

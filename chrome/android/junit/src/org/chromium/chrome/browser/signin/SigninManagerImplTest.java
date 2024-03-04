@@ -242,10 +242,7 @@ public class SigninManagerImplTest {
 
         mSigninManager.onCoreAccountInfosChanged();
 
-        verify(mIdentityMutator)
-                .clearPrimaryAccount(
-                        SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE,
-                        org.chromium.components.signin.metrics.SignoutDelete.IGNORE_METRIC);
+        verify(mIdentityMutator).clearPrimaryAccount(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
     }
 
     @Test
@@ -511,7 +508,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST), anyInt());
+        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
 
         // Sign-out should only clear the profile when the user is managed.
         inOrder.verify(mNativeMock).wipeProfileData(eq(NATIVE_SIGNIN_MANAGER), any());
@@ -529,7 +526,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST), anyInt());
+        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
         verify(mIdentityMutator)
                 .seedAccountsThenReloadAllAccountsWithPrimaryAccount(List.of(), null);
 
@@ -549,7 +546,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST), anyInt());
+        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
 
         // Sign-out should only clear the profile when the user is managed.
         inOrder.verify(mNativeMock).wipeProfileData(eq(NATIVE_SIGNIN_MANAGER), any());
@@ -567,7 +564,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST), anyInt());
+        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
         verify(mIdentityMutator)
                 .seedAccountsThenReloadAllAccountsWithPrimaryAccount(List.of(), null);
 
@@ -584,7 +581,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST), anyInt());
+        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
 
         // Sign-out should only clear the service worker cache when the user is neither managed or
         // syncing.
@@ -600,7 +597,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST), anyInt());
+        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
         verify(mIdentityMutator)
                 .seedAccountsThenReloadAllAccountsWithPrimaryAccount(List.of(), null);
 
@@ -623,7 +620,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST), anyInt());
+        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
 
         // Sign-out should only clear the service worker cache when the user has decided not to
         // wipe data.
@@ -644,7 +641,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST), anyInt());
+        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
         verify(mIdentityMutator)
                 .seedAccountsThenReloadAllAccountsWithPrimaryAccount(List.of(), null);
 
@@ -730,7 +727,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST), anyInt());
+        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
 
         // Sign-out should only clear the profile when the user is syncing and has decided to
         // wipe data.
@@ -751,7 +748,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST), anyInt());
+        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
 
         // Sign-out should only clear the profile when the user is syncing and has decided to
         // wipe data.
@@ -776,7 +773,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).revokeSyncConsent(eq(SignoutReason.TEST), anyInt());
+        inOrder.verify(mIdentityMutator).revokeSyncConsent(eq(SignoutReason.TEST));
 
         // Disabling sync should only clear the service worker cache when the user is neither
         // managed or syncing.
@@ -797,7 +794,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).revokeSyncConsent(eq(SignoutReason.TEST), anyInt());
+        inOrder.verify(mIdentityMutator).revokeSyncConsent(eq(SignoutReason.TEST));
 
         // Disabling sync should only clear the service worker cache when the user is neither
         // managed or syncing.
@@ -949,7 +946,7 @@ public class SigninManagerImplTest {
 
         mIdentityManager.onAccountsCookieDeletedByUserAction();
 
-        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt());
+        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt());
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
     }
@@ -962,7 +959,7 @@ public class SigninManagerImplTest {
 
         mIdentityManager.onAccountsCookieDeletedByUserAction();
 
-        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt());
+        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt());
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
     }
@@ -975,7 +972,7 @@ public class SigninManagerImplTest {
 
         mIdentityManager.onAccountsCookieDeletedByUserAction();
 
-        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt());
+        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt());
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
     }
@@ -989,7 +986,7 @@ public class SigninManagerImplTest {
 
         mIdentityManager.onAccountsCookieDeletedByUserAction();
 
-        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt());
+        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt());
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
     }
@@ -1005,7 +1002,7 @@ public class SigninManagerImplTest {
 
         mIdentityManager.onAccountsCookieDeletedByUserAction();
 
-        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt());
+        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt());
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
     }
@@ -1027,7 +1024,7 @@ public class SigninManagerImplTest {
 
         mIdentityManager.onAccountsCookieDeletedByUserAction();
 
-        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt());
+        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt());
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
     }
@@ -1068,7 +1065,7 @@ public class SigninManagerImplTest {
                             return null;
                         })
                 .when(mIdentityMutator)
-                .clearPrimaryAccount(anyInt(), anyInt());
+                .clearPrimaryAccount(anyInt());
 
         mSigninManager.signOut(SignoutReason.TEST);
         AtomicInteger callCount = new AtomicInteger(0);
@@ -1095,7 +1092,7 @@ public class SigninManagerImplTest {
                             return null;
                         })
                 .when(mIdentityMutator)
-                .clearPrimaryAccount(anyInt(), anyInt());
+                .clearPrimaryAccount(anyInt());
 
         mSigninManager.signOut(SignoutReason.TEST);
         AtomicInteger callCount = new AtomicInteger(0);
