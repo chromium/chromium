@@ -4541,6 +4541,14 @@
     "expiry_milestone": -1
   },
   {
+    "name": "get-user-media-deferred-device-settings-selection",
+    "owners": [
+      "bryantchandler@chromium.org",
+      "openscreen-eng@chromium.org"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "glanceables-v2",
     "owners": [ "tbarzic@chromium.org", "anasalazar@chromium.org", "cros-system-ui-eng@google.com" ],
     "expiry_milestone": 130

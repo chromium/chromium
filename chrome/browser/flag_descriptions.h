@@ -443,6 +443,9 @@ extern const char kCameraMicEffectsDescription[];
 
 extern const char kCameraMicPreviewName[];
 extern const char kCameraMicPreviewDescription[];
+
+extern const char kGetUserMediaDeferredDeviceSettingsSelectionName[];
+extern const char kGetUserMediaDeferredDeviceSettingsSelectionDescription[];
 #endif
 
 extern const char kCanvasOopRasterizationName[];

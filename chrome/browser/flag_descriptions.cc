@@ -773,6 +773,11 @@ const char kCameraMicEffectsDescription[] =
 const char kCameraMicPreviewName[] = "Camera and Mic Preview";
 const char kCameraMicPreviewDescription[] =
     "Enables camera and mic preview in permission bubble and site settings.";
+const char kGetUserMediaDeferredDeviceSettingsSelectionName[] =
+    "getUserMedia deferred device settings selection";
+const char kGetUserMediaDeferredDeviceSettingsSelectionDescription[] =
+    "Enables deferring device settings selection for getUserMedia until after "
+    "the user grants permission.";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

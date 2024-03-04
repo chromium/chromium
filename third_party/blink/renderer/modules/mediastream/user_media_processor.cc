@@ -322,16 +322,6 @@ bool ShouldDeferDeviceSettingsSelection() {
 
 }  // namespace
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-namespace features {
-
-// Defers device selection until after permission is granted.
-BASE_FEATURE(kGetUserMediaDeferredDeviceSettingsSelection,
-             "GetUserMediaDeferredDeviceSettingsSelection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-}  // namespace features
-#endif
-
 // Class for storing state of the the processing of getUserMedia requests.
 class UserMediaProcessor::RequestInfo final
     : public GarbageCollected<UserMediaProcessor::RequestInfo> {

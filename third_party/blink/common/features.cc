@@ -515,6 +515,11 @@ BASE_FEATURE(
 BASE_FEATURE(kCameraMicPreview,
              "CameraMicPreview",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Defers device selection until after permission is granted.
+BASE_FEATURE(kGetUserMediaDeferredDeviceSettingsSelection,
+             "GetUserMediaDeferredDeviceSettingsSelection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Whether to losslessly compress the resulting image after canvas hibernation.

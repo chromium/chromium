@@ -268,6 +268,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 // Enables camera preview in permission bubble and site settings.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCameraMicPreview);
+// Defers device selection until after permission is granted.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kGetUserMediaDeferredDeviceSettingsSelection);
 #endif
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvas2DHibernation);

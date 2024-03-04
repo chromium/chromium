@@ -32,14 +32,6 @@
 
 namespace blink {
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-namespace features {
-// Defers device selection until after permission is granted.
-MODULES_EXPORT BASE_DECLARE_FEATURE(
-    kGetUserMediaDeferredDeviceSettingsSelection);
-}  // namespace features
-#endif
-
 class AudioCaptureSettings;
 class LocalFrame;
 class MediaStreamAudioSource;

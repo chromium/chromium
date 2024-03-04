@@ -23901,6 +23901,8 @@ from previous Chrome versions.
   <int value="1408331660" label="enhanced-bookmarks-experiment"/>
   <int value="1409120591" label="PassiveMixedContentWarning:disabled"/>
   <int value="1409437197" label="OfflinePagesLimitlessPrefetching:enabled"/>
+  <int value="1409653883"
+      label="GetUserMediaDeferredDeviceSettingsSelection:disabled"/>
   <int value="1410697724" label="mediadrm-enable-non-compositing"/>
   <int value="1410846840"
       label="PrefetchMainResourceNetworkIsolationKey:disabled"/>
@@ -25231,6 +25233,8 @@ from previous Chrome versions.
   <int value="1996051411" label="DeprecateAltBasedSixPack:enabled"/>
   <int value="1996125159" label="AutoplayMutedVideos:enabled"/>
   <int value="1997047666" label="NTPSnippetsIncreasedVisibility:disabled"/>
+  <int value="1997086324"
+      label="GetUserMediaDeferredDeviceSettingsSelection:enabled"/>
   <int value="1997347809" label="FedCmIdPregistration:enabled"/>
   <int value="1997457877" label="RemotePageMetadata:disabled"/>
   <int value="1997931863" label="OmniboxContextMenuShowFullUrls:enabled"/>

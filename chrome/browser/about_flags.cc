@@ -10191,6 +10191,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCameraMicPreviewDescription,
      static_cast<unsigned short>(kOsMac | kOsWin | kOsLinux),
      FEATURE_VALUE_TYPE(blink::features::kCameraMicPreview)},
+
+    {"get-user-media-deferred-device-settings-selection",
+     flag_descriptions::kGetUserMediaDeferredDeviceSettingsSelectionName,
+     flag_descriptions::kGetUserMediaDeferredDeviceSettingsSelectionDescription,
+     static_cast<unsigned short>(kOsMac | kOsWin | kOsLinux),
+     FEATURE_VALUE_TYPE(
+         blink::features::kGetUserMediaDeferredDeviceSettingsSelection)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
