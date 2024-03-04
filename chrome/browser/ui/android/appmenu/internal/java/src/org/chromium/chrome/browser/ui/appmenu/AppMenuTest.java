@@ -584,6 +584,9 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_is_greater_than = VERSION_CODES.Q,
+            message = "Flaky. See crbug.com/41496891")
     public void testAppMenuButtonHelper_DownCancel() throws Exception {
         AppMenuButtonHelperImpl buttonHelper =
                 (AppMenuButtonHelperImpl) mAppMenuHandler.createAppMenuButtonHelper();
