@@ -1844,6 +1844,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Video.CaptureTimeToReferenceTime.Ms" units="ms"
+    expires_after="2024-08-22">
+  <owner>handellm@google.com</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Total time in milliseconds from capture timestamp to reference timestamp.
+    Recorded on every incoming frame containing both timestamps.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Video.CaptureTimeToTimestampAligner.Ms" units="ms"
+    expires_after="2024-08-22">
+  <owner>handellm@google.com</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Total time in milliseconds from capture timestamp to timestamp aligner's
+    timestamp. Recorded on every incoming frame containing both timestamps.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Video.CpuLimitedResolutionInPercent" units="%"
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->

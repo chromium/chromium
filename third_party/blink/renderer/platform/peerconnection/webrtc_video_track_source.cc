@@ -9,6 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "media/base/media_switches.h"
@@ -219,9 +221,25 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   // work it has to be updated on all samples.
   int64_t timestamp_us = timestamp_aligner_.TranslateTimestamp(
       frame->timestamp().InMicroseconds(), now_us);
-  if (base::FeatureList::IsEnabled(features::kWebRtcUseCaptureBeginTimestamp) &&
-      frame->metadata().capture_begin_time.has_value()) {
-    timestamp_us = frame->metadata().capture_begin_time->ToInternalValue();
+  if (frame->metadata().capture_begin_time.has_value()) {
+    auto timestamp_aligner_timestamp =
+        base::TimeTicks() + base::Microseconds(timestamp_us);
+    base::UmaHistogramCustomTimes(
+        "WebRTC.Video.CaptureTimeToTimestampAligner.Ms",
+        timestamp_aligner_timestamp -
+            frame->metadata().capture_begin_time.value(),
+        base::TimeDelta(), base::Milliseconds(250), 50);
+    if (frame->metadata().reference_time.has_value()) {
+      base::UmaHistogramCustomTimes(
+          "WebRTC.Video.CaptureTimeToReferenceTime.Ms",
+          frame->metadata().reference_time.value() -
+              frame->metadata().capture_begin_time.value(),
+          base::TimeDelta(), base::Milliseconds(250), 50);
+    }
+    if (base::FeatureList::IsEnabled(
+            features::kWebRtcUseCaptureBeginTimestamp)) {
+      timestamp_us = frame->metadata().capture_begin_time->ToInternalValue();
+    }
   }
 
   std::optional<webrtc::Timestamp> capture_time_identifier;
