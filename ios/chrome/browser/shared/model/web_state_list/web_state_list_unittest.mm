@@ -50,10 +50,14 @@ class WebStateListTestObserver : public WebStateListObserver {
   void ResetStatistics() {
     web_state_inserted_count_ = 0;
     web_state_moved_count_ = 0;
+    web_state_moved_old_group_ = nullptr;
+    web_state_moved_new_group_ = nullptr;
     web_state_replaced_count_ = 0;
     web_state_detached_count_ = 0;
     web_state_activated_count_ = 0;
     pinned_state_changed_count_ = 0;
+    status_only_old_group_ = nullptr;
+    status_only_new_group_ = nullptr;
     batch_operation_started_count_ = 0;
     batch_operation_ended_count_ = 0;
     web_state_list_destroyed_count_ = 0;
@@ -70,6 +74,16 @@ class WebStateListTestObserver : public WebStateListObserver {
 
   // Returns the number of move operations.
   int web_state_moved_count() const { return web_state_moved_count_; }
+
+  // Returns the old group mentioned in a WebStateListChangeMove.
+  const TabGroup* web_state_moved_old_group() const {
+    return web_state_moved_old_group_;
+  }
+
+  // Returns the new group mentioned in a WebStateListChangeMove.
+  const TabGroup* web_state_moved_new_group() const {
+    return web_state_moved_new_group_;
+  }
 
   // Returns whether the replacement operation was invoked.
   bool web_state_replaced() const { return web_state_replaced_count_ != 0; }
@@ -94,6 +108,16 @@ class WebStateListTestObserver : public WebStateListObserver {
 
   // Returns the number of WebState pin changes.
   int pinned_state_changed_count() const { return pinned_state_changed_count_; }
+
+  // Returns the old group mentioned in a WebStateListChangeStatusOnly.
+  const TabGroup* status_only_old_group() const {
+    return status_only_old_group_;
+  }
+
+  // Returns the new group mentioned in a WebStateListChangeStatusOnly.
+  const TabGroup* status_only_new_group() const {
+    return status_only_new_group_;
+  }
 
   // Returns whether WillBeginBatchOperation was invoked.
   bool batch_operation_started() const {
@@ -131,11 +155,13 @@ class WebStateListTestObserver : public WebStateListObserver {
                              const WebStateListStatus& status) override {
     switch (change.type()) {
       case WebStateListChange::Type::kStatusOnly: {
-        const WebStateListChangeStatusOnly& statusOnlyChange =
+        const WebStateListChangeStatusOnly& status_only_change =
             change.As<WebStateListChangeStatusOnly>();
-        if (statusOnlyChange.pinned_state_changed()) {
+        if (status_only_change.pinned_state_changed()) {
           ++pinned_state_changed_count_;
         }
+        status_only_old_group_ = status_only_change.old_group();
+        status_only_new_group_ = status_only_change.new_group();
         // The activation is handled after this switch statement.
         break;
       }
@@ -143,10 +169,14 @@ class WebStateListTestObserver : public WebStateListObserver {
         EXPECT_TRUE(web_state_list->IsMutating());
         ++web_state_detached_count_;
         break;
-      case WebStateListChange::Type::kMove:
+      case WebStateListChange::Type::kMove: {
         EXPECT_TRUE(web_state_list->IsMutating());
         ++web_state_moved_count_;
+        const auto& move_change = change.As<WebStateListChangeMove>();
+        web_state_moved_old_group_ = move_change.old_group();
+        web_state_moved_new_group_ = move_change.new_group();
         break;
+      }
       case WebStateListChange::Type::kReplace:
         EXPECT_TRUE(web_state_list->IsMutating());
         ++web_state_replaced_count_;
@@ -178,10 +208,14 @@ class WebStateListTestObserver : public WebStateListObserver {
  private:
   int web_state_inserted_count_ = 0;
   int web_state_moved_count_ = 0;
+  raw_ptr<const TabGroup> web_state_moved_old_group_ = nullptr;
+  raw_ptr<const TabGroup> web_state_moved_new_group_ = nullptr;
   int web_state_replaced_count_ = 0;
   int web_state_detached_count_ = 0;
   int web_state_activated_count_ = 0;
   int pinned_state_changed_count_ = 0;
+  raw_ptr<const TabGroup> status_only_old_group_ = nullptr;
+  raw_ptr<const TabGroup> status_only_new_group_ = nullptr;
   int batch_operation_started_count_ = 0;
   int batch_operation_ended_count_ = 0;
   int web_state_list_destroyed_count_ = 0;
@@ -1562,9 +1596,13 @@ TEST_F(WebStateListTest, ActivateWebStateAt_NoGroup) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_, "| a"));
 
+  observer_.ResetStatistics();
   web_state_list_.ActivateWebStateAt(0);
 
   EXPECT_EQ("| a*", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(1, observer_.web_state_activated_count());
+  EXPECT_EQ(nullptr, observer_.status_only_old_group());
+  EXPECT_EQ(nullptr, observer_.status_only_new_group());
 }
 
 // Tests that activating a grouped WebState keeps the group.
@@ -1572,26 +1610,58 @@ TEST_F(WebStateListTest, ActivateWebStateAt_Grouped) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(
       builder.BuildWebStateListFromDescription(web_state_list_, "| [ 0 a ]"));
+  const TabGroup* group = web_state_list_.GetGroupOfWebStateAt(0);
 
+  observer_.ResetStatistics();
   web_state_list_.ActivateWebStateAt(0);
 
   EXPECT_EQ("| [ 0 a* ]", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(1, observer_.web_state_activated_count());
+  EXPECT_EQ(group, observer_.status_only_old_group());
+  EXPECT_EQ(group, observer_.status_only_new_group());
 }
 
-// Tests creating a group with one tab.
-TEST_F(WebStateListTest, CreateGroup_OneTab) {
+// Tests creating a group with one tab that doesn't move.
+TEST_F(WebStateListTest, CreateGroup_OneTab_NotMoving) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(
       builder.BuildWebStateListFromDescription(web_state_list_, "| a*"));
-
   TabGroupVisualData visual_data =
       TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kGrey);
-  const TabGroup* group = web_state_list_.CreateGroup({0}, visual_data);
-  builder.SetTabGroupIdentifier(group, '0');
 
+  observer_.ResetStatistics();
+  const TabGroup* group = web_state_list_.CreateGroup({0}, visual_data);
+
+  builder.SetTabGroupIdentifier(group, '0');
   EXPECT_EQ("| [ 0 a* ]", builder.GetWebStateListDescription(web_state_list_));
   EXPECT_EQ(WebStateList::Range(0, 1), web_state_list_.GetWebStates(group));
   EXPECT_EQ(visual_data, group->visual_data());
+  EXPECT_EQ(0, observer_.web_state_activated_count());
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_EQ(nullptr, observer_.status_only_old_group());
+  EXPECT_EQ(group, observer_.status_only_new_group());
+}
+
+// Tests creating a group with one tab that moves.
+TEST_F(WebStateListTest, CreateGroup_OneTab_Moving) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "a* b |"));
+  TabGroupVisualData visual_data =
+      TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kGrey);
+
+  observer_.ResetStatistics();
+  const TabGroup* group = web_state_list_.CreateGroup({0}, visual_data);
+
+  builder.SetTabGroupIdentifier(group, '0');
+  EXPECT_EQ("b | [ 0 a* ]",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(1, 1), web_state_list_.GetWebStates(group));
+  EXPECT_EQ(visual_data, group->visual_data());
+  EXPECT_EQ(0, observer_.web_state_activated_count());
+  EXPECT_EQ(1, observer_.web_state_moved_count());
+  EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
+  EXPECT_EQ(group, observer_.web_state_moved_new_group());
 }
 
 // Tests creating a group with several tabs.
@@ -1599,16 +1669,21 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
                                                        "| a b* c d e"));
-
   TabGroupVisualData visual_data =
       TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kGrey);
-  const TabGroup* group = web_state_list_.CreateGroup({0, 2, 4}, visual_data);
-  builder.SetTabGroupIdentifier(group, '0');
 
+  observer_.ResetStatistics();
+  const TabGroup* group = web_state_list_.CreateGroup({0, 2, 4}, visual_data);
+
+  builder.SetTabGroupIdentifier(group, '0');
   EXPECT_EQ("| [ 0 a c e ] b* d",
             builder.GetWebStateListDescription(web_state_list_));
   EXPECT_EQ(WebStateList::Range(0, 3), web_state_list_.GetWebStates(group));
   EXPECT_EQ(visual_data, group->visual_data());
+  EXPECT_EQ(0, observer_.web_state_activated_count());
+  EXPECT_EQ(2, observer_.web_state_moved_count());
+  EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
+  EXPECT_EQ(group, observer_.web_state_moved_new_group());
 }
 
 // Tests creating a group with several tabs, some being pinned.
@@ -1616,16 +1691,21 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs_SomePinned) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
                                                        "a b* c | d e"));
-
   TabGroupVisualData visual_data =
       TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kGrey);
-  const TabGroup* group = web_state_list_.CreateGroup({1, 3}, visual_data);
-  builder.SetTabGroupIdentifier(group, '0');
 
+  observer_.ResetStatistics();
+  const TabGroup* group = web_state_list_.CreateGroup({1, 3}, visual_data);
+
+  builder.SetTabGroupIdentifier(group, '0');
   EXPECT_EQ("a c | [ 0 b* d ] e",
             builder.GetWebStateListDescription(web_state_list_));
   EXPECT_EQ(WebStateList::Range(2, 2), web_state_list_.GetWebStates(group));
   EXPECT_EQ(visual_data, group->visual_data());
+  EXPECT_EQ(0, observer_.web_state_activated_count());
+  EXPECT_EQ(1, observer_.web_state_moved_count());
+  EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
+  EXPECT_EQ(group, observer_.web_state_moved_new_group());
 }
 
 // Tests creating a group with several tabs, some being already grouped.
@@ -1634,16 +1714,21 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs_SomeGrouped) {
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
                                                        "| [ 0 a b c ] d* e"));
   const TabGroup* group_0 = web_state_list_.GetGroupOfWebStateAt(0);
-
   TabGroupVisualData visual_data_1 =
       TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kBlue);
-  const TabGroup* group_1 = web_state_list_.CreateGroup({1, 3}, visual_data_1);
-  builder.SetTabGroupIdentifier(group_1, '1');
 
+  observer_.ResetStatistics();
+  const TabGroup* group_1 = web_state_list_.CreateGroup({1, 3}, visual_data_1);
+
+  builder.SetTabGroupIdentifier(group_1, '1');
   EXPECT_EQ("| [ 0 a c ] [ 1 b d* ] e",
             builder.GetWebStateListDescription(web_state_list_));
 
   EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetWebStates(group_0));
   EXPECT_EQ(WebStateList::Range(2, 2), web_state_list_.GetWebStates(group_1));
   EXPECT_EQ(visual_data_1, group_1->visual_data());
+  EXPECT_EQ(0, observer_.web_state_activated_count());
+  EXPECT_EQ(1, observer_.web_state_moved_count());
+  EXPECT_EQ(group_0, observer_.web_state_moved_old_group());
+  EXPECT_EQ(group_1, observer_.web_state_moved_new_group());
 }
