@@ -106,7 +106,8 @@
                 "CssDominantBaseline", "text-anchor",
                 "stroke-width", "stroke-miterlimit", "stroke-linecap", "stroke-linejoin",
                 "marker-end", "marker-mid", "marker-start", "scrollbar-width", "object-view-box",
-                "position-fallback", "position-fallback-bounds"],
+                "position-fallback", "position-fallback-bounds", "position-try-options",
+                "position-try-order"],
         methods_to_diff: [
           {
             method: "BorderLeftWidth()",
