@@ -365,9 +365,7 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, SessionStartup) {
   login_manager_mixin_.WaitForActiveSession();
 }
 
-// TODO(b/1513575): Flaky.
-IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest,
-                       DISABLED_DemoSWALaunchesOnSessionStartup) {
+IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, DemoSWALaunchesOnSessionStartup) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   OpenBrowserAndInstallSystemAppForActiveProfile();
@@ -416,9 +414,8 @@ class DemoSessionLoginWithGrowthCampaignTest : public DemoSessionLoginTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(b/318756868): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
-                       DISABLED_DemoSWALaunchesOnSessionStartupWithPayload) {
+                       DemoSWALaunchesOnSessionStartupWithPayload) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   CreateTestCampaignsFile(R"({
@@ -461,9 +458,8 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
       variations::IsInSyntheticTrialGroup("CrOSGrowthStudy1", "CampaignId3"));
 }
 
-// TODO(crbug.com/1513575): Flaky.
 IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
-                       DISABLED_DemoSWALaunchesOnSessionStartupWithoutPayload) {
+                       DemoSWALaunchesOnSessionStartupWithoutPayload) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   CreateTestCampaignsFile(R"({
@@ -490,13 +486,14 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
 
-  // False because campaign not used.
-  EXPECT_FALSE(variations::HasSyntheticTrial("CrOSGrowthStudy"));
+  // Campaign is active with empty payload. Empty payload means the demo app
+  // would be launched without params.
+  EXPECT_TRUE(
+      variations::IsInSyntheticTrialGroup("CrOSGrowthStudy", "CampaignId3"));
 }
 
-// TODO(b/318756868): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
-                       DISABLED_DemoSWALaunchesOnSessionStartupMismatch) {
+                       DemoSWALaunchesOnSessionStartupMismatch) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   CreateTestCampaignsFile(R"({
@@ -546,8 +543,7 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
-                       // TODO(crbug.com/1516799): Re-enable this test
-                       DISABLED_DemoSWACampaignNoStudyId) {
+                       DemoSWACampaignNoStudyId) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   CreateTestCampaignsFile(R"({
