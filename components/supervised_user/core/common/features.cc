@@ -59,16 +59,6 @@ bool IsLocalWebApprovalsEnabled() {
 #endif
 }
 
-// Whether to display a "Managed by your parent" or similar text for supervised
-// users in various UI surfaces.
-BASE_FEATURE(kEnableManagedByParentUi,
-             "EnableManagedByParentUi",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kEnableSupervisedUserSkipParentApprovalToInstallExtensions,
              "EnableSupervisedUserSkipParentApprovalToInstallExtensions",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -110,16 +100,6 @@ BASE_FEATURE(kShadowKidsApiWithSafeSites,
 BASE_FEATURE(kForceGoogleSafeSearchForSupervisedUsers,
              "ForceGoogleSafeSearchForSupervisedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The URL which the "Managed by your parent" UI links to. This is defined as a
-// FeatureParam (but with the currently correct default) because:
-// * We expect to change this URL in the near-term, this allows us to gradually
-//   roll out that change
-// * If the exact URL needs changing this can be done without requiring a binary
-//   rollout
-constexpr base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl{
-    &kEnableManagedByParentUi, "more_info_url",
-    "https://familylink.google.com/setting/resource/94"};
 
 BASE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers,
              "CustomWebSignInInterceptForSupervisedUsers",

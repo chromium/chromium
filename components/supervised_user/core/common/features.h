@@ -18,10 +18,6 @@ extern const base::FeatureParam<std::string> kKidFriendlyContentFeedEndpoint;
 
 BASE_DECLARE_FEATURE(kLocalWebApprovals);
 
-// Flags related to supervision features on Desktop and iOS platforms.
-BASE_DECLARE_FEATURE(kEnableManagedByParentUi);
-extern const base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl;
-
 // Applies the updated extension approval flow, which can skip parent-approvals
 // on extension installations.
 BASE_DECLARE_FEATURE(

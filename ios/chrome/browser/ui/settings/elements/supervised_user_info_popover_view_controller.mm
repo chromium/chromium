@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/supervised_user/core/common/features.h"
+#import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
 #import "ios/chrome/common/string_util.h"
@@ -48,9 +48,7 @@ NSAttributedString* SecondaryMessage(BOOL addLearnMoreLink) {
       NSFontAttributeName :
           [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
       NSLinkAttributeName : [NSString
-          stringWithUTF8String:supervised_user::kManagedByParentUiMoreInfoUrl
-                                   .Get()
-                                   .c_str()],
+          stringWithUTF8String:supervised_user::kManagedByParentUiMoreInfoUrl],
     };
 
     attributedString = AttributedStringFromStringWithLink(

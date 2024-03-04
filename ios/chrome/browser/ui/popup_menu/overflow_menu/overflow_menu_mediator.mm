@@ -25,6 +25,7 @@
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
+#import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
@@ -2254,8 +2255,7 @@ bool IsBookmarked(const GURL& url,
 
 - (void)parentLearnMore {
   [self dismissMenu];
-  GURL familyLinkURL =
-      GURL(supervised_user::kManagedByParentUiMoreInfoUrl.Get());
+  GURL familyLinkURL = GURL(supervised_user::kManagedByParentUiMoreInfoUrl);
   [self.applicationHandler
       openURLInNewTab:[OpenNewTabCommand
                           commandWithURLFromChrome:familyLinkURL]];

@@ -17,7 +17,7 @@ source_set("info_popover_view_controller") {
   deps = [
     ":constants",
     "//base:base",
-    "//components/supervised_user/core/common:features",
+    "//components/supervised_user/core/common:common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/common:string_util",

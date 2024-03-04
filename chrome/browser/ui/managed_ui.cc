@@ -110,9 +110,7 @@ bool ShouldDisplayManagedByParentUi(Profile* profile) {
   return false;
 #else
   return profile &&
-         supervised_user::IsSubjectToParentalControls(*profile->GetPrefs()) &&
-         base::FeatureList::IsEnabled(
-             supervised_user::kEnableManagedByParentUi);
+         supervised_user::IsSubjectToParentalControls(*profile->GetPrefs());
 #endif  // !BUILDFLAG(ENABLE_SUPERVISED_USERS) || BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -202,7 +200,7 @@ GURL GetManagedUiUrl(Profile* profile) {
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (ShouldDisplayManagedByParentUi(profile)) {
-    return GURL(supervised_user::kManagedByParentUiMoreInfoUrl.Get());
+    return GURL(supervised_user::kManagedByParentUiMoreInfoUrl);
   }
 #endif
 
@@ -335,8 +333,7 @@ std::u16string GetManagedUiWebUILabel(Profile* profile) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
       return l10n_util::GetStringFUTF16(
           IDS_MANAGED_BY_PARENT_WITH_HYPERLINK,
-          base::UTF8ToUTF16(
-              supervised_user::kManagedByParentUiMoreInfoUrl.Get()));
+          base::UTF8ToUTF16(supervised_user::kManagedByParentUiMoreInfoUrl));
 #else
       break;
 #endif

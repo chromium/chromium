@@ -117,4 +117,7 @@ const char kSupervisedUserURLFilteringResultHistogramName[] =
 const char kSupervisedUserTopLevelURLFilteringResultHistogramName[] =
     "ManagedUsers.TopLevelFilteringResult";
 
+const char kManagedByParentUiMoreInfoUrl[] =
+    "https://familylink.google.com/setting/resource/94";
+
 }  // namespace supervised_user

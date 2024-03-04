@@ -121,6 +121,9 @@ extern const char kSupervisedUserURLFilteringResultHistogramName[];
 // Histogram name to log top level URL filtering results with reason for filter.
 extern const char kSupervisedUserTopLevelURLFilteringResultHistogramName[];
 
+// The URL which the "Managed by your parent" UI links to.
+extern const char kManagedByParentUiMoreInfoUrl[];
+
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_

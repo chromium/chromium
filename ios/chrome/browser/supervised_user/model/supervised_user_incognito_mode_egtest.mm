@@ -4,6 +4,7 @@
 
 #import "base/feature_list.h"
 #import "components/supervised_user/core/common/features.h"
+#import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_matchers.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -124,7 +125,7 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
   // For testing, there will be a redirect to the main Family Link website and
   // thus we only compare the hostnames.
   std::string expectedHostname =
-      GURL(supervised_user::kManagedByParentUiMoreInfoUrl.Get()).host();
+      GURL(supervised_user::kManagedByParentUiMoreInfoUrl).host();
   GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL].host(),
                   expectedHostname,
                   @"Did not open the correct Learn more URL with hostname %s",

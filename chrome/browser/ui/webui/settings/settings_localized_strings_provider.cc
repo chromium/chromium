@@ -348,14 +348,11 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddString(
-      "managementPage",
+  html_source->AddString("managementPage",
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-      base::FeatureList::IsEnabled(supervised_user::kEnableManagedByParentUi)
-          ? chrome::GetDeviceManagedUiHelpLabel(profile)
-          : ManagementUI::GetManagementPageSubtitle(profile)
+                         chrome::GetDeviceManagedUiHelpLabel(profile)
 #else
-      ManagementUI::GetManagementPageSubtitle(profile)
+                         ManagementUI::GetManagementPageSubtitle(profile)
 #endif
   );
   html_source->AddString(
