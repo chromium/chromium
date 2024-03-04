@@ -72,15 +72,28 @@ public class ImprovedBookmarkRowCoordinator {
 
         // Description and content description.
         boolean isFolder = bookmarkItem.isFolder();
+        boolean isLocalBookmark =
+                mBookmarkModel.areAccountBookmarkFoldersActive()
+                        && !bookmarkItem.isAccountBookmark();
+        propertyModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, isLocalBookmark);
         propertyModel.set(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE, !isFolder);
         if (isFolder) {
-            propertyModel.set(
-                    ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION,
+            String contentDescription =
                     String.format(
                             "%s %s",
                             bookmarkItem.getTitle(),
                             BookmarkUtils.getFolderDescriptionText(
-                                    bookmarkId, mBookmarkModel, mContext.getResources())));
+                                    bookmarkId, mBookmarkModel, mContext.getResources()));
+            if (isLocalBookmark) {
+                contentDescription =
+                        String.format(
+                                "%s %s",
+                                contentDescription,
+                                mContext.getResources()
+                                        .getString(R.string.local_bookmarks_section_header));
+            }
+            propertyModel.set(
+                    ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION, contentDescription);
         } else {
             propertyModel.set(
                     ImprovedBookmarkRowProperties.DESCRIPTION, bookmarkItem.getUrlForDisplay());
@@ -109,12 +122,6 @@ public class ImprovedBookmarkRowCoordinator {
 
         // Icon.
         resolveImagesForBookmark(propertyModel, bookmarkItem);
-
-        if (mBookmarkModel.areAccountBookmarkFoldersActive()) {
-            propertyModel.set(
-                    ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK,
-                    !bookmarkItem.isAccountBookmark());
-        }
 
         return propertyModel;
     }

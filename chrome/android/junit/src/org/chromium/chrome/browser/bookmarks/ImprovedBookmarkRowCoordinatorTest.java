@@ -193,6 +193,25 @@ public class ImprovedBookmarkRowCoordinatorTest {
     }
 
     @Test
+    public void testFolder_local() {
+        FakeBookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
+        bookmarkModel.setAreAccountBookmarkFoldersActive(true);
+
+        mCoordinator =
+                new ImprovedBookmarkRowCoordinator(
+                        mActivity,
+                        mBookmarkImageFetcher,
+                        bookmarkModel,
+                        mBookmarkUiPrefs,
+                        mShoppingService);
+        PropertyModel model =
+                mCoordinator.createBasePropertyModel(bookmarkModel.getMobileFolderId());
+        assertEquals(
+                "Mobile bookmarks 1 bookmark Only on this device",
+                model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
+    }
+
+    @Test
     public void testFolder_compactConversionString() {
         // Need to be careful when formatting user generating content, https://crbug.com/1509959.
         BookmarkId folderId = new BookmarkId(100, BookmarkType.NORMAL);

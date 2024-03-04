@@ -91,6 +91,7 @@ public class ImprovedBookmarkRowProperties {
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
+    // Whether this bookmark should be marked "local only" if account bookmarks are active.
     public static final WritableBooleanPropertyKey IS_LOCAL_BOOKMARK =
             new WritableBooleanPropertyKey();
 
