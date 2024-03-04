@@ -15,6 +15,8 @@
 #include "components/manta/features.h"
 #include "components/manta/manta_service.h"
 #include "components/manta/manta_status.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash::input_method {
 
@@ -41,6 +43,16 @@ std::map<std::string, std::string> CreateProviderRequest(
     orca::mojom::TextQueryRequestPtr request) {
   auto& params = request->parameters;
   std::map<std::string, std::string> provider_request;
+
+  InputMethodManager* input_method_manager = InputMethodManager::Get();
+
+  if (input_method_manager != nullptr &&
+      input_method_manager->GetActiveIMEState() != nullptr) {
+    provider_request["ime"] = extension_ime_util::GetComponentIDByInputMethodID(
+        input_method_manager->GetActiveIMEState()
+            ->GetCurrentInputMethod()
+            .id());
+  }
 
   for (auto it = params.begin(); it != params.end(); ++it) {
     provider_request[it->first] = it->second;
