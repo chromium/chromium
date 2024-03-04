@@ -276,6 +276,30 @@ class ImageCarouselView : public views::View {
         web_app::kIconSize, fixed_height);
   }
 
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    int host_view = available_size.width().is_bounded()
+                        ? available_size.width().value()
+                        : width();
+    // Use a fixed height that guarantees to fit the screenshot with max ratio
+    // and still show a clip for the next screenshot.
+    const int fixed_height = base::checked_cast<int>(
+        base::checked_cast<float>(host_view - image_padding_ * 2) /
+        webapps::kMaximumScreenshotRatio);
+
+    int width = 0;
+    for (const auto& screenshot : screenshots_) {
+      width += base::checked_cast<int>(
+          screenshot.image.width() * (base::checked_cast<float>(fixed_height) /
+                                      screenshot.image.height()));
+    }
+    return gfx::Size(width, fixed_height);
+  }
+
+  int GetHeightForWidth(int w) const override {
+    return CalculatePreferredSize(views::SizeBounds(w, {})).height();
+  }
+
  private:
   void OnScrollButtonClicked(ButtonType button_type) {
     DCHECK(image_inner_container_->children().size());
