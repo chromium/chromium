@@ -340,10 +340,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
     GTEST_SKIP();
   }
 
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
-
   content::RenderFrameHost* extension_host =
-      pdf_extension_test_util::GetOnlyPdfExtensionHost(GetActiveWebContents());
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(extension_host);
 
   // Makes sure that the correct frame invoked the context menu.
@@ -363,11 +361,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
 IN_PROC_BROWSER_TEST_P(
     PDFExtensionPrintingTest,
     DISABLED_ContextMenuPrintCommandEmbeddedExtensionMainFrame) {
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
-
-  content::WebContents* contents = GetActiveWebContents();
   content::RenderFrameHost* extension_host =
-      pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
+      LoadPdfInFirstChildGetExtensionHost(
+          embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
   ASSERT_TRUE(extension_host);
 
   content::WebContents* embedder_web_contents = GetEmbedderWebContents();
@@ -391,14 +387,12 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
                        ContextMenuPrintCommandPluginFrame) {
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
-
-  content::WebContents* contents = GetActiveWebContents();
   content::RenderFrameHost* extension_host =
-      pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
-  content::RenderFrameHost* plugin_frame =
-      pdf_extension_test_util::GetOnlyPdfPluginFrame(contents);
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(extension_host);
+
+  content::RenderFrameHost* plugin_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
   ASSERT_TRUE(plugin_frame);
 
   content::WebContents* embedder_web_contents = GetEmbedderWebContents();
@@ -421,14 +415,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
 // TODO(crbug.com/1330032): Fix flakiness.
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
                        DISABLED_ContextMenuPrintCommandEmbeddedPluginFrame) {
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
-
-  content::WebContents* contents = GetActiveWebContents();
   content::RenderFrameHost* extension_host =
-      pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
-  content::RenderFrameHost* plugin_frame =
-      pdf_extension_test_util::GetOnlyPdfPluginFrame(contents);
+      LoadPdfInFirstChildGetExtensionHost(
+          embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
   ASSERT_TRUE(extension_host);
+
+  content::RenderFrameHost* plugin_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
   ASSERT_TRUE(plugin_frame);
 
   content::WebContents* embedder_web_contents = GetEmbedderWebContents();
@@ -449,10 +442,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintButton) {
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
-
   content::RenderFrameHost* extension_host =
-      pdf_extension_test_util::GetOnlyPdfExtensionHost(GetActiveWebContents());
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(extension_host);
 
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
@@ -500,14 +491,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
       .WillOnce(base::test::RunOnceCallback<1>());
 #endif
 
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
-
-  content::WebContents* contents = GetActiveWebContents();
   content::RenderFrameHost* extension_host =
-      pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
-  content::RenderFrameHost* plugin_frame =
-      pdf_extension_test_util::GetOnlyPdfPluginFrame(contents);
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(extension_host);
+
+  content::RenderFrameHost* plugin_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
   ASSERT_TRUE(plugin_frame);
 
   content::WebContents* embedder_web_contents = GetEmbedderWebContents();
