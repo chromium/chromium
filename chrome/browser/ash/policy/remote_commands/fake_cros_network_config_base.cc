@@ -136,11 +136,10 @@ void FakeCrosNetworkConfigBase::ResetTrafficCounters(const std::string& guid) {
   NOTREACHED();
 }
 
-void FakeCrosNetworkConfigBase::SetTrafficCountersAutoReset(
+void FakeCrosNetworkConfigBase::SetTrafficCountersResetDay(
     const std::string& guid,
-    bool auto_reset,
     chromeos::network_config::mojom::UInt32ValuePtr day,
-    SetTrafficCountersAutoResetCallback callback) {
+    SetTrafficCountersResetDayCallback callback) {
   NOTREACHED();
 }
 

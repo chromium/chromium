@@ -87,9 +87,6 @@ export class FakeNetworkConfig {
     /** @private {!Map<string, !Array<!Object>>} */
     this.trafficCountersMap_ = new Map();
 
-    /** @private {!Map<string, !Array<!Object>>} */
-    this.autoResetValuesMap_ = new Map();
-
     /** @private {!number} */
     this.apnIdCounter_ = 0;
 
@@ -151,7 +148,7 @@ export class FakeNetworkConfig {
      'setProperties', 'setCellularSimState', 'selectCellularMobileNetwork',
      'startConnect', 'startDisconnect', 'configureNetwork', 'forgetNetwork',
      'getAlwaysOnVpn', 'getSupportedVpnTypes', 'requestTrafficCounters',
-     'resetTrafficCounters', 'setTrafficCountersAutoReset', 'removeCustomApn',
+     'resetTrafficCounters', 'setTrafficCountersResetDay', 'removeCustomApn',
      'createCustomApn', 'createExclusivelyEnabledCustomApn', 'modifyCustomApn']
         .forEach((methodName) => {
           this.resolverMap_.set(methodName, new PromiseResolver());
@@ -783,17 +780,15 @@ export class FakeNetworkConfig {
 
   /**
    * @param {string} guid
-   * @param {boolean} autoReset
    * @param {?UInt32Value} resetDay
    */
-  setAutoResetValues_(guid, autoReset, resetDay) {
+  setResetDay_(guid, resetDay) {
     const network = this.networkStates_.find(state => {
       return state.guid === guid;
     });
     assert(!!network, 'Network not found: ' + guid);
     const managed = this.managedProperties_.get(guid);
     if (managed) {
-      managed.trafficCounterProperties.autoReset = autoReset;
       managed.trafficCounterProperties.userSpecifiedResetDay =
           resetDay ? resetDay.value : 1;
     }
@@ -802,13 +797,12 @@ export class FakeNetworkConfig {
 
   /**
    * @param {string} guid
-   * @param {boolean} autoReset
    * @param {?UInt32Value} resetDay
    */
-  setTrafficCountersAutoReset(guid, autoReset, resetDay) {
+  setTrafficCountersResetDay(guid, resetDay) {
     return new Promise(resolve => {
-      this.methodCalled('setTrafficCountersAutoReset');
-      this.setAutoResetValues_(guid, autoReset, resetDay);
+      this.methodCalled('setTrafficCountersResetDay');
+      this.setResetDay_(guid, resetDay);
       resolve(true);
     });
   }

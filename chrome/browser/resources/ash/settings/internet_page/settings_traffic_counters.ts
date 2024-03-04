@@ -92,21 +92,15 @@ export class SettingsTrafficCountersElement extends
         type: String,
         value: '',
       },
-      /** Tracks whether auto reset is enabled. */
-      autoReset_: {
-        type: Boolean,
-        value: false,
-      },
       /** Tracks the user specified day of reset. Default is 1. */
       resetDay_: {
         type: Number,
-        value: 1,
+        value: DEFAULT_RESET_DAY,
       },
     };
   }
 
   guid: string;
-  private autoReset_: boolean;
   private date_: string;
   private resetDay_: number;
   private trafficCountersAdapter_: TrafficCountersAdapter;
@@ -130,7 +124,7 @@ export class SettingsTrafficCountersElement extends
     this.populateTrafficCountersAvailable_();
     this.populateDate_();
     this.populateDataUsageValue_();
-    this.populateAutoResetValues_();
+    this.populateUserSpecifiedResetDay_();
   }
 
   /**
@@ -217,31 +211,7 @@ export class SettingsTrafficCountersElement extends
   }
 
   /**
-   * Populates the auto reset enable and day values.
-   */
-  private populateAutoResetValues_(): void {
-    this.populateEnableAutoResetBoolean_();
-    this.populateUserSpecifiedResetDay_();
-  }
-
-  /**
-   * Determines whether auto reset is enabled.
-   */
-  private async populateEnableAutoResetBoolean_(): Promise<void> {
-    const result = await this.populateEnableAutoResetBooleanHelper_();
-    this.autoReset_ = result;
-  }
-
-  /**
-   * Gathers auto reset enable information.
-   */
-  private async populateEnableAutoResetBooleanHelper_(): Promise<boolean> {
-    const network = await this.getNetworkIfAvailable_();
-    return network ? network.autoReset : false;
-  }
-
-  /**
-   * Determines the auto reset day.
+   * Determines the reset day.
    */
   private async populateUserSpecifiedResetDay_(): Promise<void> {
     const result = await this.populateUserSpecifiedResetDayHelper_();
@@ -249,7 +219,7 @@ export class SettingsTrafficCountersElement extends
   }
 
   /**
-   * Gathers the auto reset day information.
+   * Gathers the reset day information (helper).
    */
   private async populateUserSpecifiedResetDayHelper_(): Promise<number> {
     const network = await this.getNetworkIfAvailable_();
@@ -257,26 +227,11 @@ export class SettingsTrafficCountersElement extends
   }
 
   /**
-   * Handles the auto reset toggle changes.
-   */
-  private onAutoDataUsageResetToggle_(): void {
-    this.autoReset_ = !this.autoReset_;
-    this.resetDay_ = 1;
-    const day = this.autoReset_ ? {value: this.resetDay_} : null;
-    this.trafficCountersAdapter_.setTrafficCountersAutoResetForNetwork(
-        this.guid, this.autoReset_, day);
-    this.load();
-  }
-
-  /**
    * Handles day of reset changes.
    */
   private onResetDaySelected_(): void {
-    if (!this.autoReset_) {
-      return;
-    }
-    this.trafficCountersAdapter_.setTrafficCountersAutoResetForNetwork(
-        this.guid, this.autoReset_, {value: this.resetDay_});
+    this.trafficCountersAdapter_.setTrafficCountersResetDayForNetwork(
+        this.guid, {value: this.resetDay_});
     this.load();
   }
 }

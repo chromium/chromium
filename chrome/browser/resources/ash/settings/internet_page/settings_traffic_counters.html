@@ -31,32 +31,14 @@
     </div>
     <div id="data-usage-wrapper">
       <div class="start settings-box-text" aria-hidden="true">
-        <div id="autoDataUsageResetLabel">
-          [[i18n('TrafficCountersDataUsageEnableAutoResetLabel')]]
-        </div>
-        <div class="secondary" id="autoDataUsageResetSubLabel">
-          [[i18n('TrafficCountersDataUsageEnableAutoResetSublabel')]]
+        <div id="daySelectionLabel">
+          [[i18n('TrafficCountersDataUsageAutoResetDayOfMonthLabel')]]
         </div>
       </div>
       <div class="separator"></div>
-      <cr-toggle id="autoDataUsageResetToggle" checked="[[autoReset_]]"
-          aria-labelledby="autoDataUsageResetLabel"
-          aria-describedby="autoDataUsageResetSubLabel"
-          on-change="onAutoDataUsageResetToggle_">
-      </cr-toggle>
+      <cr-input id="daySelectionInput" type="number" value="{{resetDay_}}"
+          max="31" min="1" on-change="onResetDaySelected_">
+      </cr-input>
     </div>
-    <template is="dom-if" if="[[autoReset_]]" restamp>
-      <div id="data-usage-wrapper">
-        <div class="start settings-box-text" aria-hidden="true">
-          <div id="daySelectionLabel">
-            [[i18n('TrafficCountersDataUsageAutoResetDayOfMonthLabel')]]
-          </div>
-        </div>
-        <div class="separator"></div>
-        <cr-input id="daySelectionInput" type="number" value="{{resetDay_}}"
-            max="31" min="1" on-change="onResetDaySelected_">
-        </cr-input>
-      </div>
-    </template>
   </div>
 </template>

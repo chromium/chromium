@@ -114,11 +114,10 @@ class CrosNetworkConfig
   void RequestTrafficCounters(const std::string& guid,
                               RequestTrafficCountersCallback callback) override;
   void ResetTrafficCounters(const std::string& guid) override;
-  void SetTrafficCountersAutoReset(
+  void SetTrafficCountersResetDay(
       const std::string& guid,
-      bool auto_reset,
       chromeos::network_config::mojom::UInt32ValuePtr day,
-      SetTrafficCountersAutoResetCallback callback) override;
+      SetTrafficCountersResetDayCallback callback) override;
   void CreateCustomApn(const std::string& network_guid,
                        chromeos::network_config::mojom::ApnPropertiesPtr apn,
                        CreateCustomApnCallback callback) override;

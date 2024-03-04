@@ -1845,14 +1845,6 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
     traffic_counter_properties->friendly_date = std::nullopt;
   }
 
-  const base::Value* auto_reset =
-      NetworkHandler::IsInitialized()
-          ? NetworkHandler::Get()
-                ->network_metadata_store()
-                ->GetEnableTrafficCountersAutoReset(result->guid)
-          : nullptr;
-  traffic_counter_properties->auto_reset =
-      auto_reset && auto_reset->is_bool() ? auto_reset->GetBool() : false;
   const base::Value* user_specified_reset_day =
       NetworkHandler::IsInitialized()
           ? NetworkHandler::Get()
@@ -3501,32 +3493,22 @@ void CrosNetworkConfig::ResetTrafficCounters(const std::string& guid) {
   network_state_handler_->ResetTrafficCounters(service_path);
 }
 
-void CrosNetworkConfig::SetTrafficCountersAutoReset(
+void CrosNetworkConfig::SetTrafficCountersResetDay(
     const std::string& guid,
-    bool auto_reset,
     mojom::UInt32ValuePtr day,
-    SetTrafficCountersAutoResetCallback callback) {
-  if (day && !auto_reset) {
-    NET_LOG(ERROR) << "Failed to set auto reset day for " << guid
-                   << ": auto reset must be enabled.";
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-  if (!day && auto_reset) {
-    NET_LOG(ERROR) << "Failed to enable auto reset for " << guid << ": a valid "
+    SetTrafficCountersResetDayCallback callback) {
+  if (!day) {
+    NET_LOG(ERROR) << "Failed to set reset day for " << guid << ": a valid "
                    << "day between 1 and 31 (inclusive) must be provided.";
     std::move(callback).Run(/*success=*/false);
     return;
   }
   if (day && (day->value < 1 || day->value > 31)) {
-    NET_LOG(ERROR) << "Failed to set auto reset day " << day->value << " for "
+    NET_LOG(ERROR) << "Failed to set reset day " << day->value << " for "
                    << guid << ": day must be between 1 and 31 (inclusive)";
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  NetworkHandler::Get()
-      ->network_metadata_store()
-      ->SetEnableTrafficCountersAutoReset(guid, auto_reset);
   NetworkHandler::Get()
       ->network_metadata_store()
       ->SetDayOfTrafficCountersAutoReset(

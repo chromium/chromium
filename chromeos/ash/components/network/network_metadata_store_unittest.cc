@@ -681,28 +681,7 @@ TEST_F(NetworkMetadataStoreTest, LogHiddenNetworks) {
                            /*sample=*/false, /*expected_count=*/1);
 }
 
-TEST_F(NetworkMetadataStoreTest, EnableAndDisableTrafficCountersAutoReset) {
-  std::string service_path = ConfigureService(kConfigWifi0Connectable);
-  const base::Value* value =
-      metadata_store()->GetEnableTrafficCountersAutoReset(kGuid);
-  EXPECT_EQ(nullptr, value);
-
-  metadata_store()->SetEnableTrafficCountersAutoReset(kGuid, /*enable=*/true);
-  base::RunLoop().RunUntilIdle();
-
-  value = metadata_store()->GetEnableTrafficCountersAutoReset(kGuid);
-  ASSERT_TRUE(value && value->is_bool());
-  EXPECT_TRUE(value->GetBool());
-
-  metadata_store()->SetEnableTrafficCountersAutoReset(kGuid, /*enable=*/false);
-  base::RunLoop().RunUntilIdle();
-
-  value = metadata_store()->GetEnableTrafficCountersAutoReset(kGuid);
-  ASSERT_TRUE(value && value->is_bool());
-  EXPECT_FALSE(value->GetBool());
-}
-
-TEST_F(NetworkMetadataStoreTest, SetTrafficCountersAutoResetDay) {
+TEST_F(NetworkMetadataStoreTest, SetTrafficCountersResetDay) {
   std::string service_path = ConfigureService(kConfigWifi0Connectable);
   const base::Value* value =
       metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);

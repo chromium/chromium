@@ -162,9 +162,6 @@ class TrafficCountersHandlerTest : public ::testing::Test {
                        base::Value(shill::kStateOnline));
     helper_->profile_test()->AddService(
         NetworkProfileHandler::GetSharedProfilePath(), wifi_path_);
-    NetworkHandler::Get()
-        ->network_metadata_store()
-        ->SetEnableTrafficCountersAutoReset(wifi_guid_, false);
     task_environment_.RunUntilIdle();
   }
 

@@ -132,19 +132,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   // marks networks that were added in OOBE to the user's list.
   void OwnSharedNetworksOnFirstUserLogin();
 
-  // Sets whether traffic counters should be automatically reset.
-  void SetEnableTrafficCountersAutoReset(const std::string& network_guid,
-                                         bool enable);
-
   // Sets the day of the month on which traffic counters are automatically
   // reset.
   void SetDayOfTrafficCountersAutoReset(const std::string& network_guid,
                                         const std::optional<int>& day);
-
-  // Returns whether traffic counters should be automatically reset. Returns
-  // nullptr if no pref exists for |network_guid|.
-  const base::Value* GetEnableTrafficCountersAutoReset(
-      const std::string& network_guid);
 
   // Returns the day of the month on which traffic counters are automatically
   // reset. Returns nullptr if no pref exists for |network_guid|.

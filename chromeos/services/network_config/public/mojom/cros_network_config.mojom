@@ -1330,11 +1330,9 @@ interface CrosNetworkConfig {
   // Resets traffic counters for a service with ID |guid|.
   ResetTrafficCounters(string guid);
 
-  // Sets whether traffic counters should be automatically reset and the day of
-  // the month on which traffic counters are automatically reset. In order for
-  // |day| to be valid, it must be within the limit 1 <= |day| <= 31.
-  SetTrafficCountersAutoReset(string guid, bool auto_reset, UInt32Value? day) =>
-    (bool success);
+  // Sets the traffic counters reset day. In order for |day| to be valid, it
+  // must be within the limit 1 <= |day| <= 31.
+  SetTrafficCountersResetDay(string guid, UInt32Value? day) => (bool success);
 
   // Creates a new APN for the cellular network with ID |network_guid|, and
   // appends it to |custom_apn_list|. Should only be called when the APN

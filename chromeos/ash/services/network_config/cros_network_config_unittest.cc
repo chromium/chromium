@@ -879,34 +879,22 @@ class CrosNetworkConfigTest : public testing::Test {
     run_loop.Run();
   }
 
-  void SetTrafficCountersAutoResetAndCompare(const std::string& guid,
-                                             bool auto_reset,
-                                             mojom::UInt32ValuePtr day,
-                                             bool expected_success,
-                                             base::Value* expected_auto_reset,
-                                             base::Value* expected_reset_day) {
+  void SetTrafficCountersResetDayAndCompare(const std::string& guid,
+                                            mojom::UInt32ValuePtr day,
+                                            bool expected_success,
+                                            base::Value* expected_reset_day) {
     base::RunLoop run_loop;
-    cros_network_config()->SetTrafficCountersAutoReset(
-        guid, auto_reset, day ? std::move(day) : nullptr,
+    cros_network_config()->SetTrafficCountersResetDay(
+        guid, day ? std::move(day) : nullptr,
         base::BindOnce(
             [](const std::string* const guid, bool* expected_success,
-               base::Value* expected_auto_reset,
                base::Value* expected_reset_day,
                NetworkMetadataStore* network_metadata_store,
                base::OnceClosure quit_closure, bool success) {
               EXPECT_EQ(*expected_success, success);
-              const base::Value* actual_auto_reset =
-                  network_metadata_store->GetEnableTrafficCountersAutoReset(
-                      *guid);
               const base::Value* actual_reset_day =
                   network_metadata_store->GetDayOfTrafficCountersAutoReset(
                       *guid);
-              if (expected_auto_reset) {
-                EXPECT_TRUE(actual_auto_reset);
-                EXPECT_EQ(*expected_auto_reset, *actual_auto_reset);
-              } else {
-                EXPECT_EQ(actual_auto_reset, nullptr);
-              }
               if (expected_reset_day) {
                 EXPECT_TRUE(actual_reset_day);
                 EXPECT_EQ(*expected_reset_day, *actual_reset_day);
@@ -915,7 +903,7 @@ class CrosNetworkConfigTest : public testing::Test {
               }
               std::move(quit_closure).Run();
             },
-            &guid, &expected_success, expected_auto_reset, expected_reset_day,
+            &guid, &expected_success, expected_reset_day,
             network_metadata_store(), run_loop.QuitClosure()));
     run_loop.Run();
   }
@@ -1815,28 +1803,25 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateListNoVpnServicesAndVpnProhibited) {
 // translated as strings and not enum values (See ManagedProperties definition
 // in cros_network_config.mojom for details).
 TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
-  SetTrafficCountersAutoResetAndCompare("eth_guid", /*auto_reset=*/true,
-                                        /*day=*/mojom::UInt32Value::New(32),
-                                        /*expected_success=*/false,
-                                        /*expected_auto_reset=*/nullptr,
-                                        /*expected_reset_day=*/nullptr);
+  SetTrafficCountersResetDayAndCompare("eth_guid",
+                                       /*day=*/mojom::UInt32Value::New(32),
+                                       /*expected_success=*/false,
+                                       /*expected_reset_day=*/nullptr);
   mojom::ManagedPropertiesPtr properties = GetManagedProperties("eth_guid");
   ASSERT_TRUE(properties);
   EXPECT_EQ("eth_guid", properties->guid);
   EXPECT_EQ(mojom::NetworkType::kEthernet, properties->type);
   EXPECT_EQ(mojom::ConnectionStateType::kOnline, properties->connection_state);
   ASSERT_TRUE(properties->traffic_counter_properties);
-  EXPECT_FALSE(properties->traffic_counter_properties->auto_reset);
   EXPECT_EQ(static_cast<uint32_t>(1),
             properties->traffic_counter_properties->user_specified_reset_day);
   EXPECT_FALSE(properties->traffic_counter_properties->last_reset_time);
 
-  base::Value expected_auto_reset(true);
   base::Value expected_reset_day(2);
-  SetTrafficCountersAutoResetAndCompare(
-      "wifi1_guid", /*auto_reset=*/true,
-      /*day=*/mojom::UInt32Value::New(2),
-      /*expected_success=*/true, &expected_auto_reset, &expected_reset_day);
+  SetTrafficCountersResetDayAndCompare("wifi1_guid",
+                                       /*day=*/mojom::UInt32Value::New(2),
+                                       /*expected_success=*/true,
+                                       &expected_reset_day);
   properties = GetManagedProperties("wifi1_guid");
   ASSERT_TRUE(properties);
   EXPECT_EQ("wifi1_guid", properties->guid);
@@ -1854,15 +1839,13 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
             properties->traffic_counter_properties->last_reset_time
                 ->ToDeltaSinceWindowsEpoch()
                 .InMilliseconds());
-  EXPECT_TRUE(properties->traffic_counter_properties->auto_reset);
   EXPECT_EQ(static_cast<uint32_t>(2),
             properties->traffic_counter_properties->user_specified_reset_day);
 
-  SetTrafficCountersAutoResetAndCompare("wifi2_guid", /*auto_reset=*/true,
-                                        /*day=*/nullptr,
-                                        /*expected_success=*/false,
-                                        /*expected_auto_reset=*/nullptr,
-                                        /*expected_reset_day=*/nullptr);
+  SetTrafficCountersResetDayAndCompare("wifi2_guid",
+                                       /*day=*/nullptr,
+                                       /*expected_success=*/false,
+                                       /*expected_reset_day=*/nullptr);
   properties = GetManagedProperties("wifi2_guid");
   ASSERT_TRUE(properties);
   EXPECT_EQ("wifi2_guid", properties->guid);
@@ -1877,42 +1860,6 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
   EXPECT_EQ(100, wifi->signal_strength);
   EXPECT_EQ(mojom::OncSource::kUserPolicy, properties->source);
   EXPECT_FALSE(properties->type_properties->get_wifi()->is_syncable);
-  EXPECT_FALSE(properties->traffic_counter_properties->auto_reset);
-  EXPECT_EQ(static_cast<uint32_t>(1),
-            properties->traffic_counter_properties->user_specified_reset_day);
-
-  SetTrafficCountersAutoResetAndCompare("wifi3_guid", /*auto_reset=*/false,
-                                        /*day=*/mojom::UInt32Value::New(2),
-                                        /*expected_success=*/false,
-                                        /*expected_auto_reset=*/nullptr,
-                                        /*expected_reset_day=*/nullptr);
-  properties = GetManagedProperties("wifi3_guid");
-  ASSERT_TRUE(properties);
-  EXPECT_EQ("wifi3_guid", properties->guid);
-  EXPECT_EQ(mojom::NetworkType::kWiFi, properties->type);
-  EXPECT_EQ(mojom::ConnectionStateType::kNotConnected,
-            properties->connection_state);
-  EXPECT_EQ(mojom::OncSource::kDevice, properties->source);
-  EXPECT_FALSE(properties->type_properties->get_wifi()->is_syncable);
-  EXPECT_FALSE(properties->traffic_counter_properties->auto_reset);
-  EXPECT_EQ(static_cast<uint32_t>(1),
-            properties->traffic_counter_properties->user_specified_reset_day);
-
-  expected_auto_reset = base::Value(false);
-  expected_reset_day = base::Value();
-  SetTrafficCountersAutoResetAndCompare(
-      "wifi4_guid", /*auto_reset=*/false,
-      /*day=*/nullptr,
-      /*expected_success=*/true, &expected_auto_reset, &expected_reset_day);
-  properties = GetManagedProperties("wifi4_guid");
-  ASSERT_TRUE(properties);
-  EXPECT_EQ("wifi4_guid", properties->guid);
-  EXPECT_EQ(mojom::NetworkType::kWiFi, properties->type);
-  EXPECT_EQ(mojom::ConnectionStateType::kNotConnected,
-            properties->connection_state);
-  EXPECT_EQ(mojom::OncSource::kUser, properties->source);
-  EXPECT_TRUE(properties->type_properties->get_wifi()->is_syncable);
-  EXPECT_FALSE(properties->traffic_counter_properties->auto_reset);
   EXPECT_EQ(static_cast<uint32_t>(1),
             properties->traffic_counter_properties->user_specified_reset_day);
 
@@ -4526,41 +4473,21 @@ TEST_F(CrosNetworkConfigTest, GetSupportedVpnTypes) {
   helper()->manager_test()->SetShouldReturnNullProperties(false);
 }
 
-TEST_F(CrosNetworkConfigTest, SetAutoReset) {
-  SetTrafficCountersAutoResetAndCompare("wifi1_guid", /*auto_reset=*/true,
-                                        /*day=*/mojom::UInt32Value::New(32),
-                                        /*expected_success=*/false,
-                                        /*expected_auto_reset=*/nullptr,
-                                        /*expected_reset_day=*/nullptr);
-  base::Value expected_auto_reset(true);
+TEST_F(CrosNetworkConfigTest, SetResetDay) {
+  SetTrafficCountersResetDayAndCompare("wifi1_guid",
+                                       /*day=*/mojom::UInt32Value::New(32),
+                                       /*expected_success=*/false,
+                                       /*expected_reset_day=*/nullptr);
   base::Value expected_reset_day(2);
-  SetTrafficCountersAutoResetAndCompare(
-      "wifi1_guid", /*auto_reset=*/true,
-      /*day=*/mojom::UInt32Value::New(2),
-      /*expected_success=*/true, &expected_auto_reset, &expected_reset_day);
+  SetTrafficCountersResetDayAndCompare("wifi1_guid",
+                                       /*day=*/mojom::UInt32Value::New(2),
+                                       /*expected_success=*/true,
+                                       &expected_reset_day);
   // Auto reset prefs remains unchanged from last successful call.
-  SetTrafficCountersAutoResetAndCompare(
-      "wifi1_guid", /*auto_reset=*/true,
-      /*day=*/mojom::UInt32Value::New(0),
-      /*expected_success=*/false, &expected_auto_reset, &expected_reset_day);
-  expected_auto_reset = base::Value(false);
-  expected_reset_day = base::Value();
-  SetTrafficCountersAutoResetAndCompare(
-      "wifi1_guid", /*auto_reset=*/false,
-      /*day=*/nullptr,
-      /*expected_success=*/true,
-      /*expected_auto_reset=*/&expected_auto_reset,
-      /*expected_reset_day=*/&expected_reset_day);
-  // Auto reset prefs remains unchanged from last successful call.
-  SetTrafficCountersAutoResetAndCompare(
-      "wifi1_guid", /*auto_reset=*/false,
-      /*day=*/mojom::UInt32Value::New(10),
-      /*expected_success=*/false, &expected_auto_reset, &expected_reset_day);
-  // Auto reset prefs remains unchanged from last successful call.
-  SetTrafficCountersAutoResetAndCompare(
-      "wifi1_guid", /*auto_reset=*/true,
-      /*day=*/nullptr,
-      /*expected_success=*/false, &expected_auto_reset, &expected_reset_day);
+  SetTrafficCountersResetDayAndCompare("wifi1_guid",
+                                       /*day=*/mojom::UInt32Value::New(0),
+                                       /*expected_success=*/false,
+                                       &expected_reset_day);
 }
 
 // Make sure calling shutdown before cros_network_config destruction doesn't

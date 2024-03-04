@@ -25,7 +25,6 @@ export interface Network {
   counters: TrafficCounter[];
   lastResetTime: Time|null;
   friendlyDate: string|null;
-  autoReset: boolean;
   userSpecifiedResetDay: number;
 }
 
@@ -40,7 +39,6 @@ function createNetwork(
     counters: TrafficCounter[],
     lastResetTime: Time|null,
     friendlyDate: string|null,
-    autoReset: boolean,
     userSpecifiedResetDay: number): Network {
   return {
     guid: guid,
@@ -49,7 +47,6 @@ function createNetwork(
     counters: counters,
     lastResetTime: lastResetTime,
     friendlyDate: friendlyDate,
-    autoReset: autoReset,
     userSpecifiedResetDay: userSpecifiedResetDay,
   };
 }
@@ -84,14 +81,11 @@ export class TrafficCountersAdapter {
           await this.requestLastResetTimeForNetwork(networkState.guid);
       const friendlyDate =
           await this.requestFriendlyDateForNetwork(networkState.guid);
-      const autoReset =
-          await this.requestEnableAutoResetBooleanForNetwork(networkState.guid);
       const userSpecifiedResetDay =
           await this.requestUserSpecifiedResetDayForNetwork(networkState.guid);
       networks.push(createNetwork(
           networkState.guid, networkState.name, networkState.type,
-          trafficCounters, lastResetTime, friendlyDate, autoReset,
-          userSpecifiedResetDay));
+          trafficCounters, lastResetTime, friendlyDate, userSpecifiedResetDay));
     }
     return networks;
   }
@@ -143,19 +137,6 @@ export class TrafficCountersAdapter {
   }
 
   /**
-   * Requests enable traffic counters auto reset boolean for the given network.
-   */
-  async requestEnableAutoResetBooleanForNetwork(
-    guid: string): Promise<boolean> {
-    const managedPropertiesPromise =
-        await this.networkConfig_.getManagedProperties(guid);
-    if (!managedPropertiesPromise || !managedPropertiesPromise.result) {
-      return false;
-    }
-    return managedPropertiesPromise.result.trafficCounterProperties.autoReset;
-  }
-
-  /**
    * Requests user specified reset day for the given network.
    */
   async requestUserSpecifiedResetDayForNetwork(guid: string): Promise<number> {
@@ -171,11 +152,8 @@ export class TrafficCountersAdapter {
   /**
    * Sets values for auto reset.
    */
-  async setTrafficCountersAutoResetForNetwork(
-    guid: string,
-    autoReset: boolean,
-    resetDay: UInt32Value|null): Promise<void> {
-    await this.networkConfig_.setTrafficCountersAutoReset(
-        guid, autoReset, resetDay);
+  async setTrafficCountersResetDayForNetwork(
+      guid: string, resetDay: UInt32Value|null): Promise<void> {
+    await this.networkConfig_.setTrafficCountersResetDay(guid, resetDay);
   }
 }

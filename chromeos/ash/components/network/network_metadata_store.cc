@@ -50,8 +50,6 @@ const char kCustomApnList[] = "custom_apn_list";
 const char kCustomApnListV2[] = "custom_apn_list_v2";
 const char kHasFixedHiddenNetworks[] =
     "metadata_store.has_fixed_hidden_networks";
-const char kEnableTrafficCountersAutoReset[] =
-    "enable_traffic_counters_auto_reset";
 const char kDayOfTrafficCountersAutoReset[] =
     "day_of_traffic_counters_auto_reset";
 const char kUserTextMessageSuppressionState[] =
@@ -557,22 +555,11 @@ const base::Value::List* NetworkMetadataStore::GetPreRevampCustomApnList(
   return nullptr;
 }
 
-void NetworkMetadataStore::SetEnableTrafficCountersAutoReset(
-    const std::string& network_guid,
-    bool enable) {
-  SetPref(network_guid, kEnableTrafficCountersAutoReset, base::Value(enable));
-}
-
 void NetworkMetadataStore::SetDayOfTrafficCountersAutoReset(
     const std::string& network_guid,
     const std::optional<int>& day) {
   auto value = day.has_value() ? base::Value(day.value()) : base::Value();
   SetPref(network_guid, kDayOfTrafficCountersAutoReset, std::move(value));
-}
-
-const base::Value* NetworkMetadataStore::GetEnableTrafficCountersAutoReset(
-    const std::string& network_guid) {
-  return GetPref(network_guid, kEnableTrafficCountersAutoReset);
 }
 
 const base::Value* NetworkMetadataStore::GetDayOfTrafficCountersAutoReset(
