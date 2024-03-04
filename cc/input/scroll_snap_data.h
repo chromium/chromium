@@ -88,6 +88,38 @@ struct ScrollSnapAlign {
   SnapAlignment alignment_inline;
 };
 
+// This struct represents a snap area that is considered to be a viable
+// alternative to the snap area that was selected for the associated
+// SnapSearchResult.
+// The snap area is a viable alternative because it:
+// - is a snap target in both axes, and
+// - is aligned with its associated SnapSearchResult's snap area in the
+//     main axis of that SnapSearchResult.
+// This alternative may be considered to be a better choice if it is also
+// aligned with the SnapSearchResult of the cross axis.
+struct SnapSearchResultAlternative {
+  explicit SnapSearchResultAlternative(const ElementId id,
+                                       gfx::RectF rect,
+                                       float area_cross_axis_snap_offset) {
+    element_id = id;
+    area_rect = rect;
+    cross_axis_snap_offset = area_cross_axis_snap_offset;
+  }
+  // The ElementId of the snap area considered to be a viable alternative to
+  // the snap area selected for the associated SnapSearchResult.
+  ElementId element_id;
+
+  // The rect of the snap area considered to be a viable alternative to
+  // the snap area selected for the associated SnapSearchResult relative to
+  // its snap container.
+  gfx::RectF area_rect;
+
+  // The offset in the cross axis of the associated SnapSearchResult at which
+  // the snapport of the snap container is aligned with the snap area
+  // represented by this SnapSearchResultAlternative.
+  float cross_axis_snap_offset;
+};
+
 // This class includes snap offset and visible range needed to perform a snap
 // operation on one axis for a specific area. The data can be used to determine
 // whether this snap area provides a valid snap position for the current scroll.
@@ -138,6 +170,7 @@ class SnapSearchResult {
     has_focus_within_ = has_focus_within;
   }
 
+  SearchAxis axis() const { return axis_; }
   void set_axis(const SearchAxis& axis) { axis_ = axis; }
   void set_snapport_visible_range(const gfx::RangeF& range) {
     snapport_visible_range_ = range;
@@ -148,6 +181,15 @@ class SnapSearchResult {
 
   std::optional<gfx::RectF> rect() const { return rect_; }
   void set_rect(const gfx::RectF& rect) { rect_ = rect; }
+
+  std::optional<SnapSearchResultAlternative> alternative() const {
+    return alternative_;
+  }
+  void set_alternative(const ElementId& id,
+                       const gfx::RectF& rect,
+                       float alt_cross_snap_offset) {
+    alternative_ = SnapSearchResultAlternative(id, rect, alt_cross_snap_offset);
+  }
 
  private:
   // Scroll offset corresponding to this snap position. If covered_range_ is set
@@ -189,6 +231,11 @@ class SnapSearchResult {
   // This is the rect of the SnapArea generating this result relative to its
   // snap container.
   std::optional<gfx::RectF> rect_;
+
+  // This represents a snap area that is aligned with the snap area generating
+  // this result. We may end up selecting the alternative if it turns out to
+  // also be an aligned candidate in the cross axis.
+  std::optional<SnapSearchResultAlternative> alternative_;
 };
 
 // Snap area is a bounding box that could be snapped to when a scroll happens in
@@ -441,6 +488,25 @@ class CC_EXPORT SnapContainerData {
                        const gfx::PointF& scroll_offset) const;
 
   gfx::RectF snapport() const;
+
+  // Updates the alternative of a SnapSearchResult, |current_result|, so that,
+  // if |candidate_area| is a closer snap point (in the cross axis) than the
+  // area currently represented by |current_result|'s alternative,
+  // |current_result|'s alternative is made to represent |candidate_area|
+  // instead.
+  void UpdateSearchAlternative(SnapSearchResult& current_result,
+                               const SnapSearchResult& candidate_result,
+                               const SnapAreaData& candidate_area,
+                               const SnapSelectionStrategy& strategy) const;
+
+  // This evaluates whether the snap area represented by the alternative of a
+  // SnapSearchResult, |selection|, is aligned in both axes and is therefore a
+  // better selection than the snap area of |selection|.
+  void SelectAlternativeIdForSearchResult(
+      SnapSearchResult& selection,
+      const std::optional<SnapSearchResult>& cross_selection,
+      float cross_current_position,
+      float cross_max_position) const;
 
   // Specifies whether a scroll container is a scroll snap container, how
   // strictly it snaps, and which axes are considered.
