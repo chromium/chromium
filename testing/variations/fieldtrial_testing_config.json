@@ -10618,6 +10618,21 @@
             ]
         }
     ],
+    "MediaFoundationVP9L1T2Support": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MediaFoundationVP9L1T2Support"
+                    ]
+                }
+            ]
+        }
+    ],
     "MediaHardwareSecureDecryption": [
         {
             "platforms": [
