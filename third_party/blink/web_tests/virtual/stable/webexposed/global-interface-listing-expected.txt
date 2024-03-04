@@ -3584,6 +3584,7 @@ interface HTMLIFrameElement : HTMLElement
     getter referrerPolicy
     getter sandbox
     getter scrolling
+    getter sharedStorageWritable
     getter src
     getter srcdoc
     getter width
@@ -3607,6 +3608,7 @@ interface HTMLIFrameElement : HTMLElement
     setter referrerPolicy
     setter sandbox
     setter scrolling
+    setter sharedStorageWritable
     setter src
     setter srcdoc
     setter width
@@ -3630,6 +3632,7 @@ interface HTMLImageElement : HTMLElement
     getter naturalHeight
     getter naturalWidth
     getter referrerPolicy
+    getter sharedStorageWritable
     getter sizes
     getter src
     getter srcset
@@ -3654,6 +3657,7 @@ interface HTMLImageElement : HTMLElement
     setter lowsrc
     setter name
     setter referrerPolicy
+    setter sharedStorageWritable
     setter sizes
     setter src
     setter srcset
@@ -4736,6 +4740,7 @@ interface Image
     getter naturalHeight
     getter naturalWidth
     getter referrerPolicy
+    getter sharedStorageWritable
     getter sizes
     getter src
     getter srcset
@@ -4760,6 +4765,7 @@ interface Image
     setter lowsrc
     setter name
     setter referrerPolicy
+    setter sharedStorageWritable
     setter sizes
     setter src
     setter srcset

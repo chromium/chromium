@@ -273,3 +273,14 @@ interface DocumentPictureInPictureEvent : Event
 
 # TODO(timvolodine): check screen orientation lock api
 # TODO(timvolodine): check notifications in service workers
+
+# Shared storage API is not implemented in WebView
+interface HTMLIFrameElement : HTMLElement
+    getter sharedStorageWritable
+    setter sharedStorageWritable
+interface HTMLImageElement : HTMLElement
+    getter sharedStorageWritable
+    setter sharedStorageWritable
+interface Image
+    getter sharedStorageWritable
+    setter sharedStorageWritable
