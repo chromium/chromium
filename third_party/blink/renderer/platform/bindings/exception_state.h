@@ -59,8 +59,8 @@ class PLATFORM_EXPORT ExceptionState {
     STACK_ALLOCATED();
 
    public:
-    explicit ContextScope(const ExceptionContext& context,
-                          ExceptionState& exception_state)
+    ContextScope(const ExceptionContext& context,
+                 ExceptionState& exception_state)
         : exception_state_(exception_state), context_(context) {
       exception_state_.PushContextScope(this);
     }
@@ -198,13 +198,6 @@ class PLATFORM_EXPORT ExceptionState {
   // Returns the context of what Web API is currently being executed.
   const ExceptionContext& GetContext() const {
     DCHECK(!context_stack_top_);
-    return main_context_;
-  }
-
-  // Returns the innermost context of the nested exception contexts.
-  const ExceptionContext& GetInnerMostContext() const {
-    if (context_stack_top_)
-      return context_stack_top_->GetContext();
     return main_context_;
   }
 
