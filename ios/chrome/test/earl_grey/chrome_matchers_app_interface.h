@@ -726,13 +726,13 @@
 // Returns a matcher for the credit card table view in manual fallback.
 + (id<GREYMatcher>)manualFallbackCreditCardTableViewMatcher;
 
-// Returns a matcher for the button to open password settings in manual
+// Returns a matcher for the button to open payment method settings in manual
 // fallback.
-+ (id<GREYMatcher>)manualFallbackManageCreditCardsMatcher;
++ (id<GREYMatcher>)manualFallbackManagePaymentMethodsMatcher;
 
-// Returns a matcher for the button to add credit cards settings in manual
+// Returns a matcher for the button to add a payment method in manual
 // fallback.
-+ (id<GREYMatcher>)manualFallbackAddCreditCardsMatcher;
++ (id<GREYMatcher>)manualFallbackAddPaymentMethodMatcher;
 
 // Returns a matcher for the CreditCardTableView window.
 + (id<GREYMatcher>)manualFallbackCreditCardTableViewWindowMatcher;

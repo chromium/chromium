@@ -19,8 +19,8 @@ class CreditCard;
 @protocol CardListDelegate;
 
 namespace manual_fill {
-extern NSString* const ManageCardsAccessibilityIdentifier;
-extern NSString* const kAddCreditCardsAccessibilityIdentifier;
+extern NSString* const kManagePaymentMethodsAccessibilityIdentifier;
+extern NSString* const kAddPaymentMethodAccessibilityIdentifier;
 }  // namespace manual_fill
 
 // Object in charge of getting the cards relevant for the manual fill

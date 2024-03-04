@@ -1441,13 +1441,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       manual_fill::CardTableViewAccessibilityIdentifier);
 }
 
-+ (id<GREYMatcher>)manualFallbackManageCreditCardsMatcher {
-  return grey_accessibilityID(manual_fill::ManageCardsAccessibilityIdentifier);
++ (id<GREYMatcher>)manualFallbackManagePaymentMethodsMatcher {
+  return grey_accessibilityID(
+      manual_fill::kManagePaymentMethodsAccessibilityIdentifier);
 }
 
-+ (id<GREYMatcher>)manualFallbackAddCreditCardsMatcher {
++ (id<GREYMatcher>)manualFallbackAddPaymentMethodMatcher {
   return grey_accessibilityID(
-      manual_fill::kAddCreditCardsAccessibilityIdentifier);
+      manual_fill::kAddPaymentMethodAccessibilityIdentifier);
 }
 
 + (id<GREYMatcher>)manualFallbackCreditCardTableViewWindowMatcher {

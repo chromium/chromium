@@ -34,10 +34,10 @@ class CreditCard;
 
 namespace manual_fill {
 
-NSString* const ManageCardsAccessibilityIdentifier =
-    @"kManualFillManageCardsAccessibilityIdentifier";
-NSString* const kAddCreditCardsAccessibilityIdentifier =
-    @"kAddCreditCardsAccessibilityIdentifier";
+NSString* const kManagePaymentMethodsAccessibilityIdentifier =
+    @"kManagePaymentMethodsAccessibilityIdentifier";
+NSString* const kAddPaymentMethodAccessibilityIdentifier =
+    @"kAddPaymentMethodAccessibilityIdentifier";
 
 }  // namespace manual_fill
 
@@ -142,7 +142,7 @@ NSString* const kAddCreditCardsAccessibilityIdentifier =
                [weakSelf.navigationDelegate openCardSettings];
              }];
   manageCreditCardsItem.accessibilityIdentifier =
-      manual_fill::ManageCardsAccessibilityIdentifier;
+      manual_fill::kManagePaymentMethodsAccessibilityIdentifier;
 
   NSString* addCreditCardsTitle =
       l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_ADD_PAYMENT_METHOD);
@@ -155,7 +155,7 @@ NSString* const kAddCreditCardsAccessibilityIdentifier =
                [weakSelf.navigationDelegate openAddCreditCard];
              }];
   addCreditCardsItem.accessibilityIdentifier =
-      manual_fill::kAddCreditCardsAccessibilityIdentifier;
+      manual_fill::kAddPaymentMethodAccessibilityIdentifier;
   [self.consumer presentActions:@[ addCreditCardsItem, manageCreditCardsItem ]];
 }
 
