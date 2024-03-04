@@ -536,7 +536,7 @@
   },
   {
     "name": "autofill-content-editables",
-    "owners": [ "jkeitel@chromium.org", "schwering@chromium.org" ],
+    "owners": [ "jkeitel@chromium.org", "schwering@google.com" ],
     "expiry_milestone": 125
   },
   {
@@ -763,8 +763,8 @@
   {
     "name": "autofill-undo",
     "owners": [
-      "jihadghanna@chromium.org",
-      "schwering@chromium.org"
+      "jihadghanna@google.com",
+      "schwering@google.com"
     ],
     "expiry_milestone": 125
   },
@@ -1075,7 +1075,7 @@
   {
     "name": "campbell-glyph",
     "owners": [
-      "tbarzic@chromiu.org",
+      "tbarzic@chromium.org",
       "chromeos-launcher@google.com"
     ],
     "expiry_milestone": 124
@@ -1083,7 +1083,7 @@
   {
     "name": "campbell-key",
     "owners": [
-      "tbarzic@chromiu.org",
+      "tbarzic@chromium.org",
       "chromeos-launcher@google.com"
     ],
     "expiry_milestone": 124
@@ -3319,12 +3319,12 @@
   },
   {
     "name": "enable-pip-tilt",
-    "owners": ["massan@chromium.org", "takise@chromium.org"],
+    "owners": [ "takise@chromium.org" ],
     "expiry_milestone": 124
   },
   {
     "name": "enable-pip-tuck",
-    "owners": ["massan@chromium.org", "takise@chromium.org"],
+    "owners": [ "takise@chromium.org" ],
     "expiry_milestone": 124
   },
   {
@@ -4306,12 +4306,12 @@
   },
   {
     "name": "file-system-provider-cloud-file-system",
-    "owners": [ "benreich@chromium.org", "cassycc@chromium.org", "simmonsjosh@google.com" ],
+    "owners": [ "benreich@chromium.org", "cassycc@google.com", "simmonsjosh@google.com" ],
     "expiry_milestone": 130
   },
   {
     "name": "file-system-provider-content-cache",
-    "owners": [ "benreich@chromium.org", "cassycc@chromium.org", "simmonsjosh@google.com" ],
+    "owners": [ "benreich@chromium.org", "cassycc@google.com", "simmonsjosh@google.com" ],
     "expiry_milestone": 130
   },
   {
@@ -4428,7 +4428,7 @@
   },
   {
     "name": "force-resync-drive",
-    "owners": [ "cassycc@chromium.org", "petermarshall@chromium.org", "simmonsjosh@google.com" ],
+    "owners": [ "cassycc@google.com", "petermarshall@chromium.org", "simmonsjosh@google.com" ],
     "expiry_milestone": 126
   },
   {
@@ -5070,7 +5070,7 @@
   },
   {
     "name": "lacros-color-management",
-    "owners": [ "mrfemi@chromium.org", "chromeos-gfx-compositor@google.com" ],
+    "owners": [ "mrfemi@google.com", "chromeos-gfx-compositor@google.com" ],
     // This flag is used for chrome color management
     "expiry_milestone": 140
   },
@@ -6215,7 +6215,7 @@
   },
   {
     "name": "oobe-hid-detection-revamp",
-    "owners": [ "gordonseto@chromium.org", "cros-connectivity@google.com"],
+    "owners": [ "gordonseto@google.com", "cros-connectivity@google.com"],
     "expiry_milestone": 117
   },
   {
@@ -6382,7 +6382,7 @@
   },
   {
     "name": "panel-self-refresh-2",
-    "owners": [ "mrfemi@chromium.org", "chromeos-gfx-compositor@google.com" ],
+    "owners": [ "mrfemi@google.com", "chromeos-gfx-compositor@google.com" ],
     "expiry_milestone": 124
   },
   {
@@ -7626,7 +7626,7 @@
   },
   {
     "name": "suppress-text-messages",
-    "owners": [ "fahadmansoor@chromium.org", "gordonseto@chromium.org", "ghostbusters@google.com", "cros-connectivity@google.com" ],
+    "owners": [ "fahadmansoor@google.com", "gordonseto@google.com", "ghostbusters@google.com", "cros-connectivity@google.com" ],
     "expiry_milestone": 124
   },
   {
