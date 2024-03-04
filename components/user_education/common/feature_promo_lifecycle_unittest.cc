@@ -89,6 +89,15 @@ class FeaturePromoLifecycleTest : public testing::Test {
                : FeaturePromoResult::Success();
   }
 
+  FeaturePromoResult GetNonInteractedResult() const {
+    return promo_subtype() == PromoSubtype::kNormal &&
+                   (promo_type() == PromoType::kSnooze ||
+                    promo_type() == PromoType::kTutorial ||
+                    promo_type() == PromoType::kCustomAction)
+               ? FeaturePromoResult::kRecentlyAborted
+               : FeaturePromoResult::Success();
+  }
+
   std::unique_ptr<FeaturePromoLifecycle> CreateLifecycle(
       const base::Feature& feature,
       const char* app_id = nullptr) {
@@ -493,7 +502,7 @@ TEST_P(FeaturePromoLifecycleTypesTest, SnoozeNonInteractedIPH) {
   lifecycle.reset();
 
   lifecycle = CreateLifecycle(kTestIPHFeature);
-  EXPECT_EQ(GetSnoozedResult(), lifecycle->CanShow());
+  EXPECT_EQ(GetNonInteractedResult(), lifecycle->CanShow());
 
   task_environment_.FastForwardBy(features::GetSnoozeDuration());
 

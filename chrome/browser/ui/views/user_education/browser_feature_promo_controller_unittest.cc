@@ -2165,19 +2165,19 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest,
                   AdvanceTime(kLessThanAbortCooldown),
                   AdvanceTime(kMoreThanGracePeriod),
                   MaybeShowPromo(kTutorialIPHFeature,
-                                 UseV2() ? FeaturePromoResult::kRecentlyAborted
-                                         : FeaturePromoResult::kSnoozed));
+                                 FeaturePromoResult::kRecentlyAborted));
 }
 
 TEST_P(BrowserFeaturePromoControllerPolicyTest,
        AbortedPromoDoesNotTriggerSnooze) {
-  RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
-                  MaybeShowPromo(kTutorialIPHFeature), AbortPromo(),
-                  AdvanceTime(kMoreThanAbortCooldown),
-                  AdvanceTime(kMoreThanGracePeriod),
-                  MaybeShowPromo(kTutorialIPHFeature,
-                                 UseV2() ? FeaturePromoResult::Success()
-                                         : FeaturePromoResult::kSnoozed));
+  RunTestSequence(
+      ResetSessionData(kMoreThanGracePeriod),
+      MaybeShowPromo(kTutorialIPHFeature), AbortPromo(),
+      AdvanceTime(kMoreThanAbortCooldown), AdvanceTime(kMoreThanGracePeriod),
+      // V1 uses full snooze time for aborted promos.
+      MaybeShowPromo(kTutorialIPHFeature,
+                     UseV2() ? FeaturePromoResult::Success()
+                             : FeaturePromoResult::kRecentlyAborted));
 }
 
 TEST_P(BrowserFeaturePromoControllerPolicyTest, SnoozeButtonDisappearsInV2) {

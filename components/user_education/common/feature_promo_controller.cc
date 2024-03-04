@@ -613,11 +613,16 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
     return FeaturePromoResult::kFeatureDisabled;
   }
 
-  // Fetch the anchor element. For now, assume all elements are Views.
-  ui::TrackedElement* const anchor_element =
-      spec->GetAnchorElement(GetAnchorContext());
-  if (!anchor_element) {
-    return FeaturePromoResult::kBlockedByUi;
+  // Check the lifecycle, but only if not in demo mode. This is especially
+  // important for snoozeable, app, and legal notice promos.
+  std::unique_ptr<FeaturePromoLifecycle> lifecycle;
+  if (!for_demo && !in_iph_demo_mode_) {
+    lifecycle = std::make_unique<FeaturePromoLifecycle>(
+        storage_service_, GetAppId(), &iph_feature, spec->promo_type(),
+        spec->promo_subtype());
+    if (const auto result = lifecycle->CanShow(); !result) {
+      return result;
+    }
   }
 
   std::optional<FeaturePromoSessionPolicy::PromoInfo> current_promo;
@@ -625,12 +630,6 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
     current_promo = last_promo_info_;
   } else if (bubble_factory_registry_->is_any_bubble_showing()) {
     current_promo = FeaturePromoSessionPolicy::PromoInfo();
-  }
-
-  // Promos are blocked if some other critical user messaging is queued.
-  if (messaging_controller_->has_pending_notices() &&
-      !messaging_priority_handle_) {
-    return FeaturePromoResult::kBlockedByPromo;
   }
 
   // When not in demo mode, refer to the session policy to determine if the
@@ -643,29 +642,34 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
     }
   }
 
+  // Promos are blocked if some other critical user messaging is queued.
+  if (messaging_controller_->has_pending_notices() &&
+      !messaging_priority_handle_) {
+    return FeaturePromoResult::kBlockedByPromo;
+  }
+
+  // Fetch the anchor element. For now, assume all elements are Views.
+  ui::TrackedElement* const anchor_element =
+      spec->GetAnchorElement(GetAnchorContext());
+  if (!anchor_element) {
+    return FeaturePromoResult::kBlockedByUi;
+  }
+
   // Some contexts and anchors are not appropriate for showing normal promos.
   if (!CanShowPromoForElement(anchor_element)) {
     return FeaturePromoResult::kBlockedByUi;
   }
 
-  // Check the lifecycle, but only if not in demo mode. This is especially
-  // important for snoozeable, app, and legal notice promos.
-  if (!for_demo && !in_iph_demo_mode_) {
-    auto lifecycle = std::make_unique<FeaturePromoLifecycle>(
-        storage_service_, GetAppId(), &iph_feature, spec->promo_type(),
-        spec->promo_subtype());
-    if (const auto result = lifecycle->CanShow(); !result) {
-      return result;
+  // Output the lifecycle if it was requested.
+  if (lifecycle_out) {
+    if (!lifecycle) {
+      // If in demo mode but the caller has asked for a lifecycle anyway, then
+      // provide one.
+      lifecycle = std::make_unique<FeaturePromoLifecycle>(
+          storage_service_, GetAppId(), &iph_feature, spec->promo_type(),
+          spec->promo_subtype());
     }
-    if (lifecycle_out) {
-      *lifecycle_out = std::move(lifecycle);
-    }
-  } else if (lifecycle_out) {
-    // If in demo mode but the caller has asked for a lifecycle anyway, then
-    // provide one.
-    *lifecycle_out = std::make_unique<FeaturePromoLifecycle>(
-        storage_service_, GetAppId(), &iph_feature, spec->promo_type(),
-        spec->promo_subtype());
+    *lifecycle_out = std::move(lifecycle);
   }
 
   // If the caller has asked for the specification or anchor element, then
