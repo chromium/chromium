@@ -287,8 +287,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
 
     // Click the credential.
     popup_controller->DisableThresholdForTesting(true);
-    popup_controller->AcceptSuggestion(suggestion_index,
-                                       base::TimeTicks::Now());
+    popup_controller->AcceptSuggestion(suggestion_index);
     std::string result;
     ASSERT_TRUE(message_queue.WaitForMessage(&result));
     EXPECT_EQ(result, "\"webauthn: OK\"");
@@ -491,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, GPMPasskeys) {
 
   // Click the credential.
   popup_controller->DisableThresholdForTesting(true);
-  popup_controller->AcceptSuggestion(suggestion_index, base::TimeTicks::Now());
+  popup_controller->AcceptSuggestion(suggestion_index);
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
   EXPECT_EQ(result, "\"webauthn: OK\"");
@@ -569,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
 
   // Click the credential.
   popup_controller->DisableThresholdForTesting(true);
-  popup_controller->AcceptSuggestion(suggestion_index, base::TimeTicks::Now());
+  popup_controller->AcceptSuggestion(suggestion_index);
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
   EXPECT_EQ(result, "\"webauthn: OK\"");

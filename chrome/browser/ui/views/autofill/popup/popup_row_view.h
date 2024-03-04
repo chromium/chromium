@@ -155,7 +155,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
   int line_number() const { return line_number_; }
 
  private:
-  void RunOnAcceptedForEvent(const ui::Event& event);
+  void RunOnAccepted();
 
   AccessibilitySelectionDelegate& GetA11ySelectionDelegate() {
     return a11y_selection_delegate_.get();

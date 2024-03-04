@@ -115,7 +115,7 @@ class AutofillPopupControllerImpl
   void OnSuggestionsChanged() override;
   void SelectSuggestion(int index) override;
   void UnselectSuggestion() override;
-  void AcceptSuggestion(int index, base::TimeTicks event_time) override;
+  void AcceptSuggestion(int index) override;
   void PerformButtonActionForSuggestion(int index) override;
   bool RemoveSuggestion(
       int list_index,

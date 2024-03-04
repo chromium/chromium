@@ -991,7 +991,7 @@ TEST_F(AutofillPopupControllerImplTest, SelectInvalidSuggestion) {
 
   // The following should not crash:
   client().popup_controller(manager()).AcceptSuggestion(
-      /*index=*/1, base::TimeTicks::Now());  // Out of bounds!
+      /*index=*/1);  // Out of bounds!
 }
 
 TEST_F(AutofillPopupControllerImplTest, AcceptSuggestionRespectsTimeout) {
@@ -1000,16 +1000,13 @@ TEST_F(AutofillPopupControllerImplTest, AcceptSuggestionRespectsTimeout) {
 
   // Calls before the threshold are ignored.
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
-  client().popup_controller(manager()).AcceptSuggestion(0,
-                                                        base::TimeTicks::Now());
+  client().popup_controller(manager()).AcceptSuggestion(0);
   task_environment()->FastForwardBy(base::Milliseconds(100));
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0,
-                                                        base::TimeTicks::Now());
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
 
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
   task_environment()->FastForwardBy(base::Milliseconds(400));
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0,
-                                                        base::TimeTicks::Now());
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
 
   histogram_tester.ExpectTotalCount(
       "Autofill.Popup.AcceptanceDelayThresholdNotMet", 2);
@@ -1022,11 +1019,9 @@ TEST_F(AutofillPopupControllerImplTest,
 
   // Calls before the threshold are ignored.
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0,
-                                                        base::TimeTicks::Now());
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
   task_environment()->FastForwardBy(base::Milliseconds(100));
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0,
-                                                        base::TimeTicks::Now());
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
 
   histogram_tester.ExpectTotalCount(
       "Autofill.Popup.AcceptanceDelayThresholdNotMet", 2);
@@ -1036,16 +1031,14 @@ TEST_F(AutofillPopupControllerImplTest,
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
 
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0,
-                                                        base::TimeTicks::Now());
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
   histogram_tester.ExpectTotalCount(
       "Autofill.Popup.AcceptanceDelayThresholdNotMet", 3);
 
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
   // After waiting, suggestions are accepted again.
   task_environment()->FastForwardBy(base::Milliseconds(500));
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0,
-                                                        base::TimeTicks::Now());
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
   histogram_tester.ExpectTotalCount(
       "Autofill.Popup.AcceptanceDelayThresholdNotMet", 3);
 }
@@ -1192,8 +1185,8 @@ TEST_F(AutofillPopupControllerImplTest,
               Run(_, _,
                   password_manager::metrics_util::
                       PasswordMigrationWarningTriggers::kKeyboardAcessoryBar));
-  client().popup_controller(manager()).AcceptSuggestion(
-      0, base::TimeTicks::Now() + base::Milliseconds(500));
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  client().popup_controller(manager()).AcceptSuggestion(0);
 }
 
 TEST_F(AutofillPopupControllerImplTest,
@@ -1206,8 +1199,8 @@ TEST_F(AutofillPopupControllerImplTest,
   // Calls are accepted immediately.
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(1);
   EXPECT_CALL(client().show_pwd_migration_warning_callback(), Run);
-  client().popup_controller(manager()).AcceptSuggestion(
-      0, base::TimeTicks::Now() + base::Milliseconds(500));
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  client().popup_controller(manager()).AcceptSuggestion(0);
 }
 
 TEST_F(AutofillPopupControllerImplTest,
@@ -1221,8 +1214,8 @@ TEST_F(AutofillPopupControllerImplTest,
   // Calls are accepted immediately.
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(1);
   EXPECT_CALL(client().show_pwd_migration_warning_callback(), Run).Times(0);
-  client().popup_controller(manager()).AcceptSuggestion(
-      0, base::TimeTicks::Now() + base::Milliseconds(500));
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  client().popup_controller(manager()).AcceptSuggestion(0);
 }
 
 TEST_F(AutofillPopupControllerImplTest, AcceptAddressNoPwdWarningAndroid) {
@@ -1234,8 +1227,8 @@ TEST_F(AutofillPopupControllerImplTest, AcceptAddressNoPwdWarningAndroid) {
   // Calls are accepted immediately.
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(1);
   EXPECT_CALL(client().show_pwd_migration_warning_callback(), Run).Times(0);
-  client().popup_controller(manager()).AcceptSuggestion(
-      0, base::TimeTicks::Now() + base::Milliseconds(500));
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  client().popup_controller(manager()).AcceptSuggestion(0);
 }
 
 // When a suggestion is accepted, the popup is hidden inside
@@ -1251,8 +1244,7 @@ TEST_F(AutofillPopupControllerImplTest, AcceptSuggestionIsMemorySafe) {
         client().popup_controller(manager()).Hide(
             PopupHidingReason::kAcceptSuggestion);
       });
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0,
-                                                        base::TimeTicks::Now());
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1322,7 +1314,7 @@ TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
                                          {.row = 0, .sub_popup_level = 1})));
 
   task_environment()->FastForwardBy(base::Milliseconds(1000));
-  sub_controller->AcceptSuggestion(/*index=*/0, base::TimeTicks::Now());
+  sub_controller->AcceptSuggestion(/*index=*/0);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

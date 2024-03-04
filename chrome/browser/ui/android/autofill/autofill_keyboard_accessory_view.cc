@@ -133,8 +133,8 @@ void AutofillKeyboardAccessoryView::SuggestionSelected(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint list_index) {
-    controller_->AcceptSuggestion(list_index, base::TimeTicks::Now());
-  }
+  controller_->AcceptSuggestion(list_index);
+}
 
 void AutofillKeyboardAccessoryView::DeletionRequested(
     JNIEnv* env,

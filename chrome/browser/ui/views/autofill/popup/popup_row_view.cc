@@ -309,7 +309,7 @@ void PopupRowView::OnMouseReleased(const ui::MouseEvent& event) {
 
   if (event.IsOnlyLeftMouseButton() &&
       content_view_->HitTestPoint(event.location())) {
-    RunOnAcceptedForEvent(event);
+    RunOnAccepted();
   }
 }
 
@@ -317,7 +317,7 @@ void PopupRowView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::ET_GESTURE_TAP:
       if (content_view_->HitTestPoint(event->location())) {
-        RunOnAcceptedForEvent(*event);
+        RunOnAccepted();
       }
       break;
     default:
@@ -434,7 +434,7 @@ bool PopupRowView::HandleKeyPressEvent(
   switch (event.windows_key_code) {
     case ui::VKEY_RETURN:
       if (*GetSelectedCell() == CellType::kContent && controller_) {
-        controller_->AcceptSuggestion(line_number_, base::TimeTicks::Now());
+        controller_->AcceptSuggestion(line_number_);
         return true;
       }
       return false;
@@ -443,24 +443,15 @@ bool PopupRowView::HandleKeyPressEvent(
   }
 }
 
-void PopupRowView::RunOnAcceptedForEvent(const ui::Event& event) {
+// TODO: Clean up.
+void PopupRowView::RunOnAccepted() {
   if (!controller_) {
     return;
   }
-
-  // Convert the native event timestamp into (an approximation of) time ticks.
-  base::TimeTicks time =
-      event.HasNativeEvent() &&
-              base::FeatureList::IsEnabled(
-                  features::
-                      kAutofillPopupUseLatencyInformationForAcceptThreshold)
-          ? ui::EventLatencyTimeFromNative(event.native_event(),
-                                           base::TimeTicks::Now())
-          : base::TimeTicks::Now();
   if (new_badge_tracker_) {
     new_badge_tracker_->OnSuggestionAccepted();
   }
-  controller_->AcceptSuggestion(line_number_, time);
+  controller_->AcceptSuggestion(line_number_);
 }
 
 void PopupRowView::UpdateBackground() {

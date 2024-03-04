@@ -70,12 +70,6 @@ namespace autofill {
 
 namespace {
 
-// The duration for which clicks on the just-shown Autofill popup should be
-// ignored. This is to prevent users accidentally accepting suggestions
-// (crbug.com/1279268).
-static constexpr base::TimeDelta kIgnoreEarlyClicksOnPopupDuration =
-    base::Milliseconds(500);
-
 // Returns true if the given id refers to an element that can be accepted.
 bool CanAccept(PopupItemId id) {
   return id != PopupItemId::kSeparator &&
@@ -396,15 +390,14 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged() {
   }
 }
 
-void AutofillPopupControllerImpl::AcceptSuggestion(int index,
-                                                   base::TimeTicks event_time) {
+void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/1279268).
   if (time_view_shown_.value().is_null() && !disable_threshold_for_testing_) {
     return;
   }
-  CHECK(!event_time.is_null());
-  const base::TimeDelta time_elapsed = event_time - time_view_shown_.value();
+  const base::TimeDelta time_elapsed =
+      base::TimeTicks::Now() - time_view_shown_.value();
   // If `kAutofillPopupImprovedTimingChecksV2` is enabled, then
   // `time_view_shown_` will remain null for at least
   // `kIgnoreEarlyClicksOnPopupDuration`. Therefore we do not have to check any

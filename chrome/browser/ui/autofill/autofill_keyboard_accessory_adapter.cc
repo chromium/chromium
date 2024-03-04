@@ -131,11 +131,9 @@ AutofillKeyboardAccessoryAdapter::CreateSubPopupView(
 
 // AutofillPopupController implementation.
 
-void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(
-    int index,
-    base::TimeTicks event_time) {
+void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(int index) {
   if (controller_) {
-    controller_->AcceptSuggestion(OffsetIndexFor(index), event_time);
+    controller_->AcceptSuggestion(OffsetIndexFor(index));
   }
 }
 

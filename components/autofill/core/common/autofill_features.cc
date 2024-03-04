@@ -439,12 +439,6 @@ BASE_FEATURE(kAutofillPopupImprovedTimingChecksV2,
              "AutofillPopupImprovedTimingChecksV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether the threshold for accepting Autofill popup suggestions
-// should take into account latency information of the user event.
-BASE_FEATURE(kAutofillPopupUseLatencyInformationForAcceptThreshold,
-             "AutofillPopupUseLatencyInformationForAcceptThreshold",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls non-default Autofill API predictions. See crbug.com/1331322.
 BASE_FEATURE(kAutofillServerBehaviors,
              "AutofillServerBehaviors",
