@@ -84,7 +84,6 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/logging_chrome.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
@@ -109,8 +108,6 @@
 #include "components/version_info/version_info.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/temporary_shared_resource_path_chromeos.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -122,13 +119,6 @@
 namespace crosapi {
 
 namespace {
-
-// Resources file sharing mode.
-enum class ResourcesFileSharingMode {
-  kDefault = 0,
-  // Failed to handle cached shared resources properly.
-  kError = 1,
-};
 
 // The names of the UMA metrics to track Daily LaunchMode changes.
 const char kLacrosLaunchModeDaily[] = "Ash.Lacros.Launch.Mode.Daily";
@@ -150,245 +140,6 @@ constexpr char kLacrosCannotLaunchNotificationID[] =
     "lacros_cannot_launch_notification_id";
 constexpr char kLacrosLauncherNotifierID[] = "lacros_launcher";
 
-
-base::FilePath LacrosLogPath() {
-  return BrowserLauncher::LacrosLogDirectory().Append("lacros.log");
-}
-
-// Rotate existing Lacros's log file. Returns true if a log file existed before
-// being moved, and false if no log file was found.
-bool RotateLacrosLogs() {
-  base::FilePath log_path = LacrosLogPath();
-  if (!base::PathExists(log_path)) {
-    return false;
-  }
-
-  if (!logging::RotateLogFile(log_path)) {
-    PLOG(ERROR) << "Failed to rotate the log file: " << log_path.value()
-                << ". Keeping using the same log file without rotating.";
-  }
-  return true;
-}
-
-void PreloadFile(base::FilePath file_path) {
-  DLOG(WARNING) << "Preloading " << file_path;
-
-  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  DPCHECK(file.IsValid());
-  if (!file.IsValid()) {
-    PLOG(WARNING) << "Failed opening " << file_path << " while preloading";
-    return;
-  }
-
-  int64_t file_size = file.GetLength();
-  if (file_size < 0) {
-    PLOG(WARNING) << "Failed getting size of " << file_path
-                  << "while preloading";
-    return;
-  }
-
-  if (readahead(file.GetPlatformFile(), 0, file_size) < 0) {
-    PLOG(WARNING) << "Failed preloading " << file_path;
-    return;
-  }
-
-  DLOG(WARNING) << "Preloaded " << file_path;
-}
-
-void PreloadLacrosFiles(const base::FilePath& lacros_dir) {
-  // These files are the Lacros equivalent of Ash's files preloaded at boot by
-  // ureadahead.
-  static constexpr const char* kPreloadFiles[] = {
-#if BUILDFLAG(ENABLE_WIDEVINE)
-    "WidevineCdm/manifest.json",
-#endif
-    "chrome",
-    "chrome_100_percent.pak",
-    "chrome_200_percent.pak",
-    "chrome_crashpad_handler",
-    "icudtl.dat",
-    "icudtl.dat.hash",
-#if BUILDFLAG(ENABLE_NACL)
-    "nacl_helper",
-#endif
-    "resources.pak",
-    "snapshot_blob.bin",
-  };
-
-  // Preload common files.
-  for (const char* file_name : kPreloadFiles) {
-    base::FilePath file_path = lacros_dir.Append(base::FilePath(file_name));
-    PreloadFile(file_path);
-  }
-
-  // Preload localization pack.
-  std::string locale = g_browser_process->GetApplicationLocale();
-  base::FilePath locale_path =
-      lacros_dir.Append(base::StringPrintf("locales/%s.pak", locale.c_str()));
-  PreloadFile(locale_path);
-
-// Preload Widevine for the right architecture.
-#if BUILDFLAG(ENABLE_WIDEVINE)
-#if defined(ARCH_CPU_ARM_FAMILY)
-#if defined(ARCH_CPU_ARM64)
-  base::FilePath libwidevine_path = lacros_dir.Append(
-      "WidevineCdm/_platform_specific/cros_arm64/libwidevinecdm.so");
-#else
-  base::FilePath libwidevine_path = lacros_dir.Append(
-      "WidevineCdm/_platform_specific/cros_arm/libwidevinecdm.so");
-#endif  // defined(ARCH_CPU_ARM64)
-#else
-  base::FilePath libwidevine_path = lacros_dir.Append(
-      "WidevineCdm/_platform_specific/cros_x64/libwidevinecdm.so");
-#endif  // defined(ARCH_CPU_ARM_FAMILY)
-  PreloadFile(libwidevine_path);
-#endif  // BUILDFLAG(ENABLE_WIDEVINE)
-}
-
-ResourcesFileSharingMode ClearOrMoveSharedResourceFileInternal(
-    bool clear_shared_resource_file,
-    base::FilePath shared_resource_path) {
-  // If shared resource pak doesn't exit, do nothing.
-  if (!base::PathExists(shared_resource_path)) {
-    return ResourcesFileSharingMode::kDefault;
-  }
-
-  // Clear shared resource file cache if `clear_shared_resource_file` is true.
-  if (clear_shared_resource_file) {
-    if (!base::DeleteFile(shared_resource_path)) {
-      LOG(ERROR) << "Failed to delete cached shared resource file.";
-      return ResourcesFileSharingMode::kError;
-    }
-    return ResourcesFileSharingMode::kDefault;
-  }
-
-  base::FilePath renamed_shared_resource_path =
-      ui::GetPathForTemporarySharedResourceFile(shared_resource_path);
-
-  // Move shared resource pak to `renamed_shared_resource_path`.
-  if (!base::Move(shared_resource_path, renamed_shared_resource_path)) {
-    LOG(ERROR) << "Failed to move cached shared resource file to temporary "
-               << "location.";
-    return ResourcesFileSharingMode::kError;
-  }
-  return ResourcesFileSharingMode::kDefault;
-}
-
-ResourcesFileSharingMode ClearOrMoveSharedResourceFile(
-    bool clear_shared_resource_file) {
-  // Check 3 resource paks, resources.pak, chrome_100_percent.pak and
-  // chrome_200_percent.pak.
-  ResourcesFileSharingMode resources_file_sharing_mode =
-      ResourcesFileSharingMode::kDefault;
-  // Return kError if any of the resources failed to clear or move.
-  // Make sure that ClearOrMoveSharedResourceFileInternal() runs for all
-  // resources even if it already fails for some resource.
-  if (ClearOrMoveSharedResourceFileInternal(
-          clear_shared_resource_file, browser_util::GetUserDataDir().Append(
-                                          crosapi::kSharedResourcesPackName)) ==
-      ResourcesFileSharingMode::kError) {
-    resources_file_sharing_mode = ResourcesFileSharingMode::kError;
-  }
-  if (ClearOrMoveSharedResourceFileInternal(
-          clear_shared_resource_file,
-          browser_util::GetUserDataDir().Append(
-              crosapi::kSharedChrome100PercentPackName)) ==
-      ResourcesFileSharingMode::kError) {
-    resources_file_sharing_mode = ResourcesFileSharingMode::kError;
-  }
-  if (ClearOrMoveSharedResourceFileInternal(
-          clear_shared_resource_file,
-          browser_util::GetUserDataDir().Append(
-              crosapi::kSharedChrome200PercentPackName)) ==
-      ResourcesFileSharingMode::kError) {
-    resources_file_sharing_mode = ResourcesFileSharingMode::kError;
-  }
-  return resources_file_sharing_mode;
-}
-
-// This method runs some work on a background thread prior to launching lacros.
-// The returns struct is used by the main thread as parameters to launch Lacros.
-BrowserLauncher::LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
-    base::FilePath lacros_binary,
-    bool clear_shared_resource_file,
-    bool launching_at_login_screen) {
-  BrowserLauncher::LaunchParamsFromBackground params;
-
-  if (!RotateLacrosLogs()) {
-    // If log file does not exist, most likely the user directory does not
-    // exist either. So create it here.
-    base::File::Error error;
-    base::FilePath lacros_log_dir = BrowserLauncher::LacrosLogDirectory();
-    if (!base::CreateDirectoryAndGetError(lacros_log_dir, &error)) {
-      LOG(ERROR) << "Failed to make directory " << lacros_log_dir << ": "
-                 << base::File::ErrorToString(error);
-      return params;
-    }
-  }
-
-  int fd = HANDLE_EINTR(
-      open(LacrosLogPath().value().c_str(), O_WRONLY | O_CREAT | O_EXCL, 0644));
-
-  if (fd < 0) {
-    PLOG(ERROR) << "Failed to get file descriptor for " << LacrosLogPath();
-    return params;
-  }
-
-  params.logfd = base::ScopedFD(fd);
-
-  params.enable_shared_components_dir =
-      base::FeatureList::IsEnabled(features::kLacrosSharedComponentsDir);
-
-  params.enable_resource_file_sharing =
-      base::FeatureList::IsEnabled(features::kLacrosResourcesFileSharing);
-  // If resource file sharing feature is disabled, clear the cached shared
-  // resource file anyway.
-  if (!params.enable_resource_file_sharing) {
-    clear_shared_resource_file = true;
-  }
-
-  params.enable_fork_zygotes_at_login_screen = base::FeatureList::IsEnabled(
-      browser_util::kLacrosForkZygotesAtLoginScreen);
-
-  // Clear shared resource file cache if it's initial lacros launch after ash
-  // reboot. If not, rename shared resource file cache to temporal name on
-  // Lacros launch.
-  if (ClearOrMoveSharedResourceFile(clear_shared_resource_file) ==
-      ResourcesFileSharingMode::kError) {
-    params.enable_resource_file_sharing = false;
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kLacrosChromeAdditionalArgsFile)) {
-    const base::FilePath path =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-            ash::switches::kLacrosChromeAdditionalArgsFile);
-    std::string data;
-    if (!base::ReadFileToString(path, &data)) {
-      PLOG(WARNING) << "Unable to read from lacros additional args file "
-                    << path.value();
-    }
-    std::vector<std::string_view> delimited_flags =
-        base::SplitStringPieceUsingSubstr(data, "\n", base::TRIM_WHITESPACE,
-                                          base::SPLIT_WANT_NONEMPTY);
-
-    for (const auto& flag : delimited_flags) {
-      if (flag[0] != '#') {
-        params.lacros_additional_args.emplace_back(flag);
-      }
-    }
-  }
-
-  // When launching at login screen, we can take advantage of the time before
-  // the user inputs the password and logs in to preload Lacros-related files.
-  // This speeds up the perceived startup time, as they will be loaded anyway
-  // in the later stages of Lacros's lifetime.
-  if (launching_at_login_screen) {
-    PreloadLacrosFiles(lacros_binary.DirName());
-  }
-
-  return params;
-}
 
 void SetLaunchOnLoginPref(bool launch_on_login) {
   ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetBoolean(
@@ -1033,15 +784,47 @@ void BrowserManager::Start(bool launching_at_login_screen) {
 
   SetState(State::PREPARING_FOR_LAUNCH);
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&DoLacrosBackgroundWorkPreLaunch, lacros_path_,
-                     is_initial_lacros_launch_after_reboot_,
-                     launching_at_login_screen),
-      base::BindOnce(&BrowserManager::OnLaunchParamsFetched,
+  // Ensures that this is the first time to initialize `crosapi_id` before
+  // calling `browser_launcher_.Launch`.
+  CHECK(!crosapi_id_.has_value());
+  CHECK(lacros_selection_.has_value());
+
+  // Lacros-chrome starts with kNormal type
+  // TODO(crbug.com/1289736): When `LacrosThreadTypeDelegate` becomes usable,
+  // `options.pre_exec_delegate` should be assigned a `LacrosThreadTypeDelegate`
+  // object.
+  browser_launcher_.Launch(
+      lacros_path_, launching_at_login_screen, lacros_selection_.value(),
+      base::BindOnce(&BrowserManager::OnMojoDisconnected,
+                     weak_factory_.GetWeakPtr()),
+      keep_alive_features_.empty(),
+      base::BindOnce(&BrowserManager::OnLaunchComplete,
                      weak_factory_.GetWeakPtr(), launching_at_login_screen));
-  // Set false to prepare for the next Lacros launch.
-  is_initial_lacros_launch_after_reboot_ = false;
+}
+
+void BrowserManager::OnLaunchComplete(
+    bool launching_at_login_screen,
+    base::expected<BrowserLauncher::LaunchResults,
+                   BrowserLauncher::LaunchFailureReason> launch_results) {
+  CHECK_EQ(state_, State::PREPARING_FOR_LAUNCH);
+
+  if (!launch_results.has_value()) {
+    switch (launch_results.error()) {
+      case BrowserLauncher::LaunchFailureReason::kUnknown:
+        // We give up, as this is most likely a permanent problem.
+        SetState(State::UNAVAILABLE);
+        return;
+      case BrowserLauncher::LaunchFailureReason::kShutdownRequested:
+        LOG(ERROR) << "Start attempted after Shutdown() called.";
+        SetState(State::STOPPED);
+        return;
+    }
+  }
+
+  crosapi_id_ = launch_results->crosapi_id;
+  lacros_launch_time_ = launch_results->lacros_launch_time;
+
+  SetState(launching_at_login_screen ? State::PRE_LAUNCHED : State::STARTING);
 }
 
 void BrowserManager::EmitLoginPromptVisibleCalled() {
@@ -1110,8 +893,8 @@ void BrowserManager::OnBrowserServiceConnected(
 void BrowserManager::OnBrowserServiceDisconnected(
     CrosapiId id,
     mojo::RemoteSetElementId mojo_id) {
-  // No need to check CrosapiId here, because |mojo_id| is unique within
-  // a process.
+  // No need to check CrosapiId here, because |mojo_id| is unique within a
+  // process.
   if (browser_service_.has_value() && browser_service_->mojo_id == mojo_id) {
     browser_service_.reset();
   }
@@ -1465,55 +1248,6 @@ void BrowserManager::OnResumeLaunchComplete(
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ash::browser_data_migrator_util::DryRunToCollectUMA,
                      ProfileManager::GetPrimaryUserProfile()->GetPath()));
-}
-
-void BrowserManager::OnLaunchParamsFetched(
-    bool launching_at_login_screen,
-    BrowserLauncher::LaunchParamsFromBackground params) {
-  CHECK_EQ(state_, State::PREPARING_FOR_LAUNCH);
-
-  // Ensures that this is the first time to initialize `crosapi_id` before
-  // calling `browser_launcher_.Launch`.
-  CHECK(!crosapi_id_.has_value());
-  CHECK(lacros_selection_.has_value());
-
-  // Lacros-chrome starts with kNormal type
-  // TODO(crbug.com/1289736): When `LacrosThreadTypeDelegate` becomes usable,
-  // `options.pre_exec_delegate` should be assigned a `LacrosThreadTypeDelegate`
-  // object.
-  browser_launcher_.Launch(
-      lacros_path_, std::move(params), launching_at_login_screen,
-      lacros_selection_.value(),
-      base::BindOnce(&BrowserManager::OnMojoDisconnected,
-                     weak_factory_.GetWeakPtr()),
-      keep_alive_features_.empty(),
-      base::BindOnce(&BrowserManager::OnLaunchComplete,
-                     weak_factory_.GetWeakPtr(), launching_at_login_screen));
-}
-
-void BrowserManager::OnLaunchComplete(
-    bool launching_at_login_screen,
-    base::expected<BrowserLauncher::LaunchResults,
-                   BrowserLauncher::LaunchFailureReason> launch_results) {
-  CHECK_EQ(state_, State::PREPARING_FOR_LAUNCH);
-
-  if (!launch_results.has_value()) {
-    switch (launch_results.error()) {
-      case BrowserLauncher::LaunchFailureReason::kUnknown:
-        // We give up, as this is most likely a permanent problem.
-        SetState(State::UNAVAILABLE);
-        return;
-      case BrowserLauncher::LaunchFailureReason::kShutdownRequested:
-        LOG(ERROR) << "Start attempted after Shutdown() called.";
-        SetState(State::STOPPED);
-        return;
-    }
-  }
-
-  crosapi_id_ = launch_results->crosapi_id;
-  lacros_launch_time_ = launch_results->lacros_launch_time;
-
-  SetState(launching_at_login_screen ? State::PRE_LAUNCHED : State::STARTING);
 }
 
 void BrowserManager::HandleGoToFiles() {

@@ -111,6 +111,7 @@ class BrowserManagerFake : public BrowserManager {
     if (browser_service_.has_value()) {
       OnBrowserServiceDisconnected(*crosapi_id_, browser_service_->mojo_id);
     }
+    crosapi_id_.reset();
     OnLacrosChromeTerminated();
   }
 

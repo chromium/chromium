@@ -576,6 +576,12 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Pre-launch Lacros at login screen. (Can be overridden by tests).
   virtual void PrelaunchAtLoginScreen();
 
+  // Called on launch process completed.
+  void OnLaunchComplete(
+      bool lauching_at_login_screen,
+      base::expected<BrowserLauncher::LaunchResults,
+                     BrowserLauncher::LaunchFailureReason> launch_results);
+
   // Resume Lacros startup process after login.
   void ResumeLaunch();
 
@@ -583,17 +589,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OnResumeLaunchComplete(
       base::expected<base::TimeTicks, BrowserLauncher::LaunchFailureReason>
           resume_time);
-
-  // Called as soon as `LaunchParamsFromBackground` are fetched.
-  void OnLaunchParamsFetched(
-      bool launching_at_login_screens,
-      BrowserLauncher::LaunchParamsFromBackground params);
-
-  // Called on launch process completed.
-  void OnLaunchComplete(
-      bool lauching_at_login_screen,
-      base::expected<BrowserLauncher::LaunchResults,
-                     BrowserLauncher::LaunchFailureReason> launch_results);
 
   // Launch "Go to files" if the migration error page was clicked.
   void HandleGoToFiles();
@@ -728,11 +723,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // Tracks whether lacros-chrome is terminated.
   bool is_terminated_ = false;
-
-  // True if Lacros has not yet launched after the latest ash reboot.
-  // This value is used for resource sharing feature where ash deletes cached
-  // shared resource file after ash is rebooted.
-  bool is_initial_lacros_launch_after_reboot_ = true;
 
   // Whether a shutdown request was received while Lacros was in prelaunched
   // state.

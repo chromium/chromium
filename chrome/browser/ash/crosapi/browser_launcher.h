@@ -46,9 +46,9 @@ class BrowserLauncher {
 
   ~BrowserLauncher();
 
-  // Returns specific path for saving Lacros logs, depending on which images are
-  // used.
-  static base::FilePath LacrosLogDirectory();
+  // Returns files to preload on launching at login screen.
+  static std::vector<base::FilePath> GetPreloadFiles(
+      const base::FilePath& lacros_dir);
 
   // Parameters used to launch Lacros that are calculated on a background
   // sequence.
@@ -126,10 +126,14 @@ class BrowserLauncher {
 
   // Launches a process of the given options, which are expected to be Lacros's
   // ones.
+  // `Launch` will:
+  // 1. Prepare launching on background thread to handle blocking resources.
+  // 2. Wait for device owner and primary user if it's launching in the user
+  // session.
+  // 3. Launch lacros process with the params prepared at Step 1.
+  //
   // Following is explanation for Arguments.
   // `chrome_path`: Initializes `command_line`.
-  // `params`: Parameters used to launch Lacros that are calculated on a
-  // background sequence.
   // `launching_at_login_screen`: Whether lacros is launching at login screen.
   // `postlogin_pipe_fd`: Pipe FDs through which Ash and Lacros exchange
   // post-login parameters.
@@ -140,7 +144,6 @@ class BrowserLauncher {
   // `callback`: Callback function that will be called on launch process
   // completion.
   void Launch(const base::FilePath& chrome_path,
-              LaunchParamsFromBackground params,
               bool launching_at_login_screen,
               browser_util::LacrosSelection lacros_selection,
               base::OnceClosure mojo_disconnection_cb,
@@ -158,12 +161,12 @@ class BrowserLauncher {
   EnvironmentProvider& environment_provider() { return environment_provider_; }
 
   // Returns true if process is valid.
-  bool IsProcessValid();
+  bool IsProcessValid() const;
 
   // Triggers termination synchronously if process is running.
   // Does not block the thread because it does not wait for the process
   // termination.
-  bool TriggerTerminate(int exit_code);
+  bool TriggerTerminate(int exit_code) const;
 
   // Waits for termination of the running process asynchronously during the
   // period given by the `timeout`, then invoke `callback`. On timeout, also
@@ -179,7 +182,7 @@ class BrowserLauncher {
   void Shutdown() { shutdown_requested_ = true; }
 
   // Returns reference to `process_` for testing.
-  const base::Process& GetProcessForTesting();
+  const base::Process& GetProcessForTesting() const;
 
   // Makes `LaunchProcessWithParameters` usable within the unit tests.
   bool LaunchProcessForTesting(const LaunchParams& parameters);
@@ -187,12 +190,15 @@ class BrowserLauncher {
   // Sets up additional flags for unit tests.
   // This function overwrites `command_line` with the desired flags.
   void SetUpAdditionalParametersForTesting(LaunchParamsFromBackground& params,
-                                           LaunchParams& parameters);
+                                           LaunchParams& parameters) const;
 
-  // Provides public API to call WaitForDeviceOwnerFetchedAndProfileAddedAndThen
-  // for testing.
-  void WaitForDeviceOwnerFetchedAndProfileAddedAndThenForTesting(
-      base::OnceClosure cb);
+  // Provides public API to callWaitForBackgroundWorkPreLaunch for testing.
+  void WaitForBackgroundWorkPreLaunchForTesting(
+      const base::FilePath& lacros_dir,
+      bool clear_shared_resource_file,
+      bool launching_at_login_screen,
+      base::OnceClosure callback,
+      LaunchParamsFromBackground& params);
 
   // TODO(crbug.com/1463883): Remove this once we refactored to use the
   // constructor.
@@ -206,16 +212,26 @@ class BrowserLauncher {
   static void SkipDeviceOwnershipWaitForTesting(bool skip);
 
  private:
-  // Waits for the device owner being fetched from `UserManager` and the primary
+  // Waits for the prelaunch work running on background thread. `callback` is
+  // called on background work completion and the output result is stored in
+  // `params`.
+  void WaitForBackgroundWorkPreLaunch(const base::FilePath& lacros_dir,
+                                      bool clear_shared_resource_file,
+                                      bool launching_at_login_screen,
+                                      base::OnceClosure callback,
+                                      LaunchParamsFromBackground& params);
+
+  // Waits for the device owner being fetched from `UserManager` or the primary
   // user profile being fully created and then executes a callback. Should NOT
   // be called if Lacros is launching at the login screen since the device owner
   // nor the profile is not available until login.
-  void WaitForDeviceOwnerFetchedAndProfileAddedAndThen(base::OnceClosure cb);
+  void WaitForDeviceOwnerFetchedAndThen(base::OnceClosure callback);
+  void WaitForPrimaryProfileAddedAndThen(base::OnceClosure callback);
 
   // Launches lacros-chrome process after device owner and primary profile
   // become ready.
   void LaunchProcess(const base::FilePath& chrome_path,
-                     LaunchParamsFromBackground params,
+                     std::unique_ptr<LaunchParamsFromBackground> params,
                      bool launching_at_login_screen,
                      browser_util::LacrosSelection lacros_selection,
                      base::OnceClosure mojo_disconnection_cb,
@@ -261,8 +277,15 @@ class BrowserLauncher {
   // new or existing lacros startup tasks are not executed during shutdown.
   bool shutdown_requested_ = false;
 
+  // True if this is the first time that lacros is being launched from this ash
+  // process. This value is used for resource sharing feature where ash deletes
+  // cached shared resource file after ash is rebooted. Note that this flag
+  // should not be reset on reloading as long as the ash process is not
+  // relaunched.
+  bool is_first_lacros_launch_ = true;
+
   // Indicates whether the delegate has been used.
-  bool device_ownership_waiter_called_{false};
+  bool device_ownership_waiter_called_ = false;
 
   base::WeakPtrFactory<BrowserLauncher> weak_factory_{this};
 };
