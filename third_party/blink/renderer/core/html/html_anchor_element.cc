@@ -299,7 +299,7 @@ void HTMLAnchorElement::ParseAttribute(
       DCHECK(GetDocument().GetRenderBlockingResourceManager());
       GetDocument()
           .GetRenderBlockingResourceManager()
-          ->RemovePendingParsingElement(params.new_value);
+          ->RemovePendingParsingElement(params.new_value, this);
     }
   } else if (params.name == html_names::kTitleAttr) {
     // Do nothing.
@@ -347,7 +347,7 @@ void HTMLAnchorElement::FinishParsingChildren() {
     DCHECK(GetDocument().GetRenderBlockingResourceManager());
     GetDocument()
         .GetRenderBlockingResourceManager()
-        ->RemovePendingParsingElement(GetNameAttribute());
+        ->RemovePendingParsingElement(GetNameAttribute(), this);
   }
 }
 

@@ -9,6 +9,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -163,12 +164,21 @@ void RenderBlockingResourceManager::AddPendingParsingElementLink(
 }
 
 void RenderBlockingResourceManager::RemovePendingParsingElement(
-    const AtomicString& id) {
+    const AtomicString& id,
+    Element* element) {
   if (!RuntimeEnabledFeatures::DocumentRenderBlockingEnabled()) {
     return;
   }
 
   if (element_render_blocking_links_.empty() || id.empty()) {
+    return;
+  }
+
+  // <link rel=expect> matches elements found using "select the indicated part"
+  // https://html.spec.whatwg.org/multipage/browsing-the-web.html#select-the-indicated-part
+  // which only matches elements in the document tree (as in, not in a shadow
+  // tree)
+  if (element->IsInShadowTree() || !element->isConnected()) {
     return;
   }
 

@@ -2630,7 +2630,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       DCHECK(GetDocument().GetRenderBlockingResourceManager());
       GetDocument()
           .GetRenderBlockingResourceManager()
-          ->RemovePendingParsingElement(GetIdAttribute());
+          ->RemovePendingParsingElement(GetIdAttribute(), this);
     }
   } else if (name == html_names::kClassAttr) {
     if (params.old_value == params.new_value &&
@@ -5574,7 +5574,7 @@ void Element::FinishParsingChildren() {
     DCHECK(GetDocument().GetRenderBlockingResourceManager());
     GetDocument()
         .GetRenderBlockingResourceManager()
-        ->RemovePendingParsingElement(GetIdAttribute());
+        ->RemovePendingParsingElement(GetIdAttribute(), this);
   }
   GetDocument()
       .GetStyleEngine()
