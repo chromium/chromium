@@ -134,8 +134,10 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
 
   GURL webViewURL = net::GURLWithNSURL(self.webView.URL);
 
-  if (![self.navigationHandler isCurrentNavigationBackForward])
+  if (![self.navigationHandler isCurrentNavigationBackForward]) {
+    [self.delegate webViewHandlerUpdateSSLStatusForCurrentNavigationItem:self];
     return;
+  }
 
   web::NavigationContextImpl* existingContext = [self.navigationHandler
       contextForPendingMainFrameNavigationWithURL:webViewURL];
