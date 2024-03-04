@@ -25,7 +25,9 @@ typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 /// - `text` is the message displayed in the bubble.
 /// - `bubbleBoundingSize` is the maximum size that the gestural IPH view
 /// could occupy, and is usually the size of the parent view. This must NOT be
-/// `CGSizeZero` as it is used to compute the initial bubble size.
+/// `CGSizeZero` as it is used to compute the initial bubble size, and
+/// preferably, should NOT include safe area inset of the bubble arrow
+/// direction.
 /// - `direction` also indicates which side of the view the user could perform
 /// the swipe action on. Note that the swipe movement would be toward the
 /// opposite direction.

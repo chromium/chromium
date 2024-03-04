@@ -1499,13 +1499,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   UIView* regularGridView = self.regularTabsViewController.view;
   CGSize expectedSize = CGSize();
   expectedSize.height =
-      regularGridView.safeAreaLayoutGuide.layoutFrame.size.height -
-      self.topToolbar.bounds.size.height;
+      regularGridView.frame.size.height - self.topToolbar.bounds.size.height;
   if ([self shouldUseCompactLayout]) {
     expectedSize.height -= self.bottomToolbar.bounds.size.height;
   }
+  CGFloat safeAreaInsetForArrowDirection =
+      UseRTLLayout() ? regularGridView.safeAreaInsets.right
+                     : regularGridView.safeAreaInsets.left;
   expectedSize.width =
-      regularGridView.safeAreaLayoutGuide.layoutFrame.size.width;
+      regularGridView.frame.size.width - safeAreaInsetForArrowDirection;
   GestureInProductHelpView* gestureIPHView = [[GestureInProductHelpView alloc]
                initWithText:l10n_util::GetNSString(
                                 UseRTLLayout()

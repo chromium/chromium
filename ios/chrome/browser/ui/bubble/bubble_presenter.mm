@@ -836,17 +836,53 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                                      text:(NSString*)text
                             dismissAction:(ProceduralBlock)dismissAction {
   DCHECK(self.engagementTracker);
-  NamedGuide* guide = [NamedGuide guideWithName:kContentAreaGuide
-                                           view:self.rootViewController.view];
-  if (!guide) {
+  NamedGuide* contentAreaGuide =
+      [NamedGuide guideWithName:kContentAreaGuide
+                           view:self.rootViewController.view];
+  if (!contentAreaGuide) {
     return nil;
   }
-  GestureInProductHelpView* gestureIPHView =
-      [[GestureInProductHelpView alloc] initWithText:text
-                                  bubbleBoundingSize:guide.layoutFrame.size
-                                      arrowDirection:direction];
+  UILayoutGuide* boundingSizeGuide = [[UILayoutGuide alloc] init];
+  UILayoutGuide* safeAreaGuide =
+      self.rootViewController.view.safeAreaLayoutGuide;
+  [self.rootViewController.view addLayoutGuide:boundingSizeGuide];
+  switch (direction) {
+    case BubbleArrowDirectionUp:
+      AddSameConstraintsToSides(boundingSizeGuide, contentAreaGuide,
+                                LayoutSides::kLeading | LayoutSides::kTrailing |
+                                    LayoutSides::kBottom);
+      AddSameConstraintsToSides(boundingSizeGuide, safeAreaGuide,
+                                LayoutSides::kTop);
+      break;
+    case BubbleArrowDirectionDown:
+      AddSameConstraintsToSides(
+          boundingSizeGuide, contentAreaGuide,
+          LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
+      AddSameConstraintsToSides(boundingSizeGuide, safeAreaGuide,
+                                LayoutSides::kBottom);
+      break;
+    case BubbleArrowDirectionLeading:
+      AddSameConstraintsToSides(
+          boundingSizeGuide, contentAreaGuide,
+          LayoutSides::kTop | LayoutSides::kBottom | LayoutSides::kTrailing);
+      AddSameConstraintsToSides(boundingSizeGuide, safeAreaGuide,
+                                LayoutSides::kLeading);
+      break;
+    case BubbleArrowDirectionTrailing:
+      AddSameConstraintsToSides(
+          boundingSizeGuide, contentAreaGuide,
+          LayoutSides::kTop | LayoutSides::kBottom | LayoutSides::kLeading);
+      AddSameConstraintsToSides(boundingSizeGuide, safeAreaGuide,
+                                LayoutSides::kTrailing);
+      break;
+  }
+  GestureInProductHelpView* gestureIPHView = [[GestureInProductHelpView alloc]
+            initWithText:text
+      bubbleBoundingSize:boundingSizeGuide.layoutFrame.size
+          arrowDirection:direction];
   [gestureIPHView setTranslatesAutoresizingMaskIntoConstraints:NO];
-  if (CanGestureInProductHelpViewFitInGuide(gestureIPHView, guide) &&
+  if (CanGestureInProductHelpViewFitInGuide(gestureIPHView,
+                                            boundingSizeGuide) &&
       self.engagementTracker->ShouldTriggerHelpUI(feature)) {
     __weak BubblePresenter* weakSelf = self;
     CallbackWithIPHDismissalReasonType dismissalCallbackWithSnoozeAction =
@@ -859,7 +895,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
         };
     gestureIPHView.dismissCallback = dismissalCallbackWithSnoozeAction;
     [self.rootViewController.view addSubview:gestureIPHView];
-    AddSameConstraints(gestureIPHView, guide);
+    AddSameConstraints(gestureIPHView, contentAreaGuide);
     return gestureIPHView;
   }
   return nil;
