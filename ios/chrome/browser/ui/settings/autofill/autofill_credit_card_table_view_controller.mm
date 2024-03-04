@@ -513,7 +513,6 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
     // Get the original value.
     BOOL mandatoryReauthEnabled =
         _personalDataManager->IsPaymentMethodsMandatoryReauthEnabled();
-    CHECK_NE(mandatoryReauthEnabled, switchView.isOn);
     LogMandatoryReauthOptInOrOutUpdateEvent(
         MandatoryReauthOptInOrOutSource::kSettingsPage,
         /*opt_in=*/!mandatoryReauthEnabled,
