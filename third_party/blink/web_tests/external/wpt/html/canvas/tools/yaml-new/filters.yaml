@@ -89,15 +89,32 @@
     ctx.filter = 'this string is not a filter and should do nothing';
     @assert ctx.filter.toString() == '[object CanvasFilter]';
 
-- name: 2d.filter.canvasFilterObject.blur.exceptions.tentative
-  desc: Test exceptions on CanvasFilter() blur.object
+- name: 2d.filter.{{ variant_names[0] }}.blur.exceptions{{ tentative }}
+  desc: Test exceptions on gaussianBlur filter
   code: |
-    @assert throws TypeError ctx.filter = new CanvasFilter({name: 'gaussianBlur'});
-    @assert throws TypeError ctx.filter = new CanvasFilter({name: 'gaussianBlur', stdDeviation: undefined});
-    @assert throws TypeError ctx.filter = new CanvasFilter({name: 'gaussianBlur', stdDeviation: 'foo'});
-    @assert throws TypeError ctx.filter = new CanvasFilter({name: 'gaussianBlur', stdDeviation: [1,2,3]});
-    @assert throws TypeError ctx.filter = new CanvasFilter({name: 'gaussianBlur', stdDeviation: NaN});
-    @assert throws TypeError ctx.filter = new CanvasFilter({name: 'gaussianBlur', stdDeviation: {}});
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'gaussianBlur'}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'gaussianBlur', stdDeviation: undefined}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'gaussianBlur', stdDeviation: 'foo'}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'gaussianBlur', stdDeviation: [1,2,3]}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'gaussianBlur', stdDeviation: NaN}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'gaussianBlur', stdDeviation: {}}") }};
+  append_variants_to_name: false
+  variants:
+    layers:
+      filter_declaration: |-
+        ctx.beginLayer({filter:
+          param})
+    canvasFilterObject:
+      filter_declaration: |-
+        ctx.filter = new CanvasFilter(
+          param)
+      tentative: .tentative
 
 - name: 2d.filter.{{ variant_names[0] }}.colorMatrix{{ tentative }}
   desc: Test the functionality of ColorMatrix filters
@@ -194,26 +211,57 @@
           param)
       tentative: .tentative
 
-- name: 2d.filter.canvasFilterObject.convolveMatrix.exceptions.tentative
+- name: 2d.filter.{{ variant_names[0] }}.convolveMatrix.exceptions{{ tentative }}
   desc: Test exceptions on CanvasFilter() convolveMatrix
   code: |
-    @assert throws TypeError new CanvasFilter({name: 'convolveMatrix'});
-    @assert throws TypeError new CanvasFilter({name: 'convolveMatrix', divisor: 2});
-    @assert throws TypeError new CanvasFilter({name: 'convolveMatrix', kernelMatrix: null});
-    @assert throws TypeError new CanvasFilter({name: 'convolveMatrix', kernelMatrix: 1});
-    @assert throws TypeError new CanvasFilter({name: 'convolveMatrix', kernelMatrix: [[1, 0], [0]]});
-    @assert throws TypeError new CanvasFilter({name: 'convolveMatrix', kernelMatrix: [[1, 'a'], [0]]});
-    @assert throws TypeError new CanvasFilter({name: 'convolveMatrix', kernelMatrix: [[1, 0], 0]});
-    @assert throws TypeError new CanvasFilter({name: 'convolveMatrix', kernelMatrix: [[1, 0], [0, Infinity]]});
-    @assert throws TypeError new CanvasFilter({name: 'convolveMatrix', kernelMatrix: []});
-    @assert throws TypeError new CanvasFilter({name: 'convolveMatrix', kernelMatrix: [1]});
-    @assert throws TypeError new CanvasFilter({name: 'convolveMatrix', kernelMatrix: [1, 2, 3, 4]});
-    @assert throws TypeError new CanvasFilter({name: 'convolveMatrix', kernelMatrix: [[], []]});
-    @assert throws TypeError new CanvasFilter({name: 'convolveMatrix', kernelMatrix: [[1, 2], []]});
-    @assert throws TypeError new CanvasFilter({name: 'convolveMatrix', kernelMatrix: [[], [1, 2]]});
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix'}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix', divisor: 2}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix', kernelMatrix: null}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix', kernelMatrix: 1}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix', kernelMatrix: [[1, 0], [0]]}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix', kernelMatrix: [[1, 'a'], [0]]}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix', kernelMatrix: [[1, 0], 0]}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix', kernelMatrix: [[1, 0], [0, Infinity]]}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix', kernelMatrix: []}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix', kernelMatrix: [1]}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix', kernelMatrix: [1, 2, 3, 4]}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix', kernelMatrix: [[], []]}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix', kernelMatrix: [[1, 2], []]}") }};
+    @assert throws TypeError {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix', kernelMatrix: [[], [1, 2]]}") }};
     // This should not throw an error
-    ctx.filter = new CanvasFilter({name: 'convolveMatrix', kernelMatrix: [[]]});
-    ctx.filter = new CanvasFilter({name: 'convolveMatrix', kernelMatrix: [[1]]});
+    {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix', kernelMatrix: [[]]}") }};
+    {{ close_layer -}}
+    {{ filter_declaration | replace("param",
+      "{name: 'convolveMatrix', kernelMatrix: [[1]]}") }};
+    {{ close_layer -}}
+  append_variants_to_name: false
+  variants:
+    layers:
+      filter_declaration: |-
+        ctx.beginLayer({filter:
+          param})
+      close_layer: |
+        ctx.endLayer();
+    canvasFilterObject:
+      filter_declaration: |-
+        ctx.filter = new CanvasFilter(
+          param)
+      tentative: .tentative
 
 - name: >-
     2d.filter.{{ variant_names[0] }}.componentTransfer.linear{{ tentative }}
@@ -618,7 +666,7 @@
         blur_x: 0
         blur_y: 4
 
-- name: 2d.filter.canvasFilterObject.dropShadow.tentative
+- name: 2d.filter.{{ variant_names[0] }}.dropShadow{{ tentative }}
   desc: Test CanvasFilter() dropShadow object.
   size: [520, 420]
   code: |
@@ -631,90 +679,91 @@
     ctx.fillStyle = 'crimson';
 
     // Parameter defaults.
-    ctx.filter = new CanvasFilter({name: 'dropShadow'});
+    {{ filter_declaration | replace("param", "{name: 'dropShadow'}") }}
     ctx.fillRect(10, 10, 80, 80);
+    {{ close_layer -}}
 
     // All parameters specified.
-    ctx.filter = new CanvasFilter(
-      {name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 5,
-       floodColor: 'purple', floodOpacity: 0.7});
+    {{ filter_declaration | replace("param", "{name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 5,
+       floodColor: 'purple', floodOpacity: 0.7}") }}
     ctx.fillRect(110, 10, 80, 80);
+    {{ close_layer -}}
 
     // Named color.
-    ctx.filter = new CanvasFilter(
-      {name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 3,
-       floodColor: 'purple'});
+    {{ filter_declaration | replace("param", "{name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 3,
+       floodColor: 'purple'}") }}
     ctx.fillRect(10, 110, 80, 80);
+    {{ close_layer -}}
 
     // System color.
-    ctx.filter = new CanvasFilter(
-      {name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 3,
-       floodColor: 'LinkText'});
+    {{ filter_declaration | replace("param", "{name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 3,
+       floodColor: 'LinkText'}") }}
     ctx.fillRect(110, 110, 80, 80);
+    {{ close_layer -}}
 
     // Numerical color.
-    ctx.filter = new CanvasFilter(
-      {name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 3,
-       floodColor: 'rgba(20, 50, 130, 1)'});
+    {{ filter_declaration | replace("param", "{name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 3,
+       floodColor: 'rgba(20, 50, 130, 1)'}") }}
     ctx.fillRect(210, 110, 80, 80);
+    {{ close_layer -}}
 
     // Transparent floodColor.
-    ctx.filter = new CanvasFilter(
-      {name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 3,
-       floodColor: 'rgba(20, 50, 130, 0.7)'});
+    {{ filter_declaration | replace("param", "{name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 3,
+       floodColor: 'rgba(20, 50, 130, 0.7)'}") }}
     ctx.fillRect(310, 110, 80, 80);
+    {{ close_layer -}}
 
     // Transparent floodColor and floodOpacity.
-    ctx.filter = new CanvasFilter(
-      {name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 3,
-       floodColor: 'rgba(20, 50, 130, 0.7)', floodOpacity: 0.7});
+    {{ filter_declaration | replace("param", "{name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 3,
+       floodColor: 'rgba(20, 50, 130, 0.7)', floodOpacity: 0.7}") }}
     ctx.fillRect(410, 110, 80, 80);
+    {{ close_layer -}}
 
     // No blur.
-    ctx.filter = new CanvasFilter(
-      {name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 0,
-       floodColor: 'purple'});
+    {{ filter_declaration | replace("param", "{name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 0,
+       floodColor: 'purple'}") }}
     ctx.fillRect(10, 210, 80, 80);
+    {{ close_layer -}}
 
     // Single float blur.
-    ctx.filter = new CanvasFilter(
-      {name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 5,
-       floodColor: 'purple'});
+    {{ filter_declaration | replace("param", "{name: 'dropShadow', dx: 9, dy: 12, stdDeviation: 5,
+       floodColor: 'purple'}") }}
     ctx.fillRect(110, 210, 80, 80);
+    {{ close_layer -}}
 
     // Single negative float blur.
-    ctx.filter = new CanvasFilter(
-      {name: 'dropShadow', dx: 9, dy: 12, stdDeviation: -5,
-       floodColor: 'purple'});
+    {{ filter_declaration | replace("param", "{name: 'dropShadow', dx: 9, dy: 12, stdDeviation: -5,
+       floodColor: 'purple'}") }}
     ctx.fillRect(210, 210, 80, 80);
+    {{ close_layer -}}
 
     // Two floats (X&Y) blur.
-    ctx.filter = new CanvasFilter(
-      {name: 'dropShadow', dx: 9, dy: 12, stdDeviation: [3, 5],
-       floodColor: 'purple'});
+    {{ filter_declaration | replace("param", "{name: 'dropShadow', dx: 9, dy: 12, stdDeviation: [3, 5],
+       floodColor: 'purple'}") }}
     ctx.fillRect(310, 210, 80, 80);
+    {{ close_layer -}}
 
     // Two negative floats (X&Y) blur.
-    ctx.filter = new CanvasFilter(
-      {name: 'dropShadow', dx: 9, dy: 12, stdDeviation: [-3, -5],
-       floodColor: 'purple'});
+    {{ filter_declaration | replace("param", "{name: 'dropShadow', dx: 9, dy: 12, stdDeviation: [-3, -5],
+       floodColor: 'purple'}") }}
     ctx.fillRect(410, 210, 80, 80);
+    {{ close_layer -}}
 
     // Degenerate parameter values.
-    ctx.filter = new CanvasFilter(
-      {name: 'dropShadow', dx: [-5], dy: [], stdDeviation: null,
-       floodColor: 'purple', floodOpacity: [2]});
+    {{ filter_declaration | replace("param", "{name: 'dropShadow', dx: [-5], dy: [], stdDeviation: null,
+       floodColor: 'purple', floodOpacity: [2]}") }}
     ctx.fillRect(10, 310, 80, 80);
+    {{ close_layer -}}
 
-    ctx.filter = new CanvasFilter(
-      {name: 'dropShadow', dx: null, dy: '5', stdDeviation: [[-5], ['3']],
-       floodColor: 'purple', floodOpacity: '0.8'});
+    {{ filter_declaration | replace("param", "{name: 'dropShadow', dx: null, dy: '5', stdDeviation: [[-5], ['3']],
+       floodColor: 'purple', floodOpacity: '0.8'}") }}
     ctx.fillRect(110, 310, 80, 80);
+    {{ close_layer -}}
 
-    ctx.filter = new CanvasFilter(
-      {name: 'dropShadow', dx: true, dy: ['10'], stdDeviation: false,
-       floodColor: 'purple', floodOpacity: ['0.4']});
+    {{ filter_declaration | replace("param", "{name: 'dropShadow', dx: true, dy: ['10'], stdDeviation: false,
+       floodColor: 'purple', floodOpacity: ['0.4']}") }}
     ctx.fillRect(210, 310, 80, 80);
+    {{ close_layer -}}
   html_reference: |
     <svg xmlns="http://www.w3.org/2000/svg"
          width={{ size[0] }} height={{ size[1] }}
@@ -767,41 +816,70 @@
       <rect x=210 y=310 width=80 height=80 fill="crimson"
             filter="drop-shadow(1px 10px 0px rgba(128, 0, 128, 0.4))"/>
     </svg>
+  append_variants_to_name: false
+  variants:
+    layers:
+      filter_declaration: |-
+        ctx.beginLayer({filter: param});
+      close_layer: |
+        ctx.endLayer();
+    canvasFilterObject:
+      filter_declaration: |-
+        ctx.filter = new CanvasFilter(param);
+      tentative: .tentative
 
-- name: 2d.filter.canvasFilterObject.dropShadow.exceptions.tentative
+- name: 2d.filter.{{ variant_names[0] }}.dropShadow.exceptions{{ tentative }}
   desc: Test exceptions on CanvasFilter() dropShadow object
   code: |
-    @unroll @assert new CanvasFilter({\-
+    // Should not throw an error.
+    @unroll {{ filter_declaration | replace("param", "{\-
         name: 'dropShadow', \-
         <dx | dy | floodOpacity>: \-
-        <10 | -1 | 0.5 | null | true | false | [] | [20] | '30'>});
-    @unroll @assert new CanvasFilter({\-
+        <10 | -1 | 0.5 | null | true | false | [] | [20] | '30'>}") }};
+    @unroll {{ filter_declaration | replace("param", "{\-
+        name: 'dropShadow', \-
+        <dx | dy | floodOpacity>: \-
+        <10 | -1 | 0.5 | null | true | false | [] | [20] | '30'>}") }};
+    @unroll {{ filter_declaration | replace("param", "{\-
         name: 'dropShadow', \-
         <stdDeviation>: \-
         <10 | -1 | 0.5 | null | true | false | [] | [20] | '30' | \-
          [10, -1] | [0.5, null] | [true, false] | [[], [20]] | \-
-         ['30', ['40']]>});
-    @unroll @assert new CanvasFilter({\-
+         ['30', ['40']]>}") }};
+    @unroll {{ filter_declaration | replace("param", "{\-
         name: 'dropShadow', \-
         <floodColor>: \-
-        <'red' | 'canvas' | 'rgba(4, -3, 0.5, 1)' | '#aabbccdd' | '#abcd'>});
+        <'red' | 'canvas' | 'rgba(4, -3, 0.5, 1)' | '#aabbccdd' |
+          '#abcd'>}") }};
 
-    @unroll @assert throws TypeError new CanvasFilter({\-
-        name: 'dropShadow', \-
+    // Should throw a TypeError.
+    @unroll @assert throws TypeError {{ filter_declaration | replace("param", \-
+        "{name: 'dropShadow', \-
         <dx | dy | floodOpacity>: \-
-        <NaN | Infinity | -Infinity | undefined | 'test' | {} | [1, 2]>});
-    @unroll @assert throws TypeError new CanvasFilter({\-
-        name: 'dropShadow', \-
+        <NaN | Infinity | -Infinity | undefined | 'test' | {} | [1, 2]>}") }};
+    @unroll @assert throws TypeError {{ filter_declaration | replace("param", \-
+        "{name: 'dropShadow', \-
         <stdDeviation>: \-
         <NaN | Infinity | -Infinity | undefined | 'test' | {} | [1, 2, 3] | \-
          [1, NaN] | [1, Infinity] | [1, -Infinity] | [1, undefined] | \-
-         [1, 'test'] | [1, {}] | [1, [2, 3]]>});
-    @unroll @assert throws TypeError new CanvasFilter({\-
-        name: 'dropShadow', \-
+         [1, 'test'] | [1, {}] | [1, [2, 3]]>}") }};
+    @unroll @assert throws TypeError {{ filter_declaration | replace("param", \-
+        "{name: 'dropShadow', \-
         <floodColor>: \-
-        <'test' | 'rgba(NaN, 3, 2, 1)' | 10 | undefined | null | NaN>});
+        <'test' | 'rgba(NaN, 3, 2, 1)' | 10 | undefined | null | NaN>}") }};
+  append_variants_to_name: false
+  variants:
+    layers:
+      filter_declaration: |-
+        ctx.beginLayer({filter:
+          param}); ctx.endLayer()
+    canvasFilterObject:
+      filter_declaration: |-
+        ctx.filter = new CanvasFilter(
+          param)
+      tentative: .tentative
 
-- name: 2d.filter.canvasFilterObject.turbulence.inputTypes.tentative
+- name: 2d.filter.{{ variant_names[0] }}.turbulence.inputTypes{{ tentative }}
   desc: Test exceptions on CanvasFilter() turbulence object
   code: |
     const errorTestCases = [
@@ -901,10 +979,22 @@
 
     for (testCase of errorTestCases) {
       const filterOptions = {...{name: 'turbulence'}, ...testCase};
-      @assert throws TypeError new CanvasFilter(filterOptions);
+      @assert throws TypeError {{ filter_declaration |
+        replace("param", "filterOptions") }};
     }
 
     for (testCase of workingTestCases) {
       const filterOptions = {...{name: 'turbulence'}, ...testCase};
-      @assert new CanvasFilter(filterOptions) != null;
+      {{ filter_declaration | replace("param", "filterOptions") }};
+      {{- close_layer }}
     }
+  append_variants_to_name: false
+  variants:
+    layers:
+      filter_declaration: |-
+        ctx.beginLayer({filter: param})
+      close_layer: "\n  ctx.endLayer();"
+    canvasFilterObject:
+      filter_declaration: |-
+        ctx.filter = new CanvasFilter(param)
+      tentative: .tentative
