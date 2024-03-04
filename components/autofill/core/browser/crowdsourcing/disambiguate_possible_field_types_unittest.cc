@@ -22,6 +22,9 @@ class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
   struct TestFieldData {
     FieldType predicted_type;
     FieldTypeSet ambiguous_possible_field_types;
+    // If `true`, the `AutofillField::autofilled_type_` is set to
+    // `predicted_type`. Fields aren't uploaded where this assumption is false.
+    bool is_autofilled = false;
   };
 
   std::vector<FieldTypeSet> GetDisambiguatedPossibleFieldTypes(
@@ -33,14 +36,17 @@ class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
     }
     FormStructure form_structure(form);
     for (size_t i = 0; i < test_fields.size(); ++i) {
-      form_structure.field(i)->set_possible_types(
-          test_fields[i].ambiguous_possible_field_types);
-      form_structure.field(i)->set_server_predictions(
-          {::autofill::test::CreateFieldPrediction(
-              test_fields[i].predicted_type)});
+      AutofillField& field = *form_structure.field(i);
+      field.set_possible_types(test_fields[i].ambiguous_possible_field_types);
+      field.set_server_predictions({::autofill::test::CreateFieldPrediction(
+          test_fields[i].predicted_type)});
+      if (test_fields[i].is_autofilled) {
+        field.set_autofilled_type(test_fields[i].predicted_type);
+        field.is_autofilled = true;
+      }
     }
 
-    DisambiguatePossibleFieldTypes(&form_structure);
+    DisambiguatePossibleFieldTypes(form_structure);
 
     std::vector<FieldTypeSet> disambiguated_possible_field_types;
     base::ranges::transform(
@@ -61,16 +67,16 @@ class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
 // credit card field should be disambiguated as a non credit card name.
 TEST_F(DisambiguatePossibleFieldTypesTest,
        AmbiguousNamePrecededByAddressDisambiguatesToAddress) {
-  std::vector<TestFieldData> test_fields = {
+  const std::vector<TestFieldData> kTestFields = {
       {ADDRESS_HOME_CITY, {ADDRESS_HOME_CITY}},
       {CREDIT_CARD_NAME_FIRST, {NAME_FIRST, CREDIT_CARD_NAME_FIRST}},
       {CREDIT_CARD_NAME_LAST,
        {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}}};
 
-  std::vector<FieldTypeSet> disambiguated_possible_field_types =
-      GetDisambiguatedPossibleFieldTypes(test_fields);
+  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
+      GetDisambiguatedPossibleFieldTypes(kTestFields);
 
-  EXPECT_THAT(disambiguated_possible_field_types,
+  EXPECT_THAT(kDisambiguatedPossibleFieldTypes,
               ElementsAre(UnorderedElementsAre(ADDRESS_HOME_CITY),
                           UnorderedElementsAre(NAME_FIRST),
                           UnorderedElementsAre(NAME_LAST, NAME_LAST_SECOND)));
@@ -80,16 +86,16 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
 // credit card field should be disambiguated as a credit card name.
 TEST_F(DisambiguatePossibleFieldTypesTest,
        AmbiguousNamePrecededByCreditCardDisambiguatesToCreditCard) {
-  std::vector<TestFieldData> test_fields = {
+  const std::vector<TestFieldData> kTestFields = {
       {CREDIT_CARD_NUMBER, {CREDIT_CARD_NUMBER}},
       {CREDIT_CARD_NAME_FIRST, {NAME_FIRST, CREDIT_CARD_NAME_FIRST}},
       {CREDIT_CARD_NAME_LAST,
        {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}}};
 
-  std::vector<FieldTypeSet> disambiguated_possible_field_types =
-      GetDisambiguatedPossibleFieldTypes(test_fields);
+  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
+      GetDisambiguatedPossibleFieldTypes(kTestFields);
 
-  EXPECT_THAT(disambiguated_possible_field_types,
+  EXPECT_THAT(kDisambiguatedPossibleFieldTypes,
               ElementsAre(UnorderedElementsAre(CREDIT_CARD_NUMBER),
                           UnorderedElementsAre(CREDIT_CARD_NAME_FIRST),
                           UnorderedElementsAre(CREDIT_CARD_NAME_LAST)));
@@ -99,14 +105,14 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
 // address field should be disambiguated as an address name.
 TEST_F(DisambiguatePossibleFieldTypesTest,
        AmbiguousNameFollowedByAddressDisambiguatesToAddress) {
-  std::vector<TestFieldData> test_fields = {
+  const std::vector<TestFieldData> kTestFields = {
       {CREDIT_CARD_NAME_FIRST, {NAME_FIRST, CREDIT_CARD_NAME_FIRST}},
       {CREDIT_CARD_NAME_LAST,
        {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}},
       {ADDRESS_HOME_CITY, {ADDRESS_HOME_CITY}}};
 
-  std::vector<FieldTypeSet> disambiguated_possible_field_types =
-      GetDisambiguatedPossibleFieldTypes(test_fields);
+  const std::vector<FieldTypeSet> disambiguated_possible_field_types =
+      GetDisambiguatedPossibleFieldTypes(kTestFields);
 
   EXPECT_THAT(disambiguated_possible_field_types,
               ElementsAre(UnorderedElementsAre(NAME_FIRST),
@@ -118,15 +124,15 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
 // credit card field should be disambiguated as a credit card name.
 TEST_F(DisambiguatePossibleFieldTypesTest,
        AmbiguousNameFollowedByCreditCardDisambiguatesToCreditCard) {
-  std::vector<TestFieldData> test_fields = {
+  const std::vector<TestFieldData> kTestFields = {
       {NAME_FIRST, {NAME_FIRST, CREDIT_CARD_NAME_FIRST}},
       {NAME_LAST, {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}},
       {CREDIT_CARD_NUMBER, {CREDIT_CARD_NUMBER}}};
 
-  std::vector<FieldTypeSet> disambiguated_possible_field_types =
-      GetDisambiguatedPossibleFieldTypes(test_fields);
+  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
+      GetDisambiguatedPossibleFieldTypes(kTestFields);
 
-  EXPECT_THAT(disambiguated_possible_field_types,
+  EXPECT_THAT(kDisambiguatedPossibleFieldTypes,
               ElementsAre(UnorderedElementsAre(CREDIT_CARD_NAME_FIRST),
                           UnorderedElementsAre(CREDIT_CARD_NAME_LAST),
                           UnorderedElementsAre(CREDIT_CARD_NUMBER)));
@@ -136,17 +142,17 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
 // fields should be disambiguated as a non credit card name.
 TEST_F(DisambiguatePossibleFieldTypesTest,
        AmbiguousNameSurroundedByAddressDisambiguatesToAddress) {
-  std::vector<TestFieldData> test_fields = {
+  const std::vector<TestFieldData> kTestFields = {
       {ADDRESS_HOME_CITY, {ADDRESS_HOME_CITY}},
       {CREDIT_CARD_NAME_FIRST, {NAME_FIRST, CREDIT_CARD_NAME_FIRST}},
       {CREDIT_CARD_NAME_LAST,
        {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}},
       {ADDRESS_HOME_STATE, {ADDRESS_HOME_STATE}}};
 
-  std::vector<FieldTypeSet> disambiguated_possible_field_types =
-      GetDisambiguatedPossibleFieldTypes(test_fields);
+  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
+      GetDisambiguatedPossibleFieldTypes(kTestFields);
 
-  EXPECT_THAT(disambiguated_possible_field_types,
+  EXPECT_THAT(kDisambiguatedPossibleFieldTypes,
               ElementsAre(UnorderedElementsAre(ADDRESS_HOME_CITY),
                           UnorderedElementsAre(NAME_FIRST),
                           UnorderedElementsAre(NAME_LAST, NAME_LAST_SECOND),
@@ -157,16 +163,16 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
 // should be disambiguated as a credit card name.
 TEST_F(DisambiguatePossibleFieldTypesTest,
        AmbiguousNameSurroundedByCreditCardDisambiguatesToCreditCard) {
-  std::vector<TestFieldData> test_fields = {
+  const std::vector<TestFieldData> kTestFields = {
       {CREDIT_CARD_NUMBER, {CREDIT_CARD_NUMBER}},
       {NAME_FIRST, {NAME_FIRST, CREDIT_CARD_NAME_FIRST}},
       {NAME_LAST, {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}},
       {CREDIT_CARD_EXP_4_DIGIT_YEAR, {CREDIT_CARD_EXP_4_DIGIT_YEAR}}};
 
-  std::vector<FieldTypeSet> disambiguated_possible_field_types =
-      GetDisambiguatedPossibleFieldTypes(test_fields);
+  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
+      GetDisambiguatedPossibleFieldTypes(kTestFields);
 
-  EXPECT_THAT(disambiguated_possible_field_types,
+  EXPECT_THAT(kDisambiguatedPossibleFieldTypes,
               ElementsAre(UnorderedElementsAre(CREDIT_CARD_NUMBER),
                           UnorderedElementsAre(CREDIT_CARD_NAME_FIRST),
                           UnorderedElementsAre(CREDIT_CARD_NAME_LAST),
@@ -177,17 +183,17 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
 // followed by a credit card field should not be disambiguated.
 TEST_F(DisambiguatePossibleFieldTypesTest,
        AmbiguousNamePrecededByAddressFollowedByCreditCardRemainsAmbiguous) {
-  std::vector<TestFieldData> test_fields = {
+  const std::vector<TestFieldData> kTestFields = {
       {ADDRESS_HOME_CITY, {ADDRESS_HOME_CITY}},
       {NAME_FIRST, {NAME_FIRST, CREDIT_CARD_NAME_FIRST}},
       {NAME_LAST, {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}},
       {CREDIT_CARD_EXP_4_DIGIT_YEAR, {CREDIT_CARD_EXP_4_DIGIT_YEAR}}};
 
-  std::vector<FieldTypeSet> disambiguated_possible_field_types =
-      GetDisambiguatedPossibleFieldTypes(test_fields);
+  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
+      GetDisambiguatedPossibleFieldTypes(kTestFields);
 
   EXPECT_THAT(
-      disambiguated_possible_field_types,
+      kDisambiguatedPossibleFieldTypes,
       ElementsAre(UnorderedElementsAre(ADDRESS_HOME_CITY),
                   UnorderedElementsAre(NAME_FIRST, CREDIT_CARD_NAME_FIRST),
                   UnorderedElementsAre(NAME_LAST, CREDIT_CARD_NAME_LAST,
@@ -199,22 +205,36 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
 // by a non credit card field should not be disambiguated.
 TEST_F(DisambiguatePossibleFieldTypesTest,
        AmbiguousNamePrecededByCreditCardFollowedByAddressRemainsAmbiguous) {
-  std::vector<TestFieldData> test_fields = {
+  const std::vector<TestFieldData> kTestFields = {
       {CREDIT_CARD_EXP_4_DIGIT_YEAR, {CREDIT_CARD_EXP_4_DIGIT_YEAR}},
       {NAME_FIRST, {NAME_FIRST, CREDIT_CARD_NAME_FIRST}},
       {NAME_LAST, {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}},
       {ADDRESS_HOME_CITY, {ADDRESS_HOME_CITY}}};
 
-  std::vector<FieldTypeSet> disambiguated_possible_field_types =
-      GetDisambiguatedPossibleFieldTypes(test_fields);
+  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
+      GetDisambiguatedPossibleFieldTypes(kTestFields);
 
   EXPECT_THAT(
-      disambiguated_possible_field_types,
+      kDisambiguatedPossibleFieldTypes,
       ElementsAre(UnorderedElementsAre(CREDIT_CARD_EXP_4_DIGIT_YEAR),
                   UnorderedElementsAre(NAME_FIRST, CREDIT_CARD_NAME_FIRST),
                   UnorderedElementsAre(NAME_LAST, CREDIT_CARD_NAME_LAST,
                                        NAME_LAST_SECOND),
                   UnorderedElementsAre(ADDRESS_HOME_CITY)));
+}
+
+TEST_F(DisambiguatePossibleFieldTypesTest,
+       AutofilledFieldDisambiguatesToAutofilledType) {
+  const std::vector<TestFieldData> kTestFields = {
+      {ADDRESS_HOME_LINE1,
+       {CREDIT_CARD_EXP_4_DIGIT_YEAR, NAME_FULL, COMPANY_NAME},
+       true}};
+
+  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
+      GetDisambiguatedPossibleFieldTypes(kTestFields);
+
+  EXPECT_THAT(kDisambiguatedPossibleFieldTypes,
+              ElementsAre(UnorderedElementsAre(ADDRESS_HOME_LINE1)));
 }
 
 }  // namespace autofill
