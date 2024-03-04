@@ -1084,8 +1084,8 @@ void PasswordFormManager::FillNow() {
   SendFillInformationToRenderer(
       client_, driver_.get(), *observed_password_form.get(),
       form_fetcher_->GetBestMatches(), form_fetcher_->GetFederatedMatches(),
-      form_fetcher_->GetPreferredMatch(), form_fetcher_->IsBlocklisted(),
-      metrics_recorder_.get(), WebAuthnCredentialsAvailable());
+      form_fetcher_->GetPreferredMatch(), metrics_recorder_.get(),
+      WebAuthnCredentialsAvailable());
 }
 
 void PasswordFormManager::OnGeneratedPasswordAccepted(

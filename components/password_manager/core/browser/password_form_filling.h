@@ -52,7 +52,6 @@ LikelyFormFilling SendFillInformationToRenderer(
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
         federated_matches,
     const PasswordForm* preferred_match,
-    bool blocked_by_user,
     PasswordFormMetricsRecorder* metrics_recorder,
     bool webauthn_suggestions_available);
 

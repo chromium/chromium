@@ -35,12 +35,6 @@ using Logger = autofill::SavePasswordProgressLogger;
 using password_manager_util::GetMatchType;
 using GetLoginMatchType = password_manager_util::GetLoginMatchType;
 
-// Controls whether we should suppress the account storage promos for websites
-// that are blocked by the user.
-BASE_FEATURE(kSuppressAccountStoragePromosForBlockedWebsite,
-             "SuppressAccountStoragePromosForBlockedWebsite",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether we should suppress the account storage promos for when the
 // credentials service is disabled.
 BASE_FEATURE(kSuppressAccountStoragePromosWhenCredentialServiceDisabled,
@@ -129,7 +123,6 @@ LikelyFormFilling SendFillInformationToRenderer(
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
         federated_matches,
     const PasswordForm* preferred_match,
-    bool blocked_by_user,
     PasswordFormMetricsRecorder* metrics_recorder,
     bool webauthn_suggestions_available) {
   DCHECK(driver);
@@ -146,9 +139,6 @@ LikelyFormFilling SendFillInformationToRenderer(
   }
 
   if (best_matches.empty() && !webauthn_suggestions_available) {
-    bool should_suppress_popup_due_to_blocked_website =
-        blocked_by_user && base::FeatureList::IsEnabled(
-                               kSuppressAccountStoragePromosForBlockedWebsite);
 
     bool should_suppress_popup_due_to_disabled_saving_and_filling =
         base::FeatureList::IsEnabled(
@@ -156,7 +146,6 @@ LikelyFormFilling SendFillInformationToRenderer(
         !client->IsSavingAndFillingEnabled(observed_form.url);
 
     bool should_show_popup_without_passwords =
-        !should_suppress_popup_due_to_blocked_website &&
         !should_suppress_popup_due_to_disabled_saving_and_filling &&
         (client->GetPasswordFeatureManager()->ShouldShowAccountStorageOptIn() ||
          client->GetPasswordFeatureManager()->ShouldShowAccountStorageReSignin(
