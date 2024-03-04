@@ -73,7 +73,8 @@ bool IsValidRestrictedDeclarationValue(CSSParserTokenRange range,
         case CSSValueID::kInvalid:
           // Not a built-in function, but it might be a user-defined
           // CSS function (e.g. --foo()).
-          if (token.GetType() == kFunctionToken &&
+          if (RuntimeEnabledFeatures::CSSFunctionsEnabled() &&
+              token.GetType() == kFunctionToken &&
               CSSVariableParser::IsValidVariableName(token.Value())) {
             has_references = true;
           }

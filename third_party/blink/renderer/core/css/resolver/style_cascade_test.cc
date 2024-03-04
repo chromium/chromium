@@ -4182,4 +4182,16 @@ TEST_F(StyleCascadeTest, AffectedByCSSFunction) {
   }
 }
 
+TEST_F(StyleCascadeTest, CSSFunctionDoesNotExistInShorthand) {
+  for (bool enabled : {false, true}) {
+    ScopedCSSFunctionsForTest scoped_feature(enabled);
+    TestCascade cascade(GetDocument());
+
+    cascade.Add("background", "--nonexistent()");
+    cascade.Apply();
+
+    EXPECT_EQ("rgba(0, 0, 0, 0)", cascade.ComputedValue("background-color"));
+  }
+}
+
 }  // namespace blink
