@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.util.Pair;
 
@@ -54,6 +55,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CommandLineFlags.Add;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -104,7 +106,6 @@ public class SyncConsentFragmentTest {
     private static final String NEW_ACCOUNT_NAME = "new.account@gmail.com";
     // TODO(https://crbug.com/1414078): Use ALL_SELECTABLE_TYPES defined in {@link SyncServiceImpl}
     // here.
-
     private static final AccountCapabilities MINOR_MODE_NOT_REQUIRED =
             new AccountCapabilities(
                     CollectionUtil.newHashMap(
@@ -442,6 +443,9 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    @DisableIf.Build(
+            sdk_is_less_than = VERSION_CODES.P,
+            message = "Flaky on Oreo. See crbug.com/41493567")
     public void testFRESyncConsentFragmentWithNoAccountsOnDevice() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         var startPageHistogram =
