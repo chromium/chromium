@@ -264,7 +264,7 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
     api_permission_delegate_ = std::make_unique<TestApiPermissionDelegate>();
     permission_delegate_ = std::make_unique<TestPermissionDelegate>();
     metrics_ = std::make_unique<NiceMock<FedCmMetrics>>(
-        GURL(kProviderUrl), ukm::kInvalidSourceId, 0, true);
+        GURL(kProviderUrl), ukm::kInvalidSourceId, 0);
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);

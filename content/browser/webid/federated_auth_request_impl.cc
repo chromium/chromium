@@ -390,10 +390,9 @@ void FilterAccountsWithDomainHint(
 
 std::unique_ptr<FedCmMetrics> CreateFedCmMetrics(
     const GURL& provider_config_url,
-    const ukm::SourceId& source_id,
-    bool is_disabled) {
+    const ukm::SourceId& source_id) {
   return std::make_unique<FedCmMetrics>(provider_config_url, source_id,
-                                        base::RandInt(1, 1 << 30), is_disabled);
+                                        base::RandInt(1, 1 << 30));
 }
 
 std::string GetTopFrameOriginForDisplay(const url::Origin& top_frame_origin) {
@@ -726,8 +725,7 @@ void FederatedAuthRequestImpl::RequestToken(
   }
 
   MaybeCreateFedCmMetrics(
-      idp_get_params_ptrs[0]->providers[0]->config->config_url,
-      /*is_disabled=*/idp_get_params_ptrs.size() > 1);
+      idp_get_params_ptrs[0]->providers[0]->config->config_url);
 
   had_transient_user_activation_ =
       render_frame_host().HasTransientUserActivation();
@@ -780,8 +778,7 @@ void FederatedAuthRequestImpl::RequestToken(
     had_transient_user_activation_ = true;
     // This was also possibly reset during cleanup.
     MaybeCreateFedCmMetrics(
-        idp_get_params_ptrs[0]->providers[0]->config->config_url,
-        /*is_disabled=*/idp_get_params_ptrs.size() > 1);
+        idp_get_params_ptrs[0]->providers[0]->config->config_url);
   }
 
   bool intercept = false;
@@ -847,13 +844,7 @@ void FederatedAuthRequestImpl::RequestToken(
     return;
   }
 
-  // This counter measures the number of requests made to FedCM in a document to
-  // identify RPs calling FedCM in quick succession. Requests made when FedCM is
-  // disabled, when there is a pending FedCM request or for the purpose of
-  // wallets or multi-IDP are not counted.
-  if (!IsFedCmMultipleIdentityProvidersEnabled()) {
-    ++num_requests_;
-  }
+  ++num_requests_;
 
   std::set<GURL> unique_idps;
   for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
@@ -976,8 +967,7 @@ void FederatedAuthRequestImpl::RequestUserInfo(
     return;
   }
 
-  MaybeCreateFedCmMetrics(provider->config_url,
-                          /*is_disabled=*/false);
+  MaybeCreateFedCmMetrics(provider->config_url);
 
   auto network_manager = IdpNetworkRequestManager::Create(
       static_cast<RenderFrameHostImpl*>(&render_frame_host()));
@@ -2868,8 +2858,7 @@ void FederatedAuthRequestImpl::Disconnect(
     std::move(callback).Run(DisconnectStatus::kError);
     return;
   }
-  MaybeCreateFedCmMetrics(options->config->config_url,
-                          /*is_disabled=*/false);
+  MaybeCreateFedCmMetrics(options->config->config_url);
   if (disconnect_request_) {
     // Since we do not send any fetches in this case, consider the request to be
     // instant, e.g. duration is 0.
@@ -2912,8 +2901,7 @@ void FederatedAuthRequestImpl::RecordErrorMetrics(
     return;
   }
 
-  MaybeCreateFedCmMetrics(idp->config->config_url,
-                          /*is_disabled=*/false);
+  MaybeCreateFedCmMetrics(idp->config->config_url);
 
   fedcm_metrics_->RecordTokenResponseTypeMetrics(token_response_type);
 
@@ -2930,8 +2918,7 @@ void FederatedAuthRequestImpl::RecordErrorMetrics(
 }
 
 void FederatedAuthRequestImpl::MaybeCreateFedCmMetrics(
-    const GURL& provider_config_url,
-    bool is_disabled) {
+    const GURL& provider_config_url) {
   if (!fedcm_metrics_) {
     // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
     // prerendering page. As FederatedAithRequest runs behind the
@@ -2942,8 +2929,7 @@ void FederatedAuthRequestImpl::MaybeCreateFedCmMetrics(
 
     // TODO(crbug.com/1307709): Handle FedCmMetrics for multiple IDPs.
     fedcm_metrics_ = CreateFedCmMetrics(
-        provider_config_url, render_frame_host().GetPageUkmSourceId(),
-        is_disabled);
+        provider_config_url, render_frame_host().GetPageUkmSourceId());
   }
 }
 

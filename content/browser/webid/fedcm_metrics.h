@@ -186,14 +186,13 @@ class CONTENT_EXPORT FedCmMetrics {
  public:
   FedCmMetrics(const GURL& provider,
                const ukm::SourceId page_source_id,
-               int session_id,
-               bool is_disabled);
+               int session_id);
 
   ~FedCmMetrics() = default;
 
   // Records the number of times navigator.credentials.get() is called in a
-  // document. Requests made when FedCM is disabled, when there is a pending
-  // FedCM request or for the purpose of multi-IDP are not counted.
+  // document. Requests made when FedCM is disabled or when there is a pending
+  // FedCM request are not counted.
   static void RecordNumRequestsPerDocument(ukm::SourceId page_source_id,
                                            const int num_requests);
 
@@ -336,9 +335,6 @@ class CONTENT_EXPORT FedCmMetrics {
   // recording metrics. Each FedCM call gets a random integer session id, which
   // helps group UKM events by the session id.
   int session_id_;
-
-  // Whether metrics recording is disabled for the request.
-  bool is_disabled_{false};
 };
 
 // The following metric is recorded for UMA and UKM, but does not require an

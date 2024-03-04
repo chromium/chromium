@@ -4031,6 +4031,10 @@ TEST_F(FederatedAuthRequestImplTest,
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
 
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
   // Set the account from the first IDP as returning as well, so the first
   // selected account should be that one (second IDP also has returning accounts
   // and no reordering should happen).
@@ -4039,6 +4043,13 @@ TEST_F(FederatedAuthRequestImplTest,
       LoginState::kSignIn;
   RunAuthTest(kDefaultMultiIdpRequestParameters, kExpectationSuccess, config);
   EXPECT_EQ(2u, NumFetched(FetchedEndpoint::ACCOUNTS));
+
+  // Check that the appropriate metrics are recorded upon destruction.
+  federated_auth_request_impl_->ResetAndDeleteThis();
+  ukm_loop.Run();
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.NumRequestsPerDocument", 1,
+                                       1);
+  ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
 }
 
 // Test successful multi IDP FedCM request.
