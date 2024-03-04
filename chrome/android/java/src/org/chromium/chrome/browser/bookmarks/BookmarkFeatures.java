@@ -10,15 +10,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Self-documenting feature class for bookmarks. */
 public class BookmarkFeatures {
-    /** Returns whether an additional "add bookmark" item should be in the overflow menu. */
-    public static boolean isBookmarkMenuItemAsDedicatedRowEnabled() {
-        return FeatureList.isInitialized()
-                && ShoppingFeatures.isShoppingListEligible();
-    }
-
     /** Returns whether the visual refresh should be used for the bookmark manager. */
     public static boolean isLegacyBookmarksVisualRefreshEnabled() {
-        return isBookmarkMenuItemAsDedicatedRowEnabled();
+        return FeatureList.isInitialized() && ShoppingFeatures.isShoppingListEligible();
     }
 
     /**

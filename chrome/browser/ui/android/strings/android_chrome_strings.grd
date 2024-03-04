@@ -3759,9 +3759,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_MENU_DOWNLOADS" desc="Menu item for opening the downloads page. [CHAR_LIMIT=27]">
         Downloads
       </message>
-      <message name="IDS_MENU_ADD_BOOKMARK" desc="Menu item for adding the current page to 'Bookmarks'. Verb. [CHAR_LIMIT=27]">
-        Bookmark
-      </message>
       <message name="IDS_MENU_EDIT_BOOKMARK" desc="Menu item for editing the content of the bookmark for the current page. [CHAR_LIMIT=27]">
         Edit Bookmark
       </message>

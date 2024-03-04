@@ -89,12 +89,6 @@ found in the LICENSE file.
                 android:title="@null" />
           </menu>
         </item>
-        <item android:id="@+id/add_bookmark_menu_id"
-            android:title="@string/menu_add_bookmark"
-            android:icon="@drawable/star_outline_24dp"/>
-        <item android:id="@+id/edit_bookmark_menu_id"
-            android:title="@string/menu_edit_bookmark"
-            android:icon="@drawable/btn_star_filled"/>
         <item android:id="@+id/enable_price_tracking_menu_id"
             android:title="@string/enable_price_tracking_menu_item"
             android:icon="@drawable/price_tracking_disabled" />

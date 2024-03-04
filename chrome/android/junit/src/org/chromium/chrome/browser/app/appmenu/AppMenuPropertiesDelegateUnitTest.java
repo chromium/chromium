@@ -757,44 +757,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    public void updateBookmarkMenuItemRow() {
-        setShoppingListEligible(true);
-        doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
-
-        MenuItem bookmarkMenuItemAdd = mock(MenuItem.class);
-        MenuItem bookmarkMenuItemEdit = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updateBookmarkMenuItemRow(
-                bookmarkMenuItemAdd, bookmarkMenuItemEdit, mTab);
-        verify(bookmarkMenuItemAdd).setVisible(true);
-        verify(bookmarkMenuItemAdd).setEnabled(true);
-    }
-
-    @Test
-    public void updateBookmarkMenuItemRow_NullTab() {
-        setShoppingListEligible(true);
-
-        MenuItem bookmarkMenuItemAdd = mock(MenuItem.class);
-        MenuItem bookmarkMenuItemEdit = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updateBookmarkMenuItemRow(
-                bookmarkMenuItemAdd, bookmarkMenuItemEdit, null);
-        verify(bookmarkMenuItemAdd).setVisible(false);
-        verify(bookmarkMenuItemEdit).setVisible(false);
-    }
-
-    @Test
-    public void updateBookmarkMenuItemRow_NullBookmarkModel() {
-        setShoppingListEligible(true);
-        mBookmarkModelSupplier.set(null);
-
-        MenuItem bookmarkMenuItemAdd = mock(MenuItem.class);
-        MenuItem bookmarkMenuItemEdit = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updateBookmarkMenuItemRow(
-                bookmarkMenuItemAdd, bookmarkMenuItemEdit, null);
-        verify(bookmarkMenuItemAdd).setVisible(false);
-        verify(bookmarkMenuItemEdit).setVisible(false);
-    }
-
-    @Test
     public void enablePriceTrackingItemRow() {
         setShoppingListEligible(true);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
