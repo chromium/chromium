@@ -83,7 +83,8 @@ enum class ActivationError {
   kLoginDbFileMoveFailed = 3,
   kOutdatedGmsCore = 4,
   kFlagDisabled = 5,
-  kMax = kFlagDisabled,
+  kMigrationWarningUnacknowledged = 6,
+  kMax = kMigrationWarningUnacknowledged,
 };
 
 password_manager::PasswordForm MakeExampleForm() {
@@ -154,6 +155,10 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
                           kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
                       ".",
                       syncer::GetModelTypeLowerCaseRootTag(syncer::PASSWORDS)}),
+        false);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::
+            kUserAcknowledgedLocalPasswordsMigrationWarning,
         false);
 
     SetPasswordSyncEnabledPref(false);
@@ -393,6 +398,21 @@ TEST_F(PasswordManagerAndroidUtilTest,
 
   SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
 
+  // The migration warning was not acknowledged so the migration attempt fails.
+  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
+            static_cast<int>(kOff));
+  histogram_tester->ExpectUniqueSample(
+      "PasswordManager.LocalUpmActivationError.NonSyncingWithMigration",
+      ActivationError::kMigrationWarningUnacknowledged, 1);
+  histogram_tester->ExpectUniqueSample("PasswordManager.LocalUpmActivated",
+                                       false, 1);
+  histogram_tester = std::make_unique<base::HistogramTester>();
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning,
+      true);
+
+  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
+
   // Nothing changed, the WithMigration flag was disabled.
   EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
             static_cast<int>(kOff));
@@ -490,6 +510,9 @@ TEST_F(
            kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration});
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
                              false);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning,
+      true);
   ASSERT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
             static_cast<int>(kOff));
 
@@ -536,6 +559,9 @@ TEST_F(PasswordManagerAndroidUtilTest,
            kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration});
   pref_service()->SetBoolean(
       password_manager::prefs::kCredentialsEnableAutosignin, false);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning,
+      true);
   ASSERT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
             static_cast<int>(kOff));
 

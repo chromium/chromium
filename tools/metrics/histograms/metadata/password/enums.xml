@@ -324,6 +324,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Login DB file move failed"/>
   <int value="4" label="Outdated GmsCore"/>
   <int value="5" label="Flag disabled"/>
+  <int value="6" label="Migration warning unacknowledged"/>
 </enum>
 
 <enum name="LoginDatabaseEncryptionStatus">

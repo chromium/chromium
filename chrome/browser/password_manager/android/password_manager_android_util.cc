@@ -24,6 +24,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
+#include "components/version_info/android/channel_getter.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
 using password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices;
@@ -54,7 +55,8 @@ enum class ActivationError {
   kLoginDbFileMoveFailed = 3,
   kOutdatedGmsCore = 4,
   kFlagDisabled = 5,
-  kMaxValue = kFlagDisabled,
+  kMigrationWarningUnacknowledged = 6,
+  kMaxValue = kMigrationWarningUnacknowledged,
 };
 
 UseUpmLocalAndSeparateStoresState GetSplitStoresAndLocalUpmPrefValue(
@@ -143,6 +145,17 @@ ActivationError CheckMinGmsVersionAndFlagEnabled(const base::Feature& feature) {
                                                : ActivationError::kFlagDisabled;
 }
 
+bool ShouldDelayMigrationUntillMigrationWarningIsAcknowledged(
+    PrefService* pref_service) {
+  // The migration warning is only relevant for non-stable channels.
+  version_info::Channel channel = version_info::android::GetChannel();
+  if (channel == version_info::Channel::STABLE) {
+    return false;
+  }
+  return !pref_service->GetBoolean(
+      password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning);
+}
+
 bool MustMigrateLocalPasswordsOrSettingsOnActivation(
     PrefService* pref_service,
     const base::FilePath& login_db_directory) {
@@ -219,6 +232,11 @@ void MaybeActivateSplitStoresAndLocalUpm(
               kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
       break;
     case UserType::kNonSyncingAndMigrationNeeded:
+      if (ShouldDelayMigrationUntillMigrationWarningIsAcknowledged(
+              pref_service)) {
+        error = ActivationError::kMigrationWarningUnacknowledged;
+        break;
+      }
       error = CheckMinGmsVersionAndFlagEnabled(
           password_manager::features::
               kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
