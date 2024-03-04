@@ -563,13 +563,12 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void MarkCounterStylesNeedUpdate();
   void UpdateCounterStyles();
 
-  // Set a flag to invalidate elements using position-fallback on next lifecycle
-  // update when @position-fallback rules are added or removed.
-  void MarkPositionFallbackStylesDirty();
+  // Set a flag to invalidate elements using position-try-options on next
+  // lifecycle update when @position-try rules are added or removed.
+  void MarkPositionTryStylesDirty();
 
-  // Mark elements affected by @position-fallback rules for style and layout
-  // update.
-  void InvalidatePositionFallbackStyles();
+  // Mark elements affected by @position-try rules for style and layout update.
+  void InvalidatePositionTryStyles();
 
   StyleRuleKeyframes* KeyframeStylesForAnimation(
       const AtomicString& animation_name);
@@ -618,6 +617,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                const CSSPropertyValueSet* try_set,
                                Length::AnchorEvaluator*);
   StyleRulePositionFallback* GetPositionFallbackRule(const ScopedCSSName&);
+  StyleRulePositionTry* GetPositionTryRule(const ScopedCSSName&);
   void RecalcStyle();
 
   void ClearEnsuredDescendantStyles(Element& element);
@@ -628,8 +628,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool InContainerQueryStyleRecalc() const {
     return in_container_query_style_recalc_;
   }
-  bool InPositionFallbackStyleRecalc() const {
-    return in_position_fallback_style_recalc_;
+  bool InPositionTryStyleRecalc() const {
+    return in_position_try_style_recalc_;
   }
   // If we are in a container query style recalc, return the container element,
   // otherwise return nullptr.
@@ -837,10 +837,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void RecalcStyle(StyleRecalcChange, const StyleRecalcContext&);
   void RecalcStyleForContainer(Element& container, StyleRecalcChange change);
   bool RecalcHighlightStylesForContainer(Element& container);
-  void RecalcPositionFallbackStyleForPseudoElement(
-      PseudoElement& pseudo_element,
-      const StyleRecalcChange,
-      const StyleRecalcContext&);
+  void RecalcPositionTryStyleForPseudoElement(PseudoElement& pseudo_element,
+                                              const StyleRecalcChange,
+                                              const StyleRecalcContext&);
 
   void RecalcTransitionPseudoStyle();
 
@@ -931,7 +930,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   int64_t skipped_container_recalc_{0};
   bool in_layout_tree_rebuild_{false};
   bool in_container_query_style_recalc_{false};
-  bool in_position_fallback_style_recalc_{false};
+  bool in_position_try_style_recalc_{false};
   bool in_dom_removal_{false};
   bool in_detach_scope_{false};
   bool in_apply_animation_update_{false};
@@ -939,7 +938,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool viewport_style_dirty_{false};
   bool fonts_need_update_{false};
   bool counter_styles_need_update_{false};
-  bool position_fallback_styles_dirty_{false};
+  bool position_try_styles_dirty_{false};
 
   // Set to true if we allow marking style dirty from style recalc. Ideally, we
   // should get rid of this, but we keep track of where we allow it with

@@ -140,7 +140,7 @@ enum RuleSetFlags {
   kCounterStyleRules = 1 << 3,
   kLayerRules = 1 << 4,
   kFontPaletteValuesRules = 1 << 5,
-  kPositionFallbackRules = 1 << 6,
+  kPositionTryRules = 1 << 6,
   kFontFeatureValuesRules = 1 << 7,
   kViewTransitionRules = 1 << 8,
   kFunctionRules = 1 << 9,
@@ -172,8 +172,9 @@ unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
     if (rule_set->HasCascadeLayers()) {
       flags |= kLayerRules;
     }
-    if (!rule_set->PositionFallbackRules().empty()) {
-      flags |= kPositionFallbackRules;
+    if (!rule_set->PositionFallbackRules().empty() ||
+        !rule_set->PositionTryRules().empty()) {
+      flags |= kPositionTryRules;
     }
     if (!rule_set->ViewTransitionRules().empty()) {
       flags |= kViewTransitionRules;
@@ -692,23 +693,23 @@ void StyleEngine::UpdateCounterStyles() {
   counter_styles_need_update_ = false;
 }
 
-void StyleEngine::MarkPositionFallbackStylesDirty() {
+void StyleEngine::MarkPositionTryStylesDirty() {
   // TODO(crbug.com/1381623): Currently invalidating all elements in the
-  // document with a position-fallback, regardless of where the
-  // @position-fallback rules are added. In order to make invalidation more
-  // targeted we would need to add per tree-scope dirtiness, but
-  // also adding at-rules in one tree-scope may affect multiple other tree
-  // scopes through :host, ::slotted, ::part, exportparts, and inheritance.
-  // Doing that is going to be a lot more complicated.
-  position_fallback_styles_dirty_ = true;
+  // document with position-options, regardless of where the @position-try rules
+  // are added. In order to make invalidation more targeted we would need to add
+  // per tree-scope dirtiness, but also adding at-rules in one tree-scope may
+  // affect multiple other tree scopes through :host, ::slotted, ::part,
+  // exportparts, and inheritance. Doing that is going to be a lot more
+  // complicated.
+  position_try_styles_dirty_ = true;
   GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
 }
 
-void StyleEngine::InvalidatePositionFallbackStyles() {
-  if (!position_fallback_styles_dirty_) {
+void StyleEngine::InvalidatePositionTryStyles() {
+  if (!position_try_styles_dirty_) {
     return;
   }
-  position_fallback_styles_dirty_ = false;
+  position_try_styles_dirty_ = false;
   const bool mark_style_dirty = true;
   GetDocument().GetLayoutView()->InvalidateSubtreePositionFallback(
       mark_style_dirty);
@@ -2674,10 +2675,10 @@ void StyleEngine::ApplyUserRuleSetChanges(
     }
   }
 
-  if (changed_rule_flags & kPositionFallbackRules) {
-    // TODO(crbug.com/1383907): @position-fallback rules are not yet collected
-    // from user stylesheets.
-    MarkPositionFallbackStylesDirty();
+  if (changed_rule_flags & kPositionTryRules) {
+    // TODO(crbug.com/1383907): @position-try rules are not yet collected from
+    // user stylesheets.
+    MarkPositionTryStylesDirty();
   }
 
   InvalidateForRuleSetChanges(GetDocument(), changed_rule_sets,
@@ -2808,8 +2809,8 @@ void StyleEngine::ApplyRuleSetChanges(
     }
   }
 
-  if (changed_rule_flags & kPositionFallbackRules) {
-    MarkPositionFallbackStylesDirty();
+  if (changed_rule_flags & kPositionTryRules) {
+    MarkPositionTryStylesDirty();
   }
 
   if (changed_rule_flags & kViewTransitionRules) {
@@ -3472,7 +3473,7 @@ void StyleEngine::UpdateStyleForOutOfFlow(
     const CSSPropertyValueSet* try_set,
     Length::AnchorEvaluator* anchor_evaluator) {
   // Note that we enter this function for any OOF element, not just those that
-  // use position-fallback. Therefore, it's important to return immediately
+  // use position-try-options. Therefore, it's important to return immediately
   // without doing any work when `try_set` and `existing_try_set` both are
   // nullptr.
 
@@ -3511,7 +3512,7 @@ void StyleEngine::UpdateStyleForOutOfFlow(
   // regular style recalcs can continue to include this set.
   element.EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
 
-  base::AutoReset<bool> pf_recalc(&in_position_fallback_style_recalc_, true);
+  base::AutoReset<bool> pt_recalc(&in_position_try_style_recalc_, true);
 
   UpdateViewportSize();
 
@@ -3523,8 +3524,8 @@ void StyleEngine::UpdateStyleForOutOfFlow(
   StyleRecalcChange change = StyleRecalcChange().ForceRecalcChildren();
 
   if (auto* pseudo_element = DynamicTo<PseudoElement>(element)) {
-    RecalcPositionFallbackStyleForPseudoElement(*pseudo_element, change,
-                                                style_recalc_context);
+    RecalcPositionTryStyleForPseudoElement(*pseudo_element, change,
+                                           style_recalc_context);
   } else {
     element.SetChildNeedsStyleRecalc();
     style_recalc_root_.Update(nullptr, &element);
@@ -3540,6 +3541,16 @@ StyleRulePositionFallback* StyleEngine::GetPositionFallbackRule(
   }
   return GetStyleResolver().ResolvePositionFallbackRule(tree_scope,
                                                         scoped_name.GetName());
+}
+
+StyleRulePositionTry* StyleEngine::GetPositionTryRule(
+    const ScopedCSSName& scoped_name) {
+  const TreeScope* tree_scope = scoped_name.GetTreeScope();
+  if (!tree_scope) {
+    tree_scope = &GetDocument();
+  }
+  return GetStyleResolver().ResolvePositionTryRule(tree_scope,
+                                                   scoped_name.GetName());
 }
 
 void StyleEngine::RecalcStyle(StyleRecalcChange change,
@@ -3567,7 +3578,7 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change,
   }
 }
 
-void StyleEngine::RecalcPositionFallbackStyleForPseudoElement(
+void StyleEngine::RecalcPositionTryStyleForPseudoElement(
     PseudoElement& pseudo_element,
     const StyleRecalcChange style_recalc_change,
     const StyleRecalcContext& style_recalc_context) {

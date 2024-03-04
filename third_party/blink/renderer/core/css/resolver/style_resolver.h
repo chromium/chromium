@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/color_scheme_flags.h"
 #include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
+#include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/css/resolver/matched_properties_cache.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
@@ -222,10 +223,13 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       Element& element,
       const ComputedStyle& base_style,
       ActiveInterpolationsMap& transition_interpolations);
+
   StyleRulePositionFallback* ResolvePositionFallbackRule(
       const TreeScope* tree_scope,
       AtomicString position_fallback_name);
   const ComputedStyle* ResolvePositionFallbackStyle(Element&, unsigned index);
+  StyleRulePositionTry* ResolvePositionTryRule(const TreeScope* tree_scope,
+                                               AtomicString position_try_name);
 
   // Check if the BODY or HTML element's display or containment stops
   // propagation of BODY style to HTML and viewport.
@@ -289,7 +293,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                             ElementRuleCollector&,
                             bool for_shadow_pseudo = false);
   void MatchPseudoPartRulesForUAHost(const Element&, ElementRuleCollector&);
-  void MatchTryRules(const Element&, ElementRuleCollector&);
+  void MatchPositionTryRules(const Element&, ElementRuleCollector&);
   void MatchAuthorRules(const Element&,
                         ElementRuleCollector&);
   void MatchAllRules(StyleResolverState&,

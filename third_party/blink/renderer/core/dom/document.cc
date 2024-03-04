@@ -2451,7 +2451,7 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
 
   style_engine.UpdateActiveStyle();
   style_engine.UpdateCounterStyles();
-  style_engine.InvalidatePositionFallbackStyles();
+  style_engine.InvalidatePositionTryStyles();
   style_engine.InvalidateViewportUnitStylesIfNeeded();
   InvalidateStyleAndLayoutForFontUpdates();
   UpdateStyleInvalidationIfNeeded();
@@ -9539,7 +9539,7 @@ void Document::RunPostPrerenderingActivationSteps() {
 bool Document::InStyleRecalc() const {
   return lifecycle_.GetState() == DocumentLifecycle::kInStyleRecalc ||
          style_engine_->InContainerQueryStyleRecalc() ||
-         style_engine_->InPositionFallbackStyleRecalc() ||
+         style_engine_->InPositionTryStyleRecalc() ||
          style_engine_->InEnsureComputedStyle();
 }
 

@@ -3321,7 +3321,7 @@ const ComputedStyle* Element::StyleForLayoutObject(
     // necessary if the animated property flipped back to the old style with no
     // change as the result.
     DCHECK(GetDocument().GetStyleEngine().InContainerQueryStyleRecalc() ||
-           GetDocument().GetStyleEngine().InPositionFallbackStyleRecalc() ||
+           GetDocument().GetStyleEngine().InPositionTryStyleRecalc() ||
            element_animations->CssAnimations().PendingUpdate().IsEmpty());
     element_animations->CssAnimations().ClearPendingUpdate();
   }

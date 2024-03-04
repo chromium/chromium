@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
+#include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
@@ -145,7 +146,8 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
           state.StyleBuilder().HasAnchorFunctions() ||
           (RuntimeEnabledFeatures::
                CSSAnchorPositioningCascadeFallbackEnabled() &&
-           state.StyleBuilder().PositionFallback())) &&
+           (state.StyleBuilder().PositionFallback() != nullptr ||
+            state.StyleBuilder().GetPositionTryOptions() != nullptr))) &&
          state.CanAffectAnimations();
 }
 
@@ -816,13 +818,13 @@ void StyleResolver::MatchPseudoPartRules(const Element& part_matching_element,
   }
 }
 
-// Declarations within @try rules match when ResolveStyle is invoked
+// Declarations within @position-try rules match when ResolveStyle is invoked
 // with that rule explicitly specified to match.
 //
 // See OutOfFlowData::GetTryPropertyValueSet.
 // See StyleEngine::UpdateStyleForOutOfFlow.
-void StyleResolver::MatchTryRules(const Element& element,
-                                  ElementRuleCollector& collector) {
+void StyleResolver::MatchPositionTryRules(const Element& element,
+                                          ElementRuleCollector& collector) {
   // If StyleEngine::UpdateStyleForOutOfFlow was called with a PseudoElement,
   // the CSSPropertyValueSet we need is stored on the OutOfFlowData of that
   // pseudo element. However, when resolving the style of that pseudo element,
@@ -845,7 +847,7 @@ void StyleResolver::MatchAuthorRules(const Element& element,
   MatchSlottedRules(element, collector, tracker_);
   MatchElementScopeRules(element, collector, tracker_);
   MatchPseudoPartRules(element, collector);
-  MatchTryRules(element, collector);
+  MatchPositionTryRules(element, collector);
 }
 
 void StyleResolver::MatchUserRules(ElementRuleCollector& collector) {
@@ -2323,7 +2325,9 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
   }
 
   StyleBaseData* base_data = GetBaseData(state);
-  if (!base_data || !base_data->GetBaseComputedStyle()) {
+  const ComputedStyle* base_style =
+      base_data ? base_data->GetBaseComputedStyle() : nullptr;
+  if (!base_style) {
     return false;
   }
 
@@ -2344,7 +2348,7 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
   // animation. We cannot use the base computed style optimization in such
   // cases.
   if (CSSAnimations::IsAnimatingFontAffectingProperties(element_animations)) {
-    if (base_data->GetBaseComputedStyle()->HasFontRelativeUnits()) {
+    if (base_style->HasFontRelativeUnits()) {
       return false;
     }
   }
@@ -2352,7 +2356,7 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
   // Likewise, When applying an animation or transition for line-height, lh unit
   // lengths in the base style must respond to the animation.
   if (CSSAnimations::IsAnimatingLineHeightProperty(element_animations)) {
-    if (base_data->GetBaseComputedStyle()->HasLineHeightRelativeUnits()) {
+    if (base_style->HasLineHeightRelativeUnits()) {
       return false;
     }
   }
@@ -2369,8 +2373,7 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
     return false;
   }
 
-  if (TextAutosizingMultiplierChanged(state,
-                                      *base_data->GetBaseComputedStyle())) {
+  if (TextAutosizingMultiplierChanged(state, *base_style)) {
     return false;
   }
 
@@ -2378,11 +2381,13 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
   // elements with position-fallback/anchor(), we probably need to disable
   // for descendants of such elements as well.
   if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
-      base_data->GetBaseComputedStyle()->PositionFallback()) {
+      (base_style->PositionFallback() != nullptr ||
+       base_style->GetPositionTryOptions() != nullptr)) {
     return false;
   }
+
   if (RuntimeEnabledFeatures::CSSAnchorPositioningComputeAnchorEnabled() &&
-      base_data->GetBaseComputedStyle()->HasAnchorFunctions()) {
+      base_style->HasAnchorFunctions()) {
     // TODO(crbug.com/41483417): Enable this optimization for styles with
     // anchor queries.
     return false;
@@ -3179,6 +3184,38 @@ StyleRulePositionFallback* StyleResolver::ResolvePositionFallbackRule(
   }
 
   return position_fallback_rule;
+}
+
+StyleRulePositionTry* StyleResolver::ResolvePositionTryRule(
+    const TreeScope* tree_scope,
+    AtomicString position_try_name) {
+  if (!tree_scope) {
+    tree_scope = &GetDocument();
+  }
+
+  StyleRulePositionTry* position_try_rule = nullptr;
+  for (; tree_scope; tree_scope = tree_scope->ParentTreeScope()) {
+    if (ScopedStyleResolver* resolver = tree_scope->GetScopedStyleResolver()) {
+      position_try_rule = resolver->PositionTryForName(position_try_name);
+      if (position_try_rule) {
+        break;
+      }
+    }
+  }
+
+  // Try UA rules if no author rule matches
+  if (!position_try_rule) {
+    for (const auto& rule : CSSDefaultStyleSheets::Instance()
+                                .DefaultHtmlStyle()
+                                ->PositionTryRules()) {
+      if (position_try_name == rule->Name()) {
+        position_try_rule = rule;
+        break;
+      }
+    }
+  }
+
+  return position_try_rule;
 }
 
 const ComputedStyle* StyleResolver::ResolvePositionFallbackStyle(
