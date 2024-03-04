@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">vlinders</translation>
 <translation id="188114911237521550">Donkere modus uitzetten</translation>
+<translation id="188268299367474594">Kiezen uit beschikbare APN's</translation>
 <translation id="1885577615937958993">media vooruitspoelen</translation>
 <translation id="1887850431809612466">Hardwarerevisie</translation>
 <translation id="189221451253258459">neongroen</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">vensters tonen</translation>
 <translation id="2513396635448525189">Inlogafbeelding</translation>
 <translation id="2517472476991765520">Scannen</translation>
+<translation id="2520213071283358374">Deze APN gebruiken</translation>
 <translation id="2521835766824839541">vorig nummer</translation>
 <translation id="2526590354069164005">Bureaublad</translation>
 <translation id="253029298928638905">Opnieuw opstarten…</translation>
@@ -1134,6 +1136,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8075838845814659848">Resterende batterijlading</translation>
 <translation id="8076492880354921740">Tabbladen</translation>
 <translation id="8079860070590459552">bloemenveld</translation>
+<translation id="8081553043098820199">Ongeldige APN's kunnen ertoe leiden dat je mobiele verbinding wordt uitgezet. Stel alleen APN's in die worden geleverd door je mobiele provider of beheerder.</translation>
 <translation id="8082366717211101304">Kan DNS niet omzetten vanuit Android-apps</translation>
 <translation id="8082644724189923105">toetsenbordzone</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>

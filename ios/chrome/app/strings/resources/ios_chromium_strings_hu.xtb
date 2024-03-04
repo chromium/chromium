@@ -80,7 +80,6 @@ Az adatokat a Chromium-élmény javítására használó további beállítások
 <translation id="3219277919172823720">Hangalapú keresés a Chromiumban</translation>
 <translation id="3228349498066165585">A Chromium egyes adatait még nem mentette a rendszer a Google-fiókjába.
         A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
-<translation id="3256316712990552818">A Chromiumra másolva</translation>
 <translation id="328933489847748230">{count,plural, =1{Jelenleg 1 Chromium-ablak látható}other{Jelenleg {count} Chromium-ablak látható}}</translation>
 <translation id="3344973607274501920">A Chromium nem tudta ellenőrizni a jelszavakat. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="3366305173356742781">A fiókjában lévő Chromium-adatok</translation>

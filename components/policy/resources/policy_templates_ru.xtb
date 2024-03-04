@@ -6063,6 +6063,8 @@ URL должен иметь стандартный вид (например, htt
 
 Правило CloudExtensionRequestEnabled действует только в том случае, если компьютер зарегистрирован с помощью правила <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> для <ph name="PRODUCT_NAME" />.
 Для <ph name="PRODUCT_OS_NAME" /> правило CloudExtensionRequestEnabled используется всегда.</translation>
+<translation id="6020795917180493154">Начиная с версии M119, если это правило не настроено или для него указано значение False, технология WebSQL отключена, но ее можно включить с помощью экспериментального параметра Chrome web-sql-access. Если установлено значение True, доступ к WebSQL разрешен.
+Поддержка этого правила прекращена в версии M124.</translation>
 <translation id="6022948604095165524">Действие при запуске</translation>
 <translation id="602318745029752898">Это правило разрешает функции "Озвучивание при нажатии" преобразовывать текст в речь через сервис Enhanced Network</translation>
 <translation id="6026722971789064331">Управлять использованием File System API для записи</translation>

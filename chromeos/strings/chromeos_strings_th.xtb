@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">ผีเสื้อ</translation>
 <translation id="188114911237521550">ปิดโหมดมืด</translation>
+<translation id="188268299367474594">เลือกจาก APN ที่พร้อมใช้งาน</translation>
 <translation id="1885577615937958993">กรอสื่อไปข้างหน้า</translation>
 <translation id="1887850431809612466">การแก้ไขฮาร์ดแวร์</translation>
 <translation id="189221451253258459">เขียวนีออน</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">แสดงหน้าต่าง</translation>
 <translation id="2513396635448525189">รูปภาพการเข้าสู่ระบบ</translation>
 <translation id="2517472476991765520">สแกน</translation>
+<translation id="2520213071283358374">ใช้ APN นี้</translation>
 <translation id="2521835766824839541">แทร็กก่อนหน้า</translation>
 <translation id="2526590354069164005">เดสก์ท็อป</translation>
 <translation id="253029298928638905">กำลังรีสตาร์ท…</translation>
@@ -1134,6 +1136,7 @@
 <translation id="8075838845814659848">การชาร์จที่เหลือ</translation>
 <translation id="8076492880354921740">แท็บ</translation>
 <translation id="8079860070590459552">ทุ่งดอกไม้</translation>
+<translation id="8081553043098820199">APN ที่ไม่ถูกต้องอาจทำให้การเชื่อมต่อมือถือของคุณถูกปิดใช้งาน ตั้งค่า APN ที่มาจากผู้ให้บริการเครือข่ายมือถือหรือผู้ดูแลระบบเท่านั้น</translation>
 <translation id="8082366717211101304">ไม่สามารถแปลง DNS จากแอป Android</translation>
 <translation id="8082644724189923105">โซนแป้นพิมพ์</translation>
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>

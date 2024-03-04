@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">ಚಿಟ್ಟೆಗಳು</translation>
 <translation id="188114911237521550">ಕತ್ತಲೆ ಮೋಡ್ ಆಫ್ ಮಾಡಿ</translation>
+<translation id="188268299367474594">ಲಭ್ಯವಿರುವ APN ಗಳಿಂದ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="1885577615937958993">ಮಾಧ್ಯಮವನ್ನು ಫಾಸ್ಟ್ ಫಾರ್ವರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="1887850431809612466">ಹಾರ್ಡ್‌ವೇರ್ ಪರಿಷ್ಕರಣೆ</translation>
 <translation id="189221451253258459">ನಿಯಾನ್ ಹಸಿರು</translation>
@@ -182,6 +183,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954818433534793392">ಕಟ್ಟಡ</translation>
 <translation id="1962550982027027473">ಡೀಫಾಲ್ಟ್ APN ಅಗತ್ಯವಿದೆ</translation>
+<translation id="1967860190218310525">ಹೊಸ APN ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google ಪ್ರೊಫೈಲ್ ಫೋಟೋ</translation>
 <translation id="1979103255016296513">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾವಣೆ ಮಾಡಲು ತೀರಾ ತಡವಾಗಿದೆ</translation>
@@ -271,6 +273,7 @@
 <translation id="2512979179176933762">ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2513396635448525189">ಲಾಗಿನ್ ಚಿತ್ರ</translation>
 <translation id="2517472476991765520">ಸ್ಕ್ಯಾನ್</translation>
+<translation id="2520213071283358374">ಈ APN ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="2521835766824839541">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="2526590354069164005">ಡೆಸ್ಕ್‌ಟಾಪ್</translation>
 <translation id="253029298928638905">ಮರುಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -980,6 +983,7 @@
 <translation id="7144954474087165241">ಪಗೋಡ</translation>
 <translation id="714876143603641390">LAN ಕನೆಕ್ಟಿವಿಟಿ</translation>
 <translation id="7154020516215182599">ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮ್ಮ ಸಮಸ್ಯೆಯನ್ನು ವಿವರಿಸಿ. ಸಾಧ್ಯವಾದರೆ, ನಿಮ್ಮ ಸಮಸ್ಯೆಯನ್ನು ಮರು ರಚಿಸಲು ಹಂತಗಳನ್ನು ಸೇರಿಸಿ.</translation>
+<translation id="7155037718620478619">ಇನ್ನಷ್ಟು APN ಗಳನ್ನು ಅನ್ವೇಷಿಸಿ</translation>
 <translation id="7155171745945906037">ಕ್ಯಾಮರಾ ಅಥವಾ ಫೈಲ್‌ನಿಂದ ಪ್ರಸ್ತುತ ಫೋಟೋ</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">ಪ್ರೊಫೈಲ್‌ ಚಿತ್ರ</translation>
@@ -1132,6 +1136,7 @@
 <translation id="8075838845814659848">ಉಳಿದಿರುವ ಚಾರ್ಜ್</translation>
 <translation id="8076492880354921740">ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="8079860070590459552">ಹೂದೋಟ</translation>
+<translation id="8081553043098820199">ಅಮಾನ್ಯವಾದ APN ಗಳು ನಿಮ್ಮ ಮೊಬೈಲ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಕಾರಣವಾಗಬಹುದು. ನಿಮ್ಮ ಮೊಬೈಲ್ ಪೂರೈಕೆದಾರರು ಅಥವಾ ನಿರ್ವಾಹಕರು ಒದಗಿಸುವ APN ಗಳನ್ನು ಮಾತ್ರ ಸೆಟ್ ಮಾಡಿ.</translation>
 <translation id="8082366717211101304">Android ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ DNS ಅನ್ನು ಬಗೆಹರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="8082644724189923105">ಕೀಬೋರ್ಡ್ ಝೋನ್</translation>
 <translation id="808894953321890993">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಿಸಿ</translation>

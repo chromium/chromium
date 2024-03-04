@@ -984,6 +984,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1723824996674794290">Nuwe venster</translation>
 <translation id="1724801751621173132">Invoermodus</translation>
 <translation id="1725562816265788801">Oortjierollees</translation>
+<translation id="1725585416709851618">Probeer om Google Drive in Instellings te aktiveer en kies “Probeer weer” of kies ”Maak in basiese redigeerder oop” om beperkte aansig en redigeeropsies te gebruik.</translation>
 <translation id="1726503915437308071">Kursieflettertipe</translation>
 <translation id="1729533290416704613">Dit beheer ook watter bladsy gewys word wanneer jy van die omnikassie af soek.</translation>
 <translation id="1730666151302379551">Het ou wagwoord vergeet</translation>
@@ -1565,7 +1566,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2150139952286079145">Soekbestemmings</translation>
 <translation id="2150661552845026580">Voeg "<ph name="EXTENSION_NAME" />" by?</translation>
 <translation id="2151576029659734873">Ongeldige oortjie-indeks ingevoer.</translation>
-<translation id="2152281589789213846">Voeg drukkers by jou profiel</translation>
 <translation id="2154484045852737596">Wysig kaart</translation>
 <translation id="2155473371917268529">Huidige sigbaarheidinstelling is jou toestelle</translation>
 <translation id="2155772377859296191">Lyk soos <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
@@ -2296,6 +2296,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2701330563083355633">Gedeel vanaf <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Meld aan, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">Netwerk-MAC-adres</translation>
+<translation id="2702720509009999256">Gaan jou internetverbinding na en kies “Probeer weer” of kies “Maak in basiese redigeerder oop” om beperkte aansig en redigeringopsies te gebruik.</translation>
 <translation id="2702801445560668637">Leeslys</translation>
 <translation id="270414148003105978">Mobiele netwerke</translation>
 <translation id="2704184184447774363">Microsoft-dokumentondertekening</translation>
@@ -2623,6 +2624,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2935654492420446828">Voeg later 'n skoolrekening by</translation>
 <translation id="2936851848721175671">Rugsteun en stel terug</translation>
 <translation id="2938981087412273365">Nie toegelaat om hierdie werf te lees en te verander nie</translation>
+<translation id="2939005221756255562">Aktiveer kennisgewings in die Kennisgewingsentrum. Maak <ph name="BEGIN_LINK" />Stelselinstellings<ph name="END_LINK" /> oop.</translation>
 <translation id="2939908794993783865">Bykomende onaktiewe werwe</translation>
 <translation id="2939938020978911855">Wys beskikbare Bluetooth-toestelle</translation>
 <translation id="2941112035454246133">Laag</translation>
@@ -3597,6 +3599,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3719245268140483218">Toestelgeleentheid</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> is ingevul.</translation>
 <translation id="3719826155360621982">Tuisblad</translation>
+<translation id="3720543739123045680">Ander oortjies deel ’n proses met hierdie oortjie, wat kan lei tot ’n onverwagte ervaring met Ontwikkelaarnutsgoed.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Jy en Google</translation>
 <translation id="3722108462506185496">Kon nie die virtuelemasjiendiens begin nie. Probeer asseblief weer.</translation>
@@ -4168,7 +4171,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID-toestel is gekoppel</translation>
 <translation id="4139326893730851150">Fermwareopdaterings</translation>
 <translation id="4142052906269098341">Ontsluit jou <ph name="DEVICE_TYPE" /> met jou foon. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
-<translation id="4142518881503042940">Stoor bespeurde drukkers op jou profiel, of voeg 'n nuwe drukker by. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">Kry video van beter gehalte en bespaar batterylewe. Video sal net op jou Cast-geaktiveerde skerm speel.</translation>
 <translation id="4146026355784316281">Altyd oop met die stelselkyker</translation>
 <translation id="4146785383423576110">Stel terug en maak skoon</translation>
@@ -5049,6 +5051,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="484462545196658690">Outo</translation>
 <translation id="4846628405149428620">Kies waar hierdie werf veranderinge kan stoor</translation>
 <translation id="4846680374085650406">Jy volg tans die administrateur se aanbeveling vir hierdie instelling.</translation>
+<translation id="4847242508757499006">Kies “Probeer weer” of kies “Maak in basiese redigeerder oop” om beperkte aansig en redigeeropsies te gebruik.</translation>
 <translation id="4848191975108266266">Google Assistent "Ok Google"</translation>
 <translation id="4849286518551984791">Gekoördineerde universele tyd (UTC/GMT)</translation>
 <translation id="4849517651082200438">Moenie installeer nie</translation>
@@ -6045,6 +6048,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5636012309446422">Verwyder <ph name="DEVICE" /> van <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Om <ph name="NETWORK_ID" /> te gebruik, moet jy dalk eers <ph name="LINK_START" />die netwerk se aanmeldbladsy besoek <ph name="LINK_END" />, wat binne 'n paar sekondes outomaties sal oopmaak. As dit nie gebeur nie, kan die netwerk nie gebruik word nie.</translation>
 <translation id="5637476008227280525">Aktiveer mobiele data</translation>
+<translation id="5638170200695981015">Kies “Maak in basiese redigeerder oop” om beperkte aansig en redigeeropsies te gebruik.</translation>
 <translation id="563821631542362636">Laat werf toe om data te stoor</translation>
 <translation id="5638309510554459422">Kry uitbreidings en temas in die <ph name="BEGIN_LINK" />Chrome Webwinkel<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Herlaai hierdie bladsy, hou om meer opsies te sien</translation>
@@ -6797,6 +6801,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6235208551686043831">Toestelkamera het aangeskakel. Plaas jou e-SIM se QR-kode voor die kamera.</translation>
 <translation id="6237297174664969437">Jy kan altyd in Chrome-instellings kies watter blaaierdata jy wil sinkroniseer. Jy kan sinkronisering vir webapps wat vanaf Chrome geïnstalleer is in <ph name="LINK_BEGIN" />toestelinstellings<ph name="LINK_END" /> beheer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="6237474966939441970">Stilusaantekeningprogram</translation>
+<translation id="6237481151388361546">Verander jou internetverbinding en kies “Probeer weer” of kies “Maak in basiese redigeerder oop” om beperkte aansig en redigeeropsies te gebruik.</translation>
 <translation id="623755660902014047">Leesmodus</translation>
 <translation id="6238767809035845642">Teks gedeel van ander toestel af</translation>
 <translation id="6238923052227198598">Hou jongste nota op sluitskerm</translation>
@@ -9336,6 +9341,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8200772114523450471">Hervat</translation>
 <translation id="8200789660596905522">Aanvaar die uitsaaiversoek op jou <ph name="DEVICE_NAME" />.</translation>
 <translation id="8202160505685531999">Voer asseblief jou wagwoord weer in om jou <ph name="DEVICE_TYPE" />-profiel op te dateer.</translation>
+<translation id="8202827109322349110">Maak in basiese redigeerder oop</translation>
 <translation id="8203152941016626022">Nabydeling: toestelnaam</translation>
 <translation id="8203732864715032075">Stuur vir jou kennisgewings en stel dit as verstek om hierdie rekenaar vir Boodskappe te onthou. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Regsklik</translation>

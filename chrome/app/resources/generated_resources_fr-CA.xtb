@@ -580,6 +580,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1444628761356461360">Ce paramètre est géré par le propriétaire de l'appareil : <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Impossible de charger « <ph name="IMAGE_PATH" /> » pour le thème.</translation>
 <translation id="1447531650545977377">Activer la &amp;synchronisation…</translation>
+<translation id="1447895950459090752">Fiche informative d'aperçu de l'onglet</translation>
 <translation id="1448264954024227422">Vous pouvez utiliser ce compte avec des applications Android. Si vous souhaitez ajouter un compte pour quelqu'un d'autre, <ph name="LINK_BEGIN" />ajoutez une nouvelle personne<ph name="LINK_END" /> à votre <ph name="DEVICE_TYPE" /> à la place.
 
 Les autorisations que vous avez déjà accordées à des applications peuvent s'appliquer à ce compte. Vous pouvez définir les autorisations pour les applications Android dans les <ph name="APPS_LINK_BEGIN" />Paramètres des applications<ph name="APPS_LINK_END" />.</translation>
@@ -713,7 +714,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1543538514740974167">Arrivez ici plus rapidement</translation>
 <translation id="1544588554445317666">Essayez d'utiliser un nom de fichier plus court ou de l'enregistrer dans un autre dossier</translation>
 <translation id="1545177026077493356">Mode kiosque automatique</translation>
-<translation id="1545749641540134597">Numérisez le code QR</translation>
+<translation id="1545749641540134597">Balayer le code QR</translation>
 <translation id="1545775234664667895">Thème installé : « <ph name="THEME_NAME" /> »</translation>
 <translation id="1546031833947068368">{COUNT,plural, =1{Votre fenêtre de navigation privée ne sera pas rouverte.}one{# fenêtre de navigation privée ne sera pas rouverte.}other{Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="1546280085599573572">Cette extension a modifié la page qui s'affiche lorsque vous cliquez sur le bouton Accueil.</translation>
@@ -974,6 +975,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1723824996674794290">&amp;Nouvelle fenêtre</translation>
 <translation id="1724801751621173132">Mode d'entrée</translation>
 <translation id="1725562816265788801">Défilement des onglets</translation>
+<translation id="1725585416709851618">Essayez d'activer Google Disque dans les paramètres et choisissez « Réessayer » ou « Ouvrir dans l'éditeur de base » pour utiliser les options d'affichage et de modification limitées.</translation>
 <translation id="1726503915437308071">Caractères italiques</translation>
 <translation id="1729533290416704613">Elle définit également quelle page s'affiche lorsque vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="1730666151302379551">Ancien mot de passe oublié</translation>
@@ -1554,7 +1556,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2150139952286079145">Rechercher des destinations</translation>
 <translation id="2150661552845026580">Installer « <ph name="EXTENSION_NAME" /> »?</translation>
 <translation id="2151576029659734873">L'index de l'onglet entré est incorrect.</translation>
-<translation id="2152281589789213846">Ajouter des imprimantes à votre profil</translation>
 <translation id="2154484045852737596">Modifier la carte</translation>
 <translation id="2155473371917268529">Le paramètre de visibilité actuel est réglé à vos appareils</translation>
 <translation id="2155772377859296191">Semblable à <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
@@ -2283,6 +2284,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2701330563083355633">Partagé à partir de l'appareil suivant : <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Connexion : <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">Adresse MAC du réseau</translation>
+<translation id="2702720509009999256">Vérifiez votre connexion Internet et choisissez « Réessayer », ou « Ouvrir dans l'éditeur de base » pour utiliser les options d'affichage et de modification limitées.</translation>
 <translation id="2702801445560668637">Liste de lecture</translation>
 <translation id="270414148003105978">Réseaux cellulaires</translation>
 <translation id="2704184184447774363">Signature de document Microsoft</translation>
@@ -2611,6 +2613,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2935654492420446828">Ajouter un compte scolaire plus tard</translation>
 <translation id="2936851848721175671">Sauvegarde et restauration</translation>
 <translation id="2938981087412273365">Non autorisée à lire ni à modifier ce site</translation>
+<translation id="2939005221756255562">Activez les notifications dans le centre de notification. Ouvrez <ph name="BEGIN_LINK" />Paramètres système<ph name="END_LINK" />.</translation>
 <translation id="2939908794993783865">Sites inactifs supplémentaires</translation>
 <translation id="2939938020978911855">Afficher les appareils Bluetooth disponibles</translation>
 <translation id="2941112035454246133">Faible</translation>
@@ -2816,6 +2819,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3094521107841754472">Le prix est passé de <ph name="PREVIOUS_PRICE" /> à <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Les favoris, les mots de passe et d'autres données de navigation sont synchronisés avec le compte principal.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 extension potentiellement nuisible est désactivée. Vous pouvez également la supprimer.}one{{NUM_EXTENSIONS} extension potentiellement nuisible est désactivée. Vous pouvez également la supprimer.}other{{NUM_EXTENSIONS} extensions potentiellement nuisibles sont désactivées. Vous pouvez également les supprimer.}}</translation>
+<translation id="3101057112460908988">Afficher l'utilisation de la mémoire</translation>
 <translation id="3101126716313987672">Réduire la luminosité</translation>
 <translation id="3101709781009526431">Date et heure</translation>
 <translation id="310297983047869047">Diapositive précédente</translation>
@@ -2893,6 +2897,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3166443275568926403">Performance et état de la pile</translation>
 <translation id="3169930038976362151">Choisissez le thème qui correspond à vos besoins. Pour changer votre thème, votre fond d'écran, votre écran de veille et plus, il suffit de maintenir le doigt sur le bureau.</translation>
 <translation id="3170072451822350649">Vous pouvez également sauter l'étape de connexion et <ph name="LINK_START" />naviguer en tant qu'invité<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Corps</translation>
 <translation id="3177430966804511955">Gérer les applications Web isolées (version bêta)</translation>
 <translation id="31774765611822736">Nouvel onglet à gauche</translation>
 <translation id="3177909033752230686">Langue de la page :</translation>
@@ -3072,6 +3077,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3315158641124845231">Masquer <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Activer le mode Lecture</translation>
 <translation id="3317459757438853210">Recto verso</translation>
+<translation id="3317521105713541270">Créer des groupes</translation>
 <translation id="3317678681329786349">La caméra et le microphone sont bloqués</translation>
 <translation id="3319306431415395200">Traduire le texte de l'image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Impossible de se connecter à OneDrive. Réessayez.</translation>
@@ -3585,6 +3591,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3719245268140483218">Événement de l'appareil</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> a été rempli.</translation>
 <translation id="3719826155360621982">Page d'accueil</translation>
+<translation id="3720543739123045680">D'autres onglets partagent un processus avec cet onglet, ce qui peut entraîner une utilisation inattendue des outils pour les développeurs.</translation>
 <translation id="372062398998492895">Imprimantes CUPS</translation>
 <translation id="3721119614952978349">Vous et Google</translation>
 <translation id="3722108462506185496">Erreur lors du démarrage du service de machine virtuelle. Veuillez réessayer.</translation>
@@ -4156,7 +4163,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - appareil HID connecté</translation>
 <translation id="4139326893730851150">Mises à jour du micrologiciel</translation>
 <translation id="4142052906269098341">Déverrouillez votre <ph name="DEVICE_TYPE" /> avec votre téléphone. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
-<translation id="4142518881503042940">Enregistrez les imprimantes détectées dans votre profil ou ajoutez-en une. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">Obtenez une vidéo de meilleure qualité et économisez l'énergie de la pile. La vidéo sera lue uniquement sur votre écran compatible Google Cast.</translation>
 <translation id="4146026355784316281">Toujours ouvrir avec System Viewer</translation>
 <translation id="4146785383423576110">Réinitialiser et nettoyer</translation>
@@ -4428,6 +4434,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4364830672918311045">Afficher les notifications</translation>
 <translation id="4367513928820380646">Examiner les autorisations retirées</translation>
 <translation id="4367971618859387374">Nom à afficher</translation>
+<translation id="4368960422722232719">Afficher l'utilisation de la mémoire sur la fiche informative d'aperçu de l'onglet</translation>
 <translation id="4369215744064167350">Demande de site Web approuvée</translation>
 <translation id="4369233657762989723">Dictée activée/désactivée</translation>
 <translation id="436926121798828366">Vous pouvez changer cette option en tout temps dans <ph name="SETTINGS_LINK" /></translation>
@@ -5036,6 +5043,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4846628405149428620">Sélectionnez l'emplacement où ce site enregistrera les modifications</translation>
 <translation id="4846680374085650406">Vous suivez la recommandation de l'administrateur pour ce paramètre.</translation>
+<translation id="4847242508757499006">Choisissez « Réessayer », ou « Ouvrir dans l'éditeur de base » pour utiliser les options d'affichage et de modification limitées.</translation>
 <translation id="4848191975108266266">Mot-clé « Ok Google » de l'Assistant Google</translation>
 <translation id="4849286518551984791">Temps universel coordonné (TUC/TMG)</translation>
 <translation id="4849517651082200438">Ne pas installer</translation>
@@ -5346,6 +5354,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5093569275467863761">Sous-cadre de navigation privée de la mise en cache complète bidirectionnelle : <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Vous pouvez ouvrir et modifier les fichiers pris en charge avec cette application à partir de l'application Fichiers ou d'autres applications. Pour contrôler quels fichiers ouvrent cette application par défaut, <ph name="BEGIN_LINK" />découvrez comment définir des applications par défaut sur votre appareil<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Permettre la communication avec les applications natives associées</translation>
+<translation id="5095252080770652994">Progression</translation>
 <translation id="5095507226704905004">Le fichier ne peut pas être copié, car il n'existe plus</translation>
 <translation id="5095848221827496531">Désélectionner</translation>
 <translation id="5097002363526479830">Échec de la connexion au réseau « <ph name="NAME" /> » : <ph name="DETAILS" />.</translation>
@@ -5497,6 +5506,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5213891612754844763">Afficher les paramètres de mandataire</translation>
 <translation id="5214639857958972833">Favori <ph name="BOOKMARK_TITLE" /> créé.</translation>
 <translation id="5215502535566372932">Sélectionnez un pays</translation>
+<translation id="5215665166431745539">Afficher les images</translation>
 <translation id="5220011581825921581">rechercher+flèche vers le haut</translation>
 <translation id="5222403284441421673">Téléchargement non sécurisé bloqué</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
@@ -6031,6 +6041,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5636012309446422">Retirer <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Pour utiliser <ph name="NETWORK_ID" />, vous devez d'abord <ph name="LINK_START" />accéder à la page de connexion du réseau<ph name="LINK_END" />, qui s'ouvrira automatiquement dans quelques secondes. Dans le cas contraire, ce réseau ne pourra pas être utilisé pour la connexion Internet.</translation>
 <translation id="5637476008227280525">Données mobiles activées</translation>
+<translation id="5638170200695981015">Choisissez « Ouvrir dans l'éditeur de base » pour utiliser les options d'affichage et de modification limitées.</translation>
 <translation id="563821631542362636">Autoriser le site à enregistrer des données</translation>
 <translation id="5638309510554459422">Trouvez des extensions et des thèmes dans la boutique en ligne <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Actualiser cette page, maintenir enfoncé pour obtenir davantage d'options</translation>
@@ -6783,6 +6794,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6235208551686043831">L'appareil photo est activé. Veuillez placer le code QR de votre carte eSIM devant l'appareil photo.</translation>
 <translation id="6237297174664969437">Vous pouvez toujours choisir les données du navigateur à synchroniser dans les paramètres de Chrome. Dans les <ph name="LINK_BEGIN" />paramètres de l'appareil<ph name="LINK_END" />, vous pouvez contrôler la synchronisation des applications Web installées à partir du navigateur Chrome. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="6237474966939441970">Application de prise de notes avec stylet</translation>
+<translation id="6237481151388361546">Modifiez votre connexion Internet et choisissez « Réessayer » ou « Ouvrir dans l'éditeur de base » pour utiliser les options d'affichage et de modification limitées.</translation>
 <translation id="623755660902014047">Mode de lecture</translation>
 <translation id="6238767809035845642">Texte partagé à partir d'un autre appareil</translation>
 <translation id="6238923052227198598">Afficher la dernière note sur l'écran de verrouillage</translation>
@@ -9324,6 +9336,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8200789660596905522">Assurez-vous d'accepter la demande de diffusion sur votre <ph name="DEVICE_NAME" />.</translation>
 <translation id="8202160505685531999">Veuillez entrer de nouveau votre mot de passe pour mettre à jour votre profil <ph name="DEVICE_TYPE" />.</translation>
+<translation id="8202827109322349110">Ouvrir dans l'éditeur de base</translation>
 <translation id="8203152941016626022">Nom de l'appareil pour le partage à proximité</translation>
 <translation id="8203732864715032075">Vous envoyer des notifications et mémoriser cet ordinateur par défaut pour les messages. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Clic droit</translation>

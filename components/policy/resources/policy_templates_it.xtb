@@ -1393,7 +1393,7 @@ Il criterio <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separato può essere utiliz
 <translation id="209586405398070749">Canale stabile</translation>
 <translation id="2096932573113293941">Chiedi all'utente l'autorizzazione a eseguire plug-in che la richiedono</translation>
 <translation id="2098658257603918882">Attiva rapporti sull'utilizzo e sui dati relativi agli arresti anomali</translation>
-<translation id="2099380339157427935">Non mostrare il pulsante di uscita nella barra delle applicazioni</translation>
+<translation id="2099380339157427935">Non mostrare il pulsante di disconnessione nella barra delle applicazioni</translation>
 <translation id="2100630160869631650">Aggiunge account Kerberos compilati automaticamente. Se le credenziali di Kerberos corrispondono a quelle di accesso, un account può essere configurato in modo da riutilizzare le credenziali di accesso specificando "<ph name="LOGIN_EMAIL_PLACEHOLDER" />" e "<ph name="PASSWORD_PLACEHOLDER" />" rispettivamente per l'account principale e la password, in modo che il ticket Kerberos possa essere recuperato automaticamente, a meno che non sia configurata l'autenticazione a due fattori. Gli utenti non possono modificare gli account aggiunti tramite questo criterio.
 
           Se questo criterio viene attivato, l'elenco degli account definiti dal criterio viene aggiunto alle impostazioni dell'account Kerberos.
@@ -1805,6 +1805,7 @@ Se questo criterio viene impostato, l'utente non potrà sostituire il valore.
 Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizialmente disattivata, ma potrà essere controllata dall'utente.</translation>
 <translation id="2413899611035194909">Mostra opzioni di accessibilità nel menu della barra delle applicazioni della schermata di accesso</translation>
 <translation id="2415715982424988916">Esplora (supportata dalla versione 91)</translation>
+<translation id="2419114151067000328">La funzionalità delle specifiche del prodotto non sarà disponibile per gli utenti.</translation>
 <translation id="2420958105721932612">Consente di specificare la modalità di installazione di un'app. AVAILABLE: l'app non viene installata automaticamente, ma può essere installata dall'utente. Si tratta del comportamento predefinito se questo criterio non viene specificato. FORCE_INSTALLED: l'app viene installata automaticamente e l'utente non può disinstallarla. BLOCKED: l'app è bloccata e non può essere installata. Se l'app è stata installata in base a un criterio precedente, verrà disinstallata.</translation>
 <translation id="2421400544595297401">Non consentire a utenti non affiliati di utilizzare app per Android</translation>
 <translation id="2421677964966613267">Questo criterio è deprecato in M88 e Flash non è più supportato da Chrome. Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che non possono eseguire il plug-in <ph name="FLASH_PLUGIN_NAME" />.
@@ -3296,6 +3297,7 @@ Ricorda di non tenere questo criterio sempre attivo, soprattutto nelle distribuz
 <translation id="3606571057705314194">Selettore profilo disattivato all'avvio</translation>
 <translation id="3608206578291537084">Abilita la Pipeline di reporting criptato</translation>
 <translation id="3608281460204780443">Visualizza l'icona di Chrome Web Store in Avvio app di <ph name="PRODUCT_OS_NAME" /> e nella pagina Nuova scheda</translation>
+<translation id="361046511337768385">Consenti l'attivazione della funzionalità delle specifiche del prodotto</translation>
 <translation id="3616490235694929053">Questo criterio consente di stabilire se mostrare o meno la schermata di impostazione delle dimensioni di visualizzazione all'utente durante il primo accesso.
       Se viene impostato su false, la schermata di impostazione delle dimensioni di visualizzazione non verrà visualizzata.
       Se il valore è impostato su true, viene visualizzata la schermata di impostazione delle dimensioni del display.</translation>
@@ -4125,7 +4127,7 @@ Se il criterio non viene configurato, si applica il criterio <ph name="ASK_GEOLO
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="4322842393287974810">Consenti all'app kiosk avviata automaticamente senza ritardo di controllare la versione di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4323412353642577604">Attiva l'attestazione da remoto per la protezione dei contenuti</translation>
-<translation id="4325690621216251241">Aggiungi un pulsante di uscita all'area di notifica</translation>
+<translation id="4325690621216251241">Aggiungi un pulsante di disconnessione all'area di notifica</translation>
 <translation id="4326070401554882952">Questo criterio consente di impostare un elenco di URL di accesso aziendale (solo protocolli HTTP e HTTPS). Il servizio di protezione tramite password acquisisce gli hash con salt delle password in questi URL e li utilizza per il rilevamento del riutilizzo delle password. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente gli hash con salt della password, assicurati che le pagine di accesso seguano queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
 
 Se l'impostazione viene disattivata o se non viene configurata, il servizio di protezione tramite password acquisisce solo gli hash con salt della password all'indirizzo https://accounts.google.com.
@@ -5299,6 +5301,7 @@ Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="
 
 A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è supportato anche nella modalità headless.</translation>
 <translation id="5362531528507578966">Consente di sostituire la modalità di stampa predefinita delle immagini di sfondo.</translation>
+<translation id="5363412016871318326">La funzionalità delle specifiche del prodotto sarà disponibile per gli utenti.</translation>
 <translation id="5365476955714838841">Parametri della riga di comando per il browser alternativo.</translation>
 <translation id="5365946944967967336">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>
 <translation id="5366977351895725771">Se questa norma è impostata su false, la creazione di utenti supervisionati da parte di questo utente sarà disabilitata. Gli eventuali utenti supervisionati esistenti saranno comunque disponibili.
@@ -5801,7 +5804,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> viene disattivato.<
 <translation id="5733357908790472408">Utilizza Chrome Root Store.</translation>
 <translation id="5735348887833535655">Consente di stabilire se le VM che utilizzano questa configurazione hanno accesso a un vTPM; il valore predefinito è false.</translation>
 <translation id="5735915264686983150">Nascondi e blocca le funzionalità disattivate</translation>
-<translation id="5736498355107027047">Mostra il pulsante di uscita nella barra delle applicazioni</translation>
+<translation id="5736498355107027047">Mostra il pulsante di disconnessione nella barra delle applicazioni</translation>
 <translation id="5737394734996319911">La funzione di accessibilità <ph name="PRODUCT_NAME" /> consente agli utenti di screen reader con disabilità visiva di recuperare le descrizioni delle immagini senza etichetta sul Web. Gli utenti che decidono di attivarla avranno la possibilità di usare un servizio Google anonimo per avere descrizioni automatiche delle immagini senza etichetta che trovano sul Web.
 
           Se questa funzione viene attivata, i contenuti delle immagini vengono inviati ai server di Google per generare una descrizione. Non vengono inviati cookie o altri dati utente e Google non salva né registra i contenuti delle immagini.
@@ -6123,6 +6126,8 @@ Le richieste di installazione delle estensioni vengono create quando gli utenti 
 
 Questo criterio viene applicato soltanto se la macchina viene registrata con il criterio <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
 Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="6020795917180493154">A partire dalla versione M119, se questo criterio viene impostato su false o se non viene configurato, WebSQL è disattivato, ma può essere attivato tramite il flag di Chrome "web-sql-access". Se il criterio viene impostato su true, l'accesso a WebSQL viene attivato.
+Questo criterio è stato ritirato a partire dalla versione M124.</translation>
 <translation id="6022948604095165524">Azione all'avvio</translation>
 <translation id="602318745029752898">Consenti le voci di sintesi vocale di rete migliorate in di Seleziona per ascoltare</translation>
 <translation id="6026722971789064331">Controlla l'utilizzo dell'API file system per la scrittura</translation>
@@ -7047,6 +7052,10 @@ Se il criterio viene impostato su True o se non viene configurato, gli utenti po
 
 Se il criterio viene impostato su False, il port forwarding nei container Crostini verrà disattivato.</translation>
 <translation id="6677291257287862684">Attiva i tasti permanenti nella schermata di accesso</translation>
+<translation id="668153983584136017">Questo criterio è deprecato perché l'algoritmo GREASE aggiornato è attivo per impostazione predefinita a partire dalla versione M103.
+Se il criterio viene attivato, la funzionalità di aggiornamento del client hint dello user agent GREASE allinea l'algoritmo User-Agent GREASE alla specifica più recente.
+      La specifica aggiornata potrebbe interrompere il funzionamento di alcuni siti web che limitano i caratteri consentiti per le richieste. Per ulteriori informazioni, consulta le specifiche: https://wicg.github.io/ua-client-hints/#grease
+     Questo criterio verrà rimosso in una release futura.</translation>
 <translation id="6682305153467826752">Attiva la generazione di report sulle informazioni di identificazione delle macchine</translation>
 <translation id="6685903773201985073">Attiva l'autenticazione ambientale nelle sessioni standard e Ospite.</translation>
 <translation id="6687291630099400188">Non visualizzare le informazioni di sistema nella schermata di accesso</translation>
@@ -8746,6 +8755,9 @@ Avviso: è consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="8102854005031553638">Il visualizzatore PDF utilizza il renderer AGG.</translation>
 <translation id="8102913158860568230">Impostazione stream multimediale predefinito</translation>
 <translation id="8104962233214241919">Seleziona automaticamente i certificati client per questi siti</translation>
+<translation id="810509972572344398">Se questo criterio viene attivato o se non viene configurato, le specifiche di prodotto saranno disponibili per gli utenti.
+
+Se questo criterio viene disattivato, le specifiche del prodotto non saranno disponibili.</translation>
 <translation id="8109762054721090517">Modello per l'<ph name="IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Consente di configurare il tempo di inattività del dispositivo in secondi che deve trascorrere prima di mostrare il salvaschermo per la schermata di blocco.
 

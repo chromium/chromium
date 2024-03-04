@@ -581,6 +581,7 @@
 <translation id="1444628761356461360">Այս կարգավորումը կառավարվում է սարքի սեփականատիրոջ կողմից՝ <ph name="OWNER_EMAIL" />:</translation>
 <translation id="144518587530125858">Չհաջողվեց բեռնել «<ph name="IMAGE_PATH" />»-ը թեմայի համար:</translation>
 <translation id="1447531650545977377">Միացրեք &amp;համաժամացումը...</translation>
+<translation id="1447895950459090752">Ներդիրի վրա պահման ժամանակ նախադիտման քարտ</translation>
 <translation id="1448264954024227422">Դուք կարող եք օգտագործել այս հաշիվը Android-ի համար նախատեսված հավելվածների հետ։ Եթե ուզում եք հաշիվ ավելացնել մեկ ուրիշի համար, <ph name="LINK_BEGIN" />ավելացրեք նոր օգտատեր<ph name="LINK_END" /> ձեր <ph name="DEVICE_TYPE" /> սարքում։
 
 Թույլտվությունները, որոնք տրամադրել եք հավելվածներին, կարող են կիրառվել այս հաշվի նկատմամբ։ Դուք կարող եք վերահսկել Android-ի համար նախատեսված հավելվածների թույլտվությունները <ph name="APPS_LINK_BEGIN" />Հավելվածների կարգավորումներում<ph name="APPS_LINK_END" />։</translation>
@@ -975,6 +976,7 @@
 <translation id="1723824996674794290">&amp;Նոր պատուհան</translation>
 <translation id="1724801751621173132">Ներածման ռեժիմ</translation>
 <translation id="1725562816265788801">Ներդիրների ոլորում</translation>
+<translation id="1725585416709851618">Միացրեք Google Drive-ը Կարգավորումներում և սեղմեք «Նորից փորձել» կամ ընտրեք «Բացել հիմնական խմբագրիչում»՝ դիտման և խմբագրման սահմանափակ ընտրանքներից օգտվելու համար։</translation>
 <translation id="1726503915437308071">Շեղ տառատեսակ</translation>
 <translation id="1729533290416704613">Այն նաև վերահսկում է ցուցադրվող էջերը, երբ դուք որոնում եք կատարում Omnibox-ից:</translation>
 <translation id="1730666151302379551">Մոռացել եմ հին գաղտնաբառը</translation>
@@ -1555,7 +1557,6 @@
 <translation id="2150139952286079145">Նպատակակետերի որոնում</translation>
 <translation id="2150661552845026580">Ավելացնե՞լ «<ph name="EXTENSION_NAME" />»-ը:</translation>
 <translation id="2151576029659734873">Ներդիրի սխալ ցուցիչ եք մուտքագրել:</translation>
-<translation id="2152281589789213846">Ավելացնել տպիչներ պրոֆիլում</translation>
 <translation id="2154484045852737596">Քարտի փոփոխություն</translation>
 <translation id="2155473371917268529">Ձեր սարքը տեսանելի է միայն ձեր մյուս սարքերին</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
@@ -2281,6 +2282,7 @@
 <translation id="2701330563083355633">Ուղարկվել է <ph name="DEVICE_NAME" />-ի միջոցով</translation>
 <translation id="2701737434167469065">Մուտք գործել, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">Ցանցի MAC հասցե</translation>
+<translation id="2702720509009999256">Ստուգեք ձեր ինտերնետ կապը և սեղմեք «Նորից փորձել» կամ ընտրեք «Բացել հիմնական խմբագրիչում»՝ դիտման և խմբագրման սահմանափակ ընտրանքներից օգտվելու համար։</translation>
 <translation id="2702801445560668637">Ընթերցանության ցանկ</translation>
 <translation id="270414148003105978">Բջջային ցանցեր</translation>
 <translation id="2704184184447774363">Microsoft փաստաթղթերի ստորագրում</translation>
@@ -2608,6 +2610,7 @@
 <translation id="2935654492420446828">Ավելացնել դպրոցական հաշիվ ավելի ուշ</translation>
 <translation id="2936851848721175671">Պահուստավորում և վերականգնում</translation>
 <translation id="2938981087412273365">Թույլատրված չէ դիտել և փոփոխել այս կայքը</translation>
+<translation id="2939005221756255562">Միացնել ծանուցումները Ծանուցումների կենտրոնում։ Բացել <ph name="BEGIN_LINK" />Համակարգի կարգավորումները<ph name="END_LINK" />։</translation>
 <translation id="2939908794993783865">Լրացուցիչ ոչ ակտիվ կայքեր</translation>
 <translation id="2939938020978911855">Ցուցադրել հասանելի Bluetooth սարքերը</translation>
 <translation id="2941112035454246133">Ցածր</translation>
@@ -2813,6 +2816,7 @@
 <translation id="3094521107841754472">Գինը <ph name="PREVIOUS_PRICE" />-ից դարձել է <ph name="CURRENT_PRICE" />։</translation>
 <translation id="3095871294753148861">Էջանիշները, գաղտնաբառերն ու դիտարկիչի մյուս տվյալները համաժամացված են հիմնական հաշվի հետ։</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Անջատվել է 1 վտանգավոր ընդլայնում։ Դուք կարող եք նաև հեռացնել այն։}one{Անջատվել է {NUM_EXTENSIONS} վտանգավոր ընդլայնում։ Դուք կարող եք նաև հեռացնել դրանք։}other{Անջատվել է {NUM_EXTENSIONS} վտանգավոր ընդլայնում։ Դուք կարող եք նաև հեռացնել դրանք։}}</translation>
+<translation id="3101057112460908988">Ցույց տալ օգտագործված հիշողությունը</translation>
 <translation id="3101126716313987672">Թույլ լուսավորություն</translation>
 <translation id="3101709781009526431">Ամսաթիվ և ժամ</translation>
 <translation id="310297983047869047">Նախորդ սլայդը</translation>
@@ -2890,6 +2894,7 @@
 <translation id="3166443275568926403">Արտադրողականությունը և մարտկոցի վիճակը</translation>
 <translation id="3169930038976362151">Ընտրեք ձեզ հարմար թեմա։ Թեման, պաստառը, էկրանապահը և այլ տարրեր փոխելու համար պարզապես հպեք աշխատասեղանին և պահեք։</translation>
 <translation id="3170072451822350649">Դուք կարող եք նաև մուտք չգործել և <ph name="LINK_START" />սկսել հյուրի աշխատաշրջան<ph name="LINK_END" />:</translation>
+<translation id="3175067642577044620">Հիմնական տեքստ</translation>
 <translation id="3177430966804511955">Կառավարել մեկուսացված վեբ հավելվածները (բետա)</translation>
 <translation id="31774765611822736">Նոր ներդիր ձախ կողմում</translation>
 <translation id="3177909033752230686">Էջի լեզուն՝</translation>
@@ -2901,6 +2906,7 @@
 <translation id="3183139917765991655">Պրոֆիլի ներմուծիչ</translation>
 <translation id="3183143381919926261">Տվյալների փոխանցման ցանցեր</translation>
 <translation id="3183613134231754987">Այս անցաբառը կպահվի միայն Windows Hello-ում։ Երբ փակեք բոլոր ինկոգնիտո պատուհանները, այն կպահպանվի այս սարքում։</translation>
+<translation id="3183700187146209259">Չհաջողվել տեղադրել սկաների ծրագիրը</translation>
 <translation id="3183944777708523606">Փոխել դիրքը</translation>
 <translation id="3184536091884214176">CUPS տպիչների կարգավորում և կառավարում <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Այս հավելվածն արգելափակված է}one{Այս հավելվածն արգելափակված է}other{Որոշ հավելվածներ արգելափակված են}}</translation>
@@ -3067,6 +3073,7 @@
 <translation id="3315158641124845231">Hide <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Անցնել ընթերցման ռեժիմի</translation>
 <translation id="3317459757438853210">Երկկողմանի</translation>
+<translation id="3317521105713541270">Ստեղծել խմբեր</translation>
 <translation id="3317678681329786349">Տեսախցիկի ու խոսափողի օգտագործումն արգելված է</translation>
 <translation id="3319306431415395200">Թարգմանել պատկերում առկա տեքստը <ph name="VISUAL_SEARCH_PROVIDER" />-ի միջոցով</translation>
 <translation id="3320271870899888245">Չհաջողվեց միանալ OneDrive-ին։ Նորից փորձեք։</translation>
@@ -3580,6 +3587,7 @@
 <translation id="3719245268140483218">Սարքի իրադարձություն</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> քարտի ձևը լրացված է։</translation>
 <translation id="3719826155360621982">Գլխավոր էջ</translation>
+<translation id="3720543739123045680">Այս ներդիրը մյուս ներդիրների հետ միասին նույն գործընթացի մասն է կազմում։ Այդ պատճառով ծրագրավորողի գործիքները կարող են չաշխատել այնպես, ինչպես ակնկալվում է։</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Դուք և Google-ը</translation>
 <translation id="3722108462506185496">Չհաջողվեց մեկնարկել վիրտուալ մեքենայի ծառայությունը: Նորից փորձեք:</translation>
@@ -4151,7 +4159,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – միացված է HID սարք</translation>
 <translation id="4139326893730851150">Ներկառուցված ծրագրի թարմացումներ</translation>
 <translation id="4142052906269098341">Ապակողպեք <ph name="DEVICE_TYPE" /> սարքը ձեր հեռախոսով։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
-<translation id="4142518881503042940">Պահեք հայտնաբերված տպիչները ձեր պրոֆիլում կամ ավելացրեք նորերը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">Այս գործառույթը կօգնի բարելավել տեսանյութի որակը և երկարացնել մարտկոցի կյանքը: Տեսանյութը կնվագարկվի միայն Cast աջակցող էկրաններին:</translation>
 <translation id="4146026355784316281">Միշտ բացել համակարգի դիտման ծրագրի միջոցով</translation>
 <translation id="4146785383423576110">Վերակայել և մաքրել</translation>
@@ -4423,6 +4430,7 @@
 <translation id="4364830672918311045">Ցույց տալ ծանուցումները</translation>
 <translation id="4367513928820380646">Ստուգել հեռացված թույլտվությունները</translation>
 <translation id="4367971618859387374">Ցուցադրվող անունը</translation>
+<translation id="4368960422722232719">Ներդիրի վրա պահելուց ցույց տալ օգտագործված հիշողության նախադիտման քարտը</translation>
 <translation id="4369215744064167350">Կայքի հարցումը հաստատվել է</translation>
 <translation id="4369233657762989723">Թելադրումը միացված է/անջատված է</translation>
 <translation id="436926121798828366">Այս պարամետրը կարող եք ցանկացած ժամանակ փոխել՝ անցնելով <ph name="SETTINGS_LINK" /></translation>
@@ -4899,6 +4907,7 @@
 <translation id="473775607612524610">Թարմացնել</translation>
 <translation id="473936925429402449">Ընտրված է լրացուցիչ բովանդակություն <ph name="CURRENT_ELEMENT" />-ը՝ <ph name="TOTAL_ELEMENTS" />-ից</translation>
 <translation id="4739639199548674512">Տոմսեր</translation>
+<translation id="4740546261986864539">Վերջերս բացված</translation>
 <translation id="4742334355511750246">Չի թույլատրվում ցուցադրել պատկերներ</translation>
 <translation id="4742970037960872810">Հեռացնել ընդգծումը</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Ինչպես թարմացնել հավելվածները<ph name="END_LINK" /></translation>
@@ -5031,6 +5040,7 @@
 <translation id="484462545196658690">Ավտոմատ</translation>
 <translation id="4846628405149428620">Ընտրեք, թե որտեղ կարող է այս կայքը պահել փոփոխությունները</translation>
 <translation id="4846680374085650406">Այս կարգավորումն ընտրված է ադմինիստրատորի առաջարկին համապատասխան:</translation>
+<translation id="4847242508757499006">Սեղմեք «Նորից փորձել» կամ ընտրեք «Բացել հիմնական խմբագրիչում»՝ դիտման և խմբագրման սահմանափակ ընտրանքներից օգտվելու համար։</translation>
 <translation id="4848191975108266266">Google Օգնականի «Ok Google» գործառույթ</translation>
 <translation id="4849286518551984791">Համընդհանուր կոորդինացված ժամանակ (UTC/GMT)</translation>
 <translation id="4849517651082200438">Չտեղադրել</translation>
@@ -5096,6 +5106,7 @@
 <translation id="488785315393301722">Ցույց տալ մանրամասները</translation>
 <translation id="488862352499217187">Ստեղծել նոր պանակ</translation>
 <translation id="4890292359366636311">Թույլատրեք կայքերին ավտոմատ բացել «Նկար նկարի մեջ» պատուհաններ այլ ներդիրների և պատուհանների վրա։</translation>
+<translation id="4890399733764921729">Չհաջողվեց միանալ։ Կողպվել է մեկ այլ բջջային օպերատորի կողմից։</translation>
 <translation id="4890773143211625964">Ցուցադրել տպիչի լրացուցիչ ընտրանքները</translation>
 <translation id="4891089016822695758">Բետա ֆորում</translation>
 <translation id="4892229439761351791">Կայքը կարող է օգտագործել Bluetooth-ը</translation>
@@ -5342,6 +5353,7 @@
 <translation id="5093569275467863761">Հետադարձ քեշի ենթաշրջանակ ինկոգնիտո ռեժիմում՝ <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Դուք կարող եք բացել և փոփոխել աջակցվող ֆայլերն այս հավելվածի միջոցով Ֆայլեր հավելվածից կամ այլ հավելվածներից։ <ph name="BEGIN_LINK" />Այս էջում<ph name="END_LINK" /> կարող եք իմանալ, թե ինչպես ձեր սարքում կանխադրված հավելվածներ սահմանել և նշել, թե որ ֆայլերը պետք է ըստ կանխադրման բացվեն տվյալ հավելվածով։</translation>
 <translation id="5094721898978802975">Կապվել հարակից native հավելվածների հետ</translation>
+<translation id="5095252080770652994">Ընթացագոտի</translation>
 <translation id="5095507226704905004">Ֆայլը չի կարող պատճենվել, քանի որ այն այլևս գոյություն չունի</translation>
 <translation id="5095848221827496531">Չեղարկել ընտրությունը</translation>
 <translation id="5097002363526479830">Չհաջողվեց կապակցվել «<ph name="NAME" />» ցանցին: <ph name="DETAILS" /></translation>
@@ -5493,6 +5505,7 @@
 <translation id="5213891612754844763">Ցուցադրել պրոքսի սերվերի կարգավորումները</translation>
 <translation id="5214639857958972833">«<ph name="BOOKMARK_TITLE" />» էջանիշը ստեղծված է։</translation>
 <translation id="5215502535566372932">Ընտրեք երկիրը</translation>
+<translation id="5215665166431745539">Ցույց տալ պատկերները</translation>
 <translation id="5220011581825921581">որոնում + վերև սլաք</translation>
 <translation id="5222403284441421673">Վտանգավոր ներբեռնումն արգելափակված է</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
@@ -6025,6 +6038,7 @@
 <translation id="5636012309446422">Հեռացնե՞լ <ph name="DEVICE" /> սարքը <ph name="PRIMARY_EMAIL" /> հաշվից</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" />-ն օգտագործելու համար դուք նախ պետք է <ph name="LINK_START" />այցելեք ցանցի մուտքի էջ<ph name="LINK_END" />, որը կբացվի ավտոմատ մի քանի վայրկյանից: Եթե դա տեղի չունենա, ապա ցանցի օգտագործումն անհնար է:</translation>
 <translation id="5637476008227280525">Միացնել/անջատել բջջային ինտերնետը</translation>
+<translation id="5638170200695981015">Ընտրեք «Բացել հիմնական խմբագրիչում»՝ դիտման և խմբագրման սահմանափակ ընտրանքներից օգտվելու համար։</translation>
 <translation id="563821631542362636">Թույլատրել կայքին տվյալներ պահել</translation>
 <translation id="5638309510554459422">Գտեք ընդլայնումներ և թեմաներ <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />-ում</translation>
 <translation id="5639549361331209298">Վերաբեռնել էջը (սեղմած պահեք՝ լրացուցիչ ընտրանքները տեսնելու համար)</translation>
@@ -6776,6 +6790,7 @@
 <translation id="6235208551686043831">Սարքի տեսախցիկն անջատված է։ Պահեք ձեր eSIM-ի QR կոդը տեսախցիկի առջև։</translation>
 <translation id="6237297174664969437">Դուք միշտ կարող եք ընտրել, թե դիտարկիչի ինչ տվյալներ համաժամացվեն Chrome-ի կարգավորումներում։ <ph name="LINK_BEGIN" />Սարքի կարգավորումներում<ph name="LINK_END" /> կարելի է կառավարել համաժամացումը Chrome դիտարկիչից տեղադրված վեբ հավելվածների համար։ Google-ը կարող է ձեր պատմության հիման վրա անհատականացնել Որոնումը և այլ ծառայություններ։</translation>
 <translation id="6237474966939441970">Ստիլուսի միջոցով նշումներ կատարելու հավելվածներ</translation>
+<translation id="6237481151388361546">Փոխեք ձեր ինտերնետ կապը և սեղմեք «Նորից փորձել» կամ ընտրեք «Բացել հիմնական խմբագրիչում»՝ դիտման և խմբագրման սահմանափակ ընտրանքներից օգտվելու համար։</translation>
 <translation id="623755660902014047">Ընթերցման ռեժիմ</translation>
 <translation id="6238767809035845642">Այլ սարքից ուղարկված տեքստ</translation>
 <translation id="6238923052227198598">Ցուցադրել վերջին նշումը կողպէկրանին</translation>
@@ -8329,6 +8344,7 @@
 <translation id="7465778193084373987">Netscape-ի վկայագրի ետկանչման URL</translation>
 <translation id="7466431077154602932">Սեղմ տեսք</translation>
 <translation id="746861123368584540">Ընդլայնումը բեռնվեց</translation>
+<translation id="7470131554696493512">Thunderbolt կամ USB4 լրասարքերին հասանելի չդարձնել հիշողությունը (RAM) և արգելել դրա համատեղ օգտագործումը</translation>
 <translation id="7470424110735398630">Թույլատրվում է ցուցադրել ձեր սեղմատախտակի բովանդակությունը</translation>
 <translation id="747114903913869239">Սխալ՝ չհաջողվեց ապակոդավորել ընդլայնումը</translation>
 <translation id="7471520329163184433">Ավելի դանդաղ</translation>
@@ -8981,6 +8997,7 @@
 <translation id="7943837619101191061">Ավելացնել տեղադրություն…</translation>
 <translation id="79446453817422139">Այս ֆայլը կարող է վտանգավոր լինել</translation>
 <translation id="7944772052836377867">Համաժամացման համար անհրաժեշտ է հաստատել ձեր ինքնությունը</translation>
+<translation id="7944847494038629732">Անջատեք սկաների USB մալուխը և նորից միացրեք՝ կրկին փորձելու համար</translation>
 <translation id="7945703887991230167">Նախընտրած ձայնը</translation>
 <translation id="7946586320617670168">Սկզբնաղբյուրը պետք է անվտանգ լինի</translation>
 <translation id="794676567536738329">Թույլտվությունների հաստատում</translation>
@@ -9316,6 +9333,7 @@
 <translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8200789660596905522">Համոզվեք, որ ընդունել եք ձեր <ph name="DEVICE_NAME" /> սարքում հեռարձակման հարցումը։</translation>
 <translation id="8202160505685531999">Նորից մուտքագրեք գաղտնաբառը՝ ձեր <ph name="DEVICE_TYPE" /> սարքի պրոֆիլը թարմացնելու համար:</translation>
+<translation id="8202827109322349110">Բացել հիմնական խմբագրիչում</translation>
 <translation id="8203152941016626022">«Փոխանակում մոտակա սարքերի հետ» գործառույթով սարքի անվանումը</translation>
 <translation id="8203732864715032075">Ցուցադրել ծանուցումներ՝ հեռախոսում ստացած հաղորդագրությունների մասին։ <ph name="LINK_BEGIN" />Մանրամասն<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Աջ սեղմում</translation>
@@ -9391,6 +9409,7 @@
 <translation id="8260864402787962391">Մկնիկ</translation>
 <translation id="8261378640211443080">Այս ընդլայնումը նշված չէ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ում և կարող է ավելացվել առանց ձեր իմացության:</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
+<translation id="8261625296061301062">Սկաների ծրագիրը տեղադրված է</translation>
 <translation id="8262971894813353037">Միացնում է աշխատասեղանի նոր դիզայն վեբ միջերեսի համար։ Հարկավոր է նաև միացնել Chrome Refresh 2023-ը։</translation>
 <translation id="8263336784344783289">Անվանեք այս խումբը</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />-ն անջատել է մկնիկի նշորդը:</translation>
@@ -9574,6 +9593,7 @@
 <translation id="8387361103813440603">Չի թույլատրվում տեսնել ձեր տեղադրությունը</translation>
 <translation id="8388770971141403598">Լրացուցիչ պրոֆիլները չեն աջակցվում</translation>
 <translation id="8389492867173948260">Թույլատրեք այս ընդլայնմանը կարդալ և փոխել ձեր այցելած կայքերի բոլոր տվյալները՝</translation>
+<translation id="8390392581097975659">Սկաների ծրագիրը տեղադրվում է</translation>
 <translation id="8390449457866780408">Սերվերը մատչելի չէ:</translation>
 <translation id="8391218455464584335">Վինիլային ձայնապնակ</translation>
 <translation id="8392726714909453725">«Ընտրեք և լսեք» գործառույթի կարգավորումներ</translation>

@@ -983,6 +983,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1723824996674794290">&amp;Nyt vindue</translation>
 <translation id="1724801751621173132">Input-tilstand</translation>
 <translation id="1725562816265788801">Fanerulning</translation>
+<translation id="1725585416709851618">Prøv at aktivere Google Drev i Indstillinger, og vælg "Prøv igen", eller vælg "Åbn i det grundlæggende redigeringsværktøj" for at benytte valgmuligheder for begrænset visning og redigering.</translation>
 <translation id="1726503915437308071">Skrifttype med kursiv</translation>
 <translation id="1729533290416704613">Den styrer også, hvilken side der vises, når du søger via omnifeltet.</translation>
 <translation id="1730666151302379551">Jeg har glemt min gamle adgangskode</translation>
@@ -1564,7 +1565,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2150139952286079145">Søg efter destinationer</translation>
 <translation id="2150661552845026580">Vil du tilføje "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Det angivne faneindeks er ugyldigt.</translation>
-<translation id="2152281589789213846">Føj printere til din profil</translation>
 <translation id="2154484045852737596">Rediger kort</translation>
 <translation id="2155473371917268529">Den aktuelle indstilling for synlighed er Dine enheder</translation>
 <translation id="2155772377859296191">Ligner <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
@@ -2295,6 +2295,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Log ind, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">Netværkets MAC-adresse</translation>
+<translation id="2702720509009999256">Tjek din internetforbindelse, og vælg "Prøv igen", eller vælg "Åbn i det grundlæggende redigeringsværktøj" for at benytte valgmuligheder for begrænset visning og redigering.</translation>
 <translation id="2702801445560668637">Læseliste</translation>
 <translation id="270414148003105978">Mobilnetværk</translation>
 <translation id="2704184184447774363">Microsoft-signering af dokument</translation>
@@ -2622,6 +2623,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2935654492420446828">Tilføj en skolekonto senere</translation>
 <translation id="2936851848721175671">Sikkerhedskopiering og gendannelse</translation>
 <translation id="2938981087412273365">Har ikke tilladelse til at læse og ændre dette website</translation>
+<translation id="2939005221756255562">Aktivér notifikationer i notifikationscenteret. Åbn <ph name="BEGIN_LINK" />System Settings [Systemindstillinger]<ph name="END_LINK" />.</translation>
 <translation id="2939908794993783865">Yderligere inaktive websites</translation>
 <translation id="2939938020978911855">Vis tilgængelige Bluetooth-enheder</translation>
 <translation id="2941112035454246133">Lav</translation>
@@ -3593,6 +3595,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3719245268140483218">Enhedshændelse</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> er udfyldt.</translation>
 <translation id="3719826155360621982">Startside</translation>
+<translation id="3720543739123045680">Andre faner deler en proces med denne fane, hvilket kan medføre en uventet brugeroplevelse i Udviklerværktøjer.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Dig og Google</translation>
 <translation id="3722108462506185496">Der opstod en fejl under opstarten af tjenesten på den virtuelle maskine. Prøv igen.</translation>
@@ -4164,7 +4167,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID-enhed er tilsluttet</translation>
 <translation id="4139326893730851150">Firmwareopdateringer</translation>
 <translation id="4142052906269098341">Lås din <ph name="DEVICE_TYPE" /> op med din telefon. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
-<translation id="4142518881503042940">Gem registrerede printere på din profil, eller tilføj en ny printer. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">Se video i bedre kvalitet, og forlæng batteritiden. Der afspilles kun video på din Cast-kompatible skærm.</translation>
 <translation id="4146026355784316281">Åbn altid med systemets visningsprogram</translation>
 <translation id="4146785383423576110">Nulstil og ryd op</translation>
@@ -5044,6 +5046,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="484462545196658690">Automatisk</translation>
 <translation id="4846628405149428620">Vælg, hvor dette website kan gemme ændringer</translation>
 <translation id="4846680374085650406">Du følger administratorens anbefaling for denne indstilling.</translation>
+<translation id="4847242508757499006">Vælg "Prøv igen", eller vælg "Åbn i det grundlæggende redigeringsværktøj" for at benytte valgmuligheder for begrænset visning og redigering.</translation>
 <translation id="4848191975108266266">Google Assistent-funktionen "Hey Google"</translation>
 <translation id="4849286518551984791">UTC/GMT (Coordinated Universal Time)</translation>
 <translation id="4849517651082200438">Installer ikke</translation>
@@ -6038,6 +6041,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5636012309446422">Vil du fjerne <ph name="DEVICE" /> fra <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Hvis du vil bruge <ph name="NETWORK_ID" />, skal du først <ph name="LINK_START" />gå til netværkets loginside<ph name="LINK_END" />, som åbner automatisk om et par sekunder. Hvis ikke, kan netværket ikke bruges.</translation>
 <translation id="5637476008227280525">Aktivér mobildata</translation>
+<translation id="5638170200695981015">Vælg "Åbn i det grundlæggende redigeringsværktøj" for at benytte valgmuligheder for begrænset visning og redigering.</translation>
 <translation id="563821631542362636">Tillad, at websitet gemmer data</translation>
 <translation id="5638309510554459422">Find udvidelser og temaer i <ph name="BEGIN_LINK" />Chrome Webshop<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Opdater denne side, og hold markøren for at se flere valgmuligheder</translation>
@@ -6790,6 +6794,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6235208551686043831">Enhedens kamera er aktiveret. Placer QR-koden for dit eSIM foran kameraet.</translation>
 <translation id="6237297174664969437">Du kan til enhver tid vælge, hvilke browserdata du vil synkronisere, i Chrome-indstillingerne. I <ph name="LINK_BEGIN" />enhedsindstillingerne<ph name="LINK_END" /> kan du styre synkronisering for webapps, der er installeret via Chrome-browseren. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="6237474966939441970">App til notatskrivning med styluspen</translation>
+<translation id="6237481151388361546">Skift internetforbindelse, og vælg "Prøv igen", eller vælg "Åbn i det grundlæggende redigeringsværktøj" for at benytte valgmuligheder for begrænset visning og redigering</translation>
 <translation id="623755660902014047">Læsetilstand</translation>
 <translation id="6238767809035845642">Tekst, der er delt fra en anden enhed</translation>
 <translation id="6238923052227198598">Behold den nyeste note på låseskærmen</translation>
@@ -9331,6 +9336,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8200772114523450471">Genoptag</translation>
 <translation id="8200789660596905522">Sørg for at acceptere Cast-anmodningen på din <ph name="DEVICE_NAME" /></translation>
 <translation id="8202160505685531999">Angiv adgangskoden igen for at opdatere din <ph name="DEVICE_TYPE" />-profil.</translation>
+<translation id="8202827109322349110">Åbn i det grundlæggende redigeringsværktøj</translation>
 <translation id="8203152941016626022">Enhedsnavn til Deling tæt på</translation>
 <translation id="8203732864715032075">Sende dig notifikationer og huske denne computer som standard til Beskeder. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Højreklik</translation>

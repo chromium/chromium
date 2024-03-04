@@ -80,7 +80,6 @@
 <translation id="3219277919172823720">Шукати за допомогою голосу в Chromium</translation>
 <translation id="3228349498066165585">Деякі дані Chromium іще не збережено у вашому обліковому записі Google.
         Зачекайте кілька хвилин, перш ніж виходити з облікового запису. Якщо вийти зараз, ці дані буде видалено.</translation>
-<translation id="3256316712990552818">Скопійовано в Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Показано 1 вікно Chromium}one{Показано {count} вікно Chromium}few{Показано {count} вікна Chromium}many{Показано {count} вікон Chromium}other{Показано {count} вікна Chromium}}</translation>
 <translation id="3344973607274501920">Chromium не вдалося перевірити паролі. Переконайтеся, що є інтернет-з'єднання.</translation>
 <translation id="3366305173356742781">Дані Chromium у вашому обліковому записі</translation>

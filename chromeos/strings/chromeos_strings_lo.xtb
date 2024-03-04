@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">ແມງກະເບື້ອ</translation>
 <translation id="188114911237521550">ປິດໂໝດມືດ</translation>
+<translation id="188268299367474594">ເລືອກຈາກ APN ທີ່ພ້ອມນຳໃຊ້</translation>
 <translation id="1885577615937958993">ເລື່ອນມີເດຍໄປໜ້າ</translation>
 <translation id="1887850431809612466">ການປັບປຸງແກ້ໄຂຮາດແວ</translation>
 <translation id="189221451253258459">ຂຽວນີອອນ</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">ສະແດງໜ້າຈໍ</translation>
 <translation id="2513396635448525189">ຮູບການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="2517472476991765520">ສະແກນ</translation>
+<translation id="2520213071283358374">ໃຊ້ APN ນີ້</translation>
 <translation id="2521835766824839541">ເພງກ່ອນໜ້າ</translation>
 <translation id="2526590354069164005">ເດັສທັອບ</translation>
 <translation id="253029298928638905">ກຳ​ລັງ​ຣີ​ສະ​ຕາດ...</translation>
@@ -1135,6 +1137,7 @@
 <translation id="8075838845814659848">ການສາກທີ່ເຫຼືອ</translation>
 <translation id="8076492880354921740">ແຖບ</translation>
 <translation id="8079860070590459552">ທົ່ງດອກໄມ້</translation>
+<translation id="8081553043098820199">APN ທີ່ບໍ່ຖືກຕ້ອງອາດເຮັດໃຫ້ການເຊື່ອມຕໍ່ມືຖືຂອງທ່ານຖືກປິດການນຳໃຊ້. ຕັ້ງຄ່າ APN ທີ່ມາຈາກຜູ້ໃຫ້ບໍລິການມືຖື ຫຼື ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເທົ່ານັ້ນ.</translation>
 <translation id="8082366717211101304">ບໍ່ສາມາດລະບຸ DNS ຈາກແອັບ Android ໄດ້</translation>
 <translation id="8082644724189923105">ໂຊນແປ້ນພິມ</translation>
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>

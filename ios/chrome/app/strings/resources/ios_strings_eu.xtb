@@ -158,7 +158,7 @@
 <translation id="1815941218935345331">Pasakodea</translation>
 <translation id="1820259098641718022">Gehitu da Irakurketa-zerrendan</translation>
 <translation id="1822994441903263130">FEDEX</translation>
-<translation id="1827529786398596735">Eduki sakatuta hasierako pantaila</translation>
+<translation id="1827529786398596735">Eduki sakatuta orri nagusia</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Pasahitzak arriskuan daude}=1{{COUNT} pasahitz dago arriskuan}other{{COUNT} pasahitz daude arriskuan}}</translation>
 <translation id="1832848789136765277">Sinkronizatutako datuak edonoiz atzitu ahal izango dituzula ziurtatzeko, egiaztatu zeu zarela</translation>
 <translation id="1836891464494477513">{count,plural, =1{Gorde da laster-marka Google-ko kontuan ({email})}other{Gorde dira laster-markak Google-ko kontuan ({email})}}</translation>
@@ -183,7 +183,7 @@
 <translation id="1941314575388338491">Kopiatzeko, sakatu birritan.</translation>
 <translation id="1943478190258551035">Menua → Ezarpenak</translation>
 <translation id="194449685234099560">Irekitako fitxa guztiak hemen aurki ditzakezu.</translation>
-<translation id="1956138802718275401">Lortu pasahitzak hasierako pantailatik bertatik</translation>
+<translation id="1956138802718275401">Lortu pasahitzak orri nagusitik bertatik</translation>
 <translation id="1959441496380398824">Eduki sakatuta data bat.</translation>
 <translation id="1959679933317802873">Edukiaren zain</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> erabiltzaileak <ph name="WEBSITE" /> webgunerako pasahitz bat partekatu du zurekin</translation>
@@ -571,7 +571,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3939505428630887612">Orri honi buruz</translation>
 <translation id="3948600256434252210">Ezkutuko moduan arakatzeko, pasatu hatza eskuinera.</translation>
 <translation id="3955822496205734389">Seguruak ez diren pasahitzak dauzkazu.</translation>
-<translation id="3958312024468322930">Arrastatu hasierako pantailako behealdean dagoen zintara</translation>
+<translation id="3958312024468322930">Arrastatu orri nagusiko behealdean dagoen zintara</translation>
 <translation id="3959736869653157332">Menu → Ireki ezkutuko moduko fitxa bat</translation>
 <translation id="3962326069546168954">Gorde</translation>
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
@@ -1240,7 +1240,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="734758817008927353">Txartela gordetzeko aukerak</translation>
 <translation id="7352651011704765696">Arazo bat izan da</translation>
 <translation id="7353432112255316844">Egiaztatu zeu zarela</translation>
-<translation id="7367530036083223701">Atzitu zure pasahitzak hasierako pantailatik segurtasun osoz Pasahitz-kudeatzailea widgetarekin.</translation>
+<translation id="7367530036083223701">Atzitu zure pasahitzak orri nagusitik segurtasun osoz Pasahitz-kudeatzailea widgetarekin.</translation>
 <translation id="7380220816562673297">Oraingoz, familiako kideekin soilik parteka ditzakezu pasahitzak. <ph name="BEGIN_LINK" />Sortu familia-talde bat<ph name="END_LINK" />, gehienez 6 kiderekin, eta atera etekin handiagoa Google-ren produktu eta harpidetzei.</translation>
 <translation id="739101637685146669">Zer URL bihurtu nahi duzu laster-marka?</translation>
 <translation id="7396331865858820922">Ez da partekatu pasahitza</translation>
@@ -1498,7 +1498,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8620640915598389714">Editatu</translation>
 <translation id="8624447588354561276">Paketearen zenbakia</translation>
 <translation id="8624753446837753970">Ezarri posizioa</translation>
-<translation id="8625706492572042370">Editatu hasierako pantaila</translation>
+<translation id="8625706492572042370">Editatu orri nagusia</translation>
 <translation id="8626393685701737946">Webgunearen ikuspegi lehenetsia mahaigaineko ikuspegira aldatzeko, joan Ezarpenak &gt; Edukiaren ezarpenak atalera</translation>
 <translation id="8636825310635137004">Beste gailuetako fitxak eskura izateko, aktibatu sinkronizazioa.</translation>
 <translation id="8637431369725868556">Babestu zeure burua webgune arriskutsuen aurrean.</translation>

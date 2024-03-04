@@ -1564,7 +1564,6 @@
 <translation id="2150139952286079145">గమ్యస్థానాలను వెతకండి</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />"ను జోడించాలా?</translation>
 <translation id="2151576029659734873">చెల్లని ట్యాబ్‌ సూచిక ఎంటర్ చేయ‌బడింది.</translation>
-<translation id="2152281589789213846">మీ ప్రొఫైల్‌కు ప్రింటర్‌లను జోడించండి</translation>
 <translation id="2154484045852737596">కార్డ్‌ను ఎడిట్ చేయండి</translation>
 <translation id="2155473371917268529">ప్రస్తుత విజిబిలిటీ సెట్టింగ్ మీ పరికరాలలో సెట్ చేయబడింది</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ఉన్నట్టుంది</translation>
@@ -2623,6 +2622,7 @@
 <translation id="2935654492420446828">పాఠశాల ఖాతాను తర్వాత జోడించండి</translation>
 <translation id="2936851848721175671">బ్యాకప్ &amp; పునరుద్ధరణ</translation>
 <translation id="2938981087412273365">ఈ సైట్‌ను రీడ్ చేసి, మార్చడానికి అనుమతి లేదు</translation>
+<translation id="2939005221756255562">నోటిఫికేషన్ సెంటర్‌లో నోటిఫికేషన్‌లను ఎనేబుల్ చేయండి. <ph name="BEGIN_LINK" />సిస్టమ్ సెట్టింగ్‌లను<ph name="END_LINK" /> తెరవండి.</translation>
 <translation id="2939908794993783865">అదనపు ఇన్‌యాక్టివ్ సైట్‌లు</translation>
 <translation id="2939938020978911855">అందుబాటులో ఉన్న బ్లూటూత్ పరికరాలను చూపు</translation>
 <translation id="2941112035454246133">తక్కువ</translation>
@@ -4169,7 +4169,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID పరికరం కనెక్ట్ చేయబడింది</translation>
 <translation id="4139326893730851150">ఫర్మ్‌వేర్ అప్‌డేట్‌లు</translation>
 <translation id="4142052906269098341">మీ ఫోన్‌తో <ph name="DEVICE_TYPE" />ను అన్‌లాక్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
-<translation id="4142518881503042940">గుర్తించబడిన ప్రింటర్‌లను మీ ప్రొఫైల్‌కు సేవ్ చేయండి లేదా ఒక కొత్త ప్రింటర్‌ను జోడించండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">మెరుగైన క్వాలిటీ గల వీడియోను పొందండి మరియు బ్యాటరీ జీవితకాలాన్ని పెంపొందించండి. వీడియో మీ ప్రసార అనుకూల స్క్రీన్‌లో మాత్రమే ప్లే అవుతుంది.</translation>
 <translation id="4146026355784316281">ఎల్లప్పుడూ సిస్టమ్ వ్యూయర్‌తో తెరువు</translation>
 <translation id="4146785383423576110">రీసెట్ చేసి హానికరమైన వాటిని తీసివేయండి</translation>
@@ -4918,6 +4917,7 @@
 <translation id="473775607612524610">అప్‌డేట్‌</translation>
 <translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" />లో <ph name="CURRENT_ELEMENT" />వ అదనపు కంటెంట్ ఎంచుకోబడింది</translation>
 <translation id="4739639199548674512">టికెట్‌లు</translation>
+<translation id="4740546261986864539">ఇటీవల తెరిచినవి</translation>
 <translation id="4742334355511750246">ఇమేజ్‌లను చూపడానికి అనుమతించబడలేదు</translation>
 <translation id="4742970037960872810">హైలైట్‌ను తీసివేయండి</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />అప్లికేషన్‌లను ఎలా అప్‌డేట్ చేయాలో తెలుసుకోండి<ph name="END_LINK" /></translation>
@@ -5115,6 +5115,7 @@
 <translation id="488785315393301722">వివరాలను చూపించు</translation>
 <translation id="488862352499217187">కొత్త ఫోల్డర్‌ను క్రియేట్ చేయండి</translation>
 <translation id="4890292359366636311">పిక్చర్-ఇన్-పిక్చర్ మోడ్‌లోకి ఆటోమేటిక్‌గా ఎంటర్ అవ్వండి, తద్వారా మీరు దానిని ఇతర ట్యాబ్‌లు, విండోల పైన ఉపయోగించవచ్చు.</translation>
+<translation id="4890399733764921729">కనెక్ట్ చేయడం సాధ్యపడదు. మరొక మొబైల్ ప్రొవైడర్ ద్వారా లాక్ చేయబడింది.</translation>
 <translation id="4890773143211625964">అధునాతన ప్రింటర్ ఎంపికలను చూపు</translation>
 <translation id="4891089016822695758">బీటా ఫోరమ్</translation>
 <translation id="4892229439761351791">బ్లూటూత్‌ను సైట్ ఉపయోగించవచ్చు</translation>
@@ -8352,6 +8353,7 @@
 <translation id="7465778193084373987">Netscape సర్టిఫికెట్ రద్దు URL</translation>
 <translation id="7466431077154602932">సంక్షిప్త వీక్షణ</translation>
 <translation id="746861123368584540">ఎక్స్‌టెన్షన్ లోడ్ అయ్యింది</translation>
+<translation id="7470131554696493512">Thunderbolt లేదా USB4 యాక్సెసరీలను యాక్సెస్ చేయకుండా, మెమరీని (RAM) షేర్ చేయకుండా బ్లాక్ చేయండి</translation>
 <translation id="7470424110735398630">మీ క్లిప్‌బోర్డ్ చూడటానికి అనుమతించబడింది</translation>
 <translation id="747114903913869239">ఎర్రర్: ఎక్స్‌టెన్షన్‌లను డీకోడ్ చేయడం సాధ్యం కాలేదు</translation>
 <translation id="7471520329163184433">నెమ్మదిగా</translation>
@@ -8813,7 +8815,7 @@
 <translation id="7799650166313181433"><ph name="USER_EMAIL" />‌కు సైన్ ఇన్ చేసిన పరికరాలు మాత్రమే ఈ పరికరంతో షేర్ చేయగలవు. మీ పరికరాల మధ్య షేర్ చేయడాన్ని మీరు ఆమోదించాల్సిన అవసరం లేదు.</translation>
 <translation id="7800485561443537737">మీ <ph name="DEVICE_TYPE" /> మొబైల్ డేటాను వినియోగిస్తుంది, ఫలితంగా మీ క్యారియర్ అదనపు ఫీజును ఛార్జ్ చేయవచ్చు. బ్యాటరీ వినియోగం పెరగవచ్చు. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">అ&amp;పసవ్యదిశలో తిప్పు</translation>
-<translation id="780301667611848630">వద్దు , ధన్యవాదాలు</translation>
+<translation id="780301667611848630">వద్దు</translation>
 <translation id="7803657407897251194">మీ Android పరికరంతో సెటప్‌ను కొనసాగించడానికి, మీ <ph name="DEVICE_TYPE" />‌ను నెట్‌వర్క్‌కు కనెక్ట్ చేయండి</translation>
 <translation id="7804072833593604762">ట్యాబ్ మూసివేయబడింది</translation>
 <translation id="780446144738273886">స్క్రీన్ రీడర్ కోసం టెక్స్ట్‌ను ఎక్స్‌ట్రాక్ట్ చేయడానికి PDFను స్కాన్ చేయండి. Chrome బ్రౌజర్‌లో మాత్రమే సపోర్ట్ ఉంది</translation>

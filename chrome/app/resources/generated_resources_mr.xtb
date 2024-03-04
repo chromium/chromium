@@ -983,6 +983,7 @@
 <translation id="1723824996674794290">&amp;नवीन विंडो</translation>
 <translation id="1724801751621173132">इनपुट मोड</translation>
 <translation id="1725562816265788801">टॅब स्क्रोल करणे</translation>
+<translation id="1725585416709851618">सेटिंग्जमध्ये Google Drive सुरू करून पहा आणि "पुन्हा प्रयत्न करा" निवडा किंवा मर्यादित दृश्य व संपादनाशी संबंधित पर्याय वापरण्यासाठी "मूळ संपादकामध्ये उघडा" निवडा.</translation>
 <translation id="1726503915437308071">आयटॅलिक फॉंट</translation>
 <translation id="1729533290416704613">तुम्ही ओम्निबॉक्समधून शोध घेता तेव्हा कोणते पेज दाखवावे हेदेखील ते नियंत्रित करते.</translation>
 <translation id="1730666151302379551">जुना पासवर्ड लक्षात नाही</translation>
@@ -1564,7 +1565,6 @@
 <translation id="2150139952286079145">शोध गंतव्ये</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" जोडायचे ?</translation>
 <translation id="2151576029659734873">चुकीची टॅब अनुक्रमणिका एंटर केली.</translation>
-<translation id="2152281589789213846">तुमच्या प्रोफाइलमध्ये प्रिंटर जोडा</translation>
 <translation id="2154484045852737596">कार्ड संपादित करा</translation>
 <translation id="2155473371917268529">सध्याचे दृश्यमानता सेटिंग हे तुमची डिव्हाइस असे आहे</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> सारखे दिसते</translation>
@@ -2295,6 +2295,7 @@
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> वरून शेअर केले</translation>
 <translation id="2701737434167469065"><ph name="EMAIL" /> सह साइन इन करा</translation>
 <translation id="2701960282717219666">नेटवर्क MAC अ‍ॅड्रेस</translation>
+<translation id="2702720509009999256">मर्यादित दृश्य आणि संपादनाशी संबंधित पर्याय वापरण्यासाठी, तुमचे इंटरनेट कनेक्शन तपासा आणि "पुन्हा प्रयत्न करा" किंवा "मूळ संपादकामध्ये उघडा" निवडा.</translation>
 <translation id="2702801445560668637">वाचन सूची</translation>
 <translation id="270414148003105978">मोबाइल नेटवर्क</translation>
 <translation id="2704184184447774363">Microsoft Document Signing</translation>
@@ -3597,6 +3598,7 @@
 <translation id="3719245268140483218">डिव्हाइस इव्‍हेंट</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> भरला आहे.</translation>
 <translation id="3719826155360621982">होम पेज</translation>
+<translation id="3720543739123045680">इतर टॅब हे या टॅबसह प्रक्रिया शेअर करतात, ज्यामुळे अनपेक्षित DevTools अनुभव येऊ शकतो.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">तुम्ही आणि Google</translation>
 <translation id="3722108462506185496">व्हर्च्युअल मशीन सेवा सुरू करताना एरर आली. कृपया पुन्हा प्रयत्न करा.</translation>
@@ -4166,7 +4168,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID डिव्हाइस कनेक्ट केले</translation>
 <translation id="4139326893730851150">फर्मवेअर अपडेट</translation>
 <translation id="4142052906269098341">तुमच्या फोनने <ph name="DEVICE_TYPE" /> अनलॉक करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
-<translation id="4142518881503042940">तुमच्या प्रोफाइलवर डिटेक्ट केलेले प्रिंटर सेव्ह करा किंवा नवीन प्रिंटर जोडा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">आणखी चांगल्या दर्जाचे व्हिडिओ मिळवा आणि बॅटरी लाइफ वाचवा. व्हिडिओ फक्त तुमच्या Cast सुरू केलेल्या स्क्रीनवर प्ले होईल.</translation>
 <translation id="4146026355784316281">नेहमी सिस्टम दर्शकासह उघडा</translation>
 <translation id="4146785383423576110">रीसेट करा आणि साफ करा</translation>
@@ -4915,6 +4916,7 @@
 <translation id="473775607612524610">अपडेट करा</translation>
 <translation id="473936925429402449">निवडलेले, <ph name="TOTAL_ELEMENTS" /> पैकी <ph name="CURRENT_ELEMENT" /> अतिरिक्त आशय</translation>
 <translation id="4739639199548674512">तिकिटे</translation>
+<translation id="4740546261986864539">अलीकडे उघडलेला</translation>
 <translation id="4742334355511750246">इमेज दाखवण्याची अनुमती नाही</translation>
 <translation id="4742970037960872810">हायलाइट काढून टाका</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ॲप्लिकेशन कशी अपडेट करायची ते शिका<ph name="END_LINK" /></translation>
@@ -5047,6 +5049,7 @@
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="4846628405149428620">ही साइट बदल कुठे सेव्ह करू शकते ते निवडा</translation>
 <translation id="4846680374085650406">तुम्ही या सेटिंगसाठी ॲडमिनिस्ट्रेटरच्या शिफारसींना फॉलो करत आहात.</translation>
+<translation id="4847242508757499006">मर्यादित दृश्य आणि संपादनाशी संबंधित पर्याय वापरण्यासाठी, "पुन्हा प्रयत्न करा" किंवा "मूळ संपादकामध्ये उघडा" निवडा.</translation>
 <translation id="4848191975108266266">Google Assistant "Ok Google"</translation>
 <translation id="4849286518551984791">समन्वित जागतिक वेळ (UTC/GMT)</translation>
 <translation id="4849517651082200438">इंस्टॉल करू नका</translation>
@@ -5111,6 +5114,7 @@
 <translation id="488785315393301722">तपशील दर्शवा</translation>
 <translation id="488862352499217187">नवीन फोल्डर तयार करा</translation>
 <translation id="4890292359366636311">चित्रात-चित्र आपोआप एंटर करा, जेणेकरून तुम्हाला ते इतर टॅब आणि विंडोच्या वरती वापरता येईल.</translation>
+<translation id="4890399733764921729">कनेक्ट करू शकत नाही. दुसऱ्या मोबाइल पुरवठादाराने लॉक केले आहे.</translation>
 <translation id="4890773143211625964">प्रगत प्रिंटर पर्याय दर्शवा</translation>
 <translation id="4891089016822695758">बीटा फोरम</translation>
 <translation id="4892229439761351791">साइट ब्लूटूथ वापरू शकते</translation>
@@ -6042,6 +6046,7 @@
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" /> मधून <ph name="DEVICE" /> काढून टाकायचे आहे का?</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> वापरण्यासाठी तुमच्या प्रथम <ph name="LINK_START" />नेटवर्कच्या साइन-इन पेजला भेट देणे<ph name="LINK_END" /> आवश्यक आहे, जे काही सेकंदांमध्ये आपोआप उघडेल. तसे न झाल्यास, नेटवर्क वापरणे शक्य नाही.</translation>
 <translation id="5637476008227280525">मोबाइल डेटा सुरू आहे</translation>
+<translation id="5638170200695981015">मर्यादित दृश्य आणि संपादनाशी संबंधित पर्याय वापरण्यासाठी "मूळ संपादकामध्ये उघडा" निवडा.</translation>
 <translation id="563821631542362636">साइटना डेटा सेव्ह करण्याची अनुमती द्या</translation>
 <translation id="5638309510554459422">विस्तार आणि थीम <ph name="BEGIN_LINK" />Chrome वेब स्टोअर<ph name="END_LINK" /> मध्ये शोधा</translation>
 <translation id="5639549361331209298">हे पेज रीलोड करा, अधिक पर्याय पहाण्यासाठी होल्ड करा</translation>
@@ -6795,6 +6800,7 @@
 <translation id="6235208551686043831">डिव्हाइसचा कॅमेरा सुरू झाला आहे. कृपया तुमच्या eSIM चा QR कोड कॅमेरासमोर ठेवा.</translation>
 <translation id="6237297174664969437">Chrome सेटिंग्जमध्ये कोणता ब्राउझर डेटा सिंक करायचा हे तुम्ही कधीही निवडू शकता. <ph name="LINK_BEGIN" />डिव्हाइस सेटिंग्ज<ph name="LINK_END" /> मध्ये, तुम्ही Chrome ब्राउझरवरून इंस्टॉल केलेल्या वेब ॲप्ससाठी सिंक नियंत्रित करू शकता. Google तुमच्या इतिहासाच्या आधारे Search आणि इतर सेवा पर्सनलाइझ करू शकते.</translation>
 <translation id="6237474966939441970">स्टायलस टिपा घेण्याचे अ‍ॅप</translation>
+<translation id="6237481151388361546">तुमचे इंटरनेट कनेक्शन बदला आणि "पुन्हा प्रयत्न करा" निवडा किंवा मर्यादित दृश्य व संपादनाशी संबंधित पर्याय वापरण्यासाठी "मूळ संपादकामध्ये उघडा" निवडा.</translation>
 <translation id="623755660902014047">वाचन मोड</translation>
 <translation id="6238767809035845642">मजकूर इतर डिव्हाइसवरून शेअर केला आहे</translation>
 <translation id="6238923052227198598">लॉक स्क्रीनवर नवीनतम टीप ठेवा</translation>
@@ -8347,6 +8353,7 @@
 <translation id="7465778193084373987">Netscape सर्टिफिकेट रिव्होकीकरण URL</translation>
 <translation id="7466431077154602932">संक्षिप्त दृश्य</translation>
 <translation id="746861123368584540">एक्स्टेंशन लोड केले</translation>
+<translation id="7470131554696493512">थंडरबोल्ट किंवा USB4 अ‍ॅक्सेसरीना मेमरी (RAM) अ‍ॅक्सेस आणि शेअर करण्यापासून ब्लॉक करा</translation>
 <translation id="7470424110735398630">तुमचा क्लिपबोर्ड पाहण्याची अनुमती आहे</translation>
 <translation id="747114903913869239">एरर: एक्स्टेंशन डीकोड करता आले नाही</translation>
 <translation id="7471520329163184433">आणखी धीमी</translation>
@@ -9334,6 +9341,7 @@
 <translation id="8200772114523450471">रेझ्युमे</translation>
 <translation id="8200789660596905522">तुमच्या <ph name="DEVICE_NAME" /> वर कास्‍ट करण्याशी संबंधित विनंती स्वीकारली असल्याची खात्री करा.</translation>
 <translation id="8202160505685531999">कृपया तुमचे <ph name="DEVICE_TYPE" /> प्रोफाइल अपडेट करण्‍यासाठी तुमचा पासवर्ड पुन्हा एंटर करा.</translation>
+<translation id="8202827109322349110">मूळ संपादकामध्ये उघडा</translation>
 <translation id="8203152941016626022">Nearby सह शेअरिंग च्या डिव्हाइसचे नाव</translation>
 <translation id="8203732864715032075">Messages साठी हा कॉंप्युटर डीफॉल्ट म्हणून लक्षात ठेवण्याकरता तुम्हाला सूचना पाठवेल. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">राइट क्लिक</translation>

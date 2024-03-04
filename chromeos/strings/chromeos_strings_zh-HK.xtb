@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">蝴蝶</translation>
 <translation id="188114911237521550">關閉暗光模式</translation>
+<translation id="188268299367474594">從可用的 APN 中選擇</translation>
 <translation id="1885577615937958993">向前快播媒體</translation>
 <translation id="1887850431809612466">硬件版本</translation>
 <translation id="189221451253258459">螢光綠色</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">顯示視窗</translation>
 <translation id="2513396635448525189">登入圖片</translation>
 <translation id="2517472476991765520">掃瞄</translation>
+<translation id="2520213071283358374">使用這個 APN</translation>
 <translation id="2521835766824839541">上一首歌</translation>
 <translation id="2526590354069164005">桌面電腦</translation>
 <translation id="253029298928638905">正在重新啟動…</translation>
@@ -981,7 +983,7 @@
 <translation id="7144954474087165241">寶塔</translation>
 <translation id="714876143603641390">LAN 連接性</translation>
 <translation id="7154020516215182599">請反映意見，或者描述問題。請儘量在描述中包含步驟，以便重現問題。</translation>
-<translation id="7155037718620478619">偵測更多 APN</translation>
+<translation id="7155037718620478619">探索更多 APN</translation>
 <translation id="7155171745945906037">相機或檔案中的現有照片</translation>
 <translation id="7162487448488904999">媒體庫</translation>
 <translation id="7170236477717446850">個人檔案相片</translation>
@@ -1134,6 +1136,7 @@
 <translation id="8075838845814659848">剩餘電量</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8079860070590459552">花海</translation>
+<translation id="8081553043098820199">如果 APN 無效，行動連線可能會因此中斷。設定時，請使用行動服務供應商或管理員提供的 APN，不要使用其他 APN。</translation>
 <translation id="8082366717211101304">無法從 Android 應用程式解析 DNS</translation>
 <translation id="8082644724189923105">鍵盤區域</translation>
 <translation id="808894953321890993">變更密碼</translation>

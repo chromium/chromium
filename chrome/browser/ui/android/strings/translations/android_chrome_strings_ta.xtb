@@ -116,6 +116,7 @@
 <translation id="1558391695376153246">மறைநிலைத் தாவல்களை மூடுக</translation>
 <translation id="1568636008098739136">இந்தப் பக்கத்தைப் படி. இந்த ஷார்ட்கட்டை மாற்ற தொட்டுப் பிடித்திருக்கவும்.</translation>
 <translation id="1571304935088121812">பயனர்பெயரை நகலெடுக்கும்</translation>
+<translation id="1584648915421894279">தற்போது, இந்தச் சாதனத்தில் சேமிக்கப்பட்டுள்ள கடவுச்சொற்களை Chrome சேனல்கள் முழுவதிலும் பயன்படுத்த முடியாது. Chrome பதிப்பு 125க்குப் பிறகு உங்கள் சாதனத்தில் Chrome, <ph name="CHROME_CHANNEL" /> ஆகியவற்றில் நீங்கள் சேமித்துள்ள கடவுச்சொற்கள் ஒன்றிணைக்கப்படுவதோடு அவற்றை இரண்டு ஆப்ஸிலும் பயன்படுத்தலாம்.</translation>
 <translation id="1592864538817356322">நிலையான பாதுகாப்பு:</translation>
 <translation id="1594635596540195766">இந்தப் பட்டியலில் <ph name="SUGGESTIONS_COUNT" /> பரிந்துரைகள் உள்ளன.</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் <ph name="SITE_ETLD_PLUS_ONE" /> இணையதளத்தைப் பயன்படுத்துங்கள்</translation>
@@ -328,6 +329,7 @@
 <translation id="281504910091592009">உங்கள் <ph name="BEGIN_LINK" />Google கணக்கில்<ph name="END_LINK" /> சேமிக்கப்பட்ட கடவுச்சொற்களைப் பார்த்து, நிர்வகிக்கவும்</translation>
 <translation id="2827278682606527653">ஃபீட் கார்டு மெனு பாதி அளவிற்குத் திறக்கப்பட்டுள்ளது</translation>
 <translation id="2830783625999891985">கிளிப்போர்டில் உள்ளவை மறைக்கப்பட்டது</translation>
+<translation id="2834884592945939112">அமைப்புகள், Google கணக்குப் பிழை</translation>
 <translation id="2838367486340230368">தனியுரிமை வழிகாட்டியின் விளக்கம் பாதித் திரையில் காட்டப்பட்டுள்ளது</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> தளத்தைப் பின்தொடர்வதை நிறுத்திவிட்டீர்கள்</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> மறைநிலைப் பக்கம் மூடப்படும்}other{<ph name="TAB_COUNT_MANY" /> மறைநிலைப் பக்கங்கள் மூடப்படும்}}</translation>
@@ -663,6 +665,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# நிமிடத்திற்கு முன்பு}other{# நிமிடங்களுக்கு முன்பு}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234"><ph name="CREATION_TIME" /> அன்று இந்த ஆஃப்லைன் பக்கம் உருவாக்கப்பட்டது. இது ஆன்லைன் பதிப்பிலிருந்து வேறுபடலாம்.</translation>
+<translation id="4595805675102978678">Google கணக்குப் பிழை</translation>
 <translation id="4601095002996233687">சந்தேகத்திற்கிடமான பதிவிறக்கங்களை விரிவாக ஸ்கேன் செய்யலாம்.</translation>
 <translation id="4609429330876432068">Chrome, <ph name="CHROME_CHANNEL" /> ஆகியவற்றில் நீங்கள் சேமித்துள்ள கடவுச்சொற்களின் பட்டியல்கள் ஒன்றிணைக்கப்பட்டன. இருப்பினும், நீங்கள் சேமித்துள்ள கடவுச்சொற்களை இரண்டு ஆப்ஸிலும் தானாக நிரப்பலாம்.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ஐத் திற</translation>
@@ -1355,6 +1358,7 @@
 <translation id="7947953824732555851">ஏற்று உள்நுழைக</translation>
 <translation id="7951102827450076904">பதிவிறக்கப்பட்ட PDFகளை எப்போதும் திற</translation>
 <translation id="7957413488482743710">மோசடி அபாயங்களில் இருந்து பாதுகாக்க உங்கள் அசல் கார்டை விர்ச்சுவல் கார்டு மறைக்கிறது. <ph name="BEGIN_LINK1" />விர்ச்சுவல் கார்டுகள் குறித்து மேலும் அறிக<ph name="END_LINK1" /></translation>
+<translation id="7959485987650214982">இந்தச் சாதனத்தில் உள்ள பக்கங்கள்</translation>
 <translation id="7960972236129063347">பக்கப் புள்ளிவிவரங்களுக்குச் செல்வதற்கான பட்டன்</translation>
 <translation id="7961926449547174351">சேமிப்பக அணுகலை முடக்கியுள்ளீர்கள். இதை இயக்க, அமைப்புகளுக்குச் செல்லவும்.</translation>
 <translation id="7963646190083259054">விற்பனையாளர்:</translation>

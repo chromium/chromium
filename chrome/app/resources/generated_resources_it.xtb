@@ -973,6 +973,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1723824996674794290">&amp;Nuova finestra</translation>
 <translation id="1724801751621173132">Modalità di immissione</translation>
 <translation id="1725562816265788801">Scorrimento delle schede</translation>
+<translation id="1725585416709851618">Prova ad attivare Google Drive nelle Impostazioni e scegli "Riprova" oppure scegli "Apri nell'editor di base" per utilizzare opzioni di visualizzazione e modifica limitate.</translation>
 <translation id="1726503915437308071">Carattere corsivo</translation>
 <translation id="1729533290416704613">Controlla anche la pagina visualizzata quando esegui ricerche dalla Omnibox.</translation>
 <translation id="1730666151302379551">Ho dimenticato la password precedente</translation>
@@ -1553,7 +1554,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2150139952286079145">Cerca destinazioni</translation>
 <translation id="2150661552845026580">Aggiungere "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">È stato inserito un indice di tabulazione non valido.</translation>
-<translation id="2152281589789213846">Aggiungi stampanti al tuo profilo</translation>
 <translation id="2154484045852737596">Modifica la carta</translation>
 <translation id="2155473371917268529">L'impostazione di visibilità attuale è quella dei tuoi dispositivi</translation>
 <translation id="2155772377859296191">Risoluzione di <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
@@ -2281,6 +2281,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2701330563083355633">Condivisione da <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Accedi, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">Indirizzo MAC di rete</translation>
+<translation id="2702720509009999256">Verifica la connessione a internet e scegli "Riprova" oppure seleziona "Apri nell'editor di base" per utilizzare opzioni di visualizzazione e modifica limitate.</translation>
 <translation id="2702801445560668637">Elenco di lettura</translation>
 <translation id="270414148003105978">Reti mobili</translation>
 <translation id="2704184184447774363">Firma del documento Microsoft</translation>
@@ -2608,6 +2609,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2935654492420446828">Aggiungi un account della scuola in un secondo momento</translation>
 <translation id="2936851848721175671">Backup e ripristino</translation>
 <translation id="2938981087412273365">Non autorizzata a leggere e modificare questo sito</translation>
+<translation id="2939005221756255562">Abilita le notifiche nel Centro notifiche. Apri le <ph name="BEGIN_LINK" />Impostazioni di sistema<ph name="END_LINK" />.</translation>
 <translation id="2939908794993783865">Altri siti non attivi</translation>
 <translation id="2939938020978911855">Mostra dispositivi Bluetooth disponibili</translation>
 <translation id="2941112035454246133">Bassa</translation>
@@ -3582,6 +3584,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3719245268140483218">Evento dispositivo</translation>
 <translation id="3719310907809321183">Modulo per la carta <ph name="CARD_IDENTIFIER" /> compilato.</translation>
 <translation id="3719826155360621982">Home page</translation>
+<translation id="3720543739123045680">Altre schede condividono un processo con questa scheda, questo potrebbe comportare un'esperienza DevTools imprevista.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Tu e Google</translation>
 <translation id="3722108462506185496">Errore durante l'avvio del servizio macchina virtuale. Riprova.</translation>
@@ -4153,7 +4156,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - Dispositivo HID connesso</translation>
 <translation id="4139326893730851150">Aggiornamenti del firmware</translation>
 <translation id="4142052906269098341">Sblocca <ph name="DEVICE_TYPE" /> con il telefono. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
-<translation id="4142518881503042940">Salva le stampanti rilevate nel tuo profilo o aggiungi una nuova stampante. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">Migliora la qualità dei video e fai durare di più la batteria. I video verranno riprodotti soltanto sullo schermo compatibile con Google Cast.</translation>
 <translation id="4146026355784316281">Apri sempre con visualizzatore di sistema</translation>
 <translation id="4146785383423576110">Reimpostazione e pulizia</translation>
@@ -5033,6 +5035,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="484462545196658690">Automatico</translation>
 <translation id="4846628405149428620">Seleziona la posizione in cui questo sito può salvare le modifiche</translation>
 <translation id="4846680374085650406">Stai seguendo il consiglio dell'amministratore per questa impostazione.</translation>
+<translation id="4847242508757499006">Scegli "Riprova" oppure seleziona "Apri nell'editor di base" per utilizzare opzioni di visualizzazione e modifica limitate.</translation>
 <translation id="4848191975108266266">Hotword "Ok Google" dell'Assistente Google</translation>
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Non installare</translation>
@@ -6026,6 +6029,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5636012309446422">Vuoi rimuovere <ph name="DEVICE" /> da <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Per poter utilizzare la rete <ph name="NETWORK_ID" />, potrebbe essere necessario <ph name="LINK_START" />visitare la pagina di accesso della rete<ph name="LINK_END" />, che si aprirà automaticamente tra alcuni secondi. In caso contrario, non è possibile utilizzare la rete.</translation>
 <translation id="5637476008227280525">Attivazione dati mobili</translation>
+<translation id="5638170200695981015">Scegli "Apri nell'editor di base" per utilizzare opzioni di visualizzazione e modifica limitate.</translation>
 <translation id="563821631542362636">Consenti al sito di salvare dati</translation>
 <translation id="5638309510554459422">Trova estensioni e temi nel <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Ricarica questa pagina, tieni premuto per visualizzare altre opzioni</translation>
@@ -6777,6 +6781,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6235208551686043831">Videocamera del dispositivo accesa. Posiziona il codice QR della eSIM di fronte alla videocamera.</translation>
 <translation id="6237297174664969437">Puoi scegliere in qualsiasi momento i dati del browser da sincronizzare nelle impostazioni di Chrome. Nelle <ph name="LINK_BEGIN" />impostazioni del dispositivo<ph name="LINK_END" />, puoi controllare la sincronizzazione delle app web installate dal browser Chrome. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="6237474966939441970">App per scrivere note con lo stilo</translation>
+<translation id="6237481151388361546">Modifica la connessione a internet e scegli "Riprova" oppure seleziona "Apri nell'editor di base" per utilizzare opzioni di visualizzazione e modifica limitate.</translation>
 <translation id="623755660902014047">Modalità Lettura</translation>
 <translation id="6238767809035845642">Testo condiviso da un altro dispositivo</translation>
 <translation id="6238923052227198598">Tieni le note più recenti sulla schermata di blocco</translation>
@@ -8791,7 +8796,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7799650166313181433">Soltanto i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" /> possono condividere contenuti con questo dispositivo. Non dovrai approvare la condivisione tra i tuoi dispositivi.</translation>
 <translation id="7800485561443537737">Usa i dati mobili di <ph name="DEVICE_TYPE" /> e il tuo operatore potrebbe addebitare costi aggiuntivi. Potrebbe anche aumentare l'utilizzo della batteria. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Ruota in senso anti&amp;orario</translation>
-<translation id="780301667611848630">No, grazie</translation>
+<translation id="780301667611848630">No grazie</translation>
 <translation id="7803657407897251194">Per continuare la configurazione con il tuo dispositivo Android, connetti <ph name="DEVICE_TYPE" /> a una rete</translation>
 <translation id="7804072833593604762">Scheda chiusa</translation>
 <translation id="780446144738273886">Scansiona il PDF per estrarre il testo per lo screen reader. Funzionalità supportata solo sul browser Chrome</translation>
@@ -9318,6 +9323,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8200772114523450471">Riprendi</translation>
 <translation id="8200789660596905522">Assicurati di accettare la richiesta di trasmissione su <ph name="DEVICE_NAME" />.</translation>
 <translation id="8202160505685531999">Inserisci di nuovo la password per aggiornare il profilo <ph name="DEVICE_TYPE" />.</translation>
+<translation id="8202827109322349110">Apri nell'editor di base</translation>
 <translation id="8203152941016626022">Nome dispositivo Condivisione nelle vicinanze</translation>
 <translation id="8203732864715032075">Ricevere notifiche e impostare come predefinita la memorizzazione di questo computer per Messaggi. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Clic con il pulsante destro</translation>

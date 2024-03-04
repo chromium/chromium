@@ -6049,6 +6049,8 @@ Er worden installatieverzoeken voor extensies gemaakt als gebruikers proberen ee
 
 Dit beleid is alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> voor <ph name="PRODUCT_NAME" />.
 Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="6020795917180493154">Vanaf M119 geldt dat als je dit beleid instelt op Onwaar of niet instelt, WebSQL wordt uitgezet, maar kan worden aangezet via de Chrome-flag web-sql-access. Als je het beleid instelt op Waar, wordt WebSQL-toegang aangezet.
+Dit beleid is beëindigd vanaf M124.</translation>
 <translation id="6022948604095165524">Actie bij starten</translation>
 <translation id="602318745029752898">Stemmen voor verbeterde tekst-naar-spraak via netwerk toestaan in Selecteer om voor te lezen.</translation>
 <translation id="6026722971789064331">Gebruik van de File System API voor schrijven beheren</translation>

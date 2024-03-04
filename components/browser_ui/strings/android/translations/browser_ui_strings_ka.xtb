@@ -408,7 +408,7 @@
 <translation id="7781829728241885113">გუშინ</translation>
 <translation id="7791543448312431591">დამატება</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{ამ ჩანართით გაგრძელება}other{ამ ჩანართებით გაგრძელება}}</translation>
-<translation id="780301667611848630">არა, მადლობთ</translation>
+<translation id="780301667611848630">არა, გმადლობთ</translation>
 <translation id="7804248752222191302">ეს საიტი იყენებს თქვენს კამერას</translation>
 <translation id="7807060072011926525">უზრუნველყოფს Google</translation>
 <translation id="7822573154188733812">Chrome უბლოკავს საიტების უმეტესობას მესამე მხარის ქუქი-ჩანაწერების გამოყენების შესაძლებლობას ვების დათვალიერებისას თქვენთვის თვალის დევნების მიზნით. <ph name="BEGIN_LINK" />თვალის დევნებისგან თქვენი დაცვის საშუალებების მართვა<ph name="END_LINK" /> პარამეტრებში შეგიძლიათ.</translation>

@@ -80,7 +80,6 @@
 <translation id="3219277919172823720">‏البحث باستخدام الصوت في Chromium</translation>
 <translation id="3228349498066165585">‏لم يتم حفظ بعض بيانات Chromium في حسابك على Google إلى الآن.
         يُرجى الانتظار بضع دقائق قبل تسجيل الخروج. إذا سجّلت الخروج الآن، سيتم حذف هذه البيانات.</translation>
-<translation id="3256316712990552818">‏تم النسخ إلى Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{‏يتم الآن عرض نافذة واحدة في Chromium.}zero{‏يتم الآن عرض {count} نافذة في Chromium.}two{‏يتم الآن عرض نافذتَين ({count}) في Chromium.}few{‏يتم الآن عرض {count} نوافذ في Chromium.}many{‏يتم الآن عرض {count} نافذة في Chromium.}other{‏يتم الآن عرض {count} نافذة في Chromium.}}</translation>
 <translation id="3344973607274501920">‏تعذّر على متصفِّح Chromium التحقُّق من كلمات المرور. يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="3366305173356742781">‏بيانات Chromium في حسابك</translation>

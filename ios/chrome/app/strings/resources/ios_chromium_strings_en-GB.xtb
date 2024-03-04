@@ -80,7 +80,6 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="3219277919172823720">Search with Voice in Chromium</translation>
 <translation id="3228349498066165585">Some of your Chromium data hasn't been saved in your Google Account yet.
         Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
-<translation id="3256316712990552818">Copied to Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Now showing 1 Chromium window}other{Now showing {count} Chromium windows}}</translation>
 <translation id="3344973607274501920">Chromium couldn't check your passwords. Try checking your Internet connection.</translation>
 <translation id="3366305173356742781">Chromium data in your account</translation>

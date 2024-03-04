@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954818433534793392">Gebäude</translation>
 <translation id="1962550982027027473">Ein Standard-APN ist erforderlich</translation>
+<translation id="1967860190218310525">Neuen APN erstellen</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google-Profilfoto</translation>
 <translation id="1979103255016296513">Passwortänderung überfällig</translation>
@@ -693,7 +694,7 @@
 <translation id="5372659122375744710">WLAN ist nicht sicher</translation>
 <translation id="5376354385557966694">Automatischer heller Modus</translation>
 <translation id="5378184552853359930">IP-Typ</translation>
-<translation id="5389159777326897627">Hintergrund und Stil</translation>
+<translation id="5389159777326897627">Hintergrund &amp; Stil</translation>
 <translation id="5389224261615877010">Regenbogen</translation>
 <translation id="5396811372860835203">Calla</translation>
 <translation id="5400907029458559844">Das Gerät wird verbunden.</translation>
@@ -980,6 +981,7 @@
 <translation id="7144954474087165241">Pagode</translation>
 <translation id="714876143603641390">LAN-Konnektivität</translation>
 <translation id="7154020516215182599">Gib uns Feedback oder beschreibe das Problem. Teile uns nach Möglichkeit auch mit, wie wir das Problem reproduzieren können.</translation>
+<translation id="7155037718620478619">Weitere APNs suchen</translation>
 <translation id="7155171745945906037">Vorhandenes Foto von der Kamera oder als Datei</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7170236477717446850">Profilbild</translation>

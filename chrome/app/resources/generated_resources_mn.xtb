@@ -581,6 +581,7 @@
 <translation id="1444628761356461360">Энэ тохиргоог төхөөрөмжийн эзэмшигч удирддаг, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Энэ загварт зориулан <ph name="IMAGE_PATH" />-г татах үйлдэл амжилтгүй болсон байна.</translation>
 <translation id="1447531650545977377">&amp;Синк хийхийг асаах...</translation>
+<translation id="1447895950459090752">Таб дээр курсорыг зөөхөд урьдчилан үзүүлэх карт</translation>
 <translation id="1448264954024227422">Та энэ бүртгэлийг Android аппуудтай ашиглах боломжтой. Хэрэв та өөр хэн нэгний бүртгэлийг нэмэхийг хүсвэл оронд нь өөрийн <ph name="DEVICE_TYPE" /> дээр <ph name="LINK_BEGIN" />шинэ хүн нэмнэ үү<ph name="LINK_END" />.
 
 Таны аппуудад аль хэдийн өгсөн зөвшөөрөл нь энэ бүртгэлд хэрэгжиж болзошгүй. Та Android аппуудын зөвшөөрлийг <ph name="APPS_LINK_BEGIN" />Аппуудын тохиргоо<ph name="APPS_LINK_END" /> хэсэгт хянах боломжтой.</translation>
@@ -1562,7 +1563,6 @@
 <translation id="2150139952286079145">Очих газрыг хайх</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />"-ыг нэмэх үү?</translation>
 <translation id="2151576029659734873">Цонхийн хүчингүй индекс оруулсан байна.</translation>
-<translation id="2152281589789213846">Профайлдаа хэвлэгч нэмэх</translation>
 <translation id="2154484045852737596">Картыг засах</translation>
 <translation id="2155473371917268529">Одоогийн харагдцын тохиргоо нь таны төхөөрөмжүүд юм</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> юм шиг харагдаж байна</translation>
@@ -2827,6 +2827,7 @@
 <translation id="3094521107841754472">Үнэ <ph name="PREVIOUS_PRICE" />-с <ph name="CURRENT_PRICE" /> болж өөрчлөгдсөн.</translation>
 <translation id="3095871294753148861">Хавчуурга, нууц үг болон бусад интернэтээр үзсэн өгөгдлийг үндсэн бүртгэлтэй синк хийдэг.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Аюултай байж болзошгүй 1 өргөтгөлийг унтраалаа. Та мөн түүнийг устгах боломжтой.}other{Аюултай байж болзошгүй {NUM_EXTENSIONS} өргөтгөлийг унтраалаа. Та мөн тэднийг устгах боломжтой.}}</translation>
+<translation id="3101057112460908988">Санах ойн ашиглалтыг харуулах</translation>
 <translation id="3101126716313987672">Бүдэг гэрэл</translation>
 <translation id="3101709781009526431">Огноо ба цаг</translation>
 <translation id="310297983047869047">Өмнөх слайд</translation>
@@ -2904,6 +2905,7 @@
 <translation id="3166443275568926403">Гүйцэтгэл болон батарейн төлөв</translation>
 <translation id="3169930038976362151">Таны хэрэгцээнд тохирсон загварыг сонгоно уу. Загвар, дэлгэцийн зураг, дэлгэц амраагч болон бусад зүйлээ өөрчлөхийн тулд ердөө дэлгэц дээр удаан дарна уу.</translation>
 <translation id="3170072451822350649">Та нэвтэрч орох ажиллагааг алгасаж болох бөгөөд <ph name="LINK_START" /> зочны хувиар хайлт хийж болно<ph name="LINK_END" /> .</translation>
+<translation id="3175067642577044620">Үндсэн хэсэг</translation>
 <translation id="3177430966804511955">Тусгаарласан веб аппуудыг удирдах (бета)</translation>
 <translation id="31774765611822736">Шинэ табыг зүүн тийш нь</translation>
 <translation id="3177909033752230686">Хуудасны хэл:</translation>
@@ -3083,6 +3085,7 @@
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" />-ийг нуух</translation>
 <translation id="3315442055907669208">Уншигчийн горимд орох</translation>
 <translation id="3317459757438853210">Хоёр талт</translation>
+<translation id="3317521105713541270">Бүлгүүд үүсгэх</translation>
 <translation id="3317678681329786349">Камер болон микрофоныг блоклосон</translation>
 <translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" />-р зургийн текстийг орчуулах</translation>
 <translation id="3320271870899888245">OneDrive-д холбогдох боломжгүй. Дахин оролдоно уу.</translation>
@@ -4167,7 +4170,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID төхөөрөмж холбогдлоо</translation>
 <translation id="4139326893730851150">Жижиг программын шинэчлэлтүүд</translation>
 <translation id="4142052906269098341"><ph name="DEVICE_TYPE" />-н түгжээгээ утсаараа тайлна уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
-<translation id="4142518881503042940">Илрүүлсэн хэвлэгчийг профайлдаа хадгалах эсвэл шинэ хэвлэгч нэмэх. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">Илүү чанартай видео авж батарейн ажиллах хугацаагаа хэмнээрэй. Видео нь зөвхөн таны дамжуулах боломжтой дэлгэцэд тоглоно.</translation>
 <translation id="4146026355784316281">Системийн харагчтэй үргэлж хамт нээж байх</translation>
 <translation id="4146785383423576110">Шинэчлэх, цэвэрлэх</translation>
@@ -4439,6 +4441,7 @@
 <translation id="4364830672918311045">Дэлгэцийн мэдэгдэл</translation>
 <translation id="4367513928820380646">Хассан зөвшөөрлүүдийг шалгах</translation>
 <translation id="4367971618859387374">Дэлгэцийн нэр</translation>
+<translation id="4368960422722232719">Таб дээр курсорыг зөөхөд урьдчилан үзүүлэх картад санах ойн ашиглалтыг харуулах</translation>
 <translation id="4369215744064167350">Вебсайтын хүсэлтийг зөвшөөрсөн</translation>
 <translation id="4369233657762989723">Дуу хоолойгоор бичихийг асаах/унтраах</translation>
 <translation id="436926121798828366">Та үүнийг <ph name="SETTINGS_LINK" />-д хүссэн үедээ өөрчлөх боломжтой</translation>
@@ -5359,6 +5362,7 @@
 <translation id="5093569275467863761">Нууцлалтай Back/Forward Cache хийсэн дэд хүрээ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Та Files аппаас энэ аппаар эсвэл бусад аппаар дэмжигдсэн файлуудыг нээх болон засах боломжтой. Энэ аппад өгөгдмөлөөр аль файлуудыг нээхийг хянахын тулд <ph name="BEGIN_LINK" />төхөөрөмж дээрээ өгөгдмөл аппуудыг хэрхэн тохируулах талаар мэдэж авна уу<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Хамтарч буй суурин апп-уудтай харилцах</translation>
+<translation id="5095252080770652994">Явц</translation>
 <translation id="5095507226704905004">Уг файл байхаа больсон тул үүнийг хуулах боломжгүй</translation>
 <translation id="5095848221827496531">Сонголтыг болиулах</translation>
 <translation id="5097002363526479830">Сүлжээний холболт амжилтгүй боллоо '<ph name="NAME" />': <ph name="DETAILS" /></translation>
@@ -5510,6 +5514,7 @@
 <translation id="5213891612754844763">Прокси тохиргоог харуулах</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' хавчуурга үүсгэсэн.</translation>
 <translation id="5215502535566372932">Улсаа сонгох</translation>
+<translation id="5215665166431745539">Зургуудыг харуулах</translation>
 <translation id="5220011581825921581">хайлт + дээш сум</translation>
 <translation id="5222403284441421673">Аюултай таталтыг блоклосон</translation>
 <translation id="5222676887888702881">Гарах</translation>

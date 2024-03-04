@@ -116,6 +116,7 @@
 <translation id="1558391695376153246">ရုပ်ဖျက်တဘ်များ ပိတ်ရန်</translation>
 <translation id="1568636008098739136">ဤစာမျက်နှာကို နားထောင်ရန်။ ဤဖြတ်လမ်းလင့်ခ်ကို ပြင်ရန် ထိ၍ဖိထားပါ။</translation>
 <translation id="1571304935088121812">အသုံးပြုသူအမည်ကို ကူးယူပါ</translation>
+<translation id="1584648915421894279">ဤစက်တွင် သိမ်းထားသော စကားဝှက်များကို Chrome ချန်နယ်များတွင် ယခု မသုံးနိုင်ပါ။ Chrome 125 နောက်ပိုင်းတွင် Chrome နှင့် <ph name="CHROME_CHANNEL" /> အတွက် သင့်စက်တွင် သိမ်းထားသော စကားဝှက်များကို ပေါင်းစည်းမည်ဖြစ်ပြီး အက်ပ်နှစ်ခုစလုံးတွင် သုံးနိုင်မည်။</translation>
 <translation id="1592864538817356322">ပုံမှန်ကာကွယ်မှု -</translation>
 <translation id="1594635596540195766">အောက်ပါစာရင်းတွင် အကြံပြုအရာ<ph name="SUGGESTIONS_COUNT" /> ခု ရှိသည်။</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> ကို အသုံးပြုပါ</translation>
@@ -328,6 +329,7 @@
 <translation id="281504910091592009">သိမ်းဆည်းထားသည့် စကားဝှက်များကို သင်၏ <ph name="BEGIN_LINK" />Google အကောင့်<ph name="END_LINK" /> တွင် ကြည့်ရှုစီမံပါ</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">ကလစ်ဘုတ်အကြောင်းအရာများကို ဖျောက်ထားသည်</translation>
+<translation id="2834884592945939112">ဆက်တင်များ။ Google Account အမှားအယွင်း</translation>
 <translation id="2838367486340230368">ကိုယ်ရေးအချက်အလက်လုံခြုံမှုလမ်းညွှန် ရှင်းလင်းချက်ကို မြင်ကွင်းတစ်ဝက်ဖွင့်ပြီးပြီ</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> ကို လိုက်မကြည့်တော့ပါ</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{ရုပ်ဖျက်တဘ် <ph name="TAB_COUNT_ONE" /> ခုကို ပိတ်ပါမည်}other{ရုပ်ဖျက်တဘ် <ph name="TAB_COUNT_MANY" /> ခုကို ပိတ်ပါမည်}}</translation>
@@ -617,6 +619,7 @@
 <translation id="4335835283689002019">ဘေးကင်းစွာဖွင့်ကြည့်ခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="4351244548802238354">ဒိုင်ယာလော့ ပိတ်ရန်</translation>
 <translation id="4355272626458588338">သင့်အတွက်အရေးကြီးသော စာမျက်နှာသို့ လိပ်စာမှတ်ပြီး ပြန်သွားနိုင်သည်</translation>
+<translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4378154925671717803">ဖုန်း</translation>
 <translation id="4380055775103003110">ဤပြဿနာဆက်ဖြစ်နေပါက <ph name="SITE_ETLD_PLUS_ONE" /> တွင် အခြားနည်းလမ်းများကို စမ်းကြည့်နိုင်သည်။</translation>
 <translation id="4384468725000734951">ရှာဖွေမှုအတွက် Sogou ကို အသုံးပြုသည်</translation>
@@ -663,6 +666,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{လွန်ခဲ့သည့် # မိနစ်က}other{ လွန်ခဲ့သည့် # မိနစ်က}}</translation>
 <translation id="4587589328781138893">ဝဘ်ဆိုက်များ</translation>
 <translation id="4594952190837476234">ဤအော့ဖ်လိုင်း စာမျက်နှာသည် <ph name="CREATION_TIME" /> က ဖြစ်ပြီး အွန်လိုင်းဗားရှင်းနှင့် ကွဲပြားနိုင်ပါသည်။</translation>
+<translation id="4595805675102978678">Google Account အမှားအယွင်း</translation>
 <translation id="4601095002996233687">သံသယဖြစ်ဖွယ် ဒေါင်းလုဒ်များအတွက် အသေးစိတ် စကင်ဖတ်ခြင်း။</translation>
 <translation id="4609429330876432068">Chrome နှင့် <ph name="CHROME_CHANNEL" /> တို့အတွက် သိမ်းထားသော စကားဝှက်စာရင်းကို ပေါင်းစည်းလိုက်သည်။ သင်၏ သိမ်းထားသော စကားဝှက်အားလုံးကို အက်ပ်နှစ်ခုစလုံးတွင် အော်တိုဖြည့်နိုင်ပါသေးသည်။</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ကို ဖွင့်ပါ</translation>

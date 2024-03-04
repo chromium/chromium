@@ -1566,7 +1566,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2150139952286079145">Search destinations</translation>
 <translation id="2150661552845026580">Add '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="2151576029659734873">Invalid tab index entered.</translation>
-<translation id="2152281589789213846">Add printers to your profile</translation>
 <translation id="2154484045852737596">Edit card</translation>
 <translation id="2155473371917268529">Current visibility setting is your devices</translation>
 <translation id="2155772377859296191">Looks like <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
@@ -2705,7 +2704,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3001614333383288217">{COUNT,plural, =0{No keys customised}=1{1 customised key}other{{COUNT} customised keys}}</translation>
 <translation id="3001835006423291524">Touch the fingerprint sensor at the bottom right corner of your keyboard. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3003144360685731741">Preferred networks</translation>
-<translation id="3003253259757197230">URLs you visit are sent to Google to predict what sites you might visit next and to show you additional info about the page you're visiting</translation>
+<translation id="3003253259757197230">URLs that you visit are sent to Google to predict what sites you might visit next and to show you additional info about the page that you're visiting</translation>
 <translation id="3003623123441819449">CSS Cache</translation>
 <translation id="3003967365858406397">Your <ph name="PHONE_NAME" /> will create a private Wi-Fi connection.</translation>
 <translation id="3004385386820284928">Customise keyboard keys</translation>
@@ -3863,7 +3862,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3905761538810670789">Repair app</translation>
 <translation id="3908288065506437185">Block third-party cookies in Incognito mode</translation>
 <translation id="3908501907586732282">Enable extension</translation>
-<translation id="3909701002594999354">Show All &amp;Controls</translation>
+<translation id="3909701002594999354">Show all &amp;controls</translation>
 <translation id="3909791450649380159">Cu&amp;t</translation>
 <translation id="39103738135459590">Activation code</translation>
 <translation id="3911824782900911339">New Tab page</translation>
@@ -4172,7 +4171,6 @@ This can include information about installed software, files, your browser and t
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID device connected</translation>
 <translation id="4139326893730851150">Firmware updates</translation>
 <translation id="4142052906269098341">Unlock your <ph name="DEVICE_TYPE" /> with your phone. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
-<translation id="4142518881503042940">Save detected printers to your profile, or add a new printer. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">Get better quality video and save battery life. Video will play only on your Cast-enabled screen.</translation>
 <translation id="4146026355784316281">Always Open With System Viewer</translation>
 <translation id="4146785383423576110">Reset and clean up</translation>
@@ -7546,7 +7544,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6820079682647046800">Kerberos authentication failed</translation>
 <translation id="6821439254917412979">Unpin <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Touchpad tap-to-click</translation>
-<translation id="6823561724060793716">From the address bar, you can open page info to see additional info about the page you're visiting</translation>
+<translation id="6823561724060793716">From the address bar, you can open page info to see additional info about the page that you're visiting</translation>
 <translation id="6824564591481349393">Copy &amp;Email Address</translation>
 <translation id="6824584962142919697">&amp;Inspect elements</translation>
 <translation id="6824725898506587159">Manage languages</translation>

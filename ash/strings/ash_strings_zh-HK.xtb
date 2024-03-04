@@ -606,7 +606,7 @@
 <translation id="3509391053705095206">找不到手機。請確保手機的藍牙功能已開啟。</translation>
 <translation id="3510164367642747937">突顯滑鼠遊標</translation>
 <translation id="3513798432020909783">帳戶由 <ph name="MANAGER_EMAIL" /> 管理</translation>
-<translation id="3517037892157925473">工作上次更新時間：<ph name="DATE" /> <ph name="TIME" />。</translation>
+<translation id="3517037892157925473">工作上次更新時間：<ph name="DATE" /><ph name="TIME" />。</translation>
 <translation id="352245152354538528">{0,plural, =1{請在 1 分鐘內更新裝置}other{請在 # 分鐘內更新裝置}}</translation>
 <translation id="3522979239100719575">正在尋找可用的個人檔案。請稍候片刻。</translation>
 <translation id="3526440770046466733">在新分頁中開啟連結並停留在目前的分頁中</translation>
@@ -1340,7 +1340,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">電量不足，已開啟「慳電模式」。</translation>
 <translation id="6247728804802644171">開啟通知</translation>
-<translation id="6249795363855770621">無法標示為完成，請連上網路後再試一次。</translation>
+<translation id="6249795363855770621">無法標示為完成。請在連線後再試一次。</translation>
 <translation id="6254629735336163724">已鎖定為水平</translation>
 <translation id="6259254695169772643">使用觸控筆選擇</translation>
 <translation id="6267036997247669271"><ph name="NAME" />：正在啟用…</translation>

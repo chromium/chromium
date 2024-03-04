@@ -581,6 +581,7 @@
 <translation id="1444628761356461360">ဤကြိုတင်ချိန်ညှိချက်များအား စက်ပစ္စည်း၏ ပိုင်ရှင် <ph name="OWNER_EMAIL" /> မှ စီမံသည်။</translation>
 <translation id="144518587530125858">အရောင်အဖွဲ့အတွက် '<ph name="IMAGE_PATH" />' အားဖွင့်၍မရပါ။</translation>
 <translation id="1447531650545977377">&amp;စင့်ခ်လုပ်ခြင်း ဖွင့်ရန်...</translation>
+<translation id="1447895950459090752">တဘ်ပေါ်မောက်စ်တင်ချိန် အစမ်းပြကွက်ကတ်</translation>
 <translation id="1448264954024227422">ဤအကောင့်ကို Android အက်ပ်များနှင့် သုံးနိုင်သည်။ အခြားတစ်ယောက်အတွက် အကောင့်ထည့်လိုပါက ၎င်းအစား သင်၏ <ph name="DEVICE_TYPE" /> တွင် <ph name="LINK_BEGIN" />ပုဂ္ဂိုလ်အသစ်ကို ထည့်နိုင်သည်<ph name="LINK_END" />။
 
 အက်ပ်များကို ပေးထားသော ခွင့်ပြုချက်များက ဤအကောင့်တွင် အကျုံးဝင်နိုင်သည်။ <ph name="APPS_LINK_BEGIN" />အက်ပ်ဆက်တင်များ<ph name="APPS_LINK_END" /> တွင် Android အက်ပ်များအတွက် ခွင့်ပြုချက်များကို ထိန်းချုပ်နိုင်သည်။</translation>
@@ -1564,7 +1565,6 @@
 <translation id="2150139952286079145">ခရီးအဆုံးများကို ရှာဖွေရန်</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />"ကို ထည့်ရမလား?</translation>
 <translation id="2151576029659734873">ရိုက်ထည့်ခဲ့သည့် တဘ် အညွှန်း မမှန်ပါ။</translation>
-<translation id="2152281589789213846">သင့်ပရိုဖိုင်သို့ ပုံနှိပ်စက်များ ထည့်ခြင်း</translation>
 <translation id="2154484045852737596">ကတ်ကို တည်းဖြတ်ပါ</translation>
 <translation id="2155473371917268529">လက်ရှိ မြင်နိုင်မှုဆက်တင်ကို သင့်စက်များအဖြစ် သတ်မှတ်ထားသည်</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ဟု ယူဆရပါသည်</translation>
@@ -2624,6 +2624,7 @@
 <translation id="2935654492420446828">ကျောင်းအကောင့်ကို နောင်တွင် ထည့်ခြင်း</translation>
 <translation id="2936851848721175671">အရန်သိမ်းခြင်းနှင့် ပြန်လည်ရယူခြင်း</translation>
 <translation id="2938981087412273365">ဤဝဘ်ဆိုက်ကို ဖတ်ရန်နှင့် ပြောင်းရန် ခွင့်ပြုမထားပါ</translation>
+<translation id="2939005221756255562">အကြောင်းကြားချက်များကို ‘အကြောင်းကြားချက်စင်တာ’ တွင် ဖွင့်ပါ။ <ph name="BEGIN_LINK" />စနစ်ဆက်တင်များ<ph name="END_LINK" /> ဖွင့်ရန်။</translation>
 <translation id="2939908794993783865">မသုံးသော နောက်ထပ်ဝဘ်ဆိုက်များ</translation>
 <translation id="2939938020978911855">ရရှိနိုင်သော ဘလူးတုသ် စက်ပစ္စည်းများကို ပြရန်</translation>
 <translation id="2941112035454246133">နိမ့်</translation>
@@ -2829,6 +2830,7 @@
 <translation id="3094521107841754472"><ph name="PREVIOUS_PRICE" /> မှ <ph name="CURRENT_PRICE" /> အဖြစ် ဈေးနှုန်းပြောင်းသွားသည်။</translation>
 <translation id="3095871294753148861">လိပ်စာများ၊ စကားဝှက်များနှင့် အခြားဖွင့်ကြည့်ထားသည့် မှတ်တမ်းဒေတာများကို ပင်မ အကောင့်ဖြင့် စင့်ခ်လုပ်ထားသည်။</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{အန္တရာယ်ရှိနိုင်သော နောက်ဆက်တွဲ ၁ ခုကို ပိတ်ထားသည်။ သင်၎င်းကို ဖယ်ရှားနိုင်သည်။}other{အန္တရာယ်ရှိနိုင်သော နောက်ဆက်တွဲ {NUM_EXTENSIONS} ခုကို ပိတ်ထားသည်။ သင်၎င်းတို့ကို ဖယ်ရှားနိုင်သည်။}}</translation>
+<translation id="3101057112460908988">မှတ်ဉာဏ်အသုံးပြုမှု ပြပါ</translation>
 <translation id="3101126716313987672">မီးရောင်အမှိန်</translation>
 <translation id="3101709781009526431">ရက်စွဲ နှင့် အချိန်</translation>
 <translation id="310297983047869047">ယခင်ဆလိုက်</translation>
@@ -2906,6 +2908,7 @@
 <translation id="3166443275568926403">စွမ်းဆောင်ရည်နှင့် ဘက်ထရီအခြေအနေ</translation>
 <translation id="3169930038976362151">လိုအပ်သလို အပြင်အဆင်ကို ရွေးနိုင်သည်။ အပြင်အဆင်၊ နောက်ခံ၊ စကရင်နားချိန်ပုံနှင့် အခြားအရာများပြောင်းရန် ဒက်စ်တော့ကို ထိ၍ဖိထားပါ။</translation>
 <translation id="3170072451822350649">သင် မဝင်ဘဲ ကျော်သွားနိုင်ကာ <ph name="LINK_START" />ဧည့်သည် <ph name="LINK_END" /> အနေဖြင့် အသုံးပြုနိုင်ပါသည်။</translation>
+<translation id="3175067642577044620">စာကိုယ်</translation>
 <translation id="3177430966804511955">သီးခြားခွဲထားသည့် ဝဘ်အက်ပ်များကို စီမံရန် (စမ်းသပ်)</translation>
 <translation id="31774765611822736">ဘယ်ဘက်တွင် တဘ်အသစ်</translation>
 <translation id="3177909033752230686">စာမျက်နှာ ဘာသာစကား −</translation>
@@ -3085,6 +3088,7 @@
 <translation id="3315158641124845231">ဝှက်ရန် <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">'စာဖတ်သူမုဒ်' ဝင်ရန်</translation>
 <translation id="3317459757438853210">နှစ်ဖက်စလုံး</translation>
+<translation id="3317521105713541270">အဖွဲ့များဖွဲ့ရန်</translation>
 <translation id="3317678681329786349">ကင်မရာနှင့် မိုက်ခရိုဖုန်းကို ပိတ်ထားသည်</translation>
 <translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" /> ဖြင့် ပုံထဲရှိ စာသားကို ဘာသာပြန်ရန်</translation>
 <translation id="3320271870899888245">OneDrive သို့ ချိတ်ဆက်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
@@ -4169,7 +4173,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID စက်ကို ချိတ်ဆက်ထားသည်</translation>
 <translation id="4139326893730851150">ဖာမ်းဝဲ အပ်ဒိတ်များ</translation>
 <translation id="4142052906269098341">သင်၏ <ph name="DEVICE_TYPE" /> ကို သင့်ဖုန်းဖြင့် လော့ခ်ဖွင့်နိုင်သည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
-<translation id="4142518881503042940">တွေ့ရှိသည့် ပရင်တာများကို သင့်ပရိုဖိုင်သို့ သိမ်းပါ သို့မဟုတ် အသစ်တစ်ခု ထည့်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">အရည်အသွေးပိုကောင်းသော ဗီဒီယိုကို ရယူပြီး ဘက်ထရီသက်တမ်း ချွေတာပါ။ ဗီဒီယိုကို ကာ့စ်ဖွင့်ထားသော မျက်နှာပြင်တွင်သာ ဖွင့်ပါမည်။</translation>
 <translation id="4146026355784316281">အမြဲတမ်း စနစ် ကြည့်ရှုသူဖြင့် ဖွင့်ပါ</translation>
 <translation id="4146785383423576110">ပြင်ဆင်သတ်မှတ်ပြီး ရှင်းလင်းခြင်း</translation>
@@ -4441,6 +4444,7 @@
 <translation id="4364830672918311045">ပြသမှု သတိပေးချက်များ</translation>
 <translation id="4367513928820380646">ဖယ်ရှားထားသော ခွင့်ပြုချက်များ ပြန်ကြည့်ရန်</translation>
 <translation id="4367971618859387374">ဖော်ပြချက်အမည်</translation>
+<translation id="4368960422722232719">တဘ်ပေါ်မောက်စ်တင်ချိန် အစမ်းပြကွက်ကတ်တွင် မှတ်ဉာဏ်အသုံးပြုမှုကို ပြပါ</translation>
 <translation id="4369215744064167350">ဝဘ်ဆိုက်တောင်းဆိုချက် အတည်ပြုလိုက်သည်</translation>
 <translation id="4369233657762989723">နှုတ်တိုက်ချပေးခြင်း ဖွင့်/ပိတ်</translation>
 <translation id="436926121798828366">၎င်းကို <ph name="SETTINGS_LINK" /> တွင် အချိန်မရွေး ပြောင်းနိုင်သည်</translation>
@@ -5361,6 +5365,7 @@
 <translation id="5093569275467863761">ရှေ့-နောက် ကက်ရှ်သိမ်းထားသော ရုပ်ဖျက်ဖရိမ်ခွဲ- <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">ပံ့ပိုးထားသည့်ဖိုင်များကို File အက်ပ်မှ ဤအက်ပ်ဖြင့်ဖြစ်စေ အခြားအက်ပ်များဖြင့်ဖြစ်စေ ဖွင့်ပြီး ပြင်ဆင်နိုင်သည်။ ဤအက်ပ်အား မည်သည့်ဖိုင်များက မူရင်းသတ်မှတ်ချက်ဖြင့် ဖွင့်မည်ကို ထိန်းချုပ်ရန် <ph name="BEGIN_LINK" />သင့်စက်တွင် မူရင်းအက်ပ် သတ်မှတ်ပုံကို လေ့လာနိုင်သည်<ph name="END_LINK" />။</translation>
 <translation id="5094721898978802975">ဒေသခံ အပလီကေးရှင်းများဖြင့် ပူးပေါင်းလုပ်ဆောင်ခြင်းဖြင့် ဆက်သွယ်မည်</translation>
+<translation id="5095252080770652994">တိုးတက်မှု</translation>
 <translation id="5095507226704905004">ဖိုင်မရှိတော့သဖြင့် မိတ္တူကူး၍မရပါ</translation>
 <translation id="5095848221827496531">ပြန်ဖြုတ်ရန်</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />' ကွန်ရက်သို့ ချိတ်ဆက်၍ မရခဲ့ပါ: <ph name="DETAILS" /></translation>
@@ -5512,6 +5517,7 @@
 <translation id="5213891612754844763">ပရောက်စီ ဆက်တင်များကို ပြရန်</translation>
 <translation id="5214639857958972833">‘<ph name="BOOKMARK_TITLE" />’ လိပ်စာ ပြုလုပ်ထားသည်။</translation>
 <translation id="5215502535566372932">နိုင်ငံ ရွေးပါ</translation>
+<translation id="5215665166431745539">ပုံများပြပါ</translation>
 <translation id="5220011581825921581">Search + အပေါ်ညွှန်မြား</translation>
 <translation id="5222403284441421673">လုံခြုံမှုမရှိသည့် ဒေါင်းလုဒ်ကို ပိတ်ထားခြင်း</translation>
 <translation id="5222676887888702881">ထွက်ခွာရန်</translation>

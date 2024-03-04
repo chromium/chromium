@@ -976,6 +976,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1723824996674794290">&amp;Uus aken</translation>
 <translation id="1724801751621173132">Sisestusrežiim</translation>
 <translation id="1725562816265788801">Vahelehtede kerimine</translation>
+<translation id="1725585416709851618">Proovige Google Drive seadetes lubada ning tehke valik „Proovi uuesti“ või valik „Ava lihtsas redaktoris“, et kasutada piiratud vaadet ja muutmisvõimalusi.</translation>
 <translation id="1726503915437308071">Kursiiv</translation>
 <translation id="1729533290416704613">Lisaks juhib omnikastikeses otsingu tegemise lehte.</translation>
 <translation id="1730666151302379551">Unusta vana parool</translation>
@@ -1556,7 +1557,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2150139952286079145">Otsige sihtkohti</translation>
 <translation id="2150661552845026580">Kas lisada „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2151576029659734873">Sisestati vale vahelehe register.</translation>
-<translation id="2152281589789213846">Printerite lisamine profiilile</translation>
 <translation id="2154484045852737596">Kaardi muutmine</translation>
 <translation id="2155473371917268529">Praegune nähtavuse seade on Teie seadmed</translation>
 <translation id="2155772377859296191">Näib kui <ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
@@ -2287,6 +2287,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2701330563083355633">Jagas <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Kontole <ph name="EMAIL" /> sisselogimine</translation>
 <translation id="2701960282717219666">Võrgu MAC-aadress</translation>
+<translation id="2702720509009999256">Kontrollige oma internetiühendust ja tehke valik „Proovi uuesti“ või valige „Ava lihtsas redaktoris“, et kasutada piiratud vaadet ja muutmisvõimalusi.</translation>
 <translation id="2702801445560668637">Lugemisloend</translation>
 <translation id="270414148003105978">Mobiilsidevõrgud</translation>
 <translation id="2704184184447774363">Microsofti dokumendi allkirjastamine</translation>
@@ -3589,6 +3590,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3719245268140483218">Seadme sündmus</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> on täidetud.</translation>
 <translation id="3719826155360621982">Avaleht</translation>
+<translation id="3720543739123045680">Teised vahelehed jagavad selle vahelehega protsessi, mis võib kaasa tuua arendaja tööriistade ootamatu kasutuskogemuse.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Teie ja Google</translation>
 <translation id="3722108462506185496">Viga virtuaalseadme teenuse käivitamisel. Proovige uuesti.</translation>
@@ -4160,7 +4162,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID-seade on ühendatud</translation>
 <translation id="4139326893730851150">Püsivara värskendused</translation>
 <translation id="4142052906269098341">Avage seade <ph name="DEVICE_TYPE" /> oma telefoniga. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
-<translation id="4142518881503042940">Salvestage tuvastatud printerid oma profiilile või lisage uus printer. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">Vaadake parema kvaliteediga videoid ja säästke aku tööiga. Videot esitatakse ainult Casti toega ekraanikuval.</translation>
 <translation id="4146026355784316281">Ava alati süsteemivaaturiga</translation>
 <translation id="4146785383423576110">Lähtestamine ja puhastamine</translation>
@@ -5040,6 +5041,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="484462545196658690">Automaatne</translation>
 <translation id="4846628405149428620">Valige, kus see sait muudatusi salvestada saab</translation>
 <translation id="4846680374085650406">Järgite selle seade puhul administraatori soovitust.</translation>
+<translation id="4847242508757499006">Tehke valik „Proovi uuesti“ või valige „Ava lihtsas redaktoris“, et kasutada piiratud vaadet ja muutmisvõimalusi.</translation>
 <translation id="4848191975108266266">Google'i assistent „Ok Google”</translation>
 <translation id="4849286518551984791">Koordineeritud maailmaaeg (UTC/GMT)</translation>
 <translation id="4849517651082200438">Ära installi</translation>
@@ -6035,6 +6037,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5636012309446422">Kas eemaldada seade <ph name="DEVICE" /> kontolt <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Võimalik, et võrgu <ph name="NETWORK_ID" /> kasutamiseks tuleb teil esmalt <ph name="LINK_START" />külastada võrgu sisselogimislehte<ph name="LINK_END" />, mis avaneb mõne sekundi pärast automaatselt. Kui see ei avane, ei saa võrku kasutada.</translation>
 <translation id="5637476008227280525">Luba mobiilne andmeside</translation>
+<translation id="5638170200695981015">Tehke valik „Ava lihtsas redaktoris“, et kasutada piiratud vaadet ja muutmisvõimalusi.</translation>
 <translation id="563821631542362636">Luba saidil andmeid salvestada</translation>
 <translation id="5638309510554459422">Otsige <ph name="BEGIN_LINK" />Chrome'i veebipoest<ph name="END_LINK" /> laiendusi ja teemasid</translation>
 <translation id="5639549361331209298">Laadige leht uuesti ja oodake, et näha rohkem valikuid</translation>
@@ -6787,6 +6790,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6235208551686043831">Seadme kaamera lülitati sisse. Asetage eSIM-i QR-kood kaamera ette.</translation>
 <translation id="6237297174664969437">Saate Chrome'i seadetes alati valida, milliseid brauseriandmeid sünkroonida. Chrome'i brauserist installitud veebirakenduste sünkroonimist saate hallata <ph name="LINK_BEGIN" />Seadme seadetes<ph name="LINK_END" />. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
 <translation id="6237474966939441970">Elektronpliiatsiga märkmete tegemise rakendus</translation>
+<translation id="6237481151388361546">Kontrollige oma internetiühendust ning tehke valik „Proovi uuesti“ või valik „Ava lihtsas redaktoris“, et kasutada piiratud vaadet ja muutmisvõimalusi.</translation>
 <translation id="623755660902014047">Lugemisrežiim</translation>
 <translation id="6238767809035845642">Muust seadmest jagatud tekst</translation>
 <translation id="6238923052227198598">Säilita viimane märge lukustuskuval</translation>
@@ -8801,7 +8805,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7799650166313181433">Ainult seadmed, mis on kontole <ph name="USER_EMAIL" /> sisse logitud, saavad selle seadmega jagada. Te ei pea heaks kiitma jagamist oma seadmete vahel.</translation>
 <translation id="7800485561443537737">Kasutab seadme <ph name="DEVICE_TYPE" /> mobiilset andmesidet ja teie operaator või lisatasusid nõuda. See võib suurendada akukasutust. <ph name="BEGIN_LINK_LEARN_MORE" />Lugege lisateavet.<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Pööra &amp;vastupäeva</translation>
-<translation id="780301667611848630">Ei, aitäh</translation>
+<translation id="780301667611848630">Tänan, ei</translation>
 <translation id="7803657407897251194">Android-seadmega seadistamise jätkamiseks ühendage oma seadme <ph name="DEVICE_TYPE" /> võrku</translation>
 <translation id="7804072833593604762">Vaheleht suleti</translation>
 <translation id="780446144738273886">Ekraanilugeja jaoks teksti ekstraktimiseks skannige PDF-i. Toetatakse ainult brauseris Chrome</translation>
@@ -9328,6 +9332,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8200772114523450471">Taasta</translation>
 <translation id="8200789660596905522">Veenduge, et võtaksite seadmes <ph name="DEVICE_NAME" /> ülekandmise taotluse vastu.</translation>
 <translation id="8202160505685531999">Sisestage oma seadme <ph name="DEVICE_TYPE" /> profiili värskendamiseks parool uuesti.</translation>
+<translation id="8202827109322349110">Ava lihtsas redaktoris</translation>
 <translation id="8203152941016626022">Läheduses jagamine – seadme nimi</translation>
 <translation id="8203732864715032075">See arvuti jäetakse rakenduse Messages jaoks meelde ning teile saadetakse sõnumite kohta märguandeid. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Paremklikk</translation>

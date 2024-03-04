@@ -579,6 +579,7 @@
 <translation id="1444628761356461360">ამ პარამეტრს მართავს აპარატის მფლობელი. <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">ვერ მოხერხდა „<ph name="IMAGE_PATH" />“ ის დეკორაციისთვის ჩამოტვირთვა.</translation>
 <translation id="1447531650545977377">&amp;სინქრონიზაციის ჩართვა...</translation>
+<translation id="1447895950459090752">გადახედვის ბარათი ჩანართზე კურსორის გადატარებისას</translation>
 <translation id="1448264954024227422">ამ ანგარიშის გამოყენება შეგიძლიათ Android აპებში. თუ სხვისი ანგარიშის დამატება გსურთ, სანაცვლოდ, <ph name="LINK_BEGIN" />დაამატეთ ახალი პიროვნება<ph name="LINK_END" /> თქვენს <ph name="DEVICE_TYPE" />-ს.
 
 ამ ანგარიშზე, შესაძლოა, ვრცელდებოდეს ნებართვები, რომლებიც უკვე მიანიჭეთ აპებს. Android აპებისთვის ნებართვების მართვა შეგიძლიათ <ph name="APPS_LINK_BEGIN" />აპების პარამეტრებიდან<ph name="APPS_LINK_END" />.</translation>
@@ -801,6 +802,7 @@
 <translation id="1602085790802918092">მიმდინარეობს ვირტუალური მოწყობილობის გაშვება</translation>
 <translation id="1603116295689434284">Chrome სისტემის ინფორმაცია</translation>
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" />-ის დავიწყება</translation>
+<translation id="1603879843804174953">ხანგრძლივი დაჭერა</translation>
 <translation id="1603914832182249871">(ინკოგნიტო)</translation>
 <translation id="1604432177629086300">ბეჭდვა ვერ მოხერხდა. შეამოწმეთ პრინტერი და ცადეთ ხელახლა.</translation>
 <translation id="1604567162047669454">ვიზუალური განლაგების სემანტიკის ამოცნობა</translation>
@@ -972,6 +974,7 @@
 <translation id="1723824996674794290">&amp;ახალი ფანჯარა</translation>
 <translation id="1724801751621173132">შეყვანის რეჟიმი</translation>
 <translation id="1725562816265788801">ჩანართებში გადაადგილება</translation>
+<translation id="1725585416709851618">ცადეთ, ჩართოთ Google Drive პარამეტრებიდან და აირჩიოთ „ხელახლა ცდა“, ან აირჩიეთ „საბაზისო რედაქტორში გახსნა“, ხედისა და რედაქტირების შეზღუდული ვარიანტებით რომ ისარგებლოთ.</translation>
 <translation id="1726503915437308071">დახრილი შრიფტი</translation>
 <translation id="1729533290416704613">იგი ასევე აკონტროლებს, თუ რომელი გვერდი გამოჩნდება Omnibox-ში ძიების დროს.</translation>
 <translation id="1730666151302379551">ძველი პაროლი დამავიწყდა</translation>
@@ -1339,6 +1342,7 @@
 <translation id="1992397118740194946">არ არის დაყენებული</translation>
 <translation id="1994173015038366702">საიტის URL</translation>
 <translation id="1995916364271252349">აკონტროლებს, რა ტიპის ინფორმაციის გამოყენება და ჩვენება შეუძლია საიტებს (მდებარეობა, კამერა, ამომხტარი ფანჯრები და ა.შ.)</translation>
+<translation id="199610894463449797">{0,plural, =1{ამ პროფილის დახურვა}other{ამ პროფილის დახურვა (# ფანჯარა)}}</translation>
 <translation id="1997433994358798851">Chrome საჭიროებს ნებართვას, თქვენს მოწყობილობასთან დასაკავშირებლად Bluetooth რომ გამოიყენოს</translation>
 <translation id="1997616988432401742">თქვენი სერტიფიკატები</translation>
 <translation id="1999115740519098545">ჩატვირთვისას</translation>
@@ -1551,7 +1555,6 @@
 <translation id="2150139952286079145">დანიშნულებების ძიება</translation>
 <translation id="2150661552845026580">დავამატოთ „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2151576029659734873">შეყვანილია ჩანართის არასწორი ინდექსი.</translation>
-<translation id="2152281589789213846">დაამატეთ პრინტერები თქვენს პროფილს</translation>
 <translation id="2154484045852737596">ბარათის რედაქტირება</translation>
 <translation id="2155473371917268529">ხილვადობის პარამეტრად ამჟამად მითითებულია თქვენი მოწყობილობები</translation>
 <translation id="2155772377859296191">როგორც ჩანს, გარჩევადობა არის <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
@@ -1580,6 +1583,7 @@
 <translation id="2175384018164129879">საძიებო სისტემებისა და Site Search-ის &amp;მართვა</translation>
 <translation id="217576141146192373">პრინტერის დამატება ვერ მოხერხდა. შეამოწმეთ პრინტერის კონფიგურაცია და ცადეთ ხელახლა.</translation>
 <translation id="2175927920773552910">QR კოდი</translation>
+<translation id="217631816678106981">არ ჩაისვას</translation>
 <translation id="2177306523871626993">მიმდინარეობს ტექსტის ამოცნობის ფაილების ჩამოტვირთვა… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">ინკოგნიტო ჩანართი: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -2278,6 +2282,7 @@
 <translation id="2701330563083355633">გაზიარებულია <ph name="DEVICE_NAME" />-დან</translation>
 <translation id="2701737434167469065">შესვლა, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">ქსელის MAC მისამართი</translation>
+<translation id="2702720509009999256">შეამოწმეთ კავშირი ინტერნეტთან და აირჩიეთ „ხელახლა ცდა“, აირჩიეთ „საბაზისო რედაქტორში გახსნა“, ნახვისა და რედაქტირების შეზღუდული ვარიანტებით რომ ისარგებლოთ.</translation>
 <translation id="2702801445560668637">საკითხავი სია</translation>
 <translation id="270414148003105978">მობილური ქსელები</translation>
 <translation id="2704184184447774363">Microsoft დოკუმენტების ხელმოწერა</translation>
@@ -2333,6 +2338,7 @@
 <translation id="2732134891301408122">დამატებითი კონტენტი <ph name="CURRENT_ELEMENT" /> / <ph name="TOTAL_ELEMENTS" />-დან</translation>
 <translation id="2733248615007838252">ზევით აწეული ცერი ნიშნავს, რომ ეს შედეგები მოგეწონათ.</translation>
 <translation id="2733992589856193783">თქვენ შექმენით წვდომის გასაღები ამ საიტისთვის. შესასვლელად თქვენი მობილური მოწყობილობა გჭირდებათ.</translation>
+<translation id="2734797989819862638">არ დაკოპირდეს</translation>
 <translation id="27349076983469322">ღია ფონი</translation>
 <translation id="2735712963799620190">განრიგი</translation>
 <translation id="2737363922397526254">აკეცვა…</translation>
@@ -2462,7 +2468,7 @@
 <translation id="2822634587701817431">შევიწროება / გაშლა</translation>
 <translation id="2822910719211888134">შეცდომა Linux-ის სარეზერვო კოპირებისას</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> იყენებს პროქსი-სერვერის პარამეტრებს, რომლებიც განსაზღვრულია თქვენი ადმინისტრატორის მიერ</translation>
-<translation id="2825151610926840364">მანიჭეთ წვდომა აპებსა და ვებსაიტებს, რომლებსაც კამერის გამოყენების ნებართვა აქვს. კამერის გამოსაყენებლად, შესაძლოა, დაგჭირდეთ აპის გადატვირთვა ან გვერდის განახლება.</translation>
+<translation id="2825151610926840364">მიანიჭეთ წვდომა აპებსა და ვებსაიტებს, რომლებსაც კამერის გამოყენების ნებართვა აქვს. კამერის გამოსაყენებლად, შესაძლოა, დაგჭირდეთ აპის გადატვირთვა ან გვერდის განახლება.</translation>
 <translation id="2825758591930162672">სუბიექტის საჯარო გასაღები</translation>
 <translation id="2828375943530438449">დაბრუნება სისტემაში შესვლიდან</translation>
 <translation id="2828650939514476812">Wi-Fi ქსელთან დაკავშირება</translation>
@@ -2604,6 +2610,7 @@
 <translation id="2935654492420446828">დაამატეთ სასწავლებლის ანგარიში მოგვიანებით</translation>
 <translation id="2936851848721175671">სარეზერვო კოპირება და აღდგენა</translation>
 <translation id="2938981087412273365">არ არის დაშვებული წაკითხვა და შეცვლა ამ საიტზე</translation>
+<translation id="2939005221756255562">დაუშვით შეტყობინებების მიღება შეტყობინებათა ცენტრში. გახსენით <ph name="BEGIN_LINK" />სისტემის პარამეტრები<ph name="END_LINK" />.</translation>
 <translation id="2939908794993783865">დამატებითი უმოქმედო საიტები</translation>
 <translation id="2939938020978911855">ხელმისაწვდომი Bluetooth მოწყობილობების ჩვენება</translation>
 <translation id="2941112035454246133">დაბალი</translation>
@@ -2809,6 +2816,7 @@
 <translation id="3094521107841754472">ფასი შეიცვალა <ph name="PREVIOUS_PRICE" />-დან <ph name="CURRENT_PRICE" />-ზე.</translation>
 <translation id="3095871294753148861">სანიშნეები, პაროლები და ბრაუზერის სხვა მონაცემები სინქრონიზებულია ძირითად ანგარიშთან.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 პოტენციურად საზიანო გაფართოება გამორთულია. შეგიძლიათ მისი ამოშლაც.}other{{NUM_EXTENSIONS} პოტენციურად საზიანო გაფართოება გამორთულია. შეგიძლიათ მათი ამოშლაც.}}</translation>
+<translation id="3101057112460908988">მეხსიერების გამოყენების ჩვენება</translation>
 <translation id="3101126716313987672">მკრთალი განათება</translation>
 <translation id="3101709781009526431">თარიღი და დრო</translation>
 <translation id="310297983047869047">წინა სლაიდი</translation>
@@ -2886,6 +2894,7 @@
 <translation id="3166443275568926403">წარმადობა და ბატარეის მდგომარეობა</translation>
 <translation id="3169930038976362151">აირჩიეთ თქვენი საჭიროებების შესაბამისი თემა. თემის, ფონის, ეკრანმზოგის და სხვა დაკავშირებული პარამეტრების შესაცვლელად ხანგრძლივად შეეხეთ დესკტოპს.</translation>
 <translation id="3170072451822350649">შეგიძლიათ ასევე გამოტოვოთ შესვლის ეტაპი და <ph name="LINK_START" />დაათვალიეროთ სტუმრის სტატუსით<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">ძირითადი ტექსტი</translation>
 <translation id="3177430966804511955">იზოლირებული ვებ-აპების (ბეტა) მართვა</translation>
 <translation id="31774765611822736">ახალი ჩანართი მარცხნივ</translation>
 <translation id="3177909033752230686">გვერდის ენა:</translation>
@@ -2897,6 +2906,7 @@
 <translation id="3183139917765991655">პროფილის იმპორტიორი</translation>
 <translation id="3183143381919926261">მობილური ინტერნეტის ქსელები</translation>
 <translation id="3183613134231754987">წვდომის ეს გასაღები მხოლოდ Windows Hello-ში შეინახება. ის დარჩება ამ მოწყობილობაზე, როცა ყველა ინკოგნიტო ფანჯარას დახურავთ.</translation>
+<translation id="3183700187146209259">სკანერის პროგრამული უზრუნველყოფა ვერ დაინსტალირდა</translation>
 <translation id="3183944777708523606">მონიტორის მოწყობა</translation>
 <translation id="3184536091884214176">CUPS პრინტერების დაყენება ან მართვა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{ეს აპი დაბლოკილია}other{ზოგიერთი აპი დაბლოკილია}}</translation>
@@ -3065,6 +3075,7 @@
 <translation id="3315158641124845231">დამალეთ <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">წამკითხველის რეჟიმში შესვლა</translation>
 <translation id="3317459757438853210">ორმხრივი</translation>
+<translation id="3317521105713541270">ჯგუფების შექმნა</translation>
 <translation id="3317678681329786349">კამერა და მიკროფონი დაბლოკილია</translation>
 <translation id="3319306431415395200">სურათში ტექსტის თარგმნა <ph name="VISUAL_SEARCH_PROVIDER" />-ით</translation>
 <translation id="3320271870899888245">OneDrive-თან დაკავშირება ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
@@ -3112,6 +3123,7 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" />-ის მიერ თქვენთან ზიარდება <ph name="ATTACHMENTS" />.}other{<ph name="DEVICE_NAME" />-ის მიერ თქვენთან ზიარდება <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3361954577771524115">აპიდან</translation>
 <translation id="3363202073972776113">ამ ახალი პროფილის მმართველი იქნება თქვენი ორგანიზაცია. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
+<translation id="3364159059299045452">Alt+კურსორის გადატარება</translation>
 <translation id="3364986687961713424">თქვენი ადმინისტრატორისგან: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">გამოიყენეთ Ctrl ან Alt</translation>
 <translation id="3368922792935385530">დაკავშირებული</translation>
@@ -3577,6 +3589,7 @@
 <translation id="3719245268140483218">მოვლენა მოწყობილობაზე</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> შეივსო.</translation>
 <translation id="3719826155360621982">საწყისი გვერდი</translation>
+<translation id="3720543739123045680">სხვა ჩანართები ამ ჩანართთან ერთად იყენებს პროცესს, რამაც, შესაძლოა, DevTools-ის მოულოდნელი ქცევა გამოიწვიოს.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">თქვენ და Google</translation>
 <translation id="3722108462506185496">ვირტუალური მოწყობილობის სერვისის გაშვება ვერ მოხერხდა. გთხოვთ, ცადოთ ხელახლა.</translation>
@@ -4148,7 +4161,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> — დაკავშირებულია HID მოწყობილობა</translation>
 <translation id="4139326893730851150">ჩაშენებული პროგრამული უზრუნველყოფის განახლებები</translation>
 <translation id="4142052906269098341">განბლოკეთ <ph name="DEVICE_TYPE" /> თქვენი ტელეფონით. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
-<translation id="4142518881503042940">შეინახეთ აღმოჩენილი პრინტერები თქვენს პროფილში, ან დაამატეთ ახალი პრინტერი. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">ნახეთ ვიდეოები უკეთესი ხარისხით და დაზოგეთ ბატარეა. ვიდეოები დაიკვრება მხოლოდ Cast-ის მხარდაჭერის მქონე ეკრანზე.</translation>
 <translation id="4146026355784316281">ყოველთვის გახსნა სისტემის დამთვალიერებლით</translation>
 <translation id="4146785383423576110">გადაყენება და გასუფთავება</translation>
@@ -4420,6 +4432,7 @@
 <translation id="4364830672918311045">შეტყობინებების ჩვენება</translation>
 <translation id="4367513928820380646">გაუქმებული ნებართვების შემოწმება</translation>
 <translation id="4367971618859387374">საჩვენებელი სახელი</translation>
+<translation id="4368960422722232719">მეხსიერების გამოყენების ჩვენება გადახედვის ბარათზე ჩანართზე კურსორის გადატარებისას</translation>
 <translation id="4369215744064167350">ვებსაიტის მოთხოვნა დაკმაყოფილდა</translation>
 <translation id="4369233657762989723">კარნახის ჩართვა/გამორთვა</translation>
 <translation id="436926121798828366">ამის შეცვლა ნებისმიერ დროს შეგიძლიათ სექციიდან „<ph name="SETTINGS_LINK" />“</translation>
@@ -4558,6 +4571,7 @@
 <translation id="4473559657152613417">მარჯვენა დაწკაპუნებით აირჩიეთ ჩანართი, შემდეგ კი — „ჩანართის დამატება ახალ ჯგუფში“</translation>
 <translation id="4473996011558324141">სავარაუდო დრო</translation>
 <translation id="4474155171896946103">ყველა ჩანართის სანიშნეებში დამატება…</translation>
+<translation id="4475299370877036544">ეს მოქმედება, შესაძლოა, არღვევდეს თქვენი ორგანიზაციის წესებს</translation>
 <translation id="4475552974751346499">ჩამოტვირთვების ძიება</translation>
 <translation id="4476590490540813026">სპორტსმენი</translation>
 <translation id="4476659815936224889">ამ კოდის სკანირებისთვის შეგიძლიათ გამოიყენოთ კამერის ზოგიერთი აპი ან QR კოდების სკანირების აპი თქვენს ტელეფონზე.</translation>
@@ -4895,6 +4909,7 @@
 <translation id="473775607612524610">განახლება</translation>
 <translation id="473936925429402449">არჩეულია, დამატებითი კონტენტი <ph name="CURRENT_ELEMENT" /> / <ph name="TOTAL_ELEMENTS" />-დან</translation>
 <translation id="4739639199548674512">ბილეთები</translation>
+<translation id="4740546261986864539">ახლახან გახსნილი</translation>
 <translation id="4742334355511750246">სურათების ჩვენება დაუშვებელია</translation>
 <translation id="4742970037960872810">გამოყოფის ამოშლა</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />შეიტყვეთ აპლიკაციების განახლების შესახებ<ph name="END_LINK" /></translation>
@@ -5027,6 +5042,7 @@
 <translation id="484462545196658690">ავტომატური</translation>
 <translation id="4846628405149428620">აირჩიეთ, სად შეუძლია ამ საიტს ცვლილებების შენახვა</translation>
 <translation id="4846680374085650406">ამ პატარამეტრის შემთხვევაში, თქვენ იზიარებთ ადმინისტრატორის რეკომენდაციას.</translation>
+<translation id="4847242508757499006">აირჩიეთ „ხელახლა ცდა“, ან „საბაზისო რედაქტორში გახსნა“, ნახვისა და რედაქტირების შეზღუდული ვარიანტებით რომ ისარგებლოთ.</translation>
 <translation id="4848191975108266266">Google ასისტენტის „Ok Google“</translation>
 <translation id="4849286518551984791">საერთაშორისო კოორდინირებული დრო (UTC/GMT)</translation>
 <translation id="4849517651082200438">არ დააინსტალიროთ</translation>
@@ -5091,6 +5107,7 @@
 <translation id="488785315393301722">დეტალების ჩვენება</translation>
 <translation id="488862352499217187">ახალი საქაღალდის შექმნა</translation>
 <translation id="4890292359366636311">ავტომატურად მოხდეს გადასვლა რეჟიმზე „ეკრანი ეკრანში“, რომ მისი გამოყენება შეძლოთ სხვა ჩანართებისა და ფანჯრების ზემოდან.</translation>
+<translation id="4890399733764921729">დაკავშირება ვერ ხერხდება. ჩაკეტილია სხვა მობილური ოპერატორის მიერ.</translation>
 <translation id="4890773143211625964">პრინტერის დამატებითი პარამეტრების ჩვენება</translation>
 <translation id="4891089016822695758">ბეტა ფორუმი</translation>
 <translation id="4892229439761351791">საიტს შეუძლია Bluetooth-კავშირის გამოყენება</translation>
@@ -5337,6 +5354,7 @@
 <translation id="5093569275467863761">ქეშირებული ქვეფრეიმი უკან-წინ გადასვლის შესაძლებლობით: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">ამ აპის მეშვეობით შეგიძლიათ გახსნათ და დაარედაქტიროთ მხარდაჭერილი ფაილები ფაილების აპიდან ან სხვა აპებიდან. იმისთვის, რომ გააკონტროლოთ, ნაგულისხმევად რომელმა ფაილებმა გახსნას ეს აპი, <ph name="BEGIN_LINK" />შეიტყვეთ, როგორ დააყენოთ ნაგულისხმევი აპები თქვენს მოწყობილობაზე<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">მოთანამშრომლე ძირითად პროგრამებთან კომუნიკაცია</translation>
+<translation id="5095252080770652994">პროგრესი</translation>
 <translation id="5095507226704905004">ფაილის კოპირება ვერ ხერხდება, რადგან ის აღარ არსებობს.</translation>
 <translation id="5095848221827496531">არჩევის გაუქმება</translation>
 <translation id="5097002363526479830">ქსელთან დაკავშირება ვერ მოხერხდა „<ph name="NAME" />“: <ph name="DETAILS" /></translation>
@@ -5488,6 +5506,7 @@
 <translation id="5213891612754844763">პროქსი-სერვერის პარამეტრების ჩვენება</translation>
 <translation id="5214639857958972833">სანიშნე „<ph name="BOOKMARK_TITLE" />“ შეიქმნა.</translation>
 <translation id="5215502535566372932">აირჩიეთ ქვეყანა</translation>
+<translation id="5215665166431745539">სურათების ჩვენება</translation>
 <translation id="5220011581825921581">search + ზემოთ მიმართული ისარი</translation>
 <translation id="5222403284441421673">არაუსაფრთხო ჩამოტვირთვა დაბლოკილია</translation>
 <translation id="5222676887888702881">გამოსვლა</translation>
@@ -5697,6 +5716,7 @@
 <translation id="5395498824851198390">ნაგულისხმევი შრიფტი</translation>
 <translation id="5397378439569041789">მოწყობილობა-ჯიხურის ან მიმთითებელი მოწყობილობის რეგისტრაცია</translation>
 <translation id="5397794290049113714">თქვენ</translation>
+<translation id="5398062879200420134">⌥+კურსორის გადატარება</translation>
 <translation id="5398497406011404839">დამალული სანიშნეები</translation>
 <translation id="5398572795982417028">გვერდზე მითითება საზღვრებს სცდება. ლიმიტი არის <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">არ აქვს დაშვებული თქვენი მოწყობილობისთვის ხელმისაწვდომი პრინტერების მოძიება თუ გამოყენება</translation>
@@ -6021,6 +6041,7 @@
 <translation id="5636012309446422">გსურთ, <ph name="PRIMARY_EMAIL" />-დან ამოშალოთ <ph name="DEVICE" />?</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" />-ის გამოსაყენებლად, შესაძლოა, ჯერ დაგჭირდეთ <ph name="LINK_START" />ქსელში შესვლის გვერდზე გადასვლა<ph name="LINK_END" />, რომელიც ავტომატურად გაიხსნება რამდენიმე წამში. თუ გვერდი არ იხსნება, ქსელის გამოყენება შეუძლებელია.</translation>
 <translation id="5637476008227280525">მობილური ინტერნეტის ჩართვა</translation>
+<translation id="5638170200695981015">აირჩიეთ „საბაზისო რედაქტორში გახსნა“, ნახვისა და რედაქტირების შეზღუდული ვარიანტებით რომ ისარგებლოთ.</translation>
 <translation id="563821631542362636">საიტისთვის მონაცემთა შენახვის უფლების მიცემა</translation>
 <translation id="5638309510554459422">იპოვეთ გაფართოებები და თემები <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />-ში</translation>
 <translation id="5639549361331209298">გადატვირთეთ ეს გვერდი, გააჩერეთ რათა დაიხნახოთ მეტი ფუნქციები</translation>
@@ -6321,6 +6342,7 @@
 <translation id="5882919346125742463">ცნობილი ქსელები</translation>
 <translation id="5883356647197510494">ავტომატურად დაბლოკილია <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">მორგება თითოეული გაფართოებისთვის</translation>
+<translation id="5884730022784413637">ხანგრძლივი დაჭერა</translation>
 <translation id="5885314688092915589">ამ პროფილს თქვენი ორგანიზაცია მართავს</translation>
 <translation id="5885470467814103868">სკანირების დაწყება</translation>
 <translation id="5885631909150054232">ჟეტონის კოპირება</translation>
@@ -6772,6 +6794,7 @@
 <translation id="6235208551686043831">მოწყობილობის კამერა ჩაირთო. მოათავსეთ თქვენი eSIM-ის QR კოდი კამერის წინ.</translation>
 <translation id="6237297174664969437">Chrome-ის პარამეტრებიდან ნებისმიერ დროს შეგიძლიათ აირჩიოთ, ბრაუზერის რომელი მონაცემების სინქრონიზაცია გსურთ. <ph name="LINK_BEGIN" />მოწყობილობის პარამეტრებიდან<ph name="LINK_END" /> შეგიძლიათ აკონტროლოთ იმ ვებაპების სინქრონიზაცია, რომლებიც დაინსტალირებულია Chrome ბრაუზერიდან. თქვენი ისტორიის მეშვეობით Google შეძლებს Search-ისა და სხვა სერვისების თქვენზე მორგებას.</translation>
 <translation id="6237474966939441970">სტილუსით ჩანიშვნის აპი</translation>
+<translation id="6237481151388361546">შეცვალეთ კავშირი ინტერნეტთან და აირჩიეთ „ხელახლა ცდა“, აირჩიეთ „საბაზისო რედაქტორში გახსნა“, ნახვისა და რედაქტირების შეზღუდული ვარიანტებით რომ ისარგებლოთ.</translation>
 <translation id="623755660902014047">წაკითხვის რეჟიმი</translation>
 <translation id="6238767809035845642">სხვა მოწყობილობიდან გაზიარებული ტექსტი</translation>
 <translation id="6238923052227198598">უახლესი ჩანიშვნის შენარჩუნება ჩაკეტილ ეკრანზე</translation>
@@ -7837,6 +7860,7 @@
 <translation id="7072010813301522126">მალსახმობის სახელი</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 RSA დაშიფვრით</translation>
 <translation id="7075625805486468288">HTTPS/SSL სერტიფიკატებისა და პარამეტრების მართვა</translation>
+<translation id="7075896597860500885">ამ საიტიდან კოპირება არ არის რეკომენდებული</translation>
 <translation id="7076875098323397992">ვერსიის განახლების დაწყება ვერ მოხერხდა</translation>
 <translation id="7077751457066325012">ნახეთ და მოირგეთ კლავიატურის მალსახმობი</translation>
 <translation id="7077829361966535409">ვერ მოხერხდა სისტემაში შესვლის გვერდის ჩამოტვირთვა არსებული პროქსი პარამეტრების გამოყენებით. გთხოვთ <ph name="GAIA_RELOAD_LINK_START" />სდაცეთ შესვლა კიდევ ერთხელ<ph name="GAIA_RELOAD_LINK_END" />, ან გამოიყენეთ სხვა <ph name="PROXY_SETTINGS_LINK_START" />პროქსის პარამეტრები<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
@@ -8184,6 +8208,7 @@
 <translation id="736877393389250337"><ph name="URL" /> ვერ გაიხსნება <ph name="ALTERNATIVE_BROWSER_NAME" />-ში. მიმართეთ თქვენი სისტემის ადმინისტრატორს.</translation>
 <translation id="7368927539449986686">საიტზე ძიების რედაქტირება</translation>
 <translation id="7370592524170198497">Ethernet ქსელის EAP:</translation>
+<translation id="7370751048350026847">ამ კონტენტის ამ საიტზე ჩასმა არ არის რეკომენდებული</translation>
 <translation id="7371917887111892735">ჩანართები შევიწროვდება ჩამაგრებული ჩანართის სიგანეზე</translation>
 <translation id="7374376573160927383">USB-მოწყობილობების მართვა</translation>
 <translation id="7376124766545122644">ამ ბმულის გამოყენება შეუძლებელია. ხელახლა საცდელად დარწმუნდით, რომ ბმულის დასაწყისში არის „http://“ ან „https://“.</translation>
@@ -8320,6 +8345,7 @@
 <translation id="7465778193084373987">Netscape სერტიფიკატის გაუქმების URL</translation>
 <translation id="7466431077154602932">კომპაქტური ხედი</translation>
 <translation id="746861123368584540">გაფართოება ჩაიტვირთა</translation>
+<translation id="7470131554696493512">Thunderbolt ან USB4 აქსესუარებისთვის დაიბლოკოს მეხსიერებაზე (RAM) წვდომისა და მისი გაზიარების შესაძლებლობა</translation>
 <translation id="7470424110735398630">თქვენი გაცვლის ბუფერის ნახვა დაშვებულია</translation>
 <translation id="747114903913869239">შეცდომა: გაფართოება ვერ გაიშიფრა</translation>
 <translation id="7471520329163184433">უფრო ნელა</translation>
@@ -8782,7 +8808,7 @@
 <translation id="7799650166313181433">ამ მოწყობილობასთან კონტენტის გაზიარება შეუძლია მხოლოდ <ph name="USER_EMAIL" />-ში შესულ მოწყობილობებს. თქვენი მოწყობილობებიდან კონტენტის გაზიარების დამტკიცება არ დაგჭირდებათ.</translation>
 <translation id="7800485561443537737">იყენებს თქვენი <ph name="DEVICE_TYPE" />-ის მობილურ ინტერნეტს. თქვენმა ოპერატორმა, შესაძლოა, დამატებითი გადასახადი დაგაკისროთ. შესაძლოა, გაიზარდოს ბატარეის მოხმარება. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">შეტრიალება &amp;საათის ისრის საწინააღმდეგო მიმართულებით</translation>
-<translation id="780301667611848630">არა, მადლობთ</translation>
+<translation id="780301667611848630">არა, გმადლობთ</translation>
 <translation id="7803657407897251194">დაყენების თქვენი Android მოწყობილობით გასაგრძელებლად დაუკავშირეთ თქვენი <ph name="DEVICE_TYPE" /> ქსელს</translation>
 <translation id="7804072833593604762">ჩანართი დაიხურა</translation>
 <translation id="780446144738273886">დაასკანირეთ PDF, რომ ამოიღოთ ტექსტი ეკრანის წამკითხველისთვის. მხარდაჭერილია მხოლოდ Chrome ბრაუზერში.</translation>
@@ -8973,6 +8999,7 @@
 <translation id="7943837619101191061">მდებარეობის დამატება…</translation>
 <translation id="79446453817422139">ეს ფაილი, შესაძლოა, სახიფათო იყოს</translation>
 <translation id="7944772052836377867">სინქრონიზაციის ფუნქციას სჭირდება თქვენი ვინაობის დადასტურება</translation>
+<translation id="7944847494038629732">გამოაერთეთ და ხელახლა მიაერთეთ სკანერის USB კაბელი, ხელახლა რომ ცადოთ</translation>
 <translation id="7945703887991230167">სასურველი ხმა</translation>
 <translation id="7946586320617670168">წყარო უნდა იყოს დაცული</translation>
 <translation id="794676567536738329">დაადასტურეთ ნებართვები</translation>
@@ -9308,6 +9335,7 @@
 <translation id="8200772114523450471">გაგრძელება</translation>
 <translation id="8200789660596905522">ყურადღება მიაქციეთ, რომ დაეთანხმოთ ტრანსლირების მოთხოვნას თქვენს <ph name="DEVICE_NAME" />-ზე.</translation>
 <translation id="8202160505685531999">თქვენი <ph name="DEVICE_TYPE" />-ის პროფილის განსაახლებლად, გთხოვთ, ხელახლა შეიყვანოთ თქვენი პაროლი.</translation>
+<translation id="8202827109322349110">საბაზისო რედაქტორში გახსნა</translation>
 <translation id="8203152941016626022">მახლობლად გაზიარების მოწყობილობის სახელი</translation>
 <translation id="8203732864715032075">თქვენთვის შეტყობინებების გამოგზავნა და ნაგულისხმევად ამ კომპიუტერის დამახსოვრება Messages-თვის. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">მარჯვენა დაწკაპუნება</translation>
@@ -9383,6 +9411,7 @@
 <translation id="8260864402787962391">მაუსი</translation>
 <translation id="8261378640211443080">ეს გაფართოება არ არის <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ის სიაში და, შესაძლოა, დამატებულია თქვენი თანხმობის გარეშე.</translation>
 <translation id="8261506727792406068">წაშლა</translation>
+<translation id="8261625296061301062">სკანერის პროგრამული უზრუნველყოფა დაინსტალირდა</translation>
 <translation id="8262971894813353037">ჩართავს ახალ დესკტოპ-დიზაინს WebUI-ისთვის. Chrome-ის 2023 წლის განახლებაც ჩართული უნდა იყოს.</translation>
 <translation id="8263336784344783289">დაარქვით სახელი ამ ჯგუფს</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />-მა გამორთო მაუსის კურსორი.</translation>
@@ -9566,6 +9595,7 @@
 <translation id="8387361103813440603">თქვენი მდებარეობის ნახვა დაუშვებელია</translation>
 <translation id="8388770971141403598">მეორადი პროფილები მხარდაუჭერელია</translation>
 <translation id="8389492867173948260">მიეცით საშუალება ამ გაფართოებას, წაიკითხოს და შეცვალოს თქვენი ყველა მონაცემი მონახულებულ ვებსაიტებზე:</translation>
+<translation id="8390392581097975659">მიმდინარეობს სკანერის პროგრამული უზრუნველყოფის ინსტალაცია</translation>
 <translation id="8390449457866780408">სერვერი მიუწვდომელია.</translation>
 <translation id="8391218455464584335">ვინილი</translation>
 <translation id="8392726714909453725">წარმოსათქმელად მონიშვნის პარამეტრები</translation>
@@ -9583,6 +9613,7 @@
 <translation id="8403618281196981152">თქვენი მონაცემები Chrome-ში</translation>
 <translation id="8403807918453631441">პაროლების შემოწმებას <ph name="BRAND" /> შეძლებს მათი შენახვის შემდეგ</translation>
 <translation id="8405046151008197676">გაეცანით ძირითად სიახლეებს ბოლო განახლებაში</translation>
+<translation id="8405118833120731611">{0,plural, =1{ამ პროფილის დახურვა}other{ამ პროფილის დახურვა (# ფანჯარა)}}</translation>
 <translation id="8407199357649073301">ჟურნალირების დონე:</translation>
 <translation id="8408270600235826886">თქვენ შეგიძლიათ გააკონტროლოთ, რა მონაცემები გაზიარდეს Google-თან. ამის შეცვლა ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან. მონაცემები გამოიყენება Google-ის <ph name="BEGIN_LINK" />კონფიდენციალურობის დებულების<ph name="END_LINK" /> შესაბამისად.</translation>
 <translation id="84098433273647700">თქვენ მიერ ამჟამად დაინსტალირებული თემა.</translation>

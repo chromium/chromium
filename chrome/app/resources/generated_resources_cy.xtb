@@ -1569,7 +1569,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2150139952286079145">Chwilio cyrchfannau</translation>
 <translation id="2150661552845026580">Ychwanegu "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Mae mynegai tab annilys wedi'i nodi.</translation>
-<translation id="2152281589789213846">Ychwanegu argraffwyr at eich proffil</translation>
 <translation id="2154484045852737596">Golygu cerdyn</translation>
 <translation id="2155473371917268529">Y gosodiad gwelededd presennol yw eich dyfeisiau</translation>
 <translation id="2155772377859296191">Yn edrych fel <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
@@ -4175,7 +4174,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - Mae dyfais HID wedi'i chysylltu</translation>
 <translation id="4139326893730851150">Diweddariadau cadarnwedd</translation>
 <translation id="4142052906269098341">Datglowch eich <ph name="DEVICE_TYPE" /> gan ddefnyddio'ch ffôn. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
-<translation id="4142518881503042940">Cadw argraffwyr sydd wedi'u canfod i'ch proffil, neu ychwanegu argraffydd newydd. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">Cael fideo o ansawdd gwell ac arbed pŵer yn eich batri. Dim ond ar eich sgrîn sy'n gallu defnyddio Cast y bydd fideo yn chwarae.</translation>
 <translation id="4146026355784316281">Agor gyda Dangosydd y System Bob Tro</translation>
 <translation id="4146785383423576110">Ailosod a glanhau</translation>

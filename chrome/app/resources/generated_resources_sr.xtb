@@ -581,6 +581,7 @@
 <translation id="1444628761356461360">Овим подешавањем управља власник уређаја, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Није могуће учитати „<ph name="IMAGE_PATH" />“ за тему.</translation>
 <translation id="1447531650545977377">Укључи синхронизацију…</translation>
+<translation id="1447895950459090752">Картица за преглед при преласку курсором</translation>
 <translation id="1448264954024227422">Овај налог можете да користите са Android апликацијама. Ако желите да додате налог за неког другог, уместо тога <ph name="LINK_BEGIN" />додајте нову особу<ph name="LINK_END" /> на уређај <ph name="DEVICE_TYPE" />.
 
 Дозволе које сте већ дали апликацијама могу да важе за овај налог. Можете да контролишете дозволе за Android апликације у <ph name="APPS_LINK_BEGIN" />подешавањима апликација<ph name="APPS_LINK_END" />.</translation>
@@ -1552,7 +1553,6 @@
 <translation id="2150139952286079145">Претражите одредишта</translation>
 <translation id="2150661552845026580">Желите ли да додате „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2151576029659734873">Унет је неважећи индекс картице.</translation>
-<translation id="2152281589789213846">Додајте штампаче на свој профил</translation>
 <translation id="2154484045852737596">Измените картицу</translation>
 <translation id="2155473371917268529">Актуелно подешавање видљивости је Ваши уређаји</translation>
 <translation id="2155772377859296191">Изгледа да је у питању <ph name="WIDTH" />×<ph name="HEIGHT" /></translation>
@@ -2814,6 +2814,7 @@
 <translation id="3094521107841754472">Цена је промењена из <ph name="PREVIOUS_PRICE" /> у <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Обележивачи, лозинке и други подаци прегледања се синхронизују са примарним налогом.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 потенцијално штетан додатак је искључен. Можете и да га уклоните.}one{{NUM_EXTENSIONS} потенцијално штетан додатак је искључен. Можете и да га уклоните.}few{{NUM_EXTENSIONS} потенцијално штетна додатка су искључена. Можете и да их уклоните.}other{{NUM_EXTENSIONS} потенцијално штетних додатака је искључено. Можете и да их уклоните.}}</translation>
+<translation id="3101057112460908988">Прикажи коришћење меморије</translation>
 <translation id="3101126716313987672">Пригушите светло</translation>
 <translation id="3101709781009526431">Датум и време</translation>
 <translation id="310297983047869047">Претходни слајд</translation>
@@ -2891,6 +2892,7 @@
 <translation id="3166443275568926403">Перформансе и стање батерије</translation>
 <translation id="3169930038976362151">Одаберите тему која одговара вашим потребама. Да бисте променили тему, позадину, чувар екрана и друго, само додирните и задржите радну површину.</translation>
 <translation id="3170072451822350649">Можете и да прескочите пријављивање и да <ph name="LINK_START" />прегледате као гост<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Садржај</translation>
 <translation id="3177430966804511955">Управљај изолованим веб-апликацијама (бета)</translation>
 <translation id="31774765611822736">Нова картица на левој страни</translation>
 <translation id="3177909033752230686">Језик странице:</translation>
@@ -3070,6 +3072,7 @@
 <translation id="3315158641124845231">Сакриј <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Укључи режим читача</translation>
 <translation id="3317459757438853210">Обострано</translation>
+<translation id="3317521105713541270">Направи групе</translation>
 <translation id="3317678681329786349">Камера и микрофон су блокирани</translation>
 <translation id="3319306431415395200">Преведи текст на слици помоћу претраживача <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Повезивање са OneDrive-ом није успело. Пробајте поново.</translation>
@@ -4155,7 +4158,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID уређај је повезан</translation>
 <translation id="4139326893730851150">Ажурирања фирмвера</translation>
 <translation id="4142052906269098341">Откључајте <ph name="DEVICE_TYPE" /> помоћу телефона. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
-<translation id="4142518881503042940">Сачувајте откривене штампаче на профилу или додајте нов штампач. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">Пронађите видео садржај бољег квалитета и продужите трајање батерије. Видео ће се пуштати само на екрану који подржава Cast.</translation>
 <translation id="4146026355784316281">Увек отварај помоћу системског приказивача</translation>
 <translation id="4146785383423576110">Ресетовање и чишћење</translation>
@@ -4427,6 +4429,7 @@
 <translation id="4364830672918311045">Приказуј обавештења</translation>
 <translation id="4367513928820380646">Прегледајте уклоњене дозволе</translation>
 <translation id="4367971618859387374">Име за приказ</translation>
+<translation id="4368960422722232719">Приказуј коришћење меморије на картици за преглед при преласку курсором</translation>
 <translation id="4369215744064167350">Захтев за веб-сајт је одобрен</translation>
 <translation id="4369233657762989723">Диктирање је укључено/искључено</translation>
 <translation id="436926121798828366">То можете да промените у било ком тренутку у одељку <ph name="SETTINGS_LINK" />.</translation>
@@ -4903,6 +4906,7 @@
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="473936925429402449">Изабрано је, <ph name="CURRENT_ELEMENT" />. елемент додатног садржаја од <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Тикети</translation>
+<translation id="4740546261986864539">Недавно отворено</translation>
 <translation id="4742334355511750246">Није им дозвољено да приказују слике</translation>
 <translation id="4742970037960872810">Уклони истицање</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Сазнајте како да ажурирате апликације<ph name="END_LINK" /></translation>
@@ -5100,6 +5104,7 @@
 <translation id="488785315393301722">Прикажи детаље</translation>
 <translation id="488862352499217187">Направите нови фолдер</translation>
 <translation id="4890292359366636311">Аутоматски унесите слику у слици да бисте могли да је користите преко других картица и прозора.</translation>
+<translation id="4890399733764921729">Повезивање није успело. Закључао је други мобилни оператер.</translation>
 <translation id="4890773143211625964">Приказуј напредне опције за штампач</translation>
 <translation id="4891089016822695758">Форум за бета верзију</translation>
 <translation id="4892229439761351791">Сајт може да користи Bluetooth</translation>
@@ -5346,6 +5351,7 @@
 <translation id="5093569275467863761">Цео кеширани подоквир без архивирања: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Помоћу ове апликације можете да отварате и мењате подржане фајлове из апликације Фајлови или других апликација. Да бисте контролисали који фајлови подразумевано отварају ову апликацију, <ph name="BEGIN_LINK" />сазнајте како да подесите подразумеване апликације на уређају<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Комуникација са основним апликацијама за сарадњу</translation>
+<translation id="5095252080770652994">Напредак</translation>
 <translation id="5095507226704905004">Не можете да копирате фајл зато што више не постоји</translation>
 <translation id="5095848221827496531">Поништите избор</translation>
 <translation id="5097002363526479830">Повезивање са мрежом „<ph name="NAME" />“ није успело: <ph name="DETAILS" /></translation>
@@ -5497,6 +5503,7 @@
 <translation id="5213891612754844763">Прикажи подешавања проксија</translation>
 <translation id="5214639857958972833">Направљен је обележивач <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="5215502535566372932">Изаберите земљу</translation>
+<translation id="5215665166431745539">Прикажи слике</translation>
 <translation id="5220011581825921581">тастер за претрагу + стрелица нагоре</translation>
 <translation id="5222403284441421673">Небезбедно преузимање је блокирано</translation>
 <translation id="5222676887888702881">Одјави ме</translation>
@@ -8341,6 +8348,7 @@
 <translation id="7465778193084373987">URL за опозив Netscape сертификата</translation>
 <translation id="7466431077154602932">Компактан приказ</translation>
 <translation id="746861123368584540">Додатак је учитан</translation>
+<translation id="7470131554696493512">Спречите Thunderbolt или USB4 додатну опрему да приступа меморији и да је дели са њом (RAM)</translation>
 <translation id="7470424110735398630">Дозвољено им је да виде привремену меморију</translation>
 <translation id="747114903913869239">Грешка: Није могуће дешифровати додатак</translation>
 <translation id="7471520329163184433">Спорије</translation>

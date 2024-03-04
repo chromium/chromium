@@ -80,7 +80,6 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="3219277919172823720">Effectuer une recherche vocale dans Chromium</translation>
 <translation id="3228349498066165585">Certaines de vos données Chromium n'ont pas encore été enregistrées dans votre compte Google.
         Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
-<translation id="3256316712990552818">Copiée dans Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{1 fenêtre de Chromium est maintenant affichée}one{{count} fenêtre de Chromium est maintenant affichée}other{{count} fenêtres de Chromium sont maintenant affichées}}</translation>
 <translation id="3344973607274501920">Chromium n'a pas pu vérifier vos mots de passe. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="3366305173356742781">Données Chromium dans votre compte</translation>

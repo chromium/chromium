@@ -182,6 +182,7 @@
 <translation id="1951012854035635156">Laguntzailea</translation>
 <translation id="1954818433534793392">Eraikina</translation>
 <translation id="1962550982027027473">APN lehenetsi bat behar da</translation>
+<translation id="1967860190218310525">Sortu APN bat</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google-ko profileko argazkia</translation>
 <translation id="1979103255016296513">Pasahitza iraungita dago eta aldatu egin behar da</translation>
@@ -332,7 +333,7 @@
 <translation id="3056720590588772262">Amaiera-puntua</translation>
 <translation id="3060579846059757016">Eskemak</translation>
 <translation id="3069085583900247081">Probak huts egin du</translation>
-<translation id="3078740164268491126">taula</translation>
+<translation id="3078740164268491126">Mahaia</translation>
 <translation id="3083667275341675831">Konexio-diagnostikoak</translation>
 <translation id="3084958266922136097">Desgaitu pantaila-babeslea</translation>
 <translation id="3091839911843451378">Hutsegitea - Gelditu egin da</translation>
@@ -473,7 +474,7 @@
 <translation id="4046123991198612571">Hurrengo pista</translation>
 <translation id="404928562651467259">ABISUA</translation>
 <translation id="4054683689023980771">Irudia deskargatzen</translation>
-<translation id="4063039537646912479">urdin argi</translation>
+<translation id="4063039537646912479">urdin argi koloreko</translation>
 <translation id="4093865285251893588">Profileko irudia</translation>
 <translation id="409427325554347132">Gorde probaren xehetasunak</translation>
 <translation id="409469431304488632">Esperimentua</translation>
@@ -687,7 +688,7 @@
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />), <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Aukeratu beste bat</translation>
 <translation id="5333530671332546086">Ez da ezagutzen atariaren egoera</translation>
-<translation id="5335373365677455232">arrosa</translation>
+<translation id="5335373365677455232">arrosa-koloreko</translation>
 <translation id="5346687412805619883">Tokiko sarea</translation>
 <translation id="5358174242040570474">Arazo bat izan da. Saiatu berriro horma-papera aukeratzen edo ireki berriro aplikazioa.</translation>
 <translation id="5372659122375744710">Wifi-sarea ez da segurua</translation>
@@ -811,7 +812,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" /> eta beste <ph name="NUMBER" /> album</translation>
 <translation id="6122191549521593678">Konektatu</translation>
 <translation id="6122277663991249694">Chrome OS-ren idazketa-metodoaren zerbitzua</translation>
-<translation id="6127426868813166163">zuri</translation>
+<translation id="6127426868813166163">kolore zuriko</translation>
 <translation id="6136285399872347291">atzera</translation>
 <translation id="6137767437444130246">Erabiltzaile-ziurtagiria</translation>
 <translation id="6146993107019042706">Amaitzeko, idatzi pasahitz berria</translation>
@@ -980,6 +981,7 @@
 <translation id="7144954474087165241">Pagoda</translation>
 <translation id="714876143603641390">LAN sarearen konexioa</translation>
 <translation id="7154020516215182599">Partekatu iritzia edo azaldu zer arazo duzun. Ahal izanez gero, adierazi zer urrats eginda azaltzen zaizun arazoa.</translation>
+<translation id="7155037718620478619">Aurkitu APN gehiago</translation>
 <translation id="7155171745945906037">Lehendik duzun kamerako argazkia edo fitxategia</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Profileko argazkia</translation>
@@ -1283,7 +1285,7 @@
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Maiztasuna</translation>
 <translation id="901834265349196618">helbide elektronikoa</translation>
-<translation id="9022897536196898720">loreak</translation>
+<translation id="9022897536196898720">lore sorta</translation>
 <translation id="9024331582947483881">pantaila osoa</translation>
 <translation id="9025198690966128418">Erabili gailu pertsonal gisa</translation>
 <translation id="902638246363752736">Teklatuaren ezarpenak</translation>
