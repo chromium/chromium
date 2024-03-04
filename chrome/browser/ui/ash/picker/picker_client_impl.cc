@@ -258,7 +258,7 @@ void PickerClientImpl::OnCrosSearchResultsUpdated(
       }
       case ash::AppListSearchResultType::kDriveSearch:
         picker_results.push_back(
-            ash::PickerSearchResult::Text(result->title()));
+            ash::PickerSearchResult::File(result->title(), result->filePath()));
         break;
       default:
         LOG(DFATAL) << "Got unexpected search result type "

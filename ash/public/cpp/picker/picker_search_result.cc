@@ -50,6 +50,9 @@ PickerSearchResult::GifData::~GifData() = default;
 bool PickerSearchResult::GifData::operator==(
     const PickerSearchResult::GifData&) const = default;
 
+bool PickerSearchResult::FileData::operator==(
+    const PickerSearchResult::FileData&) const = default;
+
 bool PickerSearchResult::BrowsingHistoryData::operator==(
     const PickerSearchResult::BrowsingHistoryData&) const = default;
 
@@ -100,6 +103,12 @@ PickerSearchResult PickerSearchResult::BrowsingHistory(const GURL& url,
                                                        ui::ImageModel icon) {
   return PickerSearchResult(BrowsingHistoryData{
       .url = url, .title = std::move(title), .icon = std::move(icon)});
+}
+
+PickerSearchResult PickerSearchResult::File(std::u16string title,
+                                            base::FilePath file_path) {
+  return PickerSearchResult(
+      FileData{.file_path = std::move(file_path), .title = std::move(title)});
 }
 
 PickerSearchResult PickerSearchResult::Category(PickerCategory category) {

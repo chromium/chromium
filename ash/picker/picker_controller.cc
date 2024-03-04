@@ -36,6 +36,7 @@
 #include "base/functional/overloaded.h"
 #include "base/hash/sha1.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -134,10 +135,12 @@ std::optional<PickerRichMedia> ResultToInsertMediaData(
           },
           [](const PickerSearchResult::BrowsingHistoryData& data)
               -> ReturnType { return PickerLinkMedia(data.url); },
+          [](const PickerSearchResult::FileData& data) -> ReturnType {
+            return PickerTextMedia(base::UTF8ToUTF16(data.file_path.value()));
+          },
           [](const PickerSearchResult::CategoryData& data) -> ReturnType {
             return std::nullopt;
-          },
-      },
+          }},
       result.data());
 }
 

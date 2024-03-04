@@ -201,6 +201,12 @@ void PickerSearchResultsView::AddResultToSection(
             item_view->SetLeadingIcon(data.icon);
             section_view->AddListItem(std::move(item_view));
           },
+          [&](const PickerSearchResult::FileData& data) {
+            auto item_view = std::make_unique<PickerListItemView>(
+                std::move(select_result_callback));
+            item_view->SetPrimaryText(data.file_path.AsUTF16Unsafe());
+            section_view->AddListItem(std::move(item_view));
+          },
           [&](const PickerSearchResult::CategoryData& data) {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));

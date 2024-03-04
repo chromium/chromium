@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/picker/picker_category.h"
+#include "base/files/file_path.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -86,6 +87,13 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     bool operator==(const BrowsingHistoryData&) const;
   };
 
+  struct FileData {
+    base::FilePath file_path;
+    std::u16string title;
+
+    bool operator==(const FileData&) const;
+  };
+
   struct CategoryData {
     PickerCategory category;
 
@@ -98,6 +106,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                             EmoticonData,
                             GifData,
                             BrowsingHistoryData,
+                            FileData,
                             CategoryData>;
 
   PickerSearchResult(const PickerSearchResult&);
@@ -119,6 +128,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                                 const GURL& full_url,
                                 const gfx::Size& full_dimensions,
                                 std::u16string content_description);
+  static PickerSearchResult File(std::u16string title,
+                                 base::FilePath file_path);
   static PickerSearchResult Category(PickerCategory category);
 
   const Data& data() const;
