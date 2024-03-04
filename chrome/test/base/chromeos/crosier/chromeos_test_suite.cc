@@ -41,6 +41,7 @@ void ChromeOSTestSuite::Initialize() {
       /*documents_dir=*/temp_path,
       /*downloads_dir=*/temp_path,
       /*drivefs=*/base::FilePath(),
+      /*onedrive=*/base::FilePath(),
       /*removable_media_dir=*/base::FilePath(),
       /*android_files_dir=*/base::FilePath(),
       /*linux_files_dir=*/base::FilePath(),

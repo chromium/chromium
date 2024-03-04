@@ -92,6 +92,7 @@
 #include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
 #include "chromeos/crosapi/mojom/networking_private.mojom.h"
 #include "chromeos/crosapi/mojom/nonclosable_app_toast_service.mojom.h"
+#include "chromeos/crosapi/mojom/one_drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/one_drive_notification_service.mojom.h"
 #include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #include "chromeos/crosapi/mojom/policy_service.mojom.h"
@@ -517,6 +518,11 @@ LacrosService::LacrosService()
       crosapi::mojom::OneDriveNotificationService,
       &crosapi::mojom::Crosapi::BindOneDriveNotificationService,
       Crosapi::MethodMinVersions::kBindOneDriveNotificationServiceMinVersion>();
+
+  ConstructRemote<
+      crosapi::mojom::OneDriveIntegrationService,
+      &crosapi::mojom::Crosapi::BindOneDriveIntegrationService,
+      Crosapi::MethodMinVersions::kBindOneDriveIntegrationServiceMinVersion>();
 
   ConstructRemote<crosapi::mojom::Prefs, &crosapi::mojom::Crosapi::BindPrefs,
                   Crosapi::MethodMinVersions::kBindPrefsMinVersion>();

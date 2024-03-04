@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -101,6 +102,9 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
         integration_service->IsMounted()) {
       default_paths->drivefs = integration_service->GetMountPointPath();
     }
+    if (ash::cloud_upload::IsODFSMounted(profile)) {
+      default_paths->onedrive = ash::cloud_upload::GetODFSFuseboxMount(profile);
+    }
     default_paths->android_files =
         base::FilePath(file_manager::util::GetAndroidFilesPath());
     default_paths->linux_files =
@@ -116,6 +120,7 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
     default_paths->documents = home.Append("Documents");
     default_paths->downloads = home.Append("Downloads");
     default_paths->drivefs = home.Append("Drive");
+    default_paths->onedrive = home.Append("fsp");
     default_paths->android_files = home.Append("Android");
     default_paths->linux_files = home.Append("Crostini");
     default_paths->ash_resources = home.Append("Ash");

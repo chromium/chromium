@@ -25,11 +25,11 @@
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/lacros/clipboard_history_lacros.h"
+#include "chrome/browser/lacros/cloud_file_system_path_cache.h"
 #include "chrome/browser/lacros/debug_interface_lacros.h"
 #include "chrome/browser/lacros/desk_profiles_lacros.h"
 #include "chrome/browser/lacros/desk_template_client_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
-#include "chrome/browser/lacros/drivefs_cache.h"
 #include "chrome/browser/lacros/drivefs_native_message_host_bridge_lacros.h"
 #include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
 #include "chrome/browser/lacros/field_trial_observer.h"
@@ -264,10 +264,11 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
       std::make_unique<arc::ArcIconCacheDelegateProvider>(
           arc_icon_cache_.get());
 
-  // Start Lacros' drive mount point path caching, since it is available in Ash.
-  drivefs_cache_ = std::make_unique<DriveFsCache>();
+  // Start Lacros' cloud file systems mount points paths caching, since they are
+  // available in Ash.
+  cloud_file_system_cache_ = std::make_unique<CloudFileSystemPathCache>();
   // After construction finishes, start caching.
-  drivefs_cache_->Start();
+  cloud_file_system_cache_->Start();
 
   field_trial_observer_ = std::make_unique<FieldTrialObserver>();
   field_trial_observer_->Start();

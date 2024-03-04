@@ -22,6 +22,8 @@ struct DefaultPaths {
   base::FilePath downloads_dir;
   // |drivefs| is empty if Drive is not enabled in Ash.
   base::FilePath drivefs;
+  // |onedrive| is empty if Microsoft OneDrive is not mounted in Ash.
+  base::FilePath onedrive;
   base::FilePath removable_media_dir;
   base::FilePath android_files_dir;
   base::FilePath linux_files_dir;
@@ -41,6 +43,7 @@ void SetLacrosDefaultPaths(
     const base::FilePath& documents_dir,
     const base::FilePath& downloads_dir,
     const base::FilePath& drivefs,
+    const base::FilePath& onedrive,
     const base::FilePath& removable_media_dir,
     const base::FilePath& android_files_dir,
     const base::FilePath& linux_files_dir,
@@ -57,6 +60,7 @@ void SetLacrosDefaultPaths(
   GetDefaultPaths().downloads_dir = downloads_dir;
 
   GetDefaultPaths().drivefs = drivefs;
+  GetDefaultPaths().onedrive = onedrive;
   GetDefaultPaths().removable_media_dir = removable_media_dir;
   GetDefaultPaths().android_files_dir = android_files_dir;
   GetDefaultPaths().linux_files_dir = linux_files_dir;
@@ -79,6 +83,10 @@ void SetLacrosDefaultPathsFromInitParams(
     base::FilePath drivefs_dir;
     if (default_paths->drivefs.has_value())
       drivefs_dir = default_paths->drivefs.value();
+    base::FilePath onedrive_dir;
+    if (default_paths->onedrive.has_value()) {
+      onedrive_dir = default_paths->onedrive.value();
+    }
     base::FilePath removable_media_dir;
     if (default_paths->removable_media.has_value())
       removable_media_dir = default_paths->removable_media.value();
@@ -107,7 +115,7 @@ void SetLacrosDefaultPathsFromInitParams(
 
     chrome::SetLacrosDefaultPaths(
         default_paths->documents, default_paths->downloads, drivefs_dir,
-        removable_media_dir, android_files_dir, linux_files_dir,
+        onedrive_dir, removable_media_dir, android_files_dir, linux_files_dir,
         ash_resources_dir, share_cache_dir, preinstalled_web_app_config_dir,
         preinstalled_web_app_extra_config_dir);
   }
@@ -115,6 +123,20 @@ void SetLacrosDefaultPathsFromInitParams(
 
 void SetDriveFsMountPointPath(const base::FilePath& drivefs) {
   GetDefaultPaths().drivefs = drivefs;
+}
+
+void SetOneDriveMountPointPath(const base::FilePath& onedrive) {
+  GetDefaultPaths().onedrive = onedrive;
+}
+
+bool GetOneDriveMountPointPath(base::FilePath* result) {
+  // NOTE: Lacros overrides the path with a value from ash early in startup. See
+  // crosapi::mojom::LacrosInitParams.
+  if (GetDefaultPaths().onedrive.empty()) {
+    return false;
+  }
+  *result = GetDefaultPaths().onedrive;
+  return true;
 }
 
 bool GetDefaultUserDataDirectory(base::FilePath* result) {

@@ -18,7 +18,7 @@ class BrowserServiceLacros;
 class ChromeKioskLaunchControllerLacros;
 class DeskTemplateClientLacros;
 class DeviceLocalAccountExtensionInstallerLacros;
-class DriveFsCache;
+class CloudFileSystemPathCache;
 class DownloadControllerClientLacros;
 class ForceInstalledTrackerLacros;
 class FullscreenControllerClientLacros;
@@ -113,8 +113,8 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Handles task manager crosapi from ash for sending lacros tasks to ash.
   std::unique_ptr<crosapi::TaskManagerLacros> task_manager_provider_;
 
-  // Receiver and cache of drive mount point path updates.
-  std::unique_ptr<DriveFsCache> drivefs_cache_;
+  // Receiver and cache of cloud file systems mount points paths updates.
+  std::unique_ptr<CloudFileSystemPathCache> cloud_file_system_cache_;
 
   // Handles requests from DriveFS to connect to an extension in lacros.
   std::unique_ptr<drive::DriveFsNativeMessageHostBridge>

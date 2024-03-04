@@ -563,9 +563,10 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
   base::FilePath preinstalled_web_app_config_dir;
   base::FilePath preinstalled_web_app_extra_config_dir;
   chrome::SetLacrosDefaultPaths(
-      documents_path, default_dir, drivefs_dir, removable_media_dir,
-      android_files_dir, linux_files_dir, ash_resources_dir, share_cache_dir,
-      preinstalled_web_app_config_dir, preinstalled_web_app_extra_config_dir);
+      documents_path, default_dir, drivefs_dir, /*onedrive=*/base::FilePath(),
+      removable_media_dir, android_files_dir, linux_files_dir,
+      ash_resources_dir, share_cache_dir, preinstalled_web_app_config_dir,
+      preinstalled_web_app_extra_config_dir);
 #endif
 
   // Test a valid subdirectory of downloads.

@@ -912,8 +912,8 @@ enum MetricsReportingManaged {
 // future compatibility, to avoid assumptions about where on disk the directory
 // is located.
 //
-// Next version: 35
-// Next id: 11
+// Next version: 36
+// Next id: 12
 [Stable]
 struct DefaultPaths {
   // The default (non-configurable) directory for documents. For example,
@@ -927,6 +927,10 @@ struct DefaultPaths {
   // The (non-configurable) path of the mount point for drive in ChromeOS. For
   // example, /media/fuse/drivefs-<hash>.
   [MinVersion=23] mojo_base.mojom.FilePath? drivefs@2;
+
+  // The path of the mount point for OneDrive in ChromeOS. For example,
+  // /media/fuse/fusebox/fsp.<hash>.
+  [MinVersion=35] mojo_base.mojom.FilePath? onedrive@11;
 
   // The (non-configurable) path of the software user NSS database. For
   // example, /home/chronos/u-<hash>/.pki/nssdb.
