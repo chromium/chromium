@@ -12,6 +12,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Token;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -104,9 +105,8 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     }
 
     @CalledByNative
-    private void restoreTabGroup(TabModel tabModel, int rootId, String title, int[] tabIds) {
-        // Can't restore empty or size 1 group. Note rootId is the tab ID of a tab in the group.
-        if (tabIds.length < 1) return;
+    private void restoreTabGroup(TabModel tabModel, String title, int[] tabIds) {
+        if (tabIds.length == 0) return;
 
         assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
         TabModelFilter filter =
@@ -114,13 +114,20 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
                         .getTabModelFilterProvider()
                         .getTabModelFilter(tabModel.isIncognito());
         assert filter instanceof TabGroupModelFilter;
-
         TabGroupModelFilter groupFilter = (TabGroupModelFilter) filter;
-        for (int id : tabIds) {
-            // This shouldn't happen, but as a precaution skip.
-            if (id == rootId) continue;
 
-            groupFilter.mergeTabsToGroup(id, rootId);
+        int rootId = tabIds[0];
+        if (tabIds.length == 1) {
+            if (!ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
+                return;
+            }
+            groupFilter.createSingleTabGroup(tabIds[0], false);
+        } else {
+            for (int id : tabIds) {
+                if (id == rootId) continue;
+
+                groupFilter.mergeTabsToGroup(id, rootId);
+            }
         }
 
         if (title == null || title.isEmpty()) return;

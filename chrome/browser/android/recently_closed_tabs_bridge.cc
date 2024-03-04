@@ -462,18 +462,10 @@ void RecentlyClosedTabsBridge::RestoreAndroidTabGroups(
     const std::map<tab_groups::TabGroupId,
                    AndroidLiveTabContextRestoreWrapper::TabGroup>& groups) {
   for (const auto& group : groups) {
-    base::span<int const> tab_ids(group.second.tab_ids);
-    // Ignore single tabs. This can occur if a grouped tab is restored on its
-    // own.
-    if (tab_ids.size() < 2U) {
-      continue;
-    }
-
-    const int group_id = tab_ids[0];
     Java_RecentlyClosedBridge_restoreTabGroup(
-        env, bridge_, jtab_model, group_id,
+        env, bridge_, jtab_model,
         ConvertUTF16ToJavaString(env, group.second.visual_data.title()),
-        base::android::ToJavaIntArray(env, tab_ids.subspan(1)));
+        base::android::ToJavaIntArray(env, group.second.tab_ids));
   }
 }
 
