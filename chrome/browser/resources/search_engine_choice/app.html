@@ -10,7 +10,9 @@
     --action-button-margins: 40px;
     --omnibox-width: 252px;
     --choice-list-bottom-padding: 50px;
+    --choice-list-horizontal-padding: 8px;
     --choice-title-line-height: 20px;
+    --content-container-max-width: 500px;
     color: var(--cr-primary-text-color);
   }
 
@@ -32,13 +34,16 @@
   }
 
   #actionButton {
+    --panel-width: calc((100% - var(--content-container-max-width)) / 2);
     height: unset;
     margin: var(--action-button-margins);
     /* The max-width is needed to stop the button from overlapping with
      the choice list in case of large text.  */
-    max-width: 115px;
+    max-width: calc(var(--panel-width) - (var(--action-button-margins) * 2)
+        - var(--choice-list-horizontal-padding));
     padding: 6px 16px 6px 12px;
     pointer-events: all;
+    text-align: center;
   }
 
   .content-container {
@@ -47,7 +52,7 @@
     flex-direction: column;
     height: 100vh;
     margin: auto;
-    max-width: 500px;
+    max-width: var(--content-container-max-width);
     text-align: center;
   }
 
@@ -118,7 +123,8 @@
     overflow: auto;
     /* We add horizontal padding to put the scollbar on the right and keep
     the content centered. */
-    padding: 0 8px var(--choice-list-bottom-padding);
+    padding: 0 var(--choice-list-horizontal-padding)
+        var(--choice-list-bottom-padding);
     text-align: start;
     width: 100%;
   }
