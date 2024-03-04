@@ -127,6 +127,7 @@
 #include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
 #include "chromeos/crosapi/mojom/networking_private.mojom.h"
 #include "chromeos/crosapi/mojom/nonclosable_app_toast_service.mojom.h"
+#include "chromeos/crosapi/mojom/one_drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/one_drive_notification_service.mojom.h"
 #include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #include "chromeos/crosapi/mojom/passkeys.mojom.h"
@@ -381,7 +382,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 132,
+static_assert(crosapi::mojom::Crosapi::Version_ == 133,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -472,6 +473,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::NetworkingAttributes>(),
     MakeInterfaceVersionEntry<crosapi::mojom::NetworkingPrivate>(),
     MakeInterfaceVersionEntry<crosapi::mojom::NetworkSettingsService>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::OneDriveIntegrationService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::OneDriveNotificationService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::PasskeyAuthenticator>(),
     MakeInterfaceVersionEntry<crosapi::mojom::PolicyService>(),

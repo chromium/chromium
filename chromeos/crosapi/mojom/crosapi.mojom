@@ -81,6 +81,7 @@ import "chromeos/crosapi/mojom/network_change.mojom";
 import "chromeos/crosapi/mojom/networking_attributes.mojom";
 import "chromeos/crosapi/mojom/networking_private.mojom";
 import "chromeos/crosapi/mojom/one_drive_notification_service.mojom";
+import "chromeos/crosapi/mojom/one_drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/power.mojom";
 import "chromeos/crosapi/mojom/network_settings_service.mojom";
 import "chromeos/crosapi/mojom/parent_access.mojom";
@@ -159,8 +160,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 133
-// Next method id: 135
+// Next version: 134
+// Next method id: 136
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -564,6 +565,12 @@ interface Crosapi {
   [MinVersion=130]
   BindOneDriveNotificationService@132(
       pending_receiver<OneDriveNotificationService> receiver);
+
+  // Binds the OneDrive integration service which is used by Lacros to observe
+  // OneDrive mount path changes. Added in M124.
+  [MinVersion=133]
+  BindOneDriveIntegrationService@135(
+    pending_receiver<OneDriveIntegrationService> receiver);
 
   // Binds the Parent Access UI to allow Lacros to request parent access
   // from Ash when needed.
