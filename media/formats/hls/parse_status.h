@@ -71,7 +71,7 @@ struct ParseStatusTraits {
 
 using ParseStatus = TypedStatus<ParseStatusTraits>;
 
-MEDIA_EXPORT base::StringPiece ParseStatusCodeToString(ParseStatusCode code);
+MEDIA_EXPORT std::string_view ParseStatusCodeToString(ParseStatusCode code);
 
 }  // namespace media::hls
 

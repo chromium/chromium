@@ -35,8 +35,8 @@ namespace {
 template <typename T>
 T* GetOrCreateRenditionGroup(
     base::PassKey<MultivariantPlaylist> pass_key,
-    base::flat_map<base::StringPiece, scoped_refptr<T>>& groups,
-    base::StringPiece id) {
+    base::flat_map<std::string_view, scoped_refptr<T>>& groups,
+    std::string_view id) {
   auto iter = groups.find(id);
 
   // If the group wasn't found, create it.
@@ -59,7 +59,7 @@ Playlist::Kind MultivariantPlaylist::GetKind() const {
 
 // static
 ParseStatus::Or<scoped_refptr<MultivariantPlaylist>>
-MultivariantPlaylist::Parse(base::StringPiece source,
+MultivariantPlaylist::Parse(std::string_view source,
                             GURL uri,
                             types::DecimalInteger version) {
   DCHECK(version != 0);
@@ -86,7 +86,7 @@ MultivariantPlaylist::Parse(base::StringPiece source,
   VariableDictionary::SubstitutionBuffer sub_buffer;
   std::optional<XStreamInfTag> inf_tag;
   std::vector<VariantStream> variants;
-  base::flat_map<base::StringPiece, scoped_refptr<AudioRenditionGroup>>
+  base::flat_map<std::string_view, scoped_refptr<AudioRenditionGroup>>
       audio_rendition_groups;
 
   // Get variants out of the playlist

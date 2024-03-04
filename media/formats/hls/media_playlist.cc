@@ -54,7 +54,7 @@ Playlist::Kind MediaPlaylist::GetKind() const {
 
 // static
 ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
-    base::StringPiece source,
+    std::string_view source,
     GURL uri,
     types::DecimalInteger version,
     const MultivariantPlaylist* parent_playlist) {

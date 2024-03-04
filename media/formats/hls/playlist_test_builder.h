@@ -39,15 +39,15 @@ class PlaylistTestBuilder {
 
   // Appends fragments of text to the playlist, without a trailing newline.
   template <typename... T>
-  void Append(base::StringPiece text1, T&&... rem) {
-    for (auto text : {text1, base::StringPiece(rem)...}) {
+  void Append(std::string_view text1, T&&... rem) {
+    for (auto text : {text1, std::string_view(rem)...}) {
       source_.append(text);
     }
   }
 
   // Appends fragments of text to the playlist, followed by a newline.
   template <typename... T>
-  void AppendLine(base::StringPiece part1, T&&... rem) {
+  void AppendLine(std::string_view part1, T&&... rem) {
     this->Append(part1, std::forward<T>(rem)..., "\n");
   }
 

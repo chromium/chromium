@@ -52,7 +52,7 @@ class MEDIA_EXPORT MultivariantPlaylist final : public Playlist {
   // determined via `Playlist::IdentifyPlaylist`. If the playlist source is
   // invalid, returns an error.
   static ParseStatus::Or<scoped_refptr<MultivariantPlaylist>>
-  Parse(base::StringPiece source, GURL uri, types::DecimalInteger version);
+  Parse(std::string_view source, GURL uri, types::DecimalInteger version);
 
  private:
   ~MultivariantPlaylist() override;

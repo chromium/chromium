@@ -15,7 +15,7 @@
 
 namespace media::hls {
 
-inline types::VariableName CreateVarName(base::StringPiece name) {
+inline types::VariableName CreateVarName(std::string_view name) {
   return types::VariableName::Parse(SourceString::CreateForTesting(name))
       .value();
 }

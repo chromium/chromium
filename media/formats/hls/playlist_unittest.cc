@@ -15,7 +15,7 @@ namespace media::hls {
 
 TEST(HlsPlaylistTest, IdentifyPlaylist) {
   constexpr auto ok_test = [](types::DecimalInteger version,
-                              Playlist::Kind kind, base::StringPiece src,
+                              Playlist::Kind kind, std::string_view src,
                               const base::Location& from =
                                   base::Location::Current()) {
     auto result = Playlist::IdentifyPlaylist(src);
@@ -27,7 +27,7 @@ TEST(HlsPlaylistTest, IdentifyPlaylist) {
   };
 
   constexpr auto error_test =
-      [](ParseStatusCode expected_error, base::StringPiece src,
+      [](ParseStatusCode expected_error, std::string_view src,
          const base::Location& from = base::Location::Current()) {
         auto result = Playlist::IdentifyPlaylist(src);
         ASSERT_FALSE(result.has_value()) << from.ToString();

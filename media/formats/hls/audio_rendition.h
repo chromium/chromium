@@ -110,7 +110,7 @@ class MEDIA_EXPORT AudioRenditionGroup
 
   // Looks up the renditions within this group identified by the given name.
   // If no such renditions exists, returns `nullptr`.
-  const AudioRendition* GetRendition(base::StringPiece name) const;
+  const AudioRendition* GetRendition(std::string_view name) const;
 
   // Returns the rendition which was specified with the DEFAULT=YES attribute.
   // If no such rendition was in this group, returns `nullptr`;

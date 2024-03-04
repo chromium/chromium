@@ -21,7 +21,7 @@ namespace media::hls {
 namespace {
 
 RenditionManager::CodecSupportType GetCodecSupportType(
-    base::StringPiece container,
+    std::string_view container,
     base::span<const std::string> codecs) {
   bool has_audio = false;
   bool has_video = false;
@@ -49,7 +49,7 @@ RenditionManager::CodecSupportType GetCodecSupportType(
 }
 
 RenditionManager::CodecSupportType GetCodecSupportForSoftwareOnlyLinux(
-    base::StringPiece container,
+    std::string_view container,
     base::span<const std::string> codecs) {
   bool has_audio = false;
   bool has_video = false;
@@ -128,7 +128,7 @@ class HlsRenditionManagerTest : public testing::Test {
   template <typename... Strings>
   RenditionManager GetCustomSupportRenditionManager(
       base::RepeatingCallback<RenditionManager::CodecSupportType(
-          base::StringPiece,
+          std::string_view,
           base::span<const std::string>)> support_cb,
       Strings... strings) {
     MultivariantPlaylistTestBuilder builder;

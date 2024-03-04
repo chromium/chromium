@@ -27,7 +27,7 @@ void CheckSourceString(SourceString expected,
 // Calls `GetNextLineItem` for each expectation, and verifies that the result
 // matches.
 template <typename T>
-void RunTest(base::StringPiece source,
+void RunTest(std::string_view source,
              const T& expectations,
              const base::Location& from = base::Location::Current()) {
   auto line_iter = SourceLineIterator(source);
@@ -74,7 +74,7 @@ template <typename T>
 ParseStatus::Or<LineResult> ExpectTag(T name,
                                       size_t line,
                                       size_t col,
-                                      base::StringPiece content) {
+                                      std::string_view content) {
   return LineResult(TagItem::Create(
       ToTagName(name), SourceString::CreateForTesting(line, col, content)));
 }
@@ -84,7 +84,7 @@ ParseStatus::Or<LineResult> ExpectEmptyTag(T name, size_t line) {
   return LineResult(TagItem::CreateEmpty(ToTagName(name), line));
 }
 
-ParseStatus::Or<LineResult> ExpectUnknownTag(base::StringPiece name,
+ParseStatus::Or<LineResult> ExpectUnknownTag(std::string_view name,
                                              size_t line) {
   return LineResult(
       TagItem::CreateUnknown(SourceString::CreateForTesting(line, 2, name)));
@@ -92,7 +92,7 @@ ParseStatus::Or<LineResult> ExpectUnknownTag(base::StringPiece name,
 
 ParseStatus::Or<LineResult> ExpectUri(size_t line,
                                       size_t col,
-                                      base::StringPiece content) {
+                                      std::string_view content) {
   return LineResult(
       UriItem{.content = SourceString::CreateForTesting(line, col, content)});
 }
@@ -100,7 +100,7 @@ ParseStatus::Or<LineResult> ExpectUri(size_t line,
 }  // namespace
 
 TEST(HlsItemsTest, GetNextLineItem1) {
-  constexpr base::StringPiece kManifest =
+  constexpr std::string_view kManifest =
       "#EXTM3U\n"
       "\n"
       "#ExTm3U\n"
@@ -146,7 +146,7 @@ TEST(HlsItemsTest, GetNextLineItem1) {
 }
 
 TEST(HlsItemsTest, GetNextLineItem2) {
-  constexpr base::StringPiece kManifest =
+  constexpr std::string_view kManifest =
       "#EXTM3U\n"
       "https://ww\rw.example.com\n"
       "#EXT-X-VERSION:3\n";
@@ -159,7 +159,7 @@ TEST(HlsItemsTest, GetNextLineItem2) {
 }
 
 TEST(HlsItemsTest, GetNextLineItem3) {
-  constexpr base::StringPiece kManifest = "#EXTM3U";
+  constexpr std::string_view kManifest = "#EXTM3U";
 
   const ParseStatus::Or<LineResult> kExpectations[] = {
       ParseStatusCode::kInvalidEOL, ParseStatusCode::kInvalidEOL};
@@ -168,7 +168,7 @@ TEST(HlsItemsTest, GetNextLineItem3) {
 }
 
 TEST(HlsItemsTest, GetNextLineItem4) {
-  constexpr base::StringPiece kManifest = "#EXTM3U\r";
+  constexpr std::string_view kManifest = "#EXTM3U\r";
 
   const ParseStatus::Or<LineResult> kExpectations[] = {
       ParseStatusCode::kInvalidEOL, ParseStatusCode::kInvalidEOL};
@@ -177,7 +177,7 @@ TEST(HlsItemsTest, GetNextLineItem4) {
 }
 
 TEST(HlsItemsTest, GetNextLineItem5) {
-  constexpr base::StringPiece kManifest = "\n";
+  constexpr std::string_view kManifest = "\n";
 
   const ParseStatus::Or<LineResult> kExpectations[] = {
       ParseStatusCode::kReachedEOF, ParseStatusCode::kReachedEOF};

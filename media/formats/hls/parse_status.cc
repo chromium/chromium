@@ -13,7 +13,7 @@ namespace media::hls {
   case ParseStatusCode::x:        \
     return #x
 
-base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
+std::string_view ParseStatusCodeToString(ParseStatusCode code) {
   switch (code) {
     PARSE_STATUS_CODE_CASE(kReachedEOF);
     PARSE_STATUS_CODE_CASE(kInvalidEOL);

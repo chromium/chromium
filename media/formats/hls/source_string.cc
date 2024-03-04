@@ -14,7 +14,7 @@ namespace media::hls {
 namespace subtle {
 // static
 template <typename Self>
-Self SourceStringBase<Self>::CreateForTesting(base::StringPiece str) {
+Self SourceStringBase<Self>::CreateForTesting(std::string_view str) {
   return Self(1, 1, str);
 }
 
@@ -22,7 +22,7 @@ Self SourceStringBase<Self>::CreateForTesting(base::StringPiece str) {
 template <typename Self>
 Self SourceStringBase<Self>::CreateForTesting(size_t line,
                                               size_t column,
-                                              base::StringPiece str) {
+                                              std::string_view str) {
   return Self(line, column, str);
 }
 
@@ -61,17 +61,17 @@ void SourceStringBase<Self>::TrimStart() {
 template <typename Self>
 SourceStringBase<Self>::SourceStringBase(size_t line,
                                          size_t column,
-                                         base::StringPiece str)
+                                         std::string_view str)
     : line_(line), column_(column), str_(str) {}
 
 }  // namespace subtle
 
-SourceString::SourceString(size_t line, size_t column, base::StringPiece str)
+SourceString::SourceString(size_t line, size_t column, std::string_view str)
     : SourceStringBase(line, column, str) {}
 
 ResolvedSourceString::ResolvedSourceString(size_t line,
                                            size_t column,
-                                           base::StringPiece str,
+                                           std::string_view str,
                                            SubstitutionState substitution_state)
     : SourceStringBase(line, column, str),
       substitution_state_(substitution_state) {}
@@ -81,7 +81,7 @@ ResolvedSourceString SourceString::SkipVariableSubstitution() const {
                                       Column(), Str());
 }
 
-SourceLineIterator::SourceLineIterator(base::StringPiece source)
+SourceLineIterator::SourceLineIterator(std::string_view source)
     : current_line_(1), source_(source) {}
 
 ParseStatus::Or<SourceString> SourceLineIterator::Next() {
@@ -90,7 +90,7 @@ ParseStatus::Or<SourceString> SourceLineIterator::Next() {
   }
 
   const auto line_end = source_.find_first_of("\r\n");
-  if (line_end == base::StringPiece::npos) {
+  if (line_end == std::string_view::npos) {
     ParseStatus st = ParseStatusCode::kInvalidEOL;
     return std::move(st).WithData("source", source_);
   }

@@ -32,7 +32,7 @@ types::DecimalInteger MaxSeconds() {
 }
 
 template <typename T>
-void ErrorTest(std::optional<base::StringPiece> content,
+void ErrorTest(std::optional<std::string_view> content,
                ParseStatusCode expected_status,
                const base::Location& from = base::Location::Current()) {
   auto tag = content ? TagItem::Create(ToTagName(T::kName),
@@ -45,7 +45,7 @@ void ErrorTest(std::optional<base::StringPiece> content,
 }
 
 template <typename T>
-void ErrorTest(std::optional<base::StringPiece> content,
+void ErrorTest(std::optional<std::string_view> content,
                const VariableDictionary& variable_dict,
                VariableDictionary::SubstitutionBuffer& sub_buffer,
                ParseStatusCode expected_status,
@@ -110,8 +110,8 @@ OkTestResult<T> OkTest(std::optional<std::string> content,
 // matches what was expected), use `OkTest` and `ErrorTest` for that.
 void RunTagIdenficationTest(
     TagName name,
-    base::StringPiece line,
-    std::optional<base::StringPiece> expected_content,
+    std::string_view line,
+    std::optional<std::string_view> expected_content,
     const base::Location& from = base::Location::Current()) {
   auto iter = SourceLineIterator(line);
   auto item_result = GetNextLineItem(&iter);
@@ -130,8 +130,8 @@ void RunTagIdenficationTest(
 
 template <typename T>
 void RunTagIdenficationTest(
-    base::StringPiece line,
-    std::optional<base::StringPiece> expected_content,
+    std::string_view line,
+    std::optional<std::string_view> expected_content,
     const base::Location& from = base::Location::Current()) {
   RunTagIdenficationTest(ToTagName(T::kName), line, expected_content, from);
 }
@@ -194,7 +194,7 @@ VariableDictionary CreateBasicDictionary(
 }  // namespace
 
 TEST(HlsTagsTest, TagNameIdentity) {
-  std::set<base::StringPiece> names;
+  std::set<std::string_view> names;
 
   for (TagName name = kMinTagName; name <= kMaxTagName; ++name) {
     auto name_str = TagNameToString(name);

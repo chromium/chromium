@@ -20,7 +20,7 @@
 namespace media::hls::types {
 
 namespace {
-bool IsOneOf(char c, base::StringPiece set) {
+bool IsOneOf(char c, std::string_view set) {
   return base::Contains(set, c);
 }
 
@@ -72,7 +72,7 @@ std::optional<SourceString> ExtractAttributeValue(SourceString* source_str) {
     const auto matching_quote = str.Str().find('"', 1);
 
     // If match wasn't found, value isn't valid
-    if (matching_quote == base::StringPiece::npos) {
+    if (matching_quote == std::string_view::npos) {
       return std::nullopt;
     }
 
@@ -104,7 +104,7 @@ ParseStatus::Or<DecimalInteger> ParseDecimalInteger(
   // Check that the set of characters is allowed: 0-9
   // NOTE: It may be useful to split this into a separate function which
   // extracts the range containing valid characters from a given
-  // base::StringPiece. For now that's the caller's responsibility.
+  // std::string_view. For now that's the caller's responsibility.
   if (!RE2::FullMatch(str, *decimal_integer_regex)) {
     return ParseStatusCode::kFailedToParseDecimalInteger;
   }
@@ -164,7 +164,7 @@ ParseStatus::Or<DecimalResolution> DecimalResolution::Parse(
   // decimal-resolution values are in the format: DecimalInteger 'x'
   // DecimalInteger
   const auto x_index = source_str.Str().find_first_of('x');
-  if (x_index == base::StringPiece::npos) {
+  if (x_index == std::string_view::npos) {
     return ParseStatusCode::kFailedToParseDecimalResolution;
   }
 
@@ -201,7 +201,7 @@ ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
 
   // If the offset was present, try to parse it
   std::optional<types::DecimalInteger> offset;
-  if (at_index != base::StringPiece::npos) {
+  if (at_index != std::string_view::npos) {
     source_str.Consume(1);
     auto offset_result = ParseDecimalInteger(source_str);
     if (!offset_result.has_value()) {
@@ -415,8 +415,8 @@ ParseStatus::Or<StableId> StableId::Parse(ResolvedSourceString str) {
 
 // static
 ParseStatus::Or<InstreamId> InstreamId::Parse(ResolvedSourceString str) {
-  constexpr base::StringPiece kCcStr = "CC";
-  constexpr base::StringPiece kServiceStr = "SERVICE";
+  constexpr std::string_view kCcStr = "CC";
+  constexpr std::string_view kServiceStr = "SERVICE";
 
   // Parse the type (one of 'CC' or 'SERVICE')
   Type type;

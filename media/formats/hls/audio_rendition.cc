@@ -106,7 +106,7 @@ ParseStatus::Or<absl::monostate> AudioRenditionGroup::AddRendition(
 }
 
 const AudioRendition* AudioRenditionGroup::GetRendition(
-    base::StringPiece name) const {
+    std::string_view name) const {
   auto iter = renditions_map_.find(name);
   if (iter == renditions_map_.end()) {
     return nullptr;

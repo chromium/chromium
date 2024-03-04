@@ -25,7 +25,7 @@ namespace media::hls {
 namespace {
 
 scoped_refptr<MultivariantPlaylist> CreateMultivariantPlaylist(
-    std::initializer_list<base::StringPiece> lines,
+    std::initializer_list<std::string_view> lines,
     GURL uri = GURL("http://localhost/multi_playlist.m3u8"),
     types::DecimalInteger version = Playlist::kDefaultVersion) {
   std::string source;
@@ -332,7 +332,7 @@ TEST(HlsMediaPlaylistTest, XBitrateTag) {
 
   // The EXT-X-BITRATE tag must be a valid DecimalInteger
   {
-    for (base::StringPiece x : {"", ":", ": 1", ":1 ", ":-1", ":{$bitrate}"}) {
+    for (std::string_view x : {"", ":", ": 1", ":1 ", ":-1", ":{$bitrate}"}) {
       auto fork = builder;
       fork.AppendLine("#EXT-X-BITRATE", x);
       fork.ExpectError(ParseStatusCode::kMalformedTag);
@@ -436,7 +436,7 @@ TEST(HlsMediaPlaylistTest, XByteRangeTag) {
 
   // EXT-X-BYTERANGE content must be a valid ByteRange
   {
-    for (base::StringPiece x :
+    for (std::string_view x :
          {"", ":", ": 12@34", ":12@34 ", ":12@", ":12@{$offset}"}) {
       auto fork = builder;
       fork.AppendLine("#EXT-X-BYTERANGE", x);
@@ -678,7 +678,7 @@ TEST(HlsMediaPlaylistTest, XDiscontinuitySequenceTag) {
 
   // The EXT-X-DISCONTINUITY-SEQUENCE tag must be a valid DecimalInteger
   {
-    for (const base::StringPiece x : {"", ":-1", ":{$foo}", ":1.5", ":one"}) {
+    for (const std::string_view x : {"", ":-1", ":{$foo}", ":1.5", ":one"}) {
       auto fork = builder;
       fork.AppendLine("#EXT-X-DISCONTINUITY-SEQUENCE", x);
       fork.ExpectError(ParseStatusCode::kMalformedTag);
@@ -810,7 +810,7 @@ TEST(HlsMediaPlaylistTest, XEndListTag) {
   // Without the 'EXT-X-ENDLIST' tag, the default value is false, regardless of
   // the playlist type.
   {
-    for (const base::StringPiece type : {"", "EVENT", "VOD"}) {
+    for (const std::string_view type : {"", "EVENT", "VOD"}) {
       auto fork = builder;
       if (!type.empty()) {
         fork.AppendLine("#EXT-X-PLAYLIST-TYPE:", type);
@@ -822,7 +822,7 @@ TEST(HlsMediaPlaylistTest, XEndListTag) {
 
   // The 'EXT-X-ENDLIST' tag may not have any content
   {
-    for (const base::StringPiece x : {"", "FOO=BAR", "1"}) {
+    for (const std::string_view x : {"", "FOO=BAR", "1"}) {
       auto fork = builder;
       fork.AppendLine("#EXT-X-ENDLIST:", x);
       fork.ExpectError(ParseStatusCode::kMalformedTag);
@@ -900,7 +900,7 @@ TEST(HlsMediaPlaylistTest, XIFramesOnlyTag) {
 
   // The 'EXT-X-I-FRAMES-ONLY' tag may not have any content
   {
-    for (const base::StringPiece x : {"", "FOO=BAR", "1"}) {
+    for (const std::string_view x : {"", "FOO=BAR", "1"}) {
       auto fork = builder;
       fork.AppendLine("#EXT-X-I-FRAMES-ONLY:", x);
       fork.ExpectError(ParseStatusCode::kMalformedTag);
@@ -935,7 +935,7 @@ TEST(HlsMediaPlaylistTest, XMapTag) {
   builder.AppendLine("#EXT-X-TARGETDURATION:10");
 
   // The EXT-X-MAP tag must be valid
-  for (base::StringPiece x : {"", "BYTERANGE=\"10\"", "URI=foo.ts"}) {
+  for (std::string_view x : {"", "BYTERANGE=\"10\"", "URI=foo.ts"}) {
     auto fork = builder;
     fork.AppendLine("#EXT-X-MAP:", x);
     fork.ExpectError(ParseStatusCode::kMalformedTag);
@@ -1002,7 +1002,7 @@ TEST(HlsMediaPlaylistTest, XMediaSequenceTag) {
 
   // The EXT-X-MEDIA-SEQUENCE tag's content must be a valid DecimalInteger
   {
-    for (const base::StringPiece x : {"", ":-1", ":{$foo}", ":1.5", ":one"}) {
+    for (const std::string_view x : {"", ":-1", ":{$foo}", ":1.5", ":one"}) {
       auto fork = builder;
       fork.AppendLine("#EXT-X-MEDIA-SEQUENCE", x);
       fork.ExpectError(ParseStatusCode::kMalformedTag);
@@ -1080,7 +1080,7 @@ TEST(HlsMediaPlaylistTest, XPartInfTag) {
   builder.AppendLine("#EXT-X-SERVER-CONTROL:PART-HOLD-BACK=500");
 
   // EXT-X-PART-INF tag must be well-formed
-  for (base::StringPiece x : {"", ":", ":TARGET=1", ":PART-TARGET=two"}) {
+  for (std::string_view x : {"", ":", ":TARGET=1", ":PART-TARGET=two"}) {
     auto fork = builder;
     fork.AppendLine("#EXT-X-PART-INF", x);
     fork.ExpectError(ParseStatusCode::kMalformedTag);
@@ -1371,7 +1371,7 @@ TEST(HlsMediaPlaylistTest, XTargetDurationTag) {
   }
 
   // The XTargetDurationTag must be a valid DecimalInteger (unsigned)
-  for (base::StringPiece x : {"-1", "0.5", "-1.5", "999999999999999999999"}) {
+  for (std::string_view x : {"-1", "0.5", "-1.5", "999999999999999999999"}) {
     MediaPlaylistTestBuilder builder2;
     builder2.AppendLine("#EXTM3U");
     builder2.AppendLine("#EXT-X-TARGETDURATION:", x);

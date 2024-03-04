@@ -136,7 +136,7 @@ struct MEDIA_EXPORT AttributeListIterator {
 // This is essentially a `base::fixed_flat_map`, with the advantage of erasing
 // the size of the map from its type.
 struct MEDIA_EXPORT AttributeMap {
-  using Item = std::pair<base::StringPiece, std::optional<SourceString>>;
+  using Item = std::pair<std::string_view, std::optional<SourceString>>;
 
   // Constructs an AttributeMap using the given span to store the keys and
   // values. The keys present must be unique and sorted in alphabetical order.
@@ -177,12 +177,12 @@ class MEDIA_EXPORT VariableName {
  public:
   static ParseStatus::Or<VariableName> Parse(SourceString source_str);
 
-  base::StringPiece GetName() const { return name_; }
+  std::string_view GetName() const { return name_; }
 
  private:
-  explicit VariableName(base::StringPiece name) : name_(name) {}
+  explicit VariableName(std::string_view name) : name_(name) {}
 
-  base::StringPiece name_;
+  std::string_view name_;
 };
 
 // Represents a string that is guaranteed to be non-empty, and consisting only
@@ -192,7 +192,7 @@ class MEDIA_EXPORT VariableName {
 class MEDIA_EXPORT StableId {
  public:
   static ParseStatus::Or<StableId> Parse(ResolvedSourceString str);
-  static StableId CreateForTesting(base::StringPiece str) {
+  static StableId CreateForTesting(std::string_view str) {
     return Parse(ResolvedSourceString::CreateForTesting(str)).value();
   }
 

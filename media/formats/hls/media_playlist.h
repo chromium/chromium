@@ -140,7 +140,7 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   // it should be `nullptr`. If `source` is invalid, this returns an error.
   // Otherwise, the parsed playlist is returned.
   static ParseStatus::Or<scoped_refptr<MediaPlaylist>> Parse(
-      base::StringPiece source,
+      std::string_view source,
       GURL uri,
       types::DecimalInteger version,
       const MultivariantPlaylist* parent_playlist);

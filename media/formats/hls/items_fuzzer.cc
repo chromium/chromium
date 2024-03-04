@@ -14,7 +14,7 @@
 
 namespace {
 
-bool IsSubstring(base::StringPiece sub, base::StringPiece base) {
+bool IsSubstring(std::string_view sub, std::string_view base) {
   return base.data() <= sub.data() &&
          base.data() + base.size() >= sub.data() + sub.size();
 }
@@ -48,7 +48,7 @@ size_t GetItemLineNumber(media::hls::UriItem uri) {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Create a StringPiece from the given input
-  const base::StringPiece source(reinterpret_cast<const char*>(data), size);
+  const std::string_view source(reinterpret_cast<const char*>(data), size);
   media::hls::SourceLineIterator iterator{source};
 
   while (true) {

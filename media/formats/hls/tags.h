@@ -37,7 +37,7 @@ struct MEDIA_EXPORT XDefineTag {
 
   // Constructs an XDefineTag representing a variable definition.
   static XDefineTag CreateDefinition(types::VariableName name,
-                                     base::StringPiece value);
+                                     std::string_view value);
 
   // Constructs an XDefineTag representing an imported variable definition.
   static XDefineTag CreateImport(types::VariableName name);
@@ -47,7 +47,7 @@ struct MEDIA_EXPORT XDefineTag {
 
   // The value of the variable. If this is `nullopt`, then the value
   // is being IMPORT-ed and must be defined in the parent playlist.
-  std::optional<base::StringPiece> value;
+  std::optional<std::string_view> value;
 };
 
 // Represents the contents of the #EXT-X-INDEPENDENT-SEGMENTS tag

@@ -76,7 +76,7 @@ enum class XDefineTagAttribute {
   kMaxValue = kValue,
 };
 
-constexpr base::StringPiece GetAttributeName(XDefineTagAttribute attribute) {
+constexpr std::string_view GetAttributeName(XDefineTagAttribute attribute) {
   switch (attribute) {
     case XDefineTagAttribute::kImport:
       return "IMPORT";
@@ -108,7 +108,7 @@ enum class XMediaTagAttribute {
   kMaxValue = kUri,
 };
 
-constexpr base::StringPiece GetAttributeName(XMediaTagAttribute attribute) {
+constexpr std::string_view GetAttributeName(XMediaTagAttribute attribute) {
   switch (attribute) {
     case XMediaTagAttribute::kAssocLanguage:
       return "ASSOC-LANGUAGE";
@@ -156,7 +156,7 @@ enum class XStreamInfTagAttribute {
   kMaxValue = kVideo,
 };
 
-constexpr base::StringPiece GetAttributeName(XStreamInfTagAttribute attribute) {
+constexpr std::string_view GetAttributeName(XStreamInfTagAttribute attribute) {
   switch (attribute) {
     case XStreamInfTagAttribute::kAudio:
       return "AUDIO";
@@ -226,7 +226,7 @@ enum class XMapTagAttribute {
   kMaxValue = kUri,
 };
 
-constexpr base::StringPiece GetAttributeName(XMapTagAttribute attribute) {
+constexpr std::string_view GetAttributeName(XMapTagAttribute attribute) {
   switch (attribute) {
     case XMapTagAttribute::kByteRange:
       return "BYTERANGE";
@@ -248,7 +248,7 @@ enum class XPartTagAttribute {
   kMaxValue = kUri,
 };
 
-constexpr base::StringPiece GetAttributeName(XPartTagAttribute attribute) {
+constexpr std::string_view GetAttributeName(XPartTagAttribute attribute) {
   switch (attribute) {
     case XPartTagAttribute::kByteRange:
       return "BYTERANGE";
@@ -270,7 +270,7 @@ enum class XPartInfTagAttribute {
   kMaxValue = kPartTarget,
 };
 
-constexpr base::StringPiece GetAttributeName(XPartInfTagAttribute attribute) {
+constexpr std::string_view GetAttributeName(XPartInfTagAttribute attribute) {
   switch (attribute) {
     case XPartInfTagAttribute::kPartTarget:
       return "PART-TARGET";
@@ -290,7 +290,7 @@ enum class XServerControlTagAttribute {
   kMaxValue = kPartHoldBack,
 };
 
-constexpr base::StringPiece GetAttributeName(
+constexpr std::string_view GetAttributeName(
     XServerControlTagAttribute attribute) {
   switch (attribute) {
     case XServerControlTagAttribute::kCanBlockReload:
@@ -340,9 +340,9 @@ template <typename T>
 struct TypedAttributeMap {
   static_assert(std::is_enum<T>::value, "T must be an enum");
   static_assert(std::is_same<decltype(GetAttributeName(std::declval<T>())),
-                             base::StringPiece>::value,
+                             std::string_view>::value,
                 "GetAttributeName must be overloaded for T to return a "
-                "base::StringPiece");
+                "std::string_view");
   static constexpr size_t kNumKeys = static_cast<size_t>(T::kMaxValue) + 1;
 
   TypedAttributeMap()
@@ -378,7 +378,7 @@ ParseStatus::Or<M3uTag> M3uTag::Parse(TagItem tag) {
 
 // static
 XDefineTag XDefineTag::CreateDefinition(types::VariableName name,
-                                        base::StringPiece value) {
+                                        std::string_view value) {
   return XDefineTag{.name = name, .value = value};
 }
 
@@ -924,7 +924,7 @@ ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
   auto comma = content.Str().find_first_of(',');
   SourceString duration_str = content;
   SourceString title_str = content;
-  if (comma == base::StringPiece::npos) {
+  if (comma == std::string_view::npos) {
     // While the HLS spec does require commas at the end of inf tags, it's
     // incredibly common for sites to elide the comma if there is no title
     // attribute present. In this case, we should assert that there is at least

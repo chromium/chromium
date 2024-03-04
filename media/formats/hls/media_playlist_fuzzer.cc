@@ -28,7 +28,7 @@ IcuEnvironment* env = new IcuEnvironment();
 // Attempts to determine playlist version from the given source (excercising
 // `Playlist::IdentifyPlaylist`). Since we don't necessarily want to exit early
 // on a failure here, return `kDefaultVersion` on error.
-media::hls::types::DecimalInteger GetPlaylistVersion(base::StringPiece source) {
+media::hls::types::DecimalInteger GetPlaylistVersion(std::string_view source) {
   auto ident_result = media::hls::Playlist::IdentifyPlaylist(source);
   if (!ident_result.has_value()) {
     return media::hls::Playlist::kDefaultVersion;

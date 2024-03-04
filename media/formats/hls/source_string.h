@@ -25,10 +25,10 @@ namespace subtle {
 template <typename Self>
 class MEDIA_EXPORT SourceStringBase {
  public:
-  static Self CreateForTesting(base::StringPiece str);
+  static Self CreateForTesting(std::string_view str);
   static Self CreateForTesting(size_t line,
                                size_t column,
-                               base::StringPiece str);
+                               std::string_view str);
 
   // Returns the 1-based line index of this SourceString within the manifest.
   size_t Line() const { return line_; }
@@ -39,17 +39,17 @@ class MEDIA_EXPORT SourceStringBase {
 
   // Returns the contents of this SourceString. This will never include line-end
   // characters.
-  base::StringPiece Str() const { return str_; }
+  std::string_view Str() const { return str_; }
 
   bool Empty() const { return str_.empty(); }
 
   size_t Size() const { return str_.size(); }
 
-  Self Substr(size_t pos = 0, size_t count = base::StringPiece::npos) const;
+  Self Substr(size_t pos = 0, size_t count = std::string_view::npos) const;
 
   // Consumes this string up to the given count, which may be longer than this
   // string. Returns the substring that was consumed.
-  Self Consume(size_t count = base::StringPiece::npos);
+  Self Consume(size_t count = std::string_view::npos);
 
   // Finds the first occurrence of the given character, and returns the
   // substring prefixing that character. The prefix and character are consumed
@@ -68,12 +68,12 @@ class MEDIA_EXPORT SourceStringBase {
   bool ContainsSubstitutions() const;
 
  protected:
-  SourceStringBase(size_t line, size_t column, base::StringPiece str);
+  SourceStringBase(size_t line, size_t column, std::string_view str);
 
  private:
   size_t line_;
   size_t column_;
-  base::StringPiece str_;
+  std::string_view str_;
 };
 
 }  // namespace subtle
@@ -86,7 +86,7 @@ class MEDIA_EXPORT SourceString final
   // Only `SourceLineIterator` may create `SourceString`s.
   static SourceString Create(base::PassKey<SourceLineIterator>,
                              size_t line,
-                             base::StringPiece str) {
+                             std::string_view str) {
     return SourceString(line, 1, str);
   }
 
@@ -100,7 +100,7 @@ class MEDIA_EXPORT SourceString final
 
  private:
   friend SourceStringBase;
-  SourceString(size_t line, size_t column, base::StringPiece str);
+  SourceString(size_t line, size_t column, std::string_view str);
 };
 
 // A `ResolvedSourceString` is a string slice that has either undergone or
@@ -118,14 +118,14 @@ class MEDIA_EXPORT ResolvedSourceString final
   static ResolvedSourceString Create(base::PassKey<VariableDictionary>,
                                      size_t line,
                                      size_t column,
-                                     base::StringPiece str,
+                                     std::string_view str,
                                      SubstitutionState substitution_state) {
     return ResolvedSourceString(line, column, str, substitution_state);
   }
   static ResolvedSourceString Create(base::PassKey<SourceString>,
                                      size_t line,
                                      size_t column,
-                                     base::StringPiece str) {
+                                     std::string_view str) {
     return ResolvedSourceString(line, column, str,
                                 SubstitutionState::kNoSubstitutions);
   }
@@ -138,7 +138,7 @@ class MEDIA_EXPORT ResolvedSourceString final
   friend SourceStringBase;
   ResolvedSourceString(size_t line,
                        size_t column,
-                       base::StringPiece str,
+                       std::string_view str,
                        SubstitutionState substitution_state =
                            SubstitutionState::kNoSubstitutions);
 
@@ -147,7 +147,7 @@ class MEDIA_EXPORT ResolvedSourceString final
 
 // Exposes a line-based iteration API over the source text of an HLS manifest.
 struct MEDIA_EXPORT SourceLineIterator {
-  explicit SourceLineIterator(base::StringPiece source);
+  explicit SourceLineIterator(std::string_view source);
 
   // Moves this SourceLineIterator to the next line, and returns the contents of
   // the current line. Returns `ParseStatusCode::kInvalidEOL` if invalid line
@@ -156,11 +156,11 @@ struct MEDIA_EXPORT SourceLineIterator {
   ParseStatus::Or<SourceString> Next();
 
   size_t CurrentLineForTesting() const { return current_line_; }
-  base::StringPiece SourceForTesting() const { return source_; }
+  std::string_view SourceForTesting() const { return source_; }
 
  private:
-  size_t current_line_;
-  base::StringPiece source_;
+  size_t current_line_ = 1;
+  std::string_view source_;
 };
 
 }  // namespace media::hls
