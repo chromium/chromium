@@ -516,9 +516,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(model()->size(), Eq(1ul));
 }
 
+// TODO: crbug.com/41490059 - Flaky on Android
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ShouldFilterEntriesWithEmptyEntryIdUponIncrementalRemoteUpdate \
+  DISABLED_ShouldFilterEntriesWithEmptyEntryIdUponIncrementalRemoteUpdate
+#else
+#define MAYBE_ShouldFilterEntriesWithEmptyEntryIdUponIncrementalRemoteUpdate \
+  ShouldFilterEntriesWithEmptyEntryIdUponIncrementalRemoteUpdate
+#endif
 IN_PROC_BROWSER_TEST_F(
     SingleClientReadingListSyncTest,
-    ShouldFilterEntriesWithEmptyEntryIdUponIncrementalRemoteUpdate) {
+    MAYBE_ShouldFilterEntriesWithEmptyEntryIdUponIncrementalRemoteUpdate) {
   ASSERT_TRUE(SetupClients());
 
   ASSERT_THAT(model()->size(), Eq(0ul));
