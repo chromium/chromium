@@ -51,6 +51,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.android_webview.common.BugTrackerConstants;
 import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
 import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
@@ -212,13 +213,20 @@ public class DeveloperUiTest {
                 allOf(
                         IntentMatchers.hasAction(Intent.ACTION_VIEW),
                         IntentMatchers.hasData(hasScheme("https")),
-                        IntentMatchers.hasData(hasHost("bugs.chromium.org")),
-                        IntentMatchers.hasData(hasPath("/p/chromium/issues/entry")),
-                        IntentMatchers.hasData(hasParamWithValue("template", "Webview+Bugs")),
+                        IntentMatchers.hasData(hasHost("issues.chromium.org")),
+                        IntentMatchers.hasData(hasPath("/issues/new")),
                         IntentMatchers.hasData(
                                 hasParamWithValue(
-                                        "labels",
-                                        "Via-WebView-DevTools,Pri-3,Type-Bug,OS-Android"))));
+                                        "component", BugTrackerConstants.COMPONENT_MOBILE_WEBVIEW)),
+                        IntentMatchers.hasData(
+                                hasParamWithValue(
+                                        "template", BugTrackerConstants.DEFAULT_WEBVIEW_TEMPLATE)),
+                        IntentMatchers.hasData(hasParamWithValue("priority", "P3")),
+                        IntentMatchers.hasData(hasParamWithValue("type", "BUG")),
+                        IntentMatchers.hasData(
+                                hasParamWithValue(
+                                        "customFields",
+                                        BugTrackerConstants.OS_FIELD + ":Android"))));
     }
 
     @Test

@@ -11,6 +11,7 @@ import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.android_webview.common.BugTrackerConstants;
 import org.chromium.android_webview.nonembedded.crash.CrashInfo;
 import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.base.ContextUtils;
@@ -49,9 +50,6 @@ public class CrashBugUrlFactory {
                     + "Instructions for triaging this report (Chromium members only): "
                     + "https://bit.ly/2SM1Y9t\n";
 
-    private static final String DEFAULT_LABELS =
-            "User-Submitted,Via-WebView-DevTools,Pri-3,Type-Bug,OS-Android";
-
     private final CrashInfo mCrashInfo;
 
     public CrashBugUrlFactory(CrashInfo crashInfo) {
@@ -64,18 +62,37 @@ public class CrashBugUrlFactory {
     }
 
     /**
-     * Build a report uri to open an issue on https://bugs.chromium.org/p/chromium/issues/entry.
-     * It uses WebView Bugs Template and overrides labels and description fields.
+     * Build a report uri to open an issue on
+     * https://issues.chromium.org/issues/new?component=1456456&template=1923373. It uses WebView
+     * Bugs Template and overrides labels and description fields.
      */
     public Uri getReportUri() {
-        return new Uri.Builder()
-                .scheme("https")
-                .authority("bugs.chromium.org")
-                .path("/p/chromium/issues/entry")
-                .appendQueryParameter("template", "Webview+Bugs")
-                .appendQueryParameter("description", getDescription())
-                .appendQueryParameter("labels", getLabels())
-                .build();
+        var builder =
+                new Uri.Builder()
+                        .scheme("https")
+                        .authority("issues.chromium.org")
+                        .path("/issues/new")
+                        .appendQueryParameter(
+                                "component", BugTrackerConstants.COMPONENT_MOBILE_WEBVIEW)
+                        .appendQueryParameter(
+                                "template", BugTrackerConstants.DEFAULT_WEBVIEW_TEMPLATE)
+                        .appendQueryParameter("description", getDescription())
+                        .appendQueryParameter("priority", "P3")
+                        .appendQueryParameter("type", "BUG")
+                        .appendQueryParameter(
+                                "customFields", BugTrackerConstants.OS_FIELD + ":Android")
+                        .appendQueryParameter(
+                                "hotlistIds", BugTrackerConstants.USER_SUBMITTED_HOTLIST);
+
+        String version = mCrashInfo.getCrashKey(CrashInfo.WEBVIEW_VERSION_KEY);
+        if (version != null) {
+            int firstIndex = version.indexOf(".");
+            if (firstIndex != -1) {
+                String milestone = version.substring(0, firstIndex);
+                builder.appendQueryParameter("foundIn", milestone);
+            }
+        }
+        return builder.build();
     }
 
     // Construct bug description using CRASH_REPORT_TEMPLATE
@@ -110,19 +127,5 @@ public class CrashBugUrlFactory {
         String versionCode =
                 mCrashInfo.getCrashKeyOrDefault(CrashInfo.APP_PACKAGE_VERSION_CODE_KEY, "");
         return String.format(Locale.US, "%s (%s)", name, versionCode);
-    }
-
-    // Add FoundIn-<milestone> label to default labels list
-    private String getLabels() {
-        String labels = DEFAULT_LABELS;
-        String version = mCrashInfo.getCrashKey(CrashInfo.WEBVIEW_VERSION_KEY);
-        if (version != null) {
-            int firstIndex = version.indexOf(".");
-            if (firstIndex != -1) {
-                String milestone = version.substring(0, firstIndex);
-                labels += ",FoundIn-" + milestone;
-            }
-        }
-        return labels;
     }
 }

@@ -30,6 +30,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import org.chromium.android_webview.common.BugTrackerConstants;
 import org.chromium.android_webview.devui.util.SafeIntentUtils;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
@@ -344,11 +345,16 @@ public class MainActivity extends FragmentActivity {
             Uri reportUri =
                     new Uri.Builder()
                             .scheme("https")
-                            .authority("bugs.chromium.org")
-                            .path("/p/chromium/issues/entry")
-                            .appendQueryParameter("template", "Webview+Bugs")
+                            .authority("issues.chromium.org")
+                            .path("/issues/new")
                             .appendQueryParameter(
-                                    "labels", "Via-WebView-DevTools,Pri-3,Type-Bug,OS-Android")
+                                    "component", BugTrackerConstants.COMPONENT_MOBILE_WEBVIEW)
+                            .appendQueryParameter(
+                                    "template", BugTrackerConstants.DEFAULT_WEBVIEW_TEMPLATE)
+                            .appendQueryParameter("priority", "P3")
+                            .appendQueryParameter("type", "BUG")
+                            .appendQueryParameter(
+                                    "customFields", BugTrackerConstants.OS_FIELD + ":Android")
                             .build();
             SafeIntentUtils.startActivityOrShowError(
                     this,

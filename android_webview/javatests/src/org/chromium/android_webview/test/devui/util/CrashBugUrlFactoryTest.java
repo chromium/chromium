@@ -23,6 +23,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.android_webview.common.BugTrackerConstants;
 import org.chromium.android_webview.devui.util.CrashBugUrlFactory;
 import org.chromium.android_webview.nonembedded.crash.CrashInfo;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
@@ -85,16 +86,31 @@ public class CrashBugUrlFactoryTest {
         Intent intent = new CrashBugUrlFactory(crashInfo).getReportIntent();
         assertThat(intent, hasAction(Intent.ACTION_VIEW));
         assertThat(intent, hasData(hasScheme("https")));
-        assertThat(intent, hasData(hasHost("bugs.chromium.org")));
-        assertThat(intent, hasData(hasPath("/p/chromium/issues/entry")));
-        assertThat(intent, hasData(hasParamWithValue("template", "Webview+Bugs")));
+        assertThat(intent, hasData(hasHost("issues.chromium.org")));
+        assertThat(intent, hasData(hasPath("/issues/new")));
         assertThat(
                 intent,
                 hasData(
                         hasParamWithValue(
-                                "labels",
-                                "User-Submitted,Via-WebView-DevTools,Pri-3,Type-Bug,OS-Android"
-                                        + ",FoundIn-10")));
+                                "component", BugTrackerConstants.COMPONENT_MOBILE_WEBVIEW)));
+        assertThat(
+                intent,
+                hasData(
+                        hasParamWithValue(
+                                "template", BugTrackerConstants.DEFAULT_WEBVIEW_TEMPLATE)));
+        assertThat(intent, hasData(hasParamWithValue("priority", "P3")));
+        assertThat(intent, hasData(hasParamWithValue("type", "BUG")));
+        assertThat(
+                intent,
+                hasData(
+                        hasParamWithValue(
+                                "customFields", BugTrackerConstants.OS_FIELD + ":Android")));
+        assertThat(
+                intent,
+                hasData(
+                        hasParamWithValue(
+                                "hotlistIds", BugTrackerConstants.USER_SUBMITTED_HOTLIST)));
+        assertThat(intent, hasData(hasParamWithValue("foundIn", "10")));
         assertThat(intent, hasData(hasParamWithValue("description", expectedDescription)));
     }
 }
