@@ -11,11 +11,12 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/plus_addresses/features.h"
-#include "components/plus_addresses/plus_address_http_client.h"
+#include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
-/* static */
+// static
 plus_addresses::PlusAddressService*
 PlusAddressServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
@@ -66,8 +67,8 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
       IdentityManagerFactory::GetForProfile(profile);
   return std::make_unique<plus_addresses::PlusAddressService>(
       identity_manager, profile->GetPrefs(),
-      plus_addresses::PlusAddressHttpClient(identity_manager,
-                                            profile->GetURLLoaderFactory()));
+      std::make_unique<plus_addresses::PlusAddressHttpClientImpl>(
+          identity_manager, profile->GetURLLoaderFactory()));
 }
 
 // Create this service when the profile is created to support populating the

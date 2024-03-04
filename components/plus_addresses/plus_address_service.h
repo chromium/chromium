@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_SERVICE_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_SERVICE_H_
 
+#include <memory>
 #include <optional>
 #include <set>
 #include <string>
@@ -13,7 +14,6 @@
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -29,6 +29,8 @@ class PersistentRepeatingTimer;
 }  // namespace signin
 
 namespace plus_addresses {
+
+class PlusAddressHttpClient;
 
 // An experimental class for filling plus addresses (asdf+123@some-domain.com).
 // Not intended for widespread use.
@@ -49,9 +51,10 @@ class PlusAddressService : public KeyedService,
 
   // Initialize the PlusAddressService with a `IdentityManager`, `PrefService`,
   // and a `SharedURLLoaderFactory`.
-  PlusAddressService(signin::IdentityManager* identity_manager,
-                     PrefService* pref_service,
-                     PlusAddressHttpClient plus_address_client);
+  PlusAddressService(
+      signin::IdentityManager* identity_manager,
+      PrefService* pref_service,
+      std::unique_ptr<PlusAddressHttpClient> plus_address_http_client);
 
   // autofill::AutofillPlusAddressDelegate:
   // Checks whether the passed-in string is a known plus address.
@@ -171,7 +174,7 @@ class PlusAddressService : public KeyedService,
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
 
   // Handles requests to a remote server that this service uses.
-  PlusAddressHttpClient plus_address_client_;
+  std::unique_ptr<PlusAddressHttpClient> plus_address_http_client_;
 
   // Store set of excluded sites ETLD+1 where PlusAddressService is not
   // supported.

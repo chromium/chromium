@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/plus_address_http_client.h"
+#include "components/plus_addresses/plus_address_http_client_impl.h"
 
 #include <optional>
+#include <string>
 
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -23,6 +24,7 @@
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -134,7 +136,7 @@ class PlusAddressHttpClientRequests : public ::testing::Test {
 TEST_F(PlusAddressHttpClientRequests, ReservePlusAddress_IssuesCorrectRequest) {
   identity_test_env.MakePrimaryAccountAvailable(email_address,
                                                 signin::ConsentLevel::kSignin);
-  PlusAddressHttpClient client(identity_test_env.identity_manager(),
+  PlusAddressHttpClientImpl client(identity_test_env.identity_manager(),
                            scoped_shared_url_loader_factory);
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   std::string facet = origin.Serialize();
@@ -168,7 +170,7 @@ TEST_F(PlusAddressHttpClientRequests, ReservePlusAddress_IssuesCorrectRequest) {
 TEST_F(PlusAddressHttpClientRequests, ConfirmPlusAddress_IssuesCorrectRequest) {
   identity_test_env.MakePrimaryAccountAvailable(email_address,
                                                 signin::ConsentLevel::kSignin);
-  PlusAddressHttpClient client(identity_manager, scoped_shared_url_loader_factory);
+  PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   std::string facet = origin.Serialize();
   std::string plus_address = "plus@plus.plus";
@@ -243,7 +245,7 @@ class PlusAddressCreationRequests
   base::TimeDelta latency_ = base::Milliseconds(2400);
 
  private:
-  PlusAddressHttpClient client_;
+  PlusAddressHttpClientImpl client_;
 };
 
 // Verifies ability to support making multiple requests at once.
@@ -409,7 +411,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(PlusAddressHttpClientRequests, GetAllPlusAddressesV1_IssuesCorrectRequest) {
   identity_test_env.MakePrimaryAccountAvailable(email_address,
                                                 signin::ConsentLevel::kSignin);
-  PlusAddressHttpClient client(identity_manager, scoped_shared_url_loader_factory);
+  PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
   client.GetAllPlusAddresses(base::DoNothing());
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       token, base::Time::Max());
@@ -426,7 +428,7 @@ TEST_F(PlusAddressHttpClientRequests, GetAllPlusAddressesV1_IssuesCorrectRequest
 TEST_F(PlusAddressHttpClientRequests, GetAllPlusAddresses_RequestsOauthToken) {
   identity_test_env.MakePrimaryAccountAvailable(email_address,
                                                 signin::ConsentLevel::kSignin);
-  PlusAddressHttpClient client(identity_manager, scoped_shared_url_loader_factory);
+  PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
   base::test::TestFuture<const PlusAddressMapOrError&> future;
   client.GetAllPlusAddresses(future.GetCallback());
   ASSERT_FALSE(future.IsReady());
@@ -455,7 +457,7 @@ TEST_F(PlusAddressHttpClientRequests, GetAllPlusAddresses_RequestsOauthToken) {
 TEST_F(PlusAddressHttpClientRequests, GetAllPlusAddressesV1_RunsCallbackOnSuccess) {
   identity_test_env.MakePrimaryAccountAvailable(email_address,
                                                 signin::ConsentLevel::kSignin);
-  PlusAddressHttpClient client(identity_manager, scoped_shared_url_loader_factory);
+  PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
   client.SetClockForTesting(test_clock());
 
   base::test::TestFuture<const PlusAddressMapOrError&> future;
@@ -500,7 +502,7 @@ TEST_F(PlusAddressHttpClientRequests,
        GetAllPlusAddressesV1_RunsCallbackOnNetworkError) {
   identity_test_env.MakePrimaryAccountAvailable(email_address,
                                                 signin::ConsentLevel::kSignin);
-  PlusAddressHttpClient client(identity_manager, scoped_shared_url_loader_factory);
+  PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
   client.SetClockForTesting(test_clock());
 
   // Initiate a request...
@@ -536,7 +538,7 @@ TEST_F(
     DISABLED_GetAllPlusAddressesV1_WhenLoadingRequest_NewRequestsAreDropped) {
   identity_test_env.MakePrimaryAccountAvailable(email_address,
                                                 signin::ConsentLevel::kSignin);
-  PlusAddressHttpClient client(identity_manager, scoped_shared_url_loader_factory);
+  PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
 
   base::test::TestFuture<const PlusAddressMapOrError&> first;
   // Send two requests in quick succession
@@ -564,7 +566,7 @@ TEST(PlusAddressHttpClient, ChecksUrlParamIsValidGurl) {
   feature.InitAndEnableFeatureWithParameters(
       features::kFeature,
       {{features::kEnterprisePlusAddressServerUrl.name, server_url}});
-  PlusAddressHttpClient client(
+  PlusAddressHttpClientImpl client(
       identity_test_env.identity_manager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
   ASSERT_TRUE(client.GetServerUrlForTesting().has_value());
@@ -578,7 +580,7 @@ TEST(PlusAddressHttpClient, RejectsNonUrlStrings) {
   feature.InitAndEnableFeatureWithParameters(
       features::kFeature,
       {{features::kEnterprisePlusAddressServerUrl.name, "kirubeldotcom"}});
-  PlusAddressHttpClient client(
+  PlusAddressHttpClientImpl client(
       identity_test_env.identity_manager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
   EXPECT_FALSE(client.GetServerUrlForTesting().has_value());
@@ -628,7 +630,7 @@ class PlusAddressAuthToken : public ::testing::Test {
 };
 
 TEST_F(PlusAddressAuthToken, RequestedBeforeSignin) {
-  PlusAddressHttpClient client(identity_manager(),
+  PlusAddressHttpClientImpl client(identity_manager(),
                            /* url_loader_factory= */ nullptr);
 
   base::test::TestFuture<std::optional<std::string>> callback;
@@ -648,7 +650,7 @@ TEST_F(PlusAddressAuthToken, RequestedBeforeSignin) {
 }
 
 TEST_F(PlusAddressAuthToken, RequestedUserNeverSignsIn) {
-  PlusAddressHttpClient client(identity_manager(),
+  PlusAddressHttpClientImpl client(identity_manager(),
                            /* url_loader_factory= */ nullptr);
 
   base::test::TestFuture<std::optional<std::string>> callback;
@@ -658,7 +660,7 @@ TEST_F(PlusAddressAuthToken, RequestedUserNeverSignsIn) {
 }
 
 TEST_F(PlusAddressAuthToken, RequestedAfterExpiration) {
-  PlusAddressHttpClient client(identity_manager(),
+  PlusAddressHttpClientImpl client(identity_manager(),
                            /* url_loader_factory= */ nullptr);
   // Make an initial OAuth token request.
   base::test::TestFuture<std::optional<std::string>> first_callback;
@@ -700,7 +702,7 @@ TEST_F(PlusAddressAuthToken, AuthErrorWithMultipleAccounts) {
       secondary.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
-  PlusAddressHttpClient client(identity_manager(),
+  PlusAddressHttpClientImpl client(identity_manager(),
                            /* url_loader_factory= */ nullptr);
 
   base::test::TestFuture<std::optional<std::string>> callback;
@@ -713,7 +715,7 @@ TEST_F(PlusAddressAuthToken, AuthErrorWithMultipleAccounts) {
 TEST_F(PlusAddressAuthToken, RequestWorks_ManyCallers) {
   identity_test_env_.MakePrimaryAccountAvailable(test_email_address_,
                                                  signin::ConsentLevel::kSignin);
-  PlusAddressHttpClient client(identity_manager(),
+  PlusAddressHttpClientImpl client(identity_manager(),
                            /* url_loader_factory= */ nullptr);
 
   // Issue several requests for an OAuth token.
@@ -736,7 +738,7 @@ TEST_F(PlusAddressAuthToken, RequestWorks_ManyCallers) {
 TEST_F(PlusAddressAuthToken, RequestFails_ManyCallers) {
   identity_test_env_.MakePrimaryAccountAvailable(test_email_address_,
                                                  signin::ConsentLevel::kSignin);
-  PlusAddressHttpClient client(identity_manager(),
+  PlusAddressHttpClientImpl client(identity_manager(),
                            /* url_loader_factory= */ nullptr);
 
   // Issue several requests for an OAuth token.
@@ -771,7 +773,7 @@ TEST_F(PlusAddressHttpClientNullServerUrl, ReservePlusAddress_SendsNoRequest) {
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   base::test::TestFuture<const PlusProfileOrError&> callback;
 
-  PlusAddressHttpClient client(identity_manager, scoped_shared_url_loader_factory);
+  PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
 
   EXPECT_FALSE(client.GetServerUrlForTesting().has_value());
   // ReservePlusAddress should return without making any request when no valid
@@ -785,7 +787,7 @@ TEST_F(PlusAddressHttpClientNullServerUrl, ConfirmPlusAddress_SendsNoRequest) {
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   base::test::TestFuture<const PlusProfileOrError&> callback;
 
-  PlusAddressHttpClient client(identity_manager, scoped_shared_url_loader_factory);
+  PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
 
   EXPECT_FALSE(client.GetServerUrlForTesting().has_value());
   // ConfirmPlusAddress should return without making any request when no valid
@@ -798,7 +800,7 @@ TEST_F(PlusAddressHttpClientNullServerUrl, ConfirmPlusAddress_SendsNoRequest) {
 TEST_F(PlusAddressHttpClientNullServerUrl, GetAllPlusAddresses_SendsNoRequest) {
   base::test::TestFuture<const PlusAddressMapOrError&> callback;
 
-  PlusAddressHttpClient client(identity_manager, scoped_shared_url_loader_factory);
+  PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
 
   EXPECT_FALSE(client.GetServerUrlForTesting().has_value());
   // GetAllPlusAddresses should return without making any request

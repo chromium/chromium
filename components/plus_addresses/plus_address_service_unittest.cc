@@ -19,7 +19,7 @@
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/plus_addresses/features.h"
-#include "components/plus_addresses/plus_address_http_client.h"
+#include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
@@ -27,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -325,8 +326,8 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsUnconfirmed) {
 
   PlusAddressService service(
       identity_test_env.identity_manager(), nullptr,
-      PlusAddressHttpClient(identity_test_env.identity_manager(),
-                            test_shared_loader_factory));
+      std::make_unique<PlusAddressHttpClientImpl>(
+          identity_test_env.identity_manager(), test_shared_loader_factory));
 
   base::test::TestFuture<const PlusProfileOrError&> future;
   const url::Origin no_subdomain_origin =
@@ -358,8 +359,8 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsConfirmed) {
 
   PlusAddressService service(
       identity_test_env.identity_manager(), nullptr,
-      PlusAddressHttpClient(identity_test_env.identity_manager(),
-                            test_shared_loader_factory));
+      std::make_unique<PlusAddressHttpClientImpl>(
+          identity_test_env.identity_manager(), test_shared_loader_factory));
 
   base::test::TestFuture<const PlusProfileOrError&> future;
   const url::Origin no_subdomain_origin =
@@ -391,8 +392,8 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_Fails) {
 
   PlusAddressService service(
       identity_test_env.identity_manager(), nullptr,
-      PlusAddressHttpClient(identity_test_env.identity_manager(),
-                            test_shared_loader_factory));
+      std::make_unique<PlusAddressHttpClientImpl>(
+          identity_test_env.identity_manager(), test_shared_loader_factory));
 
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
@@ -418,8 +419,8 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
 
   PlusAddressService service(
       identity_test_env.identity_manager(), nullptr,
-      PlusAddressHttpClient(identity_test_env.identity_manager(),
-                            test_shared_loader_factory));
+      std::make_unique<PlusAddressHttpClientImpl>(
+          identity_test_env.identity_manager(), test_shared_loader_factory));
 
   base::test::TestFuture<const PlusProfileOrError&> future;
   const url::Origin no_subdomain_origin =
@@ -459,8 +460,8 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Fails) {
 
   PlusAddressService service(
       identity_test_env.identity_manager(), nullptr,
-      PlusAddressHttpClient(identity_test_env.identity_manager(),
-                            test_shared_loader_factory));
+      std::make_unique<PlusAddressHttpClientImpl>(
+          identity_test_env.identity_manager(), test_shared_loader_factory));
   std::string plus_address = "plus+remote@plus.plus";
   ASSERT_FALSE(service.IsPlusAddress(plus_address));
 
@@ -493,8 +494,8 @@ TEST_F(PlusAddressServiceRequestsTest,
 
   PlusAddressService service(
       identity_test_env.identity_manager(), nullptr,
-      PlusAddressHttpClient(identity_test_env.identity_manager(),
-                            test_shared_loader_factory));
+      std::make_unique<PlusAddressHttpClientImpl>(
+          identity_test_env.identity_manager(), test_shared_loader_factory));
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://test.example"));
   const std::string site = "test.example";
@@ -542,8 +543,8 @@ TEST_F(PlusAddressServiceRequestsTest,
 
   PlusAddressService service(
       identity_test_env.identity_manager(), nullptr,
-      PlusAddressHttpClient(identity_test_env.identity_manager(),
-                            test_shared_loader_factory));
+      std::make_unique<PlusAddressHttpClientImpl>(
+          identity_test_env.identity_manager(), test_shared_loader_factory));
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://test.example"));
   const std::string site = "test.example";
@@ -613,12 +614,12 @@ TEST_F(PlusAddressServicePolling, CallsGetAllPlusAddresses) {
                                          {signin::ConsentLevel::kSignin});
   identity_test_env.SetAutomaticIssueOfAccessTokens(true);
 
-  PlusAddressHttpClient client(identity_test_env.identity_manager(),
-                               test_shared_loader_factory);
   // The service starts the timer on construction and issues a request to
   // poll.
-  PlusAddressService service(identity_test_env.identity_manager(), prefs(),
-                             std::move(client));
+  PlusAddressService service(
+      identity_test_env.identity_manager(), prefs(),
+      std::make_unique<PlusAddressHttpClientImpl>(
+          identity_test_env.identity_manager(), test_shared_loader_factory));
   // Unblock the initial polling request.
   test_url_loader_factory.SimulateResponseForPendingRequest(
       plus_profiles_endpoint, test::MakeListResponse({}));
@@ -663,12 +664,12 @@ TEST_F(PlusAddressServicePolling,
                                          {signin::ConsentLevel::kSignin});
   identity_test_env.SetAutomaticIssueOfAccessTokens(true);
 
-  PlusAddressHttpClient client(identity_test_env.identity_manager(),
-                               test_shared_loader_factory);
   // The service starts the timer on construction and issues a request to
   // poll.
-  PlusAddressService service(identity_test_env.identity_manager(), prefs(),
-                             std::move(client));
+  PlusAddressService service(
+      identity_test_env.identity_manager(), prefs(),
+      std::make_unique<PlusAddressHttpClientImpl>(
+          identity_test_env.identity_manager(), test_shared_loader_factory));
   EXPECT_TRUE(service.is_enabled());
   // Unblock the initial polling request.
   ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
@@ -692,12 +693,12 @@ TEST_F(PlusAddressServicePolling,
                                          {signin::ConsentLevel::kSignin});
   identity_test_env.SetAutomaticIssueOfAccessTokens(true);
 
-  PlusAddressHttpClient client(identity_test_env.identity_manager(),
-                               test_shared_loader_factory);
   // The service starts the timer on construction and issues a request to
   // poll.
-  PlusAddressService service(identity_test_env.identity_manager(), prefs(),
-                             std::move(client));
+  PlusAddressService service(
+      identity_test_env.identity_manager(), prefs(),
+      std::make_unique<PlusAddressHttpClientImpl>(
+          identity_test_env.identity_manager(), test_shared_loader_factory));
   EXPECT_TRUE(service.is_enabled());
   // Unblock the initial polling request.
   ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
@@ -721,12 +722,12 @@ TEST_F(PlusAddressServicePolling,
                                          {signin::ConsentLevel::kSignin});
   identity_test_env.SetAutomaticIssueOfAccessTokens(true);
 
-  PlusAddressHttpClient client(identity_test_env.identity_manager(),
-                               test_shared_loader_factory);
   // The service starts the timer on construction and issues a request to
   // poll.
-  PlusAddressService service(identity_test_env.identity_manager(), prefs(),
-                             std::move(client));
+  PlusAddressService service(
+      identity_test_env.identity_manager(), prefs(),
+      std::make_unique<PlusAddressHttpClientImpl>(
+          identity_test_env.identity_manager(), test_shared_loader_factory));
   EXPECT_TRUE(service.is_enabled());
   // Unblock the initial polling request.
   test_url_loader_factory.SimulateResponseForPendingRequest(
@@ -744,10 +745,10 @@ TEST_F(PlusAddressServicePolling, PrimaryAccountCleared_TogglesPollingOff) {
                                                 signin::ConsentLevel::kSignin);
   identity_test_env.SetAutomaticIssueOfAccessTokens(true);
 
-  PlusAddressHttpClient client(identity_test_env.identity_manager(),
-                               test_shared_loader_factory);
-  PlusAddressService service(identity_test_env.identity_manager(), prefs(),
-                             std::move(client));
+  PlusAddressService service(
+      identity_test_env.identity_manager(), prefs(),
+      std::make_unique<PlusAddressHttpClientImpl>(
+          identity_test_env.identity_manager(), test_shared_loader_factory));
   // Unblock initial poll.
   test_url_loader_factory.SimulateResponseForPendingRequest(
       plus_profiles_endpoint, test::MakeListResponse({}));
@@ -782,10 +783,10 @@ TEST_F(PlusAddressServicePolling, PrimaryRefreshTokenError_TogglesPollingOff) {
           "plus1@plus.plus", signin::ConsentLevel::kSignin);
   identity_test_env.SetAutomaticIssueOfAccessTokens(true);
 
-  PlusAddressHttpClient client(identity_test_env.identity_manager(),
-                               test_shared_loader_factory);
-  PlusAddressService service(identity_test_env.identity_manager(), prefs(),
-                             std::move(client));
+  PlusAddressService service(
+      identity_test_env.identity_manager(), prefs(),
+      std::make_unique<PlusAddressHttpClientImpl>(
+          identity_test_env.identity_manager(), test_shared_loader_factory));
   // Unblock initial poll.
   test_url_loader_factory.SimulateResponseForPendingRequest(
       plus_profiles_endpoint, test::MakeListResponse({}));

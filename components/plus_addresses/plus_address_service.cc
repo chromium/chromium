@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_http_client.h"
+#include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -27,6 +28,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace plus_addresses {
 
@@ -46,28 +48,29 @@ std::string GetEtldPlusOne(const url::Origin origin) {
 
 PlusAddressService::PlusAddressService(
     signin::IdentityManager* identity_manager)
-    : PlusAddressService(
-          identity_manager,
-          /*pref_service=*/nullptr,
-          PlusAddressHttpClient(identity_manager,
-                                /*url_loader_factory=*/nullptr)) {}
+    : PlusAddressService(identity_manager,
+                         /*pref_service=*/nullptr,
+                         std::make_unique<PlusAddressHttpClientImpl>(
+                             identity_manager,
+                             /*url_loader_factory=*/nullptr)) {}
 
 PlusAddressService::PlusAddressService()
     : PlusAddressService(
           /*identity_manager=*/nullptr,
           /*pref_service=*/nullptr,
-          PlusAddressHttpClient(/*identity_manager=*/nullptr,
-                                /*url_loader_factory=*/nullptr)) {}
+          std::make_unique<PlusAddressHttpClientImpl>(
+              /*identity_manager=*/nullptr,
+              /*url_loader_factory=*/nullptr)) {}
 
 PlusAddressService::~PlusAddressService() = default;
 
 PlusAddressService::PlusAddressService(
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
-    PlusAddressHttpClient plus_address_client)
+    std::unique_ptr<PlusAddressHttpClient> plus_address_http_client)
     : identity_manager_(identity_manager),
       pref_service_(pref_service),
-      plus_address_client_(std::move(plus_address_client)),
+      plus_address_http_client_(std::move(plus_address_http_client)),
       excluded_sites_(GetAndParseExcludedSites()) {
   if (pref_service) {
     // Clear the pref to always force a poll on service construction.
@@ -182,7 +185,7 @@ void PlusAddressService::ReservePlusAddress(
   if (!is_enabled()) {
     return;
   }
-  plus_address_client_.ReservePlusAddress(
+  plus_address_http_client_->ReservePlusAddress(
       origin,
       // Thin wrapper around on_completed to save the PlusAddress in the
       // success case.
@@ -214,7 +217,7 @@ void PlusAddressService::ConfirmPlusAddress(
     std::move(on_completed).Run(stored_plus_profile.value());
     return;
   }
-  plus_address_client_.ConfirmPlusAddress(
+  plus_address_http_client_->ConfirmPlusAddress(
       origin, plus_address,
       // Thin wrapper around on_completed to save the PlusAddress in the
       // success case.
@@ -288,7 +291,7 @@ void PlusAddressService::SyncPlusAddressMapping() {
   if (!is_enabled()) {
     return;
   }
-  plus_address_client_.GetAllPlusAddresses(base::BindOnce(
+  plus_address_http_client_->GetAllPlusAddresses(base::BindOnce(
       [](PlusAddressService* service,
          const PlusAddressMapOrError& maybe_mapping) {
         if (maybe_mapping.has_value()) {
