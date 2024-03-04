@@ -881,7 +881,7 @@ void AccessibilityManager::EnableFaceGaze(bool enabled) {
 }
 
 bool AccessibilityManager::IsFaceGazeEnabled() const {
-  return profile_ &&
+  return ::features::IsAccessibilityFaceGazeEnabled() && profile_ &&
          profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityFaceGazeEnabled);
 }
 
