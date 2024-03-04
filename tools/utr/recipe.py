@@ -34,6 +34,14 @@ def check_rdb_auth():
   return True
 
 
+def get_yn_resp():
+  prompt = 'Do you wish to proceed? Please enter Y/N to confirm: '
+  resp = input(prompt).strip()
+  if resp and resp.lower() == 'y':
+    return True
+  return False
+
+
 class LegacyRunner:
   """Interface for running the UTR recipe via the legacy `recipes.py run` mode.
 
@@ -104,12 +112,19 @@ class LegacyRunner:
     }
     self._input_props = input_props
 
-  def run_recipe(self):
-    """Runs the UTR recipe with the settings defined on the CLI.
+  def _run(self, additional_props=None):
+    """Internal implementation of invoking `recipes.py run`.
 
+    Args:
+      additional_props: Dict containing additional props to pass to the recipe.
     Returns:
-      Tuple of (exit code, error message) of the `recipes.py` invocation.
+      Tuple of
+        exit code of the `recipes.py` invocation,
+        error message of the `recipes.py` invocation,
+        a dict of additional_props the recipe should be re-invoked with
     """
+    input_props = self._input_props.copy()
+    input_props.update(additional_props or {})
     with tempfile.TemporaryDirectory() as tmp_dir:
 
       # TODO(crbug.com/41492688): Support both chrome and chromium realms. Just
@@ -120,6 +135,8 @@ class LegacyRunner:
       rdb_realm = 'chromium:try'
 
       output_path = pathlib.Path(tmp_dir).joinpath('out.json')
+      rerun_props_path = pathlib.Path(tmp_dir).joinpath('rerun_props.json')
+      input_props['output_properties_file'] = str(rerun_props_path)
       cmd = [
           'rdb',
           'stream',
@@ -140,7 +157,7 @@ class LegacyRunner:
       # determine where to upload/run things.
       env['SWARMING_SERVER'] = f'https://{self._swarming_server}.appspot.com'
       p = subprocess.Popen(cmd, stdin=subprocess.PIPE, env=env, text=True)
-      p.communicate(input=json.dumps(self._input_props))
+      p.communicate(input=json.dumps(input_props))
 
       # Try to pull out the summary markdown from the recipe run.
       failure_reason = None
@@ -157,6 +174,36 @@ class LegacyRunner:
         except json.decoder.JSONDecodeError:
           logging.exception('Recipe output is invalid json')
 
+      # If this file exists, the recipe is signalling to us that there's an
+      # issue, and that we need to re-run if we're sure we want to proceed.
+      # The contents of the file are the properties we should re-run it with.
+      rerun_props = None
+      if rerun_props_path.exists():
+        with open(rerun_props_path) as f:
+          rerun_props = json.load(f)
+
       # TODO(crbug.com/41492688): Support better status message streaming. For
       # now, just use the recipe engine's overly-verbose stdout.
-      return p.returncode, failure_reason
+      return p.returncode, failure_reason, rerun_props
+
+  def run_recipe(self):
+    """Runs the UTR recipe with the settings defined on the CLI.
+
+    Returns:
+      Tuple of (exit code, error message) of the `recipes.py` invocation.
+    """
+    rerun_props = None
+    # We might need to run the recipe a handful of times before we receive a
+    # final result. Put a cap on the amount of re-runs though, just in case.
+    for _ in range(10):
+      exit_code, error_msg, rerun_props = self._run(rerun_props)
+      if not rerun_props:
+        return exit_code, error_msg
+      else:
+        logging.warning('')
+        logging.warning(error_msg)
+        logging.warning('')
+        should_continue = get_yn_resp()
+        if not should_continue:
+          return exit_code, 'User-aborted due to config mismatch'
+    return 1, 'Exceeded too many recipe re-runs'

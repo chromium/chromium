@@ -82,7 +82,9 @@ def parse_args():
 
 def main():
   args = parse_args()
-  logging.basicConfig(level=logging.DEBUG if args.verbose else logging.WARN)
+  logging.basicConfig(level=logging.DEBUG if args.verbose else logging.WARN,
+                      format='%(message)s')
+
 
   if not recipe.check_rdb_auth():
     return 1
@@ -106,13 +108,9 @@ def main():
       skip_test,
       args.build_dir,
   )
-  # TODO(crbug.com/41492688): Add a more rich channel of output from the UTR
-  # rather than simply exit code, and use that to send Y/N prompts to the user
-  # to control/override default behavior (eg: using pre-builts with incorrect
-  # GN args).
   exit_code, error_msg = recipe_runner.run_recipe()
   if error_msg:
-    logging.error('UTR failure:')
+    logging.error('\nUTR failure:')
     logging.error(error_msg)
   return exit_code
 

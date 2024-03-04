@@ -20,10 +20,18 @@ class LegacyRunnerTests(unittest.TestCase):
   def setUp(self):
     self.tmp_dir = pathlib.Path(tempfile.mkdtemp())
     self.tmp_dir.joinpath('recipes').touch()
+    self.addCleanup(shutil.rmtree, self.tmp_dir)
+
     self.subp_mock = mock.Mock()
 
-  def tearDown(self):
-    shutil.rmtree(self.tmp_dir)
+    patch_tempdir = mock.patch('tempfile.TemporaryDirectory')
+    self.mock_tempdir = patch_tempdir.start()
+    self.mock_tempdir.return_value.__enter__.return_value = self.tmp_dir
+    self.addCleanup(patch_tempdir.stop)
+
+    patch_input = mock.patch('builtins.input')
+    self.mock_input = patch_input.start()
+    self.addCleanup(patch_input.stop)
 
   def testProps(self):
     runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
@@ -42,9 +50,7 @@ class LegacyRunnerTests(unittest.TestCase):
       exit_code, _ = runner.run_recipe()
       self.assertEqual(exit_code, 123)
 
-  @mock.patch('tempfile.TemporaryDirectory')
-  def testJson(self, mock_tmp_dir):
-    mock_tmp_dir.return_value.__enter__.return_value = self.tmp_dir
+  def testJson(self):
     runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
                                  'some-builder', 'swarming-server', [], False,
                                  False)
@@ -64,6 +70,37 @@ class LegacyRunnerTests(unittest.TestCase):
         json.dump({'failure': {'humanReason': 'it exploded'}}, f)
       _, error_msg = runner.run_recipe()
       self.assertEqual(error_msg, 'it exploded')
+
+  def testReruns(self):
+    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
+                                 'some-builder', 'swarming-server', [], False,
+                                 False)
+    with mock.patch('subprocess.Popen', return_value=self.subp_mock):
+      # Input "n" to the first re-run prompt.
+      self.mock_input.return_value = 'n'
+      with open(self.tmp_dir.joinpath('rerun_props.json'), 'w') as f:
+        json.dump({'some-new-prop': 'some-val'}, f)
+      _, error_msg = runner.run_recipe()
+      self.assertEqual(error_msg, 'User-aborted due to config mismatch')
+
+      # Input "y" to too many re-runs.
+      self.mock_input.return_value = 'y'
+      with open(self.tmp_dir.joinpath('rerun_props.json'), 'w') as f:
+        json.dump({'some-new-prop': 'some-val'}, f)
+      _, error_msg = runner.run_recipe()
+      self.assertEqual(error_msg, 'Exceeded too many recipe re-runs')
+
+      # Re-running once and succeeding. Need to manage two different tmp dirs,
+      # one for each recipe invocations.
+      first_tmp_dir = self.tmp_dir
+      second_tmp_dir = pathlib.Path(tempfile.mkdtemp())
+      self.addCleanup(shutil.rmtree, second_tmp_dir)
+      self.mock_input.return_value = 'y'
+      with open(first_tmp_dir.joinpath('rerun_props.json'), 'w') as f:
+        json.dump({'some-new-prop': 'some-val'}, f)
+      self.mock_tempdir.side_effect = [first_tmp_dir, second_tmp_dir]
+      _, error_msg = runner.run_recipe()
+      self.assertIsNone(error_msg)
 
 
 if __name__ == '__main__':
