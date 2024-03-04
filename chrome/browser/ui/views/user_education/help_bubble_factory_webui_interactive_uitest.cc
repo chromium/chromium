@@ -48,6 +48,24 @@ constexpr char16_t kBubbleBodyText[] = u"Bubble body text.";
 constexpr char16_t kBubbleButtonText[] = u"Button";
 constexpr char16_t kCloseButtonAltText[] = u"Close";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadLaterWebContentsElementId);
+
+class ViewSizeObserver : public views::ViewObserver,
+                         public ui::test::StateObserver<gfx::Size> {
+ public:
+  explicit ViewSizeObserver(raw_ptr<views::View>& view) {
+    observation_.Observe(view);
+  }
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* view) override {
+    OnStateObserverStateChanged(view->size());
+  }
+  void OnViewIsDeleting(views::View* view) override { observation_.Reset(); }
+
+ private:
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ViewSizeObserver, kSidePanelSize);
 }  // namespace
 
 class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
@@ -61,16 +79,22 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   // Opens the side panel and instruments the Read Later WebContents as
   // kReadLaterWebContentsElementId.
   auto OpenReadingListSidePanel() {
-      return Steps(
-          PressButton(kToolbarAppMenuButtonElementId),
-          SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
-          SelectMenuItem(BookmarkSubMenuModel::kReadingListMenuItem),
-          SelectMenuItem(ReadingListSubMenuModel::kReadingListMenuShowUI),
-          WaitForShow(kSidePanelElementId),
-          WaitForShow(kReadLaterSidePanelWebViewElementId), FlushEvents(),
-          // Ensure that the Reading List side panel loads properly.
-          InstrumentNonTabWebView(kReadLaterWebContentsElementId,
-                                  kReadLaterSidePanelWebViewElementId));
+    return Steps(
+        PressButton(kToolbarAppMenuButtonElementId),
+        SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+        SelectMenuItem(BookmarkSubMenuModel::kReadingListMenuItem),
+        SelectMenuItem(ReadingListSubMenuModel::kReadingListMenuShowUI),
+        AfterShow(kSidePanelElementId,
+                  [this](ui::TrackedElement* el) {
+                    side_panel_ = AsView(el);
+                    ASSERT_TRUE(side_panel_);
+                  }),
+        WaitForShow(kReadLaterSidePanelWebViewElementId), FlushEvents(),
+        // Ensure that the Reading List side panel loads properly.
+        InstrumentNonTabWebView(kReadLaterWebContentsElementId,
+                                kReadLaterSidePanelWebViewElementId),
+        ObserveState(kSidePanelSize, std::ref(side_panel_)),
+        WaitForState(kSidePanelSize, testing::Ne(gfx::Size())), FlushEvents());
   }
 
   auto OpenBookmarksSidePanel() {
@@ -118,7 +142,10 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   auto Cleanup() {
-    return Do(base::BindLambdaForTesting([this]() { help_bubble_.reset(); }));
+    return Do(base::BindLambdaForTesting([this]() {
+      side_panel_ = nullptr;
+      help_bubble_.reset();
+    }));
   }
 
  protected:
@@ -143,6 +170,7 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
         ->bubble_factory_registry();
   }
 
+  raw_ptr<views::View> side_panel_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
 
