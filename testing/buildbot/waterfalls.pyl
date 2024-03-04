@@ -3662,7 +3662,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-          'isolated_scripts': 'chromium_wpt_tests_isolated_scripts',
+          'isolated_scripts': 'chrome_wpt_tests_three_modes',
         },
       },
       'linux-wpt-content-shell-asan-fyi-rel': {

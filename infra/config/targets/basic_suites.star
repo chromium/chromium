@@ -1498,6 +1498,12 @@ targets.legacy_basic_suite(
                 shards = 1,
             ),
         ),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "chromium_wpt_tests_headful_isolated_scripts",
+    tests = {
         "chrome_wpt_tests_headful": targets.legacy_test_config(
             args = [
                 "--no-headless",
@@ -1511,6 +1517,12 @@ targets.legacy_basic_suite(
                 shards = 1,
             ),
         ),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "chromium_wpt_tests_old_headless_isolated_scripts",
+    tests = {
         "chrome_wpt_tests_old_headless": targets.legacy_test_config(
             args = [
                 "--test-type",

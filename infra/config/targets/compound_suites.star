@@ -159,6 +159,15 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
+    name = "chrome_wpt_tests_three_modes",
+    basic_suites = [
+        "chromium_wpt_tests_isolated_scripts",
+        "chromium_wpt_tests_headful_isolated_scripts",
+        "chromium_wpt_tests_old_headless_isolated_scripts",
+    ],
+)
+
+targets.legacy_compound_suite(
     name = "chromeos_device_gtests",
     basic_suites = [
         "chromeos_browser_all_tast_tests",
@@ -329,6 +338,10 @@ targets.legacy_compound_suite(
         "telemetry_perf_unittests_isolated_scripts",
         "vulkan_swiftshader_isolated_scripts",
         "chromium_web_tests_high_dpi_isolated_scripts",
+        # TODO(crbug.com/328079854): we should eventually run chrome_wpt_tests where
+        # blink_wpt_tests runs on Linux. There should not have any resource
+        # concern on this because those are all CI builders.
+        #"chromium_wpt_tests_isolated_scripts",
     ],
 )
 
@@ -367,6 +380,7 @@ targets.legacy_compound_suite(
         # TODO(crbug.com/1498364): Remove this once the BackgroundResourceFetch
         # feature launches.
         "chromium_web_tests_brfetch_isolated_scripts",
+        "chromium_wpt_tests_isolated_scripts",
     ],
 )
 
