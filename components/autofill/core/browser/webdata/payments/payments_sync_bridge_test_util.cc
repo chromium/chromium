@@ -76,15 +76,19 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForIban(
   sync_pb::AutofillWalletSpecifics wallet_specifics;
   wallet_specifics.set_type(
       sync_pb::AutofillWalletSpecifics_WalletInfoType::
-          AutofillWalletSpecifics_WalletInfoType_MASKED_IBAN);
+          AutofillWalletSpecifics_WalletInfoType_PAYMENT_INSTRUMENT);
 
-  sync_pb::WalletMaskedIban* iban_specifics =
-      wallet_specifics.mutable_masked_iban();
-  iban_specifics->set_instrument_id(client_tag);
-  iban_specifics->set_prefix("FR76");
-  iban_specifics->set_suffix("0189");
-  iban_specifics->set_length(27);
-  iban_specifics->set_nickname("My IBAN");
+  sync_pb::PaymentInstrument* payment_instrument_specifics =
+      wallet_specifics.mutable_payment_instrument();
+  int64_t instrument_id;
+  CHECK(base::StringToInt64(client_tag, &instrument_id));
+  payment_instrument_specifics->set_instrument_id(instrument_id);
+  payment_instrument_specifics->set_nickname("My IBAN");
+  sync_pb::WalletMaskedIban* masked_iban =
+      payment_instrument_specifics->mutable_iban();
+  masked_iban->set_prefix("FR76");
+  masked_iban->set_suffix("0189");
+  masked_iban->set_length(27);
   return wallet_specifics;
 }
 

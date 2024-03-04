@@ -182,15 +182,13 @@ CreditCardCloudTokenData CloudTokenDataFromSpecifics(
   return result;
 }
 
-// Creates an IBAN from the specified `iban` specifics.
-Iban IbanFromSpecifics(const sync_pb::WalletMaskedIban& iban) {
-  int64_t instrument_id = 0;
-  CHECK(base::StringToInt64(iban.instrument_id(), &instrument_id));
-  Iban result{Iban::InstrumentId(instrument_id)};
-  result.set_prefix(base::UTF8ToUTF16(iban.prefix()));
-  result.set_suffix(base::UTF8ToUTF16(iban.suffix()));
-  result.set_length(iban.length());
-  result.set_nickname(base::UTF8ToUTF16(iban.nickname()));
+// Creates an IBAN from the specified `payment_instrument` specifics.
+Iban IbanFromSpecifics(const sync_pb::PaymentInstrument& payment_instrument) {
+  Iban result{Iban::InstrumentId(payment_instrument.instrument_id())};
+  result.set_prefix(base::UTF8ToUTF16(payment_instrument.iban().prefix()));
+  result.set_suffix(base::UTF8ToUTF16(payment_instrument.iban().suffix()));
+  result.set_length(payment_instrument.iban().length());
+  result.set_nickname(base::UTF8ToUTF16(payment_instrument.nickname()));
   return result;
 }
 
@@ -395,20 +393,16 @@ void SetAutofillWalletSpecificsFromMaskedIban(
     const Iban& iban,
     sync_pb::AutofillWalletSpecifics* wallet_specifics,
     bool enforce_utf8) {
-  wallet_specifics->set_type(AutofillWalletSpecifics::MASKED_IBAN);
-  sync_pb::WalletMaskedIban* wallet_iban =
-      wallet_specifics->mutable_masked_iban();
-  if (enforce_utf8) {
-    wallet_iban->set_instrument_id(
-        base::Base64Encode(base::NumberToString(iban.instrument_id())));
-  } else {
-    wallet_iban->set_instrument_id(base::NumberToString(iban.instrument_id()));
-  }
-
-  wallet_iban->set_prefix(base::UTF16ToUTF8(iban.prefix()));
-  wallet_iban->set_suffix(base::UTF16ToUTF8(iban.suffix()));
-  wallet_iban->set_nickname(base::UTF16ToUTF8(iban.nickname()));
-  wallet_iban->set_length(iban.length());
+  wallet_specifics->set_type(AutofillWalletSpecifics::PAYMENT_INSTRUMENT);
+  sync_pb::PaymentInstrument* wallet_payment_instrument =
+      wallet_specifics->mutable_payment_instrument();
+  wallet_payment_instrument->set_instrument_id(iban.instrument_id());
+  wallet_payment_instrument->set_nickname(base::UTF16ToUTF8(iban.nickname()));
+  sync_pb::WalletMaskedIban* masked_iban =
+      wallet_payment_instrument->mutable_iban();
+  masked_iban->set_prefix(base::UTF16ToUTF8(iban.prefix()));
+  masked_iban->set_suffix(base::UTF16ToUTF8(iban.suffix()));
+  masked_iban->set_length(iban.length());
 }
 
 void SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(
@@ -706,12 +700,15 @@ void PopulateWalletTypesFromSyncData(
                     kBankAccount) {
           bank_accounts.push_back(BankAccountFromWalletSpecifics(
               autofill_specifics.payment_instrument()));
+        } else if (autofill_specifics.payment_instrument()
+                       .instrument_details_case() ==
+                   sync_pb::PaymentInstrument::InstrumentDetailsCase::kIban) {
+          wallet_ibans.push_back(
+              IbanFromSpecifics(autofill_specifics.payment_instrument()));
         }
         break;
+      // This entry is deprecated and not supported anymore.
       case sync_pb::AutofillWalletSpecifics::MASKED_IBAN:
-        wallet_ibans.push_back(
-            IbanFromSpecifics(autofill_specifics.masked_iban()));
-        break;
       case sync_pb::AutofillWalletSpecifics::UNKNOWN:
         // Just ignore new entry types that the client doesn't know about.
         break;
