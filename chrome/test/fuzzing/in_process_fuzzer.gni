@@ -56,7 +56,8 @@ template("in_process_fuzzer") {
       libfuzzer_options = [
         "rss_limit_mb=8192",
 
-        # This is for test-only. Remove once crbug.com/1471427 is fixed.
+        # We can't allow libfuzzer to fork because these fuzzers may have
+        # pre-existing threads. See crbug.com/325928325
         "fork=0",
       ]
 
