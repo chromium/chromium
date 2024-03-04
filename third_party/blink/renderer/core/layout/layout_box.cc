@@ -4361,21 +4361,6 @@ const LayoutObject* LayoutBox::AcceptableImplicitAnchor() const {
   return is_acceptable_anchor ? anchor_layout_object : nullptr;
 }
 
-std::optional<wtf_size_t> LayoutBox::PositionFallbackIndex() const {
-  const auto& layout_results = GetLayoutResults();
-  if (layout_results.empty()) {
-    return std::nullopt;
-  }
-  // We only need to check the first fragment, because when the box is
-  // fragmented, position fallback results are duplicated on all fragments.
-#if EXPENSIVE_DCHECKS_ARE_ON()
-  AssertSameDataOnLayoutResults(layout_results, [](const auto& result) {
-    return result->PositionFallbackIndex();
-  });
-#endif
-  return layout_results.front()->PositionFallbackIndex();
-}
-
 const Vector<NonOverflowingScrollRange>*
 LayoutBox::PositionFallbackNonOverflowingRanges() const {
   const auto& layout_results = GetLayoutResults();

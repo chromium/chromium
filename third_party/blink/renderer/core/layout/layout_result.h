@@ -178,9 +178,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     return bitfields_.can_use_out_of_flow_positioned_first_tier_cache;
   }
 
-  std::optional<wtf_size_t> PositionFallbackIndex() const {
-    return rare_data_ ? rare_data_->PositionFallbackIndex() : std::nullopt;
-  }
   const Vector<NonOverflowingScrollRange>*
   PositionFallbackNonOverflowingRanges() const {
     return rare_data_ ? rare_data_->PositionFallbackNonOverflowingRanges()
@@ -536,10 +533,9 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     }
 
     void SetPositionFallbackResult(
-        std::optional<wtf_size_t> fallback_index,
         const Vector<NonOverflowingScrollRange>& non_overflowing_ranges) {
       layout_result_->EnsureRareData()->SetPositionFallbackResult(
-          fallback_index, non_overflowing_ranges);
+          non_overflowing_ranges);
     }
 
    private:
@@ -796,7 +792,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
           block_end_annotation_space(rare_data.block_end_annotation_space),
           lines_until_clamp(rare_data.lines_until_clamp),
           line_box_bfc_block_offset(rare_data.line_box_bfc_block_offset),
-          position_fallback_index(rare_data.position_fallback_index),
           position_fallback_non_overflowing_ranges(
               rare_data.position_fallback_non_overflowing_ranges),
           oof_positioned_offset(rare_data.oof_positioned_offset),
@@ -865,14 +860,9 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     }
 
     void SetPositionFallbackResult(
-        std::optional<wtf_size_t> fallback_index,
         const Vector<NonOverflowingScrollRange>& non_overflowing_ranges) {
-      position_fallback_index = fallback_index;
       position_fallback_non_overflowing_ranges = non_overflowing_ranges;
       set_position_fallback_result_is_set(true);
-    }
-    std::optional<wtf_size_t> PositionFallbackIndex() const {
-      return position_fallback_index;
     }
     const Vector<NonOverflowingScrollRange>*
     PositionFallbackNonOverflowingRanges() const {
@@ -919,8 +909,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
    private:
     // Only valid if line_box_bfc_block_offset_is_set
     LayoutUnit line_box_bfc_block_offset;
-
-    std::optional<wtf_size_t> position_fallback_index;
 
     // Only valid if position_fallback_result_is_set
     Vector<NonOverflowingScrollRange> position_fallback_non_overflowing_ranges;

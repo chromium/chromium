@@ -209,9 +209,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // This should only be used when laying out a fragmentainer descendant.
     LogicalOffset original_offset;
 
-    // These fields are set only if this |OffsetInfo| is calculated from a
-    // position fallback style, either from a @try rule or auto-generated.
-    std::optional<wtf_size_t> fallback_index;
+    // This field is set only if this |OffsetInfo| is calculated from a
+    // position-try-options style, either from a @position-try rule or a tactic.
     Vector<NonOverflowingScrollRange> non_overflowing_ranges;
 
     bool inline_size_depends_on_min_max_sizes = false;

@@ -180,10 +180,6 @@ class OOFCandidateStyleIterator {
     return style;
   }
 
-  std::optional<wtf_size_t> PositionFallbackIndex() const {
-    return position_fallback_index_;
-  }
-
   bool HasNextStyle() const { return HasNextPositionFallback(); }
 
   void MoveToNextStyle() {
@@ -1878,10 +1874,8 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
 
   if (iter.UsesFallbackStyle()) {
     offset_info->uses_fallback_style = true;
-    offset_info->fallback_index = iter.PositionFallbackIndex();
     offset_info->non_overflowing_ranges = std::move(non_overflowing_ranges);
   } else {
-    DCHECK(!offset_info->fallback_index);
     DCHECK(offset_info->non_overflowing_ranges.empty());
   }
 
@@ -2203,7 +2197,7 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
 
   if (offset_info.uses_fallback_style) {
     layout_result->GetMutableForOutOfFlow().SetPositionFallbackResult(
-        offset_info.fallback_index, offset_info.non_overflowing_ranges);
+        offset_info.non_overflowing_ranges);
   }
 
   return layout_result;
