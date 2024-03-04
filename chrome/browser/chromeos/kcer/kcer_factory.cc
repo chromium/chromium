@@ -297,10 +297,9 @@ void KcerFactory::StartInitializingKcerForNss(
       base::BindOnce(&KcerFactory::InitializeKcerInstanceForNss,
                      base::Unretained(this), std::move(kcer_service)));
 
-  auto prepare_tokens_on_io = base::BindPostTask(
-      content::GetIOThreadTaskRunner({}),
+  auto prepare_tokens_on_io =
       base::BindOnce(GetPrepareTokensForNssOnIOThreadFunctor(),
-                     std::move(initialize_callback_ui)));
+                     std::move(initialize_callback_ui));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&GetNssDbOnIOThread, std::move(nss_db_getter),
