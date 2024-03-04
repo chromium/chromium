@@ -165,6 +165,13 @@ needs to have at least one test case. Valid values are:
 - `fuchsia`
 - `ios` (tested via separate [//ios/chrome/test/data/policy/pref_mapping/[PolicyName].json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/pref_mapping))
 
+Each `PolicyTestCase` needs to either have a list of `policy_pref_mapping_tests`
+(see `PolicyPrefMappingTest` below) or a `simple_policy_pref_mapping_test` (see
+`SimplePolicyPrefMappingTest` below). For simple policy to pref mappings (one
+policy maps to one pref), you should use `SimplePolicyPrefMappingTest`, if you
+need more fancy stuff (interactions between multiple policies and prefs), you
+should use `PolicyPrefMappingTest`s instead.
+
 The boolean `official_only` field indicates whether this policy is only
 supported in official builds. Defaults to `false` if not specified.
 
@@ -179,9 +186,6 @@ trigger certain preference(s) to only be checked for certain policy levels. If
 the policy is recommendable (indicated by `can_be_recommended` in
 PolicyName.yaml then the preference mapping test should also check recommended
 values.
-
-The `policy_pref_mapping_tests` should be a non-empty list of
-`PolicyPrefMappingTest`s.
 
 In case the policy's preference mapping can not be tested, the `PolicyTestCase`
 should just define a single `reason_for_missing_test_case` with a description on
@@ -258,6 +262,14 @@ behavior, e.g. setting a different preference when a policy is set as
 recommended compared to set as mandatory. In most cases, you will just need to
 use the `PolicyTestCase`'s `can_be_recommended` though.
 
+### SimplePolicyPrefMappingTest
+
+For most policies, which have a simple direct mapping from policy value to pref
+value, you can use `SimplePolicyPrefMappingTest` instead of defining multiple
+`PolicyPrefMappingTest`s. A `SimplePolicyPrefMappingTest` would then generate
+one `PolicyPrefMappingTest` for the pref's default value and one
+`PolicyPrefMappingTest` for each value in `values_to_test`.
+
 ### Full schema
 ```
 [
@@ -293,7 +305,21 @@ use the `PolicyTestCase`'s `can_be_recommended` though.
           ... // 1...M prefs
         }
       }
-    ]
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": string,
+      "pref_location":  string, // optional, one of [user_profile, local_state, signin_profile], defaults to "user_profile"
+      "policy_settings": { // optional
+            "scope": string, // optional, one of [user, machine], defaults to "user"
+            "source": string, // optional, one of [enterprise_default, command_line, cloud, active_directory, local_account_override, platform, merged, cloud_from_ash], defaults to "cloud"
+      },
+      "default_value": ${expected_default_value}, // Expected pref value when policy is unset
+      "values_to_test": [
+        ${value_1},
+        ${value_2},
+        ... // 1...N values
+      ]
+    }
   },
 
   ... // test cases for other policies

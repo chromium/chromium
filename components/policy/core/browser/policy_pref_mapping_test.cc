@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -242,9 +243,82 @@ class PolicyPrefMappingTest {
  private:
   base::Value::Dict policies_;
   base::Value::Dict policies_settings_;
-  const std::string pref_;
   std::vector<std::unique_ptr<PrefTestCase>> prefs_;
   std::vector<std::string> required_buildflags_;
+};
+
+class SimplePolicyPrefMappingTest {
+ public:
+  SimplePolicyPrefMappingTest(const std::string& policy_name,
+                              const base::Value::Dict& test) {
+    const std::string* pref_name = test.FindString("pref_name");
+    if (!pref_name) {
+      ADD_FAILURE() << "Simple test for " << policy_name
+                    << "is missing a 'pref_name'";
+      return;
+    }
+
+    const std::string* location = test.FindString("pref_location");
+    const base::Value::Dict* policy_settings = test.FindDict("policy_settings");
+
+    const base::Value* default_value = test.Find("default_value");
+    if (!default_value) {
+      ADD_FAILURE() << "Simple test for " << policy_name
+                    << "is missing a 'default_value'";
+      return;
+    }
+
+    const base::Value::List* values_to_test = test.FindList("values_to_test");
+    if (!values_to_test || values_to_test->empty()) {
+      ADD_FAILURE() << "Simple test for " << policy_name
+                    << "is missing a 'values_to_test' or is empty";
+      return;
+    }
+
+    // Build test case for default value.
+    base::Value::Dict default_value_test_dict;
+    base::Value::Dict default_value_prefs_dict;
+    base::Value::Dict default_value_pref_dict;
+    default_value_pref_dict.Set("default_value", default_value->Clone());
+    if (location) {
+      default_value_pref_dict.Set("location", *location);
+    }
+    default_value_prefs_dict.Set(*pref_name,
+                                 std::move(default_value_pref_dict));
+    default_value_test_dict.Set("prefs", std::move(default_value_prefs_dict));
+    policy_pref_mapping_test_dicts_.push_back(
+        std::move(default_value_test_dict));
+
+    // Build test case for each `value_to_test`.
+    for (const base::Value& value_to_test : *values_to_test) {
+      base::Value::Dict value_test_dict;
+      base::Value::Dict value_policies_dict;
+      base::Value::Dict value_prefs_dict;
+      base::Value::Dict value_pref_dict;
+      value_policies_dict.Set(policy_name, value_to_test.Clone());
+      value_test_dict.Set("policies", std::move(value_policies_dict));
+      if (policy_settings) {
+        base::Value::Dict value_policy_settings_dict;
+        value_policy_settings_dict.Set(policy_name, policy_settings->Clone());
+        value_test_dict.Set("policy_settings",
+                            std::move(value_policy_settings_dict));
+      }
+      value_pref_dict.Set("value", value_to_test.Clone());
+      if (location) {
+        value_pref_dict.Set("location", *location);
+      }
+      value_prefs_dict.Set(*pref_name, std::move(value_pref_dict));
+      value_test_dict.Set("prefs", std::move(value_prefs_dict));
+      policy_pref_mapping_test_dicts_.push_back(std::move(value_test_dict));
+    }
+  }
+
+  const std::vector<base::Value::Dict>& policy_pref_mapping_test_dicts() const {
+    return policy_pref_mapping_test_dicts_;
+  }
+
+ private:
+  std::vector<base::Value::Dict> policy_pref_mapping_test_dicts_;
 };
 
 // Populates buildflags as strings that policy pref mapping test cases
@@ -293,14 +367,25 @@ class PolicyTestCase {
       }
     }
 
-    const base::Value::List* policy_pref_mapping_tests =
+    const base::Value::List* policy_pref_mapping_test_list =
         test_case.FindList("policy_pref_mapping_tests");
-    if (policy_pref_mapping_tests) {
-      for (const auto& mapping : *policy_pref_mapping_tests) {
-        if (mapping.is_dict()) {
-          policy_pref_mapping_tests_.push_back(
-              std::make_unique<PolicyPrefMappingTest>(mapping.GetDict()));
+    if (policy_pref_mapping_test_list) {
+      for (const auto& policy_pref_mapping_test_dict :
+           *policy_pref_mapping_test_list) {
+        if (policy_pref_mapping_test_dict.is_dict()) {
+          AddPolicyPrefMappingTest(policy_pref_mapping_test_dict.GetDict());
         }
+      }
+    }
+
+    const base::Value::Dict* simple_policy_pref_mapping_test_dict =
+        test_case.FindDict("simple_policy_pref_mapping_test");
+    if (simple_policy_pref_mapping_test_dict) {
+      const SimplePolicyPrefMappingTest simple_policy_pref_mapping_test(
+          policy_name, *simple_policy_pref_mapping_test_dict);
+      for (const base::Value::Dict& policy_pref_mapping_test_dict :
+           simple_policy_pref_mapping_test.policy_pref_mapping_test_dicts()) {
+        AddPolicyPrefMappingTest(policy_pref_mapping_test_dict);
       }
     }
   }
@@ -374,6 +459,11 @@ class PolicyTestCase {
   std::vector<std::string> supported_os_;
   std::vector<std::unique_ptr<PolicyPrefMappingTest>>
       policy_pref_mapping_tests_;
+
+  void AddPolicyPrefMappingTest(const base::Value::Dict& mapping) {
+    policy_pref_mapping_tests_.push_back(
+        std::make_unique<PolicyPrefMappingTest>(mapping));
+  }
 };
 
 // Parses all policy test cases in components/policy/test/data/pref_mapping/ and
