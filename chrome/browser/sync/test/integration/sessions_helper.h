@@ -15,6 +15,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sync_sessions/synced_session.h"
+#include "ui/base/window_open_disposition.h"
 
 class GURL;
 

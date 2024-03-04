@@ -9,3 +9,9 @@ include_rules = [
   "+content/public/test",
   "+url",
 ]
+
+specific_include_rules = {
+  "site_isolation_policy_unittest\.cc": [
+    "+net/http/http_response_headers.h",
+  ],
+}

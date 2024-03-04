@@ -11,4 +11,8 @@ specific_include_rules = {
     # Included within #ifdef BUILD(IS_CHROMEOS_ASH).
     "+chrome/browser/ash/policy/core/device_local_account.h"
   ],
+  "one_drive_pref_observer_browsertest\.cc": [
+    # Included within #if BUILDFLAG(IS_CHROMEOS_ASH).
+    "+chrome/browser/ash/crosapi/browser_util.h"
+  ],
 }

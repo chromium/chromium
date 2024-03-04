@@ -31,6 +31,7 @@ namespace content {
 class RenderFrameHost;
 class ScopedWebUIControllerFactoryRegistration;
 class WebUI;
+struct GlobalRenderFrameHostId;
 }  // namespace content
 
 class TestChromeWebUIControllerFactory;

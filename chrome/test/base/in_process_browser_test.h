@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
@@ -30,10 +29,6 @@
 #include "base/memory/stack_allocated.h"
 #include "ui/base/test/scoped_fake_full_keyboard_access.h"
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
 
@@ -51,6 +46,11 @@ class Version;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }  // namespace base
 
+namespace content {
+class BrowserContext;
+class WebContents;
+}  // namespace content
+
 #if defined(TOOLKIT_VIEWS)
 namespace views {
 class ViewsDelegate;
@@ -60,6 +60,12 @@ class ViewsDelegate;
 namespace display {
 class Screen;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace ash::full_restore {
+class ScopedLaunchBrowserForTesting;
+}  // namespace ash::full_restore
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class Browser;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -402,9 +408,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void set_launch_browser_for_testing(
       std::unique_ptr<ash::full_restore::ScopedLaunchBrowserForTesting>
-          launch_browser_for_testing) {
-    launch_browser_for_testing_ = std::move(launch_browser_for_testing);
-  }
+          launch_browser_for_testing);
 #endif
 
   // Runs scheduled layouts on all Widgets using

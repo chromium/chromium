@@ -34,6 +34,7 @@
 #include "media/base/stream_parser.h"
 #include "media/formats/webm/webm_stream_parser.h"
 #include "third_party/skia/include/codec/SkGifDecoder.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"

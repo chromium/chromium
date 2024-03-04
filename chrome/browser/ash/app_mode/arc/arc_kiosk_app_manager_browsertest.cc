@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_skia_rep_default.h"
 
 namespace ash {
 

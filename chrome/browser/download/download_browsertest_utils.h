@@ -17,6 +17,7 @@
 #include "content/public/test/test_download_http_response.h"
 #include "content/public/test/test_file_error_injector.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
+#include "ui/base/window_open_disposition.h"
 
 class DownloadPrefs;
 

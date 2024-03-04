@@ -13,6 +13,7 @@
 #include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 class TestChromeWebUIControllerFactory;

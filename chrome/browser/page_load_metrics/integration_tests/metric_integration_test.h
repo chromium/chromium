@@ -7,6 +7,7 @@
 
 #include "base/strings/string_piece.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/render_widget_host.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"

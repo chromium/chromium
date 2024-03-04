@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/sync/sync_error_notifier.h"

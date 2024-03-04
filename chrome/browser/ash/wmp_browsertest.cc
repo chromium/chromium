@@ -4,6 +4,7 @@
 
 #include "ash/shell.h"
 #include "ash/test/active_window_waiter.h"
+#include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
