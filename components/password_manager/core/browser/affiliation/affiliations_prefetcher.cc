@@ -172,7 +172,6 @@ void AffiliationsPrefetcher::OnLoginsRetained(
 
 void AffiliationsPrefetcher::OnPasskeysChanged(
     const std::vector<webauthn::PasskeyModelChange>& changes) {
-  std::vector<FacetURI> facet_uris_to_trim;
   for (const webauthn::PasskeyModelChange& change : changes) {
     std::optional<FacetURI> facet = FacetURIFromPasskey(change.passkey());
     if (!facet) {
