@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -305,7 +306,13 @@ TEST_F(CastMediaNotificationItemTest, DownloadImage) {
   bitmap_fetcher_delegate->OnFetchComplete(image_url, &bitmap);
 }
 
-TEST_F(CastMediaNotificationItemTest, MediaPositionUpdate) {
+// TODO(crbug.com/327498504): Fix the test flakiness on Win Arm64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_MediaPositionUpdate DISABLED_MediaPositionUpdate
+#else
+#define MAYBE_MediaPositionUpdate MediaPositionUpdate
+#endif
+TEST_F(CastMediaNotificationItemTest, MAYBE_MediaPositionUpdate) {
   SetView();
   const base::TimeDelta duration = base::Seconds(100);
   const base::TimeDelta current_time = base::Seconds(70);
