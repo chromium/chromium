@@ -16,16 +16,18 @@
 
 namespace ash {
 
-// When the device enters and exits the specified time interval, this class
-// invokes the provided `on_interval_start_callback` callback and
-// `on_interval_end_callback` callback respectively. This class schedules the
-// time interval using the system timezone. Changes to the system timezone will
-// make it reprogram the time interval. When the timer fails to start the
-// callbacks will not be executed.
-// TODO(b/319086751) Implement case when next interval is in the future.
+// When the device enters and exits the specified weekly time interval, this
+// class invokes the provided `on_interval_start_callback` callback and
+// `on_interval_end_callback` callback respectively every week. This class
+// schedules the time interval using the system timezone. Changes to the system
+// timezone will make it reprogram the time interval. When the timer fails to
+// start the callbacks will not be executed.
 // TODO(b/319083880) Observe time zone changes and cancel pending executors.
 class RepeatingTimeIntervalTaskExecutor {
  public:
+  using TimerResultCallback =
+      base::OnceCallback<void(policy::ScopedWakeLock, bool)>;
+
   RepeatingTimeIntervalTaskExecutor() = delete;
 
   RepeatingTimeIntervalTaskExecutor(
@@ -52,6 +54,14 @@ class RepeatingTimeIntervalTaskExecutor {
   // of the interval and `on_interval_end_callback_` at the end.
   void Start();
 
+  // The amount of time that has to be remaining for the executor to schedule
+  // the `timer_` to the end of the interval. If the
+  // duration to the end of the interval is smaller than this time, a timer will
+  // be scheduled to the start of the next interval.
+  // TODO(b/328073367): Update policy and validator to account for this
+  // duration.
+  static constexpr base::TimeDelta kMinScheduleDuration = base::Minutes(5);
+
  protected:
   // Clock to get the current system time.
   raw_ptr<const base::Clock> clock_;
@@ -61,6 +71,17 @@ class RepeatingTimeIntervalTaskExecutor {
   // `time_interval_`.
   void IntervalStartsNow();
 
+  // Called by the `Start` function when the start of the interval is in the
+  // future.
+  void IntervalStartsLater();
+
+  // Starts a timer to expire at `expiration_time`. Calls the
+  // `timer_start_result_callback` at the start of the timer and
+  // `timer_expiration_callback` on timer expiration.
+  void StartTimer(policy::WeeklyTime expiration_time,
+                  TimerResultCallback timer_start_result_callback,
+                  base::OnceClosure timer_expiration_callback);
+
   // Timer until the end of the interval can fail to start. Handle the result to
   // inform about the failure, or proceed on the successful timer start.
   void HandleIntervalEndTimerStartResult(policy::ScopedWakeLock wakelock,
@@ -68,6 +89,11 @@ class RepeatingTimeIntervalTaskExecutor {
 
   // Timer until the end of the interval is finished.
   void HandleIntervalEndTimerFinish();
+
+  // Timer until the start of the interval can fail to start. Handle the result
+  // to inform about the failure, or proceed on the successful timer start.
+  void HandleIntervalStartTimerStartResult(policy::ScopedWakeLock wakelock,
+                                           bool result);
 
   virtual base::TimeTicks GetTimeTicksSinceBoot();
 
@@ -80,8 +106,7 @@ class RepeatingTimeIntervalTaskExecutor {
 
   // `timer_` is used for two reasons:
   // 1) When we are waiting until the time interval starts to call
-  // `on_interval_start_callback_`. TODO(b/319086751): Implement case when next
-  // interval is in the future.
+  // `on_interval_start_callback_`.
   //
   // 2) When we are waiting until the time interval ends to call
   // `on_interval_end_callback_`.

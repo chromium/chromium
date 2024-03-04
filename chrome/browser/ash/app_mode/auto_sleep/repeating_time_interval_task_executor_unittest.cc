@@ -68,13 +68,14 @@ class RepeatingTimeIntervalTaskExecutorTest : public testing::Test {
         base::NullCallback());
   }
 
-  void FastForwardTimeTo(const policy::WeeklyTime& weekly_time) {
+  void FastForwardTimeTo(const policy::WeeklyTime& weekly_time,
+                         base::TimeDelta delta = base::TimeDelta()) {
     base::Time current_time = task_environment_.GetMockClock()->Now();
     policy::WeeklyTime current_weekly_time =
         policy::WeeklyTime::GetLocalWeeklyTime(current_time);
 
-    base::TimeDelta delta = current_weekly_time.GetDurationTo(weekly_time);
-    task_environment_.FastForwardBy(delta);
+    base::TimeDelta duration = current_weekly_time.GetDurationTo(weekly_time);
+    task_environment_.FastForwardBy(duration + delta);
   }
 
   std::unique_ptr<FakeRepeatingTimeIntervalTaskExecutor> CreateTestTaskExecutor(
@@ -192,6 +193,99 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest,
   EXPECT_TRUE(future.interval_end.WaitAndClear());
 }
 
+TEST_F(RepeatingTimeIntervalTaskExecutorTest, TaskExecutorRunsInTheFuture) {
+  IntervalTestFutures future;
+
+  policy::WeeklyTimeInterval interval =
+      CreateWeeklyTimeInterval(DayOfWeek::FRIDAY,
+                               base::Hours(21),  // 9:00 PM
+                               DayOfWeek::SATURDAY,
+                               base::Hours(6)  // 6:00 AM
+      );
+  std::unique_ptr<FakeRepeatingTimeIntervalTaskExecutor> task_executor =
+      CreateTestTaskExecutor(
+          interval, future.interval_start.GetRepeatingCallback(),
+          future.interval_end.GetRepeatingCallback(), kTestTaskExecutorTag);
+
+  // Confirm that when you're outside an interval and then start the
+  // timer, it schedules the timer for the future.
+  EXPECT_FALSE(future.interval_start.IsReady());
+  FastForwardTimeTo(interval.start(), -base::Minutes(5));
+  task_executor->Start();
+  // Run until idle to make sure that any native timer tasks are scheduled.
+  task_environment()->RunUntilIdle();
+
+  EXPECT_FALSE(future.interval_start.IsReady());
+
+  FastForwardTimeTo(interval.start());
+  EXPECT_TRUE(future.interval_start.WaitAndClear());
+
+  EXPECT_FALSE(future.interval_end.IsReady());
+  FastForwardTimeTo(interval.end());
+  EXPECT_TRUE(future.interval_end.WaitAndClear());
+}
+
+TEST_F(RepeatingTimeIntervalTaskExecutorTest, TaskExecutorRunsEveryWeek) {
+  IntervalTestFutures future;
+  policy::WeeklyTimeInterval interval =
+      CreateWeeklyTimeInterval(DayOfWeek::WEDNESDAY,
+                               base::Hours(7),  // 7:00 AM
+                               DayOfWeek::WEDNESDAY,
+                               base::Hours(21)  // 9:00 PM
+      );
+  std::unique_ptr<FakeRepeatingTimeIntervalTaskExecutor> task_executor =
+      CreateTestTaskExecutor(
+          interval, future.interval_start.GetRepeatingCallback(),
+          future.interval_end.GetRepeatingCallback(), kTestTaskExecutorTag);
+
+  task_executor->Start();
+
+  for (size_t i = 0; i < 3; i++) {
+    FastForwardTimeTo(interval.start());
+    EXPECT_TRUE(future.interval_start.WaitAndClear());
+
+    EXPECT_FALSE(future.interval_end.IsReady());
+    FastForwardTimeTo(interval.end());
+    EXPECT_TRUE(future.interval_end.WaitAndClear());
+  }
+}
+
+TEST_F(RepeatingTimeIntervalTaskExecutorTest,
+       TaskExecutorDoesNotRunWhenMinDurationRemaining) {
+  IntervalTestFutures future;
+
+  policy::WeeklyTimeInterval interval =
+      CreateWeeklyTimeInterval(DayOfWeek::FRIDAY,
+                               base::Hours(21),  // 9:00 PM
+                               DayOfWeek::SATURDAY,
+                               base::Hours(6)  // 6:00 AM
+      );
+  std::unique_ptr<FakeRepeatingTimeIntervalTaskExecutor> task_executor =
+      CreateTestTaskExecutor(
+          interval, future.interval_start.GetRepeatingCallback(),
+          future.interval_end.GetRepeatingCallback(), kTestTaskExecutorTag);
+
+  // Confirm that when you're near the end of an interval with less than
+  // `kMinScheduleDuration` time remaining, the executor would not run.
+  EXPECT_FALSE(future.interval_start.IsReady());
+  FastForwardTimeTo(interval.end(),
+                    -RepeatingTimeIntervalTaskExecutor::kMinScheduleDuration);
+  task_executor->Start();
+  // Run until idle to make sure that any native timer tasks are scheduled.
+  task_environment()->RunUntilIdle();
+
+  EXPECT_FALSE(future.interval_start.IsReady());
+
+  // Confirm that forwarding to the start of next week's interval will run the
+  // callbacks.
+  FastForwardTimeTo(interval.start());
+  EXPECT_TRUE(future.interval_start.WaitAndClear());
+
+  EXPECT_FALSE(future.interval_end.IsReady());
+  FastForwardTimeTo(interval.end());
+  EXPECT_TRUE(future.interval_end.WaitAndClear());
+}
+
 TEST_F(RepeatingTimeIntervalTaskExecutorTest,
        TwoTaskExecutorsWorkConcurrently) {
   IntervalTestFutures future;
@@ -221,15 +315,14 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest,
 
   FastForwardTimeTo(interval_1.start());
   task_executor_1->Start();
+  task_executor_2->Start();
+
   EXPECT_TRUE(future.interval_start.WaitAndClear());
   FastForwardTimeTo(interval_1.end());
   EXPECT_TRUE(future.interval_end.WaitAndClear());
 
   // Do not need to fast forward the time, since the end of the first interval
   // overlaps with the start of the second.
-  // TODO(b/319086751): Remove this call to `Start` as the executor should start
-  // automatically.
-  task_executor_2->Start();
   EXPECT_TRUE(future.interval_start.WaitAndClear());
   FastForwardTimeTo(interval_2.end());
   EXPECT_TRUE(future.interval_end.WaitAndClear());
@@ -290,6 +383,32 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest, CallbacksNotCalledOnFailure) {
                              kTestTaskExecutorTag);
   FastForwardTimeTo(interval.start());
   task_executor->Start();
+  task_environment()->RunUntilIdle();
+  FastForwardTimeTo(interval.end());
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(RepeatingTimeIntervalTaskExecutorTest,
+       CallbacksNotCalledOnFailureIntevalInFuture) {
+  policy::WeeklyTimeInterval interval =
+      CreateWeeklyTimeInterval(DayOfWeek::TUESDAY,
+                               base::Hours(8),  // 8:00 AM
+                               DayOfWeek::SATURDAY,
+                               base::Hours(8)  // 8:00 AM
+      );
+  chromeos::NativeTimer::ScopedFailureSimulatorForTesting
+      scoped_failure_simulator;
+
+  // Bind lambdas with `FAIL` which will ensure that if the callbacks get
+  // called, the test will fail.
+  std::unique_ptr<FakeRepeatingTimeIntervalTaskExecutor> task_executor =
+      CreateTestTaskExecutor(interval, base::BindRepeating([]() { FAIL(); }),
+                             base::BindRepeating([]() { FAIL(); }),
+                             kTestTaskExecutorTag);
+  FastForwardTimeTo(interval.start(), -base::Minutes(5));
+  task_executor->Start();
+  task_environment()->RunUntilIdle();
+  FastForwardTimeTo(interval.start());
   task_environment()->RunUntilIdle();
   FastForwardTimeTo(interval.end());
   task_environment()->RunUntilIdle();

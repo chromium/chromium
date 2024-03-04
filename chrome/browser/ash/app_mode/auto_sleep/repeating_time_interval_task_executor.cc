@@ -30,8 +30,6 @@ base::TimeDelta GetDuration(const base::Time& start,
 }
 
 // Returns true when the provided `time` is contained within the `interval`.
-// TODO(b/319086751): Add check to early return if duration between end interval
-// and current time is less than a fixed amount of minutes.
 bool TimeFallsInInterval(const base::Time& time,
                          const policy::WeeklyTimeInterval& interval) {
   policy::WeeklyTime current_weekly_time =
@@ -61,31 +59,61 @@ RepeatingTimeIntervalTaskExecutor::~RepeatingTimeIntervalTaskExecutor() =
     default;
 
 void RepeatingTimeIntervalTaskExecutor::Start() {
-  if (TimeFallsInInterval(clock_->Now(), time_interval_)) {
+  base::Time current_time = clock_->Now();
+
+  if (TimeFallsInInterval(current_time, time_interval_) &&
+      GetDuration(current_time, time_interval_.end()) > kMinScheduleDuration) {
     IntervalStartsNow();
   } else {
-    // TODO(b/319086751) Schedule a timer to the start of interval.
+    IntervalStartsLater();
   }
 }
 
 void RepeatingTimeIntervalTaskExecutor::IntervalStartsNow() {
-  // Acquire a wake lock so that the device doesn't suspend during time tick
-  // calculation, otherwise the time tick calculation will be incorrect.
-  chromeos::OnStartNativeTimerCallback timer_start_result_callback =
-      base::BindOnce(
-          &RepeatingTimeIntervalTaskExecutor::HandleIntervalEndTimerStartResult,
-          weak_ptr_factory_.GetWeakPtr(),
-          policy::ScopedWakeLock(
-              device::mojom::WakeLockType::kPreventAppSuspension,
-              kWakeLockReason));
+  TimerResultCallback timer_start_result_callback = base::BindOnce(
+      &RepeatingTimeIntervalTaskExecutor::HandleIntervalEndTimerStartResult,
+      weak_ptr_factory_.GetWeakPtr());
 
   base::OnceClosure timer_end_callback = base::BindOnce(
       &RepeatingTimeIntervalTaskExecutor::HandleIntervalEndTimerFinish,
       weak_ptr_factory_.GetWeakPtr());
-  timer_->Start(GetTimeTicksSinceBoot() +
-                    GetDuration(clock_->Now(), time_interval_.end()),
-                std::move(timer_end_callback),
-                std::move(timer_start_result_callback));
+  StartTimer(time_interval_.end(), std::move(timer_start_result_callback),
+             std::move(timer_end_callback));
+}
+
+void RepeatingTimeIntervalTaskExecutor::IntervalStartsLater() {
+  TimerResultCallback timer_start_result_callback = base::BindOnce(
+      &RepeatingTimeIntervalTaskExecutor::HandleIntervalStartTimerStartResult,
+      weak_ptr_factory_.GetWeakPtr());
+  // Call `Start` when the timer to the start of the interval finishes,
+  // as that would retrigger the logic to the run the timer to the end of the
+  // interval and call the callbacks respectively.
+  base::OnceClosure timer_end_callback =
+      base::BindOnce(&RepeatingTimeIntervalTaskExecutor::Start,
+                     weak_ptr_factory_.GetWeakPtr());
+  StartTimer(time_interval_.start(), std::move(timer_start_result_callback),
+             std::move(timer_end_callback));
+}
+
+void RepeatingTimeIntervalTaskExecutor::StartTimer(
+    policy::WeeklyTime expiration_time,
+    TimerResultCallback timer_result_callback,
+    base::OnceClosure timer_expiration_callback) {
+  // Acquire a wake lock so that the device doesn't suspend during time tick
+  // calculation, otherwise the time tick calculation will be incorrect.
+  base::OnceCallback<void(bool)> timer_start_result_callback = base::BindOnce(
+      [](policy::ScopedWakeLock wakelock, TimerResultCallback callback,
+         bool result) -> void {
+        std::move(callback).Run(std::move(wakelock), result);
+      },
+      policy::ScopedWakeLock(device::mojom::WakeLockType::kPreventAppSuspension,
+                             kWakeLockReason),
+      std::move(timer_result_callback));
+
+  timer_->Start(
+      GetTimeTicksSinceBoot() + GetDuration(clock_->Now(), expiration_time),
+      std::move(timer_expiration_callback),
+      std::move(timer_start_result_callback));
 }
 
 void RepeatingTimeIntervalTaskExecutor::HandleIntervalEndTimerStartResult(
@@ -102,8 +130,19 @@ void RepeatingTimeIntervalTaskExecutor::HandleIntervalEndTimerStartResult(
 
 void RepeatingTimeIntervalTaskExecutor::HandleIntervalEndTimerFinish() {
   on_interval_end_callback_.Run();
-  // TODO(b/319086751) Call `Start()` here when next interval in the future case
-  // is implemented.
+  Start();
+}
+
+void RepeatingTimeIntervalTaskExecutor::HandleIntervalStartTimerStartResult(
+    policy::ScopedWakeLock wakelock,
+    bool result) {
+  // TODO(b/324878921) Consider retrying or scheduling the timer for the next
+  // week when `NativeTimer` fails to start.
+  if (!result) {
+    LOG(ERROR) << "Failed to start RepeatingTimeIntervalTaskExecutor timer to "
+                  "the start of the interval";
+    return;
+  }
 }
 
 base::TimeTicks RepeatingTimeIntervalTaskExecutor::GetTimeTicksSinceBoot() {
