@@ -25,7 +25,7 @@ class TaskEnvironmentTest : public testing::Test {
 };
 
 TEST_F(TaskEnvironmentTest, MainThreadTaskRunner) {
-  auto quit_closure = task_environment_->QuitClosure();
+  auto quit_closure = task_environment_.QuitClosure();
   base::ThreadPool::PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         Thread::MainThread()
@@ -36,7 +36,7 @@ TEST_F(TaskEnvironmentTest, MainThreadTaskRunner) {
                        }));
       }));
 
-  task_environment_->RunUntilQuit();
+  task_environment_.RunUntilQuit();
 }
 
 TEST_F(TaskEnvironmentTest, Isolate) {

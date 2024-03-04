@@ -336,12 +336,6 @@ class HTMLMediaElementWithMockSchedulerTest
 
     s_platform_clock_ = GetTickClock();
 
-    if (!task_environment()) {
-      time_overrides_ =
-          std::make_unique<base::subtle::ScopedTimeClockOverrides>(
-              nullptr, &HTMLMediaElementWithMockSchedulerTest::Now, nullptr);
-    }
-
     // DocumentParserTiming has DCHECKS to make sure time > 0.0.
     AdvanceClock(base::Seconds(1));
     // Tests rely on start time being a multiple of 250ms.

@@ -108,11 +108,9 @@ PageTestBase::PageTestBase(base::test::TaskEnvironment::TimeSource time_source)
 
 PageTestBase::~PageTestBase() {
   dummy_page_holder_.reset();
-  if (task_environment_) {
-    MemoryCache::Get()->EvictResources();
-    // Clear lazily loaded style sheets.
-    CSSDefaultStyleSheets::Instance().PrepareForLeakDetection();
-  }
+  MemoryCache::Get()->EvictResources();
+  // Clear lazily loaded style sheets.
+  CSSDefaultStyleSheets::Instance().PrepareForLeakDetection();
 }
 
 void PageTestBase::EnableCompositing() {
@@ -331,15 +329,9 @@ FocusController& PageTestBase::GetFocusController() const {
 }
 
 void PageTestBase::EnablePlatform() {
-  DCHECK(!platform_ && !platform_with_scheduler_);
-  if (task_environment_) {
-    platform_ = std::make_unique<
-        ScopedTestingPlatformSupport<TestingPlatformSupport>>();
-  } else {
-    platform_with_scheduler_ = std::make_unique<ScopedTestingPlatformSupport<
-        TestingPlatformSupportWithMockScheduler>>();
-    (*platform_with_scheduler_)->SetAutoAdvanceNowToPendingTasks(false);
-  }
+  DCHECK(!platform_);
+  platform_ =
+      std::make_unique<ScopedTestingPlatformSupport<TestingPlatformSupport>>();
 }
 
 // See also LayoutTreeAsText to dump with geometry and paint layers.
@@ -357,37 +349,19 @@ void PageTestBase::SetPreferCompositingToLCDText(bool enable) {
 }
 
 const base::TickClock* PageTestBase::GetTickClock() {
-  return platform_with_scheduler_ ? platform()->GetTickClock()
-                                  : base::DefaultTickClock::GetInstance();
+  return base::DefaultTickClock::GetInstance();
 }
 
 void PageTestBase::FastForwardBy(base::TimeDelta delta) {
-  if (task_environment_) {
-    return task_environment_->FastForwardBy(delta);
-  } else {
-    DCHECK(platform_with_scheduler_);
-    return (*platform_with_scheduler_)->RunForPeriod(delta);
-  }
+  return task_environment_.FastForwardBy(delta);
 }
 
 void PageTestBase::FastForwardUntilNoTasksRemain() {
-  if (task_environment_) {
-    return task_environment_->FastForwardUntilNoTasksRemain();
-  } else {
-    DCHECK(platform_with_scheduler_);
-    return (*platform_with_scheduler_)
-        ->test_task_runner()
-        ->FastForwardUntilNoTasksRemain();
-  }
+  return task_environment_.FastForwardUntilNoTasksRemain();
 }
 
 void PageTestBase::AdvanceClock(base::TimeDelta delta) {
-  if (task_environment_) {
-    return task_environment_->AdvanceClock(delta);
-  } else {
-    DCHECK(platform_with_scheduler_);
-    return (*platform_with_scheduler_)->AdvanceClock(delta);
-  }
+  return task_environment_.AdvanceClock(delta);
 }
 
 }  // namespace blink

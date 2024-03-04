@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace base {
@@ -130,9 +130,6 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   virtual const base::TickClock* GetTickClock();
 
   TestingPlatformSupport* platform() {
-    if (platform_with_scheduler_) {
-      return platform_with_scheduler_->GetTestingPlatformSupport();
-    }
     DCHECK(platform_);
     return platform_->GetTestingPlatformSupport();
   }
@@ -149,11 +146,6 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   // |dummy_page_holder_| is destroyed.
   std::unique_ptr<ScopedTestingPlatformSupport<TestingPlatformSupport>>
       platform_;
-  // TODO(crbug.com/1315595): Remove once TaskEnvironment becomes the default in
-  // blink_unittests_v2
-  std::unique_ptr<
-      ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>>
-      platform_with_scheduler_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
   bool enable_compositing_ = false;
 

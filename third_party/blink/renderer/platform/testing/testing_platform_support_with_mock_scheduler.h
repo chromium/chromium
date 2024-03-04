@@ -29,6 +29,8 @@ namespace scheduler {
 class MainThreadSchedulerImpl;
 }
 
+// NOTE: This class is deprecated. Please use TestingPlatformSupport for
+// platform support along with blink::TaskEnvironment for scheduler support.
 // This class adds scheduler and threading support to TestingPlatformSupport.
 // See also ScopedTestingPlatformSupport to use this class correctly.
 class TestingPlatformSupportWithMockScheduler : public TestingPlatformSupport {

@@ -14,42 +14,6 @@
 #include "third_party/blink/renderer/platform/testing/scoped_main_thread_overrider.h"
 
 namespace blink::test {
-namespace internal {
-
-class TaskEnvironmentImpl : public base::test::TaskEnvironment {
- public:
-  using ValidTraits = base::test::TaskEnvironment::ValidTraits;
-
-  template <typename... Traits>
-    requires base::trait_helpers::AreValidTraits<ValidTraits, Traits...>
-  explicit TaskEnvironmentImpl(Traits... traits)
-      : TaskEnvironmentImpl(CreateTaskEnvironmentWithPriorities(
-            blink::scheduler::CreatePrioritySettings(),
-            SubclassCreatesDefaultTaskRunner{},
-            traits...)) {}
-
-  ~TaskEnvironmentImpl() override;
-
-  scheduler::MainThreadSchedulerImpl* main_thread_scheduler() {
-    return scheduler_.get();
-  }
-  v8::Isolate* isolate() { return main_thread_isolate_->isolate(); }
-  void ResetIsolate() { main_thread_isolate_.reset(); }
-
-  static bool IsSupported();
-  static void SetSupported(bool is_supported);
-
- private:
-  // When |real_main_thread_scheduler|, instantiate a full featured
-  // blink::MainThreadScheduler as opposed to a simple Thread scheduler.
-  TaskEnvironmentImpl(base::test::TaskEnvironment&& scoped_task_environment);
-
-  std::unique_ptr<scheduler::MainThreadSchedulerImpl> scheduler_;
-  std::optional<MainThreadIsolate> main_thread_isolate_;
-  std::optional<ScopedMainThreadOverrider> main_thread_overrider_;
-};
-
-}  // namespace internal
 
 // TaskEnvironment is a convenience class which allows usage of these
 // APIs within its scope:
@@ -60,25 +24,37 @@ class TaskEnvironmentImpl : public base::test::TaskEnvironment {
 // Only tests that need blink APIs should instantiate a
 // blink::test::TaskEnvironment. Use base::test::SingleThreadTaskEnvironment or
 // base::test::TaskEnvironment otherwise.
-class TaskEnvironment {
+class TaskEnvironment : public base::test::TaskEnvironment {
  public:
-  using ValidTraits = internal::TaskEnvironmentImpl::ValidTraits;
+  using ValidTraits = base::test::TaskEnvironment::ValidTraits;
 
   template <typename... Traits>
     requires base::trait_helpers::AreValidTraits<ValidTraits, Traits...>
   explicit TaskEnvironment(Traits... traits)
-      : impl_{internal::TaskEnvironmentImpl::IsSupported()
-                  ? std::make_optional<internal::TaskEnvironmentImpl>(traits...)
-                  : std::nullopt} {}
+      : TaskEnvironment(CreateTaskEnvironmentWithPriorities(
+            blink::scheduler::CreatePrioritySettings(),
+            SubclassCreatesDefaultTaskRunner{},
+            traits...)) {}
 
-  explicit operator bool() const { return impl_.has_value(); }
-  internal::TaskEnvironmentImpl* operator->() { return impl_.operator->(); }
-  internal::TaskEnvironmentImpl& operator*() { return *impl_; }
+  ~TaskEnvironment() override;
 
-  v8::Isolate* isolate();
+  scheduler::MainThreadSchedulerImpl* main_thread_scheduler() {
+    return scheduler_.get();
+  }
+  v8::Isolate* isolate() { return main_thread_isolate_->isolate(); }
+  void ResetIsolate() { main_thread_isolate_.reset(); }
+
+  static bool IsSupported();
 
  private:
-  std::optional<internal::TaskEnvironmentImpl> impl_;
+  // When |real_main_thread_scheduler|, instantiate a full featured
+  // blink::MainThreadScheduler as opposed to a simple Thread scheduler.
+  explicit TaskEnvironment(
+      base::test::TaskEnvironment&& scoped_task_environment);
+
+  std::unique_ptr<scheduler::MainThreadSchedulerImpl> scheduler_;
+  std::optional<MainThreadIsolate> main_thread_isolate_;
+  std::optional<ScopedMainThreadOverrider> main_thread_overrider_;
 };
 
 }  // namespace blink::test
