@@ -17,7 +17,6 @@ jonross@chromium.org
 dullweber@chromium.org
 # For PerformanceMonitor.* histograms:
 olivierli@chromium.org
-# For BootTime.*, Uptime.*, UserManager.*, TimeZone.* histograms:
 # For AccessCodeCast.* histograms:
 bzielinski@google.com
 # For Ads.InterestGroup.* histograms:

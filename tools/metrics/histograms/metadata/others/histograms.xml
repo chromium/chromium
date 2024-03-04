@@ -155,7 +155,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="AccessCodeCast.Discovery.AddSinkResult.New"
-    enum="AccessCodeCastAddSinkResult" expires_after="2024-06-30">
+    enum="AccessCodeCastAddSinkResult" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -166,7 +166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Discovery.AddSinkResult.Remembered"
-    enum="AccessCodeCastAddSinkResult" expires_after="2024-04-03">
+    enum="AccessCodeCastAddSinkResult" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Discovery.CastModeOnSuccess"
-    enum="AccessCodeCastCastMode" expires_after="2024-08-04">
+    enum="AccessCodeCastCastMode" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Discovery.DeviceDurationOnRoute"
-    units="seconds" expires_after="2024-01-28">
+    units="seconds" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -200,7 +200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Discovery.RememberedDevicesCount"
-    units="cast devices" expires_after="2024-07-21">
+    units="cast devices" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -211,7 +211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Session.FreezeCount" units="instances"
-    expires_after="2024-06-30">
+    expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Session.FreezeDuration" units="ms"
-    expires_after="2024-07-07">
+    expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -233,7 +233,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Session.NewDeviceRouteCreationDuration"
-    units="ms" expires_after="2024-07-07">
+    units="ms" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Session.RouteDiscoveryTypeAndSource"
-    enum="AccessCodeCastDiscoveryTypeAndSource" expires_after="2024-06-30">
+    enum="AccessCodeCastDiscoveryTypeAndSource" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -257,7 +257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Session.RouteDuration" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Session.SavedDeviceRouteCreationDuration"
-    units="ms" expires_after="2024-03-17">
+    units="ms" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Ui.AccessCodeInputTime" units="ms"
-    expires_after="2024-04-03">
+    expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -292,7 +292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Ui.AccessCodeNotFoundCount" units="instances"
-    expires_after="2024-06-16">
+    expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -304,7 +304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Ui.CastAttemptLength" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -316,7 +316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Ui.DialogCloseReason"
-    enum="AccessCodeCastDialogCloseReason" expires_after="2024-08-04">
+    enum="AccessCodeCastDialogCloseReason" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -326,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Ui.DialogLoadTime" units="ms"
-    expires_after="2024-08-04">
+    expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -337,7 +337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Ui.DialogOpenLocation"
-    enum="AccessCodeCastDialogOpenLocation" expires_after="2024-07-07">
+    enum="AccessCodeCastDialogOpenLocation" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -347,7 +347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Ui.TabSwitcherUsageType"
-    enum="AccessCodeCastUiTabSwitcherUsage" expires_after="2024-06-30">
+    enum="AccessCodeCastUiTabSwitcherUsage" expires_after="2024-09-04">
   <owner>ahmedmoussa@google.com</owner>
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -362,7 +362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Ui.TabSwitchingCount" units="count"
-    expires_after="2024-06-30">
+    expires_after="2024-09-04">
   <owner>ahmedmoussa@google.com</owner>
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>

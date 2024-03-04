@@ -6764,7 +6764,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Session.Length.AccessCode"
-    units="ms" expires_after="2024-04-28">
+    units="ms" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -6800,7 +6800,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Start.Failure.AccessCodeManualEntry"
-    enum="MirroringServiceErrorType" expires_after="2024-05-01">
+    enum="MirroringServiceErrorType" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -6811,7 +6811,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MediaRouter.CastStreaming.Start.Failure.AccessCodeRememberedDevice"
-    enum="MirroringServiceErrorType" expires_after="2024-05-01">
+    enum="MirroringServiceErrorType" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -6843,7 +6843,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Start.Success.AccessCodeManualEntry"
-    enum="MirrorType" expires_after="2024-06-30">
+    enum="MirrorType" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -6855,7 +6855,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MediaRouter.CastStreaming.Start.Success.AccessCodeRememberedDevice"
-    enum="MirrorType" expires_after="2024-03-17">
+    enum="MirrorType" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
