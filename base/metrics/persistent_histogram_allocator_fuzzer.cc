@@ -17,8 +17,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // PersistentMemoryAllocator segments must be aligned and an acceptable size.
   if (!base::PersistentMemoryAllocator::IsMemoryAcceptable(
-          data, size, 0,
-          base::FilePersistentMemoryAllocator::kReadWriteExisting)) {
+          data, size, /*page_size=*/0, /*readonly=*/false)) {
     return 0;
   }
 
