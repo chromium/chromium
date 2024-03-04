@@ -7,6 +7,7 @@
 
 namespace extensions {
 
+class Dispatcher;
 class ModuleSystem;
 class NativeExtensionBindingsSystem;
 class ScriptContext;
@@ -27,6 +28,13 @@ class ExtensionsRendererAPIProvider {
       ModuleSystem* module_system,
       NativeExtensionBindingsSystem* bindings_system,
       ScriptContext* context) = 0;
+
+  // Registers any additional hooks associated with specific APIs to the API
+  // bindings system. Called once per NativeExtensionBindingsSystem, which is
+  // one-per-thread and re-used across ScriptContexts.
+  virtual void AddBindingsSystemHooks(
+      Dispatcher* dispatcher,
+      NativeExtensionBindingsSystem* bindings_system) = 0;
 
   // Includes additional source resources into the resource map.
   virtual void PopulateSourceMap(ResourceBundleSourceMap* source_map) = 0;

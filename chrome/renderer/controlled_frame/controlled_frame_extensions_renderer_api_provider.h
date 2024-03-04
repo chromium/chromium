@@ -32,6 +32,9 @@ class ControlledFrameExtensionsRendererAPIProvider
       extensions::ModuleSystem* module_system,
       extensions::NativeExtensionBindingsSystem* bindings_system,
       extensions::ScriptContext* context) override;
+  void AddBindingsSystemHooks(
+      extensions::Dispatcher* dispatcher,
+      extensions::NativeExtensionBindingsSystem* bindings_system) override;
   void PopulateSourceMap(
       extensions::ResourceBundleSourceMap* source_map) override;
   void EnableCustomElementAllowlist() override;

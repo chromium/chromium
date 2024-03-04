@@ -9,8 +9,6 @@
 #include <string>
 
 namespace extensions {
-class Dispatcher;
-class NativeExtensionBindingsSystem;
 class ScriptContext;
 
 // Base class and default implementation for an extensions::Dispacher delegate.
@@ -28,13 +26,6 @@ class DispatcherDelegate {
   // the Dispatcher.
   virtual void OnActiveExtensionsUpdated(
       const std::set<std::string>& extension_ids) {}
-
-  // Allows the delegate to add any additional custom bindings or types to the
-  // native bindings system. This will only be called if --native-crx-bindings
-  // is enabled.
-  virtual void InitializeBindingsSystem(
-      Dispatcher* dispatcher,
-      NativeExtensionBindingsSystem* bindings_system) {}
 };
 
 }  // namespace extensions

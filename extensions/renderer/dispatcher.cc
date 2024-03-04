@@ -1580,7 +1580,9 @@ std::unique_ptr<NativeExtensionBindingsSystem> Dispatcher::CreateBindingsSystem(
     std::unique_ptr<IPCMessageSender> ipc_sender) {
   auto bindings_system = std::make_unique<NativeExtensionBindingsSystem>(
       delegate, std::move(ipc_sender));
-  delegate_->InitializeBindingsSystem(this, bindings_system.get());
+  for (const auto& api_provider : api_providers_) {
+    api_provider->AddBindingsSystemHooks(this, bindings_system.get());
+  }
   return bindings_system;
 }
 

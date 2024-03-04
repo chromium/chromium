@@ -17,6 +17,10 @@ void ControlledFrameExtensionsRendererAPIProvider::RegisterNativeHandlers(
     extensions::NativeExtensionBindingsSystem* bindings_system,
     extensions::ScriptContext* context) {}
 
+void ControlledFrameExtensionsRendererAPIProvider::AddBindingsSystemHooks(
+    extensions::Dispatcher* dispatcher,
+    extensions::NativeExtensionBindingsSystem* bindings_system) {}
+
 void ControlledFrameExtensionsRendererAPIProvider::PopulateSourceMap(
     extensions::ResourceBundleSourceMap* source_map) {
   source_map->RegisterSource("controlledFrame", IDR_CONTROLLED_FRAME_JS);
