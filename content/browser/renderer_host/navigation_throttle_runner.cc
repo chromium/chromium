@@ -236,12 +236,14 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
 
   // Defer subframe navigation in bfcached page if it hasn't sent a network
   // request.
+  // This must be the last throttle to run. See https://crrev.com/c/5316738.
   if (base::FeatureList::IsEnabled(
           features::kEnableBackForwardCacheForOngoingSubframeNavigation)) {
     AddThrottle(
         BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
             request));
   }
+  // DO NOT ADD any throttles after this line.
 
   // Insert all testing NavigationThrottles last.
   throttles_.insert(throttles_.end(),

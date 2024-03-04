@@ -2983,6 +2983,11 @@ class BackForwardCacheEvictionDueToSubframeNavigationBrowserTest
         return "CrossSite";
     }
   }
+
+ protected:
+  bool UseCrossOriginSubframe() const {
+    return GetParam() == SubframeType::CrossSite;
+  }
 };
 
 IN_PROC_BROWSER_TEST_P(
@@ -2990,9 +2995,8 @@ IN_PROC_BROWSER_TEST_P(
     SubframePendingCommitShouldPreventCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  bool use_cross_origin_subframe = GetParam() == SubframeType::CrossSite;
   GURL subframe_url = embedded_test_server()->GetURL(
-      use_cross_origin_subframe ? "b.com" : "a.com", "/title1.html");
+      UseCrossOriginSubframe() ? "b.com" : "a.com", "/title1.html");
 
   IsolateOriginsForTesting(embedded_test_server(), web_contents(),
                            std::vector<std::string>{"a.com", "b.com"});
@@ -3025,6 +3029,58 @@ IN_PROC_BROWSER_TEST_P(
       JsReplace("document.querySelector('#child').src = $1;", subframe_url));
   // 4) Wait until subframe navigation is pending commit.
   commit_message_delayer.Wait();
+}
+
+// Check that when the main frame gets BFCached while the subframe navigation
+// deferring NavigationThrottles has already ran, the issue that the subframe
+// navigation escapes the throttle deferral is addressed.
+IN_PROC_BROWSER_TEST_P(
+    BackForwardCacheEvictionDueToSubframeNavigationBrowserTest,
+    MainFrameCommitFirstAndSubframePendingCommitShouldBeEvicted) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Prepare the main frame and the sub frame, where both of them are same-site.
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child = root->child_at(0);
+  RenderFrameHostImplWrapper child_rfh(child->current_frame_host());
+
+  // Navigate both frames simultaneously.
+  const std::string subframe_origin =
+      UseCrossOriginSubframe() ? "b.com" : "a.com";
+  GURL new_url_1(
+      embedded_test_server()->GetURL(subframe_origin, "/title1.html"));
+  GURL new_url_2(
+      embedded_test_server()->GetURL(subframe_origin, "/title2.html"));
+  TestNavigationManager manager1(web_contents(), new_url_1);
+  TestNavigationManager manager2(web_contents(), new_url_2);
+  auto script = JsReplace("location = $1; frames[0].location = $2;", new_url_1,
+                          new_url_2);
+  EXPECT_TRUE(ExecJs(web_contents(), script));
+
+  // Wait for main frame request, but don't commit it yet. This should create
+  // a speculative RenderFrameHost.
+  ASSERT_TRUE(manager1.WaitForRequestStart());
+
+  // Wait for subframe request, but don't commit it yet.
+  ASSERT_TRUE(manager2.WaitForRequestStart());
+
+  // Now let the main frame commit.
+  ASSERT_TRUE(manager1.WaitForNavigationFinished());
+  // Make sure the main frame is at the new URL.
+  ASSERT_TRUE(root->current_frame_host()->IsRenderFrameLive());
+  ASSERT_EQ(new_url_1, root->current_frame_host()->GetLastCommittedURL());
+
+  // The subframe should be gone now: it should have been evicted from BFCache
+  // because the subframe is still navigating; otherwise, this will cause a
+  // crash.
+  ASSERT_TRUE(manager2.WaitForNavigationFinished());
+  EXPECT_TRUE(child_rfh.IsDestroyed());
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating}, {},
+      {}, {}, {}, FROM_HERE);
 }
 
 INSTANTIATE_TEST_SUITE_P(

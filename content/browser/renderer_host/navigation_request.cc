@@ -1127,6 +1127,43 @@ bool IsFailedDownload(bool is_download,
       },                                                           \
       weak_factory_.GetWeakPtr()))
 
+// Returns if the given `rfh` should be evicted from BackForwardCache due to
+// ongoing navigation.
+bool MaybeEvictFromBackForwardCacheBySubframeNavigation(
+    RenderFrameHostImpl* rfh) {
+  if (base::FeatureList::IsEnabled(
+          features::kEnableBackForwardCacheForOngoingSubframeNavigation) &&
+      rfh->GetParentOrOuterDocument() &&
+      rfh->GetLifecycleState() ==
+          RenderFrameHost::LifecycleState::kInBackForwardCache) {
+    // Normally, ongoing subframe navigations will be deferred by
+    // `BackForwardCacheSubframeNavigationThrottle` before they reach this
+    // point, if the page the subframe is on gets BFCached.
+    //
+    // However, it's possible for subframe navigations to end up here while its
+    // page is BFCached, if at the time the navigation went through
+    // `BackForwardCacheSubframeNavigationThrottle::WillStartRequest()` or
+    // BackForwardCacheSubframeNavigationThrottle::WillCommitWithoutUrlLoader(),
+    // the page is not BFCached yet, but then the page gets BFCached in between
+    // that time and when this function is called.
+    //
+    // Outside of tests, this should not be possible, as
+    // `BackForwardCacheSubframeNavigationThrottle` are the last throttles to be
+    // registered/run. However, in tests, the last throttles to run are
+    // test-only throttles, which can introduce an asynchronous step, making it
+    // possible for the page to enter BFCache during that time. In that case, we
+    // shouldn't continue processing the navigation in the subframe and need to
+    // evict the page from BFCache.
+    rfh->EvictFromBackForwardCacheWithReason(
+        BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating);
+
+    // DO NOT ADD CODE after this. The previous call has destroyed the
+    // NavigationRequest.
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 NavigationRequest::PrerenderActivationNavigationState::
@@ -6948,6 +6985,14 @@ void NavigationRequest::OnWillStartRequestProcessed(
       std::move(complete_callback_for_testing_).Run(result)) {
     return;
   }
+
+  if (MaybeEvictFromBackForwardCacheBySubframeNavigation(
+          frame_tree_node_->current_frame_host())) {
+    // DO NOT ADD CODE AFTER THIS, as the NavigationRequest might have been
+    // deleted by the previous calls.
+    return;
+  }
+
   OnStartChecksComplete(result);
 
   // DO NOT ADD CODE AFTER THIS, as the NavigationRequest might have been
@@ -7036,6 +7081,13 @@ void NavigationRequest::OnWillCommitWithoutUrlLoaderProcessed(
   processing_navigation_throttle_ = false;
   if (complete_callback_for_testing_ &&
       std::move(complete_callback_for_testing_).Run(result)) {
+    return;
+  }
+
+  if (MaybeEvictFromBackForwardCacheBySubframeNavigation(
+          frame_tree_node_->current_frame_host())) {
+    // DO NOT ADD CODE AFTER THIS, as the NavigationRequest might have been
+    // deleted by the previous calls.
     return;
   }
 
