@@ -181,6 +181,7 @@ void TapMoreButtonIfVisible() {
       [self isRunningTest:@selector(testMagicStackEditButton)] ||
       [self isRunningTest:@selector
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
+    config.features_enabled.push_back(kIOSMagicStackCollectionView);
     std::string enable_magic_stack_segmentation_arg =
         "--enable-features=" +
         std::string(segmentation_platform::features::
@@ -814,7 +815,7 @@ void TapMoreButtonIfVisible() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    [NewTabPageAppInterface setUpListTitle])]
-      assertWithMatcher:grey_nil()];
+      assertWithMatcher:grey_notVisible()];
 }
 
 #pragma mark - Test utils

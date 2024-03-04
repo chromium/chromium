@@ -1563,10 +1563,18 @@ const CGFloat kModuleMinMargin = 16;
       ]];
     }
   } else {
-    [NSLayoutConstraint activateConstraints:@[
-      [self.collectionView.topAnchor
-          constraintEqualToAnchor:contentSuggestionsView.bottomAnchor],
-    ]];
+    if (IsIOSMagicStackCollectionViewEnabled()) {
+      [NSLayoutConstraint activateConstraints:@[
+        [self.collectionView.topAnchor
+            constraintEqualToAnchor:self.magicStackCollectionView.view
+                                        .bottomAnchor],
+      ]];
+    } else {
+      [NSLayoutConstraint activateConstraints:@[
+        [self.collectionView.topAnchor
+            constraintEqualToAnchor:contentSuggestionsView.bottomAnchor],
+      ]];
+    }
   }
 
   if (_feedContainer) {

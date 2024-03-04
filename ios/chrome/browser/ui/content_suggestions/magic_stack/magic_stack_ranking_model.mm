@@ -38,6 +38,7 @@
 @interface MagicStackRankingModel () <MostVisitedTilesMediatorDelegate,
                                       ParcelTrackingMediatorDelegate,
                                       SafetyCheckMagicStackMediatorDelegate,
+                                      SetUpListMediatorAudience,
                                       ShortcutsMediatorDelegate,
                                       TabResumptionHelperDelegate>
 // For testing-only
@@ -85,6 +86,7 @@
         _mostVisitedTilesMediator.delegate = self;
       } else if ([mediator isKindOfClass:[SetUpListMediator class]]) {
         _setUpListMediator = static_cast<SetUpListMediator*>(mediator);
+        _setUpListMediator.audience = self;
       } else if ([mediator isKindOfClass:[TabResumptionMediator class]]) {
         _tabResumptionMediator = static_cast<TabResumptionMediator*>(mediator);
         _tabResumptionMediator.delegate = self;
@@ -156,6 +158,20 @@
       recordMagicStackModuleEngagementForType:type
                                       atIndex:
                                           [self indexForMagicStackModule:type]];
+}
+
+#pragma mark - SetUpListMediatorAudience
+
+- (void)removeSetUpList {
+  DCHECK(IsIOSMagicStackCollectionViewEnabled());
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_setUpListMediator.setUpListConfigs[0]];
+}
+
+- (void)replaceSetUpListWithAllSet:(SetUpListConfig*)allSetConfig {
+  [self.delegate magicStackRankingModel:self
+                         didReplaceItem:_setUpListMediator.setUpListConfigs[0]
+                               withItem:allSetConfig];
 }
 
 #pragma mark - SafetyCheckMagicStackMediatorDelegate

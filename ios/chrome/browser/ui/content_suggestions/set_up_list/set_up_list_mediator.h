@@ -40,6 +40,18 @@ class SyncService;
 
 @end
 
+// Audience for Set Up List events
+@protocol SetUpListMediatorAudience
+
+// Indicates that the Set Up List should be removed.
+- (void)removeSetUpList;
+
+// Indicates that the displayed Set Up List should be replaced by
+// `allSetConfig`.
+- (void)replaceSetUpListWithAllSet:(SetUpListConfig*)allSetConfig;
+
+@end
+
 // Mediator for managing the state of the Set Up List for its Magic Stack
 // module.
 @interface SetUpListMediator : NSObject
@@ -84,6 +96,9 @@ class SyncService;
 // Receiver for Set Up List actions.
 @property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
     commandHandler;
+
+// Audience used to communicate Set Up List events.
+@property(nonatomic, weak) id<SetUpListMediatorAudience> audience;
 
 // Delegate used to communicate Content Suggestions events to the delegate.
 @property(nonatomic, weak) id<ContentSuggestionsDelegate> delegate;

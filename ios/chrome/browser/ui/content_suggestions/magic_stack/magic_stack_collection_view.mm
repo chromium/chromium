@@ -140,6 +140,8 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
              initWithFrame:CGRectZero
       collectionViewLayout:_magicStackCollectionViewLayoutConfigurator
                                .magicStackCompositionalLayout];
+  _collectionView.accessibilityIdentifier =
+      kMagicStackScrollViewAccessibilityIdentifier;
   _collectionView.clipsToBounds = [self shouldHaveWideLayout];
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.showsHorizontalScrollIndicator = NO;
