@@ -224,11 +224,11 @@ class IsolatedWebAppInstallCommandHelperTrustAndSignaturesBundleTest
  public:
   IsolatedWebAppInstallCommandHelperTrustAndSignaturesBundleTest()
       : is_dev_mode_(GetParam()),
-        location_(is_dev_mode_ ? IsolatedWebAppLocation(InstalledBundle{
+        location_(is_dev_mode_ ? IsolatedWebAppLocation(DevModeBundle{
                                      .path = base::FilePath{FILE_PATH_LITERAL(
                                          "/testing/path/to/a/bundle")},
                                  })
-                               : IsolatedWebAppLocation(DevModeBundle{
+                               : IsolatedWebAppLocation(InstalledBundle{
                                      .path = base::FilePath{FILE_PATH_LITERAL(
                                          "/testing/path/to/a/bundle")},
                                  })) {}
@@ -279,12 +279,12 @@ TEST_P(IsolatedWebAppInstallCommandHelperTrustAndSignaturesBundleTest,
   base::test::TestFuture<base::expected<void, std::string>> future;
   command_helper->CheckTrustAndSignatures(location_, &*profile(),
                                           future.GetCallback());
-  if (GetParam()) {
-    EXPECT_THAT(future.Get(), HasValue());
-  } else {
+  if (is_dev_mode_) {
     EXPECT_THAT(
         future.Take(),
         ErrorIs(HasSubstr("Isolated Web App Developer Mode is not enabled")));
+  } else {
+    EXPECT_THAT(future.Get(), HasValue());
   }
 }
 

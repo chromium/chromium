@@ -209,7 +209,7 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, Succeeds) {
   test::AwaitStartWebAppProviderAndSubsystems(profile());
   InstallIwa(update_info());
-  WriteUpdateBundleToDisk();
+  ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   CreateDefaultPageState();
 
   auto& icon_state = fake_web_contents_manager().GetOrCreateIconState(
@@ -243,7 +243,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest,
 
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIwaIsNotInstalled) {
   test::AwaitStartWebAppProviderAndSubsystems(profile());
-  WriteUpdateBundleToDisk();
+  ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   CreateDefaultPageState();
 
   auto result = ApplyPendingUpdate();
@@ -260,7 +260,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstalledAppIsNotIsolated) {
   test::InstallDummyWebApp(profile(), "installed app",
                            url_info_.origin().GetURL());
 
-  WriteUpdateBundleToDisk();
+  ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   CreateDefaultPageState();
 
   auto result = ApplyPendingUpdate();
@@ -277,7 +277,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest,
   test::AwaitStartWebAppProviderAndSubsystems(profile());
   installed_version_ = base::Version("3.0.0");
   InstallIwa(/*pending_update_info=*/std::nullopt);
-  WriteUpdateBundleToDisk();
+  ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   CreateDefaultPageState();
 
   auto result = ApplyPendingUpdate();
@@ -292,7 +292,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest,
   test::AwaitStartWebAppProviderAndSubsystems(profile());
   installed_version_ = base::Version("3.0.0");
   InstallIwa(update_info());
-  WriteUpdateBundleToDisk();
+  ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   CreateDefaultPageState();
 
   auto result = ApplyPendingUpdate();
@@ -305,7 +305,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest,
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfAppNotTrusted) {
   test::AwaitStartWebAppProviderAndSubsystems(profile());
   InstallIwa(update_info());
-  WriteUpdateBundleToDisk();
+  ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   CreateDefaultPageState();
   SetTrustedWebBundleIdsForTesting({});
 
@@ -319,7 +319,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfAppNotTrusted) {
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfUrlLoadingFails) {
   test::AwaitStartWebAppProviderAndSubsystems(profile());
   InstallIwa(update_info());
-  WriteUpdateBundleToDisk();
+  ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   auto& page_state = CreateDefaultPageState();
   page_state.url_load_result = WebAppUrlLoader::Result::kFailedErrorPageLoaded;
 
@@ -332,7 +332,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfUrlLoadingFails) {
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallabilityCheckFails) {
   test::AwaitStartWebAppProviderAndSubsystems(profile());
   InstallIwa(update_info());
-  WriteUpdateBundleToDisk();
+  ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   CreateDefaultPageState();
   auto& page_state = CreateDefaultPageState();
   page_state.error_code =
@@ -349,7 +349,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallabilityCheckFails) {
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfManifestIsInvalid) {
   test::AwaitStartWebAppProviderAndSubsystems(profile());
   InstallIwa(update_info());
-  WriteUpdateBundleToDisk();
+  ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   auto& page_state = CreateDefaultPageState();
   page_state.opt_manifest->scope = GURL("https://example.com/foo");
 
@@ -363,7 +363,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfManifestIsInvalid) {
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIconDownloadFails) {
   test::AwaitStartWebAppProviderAndSubsystems(profile());
   InstallIwa(update_info());
-  WriteUpdateBundleToDisk();
+  ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   CreateDefaultPageState();
 
   auto result = ApplyPendingUpdate();
@@ -394,7 +394,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallFinalizerFails) {
   test::AwaitStartWebAppProviderAndSubsystems(profile());
 
   InstallIwa(update_info());
-  WriteUpdateBundleToDisk();
+  ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   CreateDefaultPageState();
 
   auto& icon_state = fake_web_contents_manager().GetOrCreateIconState(

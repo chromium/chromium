@@ -124,43 +124,45 @@ void IsolatedWebAppApplyUpdateCommand::CheckIfUpdateIsStillPending(
     base::OnceClosure next_step_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  installed_app_ = lock_->registrar().GetAppById(url_info_.app_id());
-  if (installed_app_ == nullptr) {
+  const WebApp* installed_app =
+      lock_->registrar().GetAppById(url_info_.app_id());
+  if (installed_app == nullptr) {
     ReportFailure("App is no longer installed.");
     return;
   }
-  if (!installed_app_->isolation_data().has_value()) {
+  if (!installed_app->isolation_data().has_value()) {
     ReportFailure("Installed app is not an Isolated Web App.");
     return;
   }
   const WebApp::IsolationData& isolation_data =
-      *installed_app_->isolation_data();
+      *installed_app->isolation_data();
 
   if (!isolation_data.pending_update_info().has_value()) {
     ReportFailure("Installed app does not have a pending update.");
     return;
   }
-  const WebApp::IsolationData::PendingUpdateInfo& update_info =
-      *isolation_data.pending_update_info();
+  pending_update_info_ = *isolation_data.pending_update_info();
 
-  GetMutableDebugValue().Set("update_info", update_info.AsDebugValue());
+  GetMutableDebugValue().Set("pending_update_info",
+                             pending_update_info_->AsDebugValue());
 
-  if (isolation_data.version >= update_info.version) {
+  if (isolation_data.version >= pending_update_info_->version) {
     ReportFailure(base::StrCat({"Installed app is already on version ",
                                 isolation_data.version.GetString(),
                                 ". Cannot update to version ",
-                                update_info.version.GetString()}));
+                                pending_update_info_->version.GetString()}));
     return;
   }
-  if (isolation_data.location.index() != update_info.location.index()) {
-    ReportFailure(base::StringPrintf(
-        "Unable to update between different "
-        "IsolatedWebAppLocation types (%zu to %zu).",
-        isolation_data.location.index(), update_info.location.index()));
+  if (isolation_data.location.index() !=
+      pending_update_info_->location.index()) {
+    ReportFailure(
+        base::StringPrintf("Unable to update between different "
+                           "IsolatedWebAppLocation types (%zu to %zu).",
+                           isolation_data.location.index(),
+                           pending_update_info_->location.index()));
     return;
   }
 
-  update_location_ = update_info.location;
   std::move(next_step_callback).Run();
 }
 
@@ -169,7 +171,7 @@ void IsolatedWebAppApplyUpdateCommand::CheckTrustAndSignatures(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   command_helper_->CheckTrustAndSignatures(
-      update_info().location, &profile(),
+      pending_update_info_->location, &profile(),
       base::BindOnce(
           &IsolatedWebAppApplyUpdateCommand::RunNextStepOnSuccess<void>,
           weak_factory_.GetWeakPtr(), std::move(next_step_callback)));
@@ -189,7 +191,7 @@ void IsolatedWebAppApplyUpdateCommand::LoadInstallUrl(
     base::OnceClosure next_step_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   command_helper_->LoadInstallUrl(
-      update_info().location, *web_contents_.get(), *url_loader_.get(),
+      pending_update_info_->location, *web_contents_.get(), *url_loader_.get(),
       base::BindOnce(
           &IsolatedWebAppApplyUpdateCommand::RunNextStepOnSuccess<void>,
           weak_factory_.GetWeakPtr(), std::move(next_step_callback)));
@@ -213,7 +215,7 @@ void IsolatedWebAppApplyUpdateCommand::ValidateManifestAndCreateInstallInfo(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::expected<WebAppInstallInfo, std::string> install_info =
       command_helper_->ValidateManifestAndCreateInstallInfo(
-          update_info().version, manifest_and_url);
+          pending_update_info_->version, manifest_and_url);
   RunNextStepOnSuccess(std::move(next_step_callback), std::move(install_info));
 }
 
@@ -278,9 +280,9 @@ void IsolatedWebAppApplyUpdateCommand::ReportFailure(
 void IsolatedWebAppApplyUpdateCommand::CleanupOnFailure(
     base::OnceClosure next_step_callback) {
   base::OnceClosure update_callback =
-      update_location_.has_value()
+      pending_update_info_.has_value()
           ? base::BindOnce(CleanupLocationIfOwned, profile().GetPath(),
-                           update_location_.value(),
+                           pending_update_info_->location,
                            std::move(next_step_callback))
           : std::move(next_step_callback);
 
