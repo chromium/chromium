@@ -123,7 +123,6 @@ if (RUN_TESTS === 'true') {
   const wptRunArgs = [
     '--binary',
     BROWSER_BIN,
-    `--webdriver-arg=--headless=${HEADLESS}`,
     '--log-wptreport',
     WPT_REPORT,
     '--manifest',
@@ -167,6 +166,8 @@ if (RUN_TESTS === 'true') {
     if (HEADLESS === 'true') {
       chromeDriverLogs = join('logs', 'chromedriver-headless.log');
       wptRunArgs.push('--binary-arg=--headless=new');
+    } else {
+      wptRunArgs.push('--no-headless');
     }
     wptRunArgs.push(
       '--install-webdriver',
@@ -181,7 +182,7 @@ if (RUN_TESTS === 'true') {
     );
   } else {
     wptRunArgs.push(
-      `--webdriver-arg=--headless=${HEADLESS}`,
+      `--webdriver-arg=--headless=${HEADLESS}`, // only used by bidi-server.mjs.
       '--webdriver-binary',
       join('tools', 'run-bidi-server.mjs')
     );
@@ -210,6 +211,8 @@ if (RUN_TESTS === 'true') {
     test
   );
 
+  // TODO: escaping here is not quite correct.
+  log(`${wptBinary} run ${wptRunArgs.map((arg) => `'${arg}'`).join(' ')}`);
   run_status = spawnSync(wptBinary, ['run', ...wptRunArgs], {
     stdio: 'inherit',
   }).status;
