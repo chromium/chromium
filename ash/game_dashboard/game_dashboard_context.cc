@@ -5,6 +5,7 @@
 #include "ash/game_dashboard/game_dashboard_context.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
@@ -13,6 +14,7 @@
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_cursor_handler.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
+#include "ash/game_dashboard/game_dashboard_metrics.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/game_dashboard/game_dashboard_welcome_dialog.h"
@@ -205,6 +207,7 @@ bool GameDashboardContext::ToggleToolbar() {
     } else {
       toolbar_widget_->Show();
     }
+    RecordGameDashboardToolbarToggleState(/*toggled_on=*/true);
     return true;
   }
 
@@ -217,6 +220,7 @@ void GameDashboardContext::CloseToolbar() {
   DCHECK(toolbar_widget_);
   toolbar_view_ = nullptr;
   toolbar_widget_.reset();
+  RecordGameDashboardToolbarToggleState(/*toggled_on=*/false);
 }
 
 void GameDashboardContext::MaybeUpdateToolbarWidgetBounds() {
@@ -239,6 +243,13 @@ void GameDashboardContext::OnRecordingStarted(bool is_recording_game_window) {
     OnUpdateRecordingTimer();
     recording_timer_.Start(FROM_HERE, kCountUpTimerRefreshInterval, this,
                            &GameDashboardContext::OnUpdateRecordingTimer);
+    CHECK(recording_from_main_menu_);
+    RecordGameDashboardRecordingStartSource(*recording_from_main_menu_
+                                                ? GameDashboardMenu::kMainMenu
+                                                : GameDashboardMenu::kToolbar);
+    // `recording_from_main_menu_` is used to record the histogram for starting
+    // recording only. Reset it after the histogram is recorded.
+    recording_from_main_menu_ = std::nullopt;
   }
   if (main_menu_view_) {
     main_menu_view_->OnRecordingStarted(is_recording_game_window);

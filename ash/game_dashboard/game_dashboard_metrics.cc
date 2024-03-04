@@ -13,36 +13,52 @@ namespace ash {
 namespace {
 
 constexpr char kGameDashboardHistogramNameRoot[] = "Ash.GameDashboard";
-constexpr char kGameDashboardToggleMainMenu[] = "ToggleMainMenu";
-
-constexpr char kOn[] = "On";
-constexpr char kOff[] = "Off";
-constexpr char kSeparator[] = ".";
 
 }  // namespace
 
 ASH_EXPORT std::string BuildGameDashboardHistogramName(
-    GameDashboardHistogramCategory category,
-    bool is_on) {
-  switch (category) {
-    case GameDashboardHistogramCategory::kToggleMainMenu:
-      return base::JoinString(
-          std::vector<std::string>{kGameDashboardHistogramNameRoot,
-                                   kGameDashboardToggleMainMenu,
-                                   is_on ? kOn : kOff},
-          kSeparator);
-    default:
-      NOTREACHED();
-  }
+    const std::string& name) {
+  return base::JoinString(
+      std::vector<std::string>{kGameDashboardHistogramNameRoot, name},
+      kGameDashboardHistogramSeparator);
 }
 
 void RecordGameDashboardToggleMainMenu(
     GameDashboardMainMenuToggleMethod toggled_method,
     bool toggled_on) {
   base::UmaHistogramEnumeration(
-      BuildGameDashboardHistogramName(
-          GameDashboardHistogramCategory::kToggleMainMenu, toggled_on),
+      BuildGameDashboardHistogramName(kGameDashboardToggleMainMenuHistogram)
+          .append(kGameDashboardHistogramSeparator)
+          .append(toggled_on ? kGameDashboardHistogramOn
+                             : kGameDashboardHistogramOff),
       toggled_method);
+}
+
+void RecordGameDashboardToolbarToggleState(bool toggled_on) {
+  base::UmaHistogramBoolean(BuildGameDashboardHistogramName(
+                                kGameDashboardToolbarToggleStateHistogram),
+                            toggled_on);
+}
+
+void RecordGameDashboardRecordingStartSource(GameDashboardMenu menu) {
+  base::UmaHistogramEnumeration(
+      BuildGameDashboardHistogramName(
+          kGameDashboardRecordingStartSourceHistogram),
+      menu);
+}
+
+void RecordGameDashboardScreenshotTakeSource(GameDashboardMenu menu) {
+  base::UmaHistogramEnumeration(
+      BuildGameDashboardHistogramName(
+          kGameDashboardScreenshotTakeSourceHistogram),
+      menu);
+}
+
+void RecordGameDashboardEditControlsWithEmptyState(bool is_setup) {
+  base::UmaHistogramBoolean(
+      BuildGameDashboardHistogramName(
+          kGameDashboardEditControlsWithEmptyStateHistogram),
+      is_setup);
 }
 
 }  // namespace ash

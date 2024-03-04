@@ -12,6 +12,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
+#include "ash/game_dashboard/game_dashboard_metrics.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/arc_compat_mode_util.h"
@@ -478,15 +479,21 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
   }
 
   void EnableEditMode() {
+    auto* game_window = GetGameWindow();
+
+    // Close the main menu after `GetGameWindow()` because `GetGameWindow()`
+    // still needs to get values from the main menu.
     main_menu_->context_->CloseMainMenu(
         GameDashboardMainMenuToggleMethod::kActivateNewFeature);
 
-    auto* game_window = GetGameWindow();
+    const auto flags = game_dashboard_utils::GetGameControlsFlag(game_window);
+    CHECK(flags);
     game_window->SetProperty(
         kArcGameControlsFlagsKey,
-        game_dashboard_utils::UpdateFlag(
-            game_window->GetProperty(kArcGameControlsFlagsKey),
-            ArcGameControlsFlag::kEdit, /*enable_flag=*/true));
+        game_dashboard_utils::UpdateFlag(*flags, ArcGameControlsFlag::kEdit,
+                                         /*enable_flag=*/true));
+    RecordGameDashboardEditControlsWithEmptyState(
+        game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty));
   }
 
   aura::Window* GetGameWindow() { return main_menu_->context_->game_window(); }
@@ -564,6 +571,8 @@ void GameDashboardMainMenuView::OnToolbarTilePressed() {
 }
 
 void GameDashboardMainMenuView::OnRecordGameTilePressed() {
+  context_->set_recording_from_main_menu(true);
+
   if (record_game_tile_->IsToggled()) {
     CaptureModeController::Get()->EndVideoRecording(
         EndRecordingReason::kGameDashboardStopRecordingButton);
@@ -597,6 +606,8 @@ void GameDashboardMainMenuView::OnScreenshotTilePressed() {
       GameDashboardMainMenuToggleMethod::kActivateNewFeature);
   CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(
       context_->game_window());
+
+  RecordGameDashboardScreenshotTakeSource(GameDashboardMenu::kMainMenu);
 }
 
 void GameDashboardMainMenuView::OnSettingsBackButtonPressed() {

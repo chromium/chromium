@@ -11,6 +11,26 @@
 
 namespace ash {
 
+inline constexpr char kGameDashboardToggleMainMenuHistogram[] =
+    "ToggleMainMenu";
+inline constexpr char kGameDashboardToolbarToggleStateHistogram[] =
+    "ToolbarToggleState";
+inline constexpr char kGameDashboardRecordingStartSourceHistogram[] =
+    "RecordingStartSource";
+inline constexpr char kGameDashboardScreenshotTakeSourceHistogram[] =
+    "ScreenshotTakeSource";
+inline constexpr char kGameDashboardEditControlsWithEmptyStateHistogram[] =
+    "EditControlsWithEmptyState";
+
+// Used to build histogram name with on or off state.
+inline constexpr char kGameDashboardHistogramOn[] = "On";
+inline constexpr char kGameDashboardHistogramOff[] = "Off";
+
+// Used to build histogram name.
+inline constexpr char kGameDashboardHistogramSeparator[] = ".";
+
+// This enum should be kept in sync with the `GameDashboardMainMenuToggleMethod`
+// in tools/metrics/histograms/metadata/ash/enums.xml.
 enum class GameDashboardMainMenuToggleMethod {
   kGameDashboardButton,
   kSearchPlusG,
@@ -23,18 +43,27 @@ enum class GameDashboardMainMenuToggleMethod {
   kMaxValue = kOthers,
 };
 
-enum class GameDashboardHistogramCategory {
-  kToggleMainMenu,
-  kMaxValue = kToggleMainMenu,
+// This enum should be kept in sync with the `GameDashboardMenu` in
+// tools/metrics/histograms/metadata/ash/enums.xml.
+enum class GameDashboardMenu {
+  kMainMenu,
+  kToolbar,
+  kMaxValue = kToolbar,
 };
 
-ASH_EXPORT std::string BuildGameDashboardHistogramName(
-    GameDashboardHistogramCategory category,
-    bool is_on);
+ASH_EXPORT std::string BuildGameDashboardHistogramName(const std::string& name);
 
 void RecordGameDashboardToggleMainMenu(
     GameDashboardMainMenuToggleMethod toggle_method,
     bool toggled_on);
+
+void RecordGameDashboardToolbarToggleState(bool toggled_on);
+
+void RecordGameDashboardRecordingStartSource(GameDashboardMenu menu);
+
+void RecordGameDashboardScreenshotTakeSource(GameDashboardMenu menu);
+
+void RecordGameDashboardEditControlsWithEmptyState(bool is_setup);
 
 }  // namespace ash
 

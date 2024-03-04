@@ -1129,6 +1129,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Others"/>
 </enum>
 
+<enum name="GameDashboardMenu">
+  <int value="0" label="Main menu"/>
+  <int value="1" label="Toolbar"/>
+</enum>
+
 <enum name="GlanceableStudentAssignmentList">
   <int value="0" label="Assigned"/>
   <int value="1" label="NoDueDate"/>

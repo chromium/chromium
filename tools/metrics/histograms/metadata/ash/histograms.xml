@@ -3499,6 +3499,34 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.GameDashboard.EditControlsWithEmptyState"
+    enum="BooleanEnabled" expires_after="2025-02-22">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <summary>
+    Records whether Game Controls is in the empty state when users start to edit
+    the Game Controls.
+  </summary>
+</histogram>
+
+<histogram name="Ash.GameDashboard.RecordingStartSource"
+    enum="GameDashboardMenu" expires_after="2025-02-22">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <summary>
+    Records where the recording starts from, main menu or toolbar.
+  </summary>
+</histogram>
+
+<histogram name="Ash.GameDashboard.ScreenshotTakeSource"
+    enum="GameDashboardMenu" expires_after="2025-02-22">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <summary>
+    Records where the screenshot is taken from, main menu or toolbar.
+  </summary>
+</histogram>
+
 <histogram name="Ash.GameDashboard.ToggleMainMenu.{OnOrOff}"
     enum="GameDashboardMainMenuToggleMethod" expires_after="2025-02-22">
   <owner>cuicuiruan@google.com</owner>
@@ -3510,6 +3538,13 @@ chromium-metrics-reviews@google.com.
     <variant name="Off" summary="close main menu"/>
     <variant name="On" summary="open main menu"/>
   </token>
+</histogram>
+
+<histogram name="Ash.GameDashboard.ToolbarToggleState" enum="BooleanEnabled"
+    expires_after="2025-02-22">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <summary>Records whether the tool bar is toggled on or off.</summary>
 </histogram>
 
 <histogram

@@ -115,6 +115,10 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
 
+  void set_recording_from_main_menu(bool from_main_menu) {
+    recording_from_main_menu_ = from_main_menu;
+  }
+
  private:
   friend class GameDashboardContextTestApi;
 
@@ -216,6 +220,11 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // param ensures the welcome dialog is only shown once per game window
   // startup.
   bool show_welcome_dialog_ = false;
+
+  // Indicates where the recording feature starts from the main menu. It is
+  // false if the recording starts from the toolbar. It is null if the recording
+  // is started from somewhere else.
+  std::optional<bool> recording_from_main_menu_;
 
   base::WeakPtrFactory<GameDashboardContext> weak_ptr_factory_{this};
 };

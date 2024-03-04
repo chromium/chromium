@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
+#include "ash/game_dashboard/game_dashboard_metrics.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -345,6 +346,8 @@ void GameDashboardToolbarView::OnGameControlsButtonPressed() {
 }
 
 void GameDashboardToolbarView::OnRecordButtonPressed() {
+  context_->set_recording_from_main_menu(false);
+
   if (record_game_button_->toggled()) {
     CaptureModeController::Get()->EndVideoRecording(
         EndRecordingReason::kGameToolbarStopRecordingButton);
@@ -357,6 +360,8 @@ void GameDashboardToolbarView::OnRecordButtonPressed() {
 void GameDashboardToolbarView::OnScreenshotButtonPressed() {
   CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(
       context_->game_window());
+
+  RecordGameDashboardScreenshotTakeSource(GameDashboardMenu::kToolbar);
 }
 
 void GameDashboardToolbarView::AddShortcutTiles() {
