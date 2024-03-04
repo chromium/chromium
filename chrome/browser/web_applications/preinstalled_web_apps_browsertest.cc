@@ -88,42 +88,50 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
   } kOfflineOnlyExpectations[] = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if BUILDFLAG(IS_CHROMEOS)
-    {
-        kGoogleCalendarAppId,
-        "https://calendar.google.com/calendar/installwebapp?usp=chrome_default",
-        "https://calendar.google.com/calendar/r?usp=installed_webapp",
-    },
+      {
+          kGoogleCalendarAppId,
+          "https://calendar.google.com/calendar/"
+          "installwebapp?usp=chrome_default",
+          "https://calendar.google.com/calendar/r?usp=installed_webapp",
+      },
+      {
+          kMallAppId,
+          "https://discover.apps.chrome/install/",
+          "https://discover.apps.chrome/",
+      },
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    {
-        kGoogleDocsAppId,
-        "https://docs.google.com/document/installwebapp?usp=chrome_default",
-        "https://docs.google.com/document/?usp=installed_webapp",
-    },
-    {
-        kGoogleSlidesAppId,
-        "https://docs.google.com/presentation/installwebapp?usp=chrome_default",
-        "https://docs.google.com/presentation/?usp=installed_webapp",
-    },
-    {
-        kGoogleSheetsAppId,
-        "https://docs.google.com/spreadsheets/installwebapp?usp=chrome_default",
-        "https://docs.google.com/spreadsheets/?usp=installed_webapp",
-    },
-    {
-        kGoogleDriveAppId,
-        "https://drive.google.com/drive/installwebapp?usp=chrome_default",
-        "https://drive.google.com/?lfhs=2&usp=installed_webapp",
-    },
-    {
-        kGmailAppId,
-        "https://mail.google.com/mail/installwebapp?usp=chrome_default",
-        "https://mail.google.com/mail/?usp=installed_webapp",
-    },
-    {
-        kYoutubeAppId,
-        "https://www.youtube.com/s/notifications/manifest/cr_install.html",
-        "https://www.youtube.com/?feature=ytca",
-    },
+      {
+          kGoogleDocsAppId,
+          "https://docs.google.com/document/installwebapp?usp=chrome_default",
+          "https://docs.google.com/document/?usp=installed_webapp",
+      },
+      {
+          kGoogleSlidesAppId,
+          "https://docs.google.com/presentation/"
+          "installwebapp?usp=chrome_default",
+          "https://docs.google.com/presentation/?usp=installed_webapp",
+      },
+      {
+          kGoogleSheetsAppId,
+          "https://docs.google.com/spreadsheets/"
+          "installwebapp?usp=chrome_default",
+          "https://docs.google.com/spreadsheets/?usp=installed_webapp",
+      },
+      {
+          kGoogleDriveAppId,
+          "https://drive.google.com/drive/installwebapp?usp=chrome_default",
+          "https://drive.google.com/?lfhs=2&usp=installed_webapp",
+      },
+      {
+          kGmailAppId,
+          "https://mail.google.com/mail/installwebapp?usp=chrome_default",
+          "https://mail.google.com/mail/?usp=installed_webapp",
+      },
+      {
+          kYoutubeAppId,
+          "https://www.youtube.com/s/notifications/manifest/cr_install.html",
+          "https://www.youtube.com/?feature=ytca",
+      },
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };
   size_t kOfflineOnlyExpectedCount =
@@ -134,15 +142,15 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
   } kOnlineOnlyExpectations[] = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if BUILDFLAG(IS_CHROMEOS)
-    {
-        "https://mail.google.com/chat/download?usp=chrome_default",
-    },
-    {
-        "https://meet.google.com/download/webapp?usp=chrome_default",
-    },
-    {
-        "https://calculator.apps.chrome/install",
-    },
+      {
+          "https://mail.google.com/chat/download?usp=chrome_default",
+      },
+      {
+          "https://meet.google.com/download/webapp?usp=chrome_default",
+      },
+      {
+          "https://calculator.apps.chrome/install",
+      },
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };

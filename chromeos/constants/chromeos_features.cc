@@ -73,6 +73,10 @@ BASE_FEATURE(kCrosComponents,
              "CrosComponents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables an app to discover and install other apps. This flag will be enabled
+// with Finch.
+BASE_FEATURE(kCrosMall, "CrosMall", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the behaviour difference between web apps and browser created
 // shortcut backed by the web app system on Chrome OS.
 BASE_FEATURE(kCrosShortstand,
