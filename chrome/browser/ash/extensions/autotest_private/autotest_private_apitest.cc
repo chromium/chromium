@@ -169,7 +169,14 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
-IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivate) {
+// Flaky on linux.
+// TODO(b/327929010): re-enable the following test.
+#if defined(IS_LINUX)
+#define MAYBE_AutotestPrivate DISABLED_AutotestPrivate
+#else
+#define MAYBE_AutotestPrivate AutotestPrivate
+#endif
+IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, MAYBE_AutotestPrivate) {
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("default")) << message_;
 }
 
