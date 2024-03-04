@@ -210,9 +210,14 @@ QuickStartController::EntryPoint QuickStartController::GetExitPoint() {
 }
 
 void QuickStartController::PrepareForUpdate() {
-  // TODO(b/280308569): Investigate whether state should be reset here in case
-  // of error installing update.
   bootstrap_controller_->PrepareForUpdate();
+}
+
+void QuickStartController::ResumeSessionAfterCancelledUpdate() {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->quick_start_setup_ongoing = true;
+  controller_state_ = ControllerState::WAITING_TO_RESUME_AFTER_UPDATE;
 }
 
 void QuickStartController::InitTargetDeviceBootstrapController() {
@@ -438,6 +443,16 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
   } else if (controller_state_ ==
              ControllerState::WAITING_TO_RESUME_AFTER_UPDATE) {
     exit_point_ = QuickStartController::EntryPoint::GAIA_INFO_SCREEN;
+
+    // It's possible the local state still needs to be cleared if an update was
+    // initiated but cancelled. We can't check/clear the state immediately upon
+    // cancelling the update since it's possible it happens before the target
+    // device persists this pref to local state.
+    if (g_browser_process->local_state()->GetBoolean(
+            prefs::kShouldResumeQuickStartAfterReboot)) {
+      g_browser_process->local_state()->ClearPref(
+          prefs::kShouldResumeQuickStartAfterReboot);
+    }
 
     if (IsBluetoothDisabled()) {
       controller_state_ = ControllerState::WAITING_FOR_BLUETOOTH_PERMISSION;

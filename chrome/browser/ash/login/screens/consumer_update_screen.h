@@ -170,6 +170,10 @@ class ConsumerUpdateScreen : public BaseScreen,
   // the default network.
   bool is_first_portal_notification_ = true;
 
+  // Whether Quick Start was notified of an update. True for users who
+  // previously started Quick Start and will install an update.
+  bool did_prepare_quick_start_for_update_ = false;
+
   base::WeakPtr<ConsumerUpdateScreenView> view_;
   raw_ptr<ErrorScreen> error_screen_;
   ScreenExitCallback exit_callback_;

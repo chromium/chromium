@@ -229,6 +229,12 @@ void ConsumerUpdateScreen::DelayExitNoUpdate() {
 }
 
 void ConsumerUpdateScreen::FinishExitUpdate(VersionUpdater::Result result) {
+  if (did_prepare_quick_start_for_update_) {
+    WizardController::default_controller()
+        ->quick_start_controller()
+        ->ResumeSessionAfterCancelledUpdate();
+  }
+
   switch (result) {
     case VersionUpdater::Result::UPDATE_NOT_REQUIRED:
       RecordOobeConsumerUpdateScreenSkippedReasonHistogram(
@@ -438,6 +444,7 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
         WizardController::default_controller()
             ->quick_start_controller()
             ->PrepareForUpdate();
+        did_prepare_quick_start_for_update_ = true;
         wait_before_reboot_time_ += base::Seconds(2);
       }
 

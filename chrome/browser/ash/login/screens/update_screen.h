@@ -197,6 +197,10 @@ class UpdateScreen : public BaseScreen,
   // check for update is done.
   bool is_opt_out_enabled_ = false;
 
+  // Whether Quick Start was notified of an update. True for users who
+  // previously started Quick Start and will install an update.
+  bool did_prepare_quick_start_for_update_ = false;
+
   // EU country list.
   inline static constexpr auto kEUCountriesSet =
       base::MakeFixedFlatSet<std::string_view>(

@@ -147,8 +147,12 @@ class QuickStartController
   EntryPoint GetExitPoint();
 
   // Exposes TargetDeviceBootstrapController::PrepareForUpdate() to the OOBE
-  // UpdateScreen.
+  // UpdateScreen and ConsumerUpdateScreen.
   void PrepareForUpdate();
+
+  // Resumes current session if an update is aborted on
+  // the OOBE UpdateScreen or ConsumerUpdateScreen.
+  void ResumeSessionAfterCancelledUpdate();
 
  private:
   // Initializes the BootstrapController and starts to observe it.
