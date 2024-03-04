@@ -680,7 +680,6 @@ import("//build/toolchain/siso.gni")
 foreach(_target_type, [ "action" ]) {
   template(_target_type) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    forward_variables_from(invoker, [ "allow_remote" ])
     action("${target_name}") {
       forward_variables_from(invoker,
                              [
