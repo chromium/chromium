@@ -40,9 +40,6 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;
   ConfirmInfoBarDelegate* AsConfirmInfoBarDelegate() override;
 
-  // Returns the InfoBar type to be displayed for the InfoBar.
-  InfoBarAutomationType GetInfoBarAutomationType() const override;
-
   // Returns the title string to be displayed for the InfoBar.
   // Defaults to having not title. Currently only used on iOS.
   virtual std::u16string GetTitleText() const;

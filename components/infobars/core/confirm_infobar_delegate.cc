@@ -23,11 +23,6 @@ ConfirmInfoBarDelegate* ConfirmInfoBarDelegate::AsConfirmInfoBarDelegate() {
   return this;
 }
 
-infobars::InfoBarDelegate::InfoBarAutomationType
-ConfirmInfoBarDelegate::GetInfoBarAutomationType() const {
-  return CONFIRM_INFOBAR;
-}
-
 std::u16string ConfirmInfoBarDelegate::GetTitleText() const {
   return std::u16string();
 }

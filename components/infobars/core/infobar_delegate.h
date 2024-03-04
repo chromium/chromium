@@ -56,13 +56,6 @@ class InfoBarDelegate {
     PAGE_ACTION_TYPE,
   };
 
-  enum InfoBarAutomationType {
-    CONFIRM_INFOBAR,
-    PASSWORD_INFOBAR,
-    RPH_INFOBAR,
-    UNKNOWN_INFOBAR,
-  };
-
   // Unique identifier for every InfoBarDelegate subclass.  Use suffixes to mark
   // infobars specific to particular OSes/platforms.
   // KEEP IN SYNC WITH THE InfoBarIdentifier ENUM IN enums.xml.
@@ -223,8 +216,6 @@ class InfoBarDelegate {
   // New implementers must append a new value to the InfoBarIdentifier enum here
   // and in histograms/enums.xml.
   virtual InfoBarIdentifier GetIdentifier() const = 0;
-
-  virtual InfoBarAutomationType GetInfoBarAutomationType() const;
 
   // Returns the resource ID of the icon to be shown for this InfoBar.  If the
   // value is equal to |kNoIconID|, GetIcon() will not show an icon by default.
