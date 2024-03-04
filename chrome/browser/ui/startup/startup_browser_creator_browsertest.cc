@@ -2281,8 +2281,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   CloseBrowserAsynchronously(browser());
 }
 
+// TODO(crbug.com/327256043): Flaky on win
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_LastUsedProfilesWithWebApp DISABLED_LastUsedProfilesWithWebApp
+#else
+#define MAYBE_LastUsedProfilesWithWebApp LastUsedProfilesWithWebApp
+#endif
 IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
-                       LastUsedProfilesWithWebApp) {
+                       MAYBE_LastUsedProfilesWithWebApp) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
   base::FilePath dest_path = profile_manager->user_data_dir();
