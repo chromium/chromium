@@ -276,10 +276,12 @@ std::unique_ptr<ThrottlingURLLoader> ThrottlingURLLoader::CreateLoaderAndStart(
     network::mojom::URLLoaderClient* client,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    std::optional<std::vector<std::string>> cors_exempt_header_list) {
+    std::optional<std::vector<std::string>> cors_exempt_header_list,
+    ClientReceiverDelegate* client_receiver_delegate) {
   DCHECK(url_request);
-  std::unique_ptr<ThrottlingURLLoader> loader(new ThrottlingURLLoader(
-      std::move(throttles), client, traffic_annotation));
+  std::unique_ptr<ThrottlingURLLoader> loader(
+      new ThrottlingURLLoader(std::move(throttles), client, traffic_annotation,
+                              client_receiver_delegate));
   loader->Start(std::move(factory), request_id, options, url_request,
                 std::move(task_runner), std::move(cors_exempt_header_list));
   return loader;
@@ -408,8 +410,11 @@ network::mojom::URLLoaderClientEndpointsPtr ThrottlingURLLoader::Unbind() {
 ThrottlingURLLoader::ThrottlingURLLoader(
     std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
     network::mojom::URLLoaderClient* client,
-    const net::NetworkTrafficAnnotationTag& traffic_annotation)
-    : forwarding_client_(client), traffic_annotation_(traffic_annotation) {
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    ClientReceiverDelegate* client_receiver_delegate)
+    : forwarding_client_(client),
+      client_receiver_delegate_(std::move(client_receiver_delegate)),
+      traffic_annotation_(traffic_annotation) {
   TRACE_EVENT_WITH_FLOW0("loading", "ThrottlingURLLoader::ThrottlingURLLoader",
                          TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
   throttles_.reserve(throttles.size());
@@ -634,6 +639,12 @@ void ThrottlingURLLoader::OnReceiveResponse(
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "url", response_url_.possibly_invalid_spec());
+  if (client_receiver_delegate_) {
+    client_receiver_delegate_->OnReceiveResponse(
+        std::move(response_head), std::move(body), std::move(cached_metadata));
+    return;
+  }
+
   if (start_info_ && start_info_->url_request.keepalive) {
     base::UmaHistogramBoolean("FetchKeepAlive.Renderer.Total.ReceivedResponse",
                               true);
@@ -798,6 +809,11 @@ void ThrottlingURLLoader::OnReceiveRedirect(
   // redirect or if it will be cancelled. FollowRedirect would be a more
   // suitable place to set this URL but there we do not have the data.
   response_url_ = redirect_info.new_url;
+  if (client_receiver_delegate_) {
+    client_receiver_delegate_->EndReceiveRedirect(redirect_info,
+                                                  std::move(response_head));
+    return;
+  }
   forwarding_client_->OnReceiveRedirect(redirect_info,
                                         std::move(response_head));
 }
@@ -826,6 +842,10 @@ void ThrottlingURLLoader::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
   DCHECK(!loader_completed_);
+  if (client_receiver_delegate_) {
+    client_receiver_delegate_->OnComplete(status);
+    return;
+  }
 
   // Only dispatch WillOnCompleteWithError() if status is not OK.
   if (!throttles_.empty() && status.error_code != net::OK) {
@@ -872,6 +892,10 @@ void ThrottlingURLLoader::CancelWithExtendedError(
 
   deferred_stage_ = DEFERRED_NONE;
   DisconnectClient(custom_reason);
+  if (client_receiver_delegate_) {
+    client_receiver_delegate_->CancelWithStatus(status);
+    return;
+  }
   forwarding_client_->OnComplete(status);
 }
 
