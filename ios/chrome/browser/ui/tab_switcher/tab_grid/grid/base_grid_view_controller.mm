@@ -1614,6 +1614,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   if (IsTabGridCompositionalLayoutEnabled()) {
     ObjCCastStrict<GridLayout>(self.gridLayout).tabsSectionHeaderType =
         [self tabsSectionHeaderTypeForMode:_mode];
+    [self.gridLayout invalidateLayout];
   }
 }
 
