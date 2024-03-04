@@ -44,6 +44,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
@@ -152,6 +153,7 @@ public class TabSwitcherTabletTest {
     @Test
     @MediumTest
     @RequiresRestart
+    @DisabledTest(message = "Flaky, see crbug.com/327457591")
     public void testEnterAndExitTabSwitcher() throws TimeoutException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         checkTabSwitcherLayout(cta, false);
