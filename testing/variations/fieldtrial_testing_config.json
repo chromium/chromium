@@ -6382,6 +6382,26 @@
             ]
         }
     ],
+    "EnableBackForwardCacheForOngoingSubframeNavigation": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240305",
+                    "enable_features": [
+                        "EnableBackForwardCacheForOngoingSubframeNavigation"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableConfigurableThreadCacheMultiplier": [
         {
             "platforms": [
