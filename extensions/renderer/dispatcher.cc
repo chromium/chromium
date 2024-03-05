@@ -1543,13 +1543,10 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
   if (context->GetAvailability("webViewInternal").is_available()) {
     requires_guest_view_module = true;
 
-    // If none of the API providers require a WebView module, use the embedder's
-    // implementation.
-    if (!RequireWebViewModulesFromProviders(context)) {
-      // The embedder of the extensions layer may define its own implementation
-      // of WebView.
-      delegate_->RequireWebViewModules(context);
+    for (const auto& api_provider : api_providers_) {
+      api_provider->RequireWebViewModules(context);
     }
+    delegate_->RequireWebViewModules(context);
   } else if (web_view_permission_exists) {
     module_system->Require("webViewDeny");
   }
@@ -1564,15 +1561,6 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
         ->GetSettings()
         ->SetForceMainWorldInitialization(true);
   }
-}
-
-bool Dispatcher::RequireWebViewModulesFromProviders(ScriptContext* context) {
-  for (const auto& api_provider : api_providers_) {
-    if (api_provider->RequireWebViewModules(context)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 std::unique_ptr<NativeExtensionBindingsSystem> Dispatcher::CreateBindingsSystem(

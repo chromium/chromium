@@ -319,10 +319,6 @@ class Dispatcher : public content::RenderThreadObserver,
   // |context|.
   void RequireGuestViewModules(ScriptContext* context);
 
-  // Returns true if one of the API providers is able to provide a WebView
-  // module.
-  bool RequireWebViewModulesFromProviders(ScriptContext* context);
-
   // Creates the NativeExtensionBindingsSystem. Note: this may be called on any
   // thread, and thus cannot mutate any state or rely on state which can be
   // mutated in Dispatcher.

@@ -31,7 +31,7 @@ class ChromeExtensionsRendererAPIProvider
       NativeExtensionBindingsSystem* bindings_system) override;
   void PopulateSourceMap(ResourceBundleSourceMap* source_map) override;
   void EnableCustomElementAllowlist() override;
-  bool RequireWebViewModules(ScriptContext* context) override;
+  void RequireWebViewModules(ScriptContext* context) override;
 };
 
 }  // namespace extensions

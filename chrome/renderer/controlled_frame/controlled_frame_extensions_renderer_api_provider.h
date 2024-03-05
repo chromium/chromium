@@ -38,7 +38,7 @@ class ControlledFrameExtensionsRendererAPIProvider
   void PopulateSourceMap(
       extensions::ResourceBundleSourceMap* source_map) override;
   void EnableCustomElementAllowlist() override;
-  bool RequireWebViewModules(extensions::ScriptContext* context) override;
+  void RequireWebViewModules(extensions::ScriptContext* context) override;
 };
 
 }  // namespace controlled_frame

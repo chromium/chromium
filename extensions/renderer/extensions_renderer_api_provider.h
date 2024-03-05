@@ -45,7 +45,7 @@ class ExtensionsRendererAPIProvider {
 
   // Requires modules for defining WebView APIs within a ScriptContext's
   // ModuleSystem.
-  virtual bool RequireWebViewModules(ScriptContext* context) = 0;
+  virtual void RequireWebViewModules(ScriptContext* context) = 0;
 };
 
 }  // namespace extensions

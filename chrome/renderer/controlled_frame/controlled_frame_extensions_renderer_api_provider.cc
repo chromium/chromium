@@ -37,16 +37,14 @@ void ControlledFrameExtensionsRendererAPIProvider::
   blink::WebCustomElement::AddEmbedderCustomElementName("controlledframe");
 }
 
-bool ControlledFrameExtensionsRendererAPIProvider::RequireWebViewModules(
+void ControlledFrameExtensionsRendererAPIProvider::RequireWebViewModules(
     extensions::ScriptContext* context) {
   if (context->GetAvailability("controlledFrameInternal").is_available()) {
     // CHECK chromeWebViewInternal since controlledFrame will be built on top
     // of it.
     CHECK(context->GetAvailability("chromeWebViewInternal").is_available());
     context->module_system()->Require("controlledFrame");
-    return true;
   }
-  return false;
 }
 
 }  // namespace controlled_frame

@@ -17,7 +17,9 @@ ChromeExtensionsDispatcherDelegate::~ChromeExtensionsDispatcherDelegate() {}
 void ChromeExtensionsDispatcherDelegate::RequireWebViewModules(
     extensions::ScriptContext* context) {
   DCHECK(context->GetAvailability("webViewInternal").is_available());
-  context->module_system()->Require("chromeWebViewElement");
+  if (context->GetAvailability("chromeWebViewTag").is_available()) {
+    context->module_system()->Require("chromeWebViewElement");
+  }
 }
 
 void ChromeExtensionsDispatcherDelegate::OnActiveExtensionsUpdated(

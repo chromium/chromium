@@ -217,9 +217,7 @@ void ChromeExtensionsRendererAPIProvider::PopulateSourceMap(
 
 void ChromeExtensionsRendererAPIProvider::EnableCustomElementAllowlist() {}
 
-bool ChromeExtensionsRendererAPIProvider::RequireWebViewModules(
-    ScriptContext* context) {
-  return false;
-}
+void ChromeExtensionsRendererAPIProvider::RequireWebViewModules(
+    ScriptContext* context) {}
 
 }  // namespace extensions
