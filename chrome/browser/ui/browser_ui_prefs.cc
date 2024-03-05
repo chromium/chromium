@@ -66,6 +66,11 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
                                 true);
 #endif
   registry->RegisterIntegerPref(prefs::kToolbarAvatarLabelSettings, 0);
+
+  registry->RegisterTimePref(prefs::kDefaultBrowserLastDeclinedTime,
+                             base::Time());
+
+  registry->RegisterIntegerPref(prefs::kDefaultBrowserDeclinedCount, 0);
 }
 
 void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {

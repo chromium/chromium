@@ -6,9 +6,14 @@
 #define CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_H_
 
 class PrefRegistrySimple;
+class PrefService;
 class Profile;
 
 void RegisterDefaultBrowserPromptPrefs(PrefRegistrySimple* registry);
+
+// Migrates the old last declined time profile pref to the new last declined
+// time local pref.
+void MigrateDefaultBrowserLastDeclinedPref(PrefService* profile_prefs);
 
 // Shows a prompt UI to set the default browser if necessary.
 void ShowDefaultBrowserPrompt(Profile* profile);

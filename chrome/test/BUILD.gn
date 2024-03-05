@@ -10262,6 +10262,10 @@ test("unit_tests") {
       "//components/segmentation_platform/embedder/default_model",
     ]
   }
+
+  if (is_win || is_mac || is_linux) {
+    sources += [ "../browser/ui/startup/default_browser_prompt_unittest.cc" ]
+  }
 }
 
 static_library("test_support_unit") {

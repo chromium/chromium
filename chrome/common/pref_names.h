@@ -1326,6 +1326,15 @@ inline constexpr char kPluginsAlwaysOpenPdfExternally[] =
 inline constexpr char kDefaultBrowserLastDeclined[] =
     "browser.default_browser_infobar_last_declined";
 
+// base::Time containing time at which the default browser infobar was last
+// dismissed by the user.
+inline constexpr char kDefaultBrowserLastDeclinedTime[] =
+    "browser.default_browser_infobar_last_declined_time";
+
+// Int representing the number of times the user has dismissed the infobar.
+inline constexpr char kDefaultBrowserDeclinedCount[] =
+    "browser.default_browser_infobar_declined_count";
+
 // Policy setting whether default browser check should be disabled and default
 // browser registration should take place.
 inline constexpr char kDefaultBrowserSettingEnabled[] =
