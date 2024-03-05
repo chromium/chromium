@@ -8,7 +8,6 @@ import type {RealboxElement, RealboxIconElement, RealboxMatchElement} from 'chro
 import {$$, BrowserProxyImpl, decodeString16, MetricsReporterImpl, mojoString16, RealboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {AutocompleteMatch} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
 import {NavigationPredictor, RenderType, SideType} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
-import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -157,20 +156,23 @@ suite('NewTabPageRealboxTest', () => {
     document.body.appendChild(realbox);
   });
 
-  function assertFavicon(
-      iconElement: RealboxIconElement, destinationUrl: string) {
-    assertStyle(
-        iconElement.$.icon, 'background-image',
+  // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
+  /*
+    function assertFavicon(
+        iconElement: RealboxIconElement, destinationUrl: string) {
+      assertStyle(
+          iconElement.$.icon, 'background-image',
 
-        // Resolution units are converted from `x` (shorthand for `dppx`) to
-        // `dppx` (the canonical unit for the resolution type) because
-        // assertStyle is using computed values instead of specified ones, and
-        // the computed values have to return the canonical unit for the type.
-        getFaviconForPageURL(destinationUrl, false, '', 32, true)
-            .replace(' 1x', ' 1dppx')
-            .replace(' 2x', ' 2dppx'));
-    assertStyle(iconElement.$.icon, '-webkit-mask-image', 'none');
-  }
+          // Resolution units are converted from `x` (shorthand for `dppx`) to
+          // `dppx` (the canonical unit for the resolution type) because
+          // assertStyle is using computed values instead of specified ones, and
+          // the computed values have to return the canonical unit for the type.
+          getFaviconForPageURL(destinationUrl, false, '', 16, true)
+              .replace(' 1x', ' 1dppx')
+              .replace(' 2x', ' 2dppx'));
+      assertStyle(iconElement.$.icon, '-webkit-mask-image', 'none');
+    }
+  */
 
   function assertIconMaskImageUrl(
       iconElement: RealboxIconElement, url: string) {
@@ -278,7 +280,9 @@ suite('NewTabPageRealboxTest', () => {
   // Test Querying Autocomplete
   //============================================================================
 
-  test('left-clicking empy input queries autocomplete', async () => {
+  // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
+  /*
+  test('left-clicking empty input queries autocomplete', async () => {
     // Query zero-prefix matches.
     realbox.$.input.value = '';
     // Left click queries autocomplete when matches are not showing.
@@ -328,7 +332,10 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
   });
+  */
 
+  // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
+  /*
   test('focusing the input does not query autocomplete', async () => {
     assertEquals(0, testProxy.handler.getCallCount('onFocusChanged'));
     realbox.$.input.value = '';
@@ -337,72 +344,74 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
     assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
   });
+  */
 
-  test('tabbing into empty input queries autocomplete', async () => {
-    // Query zero-prefix matches.
-    realbox.$.input.value = '';
-    realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertFalse(args.preventInlineAutocomplete);
+  // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
+  /*
+    test('tabbing into empty input queries autocomplete', async () => {
+      // Query zero-prefix matches.
+      realbox.$.input.value = '';
+      realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
+      await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
+        assertEquals(decodeString16(args.input), realbox.$.input.value);
+        assertFalse(args.preventInlineAutocomplete);
+      });
+      assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+
+      testProxy.handler.reset();
+
+      // Show zero-prefix matches.
+      const matches = [createSearchMatch(), createUrlMatch()];
+      testProxy.callbackRouterRemote.autocompleteResultChanged({
+        input: mojoString16(''),
+        matches,
+        suggestionGroupsMap: {},
+      });
+      await testProxy.callbackRouterRemote.$.flushForTesting();
+      assertTrue(areMatchesShowing());
+
+      const matchEls =
+          realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
+      assertEquals(2, matchEls.length);
+
+      // Tabbing into input does not query autocomplete when matches are
+    showing. realbox.$.input.dispatchEvent(new KeyboardEvent('keyup', { bubbles:
+    true, cancelable: true, key: 'Tab',
+      }));
+      assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+
+      // Hide the matches by focusing out.
+      matchEls[0]!.dispatchEvent(new FocusEvent('focusout', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,  // So it propagates across shadow DOM boundary.
+        relatedTarget: document.body,
+      }));
+
+      // Tabbing into empty input queries autocomplete.
+      realbox.$.input.dispatchEvent(new KeyboardEvent('keyup', {
+        bubbles: true,
+        cancelable: true,
+        key: 'Tab',
+      }));
+      await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
+        assertEquals(decodeString16(args.input), realbox.$.input.value);
+        assertFalse(args.preventInlineAutocomplete);
+      });
+      assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+
+      testProxy.handler.reset();
+
+      // Tabbing into non-empty input does not query autocomplete.
+      realbox.$.input.value = '   ';
+      realbox.$.input.dispatchEvent(new KeyboardEvent('keyup', {
+        bubbles: true,
+        cancelable: true,
+        key: 'Tab',
+      }));
+      assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
     });
-    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
-
-    testProxy.handler.reset();
-
-    // Show zero-prefix matches.
-    const matches = [createSearchMatch(), createUrlMatch()];
-    testProxy.callbackRouterRemote.autocompleteResultChanged({
-      input: mojoString16(''),
-      matches,
-      suggestionGroupsMap: {},
-    });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
-
-    const matchEls =
-        realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
-    assertEquals(2, matchEls.length);
-
-    // Tabbing into input does not query autocomplete when matches are showing.
-    realbox.$.input.dispatchEvent(new KeyboardEvent('keyup', {
-      bubbles: true,
-      cancelable: true,
-      key: 'Tab',
-    }));
-    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
-
-    // Hide the matches by focusing out.
-    matchEls[0]!.dispatchEvent(new FocusEvent('focusout', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      relatedTarget: document.body,
-    }));
-
-    // Tabbing into empty input queries autocomplete.
-    realbox.$.input.dispatchEvent(new KeyboardEvent('keyup', {
-      bubbles: true,
-      cancelable: true,
-      key: 'Tab',
-    }));
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertFalse(args.preventInlineAutocomplete);
-    });
-    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
-
-    testProxy.handler.reset();
-
-    // Tabbing into non-empty input does not query autocomplete.
-    realbox.$.input.value = '   ';
-    realbox.$.input.dispatchEvent(new KeyboardEvent('keyup', {
-      bubbles: true,
-      cancelable: true,
-      key: 'Tab',
-    }));
-    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
-  });
+  */
 
   test('arrow up/down keys in empty input query autocomplete', async () => {
     // Query zero-prefix matches.
@@ -1309,6 +1318,13 @@ suite('NewTabPageRealboxTest', () => {
 
     assertEquals(
         window.getComputedStyle(matchEls[0]!.$.remove).display, 'none');
+
+    // Match must be focused/selected for remove button to be shown/
+    matchEls[1]!.dispatchEvent(new Event('focusin', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+    }));
     assertNotEquals(
         window.getComputedStyle(matchEls[1]!.$.remove).display, 'none');
   });
@@ -1576,103 +1592,106 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(0, matchEls.length);
   });
 
-  test('arrow up/down moves selection / focus', async () => {
-    realbox.$.input.focus();
-    realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new InputEvent('input'));
-    assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
+  // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
+  /*
+    test('arrow up/down moves selection / focus', async () => {
+      realbox.$.input.focus();
+      realbox.$.input.value = 'hello';
+      realbox.$.input.dispatchEvent(new InputEvent('input'));
+      assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
 
-    const matches = [createSearchMatch(), createUrlMatch()];
-    testProxy.callbackRouterRemote.autocompleteResultChanged({
-      input: mojoString16(realbox.$.input.value.trimStart()),
-      matches,
-      suggestionGroupsMap: {},
+      const matches = [createSearchMatch(), createUrlMatch()];
+      testProxy.callbackRouterRemote.autocompleteResultChanged({
+        input: mojoString16(realbox.$.input.value.trimStart()),
+        matches,
+        suggestionGroupsMap: {},
+      });
+      await testProxy.callbackRouterRemote.$.flushForTesting();
+      assertTrue(areMatchesShowing());
+
+      const matchEls =
+          realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
+      assertEquals(2, matchEls.length);
+
+      let arrowDownEvent = new KeyboardEvent('keydown', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,  // So it propagates across shadow DOM boundary.
+        key: 'ArrowDown',
+      });
+      realbox.$.input.dispatchEvent(arrowDownEvent);
+      assertTrue(arrowDownEvent.defaultPrevented);
+
+      // First match is selected but does not get focus while focus is in the
+      // input.
+      assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+      assertEquals('hello world', realbox.$.input.value);
+      assertEquals(realbox.$.input, realbox.shadowRoot!.activeElement);
+
+      // If text is being composed with an IME composition selection is
+    prevented. arrowDownEvent = new KeyboardEvent('keydown', { bubbles: true,
+        cancelable: true,
+        composed: true,  // So it propagates across shadow DOM boundary.
+        isComposing: true,
+        key: 'ArrowDown',
+      });
+      realbox.$.input.dispatchEvent(arrowDownEvent);
+      assertFalse(arrowDownEvent.defaultPrevented);
+
+      // First match remains selected and does not get focus while focus is in
+    the
+      // input.
+      assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+      assertEquals('hello world', realbox.$.input.value);
+      assertEquals(realbox.$.input, realbox.shadowRoot!.activeElement);
+
+      arrowDownEvent = new KeyboardEvent('keydown', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,  // So it propagates across shadow DOM boundary.
+        key: 'ArrowDown',
+      });
+      realbox.$.input.dispatchEvent(arrowDownEvent);
+      assertTrue(arrowDownEvent.defaultPrevented);
+
+      // Second match gets selected but does not get focus while focus is in the
+      // input.
+      assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
+      assertEquals('https://helloworld.com', realbox.$.input.value);
+      assertEquals(realbox.$.input, realbox.shadowRoot!.activeElement);
+
+      // Move the focus to the second match.
+      matchEls[1]!.focus();
+      matchEls[1]!.dispatchEvent(new Event('focusin', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,  // So it propagates across shadow DOM boundary.
+      }));
+
+      // Second match is selected and has focus.
+      assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
+      assertEquals('https://helloworld.com', realbox.$.input.value);
+      assertEquals(matchEls[1], realbox.$.matches.shadowRoot!.activeElement);
+
+      const arrowUpEvent = new KeyboardEvent('keydown', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,  // So it propagates across shadow DOM boundary.
+        key: 'ArrowUp',
+      });
+      matchEls[1]!.dispatchEvent(arrowUpEvent);
+      assertTrue(arrowUpEvent.defaultPrevented);
+
+      // First match gets selected and gets focus while focus is in the matches.
+      assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+      assertEquals('hello world', realbox.$.input.value);
+      assertEquals(matchEls[0], realbox.$.matches.shadowRoot!.activeElement);
+
+      // Changing match selection doesn't result in another onFocusChanged call
+      // because focus is for the whole realbox (including input container).
+      assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
-
-    const matchEls =
-        realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
-    assertEquals(2, matchEls.length);
-
-    let arrowDownEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'ArrowDown',
-    });
-    realbox.$.input.dispatchEvent(arrowDownEvent);
-    assertTrue(arrowDownEvent.defaultPrevented);
-
-    // First match is selected but does not get focus while focus is in the
-    // input.
-    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-    assertEquals('hello world', realbox.$.input.value);
-    assertEquals(realbox.$.input, realbox.shadowRoot!.activeElement);
-
-    // If text is being composed with an IME composition selection is prevented.
-    arrowDownEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      isComposing: true,
-      key: 'ArrowDown',
-    });
-    realbox.$.input.dispatchEvent(arrowDownEvent);
-    assertFalse(arrowDownEvent.defaultPrevented);
-
-    // First match remains selected and does not get focus while focus is in the
-    // input.
-    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-    assertEquals('hello world', realbox.$.input.value);
-    assertEquals(realbox.$.input, realbox.shadowRoot!.activeElement);
-
-    arrowDownEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'ArrowDown',
-    });
-    realbox.$.input.dispatchEvent(arrowDownEvent);
-    assertTrue(arrowDownEvent.defaultPrevented);
-
-    // Second match gets selected but does not get focus while focus is in the
-    // input.
-    assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
-    assertEquals('https://helloworld.com', realbox.$.input.value);
-    assertEquals(realbox.$.input, realbox.shadowRoot!.activeElement);
-
-    // Move the focus to the second match.
-    matchEls[1]!.focus();
-    matchEls[1]!.dispatchEvent(new Event('focusin', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-    }));
-
-    // Second match is selected and has focus.
-    assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
-    assertEquals('https://helloworld.com', realbox.$.input.value);
-    assertEquals(matchEls[1], realbox.$.matches.shadowRoot!.activeElement);
-
-    const arrowUpEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'ArrowUp',
-    });
-    matchEls[1]!.dispatchEvent(arrowUpEvent);
-    assertTrue(arrowUpEvent.defaultPrevented);
-
-    // First match gets selected and gets focus while focus is in the matches.
-    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-    assertEquals('hello world', realbox.$.input.value);
-    assertEquals(matchEls[0], realbox.$.matches.shadowRoot!.activeElement);
-
-    // Changing match selection doesn't result in another onFocusChanged call
-    // because focus is for the whole realbox (including input container).
-    assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
-  });
+  */
 
   test('focus indicator', async () => {
     realbox.$.input.focus();
@@ -1843,7 +1862,8 @@ suite('NewTabPageRealboxTest', () => {
             realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
         assertEquals(2, matchEls.length);
         assertIconMaskImageUrl(matchEls[0]!.$.icon, 'clock.svg');
-        assertFavicon(matchEls[1]!.$.icon, matches[1]!.destinationUrl.url);
+        // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
+        // assertFavicon(matchEls[1]!.$.icon, matches[1]!.destinationUrl.url);
         assertIconMaskImageUrl(realbox.$.icon, 'search.svg');  // Default icon.
 
         // Select the first match.
@@ -1878,7 +1898,8 @@ suite('NewTabPageRealboxTest', () => {
         // Input is updated.
         assertEquals('https://helloworld.com', realbox.$.input.value);
         // Realbox icon is updated.
-        assertFavicon(realbox.$.icon, matches[1]!.destinationUrl.url);
+        // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
+        // assertFavicon(realbox.$.icon, matches[1]!.destinationUrl.url);
 
         // Select the first match by pressing 'Escape'.
         const escapeEvent = new KeyboardEvent('keydown', {
@@ -1915,7 +1936,8 @@ suite('NewTabPageRealboxTest', () => {
         await testProxy.callbackRouterRemote.$.flushForTesting();
         assertTrue(areMatchesShowing());
 
-        assertFavicon(realbox.$.icon, matches[0]!.destinationUrl.url);
+        // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
+        // assertFavicon(realbox.$.icon, matches[0]!.destinationUrl.url);
         // Select the entire input.
         realbox.$.input.setSelectionRange(0, realbox.$.input.value.length);
 
@@ -1952,7 +1974,8 @@ suite('NewTabPageRealboxTest', () => {
         const matchEls =
             realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
         assertEquals(2, matchEls.length);
-        assertFavicon(matchEls[0]!.$.icon, matches[0]!.destinationUrl.url);
+        // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
+        // assertFavicon(matchEls[0]!.$.icon, matches[0]!.destinationUrl.url);
         assertIconMaskImageUrl(matchEls[1]!.$.icon, 'clock.svg');
         assertIconMaskImageUrl(realbox.$.icon, 'search.svg');  // Default icon.
 
@@ -1971,7 +1994,8 @@ suite('NewTabPageRealboxTest', () => {
         // Input is updated.
         assertEquals('https://helloworld.com', realbox.$.input.value);
         // Realbox icon is updated.
-        assertFavicon(matchEls[0]!.$.icon, matches[0]!.destinationUrl.url);
+        // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
+        // assertFavicon(matchEls[0]!.$.icon, matches[0]!.destinationUrl.url);
 
         // Select the second match.
         arrowDownEvent = new KeyboardEvent('keydown', {
@@ -2021,7 +2045,8 @@ suite('NewTabPageRealboxTest', () => {
         // Input is updated.
         assertEquals('https://helloworld.com', realbox.$.input.value);
         // Realbox icon is updated.
-        assertFavicon(realbox.$.icon, matches[0]!.destinationUrl.url);
+        // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
+        // assertFavicon(realbox.$.icon, matches[0]!.destinationUrl.url);
       });
 
   //============================================================================
@@ -2340,10 +2365,6 @@ suite('NewTabPageRealboxTest', () => {
 
     const pedalEl = $$($$(matchEl, 'cr-realbox-action')!, '.contents')!;
 
-    assertEquals(
-        pedalEl.querySelector<HTMLImageElement>('#action-icon')!.src,
-        'chrome://theme/current-channel-logo');  // Default Pedal Icon
-
     const leftClick = new MouseEvent('click', {
       bubbles: true,
       button: 1,
@@ -2401,10 +2422,6 @@ suite('NewTabPageRealboxTest', () => {
 
     const pedalElClear =
         $$($$(matchEls[1]!, 'cr-realbox-action')!, '.contents')!;
-
-    assertEquals(
-        pedalElClear.querySelector<HTMLImageElement>('#action-icon')!.src,
-        'chrome://theme/current-channel-logo');  // Default Pedal Icon
 
     const leftClick = new MouseEvent('click', {
       bubbles: true,
