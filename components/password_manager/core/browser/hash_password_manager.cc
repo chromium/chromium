@@ -229,15 +229,21 @@ std::vector<PasswordHashData> HashPasswordManager::RetrieveAllPasswordHashes() {
       return result;
     }
   }
-  result = RetrieveAllPasswordHashesInternal(
-      prefs_->GetList(prefs::kPasswordHashDataList));
+  // Required check to avoid returning an empty pref value.
+  if (prefs_->HasPrefPath(prefs::kPasswordHashDataList)) {
+    result = RetrieveAllPasswordHashesInternal(
+        prefs_->GetList(prefs::kPasswordHashDataList));
+  }
   if (base::FeatureList::IsEnabled(
           features::kLocalStateEnterprisePasswordHashes)) {
-    std::vector<PasswordHashData> enterprise_result =
-        RetrieveAllPasswordHashesInternal(
-            local_prefs_->GetList(prefs::kLocalPasswordHashDataList));
-    result.insert(result.end(), enterprise_result.begin(),
-                  enterprise_result.end());
+    // Required check to avoid returning an empty pref value.
+    if (local_prefs_->HasPrefPath(prefs::kLocalPasswordHashDataList)) {
+      std::vector<PasswordHashData> enterprise_result =
+          RetrieveAllPasswordHashesInternal(
+              local_prefs_->GetList(prefs::kLocalPasswordHashDataList));
+      result.insert(result.end(), enterprise_result.begin(),
+                    enterprise_result.end());
+    }
   }
 
   return result;
@@ -263,8 +269,11 @@ std::optional<PasswordHashData> HashPasswordManager::RetrievePasswordHash(
   if (username.empty()) {
     return std::nullopt;
   }
-  const base::Value::List& hash_list = GetPrefList(is_gaia_password);
-  for (const base::Value& entry : hash_list) {
+  const base::Value::List* hash_list = GetPrefList(is_gaia_password);
+  if (!hash_list) {
+    return std::nullopt;
+  }
+  for (const base::Value& entry : *hash_list) {
     if (AreUsernamesSame(GetAndDecryptField(entry, kUsernameFieldKey),
                          IsGaiaPassword(entry), username, is_gaia_password)) {
       return ConvertToPasswordHashData(entry);
@@ -280,8 +289,11 @@ bool HashPasswordManager::HasPasswordHash(const std::string& username,
   if (username.empty()) {
     return false;
   }
-  const base::Value::List& hash_list = GetPrefList(is_gaia_password);
-  for (const base::Value& entry : hash_list) {
+  const base::Value::List* hash_list = GetPrefList(is_gaia_password);
+  if (!hash_list) {
+    return false;
+  }
+  for (const base::Value& entry : *hash_list) {
     if (AreUsernamesSame(GetAndDecryptField(entry, kUsernameFieldKey),
                          IsGaiaPassword(entry), username, is_gaia_password)) {
       return true;
@@ -356,15 +368,23 @@ bool HashPasswordManager::EncryptAndSave(
   return true;
 }
 
-const base::Value::List& HashPasswordManager::GetPrefList(
+const base::Value::List* HashPasswordManager::GetPrefList(
     bool is_gaia_password) const {
   if (!is_gaia_password) {
     if (base::FeatureList::IsEnabled(
             features::kLocalStateEnterprisePasswordHashes)) {
-      return local_prefs_->GetList(prefs::kLocalPasswordHashDataList);
+      // Required check to avoid returning an empty pref value.
+      if (!local_prefs_->HasPrefPath(prefs::kLocalPasswordHashDataList)) {
+        return nullptr;
+      }
+      return &local_prefs_->GetList(prefs::kLocalPasswordHashDataList);
     }
   }
-  return prefs_->GetList(prefs::kPasswordHashDataList);
+  // Required check to avoid returning an empty pref value.
+  if (!prefs_->HasPrefPath(prefs::kPasswordHashDataList)) {
+    return nullptr;
+  }
+  return &prefs_->GetList(prefs::kPasswordHashDataList);
 }
 
 std::unique_ptr<ScopedListPrefUpdate>

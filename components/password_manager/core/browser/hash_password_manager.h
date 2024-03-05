@@ -89,7 +89,7 @@ class HashPasswordManager {
   std::vector<PasswordHashData> RetrieveAllPasswordHashesInternal(
       const base::Value::List& hash_list) const;
 
-  const base::Value::List& GetPrefList(bool is_gaia_password) const;
+  const base::Value::List* GetPrefList(bool is_gaia_password) const;
   std::unique_ptr<ScopedListPrefUpdate> GetScopedListPrefUpdate(
       bool is_gaia_password) const;
 
