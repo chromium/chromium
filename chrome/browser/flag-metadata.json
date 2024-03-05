@@ -3051,17 +3051,22 @@
   },
   {
     "name": "enable-isolated-web-app-automatic-updates",
-    "owners": [ "cmfcmf@chromium.org", "reillyg@chromium.org", "rmcelrath@chromium.org", "peletskyi@google.com" ],
+    "owners": [ "rmcelrath@chromium.org", "reillyg@chromium.org", "iwa-team@google.com" ],
     "expiry_milestone": 140
   },
   {
     "name": "enable-isolated-web-app-dev-mode",
-    "owners": [ "cmfcmf@chromium.org", "reillyg@chromium.org", "rmcelrath@chromium.org", "peletskyi@google.com" ],
+    "owners": [ "rmcelrath@chromium.org", "reillyg@chromium.org", "iwa-team@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "enable-isolated-web-app-unmanaged-install",
+    "owners": [ "rmcelrath@chromium.org", "reillyg@chromium.org", "iwa-team@google.com" ],
     "expiry_milestone": 140
   },
   {
     "name": "enable-isolated-web-apps",
-    "owners": [ "cmfcmf@chromium.org", "reillyg@chromium.org", "rmcelrath@chromium.org", "peletskyi@google.com" ],
+    "owners": [ "rmcelrath@chromium.org", "reillyg@chromium.org", "iwa-team@google.com" ],
     "expiry_milestone": 140
   },
   {

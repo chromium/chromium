@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_dev_mode.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
+
 #include <tuple>
 
 #include "base/test/scoped_feature_list.h"
@@ -25,7 +26,7 @@ namespace {
 using testing::IsFalse;
 using testing::IsTrue;
 
-class IsolatedWebAppDevModeTest : public WebAppTest {
+class IsolatedWebAppFeaturesTest : public WebAppTest {
  protected:
   void SetDeveloperToolsAvailabilityPolicy(
       policy::DeveloperToolsPolicyHandler::Availability availability) {
@@ -35,7 +36,7 @@ class IsolatedWebAppDevModeTest : public WebAppTest {
   }
 };
 
-TEST_F(IsolatedWebAppDevModeTest, IsIwaDevModeEnabled) {
+TEST_F(IsolatedWebAppFeaturesTest, IsIwaDevModeEnabled) {
   SetDeveloperToolsAvailabilityPolicy(
       policy::DeveloperToolsPolicyHandler::Availability::
           kDisallowedForForceInstalledExtensions);
@@ -62,6 +63,30 @@ TEST_F(IsolatedWebAppDevModeTest, IsIwaDevModeEnabled) {
     SetDeveloperToolsAvailabilityPolicy(
         policy::DeveloperToolsPolicyHandler::Availability::kDisallowed);
     EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
+  }
+}
+
+TEST_F(IsolatedWebAppFeaturesTest, IsIwaUnmanagedInstallEnabled) {
+  EXPECT_THAT(IsIwaUnmanagedInstallEnabled(profile()), IsFalse());
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list{
+        features::kIsolatedWebAppUnmanagedInstall};
+    // `features::kIsolatedWebApps` is not enabled.
+    EXPECT_THAT(IsIwaUnmanagedInstallEnabled(profile()), IsFalse());
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list{
+        features::kIsolatedWebApps};
+    // `features::kIsolatedWebAppUnmanagedInstall` is not enabled.
+    EXPECT_THAT(IsIwaUnmanagedInstallEnabled(profile()), IsFalse());
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {features::kIsolatedWebApps, features::kIsolatedWebAppUnmanagedInstall},
+        {});
+    EXPECT_THAT(IsIwaUnmanagedInstallEnabled(profile()), IsTrue());
   }
 }
 

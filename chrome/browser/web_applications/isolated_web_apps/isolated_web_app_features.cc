@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_dev_mode.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 
 #include "base/feature_list.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
@@ -36,6 +36,15 @@ bool IsIwaDevModeEnabled(Profile* profile) {
   }
 
   return base::FeatureList::IsEnabled(features::kIsolatedWebAppDevMode);
+}
+
+bool IsIwaUnmanagedInstallEnabled(Profile* profile) {
+  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile)) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(
+      features::kIsolatedWebAppUnmanagedInstall);
 }
 
 }  // namespace web_app

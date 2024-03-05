@@ -132,6 +132,8 @@ class ScopedBundledIsolatedWebApp : public BundledIsolatedWebApp {
       const std::vector<uint8_t> serialized_bundle,
       std::optional<ManifestBuilder> manifest_builder = std::nullopt);
 
+  ~ScopedBundledIsolatedWebApp();
+
  private:
   ScopedBundledIsolatedWebApp(
       const web_package::SignedWebBundleId& web_bundle_id,

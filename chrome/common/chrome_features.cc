@@ -885,6 +885,11 @@ BASE_FEATURE(kIsolatedWebAppDevMode,
              "IsolatedWebAppDevMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables users on unmanaged devices to install Isolated Web Apps.
+BASE_FEATURE(kIsolatedWebAppUnmanagedInstall,
+             "IsolatedWebAppUnmanagedInstall",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kKioskEnableSystemWebApps,
              "KioskEnableSystemWebApps",

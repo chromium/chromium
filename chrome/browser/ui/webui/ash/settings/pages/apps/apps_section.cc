@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/startup_section.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
@@ -453,7 +454,7 @@ AppsSection::AppsSection(Profile* profile,
     UpdateAndroidSearchTags();
   }
 
-  if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile)) {
+  if (web_app::IsIwaUnmanagedInstallEnabled(profile)) {
     updater.AddSearchTags(GetManageIsolatedWebAppsSearchConcepts());
     updater.AddSearchTags(GetTurnOnIsolatedWebAppsSearchConcepts());
   }
@@ -539,11 +540,8 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(features::kOsSettingsAppNotificationsPage));
   html_source->AddBoolean("isArcVmEnabled", arc::IsArcVmEnabled());
 
-  // TODO(crbug.com/1481737): Double check that this is the correct feature
-  // check.
-  html_source->AddBoolean(
-      "showManageIsolatedWebAppsRow",
-      content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile()));
+  html_source->AddBoolean("showManageIsolatedWebAppsRow",
+                          web_app::IsIwaUnmanagedInstallEnabled(profile()));
   html_source->AddString(
       "isolatedWebAppsDescription",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_ISOLATED_WEB_APPS_DESCRIPTION,

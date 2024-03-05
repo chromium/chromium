@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -55,56 +55,29 @@ class IsolatedWebAppInstallerBrowserTest : public WebAppControllerBrowserTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
+        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode,
+         features::kIsolatedWebAppUnmanagedInstall},
+        {});
     WebAppControllerBrowserTest::SetUp();
   }
 
-  base::FilePath BuildBundleAndWrite(
-      std::string_view bundle_file_name,
-      std::string_view version_string,
-      std::optional<web_package::WebBundleSigner::ErrorsForTesting> errors) {
-    base::Version version(version_string);
-    CHECK(temp_dir_.CreateUniqueTempDir());
-    const base::FilePath& dir_path = temp_dir_.GetPath();
-    base::FilePath bundle_path =
-        dir_path.Append(base::FilePath::FromASCII(bundle_file_name));
-
-    TestSignedWebBundleBuilder builder;
-    TestSignedWebBundleBuilder::BuildOptions build_options;
-    build_options.SetVersion(version);
-    if (errors.has_value()) {
-      build_options.SetErrorsForTesting(errors.value());
-    }
-    TestSignedWebBundle test_bundle = builder.BuildDefault(build_options);
-    web_package::SignedWebBundleId signed_web_bundle_id(test_bundle.id);
-    IsolatedWebAppUrlInfo url_info =
-        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-            signed_web_bundle_id);
-    app_id_ = url_info.app_id();
-    CHECK(base::WriteFile(bundle_path, test_bundle.data));
-    return bundle_path;
-  }
-
-  const webapps::AppId& app_id() const { return app_id_; }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::ScopedTempDir temp_dir_;
-  webapps::AppId app_id_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
                        ValidBundleInstallAndLaunch) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  base::FilePath bundle_path = BuildBundleAndWrite(
-      "test_bundle_good.swbn", "1.0.0", /*errors=*/std::nullopt);
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  webapps::AppId app_id =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(app->web_bundle_id())
+          .app_id();
 
   base::test::TestFuture<void> on_closed_future;
 
   IsolatedWebAppInstallerCoordinator* coordinator =
       IsolatedWebAppInstallerCoordinator::CreateAndStart(
-          profile(), bundle_path, on_closed_future.GetCallback(),
+          profile(), app->path(), on_closed_future.GetCallback(),
           std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>(true));
 
   IsolatedWebAppInstallerModel* model = coordinator->GetModelForTesting();
@@ -133,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
   ASSERT_TRUE(child_widget);
 
   // App is not installed.
-  ASSERT_FALSE(provider().registrar_unsafe().IsInstalled(app_id()));
+  ASSERT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
 
   AcceptDialogAndAwaitDestruction(child_widget);
 
@@ -143,12 +116,45 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
       IsolatedWebAppInstallerModel::Step::kInstallSuccess);
 
   // App is installed.
-  ASSERT_TRUE(provider().registrar_unsafe().IsInstalled(app_id()));
+  ASSERT_TRUE(provider().registrar_unsafe().IsInstalled(app_id));
 
   AcceptDialogAndContinue(main_widget);
 
   // Installer closed.
   ASSERT_TRUE(on_closed_future.Wait());
+}
+
+class IsolatedWebAppInstallerDisabledBrowserTest
+    : public WebAppControllerBrowserTest {
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode},
+        {features::kIsolatedWebAppUnmanagedInstall});
+    WebAppControllerBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerDisabledBrowserTest,
+                       DoesNotLaunchIfUnmanagedInstallIsDisabled) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+
+  base::test::TestFuture<void> on_closed_future;
+
+  IsolatedWebAppInstallerCoordinator* coordinator =
+      IsolatedWebAppInstallerCoordinator::CreateAndStart(
+          profile(), app->path(), on_closed_future.GetCallback(),
+          std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>(true));
+
+  IsolatedWebAppInstallerModel* model = coordinator->GetModelForTesting();
+  ASSERT_TRUE(model);
+
+  ASSERT_TRUE(on_closed_future.Wait());
+
+  EXPECT_EQ(model->step(), IsolatedWebAppInstallerModel::Step::kNone);
 }
 
 }  // namespace web_app

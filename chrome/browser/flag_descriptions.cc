@@ -1236,6 +1236,12 @@ const char kEnableIsolatedWebAppAutomaticUpdatesName[] =
 const char kEnableIsolatedWebAppAutomaticUpdatesDescription[] =
     "Enables experimental support for automatically updating Isolated Web "
     "Apps.";
+
+const char kEnableIsolatedWebAppUnmanagedInstallName[] =
+    "Enable Isolated Web App unmanaged installation";
+const char kEnableIsolatedWebAppUnmanagedInstallDescription[] =
+    "Enables the installation of Isolated Web Apps on devices that are not "
+    "managed by an enterprise.";
 #endif
 
 const char kEnableIsolatedWebAppDevModeName[] =

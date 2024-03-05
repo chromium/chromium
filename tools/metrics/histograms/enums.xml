@@ -17568,6 +17568,7 @@ from previous Chrome versions.
   <int value="-1481918315" label="SmsReceiverCrossDevice:enabled"/>
   <int value="-1481777496" label="DragAndDropAndroid:disabled"/>
   <int value="-1480926949" label="MaterialDesignBookmarks:enabled"/>
+  <int value="-1480906156" label="IsolatedWebAppUnmanagedInstall:enabled"/>
   <int value="-1480866718" label="ash-disable-login-dim-and-blur"/>
   <int value="-1480606359" label="AssistantIntentPageUrl:enabled"/>
   <int value="-1480040278" label="OmniboxExpandedStateColors:enabled"/>
@@ -20828,6 +20829,7 @@ from previous Chrome versions.
   <int value="-9701088" label="ScanAppMediaLink:disabled"/>
   <int value="-9599490" label="KernelnextVMs:disabled"/>
   <int value="-9322265" label="ShowBluetoothDebugLogToggle:enabled"/>
+  <int value="-8405936" label="IsolatedWebAppUnmanagedInstall:disabled"/>
   <int value="-8063095" label="AutofillEnableRemadeDownstreamMetrics:enabled"/>
   <int value="-7996532" label="ThrottleIntersectionObserverUMA:disabled"/>
   <int value="-7008077" label="MediaPickerAdoption:enabled"/>

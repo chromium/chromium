@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom-forward.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_dev_mode.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"

@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -211,7 +212,11 @@ class IsolatedWebAppInstallerViewUiPixelTest
  public:
   IsolatedWebAppInstallerViewUiPixelTest()
       : NamedWidgetUiPixelTest(GetParam().use_dark_theme,
-                               GetParam().use_right_to_left_language) {}
+                               GetParam().use_right_to_left_language) {
+    feature_list_.InitWithFeatures(
+        {features::kIsolatedWebApps, features::kIsolatedWebAppUnmanagedInstall},
+        {});
+  }
 
   ~IsolatedWebAppInstallerViewUiPixelTest() override = default;
 
@@ -267,7 +272,7 @@ class IsolatedWebAppInstallerViewUiPixelTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kIsolatedWebApps};
+  base::test::ScopedFeatureList feature_list_;
   base::test::TestFuture<void> on_complete_future;
   raw_ptr<views::Widget> widget_;
 };

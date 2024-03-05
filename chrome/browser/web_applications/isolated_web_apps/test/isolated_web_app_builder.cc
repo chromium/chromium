@@ -199,6 +199,11 @@ ScopedBundledIsolatedWebApp::ScopedBundledIsolatedWebApp(
                             std::move(manifest_builder)),
       bundle_file_(std::move(bundle_file)) {}
 
+ScopedBundledIsolatedWebApp::~ScopedBundledIsolatedWebApp() {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  bundle_file_.Reset();
+}
+
 ScopedProxyIsolatedWebApp::ScopedProxyIsolatedWebApp(
     std::unique_ptr<net::EmbeddedTestServer> proxy_server,
     std::optional<ManifestBuilder> manifest_builder)
