@@ -7,14 +7,14 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsPrivacyGuideDialogElement, SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
-import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting, NetworkPredictionOptions} from 'chrome://settings/lazy_load.js';
+import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SyncStatus} from 'chrome://settings/settings.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {createPrivacyGuidePageForTest, navigateToStep, clickNextOnWelcomeStep, setCookieSetting, setParametersForCookiesStep, setParametersForHistorySyncStep, setParametersForSafeBrowsingStep, setSafeBrowsingSetting, setupPrivacyGuidePageForTest, setupPrivacyRouteForTest, setupSync, shouldShowCookiesCard, shouldShowHistorySyncCard, shouldShowSafeBrowsingCard, setPreloadSetting, shouldShowPreloadCard} from './privacy_guide_test_util.js';
+import {createPrivacyGuidePageForTest, navigateToStep, clickNextOnWelcomeStep, setCookieSetting, setParametersForCookiesStep, setParametersForHistorySyncStep, setParametersForSafeBrowsingStep, setSafeBrowsingSetting, setupPrivacyGuidePageForTest, setupPrivacyRouteForTest, setupSync, shouldShowCookiesCard, shouldShowHistorySyncCard, shouldShowSafeBrowsingCard} from './privacy_guide_test_util.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
@@ -23,10 +23,7 @@ import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 
 // Maximum number of steps in the privacy guide, excluding the welcome and
 // completion steps.
-// TODO(crbug.com/1215630): Remove PRIVACY_GUIDE_STEPS_PG3_OFF once
-// PrivacyGuide3 launched.
-const PRIVACY_GUIDE_STEPS_PG3_OFF = 4;
-const PRIVACY_GUIDE_STEPS = 5;
+const PRIVACY_GUIDE_STEPS = 4;
 
 function assertQueryParameter(step: PrivacyGuideStep) {
   assertEquals(step, Router.getInstance().getQueryParameters().get('step'));
@@ -42,8 +39,6 @@ interface AssertCardComponentsVisibleParams {
   isHistorySyncFragmentVisibleExpected?: boolean;
   isSafeBrowsingFragmentVisibleExpected?: boolean;
   isCookiesFragmentVisibleExpected?: boolean;
-  isSearchSuggestionsFragmentVisibleExpected?: boolean;
-  isPreloadFragmentVisibleExpected?: boolean;
 }
 
 function assertCardComponentsVisible({
@@ -56,8 +51,6 @@ function assertCardComponentsVisible({
   isHistorySyncFragmentVisibleExpected,
   isSafeBrowsingFragmentVisibleExpected,
   isCookiesFragmentVisibleExpected,
-  isSearchSuggestionsFragmentVisibleExpected,
-  isPreloadFragmentVisibleExpected,
 }: AssertCardComponentsVisibleParams) {
   assertEquals(
       !!isSettingFooterVisibleExpected, isChildVisible(page, '#settingFooter'),
@@ -95,18 +88,6 @@ function assertCardComponentsVisible({
       !!isCookiesFragmentVisibleExpected,
       isChildVisible(page, '#' + PrivacyGuideStep.COOKIES),
       'Incorrect cookies fragment visibility.');
-  if (loadTimeData.getBoolean('enablePrivacyGuide3')) {
-    assertEquals(
-        !!isSearchSuggestionsFragmentVisibleExpected,
-        isChildVisible(page, '#' + PrivacyGuideStep.SEARCH_SUGGESTIONS),
-        'Incorrect search suggestions fragment visibility.');
-  }
-  if (loadTimeData.getBoolean('enablePrivacyGuidePreload')) {
-    assertEquals(
-        !!isPreloadFragmentVisibleExpected,
-        isChildVisible(page, '#' + PrivacyGuideStep.PRELOAD),
-        'Incorrect preloading fragment visibility.');
-  }
 }
 
 /**
@@ -115,9 +96,7 @@ function assertCardComponentsVisible({
 function getExpectedNumberOfActiveCards(
     page: SettingsPrivacyGuidePageElement,
     syncBrowserProxy: TestSyncBrowserProxy): number {
-  let numSteps = loadTimeData.getBoolean('enablePrivacyGuide3') ?
-      PRIVACY_GUIDE_STEPS :
-      PRIVACY_GUIDE_STEPS_PG3_OFF;
+  let numSteps = PRIVACY_GUIDE_STEPS;
   if (!shouldShowHistorySyncCard(syncBrowserProxy)) {
     numSteps -= 1;
   }
@@ -129,10 +108,6 @@ function getExpectedNumberOfActiveCards(
   }
   if (!shouldShowSafeBrowsingCard(page)) {
     numSteps -= 1;
-  }
-  if (loadTimeData.getBoolean('enablePrivacyGuidePreload') &&
-      shouldShowPreloadCard(page)) {
-    numSteps += 1;
   }
   return numSteps;
 }
@@ -198,21 +173,15 @@ function assertCookiesCardVisible(
     isBackButtonVisibleExpected: true,
     isCookiesFragmentVisibleExpected: true,
   });
-  // TODO(crbug.com/1215630): Remove once PrivacyGuide3 launched.
-  if (!loadTimeData.getBoolean('enablePrivacyGuide3')) {
-    let activeIndex = 3;
-    if (!shouldShowHistorySyncCard(syncBrowserProxy)) {
-      activeIndex -= 1;
-    }
-    if (!shouldShowSafeBrowsingCard(page)) {
-      activeIndex -= 1;
-    }
-    assertStepIndicatorModel(page, syncBrowserProxy, activeIndex);
-    return;
+  let activeIndex = 3;
+  if (!shouldShowHistorySyncCard(syncBrowserProxy)) {
+    activeIndex -= 1;
   }
-  assertStepIndicatorModel(
-      page, syncBrowserProxy,
-      shouldShowHistorySyncCard(syncBrowserProxy) ? 2 : 1);
+  if (!shouldShowSafeBrowsingCard(page)) {
+    activeIndex -= 1;
+  }
+  assertStepIndicatorModel(page, syncBrowserProxy, activeIndex);
+  return;
 }
 
 function assertSafeBrowsingCardVisible(
@@ -225,77 +194,9 @@ function assertSafeBrowsingCardVisible(
     isBackButtonVisibleExpected: true,
     isSafeBrowsingFragmentVisibleExpected: true,
   });
-  // TODO(crbug.com/1215630): Remove PG3 part when PrivacyGuide3 launched.
-  // TODO(b:306414714): Remove 3pcd part when 3pcd launched.
-  if (!loadTimeData.getBoolean('enablePrivacyGuide3') ||
-      loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
-    assertStepIndicatorModel(
-        page, syncBrowserProxy,
-        shouldShowHistorySyncCard(syncBrowserProxy) ? 2 : 1);
-    return;
-  }
-  let activeIndex = 3;
-  if (!shouldShowHistorySyncCard(syncBrowserProxy)) {
-    activeIndex -= 1;
-  }
-  if (!shouldShowCookiesCard(page)) {
-    activeIndex -= 1;
-  }
-  assertStepIndicatorModel(page, syncBrowserProxy, activeIndex);
-}
-
-function assertSearchSuggestionsCardVisible(
-    page: SettingsPrivacyGuidePageElement,
-    syncBrowserProxy: TestSyncBrowserProxy) {
-  assertQueryParameter(PrivacyGuideStep.SEARCH_SUGGESTIONS);
-  assertCardComponentsVisible({
-    page: page,
-    isSettingFooterVisibleExpected: true,
-    isBackButtonVisibleExpected: true,
-    isSearchSuggestionsFragmentVisibleExpected: true,
-  });
-  let activeIndex = 4;
-  // TODO(b:306414714): Remove once 3pcd launched.
-  if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
-    activeIndex -= 1;
-  }
-  if (!shouldShowHistorySyncCard(syncBrowserProxy)) {
-    activeIndex -= 1;
-  }
-  if (!shouldShowCookiesCard(page)) {
-    activeIndex -= 1;
-  }
-  if (!shouldShowSafeBrowsingCard(page)) {
-    activeIndex -= 1;
-  }
-  assertStepIndicatorModel(page, syncBrowserProxy, activeIndex);
-}
-
-function assertPreloadCardVisible(
-    page: SettingsPrivacyGuidePageElement,
-    syncBrowserProxy: TestSyncBrowserProxy) {
-  assertQueryParameter(PrivacyGuideStep.PRELOAD);
-  assertCardComponentsVisible({
-    page: page,
-    isSettingFooterVisibleExpected: true,
-    isBackButtonVisibleExpected: true,
-    isPreloadFragmentVisibleExpected: true,
-  });
-  let activeIndex = 5;
-  // TODO(b:306414714): Remove once 3pcd launched.
-  if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
-    activeIndex -= 1;
-  }
-  if (!shouldShowHistorySyncCard(syncBrowserProxy)) {
-    activeIndex -= 1;
-  }
-  if (!shouldShowCookiesCard(page)) {
-    activeIndex -= 1;
-  }
-  if (!shouldShowSafeBrowsingCard(page)) {
-    activeIndex -= 1;
-  }
-  assertStepIndicatorModel(page, syncBrowserProxy, activeIndex);
+  assertStepIndicatorModel(
+      page, syncBrowserProxy,
+      shouldShowHistorySyncCard(syncBrowserProxy) ? 2 : 1);
 }
 
 suite('PrivacyGuidePage', function() {
@@ -384,7 +285,7 @@ suite('PrivacyGuidePage', function() {
         new CustomEvent('back-button-click', {bubbles: true, composed: true}));
     flush();
 
-    assertSearchSuggestionsCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
     const actionResult =
         await testMetricsBrowserProxy.whenCalled('recordAction');
     assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickCompletion');
@@ -478,16 +379,12 @@ suite('PrivacyGuidePage', function() {
     assertSafeBrowsingCardVisible(page, syncBrowserProxy);
 
     dispatchArrowRightEvent();
-    assertSearchSuggestionsCardVisible(page, syncBrowserProxy);
-    dispatchArrowRightEvent();
     assertCompletionCardVisible(page);
     // Forward navigation on the completion card does not trigger a navigation.
     dispatchArrowRightEvent();
     assertCompletionCardVisible(page);
 
     // Backward flow.
-    dispatchArrowLeftEvent();
-    assertSearchSuggestionsCardVisible(page, syncBrowserProxy);
     dispatchArrowLeftEvent();
     assertSafeBrowsingCardVisible(page, syncBrowserProxy);
     dispatchArrowLeftEvent();
@@ -535,219 +432,6 @@ suite('FlowLength', function() {
     page = createPrivacyGuidePageForTest(settingsPrefs);
 
     return flushTasks();
-  });
-
-  test('MSBB_SearchSuggestions', async function() {
-    Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
-    await flushTasks();
-
-    setParametersForHistorySyncStep(syncBrowserProxy, false);
-    setParametersForSafeBrowsingStep(page, false);
-
-    await clickNextOnWelcomeStep(page);
-
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideFlowLengthHistogram');
-    assertEquals(2, result);
-  });
-
-  test('MSBB_HistorySync_SearchSuggestions', async function() {
-    Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
-    await flushTasks();
-
-    setParametersForHistorySyncStep(syncBrowserProxy, true);
-    setParametersForSafeBrowsingStep(page, false);
-
-    await clickNextOnWelcomeStep(page);
-
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideFlowLengthHistogram');
-    assertEquals(3, result);
-  });
-
-  test('MSBB_SafeBrowsing_SearchSuggestions', async function() {
-    Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
-    await flushTasks();
-
-    setParametersForHistorySyncStep(syncBrowserProxy, false);
-    setParametersForSafeBrowsingStep(page, true);
-
-    await clickNextOnWelcomeStep(page);
-
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideFlowLengthHistogram');
-    assertEquals(3, result);
-  });
-
-  test('MSBB_HistorySync_SafeBrowsing_SearchSuggestions', async function() {
-    Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
-    await flushTasks();
-
-    setParametersForHistorySyncStep(syncBrowserProxy, true);
-    setParametersForSafeBrowsingStep(page, true);
-
-    await clickNextOnWelcomeStep(page);
-
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideFlowLengthHistogram');
-    assertEquals(4, result);
-  });
-});
-
-// TODO(crbug.com/1215630): Remove once PrivacyGuide3 launched.
-suite('PrivacyGuidePagePG3Off', function() {
-  let page: SettingsPrivacyGuidePageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let syncBrowserProxy: TestSyncBrowserProxy;
-  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({enablePrivacyGuide3: false});
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    syncBrowserProxy = new TestSyncBrowserProxy();
-    setupSync({
-      syncBrowserProxy: syncBrowserProxy,
-      syncOn: true,
-      syncAllDataTypes: true,
-      typedUrlsSynced: true,
-    });
-    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
-
-    page = createPrivacyGuidePageForTest(settingsPrefs);
-    setupPrivacyGuidePageForTest(page, syncBrowserProxy);
-
-    return flushTasks();
-  });
-
-  teardown(function() {
-    page.remove();
-    // The browser instance is shared among the tests, hence the route needs to
-    // be reset between tests.
-    Router.getInstance().navigateTo(routes.BASIC);
-  });
-
-  test('completionCardBackNavigation', async function() {
-    await navigateToStep(PrivacyGuideStep.COMPLETION);
-    assertCompletionCardVisible(page);
-
-    // The completion fragment fires a |back-button-click| event to navigate
-    // back.
-    const completionFragment =
-        page.shadowRoot!.querySelector('#' + PrivacyGuideStep.COMPLETION);
-    assertTrue(!!completionFragment);
-    completionFragment.dispatchEvent(
-        new CustomEvent('back-button-click', {bubbles: true, composed: true}));
-    flush();
-
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-    const actionResult =
-        await testMetricsBrowserProxy.whenCalled('recordAction');
-    assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickCompletion');
-  });
-
-  test('arrowKeyNavigation', async function() {
-    const pgCard =
-        page.shadowRoot!.querySelector<HTMLElement>('#privacyGuideCard')!;
-    const arrowLeftEvent = new KeyboardEvent(
-        'keydown', {cancelable: true, key: 'ArrowLeft', keyCode: 37});
-    const arrowRightEvent = new KeyboardEvent(
-        'keydown', {cancelable: true, key: 'ArrowRight', keyCode: 39});
-    function dispatchArrowLeftEvent() {
-      pgCard.dispatchEvent(arrowLeftEvent);
-      flush();
-    }
-    function dispatchArrowRightEvent() {
-      pgCard.dispatchEvent(arrowRightEvent);
-      flush();
-    }
-
-    // Ensure a defined text direction.
-    loadTimeData.overrideValues({textdirection: 'ltr'});
-
-    // Forward flow.
-    await navigateToStep(PrivacyGuideStep.WELCOME);
-    dispatchArrowRightEvent();
-    assertMsbbCardVisible(page, syncBrowserProxy);
-    dispatchArrowRightEvent();
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
-    dispatchArrowRightEvent();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-    // Arrow keys don't trigger a navigation when the focus is inside the radio
-    // group.
-    const sbRadioGroup =
-        page.shadowRoot!
-            .querySelector<HTMLElement>('#' + PrivacyGuideStep.SAFE_BROWSING)!
-            .shadowRoot!.querySelector<HTMLElement>('#safeBrowsingRadioGroup');
-    assertTrue(!!sbRadioGroup);
-    sbRadioGroup.dispatchEvent(arrowLeftEvent);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-    sbRadioGroup.dispatchEvent(arrowRightEvent);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-
-    dispatchArrowRightEvent();
-    assertCompletionCardVisible(page);
-    // Forward navigation on the completion card does not trigger a navigation.
-    dispatchArrowRightEvent();
-    assertCompletionCardVisible(page);
-
-    // Backward flow.
-    dispatchArrowLeftEvent();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-    dispatchArrowLeftEvent();
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
-    dispatchArrowLeftEvent();
-    assertMsbbCardVisible(page, syncBrowserProxy);
-    dispatchArrowLeftEvent();
-    assertWelcomeCardVisible(page);
-    // Backward navigation on the welcome card does not trigger a navigation.
-    dispatchArrowLeftEvent();
-    assertWelcomeCardVisible(page);
-  });
-});
-
-// TODO(crbug.com/1215630): Remove once PrivacyGuide3 launched.
-suite('FlowLengthPG3Off', function() {
-  let page: SettingsPrivacyGuidePageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let syncBrowserProxy: TestSyncBrowserProxy;
-  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({enablePrivacyGuide3: false});
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    syncBrowserProxy = new TestSyncBrowserProxy();
-    setupSync({
-      syncBrowserProxy: syncBrowserProxy,
-      syncOn: true,
-      syncAllDataTypes: true,
-      typedUrlsSynced: true,
-    });
-    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
-
-    page = createPrivacyGuidePageForTest(settingsPrefs);
-
-    return flushTasks();
-  });
-
-  teardown(function() {
-    page.remove();
-    // The browser instance is shared among the tests, hence the route needs to
-    // be reset between tests.
-    Router.getInstance().navigateTo(routes.BASIC);
   });
 
   test('MSBB', async function() {
@@ -882,55 +566,6 @@ suite('MsbbCardNavigations', function() {
   });
 });
 
-// TODO(crbug.com/1215630): Remove once PrivacyGuide3 launched.
-suite('MsbbCardNavigationsPG3Off', function() {
-  let page: SettingsPrivacyGuidePageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let syncBrowserProxy: TestSyncBrowserProxy;
-  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({enablePrivacyGuide3: false});
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    syncBrowserProxy = new TestSyncBrowserProxy();
-    syncBrowserProxy.testSyncStatus = null;
-    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
-
-    page = createPrivacyGuidePageForTest(settingsPrefs);
-    setupPrivacyGuidePageForTest(page, syncBrowserProxy);
-
-    return flushTasks();
-  });
-
-  teardown(function() {
-    page.remove();
-    // The browser instance is shared among the tests, hence the route needs to
-    // be reset between tests.
-    Router.getInstance().navigateTo(routes.BASIC);
-  });
-
-  test('ForwardNavigationSyncOff', async function() {
-    setupSync({
-      syncBrowserProxy: syncBrowserProxy,
-      syncOn: false,
-      syncAllDataTypes: false,
-      typedUrlsSynced: false,
-    });
-    await navigateToStep(PrivacyGuideStep.MSBB);
-    assertMsbbCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-  });
-});
-
 suite('HistorySyncCardNavigations', function() {
   let page: SettingsPrivacyGuidePageElement;
   let settingsPrefs: SettingsPrefsElement;
@@ -999,107 +634,6 @@ suite('HistorySyncCardNavigations', function() {
     assertSafeBrowsingCardVisible(page, syncBrowserProxy);
   });
 
-  test('ForwardNavigationShouldShowSafeBrowsingCard', async function() {
-    await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideNextNavigationHistogram');
-    assertEquals(PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON, result);
-
-    const actionResult =
-        await testMetricsBrowserProxy.whenCalled('recordAction');
-    assertEquals(actionResult, 'Settings.PrivacyGuide.NextClickHistorySync');
-  });
-
-  test('ForwardNavigationShouldHideSafeBrowsingCard', async function() {
-    setSafeBrowsingSetting(page, SafeBrowsingSetting.DISABLED);
-    await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    assertSearchSuggestionsCardVisible(page, syncBrowserProxy);
-  });
-});
-
-// TODO(crbug.com/1215630): Remove once PrivacyGuide3 launched.
-suite('HistorySyncCardNavigationsPG3Off', function() {
-  let page: SettingsPrivacyGuidePageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let syncBrowserProxy: TestSyncBrowserProxy;
-  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({enablePrivacyGuide3: false});
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    syncBrowserProxy = new TestSyncBrowserProxy();
-    syncBrowserProxy.testSyncStatus = null;
-    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
-
-    page = createPrivacyGuidePageForTest(settingsPrefs);
-    setupPrivacyGuidePageForTest(page, syncBrowserProxy);
-
-    return flushTasks();
-  });
-
-  teardown(function() {
-    page.remove();
-    // The browser instance is shared among the tests, hence the route needs to
-    // be reset between tests.
-    Router.getInstance().navigateTo(routes.BASIC);
-  });
-
-  test('NavigatesAwayOnSyncOff', async function() {
-    await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
-
-    // User disables sync while history sync card is shown.
-    setupSync({
-      syncBrowserProxy: syncBrowserProxy,
-      syncOn: false,
-      syncAllDataTypes: false,
-      typedUrlsSynced: false,
-    });
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-  });
-
-  test('NotReachableWhenSyncOff', async function() {
-    await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
-    setupSync({
-      syncBrowserProxy: syncBrowserProxy,
-      syncOn: false,
-      syncAllDataTypes: false,
-      typedUrlsSynced: false,
-    });
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-  });
-
-  test('ForwardNavigationShouldShowSafeBrowsingCard', async function() {
-    await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideNextNavigationHistogram');
-    assertEquals(PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON, result);
-
-    const actionResult =
-        await testMetricsBrowserProxy.whenCalled('recordAction');
-    assertEquals(actionResult, 'Settings.PrivacyGuide.NextClickHistorySync');
-  });
-
   test('ForwardNavigationShouldHideSafeBrowsingCard', async function() {
     setSafeBrowsingSetting(page, SafeBrowsingSetting.DISABLED);
     await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
@@ -1116,6 +650,7 @@ suite('SafeBrowsingCardNavigations', function() {
   let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testHatsBrowserProxy: TestHatsBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -1128,94 +663,8 @@ suite('SafeBrowsingCardNavigations', function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
     syncBrowserProxy.testSyncStatus = null;
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
-
-    page = createPrivacyGuidePageForTest(settingsPrefs);
-    setupPrivacyGuidePageForTest(page, syncBrowserProxy);
-
-    return flushTasks();
-  });
-
-  teardown(function() {
-    page.remove();
-    // The browser instance is shared among the tests, hence the route needs to
-    // be reset between tests.
-    Router.getInstance().navigateTo(routes.BASIC);
-  });
-
-  test('BackNavigationSyncOn', async function() {
-    await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
-
-    const actionResult =
-        await testMetricsBrowserProxy.whenCalled('recordAction');
-    assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickSafeBrowsing');
-  });
-
-  test('BackNavigationSyncOff', async function() {
-    setupSync({
-      syncBrowserProxy: syncBrowserProxy,
-      syncOn: false,
-      syncAllDataTypes: false,
-      typedUrlsSynced: false,
-    });
-    await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    assertMsbbCardVisible(page, syncBrowserProxy);
-  });
-
-  test('ForwardNavigationShouldShowSearchSuggestionsCard', async function() {
-    await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    flush();
-    assertSearchSuggestionsCardVisible(page, syncBrowserProxy);
-
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideNextNavigationHistogram');
-    assertEquals(PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON, result);
-
-    const actionResult =
-        await testMetricsBrowserProxy.whenCalled('recordAction');
-    assertEquals(actionResult, 'Settings.PrivacyGuide.NextClickSafeBrowsing');
-  });
-
-  test('safeBrowsingOffNavigatesAway', async function() {
-    await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-
-    // Changing the safe browsing setting to a disabled state while shown should
-    // navigate away from the safe browsing card.
-    setSafeBrowsingSetting(page, SafeBrowsingSetting.DISABLED);
-    assertSearchSuggestionsCardVisible(page, syncBrowserProxy);
-  });
-});
-
-// TODO(crbug.com/1215630): Remove once PrivacyGuide3 launched.
-suite('SafeBrowsingCardNavigationsPG3Off', function() {
-  let page: SettingsPrivacyGuidePageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let syncBrowserProxy: TestSyncBrowserProxy;
-  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({enablePrivacyGuide3: false});
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    syncBrowserProxy = new TestSyncBrowserProxy();
-    syncBrowserProxy.testSyncStatus = null;
-    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+    testHatsBrowserProxy = new TestHatsBrowserProxy();
+    HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
 
     page = createPrivacyGuidePageForTest(settingsPrefs);
     setupPrivacyGuidePageForTest(page, syncBrowserProxy);
@@ -1283,13 +732,26 @@ suite('SafeBrowsingCardNavigationsPG3Off', function() {
     flush();
     assertCompletionCardVisible(page);
   });
+
+  test('hatsInformedOnFinish', async function() {
+    await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
+
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+
+    // HaTS gets triggered if the user navigates to the completion page.
+    const interaction =
+        await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
+    assertEquals(TrustSafetyInteraction.COMPLETED_PRIVACY_GUIDE, interaction);
+  });
 });
 
+// TODO(b:306414714): Remove once 3pcd launched.
 suite('CookiesCardNavigations', function() {
   let page: SettingsPrivacyGuidePageElement;
   let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testHatsBrowserProxy: TestHatsBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: false});
@@ -1303,128 +765,12 @@ suite('CookiesCardNavigations', function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
     syncBrowserProxy.testSyncStatus = null;
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
-
-    page = createPrivacyGuidePageForTest(settingsPrefs);
-    setupPrivacyGuidePageForTest(page, syncBrowserProxy);
-
-    return flushTasks();
-  });
-
-  teardown(function() {
-    page.remove();
-    // The browser instance is shared among the tests, hence the route needs to
-    // be reset between tests.
-    Router.getInstance().navigateTo(routes.BASIC);
-  });
-
-  test('BackNavigationShouldShowSync', async function() {
-    await navigateToStep(PrivacyGuideStep.COOKIES);
-    assertCookiesCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    flush();
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
-
-    const actionResult =
-        await testMetricsBrowserProxy.whenCalled('recordAction');
-    assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickCookies');
-  });
-
-  test('BackNavigationShouldHideSync', async function() {
-    setupSync({
-      syncBrowserProxy: syncBrowserProxy,
-      syncOn: false,
-      syncAllDataTypes: false,
-      typedUrlsSynced: false,
-    });
-    await navigateToStep(PrivacyGuideStep.COOKIES);
-    assertCookiesCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    flush();
-    assertMsbbCardVisible(page, syncBrowserProxy);
-  });
-
-  test('ForwardNavigationShouldShowSafeBrowsing', async function() {
-    await navigateToStep(PrivacyGuideStep.COOKIES);
-    assertCookiesCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    flush();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideNextNavigationHistogram');
-    assertEquals(PrivacyGuideInteractions.COOKIES_NEXT_BUTTON, result);
-
-    const actionResult =
-        await testMetricsBrowserProxy.whenCalled('recordAction');
-    assertEquals(actionResult, 'Settings.PrivacyGuide.NextClickCookies');
-  });
-
-  test('ForwardNavigationShouldHideSafeBrowsing', async function() {
-    setSafeBrowsingSetting(page, SafeBrowsingSetting.DISABLED);
-    await navigateToStep(PrivacyGuideStep.COOKIES);
-    assertCookiesCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    flush();
-    assertSearchSuggestionsCardVisible(page, syncBrowserProxy);
-  });
-
-  test('cookiesAllowAllNavigatesAway', async function() {
-    await navigateToStep(PrivacyGuideStep.COOKIES);
-    assertCookiesCardVisible(page, syncBrowserProxy);
-
-    // Changing the cookie setting to a non-third-party state while shown should
-    // navigate away from the cookies card.
-    setCookieSetting(page, CookiePrimarySetting.ALLOW_ALL);
-    await flushTasks();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-  });
-
-  test('cookiesBlockAllNavigatesAway', async function() {
-    await navigateToStep(PrivacyGuideStep.COOKIES);
-    assertCookiesCardVisible(page, syncBrowserProxy);
-
-    // Changing the cookie setting to a non-third-party state while shown should
-    // navigate away from the cookies card.
-    setCookieSetting(page, CookiePrimarySetting.BLOCK_ALL);
-    await flushTasks();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-  });
-});
-
-// TODO(crbug.com/1215630): Remove once PrivacyGuide3 launched.
-suite('CookiesCardNavigationsPG3Off', function() {
-  let page: SettingsPrivacyGuidePageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let syncBrowserProxy: TestSyncBrowserProxy;
-  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-  let testHatsBrowserProxy: TestHatsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      is3pcdCookieSettingsRedesignEnabled: false,
-      enablePrivacyGuide3: false,
-    });
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    syncBrowserProxy = new TestSyncBrowserProxy();
-    syncBrowserProxy.testSyncStatus = null;
-    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
-
-    page = createPrivacyGuidePageForTest(settingsPrefs);
-    setupPrivacyGuidePageForTest(page, syncBrowserProxy);
-
     testHatsBrowserProxy = new TestHatsBrowserProxy();
     HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
 
+    page = createPrivacyGuidePageForTest(settingsPrefs);
+    setupPrivacyGuidePageForTest(page, syncBrowserProxy);
+
     return flushTasks();
   });
 
@@ -1435,12 +781,12 @@ suite('CookiesCardNavigationsPG3Off', function() {
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
-  test('NavigationShouldShowSafeBrowsingCard', async function() {
+  test('BackNavigationShouldShowSafeBrowsing', async function() {
     await navigateToStep(PrivacyGuideStep.COOKIES);
     assertCookiesCardVisible(page, syncBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    flush();
+    await flushTasks();
     assertSafeBrowsingCardVisible(page, syncBrowserProxy);
 
     const actionResult =
@@ -1448,13 +794,13 @@ suite('CookiesCardNavigationsPG3Off', function() {
     assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickCookies');
   });
 
-  test('NavigationShouldHideSafeBrowsingCard', async function() {
+  test('BackNavigationShouldSafeBrowsingSync', async function() {
     setSafeBrowsingSetting(page, SafeBrowsingSetting.DISABLED);
     await navigateToStep(PrivacyGuideStep.COOKIES);
     assertCookiesCardVisible(page, syncBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    flush();
+    await flushTasks();
     assertHistorySyncCardVisible(page, syncBrowserProxy);
   });
 
@@ -1463,7 +809,7 @@ suite('CookiesCardNavigationsPG3Off', function() {
     assertCookiesCardVisible(page, syncBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    flush();
+    await flushTasks();
     assertCompletionCardVisible(page);
 
     const result = await testMetricsBrowserProxy.whenCalled(
@@ -1496,170 +842,9 @@ suite('CookiesCardNavigationsPG3Off', function() {
     await flushTasks();
     assertCompletionCardVisible(page);
   });
-});
-
-suite('SearchSuggestionsCardNavigations', function() {
-  let page: SettingsPrivacyGuidePageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let syncBrowserProxy: TestSyncBrowserProxy;
-  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-  let testHatsBrowserProxy: TestHatsBrowserProxy;
-
-  suiteSetup(function() {
-    // TODO(b:306414714): Remove once 3pcd launched.
-    loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: true});
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    syncBrowserProxy = new TestSyncBrowserProxy();
-    syncBrowserProxy.testSyncStatus = null;
-    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
-
-    page = createPrivacyGuidePageForTest(settingsPrefs);
-    setupPrivacyGuidePageForTest(page, syncBrowserProxy);
-
-    testHatsBrowserProxy = new TestHatsBrowserProxy();
-    HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
-
-    return flushTasks();
-  });
-
-  teardown(function() {
-    page.remove();
-    // The browser instance is shared among the tests, hence the route needs to
-    // be reset between tests.
-    Router.getInstance().navigateTo(routes.BASIC);
-  });
-
-  test('BackNavigationSafeBrowsingOn', async function() {
-    await navigateToStep(PrivacyGuideStep.SEARCH_SUGGESTIONS);
-    assertSearchSuggestionsCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-
-    const actionResult =
-        await testMetricsBrowserProxy.whenCalled('recordAction');
-    assertEquals(
-        actionResult, 'Settings.PrivacyGuide.BackClickSearchSuggestions');
-  });
-
-  test('BackNavigationSafeBrowsingOff', async function() {
-    setSafeBrowsingSetting(page, SafeBrowsingSetting.DISABLED);
-    await navigateToStep(PrivacyGuideStep.SEARCH_SUGGESTIONS);
-    assertSearchSuggestionsCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
-  });
-
-  test('ForwardNavigationShouldShowCompletion', async function() {
-    await navigateToStep(PrivacyGuideStep.SEARCH_SUGGESTIONS);
-    assertSearchSuggestionsCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    flush();
-    assertCompletionCardVisible(page);
-
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideNextNavigationHistogram');
-    assertEquals(
-        PrivacyGuideInteractions.SEARCH_SUGGESTIONS_NEXT_BUTTON, result);
-
-    const actionResult =
-        await testMetricsBrowserProxy.whenCalled('recordAction');
-    assertEquals(
-        actionResult, 'Settings.PrivacyGuide.NextClickSearchSuggestions');
-  });
 
   test('hatsInformedOnFinish', async function() {
-    await navigateToStep(PrivacyGuideStep.SEARCH_SUGGESTIONS);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-
-    // HaTS gets triggered if the user navigates to the completion page.
-    const interaction =
-        await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
-    assertEquals(TrustSafetyInteraction.COMPLETED_PRIVACY_GUIDE, interaction);
-  });
-});
-
-suite('PreloadCardNavigations', function() {
-  let page: SettingsPrivacyGuidePageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let syncBrowserProxy: TestSyncBrowserProxy;
-  let testHatsBrowserProxy: TestHatsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enablePrivacyGuidePreload: true,
-      // TODO(b:306414714): Remove once 3pcd launched.
-      is3pcdCookieSettingsRedesignEnabled: true,
-    });
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    syncBrowserProxy = new TestSyncBrowserProxy();
-    syncBrowserProxy.testSyncStatus = null;
-    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
-
-    page = createPrivacyGuidePageForTest(settingsPrefs);
-    setupPrivacyGuidePageForTest(page, syncBrowserProxy);
-
-    testHatsBrowserProxy = new TestHatsBrowserProxy();
-    HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
-
-    return flushTasks();
-  });
-
-  teardown(function() {
-    page.remove();
-    // The browser instance is shared among the tests, hence the route needs to
-    // be reset between tests.
-    Router.getInstance().navigateTo(routes.BASIC);
-  });
-
-  test('BackNavigation', async function() {
-    setPreloadSetting(page, NetworkPredictionOptions.STANDARD);
-    await navigateToStep(PrivacyGuideStep.PRELOAD);
-    assertPreloadCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    assertSearchSuggestionsCardVisible(page, syncBrowserProxy);
-  });
-
-  test('preloadExtendedNavigatesAway', async function() {
-    setPreloadSetting(page, NetworkPredictionOptions.STANDARD);
-    await navigateToStep(PrivacyGuideStep.PRELOAD);
-    assertPreloadCardVisible(page, syncBrowserProxy);
-
-    // Changing preload settings to extended while shown should navigate away.
-    setPreloadSetting(page, NetworkPredictionOptions.EXTENDED);
-    await flushTasks();
-    assertCompletionCardVisible(page);
-  });
-
-  test('ForwardNavigationShouldShowCompletion', async function() {
-    setPreloadSetting(page, NetworkPredictionOptions.STANDARD);
-    await navigateToStep(PrivacyGuideStep.PRELOAD);
-    assertPreloadCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    flush();
-    assertCompletionCardVisible(page);
-  });
-
-  test('hatsInformedOnFinish', async function() {
-    setPreloadSetting(page, NetworkPredictionOptions.STANDARD);
-    await navigateToStep(PrivacyGuideStep.PRELOAD);
+    await navigateToStep(PrivacyGuideStep.COOKIES);
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
 
@@ -1751,7 +936,7 @@ suite('3pcdOff', function() {
   });
 
   test(
-      'length_MSBB_Cookies_SafeBrowsing_SearchSuggestions', async function() {
+      'length_MSBB_Cookies_SafeBrowsing', async function() {
         Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
         await flushTasks();
 
@@ -1763,12 +948,11 @@ suite('3pcdOff', function() {
 
         const result = await testMetricsBrowserProxy.whenCalled(
             'recordPrivacyGuideFlowLengthHistogram');
-        assertEquals(4, result);
+        assertEquals(3, result);
       });
 
   test(
-      'length_MSBB_HistorySync_Cookies_SafeBrowsing_SearchSuggestions',
-      async function() {
+      'length_MSBB_HistorySync_Cookies_SafeBrowsing', async function() {
         Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
         await flushTasks();
 
@@ -1780,7 +964,7 @@ suite('3pcdOff', function() {
 
         const result = await testMetricsBrowserProxy.whenCalled(
             'recordPrivacyGuideFlowLengthHistogram');
-        assertEquals(5, result);
+        assertEquals(4, result);
       });
 
   test('arrowKeyNavigation', async function() {
@@ -1809,20 +993,6 @@ suite('3pcdOff', function() {
     dispatchArrowRightEvent();
     assertHistorySyncCardVisible(page, syncBrowserProxy);
     dispatchArrowRightEvent();
-    assertCookiesCardVisible(page, syncBrowserProxy);
-    // Arrow keys don't trigger a navigation when the focus is inside the radio
-    // group.
-    const cookiesRadioGroup =
-        page.shadowRoot!
-            .querySelector<HTMLElement>('#' + PrivacyGuideStep.COOKIES)!
-            .shadowRoot!.querySelector<HTMLElement>('#cookiesRadioGroup');
-    assertTrue(!!cookiesRadioGroup);
-    cookiesRadioGroup.dispatchEvent(arrowLeftEvent);
-    assertCookiesCardVisible(page, syncBrowserProxy);
-    cookiesRadioGroup.dispatchEvent(arrowRightEvent);
-    assertCookiesCardVisible(page, syncBrowserProxy);
-
-    dispatchArrowRightEvent();
     assertSafeBrowsingCardVisible(page, syncBrowserProxy);
     // Arrow keys don't trigger a navigation when the focus is inside the radio
     // group.
@@ -1837,7 +1007,19 @@ suite('3pcdOff', function() {
     assertSafeBrowsingCardVisible(page, syncBrowserProxy);
 
     dispatchArrowRightEvent();
-    assertSearchSuggestionsCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(page, syncBrowserProxy);
+    // Arrow keys don't trigger a navigation when the focus is inside the radio
+    // group.
+    const cookiesRadioGroup =
+        page.shadowRoot!
+            .querySelector<HTMLElement>('#' + PrivacyGuideStep.COOKIES)!
+            .shadowRoot!.querySelector<HTMLElement>('#cookiesRadioGroup');
+    assertTrue(!!cookiesRadioGroup);
+    cookiesRadioGroup.dispatchEvent(arrowLeftEvent);
+    assertCookiesCardVisible(page, syncBrowserProxy);
+    cookiesRadioGroup.dispatchEvent(arrowRightEvent);
+    assertCookiesCardVisible(page, syncBrowserProxy);
+
     dispatchArrowRightEvent();
     assertCompletionCardVisible(page);
     // Forward navigation on the completion card does not trigger a navigation.
@@ -1846,11 +1028,9 @@ suite('3pcdOff', function() {
 
     // Backward flow.
     dispatchArrowLeftEvent();
-    assertSearchSuggestionsCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(page, syncBrowserProxy);
     dispatchArrowLeftEvent();
     assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-    dispatchArrowLeftEvent();
-    assertCookiesCardVisible(page, syncBrowserProxy);
     dispatchArrowLeftEvent();
     assertHistorySyncCardVisible(page, syncBrowserProxy);
     dispatchArrowLeftEvent();
@@ -1862,102 +1042,83 @@ suite('3pcdOff', function() {
     assertWelcomeCardVisible(page);
   });
 
-  test('msbbForwardNavigationSyncOff', async function() {
-    setupSync({
-      syncBrowserProxy: syncBrowserProxy,
-      syncOn: false,
-      syncAllDataTypes: false,
-      typedUrlsSynced: false,
-    });
-    await navigateToStep(PrivacyGuideStep.MSBB);
-    assertMsbbCardVisible(page, syncBrowserProxy);
+  test('safeBrowsingForwardNavigationShouldShowCookies', async function() {
+    await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
+    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     assertCookiesCardVisible(page, syncBrowserProxy);
-  });
 
-  test('historySyncNavigatesAwayOnSyncOff', async function() {
-    await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
-
-    // User disables sync while history sync card is shown.
-    setupSync({
-      syncBrowserProxy: syncBrowserProxy,
-      syncOn: false,
-      syncAllDataTypes: false,
-      typedUrlsSynced: false,
-    });
-    assertCookiesCardVisible(page, syncBrowserProxy);
-  });
-
-  test('historySyncNotReachableWhenSyncOff', async function() {
-    await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
-    setupSync({
-      syncBrowserProxy: syncBrowserProxy,
-      syncOn: false,
-      syncAllDataTypes: false,
-      typedUrlsSynced: false,
-    });
-    assertCookiesCardVisible(page, syncBrowserProxy);
-  });
-
-  test(
-      'historySyncCardForwardNavigationShouldShowCookiesCard',
-      async function() {
-        await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
-        assertHistorySyncCardVisible(page, syncBrowserProxy);
-
-        page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-        assertCookiesCardVisible(page, syncBrowserProxy);
-
-        const result = await testMetricsBrowserProxy.whenCalled(
-            'recordPrivacyGuideNextNavigationHistogram');
-        assertEquals(PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON, result);
-
-        const actionResult =
-            await testMetricsBrowserProxy.whenCalled('recordAction');
-        assertEquals(
-            actionResult, 'Settings.PrivacyGuide.NextClickHistorySync');
-      });
-
-  test(
-      'historySyncCardForwardNavigationShouldHideCookiesCard',
-      async function() {
-        setCookieSetting(page, CookiePrimarySetting.ALLOW_ALL);
-        await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
-        assertHistorySyncCardVisible(page, syncBrowserProxy);
-
-        page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-        assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-      });
-
-  test('safeBrowsingCardBackNavigationCookiesOn', async function() {
-    await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    assertCookiesCardVisible(page, syncBrowserProxy);
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideNextNavigationHistogram');
+    assertEquals(PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON, result);
 
     const actionResult =
         await testMetricsBrowserProxy.whenCalled('recordAction');
-    assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickSafeBrowsing');
+    assertEquals(actionResult, 'Settings.PrivacyGuide.NextClickSafeBrowsing');
   });
 
-  test('safeBrowsingCardBackNavigationCookiesOff', async function() {
-    setCookieSetting(page, CookiePrimarySetting.BLOCK_ALL);
+  test('safeBrowsingForwardNavigationShouldHideCookies', async function() {
+    setCookieSetting(page, CookiePrimarySetting.ALLOW_ALL);
     await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
     assertSafeBrowsingCardVisible(page, syncBrowserProxy);
 
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+    await flushTasks();
+    assertCompletionCardVisible(page);
+  });
+
+  test('cookiesBackNavigationSafeBrowsingOn', async function() {
+    await navigateToStep(PrivacyGuideStep.COOKIES);
+    assertCookiesCardVisible(page, syncBrowserProxy);
+
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
+    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickCookies');
+  });
+
+  test('cookiesBackNavigationSafeBrowsingOff', async function() {
+    setSafeBrowsingSetting(page, SafeBrowsingSetting.DISABLED);
+    await navigateToStep(PrivacyGuideStep.COOKIES);
+    assertCookiesCardVisible(page, syncBrowserProxy);
+
+    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
+    await flushTasks();
     assertHistorySyncCardVisible(page, syncBrowserProxy);
   });
 
-  test('searchSuggestionsCardBackNavigationSafeBrowsingOff', async function() {
-    setSafeBrowsingSetting(page, SafeBrowsingSetting.DISABLED);
-    await navigateToStep(PrivacyGuideStep.SEARCH_SUGGESTIONS);
-    assertSearchSuggestionsCardVisible(page, syncBrowserProxy);
-
-    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
+  test('cookiesForwardNavigation', async function() {
+    await navigateToStep(PrivacyGuideStep.COOKIES);
     assertCookiesCardVisible(page, syncBrowserProxy);
+
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+    await flushTasks();
+    assertCompletionCardVisible(page);
+
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(actionResult, 'Settings.PrivacyGuide.NextClickCookies');
+  });
+
+  test('completionCardBackNavigation', async function() {
+    await navigateToStep(PrivacyGuideStep.COMPLETION);
+    assertCompletionCardVisible(page);
+
+    // The completion fragment fires a |back-button-click| event to navigate
+    // back.
+    const completionFragment =
+        page.shadowRoot!.querySelector('#' + PrivacyGuideStep.COMPLETION);
+    assertTrue(!!completionFragment);
+    completionFragment.dispatchEvent(
+        new CustomEvent('back-button-click', {bubbles: true, composed: true}));
+    flush();
+
+    assertCookiesCardVisible(page, syncBrowserProxy);
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickCompletion');
   });
 });
