@@ -325,24 +325,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintCommand) {
   print_observer.WaitUntilPreviewIsReady();
 }
 
-// TODO(crbug.com/1488085): Test is flaky.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_ContextMenuPrintCommandExtensionMainFrame \
-  DISABLED_ContextMenuPrintCommandExtensionMainFrame
-#else
-#define MAYBE_ContextMenuPrintCommandExtensionMainFrame \
-  ContextMenuPrintCommandExtensionMainFrame
-#endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
-                       MAYBE_ContextMenuPrintCommandExtensionMainFrame) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
+                       ContextMenuPrintCommandExtensionMainFrame) {
   content::RenderFrameHost* extension_host =
       LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(extension_host);
+
+  content::WebContents* embedder_web_contents = GetEmbedderWebContents();
+  ASSERT_TRUE(embedder_web_contents);
 
   // Makes sure that the correct frame invoked the context menu.
   content::ContextMenuInterceptor menu_interceptor(extension_host);
@@ -351,16 +341,15 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
-  extension_host->GetRenderWidgetHost()->ShowContextMenuAtPoint(
-      {1, 1}, ui::MENU_SOURCE_MOUSE);
+  SimulateMouseClickAt(extension_host, embedder_web_contents,
+                       blink::WebInputEvent::kNoModifiers,
+                       blink::WebMouseEvent::Button::kRight, {1, 1});
   print_observer.WaitUntilPreviewIsReady();
   menu_interceptor.Wait();
 }
 
-// TODO(crbug.com/1344508): Test is flaky on multiple platforms.
-IN_PROC_BROWSER_TEST_P(
-    PDFExtensionPrintingTest,
-    DISABLED_ContextMenuPrintCommandEmbeddedExtensionMainFrame) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
+                       ContextMenuPrintCommandEmbeddedExtensionMainFrame) {
   content::RenderFrameHost* extension_host =
       LoadPdfInFirstChildGetExtensionHost(
           embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
@@ -378,9 +367,7 @@ IN_PROC_BROWSER_TEST_P(
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
   SimulateMouseClickAt(extension_host, embedder_web_contents,
                        blink::WebInputEvent::kNoModifiers,
-                       blink::WebMouseEvent::Button::kLeft, {1, 1});
-  extension_host->GetRenderWidgetHost()->ShowContextMenuAtPoint(
-      {1, 1}, ui::MENU_SOURCE_MOUSE);
+                       blink::WebMouseEvent::Button::kRight, {1, 1});
   print_observer.WaitUntilPreviewIsReady();
   menu_interceptor.Wait();
 }
@@ -480,11 +467,8 @@ class PDFExtensionBasicPrintingTest : public PDFExtensionPrintingTest {
   }
 };
 
-// TODO(https://crbug.com/1488085): Test is flaky.
-// Note that MAYBE_ContextMenuPrintCommandExtensionMainFrame is already
-// defined above.
 IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
-                       MAYBE_ContextMenuPrintCommandExtensionMainFrame) {
+                       ContextMenuPrintCommandExtensionMainFrame) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Acknowledge print job creation so that the mojo callback doesn't hang.
   EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
@@ -510,8 +494,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
 
   SetupPrintViewManagerForJobMonitoring(plugin_frame);
   SetInputFocusOnPlugin(extension_host, embedder_web_contents);
-  plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
-      {1, 1}, ui::MENU_SOURCE_MOUSE);
+  SimulateMouseClickAt(plugin_frame, embedder_web_contents,
+                       blink::WebInputEvent::kNoModifiers,
+                       blink::WebMouseEvent::Button::kRight, {1, 1});
   menu_interceptor.Wait();
   WaitForPrintJobDestruction();
 }
