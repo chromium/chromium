@@ -531,6 +531,7 @@ crbug.com/328102507 [ mac angle-opengl graphite-disabled ] conformance/renderbuf
 
 crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/1230781 [ mac amd-0x67ef angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
+crbug.com/328100306 [ sonoma amd ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
 
 
 # TODO(kbr): uncomment the following expectation after test has
