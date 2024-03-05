@@ -241,6 +241,11 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
                                                      ReadableStream*,
                                                      ExceptionState&);
 
+  // https://streams.spec.whatwg.org/#readable-stream-cancel
+  static v8::Local<v8::Promise> Cancel(ScriptState*,
+                                       ReadableStream*,
+                                       v8::Local<v8::Value> reason);
+
   //
   // Functions exported for use by TransformStream. Not part of the standard.
   //
@@ -302,11 +307,6 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
 
   // https://streams.spec.whatwg.org/#readable-stream-add-read-request
   static void AddReadRequest(ScriptState*, ReadableStream*, ReadRequest*);
-
-  // https://streams.spec.whatwg.org/#readable-stream-cancel
-  static v8::Local<v8::Promise> Cancel(ScriptState*,
-                                       ReadableStream*,
-                                       v8::Local<v8::Value> reason);
 
   // https://streams.spec.whatwg.org/#readable-stream-close
   static void Close(ScriptState*, ReadableStream*);
