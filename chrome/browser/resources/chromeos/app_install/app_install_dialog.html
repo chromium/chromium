@@ -67,6 +67,15 @@
     margin: 0px;
   }
 
+  #screenshot-container {
+    padding-bottom: 20px;
+  }
+
+  #screenshot {
+    border-radius: 16px;
+    display: block;
+  }
+
   div[slot=button-container] {
     display: flex;
     justify-content: flex-end;
@@ -94,7 +103,9 @@
     <hr id="divider" hidden>
     <div id="description-and-screenshots" hidden>
       <p id="description"></p>
-      <!-- TODO(crbug.com/40283709): Add screenshots. -->
+      <div id="screenshot-container" hidden>
+        <img id="screenshot" is="cr-auto-img" width="408">
+      </div>
     </div>
   </div>
   <div slot="button-container">

@@ -46,6 +46,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/base/webui/web_ui_util.h"
 #endif
 
 namespace web_app {
@@ -80,6 +81,7 @@ const GURL& GetIconUrl(const std::vector<apps::IconInfo>& manifest_icons) {
 
 void OnManifestFetchedShowCrosDialog(
     base::WeakPtr<ash::app_install::AppInstallDialog> dialog_handle,
+    std::vector<webapps::Screenshot> screenshots,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
@@ -91,6 +93,10 @@ void OnManifestFetchedShowCrosDialog(
   args->name = base::UTF16ToUTF8(web_app_info->title);
   args->description = base::UTF16ToUTF8(web_app_info->description);
   args->icon_url = GetIconUrl(web_app_info->manifest_icons);
+  for (const auto& screenshot : screenshots) {
+    args->screenshot_urls.push_back(
+        GURL(webui::GetBitmapDataUrl(screenshot.image)));
+  }
 
   dialog_handle->Show(
       initiator_web_contents->GetNativeView(), std::move(args),
@@ -271,7 +277,9 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
         ash::app_install::AppInstallDialog::CreateDialog();
     provider->scheduler().FetchManifestAndInstall(
         install_source, web_contents->GetWeakPtr(),
-        base::BindOnce(OnManifestFetchedShowCrosDialog, dialog_handle),
+        base::BindOnce(OnManifestFetchedShowCrosDialog, dialog_handle,
+                       data.has_value() ? std::move(data->screenshots)
+                                        : std::vector<webapps::Screenshot>()),
         base::BindOnce(OnWebAppInstalledFromCrosDialog, dialog_handle,
                        std::move(callback)),
         /*use_fallback=*/true);
@@ -334,7 +342,9 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
         ash::app_install::AppInstallDialog::CreateDialog();
     provider->scheduler().FetchManifestAndInstall(
         install_source, web_contents->GetWeakPtr(),
-        base::BindOnce(OnManifestFetchedShowCrosDialog, dialog_handle),
+        base::BindOnce(OnManifestFetchedShowCrosDialog, dialog_handle,
+                       data.has_value() ? std::move(data->screenshots)
+                                        : std::vector<webapps::Screenshot>()),
         base::BindOnce(OnWebAppInstalledFromCrosDialog, dialog_handle,
                        std::move(installed_callback)),
         /*use_fallback=*/use_fallback);

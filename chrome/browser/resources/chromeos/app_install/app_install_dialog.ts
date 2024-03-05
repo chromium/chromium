@@ -74,6 +74,14 @@ class AppInstallDialogElement extends HTMLElement {
         this.$<HTMLDivElement>('#description-and-screenshots').hidden = false;
         this.$<HTMLHRElement>('#divider').hidden = false;
       }
+
+      if (dialogArgs.args.screenshotUrls[0]) {
+        this.$<HTMLSpanElement>('#description-and-screenshots').hidden = false;
+        this.$<HTMLHRElement>('#divider').hidden = false;
+        this.$<HTMLSpanElement>('#screenshot-container').hidden = false;
+        this.$<HTMLImageElement>('#screenshot')
+            .setAttribute('auto-src', dialogArgs.args.screenshotUrls[0].url);
+      }
     } catch (e) {
       // TODO(crbug.com/1488697) Define expected behavior.
       console.error(`Unable to get dialog arguments . Error: ${e}.`);

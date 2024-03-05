@@ -15,7 +15,7 @@ struct DialogArgs {
 
   url.mojom.Url icon_url;
 
-  // TODO(crbug.com/1488697): Add screenshots.
+  array<url.mojom.Url> screenshot_urls;
 };
 
 // Lives in the browser process. A renderer uses this to create a page handler
