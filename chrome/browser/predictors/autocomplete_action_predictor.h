@@ -249,15 +249,15 @@ class AutocompleteActionPredictor : public KeyedService,
   void OnHistoryServiceLoaded(
       history::HistoryService* history_service) override;
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // Set when this is a predictor for an incognito profile.
-  raw_ptr<AutocompleteActionPredictor> main_profile_predictor_;
+  raw_ptr<AutocompleteActionPredictor> main_profile_predictor_ = nullptr;
 
   // Set when this is a predictor for a non-incognito profile, and the incognito
   // profile creates a predictor.  If this is non-NULL when we finish
   // initialization, we should call CopyFromMainProfile() on it.
-  raw_ptr<AutocompleteActionPredictor> incognito_predictor_;
+  raw_ptr<AutocompleteActionPredictor> incognito_predictor_ = nullptr;
 
   // The backing data store.  This is nullptr for incognito-owned predictors.
   scoped_refptr<AutocompleteActionPredictorTable> table_;
@@ -278,7 +278,7 @@ class AutocompleteActionPredictor : public KeyedService,
   DBCacheMap db_cache_;
   DBIdCacheMap db_id_cache_;
 
-  bool initialized_;
+  bool initialized_ = false;
 
   base::ObserverList<Observer> observers_;
 

@@ -116,25 +116,24 @@ const size_t AutocompleteActionPredictor::kMinimumUserTextLength = 1;
 const size_t AutocompleteActionPredictor::kMaximumStringLength = 1024;
 
 AutocompleteActionPredictor::AutocompleteActionPredictor(Profile* profile)
-    : profile_(profile),
-      main_profile_predictor_(nullptr),
-      incognito_predictor_(nullptr),
-      initialized_(false) {
+    : profile_(profile) {
   if (profile_->IsOffTheRecord()) {
     main_profile_predictor_ = AutocompleteActionPredictorFactory::GetForProfile(
         profile_->GetOriginalProfile());
     DCHECK(main_profile_predictor_);
     main_profile_predictor_->incognito_predictor_ = this;
-    if (main_profile_predictor_->initialized_)
+    if (main_profile_predictor_->initialized_) {
       CopyFromMainProfile();
+    }
   } else {
     // Request the in-memory database from the history to force it to load so
     // it's available as soon as possible.
     history::HistoryService* history_service =
         HistoryServiceFactory::GetForProfile(
             profile_, ServiceAccessType::EXPLICIT_ACCESS);
-    if (history_service)
+    if (history_service) {
       history_service->InMemoryDatabase();
+    }
 
     table_ =
         PredictorDatabaseFactory::GetForProfile(profile_)->autocomplete_table();
@@ -155,12 +154,14 @@ AutocompleteActionPredictor::AutocompleteActionPredictor(Profile* profile)
 }
 
 AutocompleteActionPredictor::~AutocompleteActionPredictor() {
-  if (main_profile_predictor_)
+  if (main_profile_predictor_) {
     main_profile_predictor_->incognito_predictor_ = nullptr;
-  else if (incognito_predictor_)
+  } else if (incognito_predictor_) {
     incognito_predictor_->main_profile_predictor_ = nullptr;
-  if (no_state_prefetch_handle_.get())
+  }
+  if (no_state_prefetch_handle_.get()) {
     no_state_prefetch_handle_->OnCancel();
+  }
 }
 
 void AutocompleteActionPredictor::RegisterTransitionalMatches(
@@ -317,8 +318,10 @@ AutocompleteActionPredictor::RecommendAction(
 
   // Downgrade prerender to preconnect if this is a search match.
   // Default search result engine pre* is managed by `SearchPrefetchService`.
-  if (action == ACTION_PRERENDER && AutocompleteMatch::IsSearchType(match.type))
+  if (action == ACTION_PRERENDER &&
+      AutocompleteMatch::IsSearchType(match.type)) {
     action = ACTION_PRECONNECT;
+  }
 
   // During startup/shutdown it could be possible that the Omnibox doesn't have
   // an attached WebContents yet. In that case, don't create PreloadingData and
@@ -350,8 +353,9 @@ bool AutocompleteActionPredictor::IsPreconnectable(
 }
 
 void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
-  if (!initialized_)
+  if (!initialized_) {
     return;
+  }
 
   // TODO(dominich): The body of this method doesn't need to be run
   // synchronously. Investigate posting it as a task to be run later.
@@ -368,8 +372,9 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
   // to learn from paste-and-go actions even if the popup is open because
   // the paste-and-go destination has no relation to whatever text the user
   // may have typed.
-  if (!log.is_popup_open || log.is_paste_and_go)
+  if (!log.is_popup_open || log.is_paste_and_go) {
     return;
+  }
 
   const AutocompleteMatch& match = log.result->match_at(log.selection.line);
   const GURL& opened_url = match.destination_url;
@@ -452,8 +457,9 @@ void AutocompleteActionPredictor::UpdateDatabaseFromTransitionalMatches(
       }
     }
   }
-  if (!rows_to_add.empty() || !rows_to_update.empty())
+  if (!rows_to_add.empty() || !rows_to_update.empty()) {
     AddAndUpdateRows(rows_to_add, rows_to_update);
+  }
 
   std::vector<AutocompleteActionPredictorTable::Row::Id> ids_to_delete;
   if (db_cache_.size() > kMaximumCacheSize) {
@@ -507,8 +513,9 @@ void AutocompleteActionPredictor::DeleteRowsFromCaches(
 void AutocompleteActionPredictor::AddAndUpdateRows(
     const AutocompleteActionPredictorTable::Rows& rows_to_add,
     const AutocompleteActionPredictorTable::Rows& rows_to_update) {
-  if (!initialized_)
+  if (!initialized_) {
     return;
+  }
 
   for (auto it = rows_to_add.begin(); it != rows_to_add.end(); ++it) {
     const DBCacheKey key = { it->user_text, it->url };
@@ -570,12 +577,14 @@ void AutocompleteActionPredictor::TryDeleteOldEntries(
   DCHECK(!profile_->IsOffTheRecord());
   DCHECK(!initialized_);
 
-  if (!service)
+  if (!service) {
     return;
+  }
 
   history::URLDatabase* url_db = service->InMemoryDatabase();
-  if (!url_db)
+  if (!url_db) {
     return;
+  }
 
   DeleteOldEntries(url_db);
 }
@@ -602,8 +611,9 @@ void AutocompleteActionPredictor::DeleteOldEntries(
   }
 
   FinishInitialization();
-  if (incognito_predictor_)
+  if (incognito_predictor_) {
     incognito_predictor_->CopyFromMainProfile();
+  }
 }
 
 void AutocompleteActionPredictor::DeleteOldIdsFromCaches(
@@ -693,8 +703,9 @@ void AutocompleteActionPredictor::FinishInitialization() {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   DCHECK(!initialized_);
   initialized_ = true;
-  for (Observer& obs : observers_)
+  for (Observer& obs : observers_) {
     obs.OnInitialized();
+  }
 }
 
 double AutocompleteActionPredictor::CalculateConfidence(
@@ -702,12 +713,14 @@ double AutocompleteActionPredictor::CalculateConfidence(
     const AutocompleteMatch& match) const {
   const DBCacheKey key = { user_text, match.destination_url };
 
-  if (user_text.length() < kMinimumUserTextLength)
+  if (user_text.length() < kMinimumUserTextLength) {
     return 0.0;
+  }
 
   const DBCacheMap::const_iterator iter = db_cache_.find(key);
-  if (iter == db_cache_.end())
+  if (iter == db_cache_.end()) {
     return 0.0;
+  }
 
   return CalculateConfidenceForDbEntry(iter);
 }
@@ -715,8 +728,9 @@ double AutocompleteActionPredictor::CalculateConfidence(
 double AutocompleteActionPredictor::CalculateConfidenceForDbEntry(
     DBCacheMap::const_iterator iter) const {
   const DBCacheValue& value = iter->second;
-  if (value.number_of_hits < kMinimumNumberOfHits)
+  if (value.number_of_hits < kMinimumNumberOfHits) {
     return 0.0;
+  }
 
   const double number_of_hits = static_cast<double>(value.number_of_hits);
   return number_of_hits / (number_of_hits + value.number_of_misses);
@@ -754,8 +768,9 @@ void AutocompleteActionPredictor::OnURLsDeleted(
 
 void AutocompleteActionPredictor::OnHistoryServiceLoaded(
     history::HistoryService* history_service) {
-  if (!initialized_)
+  if (!initialized_) {
     TryDeleteOldEntries(history_service);
+  }
 }
 
 void AutocompleteActionPredictor::AddObserver(Observer* observer) {
