@@ -327,12 +327,33 @@ suite('AppearanceTest', () => {
           appearanceElement.$.setClassicChromeButton, 'display', 'none');
       assertStyle(appearanceElement.$.themeSnapshot, 'display', 'none');
       assertNotStyle(appearanceElement.$.chromeColors, 'display', 'none');
-
-      const clickEvent =
-          eventToPromise('wallpaper-search-click', appearanceElement);
-      appearanceElement.$.searchedImageButton.click();
-      await clickEvent;
     });
+
+    test(
+        'searched image button opens themes when feature disabled',
+        async () => {
+          const clickEvent =
+              eventToPromise('edit-theme-click', appearanceElement);
+          appearanceElement.$.searchedImageButton.click();
+          await clickEvent;
+        });
+  });
+
+  suite('WallpaperSearch', async () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        'wallpaperSearchEnabled': true,
+      });
+    });
+
+    test(
+        'searched image button opens wallpaper search when feature enabled',
+        async () => {
+          const clickEvent =
+              eventToPromise('wallpaper-search-click', appearanceElement);
+          appearanceElement.$.searchedImageButton.click();
+          await clickEvent;
+        });
   });
 
   suite('Metrics', () => {
