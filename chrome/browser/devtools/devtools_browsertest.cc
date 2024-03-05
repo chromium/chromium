@@ -1738,7 +1738,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 }
 
 // Tests that console selector shows correct context names.
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestConsoleContextNames) {
+// TODO(crbug.com/328131890): Test is flaky on multiple platforms. Tends to time
+// out when trying to open the devtools window.
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
+                       DISABLED_TestConsoleContextNames) {
   LoadExtension("simple_content_script");
   RunTest("testConsoleContextNames", kPageWithContentScript);
 }
