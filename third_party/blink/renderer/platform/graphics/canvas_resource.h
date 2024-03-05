@@ -468,7 +468,8 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   const bool is_accelerated_;
   const bool is_overlay_candidate_;
   const bool supports_display_compositing_;
-  const GLenum texture_target_;
+  // NOTE: Initialized in the constructor post-creation of the SharedImage.
+  GLenum texture_target_ = 0;
   const bool use_oop_rasterization_;
   // TODO(crbug.com/1494911): Remove this field once GetOrCreateGpuMailbox() is
   // converted to return ClientSharedImage.

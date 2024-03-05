@@ -414,11 +414,8 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
       is_origin_top_left_(is_origin_top_left),
       is_accelerated_(is_accelerated),
 #if BUILDFLAG(IS_MAC)
-      // On Mac, WebGPU usage is always backed by an IOSurface which should also
-      // use the GL_TEXTURE_RECTANGLE target instead of GL_TEXTURE_2D. Setting
-      // |is_overlay_candidate_| both allows overlays, and causes
-      // |texture_target_| to take the value returned from
-      // gpu::GetBufferTextureTarget.
+      // On Mac, WebGPU usage is always backed by an IOSurface, meaning that the
+      // SI created will be an overlay candidate.
       is_overlay_candidate_(shared_image_usage_flags &
                             (gpu::SHARED_IMAGE_USAGE_SCANOUT |
                              gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
@@ -429,13 +426,6 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
 #endif
       supports_display_compositing_(shared_image_usage_flags &
                                     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ),
-      texture_target_(is_overlay_candidate_
-                          ? gpu::GetBufferTextureTarget(
-                                gfx::BufferUsage::SCANOUT,
-                                GetBufferFormat(),
-                                context_provider_wrapper_->ContextProvider()
-                                    ->GetCapabilities())
-                          : GL_TEXTURE_2D),
       use_oop_rasterization_(is_accelerated &&
                              context_provider_wrapper_->ContextProvider()
                                  ->GetCapabilities()
@@ -508,6 +498,9 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
         gpu::kNullSurfaceHandle);
     CHECK(client_shared_image);
   }
+
+  texture_target_ =
+      client_shared_image->GetTextureTarget(gfx::BufferUsage::SCANOUT);
 
   // Wait for the mailbox to be ready to be used.
   WaitSyncToken(shared_image_interface->GenUnverifiedSyncToken());
