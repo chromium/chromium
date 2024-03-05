@@ -334,8 +334,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   MemoryDebuggerManager* _memoryDebuggerManager;
 
   // Responsible for indexing chrome links (such as bookmarks, most likely...)
-  // in system Spotlight index.
-  SpotlightManager* _spotlightManager;
+  // in system Spotlight index for all loaded browser states.
+  NSMutableArray<SpotlightManager*>* _spotlightManagers;
 
   // Variable backing metricsMediator property.
   __weak MetricsMediator* _metricsMediator;
@@ -423,6 +423,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   if ((self = [super init])) {
     _isFirstRun = ShouldPresentFirstRunExperience();
     _startupTasks = [[StartupTasks alloc] init];
+    _spotlightManagers = [NSMutableArray array];
   }
   return self;
 }
@@ -587,39 +588,34 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   RegisterComponentsForUpdate();
 
-  // TODO(crbug.com/325255635): Don't get a singular browser state; perform
-  // pre-window init on all browser states.
-  ChromeBrowserState* chromeBrowserState = self.appState.mainBrowserState;
-  DCHECK(chromeBrowserState);
-
-  // Legacy code used GetLastUsedBrowserState() in this method. We changed it to
-  // use self.appState.mainBrowserState instead. The DCHECK ensures that
-  // invariant holds true.
-  DCHECK_EQ(chromeBrowserState, GetApplicationContext()
-                                    ->GetChromeBrowserStateManager()
-                                    ->GetLastUsedBrowserState());
-
   [[PreviousSessionInfo sharedInstance] resetConnectedSceneSessionIDs];
 
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          chromeBrowserState);
-  // Send "Chrome Opened" event to the feature_engagement::Tracker on cold
-  // start.
-  tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* chromeBrowserState : loadedBrowserStates) {
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForBrowserState(
+            chromeBrowserState);
+    // Send "Chrome Opened" event to the feature_engagement::Tracker on cold
+    // start.
+    tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
 
-  _spotlightManager =
-      [SpotlightManager spotlightManagerWithBrowserState:chromeBrowserState];
+    [_spotlightManagers
+        addObject:[SpotlightManager
+                      spotlightManagerWithBrowserState:chromeBrowserState]];
 
-  ShareExtensionService* service =
-      ShareExtensionServiceFactory::GetForBrowserState(chromeBrowserState);
-  service->Initialize();
+    ShareExtensionService* service =
+        ShareExtensionServiceFactory::GetForBrowserState(chromeBrowserState);
+    service->Initialize();
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
-  if (IsCredentialProviderExtensionSupported()) {
-    CredentialProviderServiceFactory::GetForBrowserState(chromeBrowserState);
-  }
+    if (IsCredentialProviderExtensionSupported()) {
+      CredentialProviderServiceFactory::GetForBrowserState(chromeBrowserState);
+    }
 #endif
+  }
 
   _windowConfigurationRecorder = [[WindowConfigurationRecorder alloc] init];
 }
@@ -861,8 +857,10 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)stopChromeMain {
-  [_spotlightManager shutdown];
-  _spotlightManager = nil;
+  for (SpotlightManager* spotlightManager : _spotlightManagers) {
+    [spotlightManager shutdown];
+  }
+  [_spotlightManagers removeAllObjects];
 
   _extensionSearchEngineDataUpdater = nullptr;
 
@@ -1297,12 +1295,18 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)scheduleSpotlightResync {
-  __weak SpotlightManager* spotlightManager = _spotlightManager;
+  __weak MainController* weakSelf = self;
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kStartSpotlightBookmarksIndexing
                   block:^{
-                    [spotlightManager resyncIndex];
+                    [weakSelf resyncIndex];
                   }];
+}
+
+- (void)resyncIndex {
+  for (SpotlightManager* manager : _spotlightManagers) {
+    [manager resyncIndex];
+  }
 }
 
 - (void)scheduleFaviconsCleanup {
