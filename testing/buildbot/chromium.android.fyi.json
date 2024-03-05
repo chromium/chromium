@@ -12878,7 +12878,8 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.crashpad_tests.filter"
         ],
         "merge": {
           "args": [

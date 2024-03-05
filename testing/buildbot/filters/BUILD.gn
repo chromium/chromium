@@ -225,6 +225,7 @@ source_set("crashpad_tests_filters") {
   data = [
     "//testing/buildbot/filters/android.arm64_proguard_rel.crashpad_tests.filter",
     "//testing/buildbot/filters/android.emulator.crashpad_tests.filter",
+    "//testing/buildbot/filters/android.mte.crashpad_tests.filter",
     "//testing/buildbot/filters/android.pie_tot.crashpad_tests.filter",
   ]
 }
