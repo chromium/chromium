@@ -369,7 +369,7 @@ BASE_FEATURE(kIOSLargeFakebox,
 
 BASE_FEATURE(kIOSHideFeedWithSearchChoice,
              "IOSHideFeedWithSearchChoice",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFullscreenImprovement,
              "FullscreenImprovement",
@@ -556,7 +556,7 @@ double GetBackgroundRefreshMaxAgeInSeconds() {
 bool IsIOSHideFeedWithSearchChoiceTargeted() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kIOSHideFeedWithSearchChoice, kIOSHideFeedWithSearchChoiceTargeted,
-      /*default=*/false);
+      /*default=*/true);
 }
 
 bool IsFeedAblationEnabled() {
