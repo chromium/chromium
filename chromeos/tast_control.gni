@@ -83,9 +83,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1392911
   "login.RestrictSignin",
 
-  # https://crbug.com/1402224
-  "audio.PlaybackAudioControls",
-
   # b/287525851
   "arc.AudioValidity.playback",
   "arc.AudioValidity.record",
