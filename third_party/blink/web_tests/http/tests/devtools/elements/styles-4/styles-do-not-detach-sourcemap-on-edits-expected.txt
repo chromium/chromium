@@ -6,10 +6,10 @@ Running: editProperty
 element.style { ()
 
 [expanded] 
-@media (min-width: 6px)
+@media (min-width: 6px) {
 #container { (styles-do-n…dits.scss:3 -> styles-do-not-detach-sourcemap-on-edits.scss:3:9)
-    border: 1px solid blue;
-    color: blue;
+        border: 1px solid blue;
+        color: blue;
 
 [expanded] 
 div { (user agent stylesheet)
@@ -22,10 +22,10 @@ Running: editSelector
 element.style { ()
 
 [expanded] 
-@media (min-width: 6px)
+@media (min-width: 6px) {
 #container { (styles-do-n…dits.scss:3 -> styles-do-not-detach-sourcemap-on-edits.scss:3:9)
-    border: 1px solid blue;
-/-- overloaded --/     NAME: VALUE;
+        border: 1px solid blue;
+/-- overloaded --/         NAME: VALUE;
 
 [expanded] 
 div { (user agent stylesheet)
@@ -38,10 +38,10 @@ Running: editMedia
 element.style { ()
 
 [expanded] 
-@media (min-width: 6px)
+@media (min-width: 6px) {
 #container, SELECTOR { (styles-do-n…dits.scss:3 -> styles-do-not-detach-sourcemap-on-edits.scss:3:17)
-    border: 1px solid blue;
-/-- overloaded --/     NAME: VALUE;
+        border: 1px solid blue;
+/-- overloaded --/         NAME: VALUE;
 
 [expanded] 
 div { (user agent stylesheet)
@@ -54,10 +54,10 @@ Running: addRule
 element.style { ()
 
 [expanded] 
-@media (max-width: 9999999px)
+@media (max-width: 9999999px) {
 #container, SELECTOR { (styles-do-n…dits.scss:3 -> styles-do-not-detach-sourcemap-on-edits.scss:3:17)
-    border: 1px solid blue;
-/-- overloaded --/     NAME: VALUE;
+        border: 1px solid blue;
+/-- overloaded --/         NAME: VALUE;
 
 [expanded] 
 div { (user agent stylesheet)
@@ -73,10 +73,10 @@ element.style { ()
 NEW-RULE { (styles-do-n…dits.scss:4 -> styles-do-not-detach-sourcemap-on-edits.scss:4:20)
 
 [expanded] 
-@media (max-width: 9999999px)
+@media (max-width: 9999999px) {
 #container, SELECTOR { (styles-do-n…dits.scss:3 -> styles-do-not-detach-sourcemap-on-edits.scss:3:17)
-    border: 1px solid blue;
-/-- overloaded --/     NAME: VALUE;
+        border: 1px solid blue;
+/-- overloaded --/         NAME: VALUE;
 
 [expanded] 
 div { (user agent stylesheet)
