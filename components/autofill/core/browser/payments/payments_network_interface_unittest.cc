@@ -1055,15 +1055,15 @@ TEST_F(PaymentsNetworkInterfaceTest, GetDetailsIncludesDetectedValuesInRequest) 
 }
 
 TEST_F(PaymentsNetworkInterfaceTest,
-       GetDetailsIncludesIncludesClientBehaviorSignalsInChromeUserContext) {
+       GetDetailsIncludesClientBehaviorSignalsInChromeUserContext) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kAutofillEnableNewSaveCardBubbleUi);
+      features::kAutofillEnableCvcStorageAndFilling);
 
   StartGettingUploadDetails(
       GetUploadDetailsOptions().with_client_behavior_signals(
           std::vector<ClientBehaviorConstants>{
-              ClientBehaviorConstants::kUsingFasterAndProtectedUi}));
+              ClientBehaviorConstants::kOfferingToSaveCvc}));
   IssueOAuthToken();
 
   // Verify ChromeUserContext was set.
@@ -1071,9 +1071,9 @@ TEST_F(PaymentsNetworkInterfaceTest,
   // Verify Client_behavior_signals was set.
   EXPECT_THAT(GetUploadData(), HasSubstr("client_behavior_signals"));
   // Verify fake_client_behavior_signal was set.
-  // ClientBehaviorConstants::kUsingFasterAndProtectedUi has the numeric value
-  // set to 1.
-  EXPECT_THAT(GetUploadData(), HasSubstr("\"client_behavior_signals\":[1]"));
+  // ClientBehaviorConstants::kOfferingToSaveCvc has the numeric value
+  // set to 3.
+  EXPECT_THAT(GetUploadData(), HasSubstr("\"client_behavior_signals\":[3]"));
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, GetDetailsIncludesChromeUserContext) {
@@ -1449,11 +1449,11 @@ TEST_F(PaymentsNetworkInterfaceTest,
 TEST_F(PaymentsNetworkInterfaceTest, UploadRequestIncludesClientBehaviorSignals) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kAutofillEnableNewSaveCardBubbleUi);
+      features::kAutofillEnableCvcStorageAndFilling);
 
   StartUploading(UploadCardOptions().with_client_behavior_signals(
       std::vector<ClientBehaviorConstants>{
-          ClientBehaviorConstants::kUsingFasterAndProtectedUi}));
+          ClientBehaviorConstants::kOfferingToSaveCvc}));
   IssueOAuthToken();
 
   // Verify ChromeUserContext was set.
@@ -1461,10 +1461,10 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadRequestIncludesClientBehaviorSignals)
   // Verify Client_behavior_signals was set.
   EXPECT_THAT(GetUploadData(), HasSubstr("client_behavior_signals"));
   // Verify fake_client_behavior_signal was set.
-  // ClientBehaviorConstants::kUsingFasterAndProtectedUi has the numeric value
-  // set to 1.
+  // ClientBehaviorConstants::kOfferingToSaveCvc has the numeric value
+  // set to 3.
   EXPECT_THAT(GetUploadData(),
-              HasSubstr("%22client_behavior_signals%22:%5B1%5D"));
+              HasSubstr("%22client_behavior_signals%22:%5B3%5D"));
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, UploadRequestIncludesPan) {

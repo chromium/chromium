@@ -160,7 +160,6 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
   SaveCardBubbleControllerImplTest() {
     scoped_feature_list_.InitWithFeatureStates({
         {features::kAutofillEnableCvcStorageAndFilling, false},
-        {features::kAutofillEnableNewSaveCardBubbleUi, false},
         {features::kAutofillEnableSaveCardLoadingAndConfirmation, false},
     });
   }
@@ -999,27 +998,6 @@ TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
             u"To pay faster next time, save your card, encrypted security "
             u"code, and billing address in your Google Account");
-}
-
-class SaveCardBubbleControllerImplTestWithNewSaveCardBubbleUi
-    : public SaveCardBubbleControllerImplTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillEnableNewSaveCardBubbleUi};
-};
-
-TEST_F(SaveCardBubbleControllerImplTestWithNewSaveCardBubbleUi,
-       UploadCardSaveDialogContent) {
-  // Show the server card save bubble.
-  ShowUploadBubble(
-      /*options=*/AutofillClient::SaveCreditCardOptions().with_show_prompt(
-          true));
-
-  ASSERT_EQ(BubbleType::UPLOAD_SAVE, controller()->GetBubbleType());
-  ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
-  EXPECT_EQ(controller()->GetWindowTitle(), u"Save card?");
-  EXPECT_EQ(controller()->GetExplanatoryMessage(),
-            u"Pay faster next time and protect your card with Google’s "
-            u"industry-leading security.");
 }
 
 class SaveCardBubbleControllerImplTestWithLoadingAndConfirmation

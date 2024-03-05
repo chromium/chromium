@@ -645,11 +645,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "autofill-enable-new-save-card-bubble-ui",
-    "owners": [ "koulvipul@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "autofill-enable-offers-in-clank-keyboard-accessory",
     "owners": [ "siyua@chromium.org", "siashah@google.com" ],
     "expiry_milestone": 116

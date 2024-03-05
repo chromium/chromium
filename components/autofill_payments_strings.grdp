@@ -170,9 +170,6 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to November 2018 UI guidelines. The prompt can be either a bubble or an infobar.">
     Save card to Google Account?
   </message>
-  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V5" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, based on the results for the Save Card UI experiment. The prompt can be either a bubble or an infobar.">
-    Save card?
-  </message>
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD" desc="Title text for the Autofill CVC upload prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
     Save security code?
   </message>
@@ -216,9 +213,6 @@
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3_WITH_NAME" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to April 2018 UI guidelines, and minorly updated again in September 2023. The prompt will be shown either in a bubble below the omnibox, or in a bottom sheet, or in an infobar.">
     To pay faster next time, save your card, name, and billing address in your Google Account
-  </message>
-  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V4" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, based on the results for the Save Card UI experiment. The prompt will be shown in a bubble below the omnibox.">
-    Pay faster next time and protect your card with Google’s industry-leading security.
   </message>
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill save CVC prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
     This card's CVC will be encrypted and saved in your Google Account for faster checkout

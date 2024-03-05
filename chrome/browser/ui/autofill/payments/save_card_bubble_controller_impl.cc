@@ -218,11 +218,6 @@ std::u16string SaveCardBubbleControllerImpl::GetWindowTitle() const {
           IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL);
     case BubbleType::UPLOAD_SAVE:
     case BubbleType::UPLOAD_IN_PROGRESS:
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableNewSaveCardBubbleUi)) {
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V5);
-      }
       return features::ShouldShowImprovedUserConsentForCreditCardSave()
                  ? l10n_util::GetStringUTF16(
                        IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4)
@@ -276,12 +271,6 @@ std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
           AutofillClient::CardSaveType::kCardSaveWithCvc) {
     return l10n_util::GetStringUTF16(
         IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD);
-  }
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewSaveCardBubbleUi)) {
-    return l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V4);
   }
 
   if (options_.should_request_name_from_user) {

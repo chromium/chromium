@@ -600,12 +600,6 @@ const char kAutofillEnableVcnGrayOutForMerchantOptOutDescription[] =
     "When enabled, Chrome will display grayed out virtual card suggestions on "
     "merchant websites where the merchant has opted-out of virtual cards.";
 
-const char kAutofillEnableNewSaveCardBubbleUiName[] =
-    "Update UI messaging and banner image for credit card upload save";
-const char kAutofillEnableNewSaveCardBubbleUiDescription[] =
-    "When enabled, the user will see a new banner logo and text in the bubble "
-    "offering to upload their cards to Google Pay.";
-
 const char kAutofillEnableVcnEnrollLoadingAndConfirmationName[] =
     "Enable showing loading and confirmation screens for virtual card "
     "enrollment";

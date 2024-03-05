@@ -1764,68 +1764,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoNameAvailable) {
 }
 #endif
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-TEST_F(CreditCardSaveManagerTest,
-       AttemptToOfferCardUploadSave_AutofillEnableNewSaveCardBubbleUiEnabled) {
-  // Setting the flag to enable the new bubble for Save Card UI.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableNewSaveCardBubbleUi);
-
-  // Set up our credit card form data.
-  FormData credit_card_form = CreateTestCreditCardFormData();
-  FormsSeen(std::vector<FormData>(1, credit_card_form));
-
-  // Edit the data, and submit.
-  credit_card_form.fields[0].value = u"Jane Doe";
-  credit_card_form.fields[1].value = u"4111111111111111";
-  credit_card_form.fields[2].value = ASCIIToUTF16(test::NextMonth());
-  credit_card_form.fields[3].value = ASCIIToUTF16(test::NextYear());
-  credit_card_form.fields[4].value = u"123";
-  FormSubmitted(credit_card_form);
-
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
-  EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
-
-  // Confirm that client_behavior_signals vector does contain the
-  // FasterAndProtected signal.
-  std::vector<ClientBehaviorConstants> client_behavior_signals_in_request =
-      payments_network_interface().client_behavior_signals_in_request();
-  EXPECT_THAT(
-      client_behavior_signals_in_request,
-      testing::Contains(ClientBehaviorConstants::kUsingFasterAndProtectedUi));
-}
-
-TEST_F(CreditCardSaveManagerTest,
-       AttemptToOfferCardUploadSave_AutofillEnableNewSaveCardBubbleUiDisabled) {
-  // Setting the flag to disable the new bubble for Save Card UI.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnableNewSaveCardBubbleUi);
-
-  FormData credit_card_form = CreateTestCreditCardFormData();
-  FormsSeen(std::vector<FormData>(1, credit_card_form));
-
-  credit_card_form.fields[0].value = u"Jane Doe";
-  credit_card_form.fields[1].value = u"4111111111111111";
-  credit_card_form.fields[2].value = ASCIIToUTF16(test::NextMonth());
-  credit_card_form.fields[3].value = ASCIIToUTF16(test::NextYear());
-  credit_card_form.fields[4].value = u"123";
-  FormSubmitted(credit_card_form);
-
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
-  EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
-
-  // Confirm that client_behavior_signals vector not contain the
-  // kShowAccountEmailInLegalMessage signal.
-  std::vector<ClientBehaviorConstants> client_behavior_signals_in_request =
-      payments_network_interface().client_behavior_signals_in_request();
-  EXPECT_THAT(client_behavior_signals_in_request,
-              testing::Not(testing::Contains(
-                  ClientBehaviorConstants::kUsingFasterAndProtectedUi)));
-}
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(CreditCardSaveManagerTest,
        AttemptToOfferCardUploadSave_AutofillEnableBottomSheetAccountEmail) {
@@ -1894,11 +1832,10 @@ TEST_F(CreditCardSaveManagerTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {features::kAutofillEnableCvcStorageAndFilling,
-       features::kAutofillEnableNewSaveCardBubbleUi},
+      {features::kAutofillEnableCvcStorageAndFilling},
 #if BUILDFLAG(IS_ANDROID)
       /*disabled_features=*/
-      {  features::kAutofillEnablePaymentsAndroidBottomSheetAccountEmail }
+      { features::kAutofillEnablePaymentsAndroidBottomSheetAccountEmail }
 #else
       /*disabled_features=*/{}
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1963,8 +1900,7 @@ TEST_F(CreditCardSaveManagerTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {features::kAutofillEnableCvcStorageAndFilling,
-       features::kAutofillEnableNewSaveCardBubbleUi},
+      {features::kAutofillEnableCvcStorageAndFilling},
       /*disabled_features=*/{});
 
   // Set up our credit card form data.
@@ -1994,43 +1930,8 @@ TEST_F(
   // Set up the flags to disable the Tos for Save Card CVC UI.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableNewSaveCardBubbleUi},
+      /*enabled_features=*/{},
       /*disabled_features=*/{features::kAutofillEnableCvcStorageAndFilling});
-
-  // Set up our credit card form data.
-  FormData credit_card_form = CreateTestCreditCardFormData();
-  FormsSeen(std::vector<FormData>(1, credit_card_form));
-
-  // Edit the data, and submit.
-  credit_card_form.fields[0].value = u"Jane Doe";
-  credit_card_form.fields[1].value = u"4111111111111111";
-  credit_card_form.fields[2].value = ASCIIToUTF16(test::NextMonth());
-  credit_card_form.fields[3].value = ASCIIToUTF16(test::NextYear());
-  credit_card_form.fields[4].value = u"123";
-  FormSubmitted(credit_card_form);
-
-  // Confirm that client_behavior_signals vector does not contain the
-  // OfferingToSaveCvc signal.
-  std::vector<ClientBehaviorConstants> client_behavior_signals_in_request =
-      payments_network_interface().client_behavior_signals_in_request();
-  EXPECT_THAT(client_behavior_signals_in_request,
-              testing::Not(testing::Contains(
-                  ClientBehaviorConstants::kOfferingToSaveCvc)));
-}
-
-TEST_F(
-    CreditCardSaveManagerTest,
-    AttemptToOfferCardUploadSave_DoNotSendSaveCvcSignalIfNewSaveCardBubbleUiDisabled) {
-  // Set up the flags to disable the new bubble for Save Card UI.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling},
-      /*disabled_features=*/{
-          features::kAutofillEnableNewSaveCardBubbleUi,
-#if BUILDFLAG(IS_ANDROID)
-          features::kAutofillEnablePaymentsAndroidBottomSheetAccountEmail,
-#endif
-      });
 
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
@@ -2059,8 +1960,7 @@ TEST_F(CreditCardSaveManagerTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {features::kAutofillEnableCvcStorageAndFilling,
-       features::kAutofillEnableNewSaveCardBubbleUi},
+      {features::kAutofillEnableCvcStorageAndFilling},
       /*disabled_features=*/{});
 
   // Disable the CVC storage pref, implying that the user has opted-out of the

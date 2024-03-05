@@ -348,9 +348,6 @@ extern const char kAutofillEnableVcn3dsAuthenticationDescription[];
 extern const char kAutofillEnableVcnGrayOutForMerchantOptOutName[];
 extern const char kAutofillEnableVcnGrayOutForMerchantOptOutDescription[];
 
-extern const char kAutofillEnableNewSaveCardBubbleUiName[];
-extern const char kAutofillEnableNewSaveCardBubbleUiDescription[];
-
 extern const char kAutofillEnableVcnEnrollLoadingAndConfirmationName[];
 extern const char kAutofillEnableVcnEnrollLoadingAndConfirmationDescription[];
 

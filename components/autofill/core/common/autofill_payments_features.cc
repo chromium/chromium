@@ -141,12 +141,6 @@ BASE_FEATURE(kAutofillEnableMovingGPayLogoToTheRightOnClank,
              "AutofillEnableMovingGPayLogoToTheRightOnClank",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, the user will see a new banner logo and text in the bubble
-// offering to Upstream their cards onto Google Pay.
-BASE_FEATURE(kAutofillEnableNewSaveCardBubbleUi,
-             "AutofillEnableNewSaveCardBubbleUi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, offers will be displayed in the Clank keyboard accessory during
 // downstream.
 BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,

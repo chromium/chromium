@@ -2349,8 +2349,7 @@ class SaveCardBubbleViewsAccountChipFooterBrowserTest
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kAutofillUpstream};
-    std::vector<base::test::FeatureRef> disabled_features = {
-        features::kAutofillEnableNewSaveCardBubbleUi};
+    std::vector<base::test::FeatureRef> disabled_features = {};
     if (AccountChipFooterIsEnabled()) {
       enabled_features.push_back(
           features::kAutofillEnableUserAvatarInSaveCardFooter);

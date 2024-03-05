@@ -9926,15 +9926,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kNotifierCollision)},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-new-save-card-bubble-ui",
-     flag_descriptions::kAutofillEnableNewSaveCardBubbleUiName,
-     flag_descriptions::kAutofillEnableNewSaveCardBubbleUiDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableNewSaveCardBubbleUi)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
     {"autofill-enable-new-card-art-and-network-images",
      flag_descriptions::kAutofillEnableNewCardArtAndNetworkImagesName,
      flag_descriptions::kAutofillEnableNewCardArtAndNetworkImagesDescription,

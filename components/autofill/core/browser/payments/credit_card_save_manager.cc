@@ -351,36 +351,18 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   show_save_prompt_ = !GetCreditCardSaveStrikeDatabase()->ShouldBlockFeature(
       base::UTF16ToUTF8(upload_request_.card.LastFourDigits()));
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewSaveCardBubbleUi)) {
-    upload_request_.client_behavior_signals.push_back(
-        ClientBehaviorConstants::kUsingFasterAndProtectedUi);
-  }
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
-  bool cvc_is_being_uploaded =
-      !upload_request_.card.cvc().empty() &&
-      personal_data_manager_->IsPaymentCvcStorageEnabled();
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnablePaymentsAndroidBottomSheetAccountEmail)) {
     upload_request_.client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
-    if (cvc_is_being_uploaded) {
-      upload_request_.client_behavior_signals.push_back(
-          ClientBehaviorConstants::kOfferingToSaveCvc);
-    }
   }
 #endif
 
-  if (cvc_is_being_uploaded &&
-      // kAutofillEnableNewSaveCardBubbleUi affects the overall save bubble
-      // structure, and the client signal to incorporate CVC into the ToS should
-      // only be sent if the updated UI is active. If not, CVC save notice will
-      // be built into the dialog itself, not its ToS message.
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewSaveCardBubbleUi)) {
+  // Check if the CVC is being uploaded and CVC storage is enabled on the
+  // client.
+  if (!upload_request_.card.cvc().empty() &&
+      personal_data_manager_->IsPaymentCvcStorageEnabled()) {
     upload_request_.client_behavior_signals.push_back(
         ClientBehaviorConstants::kOfferingToSaveCvc);
   }

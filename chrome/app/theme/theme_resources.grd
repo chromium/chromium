@@ -280,8 +280,6 @@
         <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD_DARK" file="common/save_password_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CARD" file="common/save_card.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_DARK" file="common/save_card_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_SECURELY_DARK" file="common/save_card_securely_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_SECURELY" file="common/save_card_securely.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CVC" file="common/save_cvc.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CVC_DARK" file="common/save_cvc_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54" file="common/migrate_address_avatar50_x135_y54.png" />
