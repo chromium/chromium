@@ -48,6 +48,7 @@ sync_protocol_sources = [
   "password_sharing_recipients.proto",
   "password_specifics.proto",
   "persisted_entity_data.proto",
+  "plus_address_specifics.proto",
   "power_bookmark_specifics.proto",
   "preference_specifics.proto",
   "printer_specifics.proto",

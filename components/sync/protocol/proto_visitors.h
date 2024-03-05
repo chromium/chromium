@@ -36,6 +36,7 @@
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/persisted_entity_data.pb.h"
+#include "components/sync/protocol/plus_address_specifics.pb.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/protocol/printer_specifics.pb.h"
@@ -1082,6 +1083,16 @@ VISIT_PROTO_FIELDS(const sync_pb::NoteEntity& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::PersistedEntityData& proto) {
   VISIT(name);
   VISIT(specifics);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PlusAddressSpecifics& proto) {
+  VISIT(profile_id);
+  VISIT(facet);
+  VISIT(plus_email);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PlusEmail& proto) {
+  VISIT(email_address);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PreferenceSpecifics& proto) {
