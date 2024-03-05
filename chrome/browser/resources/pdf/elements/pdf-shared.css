@@ -31,7 +31,6 @@ viewer-bookmark {
                     rgba(0, 0, 0, .15) 0 3px 6px 2px;
   --cr-primary-text-color: var(--google-grey-200);
   --cr-menu-background-focus-color: var(--google-grey-700);
-  --cr-menu-background-sheen: rgba(255, 255, 255, .06);
   --cr-separator-line: var(--cr-separator-height) solid
       rgba(255, 255, 255, .1);
 }
