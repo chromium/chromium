@@ -187,4 +187,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(ui::kConvertTrackpadEventsToMouse);
   aw_feature_overrides.DisableFeature(
       ::features::kMouseAndTrackpadDropdownMenu);
+
+  // Disable the MPA ViewTransition + BFCache fix on WebView. It's enabled on
+  // all other platforms but WebView requires a slower rollout.
+  aw_feature_overrides.DisableFeature(
+      ::features::kInvalidateLocalSurfaceIdPreCommit);
 }
