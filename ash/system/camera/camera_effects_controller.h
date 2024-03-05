@@ -58,7 +58,7 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   // is used for metrics collection (we cannot use `BackgroundBlurPrefValue`
   // since `base::UmaHistogramEnumeration` cannot take a negative value for
   // an enum). Note to keep in sync with enum in
-  // tools/metrics/histograms/enums.xml.
+  // tools/metrics/histograms/metadata/ash/enums.xml.
   enum class BackgroundBlurState {
     kOff = 0,
     kLowest = 1,

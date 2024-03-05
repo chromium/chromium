@@ -34,7 +34,7 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // Keep this in sync with `WindowSplittingSplitRegion` in
-  // tools/metrics/histograms/enums.xml.
+  // tools/metrics/histograms/metadata/ash/enums.xml.
   enum class SplitRegion {
     kNone = 0,
     kLeft = 1,
@@ -48,7 +48,7 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // Keep this in sync with `WindowSplittingDragType` in
-  // tools/metrics/histograms/enums.xml.
+  // tools/metrics/histograms/metadata/ash/enums.xml.
   enum class DragType {
     kIncomplete = 0,
     kNoSplit = 1,

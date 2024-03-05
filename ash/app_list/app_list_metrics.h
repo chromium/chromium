@@ -48,8 +48,8 @@ extern const char kSearchCategoriesEnableStateHeader[];
 
 // These are used in histograms, do not remove/renumber entries. If you're
 // adding to this enum with the intention that it will be logged, update the
-// AppListResultRemovalConfirmation enum listing in
-// tools/metrics/histograms/enums.xml.
+// `AppListResultRemovalConfirmation` enum listed in
+// tools/metrics/histograms/metadata/apps/enums.xml.
 enum class SearchResultRemovalConfirmation {
   kRemovalConfirmed = 0,
   kRemovalCanceled = 1,

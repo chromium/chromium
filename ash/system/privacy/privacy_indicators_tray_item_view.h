@@ -57,7 +57,8 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   // This enum covers all the possible variations for the privacy indicators
   // view type that we are interested in recording metrics, specifying whether
   // camera/mic access and screen sharing icons are showing. Note to keep in
-  // sync with enum PrivacyIndicatorsType in tools/metrics/histograms/enums.xml.
+  // sync with enum `PrivacyIndicatorsType` in
+  // tools/metrics/histograms/metadata/ash/enums.xml.
   enum class Type {
     kCamera = 1 << 1,
     kMicrophone = 1 << 2,

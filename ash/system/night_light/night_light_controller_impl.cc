@@ -59,7 +59,7 @@ namespace {
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
 // "AshAutoNightLightNotificationState" in
-// src/tools/metrics/histograms/enums.xml.
+// src/tools/metrics/histograms/metadata/ash/enums.xml.
 enum class AutoNightLightNotificationState {
   kClosedByUser = 0,
   kBodyClicked = 1,

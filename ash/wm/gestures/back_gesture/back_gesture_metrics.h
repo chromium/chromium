@@ -9,8 +9,8 @@
 
 namespace ash {
 
-// Used for histograms. See tools/metrics/histograms/enums.xml
-// BackGestureStartScenarioType.
+// Used for histograms. Keep in sync with `BackGestureStartScenarioType` in
+// tools/metrics/histograms/metadata/ash/enums.xml.
 enum class BackGestureStartScenarioType {
   kNonSnappedWindow = 0,
   kLeftSnappedWindow,
@@ -31,8 +31,8 @@ BackGestureStartScenarioType GetStartScenarioType(
     const gfx::Point& start_screen_location);
 void RecordStartScenarioType(BackGestureStartScenarioType type);
 
-// Used for histograms. See tools/metrics/histograms/enums.xml
-// BackGestureEndScenarioType.
+// Used for histograms. Keep in sync with `BackGestureEndScenarioType` in
+// tools/metrics/histograms/metadata/ash/enums.xml.
 enum class BackGestureEndScenarioType {
   kNonSnappedWindowAbort = 0,
   kNonSnappedWindowGoBack,
@@ -65,8 +65,8 @@ BackGestureEndScenarioType GetEndScenarioType(
     BackGestureEndType end_type);
 void RecordEndScenarioType(BackGestureEndScenarioType type);
 
-// Used for histograms. See tools/metrics/histograms/enums.xml
-// BackGestureUnderneathWindowType.
+// Used for histograms. Keep in sync with `BackGestureUnderneathWindowType` in
+// tools/metrics/histograms/metadata/ash/enums.xml.
 enum class BackGestureUnderneathWindowType {
   kBrowser = 0,
   kChromeApp,

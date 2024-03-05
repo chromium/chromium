@@ -45,7 +45,7 @@ namespace ash {
 // and providing an undo toast when done manually.
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
-// DeskCloseType in src/tools/metrics/histograms/enums.xml.
+// `DeskCloseType` in src/tools/metrics/histograms/metadata/ash/enums.xml.
 enum class DeskCloseType {
   // Closes the target desk and moves its windows to another desk.
   kCombineDesks = 0,
