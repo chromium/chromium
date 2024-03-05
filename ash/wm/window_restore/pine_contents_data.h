@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -25,18 +26,18 @@ struct ASH_EXPORT PineContentsData {
   struct AppInfo {
     explicit AppInfo(const std::string& id);
     AppInfo(const std::string& app_id,
-            const std::string& tab_title,
-            const std::vector<std::string>& tab_urls);
+            const std::u16string& tab_title,
+            const std::vector<GURL>& tab_urls);
     AppInfo(const AppInfo&);
     ~AppInfo();
     // App id. Used to retrieve the app name and app icon from the app registry
     // cache.
     std::string app_id;
     // Used for browser and PWAs. Shows a more descriptive title than "Chrome".
-    std::string tab_title;
+    std::u16string tab_title;
     // Used by browser only. Urls of up to 5 tabs including the active tab. Used
     // to retrieve favicons.
-    std::vector<std::string> tab_urls;
+    std::vector<GURL> tab_urls;
   };
 
   using AppsInfos = std::vector<AppInfo>;

@@ -14,7 +14,9 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/pine_contents_view.h"
+#include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
@@ -23,10 +25,12 @@
 #include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 
 namespace ash::full_restore {
 
@@ -143,8 +147,6 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, LaunchBrowsers) {
   // Click the "Restore" button and verify we have launched 2 browsers.
   BrowsersWaiter waiter(/*expected_count=*/2);
   test::Click(restore_button, /*flag=*/0);
-  // TODO(sammiequon): Change `BrowsersWaiter::Wait()` to return a vector of
-  // browsers and verify their tabs and pages as well.
   waiter.Wait();
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
 }
@@ -378,6 +380,43 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, ClickCancelButton) {
   test::Click(cancel_button, /*flag=*/0);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
+}
+
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_TabInfo) {
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+
+  Browser* browser = CreateBrowser(ProfileManager::GetActiveUserProfile());
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Create two more urls in addition to the default "about:blank" tab.
+  for (const GURL& url :
+       {GURL("https://www.youtube.com/"), GURL("https://www.google.com/")}) {
+    content::TestNavigationObserver navigation_observer(url);
+    navigation_observer.StartWatchingNewWebContents();
+    chrome::AddTabAt(browser, url, /*index=*/-1,
+                     /*foreground=*/false);
+    navigation_observer.Wait();
+  }
+
+  // Immediate save to full restore file to bypass the 2.5 second throttle.
+  AppLaunchInfoSaveWaiter::Wait();
+}
+
+// Verify that the tab info that is sent to ash shell is as expected.
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, TabInfo) {
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+
+  // The pine dialog is built based on the values in this data structure.
+  const PineContentsData* pine_contents_data =
+      Shell::Get()->pine_controller()->pine_contents_data();
+  ASSERT_TRUE(pine_contents_data);
+  const PineContentsData::AppsInfos& apps_infos =
+      pine_contents_data->apps_infos;
+  ASSERT_EQ(1u, apps_infos.size());
+  ASSERT_EQ(3u, apps_infos[0].tab_urls.size());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), apps_infos[0].tab_urls[0]);
+  EXPECT_EQ(GURL("https://www.youtube.com/"), apps_infos[0].tab_urls[1]);
+  EXPECT_EQ(GURL("https://www.google.com/"), apps_infos[0].tab_urls[2]);
 }
 
 }  // namespace ash::full_restore

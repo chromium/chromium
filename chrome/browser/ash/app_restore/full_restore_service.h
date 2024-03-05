@@ -17,6 +17,7 @@
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/sessions/core/session_types.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 class Profile;
@@ -133,6 +134,8 @@ class FullRestoreService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(FullRestoreAppLaunchHandlerArcAppBrowserTest,
                            RestoreArcApp);
 
+  using SessionWindows = std::vector<std::unique_ptr<sessions::SessionWindow>>;
+
   // KeyedService:
   void Shutdown() override;
 
@@ -160,10 +163,24 @@ class FullRestoreService : public KeyedService,
   void RestoreForForest();
   void CancelForForest();
 
+  // Callbacks run after querying for data from the session service(s).
+  // `OnGotSession` is run after receiving data from either the normal session
+  // service or app session service. `OnGotAllSessions` is run after receiving
+  // data from both.
+  void OnGotSession(base::OnceCallback<void(SessionWindows)> callback,
+                    SessionWindows session_windows,
+                    SessionID active_window_id,
+                    bool read_error);
+  void OnGotAllSessions(bool last_session_crashed,
+                        const std::vector<SessionWindows>& all_session_windows);
+
   // Constructs the object needed to show the pine dialog. It will be passed to
   // ash which will then use its contents to create and display the pine dialog.
+  // `restore_data` is the data read from the full restore file.
+  // `all_session_windows` is the browser info retrieved from session restore.
   std::unique_ptr<PineContentsData> CreatePineContentsData(
       ::app_restore::RestoreData* restore_data,
+      const std::vector<SessionWindows>& all_session_windows,
       bool last_session_crashed);
 
   raw_ptr<Profile> profile_ = nullptr;

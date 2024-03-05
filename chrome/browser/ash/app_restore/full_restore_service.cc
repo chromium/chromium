@@ -17,6 +17,7 @@
 #include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
+#include "base/barrier_callback.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -28,18 +29,23 @@
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/app_restore/new_user_restore_pref_handler.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/app_session_service_factory.h"
+#include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_restore_info.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -488,8 +494,34 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
 
   if (features::IsForestFeatureEnabled()) {
     CHECK(delegate_);
-    delegate_->MaybeStartPineOverviewSession(CreatePineContentsData(
-        app_launch_handler_->restore_data(), last_session_crashed));
+
+    if (crosapi::browser_util::IsLacrosEnabled()) {
+      // TODO(http://b/327440097): Query session service for Lacros.
+      OnGotAllSessions(last_session_crashed, /*all_session_windows=*/{});
+    } else {
+      // Retrieves session service data from browser and app browsers, which
+      // will be used to display favicons and tab titles.
+      SessionServiceBase* service =
+          SessionServiceFactory::GetForProfileForSessionRestore(profile_);
+      SessionServiceBase* app_service =
+          AppSessionServiceFactory::GetForProfileForSessionRestore(profile_);
+      if (service && app_service) {
+        auto barrier = base::BarrierCallback<SessionWindows>(
+            /*num_callbacks=*/2u, /*done_callback=*/base::BindOnce(
+                &FullRestoreService::OnGotAllSessions,
+                weak_ptr_factory_.GetWeakPtr(), last_session_crashed));
+
+        service->GetLastSession(
+            base::BindOnce(&FullRestoreService::OnGotSession,
+                           weak_ptr_factory_.GetWeakPtr(), barrier));
+        app_service->GetLastSession(
+            base::BindOnce(&FullRestoreService::OnGotSession,
+                           weak_ptr_factory_.GetWeakPtr(), barrier));
+      } else {
+        OnGotAllSessions(last_session_crashed, /*all_session_windows=*/{});
+      }
+    }
+
     // Set to true as we might want to show the post reboot notification.
     show_notification = true;
     return;
@@ -606,8 +638,25 @@ void FullRestoreService::CancelForForest() {
   delegate_->MaybeEndPineOverviewSession();
 }
 
+void FullRestoreService::OnGotSession(
+    base::OnceCallback<void(SessionWindows)> callback,
+    SessionWindows session_windows,
+    SessionID active_window_id,
+    bool read_error) {
+  std::move(callback).Run(std::move(session_windows));
+}
+
+void FullRestoreService::OnGotAllSessions(
+    bool last_session_crashed,
+    const std::vector<SessionWindows>& all_session_windows) {
+  delegate_->MaybeStartPineOverviewSession(
+      CreatePineContentsData(app_launch_handler_->restore_data(),
+                             all_session_windows, last_session_crashed));
+}
+
 std::unique_ptr<PineContentsData> FullRestoreService::CreatePineContentsData(
     ::app_restore::RestoreData* restore_data,
+    const std::vector<SessionWindows>& all_session_windows,
     bool last_session_crashed) {
   auto pine_contents_data = std::make_unique<PineContentsData>();
   pine_contents_data->last_session_crashed = last_session_crashed;
@@ -616,19 +665,90 @@ std::unique_ptr<PineContentsData> FullRestoreService::CreatePineContentsData(
   pine_contents_data->cancel_callback = base::BindOnce(
       &FullRestoreService::CancelForForest, weak_ptr_factory_.GetWeakPtr());
 
+  // Place all the session windows in map so we don't have to do so many O(n)
+  // lookups below.
+  base::flat_map<int, sessions::SessionWindow*> session_windows_map;
+  for (const SessionWindows& session_windows : all_session_windows) {
+    for (const std::unique_ptr<sessions::SessionWindow>& session_window :
+         session_windows) {
+      session_windows_map[session_window->window_id.id()] =
+          session_window.get();
+    }
+  }
+
   // Retrieve app id's from `restore_data`. There can be multiple entries with
   // the same app id, these denote different windows.
-  // TODO(sammiequon): App id's for PWAs are stored in the full restore file
-  // with the chrome browser app id. We need to get the app name from the
-  // session restore.
-  // TODO(sammiequon): Retrieve the browser tab info from session restore.
-  // TODO(sammiequon): Order these by activation index.
+  // TODO(http://b/327440097): Order these by activation index.
   for (const auto& [app_id, launch_list] :
        restore_data->app_id_to_launch_list()) {
-    for (size_t i = 0; i < launch_list.size(); ++i) {
-      pine_contents_data->apps_infos.emplace_back(
-          app_id, /*tab_title=*/"",
-          /*tab_urls=*/std::vector<std::string>());
+    for (const std::pair<const int,
+                         std::unique_ptr<::app_restore::AppRestoreData>>&
+             app_restore_data : launch_list) {
+      // For non browsers, the app id is sufficient for the UI we want to
+      // display.
+      if (app_id != app_constants::kChromeAppId) {
+        pine_contents_data->apps_infos.emplace_back(app_id);
+        continue;
+      }
+
+      // Find the `sessions::SessionWindow` associated with `window_id` if it
+      // exists.
+      const int window_id = app_restore_data.first;
+      auto it = session_windows_map.find(window_id);
+      sessions::SessionWindow* session_window =
+          it == session_windows_map.end() ? nullptr : it->second;
+
+      // Default to using the app id if we cannot find the associated window for
+      // whatever reason.
+      if (!session_window) {
+        pine_contents_data->apps_infos.emplace_back(app_id);
+        continue;
+      }
+
+      // App browsers app ID is the same as regular chrome browsers. To get the
+      // correct icon and title from the app service, we need to find the app
+      // name and remove the "_crx_", then use that result.
+      const std::string app_name =
+          session_window->type == sessions::SessionWindow::TYPE_APP
+              ? session_window->app_name
+              : std::string();
+      if (!app_name.empty()) {
+        const std::string new_app_id =
+            ::app_restore::GetAppIdFromAppName(app_name);
+        pine_contents_data->apps_infos.emplace_back(
+            new_app_id.empty() ? app_id : new_app_id);
+        continue;
+      }
+
+      // TODO(http://b/327440097): The active tab index
+      // (`SessionWindow::selected_tab_index`) should be included in
+      // the list of urls and be the first one. For now use the first tab's
+      // title.
+      std::u16string tab_title;
+      std::vector<GURL> tab_urls;
+      const auto& tabs = session_window->tabs;
+      for (const std::unique_ptr<sessions::SessionTab>& tab : tabs) {
+        const auto& navigations = tab->navigations;
+        const int index = tab->current_navigation_index;
+        if (navigations.size() <= static_cast<size_t>(index)) {
+          continue;
+        }
+
+        // Use the tab title if possible. Otherwise we will default to the app
+        // title, "Chrome".
+        if (tab_title.empty() && !navigations[index].title().empty()) {
+          tab_title = navigations[index].title();
+        }
+
+        tab_urls.push_back(navigations[index].original_request_url());
+
+        // We only show five favicons maximum so we can stop once we reach that
+        // amount.
+        if (tab_urls.size() >= 5u) {
+          break;
+        }
+      }
+      pine_contents_data->apps_infos.emplace_back(app_id, tab_title, tab_urls);
     }
   }
   return pine_contents_data;

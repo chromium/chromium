@@ -41,8 +41,8 @@ class PineItemView : public views::BoxLayoutView {
   METADATA_HEADER(PineItemView, views::BoxLayoutView)
 
  public:
-  PineItemView(const std::string& app_title,
-               const std::vector<std::string>& favicons) {
+  PineItemView(const std::u16string& app_title,
+               const std::vector<GURL>& favicons) {
     SetBetweenChildSpacing(pine::kItemChildSpacing);
     SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
     SetOrientation(views::BoxLayout::Orientation::kHorizontal);
@@ -63,7 +63,7 @@ class PineItemView : public views::BoxLayoutView {
                                                 pine::kItemTitleFontSize,
                                                 gfx::Font::Weight::BOLD))
                      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                     .SetText(base::UTF8ToUTF16(app_title))
+                     .SetText(app_title)
                      .Build());
     SetFlexForView(app_title_label, 1);
 
@@ -79,11 +79,11 @@ class PineItemView : public views::BoxLayoutView {
                                          weak_ptr_factory_.GetWeakPtr()));
 
     auto* delegate = Shell::Get()->saved_desk_delegate();
-    for (const std::string& url : favicons) {
+    for (const GURL& url : favicons) {
       // TODO(b/325638530): When lacros is active, this needs to supply a valid
       // profile id.
       delegate->GetFaviconForUrl(
-          url, /*lacros_profile_id=*/0,
+          url.spec(), /*lacros_profile_id=*/0,
           base::BindOnce(&PineItemView::OnOneFaviconLoaded, GetWeakPtr(),
                          barrier),
           &cancelable_favicon_task_tracker_);
@@ -176,13 +176,14 @@ PineItemsContainerView::PineItemsContainerView(
       break;
     }
 
-    std::string title;
+    std::u16string title = app_info.tab_title;
     // `cache` might be null in a test environment. In that case, we will
     // use an empty title.
-    if (cache) {
-      cache->ForOneApp(
-          app_info.app_id,
-          [&title](const apps::AppUpdate& update) { title = update.Name(); });
+    if (cache && title.empty()) {
+      cache->ForOneApp(app_info.app_id,
+                       [&title](const apps::AppUpdate& update) {
+                         title = base::ASCIIToUTF16(update.Name());
+                       });
     }
 
     // TODO(hewer|sammiequon): `PineItemView` should just take `app_info` and
