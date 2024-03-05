@@ -4387,6 +4387,7 @@
         'os_type': 'mac',
         'browser_config': 'release',
         'mixins': [
+          'limited_capacity_bot',
           'mac_arm64_apple_m2_retina_gpu_experimental',
         ],
         # When the experimental OS version is identical to the stable version,
@@ -4394,7 +4395,8 @@
         # should have the same test_suites as 'Mac FYI Retina Release (Apple
         # M2)'.
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+          'gtest_tests': 'gpu_fyi_mac_release_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_only_mac_release_telemetry_tests',
         },
       },
       'Mac FYI Experimental Retina Release (NVIDIA)': {
