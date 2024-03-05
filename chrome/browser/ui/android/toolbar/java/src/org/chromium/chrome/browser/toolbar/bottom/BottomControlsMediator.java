@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.bottom;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
@@ -13,6 +15,8 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -27,6 +31,8 @@ class BottomControlsMediator
                 KeyboardVisibilityDelegate.KeyboardVisibilityListener,
                 LayoutStateObserver,
                 TabObscuringHandler.Observer {
+    private static final String TAG = "BotControlsMediator";
+
     /** The model for the bottom controls component that holds all of its view state. */
     private final PropertyModel mModel;
 
@@ -39,6 +45,8 @@ class BottomControlsMediator
     private final TabObscuringHandler mTabObscuringHandler;
 
     private final CallbackController mCallbackController;
+
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     /** The height of the bottom bar in pixels, not including the top shadow. */
     private int mBottomControlsHeight;
@@ -60,17 +68,23 @@ class BottomControlsMediator
 
     private LayoutStateProvider mLayoutStateProvider;
 
+    @Nullable private ChangeObserver mEdgeToEdgeChangeObserver;
+    private int mEdgeToEdgePaddingPx;
+
     /**
      * Build a new mediator that handles events from outside the bottom controls component.
+     *
      * @param windowAndroid A {@link WindowAndroid} for watching keyboard visibility events.
      * @param model The {@link BottomControlsProperties} that holds all the view state for the
-     *         bottom controls component.
+     *     bottom controls component.
      * @param controlsSizer The {@link BrowserControlsSizer} to manipulate browser controls.
      * @param fullscreenManager A {@link FullscreenManager} for events related to the browser
-     *                          controls.
+     *     controls.
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param bottomControlsHeight The height of the bottom bar in pixels.
      * @param overlayPanelVisibilitySupplier Notifies overlay panel visibility event.
+     * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController} to adjust the
+     *     height of the bottom controls when drawing all the way to the edge of the screen.
      */
     BottomControlsMediator(
             WindowAndroid windowAndroid,
@@ -79,7 +93,8 @@ class BottomControlsMediator
             FullscreenManager fullscreenManager,
             TabObscuringHandler tabObscuringHandler,
             int bottomControlsHeight,
-            ObservableSupplier<Boolean> overlayPanelVisibilitySupplier) {
+            ObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mModel = model;
 
         mFullscreenManager = fullscreenManager;
@@ -100,6 +115,15 @@ class BottomControlsMediator
         // Watch for keyboard events so we can hide the bottom toolbar when the keyboard is showing.
         mWindowAndroid = windowAndroid;
         mWindowAndroid.getKeyboardDelegate().addKeyboardVisibilityListener(this);
+
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
+        if (mEdgeToEdgeControllerSupplier.get() != null) {
+            mEdgeToEdgeChangeObserver =
+                    (bottomInset) -> {
+                        onEdgeToEdgeChanged(bottomInset);
+                    };
+            mEdgeToEdgeControllerSupplier.get().registerObserver(mEdgeToEdgeChangeObserver);
+        }
     }
 
     void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
@@ -121,6 +145,10 @@ class BottomControlsMediator
         if (mLayoutStateProvider != null) {
             mLayoutStateProvider.removeObserver(this);
             mLayoutStateProvider = null;
+        }
+        if (mEdgeToEdgeControllerSupplier.get() != null && mEdgeToEdgeChangeObserver != null) {
+            mEdgeToEdgeControllerSupplier.get().unregisterObserver(mEdgeToEdgeChangeObserver);
+            mEdgeToEdgeChangeObserver = null;
         }
         mTabObscuringHandler.removeObserver(this);
     }
@@ -158,6 +186,17 @@ class BottomControlsMediator
         updateAndroidViewVisibility();
     }
 
+    private void onEdgeToEdgeChanged(int bottomInset) {
+        mEdgeToEdgePaddingPx = bottomInset;
+
+        updateBrowserControlsHeight();
+
+        int androidViewHeight = getAndroidViewHeight();
+        if (androidViewHeight != mModel.get(BottomControlsProperties.ANDROID_VIEW_HEIGHT)) {
+            mModel.set(BottomControlsProperties.ANDROID_VIEW_HEIGHT, androidViewHeight);
+        }
+    }
+
     /**
      * @return Whether the browser is currently in fullscreen mode.
      */
@@ -175,9 +214,31 @@ class BottomControlsMediator
     private void updateCompositedViewVisibility() {
         final boolean isCompositedViewVisible = isCompositedViewVisible();
         mModel.set(BottomControlsProperties.COMPOSITED_VIEW_VISIBLE, isCompositedViewVisible);
+        updateBrowserControlsHeight();
+    }
+
+    private int getBrowserControlsHeight() {
         int minHeight = mBrowserControlsSizer.getBottomControlsMinHeight();
+        int androidViewHeight = getAndroidViewHeight();
+
+        return isCompositedViewVisible() ? androidViewHeight + minHeight : minHeight;
+    }
+
+    private int getAndroidViewHeight() {
+        int edgeToEdgePadding = 0;
+
+        if (mEdgeToEdgeControllerSupplier.get() != null) {
+            // TODO(https://crbug.com/327274751): Account for presence of Read Aloud when
+            // determining bottom controls height.
+            edgeToEdgePadding = mEdgeToEdgePaddingPx;
+        }
+
+        return mBottomControlsHeight + edgeToEdgePadding;
+    }
+
+    private void updateBrowserControlsHeight() {
         mBrowserControlsSizer.setBottomControlsHeight(
-                isCompositedViewVisible ? mBottomControlsHeight + minHeight : minHeight, minHeight);
+                getBrowserControlsHeight(), mBrowserControlsSizer.getBottomControlsMinHeight());
     }
 
     boolean isCompositedViewVisible() {
@@ -203,5 +264,13 @@ class BottomControlsMediator
     @Override
     public void updateObscured(boolean obscureTabContent, boolean obscureToolbar) {
         mModel.set(BottomControlsProperties.IS_OBSCURED, obscureToolbar);
+    }
+
+    ChangeObserver getEdgeToEdgeChangeObserverForTesting() {
+        return mEdgeToEdgeChangeObserver;
+    }
+
+    void simulateEdgeToEdgeChangeForTesting(int bottomInset) {
+        onEdgeToEdgeChanged(bottomInset);
     }
 }

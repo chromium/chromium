@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
+import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -330,6 +331,57 @@ public class TabGroupUiTest {
                             bottomSheetController.getSheetState(), not(is(SheetState.HIDDEN)));
                 });
         assertFalse(isTabStripIphShowing(cta));
+    }
+
+    @Test
+    @MediumTest
+    public void testStripShownOnGroupTabPage_EdgeToEdge() throws Exception {
+        // Create a tab group with 2 tabs.
+        finishActivity(sActivityTestRule.getActivity());
+        createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
+        createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
+        TabAttributeCache.setRootIdForTesting(0, 0);
+        TabAttributeCache.setRootIdForTesting(1, 0);
+        createTabStatesAndMetadataFile(new int[] {0, 1});
+
+        // Restart Chrome and make sure tab strip is showing.
+        sActivityTestRule.startMainActivityFromLauncher();
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.tab_list_recycler_view),
+                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isCompletelyDisplayed()));
+
+        BottomControlsCoordinator coordinator =
+                sActivityTestRule
+                        .getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getToolbarManager()
+                        .getBottomControlsCoordinatorForTesting();
+
+        assertTrue(
+                "Scene overlay should be visible",
+                coordinator.getSceneLayerForTesting().isSceneOverlayTreeShowing());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    coordinator.simulateEdgeToEdgeChangeForTesting(100);
+                });
+
+        assertFalse(
+                "Scene overlay should be hidden.",
+                coordinator.getSceneLayerForTesting().isSceneOverlayTreeShowing());
+
+        // Force a bitmap capture.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    coordinator.getResourceAdapterForTesting().triggerBitmapCapture();
+                });
+
+        assertTrue(
+                "Scene overlay should visible after bitmap capture.",
+                coordinator.getSceneLayerForTesting().isSceneOverlayTreeShowing());
     }
 
     private boolean isTabStripIphShowing(ChromeTabbedActivity cta) {
