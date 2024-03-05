@@ -1055,11 +1055,13 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
   }
 }
 
-// Tests the visibility detection of iframes.
+// Tests the visibility detection of fields.
 // This test checks many scenarios. It's intentionally not a parameterized test
 // for performance reasons.
 // This test is very similar to the IsVisibleIframeTest test.
 TEST_F(FormAutofillUtilsTest, IsWebElementVisibleTest) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillDetectFieldVisibility};
   // Test cases of <input> elements with different types and styles.
   //
   // The `data-[in]visible` attribute represents whether IsWebElementVisible()

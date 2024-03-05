@@ -1812,8 +1812,10 @@ bool IsWebElementVisible(const WebElement& element) {
     return size.width() >= kMinPixelSize && size.height() >= kMinPixelSize;
   };
   return !element.IsNull() && IsWebElementFocusableForAutofill(element) &&
-         (IsCheckableElement(element) || HasMinSize(element.GetClientSize()) ||
-          HasMinSize(element.GetScrollSize()));
+         (!base::FeatureList::IsEnabled(
+              features::kAutofillDetectFieldVisibility) ||
+          (IsCheckableElement(element) || HasMinSize(element.GetClientSize()) ||
+           HasMinSize(element.GetScrollSize())));
 }
 
 uint64_t GetMaxLength(const WebFormControlElement& element) {

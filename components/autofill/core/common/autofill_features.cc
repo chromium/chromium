@@ -290,6 +290,13 @@ BASE_FEATURE(kAutofillImproveSubmissionDetection,
              "AutofillImproveSubmissionDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, FormFieldData::is_visible is a heuristic for actual visibility.
+// Otherwise, it's an alias for FormFieldData::is_focusable.
+// TODO(crbug.com/324199622) When abandoned, remove FormFieldData::is_visible.
+BASE_FEATURE(kAutofillDetectFieldVisibility,
+             "AutofillDetectFieldVisibility",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, whenever form controls are removed from the DOM, the ChromeClient
 // is informed about this. This enables Autofill to trigger a reparsing of
 // forms.

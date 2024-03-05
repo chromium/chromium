@@ -382,7 +382,7 @@ struct FormFieldData {
 
   CheckStatus check_status = CheckStatus::kNotCheckable;
   bool is_focusable = true;
-  bool is_visible = true;
+  bool is_visible = true;  // See `features::kAutofillDetectFieldVisibility`.
   bool should_autocomplete = true;
   RoleAttribute role = RoleAttribute::kOther;
   base::i18n::TextDirection text_direction = base::i18n::UNKNOWN_DIRECTION;
