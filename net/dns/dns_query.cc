@@ -10,6 +10,7 @@
 #include "base/big_endian.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
@@ -120,15 +121,15 @@ DnsQuery::DnsQuery(uint16_t id,
 
   io_buffer_ = base::MakeRefCounted<IOBufferWithSize>(buffer_size);
 
-  header_ = reinterpret_cast<dns_protocol::Header*>(io_buffer_->data());
-  *header_ = {};
-  header_->id = base::HostToNet16(id);
-  header_->flags = base::HostToNet16(dns_protocol::kFlagRD);
-  header_->qdcount = base::HostToNet16(1);
+  dns_protocol::Header* header = header_in_io_buffer();
+  *header = {};
+  header->id = base::HostToNet16(id);
+  header->flags = base::HostToNet16(dns_protocol::kFlagRD);
+  header->qdcount = base::HostToNet16(1);
 
   // Write question section after the header.
-  base::BigEndianWriter writer(io_buffer_->data() + kHeaderSize,
-                               io_buffer_->size() - kHeaderSize);
+  base::BigEndianWriter writer(
+      base::as_writable_bytes(io_buffer_->span()).subspan(kHeaderSize));
   writer.WriteBytes(qname.data(), qname.size());
   writer.WriteU16(qtype);
   writer.WriteU16(dns_protocol::kClassIN);
@@ -136,7 +137,7 @@ DnsQuery::DnsQuery(uint16_t id,
   if (merged_opt_rdata) {
     DCHECK_NE(merged_opt_rdata->OptCount(), 0u);
 
-    header_->arcount = base::HostToNet16(1);
+    header->arcount = base::HostToNet16(1);
     // Write OPT pseudo-resource record.
     writer.WriteU8(0);                       // empty domain name (root domain)
     writer.WriteU16(OptRecordRdata::kType);  // type
@@ -174,16 +175,11 @@ std::unique_ptr<DnsQuery> DnsQuery::CloneWithNewId(uint16_t id) const {
 }
 
 bool DnsQuery::Parse(size_t valid_bytes) {
-  if (io_buffer_ == nullptr || io_buffer_->data() == nullptr) {
+  if (io_buffer_ == nullptr || io_buffer_->span().empty()) {
     return false;
   }
-  CHECK(valid_bytes <= base::checked_cast<size_t>(io_buffer_->size()));
-  // We should only parse the query once if the query is constructed from a raw
-  // buffer. If we have constructed the query from data or the query is already
-  // parsed after constructed from a raw buffer, |header_| is not null.
-  DCHECK(header_ == nullptr);
   base::BigEndianReader reader(
-      reinterpret_cast<const uint8_t*>(io_buffer_->data()), valid_bytes);
+      base::as_bytes(io_buffer_->span()).first(valid_bytes));
   dns_protocol::Header header;
   if (!ReadHeader(&reader, &header)) {
     return false;
@@ -207,33 +203,29 @@ bool DnsQuery::Parse(size_t valid_bytes) {
     return false;
   }
   // |io_buffer_| now contains the raw packet of a valid DNS query, we just
-  // need to properly initialize |qname_size_| and |header_|.
+  // need to properly initialize |qname_size_|.
   qname_size_ = qname.size();
-  header_ = reinterpret_cast<dns_protocol::Header*>(io_buffer_->data());
   return true;
 }
 
 uint16_t DnsQuery::id() const {
-  return base::NetToHost16(header_->id);
+  return base::NetToHost16(header_in_io_buffer()->id);
 }
 
 base::span<const uint8_t> DnsQuery::qname() const {
-  return base::span<const uint8_t>(
-      reinterpret_cast<const uint8_t*>(io_buffer_->data() + kHeaderSize),
-      qname_size_);
+  return base::as_bytes(io_buffer_->span()).subspan(kHeaderSize, qname_size_);
 }
 
 uint16_t DnsQuery::qtype() const {
-  uint16_t type;
-  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(
-                          io_buffer_->data() + kHeaderSize + qname_size_),
-                      &type);
-  return type;
+  return base::numerics::U16FromBigEndian(
+      base::as_bytes(io_buffer_->span())
+          .subspan(kHeaderSize + qname_size_)
+          .first<2u>());
 }
 
 base::StringPiece DnsQuery::question() const {
-  return base::StringPiece(io_buffer_->data() + kHeaderSize,
-                           QuestionSize(qname_size_));
+  auto s = io_buffer_->span().subspan(kHeaderSize, QuestionSize(qname_size_));
+  return base::StringPiece(s.begin(), s.end());
 }
 
 size_t DnsQuery::question_size() const {
@@ -241,20 +233,18 @@ size_t DnsQuery::question_size() const {
 }
 
 void DnsQuery::set_flags(uint16_t flags) {
-  header_->flags = flags;
+  header_in_io_buffer()->flags = flags;
 }
 
 DnsQuery::DnsQuery(const DnsQuery& orig, uint16_t id) {
   CopyFrom(orig);
-  header_->id = base::HostToNet16(id);
+  header_in_io_buffer()->id = base::HostToNet16(id);
 }
 
 void DnsQuery::CopyFrom(const DnsQuery& orig) {
   qname_size_ = orig.qname_size_;
   io_buffer_ = base::MakeRefCounted<IOBufferWithSize>(orig.io_buffer()->size());
-  memcpy(io_buffer_.get()->data(), orig.io_buffer()->data(),
-         io_buffer_.get()->size());
-  header_ = reinterpret_cast<dns_protocol::Header*>(io_buffer_->data());
+  io_buffer_->span().copy_from(orig.io_buffer()->span());
 }
 
 bool DnsQuery::ReadHeader(base::BigEndianReader* reader,

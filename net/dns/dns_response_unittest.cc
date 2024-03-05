@@ -322,7 +322,7 @@ TEST(DnsRecordParserTest, ReadRecord) {
   };
 
   std::string out;
-  DnsRecordParser parser(data, sizeof(data), 0, /*num_records=*/2);
+  DnsRecordParser parser(data, 0, /*num_records=*/2);
 
   DnsResourceRecord record;
   EXPECT_TRUE(parser.ReadRecord(&record));

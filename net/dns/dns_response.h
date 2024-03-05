@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
@@ -70,24 +71,29 @@ class NET_EXPORT_PRIVATE DnsRecordParser {
   // Construct an uninitialized iterator.
   DnsRecordParser();
 
-  // Construct an iterator to process the `packet` of given `length`.
+  // Construct an iterator to process the `packet`.
   // `offset` points to the beginning of the answer section. `ReadRecord()` will
   // fail if called more than `num_records` times, no matter whether or not
   // there is additional data at the end of the buffer that may appear to be a
   // valid record.
-  DnsRecordParser(const void* packet,
-                  size_t length,
+  DnsRecordParser(base::span<const uint8_t> packet,
                   size_t offset,
                   size_t num_records);
 
+  // TODO(crbug.com/40284755): Deprecated, use the span-based constructor.
+  UNSAFE_BUFFER_USAGE DnsRecordParser(const void* packet,
+                                      size_t length,
+                                      size_t offset,
+                                      size_t num_records);
+
   // Returns |true| if initialized.
-  bool IsValid() const { return packet_ != nullptr; }
+  bool IsValid() const { return !packet_.empty(); }
 
   // Returns |true| if no more bytes remain in the packet.
-  bool AtEnd() const { return cur_ == packet_ + length_; }
+  bool AtEnd() const { return cur_ == packet_.size(); }
 
   // Returns current offset into the packet.
-  size_t GetOffset() const { return cur_ - packet_; }
+  size_t GetOffset() const { return cur_; }
 
   // Parses a (possibly compressed) DNS name from the packet starting at
   // |pos|. Stores output (even partial) in |out| unless |out| is NULL. |out|
@@ -107,12 +113,11 @@ class NET_EXPORT_PRIVATE DnsRecordParser {
   bool ReadQuestion(std::string& out_dotted_qname, uint16_t& out_qtype);
 
  private:
-  const char* packet_ = nullptr;
-  size_t length_ = 0;
-  size_t num_records_ = 0;
-  size_t num_records_parsed_ = 0;
+  base::span<const uint8_t> packet_;
+  size_t num_records_ = 0u;
+  size_t num_records_parsed_ = 0u;
   // Current offset within the packet.
-  const char* cur_ = nullptr;
+  size_t cur_ = 0u;
 };
 
 // Buffer-holder for the DNS response allowing easy access to the header fields
