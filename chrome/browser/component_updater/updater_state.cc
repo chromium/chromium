@@ -35,7 +35,7 @@ namespace {
 // These literals must not be changed since they affect the forward and
 // backward compatibility with //chrome/updater.
 constexpr char kUpdaterPrefsActiveVersion[] = "active_version";
-constexpr char kUpdaterPrefsLastChecked[] = "update_time";
+constexpr char kUpdaterPrefsLastChecked[] = "last_checked";
 constexpr char kUpdaterPrefsLastStarted[] = "last_started";
 }  // namespace
 
