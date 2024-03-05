@@ -17,7 +17,6 @@ AudioStreamView::AudioStreamView()
   SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_MEDIA_PREVIEW_AUDIO_STREAM_ACCESSIBLE_NAME));
   SetAccessibleRole(ax::mojom::Role::kSlider);
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetFlipCanvasOnPaintForRTLUI(true);
 }
 

@@ -90,13 +90,10 @@ class MicCoordinatorTest : public TestWithBrowserView {
   }
 
   void VerifyEmptyCombobox() const {
-    // Our combobox model size will always be >= 1. If no mics are connected,
-    // a message is shown to the user to connect a mic.
+    // Our combobox model size will always be >= 1.
     // Verify that there is precisely one item in the combobox model.
     EXPECT_EQ(GetComboboxModel().GetItemCount(), 1u);
-    EXPECT_EQ(
-        GetComboboxModel().GetItemAt(/*index=*/0),
-        l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_NO_MICS_FOUND_COMBOBOX));
+    EXPECT_EQ(GetComboboxModel().GetItemAt(/*index=*/0), std::u16string());
   }
 
   bool AddFakeInputDevice(const media::AudioDeviceDescription& descriptor) {

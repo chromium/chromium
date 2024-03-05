@@ -38,7 +38,8 @@ class MediaViewControllerBase {
                           ui::ComboboxModel* model,
                           SourceChangeCallback source_change_callback,
                           const std::u16string& combobox_accessible_name,
-                          const std::u16string& no_device_connected_label_text);
+                          const std::u16string& no_devices_found_combobox_text,
+                          const std::u16string& no_devices_found_label_text);
   MediaViewControllerBase(const MediaViewControllerBase&) = delete;
   MediaViewControllerBase& operator=(const MediaViewControllerBase&) = delete;
   ~MediaViewControllerBase();
@@ -46,7 +47,7 @@ class MediaViewControllerBase {
   // Returns the immediate parent view of the live camera/mic feeds.
   MediaView& GetLiveFeedContainer() { return live_feed_container_.get(); }
 
-  // Enables the combobox if `device_count` > 1.
+  // Shows the combobox if `device_count` > 1.
   void OnDeviceListChanged(size_t device_count);
 
  private:
@@ -54,10 +55,15 @@ class MediaViewControllerBase {
 
   void OnComboboxSelection();
 
+  void UpdateDeviceNameLabel(bool has_devices);
+
   const raw_ref<MediaView> base_view_;
   const raw_ref<MediaView> live_feed_container_;
-  const raw_ref<views::Label> no_device_connected_label_;
+  const raw_ref<views::Label> no_devices_found_label_;
+  const raw_ref<views::Label> device_name_label_;
   const raw_ref<views::Combobox> device_selector_combobox_;
+
+  const std::u16string no_devices_found_combobox_text_;
 
   const SourceChangeCallback source_change_callback_;
 };

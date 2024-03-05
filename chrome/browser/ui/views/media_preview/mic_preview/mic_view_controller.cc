@@ -32,8 +32,9 @@ const ui::ImageModel GetMicImageModel() {
 std::vector<ui::SimpleComboboxModel::Item> GetComboboxItems(
     const std::vector<media::AudioDeviceDescription>& audio_source_infos) {
   if (audio_source_infos.empty()) {
-    return {ui::SimpleComboboxModel::Item{
-        l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_NO_MICS_FOUND_COMBOBOX)}};
+    // TODO(b/328262459): At least one item is needed because combobox doesn't
+    // handle empty models correctly.
+    return {ui::SimpleComboboxModel::Item(std::u16string())};
   }
 
   std::vector<ui::SimpleComboboxModel::Item> items;
@@ -70,12 +71,15 @@ MicViewController::MicViewController(
 
   const auto& combobox_accessible_name =
       l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_MIC_ACCESSIBLE_NAME);
-  const auto& no_device_connected_label_text =
+  const auto& no_devices_found_combobox_text =
+      l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_NO_MICS_FOUND_COMBOBOX);
+  const auto& no_devices_found_label_text =
       l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_NO_MICS_FOUND);
 
   base_controller_ = std::make_unique<MediaViewControllerBase>(
       base_view, needs_borders, &combobox_model, std::move(callback),
-      combobox_accessible_name, no_device_connected_label_text);
+      combobox_accessible_name, no_devices_found_combobox_text,
+      no_devices_found_label_text);
 
   auto& container = GetLiveFeedContainer();
   container.SetOrientation(views::BoxLayout::Orientation::kHorizontal);

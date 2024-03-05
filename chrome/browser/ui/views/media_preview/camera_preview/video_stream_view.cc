@@ -25,7 +25,6 @@ VideoStreamView::VideoStreamView()
   SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_MEDIA_PREVIEW_VIDEO_STREAM_ACCESSIBLE_NAME));
   SetAccessibleRole(ax::mojom::Role::kImage);
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
   raster_context_provider_ =
       content::GetContextFactory()->SharedMainThreadRasterContextProvider();
