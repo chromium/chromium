@@ -38,6 +38,7 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -72,18 +73,6 @@ std::tuple<int, base::Time, int> GetPriorityProperties(
 bool IsBetterMatch(const PasswordForm* lhs, const PasswordForm* rhs) {
   return GetPriorityProperties(lhs) > GetPriorityProperties(rhs);
 }
-
-#if BUILDFLAG(IS_ANDROID)
-bool UsesSplitStoresAndUPMForLocal(PrefService* pref_service) {
-  return pref_service &&
-         static_cast<
-             password_manager::prefs::UseUpmLocalAndSeparateStoresState>(
-             pref_service->GetInteger(
-                 password_manager::prefs::
-                     kPasswordsUseUPMLocalAndSeparateStores)) ==
-             password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn;
-}
-#endif
 
 }  // namespace
 
@@ -167,7 +156,7 @@ void UserTriggeredManualGenerationFromContextMenu(
 
 bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client) {
 #if BUILDFLAG(IS_ANDROID)
-  if (UsesSplitStoresAndUPMForLocal(client->GetPrefs()) &&
+  if (password_manager::UsesSplitStoresAndUPMForLocal(client->GetPrefs()) &&
       IsSyncFeatureEnabledIncludingPasswords(client->GetSyncService())) {
     // After store split on Android, AccountPasswordStore is a default store for
     // saving passwords when sync is enabled. If either of conditions above is
