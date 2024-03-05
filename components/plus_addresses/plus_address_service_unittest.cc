@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -25,11 +27,15 @@
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/webdata/plus_address_table.h"
+#include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/webdata/common/web_database.h"
+#include "components/webdata/common/web_database_service.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -329,7 +335,8 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsUnconfirmed) {
   PlusAddressService service(
       identity_test_env.identity_manager(), nullptr,
       std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory));
+          identity_test_env.identity_manager(), test_shared_loader_factory),
+      /*webdata_service=*/nullptr);
 
   base::test::TestFuture<const PlusProfileOrError&> future;
   const url::Origin no_subdomain_origin =
@@ -362,7 +369,8 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsConfirmed) {
   PlusAddressService service(
       identity_test_env.identity_manager(), nullptr,
       std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory));
+          identity_test_env.identity_manager(), test_shared_loader_factory),
+      /*webdata_service=*/nullptr);
 
   base::test::TestFuture<const PlusProfileOrError&> future;
   const url::Origin no_subdomain_origin =
@@ -395,7 +403,8 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_Fails) {
   PlusAddressService service(
       identity_test_env.identity_manager(), nullptr,
       std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory));
+          identity_test_env.identity_manager(), test_shared_loader_factory),
+      /*webdata_service=*/nullptr);
 
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
@@ -422,7 +431,8 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
   PlusAddressService service(
       identity_test_env.identity_manager(), nullptr,
       std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory));
+          identity_test_env.identity_manager(), test_shared_loader_factory),
+      /*webdata_service=*/nullptr);
 
   base::test::TestFuture<const PlusProfileOrError&> future;
   const url::Origin no_subdomain_origin =
@@ -463,7 +473,8 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Fails) {
   PlusAddressService service(
       identity_test_env.identity_manager(), nullptr,
       std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory));
+          identity_test_env.identity_manager(), test_shared_loader_factory),
+      /*webdata_service=*/nullptr);
   std::string plus_address = "plus+remote@plus.plus";
   ASSERT_FALSE(service.IsPlusAddress(plus_address));
 
@@ -497,7 +508,8 @@ TEST_F(PlusAddressServiceRequestsTest,
   PlusAddressService service(
       identity_test_env.identity_manager(), nullptr,
       std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory));
+          identity_test_env.identity_manager(), test_shared_loader_factory),
+      /*webdata_service=*/nullptr);
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://test.example"));
   const std::string site = "test.example";
@@ -546,7 +558,8 @@ TEST_F(PlusAddressServiceRequestsTest,
   PlusAddressService service(
       identity_test_env.identity_manager(), nullptr,
       std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory));
+          identity_test_env.identity_manager(), test_shared_loader_factory),
+      /*webdata_service=*/nullptr);
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://test.example"));
   const std::string site = "test.example";
@@ -621,7 +634,8 @@ TEST_F(PlusAddressServicePolling, CallsGetAllPlusAddresses) {
   PlusAddressService service(
       identity_test_env.identity_manager(), prefs(),
       std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory));
+          identity_test_env.identity_manager(), test_shared_loader_factory),
+      /*webdata_service=*/nullptr);
   // Unblock the initial polling request.
   test_url_loader_factory.SimulateResponseForPendingRequest(
       plus_profiles_endpoint, test::MakeListResponse({}));
@@ -671,7 +685,8 @@ TEST_F(PlusAddressServicePolling,
   PlusAddressService service(
       identity_test_env.identity_manager(), prefs(),
       std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory));
+          identity_test_env.identity_manager(), test_shared_loader_factory),
+      /*webdata_service=*/nullptr);
   EXPECT_TRUE(service.is_enabled());
   // Unblock the initial polling request.
   ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
@@ -700,7 +715,8 @@ TEST_F(PlusAddressServicePolling,
   PlusAddressService service(
       identity_test_env.identity_manager(), prefs(),
       std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory));
+          identity_test_env.identity_manager(), test_shared_loader_factory),
+      /*webdata_service=*/nullptr);
   EXPECT_TRUE(service.is_enabled());
   // Unblock the initial polling request.
   ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
@@ -729,7 +745,8 @@ TEST_F(PlusAddressServicePolling,
   PlusAddressService service(
       identity_test_env.identity_manager(), prefs(),
       std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory));
+          identity_test_env.identity_manager(), test_shared_loader_factory),
+      /*webdata_service=*/nullptr);
   EXPECT_TRUE(service.is_enabled());
   // Unblock the initial polling request.
   test_url_loader_factory.SimulateResponseForPendingRequest(
@@ -750,7 +767,8 @@ TEST_F(PlusAddressServicePolling, PrimaryAccountCleared_TogglesPollingOff) {
   PlusAddressService service(
       identity_test_env.identity_manager(), prefs(),
       std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory));
+          identity_test_env.identity_manager(), test_shared_loader_factory),
+      /*webdata_service=*/nullptr);
   // Unblock initial poll.
   test_url_loader_factory.SimulateResponseForPendingRequest(
       plus_profiles_endpoint, test::MakeListResponse({}));
@@ -788,7 +806,8 @@ TEST_F(PlusAddressServicePolling, PrimaryRefreshTokenError_TogglesPollingOff) {
   PlusAddressService service(
       identity_test_env.identity_manager(), prefs(),
       std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory));
+          identity_test_env.identity_manager(), test_shared_loader_factory),
+      /*webdata_service=*/nullptr);
   // Unblock initial poll.
   test_url_loader_factory.SimulateResponseForPendingRequest(
       plus_profiles_endpoint, test::MakeListResponse({}));
@@ -816,6 +835,53 @@ TEST_F(PlusAddressServicePolling, PrimaryRefreshTokenError_TogglesPollingOff) {
   ASSERT_TRUE(service.GetPlusAddress(foo_origin).has_value());
   EXPECT_EQ(service.GetPlusAddress(foo_origin).value(), "plus+foo@plus.plus");
   EXPECT_TRUE(service.IsPlusAddress("plus+foo@plus.plus"));
+}
+
+// Tests that communication with `PlusAddressTable` works.
+class PlusAddressServiceWebDataTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    // Create an in-memory PlusAddressTable fully operating on the UI sequence.
+    webdatabase_service_ = base::MakeRefCounted<WebDatabaseService>(
+        base::FilePath(WebDatabase::kInMemoryPath),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+    webdatabase_service_->AddTable(std::make_unique<PlusAddressTable>());
+    webdatabase_service_->LoadDatabase();
+    plus_webdata_service_ = base::MakeRefCounted<PlusAddressWebDataService>(
+        webdatabase_service_,
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+    plus_webdata_service_->Init(base::DoNothing());
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  scoped_refptr<WebDatabaseService> webdatabase_service_;
+  scoped_refptr<PlusAddressWebDataService> plus_webdata_service_;
+};
+
+// Tests that when plus addresses are received from the backend, they are
+// persisted in the database and afterwards available through
+// PlusAddressService.
+TEST_F(PlusAddressServiceWebDataTest, DatabaseRoundTrip) {
+  PlusAddressService service(
+      /*identity_manager=*/nullptr, /*pref_service=*/nullptr,
+      std::make_unique<PlusAddressHttpClientImpl>(
+          /*identity_manager=*/nullptr,
+          /*url_loader_factory=*/nullptr),
+      plus_webdata_service_);
+  // Simulate receiving an address from the backend.
+  // TODO(b/322147254): Update once sync integration exists.
+  url::Origin foo_origin = url::Origin::Create(GURL("https://foo.com"));
+  service.UpdatePlusAddressMap(
+      {{foo_origin.GetURL().host(), "plus+foo@plus.plus"}});
+
+  // Expect that it is not available through the `service` yet, since the DB
+  // task is still pending.
+  EXPECT_FALSE(service.GetPlusAddress(foo_origin).has_value());
+
+  // Wait for the DB tasks to finish and expect that the address is available.
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(service.GetPlusAddress(foo_origin).has_value());
 }
 
 class PlusAddressServiceDisabledTest : public PlusAddressServiceTest {

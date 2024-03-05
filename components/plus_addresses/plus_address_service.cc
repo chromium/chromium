@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,6 +27,7 @@
 #include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/webdata/common/web_data_results.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_status_code.h"
@@ -53,7 +55,8 @@ PlusAddressService::PlusAddressService(
                          /*pref_service=*/nullptr,
                          std::make_unique<PlusAddressHttpClientImpl>(
                              identity_manager,
-                             /*url_loader_factory=*/nullptr)) {}
+                             /*url_loader_factory=*/nullptr),
+                         /*webdata_service=*/nullptr) {}
 
 PlusAddressService::PlusAddressService()
     : PlusAddressService(
@@ -61,17 +64,20 @@ PlusAddressService::PlusAddressService()
           /*pref_service=*/nullptr,
           std::make_unique<PlusAddressHttpClientImpl>(
               /*identity_manager=*/nullptr,
-              /*url_loader_factory=*/nullptr)) {}
+              /*url_loader_factory=*/nullptr),
+          /*webdata_service=*/nullptr) {}
 
 PlusAddressService::~PlusAddressService() = default;
 
 PlusAddressService::PlusAddressService(
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
-    std::unique_ptr<PlusAddressHttpClient> plus_address_http_client)
+    std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
+    scoped_refptr<PlusAddressWebDataService> webdata_service)
     : identity_manager_(identity_manager),
       pref_service_(pref_service),
       plus_address_http_client_(std::move(plus_address_http_client)),
+      webdata_service_(webdata_service),
       plus_address_allocator_(std::make_unique<PlusAddressJitAllocator>(
           this,
           plus_address_http_client_.get())),
@@ -83,6 +89,9 @@ PlusAddressService::PlusAddressService(
   }
   if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
+  }
+  if (webdata_service_ && is_enabled()) {
+    webdata_service_->GetPlusProfiles(this);
   }
 }
 
@@ -289,7 +298,9 @@ void PlusAddressService::SyncPlusAddressMapping() {
       [](PlusAddressService* service,
          const PlusAddressMapOrError& maybe_mapping) {
         if (maybe_mapping.has_value()) {
-          service->UpdatePlusAddressMap(maybe_mapping.value());
+          if (service->is_enabled()) {
+            service->UpdatePlusAddressMap(maybe_mapping.value());
+          }
           if (!service->account_is_forbidden_.has_value()) {
             service->account_is_forbidden_.emplace(false);
           }
@@ -304,12 +315,44 @@ void PlusAddressService::SyncPlusAddressMapping() {
 
 void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!is_enabled()) {
+  if (!webdata_service_) {
+    // Tests might not have a database. In this case, update the local cache
+    // directly.
+    plus_address_by_site_ = map;
+    plus_addresses_.clear();
+    for (const auto& [_, value] : map) {
+      plus_addresses_.insert(value);
+    }
     return;
   }
-  plus_address_by_site_ = map;
-  for (const auto& [_, value] : map) {
-    plus_addresses_.insert(value);
+  // Update the database.
+  webdata_service_->ClearPlusProfiles();
+  for (const auto& [facet, plus_address] : map) {
+    webdata_service_->AddPlusProfile(
+        {.facet = facet, .plus_address = plus_address, .is_confirmed = true});
+  }
+  // TODO(b/322147254): Re-reading the data we just wrote is unnecessary and the
+  // local cache could be updated right away. This simply exists as a "sanity
+  // check" that the round trip to the database works. Once the sync integration
+  // has finished, `UpdatePlusAddressMap()` and the surrounding polling logic
+  // will be removed.
+  webdata_service_->GetPlusProfiles(this);
+}
+
+void PlusAddressService::OnWebDataServiceRequestDone(
+    WebDataServiceBase::Handle handle,
+    std::unique_ptr<WDTypedResult> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(result->GetType(), PLUS_ADDRESS_RESULT);
+  std::vector<PlusProfile> plus_profiles =
+      static_cast<WDResult<std::vector<PlusProfile>>*>(result.get())
+          ->GetValue();
+  plus_address_by_site_.clear();
+  plus_addresses_.clear();
+  for (const PlusProfile& plus_profile : plus_profiles) {
+    plus_address_by_site_.insert(
+        {plus_profile.facet, plus_profile.plus_address});
+    plus_addresses_.insert(plus_profile.plus_address);
   }
 }
 
@@ -361,6 +404,9 @@ void PlusAddressService::HandleSignout() {
   plus_address_by_site_.clear();
   plus_addresses_.clear();
   repeating_timer_.reset();
+  if (webdata_service_) {
+    webdata_service_->ClearPlusProfiles();
+  }
 }
 
 std::set<std::string> PlusAddressService::GetAndParseExcludedSites() {

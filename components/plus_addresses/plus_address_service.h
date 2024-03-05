@@ -11,13 +11,16 @@
 #include <string>
 #include <unordered_set>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/webdata/common/web_data_service_consumer.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/origin.h"
 
@@ -37,7 +40,8 @@ class PlusAddressHttpClient;
 // Not intended for widespread use.
 class PlusAddressService : public KeyedService,
                            public autofill::AutofillPlusAddressDelegate,
-                           public signin::IdentityManager::Observer {
+                           public signin::IdentityManager::Observer,
+                           public WebDataServiceConsumer {
  public:
   // Limits the number of retries allowed for the initial poll request.
   const int MAX_INITIAL_POLL_RETRY_ATTEMPTS = 1;
@@ -50,12 +54,12 @@ class PlusAddressService : public KeyedService,
   explicit PlusAddressService(signin::IdentityManager* identity_manager);
   ~PlusAddressService() override;
 
-  // Initialize the PlusAddressService with a `IdentityManager`, `PrefService`,
-  // and a `SharedURLLoaderFactory`.
+  // Initialize the PlusAddressService with its dependencies.
   PlusAddressService(
       signin::IdentityManager* identity_manager,
       PrefService* pref_service,
-      std::unique_ptr<PlusAddressHttpClient> plus_address_http_client);
+      std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
+      scoped_refptr<PlusAddressWebDataService> webdata_service);
 
   // autofill::AutofillPlusAddressDelegate:
   // Checks whether the passed-in string is a known plus address.
@@ -66,6 +70,11 @@ class PlusAddressService : public KeyedService,
       std::u16string_view focused_field_value,
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
   void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
+
+  // WebDataServiceConsumer:
+  void OnWebDataServiceRequestDone(
+      WebDataServiceBase::Handle handle,
+      std::unique_ptr<WDTypedResult> result) override;
 
   // Returns `true` when plus addresses are supported. This includes checks that
   // the `kPlusAddressesEnabled` base::Feature is enabled, that there's a
@@ -122,6 +131,11 @@ class PlusAddressService : public KeyedService,
 
   bool is_enabled() const;
 
+  // Updates `plus_address_by_site_` and `plus_addresses_` using `map`.
+  // TODO(b/322147254): This is only public for easier testing. Once sync
+  // integration has finished, it can be removed entirely.
+  void UpdatePlusAddressMap(const PlusAddressMap& map);
+
  protected:
   // Creates and starts a timer to keep `plus_address_by_site_` and
   // `plus_addresses` in sync with a remote plus address server.
@@ -129,9 +143,6 @@ class PlusAddressService : public KeyedService,
   // This has no effect if this service is not enabled, `pref_service_` is null
   // or `repeating_timer_` has already been created.
   void CreateAndStartTimer();
-
-  // Updates `plus_address_by_site_` and `plus_addresses_` using `map`.
-  void UpdatePlusAddressMap(const PlusAddressMap& map);
 
   // Error handling for failed requests made by GetAllPlusAddresses.
   //
@@ -177,6 +188,9 @@ class PlusAddressService : public KeyedService,
 
   // Handles requests to a remote server that this service uses.
   std::unique_ptr<PlusAddressHttpClient> plus_address_http_client_;
+
+  // Responsible for communicating with `PlusAddressTable`.
+  scoped_refptr<PlusAddressWebDataService> webdata_service_;
 
   // Responsible for allocating new plus addresses.
   const std::unique_ptr<PlusAddressAllocator> plus_address_allocator_;

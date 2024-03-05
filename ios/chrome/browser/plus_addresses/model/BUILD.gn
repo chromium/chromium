@@ -13,5 +13,6 @@ source_set("model") {
     "//components/plus_addresses",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/webdata_services/model",
   ]
 }

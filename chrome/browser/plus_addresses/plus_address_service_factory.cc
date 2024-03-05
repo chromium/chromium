@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_service.h"
@@ -49,6 +50,7 @@ PlusAddressServiceFactory::PlusAddressServiceFactory()
     : ProfileKeyedServiceFactory("PlusAddressService",
                                  CreateProfileSelections()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(WebDataServiceFactory::GetInstance());
 }
 
 PlusAddressServiceFactory::~PlusAddressServiceFactory() = default;
@@ -68,7 +70,9 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<plus_addresses::PlusAddressService>(
       identity_manager, profile->GetPrefs(),
       std::make_unique<plus_addresses::PlusAddressHttpClientImpl>(
-          identity_manager, profile->GetURLLoaderFactory()));
+          identity_manager, profile->GetURLLoaderFactory()),
+      WebDataServiceFactory::GetPlusAddressWebDataForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS));
 }
 
 // Create this service when the profile is created to support populating the
