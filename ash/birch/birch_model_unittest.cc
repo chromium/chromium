@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -23,13 +24,33 @@ namespace ash {
 
 namespace {
 
+// A data provider that does nothing.
+class StubBirchDataProvider : public BirchDataProvider {
+ public:
+  StubBirchDataProvider() = default;
+  ~StubBirchDataProvider() override = default;
+
+  // BirchDataProvider:
+  void RequestBirchDataFetch() override {}
+};
+
+// A BirchClient that returns data providers that do nothing.
 class StubBirchClient : public BirchClient {
  public:
   StubBirchClient() = default;
   ~StubBirchClient() override = default;
 
   // BirchClient:
-  void RequestBirchDataFetch() override {}
+  BirchDataProvider* GetCalendarProvider() override { return &data_provider_; }
+  BirchDataProvider* GetFileSuggestProvider() override {
+    return &data_provider_;
+  }
+  BirchDataProvider* GetRecentTabsProvider() override {
+    return &data_provider_;
+  }
+
+ private:
+  StubBirchDataProvider data_provider_;
 };
 
 class TestModelConsumer {
@@ -68,7 +89,7 @@ class BirchModelTest : public AshTestBase {
     // Inject no-op, stub weather provider to prevent real implementation from
     // returning empty weather info.
     Shell::Get()->birch_model()->OverrideWeatherProviderForTest(
-        std::make_unique<StubBirchClient>());
+        std::make_unique<StubBirchDataProvider>());
     Shell::Get()->birch_model()->SetClient(&stub_birch_client_);
 
     // Set a test clock so that ranking uses a consistent time across test runs.

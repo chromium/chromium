@@ -79,7 +79,7 @@ TEST_F(BirchCalendarProviderTest, GetCalendarEvents) {
   provider.SetFetcherForTest(std::move(fetcher));
 
   // Get the calendar events.
-  provider.GetCalendarEvents();
+  provider.RequestBirchDataFetch();
 
   // Verify the events were inserted into the birch model.
   const auto& items = Shell::Get()->birch_model()->GetCalendarItemsForTest();
@@ -116,7 +116,7 @@ TEST_F(BirchCalendarProviderTest, GetCalendarEvents_WithAttachments) {
   provider.SetFetcherForTest(std::move(fetcher));
 
   // Get the calendar events.
-  provider.GetCalendarEvents();
+  provider.RequestBirchDataFetch();
 
   // Verify the event was converted correctly to Birch data types.
   auto* birch_model = Shell::Get()->birch_model();
@@ -152,7 +152,7 @@ TEST_F(BirchCalendarProviderTest, GetCalendarEvents_HttpError) {
   provider.SetFetcherForTest(std::move(fetcher));
 
   // Get the calendar events.
-  provider.GetCalendarEvents();
+  provider.RequestBirchDataFetch();
 
   // Verify the birch model is empty.
   EXPECT_TRUE(Shell::Get()->birch_model()->GetCalendarItemsForTest().empty());
@@ -173,7 +173,7 @@ TEST_F(BirchCalendarProviderTest, GetCalendarEvents_NullEventList) {
   provider.SetFetcherForTest(std::move(fetcher));
 
   // Get the calendar events.
-  provider.GetCalendarEvents();
+  provider.RequestBirchDataFetch();
 
   // Verify the birch model is empty.
   EXPECT_TRUE(Shell::Get()->birch_model()->GetCalendarItemsForTest().empty());

@@ -26,7 +26,7 @@ BirchFileSuggestProvider::BirchFileSuggestProvider(Profile* profile)
 
 BirchFileSuggestProvider::~BirchFileSuggestProvider() = default;
 
-void BirchFileSuggestProvider::RequestDataFetch() {
+void BirchFileSuggestProvider::RequestBirchDataFetch() {
   file_suggest_service_->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(&BirchFileSuggestProvider::OnSuggestedFileDataUpdated,
@@ -38,7 +38,7 @@ void BirchFileSuggestProvider::OnFileSuggestionUpdated(
   weak_factory_.InvalidateWeakPtrs();
 
   if (type == FileSuggestionType::kDriveFile) {
-    RequestDataFetch();
+    RequestBirchDataFetch();
   }
 }
 

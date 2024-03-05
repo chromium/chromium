@@ -2600,8 +2600,6 @@ static_library("ui") {
       "ash/birch/birch_calendar_fetcher.h",
       "ash/birch/birch_calendar_provider.cc",
       "ash/birch/birch_calendar_provider.h",
-      "ash/birch/birch_client_impl.cc",
-      "ash/birch/birch_client_impl.h",
       "ash/birch/birch_file_suggest_provider.cc",
       "ash/birch/birch_file_suggest_provider.h",
       "ash/birch/birch_keyed_service.cc",

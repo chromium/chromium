@@ -9,11 +9,14 @@
 
 namespace ash {
 
+class BirchDataProvider;
+
 // Interface to communicate with the birch keyed service.
 class ASH_EXPORT BirchClient {
  public:
-  // Request that the birch keyed service start fetching data.
-  virtual void RequestBirchDataFetch() = 0;
+  virtual BirchDataProvider* GetCalendarProvider() = 0;
+  virtual BirchDataProvider* GetFileSuggestProvider() = 0;
+  virtual BirchDataProvider* GetRecentTabsProvider() = 0;
 
   virtual ~BirchClient() = default;
 };

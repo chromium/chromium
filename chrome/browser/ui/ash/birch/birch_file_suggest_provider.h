@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "ash/ash_export.h"
+#include "ash/birch/birch_data_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -20,14 +21,16 @@ namespace ash {
 // Manages observing file suggestion changes for the birch feature. Fetched
 // file suggest items are send to the `BirchModel` to be stored.
 class ASH_EXPORT BirchFileSuggestProvider
-    : public FileSuggestKeyedService::Observer {
+    : public BirchDataProvider,
+      public FileSuggestKeyedService::Observer {
  public:
   explicit BirchFileSuggestProvider(Profile* profile);
   BirchFileSuggestProvider(const BirchFileSuggestProvider&) = delete;
   BirchFileSuggestProvider& operator=(const BirchFileSuggestProvider&) = delete;
   ~BirchFileSuggestProvider() override;
 
-  void RequestDataFetch();
+  // BirchDataProvider:
+  void RequestBirchDataFetch() override;
 
   // FileSuggestKeyedService::Observer:
   void OnFileSuggestionUpdated(FileSuggestionType type) override;

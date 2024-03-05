@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/birch/birch_data_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
@@ -20,18 +21,18 @@ class BirchCalendarFetcher;
 
 // Manages fetching calendar events for the birch feature. Fetched events are
 // sent to the `BirchModel` to be stored.
-class BirchCalendarProvider {
+class BirchCalendarProvider : public BirchDataProvider {
  public:
   explicit BirchCalendarProvider(Profile* profile);
   BirchCalendarProvider(const BirchCalendarProvider&) = delete;
   BirchCalendarProvider& operator=(const BirchCalendarProvider&) = delete;
-  ~BirchCalendarProvider();
+  ~BirchCalendarProvider() override;
 
   void Initialize();
   void Shutdown();
 
-  // Gets calendar events and stores them in the `BirchModel`.
-  void GetCalendarEvents();
+  // BirchDataProvider:
+  void RequestBirchDataFetch() override;
 
   void SetFetcherForTest(std::unique_ptr<BirchCalendarFetcher> fetcher);
 

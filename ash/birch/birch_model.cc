@@ -104,7 +104,9 @@ void BirchModel::RequestBirchDataFetch(base::OnceClosure callback) {
 
   // TODO(b/305094143): Call this before we begin showing birch views.
   if (birch_client_) {
-    birch_client_->RequestBirchDataFetch();
+    birch_client_->GetCalendarProvider()->RequestBirchDataFetch();
+    birch_client_->GetFileSuggestProvider()->RequestBirchDataFetch();
+    birch_client_->GetRecentTabsProvider()->RequestBirchDataFetch();
   }
   if (weather_provider_) {
     weather_provider_->RequestBirchDataFetch();
@@ -228,7 +230,7 @@ bool BirchModel::IsDataFresh() {
 }
 
 void BirchModel::OverrideWeatherProviderForTest(
-    std::unique_ptr<BirchClient> weather_provider) {
+    std::unique_ptr<BirchDataProvider> weather_provider) {
   CHECK(weather_provider_);
   weather_provider_ = std::move(weather_provider);
 }

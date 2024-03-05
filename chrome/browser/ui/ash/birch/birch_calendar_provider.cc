@@ -35,8 +35,8 @@ void BirchCalendarProvider::Shutdown() {
   fetcher_->Shutdown();
 }
 
-void BirchCalendarProvider::GetCalendarEvents() {
-  VLOG(1) << "BirchCalendarProvider::GetCalendarEvents";
+void BirchCalendarProvider::RequestBirchDataFetch() {
+  VLOG(1) << "BirchCalendarProvider::RequestBirchDataFetch";
 
   // Get all events from 2 hours ago until 1 day in the future.
   base::Time now = base::Time::Now();

@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "ash/birch/birch_client.h"
+#include "ash/birch/birch_data_provider.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 
@@ -21,7 +21,7 @@ class BirchModel;
 
 struct WeatherInfo;
 
-class BirchWeatherProvider : public BirchClient {
+class BirchWeatherProvider : public BirchDataProvider {
  public:
   explicit BirchWeatherProvider(BirchModel* birch_model);
   BirchWeatherProvider(const BirchWeatherProvider&) = delete;

@@ -17,6 +17,8 @@
 
 namespace ash {
 
+class BirchDataProvider;
+
 // Birch model, which is used to aggregate and store relevant information from
 // different providers.
 class ASH_EXPORT BirchModel {
@@ -65,7 +67,7 @@ class ASH_EXPORT BirchModel {
   bool IsDataFresh();
 
   void OverrideWeatherProviderForTest(
-      std::unique_ptr<BirchClient> weather_provider);
+      std::unique_ptr<BirchDataProvider> weather_provider);
   void OverrideClockForTest(base::Clock* clock);
 
  private:
@@ -129,7 +131,7 @@ class ASH_EXPORT BirchModel {
 
   raw_ptr<BirchClient> birch_client_ = nullptr;
 
-  std::unique_ptr<BirchClient> weather_provider_;
+  std::unique_ptr<BirchDataProvider> weather_provider_;
 
   // When set, this clock is used to ensure a consistent current time is used
   // for testing.

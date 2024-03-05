@@ -281,6 +281,17 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList feature_list_{features::kForestFeature};
 };
 
+TEST_F(BirchKeyedServiceTest, HasDataProviders) {
+  WaitUntilFileSuggestServiceReady(
+      ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
+          GetProfile()));
+  task_environment()->RunUntilIdle();
+
+  EXPECT_TRUE(birch_keyed_service()->GetCalendarProvider());
+  EXPECT_TRUE(birch_keyed_service()->GetFileSuggestProvider());
+  EXPECT_TRUE(birch_keyed_service()->GetRecentTabsProvider());
+}
+
 TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider) {
   WaitUntilFileSuggestServiceReady(
       ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(

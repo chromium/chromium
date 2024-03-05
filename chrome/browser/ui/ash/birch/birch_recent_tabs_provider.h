@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_BIRCH_BIRCH_RECENT_TABS_PROVIDER_H_
 
 #include "ash/ash_export.h"
+#include "ash/birch/birch_data_provider.h"
 #include "base/memory/raw_ptr.h"
 
 class Profile;
@@ -14,14 +15,15 @@ namespace ash {
 
 // Manages fetching foreign session tabs for the birch feature. Fetched tabs
 // are sent to the `BirchModel` to be stored.
-class ASH_EXPORT BirchRecentTabsProvider {
+class ASH_EXPORT BirchRecentTabsProvider : public BirchDataProvider {
  public:
   explicit BirchRecentTabsProvider(Profile* profile);
   BirchRecentTabsProvider(const BirchRecentTabsProvider&) = delete;
   BirchRecentTabsProvider& operator=(const BirchRecentTabsProvider&) = delete;
-  ~BirchRecentTabsProvider();
+  ~BirchRecentTabsProvider() override;
 
-  void GetRecentTabs();
+  // BirchDataProvider:
+  void RequestBirchDataFetch() override;
 
  private:
   raw_ptr<Profile> profile_ = nullptr;

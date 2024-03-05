@@ -39,7 +39,7 @@ BirchRecentTabsProvider::BirchRecentTabsProvider(Profile* profile)
 
 BirchRecentTabsProvider::~BirchRecentTabsProvider() = default;
 
-void BirchRecentTabsProvider::GetRecentTabs() {
+void BirchRecentTabsProvider::RequestBirchDataFetch() {
   auto* session_sync_service =
       SessionSyncServiceFactory::GetInstance()->GetForProfile(profile_);
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/birch/birch_client.h"
 #include "ash/shell_observer.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -17,13 +18,14 @@ namespace ash {
 
 class Shell;
 class BirchCalendarProvider;
-class BirchClientImpl;
 class BirchFileSuggestProvider;
 class BirchRecentTabsProvider;
 
 // A keyed service which is used to manage data providers for the birch feature.
 // Fetched data will be sent to the `BirchModel` to be stored.
-class BirchKeyedService : public ShellObserver, public KeyedService {
+class BirchKeyedService : public KeyedService,
+                          public ShellObserver,
+                          public BirchClient {
  public:
   explicit BirchKeyedService(Profile* profile);
   BirchKeyedService(const BirchKeyedService&) = delete;
@@ -37,7 +39,10 @@ class BirchKeyedService : public ShellObserver, public KeyedService {
   // ShellObserver:
   void OnShellDestroying() override;
 
-  void RequestBirchDataFetch();
+  // BirchClient:
+  BirchDataProvider* GetCalendarProvider() override;
+  BirchDataProvider* GetFileSuggestProvider() override;
+  BirchDataProvider* GetRecentTabsProvider() override;
 
  private:
   void ShutdownBirch();
@@ -50,8 +55,6 @@ class BirchKeyedService : public ShellObserver, public KeyedService {
   std::unique_ptr<BirchFileSuggestProvider> file_suggest_provider_;
 
   std::unique_ptr<BirchRecentTabsProvider> recent_tabs_provider_;
-
-  std::unique_ptr<BirchClientImpl> birch_client_impl_;
 
   base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 };
