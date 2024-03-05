@@ -70,10 +70,10 @@ const GURL GetFrenchUrl() {
   [BookmarkEarlGreyAppInterface commitPendingWrite];
 }
 
-- (void)setLastUsedBookmarkFolder:(const bookmarks::BookmarkNode*)folder
-                      storageType:(BookmarkModelType)storageType {
-  [BookmarkEarlGreyAppInterface setLastUsedBookmarkFolder:folder
-                                              storageType:storageType];
+- (void)setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
+    (BookmarkModelType)storageType {
+  [BookmarkEarlGreyAppInterface
+      setLastUsedBookmarkFolderToMobileBookmarksInStorageType:storageType];
 }
 
 - (const bookmarks::BookmarkNode*)lastUsedBookmarkFolder {

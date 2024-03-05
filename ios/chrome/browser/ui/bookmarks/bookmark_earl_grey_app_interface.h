@@ -47,8 +47,8 @@ enum class BookmarkModelType;
 + (void)commitPendingWrite;
 
 // Set the last used bookmark folder.
-+ (void)setLastUsedBookmarkFolder:(const bookmarks::BookmarkNode*)folder
-                      storageType:(BookmarkModelType)storageType;
++ (void)setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
+    (BookmarkModelType)storageType;
 
 // Get the last used bookmark folder.
 + (const bookmarks::BookmarkNode*)lastUsedBookmarkFolder;
