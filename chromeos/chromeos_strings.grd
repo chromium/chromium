@@ -5415,6 +5415,15 @@
         <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_BUTTON_USE_APN" desc="Text used to close the APN dialog in view mode.">
           Use this APN
         </message>
+        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_A11Y_USE_APN_ENABLED" desc="A11y announcement when 'Use this APN' button becomes enabled in the APN selection dialog.">
+          Use this APN is now enabled
+        </message>
+        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_A11Y_USE_APN_DISABLED" desc="A11y announcement when 'Use this APN' button becomes disabled in the APN selection dialog.">
+          Use this APN is now disabled
+        </message>
+        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_LIST_ITEM_SELECTED" desc="A11y text for checkmark in APN selection dialog list item">
+          Selected
+        </message>
         <!-- End of APN -->
 
         <!-- Arc Input Overlay -->

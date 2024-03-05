@@ -387,6 +387,39 @@ suite('ApnListTest', function() {
         .click();
   });
 
+  test(
+      'Calling openApnSelectionDialog() opens APN selection dialog',
+      async function() {
+        const getApnSelectionDialog = () =>
+            apnList.shadowRoot.querySelector('apn-selection-dialog');
+        apnList.guid = 'fake-guid';
+        assertFalse(!!getApnSelectionDialog());
+        apnList.openApnSelectionDialog();
+        await flushTasks();
+        assertTrue(!!getApnSelectionDialog());
+        assertEquals(apnList.guid, getApnSelectionDialog().guid);
+        assertEquals(0, getApnSelectionDialog().apnList.length);
+
+        apnList.managedCellularProperties = {};
+        assertEquals(0, getApnSelectionDialog().apnList.length);
+
+        apnList.managedCellularProperties = {
+          apnList: {
+            activeValue: [apn1],
+          },
+        };
+        assertEquals(1, getApnSelectionDialog().apnList.length);
+        assertTrue(OncMojo.apnMatch(apn1, getApnSelectionDialog().apnList[0]));
+
+        const cancelButton =
+            getApnSelectionDialog().shadowRoot.querySelector('.cancel-button');
+        assertTrue(!!cancelButton);
+        cancelButton.click();
+        await flushTasks();
+
+        assertFalse(!!getApnSelectionDialog());
+      });
+
   test('Show disable/remove/enable warning', async function() {
     apnList.managedCellularProperties = {
       connectedApn: Object.assign({}, connectedApn),
@@ -506,6 +539,4 @@ suite('ApnListTest', function() {
     apnList.portalState = PortalState.kNoInternet;
     assertEquals(PortalState.kNoInternet, apns[0].portalState);
   });
-
-  // TODO(b/325487350): Test that <apn-selection-dialog> has correct apnList.
 });

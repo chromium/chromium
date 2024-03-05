@@ -65,6 +65,7 @@ suite('ApnSelectionDialog', () => {
     assertEquals(
         apnSelectionDialog.i18n('apnSelectionDialogDescription'),
         apnSelectionDialogDescription.innerText);
+    assertEquals('polite', apnSelectionDialogDescription.ariaLive);
 
     const apnSelectionActionBtn =
         apnSelectionDialog.shadowRoot.querySelector('#apnSelectionActionBtn');
@@ -79,6 +80,8 @@ suite('ApnSelectionDialog', () => {
     assertEquals(
         apnSelectionDialog.i18n('apnDetailDialogCancel'),
         apnSelectionCancelBtn.innerText);
+    assertEquals(
+        apnSelectionCancelBtn, apnSelectionDialog.shadowRoot.activeElement);
   });
 
   test('No apnList', () => {
@@ -100,6 +103,14 @@ suite('ApnSelectionDialog', () => {
       accessPointName: 'Access Point 2',
     };
 
+    // Button state should not be announced when dialog opens initially.
+    // Announcement should only be made when the enabled state changes
+    // from disabled to enabled.
+    const getActionButtonEnabledA11yText = () =>
+        apnSelectionDialog.shadowRoot.querySelector(
+            '#actionButtonEnabledA11yText');
+    assertFalse(!!getActionButtonEnabledA11yText());
+
     const apnList = [apn1, apn2];
     apnSelectionDialog.apnList = apnList;
     await flushTasks();
@@ -113,16 +124,29 @@ suite('ApnSelectionDialog', () => {
         apnList.length, listItems.length, `APN list lengths don't match`);
     assertTrue(OncMojo.apnMatch(apn1, listItems[0].apn));
     assertTrue(OncMojo.apnMatch(apn2, listItems[1].apn));
+    assertEquals('assertive', listItems[0].ariaLive);
+    assertEquals('assertive', listItems[1].ariaLive);
     assertNull(ironList.selectedItem);
     assertFalse(listItems[0].selected);
+    assertEquals('false', listItems[0].ariaSelected);
     assertFalse(listItems[1].selected);
+    assertEquals('false', listItems[1].ariaSelected);
+    assertFalse(!!getActionButtonEnabledA11yText());
 
     // Select the second APN.
     listItems[1].click();
     await flushTasks();
     assertTrue(OncMojo.apnMatch(apn2, ironList.selectedItem));
     assertFalse(listItems[0].selected);
+    assertEquals('false', listItems[0].ariaSelected);
     assertTrue(listItems[1].selected);
+    assertEquals('true', listItems[1].ariaSelected);
+
+    // Button state becomes enabled, announcement should be made.
+    assertTrue(!!getActionButtonEnabledA11yText());
+    assertEquals(
+        apnSelectionDialog.i18n('apnSelectionDialogA11yUseApnEnabled'),
+        getActionButtonEnabledA11yText().innerText);
 
     // De-select the APN.
     listItems[1].click();
@@ -130,8 +154,16 @@ suite('ApnSelectionDialog', () => {
     assertNull(ironList.selectedItem, `List has a non-null selected item`);
     assertFalse(
         listItems[0].selected, `apn1 is selected when it shouldn\'t be`);
+    assertEquals('false', listItems[0].ariaSelected);
     assertFalse(
         listItems[1].selected, `apn2 is selected when it shouldn\'t be`);
+    assertEquals('false', listItems[0].ariaSelected);
+
+    // Button state becomes disabled, announcement should be made.
+    assertTrue(!!getActionButtonEnabledA11yText());
+    assertEquals(
+        apnSelectionDialog.i18n('apnSelectionDialogA11yUseApnDisabled'),
+        getActionButtonEnabledA11yText().innerText);
   });
 
   test('Clicking the cancel button fires the close event', async () => {

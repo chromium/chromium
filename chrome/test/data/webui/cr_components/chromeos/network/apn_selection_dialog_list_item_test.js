@@ -66,12 +66,15 @@ suite('ApnSelectionDialogListItem', () => {
   });
 
   test('Item selected', async () => {
-    assertNull(
-        apnSelectionDialogListItem.shadowRoot.querySelector('#checkmark'));
+    const getCheckmark = () =>
+        apnSelectionDialogListItem.shadowRoot.querySelector('#checkmark');
+    assertNull(getCheckmark());
 
     apnSelectionDialogListItem.selected = true;
     await flushTasks();
-    assertTrue(
-        !!apnSelectionDialogListItem.shadowRoot.querySelector('#checkmark'));
+    assertTrue(!!getCheckmark);
+    assertEquals(
+        apnSelectionDialogListItem.i18n('apnSelectionDialogListItemSelected'),
+        getCheckmark().ariaLabel);
   });
 });

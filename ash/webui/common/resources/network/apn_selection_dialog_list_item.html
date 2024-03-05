@@ -41,7 +41,6 @@
 <div id="container">
   <div class="flex layout horizontal center link-wrapper">
     <div id="details">
-      <!-- TODO(b/325487350): Implement a11y. -->
       <div class="flex settings-box-text">
         <span id="friendlyApnName">[[getApnDisplayName_(apn)]]</span>
         <span id="secondaryApnName"
@@ -53,7 +52,8 @@
     <template is="dom-if" if="[[selected]]" restamp>
       <iron-icon id="checkmark"
           icon="cellular-setup:checked"
-          tabindex="-1">
+          tabindex="-1"
+          aria-label="[[i18n('apnSelectionDialogListItemSelected')]]">
       </iron-icon>
     </template>
   </div>

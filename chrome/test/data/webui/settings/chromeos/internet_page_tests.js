@@ -1063,6 +1063,7 @@ suite('InternetPage', function() {
         const apnMenuButton =
             internetPage.shadowRoot.querySelector('#apnActionMenuButton');
         assertTrue(!!apnMenuButton);
+        assertEquals(apnMenuButton.title, internetPage.i18n('moreActions'));
         apnMenuButton.click();
         await flushAsync();
 
