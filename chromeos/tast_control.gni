@@ -115,9 +115,6 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardHandwriting.floating_lacros@jacuzzi",
   "inputs.VirtualKeyboardHandwriting.floating_lacros@octopus",
 
-  # Failed on LKGM 15770.0.0, fixed on LKGM 15771.0.0 and later.
-  "filemanager.DrivefsUI",
-
   # b/325107262
   "a11y.Smoke",
   "a11y.Smoke.lacros",
