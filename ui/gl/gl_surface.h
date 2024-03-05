@@ -119,9 +119,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // Get the underlying platform specific surface "handle".
   virtual void* GetHandle() = 0;
 
-  // Returns whether or not the surface supports SwapBuffersWithBounds
-  virtual bool SupportsSwapBuffersWithBounds();
-
   // Returns whether or not the surface supports PostSubBuffer.
   virtual bool SupportsPostSubBuffer();
 
@@ -150,13 +147,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   virtual void SwapBuffersAsync(SwapCompletionCallback completion_callback,
                                 PresentationCallback presentation_callback,
                                 gfx::FrameData data);
-
-  // Swap buffers with content bounds. If it returns SWAP_FAILED, it is possible
-  // that the context is no longer current.
-  virtual gfx::SwapResult SwapBuffersWithBounds(
-      const std::vector<gfx::Rect>& rects,
-      PresentationCallback callback,
-      gfx::FrameData data);
 
   // Copy part of the backbuffer to the frontbuffer. If it returns SWAP_FAILED,
   // it is possible that the context is no longer current.

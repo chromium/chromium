@@ -65,10 +65,6 @@ bool GLSurface::DeferDraws() {
   return false;
 }
 
-bool GLSurface::SupportsSwapBuffersWithBounds() {
-  return false;
-}
-
 bool GLSurface::SupportsPostSubBuffer() {
   return false;
 }
@@ -85,13 +81,6 @@ void GLSurface::SwapBuffersAsync(SwapCompletionCallback completion_callback,
                                  PresentationCallback presentation_callback,
                                  gfx::FrameData data) {
   NOTREACHED();
-}
-
-gfx::SwapResult GLSurface::SwapBuffersWithBounds(
-    const std::vector<gfx::Rect>& rects,
-    PresentationCallback callback,
-    gfx::FrameData data) {
-  return gfx::SwapResult::SWAP_FAILED;
 }
 
 gfx::SwapResult GLSurface::PostSubBuffer(int x,
