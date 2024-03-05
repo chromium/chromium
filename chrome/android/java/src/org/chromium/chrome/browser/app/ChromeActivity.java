@@ -431,17 +431,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     protected void onPreCreate() {
+        // The startup metrics tracker should be created as early as possible in the Activity
+        // lifetime.
+        mActivityTabStartupMetricsTracker =
+                new ActivityTabStartupMetricsTracker(mActivityId, mTabModelSelectorSupplier);
         CachedFlagsSafeMode.getInstance().onStartOrResumeCheckpoint();
-        if (earlyInitializeStartupMetrics()) {
-            mActivityTabStartupMetricsTracker =
-                    new ActivityTabStartupMetricsTracker(mActivityId, mTabModelSelectorSupplier);
-        }
         super.onPreCreate();
         initializeBackPressHandling();
-    }
-
-    private boolean earlyInitializeStartupMetrics() {
-        return ChromeFeatureList.sEarlyInitializeStartupMetrics.isEnabled();
     }
 
     @Override
@@ -747,10 +743,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 ChromeActivitySessionTracker.getInstance();
         chromeActivitySessionTracker.registerTabModelSelectorSupplier(
                 this, mTabModelSelectorSupplier);
-        if (!earlyInitializeStartupMetrics()) {
-            mActivityTabStartupMetricsTracker =
-                    new ActivityTabStartupMetricsTracker(mActivityId, mTabModelSelectorSupplier);
-        }
     }
 
     public ActivityTabStartupMetricsTracker getActivityTabStartupMetricsTracker() {

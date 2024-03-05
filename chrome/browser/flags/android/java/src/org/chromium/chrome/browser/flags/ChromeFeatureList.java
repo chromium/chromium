@@ -274,7 +274,6 @@ public abstract class ChromeFeatureList {
     public static final String DRAW_NATIVE_EDGE_TO_EDGE = "DrawNativeEdgeToEdge";
     public static final String DRAW_WEB_EDGE_TO_EDGE = "DrawWebEdgeToEdge";
     public static final String DYNAMIC_TOP_CHROME = "DynamicTopChrome";
-    public static final String EARLY_INITIALIZE_STARTUP_METRICS = "EarlyInitializeStartupMetrics";
     public static final String EXPERIMENTS_FOR_AGSA = "ExperimentsForAgsa";
     public static final String FEATURE_NOTIFICATION_GUIDE = "FeatureNotificationGuide";
     public static final String FEED_DYNAMIC_COLORS = "FeedDynamicColors";
@@ -573,8 +572,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(DRAW_NATIVE_EDGE_TO_EDGE, false);
     public static final CachedFlag sDrawWebEdgeToEdge = newCachedFlag(DRAW_WEB_EDGE_TO_EDGE, false);
     public static final CachedFlag sDynamicTopChrome = newCachedFlag(DYNAMIC_TOP_CHROME, false);
-    public static final CachedFlag sEarlyInitializeStartupMetrics =
-            newCachedFlag(EARLY_INITIALIZE_STARTUP_METRICS, false);
     public static final CachedFlag sExperimentsForAgsa = newCachedFlag(EXPERIMENTS_FOR_AGSA, true);
     public static final CachedFlag sFeedLoadingPlaceholder =
             newCachedFlag(FEED_LOADING_PLACEHOLDER, false);
@@ -707,7 +704,6 @@ public abstract class ChromeFeatureList {
                     sDrawNativeEdgeToEdge,
                     sDrawWebEdgeToEdge,
                     sDynamicTopChrome,
-                    sEarlyInitializeStartupMetrics,
                     sFeedLoadingPlaceholder,
                     sFriendlierSafeBrowsingSettingsEnhancedProtection,
                     sFriendlierSafeBrowsingSettingsStandardProtection,
