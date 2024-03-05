@@ -80,7 +80,13 @@ class FakeWebContentsManager : public WebContentsManager {
     // An empty url is considered an absent url.
     GURL manifest_url;
     bool valid_manifest_for_web_app = false;
-    blink::mojom::ManifestPtr opt_manifest;
+    // Manifests always go through default processing (e.g. start_url defaulting
+    // to the document_url, and manifest_id defaulting to start_url). This fake
+    // system will ensure that `CheckInstallabilityAndRetrieveManifest` this
+    // behavior is replicated before the manifest is returned for
+    // `CheckInstallabilityAndRetrieveManifest`.
+    blink::mojom::ManifestPtr manifest_before_default_processing;
+
     webapps::InstallableStatusCode error_code =
         webapps::InstallableStatusCode::NO_ERROR_DETECTED;
     GURL favicon_url;

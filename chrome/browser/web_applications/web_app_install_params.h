@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_PARAMS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_PARAMS_H_
 
+#include <iosfwd>
 #include <memory>
 #include <optional>
 #include <string>
@@ -122,6 +123,19 @@ enum class WebAppInstallFlow {
   // experience determined by the site.
   kInstallSite,
 };
+
+enum class FallbackBehavior {
+  // Installation will use the crafted manifest, and error if the manifest is
+  // not installable.
+  kCraftedManifestOnly,
+  // Installation uses the legacy 'create shortcut' flow, which uses the crafted
+  // manifest if possible, and otherwise fallback information (which has an
+  // empty
+  // 'scope()', so IsShortcut() returns true).
+  kAllowFallbackDataAlways,
+};
+
+std::ostream& operator<<(std::ostream& os, FallbackBehavior state);
 
 }  // namespace web_app
 

@@ -196,7 +196,7 @@ TEST_F(InstallFromSyncTest, SuccessWithManifest) {
   fake_page_state.opt_metadata =
       FakeWebContentsManager::CreateMetadataWithIconAndTitle(
           kDocumentTitle, kDocumentIconUrl, kIconSize);
-  fake_page_state.opt_manifest =
+  fake_page_state.manifest_before_default_processing =
       CreateManifest(kWebAppStartUrl, kWebAppManifestId, /*icons=*/true);
 
   // Icon state.
@@ -266,7 +266,7 @@ TEST_F(InstallFromSyncTest, SuccessManifestNoIcons) {
   fake_page_state.opt_metadata =
       FakeWebContentsManager::CreateMetadataWithIconAndTitle(
           kDocumentTitle, kDocumentIconUrl, kIconSize);
-  fake_page_state.opt_manifest =
+  fake_page_state.manifest_before_default_processing =
       CreateManifest(kWebAppStartUrl, kWebAppManifestId, /*icons=*/false);
 
   // Document icon state.
@@ -371,9 +371,10 @@ TEST_F(InstallFromSyncTest, FallbackManifestIdMismatch) {
   fake_page_state.opt_metadata =
       FakeWebContentsManager::CreateMetadataWithIconAndTitle(
           kDocumentTitle, kDocumentIconUrl, kIconSize);
-  fake_page_state.opt_manifest =
+  fake_page_state.manifest_before_default_processing =
       CreateManifest(kWebAppStartUrl, kWebAppManifestId, /*icons=*/true);
-  fake_page_state.opt_manifest->id = kOtherWebAppManifestId;
+  fake_page_state.manifest_before_default_processing->id =
+      kOtherWebAppManifestId;
 
   // Icon state.
   web_contents_manager().GetOrCreateIconState(kDocumentIconUrl).bitmaps = {
@@ -509,7 +510,7 @@ TEST_F(InstallFromSyncTest, Shutdown) {
   fake_page_state.opt_metadata =
       FakeWebContentsManager::CreateMetadataWithIconAndTitle(
           kDocumentTitle, kDocumentIconUrl, kIconSize);
-  fake_page_state.opt_manifest =
+  fake_page_state.manifest_before_default_processing =
       CreateManifest(kWebAppStartUrl, kWebAppManifestId, /*icons=*/true);
   fake_page_state.on_manifest_fetch =
       base::BindLambdaForTesting([&]() { command_manager().Shutdown(); });

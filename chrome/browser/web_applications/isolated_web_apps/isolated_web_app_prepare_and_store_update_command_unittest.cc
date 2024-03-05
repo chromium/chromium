@@ -153,7 +153,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
     page_state.manifest_url =
         url_info_.origin().GetURL().Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
-    page_state.opt_manifest =
+    page_state.manifest_before_default_processing =
         CreateDefaultManifest(url_info_.origin().GetURL(), update_version_);
 
     return page_state;
@@ -453,7 +453,8 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
 
   WriteUpdateBundleToDisk();
   auto& page_state = CreateDefaultPageState();
-  page_state.opt_manifest->scope = GURL("https://example.com/foo");
+  page_state.manifest_before_default_processing->scope =
+      GURL("https://example.com/foo/");
 
   auto result = PrepareAndStoreUpdateInfo(update_version_);
   EXPECT_THAT(result, IsErrorWithMessage(

@@ -342,15 +342,16 @@ class ExternallyAppManagerTest : public WebAppTest {
     install_page_state.manifest_url = manifest_url;
     install_page_state.valid_manifest_for_web_app = true;
 
-    install_page_state.opt_manifest = blink::mojom::Manifest::New();
-    install_page_state.opt_manifest->scope =
-        url::Origin::Create(start_url).GetURL();
-    install_page_state.opt_manifest->start_url = start_url;
-    install_page_state.opt_manifest->id =
+    install_page_state.manifest_before_default_processing =
+        blink::mojom::Manifest::New();
+    install_page_state.manifest_before_default_processing->start_url =
+        start_url;
+    install_page_state.manifest_before_default_processing->id =
         GenerateManifestIdFromStartUrlOnly(start_url);
-    install_page_state.opt_manifest->display =
+    install_page_state.manifest_before_default_processing->display =
         blink::mojom::DisplayMode::kStandalone;
-    install_page_state.opt_manifest->short_name = u"Basic app name";
+    install_page_state.manifest_before_default_processing->short_name =
+        u"Basic app name";
 
     return GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   }
@@ -649,7 +650,8 @@ TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
     // Install user app
     auto& install_page_state =
         web_contents_manager().GetOrCreatePageState(kInstallUrl);
-    install_page_state.opt_manifest->short_name = u"Test user app";
+    install_page_state.manifest_before_default_processing->short_name =
+        u"Test user app";
 
     auto install_info = std::make_unique<WebAppInstallInfo>();
     install_info->start_url = kStartUrl;
@@ -667,7 +669,8 @@ TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
     // Install policy app
     auto& install_page_state =
         web_contents_manager().GetOrCreatePageState(kInstallUrl);
-    install_page_state.opt_manifest->short_name = u"Test policy app";
+    install_page_state.manifest_before_default_processing->short_name =
+        u"Test policy app";
 
     SynchronizeFuture result;
     provider().externally_managed_app_manager().SynchronizeInstalledApps(

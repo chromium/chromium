@@ -396,7 +396,7 @@ class ManifestUpdateCheckCommandTest : public WebAppTest {
     auto& page_state = web_contents_manager().GetOrCreatePageState(app_url());
 
     page_state.has_service_worker = true;
-    page_state.opt_manifest = GetManifestFromInfo(info);
+    page_state.manifest_before_default_processing = GetManifestFromInfo(info);
     page_state.valid_manifest_for_web_app = true;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
   }
@@ -462,7 +462,7 @@ TEST_F(ManifestUpdateCheckCommandTest, VerifySuccessfulScopeUpdate) {
   // Verify scope changes are properly propagated.
   WebAppInstallInfo new_info;
   new_info.start_url = app_url();
-  new_info.scope = GURL("https://foo.bar.com/new_scope");
+  new_info.scope = GURL("https://foo.bar.com/new_scope/");
   new_info.display_mode = DisplayMode::kStandalone;
   new_info.title = u"Foo App";
 
@@ -471,7 +471,7 @@ TEST_F(ManifestUpdateCheckCommandTest, VerifySuccessfulScopeUpdate) {
 
   EXPECT_EQ(result.check_result, ManifestUpdateCheckResult::kAppUpdateNeeded);
   EXPECT_EQ(result.new_install_info.value().scope,
-            GURL("https://foo.bar.com/new_scope"));
+            GURL("https://foo.bar.com/new_scope/"));
 }
 
 TEST_F(ManifestUpdateCheckCommandTest, VerifySuccessfulDisplayModeUpdate) {

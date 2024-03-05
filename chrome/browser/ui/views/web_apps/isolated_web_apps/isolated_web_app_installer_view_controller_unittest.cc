@@ -261,7 +261,7 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
     page_state.manifest_url = iwa_url.Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
-    page_state.opt_manifest =
+    page_state.manifest_before_default_processing =
         CreateDefaultManifest(iwa_url, base::Version(version));
   }
 

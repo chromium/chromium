@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
@@ -51,6 +52,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_utils.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -99,7 +101,16 @@ MATCHER_P(EqualsBitmap, expected_bmp, "") {
   if (error_pixels_count != 0) {
     *result_listener << "Number of pixel with an error: " << error_pixels_count
                      << "\nError Bounding Box : "
-                     << error_bounding_rect.ToString();
+                     << error_bounding_rect.ToString() << "\n";
+    int sample_x = expected_bmp.width() / 2;
+    int sample_y = expected_bmp.height() / 2;
+    std::string expected_color = color_utils::SkColorToRgbaString(
+        expected_bmp.getColor(sample_x, sample_y));
+    std::string actual_color =
+        color_utils::SkColorToRgbaString(arg.getColor(sample_x, sample_y));
+    *result_listener << "Sample pixel comparison at " << sample_x << "x"
+                     << sample_y << ": Expected " << expected_color
+                     << ", actual " << actual_color;
     return false;
   }
 
@@ -113,6 +124,8 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
       GenerateAppId(/*manifest_id=*/std::nullopt, kWebAppUrl);
   const GURL kWebAppManifestUrl =
       GURL("https://example.com/path/manifest.json");
+  const GURL kDefaultIconUrl = GURL("https://example.com/path/def_icon.png");
+  const SkColor kDefaultIconColor = SK_ColorYELLOW;
 
   void SetUp() override {
     WebAppTest::SetUp();
@@ -189,6 +202,11 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
     manifest->start_url = kWebAppUrl;
     manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl);
     manifest->display = blink::mojom::DisplayMode::kStandalone;
+    blink::Manifest::ImageResource icon;
+    icon.src = kDefaultIconUrl;
+    icon.sizes = {{144, 144}};
+    icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+    manifest->icons = {icon};
     return manifest;
   }
 
@@ -202,10 +220,18 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
     auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);
 
     page_state.has_service_worker = true;
-    page_state.opt_manifest =
+    page_state.manifest_before_default_processing =
         opt_manifest ? std::move(opt_manifest) : CreateValidManifest();
     page_state.valid_manifest_for_web_app = true;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
+
+    // When using the default manifest, populate the default icon.
+    if (!opt_manifest) {
+      auto& icon_state =
+          web_contents_manager().GetOrCreateIconState(kDefaultIconUrl);
+      icon_state.bitmaps = {CreateSquareIcon(144, kDefaultIconColor)};
+      icon_state.http_status_code = 200;
+    }
   }
 
   void SetupIconState(IconsMap icons,
@@ -223,12 +249,14 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
   webapps::InstallResultCode InstallAndWait(
       webapps::WebappInstallSource install_surface,
       WebAppInstallDialogCallback dialog_callback,
-      bool use_fallback = false) {
+      FallbackBehavior fallback_behavior =
+          FallbackBehavior::kCraftedManifestOnly) {
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         install_future;
     provider()->scheduler().FetchManifestAndInstall(
         install_surface, web_contents()->GetWeakPtr(),
-        std::move(dialog_callback), install_future.GetCallback(), use_fallback);
+        std::move(dialog_callback), install_future.GetCallback(),
+        fallback_behavior);
     EXPECT_TRUE(install_future.Wait());
     return install_future.Get<webapps::InstallResultCode>();
   }
@@ -264,7 +292,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
   EXPECT_EQ(InstallAndWait(
                 webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
-                /*use_fallback=*/true),
+                FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId), "foo");
@@ -275,14 +303,14 @@ TEST_F(FetchManifestAndInstallCommandTest,
        SuccessWithFallbackInstallNoManifest) {
   SetupPageState();
   auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);
-  page_state.opt_manifest = nullptr;
+  page_state.manifest_before_default_processing = nullptr;
   page_state.opt_metadata =
       FakeWebContentsManager::CreateMetadataWithTitle(u"test app");
 
   EXPECT_EQ(InstallAndWait(
                 webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
-                /*use_fallback=*/true),
+                FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId),
@@ -297,7 +325,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
   EXPECT_EQ(InstallAndWait(
                 webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
-                /*use_fallback=*/true),
+                FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
   EXPECT_FALSE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
@@ -344,7 +372,7 @@ TEST_F(FetchManifestAndInstallCommandTest, Shutdown) {
             result_populated = true;
             result = code;
           }),
-      /*use_fallback=*/false);
+      FallbackBehavior::kCraftedManifestOnly);
 
   dialog_runloop.Run();
   provider()->command_manager().Shutdown();
@@ -362,7 +390,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsDestroyed) {
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       web_contents()->GetWeakPtr(), CreateDialogCallback(),
-      install_future.GetCallback(), /*use_fallback=*/false);
+      install_future.GetCallback(), FallbackBehavior::kCraftedManifestOnly);
 
   DeleteContents();
   ASSERT_TRUE(install_future.Wait());
@@ -385,8 +413,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       web_contents()->GetWeakPtr(), CreateDialogCallback(),
-      install_future.GetCallback(),
-      /*use_fallback=*/false);
+      install_future.GetCallback(), FallbackBehavior::kCraftedManifestOnly);
 
   // Wait till we reach an async process, like manifest fetching.
   EXPECT_TRUE(manifest_fetch_future.Wait());
@@ -416,7 +443,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       web_contents()->GetWeakPtr(), CreateDialogCallback(),
-      install_future.GetCallback(), /*use_fallback=*/false);
+      install_future.GetCallback(), FallbackBehavior::kCraftedManifestOnly);
 
   // Wait till we reach an async process, then trigger navigation to another url
   // with the same origin.
@@ -466,6 +493,9 @@ TEST_F(FetchManifestAndInstallCommandTest, WriteDataToDisk) {
   // Prepare all the data to be fetched or downloaded.
   IconsMap icons_map;
   const GURL url = GURL("https://example.com/path");
+
+  // Remove the default icon.
+  manifest->icons = {};
 
   for (const TestIconInfo& purpose_info : purpose_infos) {
     for (SquareSizePx s : purpose_info.sizes_px) {
@@ -569,8 +599,8 @@ TEST_F(FetchManifestAndInstallCommandTest, GetIcons_PrimaryPageChanged) {
   const GURL url = GURL("https://example.com/path");
 
   GURL icon_url = url.Resolve("color.png");
-  manifest->icons.push_back(
-      CreateSquareImageResource(icon_url, icon_size::k64, {IconPurpose::ANY}));
+  manifest->icons = {
+      CreateSquareImageResource(icon_url, icon_size::k64, {IconPurpose::ANY})};
   icons_map[icon_url] = {CreateSquareIcon(icon_size::k64, SK_ColorBLUE)};
 
   SetupPageState(std::move(manifest));
@@ -633,8 +663,8 @@ TEST_F(FetchManifestAndInstallCommandTest, GetIcons_IconNotFound) {
   const GURL url = GURL("https://example.com/path");
 
   GURL icon_url = url.Resolve("color.png");
-  manifest->icons.push_back(
-      CreateSquareImageResource(icon_url, icon_size::k64, {IconPurpose::ANY}));
+  manifest->icons = {
+      CreateSquareImageResource(icon_url, icon_size::k64, {IconPurpose::ANY})};
   SetupPageState(std::move(manifest));
   // Setting up an empty icons map should trigger a 404 response.
   SetupIconState(icons_map);
@@ -722,7 +752,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsNavigates) {
       web_contents()->GetWeakPtr(),
       CreateDialogCallback(/*accept=*/true,
                            mojom::UserDisplayMode::kStandalone),
-      install_future.GetCallback(), /*use_fallback=*/false);
+      install_future.GetCallback(), FallbackBehavior::kCraftedManifestOnly);
   // The command is always started asynchronously, so this immediate
   // navigation should test that it correctly handles navigation before
   // starting.
@@ -776,25 +806,11 @@ class FetchManifestAndInstallCommandUniversalInstallTest
     page_state.title = kPageTitle;
   }
 
-  // TODO(dmurph): Update the FakeWebContentsManager to encapsulate the possible
-  // return cases better after default manifests are a thing. Possibly creating
-  // a CreateAndGetDefaultPageState function.
-  void SetupDefaultManifest() {
-    auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);
-    // Create the manifest to model the default manifest from manifest_parser.
-    page_state.opt_manifest = blink::mojom::Manifest::New();
-    page_state.opt_manifest->start_url = kWebAppUrl;
-    page_state.opt_manifest->id =
-        GenerateManifestIdFromStartUrlOnly(kWebAppUrl);
-    page_state.opt_manifest->display = blink::mojom::DisplayMode::kUndefined;
-    page_state.opt_manifest->scope = kWebAppUrl.GetWithoutFilename();
-  }
-
   void CreateCraftedAppPage() {
     auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);
     page_state.has_service_worker = false;
     page_state.manifest_url = kWebAppManifestUrl;
-    page_state.opt_manifest = CreateValidManifest();
+    page_state.manifest_before_default_processing = CreateValidManifest();
     page_state.valid_manifest_for_web_app = true;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
   }
@@ -810,7 +826,7 @@ TEST_F(FetchManifestAndInstallCommandUniversalInstallTest, CraftedApp) {
       InstallAndWait(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
                      CreateDialogCallback(/*accept=*/true,
                                           mojom::UserDisplayMode::kStandalone),
-                     /*use_fallback=*/false),
+                     FallbackBehavior::kCraftedManifestOnly),
       webapps::InstallResultCode::kSuccessNewInstall);
 }
 
@@ -818,7 +834,6 @@ TEST_F(FetchManifestAndInstallCommandUniversalInstallTest, CraftedApp) {
 TEST_F(FetchManifestAndInstallCommandUniversalInstallTest,
        DISABLED_NoManifest) {
   SetupPageTitleAndIcons();
-  SetupDefaultManifest();
   auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);
   page_state.error_code = webapps::InstallableStatusCode::NO_MANIFEST;
 
@@ -826,7 +841,9 @@ TEST_F(FetchManifestAndInstallCommandUniversalInstallTest,
       InstallAndWait(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
                      CreateDialogCallback(/*accept=*/true,
                                           mojom::UserDisplayMode::kStandalone),
-                     /*use_fallback=*/false),
+                     // TODO(https://crbug.com/291778116): change this to a new
+                     // fallback behavior.
+                     FallbackBehavior::kAllowFallbackDataAlways),
       webapps::InstallResultCode::kSuccessNewInstall);
 }
 
@@ -855,16 +872,16 @@ class DiyAppManifestTest
     }
 
     return base::StrCat(
-        {"AppName_",
+        {"AppName",
          std::get<0>(config) ? base::UTF16ToUTF8(std::get<0>(config).value())
                              : "Absent",
-         "_Favicon_",
+         "_Favicon",
          std::get<1>(config) ? ui::SkColorName(*std::get<1>(config)) : "Absent",
-         "_StartUrl_", std::get<2>(config) ? "Specified" : "Absent",
-         "_ManifestId_", std::get<3>(config) ? "Specified" : "Absent",
-         "_DisplayMode_",
+         "_StartUrl", std::get<2>(config) ? "Specified" : "Absent",
+         "_ManifestId", std::get<3>(config) ? "Specified" : "Absent",
+         "_DisplayMode",
          std::get<4>(config) ? base::ToString(*std::get<4>(config)) : "Absent",
-         "_ManifestIcons_", icons_name_part});
+         "_ManifestIcons", icons_name_part});
   }
 
   DiyAppManifestTest() = default;
@@ -886,10 +903,15 @@ class DiyAppManifestTest
     return std::get<std::optional<blink::Manifest::ImageResource>>(GetParam());
   }
 
+  bool IsCraftedApp() {
+    return GetAppName() && GetStartUrl() && GetIcon() &&
+           !base::Contains(GetIcon()->src.spec(), "not_found");
+  }
+
   SkBitmap GenerateExpected256Icon() {
     if (GetIcon() && !base::Contains(GetIcon()->src.spec(), "not_found")) {
       return CreateSquareIcon(icon_size::k256, kIconColor);
-    } else if (GetFaviconColor()) {
+    } else if (!IsCraftedApp() && GetFaviconColor()) {
       return CreateSquareIcon(icon_size::k256, GetFaviconColor().value());
     } else {
       // This generates the letter icons.
@@ -899,16 +921,17 @@ class DiyAppManifestTest
   }
 
   void SetupPageFromParams() {
-    SetupDefaultManifest();
-
     auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);
     page_state.title = kPageTitle;
     if (GetFaviconColor()) {
       page_state.favicon_url = kFaviconUrl;
       page_state.favicon = {CreateSquareIcon(32, GetFaviconColor().value()),
-                            CreateSquareIcon(64, GetFaviconColor().value())};
+                            CreateSquareIcon(64, GetFaviconColor().value()),
+                            CreateSquareIcon(256, GetFaviconColor().value())};
     }
-    auto& manifest = page_state.opt_manifest;
+    page_state.manifest_before_default_processing =
+        blink::mojom::Manifest::New();
+    auto& manifest = page_state.manifest_before_default_processing;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
 
     if (GetAppName()) {
@@ -926,6 +949,10 @@ class DiyAppManifestTest
           webapps::InstallableStatusCode::START_URL_NOT_VALID;
     }
 
+    if (GetManifestIdentity()) {
+      manifest->id = GetManifestIdentity().value();
+    }
+
     if (GetDisplayMode()) {
       manifest->display = blink::mojom::DisplayMode::kBrowser;
       manifest->display_override = {GetDisplayMode().value()};
@@ -938,7 +965,7 @@ class DiyAppManifestTest
       manifest->icons = {GetIcon().value()};
       GURL url = GetIcon()->src;
       auto& icon_state = web_contents_manager().GetOrCreateIconState(url);
-      if (!base::Contains(url.spec(), "not_found")) {
+      if (base::Contains(url.spec(), "not_found")) {
         icon_state.bitmaps = {};
         icon_state.http_status_code = 404;
       } else {
@@ -963,14 +990,16 @@ TEST_P(DiyAppManifestTest, DISABLED_DiyAppInstall) {
       CreateDialogCallback(/*accept=*/true,
                            mojom::UserDisplayMode::kStandalone),
       install_future.GetCallback(),
-      /*use_fallback=*/false);
+      // TODO(https://crbug.com/291778116): change this to a new fallback
+      // behavior.
+      FallbackBehavior::kCraftedManifestOnly);
   EXPECT_TRUE(install_future.Wait());
   EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kSuccessNewInstall);
 
   webapps::AppId app_id = install_future.Get<webapps::AppId>();
 
-  ASSERT_TRUE(provider()->registrar_unsafe().IsInstalled(kWebAppId));
+  ASSERT_TRUE(provider()->registrar_unsafe().IsInstalled(app_id));
 
   auto& registrar = provider()->registrar_unsafe();
 
@@ -978,15 +1007,15 @@ TEST_P(DiyAppManifestTest, DISABLED_DiyAppInstall) {
   EXPECT_EQ(registrar.GetAppShortName(app_id), name);
 
   GURL start_url = GetStartUrl().value_or(kWebAppUrl);
-  EXPECT_EQ(registrar.GetAppStartUrl(app_id), name);
+  EXPECT_EQ(registrar.GetAppStartUrl(app_id), start_url);
 
   webapps::ManifestId manifest_id =
       GetManifestIdentity().value_or(GetStartUrl().value_or(kWebAppUrl));
-  EXPECT_EQ(registrar.GetAppManifestId(app_id), name);
+  EXPECT_EQ(registrar.GetAppManifestId(app_id), manifest_id);
 
   auto display_mode =
       GetDisplayMode().value_or(blink::mojom::DisplayMode::kMinimalUi);
-  EXPECT_EQ(registrar.GetAppDisplayMode(app_id), display_mode);
+  EXPECT_EQ(registrar.GetAppEffectiveDisplayMode(app_id), display_mode);
 
   base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> icons_future;
   provider()->icon_manager().ReadIcons(

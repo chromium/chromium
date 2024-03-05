@@ -186,7 +186,8 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
 
     page_state.manifest_url = CreateDefaultManifestURL(application_url);
     page_state.valid_manifest_for_web_app = true;
-    page_state.opt_manifest = CreateDefaultManifest(application_url);
+    page_state.manifest_before_default_processing =
+        CreateDefaultManifest(application_url);
 
     auto& icon_state = web_contents_manager().GetOrCreateIconState(
         application_url.Resolve(kIconPath));
@@ -288,7 +289,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
   page_state.manifest_url = GURL("http://test-url-example.com/manifest.json");
-  page_state.opt_manifest = blink::mojom::Manifest::New();
+  page_state.manifest_before_default_processing = blink::mojom::Manifest::New();
   page_state.error_code = webapps::InstallableStatusCode::NO_MANIFEST;
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
@@ -439,7 +440,7 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
        FailsWhenManifestIdIsNotEmpty) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.opt_manifest->id =
+  page_state.manifest_before_default_processing->id =
       url_info.origin().GetURL().Resolve("/test-manifest-id");
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
@@ -453,7 +454,8 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
        InstalledApplicationScopeIsResolvedToRootWhenManifestScopeIsSlash) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.opt_manifest->scope = url_info.origin().GetURL().Resolve("/");
+  page_state.manifest_before_default_processing->scope =
+      url_info.origin().GetURL().Resolve("/");
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
 
@@ -466,7 +468,8 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
        PassesManifestNameAsUntranslatedName) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.opt_manifest->name = u"test application name";
+  page_state.manifest_before_default_processing->name =
+      u"test application name";
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
 
@@ -479,8 +482,9 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
        UseShortNameAsUntranslatedNameWhenNameIsNotPresent) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.opt_manifest->name = std::nullopt;
-  page_state.opt_manifest->short_name = u"test short name";
+  page_state.manifest_before_default_processing->name = std::nullopt;
+  page_state.manifest_before_default_processing->short_name =
+      u"test short name";
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
 
@@ -493,8 +497,9 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
        UseShortNameAsTitleWhenManifestNameIsEmpty) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.opt_manifest->name = u"";
-  page_state.opt_manifest->short_name = u"other test short name";
+  page_state.manifest_before_default_processing->name = u"";
+  page_state.manifest_before_default_processing->short_name =
+      u"other test short name";
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
 
@@ -582,7 +587,7 @@ TEST_F(InstallIsolatedWebAppCommandMetricsTest,
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
   page_state.manifest_url = GURL{"http://test-url-example.com/manifest.json"};
-  page_state.opt_manifest = blink::mojom::Manifest::New();
+  page_state.manifest_before_default_processing = blink::mojom::Manifest::New();
   page_state.error_code = webapps::InstallableStatusCode::NO_MANIFEST;
 
   base::HistogramTester histogram_tester;
@@ -598,7 +603,7 @@ TEST_F(InstallIsolatedWebAppCommandMetricsTest,
        ReportFailureWhenManifestIsNull) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.opt_manifest = nullptr;
+  page_state.manifest_before_default_processing = nullptr;
   page_state.error_code = webapps::InstallableStatusCode::NO_MANIFEST;
 
   base::HistogramTester histogram_tester;
@@ -614,7 +619,7 @@ TEST_F(InstallIsolatedWebAppCommandMetricsTest,
        ReportFailureWhenManifestIdIsNotEmpty) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.opt_manifest->id =
+  page_state.manifest_before_default_processing->id =
       url_info.origin().GetURL().Resolve("/test manifest id");
 
   base::HistogramTester histogram_tester;

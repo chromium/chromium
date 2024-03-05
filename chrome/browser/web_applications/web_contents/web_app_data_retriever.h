@@ -108,8 +108,7 @@ class WebAppDataRetriever : content::WebContentsObserver {
                          IconsMap icons_map,
                          DownloadedIconsHttpResults icons_http_results);
 
-  void CallCallbackOnError(
-      std::optional<webapps::InstallableStatusCode> error_code);
+  void CallCallbackOnError(webapps::InstallableStatusCode error_code);
   bool ShouldStopRetrieval() const;
 
   std::unique_ptr<WebAppInstallInfo> fallback_install_info_;

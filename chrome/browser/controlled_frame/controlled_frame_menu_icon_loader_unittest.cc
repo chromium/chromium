@@ -86,7 +86,8 @@ class ControlledFrameMenuIconLoaderTest : public WebAppTest {
 
     page_state.manifest_url = CreateDefaultManifestURL(application_url);
     page_state.valid_manifest_for_web_app = true;
-    page_state.opt_manifest = CreateDefaultManifest(application_url);
+    page_state.manifest_before_default_processing =
+        CreateDefaultManifest(application_url);
 
     auto& icon_state = web_contents_manager().GetOrCreateIconState(
         application_url.Resolve(kIconPath));

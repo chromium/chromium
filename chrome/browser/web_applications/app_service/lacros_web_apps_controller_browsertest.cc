@@ -554,6 +554,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, LaunchWithFiles) {
   const GURL app_url =
       embedded_test_server()->GetURL("/web_apps/file_handler_index.html");
   webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  ASSERT_FALSE(app_id.empty());
   EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id), app_url);
 
   MockAppPublisher mock_app_publisher(profile());
@@ -1088,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
   auto app_id = InstallWebAppFromManifest(
       browser(),
       embedded_test_server()->GetURL("/web_app_file_handling/basic_app.html"));
-
+  ASSERT_FALSE(app_id.empty());
   // Have to call it explicitly due to usage of
   // OsIntegrationManager::ScopedSuppressForTesting
   base::RunLoop run_loop;

@@ -48,6 +48,11 @@ constexpr char kBadIconErrorTemplate[] = R"({
          "http_status_code": 404,
          "icon_size": "0x0",
          "icon_url": "$1banners/bad_icon.png"
+      }, {
+         "http_code_desc": "Not Found",
+         "http_status_code": 404,
+         "icon_size": "0x0",
+         "icon_url": "$1favicon.ico"
       } ],
       "is_generated_icon": true
    } ]
@@ -102,7 +107,7 @@ class WebAppInternalsBrowserTest : public WebAppControllerBrowserTest {
           app_id = new_app_id;
           run_loop.Quit();
         }),
-        /*use_fallback=*/true);
+        FallbackBehavior::kAllowFallbackDataAlways);
 
     run_loop.Run();
     return app_id;

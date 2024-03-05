@@ -101,14 +101,12 @@ void WebAppCommandScheduler::FetchManifestAndInstall(
     base::WeakPtr<content::WebContents> contents,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback callback,
-    bool use_fallback,
+    FallbackBehavior behavior,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<FetchManifestAndInstallCommand>(
           install_surface, std::move(contents), std::move(dialog_callback),
-          std::move(callback), use_fallback,
-          provider_->ui_manager().GetWeakPtr(),
-          provider_->web_contents_manager().CreateDataRetriever()),
+          std::move(callback), behavior, provider_->ui_manager().GetWeakPtr()),
       location);
 }
 

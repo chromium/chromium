@@ -105,7 +105,8 @@ void WebAppDataRetriever::GetWebAppInstallInfo(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
-                       weak_ptr_factory_.GetWeakPtr(), std::nullopt));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       webapps::InstallableStatusCode::RENDERER_CANCELLED));
     return;
   }
 
@@ -321,7 +322,7 @@ void WebAppDataRetriever::OnIconsDownloaded(
 }
 
 void WebAppDataRetriever::CallCallbackOnError(
-    std::optional<webapps::InstallableStatusCode> error_code) {
+    webapps::InstallableStatusCode error_code) {
   Observe(nullptr);
   DCHECK(ShouldStopRetrieval());
   icon_downloader_.reset();
@@ -336,8 +337,7 @@ void WebAppDataRetriever::CallCallbackOnError(
         .Run(/*manifest=*/nullptr, /*manifest_url=*/GURL(),
              /*installable_check_passed_for_web_app=*/false,
              /*error_code=*/
-             error_code.value_or(
-                 webapps::InstallableStatusCode::NO_ERROR_DETECTED));
+             error_code);
   } else if (get_icons_callback_) {
     std::move(get_icons_callback_)
         .Run(IconsDownloadedResult::kPrimaryPageChanged, IconsMap{},

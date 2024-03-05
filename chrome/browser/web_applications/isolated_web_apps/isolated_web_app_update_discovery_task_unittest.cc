@@ -315,7 +315,7 @@ class IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest
     page_state.manifest_url =
         url_info_.origin().GetURL().Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
-    page_state.opt_manifest =
+    page_state.manifest_before_default_processing =
         CreateDefaultManifest(url_info_.origin().GetURL(), available_version);
 
     return page_state;

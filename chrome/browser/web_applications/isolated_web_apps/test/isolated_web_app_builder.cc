@@ -90,7 +90,8 @@ void FakeInstallPageState(Profile* profile,
       webapps::InstallableStatusCode::NO_ERROR_DETECTED;
   install_page_state.manifest_url = base_url.Resolve(kManifestPath);
   install_page_state.valid_manifest_for_web_app = true;
-  install_page_state.opt_manifest = std::move(blink_manifest);
+  install_page_state.manifest_before_default_processing =
+      std::move(blink_manifest);
 }
 
 base::expected<IsolatedWebAppUrlInfo, std::string> Install(

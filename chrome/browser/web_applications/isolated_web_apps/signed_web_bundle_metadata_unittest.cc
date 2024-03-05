@@ -92,8 +92,8 @@ class SignedWebBundleMetadataTest : public WebAppTest {
     page_state.manifest_url =
         url_info.origin().GetURL().Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
-    page_state.opt_manifest = CreateDefaultManifest(url_info.origin().GetURL(),
-                                                    base::Version("3.4.5"));
+    page_state.manifest_before_default_processing = CreateDefaultManifest(
+        url_info.origin().GetURL(), base::Version("3.4.5"));
   }
 
  private:

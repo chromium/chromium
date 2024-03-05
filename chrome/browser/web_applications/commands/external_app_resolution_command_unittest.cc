@@ -209,17 +209,17 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
                     const PageStateOptions& mock_options = {}) {
     FakeWebContentsManager::FakePageState& state =
         fake_web_contents_manager().GetOrCreatePageState(options.install_url);
-    state.opt_manifest = blink::mojom::Manifest::New();
-    state.opt_manifest->start_url = options.install_url;
+    state.manifest_before_default_processing = blink::mojom::Manifest::New();
+    state.manifest_before_default_processing->start_url = options.install_url;
 
     if (mock_options.manifest_id.has_value()) {
-      state.opt_manifest->id = *mock_options.manifest_id;
+      state.manifest_before_default_processing->id = *mock_options.manifest_id;
     } else {
-      state.opt_manifest->id =
+      state.manifest_before_default_processing->id =
           GenerateManifestIdFromStartUrlOnly(options.install_url);
     }
 
-    state.opt_manifest->name = u"Manifest Name";
+    state.manifest_before_default_processing->name = u"Manifest Name";
     state.return_null_info = mock_options.empty_web_app_info;
 
     state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;

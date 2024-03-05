@@ -141,15 +141,16 @@ class WebKioskInstallerLacrosTest : public testing::Test {
     install_page_state.manifest_url = manifest_url;
     install_page_state.valid_manifest_for_web_app = true;
 
-    install_page_state.opt_manifest = blink::mojom::Manifest::New();
-    install_page_state.opt_manifest->scope =
-        url::Origin::Create(start_url).GetURL();
-    install_page_state.opt_manifest->start_url = start_url;
-    install_page_state.opt_manifest->id =
+    install_page_state.manifest_before_default_processing =
+        blink::mojom::Manifest::New();
+    install_page_state.manifest_before_default_processing->start_url =
+        start_url;
+    install_page_state.manifest_before_default_processing->id =
         web_app::GenerateManifestIdFromStartUrlOnly(start_url);
-    install_page_state.opt_manifest->display =
+    install_page_state.manifest_before_default_processing->display =
         blink::mojom::DisplayMode::kStandalone;
-    install_page_state.opt_manifest->short_name = u"Basic app name";
+    install_page_state.manifest_before_default_processing->short_name =
+        u"Basic app name";
 
     return web_app::GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   }

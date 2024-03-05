@@ -130,7 +130,7 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
           app_id = new_app_id;
           run_loop.Quit();
         }),
-        /*use_fallback=*/true);
+        FallbackBehavior::kAllowFallbackDataAlways);
     run_loop.Run();
     return app_id;
   }

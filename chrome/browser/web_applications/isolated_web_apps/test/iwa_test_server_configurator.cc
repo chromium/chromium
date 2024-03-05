@@ -40,7 +40,8 @@ void ConfigureFakeWebContentsManager(
   page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
   page_state.manifest_url = origin_url.Resolve("manifest.webmanifest");
   page_state.valid_manifest_for_web_app = true;
-  page_state.opt_manifest = CreateDefaultManifest(origin_url);
+  page_state.manifest_before_default_processing =
+      CreateDefaultManifest(origin_url);
 }
 }  // namespace
 

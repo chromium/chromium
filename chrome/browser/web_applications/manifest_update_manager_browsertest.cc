@@ -495,7 +495,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
         base::BindOnce(test::TestAcceptDialogCallback),
         install_future.GetCallback(),
-        /*use_fallback=*/true);
+        FallbackBehavior::kAllowFallbackDataAlways);
     EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
     return install_future.Get<webapps::AppId>();
@@ -517,7 +517,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
           app_id = new_app_id;
           run_loop.Quit();
         }),
-        /*use_fallback=*/true);
+        FallbackBehavior::kAllowFallbackDataAlways);
 
     run_loop.Run();
     return app_id;
@@ -539,7 +539,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
           app_id = new_app_id;
           run_loop.Quit();
         }),
-        /*use_fallback=*/true);
+        FallbackBehavior::kAllowFallbackDataAlways);
 
     run_loop.Run();
     return app_id;

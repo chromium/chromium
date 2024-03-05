@@ -213,8 +213,9 @@ bool CanCreateWebApp(const Browser* browser) {
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (!IsValidWebAppUrl(web_contents->GetLastCommittedURL()) ||
-      web_contents->IsCrashed())
+      web_contents->IsCrashed()) {
     return false;
+  }
   content::NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
   if (entry && entry->GetPageType() == content::PAGE_TYPE_ERROR)
@@ -282,7 +283,7 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
                                         : std::vector<webapps::Screenshot>()),
         base::BindOnce(OnWebAppInstalledFromCrosDialog, dialog_handle,
                        std::move(callback)),
-        /*use_fallback=*/true);
+        FallbackBehavior::kAllowFallbackDataAlways);
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -295,7 +296,7 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
                      data.has_value() ? std::move(data->screenshots)
                                       : std::vector<webapps::Screenshot>()),
       base::BindOnce(OnWebAppInstalled, std::move(callback)),
-      /*use_fallback=*/true);
+      FallbackBehavior::kAllowFallbackDataAlways);
 }
 
 bool CreateWebAppFromManifest(content::WebContents* web_contents,
@@ -330,8 +331,10 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
 
   // If the source is from ML, there may not be a manifest, so allow the command
   // to use the metadata from the page too.
-  bool use_fallback =
-      install_source == webapps::WebappInstallSource::ML_PROMOTION;
+  FallbackBehavior fallback_behavior =
+      install_source == webapps::WebappInstallSource::ML_PROMOTION
+          ? FallbackBehavior::kAllowFallbackDataAlways
+          : FallbackBehavior::kCraftedManifestOnly;
 
   // TODO(b/307145346): Eventually, this should also be primary install for
   // Lacros.
@@ -347,7 +350,7 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
                                         : std::vector<webapps::Screenshot>()),
         base::BindOnce(OnWebAppInstalledFromCrosDialog, dialog_handle,
                        std::move(installed_callback)),
-        /*use_fallback=*/use_fallback);
+        fallback_behavior);
     return true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -360,7 +363,7 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
                      data.has_value() ? std::move(data->screenshots)
                                       : std::vector<webapps::Screenshot>()),
       base::BindOnce(OnWebAppInstalled, std::move(installed_callback)),
-      /*use_fallback=*/use_fallback);
+      fallback_behavior);
   return true;
 }
 

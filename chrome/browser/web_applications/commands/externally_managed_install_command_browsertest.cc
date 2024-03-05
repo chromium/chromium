@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
       base::BindOnce(test::TestAcceptDialogCallback),
       future_first_install.GetCallback(),
-      /*use_fallback=*/false);
+      FallbackBehavior::kCraftedManifestOnly);
 
   const webapps::AppId& first_app_id = future_first_install.Get<0>();
   webapps::InstallResultCode first_install_code = future_first_install.Get<1>();

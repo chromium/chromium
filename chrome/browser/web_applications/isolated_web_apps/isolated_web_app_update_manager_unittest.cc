@@ -245,7 +245,7 @@ class IsolatedWebAppUpdateManagerDevModeUpdateTest
     page_state.manifest_url =
         url_info.origin().GetURL().Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
-    page_state.opt_manifest = CreateDefaultManifest(
+    page_state.manifest_before_default_processing = CreateDefaultManifest(
         url_info.origin().GetURL(), u"updated iwa", base::Version("2.0.0"));
   }
 
@@ -405,7 +405,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
     page_state.manifest_url =
         iwa_info.url_info.origin().GetURL().Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
-    page_state.opt_manifest = CreateDefaultManifest(
+    page_state.manifest_before_default_processing = CreateDefaultManifest(
         iwa_info.url_info.origin().GetURL(),
         base::UTF8ToUTF16(iwa_info.update_app_name), iwa_info.update_version);
   }

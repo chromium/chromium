@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
               app_id = installed_app_id;
               run_loop.Quit();
             }),
-        /*use_fallback=*/true);
+        FallbackBehavior::kAllowFallbackDataAlways);
     run_loop.Run();
     ui_test_utils::WaitForBrowserSetLastActive(app_browser_observer.Wait());
   }

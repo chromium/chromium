@@ -1754,8 +1754,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
       base::BindOnce(test::TestAcceptDialogCallback),
-      install_future.GetCallback(),
-      /*use_fallback=*/false);
+      install_future.GetCallback(), FallbackBehavior::kCraftedManifestOnly);
 
   const webapps::AppId& app_id = install_future.Get<0>();
   EXPECT_EQ(provider->registrar_unsafe().GetAppShortName(app_id),

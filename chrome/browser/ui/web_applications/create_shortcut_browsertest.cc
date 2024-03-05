@@ -208,6 +208,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   ASSERT_TRUE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
 
   const webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
+  ASSERT_FALSE(app_id.empty());
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
   CHECK(app_browser);
   CHECK(app_browser != browser());

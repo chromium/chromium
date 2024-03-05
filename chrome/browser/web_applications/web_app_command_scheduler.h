@@ -60,6 +60,7 @@ class SignedWebBundleMetadata;
 class WebApp;
 class WebAppProvider;
 enum class ApiApprovalState;
+enum class FallbackBehavior;
 enum class IsolatedInstallabilityCheckResult;
 struct ComputedAppSize;
 struct IsolatedWebAppApplyUpdateCommandError;
@@ -101,7 +102,7 @@ class WebAppCommandScheduler {
                                base::WeakPtr<content::WebContents> contents,
                                WebAppInstallDialogCallback dialog_callback,
                                OnceInstallCallback callback,
-                               bool use_fallback,
+                               FallbackBehavior behavior,
                                const base::Location& location = FROM_HERE);
 
   void FetchInstallInfoFromInstallUrl(
