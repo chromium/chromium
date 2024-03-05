@@ -7,6 +7,7 @@
 
 #include <list>
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/containers/queue.h"
@@ -65,19 +66,16 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
                           PlusAddressRequestCallback on_completed) override;
   void GetAllPlusAddresses(PlusAddressMapRequestCallback on_completed) override;
 
+ private:
+  friend class PlusAddressHttpClientImplTestApi;
+
+  using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
   using TokenReadyCallback =
       base::OnceCallback<void(std::optional<std::string>)>;
+
   // Initiates a request for a new OAuth token. If the request succeeds, this
   // runs `on_fetched` with the retrieved token. Must be run on the UI thread.
-  // TODO(b/327954198): Make private and expose via TestApi - this is only
-  // needed internally and in tests.
   void GetAuthToken(TokenReadyCallback on_fetched);
-
-  void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
-  std::optional<GURL> GetServerUrlForTesting() const { return server_url_; }
-
- private:
-  using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
 
   // The actual implementations of the interface methods. The overridden
   // interface methods (`ReservePlusAddress`, ...) call `GetAuthToken` with the

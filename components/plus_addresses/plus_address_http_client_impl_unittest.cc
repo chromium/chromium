@@ -20,6 +20,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_http_client_impl_test_api.h"
 #include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -210,7 +211,7 @@ class PlusAddressCreationRequests
       : client_(identity_manager, scoped_shared_url_loader_factory) {
     identity_test_env.MakePrimaryAccountAvailable(
         email_address, signin::ConsentLevel::kSignin);
-    client_.SetClockForTesting(test_clock());
+    test_api(client_).SetClockForTesting(test_clock());
   }
 
  protected:
@@ -458,7 +459,7 @@ TEST_F(PlusAddressHttpClientRequests, GetAllPlusAddressesV1_RunsCallbackOnSucces
   identity_test_env.MakePrimaryAccountAvailable(email_address,
                                                 signin::ConsentLevel::kSignin);
   PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
-  client.SetClockForTesting(test_clock());
+  test_api(client).SetClockForTesting(test_clock());
 
   base::test::TestFuture<const PlusAddressMapOrError&> future;
   // Initiate a request...
@@ -503,7 +504,7 @@ TEST_F(PlusAddressHttpClientRequests,
   identity_test_env.MakePrimaryAccountAvailable(email_address,
                                                 signin::ConsentLevel::kSignin);
   PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
-  client.SetClockForTesting(test_clock());
+  test_api(client).SetClockForTesting(test_clock());
 
   // Initiate a request...
   base::test::TestFuture<const PlusAddressMapOrError&> callback;
@@ -569,8 +570,8 @@ TEST(PlusAddressHttpClient, ChecksUrlParamIsValidGurl) {
   PlusAddressHttpClientImpl client(
       identity_test_env.identity_manager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
-  ASSERT_TRUE(client.GetServerUrlForTesting().has_value());
-  EXPECT_EQ(client.GetServerUrlForTesting().value(), server_url);
+  EXPECT_EQ(test_api(client).GetServerUrlForTesting().value_or(GURL()),
+            server_url);
 }
 
 TEST(PlusAddressHttpClient, RejectsNonUrlStrings) {
@@ -583,7 +584,7 @@ TEST(PlusAddressHttpClient, RejectsNonUrlStrings) {
   PlusAddressHttpClientImpl client(
       identity_test_env.identity_manager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
-  EXPECT_FALSE(client.GetServerUrlForTesting().has_value());
+  EXPECT_FALSE(test_api(client).GetServerUrlForTesting().has_value());
 }
 
 class PlusAddressAuthToken : public ::testing::Test {
@@ -634,7 +635,7 @@ TEST_F(PlusAddressAuthToken, RequestedBeforeSignin) {
                            /* url_loader_factory= */ nullptr);
 
   base::test::TestFuture<std::optional<std::string>> callback;
-  client.GetAuthToken(callback.GetCallback());
+  test_api(client).GetAuthToken(callback.GetCallback());
 
   // The callback is run only after signin.
   EXPECT_FALSE(callback.IsReady());
@@ -654,7 +655,7 @@ TEST_F(PlusAddressAuthToken, RequestedUserNeverSignsIn) {
                            /* url_loader_factory= */ nullptr);
 
   base::test::TestFuture<std::optional<std::string>> callback;
-  client.GetAuthToken(callback.GetCallback());
+  test_api(client).GetAuthToken(callback.GetCallback());
   EXPECT_FALSE(callback.IsReady());
   histogram_tester.ExpectTotalCount(kPlusAddressOauthErrorHistogram, 0);
 }
@@ -664,7 +665,7 @@ TEST_F(PlusAddressAuthToken, RequestedAfterExpiration) {
                            /* url_loader_factory= */ nullptr);
   // Make an initial OAuth token request.
   base::test::TestFuture<std::optional<std::string>> first_callback;
-  client.GetAuthToken(first_callback.GetCallback());
+  test_api(client).GetAuthToken(first_callback.GetCallback());
 
   // Sign in, get a token, and fast-forward to after it is expired.
   identity_test_env_.MakePrimaryAccountAvailable(test_email_address_,
@@ -680,7 +681,7 @@ TEST_F(PlusAddressAuthToken, RequestedAfterExpiration) {
 
   // Issue another request for an OAuth token.
   base::test::TestFuture<std::optional<std::string>> second_callback;
-  client.GetAuthToken(second_callback.GetCallback());
+  test_api(client).GetAuthToken(second_callback.GetCallback());
 
   // Callback is only run once the new OAuth token request has completed.
   EXPECT_FALSE(second_callback.IsReady());
@@ -706,7 +707,7 @@ TEST_F(PlusAddressAuthToken, AuthErrorWithMultipleAccounts) {
                            /* url_loader_factory= */ nullptr);
 
   base::test::TestFuture<std::optional<std::string>> callback;
-  client.GetAuthToken(callback.GetCallback());
+  test_api(client).GetAuthToken(callback.GetCallback());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       primary.account_id, test_token_, base::Time::Max());
   EXPECT_EQ(callback.Get(), test_token_);
@@ -722,9 +723,9 @@ TEST_F(PlusAddressAuthToken, RequestWorks_ManyCallers) {
   base::test::TestFuture<std::optional<std::string>> first;
   base::test::TestFuture<std::optional<std::string>> second;
   base::test::TestFuture<std::optional<std::string>> third;
-  client.GetAuthToken(first.GetCallback());
-  client.GetAuthToken(second.GetCallback());
-  client.GetAuthToken(third.GetCallback());
+  test_api(client).GetAuthToken(first.GetCallback());
+  test_api(client).GetAuthToken(second.GetCallback());
+  test_api(client).GetAuthToken(third.GetCallback());
 
   // Although we failed to get a token, each callback should still be run.
   identity_test_env_
@@ -745,9 +746,9 @@ TEST_F(PlusAddressAuthToken, RequestFails_ManyCallers) {
   base::test::TestFuture<std::optional<std::string>> first;
   base::test::TestFuture<std::optional<std::string>> second;
   base::test::TestFuture<std::optional<std::string>> third;
-  client.GetAuthToken(first.GetCallback());
-  client.GetAuthToken(second.GetCallback());
-  client.GetAuthToken(third.GetCallback());
+  test_api(client).GetAuthToken(first.GetCallback());
+  test_api(client).GetAuthToken(second.GetCallback());
+  test_api(client).GetAuthToken(third.GetCallback());
 
   // Although we failed to get a token, each callback should still be run.
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
@@ -775,7 +776,7 @@ TEST_F(PlusAddressHttpClientNullServerUrl, ReservePlusAddress_SendsNoRequest) {
 
   PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
 
-  EXPECT_FALSE(client.GetServerUrlForTesting().has_value());
+  EXPECT_FALSE(test_api(client).GetServerUrlForTesting().has_value());
   // ReservePlusAddress should return without making any request when no valid
   // `server_ur_` is provided.
   client.ReservePlusAddress(origin, callback.GetCallback());
@@ -789,7 +790,7 @@ TEST_F(PlusAddressHttpClientNullServerUrl, ConfirmPlusAddress_SendsNoRequest) {
 
   PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
 
-  EXPECT_FALSE(client.GetServerUrlForTesting().has_value());
+  EXPECT_FALSE(test_api(client).GetServerUrlForTesting().has_value());
   // ConfirmPlusAddress should return without making any request when no valid
   // `server_ur_` is provided.
   client.ConfirmPlusAddress(origin, "random_address", callback.GetCallback());
@@ -802,7 +803,7 @@ TEST_F(PlusAddressHttpClientNullServerUrl, GetAllPlusAddresses_SendsNoRequest) {
 
   PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
 
-  EXPECT_FALSE(client.GetServerUrlForTesting().has_value());
+  EXPECT_FALSE(test_api(client).GetServerUrlForTesting().has_value());
   // GetAllPlusAddresses should return without making any request
   // when no valid `server_ur_` is provided.
   client.GetAllPlusAddresses(callback.GetCallback());
