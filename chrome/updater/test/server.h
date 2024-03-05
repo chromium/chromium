@@ -8,11 +8,13 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/updater/test/request_matcher.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 class GURL;
@@ -54,7 +56,8 @@ class ScopedServer {
   // more expected requests. If the server does not receive every expected
   // request, it will fail the test during destruction.
   void ExpectOnce(request::MatcherGroup request_matcher_group,
-                  const std::string& response_body);
+                  const std::string& response_body,
+                  net::HttpStatusCode response_status_code = net::HTTP_OK);
 
   std::string update_path() const { return "/update"; }
   GURL update_url() const { return test_server_->GetURL(update_path()); }
@@ -82,7 +85,7 @@ class ScopedServer {
   std::unique_ptr<net::test_server::EmbeddedTestServer> test_server_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   std::list<request::MatcherGroup> request_matcher_groups_;
-  std::list<std::string> response_bodies_;
+  std::list<std::pair<net::HttpStatusCode, std::string>> responses_;
   scoped_refptr<IntegrationTestCommands> integration_test_commands_;
   base::TimeDelta download_delay_;
 };

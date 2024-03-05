@@ -70,6 +70,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
+#include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -305,6 +306,7 @@ void ExpectDeviceManagementRequest(ScopedServer* test_server,
                                    const std::string& request_type,
                                    const std::string& authorization_type,
                                    const std::string& authorization_token,
+                                   net::HttpStatusCode response_status,
                                    const std::string& response) {
   test_server->ExpectOnce(
       {request::GetPathMatcher(base::StringPrintf(
@@ -319,7 +321,7 @@ void ExpectDeviceManagementRequest(ScopedServer* test_server,
            base::StringPrintf("%s token=%s", authorization_type.c_str(),
                               authorization_token.c_str())),
        request::GetHeaderMatcher("Content-Type", "application/x-protobuf")},
-      response);
+      response, response_status);
 }
 
 }  // namespace
@@ -1328,7 +1330,7 @@ void ExpectDeviceManagementRegistrationRequest(
     const std::string& dm_token) {
   ExpectDeviceManagementRequest(
       test_server, "register_policy_agent", "GoogleEnrollmentToken",
-      enrollment_token, [&dm_token] {
+      enrollment_token, net::HTTP_OK, [&dm_token] {
         enterprise_management::DeviceManagementResponse dm_response;
         dm_response.mutable_register_response()->set_device_management_token(
             dm_token);
@@ -1342,7 +1344,7 @@ void ExpectDeviceManagementPolicyFetchRequest(
     const ::wireless_android_enterprise_devicemanagement::
         OmahaSettingsClientProto& omaha_settings) {
   ExpectDeviceManagementRequest(
-      test_server, "policy", "GoogleDMToken", dm_token,
+      test_server, "policy", "GoogleDMToken", dm_token, net::HTTP_OK,
       [&dm_token, &omaha_settings] {
         std::unique_ptr<::enterprise_management::DeviceManagementResponse>
             dm_response = GetDMResponseForOmahaPolicy(
@@ -1359,7 +1361,7 @@ void ExpectDeviceManagementPolicyFetchWithNewPublicKeyRequest(
     const ::wireless_android_enterprise_devicemanagement::
         OmahaSettingsClientProto& omaha_settings) {
   ExpectDeviceManagementRequest(
-      test_server, "policy", "GoogleDMToken", dm_token,
+      test_server, "policy", "GoogleDMToken", dm_token, net::HTTP_OK,
       [&dm_token, &omaha_settings] {
         std::unique_ptr<::enterprise_management::DeviceManagementResponse>
             dm_response =
@@ -1378,11 +1380,29 @@ void ExpectDeviceManagementPolicyFetchWithNewPublicKeyRequest(
       }());
 }
 
+void ExpectDeviceManagementTokenDeletionRequest(ScopedServer* test_server,
+                                                const std::string& dm_token) {
+  ExpectDeviceManagementRequest(
+      test_server, "policy", "GoogleDMToken", dm_token, net::HTTP_GONE,
+      [&dm_token] {
+        std::unique_ptr<::enterprise_management::DeviceManagementResponse>
+            dm_response =
+                DMPolicyBuilderForTesting::CreateInstanceWithOptions(
+                    /*first_request=*/false, /*rotate_to_new_key=*/false,
+                    DMPolicyBuilderForTesting::SigningOption::kSignNormally,
+                    dm_token, GetDefaultDMStorage()->GetDeviceID())
+                    ->BuildDMResponseWithError(
+                        enterprise_management::
+                            CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN);
+        return dm_response->SerializeAsString();
+      }());
+}
+
 void ExpectDeviceManagementPolicyValidationRequest(
     ScopedServer* test_server,
     const std::string& dm_token) {
   ExpectDeviceManagementRequest(test_server, "policy_validation_report",
-                                "GoogleDMToken", dm_token, "");
+                                "GoogleDMToken", dm_token, net::HTTP_OK, "");
 }
 
 }  // namespace updater::test

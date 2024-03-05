@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "chrome/updater/device_management/dm_message.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 
 namespace enterprise_management {
 class DeviceManagementResponse;
@@ -117,6 +118,11 @@ class DMPolicyBuilderForTesting {
   std::unique_ptr<::enterprise_management::DeviceManagementResponse>
   BuildDMResponseForPolicies(
       const base::flat_map<std::string, std::string>& policies) const;
+
+  // Builds a DeviceManagementResponse with the given error.
+  std::unique_ptr<::enterprise_management::DeviceManagementResponse>
+  BuildDMResponseWithError(
+      ::enterprise_management::DeviceManagementErrorDetail error) const;
 
  private:
   const std::string dm_token_;

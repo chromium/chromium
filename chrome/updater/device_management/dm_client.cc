@@ -278,6 +278,7 @@ void DMFetch::OnRequestComplete(std::unique_ptr<std::string> response_body,
     VLOG(1) << "DM request failed due to net error: " << net_error;
     result = DMClient::RequestResult::kNetworkError;
   } else if (http_status_code_ == kHTTPStatusGone) {
+    VLOG(1) << "Got response to delete/invalidate the DM token.";
     if (ShouldDeleteDmToken(*response_body)) {
       storage_->DeleteDMToken();
       result = DMClient::RequestResult::kNoDMToken;

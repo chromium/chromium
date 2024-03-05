@@ -387,4 +387,13 @@ DMPolicyBuilderForTesting::BuildDMResponseForPolicies(
   return dm_response;
 }
 
+std::unique_ptr<::enterprise_management::DeviceManagementResponse>
+DMPolicyBuilderForTesting::BuildDMResponseWithError(
+    ::enterprise_management::DeviceManagementErrorDetail error) const {
+  auto dm_response =
+      std::make_unique<::enterprise_management::DeviceManagementResponse>();
+  dm_response->add_error_detail(error);
+  return dm_response;
+}
+
 }  // namespace updater
