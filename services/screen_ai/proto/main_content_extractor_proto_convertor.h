@@ -8,13 +8,18 @@
 #include <map>
 #include <string>
 
-#include "ui/accessibility/ax_tree_update.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/accessibility/ax_tree_update_forward.h"
+
+namespace ui {
+class AXTree;
+}
 
 namespace screen_ai {
 
-// Converts an AXTreeUpdate snapshot to serialized ViewHierarchy proto for
-// MainContentExtractor.
-std::string SnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot);
+// Converts an AXTree with an unserialized snapshot to a serialized
+// ViewHierarchy proto.
+std::string SnapshotToViewHierarchy(const ui::AXTree* tree);
 
 // Returns a map of MainContentExtractor role strings to Chrome roles.
 std::map<std::string, ax::mojom::Role>

@@ -17,6 +17,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/closure_compiler/closure_args.gni")
@@ -1870,6 +1871,11 @@ test("content_browsertests") {
 
   if (enable_plugins) {
     sources += [ "../browser/plugin_service_impl_browsertest.cc" ]
+  }
+
+  if (enable_screen_ai_service) {
+    sources += [ "../renderer/accessibility/annotations/ax_main_node_annotator_browsertest.cc" ]
+    deps += [ "//services/screen_ai" ]
   }
 
   if (enable_library_cdms) {

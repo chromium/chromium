@@ -24,6 +24,10 @@
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "services/screen_ai/screen_ai_library_wrapper.h"
 
+namespace ui {
+class AXTree;
+}
+
 namespace ukm {
 class UkmRecorder;
 }
@@ -54,6 +58,10 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
                             base::TimeDelta elapsed_time,
                             bool success);
 
+  static ui::AXNodeID ComputeMainNodeForTesting(
+      const ui::AXTree* tree,
+      const std::vector<ui::AXNodeID>& content_node_ids);
+
  private:
   std::unique_ptr<ScreenAILibraryWrapper> library_;
 
@@ -78,6 +86,8 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   void ExtractMainContent(const ui::AXTreeUpdate& snapshot,
                           ukm::SourceId ukm_source_id,
                           ExtractMainContentCallback callback) override;
+  void ExtractMainNode(const ui::AXTreeUpdate& snapshot,
+                       ExtractMainNodeCallback callback) override;
 
   // mojom::ScreenAIServiceFactory:
   void InitializeMainContentExtraction(
@@ -117,6 +127,15 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
       mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
       InitializeOCRCallback callback,
       std::unique_ptr<PreloadedModelData> model_data);
+
+  // Takes as input an AXTreeUpdate and references to an empty AXTree and
+  // vector of ints. Unseriazes |snapshot| into |tree|. Runs the libary
+  // ExtractMainContent function whose return value sets |content_node_ids|.
+  // If |content_node_ids| is empty; returns false; otherwise, returns true.
+  bool ExtractMainContentInternal(
+      const ui::AXTreeUpdate& snapshot,
+      ui::AXTree& tree,
+      std::optional<std::vector<int32_t>>& content_node_ids);
 
   // Wrapper to call `PerformOcr` library function and record metrics.
   std::optional<chrome_screen_ai::VisualAnnotation> PerformOcrAndRecordMetrics(

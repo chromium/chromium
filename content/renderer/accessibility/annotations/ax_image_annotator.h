@@ -45,6 +45,7 @@ class CONTENT_EXPORT AXImageAnnotator : public AXAnnotator,
   AXImageAnnotator& operator=(const AXImageAnnotator&) = delete;
   ~AXImageAnnotator() override;
 
+  // AXAnnotator:
   void Annotate(const blink::WebDocument& document,
                 ui::AXTreeUpdate* update,
                 bool load_complete) override;
@@ -139,7 +140,7 @@ class CONTENT_EXPORT AXImageAnnotator : public AXAnnotator,
   const raw_ptr<RenderAccessibilityImpl> render_accessibility_;
 
   // A pointer to the automatic image annotation service.
-  mojo::Remote<image_annotation::mojom::Annotator> annotator_;
+  mojo::Remote<image_annotation::mojom::Annotator> annotator_remote_;
 
   // Keeps track of the image data and the automatic annotations for each image.
   //

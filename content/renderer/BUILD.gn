@@ -10,6 +10,7 @@ import("//content/common/features.gni")
 import("//media/media_options.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//sandbox/features.gni")
+import("//services/screen_ai/buildflags/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/webrtc/webrtc.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
@@ -297,6 +298,7 @@ target(link_target_type, "renderer") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:network_service",
     "//services/network/public/mojom",
+    "//services/screen_ai/buildflags",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
     "//services/tracing/public/cpp",
@@ -344,6 +346,15 @@ target(link_target_type, "renderer") {
     if (use_seccomp_bpf) {
       deps += [ "//sandbox/policy" ]
     }
+  }
+
+  if (enable_screen_ai_service) {
+    sources += [
+      "accessibility/annotations/ax_main_node_annotator.cc",
+      "accessibility/annotations/ax_main_node_annotator.h",
+    ]
+
+    deps += [ "//services/screen_ai/public/mojom" ]
   }
 
   if (is_linux || is_chromeos) {

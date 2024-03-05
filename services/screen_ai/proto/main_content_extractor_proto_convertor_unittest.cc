@@ -285,8 +285,8 @@ TEST_F(MainContentExtractorProtoConvertorTest, PreOrderTreeGeneration) {
   // Create the tree, convert it, and decode from proto.
   ui::AXTreeUpdate tree_update =
       CreateAXTreeUpdateFromTemplate(1, input_tree, nodes_count);
-
-  std::string serialized_proto = SnapshotToViewHierarchy(tree_update);
+  ui::AXTree tree(tree_update);
+  std::string serialized_proto = SnapshotToViewHierarchy(&tree);
   screenai::ViewHierarchy view_hierarchy;
   ASSERT_TRUE(view_hierarchy.ParseFromString(serialized_proto));
 
@@ -349,7 +349,8 @@ TEST_P(ProtoConvertorViewHierarchyTest, MAYBE_AxTreeJsonToProtoTest) {
   ASSERT_GT(tree_update.nodes.size(), 0u);
 
   // Convert AX Tree to Screen2x proto.
-  std::string serialized_proto = SnapshotToViewHierarchy(tree_update);
+  ui::AXTree tree(tree_update);
+  std::string serialized_proto = SnapshotToViewHierarchy(&tree);
   screenai::ViewHierarchy generated_view_hierarchy;
   ASSERT_TRUE(generated_view_hierarchy.ParseFromString(serialized_proto))
       << "Failed to parse created proto.";

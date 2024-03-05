@@ -48,12 +48,10 @@ class CONTENT_EXPORT AXAnnotatorsManager {
   // Add any additional debugging attributes.
   void AddDebuggingAttributes(const std::vector<ui::AXTreeUpdate>& updates);
 
- private:
-  friend class AXImageAnnotatorTest;
-
   void AddAnnotatorForTesting(std::unique_ptr<AXAnnotator>);
   void ClearAnnotatorsForTesting();
 
+ private:
   // The RenderAccessibilityManager that owns us.
   raw_ptr<RenderAccessibilityImpl> render_accessibility_;
 

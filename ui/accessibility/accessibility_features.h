@@ -273,6 +273,12 @@ AX_BASE_EXPORT bool IsScreenAIOCREnabled();
 // If enabled, ScreenAI library will be loaded from //third_party/screen-ai.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kScreenAITestMode);
 AX_BASE_EXPORT bool IsScreenAITestModeEnabled();
+
+// Identify and annotate the main node of the AXTree where one was not already
+// provided.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kMainNodeAnnotations);
+AX_BASE_EXPORT bool IsMainNodeAnnotationsEnabled();
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)

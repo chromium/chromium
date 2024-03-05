@@ -48,6 +48,15 @@ ui::AXTreeUpdate ConvertVisualAnnotationToTreeUpdate(
   return VisualAnnotationToAXTreeUpdate(*annotation_proto, image_rect);
 }
 
+ui::AXNodeID ComputeMainNode(
+    const ui::AXTree* tree,
+    const std::vector<ui::AXNodeID>& content_node_ids) {
+  ui::AXNode* front = tree->GetFromId(content_node_ids.front());
+  ui::AXNode* back = tree->GetFromId(content_node_ids.back());
+  ui::AXNode* main = front->GetLowestCommonAncestor(*back);
+  return main->id();
+}
+
 }  // namespace
 
 // The library accepts simple pointers to model data retrieval functions, hence
@@ -408,30 +417,61 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
                                          ukm::SourceId ukm_source_id,
                                          ExtractMainContentCallback callback) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  ui::AXTree tree;
+  std::optional<std::vector<int32_t>> content_node_ids;
+  bool success = ExtractMainContentInternal(snapshot, tree, content_node_ids);
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  RecordMetrics(ukm_source_id, ukm::UkmRecorder::Get(), elapsed_time, success);
+
+  if (success) {
+    std::move(callback).Run(*content_node_ids);
+  } else {
+    std::move(callback).Run(std::vector<int32_t>());
+  }
+}
+
+void ScreenAIService::ExtractMainNode(const ui::AXTreeUpdate& snapshot,
+                                      ExtractMainNodeCallback callback) {
+  ui::AXTree tree;
+  std::optional<std::vector<int32_t>> content_node_ids;
+  bool success = ExtractMainContentInternal(snapshot, tree, content_node_ids);
+
+  if (success) {
+    ui::AXNodeID main_node_id = ComputeMainNode(&tree, *content_node_ids);
+    std::move(callback).Run(main_node_id);
+  } else {
+    std::move(callback).Run(ui::kInvalidAXNodeID);
+  }
+}
+
+bool ScreenAIService::ExtractMainContentInternal(
+    const ui::AXTreeUpdate& snapshot,
+    ui::AXTree& tree,
+    std::optional<std::vector<int32_t>>& content_node_ids) {
   // Early return if input is empty.
   if (snapshot.nodes.empty()) {
-    std::move(callback).Run(std::vector<int32_t>());
-    return;
+    return false;
   }
 
-  std::string serialized_snapshot = SnapshotToViewHierarchy(snapshot);
+  // Deserialize the snapshot and reserialize it to a view hierarchy proto.
+  CHECK(tree.Unserialize(snapshot));
+  std::string serialized_snapshot = SnapshotToViewHierarchy(&tree);
+  content_node_ids = library_->ExtractMainContent(serialized_snapshot);
 
-  base::TimeTicks start_time = base::TimeTicks::Now();
-  std::optional<std::vector<int32_t>> content_node_ids =
-      library_->ExtractMainContent(serialized_snapshot);
-  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
-
-  RecordMetrics(ukm_source_id, ukm::UkmRecorder::Get(), elapsed_time,
-                /* success= */ content_node_ids.has_value());
-
-  if (content_node_ids.has_value()) {
+  if (content_node_ids.has_value() && content_node_ids->size() > 0) {
     VLOG(2) << "Screen2x returned " << content_node_ids->size() << " node ids.";
-    std::move(callback).Run(*content_node_ids);
-    return;
+    return true;
+  } else {
+    VLOG(0) << "Screen2x returned no results.";
+    return false;
   }
+}
 
-  VLOG(0) << "Screen2x returned no results.";
-  std::move(callback).Run(std::vector<int32_t>());
+ui::AXNodeID ScreenAIService::ComputeMainNodeForTesting(
+    const ui::AXTree* tree,
+    const std::vector<ui::AXNodeID>& content_node_ids) {
+  return ComputeMainNode(tree, content_node_ids);
 }
 
 // static

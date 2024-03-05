@@ -159,6 +159,10 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // for debugging.
   bool image_annotation_debugging_ = false;
 
+  AXAnnotatorsManager* ax_annotators_manager_for_testing() {
+    return ax_annotators_manager_.get();
+  }
+
  protected:
   // Check the entire accessibility tree to see if any nodes have
   // changed location, by comparing their locations to the cached
