@@ -9,8 +9,9 @@ namespace autofill {
 
 class FormStructure;
 
-// Uses context about previous and next fields to select the appropriate type
-// for fields with ambiguous upload types.
+// Applies several heuristics to select the most probable types for fields with
+// ambiguous possible types. Heuristics are run in order of priority which is
+// based on reflecting user intent the most.
 // Note that the case where a single-line street address is ambiguous to address
 // line 1 is handled on the server.
 void DisambiguatePossibleFieldTypes(FormStructure& form);
