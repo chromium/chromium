@@ -159,7 +159,7 @@ class Authenticator {
   }
 
  protected:
-  void NotifyStateChangeAfterAccepted();
+  virtual void NotifyStateChangeAfterAccepted();
 
   // Chain the state change notification such that, whenever
   // underlying->NotifyStateChangeAfterAccepted() is called,

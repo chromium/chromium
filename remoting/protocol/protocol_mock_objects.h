@@ -63,6 +63,11 @@ class MockAuthenticator : public Authenticator {
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override {
     return base::WrapUnique(GetNextMessagePtr());
   }
+
+  // Make this method public.
+  void NotifyStateChangeAfterAccepted() override {
+    Authenticator::NotifyStateChangeAfterAccepted();
+  }
 };
 
 class MockConnectionToClientEventHandler

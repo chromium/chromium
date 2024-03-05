@@ -8,9 +8,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/test/mock_callback.h"
 #include "net/base/net_errors.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/protocol/auth_util.h"
+#include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/authenticator_test_base.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/connection_tester.h"
@@ -26,6 +28,7 @@
 
 using testing::_;
 using testing::DeleteArg;
+using testing::Return;
 using testing::SaveArg;
 
 namespace remoting::protocol {
@@ -112,6 +115,15 @@ class NegotiatingAuthenticatorTest : public AuthenticatorTestBase {
                                        kTestClientId, kTestPairedSecret);
       pairing_registry_->AddPairing(pairing);
     }
+  }
+
+  void SwapCurrentAuthenticator(
+      NegotiatingAuthenticatorBase* negotiating_authenticator,
+      std::unique_ptr<Authenticator> current_authenticator) {
+    negotiating_authenticator->current_authenticator_ =
+        std::move(current_authenticator);
+    negotiating_authenticator->ChainStateChangeAfterAcceptedWithUnderlying(
+        *negotiating_authenticator->current_authenticator_);
   }
 
   static void FetchSecret(
@@ -263,6 +275,54 @@ TEST_F(NegotiatingPairingAuthenticatorTest, PairingFailedInvalidSecretAndPin) {
       kTestClientId, kTestPairedSecretBad, kTestPinBad, kTestPin));
   ASSERT_NO_FATAL_FAILURE(RunAuthExchange());
   VerifyRejected(Authenticator::RejectionReason::INVALID_CREDENTIALS);
+}
+
+TEST_F(NegotiatingAuthenticatorTest, NotifyStateChangeAfterAccepted) {
+  base::MockRepeatingClosure host_state_change_after_accepted;
+  base::MockRepeatingClosure client_state_change_after_accepted;
+  ASSERT_NO_FATAL_FAILURE(
+      InitAuthenticators(kNoClientId, kNoPairedSecret, kTestPin, kTestPin));
+  host_->set_state_change_after_accepted_callback(
+      host_state_change_after_accepted.Get());
+  client_->set_state_change_after_accepted_callback(
+      client_state_change_after_accepted.Get());
+  VerifyAccepted();
+
+  // There is no client authenticator for SessionAuthz (which has
+  // state-change-after-accepted behavior), so we have to swap the current
+  // authenticators with mock ones.
+  auto mock_host_authenticator_owned = std::make_unique<MockAuthenticator>();
+  auto mock_client_authenticator_owned = std::make_unique<MockAuthenticator>();
+  MockAuthenticator* mock_host_authenticator =
+      mock_host_authenticator_owned.get();
+  MockAuthenticator* mock_client_authenticator =
+      mock_client_authenticator_owned.get();
+  SwapCurrentAuthenticator(host_as_negotiating_authenticator_,
+                           std::move(mock_host_authenticator_owned));
+  SwapCurrentAuthenticator(client_as_negotiating_authenticator_,
+                           std::move(mock_client_authenticator_owned));
+  EXPECT_CALL(*mock_host_authenticator, state())
+      .WillOnce(Return(Authenticator::REJECTED));
+  EXPECT_CALL(*mock_client_authenticator, state())
+      .WillOnce(Return(Authenticator::REJECTED));
+  EXPECT_CALL(*mock_host_authenticator, rejection_reason())
+      .WillOnce(
+          Return(Authenticator::RejectionReason::REAUTHZ_POLICY_CHECK_FAILED));
+  EXPECT_CALL(*mock_client_authenticator, rejection_reason())
+      .WillOnce(
+          Return(Authenticator::RejectionReason::REAUTHZ_POLICY_CHECK_FAILED));
+  EXPECT_CALL(host_state_change_after_accepted, Run());
+  EXPECT_CALL(client_state_change_after_accepted, Run());
+
+  mock_host_authenticator->NotifyStateChangeAfterAccepted();
+  mock_client_authenticator->NotifyStateChangeAfterAccepted();
+
+  EXPECT_EQ(host_->state(), Authenticator::REJECTED);
+  EXPECT_EQ(client_->state(), Authenticator::REJECTED);
+  EXPECT_EQ(host_->rejection_reason(),
+            Authenticator::RejectionReason::REAUTHZ_POLICY_CHECK_FAILED);
+  EXPECT_EQ(client_->rejection_reason(),
+            Authenticator::RejectionReason::REAUTHZ_POLICY_CHECK_FAILED);
 }
 
 }  // namespace remoting::protocol

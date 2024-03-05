@@ -64,6 +64,8 @@ class ValidatingAuthenticator : public Authenticator {
   // |resume_callback| is called after the state is updated.
   void UpdateState(base::OnceClosure resume_callback);
 
+  void NotifyStateChangeAfterAccepted() override;
+
   // The JID of the remote user.
   std::string remote_jid_;
 

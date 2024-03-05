@@ -14,6 +14,7 @@
 #include "base/strings/string_split.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/rsa_key_pair.h"
+#include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
@@ -108,6 +109,14 @@ NegotiatingAuthenticatorBase::GetNextMessageInternal() {
   result->AddAttr(kMethodAttributeQName,
                   HostAuthenticationConfig::MethodToString(current_method_));
   return result;
+}
+
+void NegotiatingAuthenticatorBase::NotifyStateChangeAfterAccepted() {
+  state_ = current_authenticator_->state();
+  if (state_ == REJECTED) {
+    rejection_reason_ = current_authenticator_->rejection_reason();
+  }
+  Authenticator::NotifyStateChangeAfterAccepted();
 }
 
 void NegotiatingAuthenticatorBase::AddMethod(Method method) {

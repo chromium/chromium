@@ -94,6 +94,8 @@ class NegotiatingAuthenticatorBase : public Authenticator {
 
   explicit NegotiatingAuthenticatorBase(Authenticator::State initial_state);
 
+  void NotifyStateChangeAfterAccepted() override;
+
   void AddMethod(HostAuthenticationConfig::Method method);
 
   // Updates |state_| to reflect the current underlying authenticator state.

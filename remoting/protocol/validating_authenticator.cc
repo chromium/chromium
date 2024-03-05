@@ -147,4 +147,12 @@ void ValidatingAuthenticator::UpdateState(base::OnceClosure resume_callback) {
   }
 }
 
+void ValidatingAuthenticator::NotifyStateChangeAfterAccepted() {
+  state_ = current_authenticator_->state();
+  if (state_ == REJECTED) {
+    rejection_reason_ = current_authenticator_->rejection_reason();
+  }
+  Authenticator::NotifyStateChangeAfterAccepted();
+}
+
 }  // namespace remoting::protocol
