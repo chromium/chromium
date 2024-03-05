@@ -170,16 +170,15 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   entry_point_depth_ = 0;
   pending_script_info_ = std::nullopt;
 
+  if (RuntimeEnabledFeatures::LongTaskFromLongAnimationFrameEnabled() &&
+      frame && frame->DomWindow() && task_duration >= kLongTaskDuration) {
+    client_.ReportLongTaskTiming(start_time, end_time, frame->DomWindow());
+  }
+
   // If we already need an update and a new task is processed, count its
   // duration towards blockingTime.
-  if (frame || did_see_ui_events) {
-    if (RuntimeEnabledFeatures::LongTaskFromLongAnimationFrameEnabled() &&
-        task_duration >= kLongTaskDuration) {
-      client_.ReportLongTaskTiming(start_time, end_time, frame->DomWindow());
-    }
-    if (state_ == State::kPendingFrame) {
-      ApplyTaskDuration(task_duration);
-    }
+  if ((frame || did_see_ui_events) && (state_ == State::kPendingFrame)) {
+    ApplyTaskDuration(task_duration);
   }
 
   if (state_ != State::kProcessingTask) {

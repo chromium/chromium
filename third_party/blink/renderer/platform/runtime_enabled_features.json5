@@ -2219,7 +2219,8 @@
     },
     {
       // Use LongAnimationFrameMonitor to emit longtask entries
-      name: "LongTaskFromLongAnimationFrame"
+      name: "LongTaskFromLongAnimationFrame",
+      status: "stable",
     },
     {
       name: "MacFontsDeprecateFontTraitsWorkaround",
