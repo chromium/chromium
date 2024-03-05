@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -20,7 +21,11 @@ InterpolableNumber* ConsumeControlAxis(double value,
 float ConsumeInterpolableControlAxis(const InterpolableValue* number,
                                      bool is_absolute,
                                      double current_value) {
-  double value = To<InterpolableNumber>(number)->Value();
+  // Note: using default CSSToLengthConversionData here as it's
+  // guaranteed to be a double.
+  // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
+  double value =
+      To<InterpolableNumber>(number)->Value(CSSToLengthConversionData());
   return ClampTo<float>(is_absolute ? value : value - current_value);
 }
 
@@ -39,7 +44,8 @@ float ConsumeInterpolableCoordinateAxis(const InterpolableValue* number,
                                         bool is_absolute,
                                         double& current_value) {
   double previous_value = current_value;
-  current_value = To<InterpolableNumber>(number)->Value();
+  current_value =
+      To<InterpolableNumber>(number)->Value(CSSToLengthConversionData());
   return ClampTo<float>(is_absolute ? current_value
                                     : current_value - previous_value);
 }
@@ -210,11 +216,17 @@ PathSegmentData ConsumeInterpolableArc(const InterpolableValue& value,
       list.Get(0), is_absolute, coordinates.current_x));
   segment.target_point.set_y(ConsumeInterpolableCoordinateAxis(
       list.Get(1), is_absolute, coordinates.current_y));
-  segment.SetArcRadiusX(To<InterpolableNumber>(list.Get(2))->Value());
-  segment.SetArcRadiusY(To<InterpolableNumber>(list.Get(3))->Value());
-  segment.SetArcAngle(To<InterpolableNumber>(list.Get(4))->Value());
-  segment.arc_large = To<InterpolableNumber>(list.Get(5))->Value() >= 0.5;
-  segment.arc_sweep = To<InterpolableNumber>(list.Get(6))->Value() >= 0.5;
+  CSSToLengthConversionData length_resolver;
+  segment.SetArcRadiusX(
+      To<InterpolableNumber>(list.Get(2))->Value(length_resolver));
+  segment.SetArcRadiusY(
+      To<InterpolableNumber>(list.Get(3))->Value(length_resolver));
+  segment.SetArcAngle(
+      To<InterpolableNumber>(list.Get(4))->Value(length_resolver));
+  segment.arc_large =
+      To<InterpolableNumber>(list.Get(5))->Value(length_resolver) >= 0.5;
+  segment.arc_sweep =
+      To<InterpolableNumber>(list.Get(6))->Value(length_resolver) >= 0.5;
   return segment;
 }
 
