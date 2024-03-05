@@ -34,7 +34,7 @@ cargo_crate("{{this.name}}") {
   edition = "{{edition}}"
   cargo_pkg_version = "{{cargo_pkg_version}}"
   {{#with cargo_pkg_authors}}
-  cargo_pkg_authors = "{{this}}"
+  cargo_pkg_authors = "{{gn_escape this}}"
   {{/with}}
   cargo_pkg_name = "{{cargo_pkg_name}}"
   {{#with cargo_pkg_description}}
