@@ -863,6 +863,11 @@ void PageSpecificContentSettings::OnContentBlocked(ContentSettingsType type) {
   DCHECK(type != ContentSettingsType::MEDIASTREAM_MIC &&
          type != ContentSettingsType::MEDIASTREAM_CAMERA)
       << "Media stream settings handled by OnMediaStreamPermissionSet";
+
+  if (freeze_indicators_) {
+    return;
+  }
+
   if (!content_settings::ContentSettingsRegistry::GetInstance()->Get(type)) {
     return;
   }
@@ -1171,6 +1176,16 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
     const GURL& request_origin,
     MicrophoneCameraState new_microphone_camera_state) {
   DCHECK(!IsEmbeddedPage());
+
+  // Camera and/or Mic permission request could auto-ignore in case of a page
+  // refresh. In this case `OnMediaStreamPermissionSet` should not store media
+  // stream state and it should not update activity indicators.
+  if (freeze_indicators_ &&
+      (new_microphone_camera_state.Has(kMicrophoneBlocked) ||
+       new_microphone_camera_state.Has(kCameraBlocked))) {
+    return;
+  }
+
   media_stream_access_origin_ = request_origin;
 
   if (new_microphone_camera_state.Has(kMicrophoneAccessed)) {

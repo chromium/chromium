@@ -449,6 +449,12 @@ class PageSpecificContentSettings
   // indicators.
   void OnPermissionIndicatorHidden(ContentSettingsType type);
 
+  // If permission requests need to be cleaned up due to a page refresh, PSCS
+  // should be temporarily frozen to prevent unnecessary update of activity
+  // indicators.
+  void OnPermissionRequestCleanupStart() { freeze_indicators_ = true; }
+  void OnPermissionRequestCleanupEnd() { freeze_indicators_ = false; }
+
   void set_media_stream_access_origin_for_testing(const GURL& url) {
     media_stream_access_origin_ = url;
   }
@@ -548,6 +554,12 @@ class PageSpecificContentSettings
   // updating synced PageSpecificContentSettings for the document
   // picture-in-picture case.
   bool is_updating_synced_pscs_ = false;
+
+  // If `false` PSCS is allowed to save a new blocked state for an activity
+  // indicator. If `true` PSCS is frozen and a new blocked state will be
+  // ignored. This variable is controlled by PermissionRequestManager to prevent
+  // showing indicators after requests were cleaned up due to a new navigation.
+  bool freeze_indicators_ = false;
 
   raw_ptr<Delegate> delegate_;
 
