@@ -309,11 +309,16 @@ void OpenXrGraphicsBindingD3D11::SetWebXrTexture(
 }
 
 bool OpenXrGraphicsBindingD3D11::SetOverlayTexture(
-    mojo::PlatformHandle texture_handle,
+    gfx::GpuMemoryBufferHandle texture,
     const gpu::SyncToken& sync_token,
     const gfx::RectF& left,
     const gfx::RectF& right) {
-  return texture_helper_->SetOverlayTexture(texture_handle.TakeHandle(),
+  if (texture.is_null()) {
+    return false;
+  }
+
+  CHECK(texture.type == gfx::DXGI_SHARED_HANDLE);
+  return texture_helper_->SetOverlayTexture(std::move(texture.dxgi_handle),
                                             sync_token, left, right);
 }
 

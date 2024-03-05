@@ -7900,23 +7900,17 @@ static_library("browser") {
   }
 
   if (enable_vr) {
-    if (is_win) {
-      sources += [
-        "vr/ui_host/vr_ui_host_impl.cc",
-        "vr/ui_host/vr_ui_host_impl.h",
-      ]
-
-      deps += [ "//device/vr/public/mojom:isolated_xr_service" ]
-    }
-
     sources += [
       "vr/chrome_xr_integration_client.cc",
       "vr/chrome_xr_integration_client.h",
+      "vr/ui_host/vr_ui_host_impl.cc",
+      "vr/ui_host/vr_ui_host_impl.h",
     ]
 
     deps += [
       "//chrome/browser/vr:vr_common",
       "//device/vr",
+      "//device/vr/public/mojom:isolated_xr_service",
     ]
 
     if (is_android) {

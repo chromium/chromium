@@ -387,11 +387,8 @@ void OpenXrRenderLoop::StartRuntimeFinish(
 
   mojo::PendingRemote<mojom::ImmersiveOverlay> overlay_remote;
 
-  // TODO(https://crbug.com/40901055): Implement overlay code for Android.
-  if constexpr (BUILDFLAG(IS_WIN)) {
-    overlay_receiver_.reset();
-    overlay_remote = overlay_receiver_.BindNewPipeAndPassRemote();
-  }
+  overlay_receiver_.reset();
+  overlay_remote = overlay_receiver_.BindNewPipeAndPassRemote();
 
   main_thread_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true, std::move(session),
@@ -541,7 +538,7 @@ void OpenXrRenderLoop::UpdateLayerBounds(int16_t frame_id,
 
 void OpenXrRenderLoop::SubmitOverlayTexture(
     int16_t frame_id,
-    mojo::PlatformHandle texture_handle,
+    gfx::GpuMemoryBufferHandle texture,
     const gpu::SyncToken& sync_token,
     const gfx::RectF& left_bounds,
     const gfx::RectF& right_bounds,
@@ -560,7 +557,7 @@ void OpenXrRenderLoop::SubmitOverlayTexture(
 
   pending_frame_->waiting_for_overlay_ = false;
 
-  graphics_binding_->SetOverlayTexture(std::move(texture_handle), sync_token,
+  graphics_binding_->SetOverlayTexture(std::move(texture), sync_token,
                                        left_bounds, right_bounds);
   pending_frame_->overlay_submitted_ = true;
 

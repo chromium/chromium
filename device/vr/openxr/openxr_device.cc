@@ -191,11 +191,7 @@ void OpenXrDevice::OnRequestSessionResult(
   session_result->session = std::move(session);
   session_result->controller =
       exclusive_controller_receiver_.BindNewPipeAndPassRemote();
-
-  // TODO(https://crbug.com/40901055): Implement overlay code for Android.
-  if constexpr (BUILDFLAG(IS_WIN)) {
-    session_result->overlay = std::move(overlay);
-  }
+  session_result->overlay = std::move(overlay);
 
   std::move(request_session_callback_).Run(std::move(session_result));
 

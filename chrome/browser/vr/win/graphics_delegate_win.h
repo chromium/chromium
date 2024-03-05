@@ -31,10 +31,11 @@ class GraphicsDelegateWin : public GraphicsDelegate {
   ~GraphicsDelegateWin() override;
 
   // GraphicsDelegate:
+  void Initialize(base::OnceClosure on_initialized) override;
   bool PreRender() override;
   void PostRender() override;
-  mojo::PlatformHandle GetTexture() override;
-  const gpu::SyncToken& GetSyncToken() override;
+  gfx::GpuMemoryBufferHandle GetTexture() override;
+  gpu::SyncToken GetSyncToken() override;
   void ResetMemoryBuffer() override;
   bool BindContext() override;
   void ClearContext() override;

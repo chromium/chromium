@@ -11,8 +11,6 @@
 #include "chrome/browser/vr/browser_renderer.h"
 #include "chrome/browser/vr/ui.h"
 #include "chrome/browser/vr/win/graphics_delegate_win.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
-#include "gpu/command_buffer/client/gles2_lib.h"
 #include "ui/gfx/geometry/quaternion.h"
 
 // To avoid conflicts with the macro from the Windows SDK...
@@ -148,6 +146,16 @@ void VRBrowserRendererThreadWin::UpdateOverlayState() {
     // the UI to prevent just auto-stopping the Overlay for tests, so that the
     // other logic can potentially run.
     if (!g_overlay_ui_disabled_for_testing_) {
+      // If we don't have a graphics yet (because StartOverlay hasn't finished),
+      // then postpone running the overlay update until it is.
+      if (!graphics_) {
+        // Unretained is safe since we maintain ownership of this callback.
+        pending_overlay_update_ =
+            base::BindOnce(&VRBrowserRendererThreadWin::UpdateOverlayState,
+                           base::Unretained(this));
+        return;
+      }
+
       overlay_->RequestNextOverlayPose(
           base::BindOnce(&VRBrowserRendererThreadWin::OnPose,
                          base::Unretained(this), GetNextRequestId()));
@@ -245,10 +253,23 @@ void VRBrowserRendererThreadWin::StartOverlay() {
   if (started_)
     return;
 
+  started_ = true;
+  std::unique_ptr<GraphicsDelegate> graphics = GraphicsDelegate::Create();
+
+  // We're going to pass the unique_ptr into the callback so grab a temporary
+  // reference to it here to prevent a use-after-move. This keeps the member
+  // null until we've been fully initialized.
+  auto* initializing_graphics = graphics.get();
+  initializing_graphics->Initialize(
+      base::BindOnce(&VRBrowserRendererThreadWin::OnGraphicsReady,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(graphics)));
+}
+
+void VRBrowserRendererThreadWin::OnGraphicsReady(
+    std::unique_ptr<GraphicsDelegate> initializing_graphics) {
+  DVLOG(2) << __func__;
   // The graphics delegate will eventually be owned by the browser_renderer_,
   // but we need to keep a raw pointer to it.
-  std::unique_ptr<GraphicsDelegateWin> initializing_graphics =
-      std::make_unique<GraphicsDelegateWin>();
   graphics_ = initializing_graphics.get();
 
   // We should have received valid views from the ui host before rendering.
@@ -269,7 +290,9 @@ void VRBrowserRendererThreadWin::StartOverlay() {
 
   graphics_->ClearContext();
 
-  started_ = true;
+  if (pending_overlay_update_) {
+    std::move(pending_overlay_update_).Run();
+  }
 }
 
 void VRBrowserRendererThreadWin::OnWebXRSubmitted() {
@@ -395,7 +418,7 @@ void VRBrowserRendererThreadWin::OnPose(int request_id,
 }
 
 bool VRBrowserRendererThreadWin::PreRender() {
-  // GraphicsDelegateWin::PreRender can fail if the context has become lost
+  // GraphicsDelegate::PreRender can fail if the context has become lost
   // due to hybrid adapter switching. Giving up on life means no overlays are
   // submitted to the XR process, causing it hang, waiting forever. Instead,
   // we shutdown and restart the overlay system, re-establishing the GPU process
@@ -403,12 +426,23 @@ bool VRBrowserRendererThreadWin::PreRender() {
   if (!graphics_->PreRender()) {
     StopOverlay();
     StartOverlay();
+    // StartOverlay is asynchronous, so we may not have a graphics_ again
+    // immediately. We'll essentially bail on this pose and ask for a new one
+    // once the connection has been re-established.
+    if (!graphics_) {
+      // Unretained is safe since we maintain ownership of this callback.
+      pending_overlay_update_ =
+          base::BindOnce(&VRBrowserRendererThreadWin::UpdateOverlayState,
+                         base::Unretained(this));
+      return false;
+    }
     return graphics_->PreRender();
   }
   return true;
 }
 
 void VRBrowserRendererThreadWin::SubmitFrame(int16_t frame_id) {
+  DVLOG(3) << __func__ << " frame_id=" << frame_id;
   graphics_->PostRender();
 
   overlay_->SubmitOverlayTexture(
@@ -419,6 +453,7 @@ void VRBrowserRendererThreadWin::SubmitFrame(int16_t frame_id) {
 }
 
 void VRBrowserRendererThreadWin::SubmitResult(bool success) {
+  DVLOG(3) << __func__ << " success=" << success;
   if (!success && graphics_) {
     graphics_->ResetMemoryBuffer();
   }
@@ -429,6 +464,7 @@ void VRBrowserRendererThreadWin::SubmitResult(bool success) {
   }
 
   if (draw_state_.ShouldDrawUI() && started_) {
+    DVLOG(3) << __func__ << " Requesting Overlay Pose";
     overlay_->RequestNextOverlayPose(
         base::BindOnce(&VRBrowserRendererThreadWin::OnPose,
                        base::Unretained(this), GetNextRequestId()));

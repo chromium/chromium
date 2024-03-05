@@ -162,7 +162,7 @@ class OpenXrRenderLoop : public XRThread,
 
   // ImmersiveOverlay:
   void SubmitOverlayTexture(int16_t frame_id,
-                            mojo::PlatformHandle texture,
+                            gfx::GpuMemoryBufferHandle texture,
                             const gpu::SyncToken& sync_token,
                             const gfx::RectF& left_bounds,
                             const gfx::RectF& right_bounds,

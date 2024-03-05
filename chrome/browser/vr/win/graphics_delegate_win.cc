@@ -18,7 +18,10 @@
 
 namespace vr {
 
-GraphicsDelegateWin::GraphicsDelegateWin() {
+GraphicsDelegateWin::GraphicsDelegateWin() = default;
+GraphicsDelegateWin::~GraphicsDelegateWin() = default;
+
+void GraphicsDelegateWin::Initialize(base::OnceClosure on_initialized) {
   gpu::GpuChannelEstablishFactory* factory =
       content::GetGpuChannelEstablishFactory();
   gpu_channel_host_ = factory->EstablishGpuChannelSync();
@@ -38,9 +41,9 @@ GraphicsDelegateWin::GraphicsDelegateWin() {
     gl_ = context_provider_->ContextGL();
     sii_ = context_provider_->SharedImageInterface();
   }
-}
 
-GraphicsDelegateWin::~GraphicsDelegateWin() = default;
+  std::move(on_initialized).Run();
+}
 
 bool GraphicsDelegateWin::BindContext() {
   if (!gl_)
@@ -113,17 +116,15 @@ void GraphicsDelegateWin::PostRender() {
   ClearContext();
 }
 
-mojo::PlatformHandle GraphicsDelegateWin::GetTexture() {
+gfx::GpuMemoryBufferHandle GraphicsDelegateWin::GetTexture() {
   if (!client_shared_image_) {
-    return {};
+    return gfx::GpuMemoryBufferHandle();
   }
 
-  gfx::GpuMemoryBufferHandle gpu_handle =
-      client_shared_image_->CloneGpuMemoryBufferHandle();
-  return mojo::PlatformHandle(std::move(gpu_handle.dxgi_handle));
+  return client_shared_image_->CloneGpuMemoryBufferHandle();
 }
 
-const gpu::SyncToken& GraphicsDelegateWin::GetSyncToken() {
+gpu::SyncToken GraphicsDelegateWin::GetSyncToken() {
   return access_done_sync_token_;
 }
 

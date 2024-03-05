@@ -11,7 +11,7 @@
 #include "chrome/browser/vr/render_info.h"
 #include "chrome/browser/vr/vr_export.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
-#include "mojo/public/cpp/platform/platform_handle.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gfx {
 class Transform;
@@ -30,6 +30,8 @@ namespace vr {
 // viewports.
 class VR_EXPORT GraphicsDelegate {
  public:
+  static std::unique_ptr<GraphicsDelegate> Create();
+
   using Transform = float[16];
   GraphicsDelegate();
   virtual ~GraphicsDelegate();
@@ -44,10 +46,11 @@ class VR_EXPORT GraphicsDelegate {
                            const gfx::Transform& head_pose);
   RenderInfo GetOptimizedRenderInfoForFovs(const FovRectangles& fovs);
 
+  virtual void Initialize(base::OnceClosure on_initialized) = 0;
   virtual bool PreRender() = 0;
   virtual void PostRender() = 0;
-  virtual mojo::PlatformHandle GetTexture() = 0;
-  virtual const gpu::SyncToken& GetSyncToken() = 0;
+  virtual gfx::GpuMemoryBufferHandle GetTexture() = 0;
+  virtual gpu::SyncToken GetSyncToken() = 0;
   virtual void ResetMemoryBuffer() = 0;
   virtual bool BindContext() = 0;
   virtual void ClearContext() = 0;

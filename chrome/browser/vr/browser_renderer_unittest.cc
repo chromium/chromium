@@ -55,10 +55,13 @@ class MockGraphicsDelegate : public GraphicsDelegate {
   bool using_buffer() { return using_buffer_; }
 
   // GraphicsDelegate
+  void Initialize(base::OnceClosure on_initialized) override {
+    std::move(on_initialized).Run();
+  }
   bool PreRender() override { return true; }
   void PostRender() override {}
-  mojo::PlatformHandle GetTexture() override { NOTREACHED_NORETURN(); }
-  const gpu::SyncToken& GetSyncToken() override { NOTREACHED_NORETURN(); }
+  gfx::GpuMemoryBufferHandle GetTexture() override { NOTREACHED_NORETURN(); }
+  gpu::SyncToken GetSyncToken() override { NOTREACHED_NORETURN(); }
   void ResetMemoryBuffer() override {}
   bool BindContext() override { return true; }
   void ClearContext() override {}

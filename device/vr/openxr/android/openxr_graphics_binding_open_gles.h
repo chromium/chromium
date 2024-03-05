@@ -49,7 +49,7 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
   bool ShouldFlipSubmittedImage() override;
   void SetOverlayAndWebXrVisibility(bool overlay_visible,
                                     bool webxr_visible) override;
-  bool SetOverlayTexture(mojo::PlatformHandle texture_handle,
+  bool SetOverlayTexture(gfx::GpuMemoryBufferHandle texture,
                          const gpu::SyncToken& sync_token,
                          const gfx::RectF& left,
                          const gfx::RectF& right) override;
@@ -64,6 +64,10 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
   XrGraphicsBindingOpenGLESAndroidKHR binding_{
       XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR, nullptr};
   std::vector<SwapChainInfo> color_swapchain_images_;
+  gfx::GpuMemoryBufferHandle overlay_handle_;
+
+  bool webxr_visible_ = true;
+  bool overlay_visible_ = false;
 
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
@@ -71,6 +75,7 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
 
   std::unique_ptr<XrRenderer> renderer_;
   GLuint back_buffer_fbo_ = 0;
+  GLuint overlay_texture_ = 0;
 };
 
 }  // namespace device

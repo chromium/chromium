@@ -35,8 +35,6 @@ component("vr_ui") {
     "elements/rect.h",
     "elements/scaled_depth_adjuster.cc",
     "elements/scaled_depth_adjuster.h",
-    "elements/spinner.cc",
-    "elements/spinner.h",
     "elements/text.cc",
     "elements/text.h",
     "elements/textured_element.cc",
@@ -90,6 +88,13 @@ component("vr_ui") {
     "ui_scene_creator.h",
     "vr_ui_export.h",
   ]
+
+  if (is_win) {
+    sources += [
+      "elements/spinner.cc",
+      "elements/spinner.h",
+    ]
+  }
 
   deps = [
     ":vr_base",
@@ -152,6 +157,8 @@ component("vr_common") {
     "vr_export.h",
     "vr_web_contents_observer.cc",
     "vr_web_contents_observer.h",
+    "win/vr_browser_renderer_thread_win.cc",
+    "win/vr_browser_renderer_thread_win.h",
   ]
 
   public_deps = [
@@ -160,6 +167,7 @@ component("vr_common") {
   ]
 
   deps = [
+    ":vr_ui",
     "//base",
     "//cc/paint",
     "//chrome/common:constants",
@@ -188,20 +196,23 @@ component("vr_common") {
     sources += [
       "win/graphics_delegate_win.cc",
       "win/graphics_delegate_win.h",
-      "win/vr_browser_renderer_thread_win.cc",
-      "win/vr_browser_renderer_thread_win.h",
+    ]
+
+    deps += [ "//services/viz/public/cpp/gpu" ]
+  }
+
+  if (is_android) {
+    sources += [
+      "graphics_delegate_android.cc",
+      "graphics_delegate_android.h",
     ]
 
     deps += [
-      "//gpu/command_buffer/client:gles2_c_lib",
-      "//services/viz/public/cpp/gpu",
+      "//components/webxr",
+      "//device/vr/android:vr_android",
+      "//gpu/command_buffer/service:gles2",
+      "//ui/gl/init",
     ]
-
-    # Windows doesn't have app bundles, so include the UI directly.
-    deps += [ ":vr_ui" ]
-  }
-
-  if (!use_command_buffer) {
   }
 }
 
@@ -264,7 +275,6 @@ test("vr_common_unittests") {
     "elements/linear_layout_unittest.cc",
     "elements/rect_unittest.cc",
     "elements/scaled_depth_adjuster_unittest.cc",
-    "elements/spinner_unittest.cc",
     "elements/text_unittest.cc",
     "elements/transient_element_unittest.cc",
     "elements/ui_element_unittest.cc",
@@ -278,6 +288,10 @@ test("vr_common_unittests") {
     "ui_scene_unittest.cc",
     "ui_unittest.cc",
   ]
+
+  if (is_win) {
+    sources += [ "elements/spinner_unittest.cc" ]
+  }
 
   deps = [
     ":vr_test_support",

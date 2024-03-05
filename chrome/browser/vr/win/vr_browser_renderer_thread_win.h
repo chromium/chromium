@@ -9,6 +9,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/vr/browser_renderer.h"
@@ -23,8 +24,8 @@
 namespace vr {
 
 class BrowserUiInterface;
-class GraphicsDelegateWin;
 class SchedulerUiInterface;
+class GraphicsDelegate;
 
 class VR_EXPORT VRBrowserRendererThreadWin {
  public:
@@ -67,6 +68,7 @@ class VR_EXPORT VRBrowserRendererThreadWin {
     bool indicators_visible_ = false;
   };
 
+  void OnGraphicsReady(std::unique_ptr<GraphicsDelegate> initializing_graphics);
   void OnPose(int request_id, device::mojom::XRRenderInfoPtr data);
   bool PreRender();
   void SubmitResult(bool success);
@@ -86,7 +88,7 @@ class VR_EXPORT VRBrowserRendererThreadWin {
   std::unique_ptr<BrowserRenderer> browser_renderer_;
 
   // Raw pointers to objects owned by browser_renderer_:
-  raw_ptr<GraphicsDelegateWin, DanglingUntriaged> graphics_ = nullptr;
+  raw_ptr<GraphicsDelegate, DanglingUntriaged> graphics_ = nullptr;
   raw_ptr<BrowserUiInterface, DanglingUntriaged> ui_ = nullptr;
   raw_ptr<SchedulerUiInterface, DanglingUntriaged> scheduler_ui_ = nullptr;
 
@@ -103,12 +105,16 @@ class VR_EXPORT VRBrowserRendererThreadWin {
   base::CancelableOnceClosure webxr_frame_timeout_closure_;
   base::CancelableOnceClosure webxr_spinner_timeout_closure_;
 
+  base::OnceClosure pending_overlay_update_;
+
   // This class is effectively a singleton, although it's not actually
   // implemented as one. Since tests need to access the thread to post tasks,
   // just keep a static reference to the existing instance.
   static VRBrowserRendererThreadWin* instance_for_testing_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  base::WeakPtrFactory<VRBrowserRendererThreadWin> weak_ptr_factory_{this};
 };
 
 }  // namespace vr

@@ -15,6 +15,7 @@ import "sandbox/policy/mojom/sandbox.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/gpu.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/buffer_types.mojom";
 
 // The XRSessionController lives in the xr runtime service, and corresponds to
 // a set of the XRSession bindings.  The client is the browser process, which
@@ -142,7 +143,7 @@ interface ImmersiveOverlay {
   // Submit a frame to show in the headset.  Only can be called when an overlay
   // is visible.  The frame will be composited on top of WebXR content.
   // |texture| should only be used after |sync_token| has passed.
-  SubmitOverlayTexture(int16 frame_id, handle<platform> texture,
+  SubmitOverlayTexture(int16 frame_id, gfx.mojom.GpuMemoryBufferHandle texture,
       gpu.mojom.SyncToken sync_token, gfx.mojom.RectF left_bounds,
       gfx.mojom.RectF right_bounds) => (bool success);
 
