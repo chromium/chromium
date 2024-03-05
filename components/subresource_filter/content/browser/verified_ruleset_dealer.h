@@ -157,8 +157,7 @@ class VerifiedRuleset {
 // The UI-thread handle that owns a VerifiedRuleset living on a dedicated
 // sequenced |task_runner|, same as the VerifiedRulesetDealer lives on. Provides
 // asynchronous access to the instance, and destroys it asynchronously.
-class VerifiedRuleset::Handle
-    : public base::SupportsWeakPtr<VerifiedRuleset::Handle> {
+class VerifiedRuleset::Handle {
  public:
   // Creates a VerifiedRuleset and initializes it asynchronously on a
   // |task_runner| using |dealer_handle|. The instance remains owned by this
@@ -179,6 +178,8 @@ class VerifiedRuleset::Handle
   // least until the callback returns.
   void GetRulesetAsync(base::OnceCallback<void(VerifiedRuleset*)> callback);
 
+  base::WeakPtr<Handle> AsWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
+
  private:
   // This is to allow ADSF to post |ruleset_.get()| pointer to |task_runner_|.
   friend class AsyncDocumentSubresourceFilter;
@@ -187,6 +188,7 @@ class VerifiedRuleset::Handle
   raw_ptr<base::SequencedTaskRunner, DanglingUntriaged> task_runner_;
   std::unique_ptr<VerifiedRuleset, base::OnTaskRunnerDeleter> ruleset_;
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<Handle> weak_ptr_factory_{this};
 };
 
 }  // namespace subresource_filter
