@@ -1279,7 +1279,7 @@ void PopulateCompileUnitOffsets(int fd,
 }  // namespace
 
 bool GetDwarfSourceLineNumber(const void* pc,
-                              uintptr_t cu_offset,
+                              uint64_t cu_offset,
                               char* out,
                               size_t out_size) {
   uint64_t pc0 = reinterpret_cast<uint64_t>(pc);
@@ -1305,11 +1305,9 @@ bool GetDwarfSourceLineNumber(const void* pc,
 void GetDwarfCompileUnitOffsets(const void* const* trace,
                                 uint64_t* cu_offsets,
                                 size_t num_frames) {
-  // Ensure `cu_offsets` always has a known state.
-  memset(cu_offsets, 0, sizeof(uint64_t) * num_frames);
-
-  FrameInfo* frame_info =
-      static_cast<FrameInfo*>(alloca(sizeof(FrameInfo) * num_frames));
+  // LINT.IfChange(max_stack_frames)
+  FrameInfo frame_info[250] = {};
+  // LINT.ThenChange(stack_trace.h:max_stack_frames)
   for (size_t i = 0; i < num_frames; i++) {
     // The `cu_offset` also encodes the original sort order.
     frame_info[i].cu_offset = &cu_offsets[i];
@@ -1331,6 +1329,13 @@ void GetDwarfCompileUnitOffsets(const void* const* trace,
         google::OpenObjectFileContainingPcAndGetStartAddress(
             frame_info[cur_frame].pc, object_start_address, object_base_address,
             nullptr, 0)));
+
+    // Some stack frames may not have a corresponding object file, e.g. a call
+    // frame inside the Linux kernel's vdso. Just skip over these stack frames,
+    // as this is done on a best-effort basis.
+    if (object_fd.get() < 0) {
+      continue;
+    }
 
     // TODO(https://crbug.com/1335630): Consider exposing the end address so a
     // range of frames can be bulk-populated. This was originally implemented,

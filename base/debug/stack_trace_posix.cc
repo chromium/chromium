@@ -200,8 +200,7 @@ void ProcessBacktrace(const void* const* trace,
 
 #if defined(USE_SYMBOLIZE)
 #if BUILDFLAG(ENABLE_STACK_TRACE_LINE_NUMBERS)
-  uint64_t* cu_offsets =
-      static_cast<uint64_t*>(alloca(sizeof(uint64_t) * size));
+  uint64_t cu_offsets[StackTrace::kMaxTraces] = {};
   GetDwarfCompileUnitOffsets(trace, cu_offsets, size);
 #endif
 
