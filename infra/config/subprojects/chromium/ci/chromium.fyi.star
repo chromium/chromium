@@ -991,6 +991,9 @@ ci.builder(
     builder_spec = builder_config.copy_from(
         "ci/Win x64 Builder",
     ),
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+    ),
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
