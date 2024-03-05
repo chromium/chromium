@@ -7,7 +7,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {HistoryEmbeddingsBrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './history_embeddings.html.js';
 
-class HistoryEmbeddingsElement extends PolymerElement {
+export class HistoryEmbeddingsElement extends PolymerElement {
   static get is() {
     return 'cr-history-embeddings';
   }

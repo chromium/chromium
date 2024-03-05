@@ -6826,6 +6826,7 @@ test("unit_tests") {
     "//components/history/core/common",
     "//components/history_clusters/core",
     "//components/history_clusters/core:test_support",
+    "//components/history_embeddings",
     "//components/image_fetcher/core",
     "//components/image_fetcher/core:test_support",
     "//components/infobars/content",
@@ -7950,6 +7951,7 @@ test("unit_tests") {
       "../browser/ui/webui/components/components_handler_unittest.cc",
       "../browser/ui/webui/constrained_web_dialog_ui_unittest.cc",
       "../browser/ui/webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler_unittest.cc",
+      "../browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler_unittest.cc",
       "../browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler_unittest.cc",
       "../browser/ui/webui/customize_themes/chrome_customize_themes_handler_unittest.cc",
       "../browser/ui/webui/devtools/devtools_ui_data_source_unittest.cc",
@@ -8294,6 +8296,7 @@ test("unit_tests") {
       "//ui/color:color_headers",
       "//ui/color:test_support",
       "//ui/native_theme:test_support",
+      "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
       "//ui/webui/resources/js/browser_command:mojo_bindings",
     ]
 

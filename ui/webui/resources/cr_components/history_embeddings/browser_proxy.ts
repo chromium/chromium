@@ -12,13 +12,16 @@ export interface HistoryEmbeddingsBrowserProxy {
 export class HistoryEmbeddingsBrowserProxyImpl implements
     HistoryEmbeddingsBrowserProxy {
   static instance: HistoryEmbeddingsBrowserProxy|null = null;
+  handler: PageHandlerRemote;
 
-  handler: PageHandlerRemote = PageHandler.getRemote();
+  constructor(handler: PageHandlerRemote) {
+    this.handler = handler;
+  }
 
   static getInstance(): HistoryEmbeddingsBrowserProxy {
     return HistoryEmbeddingsBrowserProxyImpl.instance ||
         (HistoryEmbeddingsBrowserProxyImpl.instance =
-             new HistoryEmbeddingsBrowserProxyImpl());
+             new HistoryEmbeddingsBrowserProxyImpl(PageHandler.getRemote()));
   }
 
   static setInstance(newInstance: HistoryEmbeddingsBrowserProxy) {

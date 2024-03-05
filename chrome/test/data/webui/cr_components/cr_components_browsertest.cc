@@ -56,6 +56,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, HorizontalCarousel) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsTest, HistoryEmbeddings) {
+  RunTest("cr_components/history_embeddings/history_embeddings_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, ManagedDialog) {
   RunTest("cr_components/managed_dialog_test.js", "mocha.run()");
 }
