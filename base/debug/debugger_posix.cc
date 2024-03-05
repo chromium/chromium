@@ -52,7 +52,7 @@
 #include "base/strings/string_piece.h"
 
 #if defined(USE_SYMBOLIZE)
-#include "base/third_party/symbolize/symbolize.h"
+#include "base/third_party/symbolize/symbolize.h"  // nogncheck
 #endif
 
 namespace base {

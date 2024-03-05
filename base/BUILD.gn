@@ -305,14 +305,10 @@ component("base") {
     "debug/asan_invalid_access.h",
     "debug/asan_service.cc",
     "debug/asan_service.h",
-    "debug/buffered_dwarf_reader.cc",
-    "debug/buffered_dwarf_reader.h",
     "debug/debugger.cc",
     "debug/debugger.h",
     "debug/dump_without_crashing.cc",
     "debug/dump_without_crashing.h",
-    "debug/dwarf_line_no.cc",
-    "debug/dwarf_line_no.h",
     "debug/leak_annotations.h",
     "debug/profiler.cc",
     "debug/profiler.h",
@@ -2231,6 +2227,7 @@ component("base") {
       ]
       defines += [ "USE_SYMBOLIZE" ]
       deps += [
+        ":dwarf_helpers",
         "//base/third_party/symbolize",
         "//base/third_party/xdg_user_dirs",
       ]
@@ -2462,6 +2459,34 @@ component("base") {
   }
 
   if (!is_debug) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+}
+
+if (is_linux || is_chromeos) {
+  # Split out as a separate target for two reasons:
+  # - the line number reader is 2x slower in debug builds if not optimized,
+  #   leading to a worse dev experience and test timeouts.
+  # - it would be nice to upstream this logic into something like Abseil. The
+  #   logic that drives the base symbolizer is already imported more or less
+  #   directly from Abseil.
+  source_set("dwarf_helpers") {
+    sources = [
+      "debug/buffered_dwarf_reader.cc",
+      "debug/buffered_dwarf_reader.h",
+      "debug/dwarf_line_no.cc",
+      "debug/dwarf_line_no.h",
+    ]
+
+    deps = [
+      "//base/allocator/partition_allocator:raw_ptr",
+      "//base/numerics:base_numerics",
+      "//base/third_party/symbolize",
+    ]
+
+    defines = [ "USE_SYMBOLIZE" ]
+
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
