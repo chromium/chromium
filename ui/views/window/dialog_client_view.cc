@@ -104,6 +104,7 @@ DialogClientView::DialogClientView(Widget* owner, View* contents_view)
           LayoutProvider::Get()->GetInsetsMetric(INSETS_DIALOG_BUTTON_ROW)),
       input_protector_(
           std::make_unique<views::InputEventActivationProtector>()) {
+  SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
   // Doing this now ensures this accelerator will have lower priority than
   // one set by the contents view.
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
@@ -197,15 +198,27 @@ void DialogClientView::UpdateWindowRoundedCorners(int corner_radius) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-void DialogClientView::Layout(PassKey) {
-  button_row_container_->SetSize(
-      gfx::Size(width(), button_row_container_->GetHeightForWidth(width())));
-  button_row_container_->SetY(height() - button_row_container_->height());
+ProposedLayout DialogClientView::CalculateProposedLayout(
+    const SizeBounds& size_bounds) const {
+  ProposedLayout layouts;
+  DCHECK(size_bounds.is_fully_bounded());
+  const int container_height =
+      button_row_container_->GetHeightForWidth(size_bounds.width().value());
+  const int container_y = size_bounds.height().value() - container_height;
+  layouts.child_layouts.emplace_back(
+      button_row_container_.get(), button_row_container_->GetVisible(),
+      gfx::Rect(0, container_y, size_bounds.width().value(), container_height),
+      size_bounds);
   if (contents_view()) {
-    gfx::Rect contents_bounds(width(), button_row_container_->y());
+    gfx::Rect contents_bounds(size_bounds.width().value(), container_y);
     contents_bounds.Inset(GetDialogDelegate()->margins());
-    contents_view()->SetBoundsRect(contents_bounds);
+    layouts.child_layouts.emplace_back(contents_view(),
+                                       contents_view()->GetVisible(),
+                                       contents_bounds, size_bounds);
   }
+  layouts.host_size =
+      gfx::Size(size_bounds.width().value(), size_bounds.height().value());
+  return layouts;
 }
 
 bool DialogClientView::AcceleratorPressed(const ui::Accelerator& accelerator) {

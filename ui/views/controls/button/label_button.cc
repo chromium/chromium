@@ -71,6 +71,7 @@ LabelButton::LabelButton(
 
   SetAnimationDuration(base::Milliseconds(170));
   SetTextInternal(text);
+  SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
 }
 
 LabelButton::~LabelButton() {
@@ -369,10 +370,17 @@ int LabelButton::GetHeightForWidth(int width) const {
   return height;
 }
 
-void LabelButton::Layout(PassKey) {
+ProposedLayout LabelButton::CalculateProposedLayout(
+    const SizeBounds& size_bounds) const {
+  ProposedLayout layouts;
+  if (!size_bounds.is_fully_bounded()) {
+    return layouts;
+  }
   gfx::Rect image_area = GetLocalBounds();
 
-  ink_drop_container_->SetBoundsRect(image_area);
+  layouts.child_layouts.emplace_back(ink_drop_container_.get(),
+                                     ink_drop_container_->GetVisible(),
+                                     image_area, size_bounds);
 
   gfx::Insets insets = GetInsets();
   // If the button have a limited space to fit in, the image and the label
@@ -422,7 +430,10 @@ void LabelButton::Layout(PassKey) {
   } else if (horizontal_alignment == gfx::ALIGN_RIGHT) {
     image_origin.Offset(image_area.width() - image_size.width(), 0);
   }
-  image_container_view()->SetBoundsRect(gfx::Rect(image_origin, image_size));
+  layouts.child_layouts.emplace_back(
+      const_cast<LabelButton*>(this)->image_container_view(),
+      image_container_view()->GetVisible(), gfx::Rect(image_origin, image_size),
+      size_bounds);
 
   gfx::Rect label_bounds = label_area;
   if (label_area.width() == label_size.width()) {
@@ -435,8 +446,12 @@ void LabelButton::Layout(PassKey) {
       label_bounds.Offset(label_area.width() - label_size.width(), 0);
   }
 
-  label_->SetBoundsRect(label_bounds);
-  LayoutSuperclass<Button>(this);
+  layouts.child_layouts.emplace_back(label_.get(), label_->GetVisible(),
+                                     label_bounds, size_bounds);
+  layouts.host_size =
+      gfx::Size(size_bounds.width().value(), size_bounds.height().value());
+
+  return layouts;
 }
 
 void LabelButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {

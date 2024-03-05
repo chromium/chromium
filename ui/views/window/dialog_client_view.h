@@ -14,6 +14,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/input_event_activation_protector.h"
+#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/dialog_observer.h"
@@ -38,7 +39,9 @@ class Widget;
 // You must not directly depend on or use DialogClientView; it is internal to
 // //ui/views. Access it through the public interfaces on DialogDelegate. It is
 // only VIEWS_EXPORT to make it available to views_unittests.
-class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
+class VIEWS_EXPORT DialogClientView : public ClientView,
+                                      public DialogObserver,
+                                      public LayoutDelegate {
   METADATA_HEADER(DialogClientView, ClientView)
 
  public:
@@ -83,7 +86,6 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // this view is visible).
   void TriggerInputProtection(bool force_early = false);
 
-  void Layout(PassKey) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
@@ -108,6 +110,10 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   }
 
   bool IsPossiblyUnintendedInteraction(const ui::Event& event);
+
+  // LayoutDelegate:
+  ProposedLayout CalculateProposedLayout(
+      const SizeBounds& size_bounds) const override;
 
  private:
   enum {
