@@ -40,6 +40,7 @@ import "components/sync/protocol/os_preference_specifics.proto";
 import "components/sync/protocol/os_priority_preference_specifics.proto";
 import "components/sync/protocol/password_sharing_invitation_specifics.proto";
 import "components/sync/protocol/password_specifics.proto";
+import "components/sync/protocol/plus_address_specifics.proto";
 import "components/sync/protocol/power_bookmark_specifics.proto";
 import "components/sync/protocol/preference_specifics.proto";
 import "components/sync/protocol/printer_specifics.proto";
@@ -155,6 +156,7 @@ message EntitySpecifics {
     SharedTabGroupDataSpecifics shared_tab_group_data = 1239418;
     CollaborationGroupSpecifics collaboration_group = 1259076;
     CompareSpecifics compare = 1329438;
+    PlusAddressSpecifics plus_address = 1267844;
 
     // No-longer-supported data types, in various stages of removal.
     // TODO(crbug.com/1395003): Eventually, these should all become "reserved"
