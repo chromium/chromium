@@ -64,40 +64,24 @@ void LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
   // Android.
   password_sync_configured_setting_ =
       sync_util::IsSyncFeatureEnabledIncludingPasswords(sync);
-  password_sync_applied_setting_ = password_sync_configured_setting_;
 }
 
-void LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
-    SyncStatusChangeApplied() {
-  DCHECK(sync_service_);
+bool LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
+    ShouldActOnSyncStatusChanges() {
+  CHECK(sync_service_);
+
   // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
-  password_sync_applied_setting_ =
+  bool is_password_sync_enabled =
       sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_);
-}
 
-void LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
-    OnStateChanged(syncer::SyncService* sync) {
-  DCHECK(sync_service_ == sync);
-
-  // Return early if the setting didn't change.
-  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  if (sync_util::IsSyncFeatureEnabledIncludingPasswords(sync) ==
-      password_sync_configured_setting_) {
-    return;
+  // Return false if the setting didn't change.
+  if (password_sync_configured_setting_ == is_password_sync_enabled) {
+    return false;
   }
-  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  password_sync_configured_setting_ =
-      sync_util::IsSyncFeatureEnabledIncludingPasswords(sync);
 
-  if (password_sync_configured_setting_ != password_sync_applied_setting_) {
-    prefs_->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, true);
-  } else {
-    // The setting was changed back and forth, the migration is not needed.
-    prefs_->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, false);
-  }
+  password_sync_configured_setting_ = is_password_sync_enabled;
+  return true;
 }
 
 void LegacyPasswordStoreBackendMigrationDecorator::InitBackend(
@@ -129,7 +113,6 @@ void LegacyPasswordStoreBackendMigrationDecorator::InitBackend(
 
   migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
       built_in_backend_.get(), android_backend_.get(), prefs_);
-  sync_settings_helper_.set_migrator(migrator_.get());
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -265,7 +248,6 @@ LegacyPasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegate() {
 void LegacyPasswordStoreBackendMigrationDecorator::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   sync_settings_helper_.CachePasswordSyncSettingOnStartup(sync_service);
-  sync_service->AddObserver(&sync_settings_helper_);
   active_backend_->OnSyncServiceInitialized(sync_service);
   if (migrator_)
     migrator_->OnSyncServiceInitialized(sync_service);
@@ -327,7 +309,8 @@ void LegacyPasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
     return;
   }
 
-  sync_settings_helper_.SyncStatusChangeApplied();
+  prefs_->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange,
+                     sync_settings_helper_.ShouldActOnSyncStatusChanges());
   // Non-syncable data needs to be migrated to the new active backend.
   migrator_->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);

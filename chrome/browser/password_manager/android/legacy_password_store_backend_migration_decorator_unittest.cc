@@ -129,32 +129,6 @@ class LegacyPasswordStoreBackendMigrationDecoratorTest : public testing::Test {
       backend_migration_decorator_;
 };
 
-TEST_F(LegacyPasswordStoreBackendMigrationDecoratorTest,
-       MigrationPreferenceClearedWhenSyncEnabled) {
-  InitSyncService(/*is_password_sync_enabled=*/false);
-  EXPECT_FALSE(
-      prefs().GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange));
-
-  ChangeSyncSetting(/*is_password_sync_enabled=*/true);
-
-  // Since sync was enabled the migration pref should be updated.
-  EXPECT_EQ(true,
-            prefs().GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange));
-}
-
-TEST_F(LegacyPasswordStoreBackendMigrationDecoratorTest,
-       MigrationPreferenceClearedWhenSyncDisabled) {
-  InitSyncService(/*is_password_sync_enabled=*/true);
-  EXPECT_FALSE(
-      prefs().GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange));
-
-  ChangeSyncSetting(/*is_password_sync_enabled=*/false);
-
-  // Since sync was disabled the migration pref should be updated.
-  EXPECT_EQ(true,
-            prefs().GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange));
-}
-
 TEST_F(
     LegacyPasswordStoreBackendMigrationDecoratorTest,
     MigrationPreferenceUnchangedWhenSyncDisabledAndEnabledWithoutClosingSettings) {

@@ -43,7 +43,7 @@ class LegacyPasswordStoreBackendMigrationDecorator : public PasswordStoreBackend
   ~LegacyPasswordStoreBackendMigrationDecorator() override;
 
  private:
-  class PasswordSyncSettingsHelper : public syncer::SyncServiceObserver {
+  class PasswordSyncSettingsHelper {
    public:
     explicit PasswordSyncSettingsHelper(PrefService* prefs);
 
@@ -52,18 +52,11 @@ class LegacyPasswordStoreBackendMigrationDecorator : public PasswordStoreBackend
     void CachePasswordSyncSettingOnStartup(syncer::SyncService* sync);
 
     // Called when sync settings were applied to confirm change of state.
-    void SyncStatusChangeApplied();
+    bool ShouldActOnSyncStatusChanges();
 
     // Clears cached prefs when they are not needed anymore.
     void ResetCachedPrefs();
-
-    void set_migrator(BuiltInBackendToAndroidBackendMigrator* migrator) {
-      migrator_ = migrator;
-    }
-
    private:
-    // syncer::SyncServiceObserver implementation.
-    void OnStateChanged(syncer::SyncService* sync) override;
 
     // Pref service.
     const raw_ptr<PrefService> prefs_ = nullptr;
@@ -71,19 +64,10 @@ class LegacyPasswordStoreBackendMigrationDecorator : public PasswordStoreBackend
     // Set when sync_service is already initialized and can be interacted with.
     raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 
-    // Migrator object to use in case observed sync service events should
-    // trigger migration.
-    raw_ptr<BuiltInBackendToAndroidBackendMigrator> migrator_ = nullptr;
-
     // Cached value of the configured password sync setting. Updated when the
     // user is changing sync settings, and may from
     // |password_sync_applied_setting_| at that moment.
     bool password_sync_configured_setting_ = false;
-
-    // Cached value of the password sync runtime state. May differ from
-    // |password_sync_configured_setting_| at the moment when the user is
-    // changing sync settings. Updated when new settings take action.
-    bool password_sync_applied_setting_ = false;
   };
 
   // Implements PasswordStoreBackend interface.
