@@ -650,6 +650,21 @@
             ]
         }
     ],
+    "AndroidTabGroupBundle": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidTabGroupStableIds"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidVisibleUrlTruncationV2": [
         {
             "platforms": [
