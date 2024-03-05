@@ -625,7 +625,6 @@ class MODULES_EXPORT AXObjectCacheImpl
 #endif
 
  protected:
-  bool IsImmediateProcessingRequiredForEvent(const ui::AXEvent& event) const;
   void ScheduleImmediateSerialization() override;
 
   void PostPlatformNotification(
@@ -841,6 +840,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   };
 
   typedef HeapVector<Member<TreeUpdateParams>> TreeUpdateCallbackQueue;
+
+  bool IsImmediateProcessingRequired(TreeUpdateParams* tree_update) const;
+  bool IsImmediateProcessingRequiredForEvent(AXEventParams* event) const;
 
   ax::mojom::blink::EventFrom ComputeEventFrom();
 

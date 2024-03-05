@@ -2264,9 +2264,11 @@ void AXObjectCacheImpl::DeferTreeUpdate(
   TreeUpdateCallbackQueue& queue =
       GetTreeUpdateCallbackQueue(tree_update_document);
 
-  queue.push_back(MakeGarbageCollected<TreeUpdateParams>(
+  TreeUpdateParams* tree_update = MakeGarbageCollected<TreeUpdateParams>(
       node, 0u, ComputeEventFrom(), active_event_from_action_,
-      ActiveEventIntents(), update_reason, event));
+      ActiveEventIntents(), update_reason, event);
+
+  queue.push_back(tree_update);
 
   if (AXObject* obj = Get(node)) {
     obj->InvalidateCachedValues();
@@ -2274,7 +2276,15 @@ void AXObjectCacheImpl::DeferTreeUpdate(
 
   // These events are fired during RunPostLifecycleTasks(),
   // ensure there is a document lifecycle update scheduled.
-  ScheduleAXUpdate();
+  if (IsImmediateProcessingRequired(tree_update)) {
+    // Ensure that processing of tree updates occurs immediately in cases
+    // where a user action such as focus or selection occurs, so that the user
+    // gets immediate feedback.
+    ScheduleImmediateSerialization();
+  } else {
+    // Otherwise, batch updates to improve performance.
+    ScheduleAXUpdate();
+  }
 }
 void AXObjectCacheImpl::DeferTreeUpdate(
     AXObjectCacheImpl::TreeUpdateReason update_reason,
@@ -2323,9 +2333,6 @@ void AXObjectCacheImpl::SelectionChanged(Node* node) {
   if (!node)
     return;
 
-  // Firing the document selection changed event triggers the immediate
-  // serialization that is desired for user input events -- see
-  // IsImmediateProcessingRequiredForEvent().
   PostNotification(&GetDocument(),
                    ax::mojom::blink::Event::kDocumentSelectionChanged);
 
@@ -3180,6 +3187,47 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     tree_updates_paused_ = false;
   }
 
+  // Something occurred which requires an immediate serialization.
+  if (serialize_immediately_) {
+    force = true;
+    serialize_immediately_ = false;
+  }
+
+  if (!force) {
+    // Process the current tree changes unless not enough time has passed, or
+    // another serialization is already in flight.
+    if (IsSerializationInFlight()) {
+      // Another serialization is in flight. When it's finished, this method
+      // will be called again.
+      return;
+    }
+
+    const auto& now = base::Time::Now();
+    const auto& delay_between_serializations =
+        base::Milliseconds(GetDeferredEventsDelay());
+    const auto& elapsed_since_last_serialization =
+        now - last_serialization_timestamp_;
+    const auto& delay_until_next_serialization =
+        delay_between_serializations - elapsed_since_last_serialization;
+    if (delay_until_next_serialization.is_positive()) {
+      // No serialization needed yet, will serialize after a delay.
+      // Set a timer to call this method again, if one isn't already set.
+      if (!weak_factory_for_serialization_pipeline_.HasWeakCells()) {
+        document.GetTaskRunner(blink::TaskType::kInternalDefault)
+            ->PostDelayedTask(
+                FROM_HERE,
+                WTF::BindOnce(
+                    &AXObjectCacheImpl::ScheduleAXUpdate,
+                    WrapPersistent(weak_factory_for_serialization_pipeline_
+                                       .GetWeakCell())),
+                delay_until_next_serialization);
+      }
+      return;
+    }
+  }
+
+  weak_factory_for_serialization_pipeline_.Invalidate();
+
   if (GetPopupDocumentIfShowing()) {
     UpdateLifecycleIfNeeded(*GetPopupDocumentIfShowing());
     CheckStyleIsComplete(*GetPopupDocumentIfShowing());
@@ -3266,41 +3314,10 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
   // Serialize the current tree changes unless not enough time has passed, or
   // another serialization is already in flight.
   if (IsSerializationInFlight()) {
-    // Another serialization is in flight. When it's finished, a new
-    // serialization will be triggered if necessary.
+    // Another serialization is in flight. When it's finished, this method
+    // will be called again.
     return;
   }
-
-  // Something occurred which requires an immediate serialization.
-  if (serialize_immediately_) {
-    force = true;
-    serialize_immediately_ = false;
-  }
-
-  if (!force) {
-    const auto& now = base::Time::Now();
-    const auto& delay_between_serializations =
-        base::Milliseconds(GetDeferredEventsDelay());
-    const auto& elapsed_since_last_serialization =
-        now - last_serialization_timestamp_;
-    const auto& delay_until_next_serialization =
-        delay_between_serializations - elapsed_since_last_serialization;
-    if (delay_until_next_serialization.is_positive()) {
-      if (!weak_factory_for_serialization_pipeline_.HasWeakCells()) {
-        document.GetTaskRunner(blink::TaskType::kInternalDefault)
-            ->PostDelayedTask(
-                FROM_HERE,
-                WTF::BindOnce(
-                    &AXObjectCacheImpl::ScheduleAXUpdate,
-                    WrapPersistent(weak_factory_for_serialization_pipeline_
-                                       .GetWeakCell())),
-                delay_until_next_serialization);
-      }
-      return;  // No serialization needed yet.
-    }
-  }
-
-  weak_factory_for_serialization_pipeline_.Invalidate();
 
   // ------------------------ Freeze and serialize ---------------------------
   {
@@ -3533,14 +3550,15 @@ void AXObjectCacheImpl::PostNotification(AXObject* object,
     return;
   }
 
-  GetNotificationsToPost(document).push_back(
-      MakeGarbageCollected<AXEventParams>(
-          object, event_type, ComputeEventFrom(), active_event_from_action_,
-          ActiveEventIntents()));
-
-  // These events are fired during RunPostLifecycleTasks(),
-  // ensure there is a visual update scheduled.
-  ScheduleAXUpdate();
+  AXEventParams* event = MakeGarbageCollected<AXEventParams>(
+      object, event_type, ComputeEventFrom(), active_event_from_action_,
+      ActiveEventIntents());
+  GetNotificationsToPost(document).push_back(event);
+  if (IsImmediateProcessingRequiredForEvent(event)) {
+    ScheduleImmediateSerialization();
+  } else {
+    ScheduleAXUpdate();
+  }
 }
 
 void AXObjectCacheImpl::ScheduleAXUpdate() const {
@@ -4612,16 +4630,26 @@ WebLocalFrameClient* AXObjectCacheImpl::GetWebLocalFrameClient() const {
 }
 
 bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
-    const ui::AXEvent& event) const {
+    AXEventParams* event) const {
+  // Already scheduled for immediate mode.
   if (serialize_immediately_) {
-    return true;  // Already scheduled for immediate mode.
+    return true;
   }
 
-  if (event.event_from == ax::mojom::blink::EventFrom::kAction) {
-    return true;  // Actions should result in an immediate response.
+  // Actions should result in an immediate response.
+  if (event->event_from == ax::mojom::blink::EventFrom::kAction) {
+    return true;
   }
 
-  switch (event.event_type) {
+  // It's important for the user to have access to any changes to the
+  // currently focused object, so schedule serializations immediately if that
+  // object changes. The root is an exception because it often has focus while
+  // the page is loading.
+  if (event->target->GetNode() != document_ && event->target->IsFocused()) {
+    return true;
+  }
+
+  switch (event->event_type) {
     case ax::mojom::blink::Event::kActiveDescendantChanged:
     case ax::mojom::blink::Event::kBlur:
     case ax::mojom::blink::Event::kCheckedStateChanged:
@@ -4688,7 +4716,89 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::blink::Event::kWindowDeactivated:
     case ax::mojom::blink::Event::kWindowVisibilityChanged:
       // Never fired from Blink.
-      NOTREACHED() << "Event not expected from Blink: " << event.event_type;
+      NOTREACHED() << "Event not expected from Blink: " << event->event_type;
+      return false;
+  }
+}
+
+bool AXObjectCacheImpl::IsImmediateProcessingRequired(
+    TreeUpdateParams* tree_update) const {
+  // For now, immediate processing is never required for deferred AXObject
+  // updates, and this method doesn't need to be called for that case.
+  CHECK(!tree_update->axid);
+
+  // Already scheduled for immediate mode.
+  if (serialize_immediately_) {
+    return true;
+  }
+
+  // Get some initial content as soon as possible.
+  if (objects_.size() <= 1) {
+    return true;
+  }
+
+  // Actions should result in an immediate response.
+  if (tree_update->event_from_action != ax::mojom::blink::Action::kNone) {
+    return true;
+  }
+
+  // It's important for the user to have access to any changes to the
+  // currently focused object, so schedule serializations immediately if that
+  // object changes. The root is an exception because it often has focus while
+  // the page is loading.
+  if (tree_update->node != document_ &&
+      tree_update->node == document_->FocusedElement()) {
+    return true;
+  }
+
+  switch (tree_update->update_reason) {
+    // These updates are associated with a Node:
+    case TreeUpdateReason::kActiveDescendantChanged:
+    case TreeUpdateReason::kAriaExpandedChanged:
+    case TreeUpdateReason::kAriaPressedChanged:
+    case TreeUpdateReason::kAriaSelectedChanged:
+    case TreeUpdateReason::kDidHideMenuListPopup:
+    case TreeUpdateReason::kDidShowMenuListPopup:
+    case TreeUpdateReason::kEditableTextContentChanged:
+    case TreeUpdateReason::kNodeGainedFocus:
+    case TreeUpdateReason::kNodeLostFocus:
+    case TreeUpdateReason::kPostNotificationFromHandleLoadComplete:
+    case TreeUpdateReason::kUpdateActiveMenuOption:
+    case TreeUpdateReason::kValidationMessageVisibilityChanged:
+      return true;
+
+    case TreeUpdateReason::kAriaOwnsChanged:
+    case TreeUpdateReason::kFocusableChanged:
+    case TreeUpdateReason::kIdChanged:
+    case TreeUpdateReason::kMarkDirtyFromHandleLayout:
+    case TreeUpdateReason::kMarkDirtyFromHandleScroll:
+    case TreeUpdateReason::kNodeIsAttached:
+    case TreeUpdateReason::kPostNotificationFromHandleLoadStart:
+    case TreeUpdateReason::kPostNotificationFromHandleScrolledToAnchor:
+    case TreeUpdateReason::kRemoveValidationMessageObjectFromFocusedUIElement:
+    case TreeUpdateReason::
+        kRemoveValidationMessageObjectFromValidationMessageObject:
+    case TreeUpdateReason::kRoleChangeFromAriaHasPopup:
+    case TreeUpdateReason::kRoleChangeFromImageMapName:
+    case TreeUpdateReason::kRoleChangeFromRoleOrType:
+    case TreeUpdateReason::kRoleMaybeChangedFromEventListener:
+    case TreeUpdateReason::kRoleMaybeChangedFromHref:
+    case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabel:
+    case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabelledBy:
+    case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromTitle:
+    case TreeUpdateReason::kTextChangedOnNode:
+    case TreeUpdateReason::kTextChangedOnClosestNodeForLayoutObject:
+    case TreeUpdateReason::kTextMarkerDataAdded:
+    case TreeUpdateReason::kUpdateAriaOwns:
+    case TreeUpdateReason::kUpdateTableRole:
+    case TreeUpdateReason::kUseMapAttributeChanged:
+      return false;
+
+    // These updates are associated with an AXID:
+    case TreeUpdateReason::kChildrenChanged:
+    case TreeUpdateReason::kMarkAXObjectDirty:
+    case TreeUpdateReason::kMarkAXSubtreeDirty:
+    case TreeUpdateReason::kTextChangedOnLayoutObject:
       return false;
   }
 }
@@ -4789,8 +4899,8 @@ void AXObjectCacheImpl::PostPlatformNotification(
   for (auto agent : agents_)
     agent->AXEventFired(obj, event_type);
 
-  AddEventToSerializationQueue(event,
-                               IsImmediateProcessingRequiredForEvent(event));
+  // Ommediate serialization bit has already been processed for this event.
+  AddEventToSerializationQueue(event, /*immediate_serialization*/ false);
 
   // TODO(aleventhal) This is for web tests only, in order to record MarkDirty
   // events. Is there a way to avoid these calls for normal browsing?
@@ -4825,15 +4935,6 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
   if (auto* client = GetWebLocalFrameClient()) {
     client->HandleWebAccessibilityEventForTest(
         WebAXObject(obj), "MarkDirty", std::vector<ui::AXEventIntent>());
-  }
-
-  // It's important for the user to have access to any changes to the
-  // currently focused object, so schedule serializations immediately if that
-  // object changes. The root is an exception because it often has focus while
-  // the page is loading. In that case the event type is used as the signal
-  // (see IsImmediateProcessingRequiredForEvent()).
-  if (obj != Root() && obj->IsFocused()) {
-    ScheduleImmediateSerialization();
   }
 
   std::vector<ui::AXEventIntent> event_intents;
