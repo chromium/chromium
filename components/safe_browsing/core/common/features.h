@@ -44,6 +44,9 @@ BASE_DECLARE_FEATURE(kCreateWarningShownClientSafeBrowsingReports);
 // password.
 BASE_DECLARE_FEATURE(kDeepScanningEncryptedArchives);
 
+// Controls whether we prompt the user on unencrypted deep scans.
+BASE_DECLARE_FEATURE(kDeepScanningPromptRemoval);
+
 // Controls whether the delayed warning experiment is enabled.
 BASE_DECLARE_FEATURE(kDelayedWarnings);
 // True if mouse clicks should undelay the warnings immediately when delayed
