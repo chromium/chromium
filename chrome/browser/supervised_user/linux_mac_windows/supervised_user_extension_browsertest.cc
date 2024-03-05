@@ -10,6 +10,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "extensions/browser/disable_reason.h"
@@ -23,22 +24,47 @@ constexpr char kGoodCrxId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
 
 namespace extensions {
 
+enum class ExtensionsParentalControlState : int { kEnabled = 0, kDisabled };
+
+enum class ExtensionManagementSwitch : int {
+  kManagedByExtensions = 0,
+  kManagedByPermissions = 1
+};
+
 // Tests interaction between supervised users and extensions after the optional
 // supervision is removed from the account.
 class SupervisionRemovalExtensionTest
     : public ExtensionBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<
+          std::tuple<ExtensionsParentalControlState,
+                     ExtensionManagementSwitch>> {
  public:
   SupervisionRemovalExtensionTest() {
-    if (AreExtensionsPermissionsEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (ApplyParentalControlsOnExtensions()) {
+      enabled_features.push_back(
           supervised_user::
               kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+      if (GetExtensionManagementSwitch() ==
+          ExtensionManagementSwitch::kManagedByExtensions) {
+        // Managed by preference `SkipParentApprovalToInstallExtensions` (new
+        // flow).
+        enabled_features.push_back(
+            supervised_user::
+                kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+      } else {
+        disabled_features.push_back(
+            supervised_user::
+                kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+      }
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
+      disabled_features.push_back(
           supervised_user::
               kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
     }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   ~SupervisionRemovalExtensionTest() override { scoped_feature_list_.Reset(); }
@@ -104,7 +130,13 @@ class SupervisionRemovalExtensionTest
         extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
   }
 
-  bool AreExtensionsPermissionsEnabled() const { return GetParam(); }
+  bool ApplyParentalControlsOnExtensions() {
+    return std::get<0>(GetParam()) == ExtensionsParentalControlState::kEnabled;
+  }
+
+  ExtensionManagementSwitch GetExtensionManagementSwitch() {
+    return std::get<1>(GetParam());
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -121,27 +153,41 @@ class SupervisionRemovalExtensionTest
                : supervised_user::SupervisionMixin::SignInMode::kRegular}};
 };
 
-// If extension permissions are enabled, removing supervision should also
-// remove associated disable reasons, such as
+// If extension restrictions apply to supervised users, removing supervision
+// should also remove associated disable reasons, such as
 // DISABLE_CUSTODIAN_APPROVAL_REQUIRED. Extensions should become enabled again
 // after removing supervision. Prevents a regression to crbug/1045625.
-// If extension permissions are disabled, removing supervision leaves the
+// If extension restrictions are disabled, removing supervision leaves the
 // extension unchanged and enabled.
 IN_PROC_BROWSER_TEST_P(SupervisionRemovalExtensionTest,
                        PRE_RemoveCustodianApprovalRequirement) {
-  supervised_user_test_util::
-      SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
-
   ASSERT_TRUE(profile()->IsChild());
+  // Set the preference that manages the extensions to the value,
+  // that allows installations (pending approval), if extensions are subject
+  // to parental controls.
+  if (ApplyParentalControlsOnExtensions()) {
+    if (GetExtensionManagementSwitch() ==
+        ExtensionManagementSwitch::kManagedByExtensions) {
+      // Note: Setting to true would have the same effect as the extension
+      // will be installed disabled (pending approval) by `LoadExtension`,
+      // as `LoadExtension` does not reach the point where we grant the parent
+      // approval on installation success in this mode (in WebstorePrivateApi).
+      supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+          profile(), false);
+    } else {
+      supervised_user_test_util::
+          SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
+    }
+  }
 
   base::FilePath path = test_data_dir_.AppendASCII("good.crx");
-  bool extension_should_be_loaded = !AreExtensionsPermissionsEnabled();
+  bool extension_should_be_loaded = !ApplyParentalControlsOnExtensions();
   EXPECT_EQ(LoadExtension(path) != nullptr, extension_should_be_loaded);
   const Extension* extension =
       extension_registry()->GetInstalledExtension(kGoodCrxId);
   EXPECT_TRUE(extension);
 
-  if (AreExtensionsPermissionsEnabled()) {
+  if (ApplyParentalControlsOnExtensions()) {
     // This extension is a supervised user initiated install and should remain
     // disabled.
     EXPECT_TRUE(
@@ -173,6 +219,22 @@ IN_PROC_BROWSER_TEST_P(SupervisionRemovalExtensionTest,
   EXPECT_FALSE(IsDisabledForCustodianApproval(kGoodCrxId));
 }
 
-INSTANTIATE_TEST_SUITE_P(All, SupervisionRemovalExtensionTest, testing::Bool());
-
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SupervisionRemovalExtensionTest,
+    testing::Combine(
+        testing::Values(ExtensionsParentalControlState::kDisabled,
+                        ExtensionsParentalControlState::kEnabled),
+        testing::Values(ExtensionManagementSwitch::kManagedByExtensions,
+                        ExtensionManagementSwitch::kManagedByPermissions)),
+    [](const auto& info) {
+      return std::string(std::get<0>(info.param) ==
+                                 ExtensionsParentalControlState::kEnabled
+                             ? "WithParentalControlsOnExtensions"
+                             : "WithoutParentalControlsOnExtensions") +
+             std::string(std::get<1>(info.param) ==
+                                 ExtensionManagementSwitch::kManagedByExtensions
+                             ? "ManagedByExtensions"
+                             : "ManagedByPermissions");
+    });
 }  // namespace extensions
