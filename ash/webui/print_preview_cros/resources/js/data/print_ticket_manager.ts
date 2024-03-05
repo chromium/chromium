@@ -4,6 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import {createCustomEvent} from '../utils/event_utils.js';
 import {getPrintPreviewPageHandler} from '../utils/mojo_data_providers.js';
 import {type PrintPreviewPageHandler} from '../utils/print_preview_cros_app_types.js';
 
@@ -45,12 +46,6 @@ export class PrintTicketManager extends EventTarget {
     this.printPreviewPageHandler = getPrintPreviewPageHandler();
   }
 
-  // Custom event dispatch helper.
-  private dispatch(eventName: string): void {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true}));
-  }
-
   // Handles notifying start and finish print request.
   // TODO(b/323421684): Takes current print ticket uses PrintPreviewPageHandler
   // to initiate actual print request.
@@ -62,14 +57,15 @@ export class PrintTicketManager extends EventTarget {
       // allowing a second attempt.
       return;
     }
+
     this.printRequestInProgress = true;
-    this.dispatch(PRINT_REQUEST_STARTED_EVENT);
+    this.dispatchEvent(createCustomEvent(PRINT_REQUEST_STARTED_EVENT));
 
     // TODO(b/323421684): Handle result from page handler and update UI if error
     // occurred.
     this.printPreviewPageHandler!.print().finally(() => {
       this.printRequestInProgress = false;
-      this.dispatch(PRINT_REQUEST_FINISHED_EVENT);
+      this.dispatchEvent(createCustomEvent(PRINT_REQUEST_FINISHED_EVENT));
     });
   }
 
