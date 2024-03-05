@@ -235,7 +235,8 @@ GpuFeatureStatus GetCanvasOopRasterizationFeatureStatus(
     const std::set<int>& blocklisted_features,
     const base::CommandLine& command_line,
     const GpuPreferences& gpu_preferences,
-    bool use_swift_shader) {
+    bool use_swift_shader,
+    bool blocklist_needs_more_info) {
   if (GetGpuRasterizationFeatureStatus(blocklisted_features, command_line,
                                        use_swift_shader) !=
       kGpuFeatureStatusEnabled) {
@@ -244,7 +245,13 @@ GpuFeatureStatus GetCanvasOopRasterizationFeatureStatus(
     // accelerated_2d_canvas. Devices with gpu_tile_rasterization blocked but
     // not accelerated_2d_canvas would end up using the deprecated GL
     // accelerated path.
-    if (!base::FeatureList::IsEnabled(
+    // NOTE: Don't check `kCanvasOopWithoutGpuTileRaster` if the blocklist still
+    // needs more GPU info. The value returned by
+    // GetGpuRasterizationFeatureStatus() might be wrong until GL is initialized
+    // and we'll enroll clients in the CanvasOopWithoutGpuTileRaster finch study
+    // that don't have GPU tile raster blocklisted.
+    if (blocklist_needs_more_info ||
+        !base::FeatureList::IsEnabled(
             features::kCanvasOopWithoutGpuTileRaster)) {
       return kGpuFeatureStatusDisabled;
     }
@@ -567,8 +574,8 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
                                      const GpuPreferences& gpu_preferences,
                                      base::CommandLine* command_line,
                                      bool* needs_more_info) {
-  DCHECK(!needs_more_info || !(*needs_more_info));
   bool use_swift_shader = false;
+  bool blocklist_needs_more_info = false;
 
   bool fallback_to_software_gl = false;
   std::optional<gl::GLImplementationParts> requested_impl =
@@ -611,9 +618,11 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
     blocklisted_features = list->MakeDecision(
         GpuControlList::kOsAny, std::string(), gpu_info, target_test_group);
     gpu_feature_info.applied_gpu_blocklist_entries = list->GetActiveEntries();
-    if (needs_more_info) {
-      *needs_more_info = list->needs_more_info();
-    }
+    blocklist_needs_more_info = list->needs_more_info();
+  }
+
+  if (needs_more_info) {
+    *needs_more_info = blocklist_needs_more_info;
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -637,16 +646,16 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
       Get2DCanvasFeatureStatus(blocklisted_features, use_swift_shader);
 #if !BUILDFLAG(IS_CHROMEOS)
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
-      GetCanvasOopRasterizationFeatureStatus(blocklisted_features,
-                                             *command_line, gpu_preferences,
-                                             use_swift_shader);
+      GetCanvasOopRasterizationFeatureStatus(
+          blocklisted_features, *command_line, gpu_preferences,
+          use_swift_shader, blocklist_needs_more_info);
 #else
   // TODO(penghuang): call GetCanvasOopRasterizationFeatureStatus with
   // |use_swift_shader|.
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
-      GetCanvasOopRasterizationFeatureStatus(blocklisted_features,
-                                             *command_line, gpu_preferences,
-                                             /*use_swift_shader=*/false);
+      GetCanvasOopRasterizationFeatureStatus(
+          blocklisted_features, *command_line, gpu_preferences,
+          /*use_swift_shader=*/false, blocklist_needs_more_info);
 #endif
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] =
       GetAcceleratedVideoDecodeFeatureStatus(blocklisted_features,
