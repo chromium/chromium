@@ -116,9 +116,17 @@ delta = "1.0.79 -> 1.0.80"
 
 [[audits.autocfg]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "ub-risk-0"
+criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
 version = "1.1.0"
-notes = 'Grepped for `\bunsafe\b` - there were no hits'
+notes = """
+Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'``, `'\bnet\b'``, `'\bunsafe\b'``
+and there were no hits except for reasonable, client-controlled usage of
+`std::fs` in `AutoCfg::with_dir`.
+
+This crate has been added to Chromium in
+https://source.chromium.org/chromium/chromium/src/+/591a0f30c5eac93b6a3d981c2714ffa4db28dbcb
+The CL description contains a link to a Google-internal document with audit details.
+"""
 
 [[audits.base64]]
 who = "Adam Langley <agl@chromium.org>"
@@ -351,9 +359,16 @@ delta = "1.9.0 -> 1.10.0"
 
 [[audits.font-types]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "ub-risk-0"
+criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
 version = "0.4.2"
-notes = 'Grepped for `\bunsafe\b` - there were no hits'
+notes = """
+Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'``, `'\bnet\b'``, `'\bunsafe\b'``
+and there were no hits.
+
+The initial version of this crate has been added to Chromium in
+https://source.chromium.org/chromium/chromium/src/+/a59c3c448941f92f870d0c18c6d53d5c6104ab72
+The CL description contains a link to a Google-internal document with audit details.
+"""
 
 [[audits.getrandom]]
 who = "danakj@chromium.org"
@@ -372,9 +387,15 @@ delta = "0.2.11 -> 0.2.12"
 
 [[audits.heck]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "ub-risk-0"
+criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
 version = "0.4.1"
-notes = 'Grepped for `\bunsafe\b` - there were no hits'
+notes = """
+Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'``, `'\bnet\b'``, `'\bunsafe\b'``
+and there were no hits.
+
+`heck` (version `0.3.3`) has been added to Chromium in
+https://source.chromium.org/chromium/chromium/src/+/28841c33c77833cc30b286f9ae24c97e7a8f4057
+"""
 
 [[audits.hex-literal]]
 who = "danakj@chromium.org"
@@ -630,17 +651,31 @@ Previously reviewed during security review and the audit is grandparented in.
 
 [[audits.rustversion]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "ub-risk-0"
+criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
 version = "1.0.14"
-notes = '''
-Grepped for `\bunsafe\b` - the only hits were in a string and in test code:
+notes = """
+Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'``, `'\bnet\b'``, `'\bunsafe\b'``
+and there were no hits except for:
 
-```
-src/constfn.rs:            "unsafe" => Qualifiers::Unsafe,
-tests/test_const.rs:unsafe fn _unsafe() {}
-tests/test_const.rs:const _UNSAFE: () = unsafe { _unsafe() };
-```
-'''
+* Using trivially-safe `unsafe` in test code:
+
+    ```
+    tests/test_const.rs:unsafe fn _unsafe() {}
+    tests/test_const.rs:const _UNSAFE: () = unsafe { _unsafe() };
+    ```
+
+* Using `unsafe` in a string:
+
+    ```
+    src/constfn.rs:            \"unsafe\" => Qualifiers::Unsafe,
+    ```
+
+* Using `std::fs` in `build/build.rs` to write `${OUT_DIR}/version.expr`
+  which is later read back via `include!` used in `src/lib.rs`.
+
+Version `1.0.6` of this crate has been added to Chromium in
+https://source.chromium.org/chromium/chromium/src/+/28841c33c77833cc30b286f9ae24c97e7a8f4057
+"""
 
 [[audits.semver]]
 who = "danakj@chromium.org"
@@ -800,18 +835,36 @@ delta = "1.4.0 -> 1.4.1"
 
 [[audits.tinyvec]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "ub-risk-0"
+criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
 version = "1.6.0"
 notes = """
-Grepped for `unsafe` - the only hits were in comments
-and in `src/lib.rs`'s `#![forbid(unsafe_code)]`.
+Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'``, `'\bnet\b'``, `'\bunsafe\b'``
+and there were no hits except for some \"unsafe\" appearing in comments:
+
+```
+src/arrayvec.rs:    // Note: This shouldn't use A::CAPACITY, because unsafe code can't rely on
+src/lib.rs://! All of this is done with no `unsafe` code within the crate. Technically the
+src/lib.rs://! `Vec` type from the standard library uses `unsafe` internally, but *this
+src/lib.rs://! crate* introduces no new `unsafe` code into your project.
+src/array.rs:/// Just a reminder: this trait is 100% safe, which means that `unsafe` code
+```
+
+This crate has been added to Chromium in
+https://source.chromium.org/chromium/chromium/src/+/24773c33e1b7a1b5069b9399fd034375995f290b
 """
 
 [[audits.unicode-linebreak]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "ub-risk-0"
+criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
 version = "0.1.5"
-notes = 'Grepped for `\bunsafe\b` - there were no hits'
+notes = """
+Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'``, `'\bnet\b'``, `'\bunsafe\b'``
+and there were no hits.
+
+Version `0.1.2` of this crate has been added to Chromium in
+https://source.chromium.org/chromium/chromium/src/+/591a0f30c5eac93b6a3d981c2714ffa4db28dbcb
+The CL description contains a link to a Google-internal document with audit details.
+"""
 
 [[audits.unicode-width]]
 who = "danakj@chromium.org"
