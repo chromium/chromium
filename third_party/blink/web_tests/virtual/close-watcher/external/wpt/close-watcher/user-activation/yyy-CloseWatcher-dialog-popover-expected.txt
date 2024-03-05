@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Create a CloseWatcher with user activation; create a dialog with user activation; create a popover with user activation
-  assert_array_equals: lengths differ, expected array ["dialog cancel", "dialog close"] length 2, got ["dialog close"] length 1
-Harness: the test ran to completion.
-

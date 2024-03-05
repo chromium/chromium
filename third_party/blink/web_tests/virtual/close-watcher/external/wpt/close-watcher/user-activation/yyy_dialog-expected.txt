@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Create three close watchers with user activation
-  assert_array_equals: lengths differ, expected array ["watcher3 cancel", "watcher3 close"] length 2, got ["watcher3 close"] length 1
-Harness: the test ran to completion.
-

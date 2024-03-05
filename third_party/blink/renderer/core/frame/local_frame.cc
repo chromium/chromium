@@ -2700,6 +2700,9 @@ void LocalFrame::SetHadUserInteraction(bool had_user_interaction) {
     history_user_activation_state_.Clear();
   }
 
+  DomWindow()->closewatcher_stack()->SetHadUserInteraction(
+      had_user_interaction);
+
   GetFrameScheduler()->SetHadUserActivation(had_user_interaction);
 }
 
