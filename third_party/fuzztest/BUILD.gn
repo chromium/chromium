@@ -78,11 +78,7 @@ if (use_centipede) {
       "src/centipede/shared_memory_blob_sequence.cc",
       "src/centipede/shared_memory_blob_sequence.h",
     ]
-    deps = [
-      "//third_party/abseil-cpp:absl",
-      "//third_party/abseil-cpp/absl/log:check",
-      "//third_party/abseil-cpp/absl/log:log",
-    ]
+    deps = [ "//third_party/abseil-cpp:absl_full" ]
     configs += [ ":fuzztest_internal_config" ]
     configs -= fuzztest_remove_configs
     configs += fuzztest_add_configs
@@ -106,8 +102,7 @@ if (use_centipede) {
 
     deps = [
       ":centipede_common",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/abseil-cpp/absl/log:log",
+      "//third_party/abseil-cpp:absl_full",
     ]
     configs += [ ":fuzztest_internal_config" ]
     configs -= fuzztest_remove_configs
@@ -140,16 +135,7 @@ if (use_centipede) {
     public_deps = [ ":centipede_common" ]
     deps = [
       ":fuzztest_internal",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/abseil-cpp/absl/container:node_hash_set",
-      "//third_party/abseil-cpp/absl/flags:config",
-      "//third_party/abseil-cpp/absl/flags:flag",
-      "//third_party/abseil-cpp/absl/flags:parse",
-      "//third_party/abseil-cpp/absl/flags:reflection",
-      "//third_party/abseil-cpp/absl/log",
-      "//third_party/abseil-cpp/absl/log:check",
-      "//third_party/abseil-cpp/absl/log:globals",
-      "//third_party/abseil-cpp/absl/log:initialize",
+      "//third_party/abseil-cpp:absl_full",
       "//third_party/boringssl",
     ]
     sources = [
@@ -206,10 +192,7 @@ if (use_centipede) {
     configs += fuzztest_add_configs
     deps = [
       ":centipede_executable_engine",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/abseil-cpp/absl/flags:flag",
-      "//third_party/abseil-cpp/absl/log:check",
-      "//third_party/abseil-cpp/absl/log:log",
+      "//third_party/abseil-cpp:absl_full",
     ]
     sources = [
       "src/centipede/centipede_main.cc",
@@ -296,8 +279,7 @@ source_set("fuzztest_internal") {
 
   deps = [
     "//testing/gtest",
-    "//third_party/abseil-cpp/absl/flags:flag",
-    "//third_party/abseil-cpp/absl/random:bit_gen_ref",
+    "//third_party/abseil-cpp:absl_full",
   ]
 
   if (build_with_chromium) {
@@ -341,8 +323,7 @@ source_set("fuzztest") {
   ]
   deps = [
     "//testing/gtest",
-    "//third_party/abseil-cpp/absl/flags:flag",
-    "//third_party/abseil-cpp/absl/log:log",
+    "//third_party/abseil-cpp:absl_full",
   ]
   if (use_centipede) {
     # If we are building for centipede, we want to make fuzztest executables
@@ -367,8 +348,7 @@ source_set("fuzztest") {
 source_set("fuzztest_gtest_main") {
   deps = [
     "//testing/gtest",
-    "//third_party/abseil-cpp/absl/flags:flag",
-    "//third_party/abseil-cpp/absl/flags:parse",
+    "//third_party/abseil-cpp:absl_full",
   ]
   sources = [ "src/fuzztest/fuzztest_gtest_main.cc" ]
   public_deps = [
