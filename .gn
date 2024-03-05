@@ -76,6 +76,12 @@ default_args = {
 # their includes checked for proper dependencies when you run either
 # "gn check" or "gn gen --check".
 no_check_targets = [
+  # TODO(crbug.com/326607005): Remove the exceptions for googletest once it is
+  # possible to support Abseil flags in tests without regressing things (e.g.
+  # no added static initializers) in production binaries.
+  "//third_party/googletest:gmock",
+  "//third_party/googletest:gtest",
+
   # //v8, https://crbug.com/v8/7330
   "//v8/src/inspector:inspector",  # 20 errors
   "//v8/test/cctest:cctest_sources",  # 15 errors

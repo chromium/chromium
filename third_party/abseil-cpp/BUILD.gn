@@ -105,7 +105,7 @@ group("absl_component_deps") {
   ]
 
   if (is_component_build) {
-    public_deps += [ ":absl_full_deps" ]
+    public_deps += [ ":absl_flags_component_deps" ]
   }
 
   # The following dependencies currently don't build with NaCl.
@@ -118,32 +118,18 @@ group("absl_component_deps") {
   visibility = [ ":absl" ]
 }
 
-# Some third-party libraries use additional parts of absl that are banned in
-# Chrome (e.g. flags generates static initializers that are undesirable in
-# non-test binaries). These third-party libraries can depend on `absl_full`
-# instead of `absl` to use those banned subsets of Abseil as well.
-source_set("absl_full") {
-  public_deps = [ ":absl" ]
-
-  # In component builds, `absl` itself depends on `absl_full_deps` directly so
-  # that all of absl is built as a single shared library. This is to prevent
-  # globals from being duplicated between both `absl` and `absl_full` (e.g.
-  # inline variables), and the subtle breakage that could cause.
-  #
-  # Deps violations will still be enforced by the non-component build.
-  if (!is_component_build) {
-    public_deps += [ ":absl_full_deps" ]
-  }
-
-  if (build_with_chromium) {
-    visibility = [
-      "//third_party/googletest:gmock",
-      "//third_party/googletest:gtest",
+if (!is_component_build) {
+  source_set("absl_flags") {
+    public_deps = [
+      ":absl",
+      ":absl_flags_component_deps",
     ]
+
+    testonly = true
   }
 }
 
-group("absl_full_deps") {
+group("absl_flags_component_deps") {
   public_deps = [
     "//third_party/abseil-cpp/absl/flags:flag",
     "//third_party/abseil-cpp/absl/flags:parse",
@@ -151,10 +137,10 @@ group("absl_full_deps") {
     "//third_party/abseil-cpp/absl/flags:usage",
   ]
 
-  visibility = [
-    ":absl_component_deps",
-    ":absl_full",
-  ]
+  visibility = [ ":absl_component_deps" ]
+  if (!is_component_build) {
+    visibility += [ ":absl_flags" ]
+  }
 
   public_configs = [ "//third_party/abseil-cpp/absl/flags:absl_flags_config" ]
 }
