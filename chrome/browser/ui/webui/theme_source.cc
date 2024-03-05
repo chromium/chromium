@@ -345,26 +345,33 @@ void ThemeSource::SendColorsCss(
     css_selector = "html:not(#z)";
   }
 
-  std::string css_string = base::StrCat({
-    css_selector, "{",
-        generate_color_provider_mapping("ui", ui::kUiColorsStart,
-                                        ui::kUiColorsEnd, ui::ColorIdName),
-        generate_color_provider_mapping("chrome", kChromeColorsStart,
-                                        kChromeColorsEnd, &ChromeColorIdName),
+  const auto* theme_service =
+      ThemeServiceFactory::GetForProfile(profile_->GetOriginalProfile());
+  std::string theme_id;
+  if (theme_service->GetIsGrayscale()) {
+    theme_id = "--user-color-source: baseline-grayscale;";
+  } else if (theme_service->GetIsBaseline()) {
+    theme_id = "--user-color-source: baseline-default;";
+  }
+
+  std::string css_string = base::StrCat(
+      {css_selector, "{", theme_id,
+       generate_color_provider_mapping("ui", ui::kUiColorsStart,
+                                       ui::kUiColorsEnd, ui::ColorIdName),
+       generate_color_provider_mapping("chrome", kChromeColorsStart,
+                                       kChromeColorsEnd, &ChromeColorIdName),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        generate_color_mapping("ref", cros_tokens::kCrosRefColorsStart,
-                               cros_tokens::kCrosRefColorsEnd,
-                               base::BindRepeating(cros_tokens::ColorIdName)),
-        generate_color_mapping("sys", cros_tokens::kCrosSysColorsStart,
-                               cros_tokens::kCrosSysColorsEnd,
-                               base::BindRepeating(cros_tokens::ColorIdName)),
-        generate_color_mapping("legacy",
-                               cros_tokens::kLegacySemanticColorsStart,
-                               cros_tokens::kLegacySemanticColorsEnd,
-                               base::BindRepeating(cros_tokens::ColorIdName)),
+       generate_color_mapping("ref", cros_tokens::kCrosRefColorsStart,
+                              cros_tokens::kCrosRefColorsEnd,
+                              base::BindRepeating(cros_tokens::ColorIdName)),
+       generate_color_mapping("sys", cros_tokens::kCrosSysColorsStart,
+                              cros_tokens::kCrosSysColorsEnd,
+                              base::BindRepeating(cros_tokens::ColorIdName)),
+       generate_color_mapping("legacy", cros_tokens::kLegacySemanticColorsStart,
+                              cros_tokens::kLegacySemanticColorsEnd,
+                              base::BindRepeating(cros_tokens::ColorIdName)),
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-        "}"
-  });
+       "}"});
   if (!color_id_sets.empty()) {
     LOG(ERROR)
         << "Unrecognized color set(s) specified for chrome://theme/colors.css: "
