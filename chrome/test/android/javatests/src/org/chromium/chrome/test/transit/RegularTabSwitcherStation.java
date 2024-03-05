@@ -14,7 +14,6 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 
@@ -32,14 +31,11 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
 
-        TabModelSelector tabModelSelector =
-                mChromeTabbedActivityTestRule.getActivity().getTabModelSelector();
-
         Condition noRegularTabsExist =
                 new UiThreadCondition() {
                     @Override
                     public boolean check() {
-                        return tabModelSelector.getModel(false).getCount() == 0;
+                        return mChromeTabbedActivityTestRule.tabsCount(/* incognito= */ false) == 0;
                     }
 
                     @Override
@@ -53,7 +49,7 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
                 new UiThreadCondition() {
                     @Override
                     public boolean check() {
-                        return tabModelSelector.getModel(true).getCount() > 0;
+                        return mChromeTabbedActivityTestRule.tabsCount(/* incognito= */ true) > 0;
                     }
 
                     @Override

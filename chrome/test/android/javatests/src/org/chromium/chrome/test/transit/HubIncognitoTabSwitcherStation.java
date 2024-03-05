@@ -14,7 +14,7 @@ public class HubIncognitoTabSwitcherStation extends HubTabSwitcherBaseStation {
      */
     public HubIncognitoTabSwitcherStation(
             ChromeTabbedActivityTestRule chromeTabbedActivityTestRule) {
-        super(chromeTabbedActivityTestRule);
+        super(chromeTabbedActivityTestRule, /* isIncognito= */ true);
     }
 
     @Override

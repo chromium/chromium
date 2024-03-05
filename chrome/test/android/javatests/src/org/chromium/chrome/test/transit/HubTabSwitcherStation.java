@@ -4,20 +4,51 @@
 
 package org.chromium.chrome.test.transit;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
+
+import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.Elements;
+import org.chromium.base.test.transit.UiThreadCondition;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 
 /** Regular tab switcher pane station. */
 public class HubTabSwitcherStation extends HubTabSwitcherBaseStation {
+    public static final ViewElement EMPTY_STATE_TEXT =
+            scopedViewElement(withText(R.string.tabswitcher_no_tabs_empty_state));
+
     /**
      * @param chromeTabbedActivityTestRule The activity rule under test.
      */
     public HubTabSwitcherStation(ChromeTabbedActivityTestRule chromeTabbedActivityTestRule) {
-        super(chromeTabbedActivityTestRule);
+        super(chromeTabbedActivityTestRule, /* isIncognito= */ false);
     }
 
     @Override
     public @PaneId int getPaneId() {
         return PaneId.TAB_SWITCHER;
+    }
+
+    @Override
+    public void declareElements(Elements.Builder elements) {
+        super.declareElements(elements);
+
+        Condition noRegularTabsExist =
+                new UiThreadCondition() {
+                    @Override
+                    public boolean check() {
+                        return mChromeTabbedActivityTestRule.tabsCount(/* incognito= */ false) == 0;
+                    }
+
+                    @Override
+                    public String buildDescription() {
+                        return "No regular tabs exist";
+                    }
+                };
+        elements.declareViewIf(EMPTY_STATE_TEXT, noRegularTabsExist);
     }
 }

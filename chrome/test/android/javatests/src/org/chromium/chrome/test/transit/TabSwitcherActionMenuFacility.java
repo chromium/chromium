@@ -20,6 +20,7 @@ import org.chromium.base.test.transit.TransitStation;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
@@ -71,9 +72,16 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                 // No tabs left, so closing the last will either take us to a normal tab, or the tab
                 // switcher if no normal tabs exist.
                 if (tabModelSelector.getModel(false).getCount() == 0) {
-                    destination =
-                            expectedDestination.cast(
-                                    new RegularTabSwitcherStation(mChromeTabbedActivityTestRule));
+                    if (HubFieldTrial.isHubEnabled()) {
+                        destination =
+                                expectedDestination.cast(
+                                        new HubTabSwitcherStation(mChromeTabbedActivityTestRule));
+                    } else {
+                        destination =
+                                expectedDestination.cast(
+                                        new RegularTabSwitcherStation(
+                                                mChromeTabbedActivityTestRule));
+                    }
                 } else {
                     destination =
                             expectedDestination.cast(
@@ -84,9 +92,15 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                 }
             } else {
                 // No tabs left, so closing the last will take us to the tab switcher.
-                destination =
-                        expectedDestination.cast(
-                                new RegularTabSwitcherStation(mChromeTabbedActivityTestRule));
+                if (HubFieldTrial.isHubEnabled()) {
+                    destination =
+                            expectedDestination.cast(
+                                    new HubTabSwitcherStation(mChromeTabbedActivityTestRule));
+                } else {
+                    destination =
+                            expectedDestination.cast(
+                                    new RegularTabSwitcherStation(mChromeTabbedActivityTestRule));
+                }
             }
         } else {
             // Another tab will be displayed.

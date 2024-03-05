@@ -22,10 +22,12 @@ import androidx.annotation.StringRes;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 
+import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.TransitStation;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.Trip;
+import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -47,6 +49,18 @@ public abstract class HubBaseStation extends TransitStation {
             sharedViewElement(
                     allOf(isDescendantOfA(withId(R.id.hub_toolbar)), withId(R.id.pane_switcher)));
 
+    public static final ViewElement REGULAR_TOGGLE_TAB_BUTTON =
+            sharedViewElement(
+                    allOf(
+                            withContentDescription(
+                                    R.string.accessibility_tab_switcher_standard_stack)));
+
+    public static final ViewElement INCOGNITO_TOGGLE_TAB_BUTTON =
+            sharedViewElement(
+                    allOf(
+                            withContentDescription(
+                                    R.string.accessibility_tab_switcher_incognito_stack)));
+
     protected final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
 
     /**
@@ -65,6 +79,22 @@ public abstract class HubBaseStation extends TransitStation {
         elements.declareView(HUB_TOOLBAR);
         elements.declareView(HUB_PANE_HOST);
         elements.declareView(HUB_MENU_BUTTON);
+
+        Condition incognitoTabsExist =
+                new UiThreadCondition() {
+                    @Override
+                    public boolean check() {
+                        return mChromeTabbedActivityTestRule.tabsCount(/* incognito= */ true) > 0;
+                    }
+
+                    @Override
+                    public String buildDescription() {
+                        return "Incognito tabs exist";
+                    }
+                };
+
+        elements.declareViewIf(REGULAR_TOGGLE_TAB_BUTTON, incognitoTabsExist);
+        elements.declareViewIf(INCOGNITO_TOGGLE_TAB_BUTTON, incognitoTabsExist);
 
         elements.declareLogicalElement(
                 unscopedUiThreadLogicalElement(
@@ -125,6 +155,16 @@ public abstract class HubBaseStation extends TransitStation {
                 (t) -> {
                     clickPaneSwitcherForPaneWithContentDescription(contentDescriptionId);
                 });
+    }
+
+    /** Convenience method to select the Regular Tab Switcher pane. */
+    public HubTabSwitcherStation selectRegularTabList() {
+        return selectPane(PaneId.TAB_SWITCHER, HubTabSwitcherStation.class);
+    }
+
+    /** Convenience method to select the Incognito Tab Switcher pane. */
+    public HubIncognitoTabSwitcherStation selectIncognitoTabList() {
+        return selectPane(PaneId.INCOGNITO_TAB_SWITCHER, HubIncognitoTabSwitcherStation.class);
     }
 
     private boolean isHubLayoutShowing() {
