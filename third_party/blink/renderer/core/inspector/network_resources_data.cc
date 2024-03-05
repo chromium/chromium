@@ -355,12 +355,6 @@ void NetworkResourcesData::MaybeDecodeDataToContent(const String& request_id) {
   CHECK_GE(maximum_resources_content_size_, content_size_);
 }
 
-void NetworkResourcesData::ClearData(const String& request_id) {
-  if (ResourceData* resource_data = ResourceDataForRequestId(request_id)) {
-    resource_data->ClearData();
-  }
-}
-
 void NetworkResourcesData::AddResource(const String& request_id,
                                        const Resource* cached_resource) {
   ResourceData* resource_data = ResourceDataForRequestId(request_id);
