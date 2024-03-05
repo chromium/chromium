@@ -74,7 +74,6 @@ public class StartSurfaceCoordinatorUnitTest {
 
     @Test
     public void testShowAndHideWithRefactorEnabled() {
-        assertNull(mCoordinator.getTasksSurfaceForTesting());
         TabSwitcher tabSwitcherModule =
                 mCoordinator.getMediatorForTesting().getTabSwitcherModuleForTesting();
         assertNotNull(tabSwitcherModule);
@@ -83,7 +82,7 @@ public class StartSurfaceCoordinatorUnitTest {
                 tabSwitcherModule.getTabListDelegate().getListModeForTesting());
         assertNotNull(mCoordinator.getViewForTesting());
 
-        mCoordinator.showOverview(false);
+        mCoordinator.show(false);
         assertTrue(mCoordinator.isMVTilesInitializedForTesting());
         assertFalse(mCoordinator.isMVTilesCleanedUpForTesting());
         assertNotNull(mCoordinator.getTileGroupDelegateForTesting());
@@ -96,33 +95,13 @@ public class StartSurfaceCoordinatorUnitTest {
 
     @Test
     public void testMVTilesInitialized() {
-        mCoordinator.setStartSurfaceState(StartSurfaceState.NOT_SHOWN);
         Assert.assertFalse(mCoordinator.isMVTilesInitializedForTesting());
 
-        mCoordinator.setStartSurfaceState(StartSurfaceState.SHOWING_HOMEPAGE);
-        mCoordinator.showOverview(false);
+        mCoordinator.show(false);
         Assert.assertTrue(mCoordinator.isMVTilesInitializedForTesting());
 
-        mCoordinator.setStartSurfaceState(StartSurfaceState.NOT_SHOWN);
         mCoordinator.onHide();
         Assert.assertFalse(mCoordinator.isMVTilesInitializedForTesting());
-
-        mCoordinator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
-        Assert.assertFalse(mCoordinator.isMVTilesInitializedForTesting());
-    }
-
-    @Test
-    public void testDoNotInitializeSecondaryTasksSurfaceWithoutOpenGridTabSwitcher() {
-        mCoordinator.setStartSurfaceState(StartSurfaceState.SHOWING_HOMEPAGE);
-        mCoordinator.showOverview(false);
-        Assert.assertTrue(mCoordinator.isSecondaryTasksSurfaceEmptyForTesting());
-
-        mCoordinator.setStartSurfaceState(StartSurfaceState.NOT_SHOWN);
-        mCoordinator.onHide();
-        Assert.assertTrue(mCoordinator.isSecondaryTasksSurfaceEmptyForTesting());
-
-        mCoordinator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
-        Assert.assertFalse(mCoordinator.isSecondaryTasksSurfaceEmptyForTesting());
     }
 
     @Test
@@ -132,22 +111,10 @@ public class StartSurfaceCoordinatorUnitTest {
         Assert.assertEquals(
                 View.GONE, mCoordinator.getFeedSwipeRefreshLayoutForTesting().getVisibility());
 
-        mCoordinator.setStartSurfaceState(StartSurfaceState.SHOWING_HOMEPAGE);
-        mCoordinator.showOverview(false);
+        mCoordinator.show(false);
         Assert.assertEquals(
                 View.VISIBLE, mCoordinator.getFeedSwipeRefreshLayoutForTesting().getVisibility());
 
-        mCoordinator.setStartSurfaceState(StartSurfaceState.NOT_SHOWN);
-        mCoordinator.onHide();
-        Assert.assertEquals(
-                View.GONE, mCoordinator.getFeedSwipeRefreshLayoutForTesting().getVisibility());
-
-        mCoordinator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
-        mCoordinator.showOverview(false);
-        Assert.assertEquals(
-                View.VISIBLE, mCoordinator.getFeedSwipeRefreshLayoutForTesting().getVisibility());
-
-        mCoordinator.setStartSurfaceState(StartSurfaceState.NOT_SHOWN);
         mCoordinator.onHide();
         Assert.assertEquals(
                 View.GONE, mCoordinator.getFeedSwipeRefreshLayoutForTesting().getVisibility());
@@ -156,8 +123,7 @@ public class StartSurfaceCoordinatorUnitTest {
     /** Tests the logic of recording time spend in start surface. */
     @Test
     public void testRecordTimeSpendInStart() {
-        mCoordinator.setStartSurfaceState(StartSurfaceState.SHOWING_HOMEPAGE);
-        mCoordinator.showOverview(false);
+        mCoordinator.show(false);
         mCoordinator.onHide();
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramTotalCountForTesting(START_SURFACE_TIME_SPENT));

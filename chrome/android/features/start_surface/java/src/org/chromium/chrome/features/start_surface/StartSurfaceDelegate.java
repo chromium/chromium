@@ -6,7 +6,6 @@ package org.chromium.chrome.features.start_surface;
 
 import android.app.Activity;
 import android.content.Context;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -22,11 +21,9 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
-import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
-import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -36,11 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /** StartSurfaceDelegate. */
 public class StartSurfaceDelegate {
@@ -64,7 +57,6 @@ public class StartSurfaceDelegate {
      * Create the {@link StartSurfaceCoordinator}
      *
      * @param activity The {@link Activity} creates this {@link StartSurface}.
-     * @param scrimCoordinator The {@link ScrimCoordinator} to control the scrim view.
      * @param sheetController A {@link BottomSheetController} to show content in the bottom sheet.
      * @param startSurfaceOneshotSupplier Supplies the {@link StartSurface}, passing the owned
      *     supplier to StartSurface itself.
@@ -74,24 +66,17 @@ public class StartSurfaceDelegate {
      * @param windowAndroid An instance of a {@link WindowAndroid}
      * @param containerView The container {@link ViewGroup} for this ui, also the root view for
      *     StartSurface.
-     * @param dynamicResourceLoaderSupplier Supplies the current {@link DynamicResourceLoader}.
      * @param tabModelSelector Gives access to the current set of {@TabModel}.
      * @param browserControlsManager Manages the browser controls.
      * @param snackbarManager Manages the display of snackbars.
      * @param shareDelegateSupplier Supplies the current {@link ShareDelegate}.
      * @param omniboxStubSupplier Supplies the {@link OmniboxStub}.
      * @param tabContentManager Gives access to the tab content.
-     * @param modalDialogManager Manages the display of modal dialogs.
      * @param chromeActivityNativeDelegate Delegate for native initialization.
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
      * @param tabCreatorManager Manages creation of tabs.
-     * @param menuOrKeyboardActionController allows access to menu or keyboard actions.
-     * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
      * @param toolbarSupplier Supplies the {@link Toolbar}.
      * @param backPressManager {@link BackPressManager} to handle back press gesture.
-     * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
-     *     to detect pending re-auth when tab switcher is shown.
-     * @param tabSwitcherClickHandler The {@link OnClickListener} for the tab switcher button.
      * @param profileSupplier Supplies the {@link Profile}.
      * @param tabStripHeightSupplier Supplier for the tab strip height.
      * @param moduleRegistrySupplier Supplies the {@link ModuleRegistry}.
@@ -99,7 +84,6 @@ public class StartSurfaceDelegate {
      */
     public static StartSurface createStartSurface(
             @NonNull Activity activity,
-            @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull BottomSheetController sheetController,
             @NonNull OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
             @NonNull Supplier<Tab> parentTabSupplier,
@@ -107,29 +91,22 @@ public class StartSurfaceDelegate {
             @NonNull WindowAndroid windowAndroid,
             @NonNull JankTracker jankTracker,
             @NonNull ViewGroup containerView,
-            @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull SnackbarManager snackbarManager,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull Supplier<OmniboxStub> omniboxStubSupplier,
             @NonNull TabContentManager tabContentManager,
-            @NonNull ModalDialogManager modalDialogManager,
             @NonNull ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull TabCreatorManager tabCreatorManager,
-            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
-            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull Supplier<Toolbar> toolbarSupplier,
             BackPressManager backPressManager,
-            @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
-            @NonNull OnClickListener tabSwitcherClickHandler,
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull ObservableSupplier<Integer> tabStripHeightSupplier,
             @Nullable OneshotSupplier<ModuleRegistry> moduleRegistrySupplier) {
         return new StartSurfaceCoordinator(
                 activity,
-                scrimCoordinator,
                 sheetController,
                 startSurfaceOneshotSupplier,
                 parentTabSupplier,
@@ -137,23 +114,17 @@ public class StartSurfaceDelegate {
                 windowAndroid,
                 jankTracker,
                 containerView,
-                dynamicResourceLoaderSupplier,
                 tabModelSelector,
                 browserControlsManager,
                 snackbarManager,
                 shareDelegateSupplier,
                 omniboxStubSupplier,
                 tabContentManager,
-                modalDialogManager,
                 chromeActivityNativeDelegate,
                 activityLifecycleDispatcher,
                 tabCreatorManager,
-                menuOrKeyboardActionController,
-                multiWindowModeStateDispatcher,
                 toolbarSupplier,
                 backPressManager,
-                incognitoReauthControllerSupplier,
-                tabSwitcherClickHandler,
                 profileSupplier,
                 tabStripHeightSupplier,
                 moduleRegistrySupplier);

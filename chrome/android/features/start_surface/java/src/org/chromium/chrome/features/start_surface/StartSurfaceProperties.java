@@ -32,8 +32,6 @@ class StartSurfaceProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_EXPLORE_SURFACE_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey IS_SECONDARY_SURFACE_VISIBLE =
-            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_SHOWING_OVERVIEW =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<ExploreSurfaceCoordinator>
@@ -49,7 +47,6 @@ class StartSurfaceProperties {
                 BOTTOM_BAR_SELECTED_TAB_POSITION,
                 IS_BOTTOM_BAR_VISIBLE,
                 IS_EXPLORE_SURFACE_VISIBLE,
-                IS_SECONDARY_SURFACE_VISIBLE,
                 IS_SHOWING_OVERVIEW,
                 EXPLORE_SURFACE_COORDINATOR,
                 TOP_MARGIN,

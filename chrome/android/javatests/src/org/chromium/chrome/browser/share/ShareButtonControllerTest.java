@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -134,19 +133,14 @@ public final class ShareButtonControllerTest {
         UiRestriction.RESTRICTION_TYPE_PHONE,
         Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
     })
-    @DisabledTest(message = "crbug.com/1381572")
     public void testShareButtonInToolbarNotAffectedByOverview() throws TimeoutException {
         // Sign in.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mActivityTestRule
-                                .getActivity()
-                                .getStartSurface()
-                                .setStartSurfaceState(StartSurfaceState.SHOWING_START));
         LayoutTestUtils.startShowingAndWaitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
+                mActivityTestRule.getActivity().getLayoutManager(),
+                LayoutType.START_SURFACE,
+                false);
 
         View optionalButton =
                 mActivityTestRule

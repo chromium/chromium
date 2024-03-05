@@ -10,7 +10,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
@@ -47,7 +46,6 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.init.ActivityLifecycleDispatcherImpl;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
-import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
@@ -75,16 +73,12 @@ import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVis
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
-import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -238,23 +232,6 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
     }
 
     private void setUpCoordinator() {
-        ScrimCoordinator scrimCoordinator =
-                new ScrimCoordinator(
-                        mActivity,
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {
-                                // Intentional noop
-                            }
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {
-                                // Intentional noop
-                            }
-                        },
-                        mContainerView,
-                        Color.WHITE);
-
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
         BrowserControlsManager browserControlsManager = new BrowserControlsManager(mActivity, 0);
         SnackbarManager snackbarManager =
@@ -274,7 +251,6 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         mCoordinator =
                 new StartSurfaceCoordinator(
                         mActivity,
-                        scrimCoordinator,
                         Mockito.mock(BottomSheetController.class),
                         new OneshotSupplierImpl<>(),
                         new ObservableSupplierImpl<>(),
@@ -282,23 +258,17 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
                         windowAndroid,
                         new PlaceholderJankTracker(),
                         mContainerView,
-                        new ObservableSupplierImpl<>(),
                         mTabModelSelector,
                         browserControlsManager,
                         snackbarManager,
                         new ObservableSupplierImpl<>(),
                         () -> omniboxStub,
                         tabContentManager,
-                        new FakeModalDialogManager(ModalDialogType.APP),
                         Mockito.mock(ChromeActivityNativeDelegate.class),
                         new ActivityLifecycleDispatcherImpl(mActivity),
                         new MockTabCreatorManager(),
-                        Mockito.mock(MenuOrKeyboardActionController.class),
-                        new MultiWindowModeStateDispatcherImpl(mActivity),
                         new ObservableSupplierImpl<>(),
                         new BackPressManager(),
-                        mIncognitoReauthControllerSupplier,
-                        null,
                         mProfileSupplier,
                         tabStripHeightSupplier,
                         new OneshotSupplierImpl<>());

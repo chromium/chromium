@@ -14,7 +14,6 @@ import com.google.android.material.appbar.AppBarLayout;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
-import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 import org.chromium.chrome.features.tasks.TasksView;
@@ -43,12 +42,6 @@ public interface StartSurface {
      * Start surface is enabled.
      */
     void onHide();
-
-    /** Called before the tab switcher starts showing. */
-    void beforeShowTabSwitcherView();
-
-    /** Called before tab switcher starts hiding. */
-    void beforeHideTabSwitcherView();
 
     /**
      * An observer that is notified when the start surface internal state, excluding
@@ -119,44 +112,10 @@ public interface StartSurface {
     }
 
     /**
-     * @param listener Registers {@code listener} for tab switcher status changes.
-     */
-    void addTabSwitcherViewObserver(TabSwitcherViewObserver listener);
-
-    /**
-     * @param listener Unregisters {@code listener} for tab switcher status changes.
-     */
-    void removeTabSwitcherViewObserver(TabSwitcherViewObserver listener);
-
-    /**
      * Hide the tab switcher view.
      * @param animate Whether we should animate while hiding.
      */
     void hideTabSwitcherView(boolean animate);
-
-    /**
-     * Show the overview.
-     * @param animate Whether we should animate while showing.
-     */
-    // TODO(crbug.com/1315676): Rename this function once the Start surface layout and Grid tab
-    // switcher layout are decoupled.
-    void showOverview(boolean animate);
-
-    /**
-     * Sets the state {@link StartSurfaceState} and {@link NewTabPageLaunchOrigin}.
-     * @param state The {@link StartSurfaceState} to show.
-     * @param launchOrigin The {@link NewTabPageLaunchOrigin} representing what launched the
-     *         start surface.
-     */
-    void setStartSurfaceState(
-            @StartSurfaceState int state, @NewTabPageLaunchOrigin int launchOrigin);
-
-    /**
-     * Sets the state {@link StartSurfaceState} without changing the existing {@link
-     * NewTabPageLaunchOrigin}.
-     * @param state The {@link StartSurfaceState} to show.
-     */
-    void setStartSurfaceState(@StartSurfaceState int state);
 
     /**
      * Set the launch origin.
@@ -189,12 +148,6 @@ public interface StartSurface {
      * {@link StartSurfaceState#SHOWN_HOMEPAGE} when the refactoring is disabled.
      */
     boolean isHomepageShown();
-
-    /**
-     * Returns the TabListDelegate implementation that can be used to access the Tab list of the
-     * grid tab switcher surface.
-     */
-    TabSwitcher.TabListDelegate getGridTabListDelegate();
 
     /**
      * Returns the TabListDelegate implementation that can be used to access the Tab list of the
@@ -232,12 +185,4 @@ public interface StartSurface {
      */
     @NonNull
     ObservableSupplier<TabSwitcherCustomViewManager> getTabSwitcherCustomViewManagerSupplier();
-
-    /**
-     * @return The number of elements in the tab switcher's tab list model.
-     */
-    int getTabSwitcherTabListModelSize();
-
-    /** Set the tab switcher's current RecyclerViewPosition. */
-    void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition);
 }

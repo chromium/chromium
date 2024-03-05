@@ -1943,8 +1943,6 @@ public class RootUiCoordinator
                 () -> {
                     if (mTabSwitcherSupplier.get() != null) {
                         return mTabSwitcherSupplier.get().getTabSwitcherTabListModelSize();
-                    } else if (mStartSurfaceSupplier.get() != null) {
-                        return mStartSurfaceSupplier.get().getTabSwitcherTabListModelSize();
                     }
                     return 0;
                 };
@@ -1953,11 +1951,6 @@ public class RootUiCoordinator
                 (tabListModelSize) -> {
                     if (mTabSwitcherSupplier.get() != null) {
                         mTabSwitcherSupplier
-                                .get()
-                                .setTabSwitcherRecyclerViewPosition(
-                                        new RecyclerViewPosition(tabListModelSize, 0));
-                    } else if (mStartSurfaceSupplier.get() != null) {
-                        mStartSurfaceSupplier
                                 .get()
                                 .setTabSwitcherRecyclerViewPosition(
                                         new RecyclerViewPosition(tabListModelSize, 0));
