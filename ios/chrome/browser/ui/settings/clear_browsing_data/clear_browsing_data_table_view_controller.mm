@@ -572,6 +572,12 @@
 
 - (BOOL)hasDataTypeItemsSelected {
   // Returns YES iff at least 1 data type cell is selected.
+  // Check if table model has the data types section, because sometimes this
+  // is called before it does.
+  if (![self.tableViewModel
+          hasSectionForSectionIdentifier:SectionIdentifierDataTypes]) {
+    return NO;
+  }
   NSArray* dataTypeItems = [self.tableViewModel
       itemsInSectionWithIdentifier:SectionIdentifierDataTypes];
   for (TableViewClearBrowsingDataItem* dataTypeItem in dataTypeItems) {
