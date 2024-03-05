@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 module crosapi.mojom;
 
@@ -45,6 +45,14 @@ struct EditorPanelContext {
   array<EditorPanelPresetTextQuery> preset_text_queries@1;
 };
 
+// An interface to allow clients in the Lacros side to observe important state
+// changes in the Ash side.
+[Stable, Uuid="4622a780-9055-4e61-8e21-638a152a23ac"]
+interface EditorObserver {
+  // Fired whenever the EditorPanelMode state has changed.
+  OnEditorPanelModeChanged@0(EditorPanelMode mode);
+};
+
 // EditorPanelManager is an interface to allow lacros to handle requests between
 // the context menu editor panel and the backend of the editor feature
 // Next MinVersion: 2
@@ -76,4 +84,8 @@ interface EditorPanelManager {
 
   // Reports the mode of the editor panel.
   [MinVersion=2] LogEditorMode@7(EditorPanelMode mode);
+
+  // Binds a new EditorObserver in ash
+  [MinVersion=3] BindEditorObserver@8(
+      pending_remote<EditorObserver> pending_observer_remote);
 };

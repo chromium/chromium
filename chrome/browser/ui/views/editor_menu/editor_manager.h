@@ -8,12 +8,18 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 
 namespace chromeos::editor_menu {
 
 class EditorManager {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnEditorModeChanged(const EditorMode& mode) = 0;
+  };
+
   virtual ~EditorManager() = default;
 
   virtual void GetEditorPanelContext(
@@ -25,6 +31,9 @@ class EditorManager {
   virtual void StartEditingFlowWithFreeform(std::string_view text) = 0;
   virtual void OnEditorMenuVisibilityChanged(bool visible) = 0;
   virtual void LogEditorMode(EditorMode mode) = 0;
+  virtual void AddObserver(EditorManager::Observer* observer) = 0;
+  virtual void RemoveObserver(EditorManager::Observer* observer) = 0;
+  virtual void NotifyEditorModeChanged(const EditorMode& mode) = 0;
 };
 
 }  // namespace chromeos::editor_menu
