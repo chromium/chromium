@@ -51,7 +51,10 @@ class FeaturePromoResult {
              // since the last heavyweight promo.
     kRecentlyAborted = 11,  // The promo recently aborted due to a UI change and
                             // cannot be shown again for a short period of time.
-    kMaxValue = kRecentlyAborted
+    kExceededMaxShowCount = 12,  // The promo has been shown so many times that
+                                 // it should be considered permanently
+                                 // dismissed.
+    kMaxValue = kExceededMaxShowCount
   };
 
   constexpr FeaturePromoResult() = default;

@@ -1027,8 +1027,7 @@ void FeaturePromoControllerCommon::RecordPromoNotShown(
   base::UmaHistogramEnumeration(action_name, failure);
 
   // Record Failure as user action
-  std::string failure_action_name = "UserEducation.MessageNotShown";
-  failure_action_name.append(".");
+  std::string failure_action_name = "UserEducation.MessageNotShown.";
   switch (failure) {
     case FeaturePromoResult::kCanceled:
       failure_action_name.append("Canceled");
@@ -1065,6 +1064,9 @@ void FeaturePromoControllerCommon::RecordPromoNotShown(
       break;
     case FeaturePromoResult::kRecentlyAborted:
       failure_action_name.append("RecentlyAborted");
+      break;
+    case FeaturePromoResult::kExceededMaxShowCount:
+      failure_action_name.append("ExceededMaxShowCount");
       break;
     default:
       NOTREACHED();

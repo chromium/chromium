@@ -64,6 +64,9 @@ std::ostream& operator<<(std::ostream& os,
     case FeaturePromoResult::kRecentlyAborted:
       os << "kRecentlyAborted";
       break;
+    case FeaturePromoResult::kExceededMaxShowCount:
+      os << "kExceededMaxShowCount";
+      break;
   }
   return os;
 }

@@ -39,6 +39,9 @@ inline constexpr base::TimeDelta kDefaultAbortCooldown = base::Hours(4);
 inline constexpr char kMaxSnoozeCountParamName[] = "max_snooze_count";
 inline constexpr int kDefaultMaxSnoozeCount = 3;
 
+inline constexpr char kMaxPromoShowCount[] = "max_promo_show_count";
+inline constexpr int kDefaultMaxPromoShowCount = 12;
+
 }  // namespace
 
 BASE_FEATURE(kUserEducationExperienceVersion2,
@@ -89,6 +92,12 @@ int GetMaxSnoozeCount() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kUserEducationExperienceVersion2, kMaxSnoozeCountParamName,
       kDefaultMaxSnoozeCount);
+}
+
+int GetMaxPromoShowCount() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kUserEducationExperienceVersion2, kMaxPromoShowCount,
+      kDefaultMaxPromoShowCount);
 }
 
 }  // namespace user_education::features

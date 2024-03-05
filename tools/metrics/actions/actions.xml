@@ -40021,6 +40021,15 @@ should be able to be added at any place in this file.
   <description>An IPH was not shown to the user due to an error.</description>
 </action>
 
+<action name="UserEducation.MessageNotShown.ExceededMaxShowCount">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown because it has been shown more than the allowed number
+    of times.
+  </description>
+</action>
+
 <action name="UserEducation.MessageNotShown.FeatureDisabled">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>

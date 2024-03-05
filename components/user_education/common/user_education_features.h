@@ -45,6 +45,10 @@ extern base::TimeDelta GetAbortCooldown();
 // the snooze button no longer appears.
 extern int GetMaxSnoozeCount();
 
+// Returns the maximum number of times a low-priority is allowed to show at all
+// before it is permanently blocked.
+extern int GetMaxPromoShowCount();
+
 }  // namespace user_education::features
 
 #endif  // COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_FEATURES_H_

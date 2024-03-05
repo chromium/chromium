@@ -318,6 +318,9 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
       case FeaturePromoResult::kRecentlyAborted:
         failure_action_name.append("RecentlyAborted");
         break;
+      case FeaturePromoResult::kExceededMaxShowCount:
+        failure_action_name.append("ExceededMaxShowCount");
+        break;
       default:
         NOTREACHED();
     }

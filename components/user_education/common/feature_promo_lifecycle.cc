@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/user_education/common/feature_promo_data.h"
+#include "components/user_education/common/feature_promo_result.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/user_education_features.h"
@@ -68,6 +69,10 @@ FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
 
   switch (promo_subtype_) {
     case PromoSubtype::kNormal:
+      if (features::IsUserEducationV2() &&
+          data->show_count >= features::GetMaxPromoShowCount()) {
+        return FeaturePromoResult::kExceededMaxShowCount;
+      }
       switch (promo_type_) {
         case PromoType::kLegacy:
         case PromoType::kToast:
