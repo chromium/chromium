@@ -324,17 +324,6 @@ void EncodeFormFieldsForUpload(const FormStructure& form,
       added_field->add_autofill_type(field_type);
     }
 
-    field->NormalizePossibleTypesValidities();
-
-    for (const auto& [field_type, validities] :
-         field->possible_types_validities()) {
-      auto* type_validities = added_field->add_autofill_type_validities();
-      type_validities->set_type(field_type);
-      for (const auto& validity : validities) {
-        type_validities->add_validity(base::to_underlying(validity));
-      }
-    }
-
     if (field->generation_type()) {
       added_field->set_generation_type(field->generation_type());
       added_field->set_generated_password_changed(

@@ -243,14 +243,6 @@ void AutofillField::set_heuristic_type(HeuristicSource s, FieldType type) {
   }
 }
 
-void AutofillField::add_possible_types_validities(
-    const FieldTypeValidityStateMap& possible_types_validities) {
-  for (const auto& possible_type_validity : possible_types_validities) {
-    possible_types_validities_[possible_type_validity.first].push_back(
-        possible_type_validity.second);
-  }
-}
-
 void AutofillField::set_server_predictions(
     std::vector<FieldPrediction> predictions) {
   overall_type_ = AutofillType(NO_SERVER_DATA);
@@ -294,13 +286,6 @@ void AutofillField::set_server_predictions(
       << "Expected up to 2 default predictions from the Autofill server. "
          "Actual: "
       << server_predictions_.size();
-}
-
-std::vector<AutofillDataModel::ValidityState>
-AutofillField::get_validities_for_possible_type(FieldType type) {
-  if (possible_types_validities_.find(type) == possible_types_validities_.end())
-    return {AutofillDataModel::ValidityState::kUnvalidated};
-  return possible_types_validities_[type];
 }
 
 void AutofillField::SetHtmlType(HtmlFieldType type, HtmlFieldMode mode) {
@@ -458,15 +443,6 @@ bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault() const {
 
 void AutofillField::SetPasswordRequirements(PasswordRequirementsSpec spec) {
   password_requirements_ = std::move(spec);
-}
-
-void AutofillField::NormalizePossibleTypesValidities() {
-  for (auto possible_type : possible_types_) {
-    if (possible_types_validities_[possible_type].empty()) {
-      possible_types_validities_[possible_type].push_back(
-          AutofillDataModel::ValidityState::kUnvalidated);
-    }
-  }
 }
 
 bool AutofillField::IsCreditCardPrediction() const {

@@ -19,20 +19,6 @@ struct AutofillMetadata;
 // PersonalDataManager.
 class AutofillDataModel : public FormGroup {
  public:
-  // TODO(crbug.com/1174203): Remove.
-  enum class ValidityState {
-    // The field has not been validated.
-    kUnvalidated = 0,
-    // The field is empty.
-    kEmpty = 1,
-    // The field is valid.
-    kValid = 2,
-    // The field is invalid.
-    kInvalid = 3,
-    // The validation for the field is unsupported.
-    kUnsupported = 4,
-  };
-
   AutofillDataModel();
   ~AutofillDataModel() override;
 

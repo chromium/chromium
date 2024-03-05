@@ -197,356 +197,6 @@ TEST_F(AutofillCrowdsourcingEncoding,
                 "DOM_MUTATION_AFTER_AUTOFILL enumerator does not match!");
 }
 
-TEST_F(AutofillCrowdsourcingEncoding,
-       EncodeUploadRequest_WithMatchingValidities) {
-  ////////////////
-  // Setup
-  ////////////////
-  FormData form = test::GetFormData(
-      {.fields = {
-           {.label = u"First Name",
-            .name = u"firstname",
-            .form_control_type = FormControlType::kInputText},
-           {.label = u"Last Name",
-            .name = u"lastname",
-            .form_control_type = FormControlType::kInputText},
-           {.label = u"Email",
-            .name = u"email",
-            .form_control_type = FormControlType::kInputEmail},
-           {.label = u"Phone",
-            .name = u"phone",
-            .form_control_type = FormControlType::kInputNumber},
-           {.label = u"Country",
-            .name = u"country",
-            .form_control_type = FormControlType::kSelectOne},
-           // Add checkable field.
-           {.label = u"Checkable1",
-            .name = u"Checkable1",
-            .check_status = FormFieldData::CheckStatus::kCheckableButUnchecked},
-       }});
-
-  std::vector<FieldTypeSet> possible_field_types;
-  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_FIRST},
-      {AutofillProfile::ValidityState::kUnvalidated});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_LAST},
-      {AutofillProfile::ValidityState::kUnvalidated});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS},
-      {AutofillProfile::ValidityState::kInvalid});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities,
-      {PHONE_HOME_WHOLE_NUMBER}, {AutofillProfile::ValidityState::kEmpty});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities,
-      {ADDRESS_HOME_COUNTRY}, {AutofillProfile::ValidityState::kValid});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities,
-      {ADDRESS_HOME_COUNTRY}, {AutofillProfile::ValidityState::kValid});
-
-  std::unique_ptr<FormStructure> form_structure =
-      std::make_unique<FormStructure>(form);
-  for (const std::unique_ptr<autofill::AutofillField>& fs_field :
-       *form_structure) {
-    fs_field->host_form_signature = form_structure->form_signature();
-  }
-
-  ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
-  ASSERT_EQ(form_structure->field_count(),
-            possible_field_types_validities.size());
-  for (size_t i = 0; i < form_structure->field_count(); ++i) {
-    form_structure->field(i)->set_possible_types(possible_field_types[i]);
-    form_structure->field(i)->set_possible_types_validities(
-        possible_field_types_validities[i]);
-  }
-
-  FieldTypeSet available_field_types;
-  available_field_types.insert(NAME_FIRST);
-  available_field_types.insert(NAME_LAST);
-  available_field_types.insert(ADDRESS_HOME_LINE1);
-  available_field_types.insert(ADDRESS_HOME_LINE2);
-  available_field_types.insert(ADDRESS_HOME_COUNTRY);
-  available_field_types.insert(EMAIL_ADDRESS);
-  available_field_types.insert(PHONE_HOME_WHOLE_NUMBER);
-
-  // Prepare the expected proto string.
-  AutofillUploadContents upload;
-  upload.set_submission(true);
-  upload.set_client_version(
-      std::string(GetProductNameAndVersionForUserAgent()));
-  upload.set_form_signature(form_structure->form_signature().value());
-  upload.set_autofill_used(false);
-  upload.set_data_present("1442000308");
-  upload.set_submission_event(
-      AutofillUploadContents_SubmissionIndicatorEvent_NONE);
-  upload.set_has_form_tag(true);
-
-  test::FillUploadField(upload.add_field(), 3763331450U, 3U, 0);
-  test::FillUploadField(upload.add_field(), 3494530716U, 5U, 0);
-  test::FillUploadField(upload.add_field(), 1029417091U, 9U, 3);
-  test::FillUploadField(upload.add_field(), 466116101U, 14U, 1);
-  test::FillUploadField(upload.add_field(), 2799270304U, 36U, 2);
-
-  ////////////////
-  // Verification
-  ////////////////
-  std::string expected_upload_string;
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
-                                  /*login_form_signature=*/"",
-                                  /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
-
-  ////////////////
-  // Setup
-  ////////////////
-  // Add 2 address fields - this should be still a valid form.
-  for (size_t i = 0; i < 2; ++i) {
-    FormFieldData field;
-    field.label = u"Address";
-    field.name = u"address";
-    field.form_control_type = FormControlType::kInputText;
-    field.renderer_id = test::MakeFieldRendererId();
-    form.fields.push_back(field);
-    test::InitializePossibleTypesAndValidities(
-        possible_field_types, possible_field_types_validities,
-        {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2},
-        {AutofillProfile::ValidityState::kValid,
-         AutofillProfile::ValidityState::kValid});
-  }
-
-  form_structure = std::make_unique<FormStructure>(form);
-  for (const std::unique_ptr<autofill::AutofillField>& fs_field :
-       *form_structure) {
-    fs_field->host_form_signature = form_structure->form_signature();
-  }
-
-  ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
-  ASSERT_EQ(form_structure->field_count(),
-            possible_field_types_validities.size());
-  for (size_t i = 0; i < form_structure->field_count(); ++i) {
-    form_structure->field(i)->set_possible_types(possible_field_types[i]);
-    form_structure->field(i)->set_possible_types_validities(
-        possible_field_types_validities[i]);
-  }
-
-  // Adjust the expected proto string.
-  upload.set_form_signature(form_structure->form_signature().value());
-  upload.set_autofill_used(false);
-  // Create an additional 2 fields (total of 7).  Put the appropriate autofill
-  // type on the different address fields.
-  test::FillUploadField(upload.add_field(), 509334676U, {30U, 31U}, {2, 2});
-  test::FillUploadField(upload.add_field(), 509334676U, {30U, 31U}, {2, 2});
-
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
-                                  /*login_form_signature=*/"",
-                                  /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
-}
-
-TEST_F(AutofillCrowdsourcingEncoding,
-       EncodeUploadRequest_WithNonMatchingValidities) {
-  ////////////////
-  // Setup
-  ////////////////
-  FormData form = test::GetFormData(
-      {.fields = {
-           {.label = u"First Name",
-            .name = u"firstname",
-            .form_control_type = FormControlType::kInputText},
-           {.label = u"Last Name",
-            .name = u"lastname",
-            .form_control_type = FormControlType::kInputText},
-           {.label = u"Email",
-            .name = u"email",
-            .form_control_type = FormControlType::kInputEmail},
-           {.label = u"Phone",
-            .name = u"phone",
-            .form_control_type = FormControlType::kInputNumber},
-           {.label = u"Country",
-            .name = u"country",
-            .form_control_type = FormControlType::kSelectOne},
-           // Add checkable field.
-           {.label = u"Checkable1",
-            .name = u"Checkable1",
-            .check_status = FormFieldData::CheckStatus::kCheckableButUnchecked},
-       }});
-
-  std::vector<FieldTypeSet> possible_field_types;
-  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_FIRST},
-      {AutofillProfile::ValidityState::kUnvalidated});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_LAST},
-      {AutofillProfile::ValidityState::kUnvalidated});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS},
-      {AutofillProfile::ValidityState::kInvalid});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities,
-      {PHONE_HOME_WHOLE_NUMBER}, {AutofillProfile::ValidityState::kEmpty});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities,
-      {ADDRESS_HOME_COUNTRY}, {AutofillProfile::ValidityState::kValid});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities,
-      {ADDRESS_HOME_COUNTRY}, {AutofillProfile::ValidityState::kValid});
-
-  std::unique_ptr<FormStructure> form_structure =
-      std::make_unique<FormStructure>(form);
-  for (const std::unique_ptr<autofill::AutofillField>& fs_field :
-       *form_structure) {
-    fs_field->host_form_signature = form_structure->form_signature();
-  }
-
-  ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
-  ASSERT_EQ(form_structure->field_count(),
-            possible_field_types_validities.size());
-  for (size_t i = 0; i < form_structure->field_count(); ++i) {
-    form_structure->field(i)->set_possible_types(possible_field_types[i]);
-    form_structure->field(i)->set_possible_types_validities(
-        possible_field_types_validities[i]);
-  }
-
-  FieldTypeSet available_field_types;
-  available_field_types.insert(NAME_FIRST);
-  available_field_types.insert(NAME_LAST);
-  available_field_types.insert(ADDRESS_HOME_LINE1);
-  available_field_types.insert(ADDRESS_HOME_LINE2);
-  available_field_types.insert(ADDRESS_HOME_COUNTRY);
-  available_field_types.insert(EMAIL_ADDRESS);
-  available_field_types.insert(PHONE_HOME_WHOLE_NUMBER);
-
-  // Prepare the expected proto string.
-  AutofillUploadContents upload;
-  upload.set_submission(true);
-  upload.set_client_version(
-      std::string(GetProductNameAndVersionForUserAgent()));
-  upload.set_form_signature(form_structure->form_signature().value());
-  upload.set_autofill_used(false);
-  upload.set_data_present("1442000308");
-
-  test::FillUploadField(upload.add_field(), 3763331450U, 3U, 0);
-  test::FillUploadField(upload.add_field(), 3494530716U, 5U, 0);
-  test::FillUploadField(upload.add_field(), 1029417091U, 9U, 3);
-  test::FillUploadField(upload.add_field(), 466116101U, 14U, 1);
-  test::FillUploadField(upload.add_field(), 2799270304U, 36U,
-                        1);  // Non-matching validities
-
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
-                                  /*login_form_signature=*/"",
-                                  /*observed_submission=*/true),
-              ElementsAre(Not(SerializesSameAs(upload))));
-}
-
-TEST_F(AutofillCrowdsourcingEncoding,
-       EncodeUploadRequest_WithMultipleValidities) {
-  ////////////////
-  // Setup
-  ////////////////
-  FormData form = test::GetFormData(
-      {.fields = {
-           {.label = u"First Name",
-            .name = u"firstname",
-            .form_control_type = FormControlType::kInputText},
-           {.label = u"Last Name",
-            .name = u"lastname",
-            .form_control_type = FormControlType::kInputText},
-           {.label = u"Email",
-            .name = u"email",
-            .form_control_type = FormControlType::kInputEmail},
-           {.label = u"Phone",
-            .name = u"phone",
-            .form_control_type = FormControlType::kInputNumber},
-           {.label = u"Country",
-            .name = u"country",
-            .form_control_type = FormControlType::kSelectOne},
-           // Add checkable field.
-           {.label = u"Checkable1",
-            .name = u"Checkable1",
-            .check_status = FormFieldData::CheckStatus::kCheckableButUnchecked},
-       }});
-
-  std::vector<FieldTypeSet> possible_field_types;
-  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_FIRST},
-      {AutofillProfile::ValidityState::kUnvalidated,
-       AutofillProfile::ValidityState::kValid});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_LAST},
-      {AutofillProfile::ValidityState::kUnvalidated,
-       AutofillProfile::ValidityState::kValid});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS},
-      {AutofillProfile::ValidityState::kInvalid,
-       AutofillProfile::ValidityState::kValid});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities,
-      {PHONE_HOME_WHOLE_NUMBER},
-      {AutofillProfile::ValidityState::kEmpty,
-       AutofillProfile::ValidityState::kValid});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities,
-      {ADDRESS_HOME_COUNTRY},
-      {AutofillProfile::ValidityState::kValid,
-       AutofillProfile::ValidityState::kValid});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities,
-      {ADDRESS_HOME_COUNTRY},
-      {AutofillProfile::ValidityState::kValid,
-       AutofillProfile::ValidityState::kValid});
-  std::unique_ptr<FormStructure> form_structure =
-      std::make_unique<FormStructure>(form);
-  for (const std::unique_ptr<autofill::AutofillField>& fs_field :
-       *form_structure) {
-    fs_field->host_form_signature = form_structure->form_signature();
-  }
-
-  ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
-  ASSERT_EQ(form_structure->field_count(),
-            possible_field_types_validities.size());
-  for (size_t i = 0; i < form_structure->field_count(); ++i) {
-    form_structure->field(i)->set_possible_types(possible_field_types[i]);
-    form_structure->field(i)->set_possible_types_validities(
-        possible_field_types_validities[i]);
-  }
-
-  FieldTypeSet available_field_types;
-  available_field_types.insert(NAME_FIRST);
-  available_field_types.insert(NAME_LAST);
-  available_field_types.insert(ADDRESS_HOME_LINE1);
-  available_field_types.insert(ADDRESS_HOME_LINE2);
-  available_field_types.insert(ADDRESS_HOME_COUNTRY);
-  available_field_types.insert(EMAIL_ADDRESS);
-  available_field_types.insert(PHONE_HOME_WHOLE_NUMBER);
-
-  // Prepare the expected proto string.
-  AutofillUploadContents upload;
-  upload.set_submission(true);
-  upload.set_client_version(
-      std::string(GetProductNameAndVersionForUserAgent()));
-  upload.set_form_signature(form_structure->form_signature().value());
-  upload.set_autofill_used(false);
-  upload.set_data_present("1442000308");
-  upload.set_submission_event(
-      AutofillUploadContents_SubmissionIndicatorEvent_NONE);
-  upload.set_has_form_tag(true);
-
-  test::FillUploadField(upload.add_field(), 3763331450U, 3U, {0, 2});
-  test::FillUploadField(upload.add_field(), 3494530716U, 5U, {0, 2});
-  test::FillUploadField(upload.add_field(), 1029417091U, 9U, {3, 2});
-  test::FillUploadField(upload.add_field(), 466116101U, 14U, {1, 2});
-  test::FillUploadField(upload.add_field(), 2799270304U, 36U, {2, 2});
-
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
-                                  /*login_form_signature=*/"",
-                                  /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
-}
-
 TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   FormData form = test::GetFormData(
       {.fields = {
@@ -572,22 +222,18 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
        }});
 
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_FIRST});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_LAST});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
-  test::InitializePossibleTypesAndValidities(possible_field_types,
-                                             possible_field_types_validities,
-                                             {PHONE_HOME_WHOLE_NUMBER});
-  test::InitializePossibleTypesAndValidities(possible_field_types,
-                                             possible_field_types_validities,
-                                             {ADDRESS_HOME_COUNTRY});
-  test::InitializePossibleTypesAndValidities(possible_field_types,
-                                             possible_field_types_validities,
-                                             {ADDRESS_HOME_COUNTRY});
+  test::InitializePossibleTypes(possible_field_types, {NAME_FIRST});
+  test::InitializePossibleTypes(possible_field_types, {NAME_LAST});
+  test::InitializePossibleTypes(possible_field_types, {EMAIL_ADDRESS});
+  test::InitializePossibleTypes(possible_field_types,
+
+                                {PHONE_HOME_WHOLE_NUMBER});
+  test::InitializePossibleTypes(possible_field_types,
+
+                                {ADDRESS_HOME_COUNTRY});
+  test::InitializePossibleTypes(possible_field_types,
+
+                                {ADDRESS_HOME_COUNTRY});
 
   std::unique_ptr<FormStructure> form_structure =
       std::make_unique<FormStructure>(form);
@@ -599,12 +245,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   }
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
-  ASSERT_EQ(form_structure->field_count(),
-            possible_field_types_validities.size());
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     form_structure->field(i)->set_possible_types(possible_field_types[i]);
-    form_structure->field(i)->set_possible_types_validities(
-        possible_field_types_validities[i]);
   }
 
   FieldTypeSet available_field_types;
@@ -642,23 +284,18 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   for (size_t i = 0; i < 2; ++i) {
     form.fields.push_back(
         test::GetFormFieldData({.label = u"Address", .name = u"address"}));
-    test::InitializePossibleTypesAndValidities(
-        possible_field_types, possible_field_types_validities,
-        {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
+    test::InitializePossibleTypes(possible_field_types,
+                                  {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
   }
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->set_submission_event(
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
-  ASSERT_EQ(form_structure->field_count(),
-            possible_field_types_validities.size());
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     form_structure->field(i)->host_form_signature =
         form_structure->form_signature();
     form_structure->field(i)->set_possible_types(possible_field_types[i]);
-    form_structure->field(i)->set_possible_types_validities(
-        possible_field_types_validities[i]);
   }
 
   // Adjust the expected proto string.
@@ -685,18 +322,13 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   for (size_t i = 0; i < 300; ++i) {
     form.fields.push_back(
         test::GetFormFieldData({.label = u"Address", .name = u"address"}));
-    test::InitializePossibleTypesAndValidities(
-        possible_field_types, possible_field_types_validities,
-        {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
+    test::InitializePossibleTypes(possible_field_types,
+                                  {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
   }
   form_structure = std::make_unique<FormStructure>(form);
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
-  ASSERT_EQ(form_structure->field_count(),
-            possible_field_types_validities.size());
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     form_structure->field(i)->set_possible_types(possible_field_types[i]);
-    form_structure->field(i)->set_possible_types_validities(
-        possible_field_types_validities[i]);
   }
 
   EXPECT_TRUE(EncodeUploadRequest(*form_structure, available_field_types,
@@ -709,7 +341,6 @@ TEST_F(AutofillCrowdsourcingEncoding,
        EncodeUploadRequestWithAdditionalPasswordFormSignature) {
   std::unique_ptr<FormStructure> form_structure;
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
   form.renderer_id = test::MakeFormRendererId();
@@ -724,17 +355,13 @@ TEST_F(AutofillCrowdsourcingEncoding,
                           FormControlType::kInputText, "email"),
       CreateTestFormField("password", "password", "",
                           FormControlType::kInputPassword, "email")};
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_FIRST});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_LAST});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {USERNAME});
-  test::InitializePossibleTypesAndValidities(possible_field_types,
-                                             possible_field_types_validities,
-                                             {ACCOUNT_CREATION_PASSWORD});
+  test::InitializePossibleTypes(possible_field_types, {NAME_FIRST});
+  test::InitializePossibleTypes(possible_field_types, {NAME_LAST});
+  test::InitializePossibleTypes(possible_field_types, {EMAIL_ADDRESS});
+  test::InitializePossibleTypes(possible_field_types, {USERNAME});
+  test::InitializePossibleTypes(possible_field_types,
+
+                                {ACCOUNT_CREATION_PASSWORD});
 
   form_structure = std::make_unique<FormStructure>(form);
   for (auto& fs_field : *form_structure) {
@@ -742,13 +369,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
   }
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
-  ASSERT_EQ(form_structure->field_count(),
-            possible_field_types_validities.size());
 
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     form_structure->field(i)->set_possible_types(possible_field_types[i]);
-    form_structure->field(i)->set_possible_types_validities(
-        possible_field_types_validities[i]);
 
     if (form_structure->field(i)->name == u"password") {
       form_structure->field(i)->set_generation_type(
@@ -816,7 +439,6 @@ TEST_F(AutofillCrowdsourcingEncoding,
 TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   std::unique_ptr<FormStructure> form_structure;
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
   form.renderer_id = test::MakeFormRendererId();
@@ -828,8 +450,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   form.fields.back().id_attribute = u"first_name";
   form.fields.back().css_classes = u"class1 class2";
   form.fields.back().properties_mask = FieldPropertiesFlags::kHadFocus;
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_FIRST});
+  test::InitializePossibleTypes(possible_field_types, {NAME_FIRST});
 
   form.fields.push_back(CreateTestFormField(
       "Last Name", "lastname", "", FormControlType::kInputText, "family-name"));
@@ -838,8 +459,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   form.fields.back().css_classes = u"class1 class2";
   form.fields.back().properties_mask =
       FieldPropertiesFlags::kHadFocus | FieldPropertiesFlags::kUserTyped;
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_LAST});
+  test::InitializePossibleTypes(possible_field_types, {NAME_LAST});
 
   form.fields.push_back(CreateTestFormField(
       "Email", "email", "", FormControlType::kInputEmail, "email"));
@@ -848,8 +468,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   form.fields.back().css_classes = u"class1 class2";
   form.fields.back().properties_mask =
       FieldPropertiesFlags::kHadFocus | FieldPropertiesFlags::kUserTyped;
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
+  test::InitializePossibleTypes(possible_field_types, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
   for (auto& fs_field : *form_structure) {
@@ -857,13 +476,9 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   }
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
-  ASSERT_EQ(form_structure->field_count(),
-            possible_field_types_validities.size());
 
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     form_structure->field(i)->set_possible_types(possible_field_types[i]);
-    form_structure->field(i)->set_possible_types_validities(
-        possible_field_types_validities[i]);
   }
 
   FieldTypeSet available_field_types;
@@ -913,13 +528,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
        }});
 
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_FIRST});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_LAST});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
+  test::InitializePossibleTypes(possible_field_types, {NAME_FIRST});
+  test::InitializePossibleTypes(possible_field_types, {NAME_LAST});
+  test::InitializePossibleTypes(possible_field_types, {EMAIL_ADDRESS});
 
   std::unique_ptr<FormStructure> form_structure =
       std::make_unique<FormStructure>(form);
@@ -929,13 +540,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
   }
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
-  ASSERT_EQ(form_structure->field_count(),
-            possible_field_types_validities.size());
 
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     form_structure->field(i)->set_possible_types(possible_field_types[i]);
-    form_structure->field(i)->set_possible_types_validities(
-        possible_field_types_validities[i]);
   }
 
   FieldTypeSet available_field_types;
@@ -977,13 +584,9 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
                          }});
 
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_FIRST});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_LAST});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
+  test::InitializePossibleTypes(possible_field_types, {NAME_FIRST});
+  test::InitializePossibleTypes(possible_field_types, {NAME_LAST});
+  test::InitializePossibleTypes(possible_field_types, {EMAIL_ADDRESS});
 
   std::unique_ptr<FormStructure> form_structure =
       std::make_unique<FormStructure>(form);
@@ -993,13 +596,9 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
   }
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
-  ASSERT_EQ(form_structure->field_count(),
-            possible_field_types_validities.size());
 
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     form_structure->field(i)->set_possible_types(possible_field_types[i]);
-    form_structure->field(i)->set_possible_types_validities(
-        possible_field_types_validities[i]);
   }
 
   FieldTypeSet available_field_types;
@@ -1043,13 +642,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
        .url = "http://www.foo.com/"});
 
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_FIRST});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_LAST});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
+  test::InitializePossibleTypes(possible_field_types, {NAME_FIRST});
+  test::InitializePossibleTypes(possible_field_types, {NAME_LAST});
+  test::InitializePossibleTypes(possible_field_types, {EMAIL_ADDRESS});
 
   std::unique_ptr<FormStructure> form_structure =
       std::make_unique<FormStructure>(form);
@@ -1059,13 +654,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
   }
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
-  ASSERT_EQ(form_structure->field_count(),
-            possible_field_types_validities.size());
 
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     form_structure->field(i)->set_possible_types(possible_field_types[i]);
-    form_structure->field(i)->set_possible_types_validities(
-        possible_field_types_validities[i]);
   }
 
   // No available EMAIL_ADRESS on field_types.
@@ -1114,19 +705,17 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
                                      .name = u"cc-cvc"}}});
 
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
-  test::InitializePossibleTypesAndValidities(possible_field_types,
-                                             possible_field_types_validities,
-                                             {CREDIT_CARD_NAME_FULL});
-  test::InitializePossibleTypesAndValidities(possible_field_types,
-                                             possible_field_types_validities,
-                                             {CREDIT_CARD_NUMBER});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities,
-      {CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR});
-  test::InitializePossibleTypesAndValidities(possible_field_types,
-                                             possible_field_types_validities,
-                                             {CREDIT_CARD_VERIFICATION_CODE});
+  test::InitializePossibleTypes(possible_field_types,
+
+                                {CREDIT_CARD_NAME_FULL});
+  test::InitializePossibleTypes(possible_field_types,
+
+                                {CREDIT_CARD_NUMBER});
+  test::InitializePossibleTypes(possible_field_types,
+                                {CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR});
+  test::InitializePossibleTypes(possible_field_types,
+
+                                {CREDIT_CARD_VERIFICATION_CODE});
 
   ASSERT_EQ(form.global_id(), form.fields[0].renderer_form_id());
   ASSERT_NE(form.global_id(), form.fields[1].renderer_form_id());
@@ -1137,12 +726,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
       std::make_unique<FormStructure>(form);
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
-  ASSERT_EQ(form_structure->field_count(),
-            possible_field_types_validities.size());
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     form_structure->field(i)->set_possible_types(possible_field_types[i]);
-    form_structure->field(i)->set_possible_types_validities(
-        possible_field_types_validities[i]);
   }
 
   FieldTypeSet available_field_types;
@@ -1226,14 +811,10 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
   }
 
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
 
   for (size_t i = 0; i < form_structure.field_count(); ++i) {
-    test::InitializePossibleTypesAndValidities(
-        possible_field_types, possible_field_types_validities, {UNKNOWN_TYPE});
+    test::InitializePossibleTypes(possible_field_types, {UNKNOWN_TYPE});
     form_structure.field(i)->set_possible_types(possible_field_types[i]);
-    form_structure.field(i)->set_possible_types_validities(
-        possible_field_types_validities[i]);
   }
 
   // No available types.
@@ -1447,7 +1028,6 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
 
   // Check that multiple types for the field are processed correctly.
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
 
   FormData form =
       test::GetFormData({.fields = {{.label = u"email", .name = u"email"},
@@ -1455,15 +1035,12 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
                                     {.label = u"Last Name", .name = u"last"},
                                     {.label = u"Address", .name = u"address"}},
                          .renderer_id = FormRendererId()});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_FIRST});
-  test::InitializePossibleTypesAndValidities(
-      possible_field_types, possible_field_types_validities, {NAME_LAST});
-  test::InitializePossibleTypesAndValidities(possible_field_types,
-                                             possible_field_types_validities,
-                                             {ADDRESS_HOME_LINE1});
+  test::InitializePossibleTypes(possible_field_types, {EMAIL_ADDRESS});
+  test::InitializePossibleTypes(possible_field_types, {NAME_FIRST});
+  test::InitializePossibleTypes(possible_field_types, {NAME_LAST});
+  test::InitializePossibleTypes(possible_field_types,
+
+                                {ADDRESS_HOME_LINE1});
 
   auto form_structure = std::make_unique<FormStructure>(form);
   form_structure->set_submission_source(SubmissionSource::XHR_SUCCEEDED);
@@ -1471,8 +1048,6 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
     form_structure->field(i)->host_form_signature =
         form_structure->form_signature();
     form_structure->field(i)->set_possible_types(possible_field_types[i]);
-    form_structure->field(i)->set_possible_types_validities(
-        possible_field_types_validities[i]);
   }
 
   // Prepare the expected proto string.
@@ -1505,8 +1080,6 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   test::FillUploadField(upload.mutable_field(2), 2404144663U, 3U);
 
   upload.mutable_field(2)->mutable_autofill_type()->SwapElements(0, 1);
-  upload.mutable_field(2)->mutable_autofill_type_validities()->SwapElements(0,
-                                                                            1);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
@@ -1532,13 +1105,8 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   form_structure->field(form_structure->field_count() - 1)
       ->set_possible_types(
           possible_field_types[form_structure->field_count() - 1]);
-  possible_field_types_validities[3].clear();
-  form_structure->field(form_structure->field_count() - 1)
-      ->set_possible_types_validities(
-          possible_field_types_validities[form_structure->field_count() - 1]);
 
   // Adjust the expected upload proto.
-  upload.mutable_field(3)->mutable_autofill_type_validities(1)->set_type(60);
   upload.mutable_field(3)->set_autofill_type(1, 60);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,

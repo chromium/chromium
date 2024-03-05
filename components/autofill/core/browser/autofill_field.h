@@ -27,12 +27,6 @@
 
 namespace autofill {
 
-using FieldTypeValidityStatesMap =
-    std::map<FieldType, std::vector<AutofillDataModel::ValidityState>>;
-
-using FieldTypeValidityStateMap =
-    std::map<FieldType, AutofillDataModel::ValidityState>;
-
 // Specifies if the Username First Flow vote has intermediate values.
 enum class IsMostRecentSingleUsernameCandidate {
   // Field is not part of Username First Flow.
@@ -93,9 +87,6 @@ class AutofillField : public FormFieldData {
   HtmlFieldType html_type() const { return html_type_; }
   HtmlFieldMode html_mode() const { return html_mode_; }
   const FieldTypeSet& possible_types() const { return possible_types_; }
-  const FieldTypeValidityStatesMap& possible_types_validities() const {
-    return possible_types_validities_;
-  }
   bool previously_autofilled() const { return previously_autofilled_; }
   const std::u16string& parseable_name() const { return parseable_name_; }
   const std::u16string& parseable_label() const { return parseable_label_; }
@@ -103,8 +94,6 @@ class AutofillField : public FormFieldData {
 
   // Setters for the detected types.
   void set_heuristic_type(HeuristicSource s, FieldType t);
-  void add_possible_types_validities(
-      const FieldTypeValidityStateMap& possible_types_validities);
   void set_server_predictions(
       std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
                       FieldPrediction> predictions);
@@ -116,12 +105,6 @@ class AutofillField : public FormFieldData {
   void set_possible_types(const FieldTypeSet& possible_types) {
     possible_types_ = possible_types;
   }
-  void set_possible_types_validities(
-      FieldTypeValidityStatesMap possible_types_validities) {
-    possible_types_validities_ = std::move(possible_types_validities);
-  }
-  std::vector<AutofillDataModel::ValidityState>
-      get_validities_for_possible_type(FieldType);
 
   void SetHtmlType(HtmlFieldType type, HtmlFieldMode mode);
 
@@ -290,15 +273,6 @@ class AutofillField : public FormFieldData {
     return is_most_recent_single_username_candidate_;
   }
 
-  // For each type in |possible_types_| that's missing from
-  // |possible_types_validities_|, will add it to the
-  // |possible_types_validities_| and will set its validity to UNVALIDATED. This
-  // is to avoid inconsistencies between |possible_types_| and
-  // |possible_types_validities_|. Used especially when the server validity map
-  // is not available (is empty), and as a result the
-  // |possible_types_validities_| would also be empty.
-  void NormalizePossibleTypesValidities();
-
   bool was_context_menu_shown() const { return was_context_menu_shown_; }
   void set_was_context_menu_shown(bool was_context_menu_shown) {
     was_context_menu_shown_ = was_context_menu_shown;
@@ -401,9 +375,6 @@ class AutofillField : public FormFieldData {
 
   // The set of possible types for this field.
   FieldTypeSet possible_types_;
-
-  // The set of possible types and their validity for this field.
-  FieldTypeValidityStatesMap possible_types_validities_;
 
   // A low-entropy hash of the field's initial value before user-interactions or
   // automatic fillings. This field is used to detect static placeholders.

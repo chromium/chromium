@@ -794,80 +794,29 @@ void SetServerCreditCards(PaymentsAutofillTable* table,
   }
 }
 
-void InitializePossibleTypesAndValidities(
-    std::vector<FieldTypeSet>& possible_field_types,
-    std::vector<FieldTypeValidityStatesMap>& possible_field_types_validities,
-    const std::vector<FieldType>& possible_types,
-    const std::vector<AutofillDataModel::ValidityState>& validity_states) {
-  possible_field_types.push_back(FieldTypeSet());
-  possible_field_types_validities.push_back(FieldTypeValidityStatesMap());
-
-  if (validity_states.empty()) {
-    for (const auto& possible_type : possible_types) {
-      possible_field_types.back().insert(possible_type);
-      possible_field_types_validities.back()[possible_type].push_back(
-          AutofillProfile::ValidityState::kUnvalidated);
-    }
-    return;
-  }
-
-  ASSERT_FALSE(possible_types.empty());
-  ASSERT_TRUE((possible_types.size() == validity_states.size()) ||
-              (possible_types.size() == 1 && validity_states.size() > 1));
-
-  FieldType possible_type = possible_types[0];
-  for (unsigned i = 0; i < validity_states.size(); ++i) {
-    if (possible_types.size() == validity_states.size()) {
-      possible_type = possible_types[i];
-    }
+void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
+                             const std::vector<FieldType>& possible_types) {
+  possible_field_types.emplace_back();
+  for (const auto& possible_type : possible_types) {
     possible_field_types.back().insert(possible_type);
-    possible_field_types_validities.back()[possible_type].push_back(
-        validity_states[i]);
   }
 }
 
 void FillUploadField(AutofillUploadContents::Field* field,
                      unsigned signature,
-                     unsigned autofill_type,
-                     unsigned validity_state) {
+                     unsigned autofill_type) {
   field->set_signature(signature);
   field->add_autofill_type(autofill_type);
-
-  auto* type_validities = field->add_autofill_type_validities();
-  type_validities->set_type(autofill_type);
-  type_validities->add_validity(validity_state);
 }
 
 void FillUploadField(AutofillUploadContents::Field* field,
                      unsigned signature,
-                     const std::vector<unsigned>& autofill_types,
-                     const std::vector<unsigned>& validity_states) {
+                     const std::vector<unsigned>& autofill_types) {
   field->set_signature(signature);
 
   for (unsigned i = 0; i < autofill_types.size(); ++i) {
     field->add_autofill_type(autofill_types[i]);
-
-    auto* type_validities = field->add_autofill_type_validities();
-    type_validities->set_type(autofill_types[i]);
-    if (i < validity_states.size()) {
-      type_validities->add_validity(validity_states[i]);
-    } else {
-      type_validities->add_validity(0);
-    }
   }
-}
-
-void FillUploadField(AutofillUploadContents::Field* field,
-                     unsigned signature,
-                     unsigned autofill_type,
-                     const std::vector<unsigned>& validity_states) {
-  field->set_signature(signature);
-  field->add_autofill_type(autofill_type);
-
-  auto* type_validities = field->add_autofill_type_validities();
-  type_validities->set_type(autofill_type);
-  for (unsigned i = 0; i < validity_states.size(); ++i)
-    type_validities->add_validity(validity_states[i]);
 }
 
 void GenerateTestAutofillPopup(

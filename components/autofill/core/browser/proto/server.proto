@@ -329,24 +329,9 @@ message AutofillUploadContents {
     // context of the vote.
     optional VoteType vote_type = 23;
 
-    message AutofillTypeValiditiesPair {
-      // Type of the field, e.g. what type of personal data the user entered in
-      // that field before form submission. A list of all data types can be
-      // found in: components/autofill/core/browser/field_types.h
-      required int32 type = 1;
-      // The validity of the type, which is determined based on the validity of
-      // the user's profile data. A list of all validity states can be found
-      // here: components/autofill/core/browser/data_model/autofill_data_model.h
-      // The validity state of a type is used to experiment if only using valid
-      // data would result in better predictions.
-      // TODO(crbug.com/1174203): Remove the validity.
-      repeated int32 validity = 2;
-    }
-    // A list of possible types for the field with their corresponding validity
-    // states based on the user's data. Deprecated in M99 after unsuccessful
-    // experiments.
-    repeated AutofillTypeValiditiesPair autofill_type_validities = 35
-        [deprecated = true];
+    // Deleted field.
+    reserved 35;
+    reserved "autofill_type_validities";
 
     // A low-entropy hash of the field's initial value before user-interactions
     // or automatic fillings. This field is used to detect static
