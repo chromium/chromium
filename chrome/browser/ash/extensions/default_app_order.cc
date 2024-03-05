@@ -161,6 +161,8 @@ void GetDefault(std::vector<std::string>* app_ids) {
 
     web_app::kHelpAppId,
 
+    web_app::kMallAppId,
+
     web_app::kCalculatorAppId,
     extension_misc::kCalculatorAppId,
 
