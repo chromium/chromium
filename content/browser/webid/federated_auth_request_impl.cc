@@ -2653,6 +2653,16 @@ void FederatedAuthRequestImpl::DismissConfirmIdpLoginDialogForDevtools() {
       IdentityRequestDialogController::DismissReason::kOther);
 }
 
+bool FederatedAuthRequestImpl::UseAnotherAccountForDevtools(
+    const IdentityProviderData& provider) {
+  if (!provider.idp_metadata.supports_add_account) {
+    return false;
+  }
+  LoginToIdP(/*can_append_hints=*/true, provider.idp_metadata.config_url,
+             provider.idp_metadata.idp_login_url);
+  return true;
+}
+
 bool FederatedAuthRequestImpl::HasMoreDetailsButtonForDevtools() {
   return token_error_ && token_error_->url.is_valid();
 }

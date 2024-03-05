@@ -173,6 +173,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void DismissAccountsDialogForDevtools(bool should_embargo);
   void AcceptConfirmIdpLoginDialogForDevtools();
   void DismissConfirmIdpLoginDialogForDevtools();
+  bool UseAnotherAccountForDevtools(const IdentityProviderData& provider);
   bool HasMoreDetailsButtonForDevtools();
   void ClickErrorDialogGotItForDevtools();
   void ClickErrorDialogMoreDetailsForDevtools();

@@ -131,14 +131,25 @@ void WebTestFedCmManager::ClickFedCmDialogButton(
   }
   switch (button) {
     case blink::test::mojom::DialogButton::kConfirmIdpLoginContinue:
-      if (auth_request->GetDialogType() !=
-          FederatedAuthRequestImpl::kConfirmIdpLogin) {
-        std::move(callback).Run(false);
-        return;
-      }
-      auth_request->AcceptConfirmIdpLoginDialogForDevtools();
-      std::move(callback).Run(true);
-      return;
+      switch (auth_request->GetDialogType()) {
+        case FederatedAuthRequestImpl::kConfirmIdpLogin:
+          auth_request->AcceptConfirmIdpLoginDialogForDevtools();
+          std::move(callback).Run(true);
+          return;
+        case FederatedAuthRequestImpl::kSelectAccount: {
+          const auto& data = auth_request->GetSortedIdpData();
+          if (data.size() != 1) {
+            std::move(callback).Run(false);
+            return;
+          }
+          std::move(callback).Run(
+              auth_request->UseAnotherAccountForDevtools(data[0]));
+          return;
+        }
+        default:
+          std::move(callback).Run(false);
+          return;
+      };
     case blink::test::mojom::DialogButton::kErrorGotIt:
       if (auth_request->GetDialogType() != FederatedAuthRequestImpl::kError) {
         std::move(callback).Run(false);

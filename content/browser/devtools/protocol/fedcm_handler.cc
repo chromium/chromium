@@ -262,13 +262,30 @@ DispatchResponse FedCmHandler::ClickDialogButton(
 
   FederatedAuthRequestImpl::DialogType type = auth_request->GetDialogType();
   if (in_dialogButton == FedCm::DialogButtonEnum::ConfirmIdpLoginContinue) {
-    if (type != FederatedAuthRequestImpl::kConfirmIdpLogin) {
-      return DispatchResponse::ServerError(
-          "clickDialogButton called with ConfirmIdpLoginContinue while no "
-          "confirm IDP login dialog is shown");
+    switch (type) {
+      case FederatedAuthRequestImpl::kConfirmIdpLogin:
+        auth_request->AcceptConfirmIdpLoginDialogForDevtools();
+        return DispatchResponse::Success();
+      case FederatedAuthRequestImpl::kSelectAccount: {
+        const auto* idp_data = GetIdentityProviderData(auth_request);
+        CHECK(idp_data) << "kSelectAccount should always have IDP data";
+        CHECK(!idp_data->empty());
+        if (idp_data->size() > 1) {
+          return DispatchResponse::ServerError(
+              "Multi-IDP not supported for ConfirmIdpLogin yet "
+              "(crbug.com/328115461)");
+        }
+        if (!auth_request->UseAnotherAccountForDevtools(idp_data->at(0))) {
+          return DispatchResponse::ServerError(
+              "'Use another account' not supported for this IDP");
+        }
+        return DispatchResponse::Success();
+      }
+      default:
+        return DispatchResponse::ServerError(
+            "clickDialogButton called with ConfirmIdpLoginContinue while no "
+            "confirm IDP login dialog is shown");
     }
-    auth_request->AcceptConfirmIdpLoginDialogForDevtools();
-    return DispatchResponse::Success();
   } else if (in_dialogButton == FedCm::DialogButtonEnum::ErrorGotIt) {
     if (type != FederatedAuthRequestImpl::kError) {
       return DispatchResponse::ServerError(

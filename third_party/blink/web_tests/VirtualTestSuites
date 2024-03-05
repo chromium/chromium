@@ -2213,6 +2213,15 @@
     "expires": "Mar 1, 2024"
   },
   {
+    "prefix": "fedcm-button-and-other-account",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/credential-management/fedcm-button-and-other-account/"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=FedCmUseOtherAccount,FedCmButtonMode"],
+    "owners": ["cbiesinger@chromium.org", "yigu@chromium.org"],
+    "expires": "May 1, 2025"
+  },
+  {
     "prefix": "fedcm-multi-idp",
     "owners": ["npm@chromium.org", "web-identity-eng@google.com"],
     "platforms": ["Linux", "Mac", "Win"],
