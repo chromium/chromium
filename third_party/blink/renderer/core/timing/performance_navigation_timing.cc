@@ -331,7 +331,7 @@ NotRestoredReasons* PerformanceNavigationTiming::BuildNotRestoredReasons(
     reasons.push_back(detail);
   }
   if (nrr->same_origin_details) {
-    url = nrr->same_origin_details->url.GetString();
+    url = nrr->same_origin_details->url;
     for (const auto& child : nrr->same_origin_details->children) {
       NotRestoredReasons* nrr_child = BuildNotRestoredReasons(child);
       // Reasons in children vector should never be null.

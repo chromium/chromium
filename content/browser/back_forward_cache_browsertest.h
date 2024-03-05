@@ -151,7 +151,7 @@ class BackForwardCacheBrowserTest
       const std::optional<SameOriginMatcher>& same_origin_details);
 
   SameOriginMatcher MatchesSameOriginDetails(
-      const testing::Matcher<GURL>& url,
+      const testing::Matcher<std::string>& url,
       const std::vector<ReasonsMatcher>& children);
 
   // Used in tests that ensure source location is sent to the renderer side from
