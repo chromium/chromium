@@ -320,7 +320,7 @@ class WaylandWindow : public PlatformWindow,
   virtual void OnDragSessionClose(ui::mojom::DragOperation operation);
 
   // Sets the window geometry.
-  virtual void SetWindowGeometry(const PlatformWindowDelegate::State& state);
+  virtual void SetWindowGeometry(gfx::Size size_dip);
 
   // Returns the offset of the window geometry within the window surface.
   gfx::Vector2d GetWindowGeometryOffsetInDIP() const;
@@ -465,7 +465,6 @@ class WaylandWindow : public PlatformWindow,
   // PendingConfigureState describes the content of a configure sent from the
   // wayland server.
   struct PendingConfigureState {
-    std::optional<PlatformWindowState> window_state;
     std::optional<gfx::Rect> bounds_dip;
     std::optional<gfx::Size> size_px;
     std::optional<float> raster_scale;
