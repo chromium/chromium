@@ -131,8 +131,9 @@ AutocompleteControllerAndroid::AutocompleteControllerAndroid(
 
   AutocompleteControllerEmitter* emitter =
       AutocompleteControllerEmitter::GetForBrowserContext(profile_);
-  if (emitter)
+  if (emitter) {
     autocomplete_controller_->AddObserver(emitter);
+  }
 }
 
 void AutocompleteControllerAndroid::Start(JNIEnv* env,
@@ -149,10 +150,12 @@ void AutocompleteControllerAndroid::Start(JNIEnv* env,
 
   std::string desired_tld;
   GURL current_url;
-  if (!j_current_url.is_null())
+  if (!j_current_url.is_null()) {
     current_url = GURL(ConvertJavaStringToUTF16(env, j_current_url));
-  if (!j_desired_tld.is_null())
+  }
+  if (!j_desired_tld.is_null()) {
     desired_tld = ConvertJavaStringToUTF8(env, j_desired_tld);
+  }
   std::u16string text = ConvertJavaStringToUTF16(env, j_text);
   size_t cursor_pos = j_cursor_pos == -1 ? std::u16string::npos : j_cursor_pos;
   input_ = AutocompleteInput(
@@ -217,8 +220,9 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
   inside_synchronous_start_ = false;
   DCHECK(autocomplete_controller_->done());
   const AutocompleteResult& result = autocomplete_controller_->result();
-  if (result.empty())
+  if (result.empty()) {
     return ScopedJavaLocalRef<jobject>();
+  }
 
   return ScopedJavaLocalRef<jobject>(
       result.begin()->GetOrCreateJavaObject(env));
@@ -232,8 +236,9 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
     const JavaParamRef<jstring>& j_current_title) {
   // Prevents double triggering of zero suggest when OnOmniboxFocused is issued
   // in quick succession (due to odd timing in the Android focus callbacks).
-  if (!autocomplete_controller_->done())
+  if (!autocomplete_controller_->done()) {
     return;
+  }
 
   std::u16string url = ConvertJavaStringToUTF16(env, j_current_url);
   std::u16string current_title = ConvertJavaStringToUTF16(env, j_current_title);
@@ -243,8 +248,9 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   // If omnibox text is empty, set it to the current URL for the purposes of
   // populating the verbatim match.
   if (omnibox_text.empty() && !current_url.SchemeIs(content::kChromeUIScheme) &&
-      !current_url.SchemeIs(browser_ui::kChromeUINativeScheme))
+      !current_url.SchemeIs(browser_ui::kChromeUINativeScheme)) {
     omnibox_text = url;
+  }
 
   auto page_class =
       OmniboxEventProto::PageClassification(j_page_classification);
@@ -252,8 +258,9 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
       base::FeatureList::IsEnabled(
           omnibox::kOmniboxOnClobberFocusTypeOnContent) &&
       !omnibox::IsNTPPage(page_class);
-  if (interaction_clobber_focus_type)
+  if (interaction_clobber_focus_type) {
     omnibox_text.clear();
+  }
 
   // Proactively start up a renderer, to reduce the time to display search
   // results, especially if a Service Worker is used. This is done in a PostTask
@@ -285,8 +292,7 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   autocomplete_controller_->Start(input_);
 }
 
-void AutocompleteControllerAndroid::Stop(JNIEnv* env,
-                                         bool clear_results) {
+void AutocompleteControllerAndroid::Stop(JNIEnv* env, bool clear_results) {
   autocomplete_controller_->Stop(clear_results);
 }
 
@@ -452,6 +458,13 @@ void AutocompleteControllerAndroid::SetVoiceMatches(
   }
 }
 
+void AutocompleteControllerAndroid::OnSuggestionDropdownHeightChanged(
+    JNIEnv* env,
+    jint dropdown_height_with_keyboard_active_px,
+    jint suggestion_height_px) {
+  // TODO(b:327022170): plumb information to newly defined suggestion groups.
+}
+
 void AutocompleteControllerAndroid::CreateNavigationObserver(
     JNIEnv* env,
     uintptr_t navigation_handle_ptr,
@@ -482,8 +495,9 @@ AutocompleteControllerAndroid::~AutocompleteControllerAndroid() = default;
 void AutocompleteControllerAndroid::OnResultChanged(
     AutocompleteController* controller,
     bool default_match_changed) {
-  if (!inside_synchronous_start_)
+  if (!inside_synchronous_start_) {
     NotifySuggestionsReceived(autocomplete_controller_->result());
+  }
 }
 
 void AutocompleteControllerAndroid::NotifySuggestionsReceived(
@@ -492,8 +506,9 @@ void AutocompleteControllerAndroid::NotifySuggestionsReceived(
 
   // Get the inline-autocomplete text.
   std::u16string inline_autocompletion;
-  if (auto* default_match = autocomplete_result.default_match())
+  if (auto* default_match = autocomplete_result.default_match()) {
     inline_autocompletion = default_match->inline_autocompletion;
+  }
   ScopedJavaLocalRef<jstring> inline_text =
       ConvertUTF16ToJavaString(env, inline_autocompletion);
 

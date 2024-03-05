@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteMediator.EditSessionState;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
@@ -723,6 +724,34 @@ public class AutocompleteMediatorUnitTest {
                             .model
                             .get(SuggestionCommonProperties.LAYOUT_DIRECTION));
         }
+    }
+
+    @Test
+    public void onSuggestionDropdownHeightChanged_noNativeCallsUntilNativeIsReady() {
+        mMediator.onSuggestionDropdownHeightChanged(Integer.MAX_VALUE);
+        verifyNoMoreInteractions(mAutocompleteController);
+    }
+
+    @Test
+    public void onSuggestionDropdownHeightChanged_noNativeCallsUntilProfileIsReady() {
+        mMediator.onNativeInitialized();
+        mMediator.onSuggestionDropdownHeightChanged(Integer.MAX_VALUE);
+        verifyNoMoreInteractions(mAutocompleteController);
+    }
+
+    @Test
+    public void onSuggestionDropdownHeightChanged_updatedHeightPassedToNative() {
+        mMediator.onNativeInitialized();
+        mMediator.setAutocompleteProfile(mProfile);
+
+        var res = ContextUtils.getApplicationContext().getResources();
+        int suggestionHeight = res.getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
+        float displayDensity = res.getDisplayMetrics().density;
+
+        mMediator.onSuggestionDropdownHeightChanged(100);
+
+        verify(mAutocompleteController)
+                .onSuggestionDropdownHeightChanged((int) (100 * displayDensity), suggestionHeight);
     }
 
     @Test

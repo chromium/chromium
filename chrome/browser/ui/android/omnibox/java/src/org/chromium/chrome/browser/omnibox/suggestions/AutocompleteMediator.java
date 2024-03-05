@@ -1081,6 +1081,15 @@ class AutocompleteMediator
         // called the keyboard back after we hid it.
         if (mDelegate.isKeyboardActive()) {
             mDropdownViewInfoListBuilder.setDropdownHeightWithKeyboardActive(newHeight);
+
+            if (!mNativeInitialized || mAutocomplete == null) return;
+
+            int dropdownHeight =
+                    (int) (newHeight * mContext.getResources().getDisplayMetrics().density);
+            int suggestionHeight =
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
+            mAutocomplete.onSuggestionDropdownHeightChanged(dropdownHeight, suggestionHeight);
         }
     }
 

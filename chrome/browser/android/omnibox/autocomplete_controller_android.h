@@ -89,6 +89,13 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
       const base::android::JavaParamRef<jobjectArray>& j_voice_matches,
       const base::android::JavaParamRef<jfloatArray>& j_confidence_scores);
 
+  // Pass the information about the suggestion dropdown height changes to the
+  // Grouping framework.
+  void OnSuggestionDropdownHeightChanged(
+      JNIEnv* env,
+      jint dropdown_height_with_keyboard_active_px,
+      jint suggestion_height_px);
+
   void CreateNavigationObserver(JNIEnv* env,
                                 uintptr_t navigation_handle_ptr,
                                 uintptr_t match_ptr);
@@ -107,8 +114,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
 
   // Notifies the Java AutocompleteController that suggestions were received
   // based on the text the user typed in last.
-  void NotifySuggestionsReceived(
-      const AutocompleteResult& autocomplete_result);
+  void NotifySuggestionsReceived(const AutocompleteResult& autocomplete_result);
 
   // Prepare renderer process. Called in zero-prefix context.
   // This call may get triggered multiple time during User interaction with the

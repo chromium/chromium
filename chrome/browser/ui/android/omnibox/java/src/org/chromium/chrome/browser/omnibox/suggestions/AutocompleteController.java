@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -397,6 +398,21 @@ public class AutocompleteController implements Destroyable {
                 .getMatchingTabForSuggestion(mNativeController, match.getNativeObjectRef());
     }
 
+    /**
+     * Pass the UI specific measurement information to Native code to aid Adaptive Suggestions.
+     *
+     * @param dropdownHeightWithKeyboardActive the height of visible part of the suggestions
+     *     dropdown with software keyboard showing, expressed in pixels
+     * @param suggestionHeight the nominal height of a suggestion, expressed in pixels
+     */
+    void onSuggestionDropdownHeightChanged(
+            @Px int dropdownHeightWithKeyboardActive, @Px int suggestionHeight) {
+        if (mNativeController == 0) return;
+        AutocompleteControllerJni.get()
+                .onSuggestionDropdownHeightChanged(
+                        mNativeController, dropdownHeightWithKeyboardActive, suggestionHeight);
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
@@ -480,5 +496,12 @@ public class AutocompleteController implements Destroyable {
                 long nativeAutocompleteControllerAndroid,
                 long mNativeNavigationHandle,
                 long nativeAutocompleteMatch);
+
+        // Pass the information about the height of the visible Omnibox Dropdown area and
+        // Suggestion Height expressed in Pixels.
+        void onSuggestionDropdownHeightChanged(
+                long nativeAutocompleteControllerAndroid,
+                @Px int dropdownHeightWithKeyboardActive,
+                @Px int suggestionHeight);
     }
 }
