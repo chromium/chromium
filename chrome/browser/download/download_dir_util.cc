@@ -74,23 +74,24 @@ bool ExpandOneDrivePolicyVariable(Profile* profile,
     return false;
   }
 
+  base::FilePath onedrive_path;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::FilePath onedrive_path =
-      ash::cloud_upload::GetODFSFuseboxMount(profile);
+  onedrive_path = ash::cloud_upload::GetODFSFuseboxMount(profile);
   if (onedrive_path.empty()) {  // failed to get OneDrive path.
     return false;
   }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool onedrive_mounted = chrome::GetOneDriveMountPointPath(&onedrive_path);
+  if (!onedrive_mounted) {
+    return false;
+  }
+#endif
 
   std::string expanded_value = old_path.value();
   *new_path = base::FilePath(
       expanded_value.replace(position, strlen(kOneDriveNamePolicyVariableName),
                              onedrive_path.value()));
   return true;
-
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/325897784): Get OneDrive Fusebox path.
-  return false;
-#endif
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

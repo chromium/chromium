@@ -596,8 +596,13 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
   if (drivefs_mounted && drivefs.IsParent(path))
     return path;
 
-  // TODO(b/325897784): Allow paths under OneDrive mount point if the feature
-  // flag is enabled.
+  // Allow paths under OneDrive mount point if the feature flag is enabled.
+  base::FilePath odfs_path;
+  bool odfs_mounted = chrome::GetOneDriveMountPointPath(&odfs_path);
+  if (base::FeatureList::IsEnabled(features::kSkyVault) && odfs_mounted &&
+      ((odfs_path == path) || odfs_path.IsParent(path))) {
+    return path;
+  }
 
   // Allow paths for removable media devices.
   base::FilePath removable_media_path;
