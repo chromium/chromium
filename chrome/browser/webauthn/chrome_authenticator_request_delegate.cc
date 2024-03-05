@@ -1180,6 +1180,15 @@ void ChromeAuthenticatorRequestDelegate::OnModelDestroyed(
 void ChromeAuthenticatorRequestDelegate::OnStepTransition() {
   if (dialog_model_->current_step() ==
       AuthenticatorRequestDialogModel::Step::kWaitingForEnclave) {
+    if (dialog_model_->account_state() ==
+            AuthenticatorRequestDialogModel::AccountState::kRecoverable &&
+        enclave_manager_->has_pending_keys()) {
+      // In this case, we were waiting for the user to create their GPM PIN
+      // and the needed enclave action is to set up using that PIN.
+      enclave_manager_->AddDeviceAndPINToAccount(dialog_model_->TakeGPMPin());
+      return;
+    }
+
     access_token_fetcher_ = enclave_manager_->GetAccessToken(base::BindOnce(
         &ChromeAuthenticatorRequestDelegate::StartEnclaveTransaction,
         weak_ptr_factory_.GetWeakPtr()));
@@ -1286,15 +1295,22 @@ void ChromeAuthenticatorRequestDelegate::OnEnclaveManagerIdle() {
           AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain &&
       enclave_manager_->has_pending_keys()) {
     CHECK(!enclave_manager_->is_ready());
-    // The user completed recovery using MagicArch. In the future we might
-    // prompt the user to set up a GPM PIN for user verification but that isn't
-    // supported yet.
-    enclave_manager_->AddDeviceToAccount();
+    // If the user has local biometrics, and an existing recovery factor, we'll
+    // likely choose not to create a GPM PIN. For now, however, we always do:
+    dialog_model_->OnCreateGPMPin();
+    return;
   }
 
   if (enclave_manager_->is_ready() &&
       dialog_model_->account_state() == AccountState::kRecoverable) {
     dialog_model_->set_account_state(AccountState::kReady);
+
+    if (dialog_model_->current_step() ==
+        AuthenticatorRequestDialogModel::Step::kWaitingForEnclave) {
+      // If the account became ready, but the UI was already waiting for the
+      // enclave, then there's some enclave action that needs to be triggered.
+      OnStepTransition();
+    }
   }
 
   // TODO(enclave): if the store count has increased and the UI has MagicArch

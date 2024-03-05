@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "services/network/public/cpp/data_element.h"
@@ -49,6 +50,20 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
 
   void pretend_there_are_members() override {
     pretend_there_are_members_ = true;
+  }
+
+  size_t num_physical_members() const override {
+    return base::ranges::count_if(members_, [](const auto& member) -> bool {
+      return member.member_type() == trusted_vault_pb::SecurityDomainMember::
+                                         MEMBER_TYPE_PHYSICAL_DEVICE;
+    });
+  }
+
+  size_t num_pin_members() const override {
+    return base::ranges::count_if(members_, [](const auto& member) -> bool {
+      return member.member_type() == trusted_vault_pb::SecurityDomainMember::
+                                         MEMBER_TYPE_USER_DEFINED_PIN;
+    });
   }
 
  private:

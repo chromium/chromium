@@ -44,6 +44,9 @@ class FakeSecurityDomainService {
   // If called, the security domain will accept a join request with the correct
   // epoch, as if MagicArch had just completed.
   virtual void pretend_there_are_members() = 0;
+
+  virtual size_t num_physical_members() const = 0;
+  virtual size_t num_pin_members() const = 0;
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_FAKE_SECURITY_DOMAIN_SERVICE_H_

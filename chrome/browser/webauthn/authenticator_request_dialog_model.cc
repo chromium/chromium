@@ -1263,13 +1263,24 @@ void AuthenticatorRequestDialogModel::OnTrustThisComputer() {
   SetCurrentStep(Step::kRecoverSecurityDomain);
 }
 
+void AuthenticatorRequestDialogModel::OnCreateGPMPin() {
+  SetCurrentStep(Step::kGPMCreatePin);
+}
+
+std::string&& AuthenticatorRequestDialogModel::TakeGPMPin() {
+  return std::move(gpm_pin_);
+}
+
 void AuthenticatorRequestDialogModel::OnGPMPinEntered(
     const std::u16string& pin) {
   DCHECK(current_step() == Step::kGPMCreatePin ||
          current_step() == Step::kGPMEnterPin);
-  // TODO(enclave): For kGPMCreatePin - upload pin and handle passkey creation.
-  // TODO(enclave): For kGPMEnterPin - verify pin and handle sign-in or setting
-  // up biometrics (if available) or setting `gpm_pin_error_`.
+  gpm_pin_ = base::UTF16ToUTF8(pin);
+  if (current_step_ == Step::kGPMCreatePin) {
+    SetCurrentStep(Step::kWaitingForEnclave);
+  } else {
+    NOTIMPLEMENTED();
+  }
 }
 
 void AuthenticatorRequestDialogModel::AddAuthenticator(

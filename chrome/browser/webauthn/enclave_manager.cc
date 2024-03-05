@@ -356,7 +356,7 @@ bool SetSecurityDomainMemberKey(EnclaveLocalState::User* user,
 }
 
 // Build an enclave request to wrap the given security domain secrets.
-cbor::Value BuildWrappingMessage(
+cbor::Value::ArrayValue BuildSecretWrappingEnclaveRequest(
     const base::flat_map<int32_t, std::vector<uint8_t>>
         new_security_domain_secrets) {
   cbor::Value::ArrayValue requests;
@@ -369,39 +369,38 @@ cbor::Value BuildWrappingMessage(
     requests.emplace_back(std::move(request));
   }
 
-  return cbor::Value(std::move(requests));
+  return requests;
 }
 
 // Build an enclave request to wrap a PIN and a security domain secret.
-cbor::Value BuildPINAndSecretWrappingMessage(
+cbor::Value::ArrayValue BuildPINWrappingEnclaveRequest(
     base::span<const uint8_t> hashed_pin,
     std::string cert_xml,
-    std::string sig_xml,
-    base::span<const uint8_t> security_domain_secret) {
+    std::string sig_xml) {
+  cbor::Value::MapValue request;
+  request.emplace(enclave::kRequestCommandKey,
+                  enclave::kRecoveryKeyStoreWrapCommandName);
+  request.emplace(enclave::kRecoveryKeyStorePinHash, std::move(hashed_pin));
+  request.emplace(enclave::kRecoveryKeyStoreCertXml, ToVector(cert_xml));
+  request.emplace(enclave::kRecoveryKeyStoreSigXml, ToVector(sig_xml));
+
   cbor::Value::ArrayValue requests;
+  requests.emplace_back(std::move(request));
+  return requests;
+}
 
-  cbor::Value::MapValue request1;
-  request1.emplace(enclave::kRequestCommandKey,
-                   enclave::kRecoveryKeyStoreWrapCommandName);
-  request1.emplace(enclave::kRecoveryKeyStorePinHash, std::move(hashed_pin));
-  request1.emplace(enclave::kRecoveryKeyStoreCertXml, ToVector(cert_xml));
-  request1.emplace(enclave::kRecoveryKeyStoreSigXml, ToVector(sig_xml));
-  requests.emplace_back(std::move(request1));
-
-  cbor::Value::MapValue request2;
-  request2.emplace(enclave::kRequestCommandKey, enclave::kWrapKeyCommandName);
-  request2.emplace(enclave::kWrappingPurpose,
-                   enclave::kKeyPurposeSecurityDomainSecret);
-  request2.emplace(enclave::kWrappingKeyToWrap, security_domain_secret);
-  requests.emplace_back(std::move(request2));
-
-  return cbor::Value(std::move(requests));
+cbor::Value ConcatEnclaveRequests(cbor::Value::ArrayValue head,
+                                  cbor::Value::ArrayValue tail) {
+  for (auto& request : tail) {
+    head.emplace_back(std::move(request));
+  }
+  return cbor::Value(std::move(head));
 }
 
 // Update `user` with the wrapped secrets in `response`. The
 // `new_security_domain_secrets` argument is used to determine the version
 // numbers of the wrapped secrets and this value must be the same as was passed
-// to `BuildWrappingMessage` to generate the enclave request.
+// to `BuildSecretWrappingEnclaveRequest` to generate the enclave request.
 bool StoreWrappedSecrets(EnclaveLocalState::User* user,
                          const base::flat_map<int32_t, std::vector<uint8_t>>
                              new_security_domain_secrets,
@@ -1024,29 +1023,27 @@ class EnclaveManager::StateMachine {
       return;
     }
 
-    if (user_->registered() && store_keys_args_) {
-      CHECK_EQ(primary_account_info_->gaia, store_keys_args_->gaia_id);
-      auto store_keys_args = std::move(store_keys_args_);
-      store_keys_args_.reset();
-
-      new_security_domain_secrets_ =
-          GetNewSecretsToStore(*user_, *store_keys_args);
-      if (!new_security_domain_secrets_.empty()) {
-        state_ = State::kWaitingForEnclaveTokenForWrapping;
-        store_keys_args_for_joining_ = std::move(store_keys_args);
-        GetAccessTokenInternal(GaiaConstants::kPasskeysEnclaveOAuth2Scope);
-      } else if (!user_->joined() && !user_->member_public_key().empty()) {
-        store_keys_args_for_joining_ = std::move(store_keys_args);
-        JoinSecurityDomain();
-      }
-      return;
-    }
-
     if (user_->registered() && !pending_pin_.empty()) {
-      if (!setup_account_) {
-        NOTIMPLEMENTED();
-        return;
+      if (setup_account_) {
+        CHECK(!store_keys_args_);
+        setup_account_ = false;
+
+        // Create `store_keys_args_for_joining_` as if we had received the keys
+        // for the security domain from an external source.
+        store_keys_args_for_joining_ = std::make_unique<StoreKeysArgs>();
+        store_keys_args_for_joining_->gaia_id = primary_account_info_->gaia;
+        uint8_t security_domain_secret[32];
+        crypto::RandBytes(security_domain_secret);
+        store_keys_args_for_joining_->keys.emplace_back(
+            std::begin(security_domain_secret),
+            std::end(security_domain_secret));
+        // Zero is a special value that indicates that the epoch is unknown.
+        store_keys_args_for_joining_->last_key_version = 0;
+      } else {
+        CHECK(store_keys_args_);
+        store_keys_args_for_joining_ = std::move(store_keys_args_);
       }
+
       state_ = State::kHashingPIN;
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
@@ -1081,6 +1078,23 @@ class EnclaveManager::StateMachine {
                 machine->Process(PINHashed(std::move(hashed)));
               },
               weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+
+    if (user_->registered() && store_keys_args_) {
+      CHECK_EQ(primary_account_info_->gaia, store_keys_args_->gaia_id);
+      auto store_keys_args = std::move(store_keys_args_);
+      store_keys_args_.reset();
+
+      new_security_domain_secrets_ =
+          GetNewSecretsToStore(*user_, *store_keys_args);
+      store_keys_args_for_joining_ = std::move(store_keys_args);
+      if (!new_security_domain_secrets_.empty()) {
+        state_ = State::kWaitingForEnclaveTokenForWrapping;
+        GetAccessTokenInternal(GaiaConstants::kPasskeysEnclaveOAuth2Scope);
+      } else if (!user_->joined() && !user_->member_public_key().empty()) {
+        JoinSecurityDomain();
+      }
       return;
     }
 
@@ -1287,7 +1301,9 @@ class EnclaveManager::StateMachine {
     std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
     enclave::Transact(
         manager_->network_context_, enclave::GetEnclaveIdentity(),
-        std::move(token), BuildWrappingMessage(new_security_domain_secrets_),
+        std::move(token),
+        cbor::Value(
+            BuildSecretWrappingEnclaveRequest(new_security_domain_secrets_)),
         manager_->HardwareKeySigningCallback(),
         base::BindOnce(
             [](base::WeakPtr<StateMachine> machine,
@@ -1428,22 +1444,22 @@ class EnclaveManager::StateMachine {
     }
     CHECK(absl::holds_alternative<AccessToken>(event)) << ToString(event);
 
-    // Also generate the security domain secret now so that we can wrap it in
-    // the same enclave request.
-    crypto::RandBytes(security_domain_secret_);
-
     // We have everything needed to make the enclave request to wrap the hashed
     // PIN for transmission to the recovery key store.
     state_ = State::kWrappingPIN;
     std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
-    enclave::Transact(manager_->network_context_, enclave::GetEnclaveIdentity(),
-                      std::move(token),
-                      BuildPINAndSecretWrappingMessage(
-                          hashed_pin_->hashed, std::move(*cert_xml_),
-                          std::move(*sig_xml_), security_domain_secret_),
-                      manager_->HardwareKeySigningCallback(),
-                      base::BindOnce(&StateMachine::OnEnclaveResponse,
-                                     weak_ptr_factory_.GetWeakPtr()));
+    enclave::Transact(
+        manager_->network_context_, enclave::GetEnclaveIdentity(),
+        std::move(token),
+        ConcatEnclaveRequests(
+            BuildPINWrappingEnclaveRequest(hashed_pin_->hashed,
+                                           std::move(*cert_xml_),
+                                           std::move(*sig_xml_)),
+            BuildSecretWrappingEnclaveRequest(
+                GetNewSecretsToStore(*user_, *store_keys_args_for_joining_))),
+        manager_->HardwareKeySigningCallback(),
+        base::BindOnce(&StateMachine::OnEnclaveResponse,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   void DoWrappingPIN(Event event) {
@@ -1550,14 +1566,7 @@ class EnclaveManager::StateMachine {
     }
 
     wrapped_pin_ = BuildWrappedPIN(*hashed_pin_, /*generation=*/0, vault_.get(),
-                                   security_domain_secret_);
-    store_keys_args_for_joining_ = std::make_unique<StoreKeysArgs>();
-    // Key version zero is a special value that indicates that the security
-    // domain is being created.
-    store_keys_args_for_joining_->last_key_version = 0;
-    store_keys_args_for_joining_->keys.emplace_back(
-        std::begin(security_domain_secret_), std::end(security_domain_secret_));
-
+                                   store_keys_args_for_joining_->keys.back());
     const auto secure_box_pub_key =
         trusted_vault::SecureBoxPublicKey::CreateByImport(ToSpan(
             vault_->application_keys()[0].asymmetric_key_pair().public_key()));
@@ -1584,25 +1593,22 @@ class EnclaveManager::StateMachine {
       return;
     }
 
+    store_keys_args_for_joining_->last_key_version = key_version;
     user_->mutable_wrapped_pins()->clear();
     user_->mutable_wrapped_pins()->insert(
         {key_version, std::move(*wrapped_pin_)});
     wrapped_pin_.reset();
 
-    base::flat_map<int32_t, std::vector<uint8_t>> new_security_domain_secrets;
-    new_security_domain_secrets.insert({key_version,
-                                        {std::begin(security_domain_secret_),
-                                         std::end(security_domain_secret_)}});
-    if (!StoreWrappedSecrets(user_, new_security_domain_secrets,
-                             base::span<const cbor::Value>(
-                                 &wrapping_response_->GetArray()[1], 1ul))) {
+    if (!StoreWrappedSecrets(
+            user_, GetNewSecretsToStore(*user_, *store_keys_args_for_joining_),
+            base::span<const cbor::Value>(&wrapping_response_->GetArray()[1],
+                                          1ul))) {
       FIDO_LOG(ERROR) << "Secret wrapping resulted in malformed resposne: "
                       << cbor::DiagnosticWriter::Write(*wrapping_response_);
       state_ = State::kStop;
       return;
     }
 
-    store_keys_args_for_joining_->last_key_version = key_version;
     JoinSecurityDomain();
   }
 
@@ -1740,7 +1746,6 @@ class EnclaveManager::StateMachine {
   std::optional<std::string> sig_xml_;
   std::unique_ptr<HashedPIN> hashed_pin_;
   std::unique_ptr<trusted_vault_pb::Vault> vault_;
-  std::array<uint8_t, 32> security_domain_secret_;
   std::optional<webauthn_pb::EnclaveLocalState::WrappedPIN> wrapped_pin_;
   std::optional<cbor::Value> wrapping_response_;
 
@@ -1841,7 +1846,6 @@ void EnclaveManager::AddDeviceAndPINToAccount(std::string pin) {
   }
   pending_actions_->store_keys_args = std::move(pending_keys_);
   pending_actions_->pin = std::move(pin);
-  NOTIMPLEMENTED();
   Act();
 }
 

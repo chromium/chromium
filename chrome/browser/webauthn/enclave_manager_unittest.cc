@@ -516,6 +516,8 @@ TEST_F(EnclaveManagerTest, Basic) {
   ASSERT_TRUE(manager_.is_registered());
   ASSERT_TRUE(manager_.is_ready());
   ASSERT_FALSE(manager_.has_pending_keys());
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 0u);
 
   DoCreate(/*claimed_pin=*/nullptr, /*out_specifics=*/nullptr);
   DoAssertion(GetTestEntity(), /*claimed_pin=*/nullptr);
@@ -657,7 +659,7 @@ TEST_F(EnclaveManagerTest, PrimaryUserChangeDiscardsActions) {
   ASSERT_FALSE(manager_.is_ready());
 }
 
-TEST_F(EnclaveManagerTest, SetPIN) {
+TEST_F(EnclaveManagerTest, SetupWithPIN) {
   manager_.Start();
   const std::string pin = "123456";
 
@@ -676,6 +678,9 @@ TEST_F(EnclaveManagerTest, SetPIN) {
   RunUntilIdle();
   ASSERT_TRUE(manager_.is_ready());
 
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+
   std::unique_ptr<device::enclave::ClaimedPIN> claimed_pin =
       EnclaveManager::MakeClaimedPINSlowly(pin,
                                            manager_.local_state_for_testing()
@@ -689,7 +694,7 @@ TEST_F(EnclaveManagerTest, SetPIN) {
   DoAssertion(std::move(entity), std::move(claimed_pin));
 }
 
-TEST_F(EnclaveManagerTest, SetPIN_CertXMLFailure) {
+TEST_F(EnclaveManagerTest, SetupWithPIN_CertXMLFailure) {
   manager_.Start();
 
   url_loader_factory_.AddResponse(
@@ -705,7 +710,7 @@ TEST_F(EnclaveManagerTest, SetPIN_CertXMLFailure) {
   ASSERT_FALSE(manager_.is_ready());
 }
 
-TEST_F(EnclaveManagerTest, SetPIN_SigXMLFailure) {
+TEST_F(EnclaveManagerTest, SetupWithPIN_SigXMLFailure) {
   manager_.Start();
 
   url_loader_factory_.AddResponse(
@@ -719,6 +724,48 @@ TEST_F(EnclaveManagerTest, SetPIN_SigXMLFailure) {
   // This test simply shouldn't crash or hang.
   RunUntilIdle();
   ASSERT_FALSE(manager_.is_ready());
+}
+
+TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
+  security_domain_service_->pretend_there_are_members();
+  manager_.Start();
+  const std::string pin = "123456";
+
+  url_loader_factory_.AddResponse(
+      std::string(EnclaveManager::recovery_key_store_cert_url_for_testing()),
+      std::string(kSampleRecoverableKeyStoreCertXML));
+  url_loader_factory_.AddResponse(
+      std::string(EnclaveManager::recovery_key_store_sig_url_for_testing()),
+      std::string(kSampleRecoverableKeyStoreSigXML));
+  url_loader_factory_.AddResponse(
+      std::string(EnclaveManager::recovery_key_store_url_for_testing()) +
+          "?alt=proto",
+      MakeVaultResponse());
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  ASSERT_FALSE(manager_.has_pending_keys());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
+  ASSERT_TRUE(manager_.has_pending_keys());
+
+  manager_.AddDeviceAndPINToAccount(pin);
+  RunUntilIdle();
+  ASSERT_TRUE(manager_.is_ready());
+
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+
+  std::unique_ptr<device::enclave::ClaimedPIN> claimed_pin =
+      EnclaveManager::MakeClaimedPINSlowly(pin,
+                                           manager_.local_state_for_testing()
+                                               .users()
+                                               .begin()
+                                               ->second.wrapped_pins()
+                                               .begin()
+                                               ->second);
+  std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity;
+  DoCreate(/*claimed_pin=*/nullptr, &entity);
+  DoAssertion(std::move(entity), std::move(claimed_pin));
 }
 
 }  // namespace

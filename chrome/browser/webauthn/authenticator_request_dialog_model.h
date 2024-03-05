@@ -590,6 +590,12 @@ class AuthenticatorRequestDialogModel
   // Called when the user accepts enrolling a device to use passkeys.
   void OnTrustThisComputer();
 
+  // Called when the user needs to set their GPM PIN for the first time.
+  void OnCreateGPMPin();
+
+  // Return the last entered GPM PIN.
+  std::string&& TakeGPMPin();
+
   // Adds or removes an authenticator to the list of known authenticators. The
   // first authenticator added with transport `kInternal` (or without a
   // transport) is considered to be the default platform authenticator.
@@ -1001,6 +1007,9 @@ class AuthenticatorRequestDialogModel
 
   // Records the error during GPM pin entry / creation, if any.
   GpmPinError gpm_pin_error_ = GpmPinError::kNone;
+
+  // The entered GPM PIN.
+  std::string gpm_pin_;
 
 #if BUILDFLAG(IS_MAC)
   // did_record_macos_start_histogram_ is set to true if a histogram record of
