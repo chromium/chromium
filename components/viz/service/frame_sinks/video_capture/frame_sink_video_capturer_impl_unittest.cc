@@ -2250,6 +2250,8 @@ INSTANTIATE_TEST_SUITE_P(
         std::tuple(mojom::BufferFormatPreference::kDefault,
                    media::PIXEL_FORMAT_ARGB),
         std::tuple(mojom::BufferFormatPreference::kPreferGpuMemoryBuffer,
-                   media::PIXEL_FORMAT_NV12)));
+                   media::PIXEL_FORMAT_NV12),
+        std::tuple(mojom::BufferFormatPreference::kPreferGpuMemoryBuffer,
+                   media::PIXEL_FORMAT_ARGB)));
 
 }  // namespace viz

@@ -1116,7 +1116,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
 
   if (!flush_succeeded) {
     // TODO(penghuang): handle vulkan device lost.
-    FailedSkiaFlush("CopyOutputNV12 plane_surfaces[i]->flush()");
+    FailedSkiaFlush("CopyOutputRGBA FlushSurface(scoped_write->surface())");
     return;
   }
 

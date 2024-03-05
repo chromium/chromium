@@ -84,9 +84,10 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
 
   // Create a frame pool. The supplied `context` will live until all frames
   // created by the pool have been destroyed (so it may outlive the returned
-  // pool).
+  // pool). Only NV12 and ARGB formats are supported.
   static std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool> Create(
-      std::unique_ptr<Context> context);
+      std::unique_ptr<Context> context,
+      VideoPixelFormat format = PIXEL_FORMAT_NV12);
 
   // Returns a GpuMemoryBuffer-backed VideoFrame that can be rendered to. This
   // may return nullptr on an unsupported parameter, or may return nullptr
