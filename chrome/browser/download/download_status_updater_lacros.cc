@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/download/download_bubble_info_utils.h"
+#include "chrome/browser/ui/download/download_bubble_row_view_info.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
@@ -43,12 +44,22 @@
 #include "content/public/browser/download_item_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace {
 
 // Constants -------------------------------------------------------------------
+
+// The DIP size of the rasterized icon. Ensures that the icon is large enough
+// for download status clients to resize with sufficient resolution.
+constexpr int kIconSize = 50;
 
 // The key referring to an image decoder task.
 constexpr char kImageDecoderTaskKey[] = "kImageDecoderTask";
@@ -57,6 +68,19 @@ constexpr char kImageDecoderTaskKey[] = "kImageDecoderTask";
 constexpr size_t kImageDecoderTaskMaxFileSize = 10 * 1024 * 1024;  // 10 MB
 
 // Helpers ---------------------------------------------------------------------
+
+// Returns the corresponding color of `id` under the specific `color_mode`.
+// WARNING: Sending UI icons directly has drawbacks (see http://b/328070365).
+// Prefer sending metadata to construct the UI instead.
+SkColor GetColor(ui::ColorId id, ui::ColorProviderKey::ColorMode color_mode) {
+  ui::ColorProviderKey provider_key =
+      ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
+          /*custom_theme=*/nullptr);
+  provider_key.color_mode = color_mode;
+  return ui::ColorProviderManager::Get()
+      .GetColorProviderFor(provider_key)
+      ->GetColor(id);
+}
 
 crosapi::mojom::DownloadStatusUpdater* GetRemote(
     std::optional<uint32_t> min_version = std::nullopt) {
@@ -212,9 +236,18 @@ class DownloadStatusUpdater::Delegate
     status->status_text = model.GetStatusText();
     status->target_file_path = download->GetTargetFilePath();
 
-    // TODO(http://b/306459683): Remove after the 2-version skew period passes.
-    status->received_bytes_deprecated = download->GetReceivedBytes();
-    status->total_bytes_deprecated = download->GetTotalBytes();
+    const IconAndColor icon_and_color = IconAndColorForDownload(model);
+    if (const gfx::VectorIcon* const icon = icon_and_color.icon) {
+      status->icons = crosapi::mojom::DownloadStatusIcons::New(
+          gfx::CreateVectorIcon(
+              *icon, kIconSize,
+              GetColor(icon_and_color.color,
+                       ui::ColorProviderKey::ColorMode::kDark)),
+          gfx::CreateVectorIcon(
+              *icon, kIconSize,
+              GetColor(icon_and_color.color,
+                       ui::ColorProviderKey::ColorMode::kLight)));
+    }
 
     DownloadBubbleProgressBar progress_bar = ProgressBarForDownload(model);
     auto progress = crosapi::mojom::DownloadProgress::New();

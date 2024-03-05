@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/download/download_bubble_info_utils.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
@@ -50,6 +51,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/test/browser_test.h"
@@ -61,9 +63,15 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 namespace {
@@ -72,6 +80,7 @@ namespace {
 using ::crosapi::mojom::DownloadProgress;
 using ::crosapi::mojom::DownloadState;
 using ::crosapi::mojom::DownloadStatus;
+using ::crosapi::mojom::DownloadStatusIcons;
 using ::crosapi::mojom::DownloadStatusPtr;
 using ::crosapi::mojom::DownloadStatusUpdater;
 using ::crosapi::mojom::DownloadStatusUpdaterClient;
@@ -81,6 +90,7 @@ using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Invoke;
+using ::testing::IsNull;
 using ::testing::IsTrue;
 using ::testing::Mock;
 using ::testing::NiceMock;
@@ -926,16 +936,12 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterUpdateBrowserTest, Basics) {
                               Field(&DownloadProgress::total_bytes,
                                     Eq(item.GetTotalBytes())),
                               Field(&DownloadProgress::visible, Eq(true))))),
-          Field(&DownloadStatus::received_bytes_deprecated,
-                Eq(item.GetReceivedBytes())),
           Field(&DownloadStatus::resumable, Eq(false)),
           Field(&DownloadStatus::state, Eq(DownloadState::kInProgress)),
           Field(&DownloadStatus::status_text,
                 Eq(download_item_model.GetStatusText())),
           Field(&DownloadStatus::target_file_path,
-                Eq(item.GetTargetFilePath())),
-          Field(&DownloadStatus::total_bytes_deprecated,
-                Eq(item.GetTotalBytes()))))));
+                Eq(item.GetTargetFilePath()))))));
 
   // Notify the download status updater in Lacros Chrome of `item` creation and
   // verify Ash Chrome expectations.
@@ -964,22 +970,75 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterUpdateBrowserTest, Basics) {
                               Field(&DownloadProgress::total_bytes,
                                     Eq(item.GetTotalBytes())),
                               Field(&DownloadProgress::visible, Eq(true))))),
-          Field(&DownloadStatus::received_bytes_deprecated,
-                Eq(item.GetReceivedBytes())),
           Field(&DownloadStatus::resumable, Eq(true)),
           Field(&DownloadStatus::state, Eq(DownloadState::kInProgress)),
           Field(&DownloadStatus::status_text,
                 Eq(download_item_model.GetStatusText())),
           Field(&DownloadStatus::target_file_path,
-                Eq(item.GetTargetFilePath())),
-          Field(&DownloadStatus::total_bytes_deprecated,
-                Eq(item.GetTotalBytes()))))));
+                Eq(item.GetTargetFilePath()))))));
 
   // Notify the download status updater in Lacros Chrome of `item` update and
   // verify Ash Chrome expectations.
   item.NotifyObserversDownloadUpdated();
   FlushInterfaceForTesting();
   Mock::VerifyAndClearExpectations(&download_status_updater());
+
+  // Configure `item` to have dangerous contents.
+  ON_CALL(item, GetDangerType())
+      .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT));
+
+  const auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  ui::ColorProviderKey dark_mode_key = native_theme->GetColorProviderKey(
+      /*custom_theme=*/nullptr);
+  dark_mode_key.color_mode = ui::ColorProviderKey::ColorMode::kDark;
+  const ui::ColorProvider* const color_provider_dark =
+      ui::ColorProviderManager::Get().GetColorProviderFor(dark_mode_key);
+
+  ui::ColorProviderKey light_mode_key =
+      native_theme->GetColorProviderKey(/*custom_theme=*/nullptr);
+  light_mode_key.color_mode = ui::ColorProviderKey::ColorMode::kLight;
+  const ui::ColorProvider* const color_provider_light =
+      ui::ColorProviderManager::Get().GetColorProviderFor(light_mode_key);
+
+  const IconAndColor icon_and_color =
+      IconAndColorForDownload(download_item_model);
+  ASSERT_TRUE(icon_and_color.icon);
+  const SkColor expected_color_dark =
+      color_provider_dark->GetColor(icon_and_color.color);
+  const SkColor expected_color_light =
+      color_provider_light->GetColor(icon_and_color.color);
+
+  // Expect a `DownloadStatusUpdater::Update()` event in Ash Chrome when the
+  // download status updater in Lacros Chrome is notified of `item` updates.
+  // Check the download status's icons.
+  EXPECT_CALL(download_status_updater(),
+              Update(Pointer(Field(
+                  &DownloadStatus::icons,
+                  Pointer(AllOf(
+                      Field(&DownloadStatusIcons::dark_mode,
+                            Property(&gfx::ImageSkia::bitmap,
+                                     Pointee(BitmapEq(*gfx::CreateVectorIcon(
+                                                           *icon_and_color.icon,
+                                                           /*dip_size=*/50,
+                                                           expected_color_dark)
+                                                           .bitmap())))),
+                      Field(&DownloadStatusIcons::light_mode,
+                            Property(&gfx::ImageSkia::bitmap,
+                                     Pointee(BitmapEq(*gfx::CreateVectorIcon(
+                                                           *icon_and_color.icon,
+                                                           /*dip_size=*/50,
+                                                           expected_color_light)
+                                                           .bitmap()))))))))));
+
+  // Notify the download status updater in Lacros Chrome of `item` update and
+  // verify Ash Chrome expectations.
+  item.NotifyObserversDownloadUpdated();
+  FlushInterfaceForTesting();
+  Mock::VerifyAndClearExpectations(&download_status_updater());
+
+  // Reset the danger type.
+  ON_CALL(item, GetDangerType())
+      .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
 
   // Complete `item`.
   ON_CALL(item, GetState())
@@ -998,6 +1057,7 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterUpdateBrowserTest, Basics) {
           Field(&DownloadStatus::cancellable, Eq(false)),
           Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::guid, Eq(item.GetGuid())),
+          Field(&DownloadStatus::icons, Pointer(IsNull())),
           Field(&DownloadStatus::pausable, Eq(false)),
           Field(&DownloadStatus::progress,
                 Pointer(AllOf(Field(&DownloadProgress::loop, Eq(false)),
@@ -1006,16 +1066,12 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterUpdateBrowserTest, Basics) {
                               Field(&DownloadProgress::total_bytes,
                                     Eq(item.GetTotalBytes())),
                               Field(&DownloadProgress::visible, Eq(false))))),
-          Field(&DownloadStatus::received_bytes_deprecated,
-                Eq(item.GetReceivedBytes())),
           Field(&DownloadStatus::resumable, Eq(false)),
           Field(&DownloadStatus::state, Eq(DownloadState::kComplete)),
           Field(&DownloadStatus::status_text,
                 Eq(download_item_model.GetStatusText())),
           Field(&DownloadStatus::target_file_path,
-                Eq(item.GetTargetFilePath())),
-          Field(&DownloadStatus::total_bytes_deprecated,
-                Eq(item.GetTotalBytes()))))));
+                Eq(item.GetTargetFilePath()))))));
 
   // Notify the download status updater in Lacros Chrome of `item` update and
   // verify Ash Chrome expectations.
