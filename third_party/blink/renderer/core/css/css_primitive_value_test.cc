@@ -107,7 +107,8 @@ TEST_F(CSSPrimitiveValueTest, ClampTimeToNonNegative) {
 TEST_F(CSSPrimitiveValueTest, ClampAngleToNonNegative) {
   UnitValue a = {89, UnitType::kDegrees};
   UnitValue b = {0.25, UnitType::kTurns};
-  EXPECT_EQ(0.0, CreateNonNegativeSubtraction(a, b)->ComputeDegrees());
+  EXPECT_EQ(0.0, CreateNonNegativeSubtraction(a, b)->ComputeDegrees(
+                     CSSToLengthConversionData()));
 }
 
 TEST_F(CSSPrimitiveValueTest, IsResolution) {
