@@ -109,8 +109,7 @@ class GmsCoreNotificationsStateTrackerImplTest : public testing::Test {
 
   const multidevice::RemoteDeviceRefList test_devices_;
 
-  std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>
-      scanned_device_infos_;
+  std::vector<ScannedDeviceInfo> scanned_device_infos_;
   multidevice::RemoteDeviceRefList devices_to_send_;
 
   std::unique_ptr<GmsCoreNotificationsStateTrackerImpl> tracker_;

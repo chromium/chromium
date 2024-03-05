@@ -38,8 +38,7 @@ class GmsCoreNotificationsStateTrackerImpl
  protected:
   // TetherAvailabilityOperation::Observer:
   void OnTetherAvailabilityResponse(
-      const std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>&
-          scanned_device_list_so_far,
+      const std::vector<ScannedDeviceInfo>& scanned_device_list_so_far,
       const multidevice::RemoteDeviceRefList&
           gms_core_notifications_disabled_devices,
       bool is_final_scan_result) override;

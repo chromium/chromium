@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/tether/message_transfer_operation.h"
+#include "chromeos/ash/components/tether/scanned_device_info.h"
 
 namespace ash::device_sync {
 class DeviceSyncClient;
@@ -62,20 +63,6 @@ class TetherAvailabilityOperation : public MessageTransferOperation {
 
    private:
     static Factory* factory_instance_;
-  };
-
-  struct ScannedDeviceInfo {
-    ScannedDeviceInfo(multidevice::RemoteDeviceRef remote_device,
-                      const DeviceStatus& device_status,
-                      bool setup_required);
-    ~ScannedDeviceInfo();
-
-    friend bool operator==(const ScannedDeviceInfo& first,
-                           const ScannedDeviceInfo& second);
-
-    multidevice::RemoteDeviceRef remote_device;
-    DeviceStatus device_status;
-    bool setup_required;
   };
 
   class Observer {

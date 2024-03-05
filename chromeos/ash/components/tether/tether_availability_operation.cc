@@ -114,24 +114,6 @@ void TetherAvailabilityOperation::Factory::SetFactoryForTesting(Factory* factory
 
 TetherAvailabilityOperation::Factory::~Factory() = default;
 
-TetherAvailabilityOperation::ScannedDeviceInfo::ScannedDeviceInfo(
-    multidevice::RemoteDeviceRef remote_device,
-    const DeviceStatus& device_status,
-    bool setup_required)
-    : remote_device(remote_device),
-      device_status(device_status),
-      setup_required(setup_required) {}
-
-TetherAvailabilityOperation::ScannedDeviceInfo::~ScannedDeviceInfo() = default;
-
-bool operator==(const TetherAvailabilityOperation::ScannedDeviceInfo& first,
-                const TetherAvailabilityOperation::ScannedDeviceInfo& second) {
-  return first.remote_device == second.remote_device &&
-         first.device_status.SerializeAsString() ==
-             second.device_status.SerializeAsString() &&
-         first.setup_required == second.setup_required;
-}
-
 TetherAvailabilityOperation::TetherAvailabilityOperation(
     const multidevice::RemoteDeviceRefList& devices_to_connect,
     device_sync::DeviceSyncClient* device_sync_client,

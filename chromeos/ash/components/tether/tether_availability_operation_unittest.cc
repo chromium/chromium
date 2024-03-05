@@ -58,7 +58,7 @@ class MockOperationObserver : public TetherAvailabilityOperation::Observer {
   ~MockOperationObserver() = default;
 
   MOCK_METHOD3(OnTetherAvailabilityResponse,
-               void(const std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>&,
+               void(const std::vector<ScannedDeviceInfo>&,
                     const multidevice::RemoteDeviceRefList&,
                     bool));
 };
@@ -97,10 +97,9 @@ class TetherAvailabilityOperationTest : public testing::Test {
   }
 
   std::unique_ptr<TetherAvailabilityOperation> ConstructOperation() {
-    EXPECT_CALL(mock_observer_,
-                OnTetherAvailabilityResponse(
-                    std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>(),
-                    multidevice::RemoteDeviceRefList(), false));
+    EXPECT_CALL(mock_observer_, OnTetherAvailabilityResponse(
+                                    std::vector<ScannedDeviceInfo>(),
+                                    multidevice::RemoteDeviceRefList(), false));
 
     auto connection_attempt =
         std::make_unique<secure_channel::FakeConnectionAttempt>();
@@ -248,11 +247,10 @@ TEST_F(TetherAvailabilityOperationTest, NotificationsDisabled) {
 
     // The observer is notified of the list of devices whose notificaitons are
     // disabled.
-    EXPECT_CALL(
-        mock_observer_,
-        OnTetherAvailabilityResponse(
-            std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>(),
-            devices_notifications_disabled, false /* is_final_scan_result */));
+    EXPECT_CALL(mock_observer_,
+                OnTetherAvailabilityResponse(std::vector<ScannedDeviceInfo>(),
+                                             devices_notifications_disabled,
+                                             false /* is_final_scan_result */));
 
     // Respond with the error code.
     TetherAvailabilityResponse response;
@@ -276,10 +274,9 @@ TEST_F(TetherAvailabilityOperationTest, TetherAvailable) {
 
   // The observer is notified of the scanned device.
   DeviceStatus device_status = CreateFakeDeviceStatus();
-  TetherAvailabilityOperation::ScannedDeviceInfo scanned_device(
-      remote_device_, device_status, false /* setup_required */);
-  std::vector<TetherAvailabilityOperation::ScannedDeviceInfo> scanned_devices(
-      {scanned_device});
+  ScannedDeviceInfo scanned_device(remote_device_, device_status,
+                                   false /* setup_required */);
+  std::vector<ScannedDeviceInfo> scanned_devices({scanned_device});
   EXPECT_CALL(mock_observer_,
               OnTetherAvailabilityResponse(scanned_devices,
                                            multidevice::RemoteDeviceRefList(),
@@ -306,10 +303,9 @@ TEST_F(TetherAvailabilityOperationTest, LastProvisioningFailed) {
 
   // The observer is notified of the scanned device.
   DeviceStatus device_status = CreateFakeDeviceStatus();
-  TetherAvailabilityOperation::ScannedDeviceInfo scanned_device(
-      remote_device_, device_status, false /* setup_required */);
-  std::vector<TetherAvailabilityOperation::ScannedDeviceInfo> scanned_devices(
-      {scanned_device});
+  ScannedDeviceInfo scanned_device(remote_device_, device_status,
+                                   false /* setup_required */);
+  std::vector<ScannedDeviceInfo> scanned_devices({scanned_device});
   EXPECT_CALL(mock_observer_,
               OnTetherAvailabilityResponse(scanned_devices,
                                            multidevice::RemoteDeviceRefList(),
@@ -337,10 +333,9 @@ TEST_F(TetherAvailabilityOperationTest, SetupRequired) {
   // The observer is notified that the scanned device has the |setup_required|
   // flag set.
   DeviceStatus device_status = CreateFakeDeviceStatus();
-  TetherAvailabilityOperation::ScannedDeviceInfo scanned_device(
-      remote_device_, device_status, true /* setup_required */);
-  std::vector<TetherAvailabilityOperation::ScannedDeviceInfo> scanned_devices(
-      {scanned_device});
+  ScannedDeviceInfo scanned_device(remote_device_, device_status,
+                                   true /* setup_required */);
+  std::vector<ScannedDeviceInfo> scanned_devices({scanned_device});
   EXPECT_CALL(mock_observer_,
               OnTetherAvailabilityResponse(scanned_devices,
                                            multidevice::RemoteDeviceRefList(),

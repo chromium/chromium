@@ -86,8 +86,7 @@ class HostScannerImpl : public HostScanner,
  protected:
   // TetherAvailabilityOperation::Observer:
   void OnTetherAvailabilityResponse(
-      const std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>&
-          scanned_device_list_so_far,
+      const std::vector<ScannedDeviceInfo>& scanned_device_list_so_far,
       const multidevice::RemoteDeviceRefList&
           gms_core_notifications_disabled_devices,
       bool is_final_scan_result) override;
@@ -109,11 +108,9 @@ class HostScannerImpl : public HostScanner,
 
   void OnTetherHostsFetched(
       const multidevice::RemoteDeviceRefList& tether_hosts);
-  void SetCacheEntry(const TetherAvailabilityOperation::ScannedDeviceInfo&
-                         scanned_device_info);
+  void SetCacheEntry(const ScannedDeviceInfo& scanned_device_info);
   void OnFinalScanResultReceived(
-      const std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>&
-          final_scan_results);
+      const std::vector<ScannedDeviceInfo>& final_scan_results);
   void RecordHostScanResult(HostScanResultEventType event_type);
   bool IsPotentialHotspotNotificationShowing();
   bool CanAvailableHostNotificationBeShown();

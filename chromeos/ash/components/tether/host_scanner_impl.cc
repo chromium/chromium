@@ -120,8 +120,7 @@ void HostScannerImpl::OnTetherHostsFetched(
 }
 
 void HostScannerImpl::OnTetherAvailabilityResponse(
-    const std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>&
-        scanned_device_list_so_far,
+    const std::vector<ScannedDeviceInfo>& scanned_device_list_so_far,
     const multidevice::RemoteDeviceRefList&
         gms_core_notifications_disabled_devices,
     bool is_final_scan_result) {
@@ -183,7 +182,7 @@ void HostScannerImpl::OnSessionStateChanged() {
 }
 
 void HostScannerImpl::SetCacheEntry(
-    const TetherAvailabilityOperation::ScannedDeviceInfo& scanned_device_info) {
+    const ScannedDeviceInfo& scanned_device_info) {
   const DeviceStatus& status = scanned_device_info.device_status;
   multidevice::RemoteDeviceRef remote_device =
       scanned_device_info.remote_device;
@@ -208,8 +207,7 @@ void HostScannerImpl::SetCacheEntry(
 }
 
 void HostScannerImpl::OnFinalScanResultReceived(
-    const std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>&
-        final_scan_results) {
+    const std::vector<ScannedDeviceInfo>& final_scan_results) {
   // Search through all GUIDs that were in the cache before the scan began. If
   // any of those GUIDs are not present in the final scan results, remove them
   // from the cache.

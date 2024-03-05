@@ -81,8 +81,7 @@ class FakeTetherAvailabilityOperation : public TetherAvailabilityOperation {
   ~FakeTetherAvailabilityOperation() override = default;
 
   void SendScannedDeviceListUpdate(
-      const std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>&
-          scanned_device_list_so_far,
+      const std::vector<ScannedDeviceInfo>& scanned_device_list_so_far,
       bool is_final_scan_result) {
     scanned_device_list_so_far_ = scanned_device_list_so_far;
     NotifyObserversOfScannedDeviceList(is_final_scan_result);
@@ -133,15 +132,13 @@ std::string GenerateCellProviderForDevice(
   return "cellProvider" + remote_device.GetTruncatedDeviceIdForLogs();
 }
 
-std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>
-CreateFakeScannedDeviceInfos(
+std::vector<ScannedDeviceInfo> CreateFakeScannedDeviceInfos(
     const multidevice::RemoteDeviceRefList& remote_devices) {
   // At least 4 ScannedDeviceInfos should be created to ensure that all 4 cases
   // described below are tested.
   EXPECT_GT(remote_devices.size(), 3u);
 
-  std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>
-      scanned_device_infos;
+  std::vector<ScannedDeviceInfo> scanned_device_infos;
 
   for (size_t i = 0; i < remote_devices.size(); ++i) {
     // Four field possibilities:
@@ -190,8 +187,7 @@ CreateFakeScannedDeviceInfos(
     bool setup_required = i % 2 == 0;
 
     scanned_device_infos.push_back(
-        TetherAvailabilityOperation::ScannedDeviceInfo(
-            remote_devices[i], device_status, setup_required));
+        ScannedDeviceInfo(remote_devices[i], device_status, setup_required));
   }
 
   return scanned_device_infos;
@@ -319,8 +315,8 @@ class HostScannerImplTest : public testing::Test {
   }
 
   void VerifyScanResultsMatchCache() {
-    std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>
-        combined_device_infos = scanned_device_infos_from_current_scan_;
+    std::vector<ScannedDeviceInfo> combined_device_infos =
+        scanned_device_infos_from_current_scan_;
     for (const auto& previous_scan_result :
          scanned_device_infos_from_previous_scans_) {
       bool already_in_combined = false;
@@ -349,7 +345,7 @@ class HostScannerImplTest : public testing::Test {
   }
 
   void VerifyScannedDeviceInfoAndCacheEntryAreEquivalent(
-      const TetherAvailabilityOperation::ScannedDeviceInfo& scanned_device_info,
+      const ScannedDeviceInfo& scanned_device_info,
       const HostScanCacheEntry& entry) {
     EXPECT_EQ(scanned_device_info.remote_device.name(), entry.device_name);
 
@@ -409,8 +405,7 @@ class HostScannerImplTest : public testing::Test {
 
   NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
   const multidevice::RemoteDeviceRefList test_devices_;
-  const std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>
-      test_scanned_device_infos;
+  const std::vector<ScannedDeviceInfo> test_scanned_device_infos;
 
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
   std::unique_ptr<secure_channel::SecureChannelClient>
@@ -435,10 +430,8 @@ class HostScannerImplTest : public testing::Test {
   std::unique_ptr<FakeTetherAvailabilityOperationFactory>
       fake_tether_availability_operation_factory_;
 
-  std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>
-      scanned_device_infos_from_current_scan_;
-  std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>
-      scanned_device_infos_from_previous_scans_;
+  std::vector<ScannedDeviceInfo> scanned_device_infos_from_current_scan_;
+  std::vector<ScannedDeviceInfo> scanned_device_infos_from_previous_scans_;
 
   std::unique_ptr<HostScanner> host_scanner_;
 
@@ -614,9 +607,8 @@ TEST_F(HostScannerImplTest, DISABLED_TestScan_ResultsFromNoDevices) {
   EXPECT_TRUE(host_scanner_->IsScanActive());
 
   fake_tether_availability_operation_factory_->created_operations()[0]
-      ->SendScannedDeviceListUpdate(
-          std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>(),
-          true /* is_final_scan_result */);
+      ->SendScannedDeviceListUpdate(std::vector<ScannedDeviceInfo>(),
+                                    true /* is_final_scan_result */);
   EXPECT_EQ(0u, fake_host_scan_cache_->size());
   EXPECT_FALSE(host_scanner_->IsScanActive());
 }

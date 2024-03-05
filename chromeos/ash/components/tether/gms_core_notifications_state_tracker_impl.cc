@@ -16,8 +16,7 @@ namespace {
 
 bool ContainsDeviceWithId(
     const std::string& device_id,
-    const std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>&
-        device_info_list) {
+    const std::vector<ScannedDeviceInfo>& device_info_list) {
   for (const auto& device_info : device_info_list) {
     if (device_info.remote_device.GetDeviceId() == device_id)
       return true;
@@ -59,8 +58,7 @@ std::vector<std::string> GmsCoreNotificationsStateTrackerImpl::
 }
 
 void GmsCoreNotificationsStateTrackerImpl::OnTetherAvailabilityResponse(
-    const std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>&
-        scanned_device_list_so_far,
+    const std::vector<ScannedDeviceInfo>& scanned_device_list_so_far,
     const multidevice::RemoteDeviceRefList&
         gms_core_notifications_disabled_devices,
     bool is_final_scan_result) {
