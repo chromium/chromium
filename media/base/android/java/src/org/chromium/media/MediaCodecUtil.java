@@ -420,12 +420,15 @@ class MediaCodecUtil {
             // http://crbug.com/597836.
             if (Build.HARDWARE.startsWith("mt")) {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return false;
-
-                // The following chipsets have been confirmed by MediaTek to work on P+
-                return Build.HARDWARE.startsWith("mt5599")
-                        || Build.HARDWARE.startsWith("mt5895")
-                        || Build.HARDWARE.startsWith("mt8768")
-                        || Build.HARDWARE.startsWith("mt5887");
+                // MediaTek chipsets after 'Android T' are compatible with vp8.
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                    // The following chipsets have been confirmed by MediaTek to work on P+
+                    return Build.HARDWARE.startsWith("mt5599")
+                            || Build.HARDWARE.startsWith("mt5895")
+                            || Build.HARDWARE.startsWith("mt8768")
+                            || Build.HARDWARE.startsWith("mt8696")
+                            || Build.HARDWARE.startsWith("mt5887");
+                }
             }
         } else if (mime.equals(MimeTypes.VIDEO_VP9)) {
             // Nexus Player VP9 decoder performs poorly at >= 1080p resolution.
