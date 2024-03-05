@@ -1287,7 +1287,8 @@ void Component::StateUpdating::DoHandle() {
               component.next_fp_, component.install_params(),
               component.crx_component()->installer,
               update_context.config->GetUnzipperFactory()->Create(),
-              component.crx_component()->allow_cached_copies
+              component.crx_component()->allow_cached_copies &&
+                      update_context.config->EnabledDeltas()
                   ? update_context.crx_cache_
                   : std::nullopt,
               component.crx_component()->crx_format_requirement,
