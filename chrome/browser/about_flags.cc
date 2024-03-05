@@ -7660,6 +7660,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityMagnifierFollowsStsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityMagnifierFollowsSts)},
 
+    {"enable-accessibility-mousekeys",
+     flag_descriptions::kAccessibilityMouseKeysName,
+     flag_descriptions::kAccessibilityMouseKeysDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityMouseKeys)},
+
     {"enable-pip-double-tap-to-resize",
      flag_descriptions::kPipDoubleTapToResizeName,
      flag_descriptions::kPipDoubleTapToResizeDescription, kOsCrOS,

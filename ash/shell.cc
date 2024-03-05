@@ -30,6 +30,7 @@
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/magnifier/partial_magnifier_controller.h"
+#include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/ambient/ambient_controller.h"
@@ -262,6 +263,7 @@
 #include "dbus/bus.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "services/video_capture/public/mojom/multi_capture_service.mojom.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/layout_manager.h"
@@ -776,6 +778,9 @@ Shell::~Shell() {
     RemovePreTargetHandler(shortcut_input_handler_.get());
   }
   RemovePreTargetHandler(modality_filter_.get());
+  if (::features::IsAccessibilityMouseKeysEnabled()) {
+    RemovePreTargetHandler(mouse_keys_controller_.get());
+  }
   RemovePreTargetHandler(tooltip_controller_.get());
 
   // Resets the implementation of clipboard history utility functions.
@@ -966,6 +971,7 @@ Shell::~Shell() {
   // These need a valid Shell instance to clean up properly, so explicitly
   // delete them before invalidating the instance.
   // Alphabetical. TODO(oshima): sort.
+  mouse_keys_controller_.reset();
   autoclick_controller_.reset();
   fullscreen_magnifier_controller_.reset();
   tooltip_controller_.reset();
@@ -1590,6 +1596,11 @@ void Shell::Init(
 
   autoclick_controller_ = std::make_unique<AutoclickController>();
 
+  if (::features::IsAccessibilityMouseKeysEnabled()) {
+    mouse_keys_controller_ = std::make_unique<MouseKeysController>();
+    AddPreTargetHandler(mouse_keys_controller_.get());
+  }
+
   color_enhancement_controller_ =
       std::make_unique<ColorEnhancementController>();
 
@@ -1656,8 +1667,8 @@ void Shell::Init(
   // `SystemNotificationController` is created, because
   // `SystemNotificationController` ctor will creat an instance of
   // `PowerSoundsController`, which will access and play the initialized sounds.
-    system_sounds_delegate_ = shell_delegate_->CreateSystemSoundsDelegate();
-    system_sounds_delegate_->Init();
+  system_sounds_delegate_ = shell_delegate_->CreateSystemSoundsDelegate();
+  system_sounds_delegate_->Init();
 
   privacy_hub_controller_ = PrivacyHubController::CreatePrivacyHubController();
 

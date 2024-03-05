@@ -71,6 +71,7 @@ class ASH_EXPORT AccessibilityEventRewriter
 
  private:
   friend class ChromeVoxAccessibilityEventRewriterTest;
+  friend class MouseKeysAccessibilityEventRewriterTest;
 
   // Internal helpers to rewrite an event for a given accessibility feature.
   // Returns true if the event is captured.

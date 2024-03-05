@@ -191,6 +191,7 @@ class MediaControllerImpl;
 class MessageCenterAshImpl;
 class MessageCenterController;
 class MouseCursorEventFilter;
+class MouseKeysController;
 class MruWindowTracker;
 class MultiDeviceNotificationPresenter;
 class MultiDisplayMetricsController;
@@ -647,6 +648,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   MouseCursorEventFilter* mouse_cursor_filter() {
     return mouse_cursor_filter_.get();
+  }
+  MouseKeysController* mouse_keys_controller() {
+    return mouse_keys_controller_.get();
   }
   MruWindowTracker* mru_window_tracker() { return mru_window_tracker_.get(); }
   MultiDeviceNotificationPresenter* multidevice_notification_presenter() {
@@ -1140,6 +1144,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<FullscreenMagnifierController>
       fullscreen_magnifier_controller_;
   std::unique_ptr<AutoclickController> autoclick_controller_;
+  std::unique_ptr<MouseKeysController> mouse_keys_controller_;
   std::unique_ptr<::wm::FocusController> focus_controller_;
 
   std::unique_ptr<MouseCursorEventFilter> mouse_cursor_filter_;

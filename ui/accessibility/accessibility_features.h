@@ -173,6 +173,10 @@ AX_BASE_EXPORT bool IsAccessibilityExtraLargeCursorEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifierFollowsSts);
 AX_BASE_EXPORT bool IsAccessibilityMagnifierFollowsStsEnabled();
 
+// Control mouse with keyboard.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMouseKeys);
+AX_BASE_EXPORT bool IsAccessibilityMouseKeysEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

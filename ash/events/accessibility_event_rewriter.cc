@@ -7,12 +7,14 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
+#include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
 #include "base/system/sys_info.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
@@ -330,7 +332,13 @@ ui::EventDispatchDetails AccessibilityEventRewriter::RewriteEvent(
   if (!delegate_)
     return SendEvent(continuation, &event);
 
-  if (Shell::Get()->accessibility_controller()->IsSwitchAccessRunning()) {
+  // TODO(259372916): Switch to using the tray icon visibility.
+  if (::features::IsAccessibilityMouseKeysEnabled()) {
+    captured = Shell::Get()->mouse_keys_controller()->RewriteEvent(event);
+  }
+
+  if (!captured &&
+      Shell::Get()->accessibility_controller()->IsSwitchAccessRunning()) {
     captured = RewriteEventForSwitchAccess(event, continuation);
   }
 

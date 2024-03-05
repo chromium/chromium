@@ -217,6 +217,13 @@ bool IsAccessibilityMagnifierFollowsStsEnabled() {
       ::features::kAccessibilityMagnifierFollowsSts);
 }
 
+BASE_FEATURE(kAccessibilityMouseKeys,
+             "AccessibilityMouseKeys",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityMouseKeysEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityMouseKeys);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
@@ -17,6 +18,7 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -556,6 +558,34 @@ TEST_P(ChromeVoxAccessibilityEventRewriterTest,
 
   // Unmodified.
   EXPECT_EQ(ui::VKEY_A, last_key_event->key_code());
+}
+
+class MouseKeysAccessibilityEventRewriterTest
+    : public AccessibilityEventRewriterTestBase {
+ public:
+  MouseKeysAccessibilityEventRewriterTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityMouseKeys);
+  }
+
+  void SetUp() override {
+    AccessibilityEventRewriterTestBase::SetUp();
+    return Shell::Get()->mouse_keys_controller()->SetEnabled(true);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(MouseKeysAccessibilityEventRewriterTest, CapturesCorrectInput) {
+  // Mouse Keys should treat 'i' as a click.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_I);
+  EXPECT_FALSE(event_capturer().last_key_event());
+
+  // Mouse Keys should not capture 'g'.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_G);
+  ASSERT_TRUE(event_capturer().last_key_event());
+  EXPECT_EQ(ui::VKEY_G, event_capturer().last_key_event()->key_code());
 }
 
 class SwitchAccessAccessibilityEventRewriterTest

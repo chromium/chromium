@@ -22,7 +22,8 @@ class AccessibilityEventHandlerManager {
   // Ordered by priority. Earlier enums will get events before later ones.
   // Create a new level for each type of accessibility EventHandler.
   enum class HandlerType {
-    kCursor = 0,
+    kMouseKeys = 0,
+    kCursor,
     kFullscreenMagnifier,
     kDockedMagnifier,
     kChromeVox,
