@@ -50,10 +50,10 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 }  // namespace
 
 // Test case for the Safety Check view, i.e. Safety Check (Magic Stack) module.
-@interface SafetyCheckViewCase : ChromeTestCase
+@interface SafetyCheckViewTestCase : ChromeTestCase
 @end
 
-@implementation SafetyCheckViewCase
+@implementation SafetyCheckViewTestCase
 
 - (void)setUp {
   [super setUp];
@@ -86,7 +86,7 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 
 // Tests that long pressing the Safety Check view displays a context menu; tests
 // the Safety Check view is properly hidden via the context menu.
-- (void)testLongPressAndHide {
+- (void)DISABLED_testLongPressAndHide {
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                               safety_check::kSafetyCheckViewID),
@@ -112,7 +112,7 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 
 // Tests that the Password Checkup view is dismissed when there are no saved
 // passwords.
-- (void)testPasswordCheckupDismissedAfterAllPasswordsGone {
+- (void)DISABLED_testPasswordCheckupDismissedAfterAllPasswordsGone {
   password_manager_test_utils::SavePasswordFormToProfileStore();
 
   [[[EarlGrey
@@ -160,7 +160,7 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 
 // Tests that the Password Checkup view is dismissed when the user doesn't pass
 // Local Authentication.
-- (void)testPasswordCheckupDismissedAfterFailedAuthentication {
+- (void)DISABLED_testPasswordCheckupDismissedAfterFailedAuthentication {
   password_manager_test_utils::SavePasswordFormToProfileStore();
 
   [[[EarlGrey

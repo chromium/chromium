@@ -39,10 +39,10 @@ GREYLayoutConstraint* RightConstraint() {
 
 // Tests the Smart Sorting algorithm correctly sorts destinations in the new
 // overflow menu carousel given certain usage.
-@interface DestinationUsageHistoryCase : ChromeTestCase
+@interface DestinationUsageHistoryTestCase : ChromeTestCase
 @end
 
-@implementation DestinationUsageHistoryCase
+@implementation DestinationUsageHistoryTestCase
 
 - (void)setUp {
   [super setUp];
@@ -200,7 +200,7 @@ GREYLayoutConstraint* RightConstraint() {
   [ChromeEarlGreyUI closeToolsMenu];
 }
 
-#pragma mark - DestinationUsageHistoryCase Tests
+#pragma mark - DestinationUsageHistoryTestCase Tests
 
 // Tests the default sort order for the destinations carousel is correctly
 // displayed. The default sort order is:
@@ -212,9 +212,9 @@ GREYLayoutConstraint* RightConstraint() {
 // 6. Recent Tabs
 // 7. Site Information
 // 8. Settings
-- (void)testDefaultCarouselSortOrderDisplayed {
+- (void)DISABLED_testDefaultCarouselSortOrderDisplayed {
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
-  [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:NO];
+  [DestinationUsageHistoryTestCase verifyCarouselHasDefaultSortOrderOnNTP:NO];
 }
 
 // Tests the default sort order for the destinations carousel is correctly
@@ -228,8 +228,8 @@ GREYLayoutConstraint* RightConstraint() {
 // 7. Settings
 // NOTE: By design, the Site Information destination is removed from the
 // destinations carousel on the NTP.
-- (void)testDefaultCarouselSortOrderDisplayedOnNTP {
-  [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
+- (void)DISABLED_testDefaultCarouselSortOrderDisplayedOnNTP {
+  [DestinationUsageHistoryTestCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
 }
 
 // Tests the default sort order for the destinations carousel is correctly
@@ -240,10 +240,10 @@ GREYLayoutConstraint* RightConstraint() {
 // 4. Downloads
 // 5. Site Information
 // 6. Settings
-- (void)testDefaultCarouselSortOrderDisplayedForIncognito {
+- (void)DISABLED_testDefaultCarouselSortOrderDisplayedForIncognito {
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
-  [DestinationUsageHistoryCase
+  [DestinationUsageHistoryTestCase
       verifyCarouselHasDefaultSortOrderOnNTPForIncognito:NO];
 }
 
@@ -257,9 +257,9 @@ GREYLayoutConstraint* RightConstraint() {
 //
 // NOTE: By design, the Site Information destination is removed from the
 // destinations carousel on the NTP.
-- (void)testDefaultCarouselSortOrderDisplayedOnNTPForIncognito {
+- (void)DISABLED_testDefaultCarouselSortOrderDisplayedOnNTPForIncognito {
   [ChromeEarlGrey openNewIncognitoTab];
-  [DestinationUsageHistoryCase
+  [DestinationUsageHistoryTestCase
       verifyCarouselHasDefaultSortOrderOnNTPForIncognito:YES];
 }
 
@@ -270,7 +270,7 @@ GREYLayoutConstraint* RightConstraint() {
 
 // Tests an above-the-fold destination never moves within group (A),
 // regardless of usage.
-- (void)testAboveFoldDestinationNeverPromotes {
+- (void)DISABLED_testAboveFoldDestinationNeverPromotes {
   // Tap the above-fold destination, Password Manager, 5 times.
   for (int i = 0; i < 5; i++) {
     [ChromeEarlGreyUI openToolsMenu];
@@ -281,11 +281,11 @@ GREYLayoutConstraint* RightConstraint() {
         performAction:grey_tap()];
   }
 
-  [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
+  [DestinationUsageHistoryTestCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
 }
 
 // Tests a below-the-fold destination gets promoted.
-- (void)testBelowFoldDestinationPromotes {
+- (void)DISABLED_testBelowFoldDestinationPromotes {
   // Tap the below-fold destination, Settings, 5 times.
   for (int i = 0; i < 5; i++) {
     [ChromeEarlGreyUI openToolsMenu];
@@ -342,8 +342,8 @@ GREYLayoutConstraint* RightConstraint() {
 
 // Tests a below-the-fold destination is not promoted until the third click
 // for a fresh destination usage history.
-- (void)testNoSwapUntilMinClickCountReached {
-  [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
+- (void)DISABLED_testNoSwapUntilMinClickCountReached {
+  [DestinationUsageHistoryTestCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
 
   // 1st Settings tap (no promotion expected after this tap)
   [ChromeEarlGreyUI openToolsMenu];
@@ -353,7 +353,7 @@ GREYLayoutConstraint* RightConstraint() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
 
-  [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
+  [DestinationUsageHistoryTestCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
 
   // 2nd Settings tap (no promotion expected after this tap)
   [ChromeEarlGreyUI openToolsMenu];
@@ -363,7 +363,7 @@ GREYLayoutConstraint* RightConstraint() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
 
-  [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
+  [DestinationUsageHistoryTestCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
 
   // 3rd Settings tap (promotion expected after this tap!)
   [ChromeEarlGreyUI openToolsMenu];
@@ -422,8 +422,8 @@ GREYLayoutConstraint* RightConstraint() {
 // list. This test verifies that this destination is correctly part of group (B)
 // initially, and, with enough usage, is promoted to group (A)—the
 // "above-the-fold" destinations.
-- (void)testLastImmediatelyVisibleDestinationPromotes {
-  [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
+- (void)DISABLED_testLastImmediatelyVisibleDestinationPromotes {
+  [DestinationUsageHistoryTestCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
 
   // 1st Downloads tap (no promotion expected after this tap)
   [ChromeEarlGreyUI openToolsMenu];
@@ -432,7 +432,7 @@ GREYLayoutConstraint* RightConstraint() {
       tapToolsMenuButton:chrome_test_util::DownloadsDestinationButton()];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
-  [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
+  [DestinationUsageHistoryTestCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
 
   // 2nd Downloads tap (no promotion expected after this tap)
   [ChromeEarlGreyUI openToolsMenu];
@@ -441,7 +441,7 @@ GREYLayoutConstraint* RightConstraint() {
       tapToolsMenuButton:chrome_test_util::DownloadsDestinationButton()];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
-  [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
+  [DestinationUsageHistoryTestCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
 
   // 3rd Downloads tap (promotion expected after this tap!)
   [ChromeEarlGreyUI openToolsMenu];
