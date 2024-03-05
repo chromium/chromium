@@ -181,6 +181,8 @@ class CORE_EXPORT ConstraintSpace final {
     return bitfields_.is_orthogonal_writing_mode_root;
   }
 
+  bool IsHiddenForPaint() const { return bitfields_.is_hidden_for_paint; }
+
   // The available space size.
   // See: https://drafts.csswg.org/css-sizing/#available
   LogicalSize AvailableSize() const { return available_size_; }
@@ -315,10 +317,6 @@ class CORE_EXPORT ConstraintSpace final {
   std::optional<LayoutUnit> TableCellAlignmentBaseline() const {
     return HasRareData() ? rare_data_->TableCellAlignmentBaseline()
                          : std::nullopt;
-  }
-
-  bool IsTableCellHiddenForPaint() const {
-    return HasRareData() ? rare_data_->IsTableCellHiddenForPaint() : false;
   }
 
   bool IsTableCellWithCollapsedBorders() const {
@@ -1209,15 +1207,6 @@ class CORE_EXPORT ConstraintSpace final {
           table_cell_alignment_baseline;
     }
 
-    bool IsTableCellHiddenForPaint() const {
-      return GetDataUnionType() == DataUnionType::kTableCellData &&
-             table_cell_data_.is_hidden_for_paint;
-    }
-
-    void SetIsTableCellHiddenForPaint(bool is_hidden_for_paint) {
-      EnsureTableCellData()->is_hidden_for_paint = is_hidden_for_paint;
-    }
-
     bool IsTableCellWithCollapsedBorders() const {
       return GetDataUnionType() == DataUnionType::kTableCellData &&
              table_cell_data_.has_collapsed_borders;
@@ -1378,20 +1367,17 @@ class CORE_EXPORT ConstraintSpace final {
         // still possible to hit the cache if this differs.
         return table_cell_borders == other.table_cell_borders &&
                table_cell_column_index == other.table_cell_column_index &&
-               is_hidden_for_paint == other.is_hidden_for_paint &&
                has_collapsed_borders == other.has_collapsed_borders;
       }
 
       bool IsInitialForMaySkipLayout() const {
         return table_cell_borders == BoxStrut() &&
-               table_cell_column_index == kNotFound && !is_hidden_for_paint &&
-               !has_collapsed_borders;
+               table_cell_column_index == kNotFound && !has_collapsed_borders;
       }
 
       BoxStrut table_cell_borders;
       wtf_size_t table_cell_column_index = kNotFound;
       std::optional<LayoutUnit> table_cell_alignment_baseline;
-      bool is_hidden_for_paint = false;
       bool has_collapsed_borders = false;
     };
 
@@ -1566,6 +1552,7 @@ class CORE_EXPORT ConstraintSpace final {
           is_new_formatting_context(false),
           is_orthogonal_writing_mode_root(false),
           is_painted_atomically(false),
+          is_hidden_for_paint(false),
           use_first_line_style(false),
           ancestor_has_clearance_past_adjoining_floats(false),
           baseline_algorithm_type(
@@ -1595,6 +1582,7 @@ class CORE_EXPORT ConstraintSpace final {
              is_orthogonal_writing_mode_root ==
                  other.is_orthogonal_writing_mode_root &&
              is_painted_atomically == other.is_painted_atomically &&
+             is_hidden_for_paint == other.is_hidden_for_paint &&
              use_first_line_style == other.use_first_line_style &&
              ancestor_has_clearance_past_adjoining_floats ==
                  other.ancestor_has_clearance_past_adjoining_floats &&
@@ -1625,6 +1613,7 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned is_orthogonal_writing_mode_root : 1;
 
     unsigned is_painted_atomically : 1;
+    unsigned is_hidden_for_paint : 1;
     unsigned use_first_line_style : 1;
     unsigned ancestor_has_clearance_past_adjoining_floats : 1;
 

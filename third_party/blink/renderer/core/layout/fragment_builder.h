@@ -502,7 +502,8 @@ class CORE_EXPORT FragmentBuilder {
         space_(space),
         style_(style),
         writing_direction_(writing_direction),
-        style_variant_(StyleVariant::kStandard) {
+        style_variant_(StyleVariant::kStandard),
+        is_hidden_for_paint_(space.IsHiddenForPaint()) {
     DCHECK(style_);
     layout_object_ = node.GetLayoutBox();
   }

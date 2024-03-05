@@ -1440,7 +1440,7 @@ void SetupTableCellConstraintSpaceBuilder(
   builder->SetTableCellColumnIndex(start_column);
   builder->SetIsRestrictedBlockSizeTableCell(
       is_table_block_size_specified || cell_style.LogicalHeight().IsFixed());
-  builder->SetIsTableCellHiddenForPaint(is_hidden_for_paint);
+  builder->SetIsHiddenForPaint(is_hidden_for_paint);
   builder->SetIsTableCellWithCollapsedBorders(has_collapsed_borders);
   builder->SetHideTableCellIfEmpty(
       !has_collapsed_borders && cell_style.EmptyCells() == EEmptyCells::kHide);
@@ -1602,11 +1602,14 @@ void FinalizeTableCellLayout(LayoutUnit unconstrained_intrinsic_block_size,
   const bool has_inflow_children = !builder->Children().empty();
 
   // Hide table-cells if:
-  //  - They are within a collapsed column(s).
+  //  - They are within a collapsed column(s). These are already marked as
+  //    hidden for paint in the constraint space, and don't need to be marked
+  //    again in the fragment builder.
   //  - They have "empty-cells: hide", non-collapsed borders, and no children.
-  builder->SetIsHiddenForPaint(
-      space.IsTableCellHiddenForPaint() ||
-      (space.HideTableCellIfEmpty() && !has_inflow_children));
+  if (!space.IsHiddenForPaint()) {
+    builder->SetIsHiddenForPaint(space.HideTableCellIfEmpty() &&
+                                 !has_inflow_children);
+  }
   builder->SetHasCollapsedBorders(space.IsTableCellWithCollapsedBorders());
   builder->SetIsTablePart();
   builder->SetTableCellColumnIndex(space.TableCellColumnIndex());
