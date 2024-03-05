@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
 [FAIL] el-aside-in-section
   assert_false: Computed Role: "complementary" does not match any of the acceptable role strings in ["generic", "", "none"]: <aside data-testname="el-aside-in-section" class="ex-generic">x</aside> expected false got true
+[FAIL] el-footer
+  assert_false: Computed Role: "FooterAsNonLandmark" does not match any of the acceptable role strings in ["generic", "", "none"]: <footer data-testname="el-footer" aria-label="x" class="ex-generic">x\n</footer> expected false got true
 [FAIL] el-header
   assert_false: Computed Role: "HeaderAsNonLandmark" does not match any of the acceptable role strings in ["generic", "", "none"]: <header data-testname="el-header" aria-label="x" class="ex-generic">x</header> expected false got true
 [FAIL] el-header-ancestormain
