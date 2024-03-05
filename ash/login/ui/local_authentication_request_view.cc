@@ -411,7 +411,7 @@ void LocalAuthenticationRequestView::OnAuthComplete(
   if (authentication_error.has_value()) {
     LOG(ERROR) << "An error happened during the attempt to validate "
                   "the password: "
-               << authentication_error.value().get_cryptohome_code();
+               << authentication_error.value().get_cryptohome_error();
     user_context_ = std::move(user_context);
     UpdateState(
         LocalAuthenticationRequestViewState::kError, default_title_,

@@ -320,7 +320,7 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
   bool is_gaia_password_configured = true;
   if (error.has_value()) {
     LOG(WARNING) << "Failed to get auth factors configuration, code "
-                 << error->get_cryptohome_code()
+                 << error->get_cryptohome_error()
                  << ", skip fetching reauth request token";
   } else {
     const auto& config = user_context->GetAuthFactorsConfiguration();

@@ -243,7 +243,7 @@ void AuthSessionAuthenticator::DoCompleteLogin(
                                : AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Error starting authsession for Regular user "
-                     << error.value().get_cryptohome_code();
+                     << error.value().get_cryptohome_error();
     std::move(error_callback).Run(std::move(context), error.value());
     return;
   }
@@ -448,7 +448,7 @@ void AuthSessionAuthenticator::DoLoginAsExistingUser(
                                : AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Error starting authsession for Regular user "
-                     << error.value().get_cryptohome_code();
+                     << error.value().get_cryptohome_error();
     std::move(error_callback).Run(std::move(context), error.value());
     return;
   }
@@ -511,7 +511,7 @@ void AuthSessionAuthenticator::DoUnlock(
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Error starting authsession for Regular user for "
                         "verification intent "
-                     << error.value().get_cryptohome_code();
+                     << error.value().get_cryptohome_error();
     std::move(error_callback).Run(std::move(context), error.value());
     return;
   }
@@ -616,7 +616,7 @@ void AuthSessionAuthenticator::DoLoginAsPublicSession(
 
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Error starting authsession for MGS "
-                     << error.value().get_cryptohome_code();
+                     << error.value().get_cryptohome_error();
     std::move(error_callback).Run(std::move(context), error.value());
     return;
   }
@@ -697,7 +697,7 @@ void AuthSessionAuthenticator::DoLoginAsKiosk(
                                : AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Error starting authsession for Kiosk "
-                     << error.value().get_cryptohome_code();
+                     << error.value().get_cryptohome_error();
     std::move(error_callback).Run(std::move(context), error.value());
     return;
   }
@@ -1116,9 +1116,9 @@ void AuthSessionAuthenticator::ProcessCryptohomeError(
   bool handled = ResolveCryptohomeError(default_error, error);
   if (!handled) {
     NOTREACHED() << "Unhandled cryptohome error: "
-                 << error.get_cryptohome_code();
+                 << error.get_cryptohome_error();
     SCOPED_CRASH_KEY_NUMBER("Cryptohome", "error_code",
-                            error.get_cryptohome_code());
+                            error.get_cryptohome_error().code());
     base::debug::DumpWithoutCrashing();
     error.ResolveToFailure(default_error);
   }
@@ -1249,7 +1249,7 @@ void AuthSessionAuthenticator::OnUnmountForNonOwner(
     // Crash if could not unmount home directory, and let session_manager
     // handle it.
     LOG(FATAL) << "Failed to unmount non-owner home directory "
-               << error->get_cryptohome_code();
+               << error->get_cryptohome_error();
   } else {
     NotifyFailure(AuthFailure::OWNER_REQUIRED, std::move(context));
   }

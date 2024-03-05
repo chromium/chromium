@@ -149,7 +149,7 @@ void OnRemoveUserComplete(const AccountId& account_id,
                           std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Removal of cryptohome for " << account_id.Serialize()
-               << " failed, return code: " << error->get_cryptohome_code();
+               << " failed, return code: " << error->get_cryptohome_error();
   }
 }
 

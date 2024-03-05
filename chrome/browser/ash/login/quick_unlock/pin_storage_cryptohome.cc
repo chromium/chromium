@@ -302,7 +302,7 @@ void PinStorageCryptohome::OnAuthFactorsEdit(
     std::unique_ptr<UserContext> user_context,
     std::optional<AuthenticationError> error) {
   if (error.has_value()) {
-    LOG(ERROR) << "Failed to edit pin, code " << error->get_cryptohome_code();
+    LOG(ERROR) << "Failed to edit pin, code " << error->get_cryptohome_error();
     std::move(callback).Run(std::move(user_context), std::move(error));
     return;
   }

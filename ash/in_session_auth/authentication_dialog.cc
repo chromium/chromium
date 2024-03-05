@@ -202,7 +202,7 @@ void AuthenticationDialog::OnAuthFactorValidityChecked(
     }
     LOG(ERROR) << "An error happened during the attempt to validate"
                   "the password: "
-               << authentication_error.value().get_cryptohome_code();
+               << authentication_error.value().get_cryptohome_error();
     ShowAuthError();
     return;
   }
@@ -256,7 +256,7 @@ void AuthenticationDialog::OnAuthSessionStarted(
     std::optional<AuthenticationError> authentication_error) {
   if (authentication_error.has_value()) {
     LOG(ERROR) << "Error starting authsession for in session authentication: "
-               << authentication_error.value().get_cryptohome_code();
+               << authentication_error.value().get_cryptohome_error();
     CancelAuthAttempt();
   } else if (!user_exists) {
     LOG(ERROR) << "Attempting to authenticate a user which does not exist. "

@@ -386,7 +386,7 @@ void InSessionPasswordChangeManager::OnPasswordUpdateFailure(
     std::unique_ptr<UserContext> /*user_context*/,
     AuthenticationError error) {
   VLOG(1) << "Failed to change cryptohome password: "
-          << error.get_cryptohome_code();
+          << error.get_cryptohome_error();
   RecordCryptohomePasswordChangeFailure(password_source_);
   NotifyObservers(Event::CRYPTOHOME_PASSWORD_CHANGE_FAILURE);
 }

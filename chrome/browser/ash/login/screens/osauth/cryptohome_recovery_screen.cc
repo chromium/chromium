@@ -109,7 +109,7 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
     std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Failed to get auth factors configuration, code "
-               << error->get_cryptohome_code();
+               << error->get_cryptohome_error();
     context()->user_context = std::move(user_context);
     if (base::FeatureList::IsEnabled(
             ash::features::kCryptohomeRecoveryBeforeFlowSplit)) {
@@ -212,7 +212,7 @@ void CryptohomeRecoveryScreen::OnRotateRecoveryFactor(
     std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Failed to rotate recovery factor, code "
-               << error->get_cryptohome_code();
+               << error->get_cryptohome_error();
     context()->extra_factors_token =
         ash::AuthSessionStorage::Get()->Store(std::move(user_context));
     context()->osauth_error =
@@ -259,7 +259,7 @@ void CryptohomeRecoveryScreen::OnRefreshFactorsConfiguration(
     std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Failed to get auth factors configuration, code "
-               << error->get_cryptohome_code();
+               << error->get_cryptohome_error();
     context()->user_context = std::move(user_context);
     context()->osauth_error = WizardContext::OSAuthErrorKind::kFatal;
     exit_callback_.Run(Result::kError);
@@ -276,7 +276,7 @@ void CryptohomeRecoveryScreen::OnReplaceContextKey(
   context()->user_context = std::move(user_context);
   if (error.has_value()) {
     LOG(ERROR) << "Failed to replace context key, code "
-               << error->get_cryptohome_code();
+               << error->get_cryptohome_error();
     view_->OnRecoveryFailed();
     return;
   }
