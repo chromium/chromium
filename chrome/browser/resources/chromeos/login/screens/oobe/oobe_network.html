@@ -2,6 +2,15 @@
   network-select-login {
     --cr-network-row-height: var(--oobe-network-row-height);
   }
+
+  #quickStartWifiRow {
+    padding-top: 16px;
+  }
+
+  #quickStartWifiName {
+    padding-inline-start: 16px;
+    font-size: 16px;
+  }
 </style>
 <oobe-adaptive-dialog id="networkDialog" role="dialog"
     on-show-dialog="onShown" for-step="default"
@@ -41,7 +50,15 @@
     subtitle-key="networkScreenQuickStartTransferWifiSubtitle">
   <iron-icon slot="icon" icon="oobe-20:quick-start-wifi">
   </iron-icon>
-  <!-- TODO(b/300389592): Add a WiFi name to subtitle -->
+  <div slot="subtitle">
+    [[i18nDynamic(locale, 'networkScreenQuickStartTransferWifiSubtitle')]]
+    <div id="quickStartWifiRow" class="flex layout horizontal">
+      <iron-icon icon="oobe-20:quick-start-wifi-bars"
+              class="content-icon">
+      </iron-icon>
+      <div id="quickStartWifiName">[[ssid]]</div>
+    </div>
+  </div>
   <div slot="cancel-button">
     <oobe-text-button id="cancelButton" on-click="onCancelClicked"
         text-key="cancelButton">

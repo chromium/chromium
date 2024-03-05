@@ -19,9 +19,13 @@ found in the LICENSE file.
       </template>
     </slot>
   </h1>
-  <template is="dom-if" if="[[subtitleKey]]">
-    <div slot="subtitle">[[i18nDynamic(locale, subtitleKey)]]</div>
-  </template>
+  <div slot="subtitle">
+    <slot name="subtitle">
+      <template is="dom-if" if="[[subtitleKey]]">
+        <div>[[i18nDynamic(locale, subtitleKey)]]</div>
+      </template>
+    </slot>
+  </div>
   <div slot="content" class="flex layout vertical center center-justified">
     <oobe-cr-lottie id="spinner" hide-play-pause-icon
         animation-url="../../animations/spinner.json">
