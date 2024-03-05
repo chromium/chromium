@@ -26,6 +26,13 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="DisplayServerSupport">
+  <int value="0" label="None"/>
+  <int value="1" label="X11"/>
+  <int value="2" label="XWayland"/>
+  <int value="3" label="Wayland"/>
+</enum>
+
 <enum name="SilentPushEvent">
   <int value="0" label="New Silent Push request"/>
   <int value="1" label="Notification enforcement skipped"/>

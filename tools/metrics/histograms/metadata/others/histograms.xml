@@ -6721,6 +6721,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Linux.DisplayServerSupport" enum="DisplayServerSupport"
+    expires_after="never">
+<!-- expires-never: Needed to measure Linux ecosystem. -->
+
+  <owner>thestig@chromium.org</owner>
+  <owner>thomasanderson@chromium.org</owner>
+  <summary>
+    The supported display server protocols. (Linux only) Logged on each start
+    up.
+  </summary>
+</histogram>
+
 <histogram name="Linux.Distro.Debian" enum="LinuxDistroDebianVersion"
     expires_after="never">
 <!-- expires-never: Needed to measure Linux ecosystem. -->

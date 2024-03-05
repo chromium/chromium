@@ -20,6 +20,7 @@ class ChromeBrowserMainExtraPartsLinux
  private:
   // ChromeBrowserMainExtraParts overrides.
   void PreEarlyInitialization() override;
+  void PostBrowserStart() override;
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_EXTRA_PARTS_LINUX_H_
