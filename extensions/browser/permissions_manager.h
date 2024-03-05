@@ -10,10 +10,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/types/pass_key.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/extension_id.h"
 #include "url/origin.h"
 
+class ExtensionsMenuViewController;
 class BrowserContextKeyedServiceFactory;
 
 namespace content {
@@ -263,6 +265,19 @@ class PermissionsManager : public KeyedService {
   std::unique_ptr<const PermissionSet> GetExtensionGrantedPermissions(
       const Extension& extension) const;
 
+  // Adds `extension_id` to the `extensions_with_previous_broad_access` set.
+  void AddExtensionToPreviousBroadSiteAccessSet(
+      const ExtensionId& extension_id);
+
+  // Removes `extension_id` from the `extensions_with_previous_broad_access`
+  // set, if existent.
+  void RemoveExtensionFromPreviousBroadSiteAccessSet(
+      const ExtensionId& extension_id);
+
+  // Returns whether `extension_id` is in the
+  // `extensions_with_previous_broad_access` set.
+  bool HasPreviousBroadSiteAccess(const ExtensionId& extension_id);
+
   // Notifies `observers_` that the permissions have been updated for an
   // extension.
   void NotifyExtensionPermissionsUpdated(const Extension& extension,
@@ -316,6 +331,17 @@ class PermissionsManager : public KeyedService {
 
   const raw_ptr<ExtensionPrefs> extension_prefs_;
   UserPermissionsSettings user_permissions_;
+
+  // Stores extensions whose site access was updated using the extensions
+  // menu and previously had broad site access. This is done to preserve the
+  // previous site access state when toggling on the extension's site access
+  // using ExtensionsMenuViewController.
+  // The set only reflects site access changes made in the extensions menu. An
+  // extension's site access could be changed elsewhere (e.g
+  // chrome://extensions) but wouldn't be added/removed to/from this set. This
+  // is ok, since the main goal is to represent the last explicit state in
+  // the extensions menu.
+  std::set<ExtensionId> extensions_with_previous_broad_access_;
 
   base::WeakPtrFactory<PermissionsManager> weak_factory_{this};
 };

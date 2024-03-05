@@ -99,6 +99,14 @@ void SitePermissionsHelper::UpdateSiteAccess(
   CHECK(permissions_manager->CanUserSelectSiteAccess(extension, current_url,
                                                      new_access));
 
+  if (current_access == PermissionsManager::UserSiteAccess::kOnAllSites) {
+    permissions_manager->AddExtensionToPreviousBroadSiteAccessSet(
+        extension.id());
+  } else {
+    permissions_manager->RemoveExtensionFromPreviousBroadSiteAccessSet(
+        extension.id());
+  }
+
   switch (new_access) {
     case PermissionsManager::UserSiteAccess::kOnClick:
       if (permissions_manager->HasBroadGrantedHostPermissions(extension)) {

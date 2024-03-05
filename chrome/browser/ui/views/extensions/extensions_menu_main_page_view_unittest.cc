@@ -342,7 +342,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
   // When site access is toggled ON:
-  //   - extension site access is "on site".
+  //   - extension site access is "on site", since that was the previous
+  //     granted site access state.
   //   - site access toggle is visible and on.
   //   - site permissions button is visible, enabled, with icon and has "on
   //     site" text.
@@ -415,15 +416,14 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
   // When site access is toggled ON:
-  //   - extension site access is "on site". Even though previously extension
-  //     had on all sites, toggling site access on grants access just to this
-  //     site. User can still grant all sites in the site permissions page.
+  //   - extension site access is "on all sites", since that was the previous
+  //     granted site access state.
   //   - site access toggle is visible and on.
   //   - site permissions button is visible, enabled, with icon and has "on
   //     site" text.
   ClickSiteAccessToggle(menu_item);
   EXPECT_EQ(GetUserSiteAccess(*extension, url),
-            PermissionsManager::UserSiteAccess::kOnSite);
+            PermissionsManager::UserSiteAccess::kOnAllSites);
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetVisible());
@@ -433,7 +433,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_EQ(
       menu_item->site_permissions_button_for_testing()->title()->GetText(),
       l10n_util::GetStringUTF16(
-          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE));
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
 }
 
 // Verifies the site access toggle and site permissions button properties for an
@@ -496,6 +496,59 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   LayoutMenuIfNecessary();
   EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_item->site_permissions_button_for_testing()->GetVisible());
+}
+
+// Verifies the site access toggle persists its previous state when toggling
+// site access on.
+TEST_F(
+    ExtensionsMenuMainPageViewUnitTest,
+    HostPermissionsRequested_DynamicUpdates_TogglePersistsPreviousSiteAccess) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  const GURL url("http://www.example.com");
+  web_contents_tester()->NavigateAndCommit(url);
+
+  ShowMenu();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+
+  // By default, site setting is set to "customize by extension" (default) and
+  // extension has granted "on all sites" access:
+  //   - site access toggle is on.
+  //   - site permissions button has "on all sites" text.
+  ASSERT_EQ(GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  ASSERT_EQ(GetUserSiteAccess(*extension, url),
+            PermissionsManager::UserSiteAccess::kOnAllSites);
+  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
+
+  // Update site access to be "on click".
+  //   - site access toggle is off
+  //   - site permissions button has "on click" text.
+  UpdateUserSiteAccess(*extension,
+                       browser()->tab_strip_model()->GetActiveWebContents(),
+                       PermissionsManager::UserSiteAccess::kOnClick);
+  LayoutMenuIfNecessary();
+  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+
+  // Toggle extension site access ON:
+  //   - site access toggle is on
+  //   - site permissions button has "on all sites" text, since that was the
+  //     previous granted site access state.
+  ClickSiteAccessToggle(menu_item);
+  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
 }
 
 // Verifies the site access toggle and site permissions button properties for an

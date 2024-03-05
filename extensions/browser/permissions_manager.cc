@@ -766,6 +766,21 @@ PermissionsManager::GetExtensionGrantedPermissions(
              : extension_prefs_->GetGrantedPermissions(extension.id());
 }
 
+void PermissionsManager::AddExtensionToPreviousBroadSiteAccessSet(
+    const ExtensionId& extension_id) {
+  extensions_with_previous_broad_access_.insert(extension_id);
+}
+
+void PermissionsManager::RemoveExtensionFromPreviousBroadSiteAccessSet(
+    const ExtensionId& extension_id) {
+  extensions_with_previous_broad_access_.erase(extension_id);
+}
+
+bool PermissionsManager::HasPreviousBroadSiteAccess(
+    const ExtensionId& extension_id) {
+  return extensions_with_previous_broad_access_.contains(extension_id);
+}
+
 void PermissionsManager::NotifyExtensionPermissionsUpdated(
     const Extension& extension,
     const PermissionSet& permissions,

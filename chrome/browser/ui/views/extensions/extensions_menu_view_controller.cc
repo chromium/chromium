@@ -420,13 +420,18 @@ void ExtensionsMenuViewController::OnExtensionToggleSelected(
     DCHECK_EQ(current_site_access,
               PermissionsManager::UserSiteAccess::kOnClick);
 
-    // Update site access to "on site" when extension requested host
-    // permissions for the current site (that is, site access was withheld).
+    // Update site access when extension requested host permissions for the
+    // current site (that is, site access was withheld).
     if (extension_site_access.withheld_site_access ||
         extension_site_access.withheld_all_sites_access) {
-      permissions_helper.UpdateSiteAccess(
-          *extension, web_contents,
-          PermissionsManager::UserSiteAccess::kOnSite);
+      // Restore to previous access by looking whether broad site access was
+      // previously granted.
+      PermissionsManager::UserSiteAccess new_site_access =
+          permissions_manager->HasPreviousBroadSiteAccess(extension_id)
+              ? PermissionsManager::UserSiteAccess::kOnAllSites
+              : PermissionsManager::UserSiteAccess::kOnSite;
+      permissions_helper.UpdateSiteAccess(*extension, web_contents,
+                                          new_site_access);
       return;
     }
 
