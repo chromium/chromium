@@ -2518,7 +2518,6 @@
       // testing the deprecation via Finch.
       // https://drafts.csswg.org/css-ui-4/#appearance-switching
       name: "NonStandardAppearanceValuesHighUsage",
-      status: "stable",
     },
     {
       // TODO(crbug.com/1426629): This feature enables the deprecated value
