@@ -11,8 +11,7 @@
 namespace ash {
 
 // Interface between the device disabled screen and its representation.
-class DeviceDisabledScreenView
-    : public base::SupportsWeakPtr<DeviceDisabledScreenView> {
+class DeviceDisabledScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"device-disabled",
                                                        "DeviceDisabledScreen"};
@@ -29,11 +28,14 @@ class DeviceDisabledScreenView
                     const std::string& message,
                     bool is_disabled_ad_device) = 0;
   virtual void UpdateMessage(const std::string& message) = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<DeviceDisabledScreenView> AsWeakPtr() = 0;
 };
 
 // WebUI implementation of DeviceDisabledScreenActor.
-class DeviceDisabledScreenHandler : public DeviceDisabledScreenView,
-                                    public BaseScreenHandler {
+class DeviceDisabledScreenHandler final : public DeviceDisabledScreenView,
+                                          public BaseScreenHandler {
  public:
   using TView = DeviceDisabledScreenView;
 
@@ -51,10 +53,14 @@ class DeviceDisabledScreenHandler : public DeviceDisabledScreenView,
             const std::string& message,
             bool is_disabled_ad_device) override;
   void UpdateMessage(const std::string& message) override;
+  base::WeakPtr<DeviceDisabledScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+
+ private:
+  base::WeakPtrFactory<DeviceDisabledScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

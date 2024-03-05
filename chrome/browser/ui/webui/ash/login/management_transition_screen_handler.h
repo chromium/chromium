@@ -13,8 +13,7 @@ namespace ash {
 
 // Interface for dependency injection between ManagementTransitionScreen
 // and its WebUI representation.
-class ManagementTransitionScreenView
-    : public base::SupportsWeakPtr<ManagementTransitionScreenView> {
+class ManagementTransitionScreenView {
  public:
   // Renamed from "supervision-transition".
   inline constexpr static StaticOobeScreenId kScreenId{
@@ -32,11 +31,13 @@ class ManagementTransitionScreenView
 
   virtual void ShowError() = 0;
 
+  virtual base::WeakPtr<ManagementTransitionScreenView> AsWeakPtr() = 0;
+
  protected:
   ManagementTransitionScreenView() = default;
 };
 
-class ManagementTransitionScreenHandler
+class ManagementTransitionScreenHandler final
     : public BaseScreenHandler,
       public ManagementTransitionScreenView {
  public:
@@ -59,6 +60,11 @@ class ManagementTransitionScreenHandler
             std::string management_entity) override;
 
   void ShowError() override;
+
+  base::WeakPtr<ManagementTransitionScreenView> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<ManagementTransitionScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

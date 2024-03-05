@@ -48,4 +48,8 @@ void DrivePinningScreenHandler::Show(base::Value::Dict data) {
   ShowInWebUI(std::move(data));
 }
 
+base::WeakPtr<DrivePinningScreenView> DrivePinningScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

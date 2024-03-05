@@ -68,4 +68,9 @@ void LacrosDataMigrationScreenHandler::SetFailureStatus(
       show_goto_files);
 }
 
+base::WeakPtr<LacrosDataMigrationScreenView>
+LacrosDataMigrationScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

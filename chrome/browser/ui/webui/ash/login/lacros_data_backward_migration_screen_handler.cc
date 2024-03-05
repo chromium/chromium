@@ -44,4 +44,9 @@ void LacrosDataBackwardMigrationScreenHandler::SetFailureStatus() {
   CallExternalAPI("setFailureStatus");
 }
 
+base::WeakPtr<LacrosDataBackwardMigrationScreenView>
+LacrosDataBackwardMigrationScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

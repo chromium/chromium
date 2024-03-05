@@ -29,6 +29,11 @@ void EnableDebuggingScreenHandler::Show() {
   ShowInWebUI();
 }
 
+base::WeakPtr<EnableDebuggingScreenView>
+EnableDebuggingScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void EnableDebuggingScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("enableDebuggingScreenTitle",

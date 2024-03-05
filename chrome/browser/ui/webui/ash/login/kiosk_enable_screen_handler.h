@@ -11,8 +11,7 @@
 namespace ash {
 
 // Interface between enable kiosk screen and its representation.
-class KioskEnableScreenView
-    : public base::SupportsWeakPtr<KioskEnableScreenView> {
+class KioskEnableScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"kiosk-enable",
                                                        "KioskEnableScreen"};
@@ -21,11 +20,12 @@ class KioskEnableScreenView
 
   virtual void Show() = 0;
   virtual void ShowKioskEnabled(bool success) = 0;
+  virtual base::WeakPtr<KioskEnableScreenView> AsWeakPtr() = 0;
 };
 
 // WebUI implementation of KioskEnableScreenActor.
-class KioskEnableScreenHandler : public KioskEnableScreenView,
-                                 public BaseScreenHandler {
+class KioskEnableScreenHandler final : public KioskEnableScreenView,
+                                       public BaseScreenHandler {
  public:
   using TView = KioskEnableScreenView;
 
@@ -39,10 +39,14 @@ class KioskEnableScreenHandler : public KioskEnableScreenView,
   // KioskEnableScreenView:
   void Show() override;
   void ShowKioskEnabled(bool success) override;
+  base::WeakPtr<KioskEnableScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+
+ private:
+  base::WeakPtrFactory<KioskEnableScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

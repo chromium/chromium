@@ -12,8 +12,7 @@
 
 namespace ash {
 
-class RemoteActivityNotificationView
-    : public base::SupportsWeakPtr<RemoteActivityNotificationView> {
+class RemoteActivityNotificationView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "remote-activity-notification", "RemoteActivityNotificationScreen"};
@@ -21,9 +20,10 @@ class RemoteActivityNotificationView
   virtual ~RemoteActivityNotificationView() = default;
 
   virtual void Show() = 0;
+  virtual base::WeakPtr<RemoteActivityNotificationView> AsWeakPtr() = 0;
 };
 
-class RemoteActivityNotificationScreenHandler
+class RemoteActivityNotificationScreenHandler final
     : public RemoteActivityNotificationView,
       public BaseScreenHandler {
  public:
@@ -39,10 +39,13 @@ class RemoteActivityNotificationScreenHandler
  private:
   // implements `RemoteActivityNotificationView`:
   void Show() override;
+  base::WeakPtr<RemoteActivityNotificationView> AsWeakPtr() override;
 
   // `BaseScreenHandler` implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+
+  base::WeakPtrFactory<RemoteActivityNotificationView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

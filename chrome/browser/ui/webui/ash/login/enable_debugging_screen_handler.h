@@ -13,8 +13,7 @@ class PrefRegistrySimple;
 namespace ash {
 
 // Interface between enable debugging screen and its representation.
-class EnableDebuggingScreenView
-    : public base::SupportsWeakPtr<EnableDebuggingScreenView> {
+class EnableDebuggingScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"debugging",
                                                        "EnableDebuggingScreen"};
@@ -31,11 +30,12 @@ class EnableDebuggingScreenView
 
   virtual void Show() = 0;
   virtual void UpdateUIState(UIState state) = 0;
+  virtual base::WeakPtr<EnableDebuggingScreenView> AsWeakPtr() = 0;
 };
 
 // WebUI implementation of EnableDebuggingScreenView.
-class EnableDebuggingScreenHandler : public EnableDebuggingScreenView,
-                                     public BaseScreenHandler {
+class EnableDebuggingScreenHandler final : public EnableDebuggingScreenView,
+                                           public BaseScreenHandler {
  public:
   using TView = EnableDebuggingScreenView;
 
@@ -50,6 +50,7 @@ class EnableDebuggingScreenHandler : public EnableDebuggingScreenView,
   // EnableDebuggingScreenView implementation:
   void Show() override;
   void UpdateUIState(UIState state) override;
+  base::WeakPtr<EnableDebuggingScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
@@ -57,6 +58,9 @@ class EnableDebuggingScreenHandler : public EnableDebuggingScreenView,
 
   // Registers Local State preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+ private:
+  base::WeakPtrFactory<EnableDebuggingScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

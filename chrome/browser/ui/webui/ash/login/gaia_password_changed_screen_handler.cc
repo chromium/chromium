@@ -79,4 +79,9 @@ void GaiaPasswordChangedScreenHandler::SuggestRecovery() {
   CallExternalAPI("suggestRecovery");
 }
 
+base::WeakPtr<GaiaPasswordChangedView>
+GaiaPasswordChangedScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

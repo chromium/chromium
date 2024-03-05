@@ -46,4 +46,9 @@ void TouchpadScrollScreenHandler::Show(base::Value::Dict data) {
   ShowInWebUI(std::move(data));
 }
 
+base::WeakPtr<TouchpadScrollScreenView>
+TouchpadScrollScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

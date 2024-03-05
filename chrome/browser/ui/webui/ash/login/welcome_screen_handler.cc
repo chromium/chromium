@@ -285,6 +285,10 @@ void WelcomeScreenHandler::SetQuickStartEnabled() {
   CallExternalAPI("setQuickStartEnabled");
 }
 
+base::WeakPtr<WelcomeView> WelcomeScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void WelcomeScreenHandler::HandleRecordChromeVoxHintSpokenSuccess() {
   base::UmaHistogramBoolean("OOBE.WelcomeScreen.ChromeVoxHintSpokenSuccess",
                             true);

@@ -20,6 +20,11 @@ void LocalStateErrorScreenHandler::Show() {
   ShowInWebUI();
 }
 
+base::WeakPtr<LocalStateErrorScreenView>
+LocalStateErrorScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void LocalStateErrorScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("localStateErrorTitle", IDS_RESET_SCREEN_REVERT_ERROR);

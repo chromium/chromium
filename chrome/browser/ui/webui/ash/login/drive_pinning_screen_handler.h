@@ -15,8 +15,7 @@ class DrivePinningScreen;
 
 // Interface for dependency injection between DrivePinningScreen and its
 // WebUI representation.
-class DrivePinningScreenView
-    : public base::SupportsWeakPtr<DrivePinningScreenView> {
+class DrivePinningScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"drive-pinning",
                                                        "DrivePinningScreen"};
@@ -28,10 +27,13 @@ class DrivePinningScreenView
 
   // Shows the contents of the screen.
   virtual void Show(base::Value::Dict data) = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<DrivePinningScreenView> AsWeakPtr() = 0;
 };
 
-class DrivePinningScreenHandler : public BaseScreenHandler,
-                                  public DrivePinningScreenView {
+class DrivePinningScreenHandler final : public BaseScreenHandler,
+                                        public DrivePinningScreenView {
  public:
   using TView = DrivePinningScreenView;
 
@@ -50,6 +52,10 @@ class DrivePinningScreenHandler : public BaseScreenHandler,
   void SetRequiredSpaceInfo(std::u16string required_space,
                             std::u16string free_space) override;
   void Show(base::Value::Dict data) override;
+  base::WeakPtr<DrivePinningScreenView> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<DrivePinningScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

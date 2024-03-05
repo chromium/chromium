@@ -15,8 +15,7 @@ class TouchpadScrollScreen;
 
 // Interface for dependency injection between TouchpadScrollScreen and its
 // WebUI representation.
-class TouchpadScrollScreenView
-    : public base::SupportsWeakPtr<TouchpadScrollScreenView> {
+class TouchpadScrollScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"touchpad-scroll",
                                                        "TouchpadScrollScreen"};
@@ -28,10 +27,13 @@ class TouchpadScrollScreenView
 
   // Shows the contents of the screen.
   virtual void Show(base::Value::Dict data) = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<TouchpadScrollScreenView> AsWeakPtr() = 0;
 };
 
-class TouchpadScrollScreenHandler : public BaseScreenHandler,
-                                    public TouchpadScrollScreenView {
+class TouchpadScrollScreenHandler final : public BaseScreenHandler,
+                                          public TouchpadScrollScreenView {
  public:
   using TView = TouchpadScrollScreenView;
 
@@ -51,6 +53,10 @@ class TouchpadScrollScreenHandler : public BaseScreenHandler,
 
   // TouchpadScrollScreenView:
   void Show(base::Value::Dict data) override;
+  base::WeakPtr<TouchpadScrollScreenView> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<TouchpadScrollScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

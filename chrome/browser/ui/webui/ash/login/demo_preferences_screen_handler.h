@@ -11,8 +11,7 @@
 namespace ash {
 
 // Interface of the demo mode preferences screen view.
-class DemoPreferencesScreenView
-    : public base::SupportsWeakPtr<DemoPreferencesScreenView> {
+class DemoPreferencesScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"demo-preferences",
                                                        "DemoPreferencesScreen"};
@@ -21,11 +20,14 @@ class DemoPreferencesScreenView
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<DemoPreferencesScreenView> AsWeakPtr() = 0;
 };
 
 // WebUI implementation of DemoPreferencesScreenView.
-class DemoPreferencesScreenHandler : public BaseScreenHandler,
-                                     public DemoPreferencesScreenView {
+class DemoPreferencesScreenHandler final : public BaseScreenHandler,
+                                           public DemoPreferencesScreenView {
  public:
   using TView = DemoPreferencesScreenView;
 
@@ -39,10 +41,14 @@ class DemoPreferencesScreenHandler : public BaseScreenHandler,
 
   // DemoPreferencesScreenView:
   void Show() override;
+  base::WeakPtr<DemoPreferencesScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+
+ private:
+  base::WeakPtrFactory<DemoPreferencesScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

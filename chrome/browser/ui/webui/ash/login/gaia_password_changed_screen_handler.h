@@ -14,8 +14,7 @@ namespace ash {
 
 // Interface for dependency injection between GaiaPasswordChangedScreen and its
 // WebUI representation.
-class GaiaPasswordChangedView
-    : public base::SupportsWeakPtr<GaiaPasswordChangedView> {
+class GaiaPasswordChangedView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "gaia-password-changed", "GaiaPasswordChangedScreen"};
@@ -28,10 +27,11 @@ class GaiaPasswordChangedView
   virtual void Show(const std::string& email) = 0;
   virtual void ShowWrongPasswordError() = 0;
   virtual void SuggestRecovery() = 0;
+  virtual base::WeakPtr<GaiaPasswordChangedView> AsWeakPtr() = 0;
 };
 
-class GaiaPasswordChangedScreenHandler : public GaiaPasswordChangedView,
-                                         public BaseScreenHandler {
+class GaiaPasswordChangedScreenHandler final : public GaiaPasswordChangedView,
+                                               public BaseScreenHandler {
  public:
   using TView = GaiaPasswordChangedView;
 
@@ -47,10 +47,13 @@ class GaiaPasswordChangedScreenHandler : public GaiaPasswordChangedView,
   void Show(const std::string& email) override;
   void ShowWrongPasswordError() override;
   void SuggestRecovery() override;
+  base::WeakPtr<GaiaPasswordChangedView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+
+  base::WeakPtrFactory<GaiaPasswordChangedView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

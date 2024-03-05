@@ -16,8 +16,7 @@ namespace ash {
 
 // Interface for dependency injection between LacrosDataMigrationScreen and its
 // WebUI representation.
-class LacrosDataMigrationScreenView
-    : public base::SupportsWeakPtr<LacrosDataMigrationScreenView> {
+class LacrosDataMigrationScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "lacros-data-migration", "LacrosDataMigrationScreen"};
@@ -42,10 +41,13 @@ class LacrosDataMigrationScreenView
   // |show_goto_files| can control
   virtual void SetFailureStatus(const std::optional<uint64_t>& required_size,
                                 bool show_goto_files) = 0;
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<LacrosDataMigrationScreenView> AsWeakPtr() = 0;
 };
 
-class LacrosDataMigrationScreenHandler : public BaseScreenHandler,
-                                         public LacrosDataMigrationScreenView {
+class LacrosDataMigrationScreenHandler final
+    : public BaseScreenHandler,
+      public LacrosDataMigrationScreenView {
  public:
   using TView = LacrosDataMigrationScreenView;
 
@@ -67,6 +69,10 @@ class LacrosDataMigrationScreenHandler : public BaseScreenHandler,
   void SetLowBatteryStatus(bool low_battery) override;
   void SetFailureStatus(const std::optional<uint64_t>& required_size,
                         bool show_goto_files) override;
+  base::WeakPtr<LacrosDataMigrationScreenView> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<LacrosDataMigrationScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

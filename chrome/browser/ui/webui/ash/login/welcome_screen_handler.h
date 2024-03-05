@@ -18,7 +18,7 @@ namespace ash {
 class WelcomeScreen;
 
 // Interface for WelcomeScreenHandler.
-class WelcomeView : public base::SupportsWeakPtr<WelcomeView> {
+class WelcomeView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"connect",
                                                        "WelcomeScreen"};
@@ -56,11 +56,15 @@ class WelcomeView : public base::SupportsWeakPtr<WelcomeView> {
   virtual void UpdateA11yState(const A11yState& state) = 0;
 
   virtual void SetQuickStartEnabled() = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<WelcomeView> AsWeakPtr() = 0;
 };
 
 // WebUI implementation of WelcomeScreenView. It is used to interact with
 // the welcome screen (part of the page) of the OOBE.
-class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
+class WelcomeScreenHandler final : public WelcomeView,
+                                   public BaseScreenHandler {
  public:
   using TView = WelcomeView;
 
@@ -81,6 +85,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   void GiveChromeVoxHint() override;
   void UpdateA11yState(const A11yState& state) override;
   void SetQuickStartEnabled() override;
+  base::WeakPtr<WelcomeView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
@@ -92,10 +97,12 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   // JS callbacks.
   void HandleRecordChromeVoxHintSpokenSuccess();
 
-  base::Value::List language_list_;
-
   // Returns available timezones.
   static base::Value::List GetTimezoneList();
+
+  base::Value::List language_list_;
+
+  base::WeakPtrFactory<WelcomeView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

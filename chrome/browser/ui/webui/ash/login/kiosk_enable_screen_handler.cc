@@ -43,4 +43,8 @@ void KioskEnableScreenHandler::ShowKioskEnabled(bool success) {
   CallExternalAPI("onCompleted", success);
 }
 
+base::WeakPtr<KioskEnableScreenView> KioskEnableScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

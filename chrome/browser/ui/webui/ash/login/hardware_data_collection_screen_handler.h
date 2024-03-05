@@ -13,20 +13,20 @@ namespace ash {
 
 // Interface between HWDataCollection screen and its representation, either
 // WebUI or Views one.
-class HWDataCollectionView
-    : public base::SupportsWeakPtr<HWDataCollectionView> {
+class HWDataCollectionView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "hw-data-collection", "HWDataCollectionScreen"};
 
   virtual ~HWDataCollectionView() = default;
   virtual void Show(bool enabled) = 0;
+  virtual base::WeakPtr<HWDataCollectionView> AsWeakPtr() = 0;
 };
 
 // WebUI implementation of HWDataCollectionView. It is used to interact
 // with the HWDataCollection part of the JS page.
-class HWDataCollectionScreenHandler : public HWDataCollectionView,
-                                      public BaseScreenHandler {
+class HWDataCollectionScreenHandler final : public HWDataCollectionView,
+                                            public BaseScreenHandler {
  public:
   using TView = HWDataCollectionView;
 
@@ -40,10 +40,14 @@ class HWDataCollectionScreenHandler : public HWDataCollectionView,
 
   // HWDataCollectionView implementation:
   void Show(bool enabled) override;
+  base::WeakPtr<HWDataCollectionView> AsWeakPtr() override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+
+ private:
+  base::WeakPtrFactory<HWDataCollectionView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

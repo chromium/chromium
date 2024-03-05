@@ -32,6 +32,11 @@ void DeviceDisabledScreenHandler::UpdateMessage(const std::string& message) {
   CallExternalAPI("setMessage", message);
 }
 
+base::WeakPtr<DeviceDisabledScreenView>
+DeviceDisabledScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void DeviceDisabledScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("deviceDisabledHeading", IDS_DEVICE_DISABLED_HEADING);

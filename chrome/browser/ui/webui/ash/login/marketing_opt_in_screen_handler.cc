@@ -92,6 +92,11 @@ void MarketingOptInScreenHandler::UpdateA11yShelfNavigationButtonToggle(
   CallExternalAPI("updateA11yNavigationButtonToggle", enabled);
 }
 
+base::WeakPtr<MarketingOptInScreenView>
+MarketingOptInScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void MarketingOptInScreenHandler::GetAdditionalParameters(
     base::Value::Dict* parameters) {
   BaseScreenHandler::GetAdditionalParameters(parameters);

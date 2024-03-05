@@ -23,6 +23,10 @@ void LocalPasswordSetupHandler::Show(bool can_go_back, bool is_recovery_flow) {
   ShowInWebUI(std::move(dict));
 }
 
+base::WeakPtr<LocalPasswordSetupView> LocalPasswordSetupHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void LocalPasswordSetupHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   const std::u16string device_name = ui::GetChromeOSDeviceName();

@@ -13,7 +13,7 @@ namespace ash {
 
 // Interface for dependency injection between AddChildScreen and its
 // WebUI representation.
-class AddChildScreenView : public base::SupportsWeakPtr<AddChildScreenView> {
+class AddChildScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"add-child",
                                                        "AddChildScreen"};
@@ -22,10 +22,13 @@ class AddChildScreenView : public base::SupportsWeakPtr<AddChildScreenView> {
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<AddChildScreenView> AsWeakPtr() = 0;
 };
 
-class AddChildScreenHandler : public BaseScreenHandler,
-                              public AddChildScreenView {
+class AddChildScreenHandler final : public BaseScreenHandler,
+                                    public AddChildScreenView {
  public:
   using TView = AddChildScreenView;
 
@@ -42,6 +45,10 @@ class AddChildScreenHandler : public BaseScreenHandler,
 
   // AddChildScreenView:
   void Show() override;
+  base::WeakPtr<AddChildScreenView> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<AddChildScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -22,6 +22,13 @@ class MockDeviceDisabledScreenView : public DeviceDisabledScreenView {
       (override));
 
   MOCK_METHOD(void, UpdateMessage, (const std::string&), (override));
+
+  base::WeakPtr<DeviceDisabledScreenView> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<DeviceDisabledScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
