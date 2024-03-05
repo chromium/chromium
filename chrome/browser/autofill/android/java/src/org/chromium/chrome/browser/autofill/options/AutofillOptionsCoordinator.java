@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -55,7 +56,7 @@ public class AutofillOptionsCoordinator {
     @VisibleForTesting
     AutofillOptionsCoordinator(AutofillOptionsFragment fragment) {
         assert ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID);
+                AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID);
         mFragment = fragment;
         mMediator = new AutofillOptionsMediator(mFragment.getProfile());
     }
