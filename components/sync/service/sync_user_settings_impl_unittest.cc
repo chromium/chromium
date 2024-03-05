@@ -12,6 +12,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -93,6 +94,12 @@ class SyncUserSettingsImplTest : public testing::Test,
 
   void SetSyncAccountState(SyncPrefs::SyncAccountState sync_account_state) {
     sync_account_state_ = sync_account_state;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    if (sync_account_state ==
+        SyncPrefs::SyncAccountState::kSignedInNotSyncing) {
+      pref_service_.SetBoolean(prefs::kExplicitBrowserSignin, true);
+    }
+#endif
   }
 
   std::unique_ptr<SyncUserSettingsImpl> MakeSyncUserSettings(
@@ -166,6 +173,9 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
 #if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+                            switches::kExplicitBrowserSigninUIOnDesktop,
+#endif
                             kEnablePasswordsAccountStorageForNonSyncingUsers,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage},
@@ -188,11 +198,6 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
   if (!base::FeatureList::IsEnabled(kSyncSharedTabGroupDataInTransportMode)) {
     expected_disabled_types.Put(UserSelectableType::kSharedTabGroupData);
   }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // On Desktop, kPasswords is disabled by default.
-  expected_disabled_types.Put(UserSelectableType::kPasswords);
-#endif
 
   EXPECT_EQ(selected_types,
             Difference(registered_types, expected_disabled_types));

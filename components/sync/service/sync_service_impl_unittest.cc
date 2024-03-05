@@ -21,6 +21,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -714,11 +717,16 @@ TEST_F(
       /*enabled_features=*/
       {syncer::kReplaceSyncPromosWithSignInPromos,
        syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+       switches::kExplicitBrowserSigninUIOnDesktop,
+#endif
        syncer::kSyncEnableContactInfoDataTypeInTransportMode},
       /*disabled_features=*/{});
 
   // Sign-in.
   SignInWithoutSyncConsent();
+  ASSERT_TRUE(prefs()->GetBoolean(::prefs::kExplicitBrowserSignin));
+
   // Registering CONTACT_INFO which includes addresses.
   // To disable addresses sync, the kAutofill selectable type will be disabled.
   // This will also disable the kPayments selectable type. Therefore,

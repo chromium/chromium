@@ -15,6 +15,7 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
@@ -26,6 +27,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 #endif
@@ -258,8 +260,11 @@ class SingleClientContactInfoTransportSyncTest
     : public SingleClientContactInfoSyncTest {
  public:
   SingleClientContactInfoTransportSyncTest() {
-    transport_feature_.InitAndEnableFeature(
-        syncer::kSyncEnableContactInfoDataTypeInTransportMode);
+    transport_feature_.InitWithFeatures(
+        /*enabled_features=*/{syncer::
+                                  kSyncEnableContactInfoDataTypeInTransportMode,
+                              switches::kExplicitBrowserSigninUIOnDesktop},
+        /*disabled_features=*/{});
   }
 
  private:

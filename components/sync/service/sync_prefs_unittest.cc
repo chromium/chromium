@@ -5,6 +5,7 @@
 #include "components/sync/service/sync_prefs.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
@@ -407,8 +408,9 @@ TEST_F(SyncPrefsTest,
                                        UserSelectableType::kPayments};
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // On Desktop, kPasswords is disabled by default.
+  // On Desktop, kPasswords and kAutofill are disabled by default.
   expected_types.Remove(UserSelectableType::kPasswords);
+  expected_types.Remove(UserSelectableType::kAutofill);
 #endif
 
 #if BUILDFLAG(IS_IOS)
@@ -450,8 +452,9 @@ TEST_F(SyncPrefsTest,
       UserSelectableType::kPayments,  UserSelectableType::kPreferences};
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // On Desktop, kPasswords is disabled by default.
+  // On Desktop, kPasswords and kAutofill are disabled by default.
   expected_types.Remove(UserSelectableType::kPasswords);
+  expected_types.Remove(UserSelectableType::kAutofill);
 #endif
 
   EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
@@ -459,22 +462,84 @@ TEST_F(SyncPrefsTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(SyncPrefsTest, PasswordsDefaultWithExplicitBrowserSignin) {
-  base::test::ScopedFeatureList scoped_feature_list{switches::kUnoDesktop};
 
-  // If no explicit browser sign in occurred, then passwords are still disabled
+struct SyncPrefsExplicitBrowserSigninTestParam {
+  UserSelectableType user_selectable_type = UserSelectableType::kPasswords;
+  switches::ExplicitBrowserSigninPhase phase =
+      switches::ExplicitBrowserSigninPhase::kExperimental;
+  bool expected_enabled_by_default = false;
+};
+
+SyncPrefsExplicitBrowserSigninTestParam
+    kSyncPrefsExplicitBrowserSigninTestParams[] = {
+        // Experimental phase.
+        {.user_selectable_type = UserSelectableType::kPasswords,
+         .expected_enabled_by_default = true},
+        {.user_selectable_type = UserSelectableType::kAutofill},
+        // Full implementation.
+        {.user_selectable_type = UserSelectableType::kPasswords,
+         .phase = switches::ExplicitBrowserSigninPhase::kFull,
+         .expected_enabled_by_default = true},
+        {.user_selectable_type = UserSelectableType::kAutofill,
+         .phase = switches::ExplicitBrowserSigninPhase::kFull,
+         .expected_enabled_by_default = true},
+};
+
+class SyncPrefsExplicitBrowserSigninTest
+    : public SyncPrefsTest,
+      public testing::WithParamInterface<
+          SyncPrefsExplicitBrowserSigninTestParam> {
+ public:
+  SyncPrefsExplicitBrowserSigninTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        syncer::kSyncEnableContactInfoDataTypeInTransportMode};
+
+    switch (GetParam().phase) {
+      case switches::ExplicitBrowserSigninPhase::kExperimental:
+        enabled_features.push_back(switches::kUnoDesktop);
+        break;
+      case switches::ExplicitBrowserSigninPhase::kFull:
+        enabled_features.push_back(switches::kExplicitBrowserSigninUIOnDesktop);
+        break;
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features,
+                                          /*disabled_features=*/{});
+  }
+
+  UserSelectableType user_selectable_type() const {
+    return GetParam().user_selectable_type;
+  }
+
+  bool expected_enabled_by_default() const {
+    return GetParam().expected_enabled_by_default;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(SyncPrefsExplicitBrowserSigninTest, DefaultWithExplicitBrowserSignin) {
+  // If no explicit browser sign in occurred, then the type is still disabled
   // by default.
   ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
   EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
-                   .Has(UserSelectableType::kPasswords));
+                   .Has(user_selectable_type()));
 
   // Set an explicit browser signin.
   pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
 
-  // With an explicit sign in, passwords are enabled by default.
-  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
-                  .Has(UserSelectableType::kPasswords));
+  // With an explicit sign in, may be enabled by default.
+  EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
+                .Has(user_selectable_type()),
+            expected_enabled_by_default());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SyncPrefsExplicitBrowserSigninTest,
+    testing::ValuesIn(kSyncPrefsExplicitBrowserSigninTestParams));
+
 #endif
 
 TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
@@ -790,6 +855,9 @@ class SyncPrefsMigrationTest : public testing::Test {
 #if !BUILDFLAG(IS_IOS)
                               kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+                              switches::kExplicitBrowserSigninUIOnDesktop,
+#endif
                               kEnablePasswordsAccountStorageForNonSyncingUsers,
                               kSyncEnableContactInfoDataTypeInTransportMode,
                               kEnablePreferencesAccountStorage},
@@ -797,6 +865,12 @@ class SyncPrefsMigrationTest : public testing::Test {
 
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
     gaia_id_hash_ = signin::GaiaIdHash::FromGaiaId("account_gaia");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    // Pref is registered in signin internal `PrimaryAccountManager`.
+    pref_service_.registry()->RegisterBooleanPref(
+        ::prefs::kExplicitBrowserSignin, false);
+    pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
+#endif
   }
 
   void SetBooleanUserPrefValue(const char* pref_name, BooleanPrefState state) {
