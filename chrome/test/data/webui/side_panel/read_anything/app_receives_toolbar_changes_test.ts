@@ -7,7 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_too
 import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
 import {defaultFontName} from 'chrome-untrusted://read-anything-side-panel.top-chrome/common.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {emitEvent, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -181,6 +181,33 @@ suite('AppReceivesToolbarChanges', () => {
         app.$.flexParent!.dispatchEvent(kPress);
         assertTrue(app.speechPlayingState.paused);
       });
+    });
+  });
+
+  suite('on highlight toggle', () => {
+    function highlightColor(): string {
+      return window.getComputedStyle(app.$.container)
+          .getPropertyValue('--current-highlight-bg-color');
+    }
+
+    function emitHighlight(highlightOn: boolean): void {
+      emitEvent(app, 'highlight-toggle', {detail: {highlightOn}});
+    }
+
+    setup(() => {
+      app.updateThemeFromWebUi('');
+      app.updateContent();
+      app.playSpeech();
+    });
+
+    test('on hide, uses transparent highlight', () => {
+      emitHighlight(false);
+      assertEquals(highlightColor(), 'transparent');
+    });
+
+    test('on show, uses colored highlight', () => {
+      emitHighlight(true);
+      assertNotEquals(highlightColor(), 'transparent');
     });
   });
 });
