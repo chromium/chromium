@@ -725,7 +725,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
   // tooltip text. This is the accepted workaround to ensure only accessible
   // name is announced by a screenreader rather than tooltip text and
   // accessible name.
-  site_settings_toggle_->GetViewAccessibility().OverrideDescription(
+  site_settings_toggle_->GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
   // Align the site setting toggle vertically with the subheader title by

@@ -354,7 +354,7 @@ ExtensionMenuItemView::ExtensionMenuItemView(
   // tooltip text. This is the accepted workaround to ensure only accessible
   // name is announced by a screenreader rather than tooltip text and
   // accessible name.
-  site_access_toggle_->GetViewAccessibility().OverrideDescription(
+  site_access_toggle_->GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 }
 

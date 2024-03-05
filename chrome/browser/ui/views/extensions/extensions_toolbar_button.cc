@@ -99,7 +99,7 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
     // tooltip text. This is the accepted workaround to ensure only accessible
     // name is announced by a screenreader rather than tooltip text and
     // accessible name.
-    GetViewAccessibility().OverrideDescription(
+    GetViewAccessibility().SetDescription(
         std::u16string(),
         ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
   } else {

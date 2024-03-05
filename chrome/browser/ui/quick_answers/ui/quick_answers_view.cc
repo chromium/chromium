@@ -732,7 +732,7 @@ void QuickAnswersView::UpdateQuickAnswerResult(
     // Update announcement.
     auto* answer_label =
         static_cast<Label*>(first_answer_view->children().front());
-    GetViewAccessibility().OverrideDescription(l10n_util::GetStringFUTF8(
+    GetViewAccessibility().SetDescription(l10n_util::GetStringFUTF8(
         IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE_V2,
         title_label->GetText(), answer_label->GetText()));
   }
