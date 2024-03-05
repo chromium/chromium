@@ -24,6 +24,7 @@ source_set("android") {
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/AutoCompleteTextViewNoAutofill.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/NoFilterArrayAdapter.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogBridge.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogCoordinator.java",
@@ -31,6 +32,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogProperties.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogView.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogViewBinder.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/TextInputEditTextNoAutofill.java",
   ]
 
   deps = [
