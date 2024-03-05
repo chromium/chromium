@@ -58,6 +58,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristic
       delete;
   BluetoothLocalGattCharacteristic& operator=(
       const BluetoothLocalGattCharacteristic&) = delete;
+  ~BluetoothLocalGattCharacteristic() override;
 
   // Notify the remote device |device| that the value of characteristic
   // |characteristic| has changed and the new value is |new_value|. |indicate|
@@ -73,7 +74,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristic
 
  protected:
   BluetoothLocalGattCharacteristic();
-  ~BluetoothLocalGattCharacteristic() override;
 };
 
 }  // namespace device

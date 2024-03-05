@@ -137,6 +137,18 @@ interface ServerSocket {
   Disconnect() => ();
 };
 
+// Representation of a BLE GATT service.
+// TODO(b/311430390): Implement additional methods that will create and update a
+// GATT characteristic, and delete the GATT service.
+interface GattService {
+};
+
+// Listener on `GattService` events.
+// TODO(b/311430390): Implement additional methods that communicate read/write
+// requests on GATT characteristics.
+interface GattServiceObserver {
+};
+
 // Handles requests to either query Bluetooth adapter capabilities or state, or
 // find or connect to remote devices. Backed by //device/bluetooth.
 // Note: Methods which are declared [Sync] are for use by

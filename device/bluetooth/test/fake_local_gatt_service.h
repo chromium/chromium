@@ -1,0 +1,62 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef DEVICE_BLUETOOTH_TEST_FAKE_LOCAL_GATT_SERVICE_H_
+#define DEVICE_BLUETOOTH_TEST_FAKE_LOCAL_GATT_SERVICE_H_
+
+#include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
+#include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
+#include "device/bluetooth/bluetooth_local_gatt_service.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+#include "device/bluetooth/test/fake_local_gatt_characteristic.h"
+
+namespace bluetooth {
+
+// Implements device::BluetoothLocalGattService to be used in testing.
+// Not intended for direct use by clients.
+class FakeLocalGattService : public device::BluetoothLocalGattService {
+ public:
+  FakeLocalGattService(const std::string& service_id,
+                       const device::BluetoothUUID& service_uuid,
+                       bool is_primary);
+  ~FakeLocalGattService() override;
+
+  // Adds a fake characteristic with |characteristic_uuid|
+  // to this service.
+  void AddFakeCharacteristic(const std::string& characteristic_id,
+                             const device::BluetoothUUID& characteristic_uuid);
+
+  // device::BluetoothGattService:
+  std::string GetIdentifier() const override;
+  device::BluetoothUUID GetUUID() const override;
+  bool IsPrimary() const override;
+
+  // device::BluetoothLocalGattService:
+  void Register(base::OnceClosure callback,
+                ErrorCallback error_callback) override;
+  void Unregister(base::OnceClosure callback,
+                  ErrorCallback error_callback) override;
+  bool IsRegistered() override;
+  void Delete() override;
+  device::BluetoothLocalGattCharacteristic* GetCharacteristic(
+      const std::string& identifier) override;
+
+  base::WeakPtr<FakeLocalGattService> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  const std::string service_id_;
+  const device::BluetoothUUID service_uuid_;
+  const bool is_primary_;
+  base::flat_map<std::string,
+                 std::unique_ptr<device::BluetoothLocalGattCharacteristic>>
+      uuid_to_fake_characteristic_map_;
+  base::WeakPtrFactory<FakeLocalGattService> weak_ptr_factory_{this};
+};
+
+}  // namespace bluetooth
+
+#endif  // DEVICE_BLUETOOTH_TEST_FAKE_LOCAL_GATT_SERVICE_H_
