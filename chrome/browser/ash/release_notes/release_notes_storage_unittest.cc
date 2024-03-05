@@ -211,16 +211,4 @@ TEST_F(ReleaseNotesStorageTest, ShowReleaseNotesSuggestionChip) {
   EXPECT_EQ(false, release_notes_storage_->ShouldShowSuggestionChip());
 }
 
-// Tests that when we mark a notification as shown, we also show the suggestion
-// chip.
-TEST_F(ReleaseNotesStorageTest, ShowSuggestionChipWhenNotificationShown) {
-  SetUpProfile();
-
-  release_notes_storage_->MarkNotificationShown();
-
-  EXPECT_EQ(3, profile_.get()->GetPrefs()->GetInteger(
-                   prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
-  EXPECT_EQ(true, release_notes_storage_->ShouldShowSuggestionChip());
-}
-
 }  // namespace ash

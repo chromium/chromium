@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/first_run/first_run.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
+#include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_notification_controller.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
@@ -98,7 +99,7 @@ class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
          features::kReleaseNotesNotificationAllChannels,
          chromeos::features::kAppInstallServiceUri,
          features::kHelpAppLauncherSearch},
-        {});
+        {features::kHelpAppOpensInsteadOfReleaseNotesNotification});
     https_server()->AddDefaultHandlers(GetChromeTestDataDir());
   }
 
@@ -139,6 +140,13 @@ class HelpAppIntegrationTestWithFirstRunEnabled
     HelpAppIntegrationTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(ash::switches::kForceFirstRunUI);
   }
+};
+
+class HelpAppIntegrationTestWithHelpAppOpensInsteadOfReleaseNotesNotification
+    : public HelpAppIntegrationTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kHelpAppOpensInsteadOfReleaseNotesNotification};
 };
 
 }  // namespace
@@ -459,6 +467,48 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 #else
   // We just have the original browser. No new app opens.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(
+    HelpAppIntegrationTestWithHelpAppOpensInsteadOfReleaseNotesNotification,
+    OpensHelpApp) {
+  WaitForTestSystemAppInstall();
+  base::HistogramTester histogram_tester;
+  GURL expected_trusted_frame_url =
+      GURL("chrome://help-app/updates?launchSource=version-update");
+  content::TestNavigationObserver navigation_observer(
+      expected_trusted_frame_url);
+  navigation_observer.StartWatchingNewWebContents();
+  auto display_service =
+      std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kHelpAppNotificationLastShownMilestone, 20);
+  std::make_unique<HelpAppNotificationController>(profile())
+      ->MaybeShowReleaseNotesNotification();
+
+  // The release notes notification should not appear.
+  auto notifications = display_service->GetDisplayedNotificationsForType(
+      NotificationHandler::Type::TRANSIENT);
+  EXPECT_EQ(0u, notifications.size());
+  // The release notes suggestion chip should not appear.
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
+                prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
+            0);
+#if BUILDFLAG(ENABLE_CROS_HELP_APP)
+  EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
+  EXPECT_EQ(expected_trusted_frame_url,
+            GetActiveWebContents()->GetVisibleURL());
+  histogram_tester.ExpectUniqueSample(
+      "Discover.Overall.AppLaunched",
+      apps::LaunchSource::kFromReleaseNotesNotification, 1);
+#else
+  // We just have the original browser. No new app opens.
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  histogram_tester.ExpectUniqueSample(
+      "Discover.Overall.AppLaunched",
+      apps::LaunchSource::kFromReleaseNotesNotification, 0);
 #endif
 }
 
@@ -1075,4 +1125,6 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     HelpAppAllProfilesIntegrationTest);
 
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    HelpAppIntegrationTestWithHelpAppOpensInsteadOfReleaseNotesNotification);
 }  // namespace ash

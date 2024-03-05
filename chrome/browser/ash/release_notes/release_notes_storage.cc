@@ -85,6 +85,11 @@ ReleaseNotesStorage::~ReleaseNotesStorage() = default;
 
 bool ReleaseNotesStorage::ShouldNotify() {
   // TODO(b/174514401): Make this server controlled.
+  if (base::FeatureList::IsEnabled(
+          ash::features::kReleaseNotesNotificationAlwaysEligible)) {
+    return true;
+  }
+
   if (!ShouldShowForCurrentChannel())
     return false;
 
@@ -109,8 +114,9 @@ bool ReleaseNotesStorage::ShouldNotify() {
 void ReleaseNotesStorage::MarkNotificationShown() {
   profile_->GetPrefs()->SetInteger(
       prefs::kHelpAppNotificationLastShownMilestone, GetMilestone());
-  // When the notification is shown we should also show the suggestion chip a
-  // number of times.
+}
+
+void ReleaseNotesStorage::StartShowingSuggestionChip() {
   profile_->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow,
       kTimesToShowSuggestionChip);

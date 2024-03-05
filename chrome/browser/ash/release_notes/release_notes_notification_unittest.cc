@@ -97,7 +97,9 @@ TEST_F(ReleaseNotesNotificationTest, ShowReleaseNotesNotification) {
       std::make_unique<ReleaseNotesStorage>(profile());
   profile()->GetPrefs()->SetInteger(
       prefs::kHelpAppNotificationLastShownMilestone, 20);
+
   release_notes_notification_->MaybeShowReleaseNotes();
+
   EXPECT_EQ(true, HasReleaseNotesNotification());
   EXPECT_EQ(ui::SubstituteChromeOSDeviceType(
                 IDS_RELEASE_NOTES_DEVICE_SPECIFIC_NOTIFICATION_TITLE),
@@ -105,6 +107,10 @@ TEST_F(ReleaseNotesNotificationTest, ShowReleaseNotesNotification) {
   EXPECT_EQ("Get highlights from the latest update",
             base::UTF16ToASCII(GetReleaseNotesNotification().message()));
   EXPECT_EQ(1, notification_count_);
+  // And it show the release notes suggestion chip.
+  EXPECT_EQ(3, profile()->GetPrefs()->GetInteger(
+                   prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
+  EXPECT_EQ(true, release_notes_storage->ShouldShowSuggestionChip());
 }
 
 }  // namespace ash

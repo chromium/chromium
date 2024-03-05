@@ -103,6 +103,29 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class HelpAppNotificationControllerTestWithHelpAppOpensInsteadEnabled
+    : public HelpAppNotificationControllerTest {
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            features::kReleaseNotesNotificationAllChannels,
+            features::kHelpAppOpensInsteadOfReleaseNotesNotification,
+        },
+        /*disabled_features=*/{});
+    BrowserWithTestWindowTest::SetUp();
+    help_app_notification_controller_ =
+        std::make_unique<HelpAppNotificationController>(profile());
+    TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+        std::make_unique<SystemNotificationHelper>());
+    notification_tester_ =
+        std::make_unique<NotificationDisplayServiceTester>(nullptr);
+    notification_tester_->SetNotificationAddedClosure(base::BindRepeating(
+        &HelpAppNotificationControllerTest::OnNotificationAdded,
+        base::Unretained(this)));
+  }
+};
+
 // Tests for regular profiles.
 TEST_F(HelpAppNotificationControllerTest,
        DoesNotShowAnyNotificationIfNewRegularProfile) {
@@ -195,6 +218,24 @@ TEST_F(HelpAppNotificationControllerTest,
 
   EXPECT_EQ(3, profile->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
+}
+
+// Tests for help app opens instead of release notes notification.
+TEST_F(HelpAppNotificationControllerTestWithHelpAppOpensInsteadEnabled,
+       DoesNotShowNotification) {
+  Profile* profile = CreateRegularProfile();
+  profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
+                                  91);
+  std::unique_ptr<HelpAppNotificationController> controller =
+      std::make_unique<HelpAppNotificationController>(profile);
+
+  controller->MaybeShowReleaseNotesNotification();
+
+  EXPECT_EQ(0, notification_count_);
+  EXPECT_EQ(false, HasReleaseNotesNotification());
+  EXPECT_EQ(CurrentMilestone(),
+            profile->GetPrefs()->GetInteger(
+                prefs::kHelpAppNotificationLastShownMilestone));
 }
 
 }  // namespace ash

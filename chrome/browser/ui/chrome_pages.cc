@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/map_util.h"
@@ -117,7 +118,12 @@ void OpenBookmarkManagerForNode(Browser* browser, int64_t node_id) {
 void LaunchReleaseNotesImpl(Profile* profile, apps::LaunchSource source) {
   base::RecordAction(UserMetricsAction("ReleaseNotes.ShowReleaseNotes"));
   ash::SystemAppLaunchParams params;
-  params.url = GURL("chrome://help-app/updates");
+  params.url =
+      base::FeatureList::IsEnabled(
+          ash::features::kHelpAppOpensInsteadOfReleaseNotesNotification) &&
+              source == apps::LaunchSource::kFromReleaseNotesNotification
+          ? GURL("chrome://help-app/updates?launchSource=version-update")
+          : GURL("chrome://help-app/updates");
   params.launch_source = source;
   LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::HELP, params);
 }

@@ -39,6 +39,9 @@ class ReleaseNotesStorage {
   // Decreases the amount of times left to show the suggestion chip.
   void DecreaseTimesLeftToShowSuggestionChip();
 
+  // Sets the number of times left to show the chip to the max number.
+  void StartShowingSuggestionChip();
+
   // Sets the number of times left to show the suggestion chip to 0.
   void StopShowingSuggestionChip();
 

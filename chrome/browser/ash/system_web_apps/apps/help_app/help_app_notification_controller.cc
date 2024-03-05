@@ -11,11 +11,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -59,9 +61,23 @@ HelpAppNotificationController::HelpAppNotificationController(Profile* profile)
 HelpAppNotificationController::~HelpAppNotificationController() = default;
 
 void HelpAppNotificationController::MaybeShowReleaseNotesNotification() {
-  if (IsNotificationShownForCurrentMilestone(profile_)) {
+  if (IsNotificationShownForCurrentMilestone(profile_) &&
+      !base::FeatureList::IsEnabled(
+          features::kReleaseNotesNotificationAlwaysEligible)) {
     return;
   }
+  if (base::FeatureList::IsEnabled(
+          features::kHelpAppOpensInsteadOfReleaseNotesNotification)) {
+    ReleaseNotesStorage release_notes_storage(profile_);
+    if (!release_notes_storage.ShouldNotify()) {
+      return;
+    }
+    chrome::LaunchReleaseNotes(
+        profile_, apps::LaunchSource::kFromReleaseNotesNotification);
+    release_notes_storage.MarkNotificationShown();
+    return;
+  }
+
   if (!release_notes_notification_) {
     release_notes_notification_ =
         std::make_unique<ReleaseNotesNotification>(profile_);

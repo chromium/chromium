@@ -43,6 +43,9 @@ void ReleaseNotesNotification::MaybeShowReleaseNotes() {
   ShowReleaseNotesNotification();
   base::RecordAction(base::UserMetricsAction("ReleaseNotes.NotificationShown"));
   release_notes_storage_->MarkNotificationShown();
+  // When the notification is shown we should also show the suggestion chip a
+  // number of times.
+  release_notes_storage_->StartShowingSuggestionChip();
 }
 
 void ReleaseNotesNotification::HandleClickShowNotification() {
