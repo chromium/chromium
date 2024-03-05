@@ -107,6 +107,7 @@ export class CrSliderElement extends CrSliderElementBase {
       keyPressSliderIncrement: {
         type: Number,
         value: 1,
+        observer: 'onKeyPressSliderIncrementChanged_',
       },
 
       markerCount: {
@@ -161,12 +162,6 @@ export class CrSliderElement extends CrSliderElementBase {
         reflectToAttribute: true,
       },
 
-      isRtl_: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
-
       /**
        * |transiting_| is set to true when bar is touched or clicked. This
        * triggers a single position transition effect to take place for the
@@ -187,7 +182,6 @@ export class CrSliderElement extends CrSliderElementBase {
       'onTicksChanged_(ticks.*)',
       'updateUi_(ticks.*, value, min, max)',
       'onValueMinMaxChange_(value, min, max)',
-      'buildDeltaKeyMap_(isRtl_, keyPressSliderIncrement)',
     ];
   }
 
@@ -206,7 +200,6 @@ export class CrSliderElement extends CrSliderElementBase {
   private disabled_: boolean;
   private label_: string;
   private showLabel_: boolean;
-  private isRtl_: boolean;
   private transiting_: boolean;
 
   private deltaKeyMap_: Map<string, number>|null = null;
@@ -229,7 +222,6 @@ export class CrSliderElement extends CrSliderElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.isRtl_ = window.getComputedStyle(this)['direction'] === 'rtl';
     this.draggingEventTracker_ = new EventTracker();
   }
 
@@ -458,10 +450,14 @@ export class CrSliderElement extends CrSliderElementBase {
     return true;
   }
 
+  private isRtl_(): boolean {
+    return this.matches(':host-context([dir=rtl]) cr-slider');
+  }
+
   private updateValueFromClientX_(clientX: number) {
     const rect = this.$.container.getBoundingClientRect();
     let ratio = (clientX - rect.left) / rect.width;
-    if (this.isRtl_) {
+    if (this.isRtl_()) {
       ratio = 1 - ratio;
     }
     if (this.updateValue_(ratio * (this.max - this.min) + this.min)) {
@@ -469,7 +465,8 @@ export class CrSliderElement extends CrSliderElementBase {
     }
   }
 
-  private buildDeltaKeyMap_() {
+  private onKeyPressSliderIncrementChanged_() {
+    const isRtl = this.isRtl_();
     const increment = this.keyPressSliderIncrement;
     const decrement = -this.keyPressSliderIncrement;
     this.deltaKeyMap_ = new Map([
@@ -477,8 +474,8 @@ export class CrSliderElement extends CrSliderElementBase {
       ['ArrowUp', increment],
       ['PageDown', decrement],
       ['PageUp', increment],
-      ['ArrowLeft', this.isRtl_ ? increment : decrement],
-      ['ArrowRight', this.isRtl_ ? decrement : increment],
+      ['ArrowLeft', isRtl ? increment : decrement],
+      ['ArrowRight', isRtl ? decrement : increment],
     ]);
   }
 

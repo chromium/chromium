@@ -137,7 +137,7 @@
         width: 10px;
       }
 
-      :host([is-rtl_]) #knob {
+      :host-context([dir=rtl]) #knob {
         transform: translate(50%, -50%);
       }
 
@@ -159,7 +159,7 @@
         white-space: nowrap;
       }
 
-      :host([is-rtl_]) #label {
+      :host-context([dir=rtl]) #label {
         transform: translateX(50%);
       }
 
