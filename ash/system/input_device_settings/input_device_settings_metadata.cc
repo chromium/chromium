@@ -225,6 +225,10 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
            {mojom::CustomizationRestriction::
                 kAllowHorizontalScrollWheelRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
+          // Redragon M811 Aatrox MMO
+          {{0x04d9, 0xfc6d},
+           {mojom::CustomizationRestriction::kAllowAlphabetKeyEventRewrites,
+            mojom::MouseButtonConfig::kNoConfig}},
           // SteelSeries Aerox 9 WL (USB)
           {{0x1038, 0x185a},
            {mojom::CustomizationRestriction::
