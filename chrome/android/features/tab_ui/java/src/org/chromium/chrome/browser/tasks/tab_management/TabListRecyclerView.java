@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout.ZOOMING_DURATION;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayout.ZOOMING_DURATION;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

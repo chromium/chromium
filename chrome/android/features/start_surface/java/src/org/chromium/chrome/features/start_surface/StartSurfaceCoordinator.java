@@ -181,8 +181,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     // Time at which constructor started to run. Used for feed reliability logging.
     private final long mConstructedTimeNs;
 
-    private final boolean mIsStartSurfaceRefactorEnabled;
-
     @Nullable
     private AppBarLayout.OnOffsetChangedListener mOffsetChangedListenerToGenerateScrollEvents;
 
@@ -327,33 +325,18 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         mUseMagicSpace = mIsStartSurfaceEnabled && StartSurfaceConfiguration.useMagicStack();
         mTabSwitcherCustomViewManagerSupplier = new ObservableSupplierImpl<>();
-        mIsStartSurfaceRefactorEnabled =
-                ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity);
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         TabSwitcher.Controller controller = null;
-        Runnable initializeMVTilesRunnable = null;
-        View logoContainerView = null;
-        ViewGroup feedPlaceholderParentView = null;
-        if (!mIsStartSurfaceRefactorEnabled) {
-            assert mIsStartSurfaceEnabled;
 
-            // createSwipeRefreshLayout has to be called before creating any surface.
-            createSwipeRefreshLayout();
-            createAndSetStartSurface();
-            controller = mTasksSurface.getController();
-            initializeMVTilesRunnable = mTasksSurface::initializeMVTiles;
-            logoContainerView = mTasksSurface.getView().findViewById(R.id.logo_container);
-            feedPlaceholderParentView = mTasksSurface.getBodyViewContainer();
-        } else {
-            assert mIsStartSurfaceEnabled && mIsStartSurfaceRefactorEnabled;
+        assert mIsStartSurfaceEnabled;
 
-            // createSwipeRefreshLayout has to be called before creating any surface.
-            createSwipeRefreshLayout();
-            createStartSurfaceWithoutTasksSurface();
-            initializeMVTilesRunnable = this::initializeMVTiles;
-            logoContainerView = mView.findViewById(R.id.logo_container);
-            feedPlaceholderParentView = mView.findViewById(R.id.tasks_surface_body);
-        }
+        // createSwipeRefreshLayout has to be called before creating any surface.
+        createSwipeRefreshLayout();
+        createStartSurfaceWithoutTasksSurface();
+        Runnable initializeMVTilesRunnable = this::initializeMVTiles;
+        View logoContainerView = mView.findViewById(R.id.logo_container);
+        ViewGroup feedPlaceholderParentView = mView.findViewById(R.id.tasks_surface_body);
+
         mStartSurfaceMediator =
                 new StartSurfaceMediator(
                         controller,
@@ -424,10 +407,6 @@ public class StartSurfaceCoordinator implements StartSurface {
             if (mTasksSurface != null) {
                 mTasksSurface.onHide();
             }
-            if (mSecondaryTasksSurface != null) {
-                assert !mIsStartSurfaceRefactorEnabled;
-                mSecondaryTasksSurface.onHide();
-            }
             if (mSuggestionsUiDelegate != null) {
                 mSuggestionsUiDelegate.onDestroy();
                 mSuggestionsUiDelegate = null;
@@ -497,18 +476,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         } else if (mTabSwitcherModule != null) {
             mTabSwitcherModule.setOnTabSelectingListener(mStartSurfaceMediator);
         }
-
-        if (mIsStartSurfaceRefactorEnabled) return;
-
-        // Set OnTabSelectingListener to the more tabs tasks surface as well if it has been
-        // instantiated, otherwise remember it for the future instantiation.
-        if (mIsStartSurfaceEnabled) {
-            if (mSecondaryTasksSurface == null) {
-                mOnTabSelectingListener = mStartSurfaceMediator;
-            } else {
-                mSecondaryTasksSurface.setOnTabSelectingListener(mStartSurfaceMediator);
-            }
-        }
     }
 
     @Override
@@ -554,15 +521,6 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         if (mIsInitPending) {
             initialize();
-        }
-
-        if (mIsStartSurfaceRefactorEnabled) return;
-
-        if (mIsSecondaryTaskInitPending) {
-            mIsSecondaryTaskInitPending = false;
-            mSecondaryTasksSurface.onFinishNativeInitialization(
-                    mActivity, mOmniboxStubSupplier.get(), /* feedReliabilityLogger= */ null);
-            mSecondaryTasksSurface.initialize();
         }
     }
 
@@ -638,49 +596,12 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
-    public int getPreviousStartSurfaceState() {
-        return mStartSurfaceMediator.getPreviousStartSurfaceState();
-    }
-
-    @Override
-    @Nullable
-    public TabSwitcher.Controller getGridTabSwitcherController() {
-        return mStartSurfaceMediator.getTabSwitcherController();
-    }
-
-    @Override
-    public ViewGroup getTabSwitcherContainer() {
-        return mStartSurfaceMediator.getTabSwitcherContainer();
-    }
-
-    @Override
-    public void setSnackbarParentView(ViewGroup parentView) {
-        mStartSurfaceMediator.setSnackbarParentView(parentView);
-    }
-
-    @Override
-    public boolean isShowingStartSurfaceHomepage() {
-        return mStartSurfaceMediator.isShowingStartSurfaceHomepage();
-    }
-
-    @Override
     public boolean isHomepageShown() {
         return mStartSurfaceMediator.isHomepageShown();
     }
 
     @Override
     public TabSwitcher.TabListDelegate getGridTabListDelegate() {
-        if (mIsStartSurfaceEnabled) {
-            if (mIsStartSurfaceRefactorEnabled) {
-                // Unreachable.
-                return null;
-            }
-            if (mSecondaryTasksSurface == null) {
-                mStartSurfaceMediator.setSecondaryTasksSurfaceController(
-                        initializeSecondaryTasksSurface());
-            }
-            return mSecondaryTasksSurface.getTabListDelegate();
-        }
         return null;
     }
 
@@ -701,16 +622,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Override
     public TabSwitcher.TabListDelegate getSingleTabListDelegate() {
-        if (mIsStartSurfaceEnabled) {
-            if (mIsStartSurfaceRefactorEnabled) {
-                return mTabSwitcherModule.getTabListDelegate();
-            } else {
-                assert mTasksSurface != null;
-                return mTasksSurface.getTabListDelegate();
-            }
-        } else {
-            return null;
-        }
+        return mIsStartSurfaceEnabled ? mTabSwitcherModule.getTabListDelegate() : null;
     }
 
     @Override
@@ -723,11 +635,6 @@ public class StartSurfaceCoordinator implements StartSurface {
             assert mTasksSurface != null;
             if (mTasksSurface.getTabGridDialogVisibilitySupplier() != null) {
                 if (mTasksSurface.getTabGridDialogVisibilitySupplier().get()) return true;
-            }
-            if (mSecondaryTasksSurface != null
-                    && mSecondaryTasksSurface.getTabGridDialogVisibilitySupplier() != null) {
-                assert !mIsStartSurfaceRefactorEnabled;
-                if (mSecondaryTasksSurface.getTabGridDialogVisibilitySupplier().get()) return true;
             }
             return false;
         };

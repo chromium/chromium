@@ -140,7 +140,7 @@ import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
-/** Tests for the {@link TabSwitcherLayout} and {@link StartSurfaceHomeLayout} */
+/** Tests for the {@link TabSwitcherLayout}. */
 @SuppressWarnings("ConstantConditions")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
@@ -153,7 +153,7 @@ import java.util.concurrent.atomic.AtomicReference;
     UiRestriction.RESTRICTION_TYPE_PHONE,
     Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
 })
-public class TabSwitcherAndStartSurfaceLayoutTest {
+public class TabSwitcherLayoutTest {
     private static final String BASE_PARAMS =
             "force-fieldtrial-params="
                     + "Study.Group:skip-slow-zooming/false/zooming-min-memory-mb/512";

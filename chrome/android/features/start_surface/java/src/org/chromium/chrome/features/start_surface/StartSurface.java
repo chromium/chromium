@@ -5,7 +5,6 @@
 package org.chromium.chrome.features.start_surface;
 
 import android.os.SystemClock;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -183,43 +182,6 @@ public interface StartSurface {
      */
     @StartSurfaceState
     int getStartSurfaceState();
-
-    /**
-     * @return The previous {@link StartSurfaceState}.
-     */
-    @StartSurfaceState
-    int getPreviousStartSurfaceState();
-
-    /**
-     * @return The Tab switcher container view.
-     */
-    ViewGroup getTabSwitcherContainer();
-
-    /**
-     * @return The Tab switcher controller.
-     */
-    @Nullable
-    TabSwitcher.Controller getGridTabSwitcherController();
-
-    /**
-     * Sets the parent view for snackbars. If <code>null</code> is given, the original parent
-     * view is restored.
-     *
-     * @param parentView The {@link ViewGroup} to attach snackbars to.
-     */
-    void setSnackbarParentView(ViewGroup parentView);
-
-    @Deprecated
-    /*
-     * Returns whether start surface homepage is showing.
-     *
-     * TODO(1347089): Removes this test after the refactoring is enabled by default. This function
-     * is only used by {@link TabSwitcherAndStartSurfaceLayout} which will go away after the
-     * refactoring. This API add an additional check of {@link StartSurfaceState#SHOWING_PREVIOUS}
-     * to prevent shrinking animation when returns to Start surface from a Tab.
-     * See crbug.com/1248680.
-     */
-    boolean isShowingStartSurfaceHomepage();
 
     /*
      * Returns whether start surface homepage is showing. Compared with

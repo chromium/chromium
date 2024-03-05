@@ -73,8 +73,7 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Tests for the {@link TabSwitcherLayout} and {@link StartSurfaceHomeLayout}, mainly for animation
- * performance.
+ * Tests for the {@link TabSwitcherLayout}, mainly for animation performance.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
@@ -88,7 +87,7 @@ import java.util.concurrent.TimeoutException;
 })
 @EnableFeatures({ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION})
 @DisableFeatures({ChromeFeatureList.ANDROID_HUB})
-public class TabSwitcherAndStartSurfaceLayoutPerfTest {
+public class TabSwitcherLayoutPerfTest {
     private static final String TAG = "SSLayoutPerfTest";
     private static final String BASE_PARAMS =
             "force-fieldtrial-params="

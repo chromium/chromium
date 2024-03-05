@@ -1325,11 +1325,12 @@ public class TabSwitcherLayout extends Layout {
 
     /**
      * Reports the animation performance for animating the {@link TabSwitcherLayout} into or out of
-     * view. Exposed to be shared with {@link TabSwitcherAndStartSurfaceLayout}.
+     * view.
+     *
      * @param metrics the {@link AnimationPerformanceTracker.AnimationMetrics} for the animation.
      * @param animationTransitionType the type of transition to report metrics for.
      */
-    public static void reportAnimationPerf(
+    private static void reportAnimationPerf(
             AnimationPerformanceTracker.AnimationMetrics metrics,
             long transitionStartTime,
             @TransitionType int animationTransitionType) {

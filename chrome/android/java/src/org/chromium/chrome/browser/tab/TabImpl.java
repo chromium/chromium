@@ -783,9 +783,9 @@ class TabImpl implements Tab {
             // receive a timestamp. When presenting a Phone UI
             // TabGridViewBinder.bindClosableTabProperties is called by Android.View.performClick,
             // and does not receive the event timestamp. This currently triggers an animation in
-            // TabSwitcherAndStartSurfaceLayout.startHidingImpl which lasts around 300ms.
-            // TabSwitcherAndStartSurfaceLayout.doneHiding runs after the animation, actually
-            // triggering this tab change.
+            // TabSwitcherLayout.startHidingImpl which lasts around 300ms.
+            // TabSwitcherLayout.doneHiding runs after the animation, actually triggering this tab
+            // change.
             //
             // We should also consider merging the TabImpl and WebContents onShow into a single Jni
             // call.
