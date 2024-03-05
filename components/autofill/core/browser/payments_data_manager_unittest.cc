@@ -1521,6 +1521,26 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_ExpOff) {
   EXPECT_EQ(0u, bank_accounts.size());
 }
 
+TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_PaymentMethodsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+  BankAccount bank_account1 = test::CreatePixBankAccount(1234L);
+  BankAccount bank_account2 = test::CreatePixBankAccount(5678L);
+  ASSERT_TRUE(GetServerDataTable()->SetMaskedBankAccounts(
+      {bank_account1, bank_account2}));
+  // We need to call `Refresh()` to ensure that the BankAccounts are loaded
+  // again from the WebDatabase.
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+
+  // Disable payment methods prefs.
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
+
+  // Verify that no bank accounts are loaded into PersonalDataManager because
+  // the AutofillPaymentMethodsEnabled pref is set to false.
+  EXPECT_THAT(personal_data_->GetMaskedBankAccounts(), testing::IsEmpty());
+}
+
 TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_DatabaseUpdated) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableSyncingOfPixBankAccounts);
