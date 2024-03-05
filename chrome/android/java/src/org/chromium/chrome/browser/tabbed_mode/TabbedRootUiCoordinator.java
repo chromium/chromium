@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabbed_mode;
 
 import android.os.Bundle;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -276,6 +277,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param multiInstanceManager Manages multi-instance mode.
      * @param overviewIncognitoSupplier An optional incognito state for the overview. When not set,
      *     the tab model is used to determine incognito state.
+     * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
+     *     suggestion list) will position themselves relative to. If null, the content view will be
+     *     used.
      */
     public TabbedRootUiCoordinator(
             @NonNull AppCompatActivity activity,
@@ -326,7 +330,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
             @Nullable MultiInstanceManager multiInstanceManager,
-            @Nullable BooleanSupplier overviewIncognitoSupplier) {
+            @Nullable BooleanSupplier overviewIncognitoSupplier,
+            @Nullable View baseChromeLayout) {
         super(
                 activity,
                 onOmniboxFocusChangedListener,
@@ -370,7 +375,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 initializeUiWithIncognitoColors,
                 backPressManager,
                 savedInstanceState,
-                overviewIncognitoSupplier);
+                overviewIncognitoSupplier,
+                baseChromeLayout);
         mControlContainerHeightResource = controlContainerHeightResource;
         mInsetObserverViewSupplier = insetObserverViewSupplier;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;

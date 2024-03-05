@@ -511,6 +511,9 @@ public class ToolbarManager
      * @param backPressManager The {@link BackPressManager} handling back press gesture.
      * @param overviewIncognitoSupplier Incognito supplier specifically for the overview. During
      *     animations especially this might diverge from the tab model version.
+     * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
+     *     suggestion list) will position themselves relative to. If null, the content view will be
+     *     used.
      */
     public ToolbarManager(
             AppCompatActivity activity,
@@ -558,7 +561,8 @@ public class ToolbarManager
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             boolean initializeWithIncognitoColors,
             @Nullable BackPressManager backPressManager,
-            @Nullable BooleanSupplier overviewIncognitoSupplier) {
+            @Nullable BooleanSupplier overviewIncognitoSupplier,
+            @Nullable View baseChromeLayout) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -850,7 +854,8 @@ public class ToolbarManager
                             BackPressManager.isEnabled() ? backPressManager : null,
                             scrollListener,
                             tabModelSelectorSupplier,
-                            /* forcePhoneStyleOmnibox= */ false);
+                            /* forcePhoneStyleOmnibox= */ false,
+                            baseChromeLayout);
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mLocationBar = locationBarCoordinator;
