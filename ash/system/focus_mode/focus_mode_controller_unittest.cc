@@ -31,7 +31,7 @@ constexpr char kUser2Email[] = "user2@focusmode";
 
 bool IsEndingMomentNudgeShown() {
   return Shell::Get()->anchored_nudge_manager()->IsNudgeShown(
-      "focus_mode_ending_moment_nudge");
+      focus_mode_util::kFocusModeEndingMomentNudgeId);
 }
 
 }  // namespace

@@ -367,11 +367,13 @@ void FocusModeTray::OnAnimationEnded() {
   // moment start. Only for the bounce-in animation during the ending moment, we
   // will set `bounce_in_animation_finished_` to tell the progress callback the
   // animation was ended.
-  if (!visible_preferred() || !FocusModeController::Get()->in_ending_moment()) {
+  auto* controller = FocusModeController::Get();
+  if (!visible_preferred() || !controller->in_ending_moment()) {
     return;
   }
 
   bounce_in_animation_finished_ = true;
+  controller->MaybeShowEndingMomentNudge();
 }
 
 void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {

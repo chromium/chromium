@@ -24,6 +24,9 @@ constexpr base::TimeDelta kEndingMomentDuration = base::Seconds(9);
 // active focus session.
 constexpr base::TimeDelta kExtendDuration = base::Minutes(10);
 
+constexpr char kFocusModeEndingMomentNudgeId[] =
+    "focus_mode_ending_moment_nudge";
+
 // Adaptation of `base::TimeDurationFormat`. This helper function
 // takes a `TimeDelta` and returns the time formatted according to
 // `digital_format`.

@@ -146,6 +146,10 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // selected task data.
   void CompleteTask();
 
+  // Shows the ending moment nudge that is anchored to the focus mode tray. Only
+  // show if there isn't already showing and if there is no tray bubble open.
+  void MaybeShowEndingMomentNudge();
+
   // TODO(b/318897434): This is only needed for the accelerator to trigger an
   // ending moment immediately if there is an ongoing session. Remove this after
   // testing is complete.

@@ -30,9 +30,6 @@ namespace ash {
 
 namespace {
 
-constexpr char kFocusModeEndingMomentNudgeId[] =
-    "focus_mode_ending_moment_nudge";
-
 FocusModeController* g_instance = nullptr;
 
 // The default Focus Mode session duration.
@@ -85,7 +82,7 @@ void ShowEndingMomentNudge() {
   // NOTE: we anchor to `tray->image_view()` in order to center the nudge
   // properly because there is extra spacing on the actual `FocusModeTray` view.
   AnchoredNudgeData nudge_data(
-      kFocusModeEndingMomentNudgeId,
+      focus_mode_util::kFocusModeEndingMomentNudgeId,
       NudgeCatalogName::kFocusModeEndingMomentNudge,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE),
@@ -100,7 +97,7 @@ void ShowEndingMomentNudge() {
 
 void HideEndingMomentNudge() {
   if (AnchoredNudgeManager* nudge_manager = AnchoredNudgeManager::Get()) {
-    nudge_manager->Cancel(kFocusModeEndingMomentNudgeId);
+    nudge_manager->Cancel(focus_mode_util::kFocusModeEndingMomentNudgeId);
   }
 }
 
@@ -341,6 +338,22 @@ void FocusModeController::CompleteTask() {
   SetSelectedTask(nullptr);
 }
 
+void FocusModeController::MaybeShowEndingMomentNudge() {
+  // Do not show the nudge if there is a persistent tray bubble open during the
+  // ending moment.
+  if (!in_ending_moment() || current_session_->persistent_ending()) {
+    return;
+  }
+
+  if (auto* anchored_nudge_manager = AnchoredNudgeManager::Get();
+      anchored_nudge_manager->IsNudgeShown(
+          focus_mode_util::kFocusModeEndingMomentNudgeId)) {
+    return;
+  }
+
+  ShowEndingMomentNudge();
+}
+
 void FocusModeController::TriggerEndingMomentImmediately() {
   if (!in_focus_session()) {
     return;
@@ -415,8 +428,6 @@ void FocusModeController::OnTimerTick() {
                      &FocusModeController::ResetFocusSession,
                      base::TimeTicks::Now());
         MaybeUpdateDndNotification();
-        // TODO(b/325346740): Show nudge after tray bounce-in animation.
-        ShowEndingMomentNudge();
       } else {
         current_session_->set_persistent_ending();
       }
