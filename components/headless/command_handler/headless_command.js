@@ -246,6 +246,17 @@ async function screenshot(dp, params) {
   const screenshotParams = {
     format,
   };
+
+  if (params.width > 0 && params.height > 0) {
+    screenshotParams.clip = {
+      x: 0,
+      y: 0,
+      width: params.width,
+      height: params.height,
+      scale: 1.0,
+    };
+  }
+
   const response = await dp.Page.captureScreenshot(screenshotParams);
   return response.result.data;
 }

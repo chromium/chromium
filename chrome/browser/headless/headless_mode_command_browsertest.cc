@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/headless/headless_mode_browsertest.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/headless/command_handler/headless_command_handler.h"
 #include "components/headless/command_handler/headless_command_switches.h"
 #include "components/headless/test/bitmap_utils.h"
@@ -383,6 +384,40 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandBrowserTest,
 
   SkBitmap bitmap;
   ASSERT_TRUE(DecodePNG(png_data, &bitmap));
+
+  // Expect a centered blue rectangle on white background.
+  EXPECT_TRUE(CheckColoredRect(bitmap, SkColorSetRGB(0x00, 0x00, 0xff),
+                               SkColorSetRGB(0xff, 0xff, 0xff)));
+}
+
+class HeadlessModeScreenshotCommandWithWindowSizeBrowserTest
+    : public HeadlessModeScreenshotCommandBrowserTest {
+ public:
+  HeadlessModeScreenshotCommandWithWindowSizeBrowserTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessModeScreenshotCommandBrowserTest::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitchASCII(::switches::kWindowSize, "2345,1234");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandWithWindowSizeBrowserTest,
+                       HeadlessScreenshotWithWindowSize) {
+  ASSERT_THAT(ProcessCommands(),
+              testing::Eq(HeadlessCommandHandler::Result::kSuccess));
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  std::string png_data;
+  ASSERT_TRUE(base::ReadFileToString(screenshot_filename_, &png_data))
+      << screenshot_filename_;
+
+  SkBitmap bitmap;
+  ASSERT_TRUE(DecodePNG(png_data, &bitmap));
+
+  EXPECT_EQ(bitmap.width(), 2345);
+  EXPECT_EQ(bitmap.height(), 1234);
 
   // Expect a centered blue rectangle on white background.
   EXPECT_TRUE(CheckColoredRect(bitmap, SkColorSetRGB(0x00, 0x00, 0xff),
