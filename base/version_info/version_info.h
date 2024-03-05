@@ -20,12 +20,6 @@ class Version;
 
 namespace version_info {
 
-// Returns the product name and reduced version information for the User-Agent
-// header, in the format: Chrome/<major_version>.0.build_version.0, where
-// `build_version` is a frozen BUILD number.
-const std::string GetProductNameAndVersionForReducedUserAgent(
-    const std::string& build_version);
-
 // Returns the product name, e.g. "Chromium" or "Google Chrome".
 constexpr base::StringPiece GetProductName() {
   return PRODUCT_NAME;
@@ -34,12 +28,6 @@ constexpr base::StringPiece GetProductName() {
 // Returns the version number, e.g. "6.0.490.1".
 constexpr base::StringPiece GetVersionNumber() {
   return PRODUCT_VERSION;
-}
-
-// Returns the product name and version information for the User-Agent header,
-// in the format: Chrome/<major_version>.<minor_version>.<build>.<patch>.
-constexpr base::StringPiece GetProductNameAndVersionForUserAgent() {
-  return "Chrome/" PRODUCT_VERSION;
 }
 
 // Returns the major component (aka the milestone) of the version as an int,
