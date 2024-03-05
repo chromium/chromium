@@ -463,6 +463,12 @@ BASE_FEATURE(kLogUrlScoringSignals,
              "LogUrlScoringSignals",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the ML scoring service will make use of an in-memory ML score
+// cache in order to speed up the overall scoring process.
+BASE_FEATURE(kMlUrlScoreCaching,
+             "MlUrlScoreCaching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, runs the ML scoring model to assign new relevance scores to the
 // URL suggestions and reranks them.
 BASE_FEATURE(kMlUrlScoring, "MlUrlScoring", enabled_by_default_desktop_only);

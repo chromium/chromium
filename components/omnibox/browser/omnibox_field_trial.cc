@@ -1055,6 +1055,14 @@ MLConfig::MLConfig() {
           .Get();
 
   url_scoring_model = base::FeatureList::IsEnabled(omnibox::kUrlScoringModel);
+
+  ml_url_score_caching =
+      base::FeatureList::IsEnabled(omnibox::kMlUrlScoreCaching);
+  max_ml_score_cache_size =
+      base::FeatureParam<int>(&omnibox::kMlUrlScoreCaching,
+                              "MlUrlScoreCaching_MaxMlScoreCacheSize",
+                              max_ml_score_cache_size)
+          .Get();
 }
 
 MLConfig::MLConfig(const MLConfig&) = default;
@@ -1105,6 +1113,9 @@ bool IsMlUrlScoringUnlimitedNumCandidatesEnabled() {
 }
 bool IsUrlScoringModelEnabled() {
   return GetMLConfig().url_scoring_model;
+}
+bool IsMlUrlScoreCachingEnabled() {
+  return GetMLConfig().ml_url_score_caching;
 }
 
 // <- ML Relevance Scoring

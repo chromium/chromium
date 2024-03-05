@@ -7,7 +7,9 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
+#include "base/containers/lru_cache.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -58,6 +60,10 @@ class AutocompleteScoringModelService : public KeyedService {
 
   // Autocomplete URL scoring model.
   std::unique_ptr<AutocompleteScoringModelHandler> url_scoring_model_handler_;
+
+  // Cache mapping each ML model input vector to the corresponding ML model
+  // output score.
+  base::LRUCache<std::vector<float>, float> score_cache_;
 
   base::WeakPtrFactory<AutocompleteScoringModelService> weak_ptr_factory_{this};
 };

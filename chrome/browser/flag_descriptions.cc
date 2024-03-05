@@ -2578,6 +2578,10 @@ const char kOmniboxMlLogUrlScoringSignalsName[] =
 const char kOmniboxMlLogUrlScoringSignalsDescription[] =
     "Enables Omnibox to log scoring signals of URL suggestions.";
 
+const char kOmniboxMlUrlScoreCachingName[] = "Omnibox ML URL Score Caching";
+const char kOmniboxMlUrlScoreCachingDescription[] =
+    "Enables in-memory caching of ML URL scores.";
+
 const char kOmniboxMlUrlScoringName[] = "Omnibox ML URL Scoring";
 const char kOmniboxMlUrlScoringDescription[] =
     "Enables ML-based relevance scoring for Omnibox URL Suggestions.";
@@ -2588,7 +2592,7 @@ const char kOmniboxMlUrlScoringModelDescription[] =
 
 const char kOmniboxMlUrlSearchBlendingName[] = "Omnibox ML URL Search Blending";
 const char kOmniboxMlUrlSearchBlendingDescription[] =
-    "Specifies how to blend URL ML scores and search traditional scores..";
+    "Specifies how to blend URL ML scores and search traditional scores.";
 
 const char kOmniboxOnClobberFocusTypeOnContentName[] =
     "Omnibox On Clobber Focus Type On Content";

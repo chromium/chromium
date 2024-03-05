@@ -1444,6 +1444,9 @@ extern const char kOmniboxGroupingFrameworkDescription[];
 extern const char kOmniboxMlLogUrlScoringSignalsName[];
 extern const char kOmniboxMlLogUrlScoringSignalsDescription[];
 
+extern const char kOmniboxMlUrlScoreCachingName[];
+extern const char kOmniboxMlUrlScoreCachingDescription[];
+
 extern const char kOmniboxMlUrlScoringName[];
 extern const char kOmniboxMlUrlScoringDescription[];
 

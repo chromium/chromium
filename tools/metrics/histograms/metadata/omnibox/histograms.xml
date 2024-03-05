@@ -2224,6 +2224,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.URLScoringModelExecuted.MLScoreCache.CacheHit"
+    enum="BooleanCacheHit" expires_after="2025-02-23">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
+  <summary>
+    Records whether there was a cache hit when attempting to fetch the ML score
+    associated with a given vector of scoring signals. This will be recorded for
+    each match that is submitted to the ML scoring service. Each omnibox input
+    triggers multiple autocomplete passes with each pass generating multiple
+    autocomplete matches. Therefore, this metric will get logged several times
+    for a single omnibox input.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Views.PopupFirstPaint" units="ms"
     expires_after="2024-08-01">
   <owner>tluk@chromium.org</owner>

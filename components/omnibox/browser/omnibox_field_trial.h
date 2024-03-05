@@ -651,6 +651,12 @@ struct MLConfig {
   int mapped_search_blending_min{600};
   int mapped_search_blending_max{2800};
   int mapped_search_blending_grouping_threshold{1400};
+
+  // If true, ML scoring service will utilize in-memory ML score cache.
+  // Equivalent to omnibox::kMlUrlScoreCaching.
+  bool ml_url_score_caching{false};
+  // Maximum number of cached entries to store in the ML score cache.
+  int max_ml_score_cache_size{30};
 };
 
 // A testing utility class for overriding the current configuration returned
@@ -698,6 +704,9 @@ bool IsMlUrlScoringUnlimitedNumCandidatesEnabled();
 
 // Whether the URL scoring model is enabled.
 bool IsUrlScoringModelEnabled();
+
+// Whether ML URL score caching is enabled.
+bool IsMlUrlScoreCachingEnabled();
 
 // <- ML Relevance Scoring
 // ---------------------------------------------------------
