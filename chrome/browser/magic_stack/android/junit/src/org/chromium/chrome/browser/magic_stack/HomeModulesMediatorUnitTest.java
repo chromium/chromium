@@ -27,6 +27,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -54,7 +55,7 @@ public class HomeModulesMediatorUnitTest {
     @Mock private Callback<Boolean> mSetVisibilityCallback;
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private ModuleRegistry mModuleRegistry;
-    @Mock private ModelList mModel;
+    @Spy private ModelList mModel;
 
     private int[] mModuleTypeList;
     private ListItem[] mListItems;
@@ -66,6 +67,7 @@ public class HomeModulesMediatorUnitTest {
 
     @Before
     public void setUp() {
+        mModel = Mockito.spy(new ModelList());
         mModuleTypeList = new int[MODULE_TYPES];
         mListItems = new ListItem[MODULE_TYPES];
         mModuleProviderBuilderList = new ModuleProviderBuilder[MODULE_TYPES];
@@ -99,9 +101,8 @@ public class HomeModulesMediatorUnitTest {
         List<Integer> moduleList = List.of(mModuleTypeList[2], mModuleTypeList[0]);
         // Registers three modules to the ModuleRegistry.
         for (int i = 0; i < 2; i++) {
-            doReturn(false)
-                    .when(mModuleRegistry)
-                    .build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any());
+            when(mModuleRegistry.build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any()))
+                    .thenReturn(false);
         }
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
 
@@ -116,9 +117,8 @@ public class HomeModulesMediatorUnitTest {
         List<Integer> moduleList = List.of(mModuleTypeList[2], mModuleTypeList[0]);
         // Registers three modules to the ModuleRegistry.
         for (int i = 0; i < 2; i++) {
-            doReturn(true)
-                    .when(mModuleRegistry)
-                    .build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any());
+            when(mModuleRegistry.build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any()))
+                    .thenReturn(true);
         }
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
 
@@ -144,9 +144,8 @@ public class HomeModulesMediatorUnitTest {
                 List.of(mModuleTypeList[2], mModuleTypeList[0], mModuleTypeList[1]);
         // Registers three modules to the ModuleRegistry.
         for (int i = 0; i < MODULE_TYPES; i++) {
-            doReturn(true)
-                    .when(mModuleRegistry)
-                    .build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any());
+            when(mModuleRegistry.build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any()))
+                    .thenReturn(true);
         }
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
 
@@ -157,8 +156,6 @@ public class HomeModulesMediatorUnitTest {
         SimpleRecyclerViewAdapter.ListItem[] moduleFetchResultsCache =
                 mMediator.getModuleFetchResultsCacheForTesting();
         verify(mModel, never()).add(any());
-
-        doReturn(1).when(mModel).size();
 
         // Verifies that the response of a low ranking module is cached.
         PropertyModel propertyModel1 = Mockito.mock(PropertyModel.class);
@@ -192,9 +189,8 @@ public class HomeModulesMediatorUnitTest {
                 List.of(mModuleTypeList[2], mModuleTypeList[0], mModuleTypeList[1]);
         // Registers three modules to the ModuleRegistry.
         for (int i = 0; i < 3; i++) {
-            doReturn(true)
-                    .when(mModuleRegistry)
-                    .build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any());
+            when(mModuleRegistry.build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any()))
+                    .thenReturn(true);
         }
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
 
@@ -220,7 +216,6 @@ public class HomeModulesMediatorUnitTest {
         verify(mModel, never()).add(any());
         verify(mSetVisibilityCallback, never()).onResult(true);
 
-        doReturn(1).when(mModel).size();
         mMediator.addToRecyclerViewOrCache(mModuleTypeList[2], null);
         // Verifies that the RecyclerView becomes visible as soon as no-data response of the
         // highest ranking modules arrive.
@@ -230,7 +225,6 @@ public class HomeModulesMediatorUnitTest {
         assertEquals(2, mMediator.getModuleResultsWaitingIndexForTesting());
 
         // Verifies that the callback to change the visibility isn't called again.
-        doReturn(2).when(mModel).size();
         PropertyModel propertyModel1 = Mockito.mock(PropertyModel.class);
         mMediator.addToRecyclerViewOrCache(mModuleTypeList[1], propertyModel1);
         verify(mModel, times(2)).add(any());
@@ -244,6 +238,11 @@ public class HomeModulesMediatorUnitTest {
         // Adds 3 modules' data to the magic stack's RecyclerView.
         List<Integer> moduleList =
                 List.of(mModuleTypeList[0], mModuleTypeList[1], mModuleTypeList[2]);
+        // Registers three modules to the ModuleRegistry.
+        for (int i = 0; i < 3; i++) {
+            when(mModuleRegistry.build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any()))
+                    .thenReturn(true);
+        }
         mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
 
         ModuleProvider[] moduleProviders = new ModuleProvider[MODULE_TYPES];
@@ -252,9 +251,9 @@ public class HomeModulesMediatorUnitTest {
             // Modules are built successfully.
             mMediator.onModuleBuilt(mModuleTypeList[i], moduleProviders[i]);
         }
-        doReturn(3).when(mModel).size();
-        for (int i = 0; i < 3; i++) {
-            doReturn(mListItems[i]).when(mModel).get(i);
+        for (int i = 0; i < MODULE_TYPES; i++) {
+            mMediator.addToRecyclerViewOrCache(
+                    mModuleTypeList[i], Mockito.mock(PropertyModel.class));
         }
 
         mMediator.hide();
@@ -298,14 +297,12 @@ public class HomeModulesMediatorUnitTest {
         mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
 
         // Verifies that the RecyclerView is changed to be visible when the first item is added.
-        doReturn(1).when(mModel).size();
         mMediator.append(mListItems[0]);
         verify(mModel, times(1)).add(eq(mListItems[0]));
         verify(mSetVisibilityCallback).onResult(true);
 
         // Verifies that the callback to change visibility isn't called again when more items are
         // added.
-        doReturn(2).when(mModel).size();
         mMediator.append(mListItems[1]);
         verify(mModel, times(1)).add(eq(mListItems[1]));
         verify(mSetVisibilityCallback).onResult(true);
@@ -315,12 +312,13 @@ public class HomeModulesMediatorUnitTest {
     @SmallTest
     public void testRemove() {
         List<Integer> moduleList = List.of(mModuleTypeList[0]);
+        when(mModuleRegistry.build(eq(mModuleTypeList[0]), eq(mModuleDelegate), any()))
+                .thenReturn(true);
         mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
 
         ModuleProvider moduleProvider = Mockito.mock(ModuleProvider.class);
         mMediator.onModuleBuilt(mModuleTypeList[0], moduleProvider);
-        doReturn(1).when(mModel).size();
-        doReturn(mListItems[0]).when(mModel).get(0);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[0], Mockito.mock(PropertyModel.class));
 
         // Case for removing a module which isn't added to the RecyclerView.
         mMediator.remove(mModuleTypeList[1]);
@@ -339,9 +337,8 @@ public class HomeModulesMediatorUnitTest {
                 List.of(mModuleTypeList[2], mModuleTypeList[1], mModuleTypeList[0]);
         // Registers three modules to the ModuleRegistry.
         for (int i = 0; i < 3; i++) {
-            doReturn(true)
-                    .when(mModuleRegistry)
-                    .build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any());
+            when(mModuleRegistry.build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any()))
+                    .thenReturn(true);
         }
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
 
@@ -376,7 +373,6 @@ public class HomeModulesMediatorUnitTest {
         verify(mSetVisibilityCallback, never()).onResult(true);
         verify(mModuleProviders[0], never()).hideModule();
 
-        when(mModel.size()).thenReturn(1);
         mMediator.onModuleFetchTimeOut();
         verify(mModel, times(1)).add(any());
         assertEquals(3, mMediator.getModuleResultsWaitingIndexForTesting());
@@ -408,9 +404,8 @@ public class HomeModulesMediatorUnitTest {
                 List.of(mModuleTypeList[2], mModuleTypeList[1], mModuleTypeList[0]);
         // Registers three modules to the ModuleRegistry.
         for (int i = 0; i < 3; i++) {
-            doReturn(true)
-                    .when(mModuleRegistry)
-                    .build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any());
+            when(mModuleRegistry.build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any()))
+                    .thenReturn(true);
         }
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
 
