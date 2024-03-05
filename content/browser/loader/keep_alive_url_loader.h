@@ -26,7 +26,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
 #include "url/gurl.h"
 
@@ -60,7 +60,7 @@ class WeakDocumentPtr;
 // 2. In `Start()`, asks the network service to start loading the request, and
 //    then runs throttles to perform checks.
 // 3. Handles request loading results from the network service, i.e. from the
-//    remote of `loader_receiver_` (a mojom::URLLoaderClient):
+//    remote of `url_loader_` (blink::ThrottlingURLLoader):
 //    A. If it is `OnReceiveRedirect()`, this loader performs checks and runs
 //       throttles, and then asks the network service to proceed with redirects
 //       without interacting with renderer. The redirect params are stored for
@@ -89,7 +89,7 @@ class WeakDocumentPtr;
 // https://docs.google.com/document/d/1RKPgoLBrrLZBPn01XtwHJiLlH9rA7nIRXQJIR7BUqJA/edit#heading=h.y1og20bzkuf7
 class CONTENT_EXPORT KeepAliveURLLoader
     : public network::mojom::URLLoader,
-      public network::mojom::URLLoaderClient,
+      public blink::ThrottlingURLLoader::ClientReceiverDelegate,
       public blink::mojom::FetchLaterLoader {
  public:
   // A callback type to delete this loader immediately on triggered.
@@ -120,7 +120,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
       scoped_refptr<PolicyContainerHost> policy_container_host,
       WeakDocumentPtr weak_document_ptr,
       BrowserContext* browser_context,
-      std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
+      URLLoaderThrottlesGetter throttles_getter,
       base::PassKey<KeepAliveURLLoaderService>,
       std::unique_ptr<KeepAliveAttributionRequestHelper>
           attribution_request_helper);
@@ -201,20 +201,20 @@ class CONTENT_EXPORT KeepAliveURLLoader
   void PauseReadingBodyFromNet() override;
   void ResumeReadingBodyFromNet() override;
 
-  // Receives actions from network service.
-  // `network::mojom::URLLoaderClient` overrides:
-  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
+  // Receives actions from network service, loaded by `url_loader_`.
+  // `blink::ThrottlingURLLoader::ClientReceiverDelegate` overrides:
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
       std::optional<mojo_base::BigBuffer> cached_metadata) override;
-  void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
-                         network::mojom::URLResponseHeadPtr head) override;
-  void OnUploadProgress(int64_t current_position,
-                        int64_t total_size,
-                        base::OnceCallback<void()> callback) override;
-  void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
+  // Called after `url_loader_` has run throttles for OnReceiveRedirect().
+  void EndReceiveRedirect(const net::RedirectInfo& redirect_info,
+                          network::mojom::URLResponseHeadPtr head) override;
   void OnComplete(
+      const network::URLLoaderCompletionStatus& completion_status) override;
+  // Called when `url_loader_` is cancelled by throttles, or Browser<-Network
+  // pipe is disconnected.
+  void CancelWithStatus(
       const network::URLLoaderCompletionStatus& completion_status) override;
 
   // `blink::mojom::FetchLaterLoader` overrides:
@@ -249,9 +249,6 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // corresponding error code.
   net::Error WillFollowRedirect(const net::RedirectInfo& redirect_info) const;
 
-  // Called when `loader_receiver_`, Browser<-Network pipe, is disconnected.
-  void OnNetworkConnectionError();
-
   // Called when `forwarding_client_`, Browser->Renderer pipe, is disconnected.
   void OnForwardingClientDisconnected();
 
@@ -274,17 +271,6 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Set in the constructor and updated when redirected.
   network::ResourceRequest resource_request_;
 
-  // Browser -> Network connection:
-  //
-  // Connects to the receiver network::URLLoader implemented in the network
-  // service that performs actual request loading.
-  mojo::Remote<network::mojom::URLLoader> loader_;
-  // Browser <- Network connection:
-  //
-  // Receives the result of the request loaded by `loader_` from the network
-  // service.
-  mojo::Receiver<network::mojom::URLLoaderClient> loader_receiver_{this};
-
   // See
   // https://docs.google.com/document/d/1RKPgoLBrrLZBPn01XtwHJiLlH9rA7nIRXQJIR7BUqJA/edit#heading=h.y1og20bzkuf7
   class ForwardingClient;
@@ -292,7 +278,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
   //
   // Connects to the receiver URLLoaderClient implemented in the renderer.
   // It is the client that this loader may forward the URLLoader response from
-  // the network service, i.e. message received by `loader_receiver_`, to.
+  // the network service, i.e. message received by `url_loader_`, to.
   // It may be disconnected if the renderer is dead. In such case, subsequent
   // URLLoader response may be handled in browser.
   const std::unique_ptr<ForwardingClient> forwarding_client_;
@@ -331,9 +317,6 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // which owns this loader.
   const raw_ptr<BrowserContext> browser_context_;
 
-  // TODO(crbug.com/1356128): Remove custom throttle logic here with blink's.
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles_;
-
   // Tells if this loader has been started or not.
   bool is_started_ = false;
 
@@ -345,16 +328,24 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Records the latest URL to help veryfing redirect request.
   GURL last_url_;
 
-  class ThrottleEntry;
-  class ThrottleDelegate;
-  // Maintains a list of `blink::URLLoaderThrottle` created by content and
-  // content embedder, which will be prepared to run in case this loader has to
-  // handle redirects in-browser.
-  std::vector<std::unique_ptr<ThrottleEntry>> throttle_entries_;
+  // A callback to obtain URLLoaderThrottle for this loader to start loading.
+  URLLoaderThrottlesGetter throttles_getter_;
 
-  // Counts the total number when this loader is requested by throttle to pause
-  // reading body.
-  size_t paused_reading_body_from_net_count_ = 0;
+  // Connects bidirectionally with the network service, and may forward to
+  // the renderer:
+  // * Network <- (URLLoader) `url_loader_` <-(`this`)<- Renderer
+  //   This object forwards the URL loading request to the network, and may
+  //   forward further actions from the renderer.
+  // * Network -> (URLLoaderClient) `url_loader_` ->(`forwarding_client_`)->
+  //   Renderer:
+  //   It uses throttles from `throttles_getter_` to process the loading results
+  //   from a receiver of URLLoaderClient connected with network, and may
+  //   (1) continue interact with the network or (2) forward the processing
+  //   results to the renderer via `forwarding_client_` if the request has
+  //   completed.
+  // See also
+  // https://docs.google.com/document/d/1RKPgoLBrrLZBPn01XtwHJiLlH9rA7nIRXQJIR7BUqJA/edit#heading=h.y1og20bzkuf7
+  std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
 
   // Request helper responsible for processing Attribution Reporting API
   // operations (https://github.com/WICG/attribution-reporting-api). Only set if

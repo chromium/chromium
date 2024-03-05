@@ -382,6 +382,11 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
     return &network_url_loader_factory_->pending_requests()->back();
   }
 
+  const std::vector<network::TestURLLoaderFactory::PendingRequest>&
+  GetPendingRequests() const {
+    return *network_url_loader_factory_->pending_requests();
+  }
+
   void AddConnectSrcCSPToRFH(const std::string& allowed_url) {
     static_cast<RenderFrameHostImpl*>(main_rfh())
         ->policy_container_host()
@@ -1194,19 +1199,14 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   // OnReceiveRedirect:
   // Disconnected KeepAliveURLLoader is still alive.
   EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 1u);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
   // Expects no forwarding.
   EXPECT_CALL(renderer_loader_client, OnReceiveRedirect(_, _)).Times(0);
   EXPECT_CALL(renderer_loader_client, OnComplete(_)).Times(0);
-  // Simluates receiving redirect in the network service.
-  GetLastPendingRequest()->client->OnReceiveRedirect(
-      CreateRedirectInfo(GURL(kTestRedirectRequestUrl)),
-      CreateResponseHead(
-          {{kTestResponseHeaderName, kTestResponseHeaderValue}}));
-  base::RunLoop().RunUntilIdle();
 
-  // The KeepAliveURLLoader should be cancelled due to the fact that in-browser
-  // throttle requests to defer.
-  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
+  // As the request loading is deferred by `ConfigurableURLLoaderThrottle` from
+  // the beginning, there should be no requests to the network service.
+  EXPECT_THAT(GetPendingRequests(), IsEmpty());
 }
 
 class FetchLaterKeepAliveURLLoaderServiceTest

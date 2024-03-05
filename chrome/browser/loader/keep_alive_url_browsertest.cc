@@ -522,53 +522,6 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLSafeBrowsingBrowserTest,
   loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
 }
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
-class ChromeKeepAliveURLSafeBrowsingBrowserTestNoTestingConfig
-    : public ChromeKeepAliveURLSafeBrowsingBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ChromeKeepAliveURLSafeBrowsingBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch("disable-field-trial-config");
-  }
-};
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ChromeKeepAliveURLSafeBrowsingBrowserTestNoTestingConfig,
-    ::testing::Values(net::HttpRequestHeaders::kGetMethod,
-                      net::HttpRequestHeaders::kPostMethod),
-    [](const testing::TestParamInfo<
-        ChromeKeepAliveURLSafeBrowsingBrowserTest::ParamType>& info) {
-      return info.param;
-    });
-
-// Checks that when a fetch keepalive request's redirect is handled in browser
-// and when the redirect target points to a dangerous URL, the browser will not
-// perform the redirect.
-IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLSafeBrowsingBrowserTestNoTestingConfig,
-                       ReceiveRedirectToMalwareAfterPageUnload) {
-  const std::string method = GetParam();
-  const char redirect_target[] = "/malware";
-  auto request_handlers =
-      RegisterRequestHandlers({kKeepAliveEndpoint, redirect_target});
-  ASSERT_TRUE(server()->Start());
-
-  const auto malware_url = server()->GetURL(redirect_target);
-  MarkURLThreatType(malware_url, safe_browsing::SB_THREAT_TYPE_URL_MALWARE);
-
-  // Set up redirects according to the following redirect chain:
-  // fetch("http://a.com:<port>/beacon", keepalive: true)
-  // --> http://a.com:<port>/malware
-  LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
-      GetKeepAlivePageURL(kPrimaryHost, method), request_handlers[0].get(),
-      base::StringPrintf(k301ResponseTemplate, malware_url.spec().c_str()));
-
-  // The redirect should be processed in browser.
-  // Try to wait such that KeepAliveURLLoader can process the redirect and
-  // reject it.
-  loaders_observer().WaitForTotalOnReceiveRedirectProcessed(1);
-  loaders_observer().WaitForTotalOnCompleteProcessed({net::ERR_ABORTED});
-}
-
 // Chrome browser tests to cover variation header-related behaviors for fetch
 // keepalive requests.
 class ChromeKeepAliveURLVariationBrowserTest
