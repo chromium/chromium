@@ -302,6 +302,7 @@ TEST_F(ShellSurfaceTest, Maximize) {
   auto shell_surface =
       test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
   auto* surface = shell_surface->root_surface();
+  EXPECT_TRUE(shell_surface->IsReady());
 
   EXPECT_FALSE(HasBackdrop());
   shell_surface->Maximize();
@@ -393,12 +394,14 @@ TEST_F(ShellSurfaceTest, Minimize) {
   auto shell_surface =
       test::ShellSurfaceBuilder(kBufferSize).SetNoCommit().BuildShellSurface();
 
+  EXPECT_FALSE(shell_surface->IsReady());
   EXPECT_TRUE(shell_surface->CanMinimize());
 
   // Minimizing can be performed before the surface is committed, but
   // widget creation will be deferred.
   shell_surface->Minimize();
   EXPECT_FALSE(shell_surface->GetWidget());
+  EXPECT_FALSE(shell_surface->IsReady());
 
   // Committing the buffer will create a widget with minimized state.
   views::NamedWidgetShownWaiter widget_waiter(
@@ -420,6 +423,7 @@ TEST_F(ShellSurfaceTest, Minimize) {
 
   shell_surface->root_surface()->Commit();
   EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
+
   // Two configures (initial configure and the state change configure) should be
   // sent with the minimzied state.
   ASSERT_EQ(2u, serial);
@@ -429,6 +433,8 @@ TEST_F(ShellSurfaceTest, Minimize) {
 
   // Minimized widget should be Shown.
   widget_waiter.WaitIfNeededAndGet();
+
+  EXPECT_TRUE(shell_surface->IsReady());
 
   shell_surface->Restore();
   EXPECT_FALSE(shell_surface->GetWidget()->IsMinimized());
@@ -3739,11 +3745,13 @@ TEST_F(ShellSurfaceTest, InitialCenteredBoundsWithConfigure) {
                            .SetNoRootBuffer()
                            .SetNoCommit()
                            .BuildShellSurface();
+  EXPECT_FALSE(shell_surface->IsReady());
   ShellSurfaceCallbacks callbacks;
   shell_surface->set_configure_callback(base::BindRepeating(
       &ShellSurfaceCallbacks::OnConfigure, base::Unretained(&callbacks)));
   shell_surface->root_surface()->Commit();
   EXPECT_FALSE(shell_surface->GetWidget()->IsVisible());
+  EXPECT_FALSE(shell_surface->IsReady());
 
   gfx::Size size(256, 256);
   auto new_buffer =
@@ -3751,6 +3759,7 @@ TEST_F(ShellSurfaceTest, InitialCenteredBoundsWithConfigure) {
   shell_surface->root_surface()->Attach(new_buffer.get());
   shell_surface->root_surface()->Commit();
   EXPECT_TRUE(shell_surface->GetWidget()->IsVisible());
+  EXPECT_TRUE(shell_surface->IsReady());
 
   gfx::Rect expected =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
