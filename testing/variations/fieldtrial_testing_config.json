@@ -4770,6 +4770,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CrOSLateBootHighResOff"
+                    ],
+                    "hardware_classes": [
+                        "octopus"
                     ]
                 }
             ]
