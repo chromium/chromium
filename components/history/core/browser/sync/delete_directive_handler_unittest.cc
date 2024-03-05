@@ -29,6 +29,9 @@
 
 namespace history {
 
+const std::string kTestAppId1 = "org.chromium.dino.Pteranodon";
+const std::string kTestAppId2 = "org.chromium.dino.Trext";
+
 namespace {
 
 base::Time UnixUsecToTime(int64_t usec) {
@@ -108,10 +111,15 @@ class HistoryDeleteDirectiveHandlerTest : public testing::Test {
         base::BindRepeating(&ScheduleDBTask, history_backend_));
   }
 
-  void AddPage(const GURL& url, base::Time t) {
+  void AddPage(const GURL& url,
+               base::Time t,
+               std::optional<std::string> app_id = kNoAppIdFilter) {
     history::HistoryAddPageArgs args;
     args.url = url;
     args.time = t;
+    if (app_id) {
+      args.app_id = *app_id;
+    }
     history_backend_->AddPage(args);
   }
 
@@ -330,6 +338,84 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessTimeRangeDeleteDirective) {
   ASSERT_EQ(2u, sync_changes.size());
   EXPECT_EQ(syncer::SyncChange::ACTION_DELETE, sync_changes[0].change_type());
   EXPECT_EQ(syncer::SyncChange::ACTION_DELETE, sync_changes[1].change_type());
+}
+
+// Create delete directives for time ranges with or without app ID.  Only the
+// entries with the matching app ID (or all if not specified) should be deleted.
+TEST_F(HistoryDeleteDirectiveHandlerTest,
+       ProcessTimeRangeDeleteDirectiveByApp) {
+  const GURL test_url("http://www.google.com/");
+  for (int64_t i = 1; i <= 10; ++i) {
+    AddPage(test_url, UnixUsecToTime(i), kTestAppId1);
+  }
+
+  {
+    QueryURLResult query = QueryURL(test_url);
+    ASSERT_TRUE(query.success);
+    ASSERT_EQ(10, query.row.visit_count());
+  }
+
+  syncer::SyncDataList directives;
+  // 1st directive. Entries will be deleted as app ID is not specified, which
+  // will match any entries irrespective of the entries' app ID.
+  sync_pb::EntitySpecifics entity_specs;
+  sync_pb::TimeRangeDirective* time_range_directive =
+      entity_specs.mutable_history_delete_directive()
+          ->mutable_time_range_directive();
+  time_range_directive->set_start_time_usec(2);
+  time_range_directive->set_end_time_usec(4);
+  directives.push_back(
+      syncer::SyncData::CreateRemoteData(entity_specs, kFakeClientTagHash));
+
+  // 2nd directive. Entries will be deleted since the app ID is matched.
+  time_range_directive->Clear();
+  time_range_directive->set_start_time_usec(6);
+  time_range_directive->set_end_time_usec(7);
+  time_range_directive->set_app_id(kTestAppId1);
+  directives.push_back(
+      syncer::SyncData::CreateRemoteData(entity_specs, kFakeClientTagHash));
+
+  // 3rd directive. Entries cannot be deleted by this directive since the app
+  // ID doesn't match.
+  time_range_directive->Clear();
+  time_range_directive->set_start_time_usec(1);
+  time_range_directive->set_end_time_usec(10);
+  time_range_directive->set_app_id(kTestAppId2);
+  directives.push_back(
+      syncer::SyncData::CreateRemoteData(entity_specs, kFakeClientTagHash));
+
+  syncer::FakeSyncChangeProcessor change_processor;
+  EXPECT_FALSE(handler()
+                   ->MergeDataAndStartSyncing(
+                       syncer::HISTORY_DELETE_DIRECTIVES, directives,
+                       std::unique_ptr<syncer::SyncChangeProcessor>(
+                           new syncer::SyncChangeProcessorWrapperForTest(
+                               &change_processor)))
+                   .has_value());
+
+  // Inject a task to check status and keep message loop filled before
+  // directive processing finishes.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&CheckDirectiveProcessingResult,
+                                base::Time::Now() + base::Seconds(10),
+                                &change_processor, 2));
+  base::RunLoop().RunUntilIdle();
+
+  QueryURLResult query = QueryURL(test_url);
+  EXPECT_TRUE(query.success);
+  ASSERT_EQ(5, query.row.visit_count());
+  EXPECT_EQ(UnixUsecToTime(1), query.visits[0].visit_time);
+  EXPECT_EQ(UnixUsecToTime(5), query.visits[1].visit_time);
+  EXPECT_EQ(UnixUsecToTime(8), query.visits[2].visit_time);
+  EXPECT_EQ(UnixUsecToTime(9), query.visits[3].visit_time);
+  EXPECT_EQ(UnixUsecToTime(10), query.visits[4].visit_time);
+
+  // Expect three sync changes for deleting processed directives.
+  const syncer::SyncChangeList& sync_changes = change_processor.changes();
+  ASSERT_EQ(3u, sync_changes.size());
+  EXPECT_EQ(syncer::SyncChange::ACTION_DELETE, sync_changes[0].change_type());
+  EXPECT_EQ(syncer::SyncChange::ACTION_DELETE, sync_changes[1].change_type());
+  EXPECT_EQ(syncer::SyncChange::ACTION_DELETE, sync_changes[2].change_type());
 }
 
 // Create a delete directive for urls.  The expected entries should be

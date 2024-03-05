@@ -160,11 +160,19 @@ class DeleteDirectiveHandler::DeleteDirectiveTask : public HistoryDBTask {
       HistoryBackend* history_backend,
       const syncer::SyncDataList& global_id_directives);
 
-  // Process a list of time range directives, all history entries within the
-  // time ranges are deleted. `time_range_directives` should be sorted by
+  // Process a list of time range directives, all history entries matching any
+  // of the directives are deleted. `time_range_directives` should be sorted by
   // `start_time_usec` and `end_time_usec` already.
   void ProcessTimeRangeDeleteDirectives(
       HistoryBackend* history_backend,
+      const syncer::SyncDataList& time_range_directives);
+
+  // Process a list of time range directives with all have the same (possibly
+  // empty) `restrict_app_id`. If `restrict_app_id` is empty, delete all
+  // history entries within the time ranges.
+  void ProcessTimeRangeDeleteDirectivesByApp(
+      HistoryBackend* history_backend,
+      std::optional<std::string> restrict_app_id,
       const syncer::SyncDataList& time_range_directives);
 
   // Process a list of url directives, all history entries matching the
@@ -263,6 +271,31 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
     ProcessTimeRangeDeleteDirectives(
         HistoryBackend* history_backend,
         const syncer::SyncDataList& time_range_directives) {
+  // For efficient operation, the deletion logic merges the time range of
+  // directives if they overlap. But the directives of different `app_id` must
+  // not be merged since they are targeting different sets of entries in a
+  // given time range. For that, directives are grouped by `app_id` first. Then
+  // each group is fed to the deletion logic separately.
+  std::map<std::optional<std::string>, syncer::SyncDataList> app_directives_map;
+  for (const syncer::SyncData& data : time_range_directives) {
+    const sync_pb::TimeRangeDirective& time_range_directive =
+        data.GetSpecifics().history_delete_directive().time_range_directive();
+    const std::optional<std::string>& app_id =
+        time_range_directive.has_app_id() ? time_range_directive.app_id()
+                                          : kNoAppIdFilter;
+    app_directives_map[app_id].push_back(data);
+  }
+
+  for (const auto& [app_id, directives] : app_directives_map) {
+    ProcessTimeRangeDeleteDirectivesByApp(history_backend, app_id, directives);
+  }
+}
+
+void DeleteDirectiveHandler::DeleteDirectiveTask::
+    ProcessTimeRangeDeleteDirectivesByApp(
+        HistoryBackend* history_backend,
+        std::optional<std::string> restrict_app_id,
+        const syncer::SyncDataList& time_range_directives) {
   if (time_range_directives.empty()) {
     return;
   }
@@ -279,6 +312,9 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
 
     const sync_pb::TimeRangeDirective& time_range_directive =
         delete_directive.time_range_directive();
+    CHECK((!time_range_directive.has_app_id() &&
+           restrict_app_id == kNoAppIdFilter) ||
+          time_range_directive.app_id() == *restrict_app_id);
     if (!time_range_directive.has_start_time_usec() ||
         !time_range_directive.has_end_time_usec() ||
         time_range_directive.start_time_usec() >=
@@ -296,7 +332,7 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
         // Add 1us to cover history entries visited at the end time because
         // time range in directive is inclusive.
         history_backend->ExpireHistoryBetween(
-            std::set<GURL>(), kNoAppIdFilter, current_start_time,
+            std::set<GURL>(), restrict_app_id, current_start_time,
             current_end_time + base::Microseconds(1),
             /*user_initiated*/ true);
       }
@@ -309,7 +345,7 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
 
   if (!current_start_time.is_null()) {
     history_backend->ExpireHistoryBetween(
-        std::set<GURL>(), kNoAppIdFilter, current_start_time,
+        std::set<GURL>(), restrict_app_id, current_start_time,
         current_end_time + base::Microseconds(1),
         /*user_initiated*/ true);
   }
