@@ -45,6 +45,8 @@ const int kBatchSize = 100;
 /// Tracks if a clear and reindex operation is pending e.g. while the app is
 /// backgrounded.
 @property(nonatomic, assign) BOOL needsFullIndex;
+/// Prevents reentry into clearAndReindexIfNeeded method.
+@property(nonatomic, assign) BOOL deletionInProgress;
 
 @end
 
@@ -139,19 +141,24 @@ const int kBatchSize = 100;
   [self clearAndReindexIfNeeded];
 }
 - (void)clearAndReindexIfNeeded {
+  // If already waiting for Spotlight DB to clear all, don't do anything.
+  if (self.deletionInProgress) {
+    return;
+  }
+
   if (!self.needsClearAndReindex || self.isAppInBackground) {
     return;
   }
 
   self.needsFullIndex = NO;
-
+  self.deletionInProgress = YES;
   __weak OpenTabsSpotlightManager* weakSelf = self;
-
   [self.spotlightInterface
       deleteSearchableItemsWithDomainIdentifiers:@[
         StringFromSpotlightDomain(spotlight::DOMAIN_OPEN_TABS)
       ]
                                completionHandler:^(NSError*) {
+                                 weakSelf.deletionInProgress = NO;
                                  if (weakSelf.isShuttingDown) {
                                    return;
                                  }
