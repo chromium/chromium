@@ -1,0 +1,22 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "media.prefixed_fullscreen_video_api_availability",
+      "default_value": "runtime-enabled",
+      "values_to_test": [
+        "runtime-enabled",
+        "enabled",
+        "disabled"
+      ]
+    }
+  }
+]

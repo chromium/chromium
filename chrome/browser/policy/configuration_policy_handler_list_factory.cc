@@ -380,6 +380,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kZstdContentEncodingEnabled,
     prefs::kZstdContentEncodingEnabled,
     base::Value::Type::BOOLEAN},
+  { key::kPrefixedVideoFullscreenApiAvailability,
+    prefs::kPrefixedVideoFullscreenApiAvailability,
+    base::Value::Type::STRING },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAccessibilityPerformanceFilteringAllowed,

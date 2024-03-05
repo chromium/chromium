@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -45,6 +46,9 @@
 #endif
 
 namespace {
+
+constexpr char kPrefixedVideoFullscreenApiEnabled[] = "enabled";
+constexpr char kPrefixedVideoFullscreenApiDisabled[] = "disabled";
 
 // Parses a string |range| with a port range in the form "<min>-<max>".
 // If |range| is not in the correct format or contains an invalid range, zero
@@ -196,6 +200,18 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 #else
   prefs->focus_ring_color = SkColorSetRGB(0x10, 0x10, 0x10);
 #endif
+
+  std::string fullscreen_video_api_availability =
+      pref_service->GetString(prefs::kPrefixedVideoFullscreenApiAvailability);
+
+  if (fullscreen_video_api_availability == kPrefixedVideoFullscreenApiEnabled) {
+    prefs->prefixed_fullscreen_video_api_availability = true;
+  } else if (fullscreen_video_api_availability ==
+             kPrefixedVideoFullscreenApiDisabled) {
+    prefs->prefixed_fullscreen_video_api_availability = false;
+  } else {
+    prefs->prefixed_fullscreen_video_api_availability = std::nullopt;
+  }
 }
 
 }  // namespace renderer_preferences_util

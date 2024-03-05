@@ -366,6 +366,8 @@ void PrefsTabHelper::RegisterProfilePrefs(
       prefs::kEnableReferrers,
       !base::FeatureList::IsEnabled(features::kNoReferrers));
   registry->RegisterBooleanPref(prefs::kEnableEncryptedMedia, true);
+  registry->RegisterStringPref(prefs::kPrefixedVideoFullscreenApiAvailability,
+                               "runtime-enabled");
   registry->RegisterBooleanPref(prefs::kScrollToTextFragmentEnabled, true);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterDoublePref(browser_ui::prefs::kWebKitFontScaleFactor, 1.0);

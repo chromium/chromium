@@ -3508,6 +3508,14 @@ void WebViewImpl::UpdateRendererPreferences(
 
   SetExplicitlyAllowedPorts(
       renderer_preferences_.explicitly_allowed_network_ports);
+
+  if (renderer_preferences_.prefixed_fullscreen_video_api_availability
+          .has_value()) {
+    WebRuntimeFeatures::EnableFeatureFromString(
+        "PrefixedVideoFullscreen",
+        renderer_preferences_.prefixed_fullscreen_video_api_availability
+            .value());
+  }
 }
 
 void WebViewImpl::SetHistoryOffsetAndLength(int32_t history_offset,

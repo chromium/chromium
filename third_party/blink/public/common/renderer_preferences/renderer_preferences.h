@@ -90,6 +90,7 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   bool plugin_fullscreen_allowed{true};
   bool caret_browsing_enabled{false};
   std::vector<uint16_t> explicitly_allowed_network_ports;
+  std::optional<bool> prefixed_fullscreen_video_api_availability;
 
   RendererPreferences();
   RendererPreferences(const RendererPreferences& other);

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -251,6 +252,11 @@ struct BLINK_COMMON_EXPORT
   static const std::vector<uint16_t>& explicitly_allowed_network_ports(
       const ::blink::RendererPreferences& data) {
     return data.explicitly_allowed_network_ports;
+  }
+
+  static const std::optional<bool> prefixed_fullscreen_video_api_availability(
+      const ::blink::RendererPreferences& data) {
+    return data.prefixed_fullscreen_video_api_availability;
   }
 
   static bool Read(blink::mojom::RendererPreferencesDataView,
