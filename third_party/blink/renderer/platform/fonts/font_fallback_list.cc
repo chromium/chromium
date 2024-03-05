@@ -178,9 +178,8 @@ const FontData* FontFallbackList::GetFontData(
 
   if (font_selector_) {
     // Try the user's preferred standard font.
-    FontFamily font_family;
-    font_family.SetFamily(font_family_names::kWebkitStandard,
-                          FontFamily::Type::kGenericFamily);
+    FontFamily font_family(font_family_names::kWebkitStandard,
+                           FontFamily::Type::kGenericFamily);
     if (const FontData* data =
             font_selector_->GetFontData(font_description, font_family)) {
       return data;

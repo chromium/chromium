@@ -116,23 +116,18 @@ void DrawImageExpectingIconOnly(PlaceholderImage& image,
 
 float GetExpectedPlaceholderTextWidth(const StringView& text,
                                       float scale_factor) {
+  scoped_refptr<SharedFontFamily> arial = SharedFontFamily::Create(
+      font_family_names::kArial, FontFamily::Type::kFamilyName);
+  scoped_refptr<SharedFontFamily> helvetica = SharedFontFamily::Create(
+      font_family_names::kHelvetica, FontFamily::Type::kFamilyName, arial);
+  scoped_refptr<SharedFontFamily> helvetica_neue =
+      SharedFontFamily::Create(font_family_names::kHelveticaNeue,
+                               FontFamily::Type::kFamilyName, helvetica);
+  FontFamily roboto(font_family_names::kRoboto, FontFamily::Type::kFamilyName,
+                    helvetica_neue);
+
   FontDescription description;
-  description.FirstFamily().SetFamily(font_family_names::kRoboto,
-                                      FontFamily::Type::kFamilyName);
-
-  scoped_refptr<SharedFontFamily> helvetica_neue = SharedFontFamily::Create();
-  helvetica_neue->SetFamily(font_family_names::kHelveticaNeue,
-                            FontFamily::Type::kFamilyName);
-  scoped_refptr<SharedFontFamily> helvetica = SharedFontFamily::Create();
-  helvetica->SetFamily(font_family_names::kHelvetica,
-                       FontFamily::Type::kFamilyName);
-  scoped_refptr<SharedFontFamily> arial = SharedFontFamily::Create();
-  arial->SetFamily(font_family_names::kArial, FontFamily::Type::kFamilyName);
-
-  helvetica->AppendFamily(std::move(arial));
-  helvetica_neue->AppendFamily(std::move(helvetica));
-  description.FirstFamily().AppendFamily(std::move(helvetica_neue));
-
+  description.SetFamily(roboto);
   description.SetGenericFamily(FontDescription::kSansSerifFamily);
   description.SetComputedSize(scale_factor * 14.0f);
   description.SetWeight(FontSelectionValue(500));

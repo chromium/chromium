@@ -63,21 +63,10 @@ class ShapingLineBreakerTest : public FontTestBase {
   }
 
   void SelectLucidaFont() {
-    FontFamily lucida_family;
-    // Windows 10
-    lucida_family.SetFamily(AtomicString("Lucida Grande"),
-                            FontFamily::Type::kFamilyName);
-    // Windows 7
-    lucida_family.AppendFamily(AtomicString("Lucida Grande"),
-                               FontFamily::Type::kFamilyName);
-    // Linux
-    lucida_family.AppendFamily(AtomicString("Lucida Medium"),
-                               FontFamily::Type::kFamilyName);
-    // Mac
-    lucida_family.AppendFamily(AtomicString("Lucida Medium"),
-                               FontFamily::Type::kFamilyName);
-
-    font_description.SetFamily(lucida_family);
+    font_description.SetFamily(
+        FontFamily(AtomicString("Lucida Grande"), FontFamily::Type::kFamilyName,
+                   SharedFontFamily::Create(AtomicString("Lucida Medium"),
+                                            FontFamily::Type::kFamilyName)));
   }
 
   void TearDown() override {}

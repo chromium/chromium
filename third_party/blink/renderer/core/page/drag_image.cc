@@ -127,11 +127,9 @@ static Font DeriveDragLabelFont(int size, FontSelectionValue font_weight) {
   const AtomicString& family =
       LayoutThemeFontProvider::SystemFontFamily(CSSValueID::kNone);
 
-  FontFamily font_family;
-  font_family.SetFamily(family, FontFamily::InferredTypeFor(family));
-
   FontDescription description;
-  description.SetFamily(font_family);
+  description.SetFamily(
+      FontFamily(family, FontFamily::InferredTypeFor(family)));
   description.SetWeight(font_weight);
   description.SetSpecifiedSize(size);
   description.SetComputedSize(size);
