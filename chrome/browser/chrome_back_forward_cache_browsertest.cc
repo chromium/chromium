@@ -90,17 +90,8 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
-  // At the chrome layer, an outstanding request to /favicon.ico is made. It is
-  // made by the renderer on behalf of the browser process. It counts as an
-  // outstanding request, which prevents the page from entering the
-  // BackForwardCache, as long as it hasn't resolved.
-  //
-  // There are no real way to wait for this to complete. Not waiting would make
-  // the test potentially flaky. To prevent this, the no-favicon.html page is
-  // used, the image is not loaded from the network.
   GURL GetURL(const std::string& host) {
-    return embedded_test_server()->GetURL(
-        host, "/back_forward_cache/no-favicon.html");
+    return embedded_test_server()->GetURL(host, "/title1.html");
   }
 
   virtual std::vector<base::test::FeatureRefAndParams>

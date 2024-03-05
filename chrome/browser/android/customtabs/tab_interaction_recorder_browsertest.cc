@@ -111,15 +111,9 @@ class TabInteractionRecorderAndroidBrowserTest : public AndroidBrowserTest {
             web_contents()->GetPrimaryMainFrame());
     return static_cast<TestAutofillManager&>(driver->GetAutofillManager());
   }
-
-  // At the chrome layer, an outstanding request to /favicon.ico is made. It is
-  // made by the renderer on behalf of the browser process. It counts as an
-  // outstanding request, which prevents the page from entering the
-  // BackForwardCache, as long as it hasn't resolved. Here we use it the same
-  // reason as ChromeBackForwardCacheBrowserTest.
+  // Returns a URL with host `host` and path "/title1.html".
   GURL GetURLWithHost(const std::string& host) {
-    return embedded_test_server()->GetURL(
-        host, "/back_forward_cache/no-favicon.html");
+    return embedded_test_server()->GetURL(host, "/title1.html");
   }
 
   GURL GetTestFormUrl() {
