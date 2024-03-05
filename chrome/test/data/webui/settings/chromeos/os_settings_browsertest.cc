@@ -9,6 +9,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/chromeos/lacros_only_mocha_browser_test.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -35,7 +36,7 @@ class OSSettingsMochaTest : public WebUIMochaBrowserTest {
     // All OS Settings test files are located in the directory
     // settings/chromeos/.
     const std::string path_with_parent_directory = base::StrCat({
-        std::string("settings/chromeos/"),
+        "settings/chromeos/",
         test_path,
     });
     RunTest(path_with_parent_directory, trigger);
@@ -1784,6 +1785,35 @@ class OSSettingsMochaTestRevampAndLacrosOnlyDisabled
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampAndLacrosOnlyDisabled,
                        OsPeoplePageAccountManagerSubpage) {
+  RunSettingsTest("os_people_page/account_manager_subpage_test.js");
+}
+
+class OSSettingsMochaTestLacrosOnlyEnabled : public LacrosOnlyMochaBrowserTest {
+ protected:
+  OSSettingsMochaTestLacrosOnlyEnabled() : LacrosOnlyMochaBrowserTest() {
+    set_test_loader_host(chrome::kChromeUIOSSettingsHost);
+
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kOsSettingsRevampWayfinding);
+  }
+
+  void RunSettingsTest(const std::string& test_path) {
+    // All OS Settings test files are located in the directory
+    // settings/chromeos/.
+    const std::string path_with_parent_directory = base::StrCat({
+        "settings/chromeos/",
+        test_path,
+    });
+    RunTest(path_with_parent_directory, "mocha.run()");
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    OSSettingsMochaTestLacrosOnlyEnabled,
+    OsPeoplePageAccountManagerSubpageWithArcAccountRestrictionsEnabled) {
   RunSettingsTest("os_people_page/account_manager_subpage_test.js");
 }
 

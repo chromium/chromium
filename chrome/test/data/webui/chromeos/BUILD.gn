@@ -37,7 +37,6 @@ if (include_js2gtest_tests) {
       "../../../../browser/resources/chromeos/login/security_token_pin_browsertest.js",
       "../../../../browser/ui/webui/ash/certificate_manager_dialog_browsertest.js",
       "../cr_components/chromeos/cr_components_chromeos_v3_browsertest.js",
-      "../settings/chromeos/os_settings_browsertest.js",
       "account_manager/account_manager_browsertest.js",
       "arc_account_picker/arc_account_picker_browsertest.js",
       "ash_common/ash_common_browsertest.js",

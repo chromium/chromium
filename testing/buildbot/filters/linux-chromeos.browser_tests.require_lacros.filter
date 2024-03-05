@@ -19,6 +19,7 @@ ExtensionKeeplistTest*
 # Note: Some of FileTasksBrowserTest* runs only on branded ash and lacros builds.
 *FileTasksBrowserTest*
 NonKioskAcceleratorLacrosTest*
+*OSSettingsMochaTestLacrosOnlyEnabled*
 SelectToSpeak*
 StickyKeysBrowserTest*
 SwitchAccess*

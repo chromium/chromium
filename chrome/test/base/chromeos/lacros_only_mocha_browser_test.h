@@ -23,10 +23,11 @@ class LacrosOnlyMochaBrowserTest : public WebUIMochaBrowserTest {
 
  protected:
   void SetUpInProcessBrowserTestFixture() override;
+  void TearDownInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
 
  private:
-  test::AshBrowserTestStarter ash_starter_;
+  std::unique_ptr<test::AshBrowserTestStarter> ash_starter_;
 };
 
 #endif  // CHROME_TEST_BASE_CHROMEOS_LACROS_ONLY_MOCHA_BROWSER_TEST_H_
