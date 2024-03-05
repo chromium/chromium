@@ -193,6 +193,8 @@ struct ChromeMLExecuteOptions {
   const ChromeMLExecutionOutputFn* execution_output_fn;
   // Optional adaptation ID for this request.
   uint32_t* adaptation_id;
+  uint32_t top_k;
+  float temperature;
 };
 
 // Performance data filled out by GetEstimatedPerformance().

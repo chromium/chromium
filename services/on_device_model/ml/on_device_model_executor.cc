@@ -36,13 +36,9 @@ using on_device_model::mojom::LoadModelResult;
 namespace ml {
 namespace {
 
-const base::FeatureParam<double> kTemperature{
+const base::FeatureParam<int> kMaxTopK{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-    "on_device_model_temperature", 0.2};
-
-const base::FeatureParam<int> kTopK{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-    "on_device_model_topk", 3};
+    "on_device_model_max_topk", 128};
 
 const base::FeatureParam<bool> kPreferTextureWeights{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
@@ -75,6 +71,15 @@ int CalculateTokensPerSecond(int num_tokens, base::TimeDelta duration) {
   }
   return (num_tokens / static_cast<float>(duration.InMicroseconds())) *
          base::Time::kMicrosecondsPerSecond;
+}
+
+float GetTemperature(std::optional<float> temperature) {
+  return std::max(0.0f, temperature.value_or(0.0f));
+}
+
+uint32_t GetTopK(std::optional<uint32_t> top_k) {
+  return std::min(static_cast<uint32_t>(kMaxTopK.Get()),
+                  std::max(1u, top_k.value_or(1)));
 }
 
 // Handles sending and canceling responses.
@@ -262,7 +267,10 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
         .context_mode = GetContextMode(*input) | ContextMode::kSave,
         .max_tokens = input->max_tokens.value_or(0),
         .token_offset = input->token_offset.value_or(0),
-        .context_saved_fn = &context_saved_fn};
+        .context_saved_fn = &context_saved_fn,
+        .top_k = GetTopK(input->top_k),
+        .temperature = GetTemperature(input->temperature),
+    };
     if (adaptation_id_) {
       options.adaptation_id = &adaptation_id_.value();
     }
@@ -292,7 +300,10 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
         .token_offset = input->token_offset.value_or(0),
         .max_output_tokens = input->max_output_tokens.value_or(0),
         .score_ts_interval = ts_interval,
-        .execution_output_fn = &output_fn};
+        .execution_output_fn = &output_fn,
+        .top_k = GetTopK(input->top_k),
+        .temperature = GetTemperature(input->temperature),
+    };
     if (adaptation_id_) {
       options.adaptation_id = &adaptation_id_.value();
     }
@@ -446,8 +457,8 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .sentencepiece_model_proto_dispose = &sentencepiece_model_proto_dispose,
       .model_data = &data,
       .max_tokens = params->max_tokens,
-      .temperature = static_cast<float>(kTemperature.Get()),
-      .top_k = kTopK.Get(),
+      .temperature = 0.0f,
+      .top_k = kMaxTopK.Get(),
       .ts_dimension = params->ts_dimension.value_or(0),
       .adaptation_ranks = params->adaptation_ranks.data(),
       .adaptation_ranks_size = params->adaptation_ranks.size(),

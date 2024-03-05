@@ -1062,5 +1062,18 @@ bool GetOnDeviceModelRetractRepeats() {
   return kOnDeviceModelRetractRepeats.Get();
 }
 
+int GetOnDeviceModelDefaultTopK() {
+  static const base::FeatureParam<int> kTopK{
+      &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+      "on_device_model_topk", 3};
+  return kTopK.Get();
+}
+
+double GetOnDeviceModelDefaultTemperature() {
+  static const base::FeatureParam<double> kTemperature{
+      &kOptimizationGuideOnDeviceModel, "on_device_model_temperature", 0.8};
+  return kTemperature.Get();
+}
+
 }  // namespace features
 }  // namespace optimization_guide

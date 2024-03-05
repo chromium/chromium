@@ -75,7 +75,8 @@ class OnDeviceModelServiceTest : public testing::Test {
 
   mojom::InputOptionsPtr MakeInput(const std::string& input) {
     return mojom::InputOptions::New(input, std::nullopt, std::nullopt, false,
-                                    std::nullopt, std::nullopt);
+                                    std::nullopt, std::nullopt, std::nullopt,
+                                    std::nullopt);
   }
 
   std::vector<std::string> GetResponses(mojom::OnDeviceModel& model,
@@ -128,10 +129,11 @@ TEST_F(OnDeviceModelServiceTest, IgnoresContext) {
   mojo::Remote<mojom::Session> session;
   model->StartSession(session.BindNewPipeAndPassReceiver());
   session->AddContext(MakeInput("cheese"), {});
-  session->Execute(mojom::InputOptions::New(
-                       "cheddar", std::nullopt, std::nullopt,
-                       /*ignore_context=*/true, std::nullopt, std::nullopt),
-                   response.BindRemote());
+  session->Execute(
+      mojom::InputOptions::New("cheddar", std::nullopt, std::nullopt,
+                               /*ignore_context=*/true, std::nullopt,
+                               std::nullopt, std::nullopt, std::nullopt),
+      response.BindRemote());
   response.WaitForCompletion();
 
   EXPECT_THAT(response.responses(), ElementsAre("Input: cheddar\n"));
@@ -148,14 +150,16 @@ TEST_F(OnDeviceModelServiceTest, AddContextWithTokenLimits) {
   ContextClientWaiter client1;
   session->AddContext(
       mojom::InputOptions::New(input, /*max_tokens=*/4, std::nullopt, false,
-                               std::nullopt, std::nullopt),
+                               std::nullopt, std::nullopt, std::nullopt,
+                               std::nullopt),
       client1.BindRemote());
   EXPECT_EQ(client1.WaitForCompletion(), 4);
 
   ContextClientWaiter client2;
   session->AddContext(
       mojom::InputOptions::New(input, std::nullopt, /*token_offset=*/4, false,
-                               std::nullopt, std::nullopt),
+                               std::nullopt, std::nullopt, std::nullopt,
+                               std::nullopt),
       client2.BindRemote());
   EXPECT_EQ(client2.WaitForCompletion(), 6);
 

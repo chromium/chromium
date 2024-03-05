@@ -103,12 +103,12 @@ class SessionImpl::ContextProcessor
     if (!session_->ShouldUseOnDeviceModel()) {
       return;
     }
+    auto options = on_device_model::mojom::InputOptions::New();
+    options->text = input_;
+    options->max_tokens = num_tokens;
+    options->token_offset = tokens_processed_;
     session_->GetOrCreateSession().AddContext(
-        on_device_model::mojom::InputOptions::New(
-            input_, num_tokens, tokens_processed_, /*ignore_context=*/false,
-            /*max_output_tokens=*/std::nullopt,
-            /*safety_interval=*/std::nullopt),
-        client_.BindNewPipeAndPassRemote());
+        std::move(options), client_.BindNewPipeAndPassRemote());
   }
 
   raw_ref<SessionImpl> session_;
@@ -340,6 +340,9 @@ void SessionImpl::ExecuteModel(
   options->max_tokens = features::GetOnDeviceModelMaxTokensForExecute();
   options->ignore_context = input->should_ignore_input_context;
   options->max_output_tokens = features::GetOnDeviceModelMaxTokensForOutput();
+  // TODO(crbug.com/328296049): Pass this through the session.
+  options->top_k = features::GetOnDeviceModelDefaultTopK();
+  options->temperature = features::GetOnDeviceModelDefaultTemperature();
   if (safety_config_) {
     options->safety_interval =
         features::GetOnDeviceModelTextSafetyTokenInterval();

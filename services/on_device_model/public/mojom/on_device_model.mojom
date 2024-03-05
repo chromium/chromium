@@ -107,6 +107,16 @@ struct InputOptions {
   // safety update will be provided after every Nth token, as well as during
   // response completion.
   uint32? safety_interval;
+
+  // These params control the output sampling. Higher `top_k` means more tokens
+  // are considered, higher `temperature` means less likely tokens are more
+  // probable.
+  // `top_k` should be a value from 1 to the max top K value the model was
+  // initialized with.
+  uint32? top_k;
+  // `temperature` should be a value greater than 0.0. Values above 1.0 may give
+  // poor results.
+  float? temperature;
 };
 
 // A session for a model that allows adding context and then executing an input

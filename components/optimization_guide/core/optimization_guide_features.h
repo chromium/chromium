@@ -583,6 +583,12 @@ int GetOnDeviceModelMinRepeatChars();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool GetOnDeviceModelRetractRepeats();
 
+// Settings to control output sampling.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+int GetOnDeviceModelDefaultTopK();
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+double GetOnDeviceModelDefaultTemperature();
+
 }  // namespace features
 }  // namespace optimization_guide
 
