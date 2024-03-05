@@ -12,6 +12,10 @@
 
 namespace gpu {
 
+namespace {
+
+// Returns true if the OpenGL target to use for the combination of format/usage
+// is not GL_TEXTURE_2D but a platform specific texture target.
 bool GetImageNeedsPlatformSpecificTextureTarget(gfx::BufferFormat format,
                                                 gfx::BufferUsage usage) {
   if (!NativeBufferNeedsPlatformSpecificTextureTarget(format))
@@ -26,6 +30,8 @@ bool GetImageNeedsPlatformSpecificTextureTarget(gfx::BufferFormat format,
   return false;
 #endif
 }
+
+}  // namespace
 
 std::vector<gfx::BufferUsageAndFormat>
 CreateBufferUsageAndFormatExceptionList() {

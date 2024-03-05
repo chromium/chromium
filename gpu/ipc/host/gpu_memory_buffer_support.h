@@ -15,11 +15,6 @@
 
 namespace gpu {
 
-// Returns true of the OpenGL target to use for the combination of format/usage
-// is not GL_TEXTURE_2D but a platform specific texture target.
-bool GetImageNeedsPlatformSpecificTextureTarget(gfx::BufferFormat format,
-                                                gfx::BufferUsage usage);
-
 // Populate a list of buffer usage/format for which a per platform specific
 // texture target must be used instead of GL_TEXTURE_2D.
 std::vector<gfx::BufferUsageAndFormat>
