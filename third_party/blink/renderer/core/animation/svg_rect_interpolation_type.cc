@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/core/animation/interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/svg/svg_rect.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -53,11 +54,19 @@ SVGPropertyBase* SVGRectInterpolationType::AppliedSVGValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*) const {
   const auto& list = To<InterpolableList>(interpolable_value);
+  // Note: using default CSSToLengthConversionData here as it's
+  // guaranteed to be a double.
+  // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
+  CSSToLengthConversionData length_resolver;
   auto* result = MakeGarbageCollected<SVGRect>();
-  result->SetX(To<InterpolableNumber>(list.Get(kRectX))->Value());
-  result->SetY(To<InterpolableNumber>(list.Get(kRectY))->Value());
-  result->SetWidth(To<InterpolableNumber>(list.Get(kRectWidth))->Value());
-  result->SetHeight(To<InterpolableNumber>(list.Get(kRectHeight))->Value());
+  result->SetX(
+      To<InterpolableNumber>(list.Get(kRectX))->Value(length_resolver));
+  result->SetY(
+      To<InterpolableNumber>(list.Get(kRectY))->Value(length_resolver));
+  result->SetWidth(
+      To<InterpolableNumber>(list.Get(kRectWidth))->Value(length_resolver));
+  result->SetHeight(
+      To<InterpolableNumber>(list.Get(kRectHeight))->Value(length_resolver));
   return result;
 }
 
