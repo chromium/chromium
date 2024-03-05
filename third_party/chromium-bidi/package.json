@@ -216,11 +216,11 @@
     "websocket": "1.0.34",
     "wireit": "0.14.4",
     "ws": "8.16.0",
-    "yargs": "17.7.2",
-    "zod": "3.22.4"
+    "yargs": "17.7.2"
   },
   "dependencies": {
     "mitt": "3.0.1",
-    "urlpattern-polyfill": "10.0.0"
+    "urlpattern-polyfill": "10.0.0",
+    "zod": "3.22.4"
   }
 }

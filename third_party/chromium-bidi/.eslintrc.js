@@ -93,6 +93,12 @@ module.exports = {
         project: './tsconfig.base.json',
       },
       rules: {
+        'import/no-extraneous-dependencies': [
+          'error',
+          {
+            devDependencies: false,
+          },
+        ],
         // keep-sorted start block=yes sticky_comments=yes
         '@typescript-eslint/array-type': 'warn',
         '@typescript-eslint/consistent-generic-constructors': 'warn',
@@ -129,6 +135,13 @@ module.exports = {
         '@typescript-eslint/return-await': ['error', 'always'],
         '@typescript-eslint/switch-exhaustiveness-check': 'error',
         // keep-sorted end
+      },
+    },
+    {
+      // Disable rules for non production code
+      files: ['*.spec.ts', './src/bidiServer/*'],
+      rules: {
+        'import/no-extraneous-dependencies': 'off',
       },
     },
   ],
