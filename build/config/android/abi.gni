@@ -23,10 +23,6 @@ declare_args() {
   # See base::android::orderfile::StartDelayedDump for more information.
   devtools_instrumentation_dumping = false
 
-  # Only effective if use_order_profiling = true. When this is true the call
-  # graph based instrumentation is used.
-  use_call_graph = false
-
   # Build additional browser splits with HWASAN instrumentation enabled.
   build_hwasan_splits = false
 
@@ -38,8 +34,6 @@ declare_args() {
 
 assert(!devtools_instrumentation_dumping || use_order_profiling,
        "devtools_instrumentation_dumping requires use_order_profiling")
-assert(!use_call_graph || use_order_profiling,
-       "use_call_graph requires use_order_profiling")
 
 if (current_cpu == "x86") {
   android_app_abi = "x86"

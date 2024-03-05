@@ -223,9 +223,7 @@ class ClankCompiler:
     self.lib_chrome_so = str(out_dir /
                              f'lib.unstripped/{self._libchrome_target}.so')
 
-  def _GenerateGnArgs(self, instrumented, use_call_graph):
-    assert not use_call_graph or instrumented, ('You can not enable call graph '
-                                                'without instrumentation!')
+  def _GenerateGnArgs(self, instrumented):
     # Set the "Release Official" flavor, the parts affecting performance.
     gn_args = [
         'enable_resource_allowlist_generation=false',
@@ -238,7 +236,6 @@ class ClankCompiler:
         'use_goma=' + str(self._options.use_goma).lower(),
         'use_remoteexec=' + str(self._options.use_remoteexec).lower(),
         'use_order_profiling=' + str(instrumented).lower(),
-        'use_call_graph=' + str(use_call_graph).lower(),
         'devtools_instrumentation_dumping=' + str(instrumented).lower()
     ]
     gn_args += _ARCH_GN_ARGS[self._options.arch]
@@ -251,16 +248,15 @@ class ClankCompiler:
       gn_args += ['chrome_orderfile_path="//{}"'.format(src_abs_orderfile)]
     return gn_args
 
-  def _Build(self, instrumented, use_call_graph, target):
+  def _Build(self, instrumented, target):
     """Builds the provided ninja target with or without order_profiling on.
 
     Args:
       instrumented: (bool) Whether we want to build an instrumented binary.
-      use_call_graph: (bool) Whether to use the call graph instrumentation.
       target: (str) The name of the ninja target to build.
     """
     self._step_recorder.BeginStep('Compile %s' % target)
-    gn_args = self._GenerateGnArgs(instrumented, use_call_graph)
+    gn_args = self._GenerateGnArgs(instrumented)
     self._step_recorder.RunCommand(
         ['gn', 'gen',
          str(self._out_dir), '--args=' + ' '.join(gn_args)])
@@ -279,41 +275,38 @@ class ClankCompiler:
     assert file_to_touch.exists()
     self._step_recorder.RunCommand(['touch', str(file_to_touch)])
 
-  def CompileWebViewApk(self, instrumented, use_call_graph, force_relink=False):
+  def CompileWebViewApk(self, instrumented, force_relink=False):
     """Builds a SystemWebView.apk either with or without order_profiling on.
 
     Args:
       instrumented: (bool) Whether to build an instrumented apk.
-      use_call_graph: (bool) Whether to use the call graph instrumentation.
       force_relink: Whether libchromeview.so should be re-created.
     """
     if force_relink:
       self._ForceRelink()
-    self._Build(instrumented, use_call_graph, self._webview_target)
+    self._Build(instrumented, self._webview_target)
 
-  def CompileChromeApk(self, instrumented, use_call_graph, force_relink=False):
+  def CompileChromeApk(self, instrumented, force_relink=False):
     """Builds a Chrome.apk either with or without order_profiling on.
 
     Args:
       instrumented: (bool) Whether to build an instrumented apk.
-      use_call_graph: (bool) Whether to use the call graph instrumentation.
       force_relink: Whether libchromeview.so should be re-created.
     """
     if force_relink:
       self._ForceRelink()
-    self._Build(instrumented, use_call_graph, self._chrome_target)
+    self._Build(instrumented, self._chrome_target)
 
-  def CompileLibchrome(self, instrumented, use_call_graph, force_relink=False):
+  def CompileLibchrome(self, instrumented, force_relink=False):
     """Builds a libmonochrome.so either with or without order_profiling on.
 
     Args:
       instrumented: (bool) Whether to build an instrumented apk.
-      use_call_graph: (bool) Whether to use the call graph instrumentation.
       force_relink: (bool) Whether libmonochrome.so should be re-created.
     """
     if force_relink:
       self._ForceRelink()
-    self._Build(instrumented, use_call_graph, self._libchrome_target)
+    self._Build(instrumented, self._libchrome_target)
 
   @staticmethod
   def _MakePublicTarget(internal_target):
@@ -656,8 +649,7 @@ class OrderfileGenerator:
     profiles = process_profiles.ProfileManager(files)
     processor = process_profiles.SymbolOffsetProcessor(
         self._compiler.lib_chrome_so)
-    ordered_symbols = cluster.ClusterOffsets(profiles, processor,
-        call_graph=self._options.use_call_graph)
+    ordered_symbols = cluster.ClusterOffsets(profiles, processor)
     if not ordered_symbols:
       raise Exception('Failed to get ordered symbols')
     for sym in ordered_symbols:
@@ -925,7 +917,6 @@ class OrderfileGenerator:
 
       # Build APK to be installed on the device.
       self._compiler.CompileChromeApk(instrumented=False,
-                                      use_call_graph=False,
                                       force_relink=True)
       benchmark_results['Speedometer2.0'] = self._PerformanceBenchmark(
           self._compiler.chrome_apk_path)
@@ -933,7 +924,6 @@ class OrderfileGenerator:
           self._NativeCodeMemoryBenchmark(self._compiler.chrome_apk_path))
       if self._options.profile_webview_startup:
         self._compiler.CompileWebViewApk(instrumented=False,
-                                         use_call_graph=False,
                                          force_relink=True)
         benchmark_results[
             'system_health.webview_startup'] = self._WebViewStartupBenchmark(
@@ -969,11 +959,9 @@ class OrderfileGenerator:
         # If there are pregenerated profiles, the instrumented build should
         # not be changed to avoid invalidating the pregenerated profile
         # offsets.
-        self._compiler.CompileChromeApk(
-            instrumented=True, use_call_graph=self._options.use_call_graph)
+        self._compiler.CompileChromeApk(instrumented=True)
         if self._options.profile_webview_startup:
-          self._compiler.CompileWebViewApk(
-              instrumented=True, use_call_graph=self._options.use_call_graph)
+          self._compiler.CompileWebViewApk(instrumented=True)
       self._GenerateAndProcessProfile()
       self._MaybeArchiveOrderfile(self._GetUnpatchedOrderfileFilename())
     elif self._options.manual_symbol_offsets:
@@ -1001,17 +989,15 @@ class OrderfileGenerator:
                                      self._GetPathToOrderfile(),
                                      self._native_library_build_variant)
 
-      self._compiler.CompileLibchrome(instrumented=False, use_call_graph=False)
+      self._compiler.CompileLibchrome(instrumented=False)
       self._PatchOrderfile()
       # Because identical code folding is a bit different with and without
       # the orderfile build, we need to re-patch the orderfile with code
       # folding as close to the final version as possible.
       self._compiler.CompileLibchrome(instrumented=False,
-                                      use_call_graph=False,
                                       force_relink=True)
       self._PatchOrderfile()
       self._compiler.CompileLibchrome(instrumented=False,
-                                      use_call_graph=False,
                                       force_relink=True)
       self._VerifySymbolOrder()
       self._MaybeArchiveOrderfile(self._GetPathToOrderfile())
@@ -1146,8 +1132,6 @@ def CreateArgumentParser():
   parser.add_argument('--commit-hashes', action='store_true',
                       help=('Commit any orderfile hash files in the current '
                             'checkout; performs no other action'))
-  parser.add_argument('--use-call-graph', action='store_true', default=False,
-                      help='Use call graph instrumentation.')
   parser.add_argument('--use-common-out-dir-for-instrumented',
                       action='store_true',
                       help='Use out/Release for the instrumented out dir so '

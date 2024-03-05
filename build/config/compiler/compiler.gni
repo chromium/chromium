@@ -200,10 +200,7 @@ if (is_chromeos) {
       # but overall shrinks binaries considerably by avoiding huge unwind
       # tables.
       (current_cpu == "x86" && !exclude_unwind_tables && optimize_for_size) ||
-      using_sanitizer ||
-      # For caller-callee instrumentation version which needs frame pointers to
-      # get the caller address.
-      use_call_graph
+      using_sanitizer
 } else if (is_fuchsia) {
   # Fuchsia on arm64 could use shadow call stack for unwinding.
   enable_frame_pointers = current_cpu != "arm64"
