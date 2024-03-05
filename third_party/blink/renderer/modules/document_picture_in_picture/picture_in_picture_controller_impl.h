@@ -66,16 +66,18 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   LocalDOMWindow* documentPictureInPictureWindow() const;
 
   // Creates a picture-in-picture window that can contain arbitrary HTML.
-  void CreateDocumentPictureInPictureWindow(ScriptState*,
-                                            LocalDOMWindow&,
-                                            DocumentPictureInPictureOptions*,
-                                            ScriptPromiseResolver*,
-                                            ExceptionState&);
+  void CreateDocumentPictureInPictureWindow(
+      ScriptState*,
+      LocalDOMWindow&,
+      DocumentPictureInPictureOptions*,
+      ScriptPromiseResolverTyped<LocalDOMWindow>*,
+      ExceptionState&);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Implementation of PictureInPictureController.
-  void EnterPictureInPicture(HTMLVideoElement*,
-                             ScriptPromiseResolver*) override;
+  void EnterPictureInPicture(
+      HTMLVideoElement*,
+      ScriptPromiseResolverTyped<PictureInPictureWindow>*) override;
   void ExitPictureInPicture(HTMLVideoElement*, ScriptPromiseResolver*) override;
   bool IsPictureInPictureElement(const Element*) const override;
   void OnPictureInPictureStateChange() override;
@@ -101,7 +103,7 @@ class MODULES_EXPORT PictureInPictureControllerImpl
  private:
   void OnEnteredPictureInPicture(
       HTMLVideoElement*,
-      ScriptPromiseResolver*,
+      ScriptPromiseResolverTyped<PictureInPictureWindow>*,
       mojo::PendingRemote<mojom::blink::PictureInPictureSession>,
       const gfx::Size&);
   void OnExitedPictureInPicture(ScriptPromiseResolver*) override;
@@ -173,7 +175,8 @@ class MODULES_EXPORT PictureInPictureControllerImpl
 
   // The |ScriptPromiseResolver| associated with the most recent call to
   // |CreateDocumentPictureInPictureWindow()| if it has not yet been resolved.
-  Member<ScriptPromiseResolver> open_document_pip_resolver_;
+  Member<ScriptPromiseResolverTyped<LocalDOMWindow>>
+      open_document_pip_resolver_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // The Picture-in-Picture element for the associated document.

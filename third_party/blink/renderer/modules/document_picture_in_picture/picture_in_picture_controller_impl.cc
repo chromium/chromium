@@ -123,7 +123,7 @@ PictureInPictureControllerImpl::IsElementAllowed(
 
 void PictureInPictureControllerImpl::EnterPictureInPicture(
     HTMLVideoElement* video_element,
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverTyped<PictureInPictureWindow>* resolver) {
   if (!video_element->GetWebMediaPlayer()) {
     if (resolver) {
       // TODO(crbug.com/1293949): Add an error message.
@@ -189,7 +189,7 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
 
 void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
     HTMLVideoElement* element,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<PictureInPictureWindow>* resolver,
     mojo::PendingRemote<mojom::blink::PictureInPictureSession> session_remote,
     const gfx::Size& picture_in_picture_window_size) {
   // If |session_ptr| is null then Picture-in-Picture is not supported by the
@@ -359,7 +359,7 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
     ScriptState* script_state,
     LocalDOMWindow& opener,
     DocumentPictureInPictureOptions* options,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<LocalDOMWindow>* resolver,
     ExceptionState& exception_state) {
   if (!LocalFrame::ConsumeTransientUserActivation(opener.GetFrame())) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,

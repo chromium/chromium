@@ -5,15 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DELEGATED_INK_INK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DELEGATED_INK_INK_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
-
+class DelegatedInkTrailPresenter;
 class ExceptionState;
 class InkPresenterParam;
 class Navigator;
-class ScriptPromise;
 class ScriptState;
 
 class Ink : public ScriptWrappable, public Supplement<Navigator> {
@@ -24,9 +24,10 @@ class Ink : public ScriptWrappable, public Supplement<Navigator> {
   static Ink* ink(Navigator& navigator);
 
   explicit Ink(Navigator&);
-  ScriptPromise requestPresenter(ScriptState* state,
-                                 InkPresenterParam* presenter_param,
-                                 ExceptionState& exception_state);
+  ScriptPromiseTyped<DelegatedInkTrailPresenter> requestPresenter(
+      ScriptState* state,
+      InkPresenterParam* presenter_param,
+      ExceptionState& exception_state);
 
   void Trace(blink::Visitor*) const override;
 };

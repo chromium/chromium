@@ -43,7 +43,7 @@ ExecutionContext* DocumentPictureInPicture::GetExecutionContext() const {
   return GetSupplementable();
 }
 
-ScriptPromise DocumentPictureInPicture::requestWindow(
+ScriptPromiseTyped<LocalDOMWindow> DocumentPictureInPicture::requestWindow(
     ScriptState* script_state,
     DocumentPictureInPictureOptions* options,
     ExceptionState& exception_state) {
@@ -51,7 +51,7 @@ ScriptPromise DocumentPictureInPicture::requestWindow(
   if (!dom_window) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Internal error: no window");
-    return ScriptPromise();
+    return ScriptPromiseTyped<LocalDOMWindow>();
   }
 
   if (dom_window->GetFrame() &&
@@ -59,24 +59,25 @@ ScriptPromise DocumentPictureInPicture::requestWindow(
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Opening a PiP window is only allowed "
                                       "from a top-level browsing context");
-    return ScriptPromise();
+    return ScriptPromiseTyped<LocalDOMWindow>();
   }
 
   if (dom_window->IsPictureInPictureWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Opening a PiP window from a PiP window is not allowed");
-    return ScriptPromise();
+    return ScriptPromiseTyped<LocalDOMWindow>();
   }
 
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
                                       "Document not attached");
-    return ScriptPromise();
+    return ScriptPromiseTyped<LocalDOMWindow>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<LocalDOMWindow>>(
+          script_state, exception_state.GetContext());
   // |dom_window->document()| should always exist after document construction.
   auto* document = dom_window->document();
   DCHECK(document);

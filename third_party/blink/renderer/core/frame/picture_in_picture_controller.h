@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PICTURE_IN_PICTURE_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PICTURE_IN_PICTURE_CONTROLLER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -14,7 +15,7 @@ class Document;
 class Element;
 class HTMLVideoElement;
 class LocalDOMWindow;
-class ScriptPromiseResolver;
+class PictureInPictureWindow;
 class TreeScope;
 
 // PictureInPictureController allows to know if Picture-in-Picture is allowed
@@ -62,8 +63,9 @@ class CORE_EXPORT PictureInPictureController
   };
 
   // Enter Picture-in-Picture for a video element and resolve promise if any.
-  virtual void EnterPictureInPicture(HTMLVideoElement*,
-                                     ScriptPromiseResolver*) = 0;
+  virtual void EnterPictureInPicture(
+      HTMLVideoElement*,
+      ScriptPromiseResolverTyped<PictureInPictureWindow>*) = 0;
 
   // Exit Picture-in-Picture for a video element and resolve promise if any.
   virtual void ExitPictureInPicture(HTMLVideoElement*,

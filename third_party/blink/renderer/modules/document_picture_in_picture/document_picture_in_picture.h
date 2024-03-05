@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DOCUMENT_PICTURE_IN_PICTURE_DOCUMENT_PICTURE_IN_PICTURE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DOCUMENT_PICTURE_IN_PICTURE_DOCUMENT_PICTURE_IN_PICTURE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -17,7 +18,6 @@ class DocumentPictureInPictureOptions;
 class DOMWindow;
 class ExceptionState;
 class LocalDOMWindow;
-class ScriptPromise;
 class ScriptState;
 
 class MODULES_EXPORT DocumentPictureInPicture
@@ -34,9 +34,10 @@ class MODULES_EXPORT DocumentPictureInPicture
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
-  ScriptPromise requestWindow(ScriptState*,
-                              DocumentPictureInPictureOptions*,
-                              ExceptionState&);
+  ScriptPromiseTyped<LocalDOMWindow> requestWindow(
+      ScriptState*,
+      DocumentPictureInPictureOptions*,
+      ExceptionState&);
 
   DOMWindow* window(ScriptState*) const;
 
