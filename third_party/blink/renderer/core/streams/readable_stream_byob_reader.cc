@@ -183,12 +183,13 @@ void ReadableStreamBYOBReader::ErrorReadIntoRequests(
   // https://streams.spec.whatwg.org/#abstract-opdef-readablestreambyobreadererrorreadintorequests
   // 1. Let readIntoRequests be reader.[[readIntoRequests]].
   // 2. Set reader.[[readIntoRequests]] to a new empty list.
+  HeapDeque<Member<ReadIntoRequest>> read_into_requests;
+  read_into_requests.Swap(reader->read_into_requests_);
   // 3. For each readIntoRequest of readIntoRequests,
-  for (ReadIntoRequest* request : reader->read_into_requests_) {
+  for (ReadIntoRequest* request : read_into_requests) {
     //   a. Perform readIntoRequest’s error steps, given e.
     request->ErrorSteps(script_state, e);
   }
-  reader->read_into_requests_.clear();
 }
 
 void ReadableStreamBYOBReader::Release(ScriptState* script_state,

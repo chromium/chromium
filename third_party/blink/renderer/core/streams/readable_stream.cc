@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_get_reader_options.h"
@@ -144,6 +145,126 @@ class ReadableStream::CancelAlgorithm final : public StreamAlgorithm {
  private:
   Member<UnderlyingByteSourceBase> underlying_byte_source_;
 };
+
+class ReadableStream::IterationSource final
+    : public ReadableStream::IterationSourceBase {
+ public:
+  IterationSource(ScriptState* script_state,
+                  Kind kind,
+                  ReadableStreamDefaultReader* reader,
+                  bool prevent_cancel)
+      : ReadableStream::IterationSourceBase(script_state, kind),
+        reader_(reader),
+        prevent_cancel_(prevent_cancel) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(reader_);
+    ReadableStream::IterationSourceBase::Trace(visitor);
+  }
+
+ protected:
+  void GetNextIterationResult() override;
+  void AsyncIteratorReturn(ScriptValue arg) override;
+
+ private:
+  friend class IterationReadRequest;
+
+  void TryResolvePromise();
+
+  Member<ReadableStreamDefaultReader> reader_;
+  bool prevent_cancel_;
+};
+
+class ReadableStream::IterationReadRequest final : public ReadRequest {
+ public:
+  explicit IterationReadRequest(IterationSource* iteration_source)
+      : iteration_source_(iteration_source) {}
+
+  void ChunkSteps(ScriptState* script_state,
+                  v8::Local<v8::Value> chunk,
+                  ExceptionState& exception_state) const override {
+    // 1. Resolve promise with chunk.
+    iteration_source_->TakePendingPromiseResolver()->Resolve(
+        iteration_source_->MakeIterationResult(
+            ScriptValue(script_state->GetIsolate(), chunk)));
+  }
+
+  void CloseSteps(ScriptState* script_state) const override {
+    // 1. Perform ! ReadableStreamDefaultReaderRelease(reader).
+    ReadableStreamDefaultReader::Release(script_state,
+                                         iteration_source_->reader_);
+    // 2. Resolve promise with end of iteration.
+    iteration_source_->TakePendingPromiseResolver()->Resolve(
+        iteration_source_->MakeEndOfIteration());
+  }
+
+  void ErrorSteps(ScriptState* script_state,
+                  v8::Local<v8::Value> e) const override {
+    // 1. Perform ! ReadableStreamDefaultReaderRelease(reader).
+    ReadableStreamDefaultReader::Release(script_state,
+                                         iteration_source_->reader_);
+    // 2. Reject promise with e.
+    iteration_source_->TakePendingPromiseResolver()->Reject(e);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(iteration_source_);
+    ReadRequest::Trace(visitor);
+  }
+
+ private:
+  Member<IterationSource> iteration_source_;
+};
+
+void ReadableStream::IterationSource::GetNextIterationResult() {
+  DCHECK(HasPendingPromise());
+
+  // https://streams.spec.whatwg.org/#ref-for-dfn-get-the-next-iteration-result
+  // 2. Assert: reader.[[stream]] is not undefined.
+  DCHECK(reader_->owner_readable_stream_);
+
+  // 4. Let readRequest be a new read request.
+  auto* read_request = MakeGarbageCollected<IterationReadRequest>(this);
+
+  // 5. Perform ! ReadableStreamDefaultReaderRead(this, readRequest).
+  ScriptState* script_state = GetScriptState();
+  ExceptionState exception_state(script_state->GetIsolate(),
+                                 ExceptionContextType::kUnknown, "", "");
+  ReadableStreamDefaultReader::Read(script_state, reader_, read_request,
+                                    exception_state);
+}
+
+void ReadableStream::IterationSource::AsyncIteratorReturn(ScriptValue arg) {
+  DCHECK(HasPendingPromise());
+
+  // https://streams.spec.whatwg.org/#ref-for-asynchronous-iterator-return
+  // 2. Assert: reader.[[stream]] is not undefined.
+  DCHECK(reader_->owner_readable_stream_);
+  // 3. Assert: reader.[[readRequests]] is empty, as the async iterator
+  //    machinery guarantees that any previous calls to next() have settled
+  //    before this is called.
+  DCHECK(reader_->read_requests_.empty());
+
+  ScriptState* script_state = GetScriptState();
+  // 4. If iterator's prevent cancel is false:
+  if (!prevent_cancel_) {
+    // 4.1. Let result be ! ReadableStreamReaderGenericCancel(reader, arg).
+    v8::Local<v8::Promise> result = ReadableStreamGenericReader::GenericCancel(
+        script_state, reader_, arg.V8Value());
+    // 4.2. Perform ! ReadableStreamDefaultReaderRelease(reader).
+    ReadableStreamDefaultReader::Release(script_state, reader_);
+    // 4.3. Return result.
+    TakePendingPromiseResolver()->Resolve(result);
+    return;
+  }
+
+  // 5. Perform ! ReadableStreamDefaultReaderRelease(reader).
+  ReadableStreamDefaultReader::Release(script_state, reader_);
+
+  // 6. Return a promise resolved with undefined.
+  TakePendingPromiseResolver()->Resolve(
+      v8::Undefined(script_state->GetIsolate()));
+}
 
 ReadableStream* ReadableStream::Create(ScriptState* script_state,
                                        ExceptionState& exception_state) {
@@ -1209,6 +1330,23 @@ HeapVector<Member<ReadableStream>> ReadableStream::CallTeeAndReturnBranchArray(
 
   // 3. Return ! CreateArrayFromList(branches).
   return HeapVector<Member<ReadableStream>>({branch1, branch2});
+}
+
+ReadableStream::IterationSourceBase* ReadableStream::CreateIterationSource(
+    ScriptState* script_state,
+    ReadableStream::IterationSourceBase::Kind kind,
+    ReadableStreamIteratorOptions* options,
+    ExceptionState& exception_state) {
+  // 1. Let reader be ? AcquireReadableStreamDefaultReader(stream).
+  ReadableStreamDefaultReader* reader =
+      AcquireDefaultReader(script_state, this, exception_state);
+  if (!reader) {
+    return nullptr;
+  }
+  // 3. Let preventCancel be args[0]["preventCancel"].
+  bool prevent_cancel = options->preventCancel();
+  return MakeGarbageCollected<IterationSource>(script_state, kind, reader,
+                                               prevent_cancel);
 }
 
 }  // namespace blink

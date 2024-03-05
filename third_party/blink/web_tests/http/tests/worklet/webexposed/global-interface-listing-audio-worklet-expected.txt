@@ -83,12 +83,14 @@ CONSOLE MESSAGE:     method error
 CONSOLE MESSAGE: interface ReadableStream
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter locked
+CONSOLE MESSAGE:     method @@asyncIterator
 CONSOLE MESSAGE:     method cancel
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method getReader
 CONSOLE MESSAGE:     method pipeThrough
 CONSOLE MESSAGE:     method pipeTo
 CONSOLE MESSAGE:     method tee
+CONSOLE MESSAGE:     method values
 CONSOLE MESSAGE: interface ReadableStreamBYOBReader
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter closed

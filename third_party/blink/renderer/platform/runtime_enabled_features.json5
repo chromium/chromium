@@ -3049,6 +3049,10 @@
     {
       name: "RasterInducingScroll",
     },
+    {
+      name: "ReadableStreamAsyncIterable",
+      status: "stable",
+    },
     // If enabled, the Accept-Language header will be reduced.
     {
       name: "ReduceAcceptLanguage",

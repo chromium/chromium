@@ -165,12 +165,13 @@ void ReadableStreamDefaultReader::ErrorReadRequests(
   // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaultreadererrorreadrequests
   // 1. Let readRequests be reader.[[readRequests]].
   // 2. Set reader.[[readRequests]] to a new empty list.
+  HeapDeque<Member<ReadRequest>> read_requests;
+  read_requests.Swap(reader->read_requests_);
   // 3. For each readRequest of readRequests,
-  for (ReadRequest* read_request : reader->read_requests_) {
+  for (ReadRequest* read_request : read_requests) {
     //   a. Perform readRequest’s error steps, given e.
     read_request->ErrorSteps(script_state, e);
   }
-  reader->read_requests_.clear();
 }
 
 void ReadableStreamDefaultReader::Release(ScriptState* script_state,

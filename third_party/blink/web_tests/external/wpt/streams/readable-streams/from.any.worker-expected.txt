@@ -24,7 +24,7 @@ This is a testharness.js-based test.
 [FAIL] ReadableStream.from accepts a ReadableStream
   promise_test: Unhandled rejection with value: object "TypeError: ReadableStream.from is not a function"
 [FAIL] ReadableStream.from accepts a ReadableStream async iterator
-  promise_test: Unhandled rejection with value: object "TypeError: (intermediate value)[Symbol.asyncIterator] is not a function"
+  promise_test: Unhandled rejection with value: object "TypeError: ReadableStream.from is not a function"
 [FAIL] ReadableStream.from re-throws errors from calling the @@iterator method
   assert_throws_exactly: from() should re-throw the error function "() => ReadableStream.from(iterable)" threw object "TypeError: ReadableStream.from is not a function" but we expected it to throw object "Error: a unique string"
 [FAIL] ReadableStream.from re-throws errors from calling the @@asyncIterator method
