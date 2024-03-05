@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <atomic>
+#include <functional>
 #include <utility>
 
 #include <windows.foundation.h>
@@ -9,9 +11,12 @@
 #include <windows.security.cryptography.core.h>
 #include <windows.storage.streams.h>
 
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/core_winrt_util.h"
@@ -38,6 +43,12 @@ using Microsoft::WRL::ComPtr;
 namespace crypto {
 
 namespace {
+
+enum KeyCredentialManagerAvailability {
+  kUnknown = 0,
+  kAvailable = 1,
+  kUnavailable = 2,
+};
 
 // These helpers wrap callbacks by posting them to the original calling thread.
 // This enables the wrapped callbacks to bind weak pointers.
@@ -108,11 +119,23 @@ void SignInternal(
     return;
   }
 
+  // Binds the IAsyncOperation to the callback to ensure it remains alive until
+  // the callback is invoked.
+  auto wrapped_success_callback = base::BindOnce(
+      [](ComPtr<IAsyncOperation<KeyCredentialOperationResult*>>,
+         base::OnceCallback<void(ComPtr<IKeyCredentialOperationResult>)>
+             success_callback,
+         ComPtr<IKeyCredentialOperationResult> result) {
+        std::move(success_callback).Run(result);
+      },
+      sign_result, std::move(success_callback));
+
   hr = base::win::PostAsyncHandlers(
-      sign_result.Get(), std::move(success_callback),
-      base::BindOnce([](base::RepeatingCallback<void(HRESULT)> cb,
+      sign_result.Get(), std::move(wrapped_success_callback),
+      base::BindOnce([](ComPtr<IAsyncOperation<KeyCredentialOperationResult*>>,
+                        base::RepeatingCallback<void(HRESULT)> cb,
                         HRESULT hr) { cb.Run(hr); },
-                     error_callback));
+                     sign_result, error_callback));
   if (FAILED(hr)) {
     LOG(ERROR) << "SignInternal: Call to PostAsyncHandlers failed.";
     error_callback.Run(hr);
@@ -268,11 +291,23 @@ void GenerateUserVerifyingSigningKeyInternal(
     return;
   }
 
+  // Binds the IAsyncOperation to the callback to ensure it remains alive until
+  // the callback is invoked.
+  auto wrapped_success_callback = base::BindOnce(
+      [](ComPtr<IAsyncOperation<KeyCredentialRetrievalResult*>>,
+         base::OnceCallback<void(ComPtr<IKeyCredentialRetrievalResult>)>
+             success_callback,
+         ComPtr<IKeyCredentialRetrievalResult> result) {
+        std::move(success_callback).Run(result);
+      },
+      create_result, std::move(success_callback));
+
   hr = base::win::PostAsyncHandlers(
-      create_result.Get(), std::move(success_callback),
-      base::BindOnce([](base::RepeatingCallback<void(HRESULT)> cb,
+      create_result.Get(), std::move(wrapped_success_callback),
+      base::BindOnce([](ComPtr<IAsyncOperation<KeyCredentialRetrievalResult*>>,
+                        base::RepeatingCallback<void(HRESULT)> cb,
                         HRESULT hr) { cb.Run(hr); },
-                     error_callback));
+                     create_result, error_callback));
   if (FAILED(hr)) {
     LOG(ERROR) << "GenerateUserVerifyingSigningKeyInternal: Call to "
                   "PostAsyncHandlers failed.";
@@ -308,11 +343,23 @@ void GetUserVerifyingSigningKeyInternal(
     return;
   }
 
+  // Binds the IAsyncOperation to the callback to ensure it remains alive until
+  // the callback is invoked.
+  auto wrapped_success_callback = base::BindOnce(
+      [](ComPtr<IAsyncOperation<KeyCredentialRetrievalResult*>>,
+         base::OnceCallback<void(ComPtr<IKeyCredentialRetrievalResult>)>
+             success_callback,
+         ComPtr<IKeyCredentialRetrievalResult> result) {
+        std::move(success_callback).Run(result);
+      },
+      open_result, std::move(success_callback));
+
   hr = base::win::PostAsyncHandlers(
-      open_result.Get(), std::move(success_callback),
-      base::BindOnce([](base::RepeatingCallback<void(HRESULT)> cb,
+      open_result.Get(), std::move(wrapped_success_callback),
+      base::BindOnce([](ComPtr<IAsyncOperation<KeyCredentialRetrievalResult*>>,
+                        base::RepeatingCallback<void(HRESULT)> cb,
                         HRESULT hr) { cb.Run(hr); },
-                     error_callback));
+                     open_result, error_callback));
   if (FAILED(hr)) {
     LOG(ERROR) << "GetUserVerifyingSigningKeyInternal: Call to "
                   "PostAsyncHandlers failed.";
@@ -456,10 +503,84 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
   base::WeakPtrFactory<UserVerifyingKeyProviderWin> weak_factory_{this};
 };
 
+void IsKeyCredentialManagerAvailableInternal(
+    base::OnceCallback<void(bool)> callback) {
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+  // Lookup requires an asynchronous system API call, so cache the value.
+  static std::atomic<KeyCredentialManagerAvailability> availability =
+      KeyCredentialManagerAvailability::kUnknown;
+
+  // Read once to ensure consistency.
+  const KeyCredentialManagerAvailability current_availability = availability;
+  if (current_availability != KeyCredentialManagerAvailability::kUnknown) {
+    std::move(callback).Run(current_availability ==
+                            KeyCredentialManagerAvailability::kAvailable);
+    return;
+  }
+
+  ComPtr<IKeyCredentialManagerStatics> factory;
+  HRESULT hr = base::win::GetActivationFactory<
+      IKeyCredentialManagerStatics,
+      RuntimeClass_Windows_Security_Credentials_KeyCredentialManager>(&factory);
+  if (FAILED(hr)) {
+    // Don't cache API call failures, allowing the possibility of trying again
+    // if this was a one-time failure.
+    std::move(callback).Run(false);
+    return;
+  }
+
+  ComPtr<IAsyncOperation<bool>> is_supported_operation;
+  hr = factory->IsSupportedAsync(&is_supported_operation);
+  if (FAILED(hr)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // This splits the callback three ways because two need to be moved as
+  // arguments to `PostAsyncHandlers`, and one can be invoked if that
+  // function returns an error.
+  auto callback_splits = base::SplitOnceCallback(std::move(callback));
+  auto callback_error_splits =
+      base::SplitOnceCallback(std::move(callback_splits.first));
+
+  hr = base::win::PostAsyncHandlers(
+      is_supported_operation.Get(),
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback,
+             std::atomic<KeyCredentialManagerAvailability>& availability,
+             ComPtr<IAsyncOperation<bool>>, boolean result) {
+            availability = result
+                               ? KeyCredentialManagerAvailability::kAvailable
+                               : KeyCredentialManagerAvailability::kUnavailable;
+            std::move(callback).Run(result);
+          },
+          std::move(callback_splits.second), std::ref(availability),
+          is_supported_operation),
+      base::BindOnce([](base::OnceCallback<void(bool)> callback,
+                        ComPtr<IAsyncOperation<bool>>,
+                        HRESULT) { std::move(callback).Run(false); },
+                     std::move(callback_error_splits.first),
+                     is_supported_operation));
+  if (FAILED(hr)) {
+    std::move(callback_error_splits.second).Run(false);
+    return;
+  }
+}
+
 }  // namespace
 
 std::unique_ptr<UserVerifyingKeyProvider> GetUserVerifyingKeyProviderWin() {
   return std::make_unique<UserVerifyingKeyProviderWin>();
+}
+
+void IsKeyCredentialManagerAvailable(base::OnceCallback<void(bool)> callback) {
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&IsKeyCredentialManagerAvailableInternal,
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 }  // namespace crypto

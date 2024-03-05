@@ -117,6 +117,12 @@ class CRYPTO_EXPORT UserVerifyingKeyProvider {
 CRYPTO_EXPORT std::unique_ptr<UserVerifyingKeyProvider>
 GetUserVerifyingKeyProvider();
 
+// Invokes the callback with true if UV keys can be used on the current
+// platform, and false otherwise. `callback` can be invoked synchronously or
+// asynchronously.
+CRYPTO_EXPORT void AreUserVerifyingKeysSupported(
+    base::OnceCallback<void(bool)> callback);
+
 }  // namespace crypto
 
 #endif  // CRYPTO_USER_VERIFYING_KEY_H_
