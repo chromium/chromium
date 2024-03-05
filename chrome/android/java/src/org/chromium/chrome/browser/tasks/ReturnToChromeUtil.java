@@ -924,17 +924,6 @@ public final class ReturnToChromeUtil {
     }
 
     /**
-     * Returns true if START_SURFACE_REFACTOR is enabled.
-     *
-     * @deprecated this always returns true now and doesn't use the context param. Remove this as
-     *     part of crbug.com/327477398.
-     */
-    @Deprecated
-    public static boolean isStartSurfaceRefactorEnabled(@Nullable Context unused) {
-        return true;
-    }
-
-    /**
      * Records a user action that Start surface is showing due to tapping the back button.
      * @param from: Where the back navigation is initiated, either "FromTab" or "FromTabSwitcher".
      */

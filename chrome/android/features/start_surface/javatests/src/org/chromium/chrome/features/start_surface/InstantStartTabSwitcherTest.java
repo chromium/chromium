@@ -281,18 +281,6 @@ public class InstantStartTabSwitcherTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-        // After the Start surface refactoring is enabled, the StartSurfaceState.SHOWN_TABSWITCHER
-        // will go away.
-        if (!TabUiTestHelper.getIsStartSurfaceRefactorEnabledFromUIThread(cta)) {
-            StartSurfaceCoordinator startSurfaceCoordinator =
-                    StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        Assert.assertEquals(
-                                startSurfaceCoordinator.getStartSurfaceState(),
-                                StartSurfaceState.SHOWN_TABSWITCHER);
-                    });
-        }
     }
 
     @Test

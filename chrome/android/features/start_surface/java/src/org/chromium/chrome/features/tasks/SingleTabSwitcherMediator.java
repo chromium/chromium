@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
@@ -131,11 +130,6 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                 new TabModelObserver() {
                     @Override
                     public void didSelectTab(Tab tab, int type, int lastId) {
-                        if (!ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)
-                                && mTabModelSelector.isIncognitoSelected()) {
-                            return;
-                        }
-
                         assert mPropertyModel.get(IS_VISIBLE) || mModuleDelegate != null;
 
                         mSelectedTabDidNotChangedAfterShown = false;

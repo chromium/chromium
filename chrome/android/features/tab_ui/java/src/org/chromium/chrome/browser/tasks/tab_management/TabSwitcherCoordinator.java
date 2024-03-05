@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -178,7 +177,6 @@ public class TabSwitcherCoordinator
                             tabModelSelector,
                             browserControls,
                             container,
-                            tabContentManager,
                             new Handler(),
                             mode,
                             incognitoReauthControllerSupplier,
@@ -372,8 +370,7 @@ public class TabSwitcherCoordinator
             final boolean shouldUseDynamicResource =
                     mMode == TabListCoordinator.TabListMode.GRID
                             && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                            && !(ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()
-                                    && ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity));
+                            && !ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled();
 
             Profile profile = mTabModelSelector.getModel(false).getProfile();
             assert profile != null;

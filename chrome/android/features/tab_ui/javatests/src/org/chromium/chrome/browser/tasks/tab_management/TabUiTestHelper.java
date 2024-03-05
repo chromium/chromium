@@ -75,7 +75,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
@@ -92,7 +91,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 
 /** Utilities helper class for tab grid/group tests. */
 public class TabUiTestHelper {
@@ -447,29 +445,7 @@ public class TabUiTestHelper {
             return R.id.tab_switcher_view_holder;
         }
 
-        if (getIsStartSurfaceEnabledFromUIThread(context)
-                && !getIsStartSurfaceRefactorEnabledFromUIThread(context)) {
-            return R.id.tasks_surface_body;
-        }
-
         return R.id.compositor_view_holder;
-    }
-
-    private static boolean getIsStartSurfaceEnabledFromUIThread(Context context) {
-        AtomicReference<Boolean> isStartSurfaceEnabled = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> isStartSurfaceEnabled.set(ReturnToChromeUtil.isStartSurfaceEnabled(context)));
-        return isStartSurfaceEnabled.get();
-    }
-
-    public static boolean getIsStartSurfaceRefactorEnabledFromUIThread(Context context) {
-        AtomicReference<Boolean> isStartSurfaceRefactorEnabled = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    isStartSurfaceRefactorEnabled.set(
-                            ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context));
-                });
-        return isStartSurfaceRefactorEnabled.get();
     }
 
     /**

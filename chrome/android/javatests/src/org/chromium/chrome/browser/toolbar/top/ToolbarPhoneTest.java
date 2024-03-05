@@ -73,7 +73,6 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
@@ -497,9 +496,6 @@ public class ToolbarPhoneTest {
 
         // When the Start surface refactoring is enabled, the ToolbarPhone is shown on the grid tab
         // switcher rather than the Start surface toolbar.
-        if (!TabUiTestHelper.getIsStartSurfaceRefactorEnabledFromUIThread(cta)) {
-            CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() != View.VISIBLE);
-        }
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -546,9 +542,6 @@ public class ToolbarPhoneTest {
 
         // When the Start surface refactoring is enabled, the ToolbarPhone is shown on the grid tab
         // switcher rather than the Start surface toolbar.
-        if (!TabUiTestHelper.getIsStartSurfaceRefactorEnabledFromUIThread(cta)) {
-            CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() != View.VISIBLE);
-        }
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         CriteriaHelper.pollUiThread(
                 () -> {

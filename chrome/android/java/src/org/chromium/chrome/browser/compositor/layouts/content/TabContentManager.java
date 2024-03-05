@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -335,12 +334,10 @@ public class TabContentManager {
         // TODO(crbug/1444782): Remove forceUpdate and writeBack params once the following features
         // launch:
         // * GridTabSwitcherAndroidAnimations
-        // * Start Surface Refactor
         // OR
         // * Hub
         if (HubFieldTrial.isHubEnabled()
-                || (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()
-                        && ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext))) {
+                || ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
             getTabThumbnailFromDisk(tabId, thumbnailSize, callback);
             return;
         }

@@ -42,7 +42,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
@@ -62,8 +61,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
@@ -107,9 +106,6 @@ class TabSwitcherMediator
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private final ViewGroup mContainerView;
-    private final TabContentManager mTabContentManager;
-    private final boolean mIsStartSurfaceEnabled;
-    private final boolean mIsStartSurfaceRefactorEnabled;
     private final boolean mIsTablet;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
@@ -204,14 +200,13 @@ class TabSwitcherMediator
      * @param tabModelSelector {@link TabModelSelector} to observer for model and selection changes.
      * @param browserControlsStateProvider {@link BrowserControlsStateProvider} to use.
      * @param containerView The container {@link ViewGroup} to use.
-     * @param tabContentManager The {@link TabContentManager} for first meaningful paint event.
      * @param handler The {@link Handler} for running cleanup callbacks.
      * @param mode One of the {@link TabListMode}.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
      *     to detect pending re-auth when tab switcher is shown.
      * @param backPressManager {@link BackPressManager} to handle back press gesture.
-     * @param tabGridDialogControllerSupplier {@link TabGridDialogMediator.DialogController}
-     *     supplier for lazy initialization on first use.
+     * @param tabGridDialogControllerSupplier {@link DialogController} supplier for lazy
+     *     initialization on first use.
      * @param onTabSwitcherShownCallback is a callback method to notify {@link
      *     TabSwitcherCoordinator} class to attach empty view when #showTabSwitcherView is invoked.
      * @param layoutStateProviderSupplier {@link OneshotSupplier<LayoutStateProvider>} to provide
@@ -224,14 +219,11 @@ class TabSwitcherMediator
             TabModelSelector tabModelSelector,
             BrowserControlsStateProvider browserControlsStateProvider,
             ViewGroup containerView,
-            TabContentManager tabContentManager,
             @NonNull Handler handler,
             @TabListMode int mode,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @Nullable BackPressManager backPressManager,
-            @NonNull
-                    LazyOneshotSupplier<TabGridDialogMediator.DialogController>
-                            tabGridDialogControllerSupplier,
+            @NonNull LazyOneshotSupplier<DialogController> tabGridDialogControllerSupplier,
             Runnable onTabSwitcherShownCallback,
             @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
         mResetHandler = resetHandler;
@@ -242,8 +234,6 @@ class TabSwitcherMediator
         mHandler = handler;
         mContainerViewModel.set(MODE, mode);
         mContext = context;
-        mIsStartSurfaceEnabled = ReturnToChromeUtil.isStartSurfaceEnabled(context);
-        mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context);
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
         mOnTabSwitcherShownCallback = onTabSwitcherShownCallback;
         mTabGridDialogControllerSupplier = tabGridDialogControllerSupplier;
@@ -456,7 +446,6 @@ class TabSwitcherMediator
                     BOTTOM_PADDING,
                     (int) context.getResources().getDimension(R.dimen.tab_grid_bottom_padding));
             if (backPressManager != null && BackPressManager.isEnabled()) {
-                assert !mIsStartSurfaceEnabled || mIsStartSurfaceRefactorEnabled;
                 backPressManager.addHandler(this, BackPressHandler.Type.TAB_SWITCHER);
                 notifyBackPressStateChangedInternal();
             }
@@ -470,7 +459,6 @@ class TabSwitcherMediator
                     mResetHandler.hardCleanup();
                     mResetHandler.resetWithTabList(null, false);
                 };
-        mTabContentManager = tabContentManager;
 
         notifyBackPressStateChangedInternal();
     }
@@ -512,14 +500,6 @@ class TabSwitcherMediator
     }
 
     private void updateTopControlsProperties() {
-        // If the Start surface is enabled, it will handle the margins and positioning of the tab
-        // switcher. So, we shouldn't do it here.
-        if (mIsStartSurfaceEnabled && !mIsStartSurfaceRefactorEnabled) {
-            mContainerViewModel.set(TOP_MARGIN, 0);
-            mContainerViewModel.set(SHADOW_TOP_OFFSET, 0);
-            return;
-        }
-
         // The grid tab switcher for tablets translates up over top of the browser controls.
         if (mIsTablet) {
             final int toolbarHeight = getToolbarHeight();
@@ -757,7 +737,7 @@ class TabSwitcherMediator
     @Override
     public boolean onBackPressed() {
         boolean ret = onBackPressedInternal();
-        if (ret && (!mIsStartSurfaceEnabled || mIsStartSurfaceRefactorEnabled)) {
+        if (ret) {
             // When SS is enabled or refactor is disabled, StartSurfaceMediator will consume back
             // press and call this method if necessary.
             BackPressManager.record(BackPressHandler.Type.TAB_SWITCHER);
@@ -944,8 +924,7 @@ class TabSwitcherMediator
         mHandler.postDelayed(mClearTabListRunnable, HARD_CLEANUP_DELAY_MS);
         mIsTransitionInProgress = false;
         notifyBackPressStateChangedInternal();
-        if (mIsStartSurfaceRefactorEnabled
-                && ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
+        if (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
             // Ensure we skip animating here as the UI is entirely occluded already.
             boolean previousAnimateVisibilityChangesValue =
                     mContainerViewModel.get(ANIMATE_VISIBILITY_CHANGES);
