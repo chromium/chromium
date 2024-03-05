@@ -1,4 +1,3 @@
-AXTitleChanged on AXMenu AXDescription='menu'
 === Start Continuation ===
 AXMenuOpened on AXMenu
 === Start Continuation ===

@@ -1983,15 +1983,21 @@ void AXTree::NotifyNodeAttributesHaveBeenChanged(
   for (AXTreeObserver& observer : observers_)
     observer.OnNodeDataChanged(this, old_data, new_data);
 
-  if (old_data.role != new_data.role && !old_data.IsInvisibleOrIgnored() &&
-      !new_data.IsInvisibleOrIgnored()) {
-    for (AXTreeObserver& observer : observers_)
-      observer.OnRoleChanged(this, node, old_data.role, new_data.role);
+  if (base::Contains(update_state.ignored_state_changed_ids, new_data.id)) {
+    for (AXTreeObserver& observer : observers_) {
+      observer.OnIgnoredChanged(this, node, node->IsIgnored());
+    }
   }
 
-  if (base::Contains(update_state.ignored_state_changed_ids, new_data.id)) {
+  // For performance reasons, it is better to skip processing and firing of
+  // events related to property changes for ignored nodes.
+  if (old_data.IsIgnored() || new_data.IsIgnored()) {
+    return;
+  }
+
+  if (old_data.role != new_data.role) {
     for (AXTreeObserver& observer : observers_)
-      observer.OnIgnoredChanged(this, node, node->IsIgnored());
+      observer.OnRoleChanged(this, node, old_data.role, new_data.role);
   }
 
   if (old_data.state != new_data.state) {
