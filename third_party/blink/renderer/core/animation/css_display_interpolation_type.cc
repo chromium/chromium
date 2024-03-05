@@ -70,10 +70,11 @@ class UnderlyingDisplayChecker final
   ~UnderlyingDisplayChecker() final = default;
 
  private:
-  bool IsValid(const StyleResolverState&,
+  bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     double underlying_fraction =
-        To<InterpolableNumber>(*underlying.interpolable_value).Value();
+        To<InterpolableNumber>(*underlying.interpolable_value)
+            .Value(state.CssToLengthConversionData());
     EDisplay underlying_display =
         To<CSSDisplayNonInterpolableValue>(*underlying.non_interpolable_value)
             .Display(underlying_fraction);
@@ -107,8 +108,12 @@ InterpolationValue CSSDisplayInterpolationType::CreateDisplayValue(
 InterpolationValue CSSDisplayInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
+  // Note: using default CSSToLengthConversionData here as it's
+  // guaranteed to be a double.
+  // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
   double underlying_fraction =
-      To<InterpolableNumber>(*underlying.interpolable_value).Value();
+      To<InterpolableNumber>(*underlying.interpolable_value)
+          .Value(CSSToLengthConversionData());
   EDisplay underlying_display =
       To<CSSDisplayNonInterpolableValue>(*underlying.non_interpolable_value)
           .Display(underlying_fraction);
