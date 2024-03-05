@@ -70,13 +70,15 @@ and triggers.
             // enabled. Defaults to false.
             "debug_permission": true,
 
-            // Exactly one of the below fields must be present. See
+            // Exactly one of the registration fields must be present. See
             // https://github.com/WICG/attribution-reporting-api for the
             // complete schema.
             "response": {
               "Attribution-Reporting-Register-Source": { ... },
 
-              "Attribution-Reporting-Register-Trigger": { ... }
+              "Attribution-Reporting-Register-Trigger": { ... },
+
+              "Attribution-Reporting-Info": "..."
             }
           }
         ]

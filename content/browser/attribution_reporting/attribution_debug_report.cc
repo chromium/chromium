@@ -581,8 +581,6 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     return std::nullopt;
   }
 
-  // TODO(linnan): Add interop tests for header error debug reports.
-
   std::string_view header_type = GetHeaderName(error.header_type);
   if (header_type.empty()) {
     return std::nullopt;

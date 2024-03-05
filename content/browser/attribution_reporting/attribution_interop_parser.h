@@ -29,6 +29,7 @@ struct AttributionSimulationEvent {
   base::Value registration;
   base::Time time;
   bool debug_permission = false;
+  std::string info_header;
 
   AttributionSimulationEvent(
       attribution_reporting::SuitableOrigin reporting_origin,

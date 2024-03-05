@@ -5643,6 +5643,7 @@ data/attribution_reporting/interop/rate_limit_max_source_reporting_origin_ignore
 data/attribution_reporting/interop/same_destination_site.json
 data/attribution_reporting/interop/same_reporting_origin.json
 data/attribution_reporting/interop/source_deactivation.json
+data/attribution_reporting/interop/source_header_error_debug_report.json
 data/attribution_reporting/interop/source_priority.json
 data/attribution_reporting/interop/source_storage_limit.json
 data/attribution_reporting/interop/source_storage_limit_and_destination_rate_limit.json
@@ -5652,6 +5653,7 @@ data/attribution_reporting/interop/success_debug_event_level.json
 data/attribution_reporting/interop/top_level_filter_data.json
 data/attribution_reporting/interop/trigger_data_matching.json
 data/attribution_reporting/interop/trigger_data_sanitization.json
+data/attribution_reporting/interop/trigger_header_error_debug_report.json
 data/attribution_reporting/interop/trigger_verbose_debug_report_source_debug_permission.json
 data/attribution_reporting/interop/verbose_debug_report_multiple_data.json
 data/attribution_reporting/page_with_ads_apis_ot.html

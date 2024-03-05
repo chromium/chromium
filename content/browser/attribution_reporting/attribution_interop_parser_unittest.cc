@@ -156,6 +156,49 @@ TEST(AttributionInteropParserTest, ValidTriggerParses) {
   EXPECT_TRUE(result.front().debug_permission);
 }
 
+TEST(AttributionInteropParserTest, ValidInfoParses) {
+  constexpr char kJson[] = R"json({"registrations": [
+    {
+      "timestamp": "1643235573123",
+      "registration_request": {
+        "source_type": "navigation",
+        "attribution_src_url": "https://a.r.test",
+        "context_origin": "https://a.s.test"
+      },
+      "responses": [{
+        "url": "https://a.r.test",
+        "response": {
+          "Attribution-Reporting-Register-Source": 123,
+          "Attribution-Reporting-Info": "foo"
+        }
+      }]
+    },
+    {
+      "timestamp": "1643235575123",
+      "registration_request": {
+        "attribution_src_url": "https://a.r.test",
+        "context_origin": " https://b.d.test",
+      },
+      "responses": [{
+        "url": "https://a.r.test",
+        "response": {
+          "Attribution-Reporting-Register-Trigger": 789,
+          "Attribution-Reporting-Info": "bar"
+        }
+      }]
+    }
+  ]})json";
+
+  base::Value::Dict value = base::test::ParseJsonDict(kJson);
+
+  ASSERT_OK_AND_ASSIGN(
+      auto result, ParseAttributionInteropInput(std::move(value), kOffsetTime));
+  ASSERT_EQ(result.size(), 2u);
+
+  EXPECT_EQ(result.front().info_header, "foo");
+  EXPECT_EQ(result.back().info_header, "bar");
+}
+
 struct ParseErrorTestCase {
   const char* expected_failure_substr;
   const char* json;
@@ -431,6 +474,24 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
             }]
           },
         ]})json",
+    },
+    {
+        R"(["registrations"][0]["responses"][0]["response"]["Attribution-Reporting-Info"]: must be a string)",
+        R"json({"registrations": [{
+          "timestamp": "1643235574000",
+          "registration_request": {
+            "source_type": "navigation",
+            "attribution_src_url": "https://a.r.test",
+            "context_origin": "https://a.s.test"
+          },
+          "responses": [{
+            "url": "https://a.r.test",
+            "response": {
+              "Attribution-Reporting-Register-Source": {},
+              "Attribution-Reporting-Info": {}
+            }
+          }]
+        }]})json",
     },
 };
 

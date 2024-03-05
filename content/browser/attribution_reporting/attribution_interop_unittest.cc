@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -117,7 +118,9 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
   AttributionInteropConfig config = GetConfig();
   base::Value::Dict dict = base::test::ParseJsonDictFromFile(GetParam());
 
-  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> enabled_features(
+      {blink::features::kKeepAliveInBrowserMigration,
+       blink::features::kAttributionReportingInBrowserMigration});
   if (dict.FindBool("needs_trigger_context_id").value_or(false)) {
     enabled_features.emplace_back(
         attribution_reporting::features::kAttributionReportingTriggerContextId);
