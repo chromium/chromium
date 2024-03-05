@@ -32,6 +32,8 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
       new_tab_button_background_(cc::slim::UIResourceLayer::Create()),
       left_fade_(cc::slim::UIResourceLayer::Create()),
       right_fade_(cc::slim::UIResourceLayer::Create()),
+      left_padding_layer_(cc::slim::SolidColorLayer::Create()),
+      right_padding_layer_(cc::slim::SolidColorLayer::Create()),
       model_selector_button_(cc::slim::UIResourceLayer::Create()),
       model_selector_button_background_(cc::slim::UIResourceLayer::Create()),
       scrim_layer_(cc::slim::SolidColorLayer::Create()),
@@ -45,6 +47,8 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   left_fade_->SetIsDrawable(true);
   right_fade_->SetIsDrawable(true);
   scrim_layer_->SetIsDrawable(true);
+  left_padding_layer_->SetIsDrawable(true);
+  right_padding_layer_->SetIsDrawable(true);
 
   // When the ScrollingStripStacker is used, the new tab button and tabs scroll,
   // while the incognito button and left/ride fade stay fixed. Put the new tab
@@ -55,6 +59,8 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
 
   tab_strip_layer_->AddChild(left_fade_);
   tab_strip_layer_->AddChild(right_fade_);
+  tab_strip_layer_->AddChild(left_padding_layer_);
+  tab_strip_layer_->AddChild(right_padding_layer_);
   tab_strip_layer_->AddChild(model_selector_button_);
   tab_strip_layer_->AddChild(model_selector_button_background_);
   model_selector_button_background_->AddChild(model_selector_button_);
@@ -299,8 +305,8 @@ void TabStripSceneLayer::UpdateTabStripLeftFade(
     jint resource_id,
     jfloat opacity,
     const JavaParamRef<jobject>& jresource_manager,
-    jint left_fade_color) {
-
+    jint left_fade_color,
+    jfloat left_padding) {
   // Hide layer if it's not visible.
   if (opacity == 0.f) {
     left_fade_->SetHideLayerAndSubtree(true);
@@ -324,15 +330,26 @@ void TabStripSceneLayer::UpdateTabStripLeftFade(
 
   // Set bounds. Use the parent layer height so the 1px fade resource is
   // stretched vertically.
-  left_fade_->SetBounds(gfx::Size(fade_resource->size().width(),
-                                  scrollable_strip_layer_->bounds().height()));
+  float height = scrollable_strip_layer_->bounds().height();
+  left_fade_->SetBounds(gfx::Size(fade_resource->size().width(), height));
 
   // Set position. The rotation set above requires the layer to be offset
   // by its width in order to display on the left edge.
-  left_fade_->SetPosition(gfx::PointF(fade_resource->size().width(), 0));
+  left_fade_->SetPosition(
+      gfx::PointF(fade_resource->size().width() + left_padding, 0));
 
   // Ensure layer is visible.
   left_fade_->SetHideLayerAndSubtree(false);
+
+  // Update the padding layer accordingly.
+  if (left_padding == 0) {
+    left_padding_layer_->SetHideLayerAndSubtree(true);
+  } else {
+    left_padding_layer_->SetHideLayerAndSubtree(false);
+    left_padding_layer_->SetBounds(gfx::Size(left_padding, height));
+    left_padding_layer_->SetBackgroundColor(
+        SkColor4f::FromColor(left_fade_color));
+  }
 }
 
 void TabStripSceneLayer::UpdateTabStripRightFade(
@@ -341,8 +358,8 @@ void TabStripSceneLayer::UpdateTabStripRightFade(
     jint resource_id,
     jfloat opacity,
     const JavaParamRef<jobject>& jresource_manager,
-    jint right_fade_color) {
-
+    jint right_fade_color,
+    jfloat right_padding) {
   // Hide layer if it's not visible.
   if (opacity == 0.f) {
     right_fade_->SetHideLayerAndSubtree(true);
@@ -361,16 +378,28 @@ void TabStripSceneLayer::UpdateTabStripRightFade(
 
   // Set bounds. Use the parent layer height so the 1px fade resource is
   // stretched vertically.
-  right_fade_->SetBounds(gfx::Size(fade_resource->size().width(),
-                                   scrollable_strip_layer_->bounds().height()));
+  float height = scrollable_strip_layer_->bounds().height();
+  right_fade_->SetBounds(gfx::Size(fade_resource->size().width(), height));
 
   // Set position. The right fade is positioned at the end of the tab strip.
-  float x =
-      scrollable_strip_layer_->bounds().width() - fade_resource->size().width();
+  float x = scrollable_strip_layer_->bounds().width() -
+            fade_resource->size().width() - right_padding;
   right_fade_->SetPosition(gfx::PointF(x, 0));
 
   // Ensure layer is visible.
   right_fade_->SetHideLayerAndSubtree(false);
+
+  // Update the padding layer accordingly.
+  if (right_padding == 0) {
+    right_padding_layer_->SetHideLayerAndSubtree(true);
+  } else {
+    right_padding_layer_->SetHideLayerAndSubtree(false);
+    right_padding_layer_->SetBounds(gfx::Size(right_padding, height));
+    right_padding_layer_->SetPosition(gfx::PointF(
+        scrollable_strip_layer_->bounds().width() - right_padding, 0));
+    right_padding_layer_->SetBackgroundColor(
+        SkColor4f::FromColor(right_fade_color));
+  }
 }
 
 void TabStripSceneLayer::PutStripTabLayer(

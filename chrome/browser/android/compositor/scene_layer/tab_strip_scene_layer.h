@@ -108,7 +108,8 @@ class TabStripSceneLayer : public SceneLayer {
       jint resource_id,
       jfloat opacity,
       const base::android::JavaParamRef<jobject>& jresource_manager,
-      jint leftFadeColor);
+      jint leftFadeColor,
+      jfloat left_padding);
 
   void UpdateTabStripRightFade(
       JNIEnv* env,
@@ -116,7 +117,8 @@ class TabStripSceneLayer : public SceneLayer {
       jint resource_id,
       jfloat opacity,
       const base::android::JavaParamRef<jobject>& jresource_manager,
-      jint rightFadeColor);
+      jint rightFadeColor,
+      jfloat right_padding);
 
   void PutStripTabLayer(
       JNIEnv* env,
@@ -170,6 +172,12 @@ class TabStripSceneLayer : public SceneLayer {
   scoped_refptr<cc::slim::UIResourceLayer> new_tab_button_background_;
   scoped_refptr<cc::slim::UIResourceLayer> left_fade_;
   scoped_refptr<cc::slim::UIResourceLayer> right_fade_;
+
+  // Layers covering the tab strip padding area, used as an visual extension of
+  // fading.
+  scoped_refptr<cc::slim::SolidColorLayer> left_padding_layer_;
+  scoped_refptr<cc::slim::SolidColorLayer> right_padding_layer_;
+
   scoped_refptr<cc::slim::UIResourceLayer> model_selector_button_;
   scoped_refptr<cc::slim::UIResourceLayer> model_selector_button_background_;
   scoped_refptr<cc::slim::SolidColorLayer> scrim_layer_;

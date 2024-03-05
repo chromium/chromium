@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.scene_layer;
 
-import android.content.Context;
 import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
@@ -33,8 +32,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
     private long mNativePtr;
     private final float mDpToPx;
 
-    public TabStripSceneLayer(Context context) {
-        mDpToPx = context.getResources().getDisplayMetrics().density;
+    /**
+     * @param density Density for Dp to Px conversion.
+     */
+    public TabStripSceneLayer(float density) {
+        mDpToPx = density;
     }
 
     public static void setTestFlag(boolean testFlag) {
@@ -85,7 +87,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             int selectedTabId,
             int hoveredTabId,
             int scrimColor,
-            float scrimOpacity) {
+            float scrimOpacity,
+            float paddingLeftDp,
+            float paddingRightDp) {
         if (mNativePtr == 0) return;
         final boolean visible = yOffset > -layoutHelper.getHeight();
         // This will hide the tab strips if necessary.
@@ -94,7 +98,13 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         // When strip tabs are completely off screen, we don't need to update it.
         if (visible) {
             pushButtonsAndBackground(
-                    layoutHelper, resourceManager, yOffset, scrimColor, scrimOpacity);
+                    layoutHelper,
+                    resourceManager,
+                    yOffset,
+                    scrimColor,
+                    scrimOpacity,
+                    paddingLeftDp,
+                    paddingRightDp);
             pushStripTabs(
                     layoutHelper,
                     layerTitleCache,
@@ -111,7 +121,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             ResourceManager resourceManager,
             float yOffset,
             @ColorInt int scrimColor,
-            float scrimOpacity) {
+            float scrimOpacity,
+            float paddingLeftDp,
+            float paddingRightDp) {
         final int width = Math.round(layoutHelper.getWidth() * mDpToPx);
         final int height = Math.round(layoutHelper.getHeight() * mDpToPx);
         TabStripSceneLayerJni.get()
@@ -170,7 +182,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         layoutHelper.getLeftFadeDrawable(),
                         layoutHelper.getLeftFadeOpacity(),
                         resourceManager,
-                        layoutHelper.getBackgroundColor());
+                        layoutHelper.getBackgroundColor(),
+                        paddingLeftDp * mDpToPx);
 
         TabStripSceneLayerJni.get()
                 .updateTabStripRightFade(
@@ -179,7 +192,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         layoutHelper.getRightFadeDrawable(),
                         layoutHelper.getRightFadeOpacity(),
                         resourceManager,
-                        layoutHelper.getBackgroundColor());
+                        layoutHelper.getBackgroundColor(),
+                        paddingRightDp * mDpToPx);
     }
 
     private void pushStripTabs(
@@ -315,7 +329,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int resourceId,
                 float opacity,
                 ResourceManager resourceManager,
-                @ColorInt int leftFadeColor);
+                @ColorInt int leftFadeColor,
+                float paddingLeftPx);
 
         void updateTabStripRightFade(
                 long nativeTabStripSceneLayer,
@@ -323,7 +338,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int resourceId,
                 float opacity,
                 ResourceManager resourceManager,
-                @ColorInt int rightFadeColor);
+                @ColorInt int rightFadeColor,
+                float paddingRightPx);
 
         void putStripTabLayer(
                 long nativeTabStripSceneLayer,

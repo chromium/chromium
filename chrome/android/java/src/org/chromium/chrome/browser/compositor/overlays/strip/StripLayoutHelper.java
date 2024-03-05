@@ -238,13 +238,21 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private float mWidth;
     private float mHeight;
     private long mLastSpinnerUpdate;
+    // The margins on the tab strip used when positioning tabs. Tabs within these margins are not
+    // touchable, but other strip widgets (e.g new tab button) could be.
     private float mLeftMargin;
     private float mRightMargin;
     private float mLeftFadeWidth;
     private float mRightFadeWidth;
+    // Padding regions on both ends of the strip where strip touch events are blocked. Different
+    // than margins, no strip widgets should be drawn within the padding region.
+    private float mLeftPadding;
+    private float mRightPadding;
 
     // New tab button with tab strip end padding
-    private float mTabStripEndPadding;
+    private final float mFixedEndPadding;
+    private float mReservedEndMargin;
+
     // 3-dots menu button with tab strip end padding
     private final boolean mIncognito;
     private boolean mIsFirstLayoutPass;
@@ -324,14 +332,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mWindowAndroid = windowAndroid;
 
         // Use toolbar menu button padding to align NTB with menu button.
-        mTabStripEndPadding =
+        mFixedEndPadding =
                 context.getResources().getDimension(R.dimen.button_end_padding)
                         / context.getResources().getDisplayMetrics().density;
-
-        mRightMargin =
-                LocalizationUtils.isLayoutRtl() ? 0 : mTabStripEndPadding + mNewTabButtonWidth;
-        mLeftMargin =
-                LocalizationUtils.isLayoutRtl() ? mTabStripEndPadding + mNewTabButtonWidth : 0;
+        mReservedEndMargin = mFixedEndPadding + mNewTabButtonWidth;
+        updateMargins(false);
 
         mMinTabWidth = TAB_STRIP_TAB_WIDTH;
 
@@ -596,29 +601,38 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return mScrollOffset;
     }
 
+    float getVisibleLeftBound() {
+        return mLeftPadding;
+    }
+
+    float getVisibleRightBound() {
+        return mWidth - mRightPadding;
+    }
+
     /**
-     * @param margin The distance between the last tab and the edge of the screen.
-     * @param isMsbVisible The boolean to determine whether model selector button is visible.
+     * @param msbTouchTargetSize The touch target size for the model selector button.
      */
-    public void setEndMargin(float margin, boolean isMsbVisible) {
+    public void updateEndMarginForStripButtons(float msbTouchTargetSize) {
         // When MSB is not visible we add strip end padding here. When MSB is visible strip end
         // padding will be included in MSB margin, so just add padding between NTB and MSB here.
+        mReservedEndMargin =
+                msbTouchTargetSize
+                        + mNewTabButtonWidth
+                        + (mModelSelectorButton.isVisible()
+                                ? NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING
+                                : mFixedEndPadding);
+        updateMargins(true);
+    }
+
+    private void updateMargins(boolean recalculateTabWidth) {
         if (LocalizationUtils.isLayoutRtl()) {
-            mLeftMargin =
-                    margin
-                            + mNewTabButtonWidth
-                            + (isMsbVisible
-                                    ? NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING
-                                    : mTabStripEndPadding);
+            mLeftMargin = mReservedEndMargin + mLeftPadding;
+            mRightMargin = mRightPadding;
         } else {
-            mRightMargin =
-                    margin
-                            + mNewTabButtonWidth
-                            + (isMsbVisible
-                                    ? NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING
-                                    : mTabStripEndPadding);
+            mLeftMargin = mLeftPadding;
+            mRightMargin = mReservedEndMargin + mRightPadding;
         }
-        computeAndUpdateTabWidth(false, false);
+        if (recalculateTabWidth) computeAndUpdateTabWidth(false, false);
     }
 
     /**
@@ -645,29 +659,44 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     /**
      * Updates the size of the virtual tab strip, making the tabs resize and move accordingly.
-     * @param width  The new available width.
+     *
+     * @param width The new available width.
      * @param height The new height this stack should be.
      * @param orientationChanged Whether the screen orientation was changed.
      * @param time The current time of the app in ms.
+     * @param leftPadding The new left padding.
+     * @param rightPadding The new right padding.
      */
-    public void onSizeChanged(float width, float height, boolean orientationChanged, long time) {
-        if (mWidth == width && mHeight == height) return;
+    public void onSizeChanged(
+            float width,
+            float height,
+            boolean orientationChanged,
+            long time,
+            float leftPadding,
+            float rightPadding) {
+        if (mWidth == width
+                && mHeight == height
+                && leftPadding == mLeftPadding
+                && rightPadding == mRightPadding) {
+            return;
+        }
 
         StripLayoutTab selectedTab = getSelectedStripTab();
         boolean wasSelectedTabVisible = selectedTab != null && selectedTab.isVisible();
-        boolean widthChanged = mWidth != width;
+        boolean recalculateTabWidth =
+                mWidth != width || mLeftPadding != leftPadding || mRightPadding != rightPadding;
 
         mWidth = width;
         mHeight = height;
+        mLeftPadding = leftPadding;
+        mRightPadding = rightPadding;
 
         for (int i = 0; i < mStripViews.length; i++) {
             final StripLayoutView view = mStripViews[i];
             view.setHeight(mHeight);
         }
 
-        if (widthChanged) {
-            computeAndUpdateTabWidth(false, false);
-        }
+        updateMargins(recalculateTabWidth);
         if (mStripViews.length > 0) mUpdateHost.requestUpdate();
 
         // Dismiss tab menu, similar to how the app menu is dismissed on orientation change
@@ -1254,22 +1283,28 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             if (isLastTab) {
                 tabStartHidden =
                         tab.getDrawX() + mTabOverlapWidth
-                                < mNewTabButton.getDrawX() + mNewTabButton.getWidth();
+                                < getVisibleLeftBound()
+                                        + mNewTabButton.getDrawX()
+                                        + mNewTabButton.getWidth();
             } else {
                 tabStartHidden =
-                        tab.getDrawX() + mTabOverlapWidth < getCloseBtnVisibilityThreshold(false);
+                        tab.getDrawX() + mTabOverlapWidth
+                                < getVisibleLeftBound() + getCloseBtnVisibilityThreshold(false);
             }
-            tabEndHidden = tab.getDrawX() > mWidth - getCloseBtnVisibilityThreshold(true);
+            tabEndHidden =
+                    tab.getDrawX() > getVisibleRightBound() - getCloseBtnVisibilityThreshold(true);
         } else {
-            tabStartHidden = tab.getDrawX() + tab.getWidth() < getCloseBtnVisibilityThreshold(true);
+            tabStartHidden =
+                    tab.getDrawX() + tab.getWidth()
+                            < getVisibleLeftBound() + getCloseBtnVisibilityThreshold(true);
             if (isLastTab) {
                 tabEndHidden =
                         tab.getDrawX() + tab.getWidth() - mTabOverlapWidth
-                                > mNewTabButton.getDrawX();
+                                > getVisibleLeftBound() + mNewTabButton.getDrawX();
             } else {
                 tabEndHidden =
                         (tab.getDrawX() + tab.getWidth() - mTabOverlapWidth
-                                > mWidth - getCloseBtnVisibilityThreshold(false));
+                                > getVisibleRightBound() - getCloseBtnVisibilityThreshold(false));
             }
         }
         return !tabStartHidden && !tabEndHidden;
@@ -2371,7 +2406,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 mStripTabs, mMultiStepTabCloseAnimRunning, mTabCreating, mCachedTabWidth);
 
         // 4. Calculate which tabs are visible.
-        mStripStacker.performOcclusionPass(mStripTabs, 0, mWidth);
+        float stripWidth = getVisibleRightBound() - getVisibleLeftBound();
+        mStripStacker.performOcclusionPass(mStripTabs, getVisibleLeftBound(), stripWidth);
 
         // 5. Create render list.
         createRenderList();
@@ -2497,12 +2533,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                             : -NEW_TAB_BUTTON_X_OFFSET_TOWARDS_TABS;
         }
 
-            // 3. Hide the new tab button if it's not visible on the screen.
-            if ((isRtl && offset + mNewTabButtonWidth < 0) || (!isRtl && offset > mWidth)) {
-                mNewTabButton.setVisible(false);
-                return null;
-            }
-            mNewTabButton.setVisible(true);
+        // 3. Hide the new tab button if it's not visible on the screen.
+        if ((isRtl && offset + mNewTabButtonWidth < getVisibleLeftBound())
+                || (!isRtl && offset > getVisibleRightBound())) {
+            mNewTabButton.setVisible(false);
+            return null;
+        }
+        mNewTabButton.setVisible(true);
 
         // 4. Position the new tab button.
         if (animate) {
@@ -2529,6 +2566,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // 1. Calculate offsets to fully show the tab at the start and end of the strip.
         final boolean isRtl = LocalizationUtils.isLayoutRtl();
         final float tabWidth = mCachedTabWidth - mTabOverlapWidth;
+        // TODO(wenyufu): Account for offsetX{Left,Right} result too much offset. Is this expected?
         final float startOffset = (isRtl ? mRightFadeWidth : mLeftFadeWidth);
         final float endOffset = (isRtl ? mLeftFadeWidth : mRightFadeWidth);
         final float tabPosition = tab.getIdealX() - mScrollOffset + mLeftMargin;
@@ -3746,8 +3784,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     private boolean isSelectedTabCompletelyVisible(StripLayoutTab selectedTab) {
         return selectedTab.isVisible()
-                && selectedTab.getDrawX() > mLeftFadeWidth
-                && selectedTab.getDrawX() + selectedTab.getWidth() < mWidth - mRightFadeWidth;
+                && selectedTab.getDrawX() > getVisibleLeftBound() + mLeftFadeWidth
+                && selectedTab.getDrawX() + selectedTab.getWidth()
+                        < getVisibleRightBound() - mRightFadeWidth;
     }
 
     /**
@@ -3758,8 +3797,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     @VisibleForTesting
     boolean isTabCompletelyHidden(StripLayoutTab tab) {
         return !tab.isVisible()
-                || tab.getDrawX() + tab.getWidth() <= mLeftFadeWidth
-                || tab.getDrawX() >= mWidth - mRightFadeWidth;
+                || tab.getDrawX() + tab.getWidth() <= getVisibleLeftBound() + mLeftFadeWidth
+                || tab.getDrawX() >= getVisibleRightBound() - mRightFadeWidth;
     }
 
     /**

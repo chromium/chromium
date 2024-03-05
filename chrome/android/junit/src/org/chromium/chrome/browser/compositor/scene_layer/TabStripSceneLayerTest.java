@@ -92,7 +92,7 @@ public class TabStripSceneLayerTest {
     }
 
     private void initializeTest() {
-        mTabStripSceneLayer = new TabStripSceneLayer(mContext);
+        mTabStripSceneLayer = new TabStripSceneLayer(mDpToPx);
         when(mTabStripSceneMock.init(mTabStripSceneLayer)).thenReturn(1L);
         mModelSelectorButton =
                 new TintedCompositorButton(
@@ -127,6 +127,8 @@ public class TabStripSceneLayerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
     public void testPushAndUpdateStrip() {
+        float leftMargin = 10f;
+        float rightMargin = 20f;
         // Call the method being tested.
         mTabStripSceneLayer.pushAndUpdateStrip(
                 mStripLayoutHelperManager,
@@ -138,7 +140,9 @@ public class TabStripSceneLayerTest {
                 0,
                 -1,
                 Color.YELLOW,
-                0.3f);
+                0.3f,
+                leftMargin,
+                rightMargin);
 
         // Verify JNI calls.
         verify(mTabStripSceneMock)
@@ -159,7 +163,11 @@ public class TabStripSceneLayerTest {
                         mModelSelectorButton.getOpacity(),
                         mResourceManager);
         verify(mTabStripSceneMock)
-                .updateTabStripLeftFade(1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0);
+                .updateTabStripLeftFade(
+                        1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0, leftMargin);
+        verify(mTabStripSceneMock)
+                .updateTabStripRightFade(
+                        1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0, rightMargin);
         verify(mTabStripSceneMock)
                 .updateTabStripLayer(
                         eq(1L),

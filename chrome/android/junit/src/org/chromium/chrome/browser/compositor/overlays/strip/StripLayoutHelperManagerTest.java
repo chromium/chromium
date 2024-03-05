@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -24,6 +25,7 @@ import android.content.Context;
 import android.graphics.RectF;
 import android.os.Build.VERSION_CODES;
 import android.view.ContextThemeWrapper;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewStub;
 
@@ -259,6 +261,7 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void testModelSelectorButtonXPosition() {
         // Set model selector button position.
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
@@ -275,6 +278,7 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void testModelSelectorButtonXPosition_RTL() {
         // Set model selector button position.
         LocalizationUtils.setRtlForTesting(true);
@@ -567,6 +571,11 @@ public class StripLayoutHelperManagerTest {
         var activeLayoutHelper = mStripLayoutHelperManager.getActiveStripLayoutHelper();
         activeLayoutHelper.setLastHoveredTabForTesting(mHoveredStripTab);
 
+        // Update the paddings.
+        float leftPadding = 10f;
+        float rightPadding = 20f;
+        mStripLayoutHelperManager.updateHorizontalPaddings(leftPadding, rightPadding);
+
         // Invoke the method.
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
                 new RectF(), new RectF(), mRenderHost.getResourceManager(), 0f);
@@ -574,16 +583,18 @@ public class StripLayoutHelperManagerTest {
         // Verify the call to #pushAndUpdateStrip.
         verify(mTabStripTreeProvider)
                 .pushAndUpdateStrip(
-                        mStripLayoutHelperManager,
-                        mLayerTitleCacheSupplier.get(),
-                        mRenderHost.getResourceManager(),
-                        activeLayoutHelper.getStripLayoutTabsToRender(),
-                        activeLayoutHelper.getStripLayoutGroupTitlesToRender(),
-                        0f,
-                        selectedTabId,
-                        hoveredTabId,
-                        mToolbarPrimaryColor,
-                        0.f);
+                        eq(mStripLayoutHelperManager),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        eq(0f),
+                        eq(selectedTabId),
+                        eq(hoveredTabId),
+                        anyInt(),
+                        anyFloat(),
+                        eq(leftPadding),
+                        eq(rightPadding));
     }
 
     @Test
@@ -648,7 +659,9 @@ public class StripLayoutHelperManagerTest {
                         anyInt(),
                         anyInt(),
                         eq(mToolbarPrimaryColor),
-                        /* scrimOpacity= */ eq(0f));
+                        /* scrimOpacity= */ eq(0f),
+                        anyFloat(),
+                        anyFloat());
 
         // With tab strip transition, the yOffset will be forced to be 0.
         mTabStripHeightSupplier.set(0);
@@ -670,7 +683,9 @@ public class StripLayoutHelperManagerTest {
                         anyInt(),
                         anyInt(),
                         eq(mToolbarPrimaryColor),
-                        /* scrimOpacity= */ eq(expectedOpacity));
+                        /* scrimOpacity= */ eq(expectedOpacity),
+                        anyFloat(),
+                        anyFloat());
 
         // With tab strip transition finished, the yOffset will be forced to be the negative of the
         // tab strip height.
@@ -688,7 +703,9 @@ public class StripLayoutHelperManagerTest {
                         anyInt(),
                         anyInt(),
                         eq(mToolbarPrimaryColor),
-                        /* scrimOpacity= */ eq(0f));
+                        /* scrimOpacity= */ eq(0f),
+                        anyFloat(),
+                        anyFloat());
 
         // Verify StatusBarColorController method invocations.
         InOrder inOrder = Mockito.inOrder(mStatusBarColorController);
@@ -821,7 +838,9 @@ public class StripLayoutHelperManagerTest {
                         anyInt(),
                         anyInt(),
                         eq(scrimColor),
-                        /* scrimOpacity= */ eq(0f));
+                        /* scrimOpacity= */ eq(0f),
+                        anyFloat(),
+                        anyFloat());
 
         // With tab strip transition, the yOffset will be forced to be 0.
         mTabStripHeightSupplier.set(TAB_STRIP_HEIGHT_PX);
@@ -844,7 +863,9 @@ public class StripLayoutHelperManagerTest {
                         anyInt(),
                         anyInt(),
                         eq(scrimColor),
-                        /* scrimOpacity= */ eq(expectedOpacity));
+                        /* scrimOpacity= */ eq(expectedOpacity),
+                        anyFloat(),
+                        anyFloat());
 
         // When transition finished while tabs strip showing, yOffset will be forwarded to cc
         // correctly.
@@ -862,7 +883,9 @@ public class StripLayoutHelperManagerTest {
                         anyInt(),
                         anyInt(),
                         eq(scrimColor),
-                        /* scrimOpacity= */ eq(0f));
+                        /* scrimOpacity= */ eq(0f),
+                        anyFloat(),
+                        anyFloat());
 
         // Verify StatusBarColorController method invocations.
         InOrder inOrder = Mockito.inOrder(mStatusBarColorController);
@@ -877,5 +900,43 @@ public class StripLayoutHelperManagerTest {
         // Invocation after the transition finished.
         inOrder.verify(mStatusBarColorController)
                 .setTabStripColorOverlay(ScrimProperties.INVALID_COLOR, 0f);
+    }
+
+    @Test
+    public void testTouchEventsIgnoredOnMargins() {
+        // Update the size and paddings.
+        float leftPadding = 10f;
+        float rightPadding = 20f;
+        mStripLayoutHelperManager.updateHorizontalPaddings(leftPadding, rightPadding);
+        mStripLayoutHelperManager.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
+
+        float yCenterOfStrip = TAB_STRIP_HEIGHT_PX / 2;
+        assertFalse("Event on paddings should be ignored.", motionEvenHandled(0, yCenterOfStrip));
+        assertFalse("Event on paddings should be ignored.", motionEvenHandled(1, yCenterOfStrip));
+        assertFalse(
+                "Event on margins should be ignored.",
+                motionEvenHandled(leftPadding - 1, yCenterOfStrip));
+        assertTrue(
+                "Event on not on margin should be handled.",
+                motionEvenHandled(leftPadding, yCenterOfStrip));
+
+        assertFalse(
+                "Event on margins should be ignored.",
+                motionEvenHandled(SCREEN_WIDTH, yCenterOfStrip));
+        assertFalse(
+                "Event on margins should be ignored.",
+                motionEvenHandled(SCREEN_WIDTH - 1, yCenterOfStrip));
+        assertFalse(
+                "Event on margins should be ignored.",
+                motionEvenHandled(SCREEN_WIDTH - rightPadding, yCenterOfStrip));
+        assertTrue(
+                "Event on not on margin should be handled.",
+                motionEvenHandled(SCREEN_WIDTH - rightPadding - 1, yCenterOfStrip));
+    }
+
+    private boolean motionEvenHandled(float x, float y) {
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, x, y, 0);
+        return mStripLayoutHelperManager.getEventFilter().onInterceptTouchEvent(event, false);
     }
 }

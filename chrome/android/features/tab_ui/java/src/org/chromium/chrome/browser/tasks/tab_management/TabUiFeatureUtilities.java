@@ -184,4 +184,9 @@ public class TabUiFeatureUtilities {
     public static boolean isTabGroupPaneEnabled() {
         return ChromeFeatureList.sTabGroupPaneAndroid.isEnabled();
     }
+
+    /** Returns if we are using optimized window layout for tab strip. */
+    public static boolean isTabStripWindowLayoutOptimizationEnabled() {
+        return ChromeFeatureList.sTabStripLayoutOptimization.isEnabled();
+    }
 }
