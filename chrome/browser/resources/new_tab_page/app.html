@@ -124,11 +124,11 @@
     max-width: var(--ntp-search-box-width);
   }
 
-  ntp-realbox {
+  cr-realbox {
     visibility: hidden;
   }
 
-  ntp-realbox[shown] {
+  cr-realbox[shown] {
     visibility: visible;
   }
 
@@ -498,11 +498,11 @@
       hidden$="[[!logoEnabled_]]">
   </ntp-logo>
   <div id="realboxContainer">
-    <ntp-realbox id="realbox" is-dark="[[theme_.isDark]]"
+    <cr-realbox id="realbox" is-dark="[[theme_.isDark]]"
         color-source-is-baseline="[[colorSourceIsBaseline]]"
         on-open-lens-search="onOpenLensSearch_"
         on-open-voice-search="onOpenVoiceSearch_" shown$="[[realboxShown_]]">
-    </ntp-realbox>
+    </cr-realbox>
     <template is="dom-if" if="[[showLensUploadDialog_]]" restamp>
       <ntp-lens-upload-dialog id="lensUploadDialog"
           on-close-lens-search="onCloseLensSearch_">

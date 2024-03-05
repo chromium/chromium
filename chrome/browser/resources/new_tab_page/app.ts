@@ -211,7 +211,7 @@ export class AppElement extends AppElementBase {
         type: Object,
       },
 
-      // Used in ntp-realbox component via host-context.
+      // Used in cr-realbox component via host-context.
       colorSourceIsBaseline: {
         type: Boolean,
         computed: 'computeColorSourceIsBaseline(theme_)',
@@ -932,7 +932,7 @@ export class AppElement extends AppElementBase {
         case $$(this, 'ntp-logo'):
           recordClick(NtpElement.LOGO);
           return;
-        case $$(this, 'ntp-realbox'):
+        case $$(this, 'cr-realbox'):
           recordClick(NtpElement.REALBOX);
           return;
         case $$(this, 'cr-most-visited'):

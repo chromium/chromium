@@ -32,7 +32,7 @@ export interface RealboxDropdownElement {
 }
 
 // A dropdown element that contains autocomplete matches. Provides an API for
-// the embedder (i.e., <ntp-realbox>) to change the selection.
+// the embedder (i.e., <cr-realbox>) to change the selection.
 export class RealboxDropdownElement extends PolymerElement {
   static get is() {
     return 'cr-realbox-dropdown';
@@ -458,7 +458,7 @@ export class RealboxDropdownElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ntp-realbox-dropdown': RealboxDropdownElement;
+    'cr-realbox-dropdown': RealboxDropdownElement;
   }
 }
 

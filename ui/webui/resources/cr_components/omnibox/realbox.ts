@@ -51,7 +51,7 @@ const RealboxElementBase = I18nMixin(WebUiListenerMixin(PolymerElement));
 /** A real search box that behaves just like the Omnibox. */
 export class RealboxElement extends RealboxElementBase {
   static get is() {
-    return 'ntp-realbox';
+    return 'cr-realbox';
   }
 
   static get template() {
@@ -744,7 +744,7 @@ export class RealboxElement extends RealboxElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ntp-realbox': RealboxElement;
+    'cr-realbox': RealboxElement;
   }
 }
 

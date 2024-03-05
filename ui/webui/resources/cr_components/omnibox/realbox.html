@@ -5,11 +5,11 @@
     --cr-realbox-shadow: 0 1px 6px 0 var(--color-realbox-shadow);
     --cr-realbox-width: var(--cr-realbox-min-width);
 
-    --ntp-realbox-border-radius: calc(0.5 * var(--cr-realbox-height));
-    --ntp-realbox-icon-width: 26px;
-    --ntp-realbox-inner-icon-margin: 8px;
-    --ntp-realbox-voice-icon-offset: 16px;
-    border-radius: var(--ntp-realbox-border-radius);
+    --cr-realbox-border-radius: calc(0.5 * var(--cr-realbox-height));
+    --cr-realbox-icon-width: 26px;
+    --cr-realbox-inner-icon-margin: 8px;
+    --cr-realbox-voice-icon-offset: 16px;
+    border-radius: var(--cr-realbox-border-radius);
     box-shadow: var(--cr-realbox-shadow);
     font-size: 16px;
     height: var(--cr-realbox-height);
@@ -55,7 +55,7 @@
   }
 
   :host([realbox-lens-search-enabled_]) {
-    --ntp-realbox-voice-icon-offset: 53px;
+    --cr-realbox-voice-icon-offset: 53px;
   }
 
   @media (forced-colors: active) {
@@ -89,13 +89,13 @@
   input {
     background-color: var(--color-realbox-background);
     border: none;
-    border-radius: var(--ntp-realbox-border-radius);
+    border-radius: var(--cr-realbox-border-radius);
     color: var(--color-realbox-foreground);
     font-family: inherit;
     font-size: inherit;
     height: 100%;
     outline: none;
-    padding-inline-end: calc(var(--ntp-realbox-voice-icon-offset) + var(--ntp-realbox-icon-width) + var(--ntp-realbox-inner-icon-margin));
+    padding-inline-end: calc(var(--cr-realbox-voice-icon-offset) + var(--cr-realbox-icon-width) + var(--cr-realbox-inner-icon-margin));
     padding-inline-start: 52px;
     position: relative;
     width: 100%;
@@ -173,7 +173,7 @@
     pointer-events: auto;
     position: absolute;
     right: 16px;
-    width: var(--ntp-realbox-icon-width);
+    width: var(--cr-realbox-icon-width);
   }
 
   :host([realbox-chrome-refresh-theming]) .realbox-icon-button {
@@ -193,7 +193,7 @@
   }
 
   .realbox-icon-button-container.voice {
-    right: var(--ntp-realbox-voice-icon-offset);
+    right: var(--cr-realbox-voice-icon-offset);
   }
 
   :host-context(.focus-outline-visible) .realbox-icon-button-container:focus-within {
@@ -234,12 +234,12 @@
   }
 
   :host([realbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {
-    left: var(--ntp-realbox-voice-icon-offset);
+    left: var(--cr-realbox-voice-icon-offset);
     right: unset;
   }
 
   :host([realbox-lens-search-enabled_]) #voiceSearchButton {
-    right: var(--ntp-realbox-voice-icon-offset);
+    right: var(--cr-realbox-voice-icon-offset);
   }
 
   :host-context([dir='rtl']) .realbox-icon-button {
@@ -253,7 +253,7 @@
   }
 
   :host([realbox-lens-search-enabled_]):host-context([dir='rtl']) .realbox-icon-button-container.voice {
-    left: var(--ntp-realbox-voice-icon-offset);
+    left: var(--cr-realbox-voice-icon-offset);
     right: unset;
   }
 

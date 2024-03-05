@@ -153,7 +153,7 @@ suite('NewTabPageRealboxTest', () => {
     BrowserProxyImpl.setInstance(testMetricsReporterProxy);
     MetricsReporterImpl.setInstanceForTest(new MetricsReporterImpl());
 
-    realbox = document.createElement('ntp-realbox');
+    realbox = document.createElement('cr-realbox');
     document.body.appendChild(realbox);
   });
 
@@ -211,7 +211,7 @@ suite('NewTabPageRealboxTest', () => {
       realboxDefaultIcon: 'search.svg',
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('ntp-realbox');
+    realbox = document.createElement('cr-realbox');
     document.body.appendChild(realbox);
 
     // Assert.
@@ -225,7 +225,7 @@ suite('NewTabPageRealboxTest', () => {
           '//resources/cr_components/omnibox/icons/google_g.svg',
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('ntp-realbox');
+    realbox = document.createElement('cr-realbox');
     document.body.appendChild(realbox);
 
     // Assert.
@@ -244,7 +244,7 @@ suite('NewTabPageRealboxTest', () => {
     // Arrange.
     loadTimeData.overrideValues({realboxCr23Theming: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('ntp-realbox');
+    realbox = document.createElement('cr-realbox');
     realbox.colorSourceIsBaseline = true;
     document.body.appendChild(realbox);
 
@@ -261,7 +261,7 @@ suite('NewTabPageRealboxTest', () => {
     // Arrange.
     loadTimeData.overrideValues({realboxCr23Theming: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('ntp-realbox');
+    realbox = document.createElement('cr-realbox');
     realbox.colorSourceIsBaseline = false;
     document.body.appendChild(realbox);
 
