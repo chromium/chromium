@@ -14,11 +14,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -512,8 +510,6 @@ public class SigninFirstRunMediator
     }
 
     private static boolean disableSignInForAutomotiveDevice() {
-        return BuildInfo.getInstance().isAutomotive
-                && CommandLine.getInstance()
-                        .hasSwitch(ChromeSwitches.DISABLE_FRE_SIGNIN_ON_AUTOMOTIVE);
+        return BuildInfo.getInstance().isAutomotive;
     }
 }
