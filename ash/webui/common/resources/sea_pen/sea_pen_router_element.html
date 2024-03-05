@@ -1,11 +1,21 @@
 <style>
-  #seaPenContainer {
+  #topContainer {
+    background-color: var(--cros-sys-app_base_shaded);
     display: grid;
     grid-template-areas:
-      'leftspacertop    selected  rightspacertop'
+      '. middle .';
+    grid-template-columns: minmax(10px, 1fr) minmax(568px, 920px) minmax(10px, 1fr);
+    position: fixed;
+    top: 56px;
+    width: 100%;
+    z-index: 1;
+  }
+
+  #bottomContainer {
+    display: grid;
+    grid-template-areas:
       'leftspacerbottom imagegrid rightspacerbottom';
     grid-template-columns: minmax(10px, 1fr) minmax(568px, 920px) minmax(10px, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
     height: 100%;
     min-height: var(--sea-pen-router-min-height);
     position: relative;
@@ -15,14 +25,8 @@
   sea-pen-input-query,
   sea-pen-template-query,
   ::slotted(wallpaper-selected) {
-    background-color: var(--cros-sys-app_base_shaded);
-    grid-area: selected;
-    /* TODO(b/326299946): Expand query element to cover the images rather than
-     * pushing images down */
+    grid-area: middle;
     min-height: 172px;
-    position: sticky;
-    top: 56px;
-    z-index: 1;
   }
 
   sea-pen-input-query,
@@ -30,25 +34,10 @@
     height: 172px;
   }
 
-  #seaPenBottomContainer {
+  #bottomInnerContainer {
     background-color: var(--cros-bg-color);
     grid-area: imagegrid;
     padding: 10px 0;
-  }
-
-  div[class$='spacertop'] {
-    background-color: var(--cros-sys-app_base_shaded);
-    position: sticky;
-    top: 56px;
-    z-index: 1;
-  }
-
-  .leftspacertop {
-    grid-area: leftspacertop;
-  }
-
-  .rightspacertop {
-    grid-area: rightspacertop;
   }
 
   div[class$='spacerbottom'] {
@@ -64,16 +53,19 @@
     border-radius: 0 12px 12px 0;
     grid-area: rightspacerbottom;
   }
+
+  /* Reserves space for the top section which may include the selected wallpaper
+   or the query.
+   Note: :has() doesn't detect slotted content, so we fallback to using the
+   presence of always-show-top class.
+   */
+  :host(.always-show-top) #bottomContainer,
+  #topContainer:has(sea-pen-template-query, sea-pen-input-query) + #bottomContainer {
+    top: 172px;
+  }
 </style>
 
-<div id="seaPenContainer">
-  <iron-location path="{{path_}}" query="{{query_}}" dwell-time="200">
-  </iron-location>
-  <iron-query-params params-object="{{queryParams_}}" params-string="{{query_}}">
-  </iron-query-params>
-  <!-- Prevent left margin from collapsing on narrow window in RTL -->
-  <div class="leftspacertop"></div>
-  <div class="leftspacerbottom"></div>
+<div id="topContainer">
   <slot></slot>
   <template is="dom-if" if="[[shouldShowTextInputQuery_(relativePath_, queryParams_.seaPenTemplateId)]]">
     <sea-pen-input-query path="[[relativePath_]]"></sea-pen-input-query>
@@ -82,7 +74,15 @@
     <sea-pen-template-query template-id="[[queryParams_.seaPenTemplateId]]" path="[[relativePath_]]">
     </sea-pen-template-query>
   </template>
-  <div id="seaPenBottomContainer">
+</div>
+<div id="bottomContainer">
+  <iron-location path="{{path_}}" query="{{query_}}" dwell-time="200">
+  </iron-location>
+  <iron-query-params params-object="{{queryParams_}}" params-string="{{query_}}">
+  </iron-query-params>
+  <!-- Prevent left margin from collapsing on narrow window in RTL -->
+  <div class="leftspacerbottom"></div>
+  <div id="bottomInnerContainer">
     <template is="dom-if" if="[[shouldShowSeaPenRoot_(relativePath_)]]" restamp>
       <sea-pen-templates></sea-pen-templates>
       <sea-pen-recent-wallpapers></sea-pen-recent-wallpapers>
@@ -98,6 +98,5 @@
     </sea-pen-terms-of-service-dialog>
   </template>
   <!-- Prevent the right margin from collapsing when window gets very narrow -->
-  <div class="rightspacertop"></div>
   <div class="rightspacerbottom"></div>
 </div>
