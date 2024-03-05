@@ -47,24 +47,31 @@ public interface SyncService {
     public boolean isTransportStateActive();
 
     /**
-     * Checks whether Sync-the-feature can (attempt to) start. This means that there is a primary
-     * account and no disable reasons. Note that the Sync machinery may start up in transport-only
-     * mode even if this is false.
+     * Checks whether Sync-the-feature can (attempt to) start. This means that there is a
+     * ConsentLevel::kSync account and no disable reasons. It does *not* require first-time Sync
+     * setup to be complete.
+     *
+     * <p>Note: This refers to Sync-the-feature. Sync-the-transport may be running even if this is
+     * false.
      *
      * @return true if Sync can start, false otherwise.
      */
+    // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
+    // codebase. See ConsentLevel::kSync documentation for details.
     public boolean canSyncFeatureStart();
 
     /**
-     * Returns whether all conditions are satisfied for Sync-the-feature to start.
-     * This means that there is a Sync-consented account, no disable reasons, and
-     * first-time Sync setup has been completed by the user.
+     * Returns whether all conditions are satisfied for Sync-the-feature to start. This means that
+     * there is a Sync-consented account, no disable reasons, and first-time Sync setup has been
+     * completed by the user.
      *
-     * Note: This does not imply that Sync is actually running. Check
-     * IsSyncFeatureActive or GetTransportState to get the current state.
+     * <p>Note: This does not imply that Sync is actually running. Check IsSyncFeatureActive or
+     * GetTransportState to get the current state.
      *
      * @return true if the sync feature is enabled.
      */
+    // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
+    // codebase. See ConsentLevel::kSync documentation for details.
     public boolean isSyncFeatureEnabled();
 
     /**
@@ -73,6 +80,8 @@ public interface SyncService {
      *
      * @return true if Sync is active, false otherwise.
      */
+    // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
+    // codebase. See ConsentLevel::kSync documentation for details.
     public boolean isSyncFeatureActive();
 
     public @GoogleServiceAuthError.State int getAuthError();

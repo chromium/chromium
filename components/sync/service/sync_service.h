@@ -349,9 +349,8 @@ class SyncService : public KeyedService {
   bool IsEngineInitialized() const;
 
   // Returns whether Sync-the-feature can (attempt to) start. This means that
-  // there is a Sync-consented account and no disable reasons. It does *not*
-  // require first-time Sync setup to be complete, because that can only happen
-  // after the engine has started.
+  // there is a ConsentLevel::kSync account and no disable reasons. It does
+  // *not* require first-time Sync setup to be complete.
   // Note: This refers to Sync-the-feature. Sync-the-transport may be running
   // even if this is false.
   // TODO(crbug.com/1444344): Remove this API, in favor of
