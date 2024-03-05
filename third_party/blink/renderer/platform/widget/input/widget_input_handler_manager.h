@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -143,10 +144,12 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void InputWasProcessed(const gfx::PresentationFeedback& feedback);
   void WaitForInputProcessed(base::OnceClosure callback);
 
-  // Called when the WidgetBase is notified of a navigation. Resets
-  // the suppressing of input events state, and resets the UMA recorder for
-  // time of first input.
-  void DidNavigate();
+  // Resets the states related to the suppressing of input events, and also the
+  // UMA recorder for time of first input.
+  //
+  // If this method is called more than once, the latter call "overrides" any
+  // past inializations to allow possible re-use of WIHM across a navigation.
+  void InitializeInputEventSuppressionStates();
 
   // Called to inform us when the system starts or stops main frame updates.
   void OnDeferMainFrameUpdatesChanged(bool);
@@ -287,7 +290,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // before this method is called, `first_paint_time` must be passed as
   // `TimeTicks` zero.
   void RecordEventMetricsForPaintTiming(
-      const base::TimeTicks& first_paint_time);
+      std::optional<base::TimeTicks> first_paint_time);
 
   // Helpers for FlushEventQueuesForTesting.
   void FlushCompositorQueueForTesting();
@@ -375,7 +378,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // The compositor thread accesses this value when processing input (to decide
   // whether to suppress input) and the renderer thread accesses it when the
   // status of deferrals changes, so it needs to be thread safe.
-  std::atomic<uint16_t> suppressing_input_events_state_;
+  std::atomic<uint16_t> suppressing_input_events_state_ = 0;
 
   // Allow input suppression to be disabled for tests and non-browser uses
   // of chromium that do not wait for the first commit, or that may never

@@ -3825,7 +3825,8 @@ void WebFrameWidgetImpl::DidNavigate() {
   // to document lifecycle.
   if (!widget_base_->widget_input_handler_manager())
     return;
-  widget_base_->widget_input_handler_manager()->DidNavigate();
+  widget_base_->widget_input_handler_manager()
+      ->InitializeInputEventSuppressionStates();
 }
 
 void WebFrameWidgetImpl::FlushInputForTesting(base::OnceClosure done_callback) {

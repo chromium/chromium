@@ -185,7 +185,7 @@ scoped_refptr<WidgetInputHandlerManager> WidgetInputHandlerManager::Create(
           never_composited, compositor_thread_scheduler,
           std::move(widget_scheduler), allow_scroll_resampling);
 
-  manager->DidNavigate();
+  manager->InitializeInputEventSuppressionStates();
   if (uses_input_handler)
     manager->InitInputHandler();
 
@@ -441,10 +441,10 @@ void WidgetInputHandlerManager::LogInputTimingUMA() {
 }
 
 void WidgetInputHandlerManager::RecordEventMetricsForPaintTiming(
-    const base::TimeTicks& first_paint_time) {
+    std::optional<base::TimeTicks> first_paint_time) {
   CHECK(main_thread_task_runner_->BelongsToCurrentThread());
 
-  bool first_paint_max_delay_reached = first_paint_time.is_null();
+  bool first_paint_max_delay_reached = !first_paint_time.has_value();
 
   if (!first_paint_max_delay_reached) {
     if (first_paint_max_delay_timer_ &&
@@ -466,8 +466,10 @@ void WidgetInputHandlerManager::RecordEventMetricsForPaintTiming(
     base::AutoLock lock(uma_data_lock_);
     if (first_paint_max_delay_reached) {
       diff = kFirstPaintMaxAcceptableDelay;
-    } else if (uma_data_.most_recent_suppressed_event_time > first_paint_time) {
-      diff = uma_data_.most_recent_suppressed_event_time - first_paint_time;
+    } else if (uma_data_.most_recent_suppressed_event_time >
+               first_paint_time.value()) {
+      diff = uma_data_.most_recent_suppressed_event_time -
+             first_paint_time.value();
     }
 
     suppressed_interactions_count = uma_data_.suppressed_interactions_count;
@@ -751,19 +753,25 @@ void WidgetInputHandlerManager::WaitForInputProcessed(
   }
 }
 
-void WidgetInputHandlerManager::DidNavigate() {
+void WidgetInputHandlerManager::InitializeInputEventSuppressionStates() {
   suppressing_input_events_state_ =
       static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted);
 
+  // The following code assumes that for a single page load, the two calls to
+  // this method (from WIHM ctor and from WFWI::DidNavigate) are made within
+  // a time gap of kFirstPaintMaxAcceptableDelay.  If this is not true (very
+  // unlikely), the UMA will be double-counted!
   if (!first_paint_max_delay_timer_) {
     first_paint_max_delay_timer_ = std::make_unique<base::OneShotTimer>();
+  } else {
+    first_paint_max_delay_timer_->Stop();
   }
-  if (!widget_is_embedded_ && !first_paint_max_delay_timer_->IsRunning()) {
+  if (!widget_is_embedded_) {
     first_paint_max_delay_timer_->Start(
         FROM_HERE, kFirstPaintMaxAcceptableDelay,
         base::BindOnce(
             &WidgetInputHandlerManager::RecordEventMetricsForPaintTiming, this,
-            base::TimeTicks()));
+            std::nullopt));
   }
 
   base::AutoLock lock(uma_data_lock_);
