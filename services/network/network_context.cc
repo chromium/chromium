@@ -9,6 +9,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
@@ -2795,7 +2796,7 @@ void NetworkContext::OnHttpCacheSizeComputed(
     HttpCacheDataCounter* counter,
     bool is_upper_limit,
     int64_t result_or_error) {
-  EraseIf(http_cache_data_counters_, base::MatchesUniquePtr(counter));
+  std::erase_if(http_cache_data_counters_, base::MatchesUniquePtr(counter));
   std::move(callback).Run(is_upper_limit, result_or_error);
 }
 

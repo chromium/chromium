@@ -16,7 +16,6 @@
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -138,7 +137,7 @@ class TestInputMethodManager : public im::MockInputMethodManager {
     }
 
     void RemoveEnabledInputMethodId(const std::string& ime_id) {
-      base::EraseIf(enabled_input_method_ids_,
+      std::erase_if(enabled_input_method_ids_,
                     [&ime_id](const std::string& id) { return id == ime_id; });
     }
 

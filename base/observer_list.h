@@ -17,7 +17,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
@@ -343,7 +342,7 @@ class ObserverList {
     // Compact() is only ever called when the last iterator is destroyed.
     DETACH_FROM_SEQUENCE(iteration_sequence_checker_);
 
-    base::EraseIf(observers_,
+    std::erase_if(observers_,
                   [](const auto& o) { return o.IsMarkedForRemoval(); });
   }
 

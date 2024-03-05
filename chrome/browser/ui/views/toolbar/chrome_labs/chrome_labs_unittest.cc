@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/cxx20_erase_vector.h"
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -589,10 +590,10 @@ TEST_F(ChromeLabsViewControllerTest, CleanUpNewBadgePrefsTest) {
 
   // Remove two experiments.
   std::vector<LabInfo> test_experiments = TestLabInfo();
-  base::EraseIf(test_experiments, [](const auto& lab) {
+  std::erase_if(test_experiments, [](const auto& lab) {
     return lab.internal_name == kFirstTestFeatureId;
   });
-  base::EraseIf(test_experiments, [](const auto& lab) {
+  std::erase_if(test_experiments, [](const auto& lab) {
     return lab.internal_name == kTestFeatureWithVariationId;
   });
 

@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
@@ -726,7 +725,7 @@ bool ShouldIgnoreLogEntry(const NetLogEntry& entry) {
 std::vector<NetLogEntry> GetFilteredNetLogEntries(
     const RecordingNetLogObserver& net_log_observer) {
   auto entries = net_log_observer.GetEntries();
-  base::EraseIf(entries, ShouldIgnoreLogEntry);
+  std::erase_if(entries, ShouldIgnoreLogEntry);
   return entries;
 }
 

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -335,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(SiteIsolationFlagHandlingTest, FlagHandlingTest) {
 
   // Remove flag sentinels. Keep whatever is between those sentinels, to
   // verify that we don't pass additional parameters in there.
-  base::EraseIf(switches_for_user, [](const std::string& flag) {
+  std::erase_if(switches_for_user, [](const std::string& flag) {
     return flag == "--flag-switches-begin" || flag == "--flag-switches-end";
   });
   EXPECT_EQ(GetParam().expected_switches_for_user, switches_for_user);

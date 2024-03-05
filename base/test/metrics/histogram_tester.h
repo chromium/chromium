@@ -240,7 +240,7 @@ void PrintTo(const Bucket& value, std::ostream* os);
 template <typename BucketArray>
 auto BucketsAreArray(BucketArray buckets) {
   auto non_empty_buckets = buckets;
-  EraseIf(non_empty_buckets, [](Bucket b) { return b.count == 0; });
+  std::erase_if(non_empty_buckets, [](Bucket b) { return b.count == 0; });
   return ::testing::UnorderedElementsAreArray(non_empty_buckets);
 }
 

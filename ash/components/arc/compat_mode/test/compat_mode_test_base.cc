@@ -47,7 +47,7 @@ class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
     if (is_needed)
       confirmation_needed_app_ids_.push_back(app_id);
     else
-      base::Erase(confirmation_needed_app_ids_, app_id);
+      std::erase(confirmation_needed_app_ids_, app_id);
   }
 
   int GetShowSplashScreenDialogCount() const override { return show_count_; }

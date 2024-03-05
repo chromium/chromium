@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -17,9 +16,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/settings_launcher_helper.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_utils.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -435,7 +434,7 @@ CreditCardAccessoryControllerImpl::GetUnmaskedCreditCards() const {
     return card_info->card.record_type() !=
            CreditCard::RecordType::kVirtualCard;
   };
-  base::EraseIf(unmasked_cards, not_virtual_card);
+  std::erase_if(unmasked_cards, not_virtual_card);
   return unmasked_cards;
 }
 

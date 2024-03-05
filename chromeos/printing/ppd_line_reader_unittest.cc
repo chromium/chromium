@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_split.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -146,7 +145,7 @@ TEST(PpdLineReaderTest, SkipLongLines) {
   constexpr int kMaxLineLength = 35;
   std::vector<std::string> expected = base::SplitString(
       kTestPpd, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  base::EraseIf(expected, [](const std::string& entry) -> bool {
+  std::erase_if(expected, [](const std::string& entry) -> bool {
     return entry.size() > kMaxLineLength;
   });
   RunTest(kTestPpd, kMaxLineLength, expected);
@@ -157,7 +156,7 @@ TEST(PpdLineReaderTest, SkipLongLinesGzipped) {
   constexpr int kMaxLineLength = 35;
   std::vector<std::string> expected = base::SplitString(
       kTestPpd, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  base::EraseIf(expected, [](const std::string& entry) -> bool {
+  std::erase_if(expected, [](const std::string& entry) -> bool {
     return entry.size() > kMaxLineLength;
   });
   RunTest(std::string(reinterpret_cast<const char*>(kTestPpdGzipped),

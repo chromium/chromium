@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -74,7 +73,7 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
     // these tests.
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     base::CommandLine::StringVector argv = command_line->argv();
-    base::EraseIf(argv, IsNonSwitchArgument);
+    std::erase_if(argv, IsNonSwitchArgument);
     command_line->InitFromArgv(argv);
     ASSERT_TRUE(base::ranges::equal(argv, command_line->argv()));
   }
