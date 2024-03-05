@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_VERDICT_H_
 #define COMPONENTS_ENTERPRISE_DATA_CONTROLS_VERDICT_H_
 
-#include "base/functional/callback.h"
 #include "components/enterprise/data_controls/rule.h"
 
 namespace data_controls {
@@ -17,18 +16,19 @@ namespace data_controls {
 // on what UX should be shown, what should be reported, etc.
 class Verdict {
  public:
+  // The key is the rule's ID and the value is the rule's name.
+  using TriggeredRules = base::flat_map<std::string, std::string>;
+
   static Verdict NotSet();
-  static Verdict Report(base::OnceClosure initial_report_closure);
-  static Verdict Warn(base::OnceClosure initial_report_closure,
-                      base::OnceClosure bypass_report_closure);
-  static Verdict Block(base::OnceClosure initial_report_closure);
+  static Verdict Report(TriggeredRules triggered_rules);
+  static Verdict Warn(TriggeredRules triggered_rules);
+  static Verdict Block(TriggeredRules triggered_rules);
   static Verdict Allow();
 
-  // When an action has two distinct verdicts due to involving two different
-  // profiles, this helper can be used to simplify the logic to apply to the
-  // action.
-  static Verdict Merge(Verdict source_profile_verdict,
-                       Verdict destination_profile_verdict);
+  // In some circumstances multiple verdicts need to be merged, for example when
+  // an action has involves two different profiles. This helper can be used to
+  // simplify the logic to apply to the action for both verdicts.
+  static Verdict Merge(Verdict verdict_1, Verdict verdict_2);
 
   ~Verdict();
   Verdict(Verdict&&);
@@ -36,35 +36,20 @@ class Verdict {
 
   Rule::Level level() const;
 
-  // Accessors that take ownership of the underlying unique closures.
-  base::OnceClosure TakeInitialReportClosure();
-  base::OnceClosure TakeBypassReportClosure();
+  // Accessor to triggered rules corresponding to this verdict.
+  // The key is the rule's ID and the value is the rule's name.
+  const TriggeredRules& triggered_rules() const;
 
  private:
-  explicit Verdict(
-      Rule::Level level,
-      base::OnceClosure initial_report_closure = base::OnceClosure(),
-      base::OnceClosure bypass_report_closure = base::OnceClosure());
+  explicit Verdict(Rule::Level level, TriggeredRules triggered_rules);
 
   // The highest-precedence rule level to be applied to the action potentially
   // interrupted by Data Controls.
   Rule::Level level_;
 
-  // known at rule evaluation, so its type will need to change.
-  // The callback to be called to report the initial Data Controls rule
-  // triggers.
-  // TODO(b/303640183): This callback will likely require more information not
-  // known at rule evaluation, so its type will need to change.
-  base::OnceClosure initial_report_closure_;
-
-  // The callback to be called when `level` is `kWarn` and the user bypasses the
-  // warning shown to them. This should be used to report the appropriate event,
-  // and should be populated with copied data of the triggered rules since those
-  // can change arbitrarily between the time of the warning being shown and the
-  // user bypassing it.
-  // TODO(b/303640183): This callback will likely require more information not
-  // known at rule evaluation, so its type will need to change.
-  base::OnceClosure bypass_report_closure_;
+  // Rules triggered at an action's source represented by this verdict.
+  // The key is the rule's ID and the value is the rule's name.
+  TriggeredRules triggered_rules_;
 };
 
 }  // namespace data_controls

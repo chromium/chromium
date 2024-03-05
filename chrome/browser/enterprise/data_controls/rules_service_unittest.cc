@@ -20,6 +20,8 @@ namespace data_controls {
 
 namespace {
 
+constexpr char kFirstRuleID[] = "1234";
+
 class DataControlsRulesServiceTest : public testing::Test {
  public:
   explicit DataControlsRulesServiceTest(bool feature_enabled = true)
@@ -101,26 +103,26 @@ class DataControlsRulesServiceTest : public testing::Test {
 
   void ExpectBlockVerdict(Verdict verdict) const {
     ASSERT_EQ(verdict.level(), Rule::Level::kBlock);
-    ASSERT_FALSE(verdict.TakeInitialReportClosure().is_null());
-    ASSERT_TRUE(verdict.TakeBypassReportClosure().is_null());
+    EXPECT_EQ(verdict.triggered_rules().size(), 1u);
+    EXPECT_TRUE(verdict.triggered_rules().count(kFirstRuleID));
+    EXPECT_EQ(verdict.triggered_rules().at(kFirstRuleID), "block");
   }
 
   void ExpectWarnVerdict(Verdict verdict) const {
     ASSERT_EQ(verdict.level(), Rule::Level::kWarn);
-    ASSERT_FALSE(verdict.TakeInitialReportClosure().is_null());
-    ASSERT_FALSE(verdict.TakeBypassReportClosure().is_null());
+    EXPECT_EQ(verdict.triggered_rules().size(), 1u);
+    EXPECT_TRUE(verdict.triggered_rules().count(kFirstRuleID));
+    EXPECT_EQ(verdict.triggered_rules().at(kFirstRuleID), "warn");
   }
 
   void ExpectAllowVerdict(Verdict verdict) const {
     ASSERT_EQ(verdict.level(), Rule::Level::kAllow);
-    ASSERT_TRUE(verdict.TakeInitialReportClosure().is_null());
-    ASSERT_TRUE(verdict.TakeBypassReportClosure().is_null());
+    EXPECT_TRUE(verdict.triggered_rules().empty());
   }
 
   void ExpectNoVerdict(Verdict verdict) const {
     ASSERT_EQ(verdict.level(), Rule::Level::kNotSet);
-    ASSERT_TRUE(verdict.TakeInitialReportClosure().is_null());
-    ASSERT_TRUE(verdict.TakeBypassReportClosure().is_null());
+    EXPECT_TRUE(verdict.triggered_rules().empty());
   }
 
  protected:
@@ -146,6 +148,8 @@ class DataControlsRulesServiceFeatureDisabledTest
 
 TEST_F(DataControlsRulesServiceFeatureDisabledTest, NoVerdicts) {
   SetDataControls(profile()->GetPrefs(), {R"({
+                    "name": "block",
+                    "rule_id": "1234",
                     "sources": {
                       "urls": ["google.com"]
                     },
@@ -196,6 +200,8 @@ TEST_F(DataControlsRulesServiceTest, NoRuleSet) {
 TEST_F(DataControlsRulesServiceTest, SourceURL) {
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "block",
+                      "rule_id": "1234",
                       "sources": {
                         "urls": ["google.com"]
                       },
@@ -231,6 +237,8 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
 
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "warn",
+                      "rule_id": "1234",
                       "sources": {
                         "urls": ["google.com"]
                       },
@@ -269,6 +277,8 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
     // any other value.
     SetDataControls(profile()->GetPrefs(), {
                                                R"({
+                      "name": "allow",
+                      "rule_id": "1234",
                       "sources": {
                         "urls": ["google.com"]
                       },
@@ -278,6 +288,8 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
                       ]
                     })",
                                                R"({
+                      "name": "warn",
+                      "rule_id": "5678",
                       "sources": {
                         "urls": ["https://*"]
                       },
@@ -315,6 +327,8 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
 TEST_F(DataControlsRulesServiceTest, DestinationURL) {
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "block",
+                      "rule_id": "1234",
                       "destinations": {
                         "urls": ["google.com"]
                       },
@@ -347,6 +361,8 @@ TEST_F(DataControlsRulesServiceTest, DestinationURL) {
 
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "warn",
+                      "rule_id": "1234",
                       "destinations": {
                         "urls": ["google.com"]
                       },
@@ -382,6 +398,8 @@ TEST_F(DataControlsRulesServiceTest, DestinationURL) {
     // any other value.
     SetDataControls(profile()->GetPrefs(), {
                                                R"({
+                      "name": "allow",
+                      "rule_id": "1234",
                       "destinations": {
                         "urls": ["google.com"]
                       },
@@ -390,6 +408,8 @@ TEST_F(DataControlsRulesServiceTest, DestinationURL) {
                       ]
                     })",
                                                R"({
+                      "name": "warn",
+                      "rule_id": "5678",
                       "destinations": {
                         "urls": ["https://*"]
                       },
@@ -423,6 +443,8 @@ TEST_F(DataControlsRulesServiceTest, DestinationURL) {
 TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "block",
+                      "rule_id": "1234",
                       "sources": {
                         "incognito": true
                       },
@@ -462,6 +484,8 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
 
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "warn",
+                      "rule_id": "1234",
                       "sources": {
                         "incognito": true
                       },
@@ -504,6 +528,8 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
     // any other value.
     SetDataControls(profile()->GetPrefs(), {
                                                R"({
+                      "name": "allow",
+                      "rule_id": "1234",
                       "sources": {
                         "incognito": true
                       },
@@ -512,6 +538,8 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
                       ]
                     })",
                                                R"({
+                      "name": "warn",
+                      "rule_id": "5678",
                       "sources": {
                         "incognito": true
                       },
@@ -553,6 +581,8 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
 TEST_F(DataControlsRulesServiceTest, DestinationIncognito) {
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "block",
+                      "rule_id": "1234",
                       "destinations": {
                         "incognito": true
                       },
@@ -584,6 +614,8 @@ TEST_F(DataControlsRulesServiceTest, DestinationIncognito) {
 
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "warn",
+                      "rule_id": "1234",
                       "destinations": {
                         "incognito": true
                       },
@@ -618,6 +650,8 @@ TEST_F(DataControlsRulesServiceTest, DestinationIncognito) {
     // any other value.
     SetDataControls(profile()->GetPrefs(), {
                                                R"({
+                      "name": "allow",
+                      "rule_id": "1234",
                       "destinations": {
                         "incognito": true
                       },
@@ -626,6 +660,8 @@ TEST_F(DataControlsRulesServiceTest, DestinationIncognito) {
                       ]
                     })",
                                                R"({
+                      "name": "warn",
+                      "rule_id": "5678",
                       "destinations": {
                         "incognito": true
                       },
@@ -659,6 +695,8 @@ TEST_F(DataControlsRulesServiceTest, DestinationIncognito) {
 TEST_F(DataControlsRulesServiceTest, OSClipboardDestination) {
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "block",
+                      "rule_id": "1234",
                       "destinations": {
                         "os_clipboard": true
                       },
@@ -690,6 +728,8 @@ TEST_F(DataControlsRulesServiceTest, OSClipboardDestination) {
 
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "warn",
+                      "rule_id": "1234",
                       "destinations": {
                         "os_clipboard": true
                       },
@@ -724,6 +764,8 @@ TEST_F(DataControlsRulesServiceTest, OSClipboardDestination) {
     // any other value.
     SetDataControls(profile()->GetPrefs(), {
                                                R"({
+                      "name": "allow",
+                      "rule_id": "1234",
                       "destinations": {
                         "os_clipboard": true
                       },
@@ -732,6 +774,8 @@ TEST_F(DataControlsRulesServiceTest, OSClipboardDestination) {
                       ]
                     })",
                                                R"({
+                      "name": "warn",
+                      "rule_id": "5678",
                       "destinations": {
                         "os_clipboard": true
                       },
@@ -765,6 +809,8 @@ TEST_F(DataControlsRulesServiceTest, OSClipboardDestination) {
 TEST_F(DataControlsRulesServiceTest, NonOSClipboardDestination) {
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "block",
+                      "rule_id": "1234",
                       "destinations": {
                         "os_clipboard": false
                       },
@@ -796,6 +842,8 @@ TEST_F(DataControlsRulesServiceTest, NonOSClipboardDestination) {
 
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "warn",
+                      "rule_id": "1234",
                       "destinations": {
                         "os_clipboard": false
                       },
@@ -830,6 +878,8 @@ TEST_F(DataControlsRulesServiceTest, NonOSClipboardDestination) {
     // any other value.
     SetDataControls(profile()->GetPrefs(), {
                                                R"({
+                      "name": "allow",
+                      "rule_id": "1234",
                       "destinations": {
                         "os_clipboard": false
                       },
@@ -838,6 +888,8 @@ TEST_F(DataControlsRulesServiceTest, NonOSClipboardDestination) {
                       ]
                     })",
                                                R"({
+                      "name": "warn",
+                      "rule_id": "5678",
                       "destinations": {
                         "os_clipboard": false
                       },
@@ -871,6 +923,8 @@ TEST_F(DataControlsRulesServiceTest, NonOSClipboardDestination) {
 TEST_F(DataControlsRulesServiceTest, SourceOtherProfile) {
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "block",
+                      "rule_id": "1234",
                       "sources": {
                         "other_profile": true
                       },
@@ -910,6 +964,8 @@ TEST_F(DataControlsRulesServiceTest, SourceOtherProfile) {
 
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "warn",
+                      "rule_id": "1234",
                       "sources": {
                         "other_profile": true
                       },
@@ -952,6 +1008,8 @@ TEST_F(DataControlsRulesServiceTest, SourceOtherProfile) {
     // any other value.
     SetDataControls(profile()->GetPrefs(), {
                                                R"({
+                      "name": "allow",
+                      "rule_id": "1234",
                       "sources": {
                         "other_profile": true
                       },
@@ -960,6 +1018,8 @@ TEST_F(DataControlsRulesServiceTest, SourceOtherProfile) {
                       ]
                     })",
                                                R"({
+                      "name": "warn",
+                      "rule_id": "5678",
                       "sources": {
                         "other_profile": true
                       },
@@ -1001,6 +1061,8 @@ TEST_F(DataControlsRulesServiceTest, SourceOtherProfile) {
 TEST_F(DataControlsRulesServiceTest, DestinationOtherProfile) {
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "block",
+                      "rule_id": "1234",
                       "destinations": {
                         "other_profile": true
                       },
@@ -1032,6 +1094,8 @@ TEST_F(DataControlsRulesServiceTest, DestinationOtherProfile) {
 
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "warn",
+                      "rule_id": "1234",
                       "destinations": {
                         "other_profile": true
                       },
@@ -1066,6 +1130,8 @@ TEST_F(DataControlsRulesServiceTest, DestinationOtherProfile) {
     // any other value.
     SetDataControls(profile()->GetPrefs(), {
                                                R"({
+                      "name": "allow",
+                      "rule_id": "1234",
                       "destinations": {
                         "other_profile": true
                       },
@@ -1074,6 +1140,8 @@ TEST_F(DataControlsRulesServiceTest, DestinationOtherProfile) {
                       ]
                     })",
                                                R"({
+                      "name": "warn",
+                      "rule_id": "5678",
                       "destinations": {
                         "other_profile": true
                       },
@@ -1107,6 +1175,8 @@ TEST_F(DataControlsRulesServiceTest, DestinationOtherProfile) {
 TEST_F(DataControlsRulesServiceTest, OSClipboardSource) {
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "block",
+                      "rule_id": "1234",
                       "sources": {
                         "os_clipboard": true
                       },
@@ -1138,6 +1208,8 @@ TEST_F(DataControlsRulesServiceTest, OSClipboardSource) {
 
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "warn",
+                      "rule_id": "1234",
                       "sources": {
                         "os_clipboard": true
                       },
@@ -1172,6 +1244,8 @@ TEST_F(DataControlsRulesServiceTest, OSClipboardSource) {
     // any other value.
     SetDataControls(profile()->GetPrefs(), {
                                                R"({
+                      "name": "allow",
+                      "rule_id": "1234",
                       "sources": {
                         "os_clipboard": true
                       },
@@ -1180,6 +1254,8 @@ TEST_F(DataControlsRulesServiceTest, OSClipboardSource) {
                       ]
                     })",
                                                R"({
+                      "name": "warn",
+                      "rule_id": "5678",
                       "sources": {
                         "os_clipboard": true
                       },
@@ -1213,6 +1289,8 @@ TEST_F(DataControlsRulesServiceTest, OSClipboardSource) {
 TEST_F(DataControlsRulesServiceTest, NonOSClipboardSource) {
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "block",
+                      "rule_id": "1234",
                       "sources": {
                         "os_clipboard": false
                       },
@@ -1244,6 +1322,8 @@ TEST_F(DataControlsRulesServiceTest, NonOSClipboardSource) {
 
   {
     SetDataControls(profile()->GetPrefs(), {R"({
+                      "name": "warn",
+                      "rule_id": "1234",
                       "sources": {
                         "os_clipboard": false
                       },
@@ -1278,6 +1358,8 @@ TEST_F(DataControlsRulesServiceTest, NonOSClipboardSource) {
     // any other value.
     SetDataControls(profile()->GetPrefs(), {
                                                R"({
+                      "name": "allow",
+                      "rule_id": "1234",
                       "sources": {
                         "os_clipboard": false
                       },
@@ -1286,6 +1368,8 @@ TEST_F(DataControlsRulesServiceTest, NonOSClipboardSource) {
                       ]
                     })",
                                                R"({
+                      "name": "warn",
+                      "rule_id": "5678",
                       "sources": {
                         "os_clipboard": false
                       },

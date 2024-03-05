@@ -7,25 +7,32 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace data_controls {
 
 namespace {
 
+constexpr char kReportRuleID[] = "report_rule_id";
+constexpr char kWarnRuleID[] = "warn_rule_id";
+constexpr char kBlockRuleID[] = "block_rule_id";
+
+constexpr char kReportRuleName[] = "report_rule_name";
+constexpr char kWarnRuleName[] = "warn_rule_name";
+constexpr char kBlockRuleName[] = "block_rule_name";
+
 // Helpers to make the tests more concise.
 Verdict NotSet() {
   return Verdict::NotSet();
 }
 Verdict Report() {
-  return Verdict::Report(base::DoNothing());
+  return Verdict::Report({{kReportRuleID, kReportRuleName}});
 }
 Verdict Warn() {
-  return Verdict::Warn(base::DoNothing(), base::DoNothing());
+  return Verdict::Warn({{kWarnRuleID, kWarnRuleName}});
 }
 Verdict Block() {
-  return Verdict::Block(base::DoNothing());
+  return Verdict::Block({{kBlockRuleID, kBlockRuleName}});
 }
 Verdict Allow() {
   return Verdict::Allow();
@@ -81,72 +88,44 @@ TEST(DataControlVerdictTest, MergedLevel_Allow) {
   ASSERT_EQ(Verdict::Merge(Allow(), Allow()).level(), Rule::Level::kAllow);
 }
 
-TEST(DataControlVerdictTest, InitialReport) {
-  ASSERT_TRUE(NotSet().TakeInitialReportClosure().is_null());
-  ASSERT_TRUE(Allow().TakeInitialReportClosure().is_null());
+TEST(DataControlVerdictTest, TriggeredRules) {
+  ASSERT_TRUE(NotSet().triggered_rules().empty());
+  ASSERT_TRUE(Allow().triggered_rules().empty());
 
-  base::test::TestFuture<void> report_future;
-  auto report = Verdict::Report(report_future.GetCallback());
-  auto report_callback = report.TakeInitialReportClosure();
-  ASSERT_FALSE(report_callback.is_null());
-  std::move(report_callback).Run();
-  ASSERT_TRUE(report_future.Wait());
+  auto report = Report();
+  EXPECT_EQ(report.triggered_rules().size(), 1u);
+  EXPECT_TRUE(report.triggered_rules().count(kReportRuleID));
+  EXPECT_EQ(report.triggered_rules().at(kReportRuleID), kReportRuleName);
 
-  base::test::TestFuture<void> warn_future;
-  auto warn = Verdict::Warn(warn_future.GetCallback(), base::DoNothing());
-  auto warn_callback = warn.TakeInitialReportClosure();
-  ASSERT_FALSE(warn_callback.is_null());
-  std::move(warn_callback).Run();
-  ASSERT_TRUE(warn_future.Wait());
+  auto warn = Warn();
+  EXPECT_EQ(warn.triggered_rules().size(), 1u);
+  EXPECT_TRUE(warn.triggered_rules().count(kWarnRuleID));
+  EXPECT_EQ(warn.triggered_rules().at(kWarnRuleID), kWarnRuleName);
 
-  base::test::TestFuture<void> block_future;
-  auto block = Verdict::Block(block_future.GetCallback());
-  auto block_callback = block.TakeInitialReportClosure();
-  ASSERT_FALSE(block_callback.is_null());
-  std::move(block_callback).Run();
-  ASSERT_TRUE(block_future.Wait());
+  auto block = Block();
+  EXPECT_EQ(block.triggered_rules().size(), 1u);
+  EXPECT_TRUE(block.triggered_rules().count(kBlockRuleID));
+  EXPECT_EQ(block.triggered_rules().at(kBlockRuleID), kBlockRuleName);
 }
 
-TEST(DataControlVerdictTest, BypassReport) {
-  ASSERT_TRUE(NotSet().TakeBypassReportClosure().is_null());
-  ASSERT_TRUE(Block().TakeBypassReportClosure().is_null());
-  ASSERT_TRUE(Allow().TakeBypassReportClosure().is_null());
-  ASSERT_TRUE(Report().TakeBypassReportClosure().is_null());
+TEST(DataControlVerdictTest, MergedTriggeredRules) {
+  // Two verdicts with the same triggered rule merge correctly and don't
+  // internally duplicate the rule in two.
+  auto merged_warnings = Verdict::Merge(Warn(), Warn());
+  EXPECT_EQ(merged_warnings.triggered_rules().size(), 1u);
+  EXPECT_TRUE(merged_warnings.triggered_rules().count(kWarnRuleID));
+  EXPECT_EQ(merged_warnings.triggered_rules().at(kWarnRuleID), kWarnRuleName);
 
-  base::test::TestFuture<void> warn_future;
-  auto warn = Verdict::Warn(base::DoNothing(), warn_future.GetCallback());
-  auto warn_callback = warn.TakeBypassReportClosure();
-  ASSERT_FALSE(warn_callback.is_null());
-  std::move(warn_callback).Run();
-  ASSERT_TRUE(warn_future.Wait());
-}
-
-TEST(DataControlVerdictTest, MergedCallbacks) {
-  base::test::TestFuture<void> source_initial_report_future;
-  base::test::TestFuture<void> source_bypass_report_future;
-  auto source_verdict =
-      Verdict::Warn(source_initial_report_future.GetCallback(),
-                    source_bypass_report_future.GetCallback());
-
-  base::test::TestFuture<void> destination_initial_report_future;
-  base::test::TestFuture<void> destination_bypass_report_future;
-  auto destination_verdict =
-      Verdict::Warn(destination_initial_report_future.GetCallback(),
-                    destination_bypass_report_future.GetCallback());
-
-  auto merged_verdict =
-      Verdict::Merge(std::move(source_verdict), std::move(destination_verdict));
-  auto merged_initial_report = merged_verdict.TakeInitialReportClosure();
-  ASSERT_TRUE(merged_initial_report);
-  std::move(merged_initial_report).Run();
-  ASSERT_TRUE(source_initial_report_future.Wait());
-  ASSERT_TRUE(destination_initial_report_future.Wait());
-
-  auto merged_bypass_report = merged_verdict.TakeBypassReportClosure();
-  ASSERT_TRUE(merged_bypass_report);
-  std::move(merged_bypass_report).Run();
-  ASSERT_TRUE(source_bypass_report_future.Wait());
-  ASSERT_TRUE(destination_bypass_report_future.Wait());
+  // Merging three verdicts with different rules should rules in a verdict with
+  // all three rules present.
+  auto all_merged = Verdict::Merge(Warn(), Verdict::Merge(Report(), Block()));
+  EXPECT_EQ(all_merged.triggered_rules().size(), 3u);
+  EXPECT_TRUE(all_merged.triggered_rules().count(kReportRuleID));
+  EXPECT_EQ(all_merged.triggered_rules().at(kReportRuleID), kReportRuleName);
+  EXPECT_TRUE(all_merged.triggered_rules().count(kWarnRuleID));
+  EXPECT_EQ(all_merged.triggered_rules().at(kWarnRuleID), kWarnRuleName);
+  EXPECT_TRUE(all_merged.triggered_rules().count(kBlockRuleID));
+  EXPECT_EQ(all_merged.triggered_rules().at(kBlockRuleID), kBlockRuleName);
 }
 
 }  // namespace data_controls

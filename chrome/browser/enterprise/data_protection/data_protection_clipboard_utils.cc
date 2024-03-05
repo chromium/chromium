@@ -279,13 +279,10 @@ void OnDataControlsCopyWarning(
     const content::ClipboardEndpoint& source,
     const content::ClipboardMetadata& metadata,
     const std::u16string& data,
-    std::vector<base::OnceClosure> bypass_callbacks,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback,
     bool bypassed) {
   if (bypassed) {
-    for (auto& bypass_callback : bypass_callbacks) {
-      std::move(bypass_callback).Run();
-    }
+    // TODO(b/303640183): Add bypass reporting logic.
     IsCopyToOSClipboardRestricted(source, metadata, data, std::move(callback));
     return;
   }
@@ -324,20 +321,13 @@ void IsCopyRestrictedByDialog(
           ->GetCopyToOSClipboardVerdict(
               *source.data_transfer_endpoint()->GetURL());
 
-  std::vector<base::OnceClosure> bypass_callbacks;
-  if (source_only_verdict.level() == data_controls::Rule::Level::kWarn) {
-    bypass_callbacks.push_back(source_only_verdict.TakeBypassReportClosure());
-  }
-  if (os_clipboard_verdict.level() == data_controls::Rule::Level::kWarn) {
-    bypass_callbacks.push_back(os_clipboard_verdict.TakeBypassReportClosure());
-  }
-
-  if (!bypass_callbacks.empty()) {
+  if (source_only_verdict.level() == data_controls::Rule::Level::kWarn ||
+      os_clipboard_verdict.level() == data_controls::Rule::Level::kWarn) {
     data_controls::DataControlsDialog::Show(
         source.web_contents(),
         data_controls::DataControlsDialog::Type::kClipboardCopyWarn,
         base::BindOnce(&OnDataControlsCopyWarning, source, metadata, data,
-                       std::move(bypass_callbacks), std::move(callback)));
+                       std::move(callback)));
     return;
   }
 

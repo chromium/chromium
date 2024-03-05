@@ -257,28 +257,26 @@ Verdict ChromeDlpRulesManager::GetVerdict(Restriction restriction,
   }
 
   Level max_level = Level::kNotSet;
-  std::set<size_t> triggered_rules;
-  for (size_t i = 0; i < rules_.size(); ++i) {
-    Level level = rules_[i].GetLevel(restriction, context);
+  Verdict::TriggeredRules triggered_rules;
+  for (const auto& rule : rules_) {
+    Level level = rule.GetLevel(restriction, context);
     if (level > max_level) {
       max_level = level;
     }
-    if (level != Level::kNotSet) {
-      triggered_rules.insert(i);
+    if (level != Level::kNotSet && !rule.rule_id().empty()) {
+      triggered_rules[rule.rule_id()] = rule.name();
     }
   }
 
-  // TODO(b/303640183): Access `rules_` using the indexes in `triggered_rules`
-  // to populate the reporting callback(s) appropriately.
   switch (max_level) {
     case Rule::Level::kNotSet:
       return Verdict::NotSet();
     case Rule::Level::kReport:
-      return Verdict::Report(base::DoNothing());
+      return Verdict::Report(std::move(triggered_rules));
     case Rule::Level::kWarn:
-      return Verdict::Warn(base::DoNothing(), base::DoNothing());
+      return Verdict::Warn(std::move(triggered_rules));
     case Rule::Level::kBlock:
-      return Verdict::Block(base::DoNothing());
+      return Verdict::Block(std::move(triggered_rules));
     case Rule::Level::kAllow:
       return Verdict::Allow();
   }
