@@ -342,10 +342,32 @@ class VolumeManager : public KeyedService,
                                     RemoveSftpGuestOsVolumeCallback callback,
                                     ash::MountError error);
 
+  // Registers and mounts the downloads volume.
+  void MountDownloadsVolume();
+
+  // Unmounts and revokes the downloads volume.
+  void UnmountDownloadsVolume();
+
+  // Mounts all ARC roots declared in arc_media_view_util.cc.
+  void MountArcRoots();
+
+  // Unmounts all ARC roots declared in arc_media_view_util.cc.
+  void UnmountArcRoots();
+
+  void UnsubscribeFromArcEvents();
+
+  // Subscribes to ARC file system events and if needed, registers and mounts
+  // the arc volumes.
+  void SubscribeAndMountArc();
+
+  // Unsubscribes from ARC file system events and if needed, unmounts and
+  // revokes the arc volumes.
+  void UnsubscribeAndUnmountArc();
+
   // Mounts local folders (My Files, Play and Linux files).
-  void MountLocalFolders();
+  void OnLocalUserFilesEnabled();
   // Unmounts local folders (My Files, Play and Linux files).
-  void UnmountLocalFolders();
+  void OnLocalUserFilesDisabled();
 
   static int counter_;
   const int id_ = ++counter_;  // Only used in log traces
@@ -365,8 +387,11 @@ class VolumeManager : public KeyedService,
   std::unique_ptr<DocumentsProviderRootManager>
       documents_provider_root_manager_;
   io_task::IOTaskController io_task_controller_;
+  // TODO(b/328006921): Replace with a check if the volumes are mounted.
   bool arc_volumes_mounted_ = false;
   bool ignore_clipboard_changed_ = false;
+  // TODO(b/328006921): Replace with a check if the volumes are mounted.
+  bool local_user_files_allowed_ = true;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
