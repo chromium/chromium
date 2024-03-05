@@ -67,9 +67,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/241122961
   "policy.BlockThirdPartyCookies",
 
-  # https://crbug.com/1350191
-  "arc.Print",
-
   # https://crbug.com/1350880
   "arc.PIPRoundedCornersUnderlay",
 
