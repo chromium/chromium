@@ -301,4 +301,11 @@ const ClipboardFormatType& ClipboardFormatType::WebCustomDataType() {
   return *format;
 }
 
+// static
+const ClipboardFormatType& ClipboardFormatType::InternalSourceUrlType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      RegisterClipboardFormatChecked(L"Chromium internal source URL"));
+  return *format;
+}
+
 }  // namespace ui

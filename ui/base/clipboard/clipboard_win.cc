@@ -236,11 +236,33 @@ ClipboardWin::~ClipboardWin() {
 
 void ClipboardWin::OnPreShutdown() {}
 
-// DataTransferEndpoint is not used on this platform.
 std::optional<DataTransferEndpoint> ClipboardWin::GetSource(
     ClipboardBuffer buffer) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  return std::nullopt;
+
+  ScopedClipboard clipboard;
+  if (!clipboard.Acquire(GetClipboardWindow())) {
+    return std::nullopt;
+  }
+
+  HANDLE data = ::GetClipboardData(
+      ClipboardFormatType::InternalSourceUrlType().ToFormatEtc().cfFormat);
+  if (!data) {
+    return std::nullopt;
+  }
+
+  std::string source_string;
+  source_string.assign(static_cast<const char*>(::GlobalLock(data)),
+                       ::GlobalSize(data));
+  ::GlobalUnlock(data);
+  TrimAfterNull(&source_string);
+
+  GURL source_url(source_string);
+  if (!source_url.is_valid()) {
+    return std::nullopt;
+  }
+
+  return DataTransferEndpoint(std::move(source_url));
 }
 
 const ClipboardSequenceNumberToken& ClipboardWin::GetSequenceNumber(
@@ -660,8 +682,6 @@ void ClipboardWin::ReadData(const ClipboardFormatType& format,
   ::GlobalUnlock(data);
 }
 
-// |data_src| is not used. It's only passed to be consistent with other
-// platforms.
 void ClipboardWin::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
@@ -675,6 +695,11 @@ void ClipboardWin::WritePortableAndPlatformRepresentations(
   DispatchPlatformRepresentations(std::move(platform_representations));
   for (const auto& object : objects)
     DispatchPortableRepresentation(object.second);
+
+  if (data_src && data_src->IsUrlType()) {
+    HGLOBAL glob = CreateGlobalData(data_src->GetURL()->spec());
+    WriteToClipboard(ClipboardFormatType::InternalSourceUrlType(), glob);
+  }
 }
 
 void ClipboardWin::WriteText(base::StringPiece text) {
