@@ -94,7 +94,7 @@
   }
 </style>
 <template is="dom-if" if="[[shouldShowRecentlyUsedWallpapers_(recentImages_)]]">
-  <h2 class="wallpaper-collections-heading">[[i18n('seaPenRecentWallpapersHeading')]]</h2>
+  <h2 class="wallpaper-collections-heading">[[getRecentPoweredByGoogleMessage_()]]</h2>
   <iron-list id="grid"
       items="[[recentImagesToDisplay_]]"
       as="image"

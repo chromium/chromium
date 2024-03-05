@@ -199,6 +199,11 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
         mojoString16ToString(data.imageInfo.creationTime));
   }
 
+  private getRecentPoweredByGoogleMessage_(): string {
+    return window.location.origin === 'chrome://personalization' ?
+        this.i18n('seaPenRecentWallpapersHeading') :
+        this.i18n('vcBackgroundRecentWallpapersHeading');
+  }
 
   private getAriaIndex_(i: number): number {
     return i + 1;

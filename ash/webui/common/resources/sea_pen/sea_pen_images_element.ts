@@ -140,6 +140,12 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     }
   }
 
+  private getPoweredByGoogleMessage_(): string {
+    return window.location.origin === 'chrome://personalization' ?
+        this.i18n('seaPenWallpaperPoweredByGoogle') :
+        this.i18n('vcBackgroundPoweredByGoogle');
+  }
+
   private onTemplateIdChanged_() {
     clearSeaPenThumbnails(this.getStore());
   }

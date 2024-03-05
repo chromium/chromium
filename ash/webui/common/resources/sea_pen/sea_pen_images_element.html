@@ -172,7 +172,7 @@
 </template>
 <template is="dom-if" if="[[!showError_]]" restamp>
   <h2 class="wallpaper-collections-heading">
-    [[i18n('seaPenWallpaperPoweredByGoogle')]]
+    [[getPoweredByGoogleMessage_()]]
   </h2>
   <template is="dom-if" if="[[shouldShowThumbnailPlaceholders_(thumbnailsLoading_, thumbnails_)]]">
     <iron-list class="thumbnail-placeholder-list" items="[[getPlaceholders_(4)]]" grid>
