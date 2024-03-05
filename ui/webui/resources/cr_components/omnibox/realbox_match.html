@@ -74,7 +74,7 @@
     background-color: var(--color-realbox-results-background-hovered);
   }
 
-  .actions.inlined {
+  .actions.container {
     align-self: center;
     flex-grow: 1;
     flex-shrink: 0;
@@ -85,11 +85,11 @@
     display: none;
   }
 
-  :host-context(.vertical) .actions.inlined {
+  :host-context(.vertical) .actions.container {
     display: flex;
   }
 
-  :host([has-action]) .actions.inlined {
+  :host([has-action]) .actions.container {
     padding-inline-end: 8px;
     padding-inline-start: 4px;
   }
@@ -227,6 +227,7 @@
     width: 102px;
     height: auto;
   }
+
   :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       .focus-indicator {
     display: none;
@@ -277,8 +278,8 @@
 </style>
 <div class="container" aria-hidden="true">
   <div id="focus-indicator"></div>
-  <cr-realbox-icon id="icon" match="[[match]]" hidden="[[showCrNonInlinedHoverFill]]"></cr-realbox-icon>
-  <div id="text-container" hidden="[[showCrNonInlinedHoverFill]]">
+  <cr-realbox-icon id="icon" match="[[match]]"></cr-realbox-icon>
+  <div id="text-container">
     <span id="tail-suggest-prefix" hidden$="[[!tailSuggestPrefix_]]">
       <span id="prefix">[[tailSuggestPrefix_]]</span>
       <!-- This is equivalent to AutocompleteMatch::kEllipsis which is
@@ -289,7 +290,7 @@
     <span id="separator" class="dim">[[separatorText_]]</span>
     <span id="description" inner-h-t-m-l="[[descriptionHtml_]]"></span>
   </div>
-  <div class="actions container inlined" aria-hidden="true">
+  <div class="actions container" aria-hidden="true">
     <template is="dom-repeat" items="[[match.actions]]">
       <template is="dom-if" if="[[expandedStateIconsChromeRefresh]]">
         <div id="actions-focus-border">
