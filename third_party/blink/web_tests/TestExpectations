@@ -6877,9 +6877,6 @@ crbug.com/40944477 fast/events/scroll-event-handler-count.html [ Failure Pass Ti
 crbug.com/40264022 external/wpt/webtransport/echo-large-bidirectional-streams.https.any.serviceworker.html [ Failure Pass Timeout ] # Flaky
 crbug.com/40280906 virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-load-api.https.html [ Failure Pass Timeout ] # Flaky
 
-# Gardener 2024-02-22
-crbug.com/326478175 wpt_internal/dom/about_srcdoc/grandparent_location_aboutsrcdoc.sub.window.html [ Failure Pass Timeout ]
-
 # Test infra bug
 crbug.com/326459000 virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/pageswap-push-from-click.html [ Timeout ]
 crbug.com/326459000 virtual/pageswap/external/wpt/html/browsers/browsing-the-web/history-traversal/pageswap/pageswap-push-from-click.html [ Timeout ]

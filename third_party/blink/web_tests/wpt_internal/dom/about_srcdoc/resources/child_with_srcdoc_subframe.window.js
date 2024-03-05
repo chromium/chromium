@@ -13,6 +13,7 @@ window.onmessage = (e) => {
     srcdoc_content += `
         <script>
           document.body.onload = () => {
+            window.top.postMessage(location.href, '*');
             window.location = 'about:srcdoc#the_anchor';
           }
         </scr` + "ipt>";
@@ -22,22 +23,17 @@ window.onmessage = (e) => {
   grandchild_frame.onload = () => {
     // Each time the grandchild frame loads, send its location to the
     // parent. If that fails, send the error message.
-    let result;
-    if (sandbox) {
-      // If the srcdoc frame is sandboxed we don't expect to be able to read
-      // location.href, so just send back what the main frame expects to
-      // confirm loading.
-      // Alternately: we could send up the error message and let the main
-      // frame deal with it since it knows the sandboxed status.
-      result = "about:srcdoc";
-    } else {
+    // For the sandbox case, the child directly sends the href value before
+    // self-navigating.
+    if (!sandbox) {
+      let result;
       try {
         result = grandchild_frame.contentWindow.location.href;
       } catch (error) {
         result = error;
       }
+      e.source.postMessage(result, "*");
     }
-    e.source.postMessage(result, "*");
   };
   if (sandbox) {
     grandchild_frame.sandbox = "allow-scripts";
