@@ -1438,7 +1438,6 @@
 <translation id="3739842843727261045">«رأی موافق» بازخوردی با این معنا ارسال می‌کند که شما این نتایج را می‌پسندید</translation>
 <translation id="3740447166056383374">قبل‌از کپی کردن باید بررسی شود</translation>
 <translation id="374325029554577103">محصولات فناوری تناسب اندام</translation>
-<translation id="3743765582345153106">همیشه هنگام استفاده از تکمیل خودکار تأیید شود</translation>
 <translation id="3744111561329211289">همگام‌سازی پس‌زمینه</translation>
 <translation id="3744212718085287312">می‌خواهید آن را دفعه بعدی با کارت مجازی ایمن‌تر کنیم؟</translation>
 <translation id="3744899669254331632">‏نمی‌توانید اکنون از <ph name="SITE" /> دیدن کنید زیرا وب‌سایت اعتبارنامه‌های درهمی ارسال کرده که Chromium نمی‌تواند پردازش کند. خطاها و حمله‌های شبکه معمولاً موقتی هستند، بنابراین احتمالاً این صفحه بعداً کار می‌کند.</translation>
@@ -1767,6 +1766,7 @@
 <translation id="4358461427845829800">مدیریت روش‌های پرداخت…</translation>
 <translation id="4359160567981085931">‏اخیراً گذرواژه‌تان را در سایتی فریب‌کار وارد کرده‌اید. Chrome می‌تواند کمک کند. برای اینکه گذرواژه‌تان را تغییر دهید و به Google اطلاع دهید که شاید حسابتان درمعرض خطر باشد، روی «محافظت از حساب» کلیک کنید.</translation>
 <translation id="4363222835916186793">هشدارهای این محصول خاموش شد</translation>
+<translation id="4363729811203340554">‏اگر مشترک با دیگران از این دستگاه استفاده می‌کنید، Chrome می‌تواند هربار که بااستفاده از تکمیل خودکار پرداخت می‌کنید از شما بخواهد آن را تأیید کنید</translation>
 <translation id="4366943895537458493">صفحه</translation>
 <translation id="437040971055499437">رویداد امنیتی اتفاق می‌افتد</translation>
 <translation id="4371591986692297148">غیرفعال</translation>
@@ -2032,6 +2032,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101">‏<ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای جستجو کردن، ابتدا کلید Tab و سپس Enter را فشار دهید</translation>
 <translation id="4930153903256238152">ظرفیت زیاد</translation>
+<translation id="4930714375720679147">روشن کردن</translation>
 <translation id="4932035752129140860">‏نوشتاری که جای‌گذاری یا پیوست می‌کنید برای تجزیه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شود. مثلاً ممکن است ازنظر وجود داده‌های حساس اسکن شود و ممکن است براساس خط‌مشی‌های شرکت ذخیره شود و برای سرپرست شما قابل‌مشاهده باشد.</translation>
 <translation id="4934780484581617878">مدیریت پنجره</translation>
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> درج‌شده پیدا نشد.</translation>
@@ -2283,6 +2284,7 @@
 <translation id="5447765697759493033">این سایت ترجمه نخواهد شد</translation>
 <translation id="5452270690849572955">صفحه <ph name="HOST_NAME" /> پیدا نمی‌شود</translation>
 <translation id="5455374756549232013">مهر زمان خط‌مشی نادرست است</translation>
+<translation id="5456839782162429664">تأیید دستی همه پرداخت‌هایی که از تکمیل خودکار استفاده می‌کنند</translation>
 <translation id="5457113250005438886">نامعتبر</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مخاطب دیگر}one{<ph name="CONTACT_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مخاطب دیگر}other{<ph name="CONTACT_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مخاطب دیگر}}</translation>
 <translation id="5463625433003343978">درحال پیدا کردن دستگاه‌ها…</translation>
@@ -2380,6 +2382,7 @@
 <translation id="5633066919399395251">شاید درحال‌حاضر مهاجم‌ها در <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> در تلاش باشند برنامه‌های خطرناکی در رایانه‌تان نصب کنند که اطلاعات شما (مانند عکس‌ها، گذرواژه‌ها، پیام‌ها و کارت‌های اعتباری) را به سرقت می‌برند یا حذف می‌کنند. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">محتوای فریب‌کارانه مسدود شد.</translation>
 <translation id="563371367637259496">دستگاه همراه</translation>
+<translation id="5634725266554983459">درستی‌سنجی دستی روشن شود؟</translation>
 <translation id="5635478143789726479">شرایط خدمات فروشنده</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">سیستم‌ها و قطعات استریو</translation>
@@ -2479,6 +2482,7 @@
 <translation id="584902713199270089">دوستیابی و شخصیت</translation>
 <translation id="5851548754964597211">فهرست برگه</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">روشن کردن</translation>
 <translation id="5862579898803147654">پشته‌ساز ۸</translation>
 <translation id="5863847714970149516">صفحه پیش‌رو ممکن است تلاش کند از شما پول دریافت کند</translation>
 <translation id="5866257070973731571">افزودن شماره تلفن</translation>
@@ -3066,6 +3070,7 @@
 <translation id="6973988895180423160">۵ × ۳٫۵ اینچ</translation>
 <translation id="6978121630131642226">موتورهای جستجو</translation>
 <translation id="6978236010531171013">درهرصورت هم‌رسانی شود</translation>
+<translation id="6978722349058177832">‏اگر مشترک با دیگران از این دستگاه استفاده می‌کنید، Chromium می‌تواند هربار که بااستفاده از تکمیل خودکار پرداخت می‌کنید از شما بخواهد آن را تأیید کنید</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">شروع نوشتار استخراج‌شده</translation>
 <translation id="6979440798594660689">بی‌صدا (پیش‌فرض)</translation>
@@ -3770,7 +3775,6 @@
 <translation id="8288320283441806607">برای استفاده از این ویژگی، تنظیم «بهبود جستجوها و مرور» را روشن کنید</translation>
 <translation id="8288807391153049143">نمایش گواهی</translation>
 <translation id="8289355894181816810">اگر این موضوع را متوجه نمی‌شوید، با سرپرست شبکه‌تان تماس بگیرید.</translation>
-<translation id="8292520987784410870">درهرصورت تأیید شود؟</translation>
 <translation id="8293206222192510085">افزودن نشانک</translation>
 <translation id="829335040383910391">صدا</translation>
 <translation id="8294431847097064396">منبع</translation>
@@ -3911,7 +3915,6 @@
 <translation id="854892890027593466">پاکت سی۶/سی۵</translation>
 <translation id="8554010658308662631">بارگیری موارد بیشتر</translation>
 <translation id="8554181323880688938">کالاهای تجملی</translation>
-<translation id="8554802735558319842">برای امنیت بیشتر در دستگاه‌های مشترک، هربار که بااستفاده از تکمیل خودکار پرداخت می‌کنید درستی‌سنجی را روشن کنید.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{بازنشانی اجازه}one{بازنشانی اجازه}other{بازنشانی اجازه‌ها}}</translation>
 <translation id="8555010941760982128">هنگام تسویه‌حساب، از این کد استفاده کنید</translation>
 <translation id="8556297087315686325">پایش و مدیریت شبکه</translation>

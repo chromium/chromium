@@ -1438,7 +1438,6 @@
 <translation id="3739842843727261045">Îmi place: trimite feedback conform căruia îți plac aceste rezultate</translation>
 <translation id="3740447166056383374">Este necesară examinarea înainte de a copia</translation>
 <translation id="374325029554577103">Produse pentru tehnologii de fitness</translation>
-<translation id="3743765582345153106">Confirmă întotdeauna când folosești completarea automată</translation>
 <translation id="3744111561329211289">Sincronizare în fundal</translation>
 <translation id="3744212718085287312">Dorești să-l securizezi folosind un card virtual data viitoare?</translation>
 <translation id="3744899669254331632">Nu poți accesa acum <ph name="SITE" />, deoarece site-ul a trimis date de conectare într-un format necunoscut pe care Chromium nu le poate procesa. Erorile de rețea și atacurile sunt de obicei temporare și probabil că această pagină va funcționa mai târziu.</translation>
@@ -1767,6 +1766,7 @@
 <translation id="4358461427845829800">Gestionează metodele de plată...</translation>
 <translation id="4359160567981085931">Ai introdus parola pe un site înșelător. Chrome te poate ajuta. Ca să schimbi parola și să anunți Google că respectivul cont poate fi în pericol, dă clic pe Protejează contul.</translation>
 <translation id="4363222835916186793">Alertele pentru acest produs au fost dezactivate</translation>
+<translation id="4363729811203340554">Dacă folosești dispozitivul în comun cu alte persoane, Chrome îți poate solicita să confirmi de fiecare dată când plătești folosind completarea automată</translation>
 <translation id="4366943895537458493">Formă de tipar pentru offset</translation>
 <translation id="437040971055499437">Are loc un eveniment de securitate</translation>
 <translation id="4371591986692297148">Inactiv</translation>
@@ -2032,6 +2032,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a căuta</translation>
 <translation id="4930153903256238152">Capacitate mare</translation>
+<translation id="4930714375720679147">Activează</translation>
 <translation id="4932035752129140860">Textul pe care îl introduci sau atașezi este trimis la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile și poate să fie stocat conform politicilor companiei și să fie vizibil pentru administrator.</translation>
 <translation id="4934780484581617878">Gestionarea ferestrelor</translation>
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> inserat nu a fost găsit.</translation>
@@ -2283,6 +2284,7 @@
 <translation id="5447765697759493033">Acest site nu va fi tradus</translation>
 <translation id="5452270690849572955">Această pagină de pe <ph name="HOST_NAME" /> nu poate fi găsită</translation>
 <translation id="5455374756549232013">Marcaj temporal greșit pentru politică</translation>
+<translation id="5456839782162429664">Confirmă manual de fiecare dată când plătești folosind completarea automată</translation>
 <translation id="5457113250005438886">Nevalide</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Se caută dispozitive...</translation>
@@ -2380,6 +2382,7 @@
 <translation id="5633066919399395251">Atacatorii de pe <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> pot încerca să instaleze programe periculoase pe computerul tău, care să îți fure sau să îți șteargă informațiile (de exemplu, fotografii, parole, mesaje sau date despre cardurile de credit). <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Conținutul înșelător a fost blocat.</translation>
 <translation id="563371367637259496">Mobilă</translation>
+<translation id="5634725266554983459">Activezi confirmarea manuală?</translation>
 <translation id="5635478143789726479">Termenii și condițiile vânzătorului</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Sisteme stereo și componente pentru acestea</translation>
@@ -2479,6 +2482,7 @@
 <translation id="584902713199270089">Servicii și anunțuri matrimoniale</translation>
 <translation id="5851548754964597211">Listă de file</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Activează</translation>
 <translation id="5862579898803147654">Receptorul de hârtie 8</translation>
 <translation id="5863847714970149516">Următoarea pagină poate să genereze costuri</translation>
 <translation id="5866257070973731571">Adaugă un număr de telefon</translation>
@@ -3066,6 +3070,7 @@
 <translation id="6973988895180423160">3,5 x 5 in</translation>
 <translation id="6978121630131642226">Motoarele de căutare</translation>
 <translation id="6978236010531171013">Permite accesul oricum</translation>
+<translation id="6978722349058177832">Dacă folosești dispozitivul în comun cu alte persoane, Chromium îți poate solicita să confirmi de fiecare dată când plătești folosind completarea automată</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">Începutul textului extras</translation>
 <translation id="6979440798594660689">Dezactivează sunetul (prestabilit)</translation>
@@ -3770,7 +3775,6 @@ Detalii suplimentare:
 <translation id="8288320283441806607">Pentru a folosi această funcție, activează opțiunea Îmbunătățește căutările și navigarea</translation>
 <translation id="8288807391153049143">Afișează certificatul</translation>
 <translation id="8289355894181816810">Dacă nu știți sigur ce înseamnă aceasta, contactați administratorul de rețea.</translation>
-<translation id="8292520987784410870">Confirmi întotdeauna?</translation>
 <translation id="8293206222192510085">Adăugați marcaj</translation>
 <translation id="829335040383910391">Sunet</translation>
 <translation id="8294431847097064396">Sursă</translation>
@@ -3911,7 +3915,6 @@ Detalii suplimentare:
 <translation id="854892890027593466">Plic C6/C5</translation>
 <translation id="8554010658308662631">Încarcă mai multe</translation>
 <translation id="8554181323880688938">Bunuri de lux</translation>
-<translation id="8554802735558319842">Pentru mai multă securitate pe dispozitivele folosite în comun, activează confirmarea de fiecare dată când plătești folosind completarea automată.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Resetează permisiunea}few{Resetează permisiunile}other{Resetează permisiunile}}</translation>
 <translation id="8555010941760982128">Folosește codul la finalizarea achiziției</translation>
 <translation id="8556297087315686325">Monitorizarea și gestionarea rețelelor</translation>

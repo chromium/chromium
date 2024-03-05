@@ -1438,7 +1438,6 @@
 <translation id="3739842843727261045">La mention J'aime indique que vous aimez ces résultats</translation>
 <translation id="3740447166056383374">Examen requis avant de copier</translation>
 <translation id="374325029554577103">Produits technologiques de mise en forme</translation>
-<translation id="3743765582345153106">Toujours vérifier lors de l'utilisation de la saisie automatique</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
 <translation id="3744212718085287312">Augmenter la sécurité avec une carte virtuelle la prochaine fois?</translation>
 <translation id="3744899669254331632">Vous ne pas présentement consulter le site <ph name="SITE" />, car il a renvoyé des authentifiants brouillés que Chromium ne peut pas traiter. Les erreurs et attaques réseau étant généralement temporaires, cette page sera peut-être à nouveau accessible plus tard.</translation>
@@ -1767,6 +1766,7 @@
 <translation id="4358461427845829800">Gérer les modes de paiement</translation>
 <translation id="4359160567981085931">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome peut vous aider. Pour modifier votre mot de passe et avertir Google que votre compte pourrait être en danger, cliquez sur Protéger le compte.</translation>
 <translation id="4363222835916186793">Les alertes pour ce produit ont été désactivées</translation>
+<translation id="4363729811203340554">Si vous partagez cet appareil, Chrome peut vous demander de vérifier le mode de paiement chaque fois que vous payez en utilisant le Remplissage automatique</translation>
 <translation id="4366943895537458493">Plaque</translation>
 <translation id="437040971055499437">Un événement relatif à la sécurité se produit</translation>
 <translation id="4371591986692297148">Inactif</translation>
@@ -2032,6 +2032,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour lancer la recherche</translation>
 <translation id="4930153903256238152">Grande capacité</translation>
+<translation id="4930714375720679147">Activer</translation>
 <translation id="4932035752129140860">Le texte que vous collez ou que vous joignez est envoyé à Google Cloud ou à des tiers afin d'être analysé. Par exemple, il peut être analysé pour déterminer s'il contient des données confidentielles et peut être stocké en fonction des politiques de l'entreprise et être visible pour votre administrateur.</translation>
 <translation id="4934780484581617878">Gestion des fenêtres</translation>
 <translation id="4936134414789135531">Impossible de trouver le <ph name="VALUE_NAME" /> inséré.</translation>
@@ -2283,6 +2284,7 @@
 <translation id="5447765697759493033">Ce site ne sera pas traduit</translation>
 <translation id="5452270690849572955">Cette page <ph name="HOST_NAME" /> est introuvable</translation>
 <translation id="5455374756549232013">Horodatage de la règle incorrect.</translation>
+<translation id="5456839782162429664">Vérifier manuellement le mode de paiement chaque fois que vous payez en utilisant le Remplissage automatique</translation>
 <translation id="5457113250005438886">Non valide</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> autre contact}one{<ph name="CONTACT_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> autre contact}other{<ph name="CONTACT_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> autres contacts}}</translation>
 <translation id="5463625433003343978">Recherche d'appareils en cours…</translation>
@@ -2380,6 +2382,7 @@
 <translation id="5633066919399395251">Les cyberpirates actuellement à l'œuvre sur le site <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> peuvent essayer d'installer des programmes dangereux sur votre ordinateur pour voler ou supprimer vos renseignements (par exemple, des photos, des mots de passe, des messages et des numéros de carte de crédit). <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Contenu trompeur bloqué.</translation>
 <translation id="563371367637259496">Cellulaire</translation>
+<translation id="5634725266554983459">Activer la vérification manuelle?</translation>
 <translation id="5635478143789726479">Conditions d'utilisation du marchand</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Systèmes et composants stéréophoniques</translation>
@@ -2479,6 +2482,7 @@
 <translation id="584902713199270089">Rencontres et services personnels</translation>
 <translation id="5851548754964597211">Liste d'onglets</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Activer</translation>
 <translation id="5862579898803147654">Empileur 8</translation>
 <translation id="5863847714970149516">La page suivante peut engendrer des frais</translation>
 <translation id="5866257070973731571">Ajouter un numéro de téléphone</translation>
@@ -3066,6 +3070,7 @@
 <translation id="6973988895180423160">3,5 po x 5 po</translation>
 <translation id="6978121630131642226">Moteurs de recherche</translation>
 <translation id="6978236010531171013">Partager quand même</translation>
+<translation id="6978722349058177832">Si vous partagez cet appareil, Chromium peut vous demander de vérifier le mode de paiement chaque fois que vous payez en utilisant le Remplissage automatique</translation>
 <translation id="6979158407327259162">Google Disque</translation>
 <translation id="6979332652936434520">Début de l'extraction de texte</translation>
 <translation id="6979440798594660689">Désactiver le son (par défaut)</translation>
@@ -3770,7 +3775,6 @@ Détails supplémentaires :
 <translation id="8288320283441806607">Pour utiliser cette fonctionnalité, activez le paramètre Améliorer les recherches et la navigation</translation>
 <translation id="8288807391153049143">Afficher le certificat</translation>
 <translation id="8289355894181816810">Communiquez avec votre administrateur réseau si vous n'êtes pas certain de ce que cela signifie.</translation>
-<translation id="8292520987784410870">Toujours vérifier?</translation>
 <translation id="8293206222192510085">Ajouter aux favoris</translation>
 <translation id="829335040383910391">Son</translation>
 <translation id="8294431847097064396">Source</translation>
@@ -3911,7 +3915,6 @@ Détails supplémentaires :
 <translation id="854892890027593466">Enveloppe C6/C5</translation>
 <translation id="8554010658308662631">Afficher plus</translation>
 <translation id="8554181323880688938">Produits de luxe</translation>
-<translation id="8554802735558319842">Pour plus de sécurité sur les appareils partagés, activez la vérification à chaque fois que vous payez en utilisant le remplissage automatique.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Réinitialiser l'autorisation}one{Réinitialiser l'autorisation}other{Réinitialiser les autorisations}}</translation>
 <translation id="8555010941760982128">Utiliser ce code lors du paiement</translation>
 <translation id="8556297087315686325">Surveillance et gestion des réseaux</translation>

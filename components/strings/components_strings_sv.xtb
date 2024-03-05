@@ -1438,7 +1438,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3739842843727261045">Gilla-markera för att visa att du gillar dessa resultat</translation>
 <translation id="3740447166056383374">Granskning krävs innan du kopierar</translation>
 <translation id="374325029554577103">Teknikprodukter för träning</translation>
-<translation id="3743765582345153106">Verifiera alltid när du använder autofyll</translation>
 <translation id="3744111561329211289">Synkronisering i bakgrunden</translation>
 <translation id="3744212718085287312">Vill du öka säkerheten med ett virtuellt kort nästa gång?</translation>
 <translation id="3744899669254331632">Du kan inte besöka <ph name="SITE" /> just nu eftersom webbplatsen skickade krypterade användaruppgifter som Chromium inte kan bearbeta. Nätverksfel och attacker är ofta tillfälliga, så sidan kommer förmodligen fungera senare.</translation>
@@ -1767,6 +1766,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4358461427845829800">Hantera betalningsmetoder …</translation>
 <translation id="4359160567981085931">Du angav just ditt lösenord på en bedräglig webbplats. Du kan få hjälp i Chrome. Klicka på Skydda kontot för att ändra ditt lösenord och meddela Google om att kontot kan vara utsatt för fara.</translation>
 <translation id="4363222835916186793">Aviseringar för den här produkten har inaktiverats</translation>
+<translation id="4363729811203340554">Om du delar den här enheten kan du bli ombedd att verifiera din identitet i Chrome varje gång du betalar med autofyll</translation>
 <translation id="4366943895537458493">Plåt</translation>
 <translation id="437040971055499437">Säkerhetshändelse inträffar</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
@@ -2032,6 +2032,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill söka</translation>
 <translation id="4930153903256238152">Hög kapacitet</translation>
+<translation id="4930714375720679147">Aktivera</translation>
 <translation id="4932035752129140860">Text som du klistrar in eller bifogar skickas till Google Cloud eller tredje parter för analys. Den kan till exempel genomsökas i syfte att upptäcka känsliga uppgifter eller skadlig programvara, och den kan lagras i enlighet med företagspolicyer och är synlig för administratören.</translation>
 <translation id="4934780484581617878">Fönsterhantering</translation>
 <translation id="4936134414789135531">Det gick inte att hitta de infogade värdet <ph name="VALUE_NAME" />.</translation>
@@ -2283,6 +2284,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5447765697759493033">Den här webbplatsen översätts inte</translation>
 <translation id="5452270690849572955">Sidan på <ph name="HOST_NAME" /> kan inte hittas</translation>
 <translation id="5455374756549232013">Felaktig tidsstämpel för policy</translation>
+<translation id="5456839782162429664">Verifiera manuellt varje gång du betalar med autofyll</translation>
 <translation id="5457113250005438886">Ogiltigt</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> och <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> till}other{<ph name="CONTACT_PREVIEW" /> och <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> till}}</translation>
 <translation id="5463625433003343978">Letar efter enheter …</translation>
@@ -2380,6 +2382,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5633066919399395251">Angripare på <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> kan försöka installera skadliga program som stjäl eller raderar information (t.ex. foton, lösenord, meddelanden och kreditkortsuppgifter) på datorn. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Bedrägligt innehåll har blockerats.</translation>
 <translation id="563371367637259496">Mobilt</translation>
+<translation id="5634725266554983459">Vill du aktivera manuell verifiering?</translation>
 <translation id="5635478143789726479">Säljarens användarvillkor</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereosystem och -komponenter</translation>
@@ -2479,6 +2482,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="584902713199270089">Dejting och personligt</translation>
 <translation id="5851548754964597211">Fliklista</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Aktivera</translation>
 <translation id="5862579898803147654">Utmatningsfack 8</translation>
 <translation id="5863847714970149516">Sidan du är på väg till kan försöka debitera dig</translation>
 <translation id="5866257070973731571">Ange telefonnummer</translation>
@@ -3066,6 +3070,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6973988895180423160">3,5 x 5 tum</translation>
 <translation id="6978121630131642226">Sökmotorer</translation>
 <translation id="6978236010531171013">Dela ändå</translation>
+<translation id="6978722349058177832">Om du delar den här enheten kan du bli ombedd att verifiera din identitet i Chromium varje gång du betalar med autofyll</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">Början på extraherad text</translation>
 <translation id="6979440798594660689">Ljud av (standard)</translation>
@@ -3770,7 +3775,6 @@ Mer information.
 <translation id="8288320283441806607">Aktivera Förbättra sökningar och surfandet om du vill använda den här funktionen</translation>
 <translation id="8288807391153049143">Visa certifikat</translation>
 <translation id="8289355894181816810">Kontakta din nätverksadministratör om du är osäker på vad det här innebär.</translation>
-<translation id="8292520987784410870">Vill du att verifiering alltid ska krävas?</translation>
 <translation id="8293206222192510085">Lägg till bokmärke</translation>
 <translation id="829335040383910391">ljud</translation>
 <translation id="8294431847097064396">Källa</translation>
@@ -3911,7 +3915,6 @@ Mer information:
 <translation id="854892890027593466">C6/C5-kuvert</translation>
 <translation id="8554010658308662631">Läs in fler</translation>
 <translation id="8554181323880688938">Lyxvaror</translation>
-<translation id="8554802735558319842">Du kan förbättra säkerheten på delade enheter genom att aktivera verifiering varje gång du betalar med hjälp av autofyll.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Återställ behörighet}other{Återställ behörigheter}}</translation>
 <translation id="8555010941760982128">Använd följande kod i kassan</translation>
 <translation id="8556297087315686325">Nätverksövervakning och -hantering</translation>

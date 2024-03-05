@@ -1438,7 +1438,6 @@
 <translation id="3739842843727261045">„Ми се допаѓа“ испраќа повратни информации дека ви се допаѓаат резултативе</translation>
 <translation id="3740447166056383374">Потребен е преглед пред копирањето</translation>
 <translation id="374325029554577103">Производи за фитнес технологија</translation>
-<translation id="3743765582345153106">Секогаш потврдувај кога се користи автоматско пополнување</translation>
 <translation id="3744111561329211289">Синхронизација во заднина</translation>
 <translation id="3744212718085287312">Да се направи побезбедно со виртуелна картичка следниот пат?</translation>
 <translation id="3744899669254331632">Не може да го посетите <ph name="SITE" /> во моментов бидејќи веб-локацијата испрати измешани акредитиви кои Chromium не може да ги обработи. Грешките и нападите на мрежите се најчесто привремени, па веројатно оваа страница подоцна ќе работи.</translation>
@@ -1767,6 +1766,7 @@
 <translation id="4358461427845829800">Управувајте со начините на плаќање…</translation>
 <translation id="4359160567981085931">Тукушто ја внесовте својата лозинка на измамнички сајт. Chrome може да помогне. За да ја смените лозинката и да го известите Google дека е можно вашата сметка да е изложена на ризик, кликнете „Заштити ја сметката“.</translation>
 <translation id="4363222835916186793">Известувањата за овој производ се исклучени</translation>
+<translation id="4363729811203340554">Ако го споделувате уредов, Chrome може да бара да потврдувате секогаш кога плаќате со „Автоматско пополнување“</translation>
 <translation id="4366943895537458493">Плоча</translation>
 <translation id="437040971055499437">Се појавил безбедносен настан</translation>
 <translation id="4371591986692297148">Неактивно</translation>
@@ -2032,6 +2032,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да пребарувате</translation>
 <translation id="4930153903256238152">Голем капацитет</translation>
+<translation id="4930714375720679147">Вклучи</translation>
 <translation id="4932035752129140860">Текстот што ќе го залепите или приложите се испраќа до Google Cloud или трети страни за анализа. На пример, можеби ќе се скенира за да се провери дали содржи чувствителни податоци и можеби ќе се складира согласно со правилата на компанијата и ќе биде видлив за администраторот.</translation>
 <translation id="4934780484581617878">Управување со прозорци</translation>
 <translation id="4936134414789135531">Не може да се најде вметнатата <ph name="VALUE_NAME" />.</translation>
@@ -2283,6 +2284,7 @@
 <translation id="5447765697759493033">Сајтов нема да се преведе</translation>
 <translation id="5452270690849572955">Оваа страница на <ph name="HOST_NAME" /> не може да се најде</translation>
 <translation id="5455374756549232013">Лош временски печат на правилата</translation>
+<translation id="5456839782162429664">Потврдувајте рачно секогаш кога плаќате со „Автоматско пополнување“</translation>
 <translation id="5457113250005438886">Неважечки</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Се бараат уреди…</translation>
@@ -2380,6 +2382,7 @@
 <translation id="5633066919399395251">Напаѓачите што се моментално на <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> можеби ќе се обидат да инсталираат опасни програми на вашиот компјутер што ги крадат или бришат вашите информации (на пример, фотографии, лозинки, пораки и кредитни картички). <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Лажните содржини се блокирани.</translation>
 <translation id="563371367637259496">Мобилна</translation>
+<translation id="5634725266554983459">Да се вклучи рачно потврдување?</translation>
 <translation id="5635478143789726479">Услови и одредби на продавачот</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Стерео системи и компоненти</translation>
@@ -2479,6 +2482,7 @@
 <translation id="584902713199270089">Запознавање и лични огласи</translation>
 <translation id="5851548754964597211">Список со картички</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Вклучи</translation>
 <translation id="5862579898803147654">Фиока за складирање 8</translation>
 <translation id="5863847714970149516">Страницата што ќе се појави може да се обиде да ви наплати пари</translation>
 <translation id="5866257070973731571">Додајте телефонски број</translation>
@@ -3066,6 +3070,7 @@
 <translation id="6973988895180423160">3,5 x 5 инчи</translation>
 <translation id="6978121630131642226">Пребарувачи</translation>
 <translation id="6978236010531171013">Сепак сподели</translation>
+<translation id="6978722349058177832">Ако го споделувате уредов, Chromium може да бара да потврдувате секогаш кога плаќате со „Автоматско пополнување“</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6979332652936434520">Почеток на извлечениот текст</translation>
 <translation id="6979440798594660689">Исклучи звук (стандардно)</translation>
@@ -3770,7 +3775,6 @@
 <translation id="8288320283441806607">За да ја користите функцијава, вклучете „Подобрување на пребарувањата и прелистувањата“.</translation>
 <translation id="8288807391153049143">Прикажи сертификат</translation>
 <translation id="8289355894181816810">Контактирајте со мрежниот администратор ако не сте сигурни што значи ова.</translation>
-<translation id="8292520987784410870">Да се потврдува секогаш?</translation>
 <translation id="8293206222192510085">Додај обележувач</translation>
 <translation id="829335040383910391">звук</translation>
 <translation id="8294431847097064396">Извор</translation>
@@ -3911,7 +3915,6 @@
 <translation id="854892890027593466">Плик C6/C5</translation>
 <translation id="8554010658308662631">Вчитај повеќе</translation>
 <translation id="8554181323880688938">Луксузни производи</translation>
-<translation id="8554802735558319842">За дополнителна безбедност на споделените уреди, вклучете ја потврдата секогаш кога плаќате со автоматско пополнување.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Ресетирај ја дозволата}one{Ресетирај ги дозволите}other{Ресетирај ги дозволите}}</translation>
 <translation id="8555010941760982128">Користете го кодов при наплатата</translation>
 <translation id="8556297087315686325">Следење и управување со мрежи</translation>

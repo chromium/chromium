@@ -1438,7 +1438,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3739842843727261045">O botão "Gostei" envia feedback informando que você gostou desses resultados</translation>
 <translation id="3740447166056383374">Revise antes de copiar os arquivos</translation>
 <translation id="374325029554577103">Eletrônicos para atividade física</translation>
-<translation id="3743765582345153106">Sempre verificar ao usar o preenchimento automático</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3744212718085287312">Aumentar a segurança usando um cartão virtual na próxima vez?</translation>
 <translation id="3744899669254331632">Você não pode visitar <ph name="SITE" /> agora porque o website enviou credenciais embaralhadas que o Chromium não consegue processar. Erros de rede e ataques são geralmente temporários, de modo que esta página provavelmente funcionará mais tarde.</translation>
@@ -1767,6 +1766,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4358461427845829800">Gerenciar formas de pagamento…</translation>
 <translation id="4359160567981085931">Você acabou de digitar sua senha em um site suspeito. O Chrome pode ajudar. Para mudar a senha e notificar o Google de que sua conta pode estar em risco, clique em "Proteger conta".</translation>
 <translation id="4363222835916186793">Os alertas para este produto foram desativados</translation>
+<translation id="4363729811203340554">Se você compartilha este dispositivo, o Chrome pode pedir que você faça a verificação sempre que pagar usando o preenchimento automático</translation>
 <translation id="4366943895537458493">Chapa</translation>
 <translation id="437040971055499437">Acontece uma ocorrência de segurança</translation>
 <translation id="4371591986692297148">Inativos</translation>
@@ -2032,6 +2032,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e "Enter" para pesquisar</translation>
 <translation id="4930153903256238152">Grande capacidade</translation>
+<translation id="4930714375720679147">Ativar</translation>
 <translation id="4932035752129140860">O texto colado ou anexado é enviado ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis e podem ser armazenados com base nas políticas da empresa e ficar visíveis para seu administrador.</translation>
 <translation id="4934780484581617878">Gerenciamento de janelas</translation>
 <translation id="4936134414789135531">Não foi possível localizar o valor de <ph name="VALUE_NAME" /> inserido.</translation>
@@ -2283,6 +2284,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5447765697759493033">Este site não será traduzido</translation>
 <translation id="5452270690849572955">Não foi possível encontrar a página deste <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Carimbo de data/hora da política inválido</translation>
+<translation id="5456839782162429664">Verificar manualmente sempre que você pagar usando o preenchimento automático</translation>
 <translation id="5457113250005438886">Inválidos</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Localizando dispositivos…</translation>
@@ -2380,6 +2382,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5633066919399395251">Invasores que estão em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> no momento podem tentar instalar programas perigosos no seu computador e roubar ou excluir suas informações (por exemplo, fotos, senhas, mensagens e cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Conteúdo enganoso bloqueado.</translation>
 <translation id="563371367637259496">Celular</translation>
+<translation id="5634725266554983459">Ativar a verificação manual?</translation>
 <translation id="5635478143789726479">Termos e Condições do vendedor</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Componentes e sistemas estéreos</translation>
@@ -2479,6 +2482,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="584902713199270089">Encontros amorosos</translation>
 <translation id="5851548754964597211">Lista de guias</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Ativar</translation>
 <translation id="5862579898803147654">Empilhador 8</translation>
 <translation id="5863847714970149516">A página que você está prestes a acessar pode tentar cobrar pagamentos</translation>
 <translation id="5866257070973731571">Adicione um Número de Telefone</translation>
@@ -3067,6 +3071,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6973988895180423160">3,5 x 5 pol.</translation>
 <translation id="6978121630131642226">Mecanismos de pesquisa</translation>
 <translation id="6978236010531171013">Compartilhar mesmo assim</translation>
+<translation id="6978722349058177832">Se você compartilha este dispositivo, o Chromium pode pedir que você faça a verificação sempre que pagar usando o preenchimento automático</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">Início do texto extraído</translation>
 <translation id="6979440798594660689">Desativar som (padrão)</translation>
@@ -3771,7 +3776,6 @@ Mais detalhes:
 <translation id="8288320283441806607">Para usar este recurso, ative a opção "Melhorar as pesquisas e a navegação"</translation>
 <translation id="8288807391153049143">Mostrar certificado</translation>
 <translation id="8289355894181816810">Entre em contato com seu administrador de rede se não souber o que isso significa.</translation>
-<translation id="8292520987784410870">Sempre verificar?</translation>
 <translation id="8293206222192510085">Adicionar favorito</translation>
 <translation id="829335040383910391">som</translation>
 <translation id="8294431847097064396">Origem</translation>
@@ -3912,7 +3916,6 @@ Mais detalhes:
 <translation id="854892890027593466">Envelope C6/C5</translation>
 <translation id="8554010658308662631">Carregar mais</translation>
 <translation id="8554181323880688938">Produtos de luxo</translation>
-<translation id="8554802735558319842">Para ter mais segurança em dispositivos compartilhados, ative a verificação sempre que você pagar usando o preenchimento automático.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Redefinir permissão}one{Redefinir permissão}other{Redefinir permissões}}</translation>
 <translation id="8555010941760982128">Use este código ao finalizar a compra</translation>
 <translation id="8556297087315686325">Gerenciamento e monitoramento de redes</translation>

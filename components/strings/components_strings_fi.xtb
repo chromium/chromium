@@ -1439,7 +1439,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3739842843727261045">Tykkään-painike lähettää palautetta ja kertoo, että tykkäät näistä tuloksista</translation>
 <translation id="3740447166056383374">Tarkasta tiedostot ennen kopiointia</translation>
 <translation id="374325029554577103">Kuntoilutekniikkatuotteet</translation>
-<translation id="3743765582345153106">Vahvista aina, kun käytössä on automaattinen täyttö</translation>
 <translation id="3744111561329211289">Taustasynkronointi</translation>
 <translation id="3744212718085287312">Tehdäänkö siitä turvallisempi seuraavaa kertaa varten virtuaalisella kortilla?</translation>
 <translation id="3744899669254331632">Et voi siirtyä sivustoon <ph name="SITE" /> tällä hetkellä, koska sivusto lähetti salatut kirjautumistiedot, joita Chromium ei osaa käsitellä. Verkkovirheet ja hyökkäykset ovat yleensä väliaikaisia, joten sivu toimii luultavasti myöhemmin.</translation>
@@ -1768,6 +1767,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4358461427845829800">Hallinnoi maksutapoja…</translation>
 <translation id="4359160567981085931">Lisäsit juuri salasanasi petolliselle sivustolle. Chrome voi auttaa. Valitse Suojaa tili, niin voit vaihtaa salasanasi ja Googlelle ilmoitetaan tilin mahdollisesta vaarantumisesta.</translation>
 <translation id="4363222835916186793">Tämän tuotteen ilmoitukset on laitettu pois päältä</translation>
+<translation id="4363729811203340554">Jos jaat tämän laitteen, Chrome voi pyytää sinua tekemään vahvistuksen aina, kun maksat automaattisen täytön avulla</translation>
 <translation id="4366943895537458493">Levy</translation>
 <translation id="437040971055499437">Tietoturvatapahtuma on havaittu</translation>
 <translation id="4371591986692297148">Ei aktiivinen</translation>
@@ -2033,6 +2033,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tee haku painamalla ensin sarkainta ja sitten Enter</translation>
 <translation id="4930153903256238152">Suuri kapasiteetti</translation>
+<translation id="4930714375720679147">Ota käyttöön</translation>
 <translation id="4932035752129140860">Liittämäsi teksti lähetetään Google Cloudiin tai kolmansille osapuolille analysoitavaksi. Ne voidaan esimerkiksi skannata arkaluontoisten tietojen varalta, tallentaa yrityksen käytäntöjen mukaisesti ja ne voivat näkyä järjestelmänvalvojalle.</translation>
 <translation id="4934780484581617878">Ikkunoiden hallinnointi</translation>
 <translation id="4936134414789135531">Lisättyä arvoa (<ph name="VALUE_NAME" />) ei löytynyt.</translation>
@@ -2284,6 +2285,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5447765697759493033">Sivustoa ei käännetä.</translation>
 <translation id="5452270690849572955">Tätä sivuston <ph name="HOST_NAME" /> sivua ei löydy.</translation>
 <translation id="5455374756549232013">Virheellinen käytännön aikaleima</translation>
+<translation id="5456839782162429664">Vahvista manuaalisesti aina, kun maksat automaattisen täytön avulla</translation>
 <translation id="5457113250005438886">Virheellinen</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ja <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> toinen}other{<ph name="CONTACT_PREVIEW" /> ja <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> muuta}}</translation>
 <translation id="5463625433003343978">Haetaan laitteita…</translation>
@@ -2381,6 +2383,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5633066919399395251">Sivustolle <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> hyökännyt taho voi yrittää asentaa tietokoneellesi vaarallisia ohjelmia, jotka varastavat tai poistavat tietojasi, esimerkiksi kuvia, salasanoja, viestejä tai luottokorttitietoja. <ph name="BEGIN_LEARN_MORE_LINK" />Lisätietoja<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Harhaanjohtava sisältö estetty</translation>
 <translation id="563371367637259496">Mobiili</translation>
+<translation id="5634725266554983459">Laitetaanko manuaalinen vahvistus päälle?</translation>
 <translation id="5635478143789726479">Myyjän käyttöehdot</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereojärjestelmät ja -komponentit</translation>
@@ -2480,6 +2483,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="584902713199270089">Treffit ja henkilökohtaiset ilmoitukset</translation>
 <translation id="5851548754964597211">Välilehtiluettelo</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Ota käyttöön</translation>
 <translation id="5862579898803147654">Pinoaja 8</translation>
 <translation id="5863847714970149516">Avaamasi sivu voi yrittää veloittaa sinulta rahaa</translation>
 <translation id="5866257070973731571">Lisää puhelinnumero</translation>
@@ -3067,6 +3071,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6973988895180423160">3,5 x 5 tuumaa</translation>
 <translation id="6978121630131642226">Hakukoneet</translation>
 <translation id="6978236010531171013">Jaa silti</translation>
+<translation id="6978722349058177832">Jos jaat tämän laitteen, Chromium voi pyytää sinua tekemään vahvistuksen aina, kun maksat automaattisen täytön avulla</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">Poimittu teksti alkaa</translation>
 <translation id="6979440798594660689">Mykistä (oletus)</translation>
@@ -3771,7 +3776,6 @@ Lisätietoja:
 <translation id="8288320283441806607">Jos haluat käyttää tätä ominaisuutta, laita Paranna hakuja ja selausta ‑asetus päälle</translation>
 <translation id="8288807391153049143">Näytä varmenne</translation>
 <translation id="8289355894181816810">Ota yhteyttä verkon ylläpitäjään, jos et tiedä, mitä tämä tarkoittaa.</translation>
-<translation id="8292520987784410870">Vahvistetaanko aina?</translation>
 <translation id="8293206222192510085">Lisää kirjanmerkki</translation>
 <translation id="829335040383910391">ääni</translation>
 <translation id="8294431847097064396">Lähde</translation>
@@ -3912,7 +3916,6 @@ Lisätietoja:
 <translation id="854892890027593466">Kirjekuori C6/C5</translation>
 <translation id="8554010658308662631">Lataa lisää</translation>
 <translation id="8554181323880688938">Ylellisyystavarat</translation>
-<translation id="8554802735558319842">Voit parantaa turvallisuutta jaetuilla laitteilla laittamalla vahvistuksen päälle aina, kun maksat automaattisen täytön avulla.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Nollaa lupa}other{Nollaa luvat}}</translation>
 <translation id="8555010941760982128">Käytä kassalla tätä koodia</translation>
 <translation id="8556297087315686325">Verkon valvominen ja hallinta</translation>

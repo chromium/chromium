@@ -1436,7 +1436,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3739842843727261045">Mit „Mag ich“ gibst du an, dass dir diese Ergebnisse gefallen.</translation>
 <translation id="3740447166056383374">Vor dem Kopieren ist eine Überprüfung erforderlich</translation>
 <translation id="374325029554577103">Fitness-Elektronikprodukte</translation>
-<translation id="3743765582345153106">Bei Verwendung von Autofill immer bestätigen</translation>
 <translation id="3744111561329211289">Hintergrundsynchronisierung</translation>
 <translation id="3744212718085287312">Möchtest du dich das nächste Mal mit einer virtuellen Karte besser schützen?</translation>
 <translation id="3744899669254331632">Du kannst <ph name="SITE" /> zurzeit nicht aufrufen, weil die Website verschlüsselte Anmeldedaten gesendet hat, die von Chromium nicht verarbeitet werden können. Netzwerkfehler und Angriffe sind in der Regel nur vorübergehend, sodass die Seite wahrscheinlich später wieder funktioniert.</translation>
@@ -1765,6 +1764,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4358461427845829800">Zahlungsmethoden verwalten…</translation>
 <translation id="4359160567981085931">Du hast dein Passwort gerade auf einer verdächtigen Website eingegeben. Chrome kann dir helfen. Wenn du dein Passwort ändern und Google darüber informieren möchtest, dass dein Konto gefährdet sein könnte, klicke auf "Konto schützen".</translation>
 <translation id="4363222835916186793">Benachrichtigungen zu diesem Produkt wurden deaktiviert</translation>
+<translation id="4363729811203340554">Wenn du dieses Gerät gemeinsam mit anderen verwendest, kann Chrome bei jeder Zahlung mit Autofill eine Bestätigung anfordern</translation>
 <translation id="4366943895537458493">Platte</translation>
 <translation id="437040971055499437">Sicherheitshinweis aufgetreten</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
@@ -2030,6 +2030,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, drücke zum Suchen die Tabulatortaste und dann die Eingabetaste</translation>
 <translation id="4930153903256238152">Hohe Kapazität</translation>
+<translation id="4930714375720679147">Aktivieren</translation>
 <translation id="4932035752129140860">Eingefügter oder angehängter Text wird zur Analyse an Google Cloud oder Dritte gesendet. Er kann beispielsweise auf sensible Daten geprüft, gemäß Unternehmensrichtlinien gespeichert und für deinen Administrator sichtbar sein.</translation>
 <translation id="4934780484581617878">Fensterverwaltung</translation>
 <translation id="4936134414789135531">Der angegebene „<ph name="VALUE_NAME" />“-Wert wurde nicht gefunden.</translation>
@@ -2281,6 +2282,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5447765697759493033">Diese Website wird nicht übersetzt</translation>
 <translation id="5452270690849572955">Diese <ph name="HOST_NAME" />-Seite wurde nicht gefunden</translation>
 <translation id="5455374756549232013">Zeitstempel der Richtlinie ist fehlerhaft.</translation>
+<translation id="5456839782162429664">Zahlungen mit Autofill jedes Mal manuell bestätigen</translation>
 <translation id="5457113250005438886">Ungültig</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weiterer}other{<ph name="CONTACT_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weitere}}</translation>
 <translation id="5463625433003343978">Geräte werden gesucht…</translation>
@@ -2378,6 +2380,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5633066919399395251">Zurzeit auf <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> befindliche Hacker könnten versuchen, gefährliche Programme auf deinem Computer zu installieren, um Daten wie Fotos, Passwörter, Nachrichten und Kreditkartendaten zu stehlen oder zu löschen. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Betrügerische Inhalte blockiert.</translation>
 <translation id="563371367637259496">Mobil</translation>
+<translation id="5634725266554983459">Manuelle Bestätigung aktivieren?</translation>
 <translation id="5635478143789726479">Nutzungsbedingungen des Verkäufers</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereoanlagen und ‑komponenten</translation>
@@ -2477,6 +2480,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="584902713199270089">Dating und Partnervermittlung</translation>
 <translation id="5851548754964597211">Tab-Liste</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5860491529813859533">Aktivieren</translation>
 <translation id="5862579898803147654">Stapelfach 8</translation>
 <translation id="5863847714970149516">Auf der nächsten Seite wird möglicherweise versucht, dir etwas in Rechnung zu stellen</translation>
 <translation id="5866257070973731571">Telefonnummer hinzufügen</translation>
@@ -3064,6 +3068,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6973988895180423160">3,5 × 5 Zoll</translation>
 <translation id="6978121630131642226">Suchmaschinen</translation>
 <translation id="6978236010531171013">Trotzdem freigeben</translation>
+<translation id="6978722349058177832">Wenn du dieses Gerät gemeinsam mit anderen verwendest, kann Chromium bei jeder Zahlung mit Autofill eine Bestätigung anfordern</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979332652936434520">Beginn des extrahierten Textes</translation>
 <translation id="6979440798594660689">Stummschalten (Standard)</translation>
@@ -3768,7 +3773,6 @@ Weitere Details:
 <translation id="8288320283441806607">Wenn du diese Funktion verwenden möchtest, aktiviere „Suchanfragen und das Surfen verbessern“</translation>
 <translation id="8288807391153049143">Zertifikat anzeigen</translation>
 <translation id="8289355894181816810">Wenn du weitere Informationen dazu benötigst, kann dir dein Netzwerkadministrator weiterhelfen.</translation>
-<translation id="8292520987784410870">Immer bestätigen?</translation>
 <translation id="8293206222192510085">Lesezeichen hinzufügen</translation>
 <translation id="829335040383910391">Ton</translation>
 <translation id="8294431847097064396">Quelle</translation>
@@ -3909,7 +3913,6 @@ Weitere Details:
 <translation id="854892890027593466">Umschlag C6/C5</translation>
 <translation id="8554010658308662631">Weitere laden</translation>
 <translation id="8554181323880688938">Luxusgüter</translation>
-<translation id="8554802735558319842">Für noch mehr Sicherheit auf gemeinsam verwendeten Geräten aktiviere die Bestätigung für jede Zahlung, bei der du die Autofill-Funktion nutzt.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Berechtigung zurücksetzen}other{Berechtigungen zurücksetzen}}</translation>
 <translation id="8555010941760982128">Diesen Code beim Bezahlen verwenden</translation>
 <translation id="8556297087315686325">Netzwerküberwachung und ‑verwaltung</translation>
