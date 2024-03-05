@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
 
-#import <CoreLocation/CoreLocation.h>
-
 #import <memory>
 
 #import "base/apple/foundation_util.h"

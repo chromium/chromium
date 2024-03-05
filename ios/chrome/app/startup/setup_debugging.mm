@@ -6,8 +6,6 @@
 
 #import <objc/runtime.h>
 
-#import <ostream>
-
 #import "base/check.h"
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"

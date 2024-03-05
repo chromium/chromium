@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
 
-#import <CoreLocation/CoreLocation.h>
-
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"

@@ -4,8 +4,6 @@
 
 #import "ios/chrome/app/startup/register_experimental_settings.h"
 
-#import <ostream>
-
 #import "base/apple/bundle_locations.h"
 #import "base/check.h"
 #import "base/notreached.h"

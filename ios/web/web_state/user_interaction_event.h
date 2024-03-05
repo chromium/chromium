@@ -5,8 +5,6 @@
 #ifndef IOS_WEB_WEB_STATE_USER_INTERACTION_EVENT_H_
 #define IOS_WEB_WEB_STATE_USER_INTERACTION_EVENT_H_
 
-#import <CoreFoundation/CFDate.h>
-
 #include "base/time/time.h"
 #include "url/gurl.h"
 

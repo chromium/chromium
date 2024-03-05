@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_impl.h"
 
-#import <WebKit/WebKit.h>
-
 #import <set>
 #import <string>
 
