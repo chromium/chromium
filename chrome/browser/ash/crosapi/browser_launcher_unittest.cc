@@ -16,6 +16,8 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -272,7 +274,48 @@ TEST_F(BrowserLauncherTest, LaunchAtLoginScreen) {
   EXPECT_FALSE(user_manager::UserManager::Get()->GetPrimaryUser());
 }
 
-// TODO(elkurin): Add ResumeLaunch unit test.
+TEST_F(BrowserLauncherTest, ResumeLaunch) {
+  // Creates postlogin data pipe.
+  base::ScopedFD read_postlogin_fd =
+      browser_launcher()->CreatePostLoginPipeForTesting();
+  ASSERT_TRUE(read_postlogin_fd.is_valid());
+
+  // Creates a dedicated thread to read postlogin data which mocks Lacros
+  // process.
+  base::test::TestFuture<void> wait_read;
+  base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::MayBlock()}, base::SingleThreadTaskRunnerThreadMode::DEDICATED)
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(
+              [](base::ScopedFD fd) {
+                base::ScopedFILE file(fdopen(fd.get(), "r"));
+                std::string content;
+                EXPECT_TRUE(base::ReadStreamToString(file.get(), &content));
+                fd.reset();
+              },
+              std::move(read_postlogin_fd)),
+          base::BindOnce(wait_read.GetCallback()));
+
+  // Resume launch. This must be called after potlogin data pipe is constructed.
+  base::test::TestFuture<
+      base::expected<base::TimeTicks, BrowserLauncher::LaunchFailureReason>>
+      future;
+  browser_launcher()->ResumeLaunch(future.GetCallback());
+  // On resume launch, we need to wait for device owner and primary profile to
+  // be ready, so should not complete ResumeLaunch at this point.
+  EXPECT_FALSE(future.IsReady());
+
+  // Create primary profile.
+  CreatePrimaryProfile();
+  EXPECT_TRUE(user_manager::UserManager::Get()->GetPrimaryUser());
+
+  // Make sure that ResumeLaunch complets with success.
+  EXPECT_TRUE(future.Get<0>().has_value());
+
+  // Wait for fd to close for clean up.
+  EXPECT_TRUE(wait_read.Wait());
+}
 
 TEST_F(BrowserLauncherTest, ShutdownRequestedDuringLaunch) {
   base::test::TestFuture<base::expected<BrowserLauncher::LaunchResults,

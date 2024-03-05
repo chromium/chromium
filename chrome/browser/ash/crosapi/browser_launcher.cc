@@ -785,6 +785,12 @@ bool BrowserLauncher::LaunchProcessForTesting(const LaunchParams& parameters) {
   return LaunchProcessWithParameters(parameters);
 }
 
+base::ScopedFD BrowserLauncher::CreatePostLoginPipeForTesting() {
+  base::ScopedFD read_pipe_fd;
+  CHECK(base::CreatePipe(&read_pipe_fd, &postlogin_pipe_fd_));
+  return read_pipe_fd;
+}
+
 void BrowserLauncher::SetUpAdditionalParametersForTesting(
     LaunchParamsFromBackground& params,
     LaunchParams& parameters) const {

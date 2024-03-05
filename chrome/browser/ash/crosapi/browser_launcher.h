@@ -184,15 +184,20 @@ class BrowserLauncher {
   // Returns reference to `process_` for testing.
   const base::Process& GetProcessForTesting() const;
 
-  // Makes `LaunchProcessWithParameters` usable within the unit tests.
+  // Provides public API to call LaunchProcessWithParameters for testing.
   bool LaunchProcessForTesting(const LaunchParams& parameters);
+
+  // Creates postlogin pipe fd and returns the read fd. This is used to test
+  // ResumeLaunch. Note that the reader is on the same process and does not
+  // launch testing process.
+  base::ScopedFD CreatePostLoginPipeForTesting();
 
   // Sets up additional flags for unit tests.
   // This function overwrites `command_line` with the desired flags.
   void SetUpAdditionalParametersForTesting(LaunchParamsFromBackground& params,
                                            LaunchParams& parameters) const;
 
-  // Provides public API to callWaitForBackgroundWorkPreLaunch for testing.
+  // Provides public API to call WaitForBackgroundWorkPreLaunch for testing.
   void WaitForBackgroundWorkPreLaunchForTesting(
       const base::FilePath& lacros_dir,
       bool clear_shared_resource_file,
