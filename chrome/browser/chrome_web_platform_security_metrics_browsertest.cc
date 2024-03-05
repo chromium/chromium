@@ -2627,10 +2627,16 @@ class ChromeWebPlatformSecurityMetricsBrowserPdfTest
 
 IN_PROC_BROWSER_TEST_P(ChromeWebPlatformSecurityMetricsBrowserPdfTest,
                        CrossWindowAccessToPluginDocument) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
+  const char kAccessInnerFrameDocumentScript[] = R"(
+    (() => {
+      try {
+        window.frames[0].frames[0].contentDocument;
+      } catch (e) {
+        return e.name;
+      }
+      return "success";
+    })()
+  )";
 
   EXPECT_TRUE(content::NavigateToURL(web_contents(),
                                      https_server().GetURL("/empty.html")));
@@ -2651,17 +2657,13 @@ IN_PROC_BROWSER_TEST_P(ChromeWebPlatformSecurityMetricsBrowserPdfTest,
   // count as a "plugin document".
   CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);
 
-  // Accessing the inner frame throws a `SecurityError`, however.
-  EXPECT_EQ("SecurityError", content::EvalJs(web_contents(), R"(
-    (() => {
-      try {
-        window.frames[0].frames[0].contentDocument;
-      } catch (e) {
-        return e.name;
-      }
-      return "success";
-    })()
-  )"));
+  // For OOPIF PDF viewer, accessing the inner frame throws a `TypeError` due to
+  // shadow DOM. For GuestView PDF viewer, accessing the inner frame throws a
+  // `SecurityError`.
+  const std::string expected = UseOopif() ? "TypeError" : "SecurityError";
+  content::EvalJsResult actual =
+      content::EvalJs(web_contents(), kAccessInnerFrameDocumentScript);
+  EXPECT_EQ(expected, actual);
 }
 
 // TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
