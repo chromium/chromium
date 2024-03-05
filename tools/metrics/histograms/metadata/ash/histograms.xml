@@ -8420,6 +8420,85 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Wm.WindowLayoutState.ActiveWindowAppType"
+    enum="WindowAppType" expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the window states type of the active
+    application windows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowLayoutState.ActiveWindowSize"
+    enum="WindowSizeRange" expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the window bounds type of the active
+    application windows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowLayoutState.ActiveWindowState"
+    enum="WindowStateType" expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the window states type of the active
+    application windows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowLayoutState.AllAppTypes" enum="WindowAppType"
+    expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the window states type of all opened
+    application windows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowLayoutState.AllWindowSizes"
+    enum="WindowSizeRange" expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the window bounds type of all opened
+    application windows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowLayoutState.AllWindowStates"
+    enum="WindowStateType" expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the window states type of all opened
+    application windows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowLayoutState.FreeformedWindowSizes"
+    enum="WindowSizeRange" expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the window bounds type of freeformed
+    application windows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowLayoutState.WindowNumbers" units="int"
+    expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the number of opened application windows.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Wm.WindowSnapActionSource2" enum="WindowSnapActionSource"
     expires_after="2024-04-21">
   <owner>xdai@chromium.org</owner>

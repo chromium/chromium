@@ -17,6 +17,8 @@ namespace chromeos {
 // The separate enum is defined here because we don't want to leak these type to
 // ui/base until they're stable and we know for sure that they'll persist over
 // time.
+// Note this should be kept in sync with `WindowStateType` enum in
+// tools/metrics/histograms/enums.xml.
 enum class WindowStateType {
   // States which correspond to ui.mojom.ShowState.
   kDefault,
@@ -43,6 +45,8 @@ enum class WindowStateType {
   // floated, users are allowed to change the position and size of the window.
   // One floated window is allowed per desk.
   kFloated,
+
+  kMaxValue = kFloated,
 };
 
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)

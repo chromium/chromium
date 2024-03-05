@@ -20,6 +20,8 @@ enum class AppType {
   SYSTEM_APP,
   // TODO(crbug.com/1090663): Migrate this into BROWSER.
   LACROS,
+
+  kMaxValue = LACROS,
 };
 
 }  // namespace ash
