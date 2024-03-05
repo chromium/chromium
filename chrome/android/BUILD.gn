@@ -3370,7 +3370,9 @@ if (current_toolchain == default_toolchain) {
           trichrome_chrome_basename = _trichrome_chrome_32_basename
           trichrome_webview_basename = _trichrome_webview_32_basename
         }
+      }
 
+      if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
         # Used for binary size monitoring.
         create_app_bundle_minimal_apks("trichrome_chrome_32_minimal_apks") {
           deps = [ ":trichrome_chrome_32_bundle" ]
@@ -3388,6 +3390,10 @@ if (current_toolchain == default_toolchain) {
         _trichrome_webview_basename_for_size = _trichrome_webview_32_basename
         _symbol_dir_for_size = "android_clang_arm/lib.unstripped"
         _ssargs_filename_for_size = _ssargs_32_filename
+        _mapping_files_for_size = [
+          "apks/TrichromeChrome32.aab.mapping",
+          "apks/TrichromeWebView32.aab.mapping",
+        ]
       } else {
         # Used for binary size monitoring.
         create_app_bundle_minimal_apks("trichrome_chrome_minimal_apks") {
@@ -3406,6 +3412,10 @@ if (current_toolchain == default_toolchain) {
         _trichrome_webview_basename_for_size = _trichrome_webview_basename
         _symbol_dir_for_size = "lib.unstripped"
         _ssargs_filename_for_size = _ssargs_filename
+        _mapping_files_for_size = [
+          "apks/TrichromeChrome.aab.mapping",
+          "apks/TrichromeWebView.aab.mapping",
+        ]
       }
 
       android_resource_sizes_test("resource_sizes_trichrome") {
@@ -3419,37 +3429,28 @@ if (current_toolchain == default_toolchain) {
         data_deps = [ ":trichrome_32_minimal_apks" ]
       }
 
-      if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
-        android_size_bot_config("resource_size_config_trichrome") {
-          name = "Trichrome"
-          mapping_files = [
-            "apks/TrichromeChrome32.aab.mapping",
-            "apks/TrichromeWebView32.aab.mapping",
-          ]
+      android_size_bot_config("resource_size_config_trichrome") {
+        name = "Trichrome"
+        mapping_files = _mapping_files_for_size
 
-          # Save mapping files since they are needed by:
-          # 1) Checking for ForTesting methods.
-          # 2) SuperSize adding disassembly to symbols.
-          # Save apk and unstripped library because they are needed for collecting
-          # disassembly of large symbols.
-          archive_files =
-              mapping_files + [
-                "apks/$_trichrome_library_basename_for_size",
-                "apks/$_trichrome_chrome_basename_for_size",
-                "apks/$_trichrome_webview_basename_for_size",
-                "${_symbol_dir_for_size}/libmonochrome__combined.so",
-              ]
-          to_resource_sizes_py = {
-            apk_name = "apks/resource_size_config_trichrome"
-            trichrome_library = "apks/$_trichrome_library_basename_for_size"
-            trichrome_chrome = "apks/$_trichrome_chrome_basename_for_size"
-            trichrome_webview = "apks/$_trichrome_webview_basename_for_size"
-          }
-          to_resource_sizes_py_64 = {
-            apk_name = "apks/TrichromeLibrary64.apk"
-          }
-          supersize_input_file = "apks/$_ssargs_filename_for_size"
+        # Save mapping files since they are needed by:
+        # 1) Checking for ForTesting methods.
+        # 2) SuperSize adding disassembly to symbols.
+        # Save apk and unstripped library because they are needed for collecting
+        # disassembly of large symbols.
+        archive_files = mapping_files + [
+                          "apks/$_trichrome_library_basename_for_size",
+                          "apks/$_trichrome_chrome_basename_for_size",
+                          "apks/$_trichrome_webview_basename_for_size",
+                          "${_symbol_dir_for_size}/libmonochrome__combined.so",
+                        ]
+        to_resource_sizes_py = {
+          apk_name = "apks/resource_size_config_trichrome"
+          trichrome_library = "apks/$_trichrome_library_basename_for_size"
+          trichrome_chrome = "apks/$_trichrome_chrome_basename_for_size"
+          trichrome_webview = "apks/$_trichrome_webview_basename_for_size"
         }
+        supersize_input_file = "apks/$_ssargs_filename_for_size"
       }
     }
   }
