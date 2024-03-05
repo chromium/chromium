@@ -36,6 +36,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash::video_conference {
 
@@ -194,7 +195,8 @@ void BubbleView::SetBackgroundReplaceUiVisible(bool visible) {
   CHECK(features::IsVcBackgroundReplaceEnabled() && set_camera_background_view_)
       << "Can't show set_camera_background_view before it is constructed.";
 
-  set_camera_background_view_->SetVisible(visible);
+  views::AsViewClass<SetCameraBackgroundView>(set_camera_background_view_)
+      ->SetBackgroundReplaceUiVisible(visible);
   ChildPreferredSizeChanged(set_camera_background_view_);
 }
 

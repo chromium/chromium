@@ -246,7 +246,8 @@ END_METADATA
 
 SetCameraBackgroundView::SetCameraBackgroundView(
     BubbleView* bubble_view,
-    VideoConferenceTrayController* controller) {
+    VideoConferenceTrayController* controller)
+    : controller_(controller) {
   SetID(BubbleViewID::kSetCameraBackgroundView);
 
   // `SetCameraBackgroundView` has 2+ children, we want to stack them
@@ -258,8 +259,20 @@ SetCameraBackgroundView::SetCameraBackgroundView(
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
 
-  AddChildView(std::make_unique<RecentlyUsedBackgroundView>(bubble_view));
+  recently_used_background_view_ =
+      AddChildView(std::make_unique<RecentlyUsedBackgroundView>(bubble_view));
   AddChildView(std::make_unique<CreateImageButton>(controller));
+}
+
+void SetCameraBackgroundView::SetBackgroundReplaceUiVisible(bool visible) {
+  // We don't want to show the SetCameraBackgroundView if there is no recently
+  // used background; instead, the webui is shown.
+  if (visible && recently_used_background_view_->children().empty()) {
+    controller_->CreateBackgroundImage();
+    return;
+  }
+
+  SetVisible(visible);
 }
 
 BEGIN_METADATA(SetCameraBackgroundView)
