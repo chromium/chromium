@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_APP_INSTALL_SERVICE_ASH_H_
 
 #include <iosfwd>
+#include <optional>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -32,19 +34,35 @@ class AppInstallServiceAsh : public AppInstallService {
   void InstallApp(AppInstallSurface surface,
                   PackageId package_id,
                   base::OnceClosure callback) override;
-  void InstallApp(AppInstallSurface surface,
-                  AppInstallData data,
-                  base::OnceCallback<void(bool success)> callback) override;
+
+  void InstallAppHeadless(
+      AppInstallSurface surface,
+      PackageId package_id,
+      base::OnceCallback<void(bool success)> callback) override;
+
+  void InstallAppHeadless(
+      AppInstallSurface surface,
+      AppInstallData data,
+      base::OnceCallback<void(bool success)> callback) override;
 
  private:
-  void InstallAppWithDeviceInfo(AppInstallSurface surface,
-                                PackageId package_id,
-                                base::OnceClosure callback,
-                                DeviceInfo device_info);
-  void InstallFromFetchedData(AppInstallSurface surface,
+  void FetchAppInstallData(
+      PackageId package_id,
+      base::OnceCallback<void(std::optional<AppInstallData>)> data_callback);
+  void FetchAppInstallDataWithDeviceInfo(
+      PackageId package_id,
+      base::OnceCallback<void(std::optional<AppInstallData>)> data_callback,
+      DeviceInfo device_info);
+
+  void PerformInstallHeadless(AppInstallSurface surface,
                               PackageId expected_package_id,
-                              base::OnceClosure callback,
+                              base::OnceCallback<void(bool success)> callback,
                               std::optional<AppInstallData> data);
+
+  void ShowDialogAndInstall(AppInstallSurface surface,
+                            PackageId expected_package_id,
+                            base::OnceClosure callback,
+                            std::optional<AppInstallData> data);
 
   raw_ref<Profile> profile_;
   DeviceInfoManager device_info_manager_;

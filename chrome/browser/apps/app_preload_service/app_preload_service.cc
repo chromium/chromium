@@ -177,7 +177,7 @@ void AppPreloadService::OnGetAppsForFirstLoginCompleted(
   AppInstallService& install_service =
       AppServiceProxyFactory::GetForProfile(profile_)->AppInstallService();
   for (const PreloadAppDefinition* app : apps_to_install) {
-    install_service.InstallApp(
+    install_service.InstallAppHeadless(
         app->IsDefaultApp() ? AppInstallSurface::kAppPreloadServiceDefault
                             : AppInstallSurface::kAppPreloadServiceOem,
         app->ToAppInstallData(), install_barrier_callback);

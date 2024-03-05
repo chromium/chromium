@@ -44,7 +44,9 @@ enum class AppInstallResult {
   kMaxValue = kInstallParametersInvalid,
 };
 
-AppInstallResult InstallWebApp(Profile& profile, const GURL& install_url) {
+AppInstallResult InstallWebAppWithBrowserInstallDialog(
+    Profile& profile,
+    const GURL& install_url) {
   const GURL& origin_url = install_url;
   constexpr bool is_renderer_initiated = false;
 
@@ -117,31 +119,68 @@ void AppInstallServiceAsh::InstallApp(AppInstallSurface surface,
   // TODO(b/303350800): Generalize to work with all app types.
   CHECK_EQ(package_id.app_type(), AppType::kWeb);
 
-  device_info_manager_.GetDeviceInfo(
-      base::BindOnce(&AppInstallServiceAsh::InstallAppWithDeviceInfo,
-                     weak_ptr_factory_.GetWeakPtr(), surface,
-                     std::move(package_id), std::move(callback)));
+  FetchAppInstallData(
+      package_id, base::BindOnce(&AppInstallServiceAsh::ShowDialogAndInstall,
+                                 weak_ptr_factory_.GetWeakPtr(), surface,
+                                 package_id, std::move(callback)));
 }
 
-void AppInstallServiceAsh::InstallApp(
+void AppInstallServiceAsh::InstallAppHeadless(
+    AppInstallSurface surface,
+    PackageId package_id,
+    base::OnceCallback<void(bool success)> callback) {
+  // TODO(b/303350800): Generalize to work with all app types.
+  CHECK_EQ(package_id.app_type(), AppType::kWeb);
+
+  FetchAppInstallData(
+      package_id, base::BindOnce(&AppInstallServiceAsh::PerformInstallHeadless,
+                                 weak_ptr_factory_.GetWeakPtr(), surface,
+                                 package_id, std::move(callback)));
+}
+
+void AppInstallServiceAsh::InstallAppHeadless(
     AppInstallSurface surface,
     AppInstallData data,
     base::OnceCallback<void(bool success)> callback) {
-  web_app_installer_.InstallApp(surface, std::move(data), std::move(callback));
+  // TODO(b/303350800): Generalize to work with all app types.
+  CHECK_EQ(data.package_id.app_type(), AppType::kWeb);
+
+  PerformInstallHeadless(surface, data.package_id, std::move(callback), data);
 }
 
-void AppInstallServiceAsh::InstallAppWithDeviceInfo(AppInstallSurface surface,
-                                                    PackageId package_id,
-                                                    base::OnceClosure callback,
-                                                    DeviceInfo device_info) {
-  connector_.GetAppInstallInfo(
-      package_id, std::move(device_info), *profile_->GetURLLoaderFactory(),
-      base::BindOnce(&AppInstallServiceAsh::InstallFromFetchedData,
-                     weak_ptr_factory_.GetWeakPtr(), surface, package_id,
-                     std::move(callback)));
+void AppInstallServiceAsh::FetchAppInstallData(
+    PackageId package_id,
+    base::OnceCallback<void(std::optional<AppInstallData>)> data_callback) {
+  device_info_manager_.GetDeviceInfo(
+      base::BindOnce(&AppInstallServiceAsh::FetchAppInstallDataWithDeviceInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(package_id),
+                     std::move(data_callback)));
 }
 
-void AppInstallServiceAsh::InstallFromFetchedData(
+void AppInstallServiceAsh::FetchAppInstallDataWithDeviceInfo(
+    PackageId package_id,
+    base::OnceCallback<void(std::optional<AppInstallData>)> data_callback,
+    DeviceInfo device_info) {
+  connector_.GetAppInstallInfo(package_id, std::move(device_info),
+                               *profile_->GetURLLoaderFactory(),
+                               std::move(data_callback));
+}
+
+void AppInstallServiceAsh::PerformInstallHeadless(
+    AppInstallSurface surface,
+    PackageId expected_package_id,
+    base::OnceCallback<void(bool success)> callback,
+    std::optional<AppInstallData> data) {
+  // TODO(b/327535848): Record metrics for headless installs.
+  if (!data) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  web_app_installer_.InstallApp(surface, std::move(*data), std::move(callback));
+}
+
+void AppInstallServiceAsh::ShowDialogAndInstall(
     AppInstallSurface surface,
     PackageId expected_package_id,
     base::OnceClosure callback,
@@ -187,7 +226,8 @@ void AppInstallServiceAsh::InstallFromFetchedData(
           }
           // TODO(b/303350800): Delegate to a generic AppPublisher method
           // instead of harboring app type specific logic here.
-          return InstallWebApp(*profile_, web_app_data->document_url);
+          return InstallWebAppWithBrowserInstallDialog(
+              *profile_, web_app_data->document_url);
         }
         return AppInstallResult::kAppDataCorrupted;
       case AppType::kArc:
