@@ -30,11 +30,20 @@ def __parse_rewrapper_cmdline(ctx, cmd):
     #   -exec_root: Siso already knows this.
     wrapped_command_pos = -1
     cfg_file = None
+    skip = ""
+    rw_ops = {}
     for i, arg in enumerate(cmd.args):
         if i == 0:
             continue
         if arg.startswith("-cfg="):
             cfg_file = ctx.fs.canonpath(arg.removeprefix("-cfg="))
+            continue
+        if arg.startswith("-inputs=") or skip == "-inputs":
+            rw_ops["inputs"] = arg.removeprefix("-inputs=").split(",")
+            skip = ""
+            continue
+        if arg == "-inputs":
+            skip = arg
             continue
         if not arg.startswith("-"):
             wrapped_command_pos = i
@@ -42,8 +51,12 @@ def __parse_rewrapper_cmdline(ctx, cmd):
     if wrapped_command_pos < 1:
         fail("couldn't find first non-arg passed to rewrapper for %s" % str(cmd.args))
     if not cfg_file:
-        return cmd.args[wrapped_command_pos:], None, True
-    return cmd.args[wrapped_command_pos:], rewrapper_cfg.parse(ctx, cfg_file), True
+        return cmd.args[wrapped_command_pos:], rw_ops, True
+    rw_cfg_opts = rewrapper_cfg.parse(ctx, cfg_file)
+
+    # Command line options have higher priority than the ones in the cfg file.
+    rw_cfg_opts.update(rw_ops)
+    return cmd.args[wrapped_command_pos:], rw_cfg_opts, True
 
 def __parse_cros_rewrapper_cmdline(ctx, cmd):
     # fix cros sdk clang command line and extract rewrapper cfg.
