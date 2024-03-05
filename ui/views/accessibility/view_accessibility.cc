@@ -414,6 +414,25 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role) {
   }
 }
 
+void ViewAccessibility::SetRole(const ax::mojom::Role role,
+                                const std::u16string& role_description) {
+  if (role_description == data_.GetString16Attribute(
+                              ax::mojom::StringAttribute::kRoleDescription)) {
+    // No changes to the role description, update the role and return early.
+    SetRole(role);
+    return;
+  }
+
+  if (!role_description.empty()) {
+    data_.AddStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
+                             base::UTF16ToUTF8(role_description));
+  } else {
+    data_.RemoveStringAttribute(ax::mojom::StringAttribute::kRoleDescription);
+  }
+
+  SetRole(role);
+}
+
 void ViewAccessibility::SetName(const std::string& name,
                                 ax::mojom::NameFrom name_from) {
   DCHECK_NE(name_from, ax::mojom::NameFrom::kNone);

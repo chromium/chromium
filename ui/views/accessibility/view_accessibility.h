@@ -117,6 +117,15 @@ class VIEWS_EXPORT ViewAccessibility {
 
   void SetRole(const ax::mojom::Role role);
 
+  // Sets the accessible role along with a customized string to be used by
+  // assistive technologies to present the role. When there is no role
+  // description provided, assistive technologies will use either the default
+  // role descriptions we provide (which are currently located in a number of
+  // places. See crbug.com/1290866) or the value provided by their platform. As
+  // a general rule, it is preferable to not override the role string. Please
+  // seek review from accessibility OWNERs when using this function.
+  void SetRole(ax::mojom::Role role, const std::u16string& role_description);
+
   // This function cannot follow the established pattern and be named GetRole()
   // because of a function of the same name in AXPlatformNodeDelegate.
   // ViewAXPlatformNodeDelegate extends both ViewAccessibility and

@@ -1537,10 +1537,16 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // will work.
   void SetAccessibleName(View* naming_view);
 
+  // DEPRECATED: Use ViewAccessibility::SetRole instead.
+  // See https://crbug.com/324485311.
+  //
   // Sets/gets the accessible role.
   void SetAccessibleRole(const ax::mojom::Role role);
   ax::mojom::Role GetAccessibleRole() const;
 
+  // DEPRECATED: Use ViewAccessibility::SetRole instead.
+  // See https://crbug.com/324485311.
+  //
   // Sets the accessible role along with a customized string to be used by
   // assistive technologies to present the role. When there is no role
   // description provided, assisitive technologies will use either the default
