@@ -1105,6 +1105,14 @@
       <description summary="Sets the behavior of the surface in fullscreen.">
         Suggests how the windowing manager should behave if this surface were
         to go fullscreen. Does not make the surface fullscreen.
+
+        In precise, if the surface is not in fullscreen yet, switching the mode
+        does not have immediate impact from the client side perspective, but
+        will change the behavior when making the surface fullscreen is
+        requested next time.
+        If the surface is already in fullscreen, then this request has an
+        immediate impact to switch the fullscreen mode between plan and
+        immersive.
       </description>
       <arg name="mode" type="uint" enum="fullscreen_mode"/>
     </request>
