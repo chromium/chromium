@@ -264,6 +264,8 @@
     <template is="dom-if" if="[[info_]]">
       <h2 id="name">[[info_.name]]</h2>
       <template is="dom-if" if="[[info_.email]]">
+        <!-- TODO(b/326488045) Update Settings path to /osPeople when Settings
+          revamp is launched. -->
         <a id="emailContainer"
             class="avatar-link"
             href="chrome://os-settings/accountManager"

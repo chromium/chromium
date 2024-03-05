@@ -6,8 +6,9 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {castExists} from './assert_extras.js';
+import {isRevampWayfindingEnabled} from './common/load_time_booleans.js';
 import {RouteObserverMixinInterface} from './common/route_observer_mixin.js';
-import {createRoutes, OsSettingsRoutes, Route} from './os_settings_routes.js';
+import {createRoutes, OsSettingsRoutes, PATH_REDIRECTS, Route} from './os_settings_routes.js';
 
 export {Route};
 
@@ -159,11 +160,18 @@ export class Router {
 
   /**
    * @return a Route matching the |path| containing a leading "/",
-   * or null if none matched
+   * or null if none matched.
    */
   getRouteForPath(path: string): Route|null {
-    // Allow trailing slash in paths.
-    const canonicalPath = path.replace(CANONICAL_PATH_REGEX, '$1$2');
+    assert(path[0] === '/', 'Path must contain a leading slash.');
+
+    // Remove any trailing slash.
+    let canonicalPath = path.replace(CANONICAL_PATH_REGEX, '$1$2');
+
+    // Handle redirects for obsolete paths.
+    if (isRevampWayfindingEnabled()) {
+      canonicalPath = PATH_REDIRECTS[canonicalPath] || canonicalPath;
+    }
 
     const matchingRoute = Object.values(this.routes_).find(route => {
       return route.path === canonicalPath && isNavigableRoute(route);

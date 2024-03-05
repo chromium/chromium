@@ -766,3 +766,24 @@ export function createRoutes(): OsSettingsRoutes {
 
   return r as OsSettingsRoutes;
 }
+
+const PATH_REDIRECT_PAIRS: Array<[string, string]> = [
+  [
+    routesMojom.MY_ACCOUNTS_SUBPAGE_PATH,
+    routesMojom.PEOPLE_SECTION_PATH,
+  ],
+  [
+    routesMojom.DATE_AND_TIME_SECTION_PATH,
+    routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
+  ],
+];
+
+/**
+ * An object of path redirects. The key represents a given path and the value
+ * represents the resulting path that should be redirected to. Path strings
+ * always include a leading slash.
+ */
+export const PATH_REDIRECTS =
+    Object.fromEntries(PATH_REDIRECT_PAIRS.map(([path, redirectPath]) => {
+      return [`/${path}`, `/${redirectPath}`];
+    }));

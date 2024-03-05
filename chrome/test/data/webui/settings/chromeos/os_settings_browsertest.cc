@@ -1792,6 +1792,10 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
       "personalization_page_with_personalization_hub_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled, Router) {
+  RunSettingsTest("router_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, SettingsSchedulerSlider) {
   RunSettingsTest(
       "settings_scheduler_slider/settings_scheduler_slider_test.js");
