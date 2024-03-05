@@ -256,17 +256,7 @@ void LogQualityMetrics(
         frames_of_autofilled_credit_card_fields.insert(field->host_frame);
       }
     }
-
     if (observed_submission) {
-      // If the form was submitted, record if field types have been filled and
-      // subsequently edited by the user.
-      if (field->is_autofilled || field->previously_autofilled()) {
-        // TODO(crbug.com/1368096): This metric is defective because it is
-        // conditioned on having a possible field type. Remove after M112.
-        AutofillMetrics::LogEditedAutofilledFieldAtSubmissionDeprecated(
-            form_interactions_ukm_logger, form_structure, *field);
-      }
-
       base::UmaHistogramEnumeration(
           "Autofill.LabelInference.InferredLabelSource.AtSubmission2",
           field->label_source);

@@ -726,21 +726,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission{AutofillFormType}"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2024-07-14">
-  <owner>schwering@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records at submission time for each autofilled field with autocomplete !=
-    off whether the user edited the autofilled field value or not.
-    {AutofillFormType}
-  </summary>
-  <token key="AutofillFormType" variants="AutofillFormType">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram
     name="Autofill.Autocomplete.NotOff.FillingAcceptance{AutofillFormType}"
     enum="BooleanAutofillFillingAcceptance" expires_after="2024-07-14">
   <owner>schwering@google.com</owner>
@@ -758,21 +743,6 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Autofill.Autocomplete.Off.EditedAutofilledFieldAtSubmission2{AutofillFormType}"
     enum="AutofilledFieldUserEditingStatus" expires_after="2024-07-14">
-  <owner>schwering@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records at submission time for each autofilled field with autocomplete = off
-    whether the user edited the autofilled field value or not.
-    {AutofillFormType}
-  </summary>
-  <token key="AutofillFormType" variants="AutofillFormType">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram
-    name="Autofill.Autocomplete.Off.EditedAutofilledFieldAtSubmission{AutofillFormType}"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2024-05-12">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1792,27 +1762,6 @@ chromium-metrics-reviews@google.com.
     Measures the adoption of the HTML autocomplete type hint specification (see
     http://is.gd/whatwg_autocomplete for more details). For each fillable form
     detected, logs whether that form includes author-specified type hints.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.EditedAutofilledFieldAtSubmission.Aggregate"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2024-12-12">
-  <owner>koerber@google.com</owner>
-  <owner>battre@google.com</owner>
-  <summary>
-    Total number of fields at submission time that were autofilled and have or
-    have not been editing by the user afterwards.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.EditedAutofilledFieldAtSubmission.ByFieldType"
-    enum="AutofilledFieldUserEditingStatusByFieldType"
-    expires_after="2024-12-12">
-  <owner>koerber@google.com</owner>
-  <owner>battre@google.com</owner>
-  <summary>
-    Total number of fields at submission time of a specific type that were
-    autofilled and have or have not been editing by the user afterwards.
   </summary>
 </histogram>
 

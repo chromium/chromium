@@ -1154,66 +1154,6 @@ TEST_F(AutofillMetricsTest, EditedAutofilledFieldAtSubmission) {
       0);
 }
 
-// Verify that when submitting an autofillable form, the proper type of
-// the edited fields is correctly logged to UMA.
-TEST_F(AutofillMetricsTest, TypeOfEditedAutofilledFieldsUmaLogging_Deprecated) {
-  FormData form = CreateForm(
-      {CreateTestFormField("Autofilled", "autofilled", "Elvis Aaron Presley",
-                           FormControlType::kInputText),
-       CreateTestFormField("Autofill Failed", "autofillfailed",
-                           "buddy@gmail.com", FormControlType::kInputText),
-       CreateTestFormField("Phone", "phone", "2345678901",
-                           FormControlType::kInputTelephone)});
-  form.fields[0].is_autofilled = true;
-  form.fields[1].is_autofilled = true;
-  form.fields[2].is_autofilled = true;
-
-  std::vector<FieldType> field_types = {NAME_FULL, EMAIL_ADDRESS,
-                                        PHONE_HOME_CITY_AND_NUMBER};
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  base::HistogramTester histogram_tester;
-  // Simulate text input in the first and second fields.
-  // TODO(crbug.com/1368096): Fix the metric to work independent of the final
-  // value.
-  SimulateUserChangedTextFieldWithoutActuallyChangingTheValue(form,
-                                                              form.fields[0]);
-  SimulateUserChangedTextFieldWithoutActuallyChangingTheValue(form,
-                                                              form.fields[1]);
-
-  SubmitForm(form);
-
-  // The |NAME_FULL| field was edited (bucket 112).
-  histogram_tester.ExpectBucketCount(
-      "Autofill.EditedAutofilledFieldAtSubmission.ByFieldType", 112, 1);
-
-  // The |NAME_FULL| field was edited (bucket 144).
-  histogram_tester.ExpectBucketCount(
-      "Autofill.EditedAutofilledFieldAtSubmission.ByFieldType", 144, 1);
-
-  // The |PHONE_HOME_CITY_AND_NUMBER| field was not edited (bucket 209).
-  histogram_tester.ExpectBucketCount(
-      "Autofill.EditedAutofilledFieldAtSubmission.ByFieldType", 209, 1);
-
-  // The aggregated histogram should have two counts on edited fields.
-  histogram_tester.ExpectBucketCount(
-      "Autofill.EditedAutofilledFieldAtSubmission.Aggregate", 0, 2);
-
-  // The aggregated histogram should have one count on accepted fields.
-  histogram_tester.ExpectBucketCount(
-      "Autofill.EditedAutofilledFieldAtSubmission.Aggregate", 1, 1);
-
-  // The autocomplete!=off histogram should have one count on accepted fields.
-  histogram_tester.ExpectBucketCount(
-      "Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission.Address",
-      1, 1);
-
-  // The autocomplete!=off histogram should have no count on accepted fields.
-  histogram_tester.ExpectTotalCount(
-      "Autofill.Autocomplete.Off.EditedAutofilledFieldAtSubmission.Address", 0);
-}
-
 // Verify that when submitting an autofillable form, the proper number of edited
 // fields is logged.
 TEST_F(AutofillMetricsTest, NumberOfEditedAutofilledFields) {

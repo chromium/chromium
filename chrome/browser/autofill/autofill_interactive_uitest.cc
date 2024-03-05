@@ -3616,8 +3616,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   expect_count("Autofill.NumberOfEditedAutofilledFieldsAtSubmission", 0, 1);
   expect_count("Autofill.PerfectFilling.CreditCards", 1, 1);
   // Bucket 0 = edited, 1 = accepted; 3 samples for 3 fields.
-  expect_count("Autofill.EditedAutofilledFieldAtSubmission.Aggregate", 0, 0);
-  expect_count("Autofill.EditedAutofilledFieldAtSubmission.Aggregate", 1, 3);
+  expect_count("Autofill.EditedAutofilledFieldAtSubmission2.Aggregate", 0, 0);
+  expect_count("Autofill.EditedAutofilledFieldAtSubmission2.Aggregate", 1, 3);
 }
 
 // Shadow DOM tests consist of two cases:
