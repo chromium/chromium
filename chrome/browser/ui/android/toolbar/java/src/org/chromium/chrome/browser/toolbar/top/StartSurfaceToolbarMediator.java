@@ -507,12 +507,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     }
 
     @VisibleForTesting
-    @StartSurfaceState
-    int getOverviewModeStateForTesting() {
-        return mStartSurfaceState;
-    }
-
-    @VisibleForTesting
     @LayoutType
     int getLayoutTypeForTesting() {
         return mLayoutType;

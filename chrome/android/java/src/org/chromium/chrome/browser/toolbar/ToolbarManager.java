@@ -1385,7 +1385,6 @@ public class ToolbarManager
                         identityDiscController,
                         () ->
                                 identityDiscController.getForStartSurface(
-                                        mStartSurfaceState,
                                         mLayoutStateProvider == null
                                                 ? LayoutType.NONE
                                                 : mLayoutStateProvider.getActiveLayoutType()),

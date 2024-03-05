@@ -168,12 +168,10 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
         doReturn(mButtonData)
                 .when(mIdentityDiscController)
-                .getForStartSurface(StartSurfaceState.SHOWN_HOMEPAGE, LayoutType.START_SURFACE);
+                .getForStartSurface(LayoutType.START_SURFACE);
         doReturn(disabledButtonData)
                 .when(mIdentityDiscController)
-                .getForStartSurface(
-                        not(eq(StartSurfaceState.SHOWN_HOMEPAGE)),
-                        not(eq(LayoutType.START_SURFACE)));
+                .getForStartSurface(not(eq(LayoutType.START_SURFACE)));
 
         mMockConstantState = mock(Drawable.ConstantState.class);
         doReturn(mMockConstantState).when(mDrawable).getConstantState();
@@ -640,7 +638,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
                         mIdentityDiscController,
                         () ->
                                 mIdentityDiscController.getForStartSurface(
-                                        mMediator.getOverviewModeStateForTesting(),
                                         mMediator.getLayoutTypeForTesting()),
                         /* isTabToGtsFadeAnimationEnabled= */ false,
                         () -> false,

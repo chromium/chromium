@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
@@ -43,7 +42,6 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -147,12 +145,8 @@ public class IdentityDiscController
         return mButtonData;
     }
 
-    public ButtonData getForStartSurface(
-            @StartSurfaceState int overviewModeState, @LayoutType int layoutType) {
-        if ((ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)
-                        && layoutType != LayoutType.START_SURFACE)
-                || (!ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)
-                        && overviewModeState != StartSurfaceState.SHOWN_HOMEPAGE)) {
+    public ButtonData getForStartSurface(@LayoutType int layoutType) {
+        if (layoutType != LayoutType.START_SURFACE) {
             mIsStartSurface = false;
             mButtonData.setCanShow(false);
             return mButtonData;
