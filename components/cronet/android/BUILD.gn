@@ -355,6 +355,7 @@ android_library("cronet_stats_log_java") {
   sources = [ "java/src/org/chromium/net/telemetry/CronetStatsLog.java" ]
   alternative_android_sdk_dep =
       "//third_party/android_sdk:public_framework_system_java"
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
 
 cronet_impl_common_java_srcjar_deps = [
