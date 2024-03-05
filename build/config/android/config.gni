@@ -26,7 +26,6 @@ robolectric_toolchain = "//build/toolchain/android:robolectric_$host_cpu"
 # toolchains. Checking |is_android| here would therefore be too restrictive.
 if (is_android || is_chromeos) {
   import("//build/config/android/channel.gni")
-  import("//build/config/cast.gni")
   import("//build/config/clang/clang.gni")
   import("//build/config/dcheck_always_on.gni")
   import("//build/toolchain/siso.gni")

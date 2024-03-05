@@ -4,6 +4,7 @@
 
 assert(is_fuchsia)
 
+import("//build/config/cast.gni")
 import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//third_party/fuchsia-gn-sdk/src/component.gni")
 import("//third_party/fuchsia-gn-sdk/src/package.gni")
