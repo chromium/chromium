@@ -806,27 +806,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     };
 
     const LayoutResult* layout_result = nullptr;
-    auto IntrinsicBlockSizeFunc =
-        [&](MinMaxSizesType type = MinMaxSizesType::kIntrinsic) -> LayoutUnit {
-      if (type == MinMaxSizesType::kContent && child.HasAspectRatio() &&
-          !child.IsReplaced()) {
-        // We don't enter here for replaced children because (a) this block
-        // doesn't account for natural sizes so wouldn't work for replaced
-        // elements, and (b) IntrinsicBlockSize() below already returns the
-        // kContent block size for replaced elements.
-        DCHECK(!AspectRatioProvidesMainSize(child))
-            << "We only ever call IntrinsicBlockSizeFunc with kContent for "
-               "determing flex base size in case E. If "
-               "AspectRatioProvidesMainSize==true, we would have fallen into "
-               "case B, not case E.";
-        DCHECK(!MainAxisIsInlineAxis(child))
-            << "We assume that the main axis is block axis in the call to "
-               "BlockSum() below.";
-        return AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
-            child, ComputeTransferredMainSize(),
-            min_max_sizes_in_cross_axis_direction,
-            border_padding_in_child_writing_mode);
-      }
+    auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
       if (!layout_result) {
         ConstraintSpace child_space =
             BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
@@ -841,6 +821,27 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         DCHECK(layout_result);
       }
       return layout_result->IntrinsicBlockSize();
+    };
+    auto ContentBlockSizeFunc = [&]() -> LayoutUnit {
+      if (child.HasAspectRatio() && !child.IsReplaced()) {
+        // We don't enter here for replaced children because (a) this block
+        // doesn't account for natural sizes so wouldn't work for replaced
+        // elements, and (b) IntrinsicBlockSize() below already returns the
+        // kContent block size for replaced elements.
+        DCHECK(!AspectRatioProvidesMainSize(child))
+            << "We only ever call ContentBlockSizeFunc for "
+               "determing flex base size in case E. If "
+               "AspectRatioProvidesMainSize==true, we would have fallen into "
+               "case B, not case E.";
+        DCHECK(!MainAxisIsInlineAxis(child))
+            << "We assume that the main axis is block axis in the call to "
+               "BlockSum() below.";
+        return AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
+            child, ComputeTransferredMainSize(),
+            min_max_sizes_in_cross_axis_direction,
+            border_padding_in_child_writing_mode);
+      }
+      return IntrinsicBlockSizeFunc();
     };
 
     Length flex_basis_length;
@@ -865,8 +866,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
             MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.max_size;
       } else {
         // Parts C, D, and E for what are usually column flex containers.
-        flex_base_border_box =
-            IntrinsicBlockSizeFunc(MinMaxSizesType::kContent);
+        flex_base_border_box = ContentBlockSizeFunc();
       }
     } else {
       DCHECK(!flex_basis_length.IsAuto());
