@@ -426,9 +426,6 @@ public class OmniboxTest {
                                                 int color, boolean shouldAnimate) {
                                             didThemeColorChangedCallbackHelper.notifyCalled();
                                         }
-
-                                        @Override
-                                        public void onThemeColorUpdated(boolean colorChanged) {}
                                     });
                 });
 
