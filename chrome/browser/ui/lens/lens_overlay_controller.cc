@@ -5,11 +5,17 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "ui/views/controls/webview/web_contents_set_background_color.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/flex_layout_view.h"
 
 LensOverlayController::LensOverlayController(tabs::TabModel* tab_model)
     : tab_model_(tab_model) {
@@ -60,6 +66,10 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
     return;
   }
 
+  // TODO(b/327270921): Add created overlay view to widget. Also remove instance
+  // variable as it will no longer be needed to prevent a dangling pointer.
+  overlay_host_view_ = CreateViewForOverlay();
+
   state_ = State::kOverlay;
 }
 
@@ -88,4 +98,33 @@ void LensOverlayController::TabBackgrounded() {
   // showing the UI but persist enough information to defrost the original UI
   // state when the tab is foregrounded.
   state_ = State::kOff;
+}
+
+std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
+  CHECK(tab_model_);
+  // Create a flex layout host view to make sure the web view covers the entire
+  // tab.
+  std::unique_ptr<views::FlexLayoutView> host_view =
+      std::make_unique<views::FlexLayoutView>();
+
+  // Create the web view that hosts the WebUI.
+  std::unique_ptr<views::WebView> web_view =
+      std::make_unique<views::WebView>(tab_model_->owning_model()->profile());
+  web_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
+      web_view->GetWebContents(), SK_ColorTRANSPARENT);
+
+  // Load the untrusted WebUI into the web view.
+  GURL url(chrome::kChromeUILensUntrustedURL);
+  web_view->LoadInitialURL(url);
+
+  overlay_web_view_ = host_view->AddChildView(std::move(web_view));
+  return host_view;
+}
+
+raw_ptr<views::WebView> LensOverlayController::GetOverlayWebViewForTesting() {
+  return overlay_web_view_;
 }

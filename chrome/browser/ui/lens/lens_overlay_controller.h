@@ -18,6 +18,11 @@ namespace tabs {
 class TabModel;
 }  // namespace tabs
 
+namespace views {
+class View;
+class WebView;
+}  // namespace views
+
 // Manages all state associated with the lens overlay.
 // This class is not thread safe. It should only be used from the browser
 // thread.
@@ -47,6 +52,9 @@ class LensOverlayController : public TabStripModelObserver {
   };
   State state() { return state_; }
 
+  // Testing helper method for checking web view state.
+  raw_ptr<views::WebView> GetOverlayWebViewForTesting();
+
  private:
   // Called once a screenshot has been captured. This should trigger transition
   // to kOverlay. As this process is asynchronous, there are edge cases that can
@@ -67,6 +75,9 @@ class LensOverlayController : public TabStripModelObserver {
   // Called when the associated tab enters the background.
   void TabBackgrounded();
 
+  // Called when the UI needs to create the view to show in the overlay.
+  std::unique_ptr<views::View> CreateViewForOverlay();
+
   // Owns this class.
   raw_ptr<tabs::TabModel> tab_model_;
 
@@ -76,6 +87,12 @@ class LensOverlayController : public TabStripModelObserver {
 
   // Tracks the internal state machine.
   State state_ = State::kOff;
+
+  // Pointer to the overlay host view.
+  std::unique_ptr<views::View> overlay_host_view_ = nullptr;
+
+  // A raw ptr containing the web view within the overlay.
+  raw_ptr<views::WebView> overlay_web_view_ = nullptr;
 
   // Must be the last member.
   base::WeakPtrFactory<LensOverlayController> weak_factory_{this};
