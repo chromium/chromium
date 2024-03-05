@@ -109,7 +109,6 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   virtual void TickAnimation(base::TimeTicks monotonic_time) = 0;
   virtual void NotifyCompositorAnimationFinished(int group_id) = 0;
   virtual void NotifyCompositorAnimationAborted(int group_id) = 0;
-  virtual void MainThreadScrollingDidChange() = 0;
 
   RunState RunStateForTesting() { return run_state_; }
 

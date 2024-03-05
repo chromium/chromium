@@ -166,11 +166,6 @@ void ProgrammaticScrollAnimator::UpdateCompositorAnimations() {
       }
     }
   }
-}
-
-void ProgrammaticScrollAnimator::MainThreadScrollingDidChange() {
-  ReattachCompositorAnimationIfNeeded(
-      scrollable_area_->GetCompositorAnimationTimeline());
 
   // If the scrollable area switched to require main thread scrolling during a
   // composited animation, continue the animation on the main thread.

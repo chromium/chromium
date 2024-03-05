@@ -650,7 +650,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   ScrollOffset ResolveScrollDelta(ui::ScrollGranularity,
                                   const ScrollOffset& delta);
 
-  void MainThreadScrollingDidChange();
   virtual void StopApplyingScrollStart() {}
   const ScrollStartTargetCandidates* GetScrollStartTargets() const;
 

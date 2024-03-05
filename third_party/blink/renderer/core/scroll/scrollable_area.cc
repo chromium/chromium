@@ -945,13 +945,6 @@ bool ScrollableArea::HasLayerForScrollCorner() const {
   return LayerForScrollCorner();
 }
 
-void ScrollableArea::MainThreadScrollingDidChange() {
-  if (auto* programmatic_scroll_animator = ExistingProgrammaticScrollAnimator())
-    programmatic_scroll_animator->MainThreadScrollingDidChange();
-  if (auto* scroll_animator = ExistingScrollAnimator())
-    scroll_animator->MainThreadScrollingDidChange();
-}
-
 void ScrollableArea::ServiceScrollAnimations(double monotonic_time) {
   bool requires_animation_service = false;
   if (ScrollAnimatorBase* scroll_animator = ExistingScrollAnimator()) {

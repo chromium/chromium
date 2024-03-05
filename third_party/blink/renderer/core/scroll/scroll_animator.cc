@@ -410,11 +410,6 @@ void ScrollAnimator::TakeOverCompositorAnimation() {
   ScrollAnimatorCompositorCoordinator::TakeOverCompositorAnimation();
 }
 
-void ScrollAnimator::MainThreadScrollingDidChange() {
-  ReattachCompositorAnimationIfNeeded(
-      GetScrollableArea()->GetCompositorAnimationTimeline());
-}
-
 bool ScrollAnimator::RegisterAndScheduleAnimation() {
   GetScrollableArea()->RegisterForAnimation();
   if (!scrollable_area_->ScheduleAnimation()) {
