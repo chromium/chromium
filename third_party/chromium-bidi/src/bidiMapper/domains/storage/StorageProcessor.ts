@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 import type {CdpClient} from '../../../cdp/CdpClient.js';
-import {UnableToSetCookieException} from '../../../protocol/protocol.js';
+import {
+  NoSuchUserContextException,
+  UnableToSetCookieException,
+} from '../../../protocol/protocol.js';
 import type {Storage, Network} from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
 import type {LoggerFn} from '../../../utils/log.js';
@@ -51,12 +54,21 @@ export class StorageProcessor {
   ): Promise<Storage.DeleteCookiesResult> {
     const partitionKey = this.#expandStoragePartitionSpec(params.partition);
 
-    const cdpResponse = await this.#browserCdpClient.sendCommand(
-      'Storage.getCookies',
-      {
-        browserContextId: this.#getCdpBrowserContextId(partitionKey),
+    let cdpResponse;
+    try {
+      cdpResponse = await this.#browserCdpClient.sendCommand(
+        'Storage.getCookies',
+        {
+          browserContextId: this.#getCdpBrowserContextId(partitionKey),
+        }
+      );
+    } catch (err: any) {
+      if (this.#isNoSuchUserContextError(err)) {
+        // If the user context is not found, special error is thrown.
+        throw new NoSuchUserContextException(err.message);
       }
-    );
+      throw err;
+    }
 
     const cdpCookiesToDelete = cdpResponse.cookies
       .filter(
@@ -91,12 +103,21 @@ export class StorageProcessor {
   ): Promise<Storage.GetCookiesResult> {
     const partitionKey = this.#expandStoragePartitionSpec(params.partition);
 
-    const cdpResponse = await this.#browserCdpClient.sendCommand(
-      'Storage.getCookies',
-      {
-        browserContextId: this.#getCdpBrowserContextId(partitionKey),
+    let cdpResponse;
+    try {
+      cdpResponse = await this.#browserCdpClient.sendCommand(
+        'Storage.getCookies',
+        {
+          browserContextId: this.#getCdpBrowserContextId(partitionKey),
+        }
+      );
+    } catch (err: any) {
+      if (this.#isNoSuchUserContextError(err)) {
+        // If the user context is not found, special error is thrown.
+        throw new NoSuchUserContextException(err.message);
       }
-    );
+      throw err;
+    }
 
     const filteredBiDiCookies = cdpResponse.cookies
       .filter(
@@ -127,13 +148,24 @@ export class StorageProcessor {
         cookies: [cdpCookie],
         browserContextId: this.#getCdpBrowserContextId(partitionKey),
       });
-    } catch (e: any) {
-      this.#logger?.(LogType.debugError, e);
-      throw new UnableToSetCookieException(e.toString());
+    } catch (err: any) {
+      if (this.#isNoSuchUserContextError(err)) {
+        // If the user context is not found, special error is thrown.
+        throw new NoSuchUserContextException(err.message);
+      }
+
+      this.#logger?.(LogType.debugError, err);
+      throw new UnableToSetCookieException(err.toString());
     }
     return {
       partitionKey,
     };
+  }
+
+  #isNoSuchUserContextError(err: Error): boolean {
+    // Heuristic to detect if the user context is not found.
+    // See https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/browser_handler.cc;drc=a56154dd81e4679712422ac6eed2c9581cb51ab0;l=314
+    return err.message?.startsWith('Failed to find browser context for id');
   }
 
   #getCdpBrowserContextId(

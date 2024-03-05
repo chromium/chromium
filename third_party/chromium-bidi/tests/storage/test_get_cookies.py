@@ -150,6 +150,28 @@ async def test_cookies_get_partition_user_context(websocket, context_id,
 
 
 @pytest.mark.asyncio
+async def test_cookies_get_partition_user_context_unknown(
+        websocket, context_id):
+    user_context_partition = {
+        'type': 'storageKey',
+        'userContext': 'UNKNOWN_USER_CONTEXT',
+    }
+
+    with pytest.raises(Exception,
+                       match=str({
+                           'error': 'no such user context',
+                           'message': '.*'
+                       })):
+        await execute_command(
+            websocket, {
+                'method': 'storage.getCookies',
+                'params': {
+                    'partition': user_context_partition,
+                }
+            })
+
+
+@pytest.mark.asyncio
 async def test_cookies_get_partition_unsupported_key(websocket, context_id):
     cookie = get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, SOME_DOMAIN)
     await set_cookie(websocket, context_id, cookie)
