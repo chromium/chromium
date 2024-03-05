@@ -1098,7 +1098,7 @@ FormDataParser::ParseAndReturnUsernameDetection(
   // Fields with server prediction `CREDIT_CARD_FIELD`, `CREDIT_CARD_NUMBER`,
   // `NOT_USERNAME`, and `NOT_PASSWORD` must not be considered in base
   // heuristics parsing or parsing using autocomplete attributes.
-  base::EraseIf(processed_fields, [](ProcessedField field) {
+  std::erase_if(processed_fields, [](ProcessedField field) {
     return field.server_hints_credit_card_field ||
            field.server_hints_not_password || field.server_hints_not_username;
   });
