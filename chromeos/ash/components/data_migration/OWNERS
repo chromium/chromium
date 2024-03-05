@@ -1,0 +1,7 @@
+# Please use this reviewer queue instead of specifying an individual reviewer
+# unless there is a specific reason for it.
+assistive-code-review@google.com
+
+esum@google.com #{LAST_RESORT_SUGGESTION}
+xiaohuic@chromium.org #{LAST_RESORT_SUGGESTION}
+yawano@google.com #{LAST_RESORT_SUGGESTION}

@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+component("data_migration") {
+  sources = [ "constants.h" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "testing/fake_nearby_connections.cc",
+    "testing/fake_nearby_connections.h",
+    "testing/fake_nearby_process_manager.cc",
+    "testing/fake_nearby_process_manager.h",
+  ]
+
+  deps = [
+    ":data_migration",
+    "//base",
+    "//chromeos/ash/services/nearby/public/cpp",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//mojo",
+    "//testing/gtest",
+  ]
+}
