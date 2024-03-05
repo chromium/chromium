@@ -31,6 +31,11 @@ public class SyncServiceFactory {
     public static @Nullable SyncService getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
         if (sSyncServiceForTest != null) return sSyncServiceForTest;
+        if (profile == null) {
+            throw new IllegalArgumentException(
+                    "Attempting to access the SyncService with a null profile");
+        }
+        profile.ensureNativeInitialized();
         return SyncServiceFactoryJni.get().getForProfile(profile);
     }
 
