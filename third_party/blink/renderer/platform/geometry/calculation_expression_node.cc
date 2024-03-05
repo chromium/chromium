@@ -478,6 +478,13 @@ float CalculationExpressionOperationNode::Evaluate(
       Length::EvaluationInput calculation_input(input);
       calculation_input.size_keyword_basis =
           children_[0]->Evaluate(max_value, input);
+      if (max_value == kIndefiniteSize) {
+        // "When evaluating the calc-size calculation, if percentages are not
+        // definite in the given context, the resolve to 0px. Otherwise, they
+        // resolve as normal."
+        //   -- https://drafts.csswg.org/css-values-5/#resolving-calc-size
+        max_value = 0.0f;
+      }
       return children_[1]->Evaluate(max_value, calculation_input);
     }
     case CalculationOperator::kInvalid:
