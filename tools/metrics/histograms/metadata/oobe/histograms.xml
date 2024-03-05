@@ -685,7 +685,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OOBE.MarketingOptInScreen.BackendConnector.{OOBEMarketingCountry}"
-    enum="MarketingOptInBackendConnectorEvent" expires_after="2024-02-20">
+    enum="MarketingOptInBackendConnectorEvent" expires_after="2024-09-03">
   <owner>rrsilva@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -698,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.MarketingOptInScreen.Event.{OOBEMarketingCountry}"
-    enum="MarketingOptInScreenEvent" expires_after="2024-02-20">
+    enum="MarketingOptInScreenEvent" expires_after="2024-09-03">
   <owner>rrsilva@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -796,7 +796,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.PinSetupScreen.UserActions"
-    enum="PinSetupScreenUserAction" expires_after="2024-03-03">
+    enum="PinSetupScreenUserAction" expires_after="2024-09-03">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -878,7 +878,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.StepCompletionTime2.{OOBEOnlyScreenName}" units="ms"
-    expires_after="2024-03-26">
+    expires_after="2024-09-26">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -966,7 +966,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.IsCapabilityKnown" enum="BooleanKnown"
-    expires_after="2024-03-03">
+    expires_after="2024-09-03">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
