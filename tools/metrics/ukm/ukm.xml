@@ -21557,7 +21557,6 @@ be describing additional metrics about the same event.
 
 <event name="PowerUsageScenariosIntervalData">
   <owner>fdoray@chromium.org</owner>
-  <owner>sebmarchand@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
     Metrics to measure power consumption in key usage scenarios, as well as the
