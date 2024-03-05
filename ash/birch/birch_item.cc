@@ -201,6 +201,7 @@ void BirchFileItem::PerformAction() {
 
 void BirchFileItem::LoadIcon(LoadIconCallback callback) {
   // TODO(jamescook): Figure out how to show the file icon based on its type.
+  // See chromeos/ui/base/file_icon_util.h for ideas.
   std::move(callback).Run(ui::ImageModel());
 }
 
