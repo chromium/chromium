@@ -86,6 +86,8 @@ static_library("tether") {
     "synchronous_shutdown_object_container_impl.h",
     "tether_availability_operation.cc",
     "tether_availability_operation.h",
+    "tether_availability_operation_orchestrator.cc",
+    "tether_availability_operation_orchestrator.h",
     "tether_component.cc",
     "tether_component.h",
     "tether_component_impl.cc",
