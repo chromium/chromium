@@ -48,7 +48,7 @@ async def test_cookie_set_required_fields(websocket, context_id):
                 }
             }
         })
-    assert resp == {'partitionKey': {}}
+    assert resp == {'partitionKey': {'userContext': 'default'}}
 
     resp = await execute_command(websocket, {
         'method': 'storage.getCookies',
@@ -62,7 +62,9 @@ async def test_cookie_set_required_fields(websocket, context_id):
                                 SOME_DOMAIN,
                                 secure=False))
         ],
-        'partitionKey': {}
+        'partitionKey': {
+            'userContext': 'default'
+        }
     }
 
 
@@ -83,7 +85,7 @@ async def test_cookie_set_base64_value(websocket, context_id):
                 }
             }
         })
-    assert resp == {'partitionKey': {}}
+    assert resp == {'partitionKey': {'userContext': 'default'}}
 
     resp = await execute_command(websocket, {
         'method': 'storage.getCookies',
@@ -97,7 +99,9 @@ async def test_cookie_set_base64_value(websocket, context_id):
                                 SOME_DOMAIN,
                                 secure=False))
         ],
-        'partitionKey': {}
+        'partitionKey': {
+            'userContext': 'default'
+        }
     }
 
 
@@ -122,7 +126,7 @@ async def test_cookie_set_partition_browsing_context(websocket, context_id):
                 }
             }
         })
-    assert resp == {'partitionKey': {}}
+    assert resp == {'partitionKey': {'userContext': 'default'}}
 
     resp = await execute_command(websocket, {
         'method': 'storage.getCookies',
@@ -136,7 +140,9 @@ async def test_cookie_set_partition_browsing_context(websocket, context_id):
                                 SOME_DOMAIN,
                                 secure=True))
         ],
-        'partitionKey': {}
+        'partitionKey': {
+            'userContext': 'default'
+        }
     }
 
 
@@ -161,7 +167,7 @@ async def test_cookie_set_partition_user_context(websocket, context_id):
                 }
             }
         })
-    assert resp == {'partitionKey': {}}
+    assert resp == {'partitionKey': {'userContext': 'default'}}
 
     resp = await execute_command(websocket, {
         'method': 'storage.getCookies',
@@ -175,7 +181,9 @@ async def test_cookie_set_partition_user_context(websocket, context_id):
                                 SOME_DOMAIN,
                                 secure=True))
         ],
-        'partitionKey': {}
+        'partitionKey': {
+            'userContext': 'default'
+        }
     }
 
 
@@ -249,7 +257,12 @@ async def test_cookie_set_partition_source_origin(websocket, context_id):
                 }
             }
         })
-    assert resp == {'partitionKey': {'sourceOrigin': SOME_ORIGIN_WITHOUT_PORT}}
+    assert resp == {
+        'partitionKey': {
+            'sourceOrigin': SOME_ORIGIN_WITHOUT_PORT,
+            'userContext': 'default'
+        }
+    }
 
     resp = await execute_command(websocket, {
         'method': 'storage.getCookies',
@@ -263,7 +276,9 @@ async def test_cookie_set_partition_source_origin(websocket, context_id):
                                 SOME_DOMAIN,
                                 secure=True))
         ],
-        'partitionKey': {}
+        'partitionKey': {
+            'userContext': 'default'
+        }
     }
 
 
@@ -294,7 +309,7 @@ async def test_cookie_set_params_cookie_all_fields(websocket, context_id):
                 },
             }
         })
-    assert resp == {'partitionKey': {}}
+    assert resp == {'partitionKey': {'userContext': 'default'}}
 
     resp = await execute_command(websocket, {
         'method': 'storage.getCookies',
@@ -307,7 +322,9 @@ async def test_cookie_set_params_cookie_all_fields(websocket, context_id):
                                 SOME_DOMAIN, some_path, http_only, secure,
                                 same_site, expiry))
         ],
-        'partitionKey': {}
+        'partitionKey': {
+            'userContext': 'default'
+        }
     }
 
 
@@ -324,13 +341,13 @@ async def test_cookie_set_params_cookie_expired(websocket, context_id):
                                           expiry=expiry),
             }
         })
-    assert resp == {'partitionKey': {}}
+    assert resp == {'partitionKey': {'userContext': 'default'}}
 
     resp = await execute_command(websocket, {
         'method': 'storage.getCookies',
         'params': {}
     })
-    assert resp == {'cookies': [], 'partitionKey': {}}
+    assert resp == {'cookies': [], 'partitionKey': {'userContext': 'default'}}
 
 
 @pytest.mark.asyncio
@@ -358,7 +375,12 @@ async def test_cookies_set_params_cookie_cdp_specific_fields(
                 }
             }
         })
-    assert resp == {'partitionKey': {'sourceOrigin': SOME_ORIGIN_WITHOUT_PORT}}
+    assert resp == {
+        'partitionKey': {
+            'sourceOrigin': SOME_ORIGIN_WITHOUT_PORT,
+            'userContext': 'default',
+        }
+    }
 
     resp = await execute_command(websocket, {
         'method': 'storage.getCookies',
@@ -380,5 +402,7 @@ async def test_cookies_set_params_cookie_cdp_specific_fields(
                 'goog:sourceScheme': 'Secure',
             }
         ],
-        'partitionKey': {}
+        'partitionKey': {
+            'userContext': 'default'
+        }
     }

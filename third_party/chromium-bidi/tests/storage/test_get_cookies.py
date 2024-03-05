@@ -47,7 +47,9 @@ async def test_cookies_get_params_empty(websocket, context_id):
 
     assert res == {
         'cookies': [AnyExtending(cookie)],
-        'partitionKey': {},
+        'partitionKey': {
+            'userContext': 'default'
+        },
     }
 
 
@@ -71,7 +73,9 @@ async def test_cookies_get_result_cdp_specific_fields(websocket, context_id):
                 'goog:sourceScheme': 'Secure',
             }
         ],
-        'partitionKey': {},
+        'partitionKey': {
+            'userContext': 'default'
+        },
     }
 
 
@@ -106,6 +110,7 @@ async def test_cookies_get_partition_source_origin(websocket, context_id):
         'partitionKey': {
             # CDP's `partitionKey` does not support port.
             'sourceOrigin': SOME_ORIGIN_WITHOUT_PORT,
+            'userContext': 'default'
         },
     }
 
@@ -165,7 +170,9 @@ async def test_cookies_get_partition_unsupported_key(websocket, context_id):
 
     assert res == {
         'cookies': [AnyExtending(cookie)],
-        'partitionKey': {},
+        'partitionKey': {
+            'userContext': 'default'
+        },
     }
 
 
@@ -187,7 +194,9 @@ async def test_cookies_get_partition_browsing_context(websocket, context_id):
 
     assert resp == {
         'cookies': [AnyExtending(cookie)],
-        'partitionKey': {},
+        'partitionKey': {
+            'userContext': 'default'
+        },
     }
 
 

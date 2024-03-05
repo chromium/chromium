@@ -51,13 +51,11 @@ async def test_cookies_delete_params_empty(websocket, context_id):
                      partition=source_origin_partition)
 
     # Delete all cookies.
-    res = await execute_command(websocket, {
+    resp = await execute_command(websocket, {
         'method': 'storage.deleteCookies',
         'params': {}
     })
-    assert res == {
-        'partitionKey': {},
-    }
+    assert resp == {'partitionKey': {'userContext': 'default'}}
 
     # Expect no cookies to be presented.
     await assert_only_cookies_present(websocket, [])
@@ -65,10 +63,7 @@ async def test_cookies_delete_params_empty(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_cookies_delete_partition_source_origin(websocket, context_id):
-    source_origin_partition = {
-        'type': 'storageKey',
-        'sourceOrigin': SOME_URL,
-    }
+    source_origin_partition = {'type': 'storageKey', 'sourceOrigin': SOME_URL}
 
     not_partitioned_cookie = get_bidi_cookie(SOME_COOKIE_NAME,
                                              SOME_COOKIE_VALUE, SOME_DOMAIN)
@@ -92,6 +87,7 @@ async def test_cookies_delete_partition_source_origin(websocket, context_id):
         'partitionKey': {
             # CDP's `partitionKey` does not support port.
             'sourceOrigin': SOME_ORIGIN_WITHOUT_PORT,
+            'userContext': 'default'
         },
     }
 
@@ -144,7 +140,7 @@ async def test_cookies_delete_partition_unsupported_key(websocket, context_id):
     unknown_partition_key = 'UNKNOWN_PARTITION_KEY'
     unknown_partition_value = 'UNKNOWN_PARTITION_VALUE'
 
-    res = await execute_command(
+    resp = await execute_command(
         websocket, {
             'method': 'storage.deleteCookies',
             'params': {
@@ -154,9 +150,7 @@ async def test_cookies_delete_partition_unsupported_key(websocket, context_id):
                 },
             }
         })
-    assert res == {
-        'partitionKey': {},
-    }
+    assert resp == {'partitionKey': {'userContext': 'default'}}
 
     # Expect no cookies to be presented.
     await assert_only_cookies_present(websocket, [])
@@ -179,9 +173,7 @@ async def test_cookies_delete_partition_browsing_context(
             }
         })
 
-    assert resp == {
-        'partitionKey': {},
-    }
+    assert resp == {'partitionKey': {'userContext': 'default'}}
 
     # Expect no cookies to be presented.
     await assert_only_cookies_present(websocket, [])
@@ -252,7 +244,7 @@ async def test_cookies_delete_params_filter(websocket, context_id,
             'filter': cookie_filter
         }
     })
-    assert resp == {'partitionKey': {}}
+    assert resp == {'partitionKey': {'userContext': 'default'}}
 
     await assert_only_cookies_present(websocket, [another_cookie])
 
