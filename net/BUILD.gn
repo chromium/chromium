@@ -104,6 +104,7 @@ buildflag_header("buildflags") {
     "CHROME_ROOT_STORE_OPTIONAL=$chrome_root_store_optional",
     "CHROME_ROOT_STORE_ONLY=$chrome_root_store_only",
     "CHROME_ROOT_STORE_SUPPORTED=$chrome_root_store_supported",
+    "ENABLE_DEVICE_BOUND_SESSIONS=$enable_device_bound_sessions",
   ]
 }
 
@@ -1095,6 +1096,13 @@ component("net") {
       "reporting/reporting_service.h",
       "reporting/reporting_uploader.cc",
       "reporting/reporting_uploader.h",
+    ]
+  }
+
+  if (enable_device_bound_sessions) {
+    sources += [
+      "device_bound_sessions/bound_session_registration_fetcher_param.cc",
+      "device_bound_sessions/bound_session_registration_fetcher_param.h",
     ]
   }
 
@@ -3175,6 +3183,10 @@ test("net_unittests") {
       "//net/tools/huffman_trie:huffman_trie_generator_test_sources",
       "//net/tools/transport_security_state_generator:transport_security_state_generator_test_sources",
     ]
+  }
+
+  if (enable_device_bound_sessions) {
+    sources += [ "device_bound_sessions/bound_session_registration_fetcher_param_unittest.cc" ]
   }
 }
 
