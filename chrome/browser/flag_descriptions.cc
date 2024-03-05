@@ -1096,13 +1096,6 @@ const char kEnableTLS13KyberName[] = "TLS 1.3 hybridized Kyber support";
 const char kEnableTLS13KyberDescription[] =
     "This option enables a combination of X25519 and Kyber in TLS 1.3.";
 
-const char kAccessibilityAcceleratorNotificationsTimeoutName[] =
-    "Allows accelerator notifications for accessibility features to time out";
-const char kAccessibilityAcceleratorNotificationsTimeoutDescription[] =
-    "Enables notifications for accessibility features turned on by keyboard "
-    "shortcut (docked magnifier, screen magnifier and high contrast) to time "
-    "out instead of remaining pinned.";
-
 const char kAccessibilityServiceName[] = "Experimental Accessibility Service";
 const char kAccessibilityServiceDescription[] =
     "This option enables the experimental Accessibility Service and runs some "

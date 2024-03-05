@@ -7618,14 +7618,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePeripheralNotificationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPeripheralNotification)},
 
-    {"enable-accessibility-accelerators-notifications-timeout",
-     flag_descriptions::kAccessibilityAcceleratorNotificationsTimeoutName,
-     flag_descriptions::
-         kAccessibilityAcceleratorNotificationsTimeoutDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         features::kAccessibilityAcceleratorNotificationsTimeout)},
-
     {"enable-accessibility-service",
      flag_descriptions::kAccessibilityServiceName,
      flag_descriptions::kAccessibilityServiceDescription, kOsCrOS,

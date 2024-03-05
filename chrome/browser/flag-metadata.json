@@ -2098,11 +2098,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-accessibility-accelerators-notifications-timeout",
-    "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-accessibility-dictation-keyboard-improvements",
     "owners": [ "akihiroota@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 125

@@ -128,11 +128,6 @@ AX_BASE_EXPORT bool IsUiaProviderEnabled();
 // TODO(accessibility): Should this be moved to ash_features.cc?
 AX_BASE_EXPORT bool IsDictationOfflineAvailable();
 
-// Allow accessibility accelerator notifications to timeout.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kAccessibilityAcceleratorNotificationsTimeout);
-AX_BASE_EXPORT bool IsAccessibilityAcceleratorNotificationsTimeoutEnabled();
-
 // Use Dictation keyboard improvements.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityDictationKeyboardImprovements);

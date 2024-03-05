@@ -23,7 +23,6 @@
 #include "base/containers/contains.h"
 #include "base/strings/string_split.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 
@@ -152,17 +151,10 @@ void ShowAccessibilityNotification(
     int message_id,
     const std::string& notification_id,
     const NotificationCatalogName& catalog_name) {
-  if (::features::IsAccessibilityAcceleratorNotificationsTimeoutEnabled()) {
-    // Show a notification that times out.
-    CreateAndShowNotification(
-        notification_id, catalog_name, l10n_util::GetStringUTF16(title_id),
-        l10n_util::GetStringUTF16(message_id), kNotificationAccessibilityIcon);
-  } else {
-    // Show a notification that does not time out.
-    CreateAndShowStickyNotification(
-        notification_id, catalog_name, l10n_util::GetStringUTF16(title_id),
-        l10n_util::GetStringUTF16(message_id), kNotificationAccessibilityIcon);
-  }
+  // Show a notification that times out.
+  CreateAndShowNotification(
+      notification_id, catalog_name, l10n_util::GetStringUTF16(title_id),
+      l10n_util::GetStringUTF16(message_id), kNotificationAccessibilityIcon);
 }
 
 void RemoveNotification(const std::string& notification_id) {

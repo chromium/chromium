@@ -146,14 +146,6 @@ bool IsDictationOfflineAvailable() {
       ash::features::kOnDeviceSpeechRecognition);
 }
 
-BASE_FEATURE(kAccessibilityAcceleratorNotificationsTimeout,
-             "AccessibilityAcceleratorNotificationsTimeout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityAcceleratorNotificationsTimeoutEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityAcceleratorNotificationsTimeout);
-}
-
 BASE_FEATURE(kAccessibilityDictationKeyboardImprovements,
              "AccessibilityDictationKeyboardImprovements",
              base::FEATURE_ENABLED_BY_DEFAULT);
