@@ -19,13 +19,13 @@ import java.util.Map;
 /**
  * A list of feature flags exposed to Java.
  *
- * This class lists flags exposed to Java as String constants. They should match
+ * <p>This class lists flags exposed to Java as String constants. They should match
  * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc.
  *
- * This class also provides convenience methods to access values of flags and their field trial
+ * <p>This class also provides convenience methods to access values of flags and their field trial
  * parameters through {@link ChromeFeatureMap}.
  *
- * Chrome-layer {@link CachedFlag}s are instantiated here as well.
+ * <p>Chrome-layer {@link CachedFlag}s are instantiated here as well.
  */
 public abstract class ChromeFeatureList {
     /** Prevent instantiation. */
@@ -33,9 +33,9 @@ public abstract class ChromeFeatureList {
 
     /**
      * Convenience method to check Chrome-layer feature flags, see
-     * {@link FeatureMap#isEnabled(String)}}.
+     * {@link FeatureMap#isEnabledInNative(String)}.
      *
-     * Note: Features queried through this API must be added to the array
+     * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
      */
     public static boolean isEnabled(String featureName) {
@@ -44,9 +44,9 @@ public abstract class ChromeFeatureList {
 
     /**
      * Convenience method to get Chrome-layer feature field trial params, see
-     * {@link FeatureMap#getFieldTrialParamByFeature(String, String)}}.
+     * {@link FeatureMap#getFieldTrialParamByFeature(String, String)}.
      *
-     * Note: Features queried through this API must be added to the array
+     * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
      */
     public static String getFieldTrialParamByFeature(String featureName, String paramName) {
@@ -55,9 +55,9 @@ public abstract class ChromeFeatureList {
 
     /**
      * Convenience method to get Chrome-layer feature field trial params, see
-     * {@link FeatureMap#getFieldTrialParamByFeatureAsBoolean(String, boolean)}}.
+     * {@link FeatureMap#getFieldTrialParamByFeatureAsBoolean(String, String, boolean)}.
      *
-     * Note: Features queried through this API must be added to the array
+     * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
      */
     public static boolean getFieldTrialParamByFeatureAsBoolean(
@@ -68,9 +68,9 @@ public abstract class ChromeFeatureList {
 
     /**
      * Convenience method to get Chrome-layer feature field trial params, see
-     * {@link FeatureMap#getFieldTrialParamByFeatureAsInt(String, String, int)}}.
+     * {@link FeatureMap#getFieldTrialParamByFeatureAsInt(String, String, int)}.
      *
-     * Note: Features queried through this API must be added to the array
+     * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
      */
     public static int getFieldTrialParamByFeatureAsInt(
@@ -81,9 +81,9 @@ public abstract class ChromeFeatureList {
 
     /**
      * Convenience method to get Chrome-layer feature field trial params, see
-     * {@link FeatureMap#getFieldTrialParamByFeatureAsDouble(String, String, double)}}.
+     * {@link FeatureMap#getFieldTrialParamByFeatureAsDouble(String, String, double)}.
      *
-     * Note: Features queried through this API must be added to the array
+     * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
      */
     public static double getFieldTrialParamByFeatureAsDouble(
@@ -94,9 +94,9 @@ public abstract class ChromeFeatureList {
 
     /**
      * Convenience method to get Chrome-layer feature field trial params, see
-     * {@link FeatureMap#getFieldTrialParamsForFeature(String)}}.
+     * {@link FeatureMap#getFieldTrialParamsForFeature(String)}.
      *
-     * Note: Features queried through this API must be added to the array
+     * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
      */
     public static Map<String, String> getFieldTrialParamsForFeature(String featureName) {
