@@ -12,8 +12,8 @@ OrientationIterator::OrientationIterator(const UChar* buffer,
                                          unsigned buffer_size,
                                          FontOrientation run_orientation)
     : utf16_iterator_(buffer, buffer_size), at_end_(!buffer_size) {
-  // There's not much point in segmenting by isUprightInVertical if the text
-  // orientation is not "mixed".
+  // There's not much point in segmenting by IsUprightInMixedVertical if the
+  // text orientation is not "mixed".
   DCHECK_EQ(run_orientation, FontOrientation::kVerticalMixed);
 }
 
