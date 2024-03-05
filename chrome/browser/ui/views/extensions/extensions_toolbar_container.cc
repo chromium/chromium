@@ -345,6 +345,12 @@ void ExtensionsToolbarContainer::UpdateRequestAccessButton(
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
 
+  // Button is never visible when actions cannot be show in toolbar.
+  if (!model_->CanShowActionsInToolbar(*browser_)) {
+    CHECK(!request_access_button_->GetVisible());
+    return;
+  }
+
   // Don't update the button if the confirmation message is currently showing;
   // it'll go away after a few seconds. Once the confirmation is collapsed,
   // button should be updated again.
