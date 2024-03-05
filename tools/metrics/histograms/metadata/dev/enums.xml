@@ -763,10 +763,25 @@ Called by update_protocol_commands_enum.py.-->
   <int value="129" label="Toggle Emulate Focused Page from Command Menu"/>
   <int value="130" label="Console insight generated successfully"/>
   <int value="131"
-      label="Console insight generation errored due to a server issue"/>
+      label="Console insight generation errored due to an API error"/>
   <int value="132"
       label="Console insight generation errored while rendering Markdown"/>
   <int value="133" label="Toggle Show Web Vitals"/>
+  <int value="134"
+      label="Console insight generation errored due to a permission denied"/>
+  <int value="135"
+      label="Console insight generation errored because the request cannot be
+             sent"/>
+  <int value="136"
+      label="Console insight generation errored due to a failed reuest"/>
+  <int value="137"
+      label="Console insight generation errored because the response chunk
+             cannot be pased"/>
+  <int value="138"
+      label="Console insight generation errored due to an unkown type of a
+             response chunk"/>
+  <int value="139"
+      label="Console insight generation errored for an unknown reason"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
