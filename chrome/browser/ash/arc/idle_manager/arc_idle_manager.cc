@@ -192,7 +192,6 @@ void ArcIdleManager::ThrottleInstance(bool should_throttle) {
     return;
   }
   first_idle_happened_ = true;
-  LogScreenOffTimer(/*toggle_timer*/ should_throttle);
   if (should_throttle) {
     // Enable Doze mode. May need to postpone the request.
     if (!enable_delay_.is_zero()) {
@@ -224,7 +223,7 @@ void ArcIdleManager::OnVmResumed() {
 
     // Just sync up Android state with internal state.
     // No need for logging metrics, not a state change.
-    RequestDoze(false);
+    RequestDozeWithoutMetrics(false);
   }
 }
 
@@ -253,8 +252,13 @@ void ArcIdleManager::LogScreenOffTimer(bool toggle_timer) {
   }
 }
 
-void ArcIdleManager::RequestDoze(bool enabled) {
+void ArcIdleManager::RequestDozeWithoutMetrics(bool enabled) {
   delegate_->SetIdleState(arc_power_bridge_, bridge_, !enabled);
+}
+
+void ArcIdleManager::RequestDoze(bool enabled) {
+  LogScreenOffTimer(/*toggle_timer*/ enabled);
+  RequestDozeWithoutMetrics(enabled);
 }
 
 }  // namespace arc

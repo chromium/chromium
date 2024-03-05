@@ -89,6 +89,7 @@ class ArcIdleManager : public KeyedService,
 
  private:
   void LogScreenOffTimer(bool toggle_timer);
+  void RequestDozeWithoutMetrics(bool enabled);
   void RequestDoze(bool enabled);
 
   bool first_idle_happened_ = false;
