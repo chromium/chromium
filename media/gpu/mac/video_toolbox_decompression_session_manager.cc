@@ -66,18 +66,32 @@ void VideoToolboxDecompressionSessionManager::Reset() {
 
   pending_decodes_ = {};
 
+  // Discard active decodes when they complete. In most cases this is faster
+  // than destroying the session.
   for (auto& it : active_decodes_) {
     it.second->discard = true;
   }
 
+  // If we are draining, it means that there was a pending decode with a
+  // different format. Since that was erased, there is no need to drain.
   draining_ = false;
 }
 
 size_t VideoToolboxDecompressionSessionManager::NumDecodes() {
   DVLOG(4) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  // Note: This counts frames that will be discarded due to a Reset().
-  return pending_decodes_.size() + active_decodes_.size();
+
+  size_t num_decodes = pending_decodes_.size();
+
+  // Only non-discarded decodes are counted because the caller won't be
+  // notified when discarded decodes complete.
+  for (auto& it : active_decodes_) {
+    if (!it.second->discard) {
+      ++num_decodes;
+    }
+  }
+
+  return num_decodes;
 }
 
 void VideoToolboxDecompressionSessionManager::NotifyError(DecoderStatus status) {

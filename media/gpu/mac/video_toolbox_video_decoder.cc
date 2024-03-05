@@ -239,7 +239,7 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
 void VideoToolboxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                       DecodeCB decode_cb) {
-  DVLOG(3) << __func__;
+  DVLOG(3) << __func__ << " pts=" << buffer->timestamp().InMilliseconds();
 
   if (has_error_) {
     task_runner_->PostTask(
@@ -331,13 +331,14 @@ void VideoToolboxVideoDecoder::ResetInternal(DecoderStatus status) {
 
   // Drop in-flight conversions.
   converter_weak_this_factory_.InvalidateWeakPtrs();
+  num_conversions_ = 0;
 }
 
 void VideoToolboxVideoDecoder::ReleaseDecodeCallbacks() {
   DVLOG(4) << __func__;
   DCHECK(!has_error_);
 
-  while (decode_cbs_.size() > video_toolbox_.NumDecodes()) {
+  while (decode_cbs_.size() > video_toolbox_.NumDecodes() + num_conversions_) {
     task_runner_->PostTask(FROM_HERE,
                            base::BindOnce(std::move(decode_cbs_.front()),
                                           DecoderStatus::Codes::kOk));
@@ -349,7 +350,8 @@ void VideoToolboxVideoDecoder::OnAcceleratorDecode(
     base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample,
     VideoToolboxDecompressionSessionMetadata session_metadata,
     scoped_refptr<CodecPicture> picture) {
-  DVLOG(4) << __func__;
+  DVLOG(4) << __func__
+           << " pts=" << active_decode_->timestamp().InMilliseconds();
   DCHECK(active_decode_);
 
   auto metadata = std::make_unique<VideoToolboxDecodeMetadata>();
@@ -387,17 +389,16 @@ void VideoToolboxVideoDecoder::OnAcceleratorOutput(
 void VideoToolboxVideoDecoder::OnVideoToolboxOutput(
     base::apple::ScopedCFTypeRef<CVImageBufferRef> image,
     std::unique_ptr<VideoToolboxDecodeMetadata> metadata) {
-  DVLOG(4) << __func__;
+  DVLOG(4) << __func__ << " pts=" << metadata->timestamp.InMilliseconds();
 
   if (has_error_) {
     return;
   }
 
-  // Presumably there is at least one decode callback to release.
-  ReleaseDecodeCallbacks();
-
   // Check if the frame was dropped.
+  // TODO(crbug.com/1331597): Notify the output queue of dropped frames.
   if (!image) {
+    ReleaseDecodeCallbacks();
     return;
   }
 
@@ -416,6 +417,8 @@ void VideoToolboxVideoDecoder::OnVideoToolboxOutput(
               task_runner_,
               base::BindOnce(&VideoToolboxVideoDecoder::OnConverterOutput,
                              converter_weak_this_factory_.GetWeakPtr()))));
+
+  ++num_conversions_;
 }
 
 void VideoToolboxVideoDecoder::OnVideoToolboxError(DecoderStatus status) {
@@ -426,7 +429,7 @@ void VideoToolboxVideoDecoder::OnVideoToolboxError(DecoderStatus status) {
 void VideoToolboxVideoDecoder::OnConverterOutput(
     scoped_refptr<VideoFrame> frame,
     std::unique_ptr<VideoToolboxDecodeMetadata> metadata) {
-  DVLOG(4) << __func__;
+  DVLOG(4) << __func__ << " pts=" << metadata->timestamp.InMilliseconds();
 
   if (has_error_) {
     return;
@@ -437,6 +440,17 @@ void VideoToolboxVideoDecoder::OnConverterOutput(
     NotifyError(DecoderStatus::Codes::kFailedToGetVideoFrame);
     return;
   }
+
+  CHECK_GT(num_conversions_, 0u);
+  --num_conversions_;
+
+  // The output queue expects that all decode callbacks have been called at the
+  // time that a flush completes (all outputs are fulfilled), so we must release
+  // before fulfilling pictures (at least during a flush).
+  //
+  // It would be possible to obtain tighter bounds on the backpressure by moving
+  // responsibility for releasing callbacks to the output queue implementation.
+  ReleaseDecodeCallbacks();
 
   output_queue_.FulfillPicture(std::move(metadata->picture), std::move(frame));
 }
