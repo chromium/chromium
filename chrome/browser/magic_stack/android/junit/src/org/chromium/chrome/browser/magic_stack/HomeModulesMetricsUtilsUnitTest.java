@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.magic_stack;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_CONFIGURATION_TURN_OFF_MODULE;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_CONFIGURATION_TURN_ON_MODULE;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_FIRST_MODULE_SHOWN_DURATION_MS;
+import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MAGIC_STACK_MODULE_BUILD;
+import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MAGIC_STACK_MODULE_CLICK;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MODULE_FETCH_DATA_DURATION_MS;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MODULE_FETCH_DATA_FAILED_DURATION_MS;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_DURATION_MS;
@@ -91,10 +93,12 @@ public class HomeModulesMetricsUtilsUnitTest {
         @HostSurface int hostSurface = HostSurface.START_SURFACE;
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
         int duration = 100;
-        String histogramName =
-                "MagicStack.Clank.StartSurface"
-                        + HISTOGRAM_MODULE_FETCH_DATA_DURATION_MS
-                        + HomeModulesMetricsUtils.getModuleName(moduleType);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("MagicStack.Clank.StartSurface");
+        builder.append(HISTOGRAM_MODULE_FETCH_DATA_DURATION_MS);
+        builder.append(HomeModulesMetricsUtils.getModuleName(moduleType));
+        String histogramName = builder.toString();
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder().expectIntRecord(histogramName, duration).build();
@@ -108,10 +112,12 @@ public class HomeModulesMetricsUtilsUnitTest {
         @HostSurface int hostSurface = HostSurface.START_SURFACE;
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
         int duration = 100;
-        String histogramName =
-                "MagicStack.Clank.StartSurface"
-                        + HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_DURATION_MS
-                        + HomeModulesMetricsUtils.getModuleName(moduleType);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("MagicStack.Clank.StartSurface");
+        builder.append(HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_DURATION_MS);
+        builder.append(HomeModulesMetricsUtils.getModuleName(moduleType));
+        String histogramName = builder.toString();
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder().expectIntRecord(histogramName, duration).build();
@@ -138,10 +144,12 @@ public class HomeModulesMetricsUtilsUnitTest {
         @HostSurface int hostSurface = HostSurface.START_SURFACE;
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
         int duration = 100;
-        String histogramName =
-                "MagicStack.Clank.StartSurface"
-                        + HISTOGRAM_MODULE_FETCH_DATA_FAILED_DURATION_MS
-                        + HomeModulesMetricsUtils.getModuleName(moduleType);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("MagicStack.Clank.StartSurface");
+        builder.append(HISTOGRAM_MODULE_FETCH_DATA_FAILED_DURATION_MS);
+        builder.append(HomeModulesMetricsUtils.getModuleName(moduleType));
+        String histogramName = builder.toString();
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder().expectIntRecord(histogramName, duration).build();
@@ -198,12 +206,14 @@ public class HomeModulesMetricsUtilsUnitTest {
         @HostSurface int hostSurface = HostSurface.START_SURFACE;
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
         int modulePosition = 0;
-        String histogramName =
-                "MagicStack.Clank.StartSurface"
-                        + HomeModulesMetricsUtils.HISTOGRAM_MAGIC_STACK_MODULE_CLICK
-                        + HomeModulesMetricsUtils.getModuleName(moduleType)
-                        + "."
-                        + modulePosition;
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("MagicStack.Clank.StartSurface");
+        builder.append(HISTOGRAM_MAGIC_STACK_MODULE_CLICK);
+        builder.append(HomeModulesMetricsUtils.getModuleName(moduleType));
+        builder.append(".");
+        builder.append(modulePosition);
+        String histogramName = builder.toString();
 
         var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, 1);
         HomeModulesMetricsUtils.recordModuleClickedPosition(
@@ -242,6 +252,26 @@ public class HomeModulesMetricsUtilsUnitTest {
 
         histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, moduleType);
         HomeModulesMetricsUtils.recordModuleToggledInConfiguration(moduleType, isEnabled);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordModuleBuiltPosition() {
+        @HostSurface int hostSurface = HostSurface.START_SURFACE;
+        @ModuleType int moduleType = ModuleType.SINGLE_TAB;
+        int modulePosition = 0;
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("MagicStack.Clank.StartSurface");
+        builder.append(HISTOGRAM_MAGIC_STACK_MODULE_BUILD);
+        builder.append(HomeModulesMetricsUtils.getModuleName(moduleType));
+        builder.append(".");
+        builder.append(modulePosition);
+        String histogramName = builder.toString();
+
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, 1);
+        HomeModulesMetricsUtils.recordModuleBuiltPosition(hostSurface, moduleType, modulePosition);
         histogramWatcher.assertExpected();
     }
 }

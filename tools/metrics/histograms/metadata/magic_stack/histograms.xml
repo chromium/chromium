@@ -104,6 +104,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.Build.{ModuleType}.{ModulePosition}"
+    units="count" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the type and position of the module when the home modules are added
+    to the magic stack. The histogram is logged when showing the magic stack on
+    {ModuleDelegateHost}, Android-only.
+  </summary>
+  <token key="ModuleType" variants="ModuleType"/>
+  <token key="ModulePosition" variants="ModulePosition"/>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram
     name="MagicStack.Clank.{ModuleDelegateHost}.Module.Click.{ModuleType}.{ModulePosition}"
     units="count" expires_after="2024-06-20">
   <owner>hanxi@chromium.org</owner>

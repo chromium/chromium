@@ -158,6 +158,8 @@ public class HomeModulesMediatorUnitTest {
                 mMediator.getModuleFetchResultsCacheForTesting();
         verify(mModel, never()).add(any());
 
+        doReturn(1).when(mModel).size();
+
         // Verifies that the response of a low ranking module is cached.
         PropertyModel propertyModel1 = Mockito.mock(PropertyModel.class);
         mMediator.addToRecyclerViewOrCache(mModuleTypeList[1], propertyModel1);
