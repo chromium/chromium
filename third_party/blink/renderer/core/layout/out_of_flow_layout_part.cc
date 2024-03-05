@@ -1682,22 +1682,6 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
           .ConvertToLogical(
               {oof_writing_direction, container_physical_content_size});
 
-  // Need a constraint space to resolve offsets.
-  ConstraintSpaceBuilder builder(GetConstraintSpace(), oof_writing_direction,
-                                 /* is_new_fc */ true);
-  builder.SetAvailableSize(container_content_size);
-  builder.SetPercentageResolutionSize(container_content_size);
-
-  if (container_builder_->IsInitialColumnBalancingPass()) {
-    // The |fragmentainer_offset_delta| will not make a difference in the
-    // initial column balancing pass.
-    SetupSpaceBuilderForFragmentation(
-        GetConstraintSpace(), node,
-        /* fragmentainer_offset_delta */ LayoutUnit(), &builder,
-        /* is_new_fc */ true,
-        /* requires_content_before_breaking */ false);
-  }
-
   OofContainingBlock<LogicalOffset> containing_block;
   OofContainingBlock<LogicalOffset> fixedpos_containing_block;
   OofInlineContainer<LogicalOffset> fixedpos_inline_container;
@@ -1710,9 +1694,8 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
         To<LogicalOofNodeForFragmentation>(oof_node).fixedpos_inline_container;
   }
 
-  return NodeInfo(node, builder.ToConstraintSpace(), oof_static_position,
-                  container_physical_content_size, container_info,
-                  GetConstraintSpace().GetWritingDirection(),
+  return NodeInfo(node, oof_static_position, container_physical_content_size,
+                  container_info, GetConstraintSpace().GetWritingDirection(),
                   /* is_fragmentainer_descendant */ containing_block_fragment,
                   containing_block, fixedpos_containing_block,
                   fixedpos_inline_container,
@@ -1826,15 +1809,11 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   // See non_overflowing_scroll_range.h for documentation.
   Vector<NonOverflowingScrollRange> non_overflowing_ranges;
 
-  WritingDirectionMode self_writing_direction =
-      node_info.node.Style().GetWritingDirection();
-  PhysicalSize available_size =
-      ToPhysicalSize(node_info.constraint_space.AvailableSize(),
-                     self_writing_direction.GetWritingMode());
   // Note: This assumes @try rounds can't affect writing-mode/anchor-default.
   std::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
   CreateAnchorEvaluator(anchor_evaluator_storage, node_info.container_info,
-                        available_size, self_writing_direction,
+                        node_info.container_physical_content_size,
+                        node_info.node.Style().GetWritingDirection(),
                         node_info.node.Style().AnchorDefault(),
                         *node_info.node.GetLayoutBox(), anchor_queries);
   AnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
@@ -1917,6 +1896,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   const LogicalSize container_content_size_in_candidate_writing_mode =
       node_info.container_physical_content_size.ConvertToLogical(
           candidate_writing_direction.GetWritingMode());
+  const LogicalRect& container_rect = node_info.container_info.rect;
 
   // Determine if we need to actually run the full OOF-positioned sizing, and
   // positioning algorithm.
@@ -1940,23 +1920,42 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     }
   }
 
+  // Create a constraint space to resolve border/padding/insets.
+  const ConstraintSpace space = ([&]() -> ConstraintSpace {
+    ConstraintSpaceBuilder builder(GetConstraintSpace(),
+                                   candidate_writing_direction,
+                                   /* is_new_fc */ true);
+    builder.SetAvailableSize(container_rect.size);
+    builder.SetPercentageResolutionSize(container_rect.size);
+
+    if (container_builder_->IsInitialColumnBalancingPass()) {
+      // The |fragmentainer_offset_delta| will not make a difference in the
+      // initial column balancing pass.
+      SetupSpaceBuilderForFragmentation(
+          GetConstraintSpace(), node_info.node,
+          /* fragmentainer_offset_delta */ LayoutUnit(), &builder,
+          /* is_new_fc */ true,
+          /* requires_content_before_breaking */ false);
+    }
+    return builder.ToConstraintSpace();
+  })();
+
   const LogicalAlignment alignment =
       ComputeAlignment(candidate_style, container_writing_direction,
                        candidate_writing_direction);
 
-  const LogicalOofInsets insets = ComputeOutOfFlowInsets(
-      candidate_style, node_info.constraint_space.AvailableSize(), alignment,
-      container_writing_direction, candidate_writing_direction,
-      anchor_evaluator);
+  const LogicalOofInsets insets =
+      ComputeOutOfFlowInsets(candidate_style, space.AvailableSize(), alignment,
+                             container_writing_direction,
+                             candidate_writing_direction, anchor_evaluator);
 
   const LogicalAnchorCenterPosition anchor_center_position =
       ComputeAnchorCenterPosition(alignment, candidate_writing_direction,
-                                  node_info.constraint_space.AvailableSize(),
-                                  anchor_evaluator);
+                                  space.AvailableSize(), anchor_evaluator);
 
   const InsetModifiedContainingBlock imcb = ComputeInsetModifiedContainingBlock(
-      node_info.node, node_info.constraint_space.AvailableSize(), alignment,
-      insets, node_info.static_position, anchor_center_position,
+      node_info.node, space.AvailableSize(), alignment, insets,
+      node_info.static_position, anchor_center_position,
       container_writing_direction, candidate_writing_direction);
 
   {
@@ -1984,9 +1983,8 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     }
   }
 
-  const BoxStrut border_padding =
-      ComputeBorders(node_info.constraint_space, node_info.node) +
-      ComputePadding(node_info.constraint_space, candidate_style);
+  const BoxStrut border_padding = ComputeBorders(space, node_info.node) +
+                                  ComputePadding(space, candidate_style);
 
   Length::AnchorScope anchor_scope(Length::AnchorScope::Mode::kSize,
                                    anchor_evaluator);
@@ -1998,10 +1996,9 @@ OutOfFlowLayoutPart::TryCalculateOffset(
                                    candidate_style.GetWritingDirection(),
                                    /* is_new_fc */ true);
     builder.SetAvailableSize(imcb.Size());
-    builder.SetPercentageResolutionSize(
-        node_info.constraint_space.PercentageResolutionSize());
+    builder.SetPercentageResolutionSize(space.PercentageResolutionSize());
     builder.SetReplacedPercentageResolutionSize(
-        node_info.constraint_space.PercentageResolutionSize());
+        space.PercentageResolutionSize());
 
     if (RuntimeEnabledFeatures::LayoutAlignForPositionedEnabled()) {
       const bool is_parallel =
@@ -2035,9 +2032,9 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   OffsetInfo offset_info;
   LogicalOofDimensions& node_dimensions = offset_info.node_dimensions;
   offset_info.inline_size_depends_on_min_max_sizes = ComputeOofInlineDimensions(
-      node_info.node, candidate_style, node_info.constraint_space, imcb,
-      alignment, border_padding, replaced_size, container_writing_direction,
-      anchor_evaluator, &node_dimensions);
+      node_info.node, candidate_style, space, imcb, alignment, border_padding,
+      replaced_size, container_writing_direction, anchor_evaluator,
+      &node_dimensions);
 
   const std::optional<LogicalRect> additional_fallback_bounds =
       try_fit_available_space
@@ -2052,8 +2049,8 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   std::optional<LayoutUnit> additional_inline_scroll_max;
   if (try_fit_available_space) {
     imcb_for_position_fallback = ComputeIMCBForPositionFallback(
-        node_info.constraint_space.AvailableSize(), alignment, insets,
-        node_info.static_position, candidate_style, container_writing_direction,
+        space.AvailableSize(), alignment, insets, node_info.static_position,
+        candidate_style, container_writing_direction,
         candidate_writing_direction);
     if (!CalculateNonOverflowingRangeInOneAxis(
             insets.inline_start, insets.inline_end,
@@ -2079,9 +2076,9 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   // our min/max sizes, only run if needed.
   if (node_dimensions.size.block_size == kIndefiniteSize) {
     offset_info.initial_layout_result = ComputeOofBlockDimensions(
-        node_info.node, candidate_style, node_info.constraint_space, imcb,
-        alignment, border_padding, replaced_size, container_writing_direction,
-        anchor_evaluator, &node_dimensions);
+        node_info.node, candidate_style, space, imcb, alignment, border_padding,
+        replaced_size, container_writing_direction, anchor_evaluator,
+        &node_dimensions);
   }
 
   // Calculate the block scroll offset range where the block dimension fits.
@@ -2121,7 +2118,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
 
   // |inset| is relative to the container's padding-box. Convert this to being
   // relative to the default container's border-box.
-  const LogicalRect& container_rect = node_info.container_info.rect;
   offset_info.offset = container_rect.offset;
   offset_info.offset.inline_offset += inset.inline_start;
   offset_info.offset.block_offset += inset.block_start;

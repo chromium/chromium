@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/layout/absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
-#include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/static_position.h"
@@ -151,7 +150,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
    public:
     BlockNode node;
-    const ConstraintSpace constraint_space;
     const LogicalStaticPosition static_position;
     PhysicalSize container_physical_content_size;
     const ContainingBlockInfo container_info;
@@ -163,7 +161,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     bool requires_content_before_breaking = false;
 
     NodeInfo(BlockNode node,
-             const ConstraintSpace constraint_space,
              const LogicalStaticPosition static_position,
              PhysicalSize container_physical_content_size,
              const ContainingBlockInfo container_info,
@@ -175,7 +172,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
              bool inline_container,
              bool requires_content_before_breaking)
         : node(node),
-          constraint_space(constraint_space),
           static_position(static_position),
           container_physical_content_size(container_physical_content_size),
           container_info(container_info),
