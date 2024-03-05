@@ -35,8 +35,8 @@ found in the LICENSE file.
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/accessibility_account_management_row_account_error"
                     android:id="@+id/identity_error_card_alert_icon"
-                    android:importantForAccessibility="no"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_error"/>
 

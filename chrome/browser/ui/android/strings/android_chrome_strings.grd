@@ -2427,7 +2427,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       </message>
 
       <!-- Accessibility strings for identity error visual cues -->
-      <message name="IDS_ACCESSIBILITY_ACCOUNT_MANAGEMENT_ROW_ACCOUNT_ERROR" desc="Accessibility string for alert icon in the account management row in the settings in case of identity error.">
+      <message name="IDS_ACCESSIBILITY_ACCOUNT_MANAGEMENT_ROW_ACCOUNT_ERROR" desc="Accessibility string for alert icon in the account management row in the settings and for the alert icon in the error card on the accounts page, in case of identity error.">
         Google Account error
       </message>
 
