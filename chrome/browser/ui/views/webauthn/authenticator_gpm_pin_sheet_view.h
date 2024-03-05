@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 
 // Represents a sheet in the Web Authentication request dialog that allows the
-// user to enter GPM pin code used as a recovery factor in passkeys flow.
+// user to enter GPM pin code used in passkeys flow.
 class AuthenticatorGpmPinSheetView : public AuthenticatorRequestSheetView,
                                      public AuthenticatorGPMPinView::Delegate {
  public:
