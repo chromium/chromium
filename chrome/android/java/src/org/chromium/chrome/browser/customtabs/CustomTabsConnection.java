@@ -52,6 +52,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.MockedInTests;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
@@ -107,10 +108,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Implementation of the ICustomTabsService interface.
  *
- * Note: This class is meant to be package private, and is public to be
- * accessible from {@link ChromeApplicationImpl}.
+ * <p>Note: This class is meant to be package private, and is public to be accessible from {@link
+ * ChromeApplicationImpl}.
  */
 @JNINamespace("customtabs")
+@MockedInTests
 public class CustomTabsConnection {
     private static final String TAG = "ChromeConnection";
     private static final String LOG_SERVICE_REQUESTS = "custom-tabs-log-service-requests";
