@@ -90,7 +90,7 @@ TEST_F(PickerZeroStateViewTest, ClickingOkInCapsNudgeHidesCapsNudge) {
 
   LeftClickOn(*caps_nudge_view->GetOkButtonForTesting());
 
-  EXPECT_EQ(caps_nudge_view->parent(), nullptr);
+  EXPECT_EQ(view->CapsNudgeViewForTesting(), nullptr);
 }
 
 TEST_F(PickerZeroStateViewTest, HidesSuggestedSectionWhenEmpty) {

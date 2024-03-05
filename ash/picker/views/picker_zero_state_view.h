@@ -72,6 +72,8 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
  private:
   void ClearCapsNudge();
 
+  void DeleteNudge();
+
   // Gets or creates the section to contain `category`.
   PickerSectionView* GetOrCreateSectionView(PickerCategory category);
 

@@ -4,6 +4,7 @@
 
 #include "ash/picker/views/picker_zero_state_view.h"
 
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <string>
@@ -23,14 +24,24 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/views/animation/animation_builder.h"
+#include "ui/views/animation/bounds_animator.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
+namespace {
+constexpr base::TimeDelta kNudgeHideAnimationDuration = base::Milliseconds(50);
+}  // namespace
 
 PickerZeroStateView::PickerZeroStateView(
     int picker_view_width,
@@ -151,7 +162,33 @@ PickerSectionView* PickerZeroStateView::GetOrCreateSectionView(
 }
 
 void PickerZeroStateView::ClearCapsNudge() {
-  RemoveChildView(caps_nudge_view_);
+  // Animation builder needs layers to animate so add layers to the two views we
+  // are animating.
+  SetPaintToLayer();
+  caps_nudge_view_->SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  caps_nudge_view_->layer()->SetFillsBoundsOpaquely(false);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(ui::LayerAnimator::PreemptionStrategy::
+                                 IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(&PickerZeroStateView::DeleteNudge,
+                              weak_ptr_factory_.GetWeakPtr()))
+      .Once()
+      // Technically, the specs have easing functions for these - but its only 3
+      // frames so just use the defaults since the difference won't matter.
+      .SetDuration(kNudgeHideAnimationDuration)
+      // To hide the caps nudge, we just animate the entire view upwards whilst
+      // fading the opacity.
+      .SetTransform(this, gfx::Transform::MakeTranslation(
+                              0, -caps_nudge_view_->bounds().height()))
+      .SetOpacity(caps_nudge_view_, /*opacity=*/0);
+}
+
+void PickerZeroStateView::DeleteNudge() {
+  // Now we are not animating, get rid of the layer.
+  DestroyLayer();
+  // Caps nudge view is now off screen - we don't need it any more.
+  RemoveChildViewT(caps_nudge_view_.ExtractAsDangling());
 }
 
 void PickerZeroStateView::SetPseudoFocusedItem(PickerItemView* item) {
