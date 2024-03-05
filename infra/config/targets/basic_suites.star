@@ -2037,14 +2037,6 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "goma_gtests",
-    tests = {
-        "base_unittests": targets.legacy_test_config(),
-        "content_unittests": targets.legacy_test_config(),
-    },
-)
-
 # BEGIN tests which run on the GPU bots
 
 targets.legacy_basic_suite(

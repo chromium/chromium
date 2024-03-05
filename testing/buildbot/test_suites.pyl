@@ -2248,11 +2248,6 @@
       'gl_unittests': {},
     },
 
-    'goma_gtests': {
-      'base_unittests': {},
-      'content_unittests': {},
-    },
-
     'gpu_angle_fuchsia_unittests_isolated_scripts': {
       'angle_unittests': {
         'mixins': [

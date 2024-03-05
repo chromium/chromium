@@ -3883,28 +3883,6 @@
     'name': 'chromium.goma',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'Chromium Linux Goma RBE Staging': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
-      'Chromium Linux Goma RBE Staging (dbg)': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
       # ChromeOS (simple chrome) builders.
       # Note:
       # chromeos-amd64-generic-rel-goma-* builders mirror targets of
@@ -3927,28 +3905,6 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-      },
-      'linux-archive-rel-goma-rbe-ats-canary': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
-      'linux-archive-rel-goma-rbe-canary': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
       },
     },
   },

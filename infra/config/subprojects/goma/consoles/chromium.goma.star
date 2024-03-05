@@ -10,14 +10,6 @@ luci.console_view(
     header = HEADER,
     entries = [
         luci.console_view_entry(
-            builder = "goma/Chromium Linux Goma RBE Staging",
-            category = "rbe|staging|linux|rel",
-        ),
-        luci.console_view_entry(
-            builder = "goma/Chromium Linux Goma RBE Staging (dbg)",
-            category = "rbe|staging|linux|debug",
-        ),
-        luci.console_view_entry(
             builder = "goma/Chromium Win Goma RBE Staging",
             category = "rbe|staging|win|rel",
         ),

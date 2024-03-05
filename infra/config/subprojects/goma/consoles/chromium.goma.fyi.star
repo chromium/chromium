@@ -10,20 +10,6 @@ luci.console_view(
     header = HEADER,
     entries = [
         luci.console_view_entry(
-            builder = "goma/linux-archive-rel-goma-rbe-canary",
-            category = "rbe|linux|rel",
-            short_name = "clb",
-        ),
-        luci.console_view_entry(
-            builder = "goma/linux-archive-rel-goma-rbe-ats-canary",
-            category = "rbe|linux|rel",
-            short_name = "ats",
-        ),
-        luci.console_view_entry(
-            builder = "goma/Linux Builder Goma RBE Canary",
-            category = "rbe|linux|rel",
-        ),
-        luci.console_view_entry(
             builder = "goma/chromeos-amd64-generic-rel-goma-rbe-canary",
             category = "rbe|cros|rel",
         ),

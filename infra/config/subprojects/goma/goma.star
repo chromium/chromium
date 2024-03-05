@@ -65,31 +65,6 @@ def fyi_goma_rbe_canary_builder(
     )
 
 fyi_goma_rbe_canary_builder(
-    name = "Linux Builder Goma RBE Canary",
-    builder_spec = builder_config.copy_from(
-        "ci/Linux Builder",
-        lambda spec: structs.evolve(
-            spec,
-            chromium_config = structs.extend(
-                spec.chromium_config,
-                apply_configs = [
-                    "goma_canary",
-                    "goma_use_local",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "gpu_tests",
-            "release_builder",
-            "goma",
-        ],
-    ),
-)
-
-fyi_goma_rbe_canary_builder(
     name = "chromeos-amd64-generic-rel-goma-rbe-canary",
     builder_spec = builder_config.copy_from(
         "ci/chromeos-amd64-generic-rel",
@@ -115,53 +90,6 @@ fyi_goma_rbe_canary_builder(
         ],
     ),
     goma_enable_ats = True,
-)
-
-fyi_goma_rbe_canary_builder(
-    name = "linux-archive-rel-goma-rbe-ats-canary",
-    builder_spec = builder_config.copy_from(
-        "ci/linux-archive-rel",
-        lambda spec: structs.evolve(
-            spec,
-            chromium_config = structs.extend(
-                spec.chromium_config,
-                apply_configs = [
-                    "goma_canary",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "goma",
-        ],
-    ),
-    goma_enable_ats = True,
-)
-
-fyi_goma_rbe_canary_builder(
-    name = "linux-archive-rel-goma-rbe-canary",
-    builder_spec = builder_config.copy_from(
-        "ci/linux-archive-rel",
-        lambda spec: structs.evolve(
-            spec,
-            chromium_config = structs.extend(
-                spec.chromium_config,
-                apply_configs = [
-                    "goma_canary",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "goma",
-        ],
-    ),
 )
 
 fyi_goma_rbe_canary_builder(
@@ -236,52 +164,6 @@ def goma_builder(
         os = os,
         **kwargs
     )
-
-goma_builder(
-    name = "Chromium Linux Goma RBE Staging",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-            ],
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "goma",
-        ],
-    ),
-    goma_backend = goma.backend.RBE_STAGING,
-)
-
-goma_builder(
-    name = "Chromium Linux Goma RBE Staging (dbg)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-            ],
-            target_bits = 64,
-            target_platform = builder_config.target_platform.WIN,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "debug_builder",
-            "goma",
-        ],
-    ),
-    goma_backend = goma.backend.RBE_STAGING,
-)
 
 goma_builder(
     name = "chromeos-amd64-generic-rel-goma-rbe-staging",
