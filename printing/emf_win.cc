@@ -185,6 +185,31 @@ int CALLBACK Emf::SafePlaybackProc(HDC hdc,
   return 1;
 }
 
+PostScriptMetaFile::PostScriptMetaFile() = default;
+
+PostScriptMetaFile::~PostScriptMetaFile() = default;
+
+mojom::MetafileDataType PostScriptMetaFile::GetDataType() const {
+  return mojom::MetafileDataType::kPostScriptEmf;
+}
+
+bool PostScriptMetaFile::SafePlayback(HDC hdc) const {
+  Emf::Enumerator emf_enum(*this, nullptr, nullptr);
+  for (const Emf::Record& record : emf_enum) {
+    auto* emf_record = record.record();
+    if (emf_record->iType != EMR_GDICOMMENT) {
+      continue;
+    }
+
+    auto* comment = reinterpret_cast<const EMRGDICOMMENT*>(emf_record);
+    const char* data = reinterpret_cast<const char*>(comment->Data);
+    const uint16_t* ptr = reinterpret_cast<const uint16_t*>(data);
+    int ret = ExtEscape(hdc, PASSTHROUGH, 2 + *ptr, data, 0, nullptr);
+    DCHECK_EQ(*ptr, ret);
+  }
+  return true;
+}
+
 Emf::EnumerationContext::EnumerationContext() {
   memset(this, 0, sizeof(*this));
 }
