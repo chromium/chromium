@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <vector>
+
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/browsertest_util.h"
@@ -176,7 +177,7 @@ ExtensionsToolbarUITest::GetToolbarActionViewsForBrowser(
 std::vector<ToolbarActionView*>
 ExtensionsToolbarUITest::GetVisibleToolbarActionViews() const {
   auto views = GetToolbarActionViews();
-  base::EraseIf(views, [](views::View* view) { return !view->GetVisible(); });
+  std::erase_if(views, [](views::View* view) { return !view->GetVisible(); });
   return views;
 }
 

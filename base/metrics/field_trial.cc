@@ -1309,9 +1309,9 @@ void FieldTrialList::RemoveObserverInternal(Observer* observer,
   }
   AutoLock auto_lock(global_->lock_);
   if (include_low_anonymity) {
-    Erase(global_->observers_including_low_anonymity_, observer);
+    std::erase(global_->observers_including_low_anonymity_, observer);
   } else {
-    Erase(global_->observers_, observer);
+    std::erase(global_->observers_, observer);
   }
   DCHECK_EQ(global_->num_ongoing_notify_field_trial_group_selection_calls_, 0)
       << "Cannot call RemoveObserver while accessing FieldTrial::group_name().";

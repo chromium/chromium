@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "base/containers/cxx20_erase.h"
 #include "build/build_config.h"
 #include "media/base/cdm_context.h"
 #include "media/cdm/cdm_helpers.h"
@@ -114,7 +113,7 @@ void MojoCdmHelper::GetStorageId(uint32_t version, StorageIdCB callback) {
 
 void MojoCdmHelper::CloseCdmFileIO(MojoCdmFileIO* cdm_file_io) {
   DVLOG(3) << __func__ << ": cdm_file_io = " << cdm_file_io;
-  base::EraseIf(cdm_file_io_set_,
+  std::erase_if(cdm_file_io_set_,
                 [cdm_file_io](const std::unique_ptr<MojoCdmFileIO>& ptr) {
                   return ptr.get() == cdm_file_io;
                 });

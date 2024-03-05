@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -183,7 +182,7 @@ class AudioCapturer : public media::AudioCapturerSource::CaptureCallback {
 
   void RemoveObserver(assistant_client::AudioInput::Observer* observer) {
     base::AutoLock lock(observers_lock_);
-    base::Erase(observers_, observer);
+    std::erase(observers_, observer);
   }
 
   int num_observers() {

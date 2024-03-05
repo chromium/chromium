@@ -10,9 +10,9 @@
 #include <tuple>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -260,7 +260,7 @@ bool ModuleTimeDateStampGreater::operator()(
 void RemoveAllowlistedEntries(
     const ModuleListFilter& module_list_filter,
     std::vector<third_party_dlls::PackedListModule>* blocklisted_modules) {
-  base::EraseIf(
+  std::erase_if(
       *blocklisted_modules,
       [&module_list_filter](const third_party_dlls::PackedListModule& module) {
         return module_list_filter.IsAllowlisted(

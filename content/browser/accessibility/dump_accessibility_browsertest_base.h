@@ -92,7 +92,7 @@ class DumpAccessibilityTestBase
   template <ApiTypeVector TestPasses(), ui::AXApiType::TypeConstant type>
   static ApiTypeVector TestPassesExcept() {
     ApiTypeVector passes = TestPasses();
-    base::Erase(passes, type);
+    std::erase(passes, type);
     return passes;
   }
 

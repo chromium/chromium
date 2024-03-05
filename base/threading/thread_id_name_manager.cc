@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"  // no-presubmit-check
@@ -62,7 +61,7 @@ void ThreadIdNameManager::AddObserver(Observer* obs) {
 void ThreadIdNameManager::RemoveObserver(Observer* obs) {
   AutoLock locked(lock_);
   DCHECK(base::Contains(observers_, obs));
-  base::Erase(observers_, obs);
+  std::erase(observers_, obs);
 }
 
 void ThreadIdNameManager::SetName(const std::string& name) {

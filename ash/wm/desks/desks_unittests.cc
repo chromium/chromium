@@ -370,7 +370,7 @@ class TestObserver : public DesksController::Observer {
     EXPECT_TRUE(DesksController::Get()->AreDesksBeingModified());
   }
   void OnDeskRemoved(const Desk* desk) override {
-    base::Erase(desks_, desk);
+    std::erase(desks_, desk);
     EXPECT_TRUE(DesksController::Get()->AreDesksBeingModified());
   }
   void OnDeskActivationChanged(const Desk* activated,

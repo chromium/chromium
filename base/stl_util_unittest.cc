@@ -20,7 +20,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/queue.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -229,7 +228,7 @@ TEST(Erase, IsNotIn) {
   std::vector<int> lhs = {0, 2, 2, 4, 4, 4, 6, 8, 10};
   std::vector<int> rhs = {1, 2, 2, 4, 5, 6, 7};
   std::vector<int> expected = {2, 2, 4, 6};
-  EXPECT_EQ(5u, EraseIf(lhs, IsNotIn<std::vector<int>>(rhs)));
+  EXPECT_EQ(5u, std::erase_if(lhs, IsNotIn<std::vector<int>>(rhs)));
   EXPECT_EQ(expected, lhs);
 }
 

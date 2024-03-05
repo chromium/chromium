@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 
+#include <vector>
+
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/mojom/app.mojom-shared.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
@@ -17,7 +19,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
@@ -397,7 +398,7 @@ void ArcAppTest::UpdatePackage(arc::mojom::ArcPackageInfoPtr updated_package) {
 }
 
 void ArcAppTest::RemovePackage(const std::string& package_name) {
-  base::EraseIf(fake_packages_, [package_name](const auto& package) {
+  std::erase_if(fake_packages_, [package_name](const auto& package) {
     return package->package_name == package_name;
   });
 }

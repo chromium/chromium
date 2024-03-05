@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -467,8 +466,8 @@ class BackgroundSyncManagerTest
           // |callback_one_shot_sync_registration_| for testing.
           callback_one_shot_sync_registration_ =
               std::move(one_shot_sync_registration);
-          base::Erase(callback_one_shot_sync_registrations_,
-                      one_shot_sync_registration);
+          std::erase(callback_one_shot_sync_registrations_,
+                     one_shot_sync_registration);
           return true;
         }
       }
@@ -499,8 +498,8 @@ class BackgroundSyncManagerTest
           // |callback_periodic_sync_registration_| for testing.
           callback_periodic_sync_registration_ =
               std::move(periodic_sync_registration);
-          base::Erase(callback_periodic_sync_registrations_,
-                      periodic_sync_registration);
+          std::erase(callback_periodic_sync_registrations_,
+                     periodic_sync_registration);
           return true;
         }
       }

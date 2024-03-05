@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/media_app_ui/buildflags.h"
@@ -11,7 +12,6 @@
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check_deref.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -982,7 +982,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppEligibleOpenTask) {
         file_manager::test::GetTasksForFile(profile(), file_path);
 
     // Files SWA internal task "select" matches any file, we ignore it here.
-    base::EraseIf(result, [](auto task) {
+    std::erase_if(result, [](auto task) {
       return task.task_descriptor.app_id == file_manager::kFileManagerSwaAppId;
     });
 
