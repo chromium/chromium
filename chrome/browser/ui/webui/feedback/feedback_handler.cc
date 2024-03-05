@@ -6,8 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -27,7 +29,7 @@
 namespace {
 
 void ShowChildPage(Profile* profile,
-                   const FeedbackDialog* dialog,
+                   const base::WeakPtr<FeedbackDialog>& dialog,
                    const GURL& url,
                    const std::u16string& title,
                    const std::string& args = "",
@@ -35,6 +37,11 @@ void ShowChildPage(Profile* profile,
                    int dialog_height = 400,
                    bool can_resize = true,
                    bool can_minimize = true) {
+  CHECK(profile);
+  if (!dialog) {
+    return;
+  }
+
   const bool is_parent_modal = dialog->GetWidget()->IsModal();
 
   auto delegate = std::make_unique<ui::WebDialogDelegate>();
@@ -61,8 +68,8 @@ GURL ChildPageURL(const std::string& child_page) {
 }
 }  // namespace
 
-FeedbackHandler::FeedbackHandler(const FeedbackDialog* dialog)
-    : dialog_(dialog) {}
+FeedbackHandler::FeedbackHandler(base::WeakPtr<FeedbackDialog> dialog)
+    : dialog_(std::move(dialog)) {}
 
 FeedbackHandler::~FeedbackHandler() = default;
 
@@ -95,7 +102,9 @@ void FeedbackHandler::RegisterMessages() {
 }
 
 void FeedbackHandler::HandleShowDialog(const base::Value::List& args) {
-  dialog_->Show();
+  if (dialog_) {
+    dialog_->Show();
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

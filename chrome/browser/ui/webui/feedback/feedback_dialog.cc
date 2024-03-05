@@ -125,7 +125,8 @@ FeedbackDialog::FeedbackDialog(
           : IDS_FEEDBACK_REPORT_PAGE_TITLE));
   set_show_dialog_title(true);
 
-  AddWebUIMessageHandler(std::make_unique<FeedbackHandler>(this));
+  AddWebUIMessageHandler(
+      std::make_unique<FeedbackHandler>(weak_ptr_factory_.GetWeakPtr()));
 }
 
 FeedbackDialog::~FeedbackDialog() {
