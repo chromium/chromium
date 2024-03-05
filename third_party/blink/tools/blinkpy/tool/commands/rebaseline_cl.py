@@ -239,6 +239,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 build.builder_name)
             build_steps.extend((build, step_name) for step_name in step_names)
 
+        _log.info('Fetching test results for '
+                  f'{pluralize("suite", len(build_steps))}.')
         map_fn = self._io_pool.map if self._io_pool else map
         step_results = map_fn(
             lambda build_step: results_fetcher.gather_results(*build_step),

@@ -10,7 +10,7 @@ manage changelists and try jobs associated with them.
 import collections
 import logging
 import re
-from typing import Literal, Mapping, NamedTuple, Set
+from typing import Literal, Mapping, NamedTuple, Optional, Set
 
 from blinkpy.common.checkout.git import Git
 from blinkpy.common.net.results_fetcher import filter_latest_builds
@@ -47,6 +47,17 @@ class TryJobStatus(NamedTuple):
 
 
 BuildStatuses = Mapping[Build, TryJobStatus]
+
+
+# TODO(crbug.com/41483974): Replace `issue_number` and `patchset` paired
+# arguments in `GitCL.*` with this more meaningful type.
+class Changelist(NamedTuple):
+    issue: str
+    patchset: Optional[int] = None
+
+    def __str__(self) -> str:
+        base_url = f'https://crrev.com/c/{self.issue}'
+        return f'{base_url}/{self.patchset}' if self.patchset else base_url
 
 
 class CLStatus(NamedTuple):

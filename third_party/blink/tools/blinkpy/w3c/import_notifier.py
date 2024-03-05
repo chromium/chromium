@@ -16,6 +16,7 @@ import typing
 from typing import List, NamedTuple, Optional
 
 from blinkpy.common import path_finder
+from blinkpy.common.net.git_cl import Changelist
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.web_tests.models.testharness_results import (
     LineType,
@@ -83,8 +84,8 @@ class ImportNotifier:
 
         Note: "test names" are paths of the tests relative to web_tests.
         """
-        gerrit_url = SHORT_GERRIT_PREFIX + issue
-        gerrit_url_with_ps = gerrit_url + '/' + patchset + '/'
+        gerrit_url = str(Changelist(issue))
+        gerrit_url_with_ps = str(Changelist(issue, patchset)) + '/'
 
         changed_test_baselines = self.find_changed_baselines_of_tests(
             rebaselined_tests)
