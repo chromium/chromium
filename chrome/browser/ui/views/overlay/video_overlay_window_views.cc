@@ -222,6 +222,21 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
     // Allows for dragging and resizing the window.
     return (window_component == HTNOWHERE) ? HTCAPTION : window_component;
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void UpdateWindowRoundedCorners() override {
+    // The first call to  occurs in `UpdateWindowRoundedCorners()`. However, the
+    // layer is initialized after the widget is initialized, hence the null
+    // check.
+    ui::Layer* root_view_layer = GetWidget()->GetRootView()->layer();
+    if (root_view_layer) {
+      aura::Window* window = GetWidget()->GetNativeWindow();
+      window->SetProperty(aura::client::kWindowCornerRadiusKey,
+                          chromeos::kPipRoundedCornerRadius);
+      ash::SetCornerRadius(window, root_view_layer,
+                           chromeos::kPipRoundedCornerRadius);
+    }
+  }
+#endif
 
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const View* target,
@@ -1266,8 +1281,7 @@ void VideoOverlayWindowViews::ShowInactive() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::SetCornerRadius(GetNativeWindow(), GetRootView()->layer(),
-                       chromeos::kPipRoundedCornerRadius);
+  non_client_view()->frame_view()->UpdateWindowRoundedCorners();
 #endif
 
   // If there is an existing overlay view, remove it now.
