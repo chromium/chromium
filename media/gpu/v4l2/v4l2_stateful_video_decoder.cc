@@ -365,7 +365,7 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   const bool is_h264 =
       VideoCodecProfileToVideoCodec(config.profile()) == VideoCodec::kH264;
-  constexpr size_t kNumInputBuffersH264 = 8;
+  constexpr size_t kNumInputBuffersH264 = 16;
   constexpr size_t kNumInputBuffersVPx = 2;
   const auto num_input_buffers =
       is_h264 ? kNumInputBuffersH264 : kNumInputBuffersVPx;
@@ -379,8 +379,8 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
     std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
     return;
   }
-  client_->NotifyEstimatedMaxDecodeRequests(
-      base::checked_cast<int>(num_input_buffers));
+  client_->NotifyEstimatedMaxDecodeRequests(base::checked_cast<int>(
+      std::min(static_cast<size_t>(4), num_input_buffers)));
 
   // Subscribe to the resolution change event. This is needed for resolution
   // changes mid stream but also to initialize the |CAPTURE_queue|.
