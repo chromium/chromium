@@ -83,22 +83,6 @@
         },
         'os_type': 'chromeos'
       },
-      'chromeos-eve-chrome': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromeos_device_gtests',
-        },
-        'swarming': {
-          'dimensions': {
-            'os': 'ChromeOS',
-            'device_type': 'eve',
-            'pool': 'chrome.tests',
-          },
-        },
-        'os_type': 'chromeos'
-      },
       'chromeos-jacuzzi-chrome-skylab': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -6597,6 +6581,13 @@
         'test_suites': {
           'skylab_tests': 'chromeos_brya_skylab_tests',
         }
+      },
+      'chromeos-eve-chrome': {
+        # This builder is build only.
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'os_type': 'chromeos'
       },
       'chromeos-jacuzzi-chrome': {
         # This builder is obsolete. It will be replaced with chromeos-jacuzzi-chrome-skylab.

@@ -1495,6 +1495,11 @@
       }
     ]
   },
+  "chromeos-eve-chrome": {
+    "additional_compile_targets": [
+      "chromiumos_preflight"
+    ]
+  },
   "chromeos-jacuzzi-chrome": {
     "additional_compile_targets": [
       "chromiumos_preflight"
