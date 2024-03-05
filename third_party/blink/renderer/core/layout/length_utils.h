@@ -28,6 +28,19 @@ class ComputedStyle;
 class ConstraintSpace;
 class Length;
 
+// Multiple functions in this file use MinMaxSizesFunctionRef callbacks, which
+// should have the following form:
+//
+// auto MinMaxSizesFunc = [](MinMaxSizesType) -> MinMaxSizesResult { };
+//
+// This is used for computing the min/max content or intrinsic sizes on-demand
+// rather than determining if a length resolving function will require these
+// sizes ahead of time.
+using MinMaxSizesFunctionRef =
+    base::FunctionRef<MinMaxSizesResult(MinMaxSizesType)>;
+
+using IntrinsicBlockSizeFunctionRef = base::FunctionRef<LayoutUnit()>;
+
 inline bool NeedMinMaxSize(const ComputedStyle& style) {
   return style.LogicalWidth().HasContentOrIntrinsic() ||
          style.LogicalMinWidth().HasContentOrIntrinsic() ||
@@ -69,7 +82,7 @@ CORE_EXPORT LayoutUnit ResolveInlineLengthInternal(
     const ConstraintSpace&,
     const ComputedStyle&,
     const BoxStrut& border_padding,
-    const std::optional<MinMaxSizes>&,
+    MinMaxSizesFunctionRef,
     const Length&,
     LayoutUnit override_available_size = kIndefiniteSize,
     Length::AnchorEvaluator* anchor_evaluator = nullptr);
@@ -86,19 +99,6 @@ CORE_EXPORT LayoutUnit ResolveBlockLengthInternal(
     const LayoutUnit* override_percentage_resolution_size = nullptr,
     Length::AnchorEvaluator* anchor_evaluator = nullptr);
 
-// Multiple functions in this file use MinMaxSizesFunctionRef callbacks, which
-// should have the following form:
-//
-// auto MinMaxSizesFunc = [](MinMaxSizesType) -> MinMaxSizesResult { };
-//
-// This is used for computing the min/max content or intrinsic sizes on-demand
-// rather than determining if a length resolving function will require these
-// sizes ahead of time.
-using MinMaxSizesFunctionRef =
-    base::FunctionRef<MinMaxSizesResult(MinMaxSizesType)>;
-
-using IntrinsicBlockSizeFunctionRef = base::FunctionRef<LayoutUnit()>;
-
 // Used for resolving min inline lengths, (|ComputedStyle::MinLogicalWidth|).
 inline LayoutUnit ResolveMinInlineLength(
     const ConstraintSpace& constraint_space,
@@ -112,16 +112,8 @@ inline LayoutUnit ResolveMinInlineLength(
              InlineLengthUnresolvable(constraint_space, length)))
     return border_padding.InlineSum();
 
-  std::optional<MinMaxSizes> min_max_sizes;
-  if (length.HasContentOrIntrinsic()) {
-    min_max_sizes =
-        min_max_sizes_func(length.IsMinIntrinsic() ? MinMaxSizesType::kIntrinsic
-                                                   : MinMaxSizesType::kContent)
-            .sizes;
-  }
-
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
-                                     min_max_sizes, length,
+                                     min_max_sizes_func, length,
                                      override_available_size, anchor_evaluator);
 }
 
@@ -138,16 +130,8 @@ inline LayoutUnit ResolveMaxInlineLength(
              InlineLengthUnresolvable(constraint_space, length)))
     return LayoutUnit::Max();
 
-  std::optional<MinMaxSizes> min_max_sizes;
-  if (length.HasContentOrIntrinsic()) {
-    min_max_sizes =
-        min_max_sizes_func(length.IsMinIntrinsic() ? MinMaxSizesType::kIntrinsic
-                                                   : MinMaxSizesType::kContent)
-            .sizes;
-  }
-
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
-                                     min_max_sizes, length,
+                                     min_max_sizes_func, length,
                                      override_available_size, anchor_evaluator);
 }
 
@@ -161,16 +145,9 @@ inline LayoutUnit ResolveMainInlineLength(
     LayoutUnit override_available_size = kIndefiniteSize,
     Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   DCHECK(!length.IsAuto());
-  std::optional<MinMaxSizes> min_max_sizes;
-  if (length.HasContentOrIntrinsic()) {
-    min_max_sizes =
-        min_max_sizes_func(length.IsMinIntrinsic() ? MinMaxSizesType::kIntrinsic
-                                                   : MinMaxSizesType::kContent)
-            .sizes;
-  }
 
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
-                                     min_max_sizes, length,
+                                     min_max_sizes_func, length,
                                      override_available_size, anchor_evaluator);
 }
 

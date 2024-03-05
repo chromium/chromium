@@ -91,7 +91,7 @@ LayoutUnit ResolveInlineLengthInternal(
     const ConstraintSpace& constraint_space,
     const ComputedStyle& style,
     const BoxStrut& border_padding,
-    const std::optional<MinMaxSizes>& min_max_sizes,
+    MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
     LayoutUnit override_available_size,
     Length::AnchorEvaluator* anchor_evaluator) {
@@ -121,7 +121,7 @@ LayoutUnit ResolveInlineLengthInternal(
           {.anchor_evaluator = anchor_evaluator,
            .intrinsic_evaluator = [&](const Length& length_to_evaluate) {
              return ResolveInlineLengthInternal(
-                 constraint_space, style, border_padding, min_max_sizes,
+                 constraint_space, style, border_padding, min_max_sizes_func,
                  length_to_evaluate, override_available_size, anchor_evaluator);
            }});
 
@@ -135,11 +135,16 @@ LayoutUnit ResolveInlineLengthInternal(
     case Length::kMaxContent:
     case Length::kMinIntrinsic:
     case Length::kFitContent: {
-      DCHECK(min_max_sizes.has_value());
+      MinMaxSizes min_max_sizes =
+          min_max_sizes_func(length.IsMinIntrinsic()
+                                 ? MinMaxSizesType::kIntrinsic
+                                 : MinMaxSizesType::kContent)
+              .sizes;
+
       if (length.IsMinContent() || length.IsMinIntrinsic())
-        return min_max_sizes->min_size;
+        return min_max_sizes.min_size;
       if (length.IsMaxContent())
-        return min_max_sizes->max_size;
+        return min_max_sizes.max_size;
 
       LayoutUnit available_size = constraint_space.AvailableSize().inline_size;
       DCHECK_GE(available_size, LayoutUnit());
@@ -148,7 +153,7 @@ LayoutUnit ResolveInlineLengthInternal(
       BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
       LayoutUnit fill_available =
           (available_size - margins.InlineSum()).ClampNegativeToZero();
-      return min_max_sizes->ShrinkToFit(fill_available);
+      return min_max_sizes.ShrinkToFit(fill_available);
     }
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
