@@ -33,16 +33,15 @@ uint32_t RTCEncodedVideoFrameDelegate::RtpTimestamp() const {
   return webrtc_frame_ ? webrtc_frame_->GetTimestamp() : 0;
 }
 
-void RTCEncodedVideoFrameDelegate::SetRtpTimestamp(
-    uint32_t timestamp,
-    ExceptionState& exception_state) {
+bool RTCEncodedVideoFrameDelegate::SetRtpTimestamp(uint32_t timestamp,
+                                                   String& error_message) {
   base::AutoLock lock(lock_);
-  if (webrtc_frame_) {
-    webrtc_frame_->SetRTPTimestamp(timestamp);
-  } else {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Video frame is empty.");
+  if (!webrtc_frame_) {
+    error_message = "underlying webrtc frame is empty.";
+    return false;
   }
+  webrtc_frame_->SetRTPTimestamp(timestamp);
+  return true;
 }
 
 std::optional<webrtc::Timestamp>
@@ -98,13 +97,16 @@ RTCEncodedVideoFrameDelegate::GetMetadata() const {
                        : std::nullopt;
 }
 
-void RTCEncodedVideoFrameDelegate::SetMetadata(
-    const webrtc::VideoFrameMetadata& metadata) {
+bool RTCEncodedVideoFrameDelegate::SetMetadata(
+    const webrtc::VideoFrameMetadata& metadata,
+    String& error_message) {
   base::AutoLock lock(lock_);
   if (!webrtc_frame_) {
-    return;
+    error_message = "underlying webrtc frame is empty.";
+    return false;
   }
   webrtc_frame_->SetMetadata(metadata);
+  return true;
 }
 
 std::unique_ptr<webrtc::TransformableVideoFrameInterface>
