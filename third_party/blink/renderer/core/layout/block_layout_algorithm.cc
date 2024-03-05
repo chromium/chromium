@@ -89,6 +89,16 @@ bool HasLineEvenIfEmpty(LayoutBox* box) {
   return false;
 }
 
+inline bool IsLastInflowChild(const LayoutBox& box) {
+  for (const LayoutObject* next = box.NextSibling(); next;
+       next = next->NextSibling()) {
+    if (!next->IsFloatingOrOutOfFlowPositioned()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 inline const LayoutResult* LayoutBlockChild(
     const ConstraintSpace& space,
     const BreakToken* break_token,
@@ -245,6 +255,8 @@ BlockLayoutAlgorithm::BlockLayoutAlgorithm(const LayoutAlgorithmParams& params)
       is_resuming_(IsBreakInside(params.break_token)),
       abort_when_bfc_block_offset_updated_(false),
       has_break_opportunity_before_next_child_(false),
+      should_text_box_trim_start_(params.space.ShouldTextBoxTrimStart()),
+      should_text_box_trim_end_(params.space.ShouldTextBoxTrimEnd()),
       ignore_line_clamp_(false),
       is_line_clamp_context_(params.space.IsLineClampContext()),
       lines_until_clamp_(params.space.LinesUntilClamp()) {
@@ -273,6 +285,12 @@ BlockLayoutAlgorithm::BlockLayoutAlgorithm(const LayoutAlgorithmParams& params)
       container_builder_.SetUnpositionedListMarker(
           UnpositionedListMarker(marker_node));
     }
+  }
+
+  const ComputedStyle& style = Node().Style();
+  if (UNLIKELY(style.TextBoxTrim() != ETextBoxTrim::kNone)) {
+    should_text_box_trim_start_ |= style.ShouldTextBoxTrimStart();
+    should_text_box_trim_end_ |= style.ShouldTextBoxTrimEnd();
   }
 }
 
@@ -2956,6 +2974,18 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     builder.SetLinesUntilClamp(lines_until_clamp_);
   }
   builder.SetBlockStartAnnotationSpace(block_start_annotation_space);
+
+  // Propagate `text-box-trim` only for in-flow children. Check the
+  // `LayoutObject` tree, because `InlineNode` synthesizes these flags.
+  if (!child.GetLayoutBox()->IsFloatingOrOutOfFlowPositioned()) {
+    if (UNLIKELY(should_text_box_trim_start_)) {
+      builder.SetShouldTextBoxTrimStart();
+    }
+    if (UNLIKELY(should_text_box_trim_end_) &&
+        UNLIKELY(IsLastInflowChild(*child.GetLayoutBox()))) {
+      builder.SetShouldTextBoxTrimEnd();
+    }
+  }
 
   if (constraint_space.HasBlockFragmentation()) {
     LayoutUnit fragmentainer_offset_delta;

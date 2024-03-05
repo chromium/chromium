@@ -761,6 +761,14 @@ class CORE_EXPORT ConstraintSpace final {
     return HasRareData() ? rare_data_->LinesUntilClamp() : std::nullopt;
   }
 
+  // Return true if `text-box-trim` is in effect for the block-start/end.
+  bool ShouldTextBoxTrimStart() const {
+    return bitfields_.should_text_box_trim_start_;
+  }
+  bool ShouldTextBoxTrimEnd() const {
+    return bitfields_.should_text_box_trim_end_;
+  }
+
   const GridLayoutSubtree* GetGridLayoutSubtree() const {
     return HasRareData() ? rare_data_->GetGridLayoutSubtree() : nullptr;
   }
@@ -1574,7 +1582,9 @@ class CORE_EXPORT ConstraintSpace final {
           is_restricted_block_size_table_cell_child(false),
           percentage_inline_storage(kSameAsAvailable),
           percentage_block_storage(kSameAsAvailable),
-          replaced_percentage_block_storage(kSameAsAvailable) {}
+          replaced_percentage_block_storage(kSameAsAvailable),
+          should_text_box_trim_start_(false),
+          should_text_box_trim_end_(false) {}
 
     bool MaySkipLayout(const Bitfields& other) const {
       return adjoining_object_types == other.adjoining_object_types &&
@@ -1634,6 +1644,9 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned percentage_inline_storage : 2;          // PercentageStorage
     unsigned percentage_block_storage : 2;           // PercentageStorage
     unsigned replaced_percentage_block_storage : 2;  // PercentageStorage
+
+    unsigned should_text_box_trim_start_ : 1;
+    unsigned should_text_box_trim_end_ : 1;
   };
 
   // To ensure that the bfc_offset_, rare_data_ union doesn't get polluted,

@@ -853,6 +853,45 @@ TEST_F(InlineLayoutAlgorithmTest, LineBoxWithHangingWidthRTLCenterAligned) {
   EXPECT_EQ(PhysicalRect(35, 0, 30, 10), TextAreaFirstLineRect("f"));
 }
 
+TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpace) {
+  ScopedCSSTextBoxTrimForTest enable_text_box_trim(true);
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <div id="parent" style="text-box-trim: both; position: relative">
+      <div id="abs1" style="position: absolute">abs1</div>
+      <div id="float1" style="float: left">float1</div>
+      <div id="child1">child1</div>
+      <div id="child2">child2</div>
+      <div id="abs2" style="position: absolute">abs1</div>
+      <div id="float2" style="float: left">float1</div>
+    </div>
+  )HTML");
+
+  // `ShouldTextBoxTrim*` should be set only to in-flow children.
+  for (const char* id : {"parent", "abs1", "abs2", "float1", "float2"}) {
+    const auto* layout_object = GetLayoutBlockFlowByElementId(id);
+    const LayoutResult* result = layout_object->GetCachedLayoutResult(nullptr);
+    const ConstraintSpace& space = result->GetConstraintSpaceForCaching();
+    EXPECT_FALSE(space.ShouldTextBoxTrimStart());
+    EXPECT_FALSE(space.ShouldTextBoxTrimEnd());
+  }
+
+  const auto* child1 = GetLayoutBlockFlowByElementId("child1");
+  const LayoutResult* child1_result = child1->GetCachedLayoutResult(nullptr);
+  const ConstraintSpace& child1_space =
+      child1_result->GetConstraintSpaceForCaching();
+  EXPECT_TRUE(child1_space.ShouldTextBoxTrimStart());
+  EXPECT_FALSE(child1_space.ShouldTextBoxTrimEnd());
+
+  const auto* child2 = GetLayoutBlockFlowByElementId("child2");
+  const LayoutResult* child2_result = child2->GetCachedLayoutResult(nullptr);
+  const ConstraintSpace& child2_space =
+      child2_result->GetConstraintSpaceForCaching();
+  // TODO(crbug.com/40254880): This should be `EXPECT_FALSE`.
+  EXPECT_TRUE(child2_space.ShouldTextBoxTrimStart());
+  EXPECT_TRUE(child2_space.ShouldTextBoxTrimEnd());
+}
+
 #undef MAYBE_VerticalAlignBottomReplaced
 }  // namespace
 }  // namespace blink

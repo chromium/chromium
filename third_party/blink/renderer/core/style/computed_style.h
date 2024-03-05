@@ -1722,6 +1722,18 @@ class ComputedStyle final : public ComputedStyleBase {
             RuntimeEnabledFeatures::DisplayContentsFocusableEnabled());
   }
 
+  // `text-box-trim` utility functions.
+  bool ShouldTextBoxTrimStart() const {
+    const ETextBoxTrim text_box_trim = TextBoxTrim();
+    return text_box_trim == ETextBoxTrim::kStart ||
+           text_box_trim == ETextBoxTrim::kBoth;
+  }
+  bool ShouldTextBoxTrimEnd() const {
+    const ETextBoxTrim text_box_trim = TextBoxTrim();
+    return text_box_trim == ETextBoxTrim::kEnd ||
+           text_box_trim == ETextBoxTrim::kBoth;
+  }
+
   // Text decoration utility functions.
   bool TextDecorationVisualOverflowEqual(const ComputedStyle& o) const;
   CORE_EXPORT TextDecorationLine TextDecorationsInEffect() const;

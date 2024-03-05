@@ -501,6 +501,13 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
       space_.EnsureRareData()->SetLinesUntilClamp(*clamp);
   }
 
+  void SetShouldTextBoxTrimStart() {
+    space_.bitfields_.should_text_box_trim_start_ = true;
+  }
+  void SetShouldTextBoxTrimEnd() {
+    space_.bitfields_.should_text_box_trim_end_ = true;
+  }
+
   void SetIsPushedByFloats() {
     space_.EnsureRareData()->is_pushed_by_floats = true;
   }

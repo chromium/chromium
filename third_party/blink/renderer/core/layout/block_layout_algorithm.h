@@ -427,6 +427,10 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // (between block-level siblings or line box siblings).
   bool has_break_opportunity_before_next_child_ : 1;
 
+  // If the `text-box-trim` is effective for block-start/end edges.
+  bool should_text_box_trim_start_ : 1;
+  bool should_text_box_trim_end_ : 1;
+
   // If true, ignore the line-clamp property as truncation wont be required.
   bool ignore_line_clamp_ : 1;
 

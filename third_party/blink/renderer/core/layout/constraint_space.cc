@@ -26,7 +26,7 @@ struct SameSizeAsConstraintSpace {
     void* rare_data;
   };
   ExclusionSpace exclusion_space;
-  unsigned bitfields[1];
+  unsigned bitfields[2];
 };
 
 ASSERT_SIZE(ConstraintSpace, SameSizeAsConstraintSpace);
