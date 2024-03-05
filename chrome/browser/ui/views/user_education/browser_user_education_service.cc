@@ -186,6 +186,20 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetMetadata(115, "vykochko@google.com",
                                  "Triggered after autofill popup appears.")));
 
+  // kIPHAutofillVirtualCardSuggestionFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHAutofillManualFallbackFeature,
+          kAutofillManualFallbackElementId, IDS_AUTOFILL_IPH_MANUAL_FALLBACK,
+          IDS_AUTOFILL_IPH_MANUAL_FALLBACK_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetMetadata(
+              123, "theocristea@google.com",
+              "User focuses a field, but autofill cannot be triggered "
+              "automatically because the field has autocomplete=garbage. In "
+              "this case, autofill can be triggered from the context menu.")));
+
   // kIPHAutofillVirtualCardCVCSuggestionFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(

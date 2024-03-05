@@ -13,6 +13,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(
     kAnonymizedUrlCollectionPersonalizationSettingId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAppUninstallDialogOkButtonId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAutofillCreditCardSuggestionEntryElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kAutofillManualFallbackElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAutofillStandaloneCvcSuggestionElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAutofillSuggestionElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkBarElementId);
