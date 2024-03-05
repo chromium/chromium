@@ -871,7 +871,7 @@ class WallpaperControllerTestBase : public AshTestBase {
     base::FilePath file_path = sea_pen_dir.Append(file_name);
     const char test_xmp_data[] = R"(
             <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP Core 6.0.0">
-               <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+               <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
                   <rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/">
                      <dc:description>%s</dc:description>
                   </rdf:Description>
