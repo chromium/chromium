@@ -13,6 +13,7 @@
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace {
 // The time range's expected min and max values for custom histograms.
@@ -93,6 +95,24 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   return self;
 }
 
+- (void)registerNotificationCategories {
+  UNUserNotificationCenter* center =
+      UNUserNotificationCenter.currentNotificationCenter;
+  NSMutableSet<UNNotificationCategory*>* notificationCategories =
+      [[NSMutableSet alloc] init];
+  UNNotificationAction* feedbackAction = [UNNotificationAction
+      actionWithIdentifier:kContentNotificationFeedbackActionIdentifier
+                     title:@"Send Feedback"
+                   options:UNNotificationActionOptionForeground];
+  UNNotificationCategory* contentNotificationCategory = [UNNotificationCategory
+      categoryWithIdentifier:kContentNotificationFeedbackCategoryIdentifier
+                     actions:@[ feedbackAction ]
+           intentIdentifiers:@[]
+                     options:UNNotificationCategoryOptionCustomDismissAction];
+  [notificationCategories addObject:contentNotificationCategory];
+  [center setNotificationCategories:notificationCategories];
+}
+
 #pragma mark - UNUserNotificationCenterDelegate -
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
@@ -123,6 +143,9 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
                                  kNotificationForegroundPresentation];
   // This method is invoked by iOS to process a notification that arrived while
   // the app was running in the foreground.
+  if (IsContentPushNotificationsEnabled()) {
+    [self registerNotificationCategories];
+  }
   auto* clientManager = GetApplicationContext()
                             ->GetPushNotificationService()
                             ->GetPushNotificationClientManager();
@@ -216,7 +239,9 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
           ->GetPushNotificationClientManager();
   DCHECK(clientManager);
   clientManager->OnSceneActiveForegroundBrowserReady();
-
+  if (IsContentPushNotificationsEnabled()) {
+    [self registerNotificationCategories];
+  }
   [PushNotificationUtil
       getPermissionSettings:^(UNNotificationSettings* settings) {
         [PushNotificationUtil
