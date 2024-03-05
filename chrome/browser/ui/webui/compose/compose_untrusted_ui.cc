@@ -18,7 +18,6 @@
 #include "chrome/grit/compose_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/compose/core/browser/compose_features.h"
-#include "components/compose/core/browser/config.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -88,8 +87,6 @@ webui::SetupWebUIDataSource(
       {"resubmit", IDS_COMPOSE_RESUBMIT},
       {"thumbsDown", IDS_COMPOSE_THUMBS_DOWN},
       {"thumbsUp", IDS_COMPOSE_THUMBS_UP},
-      {"savedText", IDS_COMPOSE_SUGGESTION_SAVED_TEXT},
-      {"savedLabel", IDS_COMPOSE_SUGGESTION_SAVED_LABEL},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("enableAnimations",
@@ -99,14 +96,6 @@ webui::SetupWebUIDataSource(
       "enableOnDeviceDogfoodFooter",
       base::FeatureList::IsEnabled(
           compose::features::kEnableComposeOnDeviceDogfoodFooter));
-  source->AddBoolean(
-      "enableSavedStateNotification",
-      base::FeatureList::IsEnabled(
-          compose::features::kEnableComposeSavedStateNotification));
-
-  const compose::Config& config = compose::GetComposeConfig();
-  source->AddInteger("savedStateTimeoutInMilliseconds",
-                     config.saved_state_timeout_milliseconds);
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,

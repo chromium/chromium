@@ -243,7 +243,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
       this.apiProxy_.getRouter();
   private showFirstRunDialog_: boolean;
   private showMainAppDialog_: boolean;
-  private showSavedStateDialog_: boolean;
   private showMSBBDialog_: boolean;
   private shouldShowMSBBDialog_: boolean;
   private editedInput_: string;
@@ -266,7 +265,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private undoEnabled_: boolean;
   private userHasModifiedState_: boolean = false;
   private lastTriggerElement_: TriggerElement;
-  private savedStateNotificationTimeout_: number;
   private outputComplete_: boolean = true;
   private hasOutput_: boolean = false;
   private displayedText_: string;
@@ -315,10 +313,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.saveComposeAppState_();
       }
     });
-    // For detecting when to show the Saved State Notification.
-    this.eventTracker_.add(window, 'blur', () => {
-      this.onWindowBlur_();
-    });
     this.bodyResizeObserver_ = new ResizeObserver(() => {
       this.scrollCheckDebouncer_ = Debouncer.debounce(
           this.scrollCheckDebouncer_, timeOut.after(20), () => {
@@ -353,7 +347,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
       this.showMainAppDialog_ =
           initialState.freComplete && initialState.msbbState;
-      this.showSavedStateDialog_ = false;
 
       if (initialState.initialInput) {
         this.input_ = initialState.initialInput;
@@ -579,37 +572,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     e.preventDefault();
     // Instruct the browser to open the corresponding settings page.
     this.apiProxy_.openComposeSettings();
-  }
-
-  private onWindowBlur_() {
-    if (!loadTimeData.getBoolean('enableSavedStateNotification')) {
-      return;
-    }
-
-    // When pressing tab from the last focusable element on the page, the
-    // browser seems to reset focus onto document.body and cause a temporary
-    // window blur. Do not show the saved state notification in this case
-    // since this allows users to hit tab from the last focusable element
-    // to loop focus back to the first focusable element.
-    if (document.activeElement === document.body) {
-      return;
-    }
-
-    // Show Saved State Notification if losing focus from the main app dialog.
-    if (this.showMainAppDialog_) {
-      this.showMainAppDialog_ = false;
-      this.showSavedStateDialog_ = true;
-
-      this.savedStateNotificationTimeout_ = setTimeout(() => {
-        this.apiProxy_.closeUi(CloseReason.kLostFocus);
-      }, loadTimeData.getInteger('savedStateTimeoutInMilliseconds'));
-    }
-  }
-
-  private onSavedStateDialogClick_() {
-    clearTimeout(this.savedStateNotificationTimeout_);
-    this.showMainAppDialog_ = true;
-    this.showSavedStateDialog_ = false;
   }
 
   private compose_(inputEdited: boolean = false) {

@@ -104,40 +104,6 @@
     padding: 0 20px;
   }
 
-  #savedStateDialog {
-    display: flex;
-    align-items: center;
-    min-width: 180px;
-    padding: 10px var(--padding_);
-  }
-
-  #savedStateIconContainer {
-    color: var(--cr-secondary-text-color);
-    margin-inline-end: var(--gap-between-sections_);
-    min-width: 22px;
-    height: 22px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transform-origin: top left;
-  }
-
-  #savedStateIconContainer iron-icon {
-    --iron-icon-width: 20px;
-    --iron-icon-height: 20px;
-  }
-
-  #savedStateTextContainer {
-    color: var(--cr-primary-text-color);
-    font: inherit;
-    font-size: 15px;
-    line-height: 22px;
-  }
-
-  #savedStateLabel {
-    color: var(--cr-secondary-text-color);
-  }
-
   #heading {
     display: flex;
     height: 24px;
@@ -442,7 +408,6 @@
   .footer[hidden],
   .result-container[hidden],
   #loading[hidden],
-  #savedStateDialog[hidden],
   #editContainer[hidden] {
     display: none;
   }
@@ -643,17 +608,5 @@
         </if>
       </div>
     </div>
-  </div>
-</div>
-
-
-<div id="savedStateDialog" hidden="[[!showSavedStateDialog_]]"
-  on-click="onSavedStateDialogClick_">
-  <div id="savedStateIconContainer">
-    <iron-icon icon="compose:compose"></iron-icon>
-  </div>
-  <div id="savedStateTextContainer">
-    <div id="savedStateText">$i18n{savedText}</div>
-    <div id="savedStateLabel">$i18n{savedLabel}</div>
   </div>
 </div>
