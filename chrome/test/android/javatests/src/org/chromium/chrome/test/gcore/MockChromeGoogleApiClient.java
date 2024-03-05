@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.test.gcore;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import org.chromium.chrome.browser.gcore.ChromeGoogleApiClient;
 

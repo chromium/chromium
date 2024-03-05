@@ -18,12 +18,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 
 import android.graphics.Point;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.view.View;
 import android.webkit.WebView;
 
 import androidx.test.espresso.web.sugar.Web;
 import androidx.test.espresso.web.webdriver.Locator;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;

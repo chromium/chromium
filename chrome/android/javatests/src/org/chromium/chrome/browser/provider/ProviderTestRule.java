@@ -8,15 +8,13 @@ import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.ProviderInfo;
-import android.test.IsolatedContext;
-import android.test.mock.MockContentResolver;
 
-import org.junit.Assert;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -24,7 +22,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * to a mock resolver in an isolated context.
  */
 public class ProviderTestRule implements TestRule {
-    private IsolatedContext mContext;
+    private AdvancedMockContext mContext;
 
     public ProviderTestRule() {}
 
@@ -40,6 +38,7 @@ public class ProviderTestRule implements TestRule {
 
     private void setUp() throws Exception {
         Context context = ContextUtils.getApplicationContext();
+        mContext = new AdvancedMockContext(context);
 
         final ContentProvider provider = new ChromeBrowserProvider();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -49,11 +48,8 @@ public class ProviderTestRule implements TestRule {
                     provider.attachInfo(context, providerInfo);
                 });
 
-        MockContentResolver resolver = new MockContentResolver();
-        resolver.addProvider(ChromeBrowserProviderImpl.getApiAuthority(context), provider);
-
-        mContext = new IsolatedContext(resolver, context);
-        Assert.assertTrue(getContentResolver() instanceof MockContentResolver);
+        mContext.getMockContentResolver()
+                .addProvider(ChromeBrowserProviderImpl.getApiAuthority(context), provider);
     }
 
     protected ContentResolver getContentResolver() {

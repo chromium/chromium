@@ -9,8 +9,6 @@ import android.os.Bundle;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
-import junit.framework.ComparisonFailure;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -347,12 +345,12 @@ public class WebViewLayoutTest {
                     errorMessage.append(
                             String.format(
                                     "\n"
-                                            + "At least one of the properties of the Blink interface"
-                                            + " \"%s\" is not exposed in WebView.\n"
-                                            + "Add them to the list of properties not exposed for the"
-                                            + " \"%s\" interface in\n"
-                                            + "%s\n"
-                                            + "to resolve this error\n",
+                                        + "At least one of the properties of the Blink interface"
+                                        + " \"%s\" is not exposed in WebView.\n"
+                                        + "Add them to the list of properties not exposed for the"
+                                        + " \"%s\" interface in\n"
+                                        + "%s\n"
+                                        + "to resolve this error\n",
                                     blinkInterface,
                                     blinkInterface,
                                     NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
@@ -466,11 +464,14 @@ public class WebViewLayoutTest {
             String expected = readFile(fileNameExpected);
             mTestActivity.waitForFinish(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             String result = mTestActivity.getTestResult();
-            if (noFail && !expected.equals(result)) {
-                ComparisonFailure cf = new ComparisonFailure("Unexpected result", expected, result);
-                Log.e(TAG, cf.toString());
-            } else {
+            try {
                 Assert.assertEquals(expected, result);
+            } catch (AssertionError exception) {
+                if (noFail) {
+                    Log.e(TAG, "%s", exception.toString());
+                } else {
+                    throw exception;
+                }
             }
         }
     }

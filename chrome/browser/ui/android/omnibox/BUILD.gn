@@ -367,7 +367,6 @@ android_library("unit_device_javatests") {
     "//components/content_settings/android:content_settings_enums_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
-    "//third_party/android_sdk:android_test_base_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",

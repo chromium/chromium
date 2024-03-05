@@ -4,10 +4,9 @@
 
 package org.chromium.content.browser.font;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -18,16 +17,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
-import android.test.IsolatedContext;
 import android.test.mock.MockContentProvider;
-import android.test.mock.MockContentResolver;
-import android.test.mock.MockContext;
 
 import androidx.core.provider.FontRequest;
 import androidx.core.provider.FontsContractCompat.Columns;
@@ -47,6 +42,7 @@ import org.mockito.Mock;
 import org.mockito.stubbing.OngoingStubbing;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.AndroidFontLookup;
@@ -85,7 +81,7 @@ public final class AndroidFontLookupImplTest {
     @Mock private ParcelFileDescriptor mMockCachedFileDescriptor2;
     @Mock private ParcelFileDescriptor mMockDuplicateFileDescriptor;
     @Mock private ParcelFileDescriptor mMockDuplicateFileDescriptor2;
-    private Context mMockContext;
+    private AdvancedMockContext mMockContext;
 
     @Mock private GetUniqueNameLookupTable_Response mGetUniqueNameLookupTableCallback;
     @Mock private MatchLocalFontByUniqueName_Response mMatchLocalFontByUniqueNameCallback;
@@ -98,33 +94,33 @@ public final class AndroidFontLookupImplTest {
     @Before
     public void setUp() throws IOException {
         initMocks(this);
+        mMockContext = new AdvancedMockContext();
 
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
-        MockContentResolver resolver = new MockContentResolver();
-        MockContext mockContext = new MockContext();
         when(mMockFileDescriptor.dup()).thenReturn(mMockCachedFileDescriptor);
         when(mMockFileDescriptor2.dup()).thenReturn(mMockCachedFileDescriptor2);
         when(mMockCachedFileDescriptor.dup()).thenReturn(mMockDuplicateFileDescriptor);
         when(mMockCachedFileDescriptor2.dup()).thenReturn(mMockDuplicateFileDescriptor2);
         when(mMockDuplicateFileDescriptor.detachFd()).thenReturn(FD);
         when(mMockDuplicateFileDescriptor2.detachFd()).thenReturn(FD2);
-        resolver.addProvider(
-                AUTHORITY,
-                new MockContentProvider(mockContext) {
-                    @Override
-                    public AssetFileDescriptor openTypedAssetFile(
-                            Uri url, String mimeType, Bundle opts) {
-                        if (url.equals(URI)) {
-                            return new AssetFileDescriptor(mMockFileDescriptor, 0, -1);
-                        } else if (url.equals(URI2)) {
-                            return new AssetFileDescriptor(mMockFileDescriptor2, 0, -1);
-                        } else {
-                            return null;
-                        }
-                    }
-                });
-        mMockContext = new IsolatedContext(resolver, mockContext);
+        mMockContext
+                .getMockContentResolver()
+                .addProvider(
+                        AUTHORITY,
+                        new MockContentProvider(mMockContext) {
+                            @Override
+                            public AssetFileDescriptor openTypedAssetFile(
+                                    Uri url, String mimeType, Bundle opts) {
+                                if (url.equals(URI)) {
+                                    return new AssetFileDescriptor(mMockFileDescriptor, 0, -1);
+                                } else if (url.equals(URI2)) {
+                                    return new AssetFileDescriptor(mMockFileDescriptor2, 0, -1);
+                                } else {
+                                    return null;
+                                }
+                            }
+                        });
 
         Map<String, String> fullFontNameToQuery =
                 ImmutableMap.of(

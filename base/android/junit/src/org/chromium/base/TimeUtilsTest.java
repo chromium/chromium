@@ -4,7 +4,7 @@
 
 package org.chromium.base;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import androidx.test.filters.SmallTest;
 
