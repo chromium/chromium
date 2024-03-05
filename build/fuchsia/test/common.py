@@ -64,6 +64,16 @@ def _find_fuchsia_sdk_root() -> str:
 
 SDK_ROOT = os.path.abspath(_find_fuchsia_sdk_root())
 
+
+def _find_fuchsia_gn_sdk_root() -> str:
+    """Define the root of the fuchsia sdk."""
+    if os.environ.get('FUCHSIA_GN_SDK_ROOT'):
+        return os.environ['FUCHSIA_GN_SDK_ROOT']
+    return os.path.join(DIR_SRC_ROOT, 'third_party', 'fuchsia-gn-sdk', 'src')
+
+
+GN_SDK_ROOT = os.path.abspath(_find_fuchsia_gn_sdk_root())
+
 SDK_TOOLS_DIR = os.path.join(SDK_ROOT, 'tools', get_host_arch())
 _FFX_TOOL = os.path.join(SDK_TOOLS_DIR, 'ffx')
 
