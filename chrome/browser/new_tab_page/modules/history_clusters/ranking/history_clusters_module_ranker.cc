@@ -378,6 +378,8 @@ void HistoryClustersModuleRanker::OnBatchModelExecutionComplete(
 
   // Filter clusters by model score.
   for (size_t i = 0; i < clusters.size(); i++) {
+    base::UmaHistogramBoolean("NewTabPage.HistoryClusters.ValidScore",
+                              outputs[i] <= 0 && outputs[i] >= -1);
     if (outputs[i] <= threshold_param_) {
       clusters_with_signals_and_scores.emplace_back(
           std::move(clusters[i]), std::move(ranking_signals->at(i)),

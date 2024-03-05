@@ -873,6 +873,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="NewTabPage.HistoryClusters.ValidScore" enum="Boolean"
+    expires_after="2024-06-30">
+  <owner>mfacey@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs whether there is an valid score returned for a cluster. A cluster
+    should have a score between -1 and 0 but if the model is broken in some way
+    it may return a value outside of that range.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Images.ShownTime{ImageType}" units="ms"
     expires_after="2024-09-01">
   <owner>danpeng@google.com</owner>
