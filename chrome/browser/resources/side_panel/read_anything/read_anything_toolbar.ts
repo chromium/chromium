@@ -548,13 +548,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       button.setAttribute('title', loadTimeData.getString('turnHighlightOn'));
     }
 
-    this.dispatchEvent(new CustomEvent('highlight-toggle', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        highlightOn: this.isHighlightOn_,
-      },
-    }));
+    if (this.contentPage) {
+      this.contentPage.updateHighlight(this.isHighlightOn_);
+    }
   }
 
   private onLetterSpacingClick_(event: DomRepeatEvent<MenuStateItem<number>>) {

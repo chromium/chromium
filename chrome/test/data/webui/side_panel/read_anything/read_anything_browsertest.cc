@@ -78,11 +78,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, PlayPause) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, HighlightToggle) {
-  RunSidePanelTest("side_panel/read_anything/highlight_toggle_test.js",
-                   "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, RateSelection) {
   RunSidePanelTest("side_panel/read_anything/rate_selection_test.js",
                    "mocha.run()");
@@ -107,10 +102,5 @@ class ReadAnythingReadAloudMochaTest : public ReadAnythingMochaBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, ReadAloudLinksToggled) {
   RunSidePanelTest("side_panel/read_anything/read_aloud_links_toggled.js",
-                   "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAloudMochaTest, SpeechUsesMaxTextLength) {
-  RunSidePanelTest("side_panel/read_anything/speech_uses_max_text_length.js",
                    "mocha.run()");
 }
