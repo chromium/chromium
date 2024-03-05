@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "components/manta/mahi_provider.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -49,6 +50,8 @@ class MahiManagerImpl : public chromeos::MahiManager {
 
   crosapi::mojom::MahiPageInfoPtr current_page_info_ =
       crosapi::mojom::MahiPageInfo::New();
+
+  std::unique_ptr<manta::MahiProvider> mahi_provider_;
 
   // The widget contains the Mahi main panel.
   views::UniqueWidgetPtr mahi_panel_widget_;

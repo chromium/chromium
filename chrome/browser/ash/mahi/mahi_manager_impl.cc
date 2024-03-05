@@ -15,13 +15,35 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
+#include "chrome/browser/manta/manta_service_factory.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "components/manta/features.h"
+#include "components/manta/manta_service.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace {
 
 using crosapi::mojom::MahiContextMenuActionType;
+
+std::unique_ptr<manta::MahiProvider> CreateProvider() {
+  if (!manta::features::IsMantaServiceEnabled()) {
+    return nullptr;
+  }
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile) {
+    return nullptr;
+  }
+
+  if (manta::MantaService* service =
+          manta::MantaServiceFactory::GetForProfile(profile)) {
+    return service->CreateMahiProvider();
+  }
+
+  return nullptr;
+}
 
 }  // namespace
 
@@ -55,6 +77,11 @@ void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
                                         ->crosapi_ash()
                                         ->mahi_browser_delegate_ash();
   CHECK(mahi_browser_delegate_ash);
+
+  if (!mahi_provider_) {
+    mahi_provider_ = CreateProvider();
+  }
+
   mahi_browser_delegate_ash->GetContentFromClient(
       current_page_info_->client_id, current_page_info_->page_id,
       base::BindOnce(&MahiManagerImpl::OnGetPageContent,
@@ -120,7 +147,23 @@ void MahiManagerImpl::OnGetPageContent(
     std::move(callback).Run(u"summary text");
     return;
   }
-  std::move(callback).Run(mahi_content_ptr->page_content);
+  mahi_provider_->Summarize(
+      base::UTF16ToUTF8(mahi_content_ptr->page_content),
+      base::BindOnce(
+          [](MahiSummaryCallback summary_callback, base::Value::Dict dict,
+             manta::MantaStatus status) {
+            if (status.status_code != manta::MantaStatusCode::kOk) {
+              std::move(summary_callback).Run(u"Couldn't get summary");
+              return;
+            }
+
+            if (auto* text = dict.FindString("outputData")) {
+              std::move(summary_callback).Run(base::UTF8ToUTF16(*text));
+            } else {
+              std::move(summary_callback).Run(u"Cannot find outputdata");
+            }
+          },
+          std::move(callback)));
 }
 
 }  // namespace ash
