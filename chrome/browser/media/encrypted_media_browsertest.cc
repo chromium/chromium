@@ -393,16 +393,14 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
 // Tests encrypted media playback using ExternalClearKey key system with a
 // specific library CDM interface version as test parameter:
 // - int: CDM interface version to test
-// - bool: Whether the kCdmStorageDatabase feature is enabled
-// - bool: Whether the kCdmStorageDatabaseMigration feature is enabled
-class ECKEncryptedMediaTest
-    : public EncryptedMediaTestBase,
-      public WithParamInterface<std::tuple<int, bool, bool>> {
+class ECKEncryptedMediaTest : public EncryptedMediaTestBase,
+                              public WithParamInterface<int> {
  public:
-  int GetCdmInterfaceVersion() { return std::get<0>(GetParam()); }
+  int GetCdmInterfaceVersion() { return GetParam(); }
 
   // We use special |key_system| names to do non-playback related tests,
-  // e.g. media::kExternalClearKeyFileIOTestKeySystem is used to test file IO.
+  // e.g. media::kExternalClearKeyPlatformVerificationTestKeySystem is used to
+  // test the platform verification.
   void TestNonPlaybackCases(const std::string& key_system,
                             const std::string& expected_title) {
     // Since we do not test playback, arbitrarily choose a test file and source
@@ -417,6 +415,47 @@ class ECKEncryptedMediaTest
                         const std::string& expected_title) {
     RunEncryptedMediaTest(kDefaultEmePlayer, "bear-320x240-v_enc-v.webm",
                           key_system, SrcType::MSE, session_to_load, false,
+                          PlayCount::ONCE, expected_title);
+  }
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaTestBase::SetUpCommandLine(command_line);
+
+    SetUpCommandLineForKeySystem(media::kExternalClearKeyKeySystem,
+                                 command_line);
+    // Override enabled CDM interface version for testing.
+    command_line->AppendSwitchASCII(
+        switches::kOverrideEnabledCdmInterfaceVersion,
+        base::NumberToString(GetCdmInterfaceVersion()));
+  }
+};
+
+// Tests FileIO capabilities in Encrypted Media with the following test
+// parameters:
+// - bool: Whether the kCdmStorageDatabase feature is enabled
+// - bool: Whether the kCdmStorageDatabaseMigration feature is enabled
+class ECKEncryptedMediaFileIOTest
+    : public EncryptedMediaTestBase,
+      public WithParamInterface<std::tuple<int, bool, bool>> {
+ public:
+  int GetCdmInterfaceVersion() { return std::get<0>(GetParam()); }
+
+  void TestPlaybackCase(const std::string& key_system,
+                        const std::string& session_to_load,
+                        const std::string& expected_title) {
+    RunEncryptedMediaTest(kDefaultEmePlayer, "bear-320x240-v_enc-v.webm",
+                          key_system, SrcType::MSE, session_to_load, false,
+                          PlayCount::ONCE, expected_title);
+  }
+  // We use special |key_system| names to do non-playback related tests,
+  // e.g. media::kExternalClearKeyFileIOTestKeySystem is used to test file IO.
+  void TestNonPlaybackCases(const std::string& key_system,
+                            const std::string& expected_title) {
+    // Since we do not test playback, arbitrarily choose a test file and source
+    // type.
+    RunEncryptedMediaTest(kDefaultEmePlayer, "bear-a_enc-a.webm", key_system,
+                          SrcType::SRC, kNoSessionToLoad, false,
                           PlayCount::ONCE, expected_title);
   }
 
@@ -443,6 +482,7 @@ class ECKEncryptedMediaTest
 
     SetUpCommandLineForKeySystem(media::kExternalClearKeyKeySystem,
                                  command_line, storage_feature_list);
+
     // Override enabled CDM interface version for testing.
     command_line->AppendSwitchASCII(
         switches::kOverrideEnabledCdmInterfaceVersion,
@@ -490,8 +530,6 @@ class ECKEncryptedMediaOutputProtectionTest
 
 class ECKIncognitoEncryptedMediaTest : public EncryptedMediaTestBase {
  public:
-  // We use special |key_system| names to do non-playback related tests,
-  // e.g. media::kExternalClearKeyFileIOTestKeySystem is used to test file IO.
   void TestNonPlaybackCases(const std::string& key_system,
                             const std::string& expected_title) {
     // Since we do not test playback, arbitrarily choose a test file and source
@@ -506,6 +544,52 @@ class ECKIncognitoEncryptedMediaTest : public EncryptedMediaTestBase {
     EncryptedMediaTestBase::SetUpCommandLine(command_line);
     SetUpCommandLineForKeySystem(media::kExternalClearKeyKeySystem,
                                  command_line);
+    command_line->AppendSwitch(switches::kIncognito);
+  }
+};
+
+// Tests FileIO capabilities in Encrypted Media in Incognito mode with the
+// following test parameters:
+// - bool: Whether the kCdmStorageDatabase feature is enabled
+// - bool: Whether the kCdmStorageDatabaseMigration feature is enabled
+class ECKIncognitoEncryptedMediaFileIOTest
+    : public EncryptedMediaTestBase,
+      public WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  // We use special |key_system| names to do non-playback related tests,
+  // e.g. media::kExternalClearKeyFileIOTestKeySystem is used to test file IO.
+  void TestNonPlaybackCases(const std::string& key_system,
+                            const std::string& expected_title) {
+    // Since we do not test playback, arbitrarily choose a test file and source
+    // type.
+    RunEncryptedMediaTest(kDefaultEmePlayer, "bear-a_enc-a.webm", key_system,
+                          SrcType::SRC, kNoSessionToLoad, false,
+                          PlayCount::ONCE, expected_title);
+  }
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaTestBase::SetUpCommandLine(command_line);
+    // If we are testing the FileIO functionalities, we should parameterize to
+    // test the different combinations of the CdmStorageDatabase flags to make
+    // sure that end to end functionalities do not break with changes made, so
+    // that the MediaLicenseDatabase, the CdmStorageDatabaseMigration, and the
+    // final CdmStorageDatabase all work as expected.
+    // TODO(crbug.com/1454512): Remove logic here when fully transitioned to
+    // CdmStorageDatabase.
+    std::vector<base::test::FeatureRefAndParams> storage_feature_list;
+
+    if (std::get<0>(GetParam())) {
+      storage_feature_list.push_back({features::kCdmStorageDatabase, {}});
+    }
+
+    if (std::get<1>(GetParam())) {
+      storage_feature_list.push_back(
+          {features::kCdmStorageDatabaseMigration, {}});
+    }
+
+    SetUpCommandLineForKeySystem(media::kExternalClearKeyKeySystem,
+                                 command_line, storage_feature_list);
     command_line->AppendSwitch(switches::kIncognito);
   }
 };
@@ -929,12 +1013,14 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
 // Test CDM_10 through CDM_11.
 static_assert(media::CheckSupportedCdmInterfaceVersions(10, 11),
               "Mismatch between implementation and test coverage");
+INSTANTIATE_TEST_SUITE_P(CDM_10, ECKEncryptedMediaTest, Values(10));
+INSTANTIATE_TEST_SUITE_P(CDM_11, ECKEncryptedMediaTest, Values(11));
 INSTANTIATE_TEST_SUITE_P(CDM_10,
-                         ECKEncryptedMediaTest,
+                         ECKEncryptedMediaFileIOTest,
                          Combine(Values(10), Bool(), Bool()));
 INSTANTIATE_TEST_SUITE_P(CDM_11,
-                         ECKEncryptedMediaTest,
-                         Combine(Values(11), Bool(), Bool()));
+                         ECKEncryptedMediaFileIOTest,
+                         Combine(Values(10), Bool(), Bool()));
 
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, InitializeCDMFail) {
   TestNonPlaybackCases(kExternalClearKeyInitializeFailKeySystem,
@@ -954,15 +1040,15 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_CDMCrashDuringDecode) {
                        kEmeSessionClosedAndError);
 }
 
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, FileIOTest) {
-  TestNonPlaybackCases(media::kExternalClearKeyFileIOTestKeySystem,
-                       kUnitTestSuccess);
-}
-
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, PlatformVerificationTest) {
   TestNonPlaybackCases(
       media::kExternalClearKeyPlatformVerificationTestKeySystem,
       kUnitTestSuccess);
+}
+
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaFileIOTest, FileIOTest) {
+  TestNonPlaybackCases(media::kExternalClearKeyFileIOTestKeySystem,
+                       kUnitTestSuccess);
 }
 
 // Intermittent leaks on ASan/LSan runs: crbug.com/889923
@@ -982,12 +1068,14 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_MessageTypeTest) {
                 "document.querySelector('video').receivedMessageTypes.size;"));
 }
 
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, LoadPersistentLicense) {
+// Exercises Storage Path, so use ECKEncryptedMediaFileIOTest
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaFileIOTest, LoadPersistentLicense) {
   TestPlaybackCase(media::kExternalClearKeyKeySystem, kPersistentLicense,
                    media::kEndedTitle);
 }
 
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, LoadUnknownSession) {
+// Exercises Storage Path, so use ECKEncryptedMediaFileIOTest
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaFileIOTest, LoadUnknownSession) {
   TestPlaybackCase(media::kExternalClearKeyKeySystem, kUnknownSession,
                    kEmeSessionNotFound);
 }
@@ -1131,8 +1219,11 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaOutputProtectionTest,
 // that aren't really testing anything different, as normal playback does not
 // save anything to disk. Instead we are only running the tests that actually
 // have the CDM do file access.
+INSTANTIATE_TEST_SUITE_P(,
+                         ECKIncognitoEncryptedMediaFileIOTest,
+                         Combine(Bool(), Bool()));
 
-IN_PROC_BROWSER_TEST_F(ECKIncognitoEncryptedMediaTest, FileIO) {
+IN_PROC_BROWSER_TEST_P(ECKIncognitoEncryptedMediaFileIOTest, FileIO) {
   // Try the FileIO test using the default CDM API while running in incognito.
   TestNonPlaybackCases(media::kExternalClearKeyFileIOTestKeySystem,
                        kUnitTestSuccess);
