@@ -32,13 +32,15 @@ namespace content {
 namespace {
 
 AggregationService* GetAggregationService(WebContents* web_contents) {
+  CHECK(web_contents);
   return AggregationService::GetService(web_contents->GetBrowserContext());
 }
 
 PrivateAggregationManager* GetPrivateAggregationManager(
     WebContents* web_contents) {
+  CHECK(web_contents);
   BrowserContext* browser_context = web_contents->GetBrowserContext();
-  DCHECK_NE(browser_context, nullptr);
+  CHECK(browser_context);
   return PrivateAggregationManager::GetManager(*browser_context);
 }
 
@@ -121,7 +123,7 @@ PrivateAggregationInternalsHandlerImpl::PrivateAggregationInternalsHandlerImpl(
     : web_ui_(web_ui),
       observer_(std::move(observer)),
       handler_(this, std::move(handler)) {
-  DCHECK(web_ui);
+  CHECK(web_ui);
   if (AggregationService* aggregation_service =
           GetAggregationService(web_ui_->GetWebContents())) {
     aggregation_service_observer_.Observe(aggregation_service);
