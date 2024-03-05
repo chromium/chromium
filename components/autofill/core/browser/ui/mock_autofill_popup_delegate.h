@@ -43,10 +43,6 @@ class MockAutofillPopupDelegate : public AutofillPopupDelegate {
   MOCK_METHOD(bool, RemoveSuggestion, (const Suggestion&), (override));
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
   MOCK_METHOD(FillingProduct, GetMainFillingProduct, (), (const, override));
-  MOCK_METHOD(int32_t,
-              GetWebContentsPopupControllerAxId,
-              (),
-              (const, override));
 
   base::WeakPtr<MockAutofillPopupDelegate> GetWeakPtr();
 

@@ -74,10 +74,6 @@ class AutofillPopupDelegate {
   // Returns the main filling product the popup being shown, which is a function
   // of the list of suggestions being shown.
   virtual FillingProduct GetMainFillingProduct() const = 0;
-
-  // Returns the ax node id associated with the current web contents' element
-  // who has a controller relation to the current autofill popup.
-  virtual int32_t GetWebContentsPopupControllerAxId() const = 0;
 };
 
 }  // namespace autofill

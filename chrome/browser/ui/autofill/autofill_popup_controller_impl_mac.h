@@ -17,7 +17,8 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
                                  content::WebContents* web_contents,
                                  gfx::NativeView container_view,
                                  const gfx::RectF& element_bounds,
-                                 base::i18n::TextDirection text_direction);
+                                 base::i18n::TextDirection text_direction,
+                                 int32_t form_control_ax_id);
 
   AutofillPopupControllerImplMac(const AutofillPopupControllerImplMac&) =
       delete;

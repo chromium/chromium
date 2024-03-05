@@ -63,7 +63,6 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   bool RemoveSuggestion(const autofill::Suggestion& suggestion) override;
   void ClearPreviewedForm() override;
   autofill::FillingProduct GetMainFillingProduct() const override;
-  int32_t GetWebContentsPopupControllerAxId() const override;
 
   // Invoked when a password mapping is added.
   void OnAddPasswordFillData(const autofill::PasswordFormFillData& fill_data);

@@ -163,23 +163,17 @@ autofill::FillingProduct PasswordManualFallbackFlow::GetMainFillingProduct()
   return autofill::FillingProduct::kPassword;
 }
 
-int32_t PasswordManualFallbackFlow::GetWebContentsPopupControllerAxId() const {
-  // TODO: Needs to be implemented when we step up accessibility features in the
-  // future.
-  // See http://crbug.com/991253
-  NOTIMPLEMENTED_LOG_ONCE();
-  return 0;
-}
-
 void PasswordManualFallbackFlow::RunFlowImpl(
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction) {
   std::vector<Suggestion> suggestions =
       suggestion_generator_.GetManualFallbackSuggestions(
           passwords_presenter_->GetSavedPasswords());
+  // TODO(crbug.com/991253): Set the right `form_control_ax_id`.
   autofill::AutofillClient::PopupOpenArgs open_args(
       bounds, text_direction, std::move(suggestions),
-      autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords);
+      autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords,
+      /*form_control_ax_id=*/0);
   autofill_client_->ShowAutofillPopup(open_args,
                                       weak_ptr_factory_.GetWeakPtr());
 }

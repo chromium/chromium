@@ -299,7 +299,8 @@ autofill::AutofillClient::PopupOpenArgs CreateReopenArgsWithTestSuggestions(
   return {gfx::RectF(), base::i18n::LEFT_TO_RIGHT,
           CreateTestSuggestions(has_opt_in_and_fill, has_opt_in_and_generate,
                                 has_re_signin),
-          autofill::AutofillSuggestionTriggerSource::kPasswordManager};
+          autofill::AutofillSuggestionTriggerSource::kPasswordManager,
+          /*form_control_ax_id=*/0};
 }
 
 }  // namespace

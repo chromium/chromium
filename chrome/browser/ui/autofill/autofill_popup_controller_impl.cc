@@ -112,12 +112,14 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
     content::WebContents* web_contents,
     gfx::NativeView container_view,
     const gfx::RectF& element_bounds,
-    base::i18n::TextDirection text_direction) {
+    base::i18n::TextDirection text_direction,
+    int32_t form_control_ax_id) {
   if (previous && previous->delegate_.get() == delegate.get() &&
       previous->container_view() == container_view) {
     if (previous->self_deletion_weak_ptr_factory_.HasWeakPtrs())
       previous->self_deletion_weak_ptr_factory_.InvalidateWeakPtrs();
-    previous->SetElementBounds(element_bounds);
+    previous->controller_common_.element_bounds = element_bounds;
+    previous->form_control_ax_id_ = form_control_ax_id;
     previous->ClearState();
     return previous;
   }
@@ -128,12 +130,13 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
 #if BUILDFLAG(IS_ANDROID)
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
       delegate, web_contents, container_view, element_bounds, text_direction,
+      form_control_ax_id,
       base::BindRepeating(&local_password_migration::ShowWarning),
       /*parent=*/std::nullopt);
 #else
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
       delegate, web_contents, container_view, element_bounds, text_direction,
-      base::DoNothing(), /*parent=*/std::nullopt);
+      form_control_ax_id, base::DoNothing(), /*parent=*/std::nullopt);
 #endif
   return controller->GetWeakPtr();
 }
@@ -145,6 +148,7 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
     gfx::NativeView container_view,
     const gfx::RectF& element_bounds,
     base::i18n::TextDirection text_direction,
+    int32_t form_control_ax_id,
     base::RepeatingCallback<
         void(gfx::NativeWindow,
              Profile*,
@@ -507,11 +511,6 @@ const gfx::RectF& AutofillPopupControllerImpl::element_bounds() const {
   return controller_common_.element_bounds;
 }
 
-void AutofillPopupControllerImpl::SetElementBounds(const gfx::RectF& bounds) {
-  controller_common_.element_bounds.set_origin(bounds.origin());
-  controller_common_.element_bounds.set_size(bounds.size());
-}
-
 base::i18n::TextDirection AutofillPopupControllerImpl::GetElementTextDirection()
     const {
   return controller_common_.text_direction;
@@ -528,7 +527,8 @@ AutofillPopupControllerImpl::OpenSubPopup(
     AutoselectFirstSuggestion autoselect_first_suggestion) {
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
       delegate_, web_contents_.get(), controller_common_.container_view,
-      anchor_bounds, controller_common_.text_direction, base::DoNothing(),
+      anchor_bounds, controller_common_.text_direction,
+      /*form_control_ax_id=*/form_control_ax_id_, base::DoNothing(),
       /*parent=*/GetWeakPtr());
 
   // Show() can fail and cause controller deletion. Therefore store the weak
@@ -830,10 +830,6 @@ void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
     tree_id = rfh->GetAXTreeID();
   }
 
-  // Retrieve the ax node id associated with the current web contents' element
-  // that has a controller relation to the current autofill popup.
-  int32_t node_id = delegate_->GetWebContentsPopupControllerAxId();
-
   // In order to get the AXPlatformNode for the ax node id, we first need
   // the AXPlatformNode for the web contents.
   ui::AXPlatformNode* root_platform_node =
@@ -848,7 +844,8 @@ void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
 
   // Now get the target node from its tree ID and node ID.
   ui::AXPlatformNode* target_node =
-      root_platform_node_delegate->GetFromTreeIDAndNodeID(tree_id, node_id);
+      root_platform_node_delegate->GetFromTreeIDAndNodeID(tree_id,
+                                                          form_control_ax_id_);
   if (!target_node || !view_) {
     return;
   }

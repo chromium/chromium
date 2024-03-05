@@ -198,6 +198,7 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
             nullptr,
             element_bounds,
             base::i18n::UNKNOWN_DIRECTION,
+            /*form_control_ax_id=*/0,
             std::move(show_pwd_migration_warning_callback),
             parent) {}
   ~TestAutofillPopupController() override = default;
@@ -887,7 +888,8 @@ TEST_F(AutofillPopupControllerImplTest, GetOrCreateAndroid) {
       AutofillPopupControllerImpl::GetOrCreate(
           WeakPtr<AutofillPopupControllerImpl>(),
           manager().external_delegate().GetWeakPtrForTest(), web_contents(),
-          nullptr, gfx::RectF(), base::i18n::UNKNOWN_DIRECTION);
+          nullptr, gfx::RectF(), base::i18n::UNKNOWN_DIRECTION,
+          /*form_control_ax_id=*/0);
   EXPECT_TRUE(controller);
 
   controller->Hide(PopupHidingReason::kViewDestroyed);
@@ -896,13 +898,15 @@ TEST_F(AutofillPopupControllerImplTest, GetOrCreateAndroid) {
   controller = AutofillPopupControllerImpl::GetOrCreate(
       WeakPtr<AutofillPopupControllerImpl>(),
       manager().external_delegate().GetWeakPtrForTest(), web_contents(),
-      nullptr, gfx::RectF(), base::i18n::UNKNOWN_DIRECTION);
+      nullptr, gfx::RectF(), base::i18n::UNKNOWN_DIRECTION,
+      /*form_control_ax_id=*/0);
   EXPECT_TRUE(controller);
 
   WeakPtr<AutofillPopupControllerImpl> controller2 =
       AutofillPopupControllerImpl::GetOrCreate(
           controller, manager().external_delegate().GetWeakPtrForTest(),
-          web_contents(), nullptr, gfx::RectF(), base::i18n::UNKNOWN_DIRECTION);
+          web_contents(), nullptr, gfx::RectF(), base::i18n::UNKNOWN_DIRECTION,
+          /*form_control_ax_id=*/0);
   EXPECT_EQ(controller.get(), controller2.get());
 
   controller->Hide(PopupHidingReason::kViewDestroyed);
@@ -916,7 +920,8 @@ TEST_F(AutofillPopupControllerImplTest, GetOrCreateAndroid) {
       AutofillPopupControllerImpl::GetOrCreate(
           client().popup_controller(manager()).GetWeakPtr(),
           manager().external_delegate().GetWeakPtrForTest(), web_contents(),
-          nullptr, bounds, base::i18n::UNKNOWN_DIRECTION);
+          nullptr, bounds, base::i18n::UNKNOWN_DIRECTION,
+          /*form_control_ax_id=*/0);
   EXPECT_EQ(&client().popup_controller(manager()), controller3.get());
   EXPECT_EQ(bounds, static_cast<AutofillPopupController*>(controller3.get())
                         ->element_bounds());
@@ -928,7 +933,8 @@ TEST_F(AutofillPopupControllerImplTest, GetOrCreateAndroid) {
       AutofillPopupControllerImpl::GetOrCreate(
           client().popup_controller(manager()).GetWeakPtr(),
           manager().external_delegate().GetWeakPtrForTest(), web_contents(),
-          nullptr, bounds, base::i18n::UNKNOWN_DIRECTION);
+          nullptr, bounds, base::i18n::UNKNOWN_DIRECTION,
+          /*form_control_ax_id=*/0);
   EXPECT_EQ(&client().popup_controller(manager()), controller4.get());
   EXPECT_EQ(bounds,
             static_cast<const AutofillPopupController*>(controller4.get())
@@ -946,7 +952,8 @@ TEST_F(AutofillPopupControllerImplTest, ProperlyResetController) {
       AutofillPopupControllerImpl::GetOrCreate(
           client().popup_controller(manager()).GetWeakPtr(),
           manager().external_delegate().GetWeakPtrForTest(), nullptr, nullptr,
-          gfx::RectF(), base::i18n::UNKNOWN_DIRECTION);
+          gfx::RectF(), base::i18n::UNKNOWN_DIRECTION,
+          /*form_control_ax_id=*/0);
   EXPECT_EQ(0, controller->GetLineCountForTesting());
 }
 

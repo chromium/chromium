@@ -269,9 +269,9 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
       DidAcceptSuggestion(*test_suggestion, {});
       return;
     }
-    AutofillClient::PopupOpenArgs open_args(element_bounds_,
-                                            query_field_.text_direction,
-                                            suggestions, trigger_source_);
+    AutofillClient::PopupOpenArgs open_args(
+        element_bounds_, query_field_.text_direction, suggestions,
+        trigger_source_, query_field_.form_control_ax_id);
     manager_->client().ShowAutofillPopup(open_args, GetWeakPtr());
   }
 }
@@ -859,10 +859,6 @@ FillingProduct AutofillExternalDelegate::GetMainFillingProduct() const {
     }
   }
   return FillingProduct::kNone;
-}
-
-int32_t AutofillExternalDelegate::GetWebContentsPopupControllerAxId() const {
-  return query_field_.form_control_ax_id;
 }
 
 base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {

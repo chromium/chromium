@@ -1056,7 +1056,7 @@ void ChromeAutofillClient::ShowAutofillPopup(
   popup_controller_ = AutofillPopupControllerImpl::GetOrCreate(
       popup_controller_, delegate, web_contents(),
       web_contents()->GetNativeView(), element_bounds_in_screen_space,
-      open_args.text_direction);
+      open_args.text_direction, open_args.form_control_ax_id);
 
   popup_controller_->Show(
       open_args.suggestions, open_args.trigger_source,
@@ -1097,9 +1097,12 @@ ChromeAutofillClient::GetReopenPopupArgs(
   gfx::Rect client_area = web_contents()->GetContainerBounds();
   gfx::RectF screen_space_independent_bounds =
       controller->element_bounds() - client_area.OffsetFromOrigin();
+  // GetReopenPopupArgs() is only called by the Password Manager.
+  // TODO(crbug.com/991253): Set the right `form_control_ax_id` or eliminate
+  // GetReopenPopupArgs().
   return autofill::AutofillClient::PopupOpenArgs(
       screen_space_independent_bounds, controller->GetElementTextDirection(),
-      controller->GetSuggestions(), trigger_source);
+      controller->GetSuggestions(), trigger_source, /*form_control_ax_id=*/0);
 }
 
 std::optional<AutofillClient::PopupScreenLocation>

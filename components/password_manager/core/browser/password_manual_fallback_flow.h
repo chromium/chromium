@@ -66,7 +66,6 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
   bool RemoveSuggestion(const autofill::Suggestion& suggestion) override;
   void ClearPreviewedForm() override;
   autofill::FillingProduct GetMainFillingProduct() const override;
-  int32_t GetWebContentsPopupControllerAxId() const override;
 
  private:
   // Is used to track whether the flow was invoked and whether the passwords

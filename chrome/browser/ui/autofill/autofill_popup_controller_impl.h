@@ -84,7 +84,8 @@ class AutofillPopupControllerImpl
       content::WebContents* web_contents,
       gfx::NativeView container_view,
       const gfx::RectF& element_bounds,
-      base::i18n::TextDirection text_direction);
+      base::i18n::TextDirection text_direction,
+      int32_t form_control_ax_id);
 
   // Shows the popup, or updates the existing popup with the given values.
   virtual void Show(std::vector<Suggestion> suggestions,
@@ -161,6 +162,7 @@ class AutofillPopupControllerImpl
       gfx::NativeView container_view,
       const gfx::RectF& element_bounds,
       base::i18n::TextDirection text_direction,
+      int32_t form_control_ax_id,
       base::RepeatingCallback<void(
           gfx::NativeWindow,
           Profile*,
@@ -172,7 +174,6 @@ class AutofillPopupControllerImpl
   gfx::NativeView container_view() const override;
   content::WebContents* GetWebContents() const override;
   const gfx::RectF& element_bounds() const override;
-  void SetElementBounds(const gfx::RectF& bounds);
   base::i18n::TextDirection GetElementTextDirection() const override;
 
   // Returns true if the popup still has non-options entries to show the user.
@@ -255,6 +256,9 @@ class AutofillPopupControllerImpl
   // The trigger source of the `suggestions_`.
   AutofillSuggestionTriggerSource trigger_source_ =
       AutofillSuggestionTriggerSource::kUnspecified;
+
+  // The AX ID of the field on which Autofill was triggered.
+  int32_t form_control_ax_id_ = 0;
 
   // If set to true, the popup will stay open regardless of external changes on
   // the machine that would normally cause the popup to be hidden.

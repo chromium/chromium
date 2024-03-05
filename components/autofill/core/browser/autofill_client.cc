@@ -25,11 +25,13 @@ AutofillClient::PopupOpenArgs::PopupOpenArgs(
     const gfx::RectF& element_bounds,
     base::i18n::TextDirection text_direction,
     std::vector<Suggestion> suggestions,
-    AutofillSuggestionTriggerSource trigger_source)
+    AutofillSuggestionTriggerSource trigger_source,
+    int32_t form_control_ax_id)
     : element_bounds(element_bounds),
       text_direction(text_direction),
       suggestions(std::move(suggestions)),
-      trigger_source(trigger_source) {}
+      trigger_source(trigger_source),
+      form_control_ax_id(form_control_ax_id) {}
 AutofillClient::PopupOpenArgs::PopupOpenArgs(
     const AutofillClient::PopupOpenArgs&) = default;
 AutofillClient::PopupOpenArgs::PopupOpenArgs(AutofillClient::PopupOpenArgs&&) =

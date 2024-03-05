@@ -306,7 +306,8 @@ class AutofillClient {
     PopupOpenArgs(const gfx::RectF& element_bounds,
                   base::i18n::TextDirection text_direction,
                   std::vector<Suggestion> suggestions,
-                  AutofillSuggestionTriggerSource trigger_source);
+                  AutofillSuggestionTriggerSource trigger_source,
+                  int32_t form_control_ax_id);
     PopupOpenArgs(const PopupOpenArgs&);
     PopupOpenArgs(PopupOpenArgs&&);
     PopupOpenArgs& operator=(const PopupOpenArgs&);
@@ -317,8 +318,9 @@ class AutofillClient {
     base::i18n::TextDirection text_direction =
         base::i18n::TextDirection::UNKNOWN_DIRECTION;
     std::vector<Suggestion> suggestions;
-    AutofillSuggestionTriggerSource trigger_source{
-        AutofillSuggestionTriggerSource::kUnspecified};
+    AutofillSuggestionTriggerSource trigger_source =
+        AutofillSuggestionTriggerSource::kUnspecified;
+    int32_t form_control_ax_id = 0;
   };
 
   // Describes the position of the Autofill popup on the screen.

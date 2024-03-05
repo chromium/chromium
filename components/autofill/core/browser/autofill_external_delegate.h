@@ -70,10 +70,6 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // suggestion that has a filling product that is not none.
   FillingProduct GetMainFillingProduct() const override;
 
-  // Returns the ax node id associated with the current web contents' element
-  // who has a controller relation to the current autofill popup.
-  int32_t GetWebContentsPopupControllerAxId() const override;
-
   // Called when the renderer posts an Autofill query to the browser. |bounds|
   // is window relative. We might not want to display the warning if a website
   // has disabled Autocomplete because they have their own popup, and showing

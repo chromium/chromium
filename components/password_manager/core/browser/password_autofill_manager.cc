@@ -322,14 +322,6 @@ autofill::FillingProduct PasswordAutofillManager::GetMainFillingProduct()
   return autofill::FillingProduct::kPassword;
 }
 
-int32_t PasswordAutofillManager::GetWebContentsPopupControllerAxId() const {
-  // TODO: Needs to be implemented when we step up accessibility features in the
-  // future.
-  // See http://crbug.com/991253
-  NOTIMPLEMENTED_LOG_ONCE();
-  return 0;
-}
-
 void PasswordAutofillManager::OnAddPasswordFillData(
     const autofill::PasswordFormFillData& fill_data) {
   if (!autofill::IsValidPasswordFormFillData(fill_data))
@@ -496,9 +488,11 @@ bool PasswordAutofillManager::ShowPopup(
     return false;
   }
   LogMetricsForSuggestions(suggestions);
+  // TODO(crbug.com/991253): Set the right `form_control_ax_id`.
   autofill::AutofillClient::PopupOpenArgs open_args(
       bounds, text_direction, suggestions,
-      autofill::AutofillSuggestionTriggerSource::kPasswordManager);
+      autofill::AutofillSuggestionTriggerSource::kPasswordManager,
+      /*form_control_ax_id=*/0);
   autofill_client_->ShowAutofillPopup(open_args,
                                       weak_ptr_factory_.GetWeakPtr());
   return true;
