@@ -8045,6 +8045,8 @@ test("unit_tests") {
       "../browser/webauthn/cablev2_devices_unittest.cc",
       "../browser/webauthn/chrome_authenticator_request_delegate_unittest.cc",
       "../browser/webauthn/enclave_manager_unittest.cc",
+      "../browser/webauthn/fake_security_domain_service.cc",
+      "../browser/webauthn/fake_security_domain_service.h",
       "../common/importer/mock_importer_bridge.cc",
       "../common/importer/mock_importer_bridge.h",
       "../renderer/media/webrtc_logging_agent_impl_unittest.cc",

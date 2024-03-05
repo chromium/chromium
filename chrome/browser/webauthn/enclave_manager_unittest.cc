@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/webauthn/fake_security_domain_service.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -221,17 +222,6 @@ enclave::ScopedEnclaveOverride TestEnclaveIdentity(uint16_t port) {
   return enclave::ScopedEnclaveOverride(std::move(identity));
 }
 
-trusted_vault_pb::JoinSecurityDomainsResponse MakeJoinSecurityDomainsResponse(
-    int current_epoch) {
-  trusted_vault_pb::JoinSecurityDomainsResponse response;
-  trusted_vault_pb::SecurityDomain* security_domain =
-      response.mutable_security_domain();
-  security_domain->set_name(
-      GetSecurityDomainPath(trusted_vault::SecurityDomainId::kPasskeys));
-  security_domain->set_current_epoch(current_epoch);
-  return response;
-}
-
 std::string MakeVaultResponse() {
   trusted_vault_pb::Vault vault;
   vault.mutable_vault_parameters()->set_vault_handle("test vault handle");
@@ -266,6 +256,8 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
         process_and_port_(StartEnclave(temp_dir_.GetPath())),
         enclave_override_(TestEnclaveIdentity(process_and_port_.second)),
         network_service_(CreateNetwork(&network_context_)),
+        security_domain_service_(
+            FakeSecurityDomainService::New(kSecretVersion)),
         manager_(temp_dir_.GetPath(),
                  identity_test_env_.identity_manager(),
                  network_context_.get(),
@@ -279,6 +271,20 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
                    .gaia;
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
     manager_.AddObserver(this);
+
+    auto security_domain_service_callback =
+        security_domain_service_->GetCallback();
+    url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+        [callback = std::move(security_domain_service_callback),
+         this](const network::ResourceRequest& request) {
+          std::optional<std::pair<net::HttpStatusCode, std::string>> response =
+              callback.Run(request);
+          if (response) {
+            url_loader_factory_.AddResponse(request.url.spec(),
+                                            std::move(response->second),
+                                            response->first);
+          }
+        }));
   }
 
   ~EnclaveManagerTest() override {
@@ -463,6 +469,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   std::unique_ptr<network::NetworkService> network_service_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::string gaia_id_;
+  std::unique_ptr<FakeSecurityDomainService> security_domain_service_;
   EnclaveManager manager_;
 };
 
@@ -471,6 +478,8 @@ TEST_F(EnclaveManagerTest, TestInfrastructure) {
 }
 
 TEST_F(EnclaveManagerTest, Basic) {
+  security_domain_service_->pretend_there_are_members();
+
   ASSERT_FALSE(manager_.is_loaded());
   ASSERT_FALSE(manager_.is_registered());
   ASSERT_FALSE(manager_.is_ready());
@@ -491,12 +500,6 @@ TEST_F(EnclaveManagerTest, Basic) {
   ASSERT_TRUE(manager_.is_registered());
   ASSERT_FALSE(manager_.is_ready());
 
-  url_loader_factory_.AddResponse(
-      GetFullJoinSecurityDomainsURLForTesting(
-          trusted_vault::ExtractTrustedVaultServiceURLFromCommandLine(),
-          trusted_vault::SecurityDomainId::kPasskeys)
-          .spec(),
-      MakeJoinSecurityDomainsResponse(/*current_epoch=*/1).SerializeAsString());
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/kSecretVersion);
@@ -512,17 +515,12 @@ TEST_F(EnclaveManagerTest, Basic) {
 }
 
 TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
+  security_domain_service_->pretend_there_are_members();
   manager_.Start();
   ASSERT_FALSE(manager_.is_registered());
 
   // If secrets are provided before `RegisterIfNeeded` is called, the state
   // machine should still trigger registration.
-  url_loader_factory_.AddResponse(
-      GetFullJoinSecurityDomainsURLForTesting(
-          trusted_vault::ExtractTrustedVaultServiceURLFromCommandLine(),
-          trusted_vault::SecurityDomainId::kPasskeys)
-          .spec(),
-      MakeJoinSecurityDomainsResponse(/*current_epoch=*/1).SerializeAsString());
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
@@ -535,18 +533,13 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
 }
 
 TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationCompleted) {
+  security_domain_service_->pretend_there_are_members();
   manager_.Start();
   manager_.RegisterIfNeeded();
   ASSERT_FALSE(manager_.is_registered());
 
   // Provide the domain secrets before the registration has completed. The
   // system should still end up in the correct state.
-  url_loader_factory_.AddResponse(
-      GetFullJoinSecurityDomainsURLForTesting(
-          trusted_vault::ExtractTrustedVaultServiceURLFromCommandLine(),
-          trusted_vault::SecurityDomainId::kPasskeys)
-          .spec(),
-      MakeJoinSecurityDomainsResponse(/*current_epoch=*/1).SerializeAsString());
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
@@ -634,6 +627,7 @@ TEST_F(EnclaveManagerTest, PrimaryUserChange) {
 }
 
 TEST_F(EnclaveManagerTest, PrimaryUserChangeDiscardsActions) {
+  security_domain_service_->pretend_there_are_members();
   const std::string gaia1 =
       identity_test_env_.identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
@@ -667,13 +661,6 @@ TEST_F(EnclaveManagerTest, SetPIN) {
       std::string(EnclaveManager::recovery_key_store_url_for_testing()) +
           "?alt=proto",
       MakeVaultResponse());
-  url_loader_factory_.AddResponse(
-      GetFullJoinSecurityDomainsURLForTesting(
-          trusted_vault::ExtractTrustedVaultServiceURLFromCommandLine(),
-          trusted_vault::SecurityDomainId::kPasskeys)
-          .spec(),
-      MakeJoinSecurityDomainsResponse(/*current_epoch=*/kSecretVersion)
-          .SerializeAsString());
 
   manager_.SetupWithPIN(pin);
   RunUntilIdle();
