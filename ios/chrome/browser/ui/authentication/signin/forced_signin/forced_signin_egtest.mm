@@ -288,7 +288,7 @@ void CompleteSigninFlow() {
       [self isRunningTest:@selector(testSignOutFromAccountSettingSyncEnable)] ||
       [self isRunningTest:@selector(testSignOutFromSyncSettings)] ||
       [self isRunningTest:@selector
-            (testSignOutFromSyncSettingsWithMultiWindows)]) {
+            (FLAKY_testSignOutFromSyncSettingsWithMultiWindows)]) {
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -1085,7 +1085,8 @@ void CompleteSigninFlow() {
 
 // Tests that signing out from sync settings will trigger showing the forced
 // sign-in screen in one of the foregrounded window (when multi windows).
-- (void)testSignOutFromSyncSettingsWithMultiWindows {
+// TODO(b/328015424) : fix the flake.
+- (void)FLAKY_testSignOutFromSyncSettingsWithMultiWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
