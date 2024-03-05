@@ -29,7 +29,7 @@
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
     // Also then run tools/search_engine_choice/generate_search_engine_icons.py.
-    "kCurrentDataVersion": 147
+    "kCurrentDataVersion": 148
   },
 
   // The following engines are included in country lists and are added to the
@@ -119,7 +119,6 @@
       "favicon_url": "https://cdn.ecosia.org/assets/images/ico/favicon.ico",
       "search_url": "https://www.ecosia.org/search?q={searchTerms}&addon=opensearch",
       "suggest_url": "https://ac.ecosia.org/autocomplete?q={searchTerms}&type=list",
-      "image_url": "https://www.ecosia.org/images?q={searchTerms}&addon=opensearch",
       "new_tab_url": "https://www.ecosia.org/newtab/",
       "type": "SEARCH_ENGINE_ECOSIA",
       "id": 101
@@ -738,7 +737,6 @@
       "favicon_url": "https://api.you.com/favicon.ico",
       "search_url": "https://you.com/search?tbm=youchat&q={searchTerms}",
       "suggest_url": "https://you.com/api/ac?domain=default&q={searchTerms}",
-      "image_url": "https://you.com/search?q={​searchTerms}&tbm=isch",
       "type": "SEARCH_ENGINE_YOU",
       "id": 112
     },
