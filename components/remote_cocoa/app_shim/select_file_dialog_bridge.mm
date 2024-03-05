@@ -412,18 +412,12 @@ void SelectFileDialogBridge::Show(
   auto ended_callback = base::BindRepeating(
       &SelectFileDialogBridge::OnPanelEnded, weak_factory_.GetWeakPtr());
 
-  // If the owning_window_ widget is currently in an immersive fullscreen
-  // session, add then remove the panel as a child. Otherwise the following
-  // -beginSheetModalForWindow:completionHandler: call will place the panel
-  // z-order behind the owning widget. See http://crbug/40282144.
-  NativeWidgetMacNSWindow* owning_window_widget =
-      base::apple::ObjCCast<NativeWidgetMacNSWindow>(owning_window_);
-  if (owning_window_widget && [owning_window_widget immersiveFullscreen]) {
-    [owning_window_ addChildWindow:panel_ ordered:NSWindowAbove];
-    [owning_window_ removeChildWindow:panel_];
+  NSWindow* sheet_parent = owning_window_;
+  if (NativeWidgetMacNSWindow* sheet_parent_widget_window =
+          base::apple::ObjCCast<NativeWidgetMacNSWindow>(sheet_parent)) {
+    sheet_parent = [sheet_parent_widget_window preferredSheetParent];
   }
-
-  [panel_ beginSheetModalForWindow:owning_window_
+  [panel_ beginSheetModalForWindow:sheet_parent
                  completionHandler:^(NSInteger result) {
                    ended_callback.Run(result != NSModalResponseOK);
                  }];
