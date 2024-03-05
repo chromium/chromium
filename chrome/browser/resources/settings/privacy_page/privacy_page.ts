@@ -290,20 +290,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: ChooserType,
       },
 
-      safetyCheckNotificationPermissionsEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'safetyCheckNotificationPermissionsEnabled');
-        },
-      },
-
-      notificationsDefaultBehaviorLabel_: {
-        type: String,
-        computed:
-            'computeNotificationsDefaultBehaviorLabel_(safetyCheckNotificationPermissionsEnabled_)',
-      },
-
       enableSafetyHub_: {
         type: Boolean,
         value() {
@@ -347,7 +333,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private is3pcdRedesignEnabled_: boolean;
   private privateStateTokensEnabled_: boolean;
   private autoPictureInPictureEnabled_: boolean;
-  private safetyCheckNotificationPermissionsEnabled_: boolean;
   private enableSafetyHub_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
@@ -382,7 +367,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         (status: BlockAutoplayStatus) =>
             this.onBlockAutoplayStatusChanged_(status));
 
-    if (this.safetyCheckNotificationPermissionsEnabled_ && !this.isGuest_) {
+    if (!this.isGuest_) {
       this.addWebUiListener(
           SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
           (sites: NotificationPermission[]) =>
@@ -549,7 +534,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       return;
     }
     this.showNotificationPermissionsReview_ = !this.isGuest_ &&
-        this.safetyCheckNotificationPermissionsEnabled_ &&
         permissions.length > 0;
 
     this.notificationPermissionsReviewHeader_ =
@@ -573,12 +557,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         this.isPrivacySandboxRestrictedNoticeEnabled_;
     return restricted ? this.i18n('adPrivacyRestrictedLinkRowSubLabel') :
                         this.i18n('adPrivacyLinkRowSubLabel');
-  }
-
-  private computeNotificationsDefaultBehaviorLabel_(): string {
-    return this.safetyCheckNotificationPermissionsEnabled_ ?
-        this.i18n('siteSettingsNotificationsDefaultBehaviorDescription') :
-        this.i18n('siteSettingsDefaultBehaviorDescription');
   }
 
   private computeThirdPartyCookiesSublabel_(): string {

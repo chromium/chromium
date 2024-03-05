@@ -222,10 +222,6 @@ TEST_F(NotificationPermissionReviewServiceTest,
 
 TEST_F(NotificationPermissionReviewServiceTest,
        PopulateNotificationPermissionReviewData) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      features::kSafetyCheckNotificationPermissions);
-
   CreateMockNotificationPermissionsForReview();
 
   auto* service =

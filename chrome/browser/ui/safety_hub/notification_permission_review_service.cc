@@ -302,12 +302,6 @@ void NotificationPermissionsReviewService::
 std::unique_ptr<SafetyHubService::Result>
 NotificationPermissionsReviewService::UpdateOnUIThread(
     std::unique_ptr<SafetyHubService::Result> interim_result) {
-  auto result = std::make_unique<NotificationPermissionsResult>();
-  if (!base::FeatureList::IsEnabled(
-          features::kSafetyCheckNotificationPermissions) &&
-      !base::FeatureList::IsEnabled(features::kSafetyHub)) {
-    return result;
-  }
   // Get blocklisted pattern pairs that should not be shown in the review list.
   std::set<std::pair<ContentSettingsPattern, ContentSettingsPattern>>
       ignored_patterns_set = GetIgnoredPatternPairs(hcsm_);
@@ -319,7 +313,7 @@ NotificationPermissionsReviewService::UpdateOnUIThread(
   // Get the permissions with notification counts that needs to be reviewed.
   // This list is filtered based on notification count and site engagement
   // score.
-  std::vector<NotificationPermissions> notification_permissions_list;
+  auto result = std::make_unique<NotificationPermissionsResult>();
   for (auto& item :
        hcsm_->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS)) {
     std::pair pair(item.primary_pattern, item.secondary_pattern);

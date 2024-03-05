@@ -58,14 +58,7 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, Menu) {
   RunTest("settings/settings_menu_interactive_ui_test.js", "mocha.run()");
 }
 
-class SettingsReviewNotificationPermissionsFocusTest
-    : public SettingsFocusTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kSafetyCheckNotificationPermissions};
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsReviewNotificationPermissionsFocusTest, All) {
+IN_PROC_BROWSER_TEST_F(SettingsFocusTest, ReviewNotificationPermissionsFocus) {
   RunTest("settings/review_notification_permissions_interactive_ui_test.js",
           "mocha.run()");
 }

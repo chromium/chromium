@@ -70,15 +70,6 @@ export class SettingsSafetyCheckPageElement extends
       /** UI string to display for the parent status. */
       parentDisplayString_: String,
 
-      /** Boolean to check safety check notification permissions enabled . */
-      safetyCheckNotificationPermissionsEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'safetyCheckNotificationPermissionsEnabled');
-        },
-      },
-
       /** Boolean to show/hide entry point for unused site permissions. */
       safetyCheckUnusedSitePermissionsEnabled_: {
         type: Boolean,
@@ -103,7 +94,6 @@ export class SettingsSafetyCheckPageElement extends
 
   private parentStatus_: SafetyCheckParentStatus;
   private parentDisplayString_: string;
-  private safetyCheckNotificationPermissionsEnabled_: boolean;
   private safetyCheckUnusedSitePermissionsEnabled_: boolean;
   private safetyCheckExtensionsReviewEnabled_: boolean;
   private safetyCheckNumberOfExtensionsThatNeedReview_: number;
@@ -250,8 +240,7 @@ export class SettingsSafetyCheckPageElement extends
   }
 
   private shouldShowNotificationPermissions_(): boolean {
-    return this.notificationPermissionSites_.length !== 0 &&
-        this.safetyCheckNotificationPermissionsEnabled_;
+    return this.notificationPermissionSites_.length !== 0;
   }
 
   private onUnusedSitePermissionListChanged_(sites: UnusedSitePermissions[]) {

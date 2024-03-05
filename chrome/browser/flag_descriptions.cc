@@ -3058,12 +3058,6 @@ const char kMBIModeDescription[] =
     "Enables independent agent cluster scheduling, via the "
     "AgentSchedulingGroup infrastructure.";
 
-const char kSafetyCheckNotificationPermissionsName[] =
-    "Permission Module for notifications in Safety Check";
-const char kSafetyCheckNotificationPermissionsDescription[] =
-    "When enabled, adds the notification permission module to Safety Check on "
-    "desktop. The module will be shown depending on the browser state.";
-
 const char kSafetyCheckUnusedSitePermissionsName[] =
     "Permission Module for unused sites in Safety Check";
 const char kSafetyCheckUnusedSitePermissionsDescription[] =

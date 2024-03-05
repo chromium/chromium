@@ -492,10 +492,6 @@ TEST_F(SafetyHubHandlerTest,
 
 TEST_F(SafetyHubHandlerTest,
        HandleIgnoreOriginsForNotificationPermissionReview) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      ::features::kSafetyCheckNotificationPermissions);
-
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile());
   ContentSettingsForOneType ignored_patterns =
@@ -537,10 +533,6 @@ TEST_F(SafetyHubHandlerTest,
 }
 
 TEST_F(SafetyHubHandlerTest, HandleAllowNotificationPermissionForOrigins) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      ::features::kSafetyCheckNotificationPermissions);
-
   base::Value::List args;
   base::Value::List origins = GetOriginList(2);
   args.Append(origins.Clone());
@@ -564,10 +556,6 @@ TEST_F(SafetyHubHandlerTest, HandleAllowNotificationPermissionForOrigins) {
 }
 
 TEST_F(SafetyHubHandlerTest, HandleBlockNotificationPermissionForOrigins) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      ::features::kSafetyCheckNotificationPermissions);
-
   base::Value::List args;
   base::Value::List origins = GetOriginList(2);
   args.Append(origins.Clone());
@@ -592,10 +580,6 @@ TEST_F(SafetyHubHandlerTest, HandleBlockNotificationPermissionForOrigins) {
 }
 
 TEST_F(SafetyHubHandlerTest, HandleResetNotificationPermissionForOrigins) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      ::features::kSafetyCheckNotificationPermissions);
-
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile());
   base::Value::List args;

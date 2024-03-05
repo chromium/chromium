@@ -1770,9 +1770,6 @@ extern const char kRoundedWindowsDescription[];
 extern const char kMBIModeName[];
 extern const char kMBIModeDescription[];
 
-extern const char kSafetyCheckNotificationPermissionsName[];
-extern const char kSafetyCheckNotificationPermissionsDescription[];
-
 extern const char kSafetyCheckUnusedSitePermissionsName[];
 extern const char kSafetyCheckUnusedSitePermissionsDescription[];
 

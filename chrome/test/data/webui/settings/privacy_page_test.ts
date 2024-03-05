@@ -922,55 +922,6 @@ suite('NotificationPermissionReviewSafetyHubDisabled', function() {
   });
 });
 
-// TODO(crbug.com/1443466): Remove the test once Notification Permission Review
-// feature has been rolled out.
-suite('NotificationPermissionReviewDisabled', function() {
-  let page: SettingsPrivacyPageElement;
-  let siteSettingsBrowserProxy: TestSafetyHubBrowserProxy;
-
-  const oneElementMockData = [{
-    origin: 'www.example.com',
-    notificationInfoString: 'About 4 notifications a day',
-  }];
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableSafetyHub: false,
-      safetyCheckNotificationPermissionsEnabled: false,
-    });
-  });
-
-  setup(function() {
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
-    siteSettingsBrowserProxy = new TestSafetyHubBrowserProxy();
-    SafetyHubBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-  });
-
-  teardown(function() {
-    page.remove();
-  });
-
-  function createPage() {
-    page = document.createElement('settings-privacy-page');
-    document.body.appendChild(page);
-    return flushTasks();
-  }
-
-  test('InvisibleWhenFeatureDisabled', async function() {
-    // The element should not be visible if there is no element in the list.
-    await createPage();
-    assertFalse(isChildVisible(page, 'review-notification-permissions'));
-
-    // The element should not be visible even if there is any element in the
-    // list.
-    siteSettingsBrowserProxy.setNotificationPermissionReview(
-        oneElementMockData);
-    await createPage();
-    assertFalse(isChildVisible(page, 'review-notification-permissions'));
-  });
-});
-
 suite('EnableWebBluetoothNewPermissionsBackend', function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;

@@ -1159,26 +1159,20 @@ BASE_FEATURE(kSafetyCheckExtensions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enables notification permission module in Safety Check.
-BASE_FEATURE(kSafetyCheckNotificationPermissions,
-             "SafetyCheckNotificationPermissions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int>
-    kSafetyCheckNotificationPermissionsMinEnagementLimit{
-        &kSafetyCheckNotificationPermissions,
-        "min-engagement-notification-count", 0};
-const base::FeatureParam<int>
-    kSafetyCheckNotificationPermissionsLowEnagementLimit{
-        &kSafetyCheckNotificationPermissions,
-        "low-engagement-notification-count", 4};
-
 // Enables Safety Hub feature.
 BASE_FEATURE(kSafetyHub, "SafetyHub", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Time between automated runs of the password check.
 const base::FeatureParam<base::TimeDelta> kBackgroundPasswordCheckInterval{
     &kSafetyHub, "background-password-check-interval", base::Days(10)};
+
+// Engagement limits Notification permissions module.
+const base::FeatureParam<int>
+    kSafetyCheckNotificationPermissionsMinEnagementLimit{
+        &kSafetyHub, "min-engagement-notification-count", 0};
+const base::FeatureParam<int>
+    kSafetyCheckNotificationPermissionsLowEnagementLimit{
+        &kSafetyHub, "low-engagement-notification-count", 4};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable support for multiple scheduler configurations.

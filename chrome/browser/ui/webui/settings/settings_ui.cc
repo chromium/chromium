@@ -491,9 +491,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(network::features::kPrivateStateTokens) ||
           base::FeatureList::IsEnabled(network::features::kFledgePst));
 
-  html_source->AddBoolean("safetyCheckNotificationPermissionsEnabled",
-                          base::FeatureList::IsEnabled(
-                              features::kSafetyCheckNotificationPermissions));
   html_source->AddBoolean(
       "safetyCheckUnusedSitePermissionsEnabled",
       base::FeatureList::IsEnabled(

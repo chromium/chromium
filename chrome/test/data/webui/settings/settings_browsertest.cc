@@ -850,7 +850,6 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS)
             blink::features::kWebPrinting,
 #endif
-            features::kSafetyCheckNotificationPermissions,
             features::kSafetyHub},
         {});
     scoped_feature_list2_.InitAndEnableFeatureWithParameters(
@@ -924,12 +923,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
                        NotificationPermissionReviewSafetyHubDisabled) {
   RunTest("settings/privacy_page_test.js",
           "runMochaSuite('NotificationPermissionReviewSafetyHubDisabled')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
-                       NotificationPermissionReviewDisabled) {
-  RunTest("settings/privacy_page_test.js",
-          "runMochaSuite('NotificationPermissionReviewDisabled')");
 }
 
 // TODO(crbug.com/1043665): flaky crash on Linux Tests (dbg).
@@ -1035,13 +1028,7 @@ IN_PROC_BROWSER_TEST_F(ProactiveTopicsBlockingTest,
           "runMochaSuite('ManageTopicsAndAdTopicsPageState')");
 }
 
-class SettingsReviewNotificationPermissionsTest : public SettingsBrowserTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kSafetyCheckNotificationPermissions};
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsReviewNotificationPermissionsTest, All) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, ReviewNotificationPermissions) {
   RunTest("settings/review_notification_permissions_test.js", "mocha.run()");
 }
 
@@ -1081,7 +1068,6 @@ class SettingsSafetyCheckPermissionsTest : public SettingsBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {
             content_settings::features::kSafetyCheckUnusedSitePermissions,
-            features::kSafetyCheckNotificationPermissions,
             features::kSafetyCheckExtensions,
         },
         {});

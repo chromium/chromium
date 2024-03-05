@@ -2686,10 +2686,6 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
 }
 
 void SiteSettingsHandler::SendNotificationPermissionReviewList() {
-  if (!base::FeatureList::IsEnabled(
-          features::kSafetyCheckNotificationPermissions)) {
-    return;
-  }
   NotificationPermissionsReviewService* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
   CHECK(service);

@@ -298,20 +298,6 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
         isVisible(page.shadowRoot!.querySelector(notificationElementName)));
   });
 
-  test('notificationPermissionModuleFeatureDisabled', async () => {
-    loadTimeData.overrideValues(
-        {safetyCheckNotificationPermissionsEnabled: false});
-    await createPageForNotificationPermissions(notificationMockData);
-
-    assertFalse(
-        isVisible(page.shadowRoot!.querySelector(notificationElementName)));
-    assertFalse(await metricsBrowserProxy.whenCalled(
-        'recordSafetyCheckNotificationsModuleEntryPointShown'));
-    // Re-enable the notification permission feature.
-    loadTimeData.overrideValues(
-        {safetyCheckNotificationPermissionsEnabled: true});
-  });
-
   test('notificationPermissionModuleEmptyList', async () => {
     await createPageForNotificationPermissions([]);
 
