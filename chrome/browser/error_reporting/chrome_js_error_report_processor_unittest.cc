@@ -29,6 +29,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/text/bytes_formatting.h"
 
 using ::testing::AllOf;
 using ::testing::EndsWith;
@@ -598,14 +599,17 @@ static std::string UploadInfoVectorToString(
     } else {
       result += ", ";
     }
-    base::StrAppend(&result,
-                    {"{state ", UploadInfoStateToString(upload->state),
-                     ", upload_id ", upload->upload_id, ", upload_time ",
-                     base::NumberToString(upload->upload_time.ToTimeT()),
-                     ", local_id ", upload->local_id, ", capture_time ",
-                     base::NumberToString(upload->capture_time.ToTimeT()),
-                     ", source ", upload->source, ", file size ",
-                     base::UTF16ToUTF8(upload->file_size), "}"});
+    auto file_size =
+        upload->file_size.has_value()
+            ? base::UTF16ToUTF8(ui::FormatBytes(*upload->file_size))
+            : "";
+    base::StrAppend(
+        &result, {"{state ", UploadInfoStateToString(upload->state),
+                  ", upload_id ", upload->upload_id, ", upload_time ",
+                  base::NumberToString(upload->upload_time.ToTimeT()),
+                  ", local_id ", upload->local_id, ", capture_time ",
+                  base::NumberToString(upload->capture_time.ToTimeT()),
+                  ", source ", upload->source, ", file size ", file_size, "}"});
   }
   result += "]";
   return result;

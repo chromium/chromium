@@ -37,7 +37,6 @@ static_library("crash_upload_list") {
     "//chrome/common:constants",
     "//components/crash/core/browser:browser",
     "//components/upload_list",
-    "//ui/base:base",
   ]
 
   if (is_android) {

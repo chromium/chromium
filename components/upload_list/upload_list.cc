@@ -38,7 +38,7 @@ UploadList::UploadInfo::UploadInfo(const std::string& upload_id,
 UploadList::UploadInfo::UploadInfo(const std::string& local_id,
                                    const base::Time& capture_time,
                                    State state,
-                                   const std::u16string& file_size)
+                                   int64_t file_size)
     : local_id(local_id),
       capture_time(capture_time),
       state(state),

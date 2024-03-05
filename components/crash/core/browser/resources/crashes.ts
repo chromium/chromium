@@ -24,6 +24,25 @@ function requestCrashes() {
   chrome.send('requestCrashList');
 }
 
+/**
+ * Format filesize in appropriate display units.
+ */
+function formatBytes(bytes: number): string {
+  const k = 1024;
+  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+
+  let unitAmount = bytes;
+  let unit = 0;
+  for (unit; unitAmount >= k && unit < units.length - 1; unit++) {
+    unitAmount /= k;
+  }
+  const unitAmountLocalized = unitAmount.toLocaleString(
+      undefined,  // Default locale.
+      {maximumFractionDigits: 2});
+
+  return `${unitAmountLocalized} ${units[unit]}`;
+}
+
 // Keep in sync with components/crash/core/browser/crashes_ui_util.cc.
 enum State {
   NOT_UPLOADED = 'not_uploaded',
@@ -33,7 +52,7 @@ enum State {
 }
 
 interface CrashData {
-  file_size: string;
+  file_size?: number;
   id: string;
   local_id: string;
   state: State;
@@ -169,12 +188,12 @@ function updateCrashList({
 
     const fileSize = clone.querySelector('.file-size');
     assert(fileSize);
-    if (crash.file_size === '') {
+    if (crash.file_size === undefined) {
       fileSize.remove();
     } else {
       const fileSizeCell = fileSize.querySelector('.value');
       assert(fileSizeCell);
-      fileSizeCell.textContent = crash.file_size;
+      fileSizeCell.textContent = formatBytes(crash.file_size);
     }
 
     crashList.appendChild(clone);

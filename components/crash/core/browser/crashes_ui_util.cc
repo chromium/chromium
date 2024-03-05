@@ -88,7 +88,9 @@ void UploadListToValue(UploadList* upload_list, base::Value::List* out_value) {
     }
     crash.Set("local_id", info->local_id);
     crash.Set("state", UploadInfoStateAsString(info->state));
-    crash.Set("file_size", base::UTF16ToUTF8(info->file_size));
+    if (info->file_size.has_value()) {
+      crash.Set("file_size", static_cast<double>(*info->file_size));
+    }
     out_value->Append(std::move(crash));
   }
 }
