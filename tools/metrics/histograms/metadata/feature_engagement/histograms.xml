@@ -578,7 +578,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.NotifyEventReadyState.{IPHFeature}"
-    enum="BooleanSuccess" expires_after="2024-06-30">
+    enum="BooleanSuccess" expires_after="2024-09-01">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records if the model is ready when in-product help event happens for
@@ -622,7 +622,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.TextBubble.ShownTime" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>haileywang@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>

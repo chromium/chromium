@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.SendWebPushMessageResult" enum="SendWebPushMessageResult"
-    expires_after="2024-05-19">
+    expires_after="2024-09-01">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

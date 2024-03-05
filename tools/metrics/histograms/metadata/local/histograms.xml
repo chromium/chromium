@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.MojoSizeInKB" units="KB"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.MojoTimeToPrime" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.MojoTimeToPrimeFor{LocalStorageSizes}" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -259,7 +259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.RendererAreaCacheHit"
-    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2024-06-30">
+    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2024-09-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

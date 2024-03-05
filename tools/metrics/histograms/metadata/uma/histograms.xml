@@ -80,7 +80,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.ActualLogUploadInterval" units="minutes"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.ClientIdSource" enum="ClientIdSource"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>pdyson@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>The source of the client id when its creation is forced.</summary>
@@ -778,7 +778,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.SamplingRatePerMille" units="samples per mille"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>jwd@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -912,7 +912,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.StructuredMetrics.NumEventsInUpload" units="count"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>jongahn@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
@@ -924,7 +924,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.StructuredMetrics.NumFilesPerExternalMetricsScan"
-    units="count" expires_after="2024-06-30">
+    units="count" expires_after="2024-09-01">
   <owner>tby@chromium.org</owner>
   <owner>jongahn@chromium.org</owner>
   <summary>
@@ -947,7 +947,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.TruncatedEvents.UserAction" units="events"
-    expires_after="2024-08-25">
+    expires_after="2024-09-01">
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -957,7 +957,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.UnsentLogs.Dropped" units="logs"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>holte@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>lucnguyen@google.com</owner>
@@ -971,7 +971,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.UnsentLogs.DroppedSize" units="bytes"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>akirabaruah@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>

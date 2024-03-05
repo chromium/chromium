@@ -29,7 +29,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Search.Ambient.Query" enum="AmbientSearchEntryPoint"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>juanmojica@google.com</owner>
   <owner>schechter@google.com</owner>
   <owner>stanfield@google.com</owner>
@@ -249,7 +249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.All.Searches"
-    enum="BooleanBottomSearchKind" expires_after="2024-06-30">
+    enum="BooleanBottomSearchKind" expires_after="2024-09-01">
 <!-- TODO(donnd): change expires_after to "never" once established and
        approved. -->
 
@@ -720,7 +720,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.Image.Camera.Open" enum="CameraOpenEntryPoint"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>juanmojica@google.com</owner>
   <owner>schechter@google.com</owner>
   <owner>stanfield@google.com</owner>
@@ -745,7 +745,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.iOS.SelectDefaultSearchEngine"
-    enum="OmniboxSearchEngineType" expires_after="2024-06-30">
+    enum="OmniboxSearchEngineType" expires_after="2024-09-01">
   <owner>sczs@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -952,7 +952,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RegionSearch.Lens.Result"
-    enum="LensRegionSearchCaptureResult" expires_after="2024-06-30">
+    enum="LensRegionSearchCaptureResult" expires_after="2024-09-01">
   <owner>juanmojica@google.com</owner>
   <owner>benwgold@google.com</owner>
   <owner>stanfield@google.com</owner>

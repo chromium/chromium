@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterEditDialogActions"
-    enum="PrinterEditDialogActions" expires_after="2024-07-01">
+    enum="PrinterEditDialogActions" expires_after="2024-09-01">
   <owner>nmuggli@google.com</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -286,7 +286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterRemoved" enum="PrinterProtocol"
-    expires_after="2024-07-02">
+    expires_after="2024-09-01">
   <owner>bmgordon@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterSetupResult.SettingsDiscoveredPrinters"
-    enum="PrinterSetupResult" expires_after="2024-06-30">
+    enum="PrinterSetupResult" expires_after="2024-09-01">
   <owner>gavinwill@chromium.org</owner>
   <owner>bmgordon@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
@@ -354,7 +354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterStatusReasons"
-    enum="PrinterStatusReasons" expires_after="2024-06-30">
+    enum="PrinterStatusReasons" expires_after="2024-09-01">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -609,7 +609,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrintAttemptOutcome" enum="PrintAttemptOutcome"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -646,7 +646,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrinterStatus.{StatusReason}.PrintJobSuccess"
-    enum="BooleanSuccess" expires_after="2024-06-30">
+    enum="BooleanSuccess" expires_after="2024-09-01">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -675,7 +675,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrintSettings" enum="PrintSettings"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -740,7 +740,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.RenderToPDFTime" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>Time taken to render to PDF for print preview.</summary>

@@ -55,7 +55,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Content.Classification" enum="ContentClassification"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>sophey@chromium.org</owner>
   <owner>chrome-sherlock@google.com</owner>
   <summary>
@@ -147,7 +147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.ClientStatus.Enabled.ByProvider"
-    enum="Boolean" expires_after="2024-06-20">
+    enum="Boolean" expires_after="2024-09-01">
   <owner>guiperez@google.com</owner>
   <owner>chrome-sherlock@google.com</owner>
   <summary>The status of the push notifications client for Content.</summary>
@@ -1213,7 +1213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.RefreshTrigger"
-    enum="FeedRefreshTrigger" expires_after="2024-06-30">
+    enum="FeedRefreshTrigger" expires_after="2024-09-01">
   <owner>adamta@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1254,7 +1254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.TimeSpentInFeed" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1352,7 +1352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserActions.Commands"
-    enum="FeedUserCommandType" expires_after="2024-06-30">
+    enum="FeedUserCommandType" expires_after="2024-09-01">
   <owner>harringtond@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1441,7 +1441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserSettingsOnStart"
-    enum="FeedUserSettingsOnStart" expires_after="2024-06-30">
+    enum="FeedUserSettingsOnStart" expires_after="2024-09-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1690,7 +1690,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.UnfollowResult"
-    enum="WebFeedSubscriptionRequestStatus" expires_after="2024-06-30">
+    enum="WebFeedSubscriptionRequestStatus" expires_after="2024-09-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1916,7 +1916,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.LoadMoreTrigger.TotalCards"
-    units="cards" expires_after="2024-06-30">
+    units="cards" expires_after="2024-09-01">
   <owner>dewittj@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>

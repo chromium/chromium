@@ -351,7 +351,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.App.LowMemoryKills{ArcAppKillDailyBackgroundVms}{ArcAppKillDailyType}"
-    units="Apps" expires_after="2024-06-30">
+    units="Apps" expires_after="2024-09-01">
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
   <summary>
@@ -364,7 +364,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.App.PrimaryAbi" enum="AppPrimaryAbi"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>batoon@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -374,7 +374,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.AppCount" units="units" expires_after="2024-06-30">
+<histogram name="Arc.AppCount" units="units" expires_after="2024-09-01">
   <owner>khmel@google.com</owner>
   <owner>fahdi@google.com</owner>
   <summary>
@@ -471,7 +471,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppInstalledReason" enum="InstallationCounterReasonEnum"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -790,7 +790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.CompanionLibraryApisCounter"
-    enum="CompanionLibraryApisList" expires_after="2024-06-30">
+    enum="CompanionLibraryApisList" expires_after="2024-09-01">
   <owner>sstan@google.com</owner>
   <owner>mhasank@google.com</owner>
   <owner>arc-commercial@google.com</owner>
@@ -811,7 +811,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.ContainerLifetimeEvent" enum="ArcContainerLifetimeEvent"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>khmel@google.com</owner>
   <summary>
     The number of ARC container lifetime events. One START event and up to one
@@ -824,7 +824,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.ContainerRestartAfterCrashCount" units="units"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>khmel@google.com</owner>
   <summary>
     The number of times ARC container crashes and automatically restarts in one
@@ -930,7 +930,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.EngagementTime.Background" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>mduggan@google.com</owner>
   <owner>yhanada@google.com</owner>
   <owner>arc-framework@google.com</owner>
@@ -942,7 +942,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.EngagementTime.Foreground" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>mduggan@google.com</owner>
   <owner>yhanada@google.com</owner>
   <owner>arc-framework@google.com</owner>
@@ -953,7 +953,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.EngagementTime.Total" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>mduggan@google.com</owner>
   <owner>yhanada@google.com</owner>
   <owner>arc-framework@google.com</owner>
@@ -1070,7 +1070,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.GhostWindowViewType" units="ArcGhostWindowViewType"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>sstan@chromium.org</owner>
   <owner>arc-framework-tok@google.com</owner>
   <summary>
@@ -1282,7 +1282,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.LoadAverageX100PerProcessor15MinutesAfterArcStart.{ArcBootType}"
-    units="0.01 jobs/processor" expires_after="2024-06-30">
+    units="0.01 jobs/processor" expires_after="2024-09-01">
   <owner>hashimoto@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
@@ -1478,7 +1478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Notifications.ActionEnabled" enum="BooleanEnabled"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>yaoqq@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>
@@ -1512,7 +1512,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Notifications.IsCustomNotification"
-    enum="BooleanIsCustomNotification" expires_after="2024-06-30">
+    enum="BooleanIsCustomNotification" expires_after="2024-09-01">
   <owner>shuminghao@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>
@@ -1521,7 +1521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Notifications.Style" enum="ArcNotificationStyle"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>yaoqq@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>Records the style of an Arc notification when it's created.</summary>
@@ -1548,7 +1548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.OptInAction" enum="ArcOptInAction"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -2080,7 +2080,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Session.StopReason{ArcUserTypes}" enum="ArcStopReason"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>jhorwich@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -2215,7 +2215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.UserInteraction" enum="ArcUserInteraction"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>jhorwich@chromium.org</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -2629,7 +2629,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.WindowPredictorUseCase" enum="WindowPredictorUseCase"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>sstan@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>

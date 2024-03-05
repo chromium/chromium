@@ -120,7 +120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.StorageAccess.RequestOutcome"
-    enum="StorageAccessAPIRequestOutcome" expires_after="2024-06-30">
+    enum="StorageAccessAPIRequestOutcome" expires_after="2024-09-01">
   <owner>cfredric@chromium.org</owner>
   <owner>brandm@microsoft.com</owner>
   <summary>
@@ -131,7 +131,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.StorageAccess.RequestStorageAccess2"
-    enum="RequestStorageResult" expires_after="2024-06-30">
+    enum="RequestStorageResult" expires_after="2024-09-01">
   <owner>mkwst@chromium.org</owner>
   <owner>cfredric@chromium.org</owner>
   <owner>brandm@microsoft.com</owner>
@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Clipboard.Read" enum="ClipboardFormatRead"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>huangdarwin@chromium.org</owner>
   <owner>src/ui/base/clipboard/OWNERS</owner>
   <summary>
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Clipboard.Write" enum="ClipboardFormatWrite"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>huangdarwin@chromium.org</owner>
   <owner>src/ui/base/clipboard/OWNERS</owner>
   <summary>
@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.Result" enum="SqlRecoveryResult"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>asully@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -273,7 +273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.ResultCode" enum="SqliteLoggedResultCode"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>asully@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -406,7 +406,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Storage.FileSystemAccess.{OpType}PermissionRequestOutcome.{EntryType}"
-    enum="FileSystemAccessPermissionRequestOutcome" expires_after="2024-06-30">
+    enum="FileSystemAccessPermissionRequestOutcome" expires_after="2024-09-01">
   <owner>asully@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
@@ -542,7 +542,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.InterestGroup.DBMaintenanceTime" units="microseconds"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -555,7 +555,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.InterestGroup.DBSize" units="KB"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -565,7 +565,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.InterestGroup.PerSiteCount" units="groups"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -1344,7 +1344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.StoragePressure.Bubble"
-    enum="StoragePressureBubbleUserAction" expires_after="2024-06-30">
+    enum="StoragePressureBubbleUserAction" expires_after="2024-09-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

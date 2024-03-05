@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Variations.AppliedSeed.Size" units="bytes"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.AppliedSeed.StudyCount" units="studies"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -80,7 +80,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.ExtendedSafeMode.BeaconFileStateAtStartup"
-    enum="BeaconFileState" expires_after="2024-06-30">
+    enum="BeaconFileState" expires_after="2024-09-01">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>Internals&gt;Metrics&gt;Variations</component>
@@ -389,7 +389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SafeMode.LoadSafeSeed.Result"
-    enum="VariationsSeedLoadResult" expires_after="2024-06-30">
+    enum="VariationsSeedLoadResult" expires_after="2024-09-01">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -443,7 +443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SafeMode.Streak.Crashes" units="crashes"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -457,7 +457,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SafeMode.Streak.FetchFailures" units="failures"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>

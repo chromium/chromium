@@ -277,7 +277,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.TextSuggester.Suggest.Event"
-    enum="BooleanError" expires_after="2024-06-30">
+    enum="BooleanError" expires_after="2024-09-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
@@ -297,7 +297,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MachineLearningService.WebPlatformHandwritingModel.GetPrediction.Event"
-    enum="Boolean" expires_after="2024-06-30">
+    enum="Boolean" expires_after="2024-09-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>

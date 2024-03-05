@@ -67,7 +67,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.Dialog.InnerTextNodeOffsetFound"
-    enum="ComposeInnerTextNodeOffset" expires_after="2024-07-02">
+    enum="ComposeInnerTextNodeOffset" expires_after="2024-09-01">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -131,7 +131,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.Session.EvalLocation"
-    enum="ComposeSessionEvalLocation" expires_after="2024-06-29">
+    enum="ComposeSessionEvalLocation" expires_after="2024-09-01">
   <owner>harringtond@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -215,7 +215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.{ComposeEvalLocation}Request.Feedback"
-    enum="ComposeRequestFeedback" expires_after="2024-07-02">
+    enum="ComposeRequestFeedback" expires_after="2024-09-01">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>

@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.RevenPartitionMigration"
-    enum="ChromeOSRevenPartitionMigration" expires_after="2024-06-30">
+    enum="ChromeOSRevenPartitionMigration" expires_after="2024-09-01">
   <owner>nicholasbishop@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.PowerwashCount" units="powerwashes"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@chromium.org</owner>
   <summary>
@@ -180,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.PowerwashDays" units="powerwashdays"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>qianwan@google.com</owner>
   <owner>chromeos-data@google.com</owner>
   <summary>
@@ -210,7 +210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Recovery.Reason" enum="ChromeOSRecoveryReason"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>

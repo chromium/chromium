@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.CetEnabled" enum="BooleanEnabled"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>ajgo@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.HasHighResolutionTimeTicks" enum="Boolean"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>brucedawson@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>

@@ -497,7 +497,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OOBE.ErrorScreensTime.{OOBEScreenShownBeforeNetworkError}.{OOBENetworkError}"
-    units="ms" expires_after="2024-06-30">
+    units="ms" expires_after="2024-09-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -582,7 +582,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OOBE.GestureNavigationScreen.PageShownTime.{OOBEGestureNavigationPage}"
-    units="ms" expires_after="2024-06-30">
+    units="ms" expires_after="2024-09-01">
   <owner>mmourgos@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -718,7 +718,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.NetworkErrorShown.{OOBEScreenShownBeforeNetworkError}"
-    enum="NetworkErrorType" expires_after="2024-06-30">
+    enum="NetworkErrorType" expires_after="2024-09-01">
   <owner>achuith@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -806,7 +806,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.DownloadTime" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -814,7 +814,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.ResponseCode"
-    enum="HttpResponseCode" expires_after="2024-06-30">
+    enum="HttpResponseCode" expires_after="2024-09-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -890,7 +890,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OOBE.StepCompletionTimeByExitReason.{OOBEScreenName_ExitReason}"
-    units="ms" expires_after="2024-06-30">
+    units="ms" expires_after="2024-09-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>Time spent on specific OOBE screen grouped by exit reason.</summary>
@@ -1064,7 +1064,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.StageTime.{UpdateStage}" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>

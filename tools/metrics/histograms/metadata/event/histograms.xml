@@ -67,7 +67,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Event.DownEventCount.PerInputFormFactorDestinationCombination2"
     enum="DownEventInputFormFactorDestinationCombination2"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The number of down events received per destination, input and form factor
@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.EndToEnd.KeyPress" units="microseconds"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -328,7 +328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.EndToEnd.TouchpadPinch2" units="microseconds"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>nzolghadr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>

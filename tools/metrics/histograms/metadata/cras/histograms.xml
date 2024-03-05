@@ -238,7 +238,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.DeviceGain{Device}" units="level"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -377,7 +377,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.DeviceVolume{Device}" units="level"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -694,7 +694,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.NoiseCancellationEnabledSource"
-    enum="AudioSettingsChangeSource" expires_after="2024-06-30">
+    enum="AudioSettingsChangeSource" expires_after="2024-09-01">
   <owner>gavinwill@chromium.org</owner>
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
@@ -704,7 +704,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.OutputVolumeChangedSource"
-    enum="AudioSettingsChangeSource" expires_after="2024-06-30">
+    enum="AudioSettingsChangeSource" expires_after="2024-09-01">
   <owner>gavinwill@chromium.org</owner>
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
@@ -720,7 +720,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.RtcDevicePair" enum="CrasDevicePair"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -730,7 +730,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.RtcRuntime.{InDevice}.{OutDevice}" units="seconds"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -854,7 +854,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.StreamChannelCount" units="channels"
-    expires_after="2024-04-28">
+    expires_after="2024-09-01">
 <!-- Name completed by histogram_suffixes
      name="Cras.Direction" and
      name="Cras.ClientType" -->
@@ -868,7 +868,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.StreamClientTypeInput" enum="CrasClientType"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -878,7 +878,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.StreamClientTypeOutput" enum="CrasClientType"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -944,7 +944,7 @@ This collects each top-level device metric type. For example,
   </summary>
 </histogram>
 
-<histogram name="Cras.StreamRuntime" units="seconds" expires_after="2024-06-30">
+<histogram name="Cras.StreamRuntime" units="seconds" expires_after="2024-09-01">
 <!-- Name completed by histogram_suffixes
      name="Cras.Direction" and
      name="Cras.ClientType" and
@@ -1014,7 +1014,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.StreamSamplingRate" units="bps"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
 <!-- Name completed by histogram_suffixes
      name="Cras.Direction" and
      name="Cras.ClientType" -->
@@ -1028,7 +1028,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.UnderrunsPerDevice" units="count"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>

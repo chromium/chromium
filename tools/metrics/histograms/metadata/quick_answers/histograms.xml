@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="QuickAnswers.ActiveImpression" enum="QuickAnswersResultType"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>angelaxiao@chromium.org</owner>
   <owner>yawano@google.com</owner>
   <owner>llin@google.com</owner>
@@ -66,7 +66,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Click" enum="QuickAnswersResultType"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>angelaxiao@chromium.org</owner>
   <owner>yawano@google.com</owner>
   <owner>llin@google.com</owner>

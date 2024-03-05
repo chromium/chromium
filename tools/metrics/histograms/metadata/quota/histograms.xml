@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.AvailableDiskSpace2" units="MB"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.EvictedBucketDaysSinceAccess" units="units"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -144,7 +144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.EvictedBucketsPerHour" units="buckets"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.EvictedBytesPerRound" units="MB"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.NumberOfEvictedBucketsPerRound" units="units"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>Number of evicted buckets per round.</summary>
@@ -341,7 +341,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.TotalDiskSpace" units="MB" expires_after="2024-06-30">
+<histogram name="Quota.TotalDiskSpace" units="MB" expires_after="2024-09-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.MessageReceivedType" enum="SharingMessageType"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

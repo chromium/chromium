@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.ActivateEvent.Time" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -382,7 +382,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.FetchEvent.HasResponse.Time" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -447,7 +447,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.DataTransfer.{Action}"
     enum="ServiceWorkerRaceNetworkRequestDataTransferMojoResult"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -499,7 +499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.FetchHandler.TypeAtContinueWithActivatedVersion"
-    enum="ServiceWorkerFetchHandlerType" expires_after="2024-06-30">
+    enum="ServiceWorkerFetchHandlerType" expires_after="2024-09-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -543,7 +543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.FoundServiceWorkerRegistrationOnNavigation"
-    enum="BooleanFound" expires_after="2024-06-30">
+    enum="BooleanFound" expires_after="2024-09-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -788,7 +788,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.InitialServiceWorkerStatus{NavigationType}{FrameTreeNodeType}{BrowserStartupCompleted}"
-    enum="InitialServiceWorkerStatus" expires_after="2024-06-30">
+    enum="InitialServiceWorkerStatus" expires_after="2024-09-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1017,7 +1017,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2"
-    units="ms" expires_after="2024-06-01">
+    units="ms" expires_after="2024-09-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -1223,7 +1223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.RegisteredStorageKeyCount" units="origins"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -1291,7 +1291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.SkipCallingFindRegistrationForClientUrl"
-    enum="BooleanSkipped" expires_after="2024-06-30">
+    enum="BooleanSkipped" expires_after="2024-09-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1451,7 +1451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.StartWorker.Purpose"
-    enum="ServiceWorkerMetrics.EventType" expires_after="2024-06-30">
+    enum="ServiceWorkerMetrics.EventType" expires_after="2024-09-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

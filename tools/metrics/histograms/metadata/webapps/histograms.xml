@@ -38,7 +38,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.DismissEvent" enum="AppBannersDismissEvent"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>pjmclachlan@google.com</owner>
   <owner>pcovell@google.com</owner>
   <summary>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.InstallableStatusCode" enum="InstallableStatusCode"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <summary>
@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.InstallEvent" enum="AppBannersInstallEvent"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <owner>pcovell@google.com</owner>
@@ -88,7 +88,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.UserResponse" enum="AppBannersUserResponse"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <summary>
@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Launch.WebAppDisplayMode" enum="WebAppDisplayMode"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>peter@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AddToHomescreenMediator.AppTypeToMenuEntry"
-    enum="AppTypeToMenuEntry" expires_after="2024-06-30">
+    enum="AppTypeToMenuEntry" expires_after="2024-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -223,7 +223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AmbientBadge.Click" enum="InstallAmbientBadgeAppType"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AmbientBadge.Dismiss" enum="InstallAmbientBadgeAppType"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -247,7 +247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AmbientBadge.Display" enum="InstallAmbientBadgeAppType"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -259,7 +259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AmbientBadge.Terminate"
-    enum="InstallableAmbientBadgeState" expires_after="2024-06-30">
+    enum="InstallableAmbientBadgeState" expires_after="2024-09-01">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -518,7 +518,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithEmptyDownloadedIconSizes" units="web apps"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -540,7 +540,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithEmptyIconFile" units="web apps"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -561,7 +561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithGeneratedIconFlag" units="web apps"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -587,7 +587,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithMissingIconFile" units="web apps"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -748,7 +748,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Install.InstallBounce" enum="WebappInstallSource"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>alancutter@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
@@ -759,7 +759,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Install.InstallEvent" enum="WebappInstallSource"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>alancutter@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
@@ -809,7 +809,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.InstallConfirmation.CloseReason"
-    enum="WidgetClosedReason" expires_after="2024-06-30">
+    enum="WidgetClosedReason" expires_after="2024-09-01">
   <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwa-team@google.com</owner>
   <summary>
@@ -856,7 +856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.InstallResult" enum="WebAppInstallResultCode"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
 <!-- Name completed by histogram_suffixes name="WebAppType" -->
 
   <owner>ortuno@chromium.org</owner>
@@ -961,7 +961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.LaunchContainer" enum="AppLaunchContainer"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>phillis@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -972,7 +972,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Launcher.LaunchResult"
-    enum="WebAppLauncherLaunchResult" expires_after="2024-06-30">
+    enum="WebAppLauncherLaunchResult" expires_after="2024-09-01">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
@@ -1347,7 +1347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Shortcuts.Creation.Result"
-    enum="ShortcutsCreationResult" expires_after="2024-06-30">
+    enum="ShortcutsCreationResult" expires_after="2024-09-01">
   <owner>phillis@chromium.org</owner>
   <owner>dmurph@chromium.org</owner>
   <summary>Records the result of shortcut creation for PWA.</summary>
@@ -1368,7 +1368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Shortcuts.Update.Result" enum="BooleanSuccess"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>camdenking@google.com</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1472,7 +1472,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.SystemApps.FreshInstallDuration" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>ortuno@chromium.org</owner>
   <owner>qjw@chromium.org</owner>
   <summary>
@@ -1578,7 +1578,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.WebAppUrlLoaderPrepareForLoadResult"
-    enum="WebAppUrlLoaderResult" expires_after="2024-06-30">
+    enum="WebAppUrlLoaderResult" expires_after="2024-09-01">
   <owner>qjw@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>

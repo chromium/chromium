@@ -195,7 +195,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.AppLaunch" enum="AppLaunch"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>benwells@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>tapted@chromium.org</owner>
@@ -762,7 +762,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.DeclarativeNetRequest.EvaluateBeforeRequestTime.SingleExtension2"
-    units="microseconds" expires_after="2024-06-30">
+    units="microseconds" expires_after="2024-09-01">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -1266,7 +1266,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.DisableReason2" enum="ExtensionDisableReason"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2278,7 +2278,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.Functions.ExtensionMV3Calls"
-    enum="ExtensionFunctions" expires_after="2024-06-30">
+    enum="ExtensionFunctions" expires_after="2024-09-01">
   <owner>tjudkins@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -3479,7 +3479,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.LoadType2" enum="ExtensionType"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3710,7 +3710,7 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
-<histogram name="Extensions.NetworkDelay" units="ms" expires_after="2024-06-30">
+<histogram name="Extensions.NetworkDelay" units="ms" expires_after="2024-09-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -3784,7 +3784,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.NonWebstoreLocationWithDeveloperModeOff{ExtensionState}"
-    enum="ExtensionLocation" expires_after="2024-06-30">
+    enum="ExtensionLocation" expires_after="2024-09-01">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4009,7 +4009,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ProcessManagerStartupHostsTime2" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4545,7 +4545,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.Toolbar.InvocationSource"
-    enum="ExtensionActionInvocationSource" expires_after="2024-06-30">
+    enum="ExtensionActionInvocationSource" expires_after="2024-09-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4618,7 +4618,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.WebRequest.BeforeRequestDeclarativeNetRequestEvaluationTimeInMicroseconds"
-    units="microseconds" expires_after="2024-06-30">
+    units="microseconds" expires_after="2024-09-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -4977,7 +4977,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.{ExtensionSource}ForceInstalledFailureReason3"
-    enum="ExtensionInstallationFailureReason" expires_after="2024-06-30">
+    enum="ExtensionInstallationFailureReason" expires_after="2024-09-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>

@@ -23,7 +23,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="ChromeOS.AudioSelection.{AudioType}.SystemSwitchAudio"
-    enum="BooleanSwitched" expires_after="2024-06-28">
+    enum="BooleanSwitched" expires_after="2024-09-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -59,7 +59,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.UserOverrideSystem{SwitchDecision}TimeElapsed"
-    units="minutes" expires_after="2024-06-28">
+    units="minutes" expires_after="2024-09-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -91,7 +91,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.InputDeviceTypeChangedTo"
-    enum="AudioDeviceType" expires_after="2024-06-30">
+    enum="AudioDeviceType" expires_after="2024-09-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -102,7 +102,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.InputGainSetTo" units="%"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -124,7 +124,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.NoiseCancellationEnabled"
-    enum="BooleanEnabled" expires_after="2024-06-30">
+    enum="BooleanEnabled" expires_after="2024-09-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -134,7 +134,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.OutputDeviceTypeChangedTo"
-    enum="AudioDeviceType" expires_after="2024-06-30">
+    enum="AudioDeviceType" expires_after="2024-09-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -145,7 +145,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.OutputMuteStateChange"
-    enum="AudioMuteButtonAction" expires_after="2024-06-30">
+    enum="AudioMuteButtonAction" expires_after="2024-09-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -155,7 +155,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.OutputVolumeSetTo" units="%"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

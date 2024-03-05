@@ -216,7 +216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Match.PositiveMatchSecretCorrect"
-    enum="BooleanCorrect" expires_after="2024-06-30">
+    enum="BooleanCorrect" expires_after="2024-09-01">
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -291,7 +291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.RecordFormatVersion"
-    enum="FingerprintRecordFormatVersion" expires_after="2024-06-30">
+    enum="FingerprintRecordFormatVersion" expires_after="2024-09-01">
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>

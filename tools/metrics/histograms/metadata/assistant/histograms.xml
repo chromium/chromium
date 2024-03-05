@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.EntryPoint" enum="AssistantEntryPoint"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -73,7 +73,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ExitPoint" enum="AssistantExitPoint"
-    expires_after="2024-06-30">
+    expires_after="2024-09-01">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.QueryResponseType" enum="AssistantQueryResponseType"
-    expires_after="2024-04-28">
+    expires_after="2024-09-01">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>The Assistant query response type.</summary>
@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ServiceEnabledUserCount" enum="BooleanEnabled"
-    expires_after="2024-05-19">
+    expires_after="2024-09-01">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
