@@ -717,9 +717,6 @@ void SystemTrayClientImpl::ShowNetworkSettingsHelper(
 
 void SystemTrayClientImpl::ShowMultiDeviceSetup() {
   ash::multidevice_setup::MultiDeviceSetupDialog::Show();
-  ash::phonehub::util::LogMultiDeviceSetupDialogEntryPoint(
-      ash::phonehub::util::MultiDeviceSetupDialogEntrypoint::
-          kSetupNotification);
 }
 
 void SystemTrayClientImpl::ShowFirmwareUpdate() {

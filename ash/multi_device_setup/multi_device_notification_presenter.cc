@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/phonehub/util/histogram_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/message_center.h"
@@ -255,6 +256,9 @@ void MultiDeviceNotificationPresenter::OnNotificationClicked(
   switch (notification_status_) {
     case Status::kNewUserNotificationVisible:
       Shell::Get()->system_tray_model()->client()->ShowMultiDeviceSetup();
+      phonehub::util::LogMultiDeviceSetupDialogEntryPoint(
+          ash::phonehub::util::MultiDeviceSetupDialogEntrypoint::
+              kSetupNotification);
       // If user has not interacted with Phone Hub icon when the notification is
       // visible, log MultiDeviceSetup.NotificationInteracted event when
       // notification is clicked.

@@ -64,6 +64,12 @@ void NetworkDetailedView::HandleViewClicked(views::View* view) {
     return;
   }
 
+  if (view->GetID() == VIEW_ID_OPEN_CROSS_DEVICE_SETTINGS) {
+    // TODO (b/323346091): Add metric for "Set Up Your Device" clicks
+    Shell::Get()->system_tray_model()->client()->ShowMultiDeviceSetup();
+    return;
+  }
+
   if (view->GetID() == VIEW_ID_ADD_ESIM_ENTRY) {
     base::RecordAction(base::UserMetricsAction("QS_Subpage_Network_AddESim"));
     Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(

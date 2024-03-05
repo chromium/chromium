@@ -259,6 +259,11 @@ class NetworkListViewControllerTest : public AshTestBase,
     EXPECT_EQ(GetMobileToggleButton()->GetIsOn(), toggled_on);
   }
 
+  HoverHighlightView* GetSetUpYourDeviceEntry() {
+    return FindViewById<HoverHighlightView*>(
+        VIEW_ID_OPEN_CROSS_DEVICE_SETTINGS);
+  }
+
   HoverHighlightView* GetAddWifiEntry() {
     return FindViewById<HoverHighlightView*>(VIEW_ID_JOIN_WIFI_NETWORK_ENTRY);
   }
@@ -882,7 +887,39 @@ TEST_P(NetworkListViewControllerTest,
   // shouldn't be
   if (IsInstantHotspotRebrandEnabled()) {
     EXPECT_THAT(GetTetherHostsSubHeader(), NotNull());
+    EXPECT_THAT(GetSetUpYourDeviceEntry(), NotNull());
+    LeftClickOn(GetSetUpYourDeviceEntry());
+    EXPECT_EQ(1, GetSystemTrayClient()->show_multi_device_setup_count());
   } else {
+    EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
+    EXPECT_THAT(GetSetUpYourDeviceEntry(), IsNull());
+  }
+
+  // Add tether host.
+  fake_multidevice_setup_->NotifyHostStatusChanged(
+      multidevice_setup::mojom::HostStatus::kHostVerified, std::nullopt);
+  fake_multidevice_setup_->FlushForTesting();
+  auto properties =
+      chromeos::network_config::mojom::DeviceStateProperties::New();
+  properties->type = NetworkType::kTether;
+  properties->device_state = DeviceStateType::kEnabled;
+  cros_network()->SetDeviceProperties(properties.Clone());
+
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*wifi_network_count=*/0,
+                           /*cellular_network_count=*/0,
+                           /*tether_network_count=*/0);
+
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          kTetherName, NetworkType::kTether, ConnectionStateType::kConnected));
+  base::RunLoop().RunUntilIdle();
+
+  if (IsInstantHotspotRebrandEnabled()) {
+    EXPECT_THAT(GetSetUpYourDeviceEntry(), IsNull());
+    EXPECT_THAT(GetTetherHostsSubHeader(), NotNull());
+  } else {
+    EXPECT_THAT(GetSetUpYourDeviceEntry(), IsNull());
     EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
   }
 }

@@ -279,6 +279,10 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #addr-of
   RAW_PTR_EXCLUSION HoverHighlightView* add_esim_entry_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION HoverHighlightView* set_up_cross_device_suite_entry_ =
+      nullptr;
 
   bool has_cellular_networks_;
   bool has_wifi_networks_;
