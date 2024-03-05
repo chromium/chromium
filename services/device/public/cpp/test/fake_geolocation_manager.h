@@ -15,10 +15,6 @@ class FakeGeolocationManager : public GeolocationManager {
   ~FakeGeolocationManager() override = default;
 
   void SetSystemPermission(LocationSystemPermissionStatus status);
-#if BUILDFLAG(IS_APPLE)
-  bool watching_position();
-  void FakePositionUpdated(device::mojom::GeopositionResultPtr result);
-#endif  // BUILDFLAG(IS_MAC)
 };
 
 }  // namespace device

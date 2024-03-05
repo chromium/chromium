@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_threadsafe.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "location_system_permission_status.h"
@@ -33,8 +34,12 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSource {
       base::RepeatingCallback<void(LocationSystemPermissionStatus)>;
 
 #if BUILDFLAG(IS_APPLE)
-  using PositionUpdateCallback =
-      base::RepeatingCallback<void(mojom::GeopositionResultPtr)>;
+  class PositionObserver : public base::CheckedObserver {
+   public:
+    virtual void OnPositionUpdated(const mojom::Geoposition& position) = 0;
+    virtual void OnPositionError(const mojom::GeopositionError& position) = 0;
+  };
+  using PositionObserverList = base::ObserverListThreadSafe<PositionObserver>;
 #endif
 
   virtual ~SystemGeolocationSource() = default;
@@ -51,10 +56,9 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSource {
   virtual void OpenSystemPermissionSetting() {}
 
 #if BUILDFLAG(IS_APPLE)
-  // This method accepts a callback. The callback is called whenever a new
-  // position estimate is available.
-  virtual void RegisterPositionUpdateCallback(
-      PositionUpdateCallback callback) = 0;
+  // Allows position observers to register/unregister themselves for updates.
+  virtual void AddPositionUpdateObserver(PositionObserver* observer) = 0;
+  virtual void RemovePositionUpdateObserver(PositionObserver* observer) = 0;
 
   // Starts the system level process for watching position updates. These
   // updates will trigger a call to and observers in the |position_observers_|

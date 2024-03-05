@@ -363,7 +363,7 @@ source_set("tests") {
   }
 
   if (is_apple) {
-    sources += [ "geolocation/core_location_provider_unittest.mm" ]
+    sources += [ "geolocation/core_location_provider_unittest.cc" ]
   }
 
   # UsbContext is a libusb-specific object.

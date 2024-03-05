@@ -18,7 +18,8 @@ CoreLocationProvider::CoreLocationProvider(
     GeolocationManager* geolocation_manager)
     : geolocation_manager_(geolocation_manager),
       permission_observers_(geolocation_manager->GetObserverList()),
-      position_observers_(geolocation_manager->GetPositionObserverList()) {
+      system_geolocation_source_(
+          geolocation_manager->GetSystemGeolocationSource()) {
   permission_observers_->AddObserver(this);
   main_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -70,14 +71,14 @@ void CoreLocationProvider::StartProvider(bool high_accuracy) {
 }
 
 void CoreLocationProvider::StartWatching() {
-  position_observers_->AddObserver(this);
-  geolocation_manager_->StartWatchingPosition(high_accuracy_);
+  system_geolocation_source_->AddPositionUpdateObserver(this);
+  system_geolocation_source_->StartWatchingPosition(high_accuracy_);
 }
 
 void CoreLocationProvider::StopProvider() {
   is_started_ = false;
-  position_observers_->RemoveObserver(this);
-  geolocation_manager_->StopWatchingPosition();
+  system_geolocation_source_->RemovePositionUpdateObserver(this);
+  system_geolocation_source_->StopWatchingPosition();
 }
 
 const mojom::GeopositionResult* CoreLocationProvider::GetPosition() {

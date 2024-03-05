@@ -37,7 +37,7 @@ namespace device {
 SystemGeolocationSourceMac::SystemGeolocationSourceMac()
     : location_manager_([[CLLocationManager alloc] init]),
       permission_update_callback_(base::DoNothing()),
-      position_update_callback_(base::DoNothing()) {
+      position_observers_(base::MakeRefCounted<PositionObserverList>()) {
   delegate_ = [[GeolocationManagerDelegate alloc]
       initWithManager:weak_ptr_factory_.GetWeakPtr()];
   location_manager_.delegate = delegate_;
@@ -58,25 +58,20 @@ void SystemGeolocationSourceMac::RegisterPermissionUpdateCallback(
   permission_update_callback_.Run(GetSystemPermission());
 }
 
-void SystemGeolocationSourceMac::RegisterPositionUpdateCallback(
-    PositionUpdateCallback callback) {
-  position_update_callback_ = callback;
-}
-
 void SystemGeolocationSourceMac::PermissionUpdated() {
   permission_update_callback_.Run(GetSystemPermission());
 }
 
 void SystemGeolocationSourceMac::PositionUpdated(
     const mojom::Geoposition& position) {
-  position_update_callback_.Run(
-      mojom::GeopositionResult::NewPosition(position.Clone()));
+  position_observers_->Notify(FROM_HERE, &PositionObserver::OnPositionUpdated,
+                              position);
 }
 
 void SystemGeolocationSourceMac::PositionError(
     const mojom::GeopositionError& error) {
-  position_update_callback_.Run(
-      mojom::GeopositionResult::NewError(error.Clone()));
+  position_observers_->Notify(FROM_HERE, &PositionObserver::OnPositionError,
+                              error);
 }
 
 void SystemGeolocationSourceMac::StartWatchingPosition(bool high_accuracy) {
@@ -116,6 +111,16 @@ void SystemGeolocationSourceMac::OpenSystemPermissionSetting() {
 
 void SystemGeolocationSourceMac::RequestPermission() {
   [location_manager_ requestWhenInUseAuthorization];
+}
+
+void SystemGeolocationSourceMac::AddPositionUpdateObserver(
+    PositionObserver* observer) {
+  position_observers_->AddObserver(observer);
+}
+
+void SystemGeolocationSourceMac::RemovePositionUpdateObserver(
+    PositionObserver* observer) {
+  position_observers_->RemoveObserver(observer);
 }
 
 }  // namespace device

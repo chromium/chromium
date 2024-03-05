@@ -5,13 +5,15 @@
 #include "services/device/geolocation/core_location_provider.h"
 
 #include "base/run_loop.h"
-#import "base/task/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
+#include "services/device/public/cpp/geolocation/system_geolocation_source.h"
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
+#include "services/device/public/cpp/test/fake_system_geolocation_source.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,22 +25,28 @@ class CoreLocationProviderTest : public testing::Test {
  public:
   std::unique_ptr<CoreLocationProvider> provider_;
 
- protected:
-  CoreLocationProviderTest() {}
-
-  void InitializeProvider() {
+  void SetUp() override {
     fake_geolocation_manager_ = std::make_unique<FakeGeolocationManager>();
     provider_ = std::make_unique<CoreLocationProvider>(
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         fake_geolocation_manager_.get());
+    fake_system_geolocation_source_ =
+        &fake_geolocation_manager_->SystemGeolocationSourceForTest();
   }
 
-  bool IsUpdating() { return fake_geolocation_manager_->watching_position(); }
+ protected:
+  CoreLocationProviderTest() = default;
+
+  bool IsUpdating() {
+    return static_cast<FakeSystemGeolocationSource*>(
+               fake_system_geolocation_source_)
+        ->watching_position();
+  }
 
   // updates the position synchronously
   void FakeUpdatePosition(const mojom::Geoposition& result) {
-    fake_geolocation_manager_->FakePositionUpdated(
-        mojom::GeopositionResult::NewPosition(result.Clone()));
+    static_cast<FakeSystemGeolocationSource*>(fake_system_geolocation_source_)
+        ->FakePositionUpdatedForTesting(result);
   }
 
   const mojom::GeopositionResult* GetLatestPosition() {
@@ -54,16 +62,15 @@ class CoreLocationProviderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   const LocationProvider::LocationProviderUpdateCallback callback_;
   std::unique_ptr<FakeGeolocationManager> fake_geolocation_manager_;
+  raw_ptr<SystemGeolocationSource> fake_system_geolocation_source_ = nullptr;
 };
 
 TEST_F(CoreLocationProviderTest, CreateDestroy) {
-  InitializeProvider();
   EXPECT_TRUE(provider_);
   provider_.reset();
 }
 
 TEST_F(CoreLocationProviderTest, StartAndStopUpdating) {
-  InitializeProvider();
   fake_geolocation_manager_->SetSystemPermission(
       LocationSystemPermissionStatus::kAllowed);
   base::RunLoop().RunUntilIdle();
@@ -79,7 +86,6 @@ TEST_F(CoreLocationProviderTest, StartAndStopUpdating) {
 }
 
 TEST_F(CoreLocationProviderTest, DontStartUpdatingIfPermissionDenied) {
-  InitializeProvider();
   fake_geolocation_manager_->SetSystemPermission(
       LocationSystemPermissionStatus::kDenied);
   base::RunLoop().RunUntilIdle();
@@ -92,7 +98,6 @@ TEST_F(CoreLocationProviderTest, DontStartUpdatingIfPermissionDenied) {
 }
 
 TEST_F(CoreLocationProviderTest, DontStartUpdatingUntilPermissionGranted) {
-  InitializeProvider();
   provider_->StartProvider(/*high_accuracy=*/true);
   EXPECT_FALSE(IsUpdating());
   EXPECT_EQ(
@@ -115,7 +120,6 @@ TEST_F(CoreLocationProviderTest, DontStartUpdatingUntilPermissionGranted) {
 }
 
 TEST_F(CoreLocationProviderTest, GetPositionUpdates) {
-  InitializeProvider();
   fake_geolocation_manager_->SetSystemPermission(
       LocationSystemPermissionStatus::kAllowed);
   base::RunLoop().RunUntilIdle();

@@ -50,21 +50,11 @@ void GeolocationManager::SetInstance(
 GeolocationManager::GeolocationManager(
     std::unique_ptr<SystemGeolocationSource> system_geolocation_source)
     : system_geolocation_source_(std::move(system_geolocation_source)),
-      observers_(base::MakeRefCounted<PermissionObserverList>())
-#if BUILDFLAG(IS_APPLE)
-      ,
-      position_observers_(base::MakeRefCounted<PositionObserverList>())
-#endif
-{
+      observers_(base::MakeRefCounted<PermissionObserverList>()) {
   DCHECK(system_geolocation_source_);
   system_geolocation_source_->RegisterPermissionUpdateCallback(
       base::BindRepeating(&GeolocationManager::UpdateSystemPermission,
                           weak_factory_.GetWeakPtr()));
-#if BUILDFLAG(IS_APPLE)
-  system_geolocation_source_->RegisterPositionUpdateCallback(
-      base::BindRepeating(&GeolocationManager::NotifyPositionObservers,
-                          weak_factory_.GetWeakPtr()));
-#endif
 }
 
 GeolocationManager::~GeolocationManager() = default;

@@ -79,6 +79,8 @@ source_set("test_support") {
     sources += [
       "test/fake_geolocation_manager.cc",
       "test/fake_geolocation_manager.h",
+      "test/fake_system_geolocation_source.cc",
+      "test/fake_system_geolocation_source.h",
     ]
   }
 

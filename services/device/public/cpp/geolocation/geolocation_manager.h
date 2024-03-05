@@ -58,16 +58,6 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   using PermissionObserverList =
       base::ObserverListThreadSafe<PermissionObserver>;
 
-#if BUILDFLAG(IS_APPLE)
-  class PositionObserver : public base::CheckedObserver {
-   public:
-    virtual void OnPositionUpdated(const mojom::Geoposition& position) = 0;
-    virtual void OnPositionError(const mojom::GeopositionError& error) = 0;
-  };
-
-  using PositionObserverList = base::ObserverListThreadSafe<PositionObserver>;
-#endif
-
   explicit GeolocationManager(
       std::unique_ptr<SystemGeolocationSource> system_geolocation_source);
   GeolocationManager(const GeolocationManager&) = delete;
@@ -85,20 +75,13 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   scoped_refptr<PermissionObserverList> GetObserverList() const;
 
 #if BUILDFLAG(IS_APPLE)
-  // Starts the system level process for watching position updates. These
-  // updates will trigger a call to and observers in the |position_observers_|
-  // list. Upon call the |position_observers_| will be notified of the current
-  // position.
-  void StartWatchingPosition(bool high_accuracy);
-  // Stops the system level process for watching position updates. Observers
-  // in the |position_observers_| list will stop receiving updates until
-  // StartWatchingPosition is called again.
-  void StopWatchingPosition();
-
-  // Returns the list of position observers.
-  scoped_refptr<PositionObserverList> GetPositionObserverList() const;
-  // Returns the last position
-  const mojom::GeopositionResult* GetLastPosition() const;
+  // On macOS, the same CLLocationManager object needs to be shared across
+  // permission and location updates or permission state might be out of sync
+  // when there is a pending app update. Refer to crbug.com/1143807 for more
+  // info.
+  SystemGeolocationSource& GetSystemGeolocationSource() {
+    return *system_geolocation_source_;
+  }
 #endif
 
   SystemGeolocationSource& SystemGeolocationSourceForTest();
@@ -106,26 +89,15 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
  private:
   void UpdateSystemPermission(LocationSystemPermissionStatus status);
   void NotifyPermissionObservers();
-#if BUILDFLAG(IS_APPLE)
-  void NotifyPositionObservers(mojom::GeopositionResultPtr result);
-#endif
+
+  std::unique_ptr<SystemGeolocationSource> system_geolocation_source_;
 
   // Using scoped_refptr so objects can hold a reference and ensure this list
   // is not destroyed on shutdown before it had a chance to remove itself from
   // the list
-  std::unique_ptr<SystemGeolocationSource> system_geolocation_source_;
   scoped_refptr<PermissionObserverList> observers_;
   LocationSystemPermissionStatus permission_cache_ =
       LocationSystemPermissionStatus::kNotDetermined;
-
-#if BUILDFLAG(IS_APPLE)
-  mojom::GeopositionResultPtr last_result_;
-  // Using scoped_refptr so objects can hold a reference and ensure this list
-  // is not destroyed on shutdown before it had a chance to remove itself from
-  // the list
-  scoped_refptr<PositionObserverList> position_observers_;
-#endif
-
   base::WeakPtrFactory<GeolocationManager> weak_factory_{this};
 };
 

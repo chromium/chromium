@@ -25,7 +25,6 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceMac
   // SystemGeolocationSource implementation:
   void RegisterPermissionUpdateCallback(
       PermissionUpdateCallback callback) override;
-  void RegisterPositionUpdateCallback(PositionUpdateCallback callback) override;
 
   // To be called from the macOS backend via callback when the permission is
   // updated
@@ -36,6 +35,8 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceMac
   void PositionUpdated(const mojom::Geoposition& position);
   void PositionError(const mojom::GeopositionError& error);
 
+  void AddPositionUpdateObserver(PositionObserver* observer) override;
+  void RemovePositionUpdateObserver(PositionObserver* observer) override;
   void StartWatchingPosition(bool high_accuracy) override;
   void StopWatchingPosition() override;
   void RequestPermission() override;
@@ -44,12 +45,11 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceMac
 
  private:
   LocationSystemPermissionStatus GetSystemPermission() const;
-
   GeolocationManagerDelegate* __strong delegate_;
   CLLocationManager* __strong location_manager_;
   SEQUENCE_CHECKER(sequence_checker_);
   PermissionUpdateCallback permission_update_callback_;
-  PositionUpdateCallback position_update_callback_;
+  scoped_refptr<PositionObserverList> position_observers_;
   base::WeakPtrFactory<SystemGeolocationSourceMac> weak_ptr_factory_{this};
 };
 

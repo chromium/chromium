@@ -27,7 +27,6 @@ component("geolocation") {
   }
   if (is_apple) {
     sources += [
-      "geolocation_manager_mac.cc",
       "system_geolocation_source_mac.h",
       "system_geolocation_source_mac.mm",
     ]

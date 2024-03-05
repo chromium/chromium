@@ -33,10 +33,11 @@ class SourceImpl : public device::SystemGeolocationSource {
 
 #if BUILDFLAG(IS_MAC)
   // This methods are not used in the tests, but need to be implemented on Mac.
-  void RegisterPositionUpdateCallback(PositionUpdateCallback) override {}
   void StartWatchingPosition(bool) override {}
   void StopWatchingPosition() override {}
   void RequestPermission() override {}
+  void AddPositionUpdateObserver(PositionObserver* observer) override {}
+  void RemovePositionUpdateObserver(PositionObserver* observer) override {}
 #endif
 
   // Helper function to force observer notification (normally done by
