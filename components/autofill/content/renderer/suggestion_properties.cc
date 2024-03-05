@@ -22,6 +22,7 @@ bool ShouldAutofillOnEmptyValues(
     case AutofillSuggestionTriggerSource::kManualFallbackAddress:
     case AutofillSuggestionTriggerSource::kManualFallbackPayments:
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+    case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
     case AutofillSuggestionTriggerSource::
         kShowPromptAfterDialogClosedNonManualFallback:
     case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
@@ -53,6 +54,7 @@ bool ShouldAutofillOnLongValues(
     case AutofillSuggestionTriggerSource::kManualFallbackAddress:
     case AutofillSuggestionTriggerSource::kManualFallbackPayments:
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+    case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
     case AutofillSuggestionTriggerSource::
         kShowPromptAfterDialogClosedNonManualFallback:
@@ -80,6 +82,7 @@ bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
     case AutofillSuggestionTriggerSource::kManualFallbackAddress:
     case AutofillSuggestionTriggerSource::kManualFallbackPayments:
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+    case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
     case AutofillSuggestionTriggerSource::
         kShowPromptAfterDialogClosedNonManualFallback:
     case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
@@ -113,6 +116,7 @@ bool ShouldShowFullSuggestionListForPasswordManager(
     case AutofillSuggestionTriggerSource::kManualFallbackAddress:
     case AutofillSuggestionTriggerSource::kManualFallbackPayments:
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+    case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
     case AutofillSuggestionTriggerSource::
         kShowPromptAfterDialogClosedNonManualFallback:
     case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:

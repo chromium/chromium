@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -98,6 +99,7 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
     case AutofillSuggestionTriggerSource::kManualFallbackAddress:
     case AutofillSuggestionTriggerSource::kManualFallbackPayments:
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+    case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
       // Manual fallbacks are both a suggestion trigger source (e.g. through the
       // context menu) and a trigger source (by selecting a suggestion generated
       // through the context menu).

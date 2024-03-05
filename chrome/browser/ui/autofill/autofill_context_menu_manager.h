@@ -102,6 +102,10 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // was opened on.
   void ExecuteFallbackForPaymentsCommand(AutofillManager& manager);
 
+  // Triggers Plus Address suggestions on the field that the context menu was
+  // opened on.
+  void ExecuteFallbackForPlusAddressesCommand(AutofillDriver& driver);
+
   // Gets the `AutofillField` described by the `params_` from the `manager`.
   // The `frame_token` is used to map from the `params_` renderer id to a global
   // id.

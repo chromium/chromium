@@ -160,6 +160,8 @@ std::vector<Suggestion> PlusAddressService::GetSuggestions(
       GetPlusAddress(last_committed_primary_main_frame_origin);
   if (maybe_address == std::nullopt) {
     if (!normalized_field_value.empty()) {
+      // TODO(b/327568061): Add suggestion trigger source and do not enforce
+      // non-emptiness for manual fallbacks.
       return {};
     }
     Suggestion create_plus_address_suggestion(

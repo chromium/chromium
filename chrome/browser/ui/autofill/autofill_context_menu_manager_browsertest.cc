@@ -789,4 +789,24 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, ExcludedDomain) {
   EXPECT_THAT(menu_model(), OnlyPlusAddressFallbackAdded());
 }
 
+// Tests that selecting the Plus Address manual fallback entry results in
+// triggering suggestions with correct field global id and trigger source.
+IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
+                       ActionTriggersSuggestions) {
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_CALL(
+      *driver(),
+      RendererShouldTriggerSuggestions(
+          FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
+                        form.fields[0].renderer_id},
+          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses));
+
+  autofill_context_menu_manager()->ExecuteCommand(
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS);
+}
+
 }  // namespace autofill

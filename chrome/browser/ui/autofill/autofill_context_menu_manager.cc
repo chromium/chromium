@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -261,7 +262,7 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
   }
 
   if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS) {
-    // TODO(b/327568061): Implement.
+    ExecuteFallbackForPlusAddressesCommand(*driver);
     return;
   }
 }
@@ -317,6 +318,15 @@ void AutofillContextMenuManager::ExecuteFallbackForPaymentsCommand(
   LogManualFallbackContextMenuEntryAccepted(
       static_cast<BrowserAutofillManager&>(manager),
       FillingProduct::kCreditCard);
+}
+
+void AutofillContextMenuManager::ExecuteFallbackForPlusAddressesCommand(
+    AutofillDriver& driver) {
+  driver.RendererShouldTriggerSuggestions(
+      /*field_id=*/{driver.GetFrameToken(),
+                    FieldRendererId(params_.field_renderer_id)},
+      AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
+  // TODO(b/327566698): Add metrics.
 }
 
 void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems(

@@ -7674,6 +7674,26 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
                           _, _, _, _));
 }
 
+// Tests that only Plus Address suggestions are shown when the trigger source is
+// a manual fallback for plus addresses.
+TEST_F(BrowserAutofillManagerPlusAddressTest, ManualFallbackPlusAddress) {
+  EXPECT_CALL(plus_address_delegate(), GetSuggestions)
+      .WillOnce(Return(std::vector<Suggestion>{
+          Suggestion(PopupItemId::kCreateNewPlusAddress)}));
+
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  // Check that only the plus address suggestion is offered.
+  GetAutofillSuggestions(
+      form, form.fields[0],
+      AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_THAT(
+      external_delegate()->suggestions(),
+      ElementsAre(EqualsSuggestion(PopupItemId::kCreateNewPlusAddress)));
+}
+
 // Test that plus address inputs are forced to !should_autocomplete
 // for `SingleFieldFormFillRouter::OnWillSubmitForm()`.
 TEST_F(BrowserAutofillManagerPlusAddressTest,

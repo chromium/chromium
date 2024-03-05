@@ -534,6 +534,7 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::kManualFallbackAddress:
     case AutofillSuggestionTriggerSource::kManualFallbackPayments:
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+    case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
     case AutofillSuggestionTriggerSource::
         kShowPromptAfterDialogClosedNonManualFallback:
       return false;
@@ -2488,6 +2489,14 @@ void BrowserAutofillManager::GetAvailableSuggestions(
 
   // Compose suggestions are not populated in this method.
   if (IsTriggerSourceOnlyRelevantForCompose(trigger_source)) {
+    return;
+  }
+
+  if (trigger_source ==
+      AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses) {
+    *suggestions = client().GetPlusAddressDelegate()->GetSuggestions(
+        client().GetLastCommittedPrimaryMainFrameOrigin(),
+        client().IsOffTheRecord(), field.value);
     return;
   }
 
