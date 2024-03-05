@@ -38,6 +38,9 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
       return PROT_READ | PROT_EXEC;
     case PageAccessibilityConfiguration::kReadWriteExecute:
       return PROT_READ | PROT_WRITE | PROT_EXEC;
+    case PageAccessibilityConfiguration::kReadWriteExecuteProtected:
+      return PROT_READ | PROT_WRITE | PROT_EXEC |
+             (base::CPU::GetInstanceNoAllocation().has_bti() ? PA_PROT_BTI : 0);
     case PageAccessibilityConfiguration::kInaccessible:
     case PageAccessibilityConfiguration::kInaccessibleWillJitLater:
       return PROT_NONE;

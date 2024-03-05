@@ -33,6 +33,9 @@ struct PageAccessibilityConfiguration {
     // that don't support Arm's BTI.
     kReadExecuteProtected,
     kReadExecute,
+    // This flag is mapped to `kReadWriteExecute` on systems that do not support
+    // Arm's BTI.
+    kReadWriteExecuteProtected,
     // This flag is deprecated and will go away soon.
     // TODO(bbudge) Remove this as soon as V8 doesn't need RWX pages.
     kReadWriteExecute,

@@ -4,10 +4,10 @@
 
 #include "gin/v8_platform_page_allocator.h"
 
-#include "base/check_op.h"
 #include "base/cpu.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "v8/include/v8-platform.h"
 
 // includes for Branch Target Instruction tests
 #if defined(ARCH_CPU_ARM64) && (OS_LINUX || OS_ANDROID)
@@ -24,43 +24,58 @@
 namespace gin {
 
 TEST(V8PlatformPageAllocatorTest, VerifyGetPageConfig) {
-  auto sut = gin::PageAllocator();
+  auto page_allocator = gin::PageAllocator();
 
-  CHECK_EQ(sut.GetPageConfigPermissionsForTesting(v8::PageAllocator::kNoAccess),
-           partition_alloc::PageAccessibilityConfiguration::kInaccessible);
-  CHECK_EQ(sut.GetPageConfigPermissionsForTesting(v8::PageAllocator::kRead),
-           partition_alloc::PageAccessibilityConfiguration::kRead);
-  CHECK_EQ(
-      sut.GetPageConfigPermissionsForTesting(v8::PageAllocator::kReadWrite),
-      partition_alloc::PageAccessibilityConfiguration::kReadWrite);
-  CHECK_EQ(sut.GetPageConfigPermissionsForTesting(
-               v8::PageAllocator::kReadWriteExecute),
-           partition_alloc::PageAccessibilityConfiguration::kReadWriteExecute);
-
+  EXPECT_EQ(page_allocator.GetPageConfigPermissionsForTesting(
+                v8::PageAllocator::kNoAccess),
+            partition_alloc::PageAccessibilityConfiguration::kInaccessible);
+  EXPECT_EQ(page_allocator.GetPageConfigPermissionsForTesting(
+                v8::PageAllocator::kRead),
+            partition_alloc::PageAccessibilityConfiguration::kRead);
+  EXPECT_EQ(page_allocator.GetPageConfigPermissionsForTesting(
+                v8::PageAllocator::kReadWrite),
+            partition_alloc::PageAccessibilityConfiguration::kReadWrite);
 #if defined(__ARM_FEATURE_BTI_DEFAULT)
-  CHECK_EQ(
-      sut.GetPageConfigPermissionsForTesting(v8::PageAllocator::kReadExecute),
+  EXPECT_EQ(
+      page_allocator.GetPageConfigPermissionsForTesting(
+          v8::PageAllocator::kReadExecute),
       base::CPU::GetInstanceNoAllocation().has_bti()
           ? partition_alloc::PageAccessibilityConfiguration::
                 kReadExecuteProtected
           : partition_alloc::PageAccessibilityConfiguration::kReadExecute);
+  EXPECT_EQ(
+      page_allocator.GetPageConfigPermissionsForTesting(
+          v8::PageAllocator::kReadWriteExecute),
+      base::CPU::GetInstanceNoAllocation().has_bti()
+          ? partition_alloc::PageAccessibilityConfiguration::
+                kReadWriteExecuteProtected
+          : partition_alloc::PageAccessibilityConfiguration::kReadWriteExecute);
 #else
-  CHECK_EQ(
-      sut.GetPageConfigPermissionsForTesting(v8::PageAllocator::kReadExecute),
-      partition_alloc::PageAccessibilityConfiguration::kReadExecute);
+  EXPECT_EQ(page_allocator.GetPageConfigPermissionsForTesting(
+                v8::PageAllocator::kReadExecute),
+            partition_alloc::PageAccessibilityConfiguration::kReadExecute);
+  EXPECT_EQ(page_allocator.GetPageConfigPermissionsForTesting(
+                v8::PageAllocator::kReadWriteExecute),
+            partition_alloc::PageAccessibilityConfiguration::kReadWriteExecute);
 #endif
 
-  CHECK_EQ(sut.GetPageConfigPermissionsForTesting(
-               v8::PageAllocator::kNoAccessWillJitLater),
-           partition_alloc::PageAccessibilityConfiguration::
-               kInaccessibleWillJitLater);
+  EXPECT_EQ(page_allocator.GetPageConfigPermissionsForTesting(
+                v8::PageAllocator::kNoAccessWillJitLater),
+            partition_alloc::PageAccessibilityConfiguration::
+                kInaccessibleWillJitLater);
 }
 
 #if defined(ARCH_CPU_ARM64) && (OS_LINUX || OS_ANDROID)
 
+#ifdef GTEST_HAS_DEATH_TEST
 using BTITestFunction = int64_t (*)(int64_t);
 
-TEST(V8PlatformPageAllocatorBTITest, VerifyReadExecutePagesAreProtected) {
+using V8PlatformPageAllocatorBTIDeathTest =
+    ::testing::TestWithParam<v8::PageAllocator::Permission>;
+
+TEST_P(V8PlatformPageAllocatorBTIDeathTest, VerifyExecutablePagesAreProtected) {
+  const v8::PageAllocator::Permission permission_to_test = GetParam();
+
   auto page_allocator = gin::PageAllocator();
 
   auto const memory_size =
@@ -89,8 +104,7 @@ TEST(V8PlatformPageAllocatorBTITest, VerifyReadExecutePagesAreProtected) {
          function_range);
 
   // Next re-protect the page to the permission level to test
-  page_allocator.SetPermissions(buffer, memory_size,
-                                v8::PageAllocator::Permission::kReadExecute);
+  page_allocator.SetPermissions(buffer, memory_size, permission_to_test);
 
   // Attempt to call a function with BTI landing pad.
   BTITestFunction const bti_enabled_fn =
@@ -119,51 +133,13 @@ TEST(V8PlatformPageAllocatorBTITest, VerifyReadExecutePagesAreProtected) {
   page_allocator.FreePages(buffer, memory_size);
 }
 
-TEST(V8PlatformAllocatorBTITest, VerifyReadWriteExecutePagesAreNotProtected) {
-  auto page_allocator = gin::PageAllocator();
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    V8PlatformPageAllocatorBTIDeathTest,
+    testing::Values(v8::PageAllocator::Permission::kReadExecute,
+                    v8::PageAllocator::Permission::kReadWriteExecute));
 
-  auto const memory_size =
-      partition_alloc::internal::PageAllocationGranularity();
-  auto const memory_alignment =
-      partition_alloc::internal::PageAllocationGranularity();
-
-  // Next, map some read-write memory and copy some test helper functions there.
-  char* const buffer = reinterpret_cast<char*>(page_allocator.AllocatePages(
-      nullptr, memory_size, memory_alignment,
-      v8::PageAllocator::Permission::kReadWriteExecute));
-
-  ptrdiff_t const function_range =
-      reinterpret_cast<char*>(arm_bti_test_function_end) -
-      reinterpret_cast<char*>(arm_bti_test_function);
-  ptrdiff_t const invalid_offset =
-      reinterpret_cast<char*>(arm_bti_test_function_invalid_offset) -
-      reinterpret_cast<char*>(arm_bti_test_function);
-
-  // ensure alignment to 4 bytes required by function call convention
-  EXPECT_EQ(0u, ((uint64_t)buffer) % 4);
-  EXPECT_EQ(0u, ((uint64_t)function_range) % 4);
-  EXPECT_EQ(0u, ((uint64_t)invalid_offset) % 4);
-
-  memcpy(buffer, reinterpret_cast<void*>(arm_bti_test_function),
-         function_range);
-
-  // Attempt to call a function with BTI landing pad.
-  BTITestFunction const bti_enabled_fn =
-      reinterpret_cast<BTITestFunction>(buffer);
-
-  // bti_enabled_fn must return 18, no matter if BTI is actually enabled or not.
-  EXPECT_EQ(bti_enabled_fn(15), 18);
-
-  // Next, attempt to call a function without BTI landing pad.
-  BTITestFunction const bti_invalid_fn =
-      reinterpret_cast<BTITestFunction>(buffer + invalid_offset);
-
-  // Since permission kReadWriteExecute wont actually cause BTI to be enabled
-  // for the allocated page, calling this function must return without error.
-  EXPECT_EQ(bti_invalid_fn(15), 17);
-
-  page_allocator.FreePages(buffer, memory_size);
-}
+#endif  // GTEST_HAS_DEATH_TEST
 #endif  // if defined(ARCH_CPU_ARM64) && (OS_LINUX || OS_ANDROID)
 
 }  // namespace gin

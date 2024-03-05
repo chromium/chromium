@@ -14,34 +14,42 @@
 
 namespace {
 
+template <typename T>
+T IfBtiEnabledOr(T enabled_value, T disabled_value) {
+#if defined(__ARM_FEATURE_BTI_DEFAULT)
+  return base::CPU::GetInstanceNoAllocation().has_bti() ? enabled_value
+                                                        : disabled_value;
+#else
+  return disabled_value;
+#endif
+}
+
 // Maps the v8 page permissions into a page configuration from base.
 ::partition_alloc::PageAccessibilityConfiguration::Permissions
 GetPagePermissions(v8::PageAllocator::Permission permission) {
+  // The switch doesn't have a default-case by intention. This means we can
+  // detect new enum values very easily by a compile error without introducing
+  // bugs due to unknown (hence, untested) values. On the other hand it
+  // incurs a slight overhead when rolling V8.
   switch (permission) {
     case v8::PageAllocator::Permission::kRead:
       return ::partition_alloc::PageAccessibilityConfiguration::kRead;
     case v8::PageAllocator::Permission::kReadWrite:
       return ::partition_alloc::PageAccessibilityConfiguration::kReadWrite;
     case v8::PageAllocator::Permission::kReadWriteExecute:
-      // at the moment bti-protection is not enabled for this path since some
-      // projects may still be using non-bti compliant code.
-      return ::partition_alloc::PageAccessibilityConfiguration::
-          kReadWriteExecute;
+      return IfBtiEnabledOr(
+          ::partition_alloc::PageAccessibilityConfiguration::
+              kReadWriteExecuteProtected,
+          ::partition_alloc::PageAccessibilityConfiguration::kReadWriteExecute);
     case v8::PageAllocator::Permission::kReadExecute:
-#if defined(__ARM_FEATURE_BTI_DEFAULT)
-      return base::CPU::GetInstanceNoAllocation().has_bti()
-                 ? ::partition_alloc::PageAccessibilityConfiguration::
-                       kReadExecuteProtected
-                 : ::partition_alloc::PageAccessibilityConfiguration::
-                       kReadExecute;
-#else
-      return ::partition_alloc::PageAccessibilityConfiguration::kReadExecute;
-#endif
+      return IfBtiEnabledOr(
+          ::partition_alloc::PageAccessibilityConfiguration::
+              kReadExecuteProtected,
+          ::partition_alloc::PageAccessibilityConfiguration::kReadExecute);
     case v8::PageAllocator::Permission::kNoAccessWillJitLater:
       return ::partition_alloc::PageAccessibilityConfiguration::
           kInaccessibleWillJitLater;
-    default:
-      DCHECK_EQ(v8::PageAllocator::Permission::kNoAccess, permission);
+    case v8::PageAllocator::Permission::kNoAccess:
       return ::partition_alloc::PageAccessibilityConfiguration::kInaccessible;
   }
 }

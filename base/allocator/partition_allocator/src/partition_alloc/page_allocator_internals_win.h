@@ -92,6 +92,7 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
     case PageAccessibilityConfiguration::kReadExecuteProtected:
       return PAGE_EXECUTE_READ;
     case PageAccessibilityConfiguration::kReadWriteExecute:
+    case PageAccessibilityConfiguration::kReadWriteExecuteProtected:
       return PAGE_EXECUTE_READWRITE;
     case PageAccessibilityConfiguration::kInaccessible:
     case PageAccessibilityConfiguration::kInaccessibleWillJitLater:
