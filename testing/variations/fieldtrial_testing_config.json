@@ -9452,6 +9452,27 @@
             ]
         }
     ],
+    "IdentifiabilityStudyMetaExperiment": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableMetaExperiment",
+                    "enable_features": [
+                        "IdentifiabilityStudyMetaExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "IdleTimeoutPolicies": [
         {
             "platforms": [

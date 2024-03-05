@@ -680,17 +680,19 @@ class PrivacyBudgetAssignedBlockSamplingConfigTest
     : public PlatformBrowserTest {
  public:
   PrivacyBudgetAssignedBlockSamplingConfigTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIdentifiabilityStudy,
-        {{features::kIdentifiabilityStudyBlockedMetrics.name, "44033,44289"},
-         {features::kIdentifiabilityStudyBlockedTypes.name, "13,25,28"},
-         {features::kIdentifiabilityStudyBlockWeights.name, "5202,37515,34582"},
-         {features::kIdentifiabilityStudyBlocks.name,
-          // Define three blocks of surfaces.
-          "9129224;865032;8710152;8678920;9305096,"
-          "1722309467823238416;3972031034286914064,"
-          "3873813933275956760;7532279523433960728;13014994009983628312,"},
-         {features::kIdentifiabilityStudyGeneration.name, "7"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kIdentifiabilityStudy,
+          {{features::kIdentifiabilityStudyBlockedMetrics.name, "44033,44289"},
+           {features::kIdentifiabilityStudyBlockedTypes.name, "13,25,28"},
+           {features::kIdentifiabilityStudyBlockWeights.name,
+            "5202,37515,34582"},
+           {features::kIdentifiabilityStudyBlocks.name,
+            // Define three blocks of surfaces.
+            "9129224;865032;8710152;8678920;9305096,"
+            "1722309467823238416;3972031034286914064,"
+            "3873813933275956760;7532279523433960728;13014994009983628312,"},
+           {features::kIdentifiabilityStudyGeneration.name, "7"}}}},
+        /*disabled_features=*/{features::kIdentifiabilityStudyMetaExperiment});
   }
 
   static constexpr auto kBlockedSurface =
@@ -720,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetAssignedBlockSamplingConfigTest,
   EXPECT_TRUE(settings->ShouldSampleType(
       blink::IdentifiableSurface::Type::kCanvasReadback));
 
-  // Blocked surfaces. See fieldtrial_testing_config.json#IdentifiabilityStudy.
+  // Blocked surfaces.
   EXPECT_FALSE(settings->ShouldSampleSurface(kBlockedSurface));
 
   // Some random surface that shouldn't be blocked.
