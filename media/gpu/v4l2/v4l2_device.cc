@@ -144,6 +144,10 @@ bool V4L2Device::Open(Type type, uint32_t v4l2_pixfmt) {
   return true;
 }
 
+bool V4L2Device::IsValid() {
+  return device_poll_interrupt_fd_.is_valid();
+}
+
 std::string V4L2Device::GetDriverName() {
   struct v4l2_capability caps;
   memset(&caps, 0, sizeof(caps));

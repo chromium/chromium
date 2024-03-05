@@ -1529,14 +1529,17 @@ bool V4L2VideoEncodeAccelerator::StopDevicePoll() {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
-  // Signal the DevicePollTask() to stop, and stop the device poll thread.
-  if (!device_->SetDevicePollInterrupt())
-    return false;
-  device_poll_thread_.Stop();
-  // Clear the interrupt now, to be sure.
-  if (!device_->ClearDevicePollInterrupt())
-    return false;
-
+  if (device_->IsValid()) {
+    // Signal the DevicePollTask() to stop, and stop the device poll thread.
+    if (!device_->SetDevicePollInterrupt()) {
+      return false;
+    }
+    device_poll_thread_.Stop();
+    // Clear the interrupt now, to be sure.
+    if (!device_->ClearDevicePollInterrupt()) {
+      return false;
+    }
+  }
   // Tegra driver cannot call Streamoff() when the stream is off, so we check
   // IsStreaming() first.
   if (input_queue_ && input_queue_->IsStreaming() && !input_queue_->Streamoff())

@@ -101,6 +101,9 @@ class MEDIA_GPU_EXPORT V4L2Device
   // The device will be closed in the destructor.
   [[nodiscard]] bool Open(Type type, uint32_t v4l2_pixfmt);
 
+  // Returns whether Open() has been succeeded.
+  bool IsValid();
+
   // Returns the driver name.
   std::string GetDriverName();
 
