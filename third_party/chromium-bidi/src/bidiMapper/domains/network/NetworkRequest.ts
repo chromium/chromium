@@ -150,6 +150,10 @@ export class NetworkRequest {
     return this.#redirectCount;
   }
 
+  get cdpTarget() {
+    return this.#cdpTarget;
+  }
+
   get cdpClient() {
     return this.#cdpTarget.cdpClient;
   }

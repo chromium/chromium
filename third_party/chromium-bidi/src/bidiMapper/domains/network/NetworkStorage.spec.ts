@@ -125,7 +125,7 @@ describe('NetworkStorage', () => {
 
     it('should work interception', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
-      const interception = await networkStorage.addIntercept({
+      const interception = networkStorage.addIntercept({
         urlPatterns: [{type: 'string', pattern: request.url}],
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
@@ -144,7 +144,7 @@ describe('NetworkStorage', () => {
 
     it('should work interception pause first', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
-      const interception = await networkStorage.addIntercept({
+      const interception = networkStorage.addIntercept({
         urlPatterns: [{type: 'string', pattern: request.url}],
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
@@ -162,7 +162,7 @@ describe('NetworkStorage', () => {
     });
 
     it('should work non blocking interception', async () => {
-      await networkStorage.addIntercept({
+      networkStorage.addIntercept({
         urlPatterns: [{type: 'string', pattern: 'http://not.correct.com'}],
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
@@ -182,7 +182,7 @@ describe('NetworkStorage', () => {
 
     it('should work with non blocking interception and fail response', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
-      await networkStorage.addIntercept({
+      networkStorage.addIntercept({
         urlPatterns: [{type: 'string', pattern: 'http://not.correct.com'}],
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
@@ -238,7 +238,7 @@ describe('NetworkStorage', () => {
 
     it('should work interception', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
-      const interception = await networkStorage.addIntercept({
+      const interception = networkStorage.addIntercept({
         urlPatterns: [{type: 'string', pattern: request.url}],
         phases: [Network.InterceptPhase.ResponseStarted],
       });
@@ -259,7 +259,7 @@ describe('NetworkStorage', () => {
     });
 
     it('should work non blocking interception', async () => {
-      await networkStorage.addIntercept({
+      networkStorage.addIntercept({
         urlPatterns: [{type: 'string', pattern: 'http://not.correct.com'}],
         phases: [Network.InterceptPhase.ResponseStarted],
       });

@@ -16,7 +16,11 @@
  */
 import type {Protocol} from 'devtools-protocol';
 
-import {Network, NoSuchInterceptException} from '../../../protocol/protocol.js';
+import {
+  type BrowsingContext,
+  Network,
+  NoSuchInterceptException,
+} from '../../../protocol/protocol.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
@@ -26,17 +30,18 @@ import type {EventManager} from '../session/EventManager.js';
 import {NetworkRequest} from './NetworkRequest.js';
 import {matchUrlPattern} from './NetworkUtils.js';
 
-interface NetworkInterception {
+type NetworkInterception = Omit<
+  Network.AddInterceptParameters,
+  'urlPatterns'
+> & {
   urlPatterns: Network.UrlPattern[];
-  phases: Network.AddInterceptParameters['phases'];
-}
+};
 
 /** Stores network and intercept maps. */
 export class NetworkStorage {
   #eventManager: EventManager;
   #logger?: LoggerFn;
 
-  readonly #targets = new Set<CdpTarget>();
   /**
    * A map from network request ID to Network Request objects.
    * Needed as long as information about requests comes from different events.
@@ -45,12 +50,6 @@ export class NetworkStorage {
 
   /** A map from intercept ID to track active network intercepts. */
   readonly #intercepts = new Map<Network.Intercept, NetworkInterception>();
-
-  #interceptionStages = {
-    request: false,
-    response: false,
-    auth: false,
-  };
 
   constructor(
     eventManager: EventManager,
@@ -98,8 +97,6 @@ export class NetworkStorage {
   }
 
   onCdpTargetCreated(cdpTarget: CdpTarget) {
-    this.#targets.add(cdpTarget);
-
     const cdpClient = cdpTarget.cdpClient;
 
     // TODO: Wrap into object
@@ -200,74 +197,32 @@ export class NetworkStorage {
     }
   }
 
-  async toggleInterception() {
-    if (this.#intercepts.size) {
-      const stages = {
-        request: false,
-        response: false,
-        auth: false,
-      };
-      for (const intercept of this.#intercepts.values()) {
-        stages.request ||= intercept.phases.includes(
-          Network.InterceptPhase.BeforeRequestSent
-        );
-        stages.response ||= intercept.phases.includes(
-          Network.InterceptPhase.ResponseStarted
-        );
-        stages.auth ||= intercept.phases.includes(
-          Network.InterceptPhase.AuthRequired
-        );
-      }
-      const patterns: Protocol.Fetch.EnableRequest['patterns'] = [];
-
+  getInterceptionStages(browsingContextId: BrowsingContext.BrowsingContext) {
+    const stages = {
+      request: false,
+      response: false,
+      auth: false,
+    };
+    for (const intercept of this.#intercepts.values()) {
       if (
-        this.#interceptionStages.request === stages.request &&
-        this.#interceptionStages.response === stages.response &&
-        this.#interceptionStages.auth === stages.auth
+        intercept.contexts &&
+        !intercept.contexts.includes(browsingContextId)
       ) {
-        return;
+        continue;
       }
 
-      this.#interceptionStages = stages;
-      // CDP quirk we need request interception when we intercept auth
-      if (stages.request || stages.auth) {
-        patterns.push({
-          urlPattern: '*',
-          requestStage: 'Request',
-        });
-      }
-      if (stages.response) {
-        patterns.push({
-          urlPattern: '*',
-          requestStage: 'Response',
-        });
-      }
-
-      // TODO: Don't enable on start as we will have
-      // no network interceptions at this time.
-      // Needed to enable fetch events.
-
-      await Promise.all(
-        [...this.#targets.values()].map(async (cdpTarget) => {
-          return await cdpTarget.enableFetchIfNeeded({
-            patterns,
-            handleAuthRequests: stages.auth,
-          });
-        })
+      stages.request ||= intercept.phases.includes(
+        Network.InterceptPhase.BeforeRequestSent
       );
-    } else {
-      this.#interceptionStages = {
-        request: false,
-        response: false,
-        auth: false,
-      };
-
-      await Promise.all(
-        [...this.#targets.values()].map((target) => {
-          return target.disableFetchIfNeeded();
-        })
+      stages.response ||= intercept.phases.includes(
+        Network.InterceptPhase.ResponseStarted
+      );
+      stages.auth ||= intercept.phases.includes(
+        Network.InterceptPhase.AuthRequired
       );
     }
+
+    return stages;
   }
 
   getInterceptsForPhase(
@@ -280,9 +235,14 @@ export class NetworkStorage {
 
     const intercepts = new Set<Network.Intercept>();
     for (const [interceptId, intercept] of this.#intercepts.entries()) {
-      if (!intercept.phases.includes(phase)) {
+      if (
+        !intercept.phases.includes(phase) ||
+        (intercept.contexts &&
+          !intercept.contexts.includes(request.cdpTarget.id))
+      ) {
         continue;
       }
+
       if (intercept.urlPatterns.length === 0) {
         intercepts.add(interceptId);
         continue;
@@ -313,11 +273,9 @@ export class NetworkStorage {
    *
    * @return The intercept ID.
    */
-  async addIntercept(value: NetworkInterception): Promise<Network.Intercept> {
+  addIntercept(value: NetworkInterception): Network.Intercept {
     const interceptId: Network.Intercept = uuidv4();
     this.#intercepts.set(interceptId, value);
-
-    await this.toggleInterception();
 
     return interceptId;
   }
@@ -326,15 +284,13 @@ export class NetworkStorage {
    * Removes the given intercept from the intercept map.
    * Throws NoSuchInterceptException if the intercept does not exist.
    */
-  async removeIntercept(intercept: Network.Intercept) {
+  removeIntercept(intercept: Network.Intercept) {
     if (!this.#intercepts.has(intercept)) {
       throw new NoSuchInterceptException(
         `Intercept '${intercept}' does not exist.`
       );
     }
     this.#intercepts.delete(intercept);
-
-    await this.toggleInterception();
   }
 
   getRequestById(id: Network.Request): NetworkRequest | undefined {

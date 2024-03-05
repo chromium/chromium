@@ -36,11 +36,16 @@ export class CdpTarget {
   readonly #eventManager: EventManager;
 
   readonly #preloadScriptStorage: PreloadScriptStorage;
+  readonly #networkStorage: NetworkStorage;
 
   readonly #unblocked = new Deferred<Result<void>>();
   readonly #acceptInsecureCerts: boolean;
   #networkDomainEnabled = false;
-  #fetchDomainEnabled = false;
+  #fetchDomainStages = {
+    request: false,
+    response: false,
+    auth: false,
+  };
 
   static create(
     targetId: Protocol.Target.TargetID,
@@ -59,6 +64,7 @@ export class CdpTarget {
       browserCdpClient,
       eventManager,
       preloadScriptStorage,
+      networkStorage,
       acceptInsecureCerts
     );
 
@@ -79,13 +85,15 @@ export class CdpTarget {
     browserCdpClient: CdpClient,
     eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage,
+    networkStorage: NetworkStorage,
     acceptInsecureCerts: boolean
   ) {
     this.#id = targetId;
     this.#cdpClient = cdpClient;
+    this.#browserCdpClient = browserCdpClient;
     this.#eventManager = eventManager;
     this.#preloadScriptStorage = preloadScriptStorage;
-    this.#browserCdpClient = browserCdpClient;
+    this.#networkStorage = networkStorage;
     this.#acceptInsecureCerts = acceptInsecureCerts;
   }
 
@@ -122,6 +130,7 @@ export class CdpTarget {
         BiDiModule.Network,
         this.#id
       );
+    this.#networkDomainEnabled = enabledNetwork;
 
     try {
       await Promise.all([
@@ -138,6 +147,7 @@ export class CdpTarget {
         enabledNetwork
           ? this.#cdpClient.sendCommand('Network.enable')
           : undefined,
+        this.toggleFetchIfNeeded(),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
           autoAttach: true,
           waitForDebuggerOnStart: true,
@@ -163,29 +173,41 @@ export class CdpTarget {
     });
   }
 
-  async enableFetchIfNeeded(params: Protocol.Fetch.EnableRequest) {
-    if (!this.#networkDomainEnabled || this.#fetchDomainEnabled) {
+  async toggleFetchIfNeeded() {
+    const stages = this.#networkStorage.getInterceptionStages(this.id);
+
+    if (
+      // Only toggle interception when Network is enabled
+      !this.#networkDomainEnabled ||
+      (this.#fetchDomainStages.request === stages.request &&
+        this.#fetchDomainStages.response === stages.response &&
+        this.#fetchDomainStages.auth === stages.auth)
+    ) {
       return;
     }
+    const patterns: Protocol.Fetch.EnableRequest['patterns'] = [];
 
-    this.#fetchDomainEnabled = true;
-    try {
-      await this.#cdpClient.sendCommand('Fetch.enable', params);
-    } catch (err) {
-      this.#fetchDomainEnabled = false;
+    this.#fetchDomainStages = stages;
+    if (stages.request || stages.auth) {
+      // CDP quirk we need request interception when we intercept auth
+      patterns.push({
+        urlPattern: '*',
+        requestStage: 'Request',
+      });
     }
-  }
-
-  async disableFetchIfNeeded() {
-    if (!this.#fetchDomainEnabled) {
-      return;
+    if (stages.response) {
+      patterns.push({
+        urlPattern: '*',
+        requestStage: 'Response',
+      });
     }
-
-    this.#fetchDomainEnabled = false;
-    try {
+    if (patterns.length) {
+      await this.#cdpClient.sendCommand('Fetch.enable', {
+        patterns,
+        handleAuthRequests: stages.auth,
+      });
+    } else {
       await this.#cdpClient.sendCommand('Fetch.disable');
-    } catch (err) {
-      this.#fetchDomainEnabled = true;
     }
   }
 
@@ -196,9 +218,12 @@ export class CdpTarget {
 
     this.#networkDomainEnabled = enabled;
     try {
-      await this.#cdpClient.sendCommand(
-        this.#networkDomainEnabled ? 'Network.enable' : 'Network.disable'
-      );
+      await Promise.all([
+        this.#cdpClient.sendCommand(
+          enabled ? 'Network.enable' : 'Network.disable'
+        ),
+        this.toggleFetchIfNeeded(),
+      ]);
     } catch (err) {
       this.#networkDomainEnabled = !enabled;
     }

@@ -49,18 +49,24 @@ export class NetworkProcessor {
   async addIntercept(
     params: Network.AddInterceptParameters
   ): Promise<Network.AddInterceptResult> {
-    // TODO: Use in intercepts
     this.#browsingContextStorage.verifyContextsList(params.contexts);
 
     const urlPatterns: Network.UrlPattern[] = params.urlPatterns ?? [];
     const parsedUrlPatterns: Network.UrlPattern[] =
       NetworkProcessor.parseUrlPatterns(urlPatterns);
 
-    const intercept: Network.Intercept =
-      await this.#networkStorage.addIntercept({
-        urlPatterns: parsedUrlPatterns,
-        phases: params.phases,
-      });
+    const intercept: Network.Intercept = this.#networkStorage.addIntercept({
+      urlPatterns: parsedUrlPatterns,
+      phases: params.phases,
+      contexts: params.contexts,
+    });
+
+    await Promise.all(
+      // TODO: We should to this for other CDP targets as well
+      this.#browsingContextStorage.getTopLevelContexts().map((context) => {
+        return context.cdpTarget.toggleFetchIfNeeded();
+      })
+    );
 
     return {
       intercept,
@@ -213,7 +219,14 @@ export class NetworkProcessor {
   async removeIntercept(
     params: Network.RemoveInterceptParameters
   ): Promise<EmptyResult> {
-    await this.#networkStorage.removeIntercept(params.intercept);
+    this.#networkStorage.removeIntercept(params.intercept);
+
+    await Promise.all(
+      // TODO: We should to this for other CDP targets as well
+      this.#browsingContextStorage.getTopLevelContexts().map((context) => {
+        return context.cdpTarget.toggleFetchIfNeeded();
+      })
+    );
 
     return {};
   }
