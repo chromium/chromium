@@ -98,7 +98,12 @@
   // It is important to write this dictionary to the named pipe non-atomically,
   // as otherwise the write would replace the named pipe with a regular file
   // rather than writing to the pipe.
-  [event_dict writeToURL:_fifo_url atomically:NO];
+  NSData* plist_data = [NSPropertyListSerialization
+      dataWithPropertyList:event_dict
+                    format:NSPropertyListXMLFormat_v1_0
+                   options:0
+                     error:nil];
+  [plist_data writeToURL:_fifo_url options:0 error:nil];
 }
 
 @end
