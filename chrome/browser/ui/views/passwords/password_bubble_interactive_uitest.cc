@@ -1062,8 +1062,7 @@ IN_PROC_BROWSER_TEST_F(SharedPasswordsNotificationBubbleInteractiveUiTest,
   PasswordForm shared_credentials = CreateSharedCredentials(test_url);
   shared_credentials.sharing_notification_displayed = false;
 
-  std::vector<const password_manager::PasswordForm> forms = {
-      shared_credentials};
+  std::vector<password_manager::PasswordForm> forms = {shared_credentials};
 
   auto setup_shared_passwords = [&]() {
     GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
@@ -1091,8 +1090,8 @@ IN_PROC_BROWSER_TEST_F(
       CreateSharedCredentials(test_url, u"username2");
   shared_credentials2.sharing_notification_displayed = false;
 
-  std::vector<const password_manager::PasswordForm> forms = {
-      shared_credentials1, shared_credentials2};
+  std::vector<password_manager::PasswordForm> forms = {shared_credentials1,
+                                                       shared_credentials2};
 
   auto setup_shared_passwords = [&]() {
     GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
@@ -1122,8 +1121,8 @@ IN_PROC_BROWSER_TEST_F(
       CreateSharedCredentials(test_url, u"username2", u"Sender Two");
   shared_credentials2.sharing_notification_displayed = false;
 
-  std::vector<const password_manager::PasswordForm> forms = {
-      shared_credentials1, shared_credentials2};
+  std::vector<password_manager::PasswordForm> forms = {shared_credentials1,
+                                                       shared_credentials2};
 
   auto setup_shared_passwords = [&]() {
     GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
@@ -1146,8 +1145,7 @@ IN_PROC_BROWSER_TEST_F(
   PasswordForm shared_credentials = CreateSharedCredentials(test_url);
   shared_credentials.sharing_notification_displayed = true;
 
-  std::vector<const password_manager::PasswordForm> forms = {
-      shared_credentials};
+  std::vector<password_manager::PasswordForm> forms = {shared_credentials};
 
   auto setup_shared_passwords = [&]() {
     GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),

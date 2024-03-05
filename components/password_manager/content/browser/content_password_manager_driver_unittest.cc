@@ -176,7 +176,7 @@ PasswordFormFillData GetTestPasswordFormFillData() {
   preferred_match.password_value = u"test";
   preferred_match.match_type = PasswordForm::MatchType::kExact;
 
-  std::vector<const PasswordForm> matches;
+  std::vector<PasswordForm> matches;
   PasswordForm non_preferred_match = preferred_match;
   non_preferred_match.username_value = u"test1@gmail.com";
   non_preferred_match.password_value = u"test1";

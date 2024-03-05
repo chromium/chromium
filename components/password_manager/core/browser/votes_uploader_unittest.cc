@@ -273,7 +273,7 @@ TEST_F(VotesUploaderTest, SendVotesOnSaveOverwrittenFlow) {
     match_form.form_data.fields.push_back(field);
   }
 
-  std::vector<const PasswordForm> matches = {match_form};
+  std::vector<PasswordForm> matches = {match_form};
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches_ptr(
       matches.size());
   base::ranges::transform(matches, matches_ptr.begin(),
