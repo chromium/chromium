@@ -18391,6 +18391,7 @@ from previous Chrome versions.
   <int value="-1122853453" label="LazyImageLoading:enabled"/>
   <int value="-1122458028" label="UnifiedMediaView:enabled"/>
   <int value="-1121931029" label="DownloadsForeground:enabled"/>
+  <int value="-1121780009" label="AutofillEnableManuallFallbackIPH:enabled"/>
   <int value="-1120594059" label="PowerBookmarkBackend:enabled"/>
   <int value="-1120188661" label="PolicyLogsPageAndroid:enabled"/>
   <int value="-1119700637" label="ui-disable-partial-swap"/>
@@ -19064,6 +19065,7 @@ from previous Chrome versions.
   <int value="-807352944" label="IppFirstSetupForUsbPrinters:disabled"/>
   <int value="-806549905"
       label="TabbedAppOverflowMenuThreeButtonActionbar:disabled"/>
+  <int value="-806501339" label="AutofillEnableManuallFallbackIPH:disabled"/>
   <int value="-806480547" label="SyncDeviceInfoInTransportMode:enabled"/>
   <int value="-806208718" label="ViewportSegments:disabled"/>
   <int value="-805927945" label="CrOSEnforceSystemAecNsAgc:disabled"/>

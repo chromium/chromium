@@ -8824,6 +8824,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableStickyManualFallbackForCards)},
 
+    {"autofill-enable-manual-fallback-iph",
+     flag_descriptions::kAutofillEnableManuallFallbackIPHName,
+     flag_descriptions::kAutofillEnableManuallFallbackIPHDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableManuallFallbackIPH)},
+
     {flag_descriptions::kEnableLensStandaloneFlagId,
      flag_descriptions::kEnableLensStandaloneName,
      flag_descriptions::kEnableLensStandaloneDescription, kOsDesktop,

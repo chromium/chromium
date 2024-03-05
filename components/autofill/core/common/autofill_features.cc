@@ -161,6 +161,14 @@ BASE_FEATURE(kAutofillEnableSelectList,
              "AutofillEnableSelectList",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, autofill displays an IPH informing users about using autofill
+// from the context menu. The IPH will be attached to address fields with
+// autocomplete="garbage".
+// TODO(b/313587343) Remove once manual fallback IPH feature is launched.
+BASE_FEATURE(kAutofillEnableManuallFallbackIPH,
+             "AutofillEnableManuallFallbackIPH",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls if Chrome support filling and importing between streets.
 // TODO(crbug.com/1441904) Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForBetweenStreets,

@@ -630,6 +630,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "autofill-enable-manual-fallback-iph",
+    "owners": [ "theocristea@google.com", "brunobraga@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "autofill-enable-merchant-domain-in-unmask-card-request",
     "owners": [ "justinleewells@chromium.org" ],
     "expiry_milestone": 130

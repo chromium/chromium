@@ -439,6 +439,12 @@ const char kAutofillEnableManualFallbackForVirtualCardsDescription[] =
     "When enabled, manual fallback will be enabled for virtual cards on "
     "Android.";
 
+const char kAutofillEnableManuallFallbackIPHName[] =
+    "Show autofill manuall fallback IPH";
+const char kAutofillEnableManuallFallbackIPHDescription[] =
+    "Show a promo on address fields which educates the users about the "
+    "possibility to trigger autofill from the context menu.";
+
 const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[] =
     "Enable sending merchant domain in server card unmask requests";
 const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[] =
