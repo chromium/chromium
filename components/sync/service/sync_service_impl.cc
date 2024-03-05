@@ -214,15 +214,6 @@ void LogWaitingForUpdatesReasonIfNeeded(
   }
 }
 
-bool ShouldForceImmediateStartIfTransportDataMissing() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return true;
-#else
-  return base::FeatureList::IsEnabled(
-      kSyncAlwaysForceImmediateStartIfTransportDataMissing);
-#endif
-}
-
 }  // namespace
 
 SyncServiceImpl::InitParams::InitParams() = default;
@@ -397,13 +388,8 @@ void SyncServiceImpl::Initialize() {
   }
 
   if (IsEngineAllowedToRun()) {
-    const bool force_immediate_start =
-        !sync_client_->GetSyncApiComponentFactory()
-             ->HasTransportDataIncludingFirstSync() &&
-        (IsLocalSyncEnabled() ||
-         ShouldForceImmediateStartIfTransportDataMissing());
-
-    if (force_immediate_start) {
+    if (!sync_client_->GetSyncApiComponentFactory()
+             ->HasTransportDataIncludingFirstSync()) {
       // Sync never initialized before on this profile, so let's try immediately
       // the very first time. This is particularly useful for Chrome Ash (where
       // the user is signed in to begin with) and local sync (where sign-in
