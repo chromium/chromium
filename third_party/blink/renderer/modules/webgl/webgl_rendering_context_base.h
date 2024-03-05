@@ -1208,6 +1208,17 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // Convert texture internal format.
   GLenum ConvertTexInternalFormat(GLenum internalformat, GLenum type);
 
+  enum TexImageSourceType {
+    kSourceArrayBufferView,
+    kSourceImageData,
+    kSourceHTMLImageElement,
+    kSourceHTMLCanvasElement,
+    kSourceHTMLVideoElement,
+    kSourceImageBitmap,
+    kSourceUnpackBuffer,
+    kSourceVideoFrame,
+  };
+
   enum TexImageFunctionType {
     kTexImage,
     kTexSubImage,
@@ -1227,6 +1238,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   // Parameters for all TexImage functions.
   struct TexImageParams {
+    TexImageSourceType source_type = kSourceArrayBufferView;
     TexImageFunctionID function_id = kTexImage2D;
     GLenum target = 0;
     GLint level = 0;
@@ -1277,6 +1289,9 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     // interpret the 2D source as 3D by treating it as vertical sequence of
     // images with this height.
     GLint unpack_image_height = 0;
+
+    // If true, then the source should be converted to the unpack color space.
+    bool unpack_colorspace_conversion = true;
   };
 
   // Populate the unpack state based on the context's current state. This is
@@ -1497,17 +1512,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                    const char* param_name,
                                    int64_t value);
 
-  enum TexFuncValidationSourceType {
-    kSourceArrayBufferView,
-    kSourceImageData,
-    kSourceHTMLImageElement,
-    kSourceHTMLCanvasElement,
-    kSourceHTMLVideoElement,
-    kSourceImageBitmap,
-    kSourceUnpackBuffer,
-    kSourceVideoFrame,
-  };
-
   // Helper function for tex{Sub}Image{2|3}D to check if the input params'
   // format/type/level/target/width/height/depth/border/xoffset/yoffset/zoffset
   // are valid.  Otherwise, it would return quickly without doing other work.
@@ -1515,7 +1519,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // params.width and params.height with those values before performing
   // validation.
   bool ValidateTexFunc(TexImageParams params,
-                       TexFuncValidationSourceType,
                        std::optional<GLsizei> source_width,
                        std::optional<GLsizei> source_height);
 
@@ -1533,8 +1536,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // Helper function to check input parameters for functions
   // {copy}Tex{Sub}Image.  Generates GL error and returns false if parameters
   // are invalid.
-  bool ValidateTexFuncParameters(const TexImageParams& params,
-                                 TexFuncValidationSourceType);
+  bool ValidateTexFuncParameters(const TexImageParams& params);
 
   enum NullDisposition { kNullAllowed, kNullNotAllowed, kNullNotReachable };
 
