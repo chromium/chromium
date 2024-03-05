@@ -174,8 +174,14 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/328140891): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowFloatingHelpBubble DISABLED_ShowFloatingHelpBubble
+#else
+#define MAYBE_ShowFloatingHelpBubble ShowFloatingHelpBubble
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
-                       ShowFloatingHelpBubble) {
+                       MAYBE_ShowFloatingHelpBubble) {
   const DeepQuery kPathToAddCurrentTabElement{"reading-list-app",
                                               "#currentPageActionButton"};
   RunTestSequence(
@@ -278,8 +284,16 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
 }
 
 // Regression test for item (1) in crbug.com/1422875.
+// TODO(crbug.com/328140891): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden \
+  DISABLED_FloatingHelpBubbleHiddenOnWebUiHidden
+#else
+#define MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden \
+  FloatingHelpBubbleHiddenOnWebUiHidden
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
-                       FloatingHelpBubbleHiddenOnWebUiHidden) {
+                       MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden) {
   RunTestSequence(
       OpenReadingListSidePanel(),
       ShowHelpBubble(kAddCurrentTabToReadingListElementId),
@@ -312,8 +326,14 @@ class HelpBubbleFactoryRtlWebUIInteractiveUiTest
 // This verifies that the "element bounds updated" event gets sent when the side
 // panel is resized, even if none of the elements in the side panel are resized.
 // This is a regression test for crbug.com/1425487.
+// TODO(crbug.com/328140891): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ResizeSidePanelSendsUpdate DISABLED_ResizeSidePanelSendsUpdate
+#else
+#define MAYBE_ResizeSidePanelSendsUpdate ResizeSidePanelSendsUpdate
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRtlWebUIInteractiveUiTest,
-                       ResizeSidePanelSendsUpdate) {
+                       MAYBE_ResizeSidePanelSendsUpdate) {
   RunTestSequence(
       OpenReadingListSidePanel(),
       InAnyContext(
