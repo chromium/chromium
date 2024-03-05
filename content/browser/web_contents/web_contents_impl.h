@@ -972,6 +972,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnVerticalScrollDirectionChanged(
       viz::VerticalScrollDirection scroll_direction) override;
   int GetVirtualKeyboardResizeHeight() override;
+  bool ShouldDoLearning() override;
 
   double GetPendingPageZoomLevel() override;
 

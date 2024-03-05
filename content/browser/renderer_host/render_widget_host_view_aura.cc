@@ -1698,7 +1698,7 @@ ukm::SourceId RenderWidgetHostViewAura::GetClientSourceForMetrics() const {
 }
 
 bool RenderWidgetHostViewAura::ShouldDoLearning() {
-  return GetTextInputManager() && GetTextInputManager()->should_do_learning();
+  return host_->delegate() && host_->delegate()->ShouldDoLearning();
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

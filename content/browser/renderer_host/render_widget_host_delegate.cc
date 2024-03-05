@@ -160,4 +160,8 @@ int RenderWidgetHostDelegate::GetVirtualKeyboardResizeHeight() {
   return 0;
 }
 
+bool RenderWidgetHostDelegate::ShouldDoLearning() {
+  return true;
+}
+
 }  // namespace content

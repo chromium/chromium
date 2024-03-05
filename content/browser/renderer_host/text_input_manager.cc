@@ -41,8 +41,7 @@ bool ShouldUpdateTextInputState(const ui::mojom::TextInputState& old_state,
 
 }  // namespace
 
-TextInputManager::TextInputManager(bool should_do_learning)
-    : active_view_(nullptr), should_do_learning_(should_do_learning) {}
+TextInputManager::TextInputManager() : active_view_(nullptr) {}
 
 TextInputManager::~TextInputManager() {
   // If there is an active view, we should unregister it first so that the

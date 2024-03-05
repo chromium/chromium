@@ -331,6 +331,10 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // resize the view.
   virtual int GetVirtualKeyboardResizeHeight();
 
+  // Returns false if it's a private window, and text entered into this page
+  // shouldn't be used to improve typing suggestions for the user.
+  virtual bool ShouldDoLearning();
+
  protected:
   virtual ~RenderWidgetHostDelegate() {}
 };

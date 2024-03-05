@@ -2564,6 +2564,10 @@ int WebContentsImpl::GetVirtualKeyboardResizeHeight() {
   return GetDelegate() ? GetDelegate()->GetVirtualKeyboardHeight(this) : 0;
 }
 
+bool WebContentsImpl::ShouldDoLearning() {
+  return !GetBrowserContext()->IsOffTheRecord();
+}
+
 void WebContentsImpl::OnAudioStateChanged() {
   // This notification can come from any embedded contents or from this
   // WebContents' stream monitor. Aggregate these signals to get the actual
@@ -5208,9 +5212,7 @@ TextInputManager* WebContentsImpl::GetTextInputManager() {
   }
 
   if (!text_input_manager_ && !browser_plugin_guest_) {
-    text_input_manager_ = std::make_unique<TextInputManager>(
-        GetBrowserContext() &&
-        !GetBrowserContext()->IsOffTheRecord() /* should_do_learning */);
+    text_input_manager_ = std::make_unique<TextInputManager>();
   }
 
   return text_input_manager_.get();
