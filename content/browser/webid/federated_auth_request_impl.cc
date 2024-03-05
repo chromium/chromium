@@ -800,6 +800,9 @@ void FederatedAuthRequestImpl::RequestToken(
       idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kButton) {
     rp_mode_ = RpMode::kButton;
     if (!had_transient_user_activation_) {
+      render_frame_host().AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "FedCM button mode requires transient user activation");
       // TODO(crbug.com/1487270): use a more specific error.
       CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                TokenStatus::kUnhandledRequest,
