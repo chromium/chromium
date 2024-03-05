@@ -2211,8 +2211,7 @@ class MultiBrowserObserver : public BrowserListObserver {
 
 // Test that when closing a profile with multiple browsers, all browsers are
 // restored when the profile is reopened.
-// TODO(http://b/327325665) Enable this test after resolving issue.
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, DISABLED_RestoreAllBrowsers) {
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
   // Create two profiles with two browsers each.
   Browser* first_profile_browser_one = browser();
   ui_test_utils::BrowserChangeObserver new_browser_observer(
@@ -2283,7 +2282,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, DISABLED_RestoreAllBrowsers) {
   expected_urls.insert(GURL("data:,profile 2 browser 2"));
   for (Browser* browser : browsers) {
     WaitForTabsToLoad(browser);
-    ui_test_utils::WaitForBrowserSetLastActive(browser);
     TabStripModel* tab_strip_model = browser->tab_strip_model();
     EXPECT_EQ(tab_strip_model->count(), 1);
     EXPECT_EQ(tab_strip_model->active_index(), 0);
