@@ -458,4 +458,29 @@ TEST_F(HTMLFormElementTest, ListedElementsInDeepNestedFormsLightDom) {
               ElementsAre(input));
 }
 
+// Tests that the listed elements of a form `f` only include elements inside
+// shadow DOM whose shadow hosts are descendants of `f`.
+TEST_F(HTMLFormElementTest, ShadowDomTreesMustBeDescendantsOfForm) {
+  HTMLBodyElement* body = GetDocument().FirstBodyElement();
+  body->setHTMLUnsafe(R"HTML(
+    <form id=f1>
+      <input id=i1>
+    </form>
+    <input id=i2 form=f1>
+    <div id=shadowhost>
+        <template shadowrootmode=open>
+          <input id=i3>
+        </template>
+    </div>
+  )HTML");
+
+  HTMLFormElement* f1 = GetFormElement("f1");
+  ASSERT_NE(f1, nullptr);
+
+  EXPECT_THAT(f1->ListedElements(),
+              ElementsAre(GetListedElement("i1"), GetListedElement("i2")));
+  EXPECT_THAT(f1->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(GetListedElement("i1"), GetListedElement("i2")));
+}
+
 }  // namespace blink
