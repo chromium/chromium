@@ -46,7 +46,8 @@ TEST(BufferIteratorTest, Object) {
   }
   {
     // Iterator's view of the data is not large enough to read the object.
-    BufferIterator<char> iterator(span(buffer).first<sizeof(buffer) - 1u>());
+    BufferIterator<char> iterator(
+        span<char>(buffer).first<sizeof(buffer) - 1u>());
     const TestStruct* actual = iterator.Object<TestStruct>();
     EXPECT_FALSE(actual);
   }
