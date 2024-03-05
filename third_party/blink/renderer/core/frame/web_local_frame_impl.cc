@@ -3197,7 +3197,7 @@ WebLocalFrameImpl::ConvertNotRestoredReasons(
     }
     if (reasons_to_copy->same_origin_details) {
       auto details = mojom::blink::SameOriginBfcacheNotRestoredDetails::New();
-      details->url = reasons_to_copy->same_origin_details->url.c_str();
+      details->url = KURL(reasons_to_copy->same_origin_details->url);
       for (const auto& child : reasons_to_copy->same_origin_details->children) {
         details->children.push_back(ConvertNotRestoredReasons(child));
       }

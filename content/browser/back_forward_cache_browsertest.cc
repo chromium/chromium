@@ -494,7 +494,7 @@ ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
 }
 
 SameOriginMatcher BackForwardCacheBrowserTest::MatchesSameOriginDetails(
-    const testing::Matcher<std::string>& url,
+    const testing::Matcher<GURL>& url,
     const std::vector<ReasonsMatcher>& children) {
   // TODO(crbug.com/1523191) Make this matcher display human-friendly messages.
   return testing::Pointee(testing::AllOf(

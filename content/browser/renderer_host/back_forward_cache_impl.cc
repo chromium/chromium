@@ -1785,7 +1785,7 @@ BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasonsInternal(
     // document.
     not_restored_reasons->same_origin_details =
         blink::mojom::SameOriginBfcacheNotRestoredDetails::New();
-    not_restored_reasons->same_origin_details->url = url_.spec();
+    not_restored_reasons->same_origin_details->url = url_;
     // Populate the reasons for same-origin frames.
     auto& map = GetDocumentResult().reason_to_source_map();
     for (const auto& [reason, sources] : map) {

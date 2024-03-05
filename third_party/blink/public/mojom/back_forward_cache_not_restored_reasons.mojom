@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "third_party/blink/public/mojom/script_source_location.mojom";
+import "url/mojom/url.mojom";
 
 // This is a recursive struct which has HTML attributes and information
 // about whether this document blocked back/forward cache.  This struct
@@ -14,9 +15,7 @@ import "third_party/blink/public/mojom/script_source_location.mojom";
 struct SameOriginBfcacheNotRestoredDetails {
   // URL when the frame navigated away. This could be cut down if the
   // reported value was longer than a limit.
-  // TODO(crbug.com/324031239): Use url.mojom.Url (in url/mojom/url.mojom)
-  // instead of string.
-  string url;
+  url.mojom.Url url;
   // List of children frames' information.
   array<BackForwardCacheNotRestoredReasons> children;
 };
