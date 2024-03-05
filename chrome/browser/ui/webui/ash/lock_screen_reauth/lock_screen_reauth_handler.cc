@@ -326,17 +326,15 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
     challenge_response_key = challenge_response_key_or_error.value();
   }
 
-  // Build UserContext
-  user_context_ = std::make_unique<UserContext>();
-  login::BuildUserContextForGaiaSignIn(
+  // Build UserContext.
+  user_context_ = login::BuildUserContextForGaiaSignIn(
       login::GetUsertypeFromServicesString(services),
       AccountId::FromUserEmailGaiaId(gaia::CanonicalizeEmail(email), gaia_id),
       using_saml, false /* using_saml_api */, password,
       SamlPasswordAttributes::FromJs(password_attributes),
-      /*sync_trusted_vault_keys=*/std::nullopt, challenge_response_key,
-      user_context_.get());
+      /*sync_trusted_vault_keys=*/std::nullopt, challenge_response_key);
 
-  // Create GaiaCookiesRetriever
+  // Create GaiaCookiesRetriever.
   login::SigninPartitionManager* signin_partition_manager =
       login::SigninPartitionManager::Factory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));

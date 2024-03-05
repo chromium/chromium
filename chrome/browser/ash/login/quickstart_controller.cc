@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/quickstart_controller.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "base/check.h"
@@ -75,10 +77,10 @@ std::optional<QuickStartController::EntryPoint> EntryPointFromScreen(
 
 QuickStartMetrics::ScreenName ScreenNameFromOobeScreenId(
     OobeScreenId screen_id) {
-  //  TODO(b/298042953): Check Screen IDs for Unicorn account setup flow.
+  // TODO(b/298042953): Check Screen IDs for Unicorn account setup flow.
   if (screen_id == ConsumerUpdateScreenView::kScreenId) {
-    //  TODO(b/298042953): Update Screen ID when the new OOBE Checking for
-    //  update and determining device configuration screen is added.
+    // TODO(b/298042953): Update Screen ID when the new OOBE Checking for
+    // update and determining device configuration screen is added.
     return QuickStartMetrics::ScreenName::
         kCheckingForUpdateAndDeterminingDeviceConfiguration;
   } else if (screen_id == UserCreationView::kScreenId) {
@@ -277,7 +279,7 @@ void QuickStartController::OnStatusChanged(
     case Step::PIN_VERIFICATION:
       CHECK(absl::holds_alternative<PinString>(status.payload));
       pin_ = *absl::get<PinString>(status.payload);
-      CHECK(pin_.value().length() == 4);
+      CHECK_EQ(pin_.value().length(), 4UL);
       UpdateUiState(UiState::SHOWING_PIN);
       QuickStartMetrics::RecordScreenOpened(
           QuickStartMetrics::ScreenName::kSetUpAndroidPhone);
@@ -546,19 +548,18 @@ void QuickStartController::FinishAccountCreation() {
 
   const AccountId account_id = AccountId::FromNonCanonicalEmail(
       gaia_creds_.email, gaia_creds_.gaia_id, AccountType::GOOGLE);
-  auto user_context = std::make_unique<UserContext>();
   // The user type is known to be regular. The unicorn flow transitions to the
   // Gaia screen and uses its own mechanism for account creation.
-  login::BuildUserContextForGaiaSignIn(
-      /*user_type=*/user_manager::UserType::kRegular,
-      /*account_id=*/account_id,
-      /*using_saml=*/false,
-      /*using_saml_api=*/false,
-      /*password=*/"",
-      /*password_attributes=*/SamlPasswordAttributes(),
-      /*sync_trusted_vault_keys=*/std::nullopt,
-      /*challenge_response_key=*/std::nullopt,
-      /*user_context=*/user_context.get());
+  std::unique_ptr<UserContext> user_context =
+      login::BuildUserContextForGaiaSignIn(
+          /*user_type=*/user_manager::UserType::kRegular,
+          /*account_id=*/account_id,
+          /*using_saml=*/false,
+          /*using_saml_api=*/false,
+          /*password=*/"",
+          /*password_attributes=*/SamlPasswordAttributes(),
+          /*sync_trusted_vault_keys=*/std::nullopt,
+          /*challenge_response_key=*/std::nullopt);
   user_context->SetAuthCode(gaia_creds_.auth_code);
 
   if (LoginDisplayHost::default_host()) {

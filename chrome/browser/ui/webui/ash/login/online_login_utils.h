@@ -121,7 +121,13 @@ ChallengeResponseKeyOrError ExtractClientCertificates(
 
 // Builds the UserContext with the information from the given Gaia user
 // sign-in.
-void BuildUserContextForGaiaSignIn(
+// Returns a `unique_ptr` to the `UserContext` that was just built from the
+// provided parameters.
+// Note: The return value is a `unique_ptr` to `UserContext` and not a
+// `UserContext` by itself to signify that there should only be a single
+// instance of `UserContext` active at any given time. This contract is
+// currently not enforced, but may be enforced in the future.
+std::unique_ptr<UserContext> BuildUserContextForGaiaSignIn(
     user_manager::UserType user_type,
     const AccountId& account_id,
     bool using_saml,
@@ -129,8 +135,7 @@ void BuildUserContextForGaiaSignIn(
     const std::string& password,
     const SamlPasswordAttributes& password_attributes,
     const std::optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
-    const std::optional<ChallengeResponseKey> challenge_response_key,
-    UserContext* user_context);
+    const std::optional<ChallengeResponseKey> challenge_response_key);
 
 // Returns user canonical e-mail. Finds already used account alias, if
 // user has already signed in.

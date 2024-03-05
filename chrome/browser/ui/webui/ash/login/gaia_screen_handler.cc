@@ -883,15 +883,14 @@ void GaiaScreenHandler::CompleteAuthentication(
       gaia::SanitizeEmail(signin_artifacts.email);
   LoginDisplayHost::default_host()->SetDisplayEmail(sanitized_email);
 
-  auto user_context = std::make_unique<UserContext>();
-
-  login::BuildUserContextForGaiaSignIn(
-      user_type, account_id, signin_artifacts.using_saml, using_saml_api_,
-      signin_artifacts.password.value_or(std::string()),
-      signin_artifacts.saml_password_attributes.value_or(
-          SamlPasswordAttributes()),
-      signin_artifacts.sync_trusted_vault_keys,
-      signin_artifacts.challenge_response_key, user_context.get());
+  std::unique_ptr<UserContext> user_context =
+      login::BuildUserContextForGaiaSignIn(
+          user_type, account_id, signin_artifacts.using_saml, using_saml_api_,
+          signin_artifacts.password.value_or(std::string()),
+          signin_artifacts.saml_password_attributes.value_or(
+              SamlPasswordAttributes()),
+          signin_artifacts.sync_trusted_vault_keys,
+          signin_artifacts.challenge_response_key);
 
   // Transfer the received cookies into the UserContext
   signin_artifacts.cookies->TransferCookiesToUserContext(*user_context);
@@ -1135,15 +1134,14 @@ void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
     challenge_response_key = challenge_response_key_or_error.value();
   }
 
-  UserContext user_context;
-  login::BuildUserContextForGaiaSignIn(
-      user ? user->GetType() : CalculateUserType(account_id),
-      login::GetAccountId(typed_email, gaia_id, AccountType::GOOGLE),
-      using_saml, using_saml_api_, password, SamlPasswordAttributes(),
-      /*sync_trusted_vault_keys=*/std::nullopt, challenge_response_key,
-      &user_context);
+  std::unique_ptr<UserContext> user_context =
+      login::BuildUserContextForGaiaSignIn(
+          user ? user->GetType() : CalculateUserType(account_id),
+          login::GetAccountId(typed_email, gaia_id, AccountType::GOOGLE),
+          using_saml, using_saml_api_, password, SamlPasswordAttributes(),
+          /*sync_trusted_vault_keys=*/std::nullopt, challenge_response_key);
 
-  LoginDisplayHost::default_host()->CompleteLogin(user_context);
+  LoginDisplayHost::default_host()->CompleteLogin(*user_context);
 }
 
 void GaiaScreenHandler::StartClearingDnsCache() {
