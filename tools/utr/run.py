@@ -20,8 +20,11 @@ import recipe
 def add_common_args(parser):
   parser.add_argument('--verbose',
                       '-v',
-                      action='store_true',
-                      help='Enable additional runtime logging.')
+                      dest='verbosity',
+                      default=0,
+                      action='count',
+                      help='Enable additional runtime logging. Pass multiple '
+                      'times for increased logging.')
   parser.add_argument('--test',
                       '-t',
                       nargs='+',
@@ -82,14 +85,13 @@ def parse_args():
 
 def main():
   args = parse_args()
-  logging.basicConfig(level=logging.DEBUG if args.verbose else logging.WARN,
+  logging.basicConfig(level=logging.DEBUG if args.verbosity else logging.WARN,
                       format='%(message)s')
-
 
   if not recipe.check_rdb_auth():
     return 1
 
-  bundle_root = cipd.fetch_recipe_bundle(args.verbose)
+  bundle_root = cipd.fetch_recipe_bundle(args.verbosity)
   builder_props, swarming_server = builders.find_builder_props(
       args.bucket, args.builder)
   if not builder_props:
@@ -108,7 +110,8 @@ def main():
       skip_test,
       args.build_dir,
   )
-  exit_code, error_msg = recipe_runner.run_recipe()
+  exit_code, error_msg = recipe_runner.run_recipe(
+      filter_stdout=args.verbosity < 2)
   if error_msg:
     logging.error('\nUTR failure:')
     logging.error(error_msg)

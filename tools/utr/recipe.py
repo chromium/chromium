@@ -14,6 +14,9 @@ import tempfile
 
 import output_adapter
 
+# Disable noisy asyncio logs.
+logging.getLogger('asyncio').setLevel(logging.WARNING)
+
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
 
@@ -115,10 +118,11 @@ class LegacyRunner:
     }
     self._input_props = input_props
 
-  def _run(self, additional_props=None):
+  def _run(self, filter_stdout, additional_props=None):
     """Internal implementation of invoking `recipes.py run`.
 
     Args:
+      filter_stdout: If True, filters noisy log output from the recipe.
       additional_props: Dict containing additional props to pass to the recipe.
     Returns:
       Tuple of
@@ -167,11 +171,14 @@ class LegacyRunner:
             env=env,
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE)
+            stderr=asyncio.subprocess.STDOUT)
 
         proc.stdin.write(json.dumps(input_props).encode('ascii'))
         proc.stdin.write_eof()
-        adapter = output_adapter.LegacyOutputAdapter()
+        if filter_stdout:
+          adapter = output_adapter.LegacyOutputAdapter()
+        else:
+          adapter = output_adapter.PassthroughAdapter()
         while not proc.stdout.at_eof():
           line = await proc.stdout.readline()
           adapter.ProcessLine(line.decode('utf-8').strip('\n'))
@@ -205,9 +212,11 @@ class LegacyRunner:
 
       return returncode, failure_reason, rerun_props
 
-  def run_recipe(self):
+  def run_recipe(self, filter_stdout=True):
     """Runs the UTR recipe with the settings defined on the CLI.
 
+    Args:
+      filter_stdout: If True, filters noisy log output from the recipe.
     Returns:
       Tuple of (exit code, error message) of the `recipes.py` invocation.
     """
@@ -215,7 +224,7 @@ class LegacyRunner:
     # We might need to run the recipe a handful of times before we receive a
     # final result. Put a cap on the amount of re-runs though, just in case.
     for _ in range(10):
-      exit_code, error_msg, rerun_props = self._run(rerun_props)
+      exit_code, error_msg, rerun_props = self._run(filter_stdout, rerun_props)
       if not rerun_props:
         return exit_code, error_msg
       else:

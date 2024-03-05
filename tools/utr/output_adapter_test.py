@@ -12,6 +12,26 @@ from unittest import mock
 import output_adapter
 
 
+class PassthroughAdapterTests(unittest.TestCase):
+
+  def testBasic(self):
+    adapter = output_adapter.PassthroughAdapter()
+    with self.assertLogs('', level=logging.DEBUG) as info_log:
+      fake_output = """@@@SEED_STEP@fake_step@@@
+@@@STEP_CURSOR@fake_step@@@
+@@@STEP_STARTED@@@
+@@@SET_BUILD_PROPERTY@fake_property@"value"@@@
+@@@STEP_LOG_LINE@run_recipe@fake_step_log_line@@@
+@@@STEP_LOG_END@run_recipe@@@
+@@@STEP_LOG_END@memory_profile@@@
+fake std_out text"""
+      lines = fake_output.split('\n')
+      for line in lines:
+        adapter.ProcessLine(line)
+      for line in lines:
+        self.assertIn('DEBUG:root:' + line, info_log.output)
+
+
 class LegacyOutputAdapterTests(unittest.TestCase):
 
   def testNoRecipeEngineOutput(self):
