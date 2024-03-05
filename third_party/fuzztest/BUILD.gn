@@ -14,6 +14,13 @@
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/build.gni")
 
+# Retain full optimization level for the engine parts independent of the
+# optimizations set for the fuzz target.
+fuzztest_remove_configs = fuzzing_engine_remove_configs +
+                          [ "//build/config/compiler:default_optimization" ]
+fuzztest_add_configs =
+    fuzzing_engine_add_configs + [ "//build/config/compiler:optimize" ]
+
 config("fuzztest_internal_config") {
   cflags = [
     "-Wno-sign-compare",  # https://github.com/google/centipede/issues/487,
@@ -77,8 +84,8 @@ if (use_centipede) {
       "//third_party/abseil-cpp/absl/log:log",
     ]
     configs += [ ":fuzztest_internal_config" ]
-    configs -= fuzzing_engine_remove_configs
-    configs += fuzzing_engine_add_configs
+    configs -= fuzztest_remove_configs
+    configs += fuzztest_add_configs
   }
 
   source_set("centipede_runner_no_main") {
@@ -103,8 +110,8 @@ if (use_centipede) {
       "//third_party/abseil-cpp/absl/log:log",
     ]
     configs += [ ":fuzztest_internal_config" ]
-    configs -= fuzzing_engine_remove_configs
-    configs += fuzzing_engine_add_configs
+    configs -= fuzztest_remove_configs
+    configs += fuzztest_add_configs
 
     # sancov symbols need to be exported for centipede to work correctly with
     # multi-dso.
@@ -126,8 +133,8 @@ if (use_centipede) {
   # depend on an external runner
   source_set("centipede_executable_engine") {
     configs += [ ":fuzztest_internal_config" ]
-    configs -= fuzzing_engine_remove_configs
-    configs += fuzzing_engine_add_configs
+    configs -= fuzztest_remove_configs
+    configs += fuzztest_add_configs
     include_dirs = [ "src" ]
     testonly = true
     public_deps = [ ":centipede_common" ]
@@ -195,8 +202,8 @@ if (use_centipede) {
   executable("centipede") {
     testonly = true
     configs += [ ":fuzztest_internal_config" ]
-    configs -= fuzzing_engine_remove_configs
-    configs += fuzzing_engine_add_configs
+    configs -= fuzztest_remove_configs
+    configs += fuzztest_add_configs
     deps = [
       ":centipede_executable_engine",
       "//third_party/abseil-cpp:absl",
@@ -311,8 +318,8 @@ source_set("fuzztest_internal") {
   ]
 
   public_configs = [ ":fuzztest_internal_config" ]
-  configs -= fuzzing_engine_remove_configs
-  configs += fuzzing_engine_add_configs
+  configs -= fuzztest_remove_configs
+  configs += fuzztest_add_configs
 }
 
 # Fuzztest support. This allows regular test executables to contain
@@ -351,8 +358,8 @@ source_set("fuzztest") {
   }
   public_deps = [ ":fuzztest_internal" ]
   public_configs = [ ":fuzztest_internal_config" ]
-  configs -= fuzzing_engine_remove_configs
-  configs += fuzzing_engine_add_configs
+  configs -= fuzztest_remove_configs
+  configs += fuzztest_add_configs
   testonly = true
 }
 
