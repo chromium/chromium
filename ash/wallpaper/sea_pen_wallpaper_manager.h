@@ -29,6 +29,11 @@ class ASH_EXPORT SeaPenWallpaperManager {
 
   ~SeaPenWallpaperManager();
 
+  // `SeaPenWallpaperManager` is owned by and has the same lifetime as
+  // `WallpaperController`, so it should exist very early after `Shell` init and
+  // last until `Shell` teardown.
+  static SeaPenWallpaperManager* GetInstance();
+
   // Set the directory that stores SeaPen images. It is an error to call any
   // other method before calling `SetStorageDirectory` with a valid directory.
   // Stores images for all users, with subfolders keyed by AccountId. Example

@@ -13,6 +13,7 @@
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -24,6 +25,8 @@ namespace ash {
 
 namespace {
 
+SeaPenWallpaperManager* g_instance = nullptr;
+
 base::FilePath GetAccountSeaPenWallpaperDir(
     const base::FilePath& storage_directory,
     const AccountId& account_id) {
@@ -34,9 +37,20 @@ base::FilePath GetAccountSeaPenWallpaperDir(
 
 SeaPenWallpaperManager::SeaPenWallpaperManager(
     WallpaperFileManager* wallpaper_file_manager)
-    : wallpaper_file_manager_(wallpaper_file_manager) {}
+    : wallpaper_file_manager_(wallpaper_file_manager) {
+  DCHECK_EQ(nullptr, g_instance);
+  g_instance = this;
+}
 
-SeaPenWallpaperManager::~SeaPenWallpaperManager() = default;
+SeaPenWallpaperManager::~SeaPenWallpaperManager() {
+  DCHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
+
+// static
+SeaPenWallpaperManager* SeaPenWallpaperManager::GetInstance() {
+  return g_instance;
+}
 
 void SeaPenWallpaperManager::SetStorageDirectory(
     const base::FilePath& storage_directory) {

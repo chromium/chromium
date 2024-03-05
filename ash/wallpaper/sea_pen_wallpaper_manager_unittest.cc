@@ -10,7 +10,6 @@
 #include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wallpaper/wallpaper_file_manager.h"
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -48,10 +47,7 @@ std::string CreateJpgBytes() {
 
 class SeaPenWallpaperManagerTest : public AshTestBase {
  public:
-  SeaPenWallpaperManagerTest()
-      : wallpaper_file_manager_(std::make_unique<WallpaperFileManager>()),
-        sea_pen_wallpaper_manager_(
-            SeaPenWallpaperManager(wallpaper_file_manager_.get())) {}
+  SeaPenWallpaperManagerTest() = default;
 
   SeaPenWallpaperManagerTest(const SeaPenWallpaperManagerTest&) = delete;
   SeaPenWallpaperManagerTest& operator=(const SeaPenWallpaperManagerTest&) =
@@ -62,7 +58,7 @@ class SeaPenWallpaperManagerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
-    sea_pen_wallpaper_manager_.SetStorageDirectory(GetTempFileDirectory());
+    sea_pen_wallpaper_manager()->SetStorageDirectory(GetTempFileDirectory());
   }
 
   void TearDown() override { AshTestBase::TearDown(); }
@@ -84,28 +80,22 @@ class SeaPenWallpaperManagerTest : public AshTestBase {
     return result;
   }
 
-  SeaPenWallpaperManager& sea_pen_wallpaper_manager() {
-    return sea_pen_wallpaper_manager_;
-  }
-
-  WallpaperFileManager* wallpaper_file_manager() {
-    return wallpaper_file_manager_.get();
+  SeaPenWallpaperManager* sea_pen_wallpaper_manager() {
+    return SeaPenWallpaperManager::GetInstance();
   }
 
  private:
   base::ScopedTempDir scoped_temp_dir_;
   InProcessDataDecoder in_process_data_decoder_;
-  const std::unique_ptr<WallpaperFileManager> wallpaper_file_manager_;
-  SeaPenWallpaperManager sea_pen_wallpaper_manager_;
 };
 
 TEST_F(SeaPenWallpaperManagerTest, DecodesImageAndReturnsId) {
   constexpr uint32_t image_id = 111;
   base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
   const base::FilePath file_path =
-      sea_pen_wallpaper_manager().GetFilePathForImageId(kAccountId1, image_id);
+      sea_pen_wallpaper_manager()->GetFilePathForImageId(kAccountId1, image_id);
   ASSERT_FALSE(base::PathExists(file_path));
-  sea_pen_wallpaper_manager().DecodeAndSaveSeaPenImage(
+  sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
       kAccountId1, {CreateJpgBytes(), image_id},
       personalization_app::mojom::SeaPenQuery::NewTextQuery("search query"),
       decode_sea_pen_image_future.GetCallback());
@@ -123,7 +113,7 @@ TEST_F(SeaPenWallpaperManagerTest, StoresTenImages) {
   // Create 10 images in the temp directory.
   for (uint32_t i = 1; i <= 10; i++) {
     base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
-    sea_pen_wallpaper_manager().DecodeAndSaveSeaPenImage(
+    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
         kAccountId1, {CreateJpgBytes(), i},
         personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
         decode_sea_pen_image_future.GetCallback());
@@ -136,7 +126,7 @@ TEST_F(SeaPenWallpaperManagerTest, StoresTenImages) {
         /*max_deviation=*/1));
 
     const auto file_path =
-        sea_pen_wallpaper_manager().GetFilePathForImageId(kAccountId1, i);
+        sea_pen_wallpaper_manager()->GetFilePathForImageId(kAccountId1, i);
     EXPECT_TRUE(base::PathExists(file_path));
   }
 
@@ -149,7 +139,7 @@ TEST_F(SeaPenWallpaperManagerTest, EleventhImageReplacesOldest) {
   // Create 10 images in the temp directory.
   for (uint32_t i = 1; i <= 10; i++) {
     base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
-    sea_pen_wallpaper_manager().DecodeAndSaveSeaPenImage(
+    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
         kAccountId1, {CreateJpgBytes(), i},
         personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
         decode_sea_pen_image_future.GetCallback());
@@ -159,7 +149,7 @@ TEST_F(SeaPenWallpaperManagerTest, EleventhImageReplacesOldest) {
   constexpr uint32_t oldest_image_id = 5;
   // Mark image 5 as the oldest by last modified time.
   ASSERT_TRUE(
-      base::TouchFile(sea_pen_wallpaper_manager().GetFilePathForImageId(
+      base::TouchFile(sea_pen_wallpaper_manager()->GetFilePathForImageId(
                           kAccountId1, oldest_image_id),
                       /*last_accessed=*/base::Time::Now(),
                       /*last_modified=*/base::Time::Now() - base::Minutes(30)));
@@ -167,12 +157,12 @@ TEST_F(SeaPenWallpaperManagerTest, EleventhImageReplacesOldest) {
   constexpr uint32_t new_image_id = 11;
 
   ASSERT_FALSE(
-      base::PathExists(sea_pen_wallpaper_manager().GetFilePathForImageId(
+      base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
           kAccountId1, new_image_id)));
 
   // Decode and save the 11th sea pen image.
   base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
-  sea_pen_wallpaper_manager().DecodeAndSaveSeaPenImage(
+  sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
       kAccountId1, {CreateJpgBytes(), new_image_id},
       personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
       decode_sea_pen_image_future.GetCallback());
@@ -189,10 +179,10 @@ TEST_F(SeaPenWallpaperManagerTest, EleventhImageReplacesOldest) {
               testing::UnorderedElementsAre(1u, 2u, 3u, 4u, 6u, 7u, 8u, 9u, 10u,
                                             new_image_id));
   EXPECT_FALSE(
-      base::PathExists(sea_pen_wallpaper_manager().GetFilePathForImageId(
+      base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
           kAccountId1, oldest_image_id)));
   EXPECT_TRUE(
-      base::PathExists(sea_pen_wallpaper_manager().GetFilePathForImageId(
+      base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
           kAccountId1, new_image_id)));
 }
 
@@ -202,7 +192,7 @@ TEST_F(SeaPenWallpaperManagerTest, GetFilePathForImageId) {
           .Append(kAccountId1.GetAccountIdKey())
           .Append("12345")
           .AddExtension(".jpg"),
-      sea_pen_wallpaper_manager().GetFilePathForImageId(kAccountId1, 12345));
+      sea_pen_wallpaper_manager()->GetFilePathForImageId(kAccountId1, 12345));
 
   const AccountId other_account_id = AccountId::FromUserEmailGaiaId(
       "other_user@test.com", "other_user@test.com");
@@ -213,8 +203,8 @@ TEST_F(SeaPenWallpaperManagerTest, GetFilePathForImageId) {
                 .Append(other_account_id.GetAccountIdKey())
                 .Append("22222")
                 .AddExtension(".jpg"),
-            sea_pen_wallpaper_manager().GetFilePathForImageId(other_account_id,
-                                                              22222));
+            sea_pen_wallpaper_manager()->GetFilePathForImageId(other_account_id,
+                                                               22222));
 }
 
 }  // namespace ash
