@@ -278,6 +278,11 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
+    // This feature only affects badges, so shouldn't impact or block anything
+    // else.
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
     config->used =
         EventConfig("whats_new_updated_used", Comparator(ANY, 0), 365, 365);
     config->trigger =
