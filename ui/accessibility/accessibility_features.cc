@@ -305,6 +305,14 @@ bool IsReadAnythingOmniboxIconEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingOmniboxIcon);
 }
 
+BASE_FEATURE(kReadAnythingDelaySidePanelLoad,
+             "ReadAnythingDelaySidePanelLoad",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsReadAnythingDelaySidePanelLoadEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kReadAnythingDelaySidePanelLoad);
+}
+
 BASE_FEATURE(kReadAnythingReadAloud,
              "ReadAnythingReadAloud",
              base::FEATURE_DISABLED_BY_DEFAULT);
