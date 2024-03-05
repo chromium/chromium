@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -128,11 +127,6 @@ class TabListEmptyCoordinator {
     public void attachEmptyView() {
         if (mEmptyView != null && mEmptyView.getParent() == null) {
             mRootView.addView(mEmptyView);
-            int toolbarHeightPx = mBrowserControlsStateProvider.getTopControlsHeight();
-            FrameLayout.LayoutParams emptyViewParams =
-                    (FrameLayout.LayoutParams) mEmptyView.getLayoutParams();
-            emptyViewParams.topMargin = toolbarHeightPx;
-            mEmptyView.setLayoutParams(emptyViewParams);
         }
         setEmptyViewVisibility(View.GONE);
     }

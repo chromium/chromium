@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /** A data adapter for the Photo Picker. */
 public class PickerAdapter extends Adapter<ViewHolder> {
@@ -71,7 +72,12 @@ public class PickerAdapter extends Adapter<ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mCategoryView.getPickerBitmaps().size();
+        List<PickerBitmap> pickerBitmapList = mCategoryView.getPickerBitmaps();
+        if (pickerBitmapList == null) {
+            return 0;
+        } else {
+            return pickerBitmapList.size();
+        }
     }
 
     /** Returns the number of times the cache supplied a bitmap. */
