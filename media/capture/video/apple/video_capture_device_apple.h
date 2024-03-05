@@ -10,6 +10,7 @@
 
 #import <Foundation/Foundation.h>
 #include <stdint.h>
+#include "base/time/time.h"
 
 #include <string>
 
@@ -74,9 +75,12 @@ class CAPTURE_EXPORT VideoCaptureDeviceApple
                     int aspect_numerator,
                     int aspect_denominator,
                     base::TimeDelta timestamp,
+                    std::optional<base::TimeTicks> capture_begin_time,
                     int rotation) override;
-  void ReceiveExternalGpuMemoryBufferFrame(CapturedExternalVideoBuffer frame,
-                                           base::TimeDelta timestamp) override;
+  void ReceiveExternalGpuMemoryBufferFrame(
+      CapturedExternalVideoBuffer frame,
+      base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_time) override;
   void OnPhotoTaken(const uint8_t* image_data,
                     size_t image_length,
                     const std::string& mime_type) override;

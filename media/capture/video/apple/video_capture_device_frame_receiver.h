@@ -24,6 +24,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
                             int aspect_numerator,
                             int aspect_denominator,
                             base::TimeDelta timestamp,
+                            std::optional<base::TimeTicks> capture_begin_time,
                             int rotation) = 0;
 
   // Called to deliver GpuMemoryBuffer-wrapped captured video frames. This
@@ -31,7 +32,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
   // AVFoundation.
   virtual void ReceiveExternalGpuMemoryBufferFrame(
       CapturedExternalVideoBuffer frame,
-      base::TimeDelta timestamp) = 0;
+      base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_time) = 0;
 
   // Callbacks with the result of a still image capture, or in case of error,
   // respectively. It's safe to call these methods from any thread.

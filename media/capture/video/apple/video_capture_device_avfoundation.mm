@@ -3,12 +3,16 @@
 // found in the LICENSE file.
 
 #import "media/capture/video/apple/video_capture_device_avfoundation.h"
+#include <optional>
+#include "base/feature_list.h"
+#include "base/time/time.h"
 
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMedia/CoreMedia.h>
 #import <CoreVideo/CoreVideo.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <optional>
 #include <sstream>
 
 #include "base/apple/foundation_util.h"
@@ -39,6 +43,10 @@
 #import <UIKit/UIKit.h>
 #endif
 
+BASE_FEATURE(kAVFoundationCaptureForwardSampleTimestamps,
+             "AVFoundationCaptureForwardSampleTimestamps",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // Logitech 4K Pro
@@ -62,14 +70,15 @@ constexpr FourCharCode kDefaultFourCCPixelFormat =
 // of precision during manipulation.
 constexpr float kFrameRateEpsilon = 0.001;
 
-base::TimeDelta GetCMSampleBufferTimestamp(CMSampleBufferRef sampleBuffer) {
+std::optional<base::TimeTicks> GetCMSampleBufferTimestamp(
+    CMSampleBufferRef sampleBuffer) {
   const CMTime cm_timestamp =
       CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
-  const base::TimeDelta timestamp =
-      CMTIME_IS_VALID(cm_timestamp)
-          ? base::Seconds(CMTimeGetSeconds(cm_timestamp))
-          : media::kNoTimestamp;
-  return timestamp;
+  if (CMTIME_IS_VALID(cm_timestamp)) {
+    uint64_t mach_time = CMClockConvertHostTimeToSystemUnits(cm_timestamp);
+    return base::TimeTicks::FromMachAbsoluteTime(mach_time);
+  }
+  return std::nullopt;
 }
 
 constexpr size_t kPixelBufferPoolSize = 10;
@@ -206,8 +215,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     base::WeakPtrFactory<SelfHolder> weak_ptr_factory{this};
   };
   SelfHolder _weakPtrHolderForStallCheck;
-  // Timestamp offset to subtract from all frames, to avoid leaking uptime.
-  base::TimeDelta _startTimestamp;
+  // TimeTicks to subtract from all frames, to avoid leaking uptime.
+  base::TimeTicks _startTimestamp;
 
   // Used to rate-limit crash reports for https://crbug.com/1168112.
   bool _hasDumpedForFrameSizeMismatch;
@@ -745,9 +754,10 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 }
 
 - (void)processSample:(CMSampleBufferRef)sampleBuffer
-        captureFormat:(const media::VideoCaptureFormat&)captureFormat
-           colorSpace:(const gfx::ColorSpace&)colorSpace
-            timestamp:(const base::TimeDelta)timestamp {
+         captureFormat:(const media::VideoCaptureFormat&)captureFormat
+            colorSpace:(const gfx::ColorSpace&)colorSpace
+             timestamp:(const base::TimeDelta)timestamp
+    capture_begin_time:(std::optional<base::TimeTicks>)capture_begin_time {
   VLOG(3) << __func__;
   // Trust |_frameReceiver| to do decompression.
   char* baseAddress = nullptr;
@@ -766,7 +776,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     if (safe_to_forward) {
       _frameReceiver->ReceiveFrame(
           reinterpret_cast<const uint8_t*>(baseAddress), frameSize,
-          captureFormat, colorSpace, 0, 0, timestamp, _rotation);
+          captureFormat, colorSpace, 0, 0, timestamp, capture_begin_time,
+          _rotation);
     }
   }
 }
@@ -774,7 +785,9 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 - (BOOL)processPixelBufferPlanes:(CVImageBufferRef)pixelBuffer
                    captureFormat:(const media::VideoCaptureFormat&)captureFormat
                       colorSpace:(const gfx::ColorSpace&)colorSpace
-                       timestamp:(const base::TimeDelta)timestamp {
+                       timestamp:(const base::TimeDelta)timestamp
+              capture_begin_time:
+                  (std::optional<base::TimeTicks>)capture_begin_time {
   VLOG(3) << __func__;
   if (CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly) !=
       kCVReturnSuccess) {
@@ -876,10 +889,11 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
   _lock.AssertAcquired();
   DCHECK(_frameReceiver);
-  _frameReceiver->ReceiveFrame(
-      packedBufferCopy.empty() ? pixelBufferAddresses[0]
-                               : packedBufferCopy.data(),
-      frameSize, captureFormat, colorSpace, 0, 0, timestamp, _rotation);
+  _frameReceiver->ReceiveFrame(packedBufferCopy.empty()
+                                   ? pixelBufferAddresses[0]
+                                   : packedBufferCopy.data(),
+                               frameSize, captureFormat, colorSpace, 0, 0,
+                               timestamp, capture_begin_time, _rotation);
   CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
   return YES;
 }
@@ -888,7 +902,9 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                           captureFormat:
                               (const media::VideoCaptureFormat&)captureFormat
                              colorSpace:(const gfx::ColorSpace&)colorSpace
-                              timestamp:(const base::TimeDelta)timestamp {
+                              timestamp:(const base::TimeDelta)timestamp
+                     capture_begin_time:
+                         (std::optional<base::TimeTicks>)capture_begin_time {
   VLOG(3) << __func__;
   DCHECK_EQ(captureFormat.pixel_format, media::PIXEL_FORMAT_NV12);
 
@@ -902,8 +918,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // The lock is needed for |_frameReceiver|.
   _lock.AssertAcquired();
   DCHECK(_frameReceiver);
-  _frameReceiver->ReceiveExternalGpuMemoryBufferFrame(std::move(externalBuffer),
-                                                      timestamp);
+  _frameReceiver->ReceiveExternalGpuMemoryBufferFrame(
+      std::move(externalBuffer), timestamp, capture_begin_time);
 }
 
 - (media::CapturedExternalVideoBuffer)
@@ -1010,10 +1026,10 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   if (!_frameReceiver || !_sampleBufferTransformer) {
     return;
   }
-
-  const base::TimeDelta pres_timestamp =
-      GetCMSampleBufferTimestamp(sampleBuffer);
-  if (_startTimestamp.is_zero()) {
+  auto capture_begin_time = GetCMSampleBufferTimestamp(sampleBuffer);
+  const base::TimeTicks pres_timestamp =
+      capture_begin_time.value_or(base::TimeTicks());
+  if (_startTimestamp.is_null()) {
     _startTimestamp = pres_timestamp;
   }
   const base::TimeDelta timestamp = pres_timestamp - _startTimestamp;
@@ -1023,6 +1039,12 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     media::LogFirstCapturedVideoFrame(_bestCaptureFormat, sampleBuffer);
   }
 #endif
+  // Forget the sample timestamp if we're out of the experiment.
+  if (!base::FeatureList::IsEnabled(
+          kAVFoundationCaptureForwardSampleTimestamps)) {
+    capture_begin_time = std::nullopt;
+  }
+
   // The SampleBufferTransformer CHECK-crashes if the sample buffer is not MJPEG
   // and does not have a pixel buffer (https://crbug.com/1160647) so we fall
   // back on the M87 code path if this is the case.
@@ -1084,7 +1106,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     [self processPixelBufferNV12IOSurface:final_pixel_buffer.get()
                             captureFormat:captureFormat
                                colorSpace:kColorSpaceRec709Apple
-                                timestamp:timestamp];
+                                timestamp:timestamp
+                       capture_begin_time:capture_begin_time];
     return;
   }
 
@@ -1123,7 +1146,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
         [self processPixelBufferNV12IOSurface:pixelBuffer
                                 captureFormat:captureFormat
                                    colorSpace:colorSpace
-                                    timestamp:timestamp];
+                                    timestamp:timestamp
+                           capture_begin_time:capture_begin_time];
         return;
       }
     }
@@ -1131,7 +1155,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     if ([self processPixelBufferPlanes:pixelBuffer
                          captureFormat:captureFormat
                             colorSpace:colorSpace
-                             timestamp:timestamp]) {
+                             timestamp:timestamp
+                    capture_begin_time:capture_begin_time]) {
       return;
     }
   }
@@ -1140,9 +1165,10 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   gfx::ColorSpace colorSpace =
       media::GetFormatDescriptionColorSpace(formatDescription);
   [self processSample:sampleBuffer
-        captureFormat:captureFormat
-           colorSpace:colorSpace
-            timestamp:timestamp];
+           captureFormat:captureFormat
+              colorSpace:colorSpace
+               timestamp:timestamp
+      capture_begin_time:capture_begin_time];
 }
 
 - (void)setIsPortraitEffectSupportedForTesting:

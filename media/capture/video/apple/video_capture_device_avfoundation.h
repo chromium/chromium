@@ -104,12 +104,16 @@ CAPTURE_EXPORT
                           captureFormat:
                               (const media::VideoCaptureFormat&)captureFormat
                              colorSpace:(const gfx::ColorSpace&)colorSpace
-                              timestamp:(const base::TimeDelta)timestamp;
+                              timestamp:(const base::TimeDelta)timestamp
+                     capture_begin_time:
+                         (std::optional<base::TimeTicks>)capture_begin_time;
 
 - (BOOL)processPixelBufferPlanes:(CVImageBufferRef)pixelBuffer
                    captureFormat:(const media::VideoCaptureFormat&)captureFormat
                       colorSpace:(const gfx::ColorSpace&)colorSpace
-                       timestamp:(const base::TimeDelta)timestamp;
+                       timestamp:(const base::TimeDelta)timestamp
+              capture_begin_time:
+                  (std::optional<base::TimeTicks>)capture_begin_time;
 
 // Returns whether the format supports the Portrait Effect feature or not.
 - (bool)isPortraitEffectSupported;
