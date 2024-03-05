@@ -239,6 +239,10 @@ using base::UserMetricsAction;
   return self.view;
 }
 
+- (id<OmniboxAdditionalTextConsumer>)additionalTextConsumer {
+  return self.view;
+}
+
 #pragma mark - public methods
 
 - (OmniboxTextFieldIOS*)textField {

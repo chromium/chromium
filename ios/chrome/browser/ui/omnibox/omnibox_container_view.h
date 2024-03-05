@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/omnibox/omnibox_additional_text_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/text_field_view_containing.h"
 
 @class LayoutGuideCenter;
@@ -15,7 +16,8 @@
 /// The omnibox container view is the view that is shown in the location bar's
 /// edit state. It contains the omnibox textfield and the buttons on the left
 /// and right of it.
-@interface OmniboxContainerView : UIView <TextFieldViewContaining>
+@interface OmniboxContainerView
+    : UIView <OmniboxAdditionalTextConsumer, TextFieldViewContaining>
 
 /// The contained omnibox textfield.
 /// Depending on kIOSNewOmniboxImplementation flag, it's either a legacy or a

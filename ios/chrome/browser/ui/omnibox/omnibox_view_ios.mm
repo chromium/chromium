@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_additional_text_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_metrics_helper.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
@@ -52,11 +53,13 @@ using base::UserMetricsAction;
 
 #pragma mark - OminboxViewIOS
 
-OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
-                               WebLocationBar* location_bar,
-                               ChromeBrowserState* browser_state,
-                               id<OmniboxCommands> omnibox_focuser,
-                               id<ToolbarCommands> toolbar_commands_handler)
+OmniboxViewIOS::OmniboxViewIOS(
+    OmniboxTextFieldIOS* field,
+    WebLocationBar* location_bar,
+    ChromeBrowserState* browser_state,
+    id<OmniboxCommands> omnibox_focuser,
+    id<ToolbarCommands> toolbar_commands_handler,
+    id<OmniboxAdditionalTextConsumer> additional_text_consumer)
     : OmniboxView(
           location_bar
               ? std::make_unique<ChromeOmniboxClientIOS>(
@@ -69,6 +72,7 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
       location_bar_(location_bar),
       omnibox_focuser_(omnibox_focuser),
       toolbar_commands_handler_(toolbar_commands_handler),
+      additional_text_consumer_(additional_text_consumer),
       ignore_popup_updates_(false),
       popup_provider_(nullptr) {
   DCHECK(field_);
@@ -263,18 +267,13 @@ void OmniboxViewIOS::SetAdditionalText(const std::u16string& text) {
   }
 
   if (!text.length()) {
-    // TODO(b/325035406): Remove additional text.
+    [additional_text_consumer_ updateAdditionalText:nil];
     return;
   }
 
   // TODO(b/325035406): Temporary string and colors. Update if needed.
-  NSMutableAttributedString* additional_text =
-      [[NSMutableAttributedString alloc]
-          initWithString:base::SysUTF16ToNSString(u" — " + text)];
-  [additional_text
-      addAttributes:@{NSForegroundColorAttributeName : UIColor.systemBlueColor}
-              range:NSMakeRange(0, additional_text.length)];
-  // TODO(b/325035406): Set additional text.
+  NSString* additional_text = base::SysUTF16ToNSString(u" - " + text);
+  [additional_text_consumer_ updateAdditionalText:additional_text];
 }
 
 void OmniboxViewIOS::OnBeforePossibleChange() {

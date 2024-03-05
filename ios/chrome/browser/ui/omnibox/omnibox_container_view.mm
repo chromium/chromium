@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_container_view.h"
 
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -38,6 +40,8 @@ const CGFloat kClearButtonInset = 4.0f;
 const CGFloat kClearButtonImageSize = 17.0f;
 /// Clear button size.
 const CGFloat kClearButtonSize = 28.5f;
+/// Minimum width of the additional text.
+const CGFloat kAdditionalTextMinWidth = 70;
 
 }  // namespace
 
@@ -55,8 +59,10 @@ const CGFloat kClearButtonSize = 28.5f;
 @implementation OmniboxContainerView {
   /// The leading image view. Used for autocomplete icons.
   UIImageView* _leadingImageView;
-  /// Horizontal stack view containing the `_leadingImageView`, `textField` and
-  /// `clearButton`.
+  /// UILabel for additional text.
+  FadeTruncatingLabel* _additionalTextLabel;
+  /// Horizontal stack view containing the `_leadingImageView`, `textField`,
+  /// `_additionalTextLabel` and `clearButton`.
   UIStackView* _stackView;
 }
 
@@ -107,6 +113,19 @@ const CGFloat kClearButtonSize = 28.5f;
         NSDirectionalEdgeInsetsMake(0, kOmniboxLeadingImageViewEdgeOffset, 0,
                                     kTextFieldClearButtonTrailingOffset));
 
+    // Additional text.
+    if (IsRichAutocompletionEnabled()) {
+      _additionalTextLabel = [[FadeTruncatingLabel alloc] init];
+      _additionalTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
+      _additionalTextLabel.isAccessibilityElement = NO;
+      _additionalTextLabel.clipsToBounds = YES;
+      _additionalTextLabel.hidden = YES;
+      _additionalTextLabel.lineBreakMode = NSLineBreakByClipping;
+      _additionalTextLabel.displayAsURL = YES;
+      _additionalTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+      [_stackView addArrangedSubview:_additionalTextLabel];
+    }
+
     // Clear button.
     UIButtonConfiguration* conf =
         [UIButtonConfiguration plainButtonConfiguration];
@@ -145,6 +164,32 @@ const CGFloat kClearButtonSize = 28.5f;
     // Constraints.
     AddSameConstraintsToSides(_textField, _stackView,
                               LayoutSides::kTop | LayoutSides::kBottom);
+    if (IsRichAutocompletionEnabled()) {
+      AddSameConstraintsToSides(_additionalTextLabel, _stackView,
+                                LayoutSides::kTop | LayoutSides::kBottom);
+
+      // Prevents the text field from taking more horizontal space than needed.
+      // This allows the additional text to sit flush with the text in
+      // `_textField`.
+      [_textField setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
+                                    forAxis:UILayoutConstraintAxisHorizontal];
+      // Allow the additional text to take more horizontal space.
+      [_additionalTextLabel
+          setContentHuggingPriority:UILayoutPriorityDefaultLow
+                            forAxis:UILayoutConstraintAxisHorizontal];
+
+      // Compress the additional text first if it doesn't fit.
+      [_additionalTextLabel
+          setContentCompressionResistancePriority:UILayoutPriorityDefaultLow - 1
+                                          forAxis:
+                                              UILayoutConstraintAxisHorizontal];
+
+      NSLayoutConstraint* additionalTextWidthConstraint =
+          [_additionalTextLabel.widthAnchor
+              constraintGreaterThanOrEqualToConstant:kAdditionalTextMinWidth];
+      additionalTextWidthConstraint.priority = UILayoutPriorityDefaultHigh;
+      additionalTextWidthConstraint.active = YES;
+    }
     [_textField
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                         forAxis:
@@ -190,6 +235,27 @@ const CGFloat kClearButtonSize = 28.5f;
     (UISemanticContentAttribute)semanticContentAttribute {
   [super setSemanticContentAttribute:semanticContentAttribute];
   _stackView.semanticContentAttribute = semanticContentAttribute;
+}
+
+#pragma mark - OmniboxAdditionalTextConsumer
+
+- (void)updateAdditionalText:(NSString*)additionalText {
+  CHECK(IsRichAutocompletionEnabled());
+
+  _additionalTextLabel.text = additionalText;
+  _additionalTextLabel.hidden = !additionalText.length;
+  // Update the font here as `_textField` changes font for different dynamic
+  // type. // TODO(b/325035406): Refactor dynamic type handling.
+  _additionalTextLabel.font = _textField.font;
+
+  // The placeholder text prevents the text field from hugging to a size smaller
+  // than `placeholder`. This prevents the additional text from staying flush to
+  // the text field (b/326371877).
+  if (_additionalTextLabel.hidden) {
+    _textField.placeholder = l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
+  } else {
+    _textField.placeholder = nil;
+  }
 }
 
 #pragma mark - TextFieldViewContaining

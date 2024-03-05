@@ -22,6 +22,7 @@ class ChromeBrowserState;
 class GURL;
 class WebLocationBar;
 struct AutocompleteMatch;
+@protocol OmniboxAdditionalTextConsumer;
 @class OmniboxTextFieldIOS;
 @protocol OmniboxCommands;
 @protocol ToolbarCommands;
@@ -38,7 +39,8 @@ class OmniboxViewIOS : public OmniboxView,
                  WebLocationBar* location_bar,
                  ChromeBrowserState* browser_state,
                  id<OmniboxCommands> omnibox_focuser,
-                 id<ToolbarCommands> toolbar_commands_handler);
+                 id<ToolbarCommands> toolbar_commands_handler,
+                 id<OmniboxAdditionalTextConsumer> additional_text_consumer);
 
   ~OmniboxViewIOS() override;
 
@@ -183,6 +185,9 @@ class OmniboxViewIOS : public OmniboxView,
 
   // Handler for ToolbarCommands.
   __weak id<ToolbarCommands> toolbar_commands_handler_;
+
+  // Consumer of additional text.
+  __weak id<OmniboxAdditionalTextConsumer> additional_text_consumer_;
 
   State state_before_change_;
   NSString* marked_text_before_change_;

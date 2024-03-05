@@ -143,9 +143,10 @@
 
   id<OmniboxCommands> omniboxHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
-  _editView = std::make_unique<OmniboxViewIOS>(self.textField, self.locationBar,
-                                               self.browser->GetBrowserState(),
-                                               omniboxHandler, _toolbarHandler);
+  _editView = std::make_unique<OmniboxViewIOS>(
+      self.textField, self.locationBar, self.browser->GetBrowserState(),
+      omniboxHandler, _toolbarHandler,
+      self.viewController.additionalTextConsumer);
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [self.textField setPasteDelegate:self.pasteDelegate];
 

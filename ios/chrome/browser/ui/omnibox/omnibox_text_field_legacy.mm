@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/common/material_timing.h"
@@ -380,6 +381,18 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 // Returns whether we are processing the first touch event on the text field.
 - (BOOL)isPreEditing {
   return !![self preEditText];
+}
+
+- (CGSize)intrinsicContentSize {
+  if (!IsRichAutocompletionEnabled()) {
+    return [super intrinsicContentSize];
+  }
+
+  if (_selection) {
+    return [_selection intrinsicContentSize];
+  } else {
+    return [super intrinsicContentSize];
+  }
 }
 
 #pragma mark - TestingUtilities category
