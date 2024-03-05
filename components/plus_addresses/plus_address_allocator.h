@@ -1,0 +1,43 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_ALLOCATOR_H_
+#define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_ALLOCATOR_H_
+
+#include "components/plus_addresses/plus_address_types.h"
+
+namespace url {
+class Origin;
+}  // namespace url
+
+namespace plus_addresses {
+
+// An interface for plus address allocation. Implementers may pursue different
+// strategies for plus address allocation, e.g. allocation on the fly or
+// pre-allocation.
+class PlusAddressAllocator {
+ public:
+  virtual ~PlusAddressAllocator() = default;
+
+  enum class AllocationMode {
+    // The requested plus address can be any (unused) plus address, regardless
+    // of whether it has been shown to the user before.
+    kAny = 0,
+    // The requested plus address should be one that the user has never seen
+    // before.
+    kNewPlusAddress = 1
+  };
+
+  // Attempts to allocate a plus address for `origin`.
+  virtual void AllocatePlusAddress(const url::Origin& origin,
+                                   AllocationMode mode,
+                                   PlusAddressRequestCallback callback) = 0;
+
+  // Returns whether a plus address for `origin` may be refreshed.
+  virtual bool IsRefreshingSupported(const url::Origin& origin) const = 0;
+};
+
+}  // namespace plus_addresses
+
+#endif  // COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_ALLOCATOR_H_

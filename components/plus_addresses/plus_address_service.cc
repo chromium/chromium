@@ -17,6 +17,7 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
+#include "components/plus_addresses/plus_address_jit_allocator.h"
 #include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -71,6 +72,9 @@ PlusAddressService::PlusAddressService(
     : identity_manager_(identity_manager),
       pref_service_(pref_service),
       plus_address_http_client_(std::move(plus_address_http_client)),
+      plus_address_allocator_(std::make_unique<PlusAddressJitAllocator>(
+          this,
+          plus_address_http_client_.get())),
       excluded_sites_(GetAndParseExcludedSites()) {
   if (pref_service) {
     // Clear the pref to always force a poll on service construction.
@@ -185,23 +189,9 @@ void PlusAddressService::ReservePlusAddress(
   if (!is_enabled()) {
     return;
   }
-  plus_address_http_client_->ReservePlusAddress(
-      origin,
-      // Thin wrapper around on_completed to save the PlusAddress in the
-      // success case.
-      base::BindOnce(
-          [](PlusAddressService* service, const url::Origin& origin,
-             PlusAddressRequestCallback callback,
-             const PlusProfileOrError& maybe_profile) {
-            if (maybe_profile.has_value() && maybe_profile->is_confirmed) {
-              service->SavePlusAddress(origin, maybe_profile->plus_address);
-            }
-            // Run callback last in case it's dependent on above changes.
-            std::move(callback).Run(maybe_profile);
-          },
-          // base::Unretained is safe here since PlusAddressService owns
-          // the PlusAddressHttpClient and they will have the same lifetime.
-          base::Unretained(this), origin, std::move(on_completed)));
+  plus_address_allocator_->AllocatePlusAddress(
+      origin, PlusAddressAllocator::AllocationMode::kAny,
+      std::move(on_completed));
 }
 
 void PlusAddressService::ConfirmPlusAddress(

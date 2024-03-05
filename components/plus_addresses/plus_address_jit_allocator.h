@@ -1,0 +1,39 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_JIT_ALLOCATOR_H_
+#define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_JIT_ALLOCATOR_H_
+
+#include "components/plus_addresses/plus_address_allocator.h"
+
+#include "base/memory/raw_ref.h"
+
+namespace plus_addresses {
+
+class PlusAddressHttpClient;
+class PlusAddressService;
+
+class PlusAddressJitAllocator : public PlusAddressAllocator {
+ public:
+  PlusAddressJitAllocator(PlusAddressService* service,
+                          PlusAddressHttpClient* http_client);
+  ~PlusAddressJitAllocator() override;
+
+  // PlusAddressAllocator:
+  void AllocatePlusAddress(const url::Origin& origin,
+                           AllocationMode mode,
+                           PlusAddressRequestCallback callback) override;
+  bool IsRefreshingSupported(const url::Origin& origin) const override;
+
+ private:
+  // The `PlusAddressService` that owns `this`.
+  const raw_ref<PlusAddressService> service_;
+  // Responsible for server communication. Owned by the `PlusAddressService` and
+  // outlives `this`.
+  const raw_ref<PlusAddressHttpClient> http_client_;
+};
+
+}  // namespace plus_addresses
+
+#endif  // COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_JIT_ALLOCATOR_H_

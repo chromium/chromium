@@ -28,6 +28,9 @@ enum class PlusAddressRequestErrorType {
   kParsingError = 0,
   kNetworkError = 1,
   kOAuthError = 2,
+  // The type of request is not supported by this version of Chrome - e.g.,
+  // refreshing plus addresses prior to them being enabled.
+  kRequestNotSupportedError = 3,
 };
 
 class PlusAddressRequestError {

@@ -15,9 +15,12 @@ source_set("types") {
 
 source_set("plus_addresses") {
   sources = [
+    "plus_address_allocator.h",
     "plus_address_http_client.h",
     "plus_address_http_client_impl.cc",
     "plus_address_http_client_impl.h",
+    "plus_address_jit_allocator.cc",
+    "plus_address_jit_allocator.h",
     "plus_address_metrics.cc",
     "plus_address_metrics.h",
     "plus_address_parser.cc",

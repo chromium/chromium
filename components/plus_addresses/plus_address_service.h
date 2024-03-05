@@ -30,6 +30,7 @@ class PersistentRepeatingTimer;
 
 namespace plus_addresses {
 
+class PlusAddressAllocator;
 class PlusAddressHttpClient;
 
 // An experimental class for filling plus addresses (asdf+123@some-domain.com).
@@ -175,6 +176,9 @@ class PlusAddressService : public KeyedService,
 
   // Handles requests to a remote server that this service uses.
   std::unique_ptr<PlusAddressHttpClient> plus_address_http_client_;
+
+  // Responsible for allocating new plus addresses.
+  const std::unique_ptr<PlusAddressAllocator> plus_address_allocator_;
 
   // Store set of excluded sites ETLD+1 where PlusAddressService is not
   // supported.
