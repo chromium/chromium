@@ -531,6 +531,15 @@ void PrintBrowserTest::SetPrinterNameForSubsequentContexts(
       printer_name);
 }
 
+#if BUILDFLAG(IS_WIN)
+void PrintBrowserTest::SetPrinterLanguageTypeForSubsequentContexts(
+    mojom::PrinterLanguageType printer_language_type) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  test_printing_context_factory_.SetPrinterLanguageTypeForSubsequentContexts(
+      printer_language_type);
+}
+#endif
+
 void PrintBrowserTest::SetNewDocumentJobId(int job_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   test_printing_context_factory_.SetJobIdOnNewDocument(job_id);
