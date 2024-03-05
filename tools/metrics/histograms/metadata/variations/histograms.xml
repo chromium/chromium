@@ -597,7 +597,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedFreshnessDiff" units="minutes"
-    expires_after="2024-03-03">
+    expires_after="2025-03-03">
   <owner>dogancanemek@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
