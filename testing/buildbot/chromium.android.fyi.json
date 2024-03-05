@@ -13440,7 +13440,8 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.media_unittests.filter"
         ],
         "merge": {
           "args": [

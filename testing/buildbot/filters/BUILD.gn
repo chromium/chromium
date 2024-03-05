@@ -373,6 +373,7 @@ source_set("linux_trusty_rel_browser_tests_filters") {
 source_set("media_unittests_filters") {
   data = [
     "//testing/buildbot/filters/android.emulator.media_unittests.filter",
+    "//testing/buildbot/filters/android.mte.media_unittests.filter",
     "//testing/buildbot/filters/fuchsia.debug.media_unittests.filter",
   ]
 }
