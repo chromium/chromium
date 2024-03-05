@@ -2402,7 +2402,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordNotesMigrationToOSCrypt.{Store}KeychainRetrievalError"
-    enum="ErrSecOSStatus" expires_after="2024-03-17">
+    enum="ErrSecOSStatus" expires_after="2024-07-21">
   <owner>rgod@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
