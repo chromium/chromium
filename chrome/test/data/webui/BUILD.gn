@@ -59,6 +59,7 @@ source_set("browser_tests") {
     "side_panel/customize_chrome/customize_chrome_browsertest.cc",
     "side_panel/performance_controls/performance_controls_browsertest.cc",
     "side_panel/read_anything/read_anything_browsertest.cc",
+    "side_panel/reading_list/reading_list_browsertest.cc",
     "side_panel/user_notes/user_notes_browsertest.cc",
     "sync_internals/sync_internals_browsertest.cc",
     "tab_search/tab_search_browsertest.cc",

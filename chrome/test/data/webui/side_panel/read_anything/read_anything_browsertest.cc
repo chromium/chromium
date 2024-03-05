@@ -13,12 +13,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/accessibility/accessibility_features.h"
 
-using SidePanelReadingListTest = WebUIMochaBrowserTest;
-IN_PROC_BROWSER_TEST_F(SidePanelReadingListTest, App) {
-  set_test_loader_host(chrome::kChromeUIReadLaterHost);
-  RunTest("side_panel/reading_list/reading_list_app_test.js", "mocha.run()");
-}
-
 class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
  protected:
   ReadAnythingMochaBrowserTest() {
