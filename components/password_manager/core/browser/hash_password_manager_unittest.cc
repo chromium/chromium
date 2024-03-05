@@ -466,5 +466,23 @@ TEST_F(HashPasswordManagerTest,
   EXPECT_EQ(0u, local_prefs_.GetList(prefs::kLocalPasswordHashDataList).size());
 }
 
+TEST_F(HashPasswordManagerTest, QueryingDefaultEmptyPrefListDoesNotCrash) {
+  scoped_feature_list_.InitAndEnableFeature(
+      password_manager::features::kLocalStateEnterprisePasswordHashes);
+  HashPasswordManager hash_password_manager;
+  hash_password_manager.set_prefs(&prefs_);
+  hash_password_manager.set_local_prefs(&local_prefs_);
+  std::string username("user@example.com");
+  EXPECT_EQ(0u, hash_password_manager.RetrieveAllPasswordHashes().size());
+  EXPECT_TRUE(std::nullopt == hash_password_manager.RetrievePasswordHash(
+                                  username, /*is_gaia_password=*/true));
+  EXPECT_TRUE(std::nullopt == hash_password_manager.RetrievePasswordHash(
+                                  username, /*is_gaia_password=*/false));
+  EXPECT_FALSE(hash_password_manager.HasPasswordHash(
+      username, /*is_gaia_password=*/true));
+  EXPECT_FALSE(hash_password_manager.HasPasswordHash(
+      username, /*is_gaia_password=*/false));
+}
+
 }  // namespace
 }  // namespace password_manager
