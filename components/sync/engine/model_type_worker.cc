@@ -61,10 +61,6 @@ const char kPasswordNotesStateHistogramName[] =
 constexpr char kEntityEncryptionResultHistogramName[] =
     "Sync.EntityEncryptionSucceeded";
 
-BASE_FEATURE(kSyncKeepGcDirectiveDuringSyncCycle,
-             "SyncKeepGcDirectiveDuringSyncCycle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class CrossUserSharingDecryptionResult {
@@ -500,8 +496,7 @@ void ModelTypeWorker::ProcessGetUpdatesResponse(
   // TODO(rlarocque): Handle data type context conflicts.
   *model_type_state_.mutable_type_context() = mutated_context;
 
-  if (progress_marker.has_gc_directive() &&
-      base::FeatureList::IsEnabled(kSyncKeepGcDirectiveDuringSyncCycle)) {
+  if (progress_marker.has_gc_directive()) {
     // Clean up all the pending updates because a new GC directive has been
     // received which means that all existing data should be cleaned up.
     pending_updates_.clear();
@@ -1215,14 +1210,6 @@ void ModelTypeWorker::ExtractGcDirective() {
     // Keep a new GC directive if received.
     pending_gc_directive_ = model_type_state_.progress_marker().gc_directive();
     model_type_state_.mutable_progress_marker()->clear_gc_directive();
-    return;
-  }
-
-  if (pending_gc_directive_.has_value() &&
-      !base::FeatureList::IsEnabled(kSyncKeepGcDirectiveDuringSyncCycle)) {
-    // Remove the GC directive if not present in the response, to mimic the
-    // previous behavior.
-    pending_gc_directive_.reset();
     return;
   }
 
