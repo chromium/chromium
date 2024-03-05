@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/mojom/history_types.mojom.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -85,9 +86,15 @@ history::mojom::TabPtr SessionTabToMojom(
   tab_mojom->url = GURL(*dictionary.FindString("url"));
   tab_mojom->title = *dictionary.FindString("title");
 
-  tab_mojom->relative_time_text =
-      base::UTF16ToUTF8(FormatRelativeTime(tab.timestamp));
-  tab_mojom->relative_time = base::Time::Now() - tab.timestamp;
+  auto relative_time = base::Time::Now() - tab.timestamp;
+  tab_mojom->relative_time = relative_time;
+  if (relative_time.InSeconds() < 60) {
+    tab_mojom->relative_time_text = l10n_util::GetStringUTF8(
+        IDS_NTP_MODULES_TAB_RESUMPTION_RECENTLY_OPENED);
+  } else {
+    tab_mojom->relative_time_text =
+        base::UTF16ToUTF8(FormatRelativeTime(tab.timestamp));
+  }
 
   return tab_mojom;
 }

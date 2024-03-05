@@ -36,15 +36,16 @@ std::unique_ptr<sessions::SessionTab> SampleSessionTab(
 
 std::unique_ptr<sync_sessions::SyncedSessionWindow> SampleSessionWindow(
     int num_tabs,
-    int curr_session) {
+    std::vector<base::Time>& timestamps) {
   auto synced_session_window =
       std::make_unique<sync_sessions::SyncedSessionWindow>();
   synced_session_window->wrapped_window.timestamp = base::Time::Now();
   for (int i = 0; i < num_tabs; i++) {
-    base::Time timestamp = base::Time::Now() - base::Hours(1) +
-                           base::Minutes(curr_session * num_tabs + i);
-    synced_session_window->wrapped_window.tabs.push_back(
-        SampleSessionTab(i, timestamp));
+    synced_session_window->wrapped_window.tabs.push_back(SampleSessionTab(
+        i, timestamps.empty() ? base::Time::Now() : timestamps.back()));
+    if (!timestamps.empty()) {
+      timestamps.pop_back();
+    }
   }
   return synced_session_window;
 }
@@ -55,11 +56,26 @@ std::unique_ptr<sync_sessions::SyncedSession> SampleSession(
     const char session_name[],
     int num_windows,
     int num_tabs,
-    int curr_session) {
+    std::vector<base::Time>& timestamps) {
   auto sample_session = std::make_unique<sync_sessions::SyncedSession>();
   for (int i = 0; i < num_windows; i++) {
     sample_session->windows[SessionID::FromSerializedValue(i)] =
-        SampleSessionWindow(num_tabs, curr_session);
+        SampleSessionWindow(num_tabs, timestamps);
+  }
+
+  sample_session->SetSessionName(session_name);
+  sample_session->SetModifiedTime(base::Time::Now());
+
+  return sample_session;
+}
+
+std::unique_ptr<sync_sessions::SyncedSession>
+SampleSession(const char session_name[], int num_windows, int num_tabs) {
+  auto sample_session = std::make_unique<sync_sessions::SyncedSession>();
+  std::vector<base::Time> timestamps = {};
+  for (int i = 0; i < num_windows; i++) {
+    sample_session->windows[SessionID::FromSerializedValue(i)] =
+        SampleSessionWindow(num_tabs, timestamps);
   }
 
   sample_session->SetSessionName(session_name);
