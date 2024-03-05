@@ -1,0 +1,32 @@
+TODO: crbug.com/328105513 - Remove when broken libraries are fixed.
+---
+diff --git a/third_party/abseil-cpp/absl/base/prefetch.h b/third_party/abseil-cpp/absl/base/prefetch.h
+index 482cde3a0166c..342d96334031a 100644
+--- a/third_party/abseil-cpp/absl/base/prefetch.h
++++ b/third_party/abseil-cpp/absl/base/prefetch.h
+@@ -135,7 +135,9 @@ void PrefetchToLocalCacheNta(const void* addr);
+ //
+ void PrefetchToLocalCacheForWrite(const void* addr);
+
+-#if ABSL_HAVE_BUILTIN(__builtin_prefetch) || defined(__GNUC__)
++#if (ABSL_HAVE_BUILTIN(__builtin_prefetch) &&      \
++     !(defined(_MSC_VER) && defined(_M_ARM64))) || \
++    defined(__GNUC__)
+
+ #define ABSL_HAVE_PREFETCH 1
+
+diff --git a/third_party/abseil-cpp/absl/container/internal/raw_hash_set.h b/third_party/abseil-cpp/absl/container/internal/raw_hash_set.h
+index 7b33de639604e..aa3725301c645 100644
+--- a/third_party/abseil-cpp/absl/container/internal/raw_hash_set.h
++++ b/third_party/abseil-cpp/absl/container/internal/raw_hash_set.h
+@@ -3315,7 +3315,9 @@ class raw_hash_set {
+   // cache misses. This is intended to overlap with execution of calculating the
+   // hash for a key.
+   void prefetch_heap_block() const {
+-#if ABSL_HAVE_BUILTIN(__builtin_prefetch) || defined(__GNUC__)
++#if (ABSL_HAVE_BUILTIN(__builtin_prefetch) &&      \
++     !(defined(_MSC_VER) && defined(_M_ARM64))) || \
++    defined(__GNUC__)
+     __builtin_prefetch(control(), 0, 1);
+ #endif
+   }

@@ -135,7 +135,9 @@ void PrefetchToLocalCacheNta(const void* addr);
 //
 void PrefetchToLocalCacheForWrite(const void* addr);
 
-#if ABSL_HAVE_BUILTIN(__builtin_prefetch) || defined(__GNUC__)
+#if (ABSL_HAVE_BUILTIN(__builtin_prefetch) &&      \
+     !(defined(_MSC_VER) && defined(_M_ARM64))) || \
+    defined(__GNUC__)
 
 #define ABSL_HAVE_PREFETCH 1
 
