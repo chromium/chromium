@@ -96,10 +96,21 @@ class HarfBuzzShaperTest : public FontTestBase {
   void TearDown() override {}
 
   void SelectDevanagariFont() {
-    font_description.SetFamily(
-        FontFamily(AtomicString("Nirmala UI"), FontFamily::Type::kFamilyName,
-                   SharedFontFamily::Create(AtomicString("ITF Devanagari"),
-                                            FontFamily::Type::kFamilyName)));
+    // Mac
+    scoped_refptr<SharedFontFamily> itf = SharedFontFamily::Create(
+        AtomicString("ITF Devanagari"), FontFamily::Type::kFamilyName);
+    // Linux
+    scoped_refptr<SharedFontFamily> lohit =
+        SharedFontFamily::Create(AtomicString("Lohit Devanagari"),
+                                 FontFamily::Type::kFamilyName, std::move(itf));
+    // Windows 7
+    scoped_refptr<SharedFontFamily> mangal = SharedFontFamily::Create(
+        AtomicString("Mangal"), FontFamily::Type::kFamilyName,
+        std::move(lohit));
+    // Windows 10
+    font_description.SetFamily(FontFamily(AtomicString("Nirmala UI"),
+                                          FontFamily::Type::kFamilyName,
+                                          std::move(mangal)));
   }
 
   Font CreateAhem(float size) {
