@@ -96,8 +96,6 @@ export class Camera extends View implements CameraViewUI {
    */
   private readonly layoutHandler: Layout;
 
-  private readonly scanOptions: ScanOptions;
-
   private readonly videoEncoderOptions =
       new VideoEncoderOptions((parameters) => setAvc1Parameters(parameters));
 
@@ -175,13 +173,12 @@ export class Camera extends View implements CameraViewUI {
 
     this.layoutHandler = new Layout(this.cameraManager);
 
-    this.scanOptions = new ScanOptions(this.cameraManager);
 
-    // Options for the camera.
-    // Put it here for it controls the UI visually under camera view but it
-    // currently won't interact with the view. To prevent typescript checker
-    // complainting about the unused reference, it's left here without any
-    // reference point to it.
+    // These constructions are left here without any references pointing to them
+    // to prevent TypeScript from complaining about the unused reference.
+    // Sub mode options for the scan mode.
+    new ScanOptions(this.cameraManager);
+    // Options that controls the camera UI.
     new Options(this.cameraManager);
 
     /**
@@ -318,7 +315,7 @@ export class Camera extends View implements CameraViewUI {
   /**
    * Initializes camera view.
    */
-  async initialize(): Promise<void> {
+  initialize(): void {
     expert.addObserver(
         expert.ExpertOption.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT,
         () => this.cameraManager.reconfigure());
@@ -327,7 +324,6 @@ export class Camera extends View implements CameraViewUI {
         () => this.cameraManager.reconfigure());
 
     this.initVideoEncoderOptions();
-    await this.initScanMode();
   }
 
   /**
@@ -368,24 +364,6 @@ export class Camera extends View implements CameraViewUI {
       },
     });
     options.initialize();
-  }
-
-  private async initScanMode() {
-    const isSupported =
-        await ChromeHelper.getInstance().isDocumentScannerSupported();
-    if (!isSupported) {
-      return;
-    }
-    // When entering document mode, refocus to shutter button for letting user
-    // to take document photo with space key as shortcut. See b/196907822.
-    const checkRefocus = () => {
-      if (!state.get(state.State.CAMERA_CONFIGURING) && state.get(Mode.SCAN) &&
-          this.scanOptions.isDocumentModeEnabled()) {
-        this.focusShutterButton();
-      }
-    };
-    state.addObserver(state.State.CAMERA_CONFIGURING, checkRefocus);
-    this.scanOptions.addOnChangeListener(() => checkRefocus());
   }
 
   override getSubViews(): View[] {

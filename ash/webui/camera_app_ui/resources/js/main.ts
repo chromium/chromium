@@ -293,7 +293,7 @@ async function setupMultiWindowHandling(
         // CCA must get camera usage for completing its initialization when
         // first launched.
         await cameraManager.initialize(cameraView);
-        await cameraView.initialize();
+        cameraView.initialize();
         cameraResourceInitialized.signal();
       }
     } catch (e) {

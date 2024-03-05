@@ -162,10 +162,6 @@ export class ScanOptions implements CameraUI {
     return getScanTypeFromElement(checkedEl);
   }
 
-  isDocumentModeEnabled(): boolean {
-    return this.documentCornerOverlay.isEnabled();
-  }
-
   /**
    * Updates the option UI and starts or stops the corresponding scanner
    * according to given |scanType|.
