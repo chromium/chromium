@@ -3304,6 +3304,9 @@ test("content_unittests") {
       "//ui/android:android",
     ]
 
+    if (enable_chrome_android_internal) {
+      data_deps += [ "//clank/build/bot/filters:content_unittests_filters" ]
+    }
     defines += [ "APPCACHE_USE_SIMPLE_CACHE" ]
   } else {
     # Non-Android.
