@@ -94,8 +94,12 @@ void CookieControlsIconView::UpdateImpl() {
               TrackingProtectionSettingsFactory::GetForProfile(profile));
       controller_observation_.Observe(controller_.get());
     }
-    // Reset whether we animated when web contents change.
-    did_animate_ = false;
+    // Reset animation and tracker when URL changes.
+    if (web_contents->GetVisibleURL() != last_visited_url_) {
+      last_visited_url_ = web_contents->GetVisibleURL();
+      did_animate_ = false;
+      ResetSlideAnimation(false);
+    }
     controller_->Update(web_contents);
   }
 }

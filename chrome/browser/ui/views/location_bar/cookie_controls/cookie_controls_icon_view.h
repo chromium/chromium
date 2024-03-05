@@ -77,6 +77,7 @@ class CookieControlsIconView : public PageActionIconView,
   bool did_animate_ = false;
   // Whether we should have a visual indicator highlighting the icon.
   bool should_highlight_ = false;
+  GURL last_visited_url_;
 
   CookieBlocking3pcdStatus blocking_status_ =
       CookieBlocking3pcdStatus::kNotIn3pcd;
