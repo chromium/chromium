@@ -803,8 +803,8 @@ PermissionControllerImpl::GetExclusionAreaBoundsInScreen(
 }
 
 void PermissionControllerImpl::NotifyEventListener() {
-  if (onchange_listeners_callback_for_tests_.has_value()) {
-    onchange_listeners_callback_for_tests_.value().Run();
+  if (onchange_listeners_callback_for_tests_) {
+    onchange_listeners_callback_for_tests_.Run();
   }
 }
 

@@ -266,14 +266,13 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
   }
 
   PrerenderAttributes GeneratePrerenderAttributes(const GURL& url) {
-    return GeneratePrerenderAttributesWithPredicate(
-        url, /*url_match_predicate=*/std::nullopt);
+    return GeneratePrerenderAttributesWithPredicate(url,
+                                                    /*url_match_predicate=*/{});
   }
 
   PrerenderAttributes GeneratePrerenderAttributesWithPredicate(
       const GURL& url,
-      std::optional<base::RepeatingCallback<bool(const GURL&)>>
-          url_match_predicate) {
+      base::RepeatingCallback<bool(const GURL&)> url_match_predicate) {
     RenderFrameHostImpl* rfh = contents()->GetPrimaryMainFrame();
     return PrerenderAttributes(
         url, PreloadingTriggerType::kSpeculationRule,
@@ -284,7 +283,7 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
         contents()->GetWeakPtr(), rfh->GetFrameToken(),
         rfh->GetFrameTreeNodeId(), rfh->GetPageUkmSourceId(),
         ui::PAGE_TRANSITION_LINK, std::move(url_match_predicate),
-        /*prerender_navigation_handle_callback=*/std::nullopt);
+        /*prerender_navigation_handle_callback=*/{});
   }
 
   void ExpectFinalStatus(PrerenderFinalStatus status) {

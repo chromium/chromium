@@ -186,7 +186,7 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
 
   PermissionOverrides permission_overrides_;
 
-  std::optional<base::RepeatingClosure> onchange_listeners_callback_for_tests_;
+  base::RepeatingClosure onchange_listeners_callback_for_tests_;
 
   std::optional<gfx::Rect> exclusion_area_bounds_for_tests_;
 

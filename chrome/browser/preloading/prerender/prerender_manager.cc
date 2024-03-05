@@ -278,7 +278,7 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
       prerender_utils::kBookmarkBarMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
-      /*url_match_predicate=*/std::nullopt,
+      /*url_match_predicate=*/{},
       std::move(prerender_navigation_handle_callback));
 
   return bookmark_prerender_handle_ ? bookmark_prerender_handle_->GetWeakPtr()

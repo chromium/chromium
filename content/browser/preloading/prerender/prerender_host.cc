@@ -386,7 +386,7 @@ bool PrerenderHost::StartPrerendering() {
     return false;
 
   if (attributes_.prerender_navigation_handle_callback) {
-    attributes_.prerender_navigation_handle_callback.value().Run(
+    attributes_.prerender_navigation_handle_callback.Run(
         *created_navigation_handle);
   }
 
@@ -820,8 +820,7 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   // here to be safe.
   CHECK(common_params_);
   if (attributes_.url_match_predicate) {
-    CHECK(
-        attributes_.url_match_predicate.value().Run(potential_activation.url));
+    CHECK(attributes_.url_match_predicate.Run(potential_activation.url));
   } else {
     CHECK_EQ(potential_activation.url, common_params_->url);
   }
@@ -1126,15 +1125,17 @@ void PrerenderHost::SetFailureReason(
 }
 
 bool PrerenderHost::IsUrlMatch(const GURL& url) const {
-  // If the trigger defines its predicate, respect it.
-  if (attributes_.url_match_predicate) {
-    // Triggers are not allowed to treat a cross-origin url as a matched url. It
-    // would cause security risks.
-    if (!url::IsSameOriginWith(attributes_.prerendering_url, url))
-      return false;
-    return attributes_.url_match_predicate.value().Run(url);
+  if (!attributes_.url_match_predicate) {
+    return GetInitialUrl() == url;
   }
-  return GetInitialUrl() == url;
+
+  // Triggers are not allowed to treat a cross-origin url as a matched url. It
+  // would cause security risks.
+  if (!url::IsSameOriginWith(attributes_.prerendering_url, url)) {
+    return false;
+  }
+
+  return attributes_.url_match_predicate.Run(url);
 }
 
 void PrerenderHost::OnAcceptClientHintChanged(

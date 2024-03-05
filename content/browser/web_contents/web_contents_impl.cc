@@ -10520,9 +10520,8 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
     ui::PageTransition page_transition,
     PreloadingHoldbackStatus holdback_status_override,
     PreloadingAttempt* preloading_attempt,
-    std::optional<base::RepeatingCallback<bool(const GURL&)>>
-        url_match_predicate,
-    std::optional<base::RepeatingCallback<void(NavigationHandle&)>>
+    base::RepeatingCallback<bool(const GURL&)> url_match_predicate,
+    base::RepeatingCallback<void(NavigationHandle&)>
         prerender_navigation_handle_callback) {
   PrerenderAttributes attributes(
       prerendering_url, trigger_type, embedder_histogram_suffix,

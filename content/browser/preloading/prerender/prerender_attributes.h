@@ -36,9 +36,8 @@ struct CONTENT_EXPORT PrerenderAttributes {
       int initiator_frame_tree_node_id,
       ukm::SourceId initiator_ukm_id,
       ui::PageTransition transition_type,
-      std::optional<base::RepeatingCallback<bool(const GURL&)>>
-          url_match_predicate,
-      std::optional<base::RepeatingCallback<void(NavigationHandle&)>>
+      base::RepeatingCallback<bool(const GURL&)> url_match_predicate,
+      base::RepeatingCallback<void(NavigationHandle&)>
           prerender_navigation_handle_callback,
       // TODO(crbug/1384419): use pattern other than default parameter.
       const std::optional<base::UnguessableToken>&
@@ -103,9 +102,9 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // Triggers can specify their own predicate judging whether two URLs are
   // considered as pointing to the same destination. The URLs must be in
   // same-origin.
-  std::optional<base::RepeatingCallback<bool(const GURL&)>> url_match_predicate;
+  base::RepeatingCallback<bool(const GURL&)> url_match_predicate;
 
-  std::optional<base::RepeatingCallback<void(NavigationHandle&)>>
+  base::RepeatingCallback<void(NavigationHandle&)>
       prerender_navigation_handle_callback;
 
   // This is std::nullopt when prerendering is initiated by the browser.

@@ -29,9 +29,8 @@ PrerenderAttributes::PrerenderAttributes(
     int initiator_frame_tree_node_id,
     ukm::SourceId initiator_ukm_id,
     ui::PageTransition transition_type,
-    std::optional<base::RepeatingCallback<bool(const GURL&)>>
-        url_match_predicate,
-    std::optional<base::RepeatingCallback<void(NavigationHandle&)>>
+    base::RepeatingCallback<bool(const GURL&)> url_match_predicate,
+    base::RepeatingCallback<void(NavigationHandle&)>
         prerender_navigation_handle_callback,
     const std::optional<base::UnguessableToken>&
         initiator_devtools_navigation_token)

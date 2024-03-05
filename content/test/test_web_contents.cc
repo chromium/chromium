@@ -450,8 +450,8 @@ int TestWebContents::AddPrerender(const GURL& url) {
       rfhi->GetLastCommittedOrigin(), rfhi->GetProcess()->GetID(), GetWeakPtr(),
       rfhi->GetFrameToken(), rfhi->GetFrameTreeNodeId(),
       rfhi->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
-      /*url_match_predicate=*/std::nullopt,
-      /*prerender_navigation_handle_callback=*/std::nullopt));
+      /*url_match_predicate=*/{},
+      /*prerender_navigation_handle_callback=*/{}));
 }
 
 TestRenderFrameHost* TestWebContents::AddPrerenderAndCommitNavigation(

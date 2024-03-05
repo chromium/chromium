@@ -900,10 +900,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       ui::PageTransition page_transition,
       PreloadingHoldbackStatus holdback_status_override,
       PreloadingAttempt* preloading_attempt,
-      std::optional<base::RepeatingCallback<bool(const GURL&)>>
-          url_match_predicate = std::nullopt,
-      std::optional<base::RepeatingCallback<void(NavigationHandle&)>>
-          prerender_navigation_handle_callback = std::nullopt) override;
+      base::RepeatingCallback<bool(const GURL&)> = {},
+      base::RepeatingCallback<void(NavigationHandle&)> = {}) override;
   void BackNavigationLikely(PreloadingPredictor predictor,
                             WindowOpenDisposition disposition) override;
   void SetOwnerLocationForDebug(
