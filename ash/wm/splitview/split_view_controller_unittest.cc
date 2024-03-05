@@ -3917,6 +3917,29 @@ TEST_F(SplitViewControllerTest,
       faster_split_screen_enabled() ? 0 : 1);
 }
 
+// Test that there will be no crash when disabling a tablet mode when a window
+// with a transient bubble widget is snapped. Regression test for b/327135981.
+TEST_F(SplitViewControllerTest,
+       ClamshellConversionWithSnappedWindowWithTransient) {
+  // Create a widget with a transient bubble widget.
+  std::unique_ptr<views::Widget> widget(CreateTestWidget());
+  aura::Window* window = widget->GetNativeWindow();
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorCanResize |
+                          aura::client::kResizeBehaviorCanMaximize);
+  views::Widget* bubble_widget = views::BubbleDialogDelegateView::CreateBubble(
+      new TestBubbleDialogDelegateView(widget->GetContentsView()));
+  aura::Window* bubble_transient = bubble_widget->GetNativeWindow();
+  EXPECT_TRUE(wm::HasTransientAncestor(bubble_transient, window));
+
+  // Snap the window.
+  ToggleOverview();
+  split_view_controller()->SnapWindow(window, SnapPosition::kSecondary);
+
+  // Convert the device to clamshell mode. There should be no crash.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+}
+
 // The test class that enables the feature flag of portrait mode split view
 // virtual keyboard improvement and the virtual keyboard.
 class SplitViewKeyboardTest : public SplitViewControllerTest {
