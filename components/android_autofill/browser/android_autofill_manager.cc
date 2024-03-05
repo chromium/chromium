@@ -170,13 +170,6 @@ void AndroidAutofillManager::Reset() {
   StartNewLoggingSession();
 }
 
-void AndroidAutofillManager::OnContextMenuShownInField(
-    const FormGlobalId& form_global_id,
-    const FieldGlobalId& field_global_id) {
-  // Not relevant for Android. Only called via context menu in Desktop.
-  NOTREACHED();
-}
-
 void AndroidAutofillManager::OnFieldTypesDetermined(AutofillManager& manager,
                                                     FormGlobalId form,
                                                     FieldTypeSource source) {

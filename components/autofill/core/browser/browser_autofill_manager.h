@@ -284,8 +284,6 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       const std::u16string& old_value) override;
   void Reset() override;
-  void OnContextMenuShownInField(const FormGlobalId& form_global_id,
-                                 const FieldGlobalId& field_global_id) override;
 
   // Retrieves the four digit combinations from the DOM of the current web page
   // and stores them in `four_digit_combinations_in_dom_`. This is used to check

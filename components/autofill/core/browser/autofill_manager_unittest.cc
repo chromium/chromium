@@ -302,7 +302,6 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(*manager_, OnBeforeProcessParsedForms).Times(AtLeast(0));
   EXPECT_CALL(*manager_, OnFormProcessed).Times(AtLeast(0));
   EXPECT_CALL(*manager_, OnAfterProcessParsedForms).Times(AtLeast(0));
-  EXPECT_CALL(*manager_, OnContextMenuShownInField).Times(AtLeast(0));
 
   // Reset the manager, the observers should stick around.
   EXPECT_CALL(observer, OnAutofillManagerReset(m));

@@ -341,15 +341,6 @@ class AutofillDriverRouter {
       void (*callback)(AutofillDriver* target,
                        const std::vector<FormDataPredictions>& predictions));
 
-  // Event called by the browser, passed to the browser:
-  void OnContextMenuShownInField(
-      AutofillDriver* source,
-      const FormGlobalId& form_global_id,
-      const FieldGlobalId& field_global_id,
-      void (*callback)(AutofillDriver* target,
-                       const FormGlobalId& form_global_id,
-                       const FieldGlobalId& field_global_id));
-
   // Returns the underlying renderer forms of `browser_form`.
   // Note that this function is intended for use outside of the `autofill`
   // component to ensure compatibility with callers whose concept of a form

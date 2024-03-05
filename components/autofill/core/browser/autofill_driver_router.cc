@@ -594,26 +594,6 @@ void AutofillDriverRouter::RendererShouldSetSuggestionAvailability(
   }
 }
 
-void AutofillDriverRouter::OnContextMenuShownInField(
-    AutofillDriver* source,
-    const FormGlobalId& form_global_id,
-    const FieldGlobalId& field_global_id,
-    void (*callback)(AutofillDriver* target,
-                     const FormGlobalId& form_global_id,
-                     const FieldGlobalId& field_global_id)) {
-  TriggerFormExtractionExcept(source);
-
-  // Even though we have the `form_global_id` of a renderer form, we cannot call
-  // `form_forest_.GetBrowserForm()` because this is admissible only after a
-  // `form_forest_.UpdateTreeOfRendererForm()` for the same form, but there's no
-  // guarantee this ever happened (e.g., because of race conditions or because
-  // the form is too large; see
-  // https://crrev.com/c/3865860/comment/eddfd61f_dadb4918/ for details).
-  ForEachFrame(form_forest_, [&](AutofillDriver* some_driver) {
-    callback(some_driver, form_global_id, field_global_id);
-  });
-}
-
 std::vector<FormData> AutofillDriverRouter::GetRendererForms(
     const FormData& browser_form) const {
   return form_forest_

@@ -167,22 +167,6 @@ class ContentAutofillDriver : public AutofillDriver,
   // Called on certain types of navigations by ContentAutofillDriverFactory.
   void Reset();
 
-  // Called to inform the browser that in the field with `form_global_id` and
-  // `field_global_id`, the context menu was triggered. This is different from
-  // the usual Autofill flow where the renderer calls the browser or the browser
-  // informs the renderer of some event.
-  //
-  // This is tricky because the context-menu event may refer to a renderer form
-  // in a certain frame, but the form is managed by the AutofillManager of
-  // another frame.
-  //
-  // TODO(crbug.com/1490899): Let callers call AutofillManager directly once
-  // AutofillManager is per-tab.
-  //
-  // Virtual for testing.
-  virtual void OnContextMenuShownInField(const FormGlobalId& form_global_id,
-                                         const FieldGlobalId& field_global_id);
-
  private:
   friend class ContentAutofillDriverTestApi;
 

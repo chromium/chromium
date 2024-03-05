@@ -52,8 +52,6 @@ class AndroidAutofillManager : public AutofillManager,
       const FormData& form) override {}
 
   void Reset() override;
-  void OnContextMenuShownInField(const FormGlobalId& form_global_id,
-                                 const FieldGlobalId& field_global_id) override;
 
   void ReportAutofillWebOTPMetrics(bool used_web_otp) override {}
 

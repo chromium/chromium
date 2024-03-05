@@ -3075,26 +3075,6 @@ void AutofillMetrics::LogAutocompletePredictionCollisionTypes(
       FieldType::MAX_VALID_FIELD_TYPE);
 }
 
-// static
-void AutofillMetrics::LogContextMenuImpressionsForField(
-    FieldType field_type,
-    AutocompleteState autocomplete_state) {
-  base::UmaHistogramEnumeration(
-      "Autofill.FieldContextMenuImpressions.ByAutocomplete",
-      autocomplete_state);
-  base::UmaHistogramSparse(
-      "Autofill.FieldContextMenuImpressions.ByAutofillType", field_type);
-}
-
-// static
-void AutofillMetrics::LogContextMenuImpressionsForForm(
-    int num_of_fields_with_context_menu_shown) {
-  base::UmaHistogramSparse(
-      "Autofill.FormContextMenuImpressions.ByNumberOfFields",
-      base::ranges::clamp(num_of_fields_with_context_menu_shown, 0,
-                          kMaxBucketsCount));
-}
-
 const std::string PaymentsRpcResultToMetricsSuffix(
     AutofillClient::PaymentsRpcResult result) {
   std::string result_suffix;

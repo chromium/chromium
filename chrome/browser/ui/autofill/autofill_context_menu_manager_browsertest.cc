@@ -149,12 +149,6 @@ class MockAutofillDriver : public ContentAutofillDriver {
  public:
   using ContentAutofillDriver::ContentAutofillDriver;
 
-  // Mock methods to enable testability.
-  MOCK_METHOD(void,
-              OnContextMenuShownInField,
-              (const FormGlobalId& form_global_id,
-               const FieldGlobalId& field_global_id),
-              (override));
   MOCK_METHOD(void,
               RendererShouldTriggerSuggestions,
               (const FieldGlobalId& field_id,
@@ -322,25 +316,6 @@ class AutocompleteUnrecognizedFieldsTest
  private:
   base::test::ScopedFeatureList feature_;
 };
-
-// Tests that the Autofill's ContentAutofillDriver is called to record metrics
-// when the context menu is triggered on a field.
-IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
-                       RecordContextMenuIsShownOnField) {
-  FormRendererId form_renderer_id(test::MakeFormRendererId());
-  FieldRendererId field_renderer_id(test::MakeFieldRendererId());
-  autofill_context_menu_manager()->set_params_for_testing(
-      CreateContextMenuParams(form_renderer_id, field_renderer_id));
-
-  FormGlobalId form_global_id{
-      LocalFrameToken(main_rfh()->GetFrameToken().value()), form_renderer_id};
-  FieldGlobalId field_global_id{
-      LocalFrameToken(main_rfh()->GetFrameToken().value()), field_renderer_id};
-
-  EXPECT_CALL(*driver(),
-              OnContextMenuShownInField(form_global_id, field_global_id));
-  autofill_context_menu_manager()->AppendItems();
-}
 
 // Tests that when triggering the context menu on an unclassified field, the
 // fallback entry is not part of the menu.

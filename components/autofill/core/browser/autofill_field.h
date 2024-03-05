@@ -273,11 +273,6 @@ class AutofillField : public FormFieldData {
     return is_most_recent_single_username_candidate_;
   }
 
-  bool was_context_menu_shown() const { return was_context_menu_shown_; }
-  void set_was_context_menu_shown(bool was_context_menu_shown) {
-    was_context_menu_shown_ = was_context_menu_shown;
-  }
-
   void set_field_log_events(const std::vector<FieldLogEventType>& events) {
     field_log_events_ = events;
   }
@@ -437,9 +432,6 @@ class AutofillField : public FormFieldData {
   IsMostRecentSingleUsernameCandidate
       is_most_recent_single_username_candidate_ =
           IsMostRecentSingleUsernameCandidate::kNotPartOfUsernameFirstFlow;
-
-  // Set to true if the context menu was triggered and shown on the field.
-  bool was_context_menu_shown_ = false;
 
   // A list of field log events, which record when user interacts the field
   // during autofill or editing, such as user clicks on the field, the

@@ -624,18 +624,6 @@ void ContentAutofillDriver::JavaScriptChangedAutofilledValue(
       });
 }
 
-void ContentAutofillDriver::OnContextMenuShownInField(
-    const FormGlobalId& form_global_id,
-    const FieldGlobalId& field_global_id) {
-  router().OnContextMenuShownInField(
-      this, form_global_id, field_global_id,
-      [](autofill::AutofillDriver* target, const FormGlobalId& form_global_id,
-         const FieldGlobalId& field_global_id) {
-        target->GetAutofillManager().OnContextMenuShownInField(form_global_id,
-                                                               field_global_id);
-      });
-}
-
 void ContentAutofillDriver::Reset() {
   owner_->router().UnregisterDriver(this,
                                     /*driver_is_dying=*/false);

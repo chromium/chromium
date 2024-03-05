@@ -1990,26 +1990,6 @@ chromium-metrics-reviews@google.com.
       variants="ClassificationMatchesFillingProduct"/>
 </histogram>
 
-<histogram name="Autofill.FieldContextMenuImpressions.ByAutocomplete"
-    enum="AutofillAutocompleteState" expires_after="2024-07-21">
-  <owner>vidhanj@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Number of context menu impressions on fields by their autocomplete attribute
-    value. Recorded on the form submission.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.FieldContextMenuImpressions.ByAutofillType"
-    enum="AutofillFieldType" expires_after="2024-07-21">
-  <owner>vidhanj@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Number of context menu impressions on fields by their autofill type.
-    Recorded on the form submission.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.FieldCount" units="form fields"
     expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
@@ -2213,16 +2193,6 @@ chromium-metrics-reviews@google.com.
     least one autofill operation was performed.
   </summary>
   <token key="FillingProduct" variants="FillingProduct"/>
-</histogram>
-
-<histogram name="Autofill.FormContextMenuImpressions.ByNumberOfFields"
-    units="fields" expires_after="2024-07-21">
-  <owner>vidhanj@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Number of fields on form where the context menu was shown. Recorded on the
-    form submission.
-  </summary>
 </histogram>
 
 <histogram name="Autofill.FormEvents.Address" enum="AutofillFormEvent"

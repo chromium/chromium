@@ -1315,17 +1315,6 @@ class AutofillMetrics {
       absl::variant<AutofillClient::PaymentsRpcCardType, CreditCard::RecordType>
           card_type);
 
-  // Logs the context menu impressions based on the autofill type as well as
-  // based on the autocomplete type.
-  static void LogContextMenuImpressionsForField(
-      FieldType field_type,
-      AutocompleteState autocomplete_state);
-
-  // Logs the context menu impressions for a submitted form. Mainly logs the
-  // number of fields in the form where the context menu was shown.
-  static void LogContextMenuImpressionsForForm(
-      int num_of_fields_with_context_menu_shown);
-
   // Returns 64-bit hash of the string of form global id, which consists of
   // |frame_token| and |renderer_id|.
   static uint64_t FormGlobalIdToHash64Bit(const FormGlobalId& form_global_id);

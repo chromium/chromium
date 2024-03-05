@@ -108,11 +108,6 @@ class MockAutofillManager : public AutofillManager {
               ReportAutofillWebOTPMetrics,
               (bool used_web_otp),
               (override));
-  MOCK_METHOD(void,
-              OnContextMenuShownInField,
-              (const FormGlobalId& form_global_id,
-               const FieldGlobalId& field_global_id),
-              (override));
 
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
 

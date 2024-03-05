@@ -203,14 +203,6 @@ void AutofillContextMenuManager::AppendItems() {
   if (!driver || !driver->CanShowAutofillUi())
     return;
 
-  if (ShouldShowAutofillContextMenu(params_)) {
-    const LocalFrameToken frame_token = driver->GetFrameToken();
-    // Formless fields have default form renderer id.
-    driver->OnContextMenuShownInField(
-        {frame_token, FormRendererId(params_.form_renderer_id)},
-        {frame_token, FieldRendererId(params_.field_renderer_id)});
-  }
-
   // Includes the option of submitting feedback on Autofill.
   if (personal_data_manager_->IsAutofillEnabled() && IsLikelyDogfoodClient()) {
     menu_model_->AddItemWithStringIdAndIcon(

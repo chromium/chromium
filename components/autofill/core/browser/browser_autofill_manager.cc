@@ -440,12 +440,6 @@ void LogAutocompletePredictionCollisionTypeMetrics(
   }
 }
 
-void LogContextMenuImpressionsForSubmittedField(const AutofillField& field) {
-  auto autocomplete_state = AutocompleteStateForSubmittedField(field);
-  AutofillMetrics::LogContextMenuImpressionsForField(
-      field.Type().GetStorableType(), autocomplete_state);
-}
-
 const char* SubmissionSourceToString(SubmissionSource source) {
   switch (source) {
     case SubmissionSource::NONE:
@@ -788,7 +782,6 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
       client().GetPlusAddressDelegate();
 
   FormData form_for_autocomplete = submitted_form->ToFormData();
-  int num_fields_where_context_menu_was_shown = 0;
   for (size_t i = 0; i < submitted_form->field_count(); ++i) {
     if (submitted_form->field(i)->Type().GetStorableType() ==
         CREDIT_CARD_VERIFICATION_CODE) {
@@ -804,17 +797,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
       // will be null if the feature is not enabled (it's disabled by default).
       form_for_autocomplete.fields[i].should_autocomplete = false;
     }
-
-    // The context menu was shown in this field, log the metrics by
-    // autocomplete type, form type and autofill type prediction of the field.
-    if (submitted_form->field(i)->was_context_menu_shown()) {
-      num_fields_where_context_menu_was_shown++;
-      LogContextMenuImpressionsForSubmittedField(*submitted_form->field(i));
-    }
   }
-
-  AutofillMetrics::LogContextMenuImpressionsForForm(
-      num_fields_where_context_menu_was_shown);
 
   single_field_form_fill_router_->OnWillSubmitForm(
       form_for_autocomplete, submitted_form.get(),
@@ -2057,23 +2040,6 @@ void BrowserAutofillManager::Reset() {
   form_filler_->Reset();
   form_submitted_timestamp_ = TimeTicks();
   four_digit_combinations_in_dom_.clear();
-}
-
-void BrowserAutofillManager::OnContextMenuShownInField(
-    const FormGlobalId& form_global_id,
-    const FieldGlobalId& field_global_id) {
-  FormStructure* form = FindCachedFormById(form_global_id);
-  if (!form) {
-    return;
-  }
-  auto field =
-      base::ranges::find_if(*form, [&field_global_id](const auto& field) {
-        return field->global_id() == field_global_id;
-      });
-
-  if (field != form->end()) {
-    (*field)->set_was_context_menu_shown(true);
-  }
 }
 
 bool BrowserAutofillManager::RefreshDataModels() {
