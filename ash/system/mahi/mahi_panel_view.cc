@@ -24,6 +24,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/views/experiment_badge.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkScalar.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -53,13 +57,52 @@ namespace ash {
 
 namespace {
 
+constexpr SkScalar kContentScrollViewCornerRadius = 16;
 constexpr int kPanelCornerRadius = 16;
 constexpr gfx::Insets kPanelPadding = gfx::Insets(16);
 constexpr int kPanelChildSpacing = 8;
 constexpr int kHeaderRowSpacing = 8;
 constexpr gfx::Insets kSourceRowPadding = gfx::Insets::TLBR(6, 12, 6, 14);
 constexpr int kSourceRowSpacing = 8;
-constexpr float kScrollerViewCornerRadius = 16;
+
+// Container for scrollable content in the Mahi panel, including the summary and
+// outlines section or the Q&A section. Clips its own bounds to present its
+// contents within a round-cornered container.
+class ContentScrollView : public views::ScrollView {
+  METADATA_HEADER(ContentScrollView, views::ScrollView)
+
+ public:
+  ContentScrollView() {
+    SetBackgroundThemeColorId(cros_tokens::kCrosSysSystemOnBase);
+    SetProperty(views::kFlexBehaviorKey,
+                views::FlexSpecification(views::FlexSpecification(
+                    views::MinimumFlexSizeRule::kPreferred,
+                    views::MaximumFlexSizeRule::kUnbounded)));
+    ClipHeightTo(/*min_height=*/0, /*max_height=*/INT_MAX);
+    SetDrawOverflowIndicator(false);
+    SetContents(views::Builder<views::View>()
+                    .SetUseDefaultFillLayout(true)
+                    .AddChild(views::Builder<SummaryOutlinesSection>())
+                    // TODO(htpp://b/319731486): Change this view to the Q&A
+                    // section and show/hide it accordingly.
+                    .AddChild(views::Builder<views::View>())
+                    .Build());
+  }
+
+ private:
+  // views::ScrollView:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
+    auto contents_bounds = GetContentsBounds();
+    // TODO(http://b/319732110): Change path to carve out bottom-right corner.
+    SetClipPath(SkPath::RRect(SkRRect::MakeRectXY(
+        SkRect::Make(
+            SkIRect::MakeWH(contents_bounds.width(), contents_bounds.height())),
+        kContentScrollViewCornerRadius, kContentScrollViewCornerRadius)));
+  }
+};
+
+BEGIN_METADATA(ContentScrollView)
+END_METADATA
 
 }  // namespace
 
@@ -155,34 +198,9 @@ MahiPanelView::MahiPanelView() {
                   })))
           .Build());
 
-  // Scrollable contents, which should contain the summary outline section and
-  // the Q&A section.
-  auto scroll_view =
-      views::Builder<views::ScrollView>()
-          .SetBackgroundThemeColorId(cros_tokens::kCrosSysSystemOnBase)
-          .SetProperty(views::kFlexBehaviorKey,
-                       views::FlexSpecification(views::FlexSpecification(
-                           views::MinimumFlexSizeRule::kPreferred,
-                           views::MaximumFlexSizeRule::kUnbounded)))
-          .ClipHeightTo(/*min_height=*/0, /*max_height=*/INT_MAX)
-          .SetDrawOverflowIndicator(false)
-          .Build();
-
-  scroll_view->SetContents(
-      views::Builder<views::View>()
-          .SetUseDefaultFillLayout(true)
-          .AddChild(views::Builder<SummaryOutlinesSection>())
-          // TODO(b/319731486): Change this view to the Q&A section and
-          // show/hide it accordingly.
-          .AddChild(views::Builder<views::View>())
-          .Build());
-
-  // Add layer for rounded corners.
-  scroll_view->SetPaintToLayer();
-  scroll_view->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF{kScrollerViewCornerRadius});
-
-  AddChildView(std::move(scroll_view));
+  // Scrollable contents, which should contain the summary and outlines section
+  // and the Q&A section.
+  AddChildView(std::make_unique<ContentScrollView>());
 
   auto feedback_view = std::make_unique<views::BoxLayoutView>();
   feedback_view->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
