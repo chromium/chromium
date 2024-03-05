@@ -164,8 +164,7 @@ ZeroCopyRasterBufferProvider::ZeroCopyRasterBufferProvider(
     viz::RasterContextProvider* compositor_context_provider,
     const RasterCapabilities& raster_caps)
     : compositor_context_provider_(compositor_context_provider),
-      tile_format_(raster_caps.tile_format),
-      tile_texture_target_(raster_caps.tile_texture_target) {}
+      tile_format_(raster_caps.tile_format) {}
 
 ZeroCopyRasterBufferProvider::~ZeroCopyRasterBufferProvider() = default;
 
@@ -180,7 +179,6 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
   if (!resource.gpu_backing()) {
     auto backing = std::make_unique<ZeroCopyGpuBacking>();
     backing->overlay_candidate = true;
-    backing->texture_target = tile_texture_target_;
     // This RasterBufferProvider will modify the resource outside of the
     // GL command stream. So resources should not become available for reuse
     // until they are not in use by the gpu anymore, which a fence is used

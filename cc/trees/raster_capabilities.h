@@ -24,9 +24,8 @@ struct CC_EXPORT RasterCapabilities {
   // holds a reasonable value for software compositing bitmaps.
   int max_texture_size = 0;
 
-  // Format and texture target used to allocate tiles.
+  // Format used to allocate tiles.
   viz::SharedImageFormat tile_format = viz::SinglePlaneFormat::kRGBA_8888;
-  uint32_t tile_texture_target = 0;
 
   // If tile textures are overlay candidates.
   bool tile_overlay_candidate = false;

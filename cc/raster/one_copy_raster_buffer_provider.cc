@@ -92,7 +92,6 @@ OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
       previous_content_id_(previous_content_id),
       before_raster_sync_token_(backing->returned_sync_token),
       shared_image_(backing->shared_image),
-      mailbox_texture_target_(backing->texture_target),
       mailbox_texture_is_overlay_candidate_(backing->overlay_candidate) {}
 
 OneCopyRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() {
@@ -126,11 +125,11 @@ void OneCopyRasterBufferProvider::RasterBufferImpl::Playback(
   // returns another SyncToken generated on the worker thread to synchronize
   // with after the raster is complete.
   after_raster_sync_token_ = client_->PlaybackAndCopyOnWorkerThread(
-      shared_image_, mailbox_texture_target_,
-      mailbox_texture_is_overlay_candidate_, before_raster_sync_token_,
-      raster_source, raster_full_rect, raster_dirty_rect, transform,
-      resource_size_, format_, color_space_, playback_settings,
-      previous_content_id_, new_content_id, should_destroy_shared_image_);
+      shared_image_, mailbox_texture_is_overlay_candidate_,
+      before_raster_sync_token_, raster_source, raster_full_rect,
+      raster_dirty_rect, transform, resource_size_, format_, color_space_,
+      playback_settings, previous_content_id_, new_content_id,
+      should_destroy_shared_image_);
 }
 
 bool OneCopyRasterBufferProvider::RasterBufferImpl::
@@ -161,7 +160,6 @@ OneCopyRasterBufferProvider::OneCopyRasterBufferProvider(
       bytes_scheduled_since_last_flush_(0),
       tile_format_(raster_caps.tile_format),
       tile_overlay_candidate_(raster_caps.tile_overlay_candidate),
-      tile_texture_target_(raster_caps.tile_texture_target),
       staging_pool_(std::move(task_runner),
                     worker_context_provider,
                     use_partial_raster,
@@ -185,7 +183,6 @@ OneCopyRasterBufferProvider::AcquireBufferForRaster(
     auto backing = std::make_unique<OneCopyGpuBacking>();
     backing->worker_context_provider = worker_context_provider_;
     backing->overlay_candidate = tile_overlay_candidate_;
-    backing->texture_target = tile_texture_target_;
     resource.set_gpu_backing(std::move(backing));
   }
   OneCopyGpuBacking* backing =
@@ -274,7 +271,6 @@ void OneCopyRasterBufferProvider::Shutdown() {
 
 gpu::SyncToken OneCopyRasterBufferProvider::PlaybackAndCopyOnWorkerThread(
     scoped_refptr<gpu::ClientSharedImage>& shared_image,
-    GLenum mailbox_texture_target,
     bool mailbox_texture_is_overlay_candidate,
     const gpu::SyncToken& sync_token,
     const RasterSource* raster_source,
@@ -304,8 +300,8 @@ gpu::SyncToken OneCopyRasterBufferProvider::PlaybackAndCopyOnWorkerThread(
   if (put_data_in_staging_buffer) {
     sync_token_after_upload = CopyOnWorkerThread(
         staging_buffer.get(), raster_source, raster_full_rect, format,
-        resource_size, shared_image, mailbox_texture_target,
-        mailbox_texture_is_overlay_candidate, sync_token, color_space);
+        resource_size, shared_image, mailbox_texture_is_overlay_candidate,
+        sync_token, color_space);
   } else if (shared_image) {
     // If we failed to put data in the staging buffer
     // (https://crbug.com/554541), then we don't have anything to give to copy
@@ -379,7 +375,6 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     viz::SharedImageFormat format,
     const gfx::Size& resource_size,
     scoped_refptr<gpu::ClientSharedImage>& shared_image,
-    GLenum mailbox_texture_target,
     bool mailbox_texture_is_overlay_candidate,
     const gpu::SyncToken& sync_token,
     const gfx::ColorSpace& color_space) {
@@ -448,7 +443,6 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
 
   uint32_t texture_target =
       shared_image->GetTextureTarget(gfx::BufferUsage::SCANOUT);
-  CHECK_EQ(texture_target, mailbox_texture_target);
 
   // Clear to ensure the resource is fully initialized and BeginAccess succeeds.
   if (needs_clear) {

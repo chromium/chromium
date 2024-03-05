@@ -69,7 +69,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
   // Playback raster source and copy result into |resource|.
   gpu::SyncToken PlaybackAndCopyOnWorkerThread(
       scoped_refptr<gpu::ClientSharedImage>& shared_image,
-      GLenum mailbox_texture_target,
       bool mailbox_texture_is_overlay_candidate,
       const gpu::SyncToken& sync_token,
       const RasterSource* raster_source,
@@ -123,7 +122,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
     const uint64_t previous_content_id_;
     const gpu::SyncToken before_raster_sync_token_;
     scoped_refptr<gpu::ClientSharedImage> shared_image_;
-    const GLenum mailbox_texture_target_;
     const bool mailbox_texture_is_overlay_candidate_;
     // A SyncToken to be returned from the worker thread, and waited on before
     // using the rastered resource.
@@ -150,7 +148,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       viz::SharedImageFormat format,
       const gfx::Size& resource_size,
       scoped_refptr<gpu::ClientSharedImage>& shared_image,
-      GLenum mailbox_texture_target,
       bool mailbox_texture_is_overlay_candidate,
       const gpu::SyncToken& sync_token,
       const gfx::ColorSpace& color_space);
@@ -166,7 +163,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
 
   const viz::SharedImageFormat tile_format_;
   const bool tile_overlay_candidate_;
-  const uint32_t tile_texture_target_;
 
   StagingBufferPool staging_pool_;
 };

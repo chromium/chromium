@@ -2917,7 +2917,6 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
   raster_caps_.tile_overlay_candidate =
       settings_.use_gpu_memory_buffer_resources &&
       shared_image_caps.supports_scanout_shared_images;
-  raster_caps_.tile_texture_target = GL_TEXTURE_2D;
 
   if (settings_.gpu_rasterization_disabled || !context_caps.gpu_rasterization) {
     // This is the GPU compositing but software rasterization path. Pick the
@@ -2926,15 +2925,6 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
         settings_.use_rgba_4444
             ? viz::SinglePlaneFormat::kRGBA_4444
             : viz::PlatformColor::BestSupportedTextureFormat(context_caps);
-
-    if (raster_caps_.tile_overlay_candidate) {
-      raster_caps_.tile_texture_target = gpu::GetBufferTextureTarget(
-          gfx::BufferUsage::SCANOUT,
-          viz::SinglePlaneSharedImageFormatToBufferFormat(
-              raster_caps_.tile_format),
-          context_caps);
-    }
-
     return;
   }
 
@@ -2948,14 +2938,6 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
       settings_.use_rgba_4444
           ? viz::SinglePlaneFormat::kRGBA_4444
           : viz::PlatformColor::BestSupportedRenderBufferFormat(context_caps);
-
-  if (raster_caps_.tile_overlay_candidate) {
-    raster_caps_.tile_texture_target = gpu::GetBufferTextureTarget(
-        gfx::BufferUsage::SCANOUT,
-        viz::SinglePlaneSharedImageFormatToBufferFormat(
-            raster_caps_.tile_format),
-        context_caps);
-  }
 }
 
 ImageDecodeCache* LayerTreeHostImpl::GetImageDecodeCache() const {

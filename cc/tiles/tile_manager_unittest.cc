@@ -2493,7 +2493,6 @@ class InvalidResourceRasterBufferProvider
     if (!resource.gpu_backing()) {
       auto backing = std::make_unique<StubGpuBacking>();
       // Don't set a mailbox to signal invalid resource.
-      backing->texture_target = 5;
       resource.set_gpu_backing(std::move(backing));
     }
     return std::make_unique<FakeRasterBuffer>();

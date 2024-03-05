@@ -755,14 +755,12 @@ TEST_F(ResourcePoolTest, InvalidResource) {
   EXPECT_NE(gfx::BufferFormat::RGBA_8888,
             viz::SinglePlaneSharedImageFormatToBufferFormat(format));
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
-  uint32_t target = 5;
 
   ResourcePool::InUsePoolResource resource =
       resource_pool_->AcquireResource(size, format, color_space);
 
   // Keep a zero mailbox
   auto backing = std::make_unique<StubGpuBacking>();
-  backing->texture_target = target;
   backing->wait_on_fence_required = true;
   backing->overlay_candidate = true;
   resource.set_gpu_backing(std::move(backing));

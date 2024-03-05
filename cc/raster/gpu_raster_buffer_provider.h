@@ -144,7 +144,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
   const raw_ptr<viz::RasterContextProvider> worker_context_provider_;
   const viz::SharedImageFormat tile_format_;
   const bool tile_overlay_candidate_;
-  const uint32_t tile_texture_target_;
   const gfx::Size max_tile_size_;
 
   const raw_ptr<RasterQueryQueue, DanglingUntriaged> pending_raster_queries_;

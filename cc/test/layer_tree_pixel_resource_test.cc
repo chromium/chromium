@@ -57,7 +57,6 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
 
   RasterCapabilities raster_caps;
   if (compositor_context_provider) {
-    raster_caps.tile_texture_target = GL_TEXTURE_2D;
     if (host_impl->settings().use_rgba_4444) {
       raster_caps.tile_format = viz::SinglePlaneFormat::kRGBA_4444;
     } else {
