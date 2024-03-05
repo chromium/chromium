@@ -260,6 +260,15 @@ export class SettingsSecurityPageElement extends
         focusWithoutInk(toFocus);
       });
     }
+
+    if (routes.SITE_SETTINGS_JAVASCRIPT_JIT) {
+      this.focusConfig.set(routes.SITE_SETTINGS_JAVASCRIPT_JIT.path, () => {
+        const toFocus =
+            this.shadowRoot!.querySelector<HTMLElement>('#v8-setting-link');
+        assert(toFocus);
+        focusWithoutInk(toFocus);
+      });
+    }
   }
 
   override ready() {
