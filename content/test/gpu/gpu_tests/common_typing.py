@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 """Helper module to store class-independent, common type hinting."""
 
-import optparse
 from typing import Any, Callable, Generator, Optional, Tuple
 
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
@@ -19,8 +18,11 @@ TagConflictChecker = Optional[Callable[[str, str], bool]]
 
 # Will hopefully eventually be replaced by argparses' equivalents once Telemetry
 # finally switches off optparse.
-CmdArgParser = optparse.OptionParser
-ParsedCmdArgs = optparse.Values
+# TODO(crbug.com/40807291): Change these to argparse.ArgumentParser and
+# argparse.Namespace respectively once the optparse -> argparse migration is
+# complete.
+CmdArgParser = Any
+ParsedCmdArgs = Any
 
 # Telemetry screenshot type. Can be changed to union of specific types if/when
 # Telemetry exposes those types.
