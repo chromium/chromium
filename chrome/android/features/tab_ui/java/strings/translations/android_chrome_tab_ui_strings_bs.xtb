@@ -64,7 +64,6 @@
 <translation id="5494920125229734069">Odaberi sve</translation>
 <translation id="5545379293264651575">Zatvori bez pregleda</translation>
 <translation id="5556417849629758491">Prikaz informacija o trgovini. Opcija je dostupna pri vrhu ekrana</translation>
-<translation id="5580090775658607195">Grupisan je sljedeći broj kartica: <ph name="TAB_COUNT" /></translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link iz Chromea}one{<ph name="TABS_COUNT_MANY" /> link iz Chromea}few{<ph name="TABS_COUNT_MANY" /> linka iz Chromea}other{<ph name="TABS_COUNT_MANY" /> linkova iz Chromea}}</translation>
 <translation id="575494663145460764">Slati obavještenja o padu cijena?</translation>
 <translation id="58326064309361797">Prevucite kartice da ih grupišete</translation>

@@ -108,7 +108,6 @@
 <translation id="160633243685262989">Förhandsgranska bild</translation>
 <translation id="1611649489706141841">framåt</translation>
 <translation id="1615335640928990664">Dataanvändning sedan <ph name="FRIENDLY_DATE" /></translation>
-<translation id="1615576200479539465">Genererar bilder …</translation>
 <translation id="1621067168122174824">Kör laddningstest</translation>
 <translation id="1626590945318984973">Kortkommandot är inte tillgängligt. Tryck på ett nytt kortkommando utan att använda funktions- och <ph name="META_KEY" />tangenterna.</translation>
 <translation id="1639239467298939599">Profilen läses in</translation>
@@ -170,6 +169,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">fjärilar</translation>
 <translation id="188114911237521550">Inaktivera mörkt läge</translation>
+<translation id="188268299367474594">Välj bland tillgängliga APN:er</translation>
 <translation id="1885577615937958993">spola framåt i media</translation>
 <translation id="1887850431809612466">Revision av maskinvara</translation>
 <translation id="189221451253258459">neongrön</translation>
@@ -272,6 +272,7 @@
 <translation id="2512979179176933762">visa fönster</translation>
 <translation id="2513396635448525189">Inloggningsbild</translation>
 <translation id="2517472476991765520">Sök</translation>
+<translation id="2520213071283358374">Använd detta APN</translation>
 <translation id="2521835766824839541">föregående spår</translation>
 <translation id="2526590354069164005">Skrivbord</translation>
 <translation id="253029298928638905">Startar om …</translation>
@@ -1135,6 +1136,7 @@
 <translation id="8075838845814659848">Batteritid som återstår</translation>
 <translation id="8076492880354921740">Flikar</translation>
 <translation id="8079860070590459552">en blomsteräng</translation>
+<translation id="8081553043098820199">Ogiltiga APN:er kan leda till att mobilanslutningen inaktiveras. Ange endast APN:er som tillhandahålls av mobiloperatören eller administratören.</translation>
 <translation id="8082366717211101304">Det gick inte att matcha DNS från Android-appar</translation>
 <translation id="8082644724189923105">tangentbordszon</translation>
 <translation id="808894953321890993">Ändra lösenord</translation>

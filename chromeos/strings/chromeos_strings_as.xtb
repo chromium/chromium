@@ -108,7 +108,6 @@
 <translation id="160633243685262989">প্ৰতিচ্ছবি পূৰ্বদৰ্শন কৰক</translation>
 <translation id="1611649489706141841">ফৰৱাৰ্ড কৰক</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />ৰ পৰা হোৱা ডেটাৰ ব্যৱহাৰ</translation>
-<translation id="1615576200479539465">প্ৰতিচ্ছবি সৃষ্টি কৰি থকা হৈছে...</translation>
 <translation id="1621067168122174824">চাৰ্জ পৰীক্ষা চলাওক</translation>
 <translation id="1626590945318984973">শ্বৰ্টকাট উপলব্ধ নহয়। ফাংশ্বন আৰু <ph name="META_KEY" /> কী ব্যৱহাৰ নকৰাকৈ এটা নতুন শ্বৰ্টকাটত টিপক।</translation>
 <translation id="1639239467298939599">ল'ড কৰি থকা হৈছে</translation>
@@ -170,6 +169,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">পখিলা</translation>
 <translation id="188114911237521550">গাঢ় ম’ড অফ কৰক</translation>
+<translation id="188268299367474594">উপলব্ধ APNসমূহৰ পৰা বাছনি কৰক</translation>
 <translation id="1885577615937958993">মিডিয়া ফাষ্ট ফৰৱাৰ্ড কৰক</translation>
 <translation id="1887850431809612466">হাৰ্ডৱেৰৰ পুনৰীক্ষণ</translation>
 <translation id="189221451253258459">নিয়ন সেউজীয়া</translation>
@@ -272,6 +272,7 @@
 <translation id="2512979179176933762">ৱিণ্ড’ দেখুৱাওক</translation>
 <translation id="2513396635448525189">লগইনৰ প্ৰতিচ্ছবি</translation>
 <translation id="2517472476991765520">স্কেন কৰক</translation>
+<translation id="2520213071283358374">এই APNটো ব্যৱহাৰ কৰক</translation>
 <translation id="2521835766824839541">পূৰ্বৱৰ্তী ট্ৰেক</translation>
 <translation id="2526590354069164005">ডেস্কটপ</translation>
 <translation id="253029298928638905">ৰিষ্টাৰ্ট কৰি থকা হৈছে…</translation>
@@ -1135,6 +1136,7 @@
 <translation id="8075838845814659848">বাকী থকা চাৰ্জ</translation>
 <translation id="8076492880354921740">টেব</translation>
 <translation id="8079860070590459552">ফুলৰ ময়দান</translation>
+<translation id="8081553043098820199">অমান্য APNসমূহে আপোনাৰ ম’বাইল সংযোগ অক্ষম কৰিব পাৰে। কেৱল আপোনাৰ ম’বাইল প্ৰদানকাৰী অথবা প্ৰশাসকে প্ৰদান কৰা APNসমূহহে ছেট কৰক।</translation>
 <translation id="8082366717211101304">Android এপৰ পৰা DNS সমাধান কৰিব নোৱাৰি</translation>
 <translation id="8082644724189923105">কীব’ৰ্ড জ’ন</translation>
 <translation id="808894953321890993">পাছৱৰ্ড সলনি কৰক</translation>

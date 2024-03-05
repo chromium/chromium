@@ -2493,7 +2493,7 @@
 <translation id="2844809857160214557">查看及管理列印工作</translation>
 <translation id="2845382757467349449">永遠顯示書籤列</translation>
 <translation id="2845751331501453107">上網時是否會看到個人化廣告，取決於這項設定、<ph name="BEGIN_LINK1" />網站建議廣告<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie 設定<ph name="LINK_END2" />，以及網站是否顯示個人化廣告</translation>
-<translation id="284581348330507117">建立專屬密碼</translation>
+<translation id="284581348330507117">建立不重複的密碼</translation>
 <translation id="2849035674501872372">查詢</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">已新增 PIN 碼</translation>
@@ -2844,7 +2844,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">無法建立資料目錄</translation>
 <translation id="3122810280993140148">根據你選擇的主題、情境、視覺風格和顏色建立自訂主題。如要使用這項功能，請開啟新分頁，然後按一下「自訂 Chrome」。</translation>
-<translation id="3122883569442693641">更多詳細資料</translation>
+<translation id="3122883569442693641">詳細資料</translation>
 <translation id="3124111068741548686">USER 控制代碼</translation>
 <translation id="3124332159330678621">根據自己的需求更新 Chrome 瀏覽器外觀</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -2906,6 +2906,7 @@
 <translation id="3183139917765991655">設定檔匯入工具</translation>
 <translation id="3183143381919926261">行動數據網路</translation>
 <translation id="3183613134231754987">這個密碼金鑰只會儲存在 Windows Hello 中。關閉所有無痕視窗後，密碼金鑰會保存在這部裝置上。</translation>
+<translation id="3183700187146209259">無法安裝掃描器軟體</translation>
 <translation id="3183944777708523606">顯示器排列位置</translation>
 <translation id="3184536091884214176">設定或管理 CUPS 印表機。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{已封鎖這個應用程式}other{已封鎖部分應用程式}}</translation>
@@ -8992,6 +8993,7 @@
 <translation id="7943837619101191061">新增位置...</translation>
 <translation id="79446453817422139">這個檔案可能含有危險內容</translation>
 <translation id="7944772052836377867">同步功能需要驗證你的身分</translation>
+<translation id="7944847494038629732">請拔下掃描器的 USB 傳輸線並重新插上，然後再試一次</translation>
 <translation id="7945703887991230167">偏好語音</translation>
 <translation id="7946586320617670168">來源必須是安全來源</translation>
 <translation id="794676567536738329">確認權限</translation>
@@ -9404,6 +9406,7 @@
 <translation id="8260864402787962391">滑鼠</translation>
 <translation id="8261378640211443080">這個擴充功能未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中，可能在你不知情的情況下加入瀏覽器。</translation>
 <translation id="8261506727792406068">刪除</translation>
+<translation id="8261625296061301062">掃描器軟體安裝完成</translation>
 <translation id="8262971894813353037">啟用新的電腦版 WebUI 設計。必須一併啟用 2023 年 Chrome WebUI 更新計畫。</translation>
 <translation id="8263336784344783289">為這個群組命名</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> 已停用滑鼠游標。</translation>
@@ -9587,6 +9590,7 @@
 <translation id="8387361103813440603">不得查看你的位置資訊</translation>
 <translation id="8388770971141403598">不支援次要設定檔</translation>
 <translation id="8389492867173948260">允許這個擴充功能讀取及變更你在造訪過的網站留下的所有資料：</translation>
+<translation id="8390392581097975659">正在安裝掃描器軟體</translation>
 <translation id="8390449457866780408">無法與伺服器連線。</translation>
 <translation id="8391218455464584335">黑膠</translation>
 <translation id="8392726714909453725">隨選朗讀設定</translation>

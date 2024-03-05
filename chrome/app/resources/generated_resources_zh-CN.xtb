@@ -2898,6 +2898,7 @@
 <translation id="3183139917765991655">个人资料导入应用</translation>
 <translation id="3183143381919926261">移动数据网络</translation>
 <translation id="3183613134231754987">此通行密钥只会保存在 Windows Hello 中。在您关闭所有无痕式窗口后，这个通行密钥会保留在此设备上。</translation>
+<translation id="3183700187146209259">无法安装扫描仪软件</translation>
 <translation id="3183944777708523606">显示器排列方式</translation>
 <translation id="3184536091884214176">设置或管理 CUPS 打印机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{这个应用已被屏蔽}other{某些应用已被屏蔽}}</translation>
@@ -8985,6 +8986,7 @@
 <translation id="7943837619101191061">添加位置…</translation>
 <translation id="79446453817422139">这可能是个危险文件</translation>
 <translation id="7944772052836377867">同步功能需要验证您的身份</translation>
+<translation id="7944847494038629732">请拔下扫描仪的 USB 线，然后重新插上并重试</translation>
 <translation id="7945703887991230167">首选语音</translation>
 <translation id="7946586320617670168">来源必须是安全的</translation>
 <translation id="794676567536738329">确认权限</translation>
@@ -9397,6 +9399,7 @@
 <translation id="8260864402787962391">鼠标</translation>
 <translation id="8261378640211443080">该扩展程序未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中，并可能是在您不知情的情况下添加的。</translation>
 <translation id="8261506727792406068">删除</translation>
+<translation id="8261625296061301062">已安装扫描仪软件</translation>
 <translation id="8262971894813353037">启用 WebUI 的全新桌面版设计。此外，还必须启用 Chrome Refresh 2023。</translation>
 <translation id="8263336784344783289">为此组命名</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> 已隐藏鼠标指针。</translation>
@@ -9580,6 +9583,7 @@
 <translation id="8387361103813440603">不允许查看您的位置信息</translation>
 <translation id="8388770971141403598">次级个人资料不受支持</translation>
 <translation id="8389492867173948260">允许此扩展程序读取和更改您在所访问的网站上留存的所有数据：</translation>
+<translation id="8390392581097975659">正在安装扫描仪软件</translation>
 <translation id="8390449457866780408">服务器无法使用。</translation>
 <translation id="8391218455464584335">黑胶唱片</translation>
 <translation id="8392726714909453725">“随选朗读”相关设置</translation>

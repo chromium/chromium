@@ -108,7 +108,6 @@
 <translation id="160633243685262989">ပုံ အစမ်းကြည့်ရှုရန်</translation>
 <translation id="1611649489706141841">ရှေ့သို့</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> မှစ၍ ဒေတာသုံးစွဲမှု</translation>
-<translation id="1615576200479539465">ပုံများ ထုတ်နေသည်...</translation>
 <translation id="1621067168122174824">အားဝင်ရောက်မှု စစ်ဆေးရန်</translation>
 <translation id="1626590945318984973">ဖြတ်လမ်းလင့်ခ် မရနိုင်ပါ။ လုပ်ဆောင်ချက်နှင့် <ph name="META_KEY" /> ခလုတ်များ မသုံးဘဲ ဖြတ်လမ်းလင့်ခ်အသစ်နှိပ်ပါ။</translation>
 <translation id="1639239467298939599">တင်ပေးနေ</translation>
@@ -170,6 +169,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">လိပ်ပြာ</translation>
 <translation id="188114911237521550">အမှောင်မုဒ် ပိတ်ရန်</translation>
+<translation id="188268299367474594">ရနိုင်သော APN များမှ ရွေးချယ်ရန်</translation>
 <translation id="1885577615937958993">မီဒီယာကို ရှေ့သို့အမြန်သွားရန်</translation>
 <translation id="1887850431809612466">စက်ပစ္စည်း စိစစ်သုံးသပ်ခြင်း</translation>
 <translation id="189221451253258459">နီယွန်စိမ်းရောင်</translation>
@@ -272,6 +272,7 @@
 <translation id="2512979179176933762">ဝင်းဒိုးများ ပြပါ</translation>
 <translation id="2513396635448525189">အကောင့်ဝင်ရန်ပုံ</translation>
 <translation id="2517472476991765520">ရှာဖွေရန်</translation>
+<translation id="2520213071283358374">ဤ APN သုံးရန်</translation>
 <translation id="2521835766824839541">ယခင်တစ်ပုဒ်သို့ သွားရန်</translation>
 <translation id="2526590354069164005">ဒက်စက်တော့</translation>
 <translation id="253029298928638905">ပြန်စနေသည်…</translation>
@@ -1135,6 +1136,7 @@
 <translation id="8075838845814659848">ကျန်ရှိသော အားပမာဏ</translation>
 <translation id="8076492880354921740">တဘ်များ</translation>
 <translation id="8079860070590459552">ပန်းခင်း</translation>
+<translation id="8081553043098820199">မမှန်ကန်သော APN များသည် သင့်မိုဘိုင်းချိတ်ဆက်မှု ပိတ်သွားစေနိုင်သည်။ သင်၏ မိုဘိုင်း ဝန်ဆောင်မှုပေးသူ (သို့) စီမံခန့်ခွဲသူ ပေးထားသည့် APN များကိုသာ သတ်မှတ်ပါ။</translation>
 <translation id="8082366717211101304">Android အက်ပ်များမှ DNS ဖြေရှင်း၍မရပါ</translation>
 <translation id="8082644724189923105">ကီးဘုတ် ဇုန်</translation>
 <translation id="808894953321890993">စကားဝှက် ပြောင်းရန်</translation>

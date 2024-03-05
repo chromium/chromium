@@ -64,7 +64,6 @@
 <translation id="5494920125229734069">Valitse kaikki</translation>
 <translation id="5545379293264651575">Sulje tarkistamatta</translation>
 <translation id="5556417849629758491">Näytä kaupan tiedot, vaihtoehto lähellä näytön yläreunaa</translation>
-<translation id="5580090775658607195"><ph name="TAB_COUNT" /> välilehteä ryhmiteltiin</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> linkki Chromesta}other{<ph name="TABS_COUNT_MANY" /> linkkiä Chromesta}}</translation>
 <translation id="575494663145460764">Haluatko ilmoituksia hinnanalennuksista?</translation>
 <translation id="58326064309361797">Ryhmittele välilehtiä vetämällä niitä</translation>

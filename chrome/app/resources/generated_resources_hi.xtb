@@ -2919,6 +2919,7 @@
 <translation id="3183139917765991655">प्रोफ़ाइल आयातकर्ता</translation>
 <translation id="3183143381919926261">मोबाइल डेटा नेटवर्क</translation>
 <translation id="3183613134231754987">यह पासकी सिर्फ़ Windows Hello में सेव की जाएगी. सभी गुप्त विंडो बंद करने के बाद, यह पासकी इस डिवाइस पर सेव रहेगी.</translation>
+<translation id="3183700187146209259">स्कैनर सॉफ़्टवेयर इंस्टॉल नहीं किया जा सका</translation>
 <translation id="3183944777708523606">मॉनिटर की डिसप्ले सेटिंग</translation>
 <translation id="3184536091884214176">CUPS प्रिंटर सेट अप या प्रबंधित करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{इस ऐप्लिकेशन को ब्लॉक किया गया है}one{इस ऐप्लिकेशन को ब्लॉक किया गया है}other{कुछ ऐप्लिकेशन ब्लॉक किए गए हैं}}</translation>
@@ -9006,6 +9007,7 @@
 <translation id="7943837619101191061">स्थान जोड़ें...</translation>
 <translation id="79446453817422139">यह फ़ाइल खतरनाक हो सकती है</translation>
 <translation id="7944772052836377867">सिंक को आपकी पहचान की पुष्टि करनी है</translation>
+<translation id="7944847494038629732">दोबारा कोशिश करने के लिए, स्कैनर के यूएसबी केबल को अनप्लग करके फिर से प्लग करें</translation>
 <translation id="7945703887991230167">पसंदीदा आवाज़</translation>
 <translation id="7946586320617670168">शुरुआती जगह सुरक्षित होनी चाहिए</translation>
 <translation id="794676567536738329">अनुमतियों की पुष्टि करें</translation>
@@ -9417,6 +9419,7 @@
 <translation id="8260864402787962391">माउस</translation>
 <translation id="8261378640211443080">यह एक्सटेंशन <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> में सूचीबद्ध नहीं है और यह आपकी जानकारी के बिना जोड़ा गया हो सकता है.</translation>
 <translation id="8261506727792406068">मिटाएं</translation>
+<translation id="8261625296061301062">स्कैनर सॉफ़्टवेयर इंस्टॉल किया गया</translation>
 <translation id="8262971894813353037">WebUI के लिए डेस्कटॉप के नए डिज़ाइन को चालू करता है. Chrome Refresh 2023 की सुविधा भी चालू होनी चाहिए.</translation>
 <translation id="8263336784344783289">इस ग्रुप को नाम दें</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> ने आपका माउस कर्सर अक्षम कर दिया है.</translation>
@@ -9600,6 +9603,7 @@
 <translation id="8387361103813440603">आपकी जगह की जानकारी देखने की अनुमति नहीं है</translation>
 <translation id="8388770971141403598">सेकंडरी प्रोफ़ाइल से वीएम सॉफ़्टवेयर इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="8389492867173948260">इस एक्सटेंशन को आपकी विज़िट की जाने वाली वेबसाइटों पर मौजूद आपका डेटा पढ़ने और बदलने की अनुमति दें</translation>
+<translation id="8390392581097975659">स्कैनर सॉफ़्टवेयर इंस्टॉल किया जा रहा है</translation>
 <translation id="8390449457866780408">सर्वर अनुपलब्‍ध है.</translation>
 <translation id="8391218455464584335">विनाइल</translation>
 <translation id="8392726714909453725">'चुनें और सुनें' सेटिंग</translation>

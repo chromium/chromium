@@ -108,7 +108,6 @@
 <translation id="160633243685262989">Зургийг урьдчилан үзэх</translation>
 <translation id="1611649489706141841">цааш</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />-с хойших дата ашиглалт</translation>
-<translation id="1615576200479539465">Зургууд үүсгэж байна...</translation>
 <translation id="1621067168122174824">Цэнэглэх туршилтыг ажиллуулах</translation>
 <translation id="1626590945318984973">Товчлол боломжгүй байна. Функц болон <ph name="META_KEY" /> товчнуудыг ашиглалгүйгээр шинэ товчлолыг дарна уу.</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
@@ -170,6 +169,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">эрвээхэйнүүд</translation>
 <translation id="188114911237521550">Бараан горимыг унтраах</translation>
+<translation id="188268299367474594">Боломжтой APN-уудаас сонгоно уу</translation>
 <translation id="1885577615937958993">медиаг хурдан урагшлуулах</translation>
 <translation id="1887850431809612466">Техник хангамжийн шалгалт</translation>
 <translation id="189221451253258459">неон ногоон</translation>
@@ -272,6 +272,7 @@
 <translation id="2512979179176933762">цонхнуудыг харуулах</translation>
 <translation id="2513396635448525189">Нэвтрэх зураг</translation>
 <translation id="2517472476991765520">Шалгах</translation>
+<translation id="2520213071283358374">Энэ APN-г ашиглана</translation>
 <translation id="2521835766824839541">өмнөх бичлэг</translation>
 <translation id="2526590354069164005">Десктоп</translation>
 <translation id="253029298928638905">Дахин эхлүүлж байна...</translation>
@@ -1135,6 +1136,7 @@
 <translation id="8075838845814659848">Үлдсэн цэнэг</translation>
 <translation id="8076492880354921740">Таб</translation>
 <translation id="8079860070590459552">цэцгийн талбай</translation>
+<translation id="8081553043098820199">Буруу APN-ууд нь таны мобайл холболтыг идэвхгүй болгоход хүргэж болно. Зөвхөн мобайл үйлчилгээ үзүүлэгч эсвэл администраторынхаа олгосон APN-уудыг тохируулна уу.</translation>
 <translation id="8082366717211101304">Android аппуудаас DNS-г шийдвэрлэх боломжгүй</translation>
 <translation id="8082644724189923105">гарын бүс</translation>
 <translation id="808894953321890993">Нууц үгийг солих</translation>

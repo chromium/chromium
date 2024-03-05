@@ -64,7 +64,6 @@
 <translation id="5494920125229734069">Избор свих ставки</translation>
 <translation id="5545379293264651575">Затвори без прегледа</translation>
 <translation id="5556417849629758491">Прегледајте информације о продавници, опцију која је доступна у врху екрана</translation>
-<translation id="5580090775658607195">Картице су груписане (<ph name="TAB_COUNT" />)</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> линк из Chrome-а}one{<ph name="TABS_COUNT_MANY" /> линк из Chrome-а}few{<ph name="TABS_COUNT_MANY" /> линкa из Chrome-а}other{<ph name="TABS_COUNT_MANY" /> линковa из Chrome-а}}</translation>
 <translation id="575494663145460764">Желите да добијате обавештења за снижења?</translation>
 <translation id="58326064309361797">Превуците картице да бисте их груписали</translation>

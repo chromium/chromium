@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">Puslapio dydis</translation>
 <translation id="1082009148392559545">Atsisiunčiama ekrano užsklanda</translation>
 <translation id="1094693127011229778">IP adresas nepasiekiamas</translation>
+<translation id="1100902271996134409">Kuriami vaizdai...</translation>
 <translation id="1116694919640316211">Apie</translation>
 <translation id="1118572504348554005">Galime bendrinti per šią formą pateiktus atsiliepimus su partneriais, siekdami pašalinti triktis ir kitas problemas, apie kurias pranešate. Neįtraukite neskelbtinos informacijos, pvz., slaptažodžių.</translation>
 <translation id="1119447706177454957">Vidinė klaida</translation>
@@ -108,7 +109,6 @@
 <translation id="160633243685262989">Peržiūrėti vaizdą</translation>
 <translation id="1611649489706141841">persiųsti</translation>
 <translation id="1615335640928990664">Duomenų naudojimas nuo <ph name="FRIENDLY_DATE" /></translation>
-<translation id="1615576200479539465">Vaizdai generuojami...</translation>
 <translation id="1621067168122174824">Vykdyti įkrovimo bandymą</translation>
 <translation id="1626590945318984973">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą nenaudodami funkcijų klavišų ir klavišo „<ph name="META_KEY" />“.</translation>
 <translation id="1639239467298939599">Įkeliama</translation>

@@ -2922,6 +2922,7 @@
 <translation id="3183139917765991655">Увозник на профил</translation>
 <translation id="3183143381919926261">Мобилни мрежи</translation>
 <translation id="3183613134231754987">Криптографскиов клуч ќе се зачува само во Windows Hello. Ќе остане на уредов откако ќе ги затворите сите прозорци „Инкогнито“.</translation>
+<translation id="3183700187146209259">Не може да се инсталира софтвер за скенерот</translation>
 <translation id="3183944777708523606">Подредување на мониторот</translation>
 <translation id="3184536091884214176">Поставете ги или управувајте со печатачите за CUPS. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Апликацијава е блокирана}one{Некои апликации се блокирани}other{Некои апликации се блокирани}}</translation>
@@ -9018,6 +9019,7 @@
 <translation id="7943837619101191061">Додај локација…</translation>
 <translation id="79446453817422139">Датотекава можеби е опасна</translation>
 <translation id="7944772052836377867">Синхронизацијата треба да потврди дека сте вие</translation>
+<translation id="7944847494038629732">За да се обидете повторно, исклучете го USB-кабелот на скенерот, па вклучете го пак</translation>
 <translation id="7945703887991230167">Претпочитан глас</translation>
 <translation id="7946586320617670168">Потеклото мора да биде безбедно</translation>
 <translation id="794676567536738329">Потврди дозволи</translation>
@@ -9429,6 +9431,7 @@
 <translation id="8260864402787962391">Глувче</translation>
 <translation id="8261378640211443080">Оваа наставка не е наведена во <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и можеби е додадена без ваше знаење.</translation>
 <translation id="8261506727792406068">Избриши</translation>
+<translation id="8261625296061301062">Софтверот за скенерот е инсталиран</translation>
 <translation id="8262971894813353037">Го овозможува новиот дизајн за работни површини за WebUI. Мора да се овозможи и Chrome Refresh 2023.</translation>
 <translation id="8263336784344783289">Именувајте ја групава</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> го оневозможи курсорот на глувчето.</translation>
@@ -9615,6 +9618,7 @@
 <translation id="8387361103813440603">Не им е дозволено да ја гледаат локацијата</translation>
 <translation id="8388770971141403598">Секундарните профили не се поддржани</translation>
 <translation id="8389492867173948260">Дозволете екстензијава да ги чита и менува сите ваши податоци на веб-сајтовите што ги посетувате:</translation>
+<translation id="8390392581097975659">Се инсталира софтвер за скенерот</translation>
 <translation id="8390449457866780408">Серверот не е достапен.</translation>
 <translation id="8391218455464584335">Грамофонска плоча</translation>
 <translation id="8392726714909453725">Поставки за „Изберете за говор“</translation>

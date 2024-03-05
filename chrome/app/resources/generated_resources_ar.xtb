@@ -4912,6 +4912,7 @@
 <translation id="473775607612524610">تحديث</translation>
 <translation id="473936925429402449">تم الاختيار، المحتوى الإضافي <ph name="CURRENT_ELEMENT" /> من أصل <ph name="TOTAL_ELEMENTS" />.</translation>
 <translation id="4739639199548674512">التذاكر</translation>
+<translation id="4740546261986864539">علامة التبويب التي تم فتحها مؤخرًا</translation>
 <translation id="4742334355511750246">المواقع الإلكترونية التي لا يُسمح لها بعرض الصور</translation>
 <translation id="4742970037960872810">إزالة التمييز</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />التعرّف على كيفية تحديث التطبيقات<ph name="END_LINK" /></translation>
@@ -5109,6 +5110,7 @@
 <translation id="488785315393301722">عرض التفاصيل</translation>
 <translation id="488862352499217187">إنشاء مجلد جديد</translation>
 <translation id="4890292359366636311">افتَح النوافذ في وضع "نافذة ضمن النافذة" تلقائيًا لكي تتمكّن من استخدامها فوق علامات التبويب والنوافذ الأخرى.</translation>
+<translation id="4890399733764921729">يتعذّر الاتصال بالشبكة، إذ تم قفلها بواسطة مُقدِّم آخر لخدمات شبكة الجوّال.</translation>
 <translation id="4890773143211625964">عرض خيارات الطابعة المتقدمة</translation>
 <translation id="4891089016822695758">منتدى الإصدار التجريبي</translation>
 <translation id="4892229439761351791">يمكن للموقع الإلكتروني استخدام البلوتوث.</translation>
@@ -8356,6 +8358,7 @@
 <translation id="7465778193084373987">‏عنوان URL لإبطال شهادة Netscape</translation>
 <translation id="7466431077154602932">العرض المكثّف</translation>
 <translation id="746861123368584540">تم تحميل الإضافة.</translation>
+<translation id="7470131554696493512">‏حظْر وصول ملحقات Thunderbolt أو USB4 إلى الذاكرة (ذاكرة الوصول العشوائي) ومشاركتها</translation>
 <translation id="7470424110735398630">المواقع الإلكترونية التي يُسمح لها بالاطّلاع على الحافظة</translation>
 <translation id="747114903913869239">خطأ: تعذر فك ترميز الإضافة</translation>
 <translation id="7471520329163184433">أبطأ</translation>

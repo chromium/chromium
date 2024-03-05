@@ -108,7 +108,6 @@
 <translation id="160633243685262989">Previsualitza la imatge</translation>
 <translation id="1611649489706141841">avança</translation>
 <translation id="1615335640928990664">Ús de dades des de <ph name="FRIENDLY_DATE" /></translation>
-<translation id="1615576200479539465">S'estan generant les imatges...</translation>
 <translation id="1621067168122174824">Executa la prova de càrrega</translation>
 <translation id="1626590945318984973">La drecera no està disponible. Prem una drecera nova sense utilitzar les tecles de funció ni de <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
@@ -170,6 +169,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">papallones</translation>
 <translation id="188114911237521550">Desactiva el mode fosc</translation>
+<translation id="188268299367474594">Tria entre els APN disponibles</translation>
 <translation id="1885577615937958993">avança ràpidament el contingut multimèdia</translation>
 <translation id="1887850431809612466">Revisió de maquinari</translation>
 <translation id="189221451253258459">verd neó</translation>
@@ -272,6 +272,7 @@
 <translation id="2512979179176933762">mostra les finestres</translation>
 <translation id="2513396635448525189">Imatge d'inici de sessió</translation>
 <translation id="2517472476991765520">Escaneja</translation>
+<translation id="2520213071283358374">Utilitza aquest APN</translation>
 <translation id="2521835766824839541">pista anterior</translation>
 <translation id="2526590354069164005">Escriptori</translation>
 <translation id="253029298928638905">S'està reiniciant...</translation>
@@ -1135,6 +1136,7 @@
 <translation id="8075838845814659848">Càrrega restant</translation>
 <translation id="8076492880354921740">Pestanyes</translation>
 <translation id="8079860070590459552">un camp de flors</translation>
+<translation id="8081553043098820199">Els APN no vàlids poden fer que la teva connexió mòbil es desactivi. Configura només els APN que proporcioni el teu administrador o proveïdor de serveis per a mòbils.</translation>
 <translation id="8082366717211101304">No es pot resoldre el DNS des d'aplicacions d'Android</translation>
 <translation id="8082644724189923105">zona del teclat</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>

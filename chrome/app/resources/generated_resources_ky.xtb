@@ -2921,6 +2921,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3183139917765991655">Профиль импорттогуч</translation>
 <translation id="3183143381919926261">Мобилдик трафиктин тармактары</translation>
 <translation id="3183613134231754987">Бул киргизүүчү ачкыч Windows Hello функциясында гана сакталат. Бардык Жашыруун терезелер жабылгандан кийин ал ушул түзмөктө сакталып калат.</translation>
+<translation id="3183700187146209259">Сканердин программасы орнотулбай жатат</translation>
 <translation id="3183944777708523606">Мониторлорду жайгаштыруу</translation>
 <translation id="3184536091884214176">CUPS принтерлерин жөндөө же башкаруу. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Бул колдонмо бөгөттөлдү}other{Айрым колдонмолор бөгөттөлдү}}</translation>
@@ -9012,6 +9013,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7943837619101191061">Жайгашкан жерди кошуу…</translation>
 <translation id="79446453817422139">Бул файл кооптуу болушу мүмкүн</translation>
 <translation id="7944772052836377867">Шайкештирүү өзүңүздү ырасташы керек</translation>
+<translation id="7944847494038629732">Кайталоо үчүн сканердин USB кабелин сууруп, кайра сайыңыз</translation>
 <translation id="7945703887991230167">Тандалган үн</translation>
 <translation id="7946586320617670168">Түпнуска шилтемени жазыңыз</translation>
 <translation id="794676567536738329">Уруксаттарды ырастоо</translation>
@@ -9423,6 +9425,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8260864402787962391">Чычкан</translation>
 <translation id="8261378640211443080">Бул кеңейтүү <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ичиндеги тизмеде камтылган эмес жана сизге эскертилбестен кошулуп калган окшойт.</translation>
 <translation id="8261506727792406068">Жок кылуу</translation>
+<translation id="8261625296061301062">Сканердин программасы орнотулду</translation>
 <translation id="8262971894813353037">WebUI үчүн иш тактанын жаңы дизайнын иштетет. Chrome Refresh 2023 да иштетилиши керек.</translation>
 <translation id="8263336784344783289">Бул топко ат коюңуз</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> чычкан курсорун өчүрдү.</translation>
@@ -9606,6 +9609,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8387361103813440603">Жайгашкан жериңизди көрө албайт</translation>
 <translation id="8388770971141403598">Кошумча профилдер колдоого алынбайт</translation>
 <translation id="8389492867173948260">Бул кеңейтүүгө каралган вебсайттардагы бардык нерселерди окууга жана өзгөртүүгө уруксат бериңиз:</translation>
+<translation id="8390392581097975659">Сканердин программасы орнотулууда</translation>
 <translation id="8390449457866780408">Сервер жеткиликсиз.</translation>
 <translation id="8391218455464584335">Винилдик пластинка</translation>
 <translation id="8392726714909453725">Басып туруп угуңуз функциясынын параметрлери</translation>

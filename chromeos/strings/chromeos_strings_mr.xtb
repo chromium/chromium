@@ -108,7 +108,6 @@
 <translation id="160633243685262989">इमेजचे पूर्वावलोकन करा</translation>
 <translation id="1611649489706141841">फॉरवर्ड करा</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> पासूनचा डेटा वापर</translation>
-<translation id="1615576200479539465">इमेज जनरेट करत आहे...</translation>
 <translation id="1621067168122174824">चार्ज चाचणी रन करा</translation>
 <translation id="1626590945318984973">शॉर्टकट उपलब्ध नाही. फंक्शन आणि <ph name="META_KEY" /> की न वापरता नवीन शॉर्टकट प्रेस करा.</translation>
 <translation id="1639239467298939599">लोड करत आहे</translation>
@@ -170,6 +169,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">फुलपाखरे</translation>
 <translation id="188114911237521550">गडद मोड बंद करा</translation>
+<translation id="188268299367474594">उपलब्ध APNs मधून निवडा</translation>
 <translation id="1885577615937958993">मीडिया फास्ट फॉरवर्ड करा</translation>
 <translation id="1887850431809612466">हार्डवेअर पुनरावृत्ती</translation>
 <translation id="189221451253258459">निऑन ग्रीन</translation>
@@ -272,6 +272,7 @@
 <translation id="2512979179176933762">विंडो दाखवा</translation>
 <translation id="2513396635448525189">लॉगिन इमेज</translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
+<translation id="2520213071283358374">हे APN वापरा</translation>
 <translation id="2521835766824839541">मागील ट्रॅक</translation>
 <translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="253029298928638905">रीस्टार्ट करत आहे…</translation>
@@ -1135,6 +1136,7 @@
 <translation id="8075838845814659848">शिल्लक चार्जिंग</translation>
 <translation id="8076492880354921740">टॅब</translation>
 <translation id="8079860070590459552">फुलांचे शेत</translation>
+<translation id="8081553043098820199">APNs मुळे तुमचे मोबाइल कनेक्शन बंद होऊ शकते. फक्त तुमच्या मोबाइल पुरवठादार किंवा अ‍ॅडमिनिस्ट्रेटरने दिलेले APNs सेट करा.</translation>
 <translation id="8082366717211101304">Android अ‍ॅप्सवरून DNS चे निराकरण करू शकत नाही</translation>
 <translation id="8082644724189923105">कीबोर्ड झोन</translation>
 <translation id="808894953321890993">पासवर्ड बदला</translation>

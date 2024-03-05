@@ -2921,6 +2921,7 @@
 <translation id="3183139917765991655">個人檔案匯入工具</translation>
 <translation id="3183143381919926261">流動數據網絡</translation>
 <translation id="3183613134231754987">此密鑰只會儲存在 Windows Hello 中。關閉所有無痕式視窗後，密鑰會保存在此裝置上。</translation>
+<translation id="3183700187146209259">無法安裝掃瞄器軟件</translation>
 <translation id="3183944777708523606">顯示器排列</translation>
 <translation id="3184536091884214176">設定或管理 CUPS 打印機。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{已封鎖這個應用程式}other{已封鎖部分應用程式}}</translation>
@@ -9006,6 +9007,7 @@
 <translation id="7943837619101191061">新增位置…</translation>
 <translation id="79446453817422139">此檔案可能不安全</translation>
 <translation id="7944772052836377867">同步功能需要驗證您的身分</translation>
+<translation id="7944847494038629732">請拔除掃瞄器的 USB 連接線並重新插入，然後再試一次</translation>
 <translation id="7945703887991230167">首選語音</translation>
 <translation id="7946586320617670168">來源必須安全</translation>
 <translation id="794676567536738329">確認權限</translation>
@@ -9418,6 +9420,7 @@
 <translation id="8260864402787962391">滑鼠</translation>
 <translation id="8261378640211443080">這個擴充功能未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中，可能是在您不知情的情況下加入瀏覽器。</translation>
 <translation id="8261506727792406068">刪除</translation>
+<translation id="8261625296061301062">已安裝掃瞄器軟件</translation>
 <translation id="8262971894813353037">啟用新桌面 WebUI 設計。必須一併啟用 2023 年 Chrome WebUI 更新計劃。</translation>
 <translation id="8263336784344783289">為此群組命名</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> 已停用滑鼠游標。</translation>
@@ -9601,6 +9604,7 @@
 <translation id="8387361103813440603">不允許查看您的位置</translation>
 <translation id="8388770971141403598">不支援次要設定檔</translation>
 <translation id="8389492867173948260">允許此擴充程式讀取及變更您瀏覽的網站上的所有資料：</translation>
+<translation id="8390392581097975659">正在安裝掃瞄器軟件</translation>
 <translation id="8390449457866780408">無法與伺服器連線。</translation>
 <translation id="8391218455464584335">黑膠唱片</translation>
 <translation id="8392726714909453725">揀選朗讀內容設定</translation>

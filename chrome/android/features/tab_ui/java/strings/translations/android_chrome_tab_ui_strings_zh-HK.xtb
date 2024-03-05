@@ -64,7 +64,6 @@
 <translation id="5494920125229734069">全部選取</translation>
 <translation id="5545379293264651575">不查看直接關閉</translation>
 <translation id="5556417849629758491">商店資料同可用選項喺螢幕最頂嘅附近</translation>
-<translation id="5580090775658607195">已將 <ph name="TAB_COUNT" /> 個分頁加入群組</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個來自 Chrome 的連結}other{<ph name="TABS_COUNT_MANY" /> 個來自 Chrome 的連結}}</translation>
 <translation id="575494663145460764">要接收降價快訊嗎？</translation>
 <translation id="58326064309361797">拖曳分頁來分組</translation>

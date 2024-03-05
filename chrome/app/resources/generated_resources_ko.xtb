@@ -2923,6 +2923,7 @@
 <translation id="3183139917765991655">프로필 가져오기 도구</translation>
 <translation id="3183143381919926261">모바일 데이터 네트워크</translation>
 <translation id="3183613134231754987">이 패스키는 Windows Hello에만 저장되며 시크릿 창을 모두 닫은 후에도 이 기기에 남아 있습니다.</translation>
+<translation id="3183700187146209259">스캐너 소프트웨어를 설치할 수 없음</translation>
 <translation id="3183944777708523606">모니터 배치</translation>
 <translation id="3184536091884214176">CUPS 프린터를 설정하거나 관리합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{앱이 차단됨}other{일부 앱이 차단됨}}</translation>
@@ -9013,6 +9014,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7943837619101191061">위치 추가...</translation>
 <translation id="79446453817422139">이 파일은 위험할 수 있습니다.</translation>
 <translation id="7944772052836377867">동기화를 위해 본인 인증 필요</translation>
+<translation id="7944847494038629732">스캐너의 USB 케이블을 분리했다가 다시 연결하여 재시도하세요.</translation>
 <translation id="7945703887991230167">기본 음성</translation>
 <translation id="7946586320617670168">출처가 안전해야 합니다.</translation>
 <translation id="794676567536738329">권한 확인</translation>
@@ -9425,6 +9427,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8260864402787962391">마우스</translation>
 <translation id="8261378640211443080">이 확장 프로그램은 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않으며 사용자 모르게 추가되었을 수 있습니다.</translation>
 <translation id="8261506727792406068">삭제</translation>
+<translation id="8261625296061301062">스캐너 소프트웨어가 설치됨</translation>
 <translation id="8262971894813353037">WebUI의 새로운 데스크톱 디자인을 사용 설정합니다. Chrome Refresh 2023도 사용 설정해야 합니다.</translation>
 <translation id="8263336784344783289">그룹 이름 지정</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />에서 마우스 커서를 사용 중지했습니다.</translation>
@@ -9608,6 +9611,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8387361103813440603">사용자 위치 확인이 허용되지 않음</translation>
 <translation id="8388770971141403598">보조 프로필은 지원되지 않습니다.</translation>
 <translation id="8389492867173948260">이 확장 프로그램이 내가 방문하는 다음 웹사이트의 모든 데이터를 읽고 변경하도록 허용합니다.</translation>
+<translation id="8390392581097975659">스캐너 소프트웨어 설치 중</translation>
 <translation id="8390449457866780408">서버를 사용할 수 없습니다.</translation>
 <translation id="8391218455464584335">레코드판</translation>
 <translation id="8392726714909453725">텍스트 읽어주기 설정</translation>

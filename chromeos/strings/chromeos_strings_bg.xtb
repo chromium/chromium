@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">Размер на страницата</translation>
 <translation id="1082009148392559545">Скрийнсейвърът се изтегля</translation>
 <translation id="1094693127011229778">IP адресът не е налице</translation>
+<translation id="1100902271996134409">Създават се изображения...</translation>
 <translation id="1116694919640316211">Информация</translation>
 <translation id="1118572504348554005">Може да споделим отзивите, изпратени чрез този формуляр, с партньорите си с цел отстраняване на програмни грешки и други проблеми, за които ни сигнализирате. Не въвеждайте поверителна информация, като например пароли.</translation>
 <translation id="1119447706177454957">Вътрешна грешка</translation>
@@ -108,7 +109,6 @@
 <translation id="160633243685262989">Визуализация на изображението</translation>
 <translation id="1611649489706141841">напред</translation>
 <translation id="1615335640928990664">Пренос на данни от <ph name="FRIENDLY_DATE" /></translation>
-<translation id="1615576200479539465">Изображенията се генерират...</translation>
 <translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
 <translation id="1626590945318984973">Клавишната комбинация не е налице. Използвайте друга, без да натискате функционалните клавиши и клавиша „<ph name="META_KEY" />“.</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">пеперуди</translation>
 <translation id="188114911237521550">Изключване на тъмния режим</translation>
+<translation id="188268299367474594">Изберете от наличните имена на точките за достъп (APN)</translation>
 <translation id="1885577615937958993">превъртане на мултимедията напред</translation>
 <translation id="1887850431809612466">Версия на хардуера</translation>
 <translation id="189221451253258459">неоновозелен</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">показване на прозорците</translation>
 <translation id="2513396635448525189">Изображение при влизане в профила</translation>
 <translation id="2517472476991765520">Сканиране</translation>
+<translation id="2520213071283358374">Използване на това име на точката за достъп (APN)</translation>
 <translation id="2521835766824839541">предишен запис</translation>
 <translation id="2526590354069164005">Работен плот</translation>
 <translation id="253029298928638905">Рестартира се…</translation>
@@ -1135,6 +1137,7 @@
 <translation id="8075838845814659848">Оставащ заряд</translation>
 <translation id="8076492880354921740">Раздели</translation>
 <translation id="8079860070590459552">поле с цветя</translation>
+<translation id="8081553043098820199">Невалидните имена на точки за достъп (APN) може да доведат до деактивиране на мобилната ви връзка. Задавайте само имена, предоставени от мобилния оператор или администратора ви.</translation>
 <translation id="8082366717211101304">Преобразуването от DNS не е възможно от приложения за Android</translation>
 <translation id="8082644724189923105">зона на клавиатурата</translation>
 <translation id="808894953321890993">Промяна на паролата</translation>

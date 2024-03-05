@@ -108,7 +108,6 @@
 <translation id="160633243685262989">Rhagolwg o'r Llun</translation>
 <translation id="1611649489706141841">ymlaen</translation>
 <translation id="1615335640928990664">Defnydd data ers <ph name="FRIENDLY_DATE" /></translation>
-<translation id="1615576200479539465">Wrthi'n cynhyrchu lluniau...</translation>
 <translation id="1621067168122174824">Rhedeg prawf Gwefru</translation>
 <translation id="1626590945318984973">Nid yw'r llwybr byr ar gael. Pwyswch lwybr byr newydd heb ddefnyddio bysellau swyddogaeth a <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Wrthi'n llwytho</translation>
@@ -170,6 +169,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">glöynnod byw</translation>
 <translation id="188114911237521550">Diffodd y modd tywyll</translation>
+<translation id="188268299367474594">Dewiswch o'r APNs sydd ar gael</translation>
 <translation id="1885577615937958993">cyflymu cyfryngau</translation>
 <translation id="1887850431809612466">Adolygu caledwedd</translation>
 <translation id="189221451253258459">gwyrdd neon</translation>
@@ -272,6 +272,7 @@
 <translation id="2512979179176933762">dangos ffenestri</translation>
 <translation id="2513396635448525189">Llun mewngofnodi</translation>
 <translation id="2517472476991765520">Sganio</translation>
+<translation id="2520213071283358374">Defnyddiwch yr APN hwn</translation>
 <translation id="2521835766824839541">trac blaenorol</translation>
 <translation id="2526590354069164005">Bwrdd gwaith</translation>
 <translation id="253029298928638905">Wrthi'n ailgychwyn...</translation>
@@ -1135,6 +1136,7 @@
 <translation id="8075838845814659848">Faint o fatri sy'n weddill</translation>
 <translation id="8076492880354921740">Tabiau</translation>
 <translation id="8079860070590459552">cae o flodau</translation>
+<translation id="8081553043098820199">Gallai APNs annilys achosi i'ch cysylltiad symudol gael ei analluogi. Gosodwch APNs a ddarperir gan eich darparwr symudol neu weinyddwr yn unig.</translation>
 <translation id="8082366717211101304">Methu â datrys DNS o apiau Android</translation>
 <translation id="8082644724189923105">parth bysellfwrdd</translation>
 <translation id="808894953321890993">Newid cyfrinair</translation>

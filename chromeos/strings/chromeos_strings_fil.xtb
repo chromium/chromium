@@ -108,7 +108,6 @@
 <translation id="160633243685262989">Larawan ng Preview</translation>
 <translation id="1611649489706141841">susunod</translation>
 <translation id="1615335640928990664">Paggamit ng data simula noong <ph name="FRIENDLY_DATE" /></translation>
-<translation id="1615576200479539465">Bumubuo ng mga larawan...</translation>
 <translation id="1621067168122174824">Patakbuhin ang pagsusuri sa Pag-charge</translation>
 <translation id="1626590945318984973">Hindi available ang shortcut. Pumindot ng bagong shortcut nang hindi ginagamit ang function key at <ph name="META_KEY" /> key.</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
@@ -170,6 +169,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">mga paruparo</translation>
 <translation id="188114911237521550">I-off ang dark mode</translation>
+<translation id="188268299367474594">Pumili mula sa mga available na APN</translation>
 <translation id="1885577615937958993">mag-fast forward ng media</translation>
 <translation id="1887850431809612466">Rebisyon ng hardware</translation>
 <translation id="189221451253258459">neon green</translation>
@@ -272,6 +272,7 @@
 <translation id="2512979179176933762">ipakita ang mga window</translation>
 <translation id="2513396635448525189">Larawan sa pag-log in</translation>
 <translation id="2517472476991765520">I-scan</translation>
+<translation id="2520213071283358374">Gamitin ang APN na ito</translation>
 <translation id="2521835766824839541">nakaraang track</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Nagre-restart...</translation>
@@ -1135,6 +1136,7 @@
 <translation id="8075838845814659848">Natitirang pag-charge</translation>
 <translation id="8076492880354921740">Mga Tab</translation>
 <translation id="8079860070590459552">field ng mga bulaklak</translation>
+<translation id="8081553043098820199">Posibleng maging dahilan ng pagka-disable ng iyong koneksyon sa mobile ang mga invalid na APN. Itakda lang ang mga APN na ibinigay ng iyong mobile provider o administrator.</translation>
 <translation id="8082366717211101304">Hindi ma-resolve ang DNS mula sa mga Android app</translation>
 <translation id="8082644724189923105">zone ng keyboard</translation>
 <translation id="808894953321890993">Palitan ang password</translation>

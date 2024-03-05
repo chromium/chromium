@@ -108,7 +108,6 @@
 <translation id="160633243685262989">Vista previa de imagen</translation>
 <translation id="1611649489706141841">adelante</translation>
 <translation id="1615335640928990664">Uso de datos desde el <ph name="FRIENDLY_DATE" /></translation>
-<translation id="1615576200479539465">Generando imágenes...</translation>
 <translation id="1621067168122174824">Realizar prueba de carga</translation>
 <translation id="1626590945318984973">Combinación de teclas no disponible. Pulsa una nueva combinación de teclas sin usar la tecla de función ni la tecla <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Cargando</translation>
@@ -170,6 +169,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">mariposas</translation>
 <translation id="188114911237521550">Desactivar modo Oscuro</translation>
+<translation id="188268299367474594">Elegir APNs disponibles</translation>
 <translation id="1885577615937958993">avanzar contenido multimedia</translation>
 <translation id="1887850431809612466">Revisión de hardware</translation>
 <translation id="189221451253258459">verde neón</translation>
@@ -272,6 +272,7 @@
 <translation id="2512979179176933762">mostrar ventanas</translation>
 <translation id="2513396635448525189">Imagen de inicio de sesión</translation>
 <translation id="2517472476991765520">Escanear</translation>
+<translation id="2520213071283358374">Usar este APN</translation>
 <translation id="2521835766824839541">pista anterior</translation>
 <translation id="2526590354069164005">Escritorio</translation>
 <translation id="253029298928638905">Reiniciando...</translation>
@@ -763,7 +764,7 @@
 <translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Álbum de galería de arte</translation>
 <translation id="5859969039821714932">Combinación de teclas no disponible. Pulsa una nueva combinación de teclas sin <ph name="KEY" /></translation>
-<translation id="5860033963881614850">Desactivada</translation>
+<translation id="5860033963881614850">Desactivado</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5876385649737594562">Actívalo para seleccionar opciones</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
@@ -1135,6 +1136,7 @@
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8076492880354921740">Pestañas</translation>
 <translation id="8079860070590459552">campo de flores</translation>
+<translation id="8081553043098820199">Los APNs no válidos pueden provocar que se inhabilite la conexión móvil. Define solo los APNs que te haya proporcionado tu operador o administrador.</translation>
 <translation id="8082366717211101304">No se puede resolver el DNS desde aplicaciones Android</translation>
 <translation id="8082644724189923105">zona de teclado</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>

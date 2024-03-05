@@ -108,7 +108,6 @@
 <translation id="160633243685262989">പ്രിവ്യൂ ചിത്രം</translation>
 <translation id="1611649489706141841">കൈമാറുക</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> മുതലുള്ള ഡാറ്റാ ഉപയോഗം</translation>
-<translation id="1615576200479539465">ചിത്രങ്ങൾ സൃഷ്‌ടിക്കുന്നു...</translation>
 <translation id="1621067168122174824">ചാർജ് ടെസ്റ്റ് റൺ ചെയ്യുക</translation>
 <translation id="1626590945318984973">കുറുക്കുവഴി ലഭ്യമല്ല. ഫംഗ്‌ഷനും <ph name="META_KEY" /> കീകളും ഉപയോഗിക്കാതെ ഒരു പുതിയ കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="1639239467298939599">ലോഡുചെയ്യുന്നു</translation>
@@ -170,6 +169,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">ചിത്രശലഭങ്ങൾ</translation>
 <translation id="188114911237521550">ഡാർക്ക് മോഡ് ഓഫാക്കുക</translation>
+<translation id="188268299367474594">ലഭ്യമായ APN-കളിൽ നിന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1885577615937958993">മീഡിയ ഫാസ്റ്റ് ഫോർവേഡ് ചെയ്യുക</translation>
 <translation id="1887850431809612466">ഹാർഡ്‌വെയർ അവലോകനം</translation>
 <translation id="189221451253258459">നിയോൺ പച്ച</translation>
@@ -272,6 +272,7 @@
 <translation id="2512979179176933762">വിൻഡോകൾ കാണിക്കുക</translation>
 <translation id="2513396635448525189">ലോഗിൻ ചിത്രം</translation>
 <translation id="2517472476991765520">സ്‌കാൻ ചെയ്യുക</translation>
+<translation id="2520213071283358374">ഈ APN ഉപയോഗിക്കുക</translation>
 <translation id="2521835766824839541">മുമ്പത്തെ ട്രാക്ക്</translation>
 <translation id="2526590354069164005">ഡെസ്ക്‌ടോപ്പ്</translation>
 <translation id="253029298928638905">റീസ്റ്റാർട്ട് ചെയ്യുന്നു…</translation>
@@ -1135,6 +1136,7 @@
 <translation id="8075838845814659848">ശേഷിക്കുന്ന ചാർജ്</translation>
 <translation id="8076492880354921740">ടാബുകള്‍‌</translation>
 <translation id="8079860070590459552">പൂപ്പാടം</translation>
+<translation id="8081553043098820199">സാധുതയില്ലാത്ത APN-കൾ ഉപയോഗിച്ചാൽ നിങ്ങളുടെ മൊബൈൽ കണക്ഷൻ പ്രവർത്തനരഹിതമാകാം. നിങ്ങളുടെ മൊബൈൽ ദാതാവോ അഡ്‌മിനോ നൽകിയ APN-കൾ മാത്രം സജ്ജീകരിക്കുക.</translation>
 <translation id="8082366717211101304">Android ആപ്പുകളിൽ നിന്ന് DNS പരിഹരിക്കാനാകില്ല</translation>
 <translation id="8082644724189923105">കീബോർഡ് മേഖല</translation>
 <translation id="808894953321890993">പാസ്‌വേഡ് മാറ്റുക</translation>
