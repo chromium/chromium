@@ -103,7 +103,6 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
                         });
         Map<String, Boolean> features = new HashMap<>();
         features.put(ChromeFeatureList.SMART_SUGGESTION_FOR_LARGE_DOWNLOADS, false);
-        features.put(ChromeFeatureList.INCOGNITO_DOWNLOADS_WARNING, true);
         FeatureList.setTestFeatures(features);
 
         setDownloadPromptStatus(DownloadPromptStatus.SHOW_INITIAL);

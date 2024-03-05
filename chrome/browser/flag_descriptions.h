@@ -1194,9 +1194,6 @@ extern const char kImprovedKeyboardShortcutsDescription[];
 extern const char kIncognitoReauthenticationForAndroidName[];
 extern const char kIncognitoReauthenticationForAndroidDescription[];
 
-extern const char kIncognitoDownloadsWarningName[];
-extern const char kIncognitoDownloadsWarningDescription[];
-
 extern const char kIncognitoNtpRevampName[];
 extern const char kIncognitoNtpRevampDescription[];
 

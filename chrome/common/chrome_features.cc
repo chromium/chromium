@@ -867,13 +867,6 @@ BASE_FEATURE(kIncompatibleApplicationsWarning,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-// When enabled, users will see a warning when downloading from Incognito.
-BASE_FEATURE(kIncognitoDownloadsWarning,
-             "IncognitoDownloadsWarning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // When enabled, users will see updated UI in Incognito NTP
 BASE_FEATURE(kIncognitoNtpRevamp,
              "IncognitoNtpRevamp",

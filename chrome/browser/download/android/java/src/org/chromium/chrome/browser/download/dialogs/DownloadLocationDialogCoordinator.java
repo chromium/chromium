@@ -147,7 +147,7 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
         if (dirs.size() == 1
                 && !mLocationDialogManaged
                 && mDialogType == DownloadLocationDialogType.DEFAULT
-                && !shouldShowIncognitoWarning()) {
+                && !mProfile.isOffTheRecord()) {
             final DirectoryOption dir = dirs.get(0);
             if (dir.type == DirectoryOption.DownloadLocationDirectoryType.DEFAULT) {
                 assert (!TextUtils.isEmpty(dir.location));
@@ -282,7 +282,7 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
                 break;
         }
 
-        if (shouldShowIncognitoWarning()) {
+        if (mProfile.isOffTheRecord()) {
             builder.with(DownloadLocationDialogProperties.SHOW_INCOGNITO_WARNING, true);
             builder.with(DownloadLocationDialogProperties.DONT_SHOW_AGAIN_CHECKBOX_SHOWN, false);
         }
@@ -293,13 +293,9 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
     private String getDefaultTitle() {
         return mContext.getString(
                 mLocationDialogManaged
-                                || (shouldShowIncognitoWarning() && !mHasMultipleDownloadLocations)
+                                || (mProfile.isOffTheRecord() && !mHasMultipleDownloadLocations)
                         ? R.string.download_location_dialog_title_confirm_download
                         : R.string.download_location_dialog_title);
-    }
-
-    private boolean shouldShowIncognitoWarning() {
-        return DownloadDialogUtils.shouldShowIncognitoWarning(mProfile.isOffTheRecord());
     }
 
     /**

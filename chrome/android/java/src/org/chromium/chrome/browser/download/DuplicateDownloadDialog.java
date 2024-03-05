@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.download.dialogs.DownloadDialogUtils;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
@@ -82,8 +81,7 @@ public class DuplicateDownloadDialog {
                                 R.string.cancel)
                         .build();
 
-        if (DownloadDialogUtils.shouldShowIncognitoWarning(
-                OTRProfileID.isOffTheRecord(otrProfileID))) {
+        if (OTRProfileID.isOffTheRecord(otrProfileID)) {
             mPropertyModel.set(
                     ModalDialogProperties.MESSAGE_PARAGRAPH_2,
                     resources.getString(R.string.download_location_incognito_warning));
