@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {EventEmitter} from '../utils/EventEmitter';
+import {EventEmitter} from '../utils/EventEmitter.js';
 
 /**
  * Implements simple transport that allows sending string messages via

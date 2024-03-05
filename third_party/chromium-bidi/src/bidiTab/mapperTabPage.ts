@@ -80,7 +80,7 @@ export function log(logPrefix: LogPrefix, ...messages: unknown[]) {
   // Skip sending BiDi logs as they are logged once by `bidi:server:*`
   if (!logPrefix.startsWith(LogType.bidi)) {
     // If `sendDebugMessage` is defined, send the log message there.
-    global.window?.sendDebugMessage?.(
+    globalThis.window?.sendDebugMessage?.(
       JSON.stringify({logType: logPrefix, messages})
     );
   }

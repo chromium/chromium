@@ -14,12 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {URLPattern} from 'urlpattern-polyfill';
-
+import {URLPattern as URLPatternPolyfill} from 'urlpattern-polyfill';
 // XXX: Switch to native URLPattern when available.
 // https://github.com/nodejs/node/issues/40844
+let URLPattern = URLPatternPolyfill;
+
 if ('URLPattern' in globalThis) {
-  (URLPattern as any) = (globalThis as any).URLPattern;
+  URLPattern = (globalThis as any).URLPattern;
 }
 
 export {URLPattern};

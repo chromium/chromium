@@ -68,7 +68,7 @@ async function matchLine(process) {
     process.off('exit', onExit);
     process.stdout.off('data', onStdout);
     process.stderr.off('data', onStdout);
-    rejecter();
+    rejecter(stdout);
   }
   process.stdout.on('data', onStdout);
   process.stderr.on('data', onStdout);
@@ -130,9 +130,11 @@ if (serverProcess.stdout) {
   serverProcess.stdout.pipe(syncFileStreams);
 }
 
-await matchLine(serverProcess).catch(() => {
+await matchLine(serverProcess).catch((error) => {
   // eslint-disable-next-line no-console
   console.log('Could not match line exiting...');
+  // eslint-disable-next-line no-console
+  console.error(error);
   process.exit(1);
 });
 
