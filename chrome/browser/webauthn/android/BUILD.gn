@@ -12,8 +12,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java",
     "java/src/org/chromium/chrome/browser/webauthn/ChromeAuthenticatorConfirmationFactory.java",
     "java/src/org/chromium/chrome/browser/webauthn/ChromeAuthenticatorFactory.java",
+    "java/src/org/chromium/chrome/browser/webauthn/CredManUiRecommenderImpl.java",
     "java/src/org/chromium/chrome/browser/webauthn/PrivacySettingsFragment.java",
   ]
+
+  jar_excluded_patterns = [ "*/CredManUiRecommenderImpl*.class" ]
+
   deps = [
     ":java_resources",
     ":jni_headers",
@@ -50,6 +54,11 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java",
     "java/src/org/chromium/chrome/browser/webauthn/PrivacySettingsFragment.java",
   ]
+}
+
+android_library("recommender_public_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/webauthn/CredManUiRecommenderImpl.java" ]
+  deps = [ "//components/webauthn/android:java" ]
 }
 
 android_resources("java_resources") {

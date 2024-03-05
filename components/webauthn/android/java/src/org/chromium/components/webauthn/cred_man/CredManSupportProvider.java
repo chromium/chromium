@@ -56,14 +56,16 @@ public class CredManSupportProvider {
         recordCredManAvailability(/*available*/ true);
 
         if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN)) {
-            // TODO(crbug.com/327543609): Use CredManUiRecommender from the
-            // CredManUiRecommenderProvider instead.
+            CredManUiRecommender recommender =
+                    CredManUiRecommenderProvider.getOrCreate().getCredManUiRecommender();
+            boolean customUiRecommended =
+                    recommender == null ? false : recommender.recommendsCustomUi();
             sCredManSupport =
                     DeviceFeatureMap.getInstance()
                                     .getFieldTrialParamByFeatureAsBoolean(
                                             DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN,
                                             "gpm_in_cred_man",
-                                            new CredManUiModeRecommender().recommendsCustomUi())
+                                            customUiRecommended)
                             ? CredManSupport.FULL_UNLESS_INAPPLICABLE
                             : CredManSupport.PARALLEL_WITH_FIDO_2;
             return sCredManSupport;
