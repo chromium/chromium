@@ -967,28 +967,16 @@ void V4L2VideoEncodeAccelerator::InputImageProcessorTask() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
       "media,gpu", "V4L2VEA::ImageProcessor::Process",
       timestamp.InMicroseconds(), "timestamp", timestamp.InMicroseconds());
-  if (image_processor_->output_mode() == ImageProcessor::OutputMode::IMPORT) {
-    const auto& buf = image_processor_output_buffers_[output_buffer_index];
-    auto output_frame = VideoFrame::WrapVideoFrame(
-        buf, buf->format(), buf->visible_rect(), buf->natural_size());
-    if (!image_processor_->Process(
-            std::move(frame), std::move(output_frame),
-            base::BindOnce(&V4L2VideoEncodeAccelerator::FrameProcessed,
-                           weak_this_, force_keyframe, timestamp,
-                           output_buffer_index))) {
-      SetErrorState({EncoderStatus::Codes::kFormatConversionError,
-                     "Failed in ImageProcessor::Process"});
-      return;
-    }
-  } else {
-    if (!image_processor_->Process(
-            std::move(frame),
-            base::BindOnce(&V4L2VideoEncodeAccelerator::FrameProcessed,
-                           weak_this_, force_keyframe, timestamp))) {
-      SetErrorState({EncoderStatus::Codes::kFormatConversionError,
-                     "Failed in ImageProcessor::Process"});
-      return;
-    }
+  auto output_frame = image_processor_output_buffers_[output_buffer_index];
+
+  if (!image_processor_->Process(
+          std::move(frame), std::move(output_frame),
+          base::BindOnce(&V4L2VideoEncodeAccelerator::FrameProcessed,
+                         weak_this_, force_keyframe, timestamp,
+                         output_buffer_index))) {
+    SetErrorState({EncoderStatus::Codes::kFormatConversionError,
+                   "Failed in ImageProcessor::Process"});
+    return;
   }
 
   num_frames_in_image_processor_++;
