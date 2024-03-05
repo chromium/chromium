@@ -1282,6 +1282,16 @@ void ChromeAuthenticatorRequestDelegate::OnEnclaveManagerIdle() {
     }
   }
 
+  if (dialog_model_->current_step() ==
+          AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain &&
+      enclave_manager_->has_pending_keys()) {
+    CHECK(!enclave_manager_->is_ready());
+    // The user completed recovery using MagicArch. In the future we might
+    // prompt the user to set up a GPM PIN for user verification but that isn't
+    // supported yet.
+    enclave_manager_->AddDeviceToAccount();
+  }
+
   if (enclave_manager_->is_ready() &&
       dialog_model_->account_state() == AccountState::kRecoverable) {
     dialog_model_->set_account_state(AccountState::kReady);

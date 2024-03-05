@@ -85,6 +85,9 @@ class EnclaveManager : public KeyedService {
   bool is_loaded() const;
   // Returns true if the current user has been registered with the enclave.
   bool is_registered() const;
+  // Returns true if `StoreKeys` has been called and thus `AddDeviceToAccount`
+  // or `AddDeviceAndPINToAccount` can be called.
+  bool has_pending_keys() const;
   // Returns true if the current user has joined the security domain and has one
   // or more wrapped security domain secrets available. (This implies
   // `is_registered`.)
@@ -101,6 +104,13 @@ class EnclaveManager : public KeyedService {
   void RegisterIfNeeded();
   // Set up an account with a newly-created PIN.
   void SetupWithPIN(std::string pin);
+  // Adds the current device to the security domain. Only valid to call after
+  // `StoreKeys` has been called and thus `has_pending_keys` returns true.
+  void AddDeviceToAccount();
+  // Adds the current device, and a GPM PIN, to the security domain. Only valid
+  // to call after `StoreKeys` has been called and thus `has_pending_keys`
+  // returns true.
+  void AddDeviceAndPINToAccount(std::string pin);
 
   // Get a callback to sign with the registered "hw" key. Only valid to call if
   // `is_ready`.
@@ -125,6 +135,8 @@ class EnclaveManager : public KeyedService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // This function is called by the MagicArch integration when the user
+  // successfully completes recovery.
   void StoreKeys(const std::string& gaia_id,
                  std::vector<std::vector<uint8_t>> keys,
                  int last_key_version);
@@ -206,6 +218,7 @@ class EnclaveManager : public KeyedService {
   bool currently_writing_ = false;
   base::OnceClosure write_finished_callback_;
 
+  std::unique_ptr<StoreKeysArgs> pending_keys_;
   std::unique_ptr<StateMachine> state_machine_;
   std::unique_ptr<PendingActions> pending_actions_;
 

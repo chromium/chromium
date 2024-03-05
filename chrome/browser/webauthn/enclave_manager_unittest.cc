@@ -501,14 +501,21 @@ TEST_F(EnclaveManagerTest, Basic) {
   ASSERT_FALSE(manager_.is_ready());
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  ASSERT_FALSE(manager_.has_pending_keys());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/kSecretVersion);
+  ASSERT_TRUE(manager_.is_idle());
+  ASSERT_TRUE(manager_.has_pending_keys());
+
+  manager_.AddDeviceToAccount();
   ASSERT_FALSE(manager_.is_idle());
   RunUntilIdle();
+
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.is_loaded());
   ASSERT_TRUE(manager_.is_registered());
   ASSERT_TRUE(manager_.is_ready());
+  ASSERT_FALSE(manager_.has_pending_keys());
 
   DoCreate(/*claimed_pin=*/nullptr, /*out_specifics=*/nullptr);
   DoAssertion(GetTestEntity(), /*claimed_pin=*/nullptr);
@@ -524,6 +531,7 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
+  manager_.AddDeviceToAccount();
   RunUntilIdle();
 
   ASSERT_TRUE(manager_.is_idle());
@@ -543,6 +551,7 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationCompleted) {
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
+  manager_.AddDeviceToAccount();
   RunUntilIdle();
 
   ASSERT_TRUE(manager_.is_idle());
@@ -643,6 +652,7 @@ TEST_F(EnclaveManagerTest, PrimaryUserChangeDiscardsActions) {
                                                  signin::ConsentLevel::kSignin);
   // `MakePrimaryAccountAvailable` should have canceled any action.
   ASSERT_TRUE(manager_.is_idle());
+  ASSERT_FALSE(manager_.has_pending_keys());
   ASSERT_FALSE(manager_.is_registered());
   ASSERT_FALSE(manager_.is_ready());
 }

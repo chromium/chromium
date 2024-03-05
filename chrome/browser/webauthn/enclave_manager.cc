@@ -81,6 +81,7 @@ struct EnclaveManager::StoreKeysArgs {
 struct EnclaveManager::PendingActions {
   bool want_registration;
   std::unique_ptr<StoreKeysArgs> store_keys_args;
+  bool setup_account = false;
   std::string pin;
 };
 
@@ -738,6 +739,8 @@ class EnclaveManager::StateMachine {
     store_keys_args_ = std::move(args);
   }
 
+  void setup_account() { setup_account_ = true; }
+
   void set_pending_pin(std::string pending_pin) {
     pending_pin_ = std::move(pending_pin);
   }
@@ -1040,6 +1043,10 @@ class EnclaveManager::StateMachine {
     }
 
     if (user_->registered() && !pending_pin_.empty()) {
+      if (!setup_account_) {
+        NOTIMPLEMENTED();
+        return;
+      }
       state_ = State::kHashingPIN;
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
@@ -1716,6 +1723,7 @@ class EnclaveManager::StateMachine {
 
   std::unique_ptr<StoreKeysArgs> store_keys_args_;
   std::string pending_pin_;
+  bool setup_account_ = false;
   bool want_registration_ = false;
 
   std::unique_ptr<StoreKeysArgs> store_keys_args_for_joining_;
@@ -1773,6 +1781,11 @@ bool EnclaveManager::is_registered() const {
   return user_ && user_->registered();
 }
 
+bool EnclaveManager::has_pending_keys() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pending_keys_ != nullptr;
+}
+
 bool EnclaveManager::is_ready() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_registered() && !user_->wrapped_security_domain_secrets().empty();
@@ -1810,6 +1823,25 @@ void EnclaveManager::SetupWithPIN(std::string pin) {
     pending_actions_ = std::make_unique<PendingActions>();
   }
   pending_actions_->pin = std::move(pin);
+  pending_actions_->setup_account = true;
+  Act();
+}
+
+void EnclaveManager::AddDeviceToAccount() {
+  if (!pending_actions_) {
+    pending_actions_ = std::make_unique<PendingActions>();
+  }
+  pending_actions_->store_keys_args = std::move(pending_keys_);
+  Act();
+}
+
+void EnclaveManager::AddDeviceAndPINToAccount(std::string pin) {
+  if (!pending_actions_) {
+    pending_actions_ = std::make_unique<PendingActions>();
+  }
+  pending_actions_->store_keys_args = std::move(pending_keys_);
+  pending_actions_->pin = std::move(pin);
+  NOTIMPLEMENTED();
   Act();
 }
 
@@ -2126,17 +2158,19 @@ void EnclaveManager::StoreKeys(const std::string& gaia_id,
                                int last_key_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto store_keys_args = std::make_unique<StoreKeysArgs>();
-  store_keys_args->gaia_id = gaia_id;
-  store_keys_args->keys = std::move(keys);
-  store_keys_args->last_key_version = last_key_version;
+  pending_keys_ = std::make_unique<StoreKeysArgs>();
+  pending_keys_->gaia_id = gaia_id;
+  pending_keys_->keys = std::move(keys);
+  pending_keys_->last_key_version = last_key_version;
   store_keys_count_++;
 
-  if (!pending_actions_) {
-    pending_actions_ = std::make_unique<PendingActions>();
+  if (!state_machine_) {
+    // Since this `EnclaveManager` is the only thing that learns when MagicArch
+    // has completed, it needs to signal the higher layers of UI. The "stopped"
+    // signal is the generic "you need to do something now" signal and so is
+    // used for this.
+    Stopped();
   }
-  pending_actions_->store_keys_args = std::move(store_keys_args);
-  Act();
 }
 
 std::unique_ptr<enclave::ClaimedPIN> EnclaveManager::MakeClaimedPINSlowly(
@@ -2281,6 +2315,9 @@ void EnclaveManager::Act() {
     state_machine_->set_store_keys_args(
         std::move(pending_actions_->store_keys_args));
   }
+  if (pending_actions_->setup_account) {
+    state_machine_->setup_account();
+  }
   if (!pending_actions_->pin.empty()) {
     state_machine_->set_pending_pin(std::move(pending_actions_->pin));
   }
@@ -2338,6 +2375,9 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
     if (!user_) {
       user_ = CreateStateForUser(local_state_.get(), primary_account_info);
     }
+    if (pending_keys_ && pending_keys_->gaia_id != primary_account_info.gaia) {
+      pending_keys_.reset();
+    }
     primary_account_info_ =
         std::make_unique<CoreAccountInfo>(std::move(primary_account_info));
   } else {
@@ -2348,6 +2388,7 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
     }
     user_ = nullptr;
     primary_account_info_.reset();
+    pending_keys_.reset();
   }
 
   user_verifying_key_.reset();
