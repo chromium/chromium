@@ -5,6 +5,7 @@
 #include "remoting/protocol/jingle_messages.h"
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/logging.h"
@@ -55,6 +56,37 @@ const NameMapElement<JingleMessage::Reason> kReasons[] = {
     {JingleMessage::INCOMPATIBLE_PARAMETERS, "incompatible-parameters"},
 };
 
+// The type names "local" and "stun" are not standard but JingleMessage has
+// used them from the start. So in order to remain backwards compatible,
+// we check specifically for those types and override the candidate type name
+// in those cases.
+std::string_view GetLegacyTypeName(const cricket::Candidate& c) {
+  if (c.is_local()) {
+    return "local";
+  }
+  if (c.is_stun()) {
+    return "stun";
+  }
+  return c.type_name();
+}
+
+std::optional<webrtc::IceCandidateType> LegacyTypeNameToCandidateType(
+    std::string_view type) {
+  if (type == "local" || type == "host") {
+    return webrtc::IceCandidateType::kHost;
+  }
+  if (type == "stun" || type == "srflx") {
+    return webrtc::IceCandidateType::kSrflx;
+  }
+  if (type == "prflx") {
+    return webrtc::IceCandidateType::kPrflx;
+  }
+  if (type == "relay") {
+    return webrtc::IceCandidateType::kRelay;
+  }
+  return std::nullopt;
+}
+
 bool ParseIceCredentials(const jingle_xmpp::XmlElement* element,
                          IceTransportInfo::IceCredentials* credentials) {
   DCHECK(element->Name() == QName(kIceTransportNamespace, "credentials"));
@@ -84,7 +116,9 @@ bool ParseIceCandidate(const jingle_xmpp::XmlElement* element,
       element->Attr(QName(kEmptyNamespace, "foundation"));
   const std::string& address = element->Attr(QName(kEmptyNamespace, "address"));
   const std::string& port_str = element->Attr(QName(kEmptyNamespace, "port"));
-  const std::string& type = element->Attr(QName(kEmptyNamespace, "type"));
+  const std::optional<webrtc::IceCandidateType> type =
+      LegacyTypeNameToCandidateType(
+          element->Attr(QName(kEmptyNamespace, "type")));
   const std::string& protocol =
       element->Attr(QName(kEmptyNamespace, "protocol"));
   const std::string& priority_str =
@@ -97,7 +131,7 @@ bool ParseIceCandidate(const jingle_xmpp::XmlElement* element,
   uint32_t generation;
   if (name.empty() || foundation.empty() || address.empty() ||
       !base::StringToInt(port_str, &port) || port < kPortMin ||
-      port > kPortMax || type.empty() || protocol.empty() ||
+      port > kPortMax || !type || protocol.empty() ||
       !base::StringToUint(priority_str, &priority) ||
       !base::StringToUint(generation_str, &generation)) {
     return false;
@@ -113,7 +147,7 @@ bool ParseIceCandidate(const jingle_xmpp::XmlElement* element,
                           priority,
                           candidate->candidate.username(),
                           candidate->candidate.password(),
-                          type,
+                          *type,
                           generation,
                           foundation};
 
@@ -128,20 +162,6 @@ XmlElement* FormatIceCredentials(
   result->SetAttr(QName(kEmptyNamespace, "ufrag"), credentials.ufrag);
   result->SetAttr(QName(kEmptyNamespace, "password"), credentials.password);
   return result;
-}
-
-// The type names "local" and "stun" are not standard but JingleMessage has
-// used them from the start. So in order to remain backwards compatible,
-// we check specifically for those types and override the candidate type name
-// in those cases.
-std::string_view GetLegacyTypeName(const cricket::Candidate& c) {
-  if (c.is_local()) {
-    return "local";
-  }
-  if (c.is_stun()) {
-    return "stun";
-  }
-  return c.type_name();
 }
 
 XmlElement* FormatIceCandidate(
