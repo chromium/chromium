@@ -30,6 +30,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
@@ -383,58 +384,68 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
     return desc;
   }
 
-  FontFamily* curr_family = nullptr;
-
 #if BUILDFLAG(IS_MAC)
-  bool has_seen_system_ui = false;
+  bool count_blink_mac_system_font = false;
 #endif
 
-  for (auto& family : To<CSSValueList>(value)) {
+  AtomicString family_name;
+  FontFamily::Type family_type = FontFamily::Type::kFamilyName;
+  scoped_refptr<SharedFontFamily> next;
+  bool has_value = false;
+
+  for (auto& family : base::Reversed(To<CSSValueList>(value))) {
+    AtomicString next_family_name;
     FontDescription::GenericFamilyType generic_family =
         FontDescription::kNoFamily;
-    AtomicString family_name;
 
-    if (!ConvertFontFamilyName(*family, generic_family, family_name,
+    if (!ConvertFontFamilyName(*family, generic_family, next_family_name,
                                font_builder, document_for_count)) {
       continue;
     }
 
-    if (!curr_family) {
-      curr_family = &desc.family;
-    } else {
-      scoped_refptr<SharedFontFamily> new_family = SharedFontFamily::Create();
-      curr_family->AppendFamily(new_family);
-      curr_family = new_family.get();
-    }
-
     // TODO(crbug.com/1065468): Get rid of GenericFamilyType.
-    bool is_generic = generic_family != FontDescription::kNoFamily ||
-                      IsA<CSSIdentifierValue>(*family);
+    const bool is_generic = generic_family != FontDescription::kNoFamily ||
+                            IsA<CSSIdentifierValue>(*family);
+
+    // Take the previous value and wrap it in a `SharedFontFamily` adding to
+    // the linked list.
+    if (has_value) {
+      scoped_refptr<SharedFontFamily> shared = SharedFontFamily::Create();
+      shared->SetFamily(family_name, family_type);
+      shared->AppendFamily(next);
+      next = shared;
+    }
+    family_name = next_family_name;
+    family_type = is_generic ? FontFamily::Type::kGenericFamily
+                             : FontFamily::Type::kFamilyName;
+    has_value = true;
+
 #if BUILDFLAG(IS_MAC)
     // TODO(https://crbug.com/554590): Remove this counter when it's no longer
     // necessary.
-    if (!has_seen_system_ui) {
-      has_seen_system_ui =
-          is_generic && family_name == font_family_names::kSystemUi;
-    }
     if (IsA<CSSFontFamilyValue>(*family) &&
         family_name == FontCache::LegacySystemFontFamily()) {
+      count_blink_mac_system_font = true;
       family_name = font_family_names::kSystemUi;
-      if (document_for_count && !has_seen_system_ui) {
-        document_for_count->CountUse(WebFeature::kBlinkMacSystemFont);
-      }
+    } else if (is_generic && family_name == font_family_names::kSystemUi) {
+      // If system-ui comes before BlinkMacSystemFont don't use-count.
+      count_blink_mac_system_font = false;
     }
 #endif
 
-    curr_family->SetFamily(family_name, is_generic
-                                            ? FontFamily::Type::kGenericFamily
-                                            : FontFamily::Type::kFamilyName);
-
-    if (is_generic) {
+    if (desc.generic_family == FontDescription::GenericFamilyType::kNoFamily) {
       desc.generic_family = generic_family;
     }
   }
 
+#if BUILDFLAG(IS_MAC)
+  if (document_for_count && count_blink_mac_system_font) {
+    document_for_count->CountUse(WebFeature::kBlinkMacSystemFont);
+  }
+#endif
+
+  desc.family.SetFamily(family_name, family_type);
+  desc.family.AppendFamily(next);
   return desc;
 }
 

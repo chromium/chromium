@@ -33,6 +33,10 @@ class CORE_EXPORT CSSValueList : public CSSValue {
  public:
   using iterator = HeapVector<Member<const CSSValue>, 4>::iterator;
   using const_iterator = HeapVector<Member<const CSSValue>, 4>::const_iterator;
+  using reverse_iterator =
+      HeapVector<Member<const CSSValue>, 4>::reverse_iterator;
+  using const_reverse_iterator =
+      HeapVector<Member<const CSSValue>, 4>::const_reverse_iterator;
 
   static CSSValueList* CreateCommaSeparated() {
     return MakeGarbageCollected<CSSValueList>(kCommaSeparator);
@@ -58,6 +62,10 @@ class CORE_EXPORT CSSValueList : public CSSValue {
   iterator end() { return values_.end(); }
   const_iterator begin() const { return values_.begin(); }
   const_iterator end() const { return values_.end(); }
+  reverse_iterator rbegin() { return values_.rbegin(); }
+  reverse_iterator rend() { return values_.rend(); }
+  const_reverse_iterator rbegin() const { return values_.rbegin(); }
+  const_reverse_iterator rend() const { return values_.rend(); }
 
   wtf_size_t length() const { return values_.size(); }
   const CSSValue& Item(wtf_size_t index) const { return *values_[index]; }
