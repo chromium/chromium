@@ -12,8 +12,7 @@ namespace winhttp {
 
 TEST(WinHttpProxyConfiguration, DirectProxy) {
   auto proxy_configuration = base::MakeRefCounted<ProxyConfiguration>();
-  EXPECT_EQ(proxy_configuration->access_type(),
-            WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY);
+  EXPECT_EQ(proxy_configuration->access_type(), WINHTTP_ACCESS_TYPE_NO_PROXY);
 }
 
 TEST(WinHttpProxyConfiguration, AutoProxy) {

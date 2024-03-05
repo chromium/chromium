@@ -37,9 +37,11 @@ class ProxyConfiguration : public base::RefCounted<ProxyConfiguration> {
   ProxyConfiguration& operator=(const ProxyConfiguration&) = delete;
 
   int access_type() const;
+  std::wstring proxy() const;
+  std::wstring proxy_bypass() const;
+
   std::optional<ScopedWinHttpProxyInfo> GetProxyForUrl(HINTERNET session_handle,
                                                        const GURL& url) const;
-
  protected:
   virtual ~ProxyConfiguration() = default;
 
@@ -70,8 +72,9 @@ class AutoProxyConfiguration final : public ProxyConfiguration {
 
 // Sets proxy info on a request handle, if WINHTTP_PROXY_INFO is provided.
 void SetProxyForRequest(
-    const HINTERNET request_handle,
+    HINTERNET request_handle,
     const std::optional<ScopedWinHttpProxyInfo>& winhttp_proxy_info);
+
 }  // namespace winhttp
 
 #endif  // COMPONENTS_WINHTTP_PROXY_CONFIGURATION_H_

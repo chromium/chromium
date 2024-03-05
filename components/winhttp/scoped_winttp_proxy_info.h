@@ -25,6 +25,7 @@ class ScopedWinHttpProxyInfo {
   ScopedWinHttpProxyInfo& operator=(const ScopedWinHttpProxyInfo& other) =
       delete;
   ScopedWinHttpProxyInfo(ScopedWinHttpProxyInfo&& other) {
+    proxy_info_.dwAccessType = other.proxy_info_.dwAccessType;
     proxy_info_.lpszProxy = other.proxy_info_.lpszProxy;
     other.proxy_info_.lpszProxy = nullptr;
 
@@ -33,6 +34,7 @@ class ScopedWinHttpProxyInfo {
   }
 
   ScopedWinHttpProxyInfo& operator=(ScopedWinHttpProxyInfo&& other) {
+    proxy_info_.dwAccessType = other.proxy_info_.dwAccessType;
     proxy_info_.lpszProxy = other.proxy_info_.lpszProxy;
     other.proxy_info_.lpszProxy = nullptr;
 
@@ -75,7 +77,6 @@ class ScopedWinHttpProxyInfo {
     proxy_info_.lpszProxyBypass = GlobalAlloc(proxy_bypass);
   }
 
-  // Return the raw pointer since WinHttpSetOption requires a non const pointer.
   const WINHTTP_PROXY_INFO* get() const { return &proxy_info_; }
 
   WINHTTP_PROXY_INFO* receive() { return &proxy_info_; }

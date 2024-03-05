@@ -4,6 +4,8 @@
 
 #include "components/winhttp/proxy_info.h"
 
+#include <string>
+
 namespace winhttp {
 
 ProxyInfo::ProxyInfo() = default;

@@ -42,6 +42,7 @@ scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
     std::optional<PolicyServiceProxyConfiguration>
         policy_service_proxy_configuration) {
   if (policy_service_proxy_configuration) {
+    VLOG(1) << "Using cloud policy configuration for proxy.";
     return base::MakeRefCounted<winhttp::ProxyConfiguration>(winhttp::ProxyInfo{
         policy_service_proxy_configuration->proxy_auto_detect,
         base::SysUTF8ToWide(
@@ -50,9 +51,7 @@ scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
             policy_service_proxy_configuration->proxy_url.value_or("")),
         L""});
   }
-
   VLOG(1) << "Using the system configuration for proxy.";
-
   return base::MakeRefCounted<winhttp::AutoProxyConfiguration>();
 }
 
@@ -204,9 +203,11 @@ class NetworkFetcherFactory::Impl {
       }
     }
     session_handle_ = base::MakeRefCounted<winhttp::SharedHInternet>(
-        winhttp::CreateSessionHandle(
-            base::ASCIIToWide(GetUpdaterUserAgent()).c_str(),
-            proxy_configuration_->access_type()));
+        winhttp::CreateSessionHandle(base::SysUTF8ToWide(GetUpdaterUserAgent()),
+                                     proxy_configuration_->access_type(),
+                                     proxy_configuration_->proxy(),
+                                     proxy_configuration_->proxy_bypass()));
+    VLOG_IF(2, !session_handle_) << "Failed to create a winhttp session.";
   }
 
   std::unique_ptr<update_client::NetworkFetcher> Create() {

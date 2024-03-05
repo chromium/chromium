@@ -9,12 +9,16 @@
 #include <windows.h>
 #include <winhttp.h>
 
+#include <ostream>
 #include <string>
 
 #include "base/check.h"
 #include "base/check_op.h"
 
 namespace winhttp {
+
+std::ostream& operator<<(std::ostream& os,
+                         const WINHTTP_PROXY_INFO& proxy_info);
 
 // Returns the last error as an HRESULT or E_FAIL if last error is NO_ERROR.
 // This is not a drop in replacement for the HRESULT_FROM_WIN32 macro.
@@ -38,11 +42,12 @@ HRESULT QueryHeadersInt(HINTERNET request_handle,
 // is successful.
 template <typename T>
 HRESULT QueryOption(HINTERNET handle, uint32_t option, T* value) {
-  auto num_bytes = sizeof(*value);
+  DWORD num_bytes = sizeof(*value);
   if (!::WinHttpQueryOption(handle, option, value, &num_bytes)) {
-    DUMP_WILL_BE_CHECK(sizeof(*value) == num_bytes);
     return HRESULTFromLastError();
   }
+  // TODO(crbug.com/325343942): replace with CHECK.
+  DUMP_WILL_BE_CHECK(sizeof(*value) == num_bytes);
   return S_OK;
 }
 

@@ -1325,6 +1325,21 @@ use `%PROGRAMFILESX86%` if appropriate instead.)
 On Windows for user-scope updaters, `{UPDATER_DATA_DIR}` is
 `%LOCALAPPDATA%\{COMPANY_SHORTNAME}\{PRODUCT_FULLNAME}`.
 
+## Network
+
+#### Proxy detection and authentication (Windows)
+The updater uses the proxy configuration defined by cloud policy or Windows
+proxy settings, in this order of priority.
+
+Windows proxy settings are defined per-system or per-user. If no user is logged
+in when the updater is running, then WinHTTP per-system proxy settings are
+used. Otherwise, the updater impersonates one of the logged in users, and uses
+the corresponding proxy settings for that user.
+
+The proxy settings include a combination of auto-proxy (WPAD), proxy
+auto-configuration, or named proxy. The updater tries one of these mechanisms
+in the order described above.
+
 ## Services
 
 ### Crash Reporting

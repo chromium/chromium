@@ -7,15 +7,20 @@
 #include <versionhelpers.h>
 #include <windows.h>
 
+#include <string_view>
 #include <utility>
 
 namespace winhttp {
 
-ScopedHInternet CreateSessionHandle(const wchar_t* user_agent,
-                                    int proxy_access_type) {
-  ScopedHInternet session_handle(
-      ::WinHttpOpen(user_agent, proxy_access_type, WINHTTP_NO_PROXY_NAME,
-                    WINHTTP_NO_PROXY_BYPASS, WINHTTP_FLAG_ASYNC));
+ScopedHInternet CreateSessionHandle(std::wstring_view user_agent,
+                                    int proxy_access_type,
+                                    std::wstring_view proxy,
+                                    std::wstring_view proxy_bypass) {
+  ScopedHInternet session_handle(::WinHttpOpen(
+      user_agent.data(), proxy_access_type,
+      proxy.empty() ? WINHTTP_NO_PROXY_NAME : proxy.data(),
+      proxy_bypass.empty() ? WINHTTP_NO_PROXY_BYPASS : proxy_bypass.data(),
+      WINHTTP_FLAG_ASYNC));
 
   // Allow TLS1.2 on Windows 7 and Windows 8. See KB3140245. TLS 1.2 is enabled
   // by default on Windows 8.1 and Windows 10.

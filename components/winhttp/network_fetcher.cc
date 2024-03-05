@@ -501,6 +501,7 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
     case WINHTTP_CALLBACK_STATUS_RESOLVING_NAME:
       status_string = "resolving";
       info_string.assign(static_cast<wchar_t*>(info), info_len);  // host.
+      VLOG(1) << "hostname: " << info_string;
       break;
     case WINHTTP_CALLBACK_STATUS_NAME_RESOLVED:
       status_string = "resolved";
@@ -508,6 +509,7 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
     case WINHTTP_CALLBACK_STATUS_CONNECTING_TO_SERVER:
       status_string = "connecting";
       info_string.assign(static_cast<wchar_t*>(info), info_len);  // IP.
+      VLOG(1) << "ip: " << info_string;
       break;
     case WINHTTP_CALLBACK_STATUS_CONNECTED_TO_SERVER:
       status_string = "connected";
