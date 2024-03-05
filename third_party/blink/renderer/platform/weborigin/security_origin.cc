@@ -118,9 +118,8 @@ static bool ShouldTreatAsOpaqueOrigin(const KURL& url) {
                      relevant_url.Protocol().Ascii()))
     return true;
 
-  // Nonstandard schemes and unregistered schemes aren't known to contain hosts
-  // and/or ports, so they'll usually be placed in opaque origins.
-  if (!relevant_url.CanSetHostOrPort()) {
+  // Nonstandard schemes and unregistered schemes are placed in opaque origins.
+  if (!relevant_url.IsStandard()) {
     // A temporary exception is made for non-standard local schemes.
     // TODO: Migrate "content:" and "externalfile:" to be standard schemes, and
     // remove the local scheme exception.
@@ -145,7 +144,7 @@ SecurityOrigin::SecurityOrigin(const KURL& url)
           // This mimics the logic in url::SchemeHostPort(const GURL&). In
           // particular, it ensures a URL with a port of 0 will translate into
           // an origin with an effective port of 0.
-          (url.HasPort() || !url.IsValid() || !url.IsHierarchical())
+          (url.HasPort() || !url.IsValid() || !url.IsStandard())
               ? url.Port()
               : DefaultPortForProtocol(url.Protocol())) {}
 

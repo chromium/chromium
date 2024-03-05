@@ -795,7 +795,7 @@ TEST(KURLTest, IsHierarchical) {
   for (const char* input : standard_urls) {
     SCOPED_TRACE(input);
     KURL url(input);
-    EXPECT_TRUE(url.IsHierarchical());
+    EXPECT_TRUE(url.IsStandard());
     EXPECT_TRUE(url.CanSetHostOrPort());
     EXPECT_TRUE(url.CanSetPathname());
   }
@@ -812,7 +812,7 @@ TEST(KURLTest, IsHierarchical) {
   for (const char* input : nonstandard_urls) {
     SCOPED_TRACE(input);
     KURL url(input);
-    EXPECT_FALSE(url.IsHierarchical());
+    EXPECT_FALSE(url.IsStandard());
     EXPECT_FALSE(url.CanSetHostOrPort());
     EXPECT_FALSE(url.CanSetPathname());
   }

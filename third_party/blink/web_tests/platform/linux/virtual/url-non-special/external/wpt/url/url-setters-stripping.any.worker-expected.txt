@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Setting protocol with leading U+0009 (https:)
   assert_equals: property expected "http:" but got "https:"
 [FAIL] Setting protocol with U+0009 before inserted colon (https:)
@@ -12,121 +12,17 @@ Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: property expected "http:" but got "https:"
 [FAIL] Setting protocol with U+000D before inserted colon (https:)
   assert_equals: property expected "http:" but got "https:"
-[FAIL] Setting port with middle U+0000 (wpt++:)
-  assert_equals: property expected "90" but got "8000"
-[FAIL] Setting port with trailing U+0000 (wpt++:)
-  assert_equals: property expected "9000" but got "8000"
-[FAIL] Setting pathname with leading U+0000 (wpt++:)
-  assert_equals: property expected "/%00test" but got "/path"
-[FAIL] Setting pathname with middle U+0000 (wpt++:)
-  assert_equals: property expected "/te%00st" but got "/path"
-[FAIL] Setting pathname with trailing U+0000 (wpt++:)
-  assert_equals: property expected "/test%00" but got "/path"
 [FAIL] Setting protocol with leading U+0009 (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
 [FAIL] Setting protocol with U+0009 before inserted colon (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
-[FAIL] Setting host with leading U+0009 (wpt++:)
-  assert_equals: property expected "test:8000" but got "host:8000"
-[FAIL] Setting hostname with leading U+0009 (wpt++:)
-  assert_equals: property expected "test" but got "host"
-[FAIL] Setting host with middle U+0009 (wpt++:)
-  assert_equals: property expected "test:8000" but got "host:8000"
-[FAIL] Setting hostname with middle U+0009 (wpt++:)
-  assert_equals: property expected "test" but got "host"
-[FAIL] Setting host with trailing U+0009 (wpt++:)
-  assert_equals: property expected "test:8000" but got "host:8000"
-[FAIL] Setting hostname with trailing U+0009 (wpt++:)
-  assert_equals: property expected "test" but got "host"
-[FAIL] Setting port with leading U+0009 (wpt++:)
-  assert_equals: property expected "9000" but got "8000"
-[FAIL] Setting port with middle U+0009 (wpt++:)
-  assert_equals: property expected "9000" but got "8000"
-[FAIL] Setting port with trailing U+0009 (wpt++:)
-  assert_equals: property expected "9000" but got "8000"
-[FAIL] Setting pathname with leading U+0009 (wpt++:)
-  assert_equals: property expected "/test" but got "/path"
-[FAIL] Setting pathname with middle U+0009 (wpt++:)
-  assert_equals: property expected "/test" but got "/path"
-[FAIL] Setting pathname with trailing U+0009 (wpt++:)
-  assert_equals: property expected "/test" but got "/path"
 [FAIL] Setting protocol with leading U+000A (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
 [FAIL] Setting protocol with U+000A before inserted colon (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
-[FAIL] Setting host with leading U+000A (wpt++:)
-  assert_equals: property expected "test:8000" but got "host:8000"
-[FAIL] Setting hostname with leading U+000A (wpt++:)
-  assert_equals: property expected "test" but got "host"
-[FAIL] Setting host with middle U+000A (wpt++:)
-  assert_equals: property expected "test:8000" but got "host:8000"
-[FAIL] Setting hostname with middle U+000A (wpt++:)
-  assert_equals: property expected "test" but got "host"
-[FAIL] Setting host with trailing U+000A (wpt++:)
-  assert_equals: property expected "test:8000" but got "host:8000"
-[FAIL] Setting hostname with trailing U+000A (wpt++:)
-  assert_equals: property expected "test" but got "host"
-[FAIL] Setting port with leading U+000A (wpt++:)
-  assert_equals: property expected "9000" but got "8000"
-[FAIL] Setting port with middle U+000A (wpt++:)
-  assert_equals: property expected "9000" but got "8000"
-[FAIL] Setting port with trailing U+000A (wpt++:)
-  assert_equals: property expected "9000" but got "8000"
-[FAIL] Setting pathname with leading U+000A (wpt++:)
-  assert_equals: property expected "/test" but got "/path"
-[FAIL] Setting pathname with middle U+000A (wpt++:)
-  assert_equals: property expected "/test" but got "/path"
-[FAIL] Setting pathname with trailing U+000A (wpt++:)
-  assert_equals: property expected "/test" but got "/path"
 [FAIL] Setting protocol with leading U+000D (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
 [FAIL] Setting protocol with U+000D before inserted colon (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
-[FAIL] Setting host with leading U+000D (wpt++:)
-  assert_equals: property expected "test:8000" but got "host:8000"
-[FAIL] Setting hostname with leading U+000D (wpt++:)
-  assert_equals: property expected "test" but got "host"
-[FAIL] Setting host with middle U+000D (wpt++:)
-  assert_equals: property expected "test:8000" but got "host:8000"
-[FAIL] Setting hostname with middle U+000D (wpt++:)
-  assert_equals: property expected "test" but got "host"
-[FAIL] Setting host with trailing U+000D (wpt++:)
-  assert_equals: property expected "test:8000" but got "host:8000"
-[FAIL] Setting hostname with trailing U+000D (wpt++:)
-  assert_equals: property expected "test" but got "host"
-[FAIL] Setting port with leading U+000D (wpt++:)
-  assert_equals: property expected "9000" but got "8000"
-[FAIL] Setting port with middle U+000D (wpt++:)
-  assert_equals: property expected "9000" but got "8000"
-[FAIL] Setting port with trailing U+000D (wpt++:)
-  assert_equals: property expected "9000" but got "8000"
-[FAIL] Setting pathname with leading U+000D (wpt++:)
-  assert_equals: property expected "/test" but got "/path"
-[FAIL] Setting pathname with middle U+000D (wpt++:)
-  assert_equals: property expected "/test" but got "/path"
-[FAIL] Setting pathname with trailing U+000D (wpt++:)
-  assert_equals: property expected "/test" but got "/path"
-[FAIL] Setting host with leading U+001F (wpt++:)
-  assert_equals: property expected "%1Ftest:8000" but got "host:8000"
-[FAIL] Setting hostname with leading U+001F (wpt++:)
-  assert_equals: property expected "%1Ftest" but got "host"
-[FAIL] Setting host with middle U+001F (wpt++:)
-  assert_equals: property expected "te%1Fst:8000" but got "host:8000"
-[FAIL] Setting hostname with middle U+001F (wpt++:)
-  assert_equals: property expected "te%1Fst" but got "host"
-[FAIL] Setting host with trailing U+001F (wpt++:)
-  assert_equals: property expected "test%1F:8000" but got "host:8000"
-[FAIL] Setting hostname with trailing U+001F (wpt++:)
-  assert_equals: property expected "test%1F" but got "host"
-[FAIL] Setting port with middle U+001F (wpt++:)
-  assert_equals: property expected "90" but got "8000"
-[FAIL] Setting port with trailing U+001F (wpt++:)
-  assert_equals: property expected "9000" but got "8000"
-[FAIL] Setting pathname with leading U+001F (wpt++:)
-  assert_equals: property expected "/%1Ftest" but got "/path"
-[FAIL] Setting pathname with middle U+001F (wpt++:)
-  assert_equals: property expected "/te%1Fst" but got "/path"
-[FAIL] Setting pathname with trailing U+001F (wpt++:)
-  assert_equals: property expected "/test%1F" but got "/path"
 Harness: the test ran to completion.
 

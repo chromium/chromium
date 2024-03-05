@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+[FAIL] <a>: Setting <file://localhost/>.protocol = 'http' Can’t switch from file URL with no host
+  assert_equals: expected "file:///" but got "http://localhost/"
+[FAIL] <area>: Setting <file://localhost/>.protocol = 'http' Can’t switch from file URL with no host
+  assert_equals: expected "file:///" but got "http://localhost/"
+[FAIL] <a>: Setting <file://y/>.host = 'x:123'
+  assert_equals: expected "file://y/" but got "file://x/"
+[FAIL] <area>: Setting <file://y/>.host = 'x:123'
+  assert_equals: expected "file://y/" but got "file://x/"
+[FAIL] <a>: Setting <file://y/>.host = 'loc%41lhost'
+  assert_equals: expected "file:///" but got "file://localhost/"
+[FAIL] <area>: Setting <file://y/>.host = 'loc%41lhost'
+  assert_equals: expected "file:///" but got "file://localhost/"
+[FAIL] <a>: Setting <file://y/>.hostname = 'loc%41lhost'
+  assert_equals: expected "file:///" but got "file://localhost/"
+[FAIL] <area>: Setting <file://y/>.hostname = 'loc%41lhost'
+  assert_equals: expected "file:///" but got "file://localhost/"
+[FAIL] <a>: Setting <file://localhost/>.port = '12'
+  assert_equals: expected "file:///" but got "file://localhost/"
+[FAIL] <area>: Setting <file://localhost/>.port = '12'
+  assert_equals: expected "file:///" but got "file://localhost/"
+[FAIL] <a>: Setting <file:///unicorn>.pathname = '//\\/' File URLs and (back)slashes
+  assert_equals: expected "file://////" but got "file:///"
+[FAIL] <area>: Setting <file:///unicorn>.pathname = '//\\/' File URLs and (back)slashes
+  assert_equals: expected "file://////" but got "file:///"
+[FAIL] <a>: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes
+  assert_equals: expected "file://///" but got "file:///"
+[FAIL] <area>: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes
+  assert_equals: expected "file://///" but got "file:///"
+Harness: the test ran to completion.
+

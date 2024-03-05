@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] URL: Setting <file://localhost/>.protocol = 'http' Can’t switch from file URL with no host
+  assert_equals: expected "file:///" but got "http://localhost/"
+[FAIL] URL: Setting <file://y/>.host = 'x:123'
+  assert_equals: expected "file://y/" but got "file://x/"
+[FAIL] URL: Setting <file://y/>.host = 'loc%41lhost'
+  assert_equals: expected "file:///" but got "file://localhost/"
+[FAIL] URL: Setting <file://y/>.hostname = 'loc%41lhost'
+  assert_equals: expected "file:///" but got "file://localhost/"
+[FAIL] URL: Setting <file://localhost/>.port = '12'
+  assert_equals: expected "file:///" but got "file://localhost/"
+Harness: the test ran to completion.
+

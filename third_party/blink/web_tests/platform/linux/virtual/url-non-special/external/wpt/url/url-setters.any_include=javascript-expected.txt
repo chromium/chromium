@@ -1,5 +1,3 @@
 This is a testharness.js-based test.
-[FAIL] URL: Setting <javascript://x/>.port = '12'
-  assert_equals: expected "javascript://x:12/" but got "javascript://x/"
 Harness: the test ran to completion.
 
