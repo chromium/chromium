@@ -425,15 +425,14 @@ BASE_FEATURE(kEnableWebUsbOnExtensionServiceWorker,
              "EnableWebUsbOnExtensionServiceWorker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, resource requests will be evaluated against the Network
-// Service's block list for NetworkContexts that are not associated with an Off
-// the Record session. The block list is populated by the MaskedDomainList, so
-// "MaskedDomainList" will need to also be enabled for the block list to have
-// any contents.
-BASE_FEATURE(kEnableNetworkServiceResourceBlockList,
-             "EnableNetworkServiceResourceBlockList",
+// When enabled, resource requests on certain pages will be evaluated against
+// the Fingerprinting Protection blocklist and possibly blocked via a
+// subresource filter.
+BASE_FEATURE(kEnableFingerprintingProtectionBlocklist,
+             "EnableFingerprintingProtectionBlockList",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// DEPRECATED, do not use.
 // When enabled, resource requests will be evaluated against the Network
 // Service's block list for NetworkContexts that are associated with an Off the
 // Record session. The block list is populated by the MaskedDomainList, so
@@ -443,6 +442,7 @@ BASE_FEATURE(kEnableNetworkServiceResourceBlockListInOtrSessions,
              "EnableNetworkServiceResourceBlockListInOtrSessions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// DEPRECATED, do not use.
 // When enabled, resource requests will be evaluated against the Network
 // Service's block list if the setting to block all third party cookies is
 // enabled. The block list is populated by the MaskedDomainList, so

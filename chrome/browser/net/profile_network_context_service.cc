@@ -1244,7 +1244,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
        cookie_settings_->ShouldBlockThirdPartyCookies()) ||
       (!profile_->IsOffTheRecord() &&
        base::FeatureList::IsEnabled(
-           features::kEnableNetworkServiceResourceBlockList)) ||
+           features::kEnableFingerprintingProtectionBlocklist)) ||
       (profile_->IsOffTheRecord() &&
        base::FeatureList::IsEnabled(
            features::kEnableNetworkServiceResourceBlockListInOtrSessions));

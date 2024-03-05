@@ -140,7 +140,7 @@ void RegisterComponentsForUpdate() {
   RegisterMaskedDomainListComponent(cus);
   RegisterPrivacySandboxAttestationsComponent(cus);
   if (base::FeatureList::IsEnabled(
-          features::kEnableNetworkServiceResourceBlockList)) {
+          features::kEnableFingerprintingProtectionBlocklist)) {
     RegisterAntiFingerprintingBlockedDomainListComponent(cus);
   }
 
@@ -154,7 +154,7 @@ void RegisterComponentsForUpdate() {
     // Clean up any existing versions of the blocklist if the feature is
     // disabled.
     if (!base::FeatureList::IsEnabled(
-            features::kEnableNetworkServiceResourceBlockList)) {
+            features::kEnableFingerprintingProtectionBlocklist)) {
       DeleteAntiFingerprintingBlockedDomainListComponent(path);
     }
 

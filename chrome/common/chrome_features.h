@@ -261,7 +261,7 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kEnableWebUsbOnExtensionServiceWorker);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kEnableNetworkServiceResourceBlockList);
+BASE_DECLARE_FEATURE(kEnableFingerprintingProtectionBlocklist);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kEnableNetworkServiceResourceBlockListInOtrSessions);

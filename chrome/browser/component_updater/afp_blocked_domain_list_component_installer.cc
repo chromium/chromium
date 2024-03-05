@@ -58,7 +58,7 @@ std::optional<std::string> ReadComponentFromDisk(
 
 base::TaskPriority GetTaskPriority() {
   return base::FeatureList::IsEnabled(
-             features::kEnableNetworkServiceResourceBlockList)
+             features::kEnableFingerprintingProtectionBlocklist)
              ? base::TaskPriority::USER_BLOCKING
              : base::TaskPriority::BEST_EFFORT;
 }
