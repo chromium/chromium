@@ -5,7 +5,7 @@ rootWebArea
 ++++++++descriptionListTerm
 ++++++++++staticText name='Term'
 ++++++++++++inlineTextBox name='Term'
-++++++++descriptionListDetail
+++++++++definition
 ++++++++++staticText name='Description'
 ++++++++++++inlineTextBox name='Description'
 ++++++definition

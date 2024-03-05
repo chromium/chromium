@@ -2,9 +2,9 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_LIST READONLY xml-roles:list
 ++++IA2_ROLE_TEXT_FRAME READONLY xml-roles:term
 ++++++ROLE_SYSTEM_STATICTEXT name='Term1'
-++++IA2_ROLE_PARAGRAPH READONLY xml-roles:definition
+++++ROLE_SYSTEM_GROUPING READONLY xml-roles:definition
 ++++++ROLE_SYSTEM_STATICTEXT name='Definition1'
 ++++IA2_ROLE_TEXT_FRAME READONLY xml-roles:term
 ++++++ROLE_SYSTEM_STATICTEXT name='Term2'
-++++IA2_ROLE_PARAGRAPH READONLY xml-roles:definition
+++++ROLE_SYSTEM_GROUPING READONLY xml-roles:definition
 ++++++ROLE_SYSTEM_STATICTEXT name='Definition2'

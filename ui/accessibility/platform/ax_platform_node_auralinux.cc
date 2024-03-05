@@ -2692,7 +2692,6 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kDateTime:
       return ATK_ROLE_DATE_EDITOR;
     case ax::mojom::Role::kDefinition:
-    case ax::mojom::Role::kDescriptionListDetail:
       return ATK_ROLE_DESCRIPTION_VALUE;
     case ax::mojom::Role::kDescriptionList:
       return ATK_ROLE_DESCRIPTION_LIST;
@@ -3040,6 +3039,7 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kNone:
       return ATK_ROLE_REDUNDANT_OBJECT;
     case ax::mojom::Role::kPreDeprecated:
+    case ax::mojom::Role::kDescriptionListDetailDeprecated:
       NOTREACHED_NORETURN();
   }
 }

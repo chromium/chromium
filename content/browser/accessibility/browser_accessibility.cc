@@ -1612,8 +1612,6 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
       return content_client->GetLocalizedString(IDS_AX_ROLE_DEFINITION);
     case ax::mojom::Role::kDescriptionList:
       return content_client->GetLocalizedString(IDS_AX_ROLE_DESCRIPTION_LIST);
-    case ax::mojom::Role::kDescriptionListDetail:
-      return content_client->GetLocalizedString(IDS_AX_ROLE_DEFINITION);
     case ax::mojom::Role::kDescriptionListTerm:
       return content_client->GetLocalizedString(IDS_AX_ROLE_DESCRIPTION_TERM);
     case ax::mojom::Role::kDetails:
@@ -1782,6 +1780,7 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
       // Android returns IDS_AX_MEDIA_VIDEO_ELEMENT.
       return {};
     case ax::mojom::Role::kPreDeprecated:
+    case ax::mojom::Role::kDescriptionListDetailDeprecated:
       NOTREACHED_NORETURN();
   }
 }

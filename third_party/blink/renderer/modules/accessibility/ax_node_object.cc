@@ -675,8 +675,8 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
           ax::mojom::blink::Role::kContentDeletion,
           ax::mojom::blink::Role::kContentInfo,
           ax::mojom::blink::Role::kContentInsertion,
+          ax::mojom::blink::Role::kDefinition,
           ax::mojom::blink::Role::kDescriptionList,
-          ax::mojom::blink::Role::kDescriptionListDetail,
           ax::mojom::blink::Role::kDescriptionListTerm,
           ax::mojom::blink::Role::kDetails,
           ax::mojom::blink::Role::kDialog,
@@ -1517,7 +1517,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return ax::mojom::blink::Role::kVideo;
 
   if (GetNode()->HasTagName(html_names::kDdTag))
-    return ax::mojom::blink::Role::kDescriptionListDetail;
+    return ax::mojom::blink::Role::kDefinition;
 
   if (GetNode()->HasTagName(html_names::kDfnTag))
     return ax::mojom::blink::Role::kTerm;

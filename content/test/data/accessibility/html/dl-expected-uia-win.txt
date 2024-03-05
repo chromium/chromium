@@ -2,7 +2,7 @@ Document
 ++List
 ++++ListItem IsControlElement=false
 ++++++Text Name='Term'
-++++Text IsControlElement=false
+++++Group IsControlElement=false
 ++++++Text Name='Description'
 ++Group
 ++++Text Name='Definition'

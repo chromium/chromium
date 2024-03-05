@@ -906,10 +906,6 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
       return {UIALocalizationStrategy::kDeferToAriaRole, UIA_GroupControlTypeId,
               L"definition"};
 
-    case ax::mojom::Role::kDescriptionListDetail:
-      return {UIALocalizationStrategy::kDeferToAriaRole, UIA_TextControlTypeId,
-              L"description"};
-
     case ax::mojom::Role::kDescriptionList:
       return {UIALocalizationStrategy::kDeferToControlType,
               UIA_ListControlTypeId, L"list"};
@@ -1458,6 +1454,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
       return {UIALocalizationStrategy::kSupply, UIA_PaneControlTypeId,
               L"region"};
 
+    case ax::mojom::Role::kDescriptionListDetailDeprecated:
     case ax::mojom::Role::kPreDeprecated:
       NOTREACHED_NORETURN();
   }
@@ -6453,9 +6450,6 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kDefinition:
       return ROLE_SYSTEM_GROUPING;
 
-    case ax::mojom::Role::kDescriptionListDetail:
-      return ROLE_SYSTEM_TEXT;
-
     case ax::mojom::Role::kDescriptionList:
       return ROLE_SYSTEM_LIST;
 
@@ -6881,6 +6875,7 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kNone:
     case ax::mojom::Role::kUnknown:
       return ROLE_SYSTEM_PANE;
+    case ax::mojom::Role::kDescriptionListDetailDeprecated:
     case ax::mojom::Role::kPreDeprecated:
       NOTREACHED_NORETURN();
   }
@@ -7013,12 +7008,6 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
       ia2_role = IA2_ROLE_DATE_EDITOR;
-      break;
-    case ax::mojom::Role::kDefinition:
-      ia2_role = IA2_ROLE_PARAGRAPH;
-      break;
-    case ax::mojom::Role::kDescriptionListDetail:
-      ia2_role = IA2_ROLE_PARAGRAPH;
       break;
     case ax::mojom::Role::kDocPageFooter:
       ia2_role = IA2_ROLE_FOOTER;
@@ -7183,6 +7172,7 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
     case ax::mojom::Role::kTime:
       ia2_role = IA2_ROLE_TEXT_FRAME;
       break;
+    case ax::mojom::Role::kDescriptionListDetailDeprecated:
     case ax::mojom::Role::kPreDeprecated:
       NOTREACHED_NORETURN();
     default:

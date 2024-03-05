@@ -155,7 +155,7 @@ enum Role {
   kDateTime = 28,
   kDefinition = 29,
   kDescriptionList = 30,
-  kDescriptionListDetail = 31,
+  kDescriptionListDetailDeprecated = 31,  // Replaced with kDefinition.
   kDescriptionListTerm = 32,
   kDesktop = 33,  // internal
   kDetails = 34,

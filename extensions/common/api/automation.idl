@@ -170,7 +170,7 @@
     dateTime,
     definition,
     descriptionList,
-    descriptionListDetail,
+    descriptionListDetailDeprecated,
     descriptionListTerm,
     desktop,
     details,
