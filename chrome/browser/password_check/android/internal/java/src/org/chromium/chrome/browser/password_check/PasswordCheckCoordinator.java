@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -64,8 +64,9 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
             PasswordCheckFragmentView fragmentView,
             HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             SettingsLauncher settingsLauncher,
-            PasswordCheckComponentUi.CustomTabIntentHelper customTabIntentHelper,
-            PasswordCheckComponentUi.TrustedIntentHelper trustedIntentHelper) {
+            CustomTabIntentHelper customTabIntentHelper,
+            TrustedIntentHelper trustedIntentHelper,
+            Profile profile) {
         mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
         mFragmentView = fragmentView;
         mSettingsLauncher = settingsLauncher;
@@ -88,7 +89,7 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
                         trustedIntentHelper);
         PasswordCheckIconHelper iconHelper =
                 new PasswordCheckIconHelper(
-                        new LargeIconBridge(ProfileManager.getLastUsedRegularProfile()),
+                        new LargeIconBridge(profile),
                         mFragmentView
                                 .getResources()
                                 .getDimensionPixelSize(R.dimen.default_favicon_size));

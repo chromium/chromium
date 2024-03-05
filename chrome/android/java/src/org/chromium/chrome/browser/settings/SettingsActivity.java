@@ -543,7 +543,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     HelpAndFeedbackLauncherImpl.getForProfile(mProfile),
                     mSettingsLauncher,
                     LaunchIntentDispatcher::createCustomTabActivityIntent,
-                    IntentUtils::addTrustedIntentExtras);
+                    IntentUtils::addTrustedIntentExtras,
+                    mProfile);
         }
         if (fragment instanceof CredentialEntryFragmentViewBase) {
             CredentialEditUiFactory.create(

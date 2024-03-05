@@ -140,6 +140,7 @@ android_library("test_java") {
     "//chrome/browser/password_check/android/internal:public_factory_java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:settings_interface_java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/settings:test_support_java",
     "//chrome/test/android:chrome_java_integration_test_support",

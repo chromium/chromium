@@ -189,7 +189,8 @@ public class PasswordCheckViewTest {
                         helpAndFeedbackLauncher,
                         settingsLauncher,
                         customTabIntentHelper,
-                        trustedIntentHelper) -> {
+                        trustedIntentHelper,
+                        profile) -> {
                     mPasswordCheckView = (PasswordCheckFragmentView) fragmentView;
                     mPasswordCheckView.setComponentDelegate(mComponentUi);
                     return mComponentUi;

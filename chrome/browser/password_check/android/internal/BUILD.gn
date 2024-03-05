@@ -44,6 +44,7 @@ _public_ui_target = "//chrome/browser/password_check/android:public_ui_java"
 android_library_factory("public_ui_factory_java") {
   deps = [
     "//chrome/browser/feedback/android:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//components/browser_ui/settings/android:java",
     "//third_party/androidx:androidx_fragment_fragment_java",
@@ -57,6 +58,7 @@ android_library("internal_ui_factory_java") {
   deps = [
     ":internal_java",
     "//chrome/browser/feedback/android:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//components/browser_ui/settings/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
