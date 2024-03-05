@@ -2516,6 +2516,10 @@ FasterSplitView* OverviewGrid::GetFasterSplitView() {
              : nullptr;
 }
 
+bool OverviewGrid::IsBirchBarShowing() const {
+  return birch_bar_widget_ && birch_bar_widget_->IsVisible();
+}
+
 void OverviewGrid::OnSplitViewStateChanged(
     SplitViewController::State previous_state,
     SplitViewController::State state) {

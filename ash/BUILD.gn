@@ -2704,6 +2704,8 @@ component("ash") {
     "wm/overlay_layout_manager.h",
     "wm/overview/birch/birch_bar_context_menu_model.cc",
     "wm/overview/birch/birch_bar_context_menu_model.h",
+    "wm/overview/birch/birch_bar_menu_model_adapter.cc",
+    "wm/overview/birch/birch_bar_menu_model_adapter.h",
     "wm/overview/birch/birch_bar_view.cc",
     "wm/overview/birch/birch_bar_view.h",
     "wm/overview/birch/birch_chip_button.cc",

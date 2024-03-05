@@ -424,6 +424,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   FasterSplitView* GetFasterSplitView();
 
+  bool IsBirchBarShowing() const;
+
   // SplitViewObserver:
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
                                SplitViewController::State state) override;
