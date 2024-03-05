@@ -27,6 +27,7 @@ try_.defaults.set(
     siso_configs = ["builder"],
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
+    siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
@@ -83,7 +84,6 @@ try_.builder(
             ],
         },
     },
-    siso_enabled = True,
     # b/325854950 - 1280 concurrent remote jobs might cause slow downloads
     # because this builder doesn't use SSD.
     siso_remote_jobs = 640,
@@ -201,7 +201,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(),
     use_clang_coverage = True,
 )
@@ -212,7 +211,6 @@ try_.compilator_builder(
     cores = "8|16",
     ssd = True,
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
