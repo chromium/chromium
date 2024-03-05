@@ -104,6 +104,7 @@ extern const wchar_t kRegValueEnrollmentMandatory[];
 
 // Registry for DM token.
 extern const wchar_t kRegKeyCompanyEnrollment[];
+extern const wchar_t kRegKeyCompanyLegacyEnrollment[];  // Path is in HKLM64.
 extern const wchar_t kRegValueDmToken[];
 
 extern const wchar_t kWindowsServiceName[];

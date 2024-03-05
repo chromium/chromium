@@ -103,49 +103,64 @@ std::string TokenService::GetEnrollmentToken() const {
 }
 
 bool TokenService::StoreDmToken(const std::string& token) {
-  const bool result =
-      SetRegistryKey(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment,
-                     kRegValueDmToken, base::SysUTF8ToWide(token));
-  VLOG(1) << "Update DM token to: [" << token << "], bool result=" << result;
-  return result;
+  const std::wstring dm_token(base::SysUTF8ToWide(token));
+  if (!SetRegistryKey(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment,
+                      kRegValueDmToken, dm_token)) {
+    VLOG(1) << "Failed to write DM token.";
+    return false;
+  }
+
+  base::win::RegKey legacy_key;
+  if (legacy_key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyLegacyEnrollment,
+                      KEY_WOW64_64KEY | KEY_WRITE) != ERROR_SUCCESS ||
+      legacy_key.WriteValue(kRegValueDmToken, dm_token.c_str()) !=
+          ERROR_SUCCESS) {
+    VLOG(1) << "Failed to write DM token at the legacy place.";
+    return false;
+  }
+
+  VLOG(1) << "Updated DM token to: [" << token << "]";
+  return true;
 }
 
 bool TokenService::DeleteDmToken() {
-  base::win::RegKey key;
-  auto result = key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment,
-                         Wow6432(KEY_QUERY_VALUE | KEY_SET_VALUE));
-
-  // The registry key which stores the DMToken value was not found, so deletion
-  // is not necessary.
-  if (result == ERROR_FILE_NOT_FOUND) {
-    return true;
-  }
-
-  if (result == ERROR_SUCCESS) {
-    result = key.DeleteValue(kRegValueDmToken);
-  } else {
+  if (!DeleteRegValue(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment,
+                      kRegValueDmToken)) {
     VLOG(1) << "Failed to delete DM token.";
     return false;
   }
 
-  // Delete the key if no other subkeys or values are present.
-  if (key.GetValueCount().value_or(1) == 0) {
-    key.DeleteKey(L"", base::win::RegKey::RecursiveDelete(false));
+  base::win::RegKey legacy_dm_key(HKEY_LOCAL_MACHINE,
+                                  kRegKeyCompanyLegacyEnrollment,
+                                  KEY_WOW64_64KEY | KEY_READ | KEY_WRITE);
+  if (legacy_dm_key.Valid()) {
+    LONG result = legacy_dm_key.DeleteValue(kRegValueDmToken);
+    if (result != ERROR_SUCCESS && result != ERROR_FILE_NOT_FOUND) {
+      VLOG(1) << "Failed to delete DM token from the legacy place.";
+      return false;
+    }
   }
-  VLOG(1) << "DM token is deleted.";
+
+  VLOG(1) << __func__ << ": success.";
   return true;
 }
 
 std::string TokenService::GetDmToken() const {
   std::wstring token;
-  base::win::RegKey key;
-  if (key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment,
-               Wow6432(KEY_READ)) != ERROR_SUCCESS ||
-      key.ReadValue(kRegValueDmToken, &token) != ERROR_SUCCESS) {
-    return std::string();
+  if (base::win::RegKey key;
+      key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment,
+               Wow6432(KEY_READ)) == ERROR_SUCCESS &&
+      key.ReadValue(kRegValueDmToken, &token) == ERROR_SUCCESS) {
+    return base::SysWideToUTF8(token);
   }
 
-  return base::SysWideToUTF8(token);
+  if (base::win::RegKey key;
+      key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyLegacyEnrollment,
+               KEY_WOW64_64KEY | KEY_READ) == ERROR_SUCCESS &&
+      key.ReadValue(kRegValueDmToken, &token) == ERROR_SUCCESS) {
+    return base::SysWideToUTF8(token);
+  }
+  return {};
 }
 
 }  // namespace

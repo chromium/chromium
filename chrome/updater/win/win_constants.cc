@@ -66,6 +66,8 @@ const wchar_t kRegValueCloudManagementEnrollmentToken[] =
 const wchar_t kRegValueEnrollmentMandatory[] = L"EnrollmentMandatory";
 
 const wchar_t kRegKeyCompanyEnrollment[] = COMPANY_KEY L"Enrollment\\";
+const wchar_t kRegKeyCompanyLegacyEnrollment[] =
+    COMPANY_KEY L"\\" BROWSER_NAME_STRING L"\\Enrollment\\";
 const wchar_t kRegValueDmToken[] = L"dmtoken";
 
 const wchar_t kWindowsServiceName[] = L"Service";
