@@ -116,9 +116,14 @@ CreateIncomingPasswordSharingInvitation(const std::string& invitation_guid,
 
   // Set the encrypted fields and the encryption key version:
   sync_pb::PasswordSharingInvitationData password_data;
-  password_data.mutable_password_data()->set_signon_realm(signon_realm);
-  password_data.mutable_password_data()->set_username_value(username_value);
-  password_data.mutable_password_data()->set_password_value(password_value);
+  password_data.mutable_password_group_data()->set_username_value(
+      username_value);
+  password_data.mutable_password_group_data()->set_password_value(
+      password_value);
+  password_data.mutable_password_group_data()
+      ->add_element_data()
+      ->set_signon_realm(signon_realm);
+
   std::string serialized_data;
   bool success = password_data.SerializeToString(&serialized_data);
   CHECK(success);
@@ -3070,7 +3075,7 @@ TEST_F(ModelTypeWorkerTest, ShouldEncryptOutgoingPasswordSharingInvitation) {
   EntitySpecifics specifics;
   specifics.mutable_outgoing_password_sharing_invitation()
       ->mutable_client_only_unencrypted_data()
-      ->mutable_password_data()
+      ->mutable_password_group_data()
       ->set_password_value("password");
   processor()->SetCommitRequest(GenerateCommitRequest(kHash1, specifics));
   DoSuccessfulCommit();
@@ -3144,11 +3149,13 @@ TEST_F(ModelTypeWorkerIncomingPasswordSharingInvitationTest,
       invitation_with_unencrypted_data.has_client_only_unencrypted_data());
   const sync_pb::PasswordSharingInvitationData& received_password_data =
       invitation_with_unencrypted_data.client_only_unencrypted_data();
-  EXPECT_EQ(received_password_data.password_data().username_value(),
+  EXPECT_EQ(received_password_data.password_group_data().username_value(),
             kUsernameValue);
-  EXPECT_EQ(received_password_data.password_data().password_value(),
+  EXPECT_EQ(received_password_data.password_group_data().password_value(),
             kPasswordValue);
-  EXPECT_EQ(received_password_data.password_data().signon_realm(),
+  EXPECT_EQ(received_password_data.password_group_data()
+                .element_data(0)
+                .signon_realm(),
             kSignonRealm);
 }
 

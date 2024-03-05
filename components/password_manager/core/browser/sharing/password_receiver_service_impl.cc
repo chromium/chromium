@@ -100,52 +100,14 @@ GetProcessSharingInvitationResultForIgnoredInvitations(
                    kSharedCredentialsExistWithDifferentSenderAndDifferentPassword;
 }
 
-// Converts a IncomingPasswordSharingInvitationSpecifics that represents only
-// one credentials to a password form. Should be used to convert the legacy
-// IncomingPasswordSharingInvitationSpecifics data layout.
-PasswordForm LegacyIncomingSharingInvitationToPasswordForm(
-    const sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation) {
-  CHECK(invitation.client_only_unencrypted_data().has_password_data());
-  const sync_pb::PasswordSharingInvitationData::PasswordData&
-      incoming_credentials =
-          invitation.client_only_unencrypted_data().password_data();
-  PasswordForm form;
-  form.url = GURL(incoming_credentials.origin());
-  form.username_element =
-      base::UTF8ToUTF16(incoming_credentials.username_element());
-  form.username_value =
-      base::UTF8ToUTF16(incoming_credentials.username_value());
-  form.password_element =
-      base::UTF8ToUTF16(incoming_credentials.password_element());
-  form.signon_realm = incoming_credentials.signon_realm();
-  form.password_value =
-      base::UTF8ToUTF16(incoming_credentials.password_value());
-  form.scheme =
-      static_cast<PasswordForm::Scheme>(incoming_credentials.scheme());
-  form.display_name = base::UTF8ToUTF16(incoming_credentials.display_name());
-  form.icon_url = GURL(incoming_credentials.avatar_url());
-  form.date_created = base::Time::Now();
-  form.type = PasswordForm::Type::kReceivedViaSharing;
-
-  // Invitation metadata.
-  const sync_pb::UserDisplayInfo& sender_info =
-      invitation.sender_info().user_display_info();
-  form.sender_email = base::UTF8ToUTF16(sender_info.email());
-  form.sender_name = base::UTF8ToUTF16(sender_info.display_name());
-  form.sender_profile_image_url = GURL(sender_info.profile_image_url());
-
-  form.date_received = base::Time::Now();
-  form.sharing_notification_displayed = false;
-  return form;
-}
-
 // Converts a IncomingPasswordSharingInvitationSpecifics that represents a group
-// of credentials to a list of password forms. Should be used to convert the new
-// IncomingPasswordSharingInvitationSpecifics data layout.
-std::vector<PasswordForm> ModernIncomingSharingInvitationToPasswordForms(
+// of credentials to a list of password forms.
+std::vector<PasswordForm> IncomingSharingInvitationToPasswordForms(
     const sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation) {
-  CHECK(invitation.client_only_unencrypted_data().has_password_group_data());
   std::vector<PasswordForm> forms;
+  if (!invitation.client_only_unencrypted_data().has_password_group_data()) {
+    return forms;
+  }
 
   const sync_pb::PasswordSharingInvitationData::PasswordGroupData&
       incoming_credentials =
@@ -292,15 +254,9 @@ void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
     return;
   }
 
-  // Prefer the modern proto format that supports representing password groups.
-  std::vector<PasswordForm> incoming_credentials_list;
-  if (invitation.client_only_unencrypted_data().has_password_group_data()) {
-    incoming_credentials_list =
-        ModernIncomingSharingInvitationToPasswordForms(invitation);
-  } else if (invitation.client_only_unencrypted_data().has_password_data()) {
-    incoming_credentials_list.push_back(
-        LegacyIncomingSharingInvitationToPasswordForm(invitation));
-  }
+  std::vector<PasswordForm> incoming_credentials_list =
+      IncomingSharingInvitationToPasswordForms(invitation);
+
   for (const PasswordForm& incoming_credentials : incoming_credentials_list) {
     if (!IsValidSharedPasswordForm(incoming_credentials)) {
       LogProcessIncomingPasswordSharingInvitationResult(

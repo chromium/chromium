@@ -82,18 +82,24 @@ OutgoingPasswordSharingInvitationSpecifics MakeSpecifics() {
   specifics.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   specifics.set_recipient_user_id(kRecipientUserId);
 
-  sync_pb::PasswordSharingInvitationData::PasswordData* mutable_password_data =
-      specifics.mutable_client_only_unencrypted_data()->mutable_password_data();
-  mutable_password_data->set_password_value(kPasswordValue);
-  mutable_password_data->set_scheme(
+  sync_pb::PasswordSharingInvitationData::PasswordGroupData*
+      mutable_password_group_data =
+          specifics.mutable_client_only_unencrypted_data()
+              ->mutable_password_group_data();
+  mutable_password_group_data->set_password_value(kPasswordValue);
+  mutable_password_group_data->set_username_value(kUsernameValue);
+
+  sync_pb::PasswordSharingInvitationData::PasswordGroupElementData*
+      mutable_password_group_element_data =
+          mutable_password_group_data->add_element_data();
+  mutable_password_group_element_data->set_scheme(
       static_cast<int>(password_manager::PasswordForm::Scheme::kHtml));
-  mutable_password_data->set_signon_realm(kSignonRealm);
-  mutable_password_data->set_origin(kOrigin);
-  mutable_password_data->set_username_element(kUsernameElement);
-  mutable_password_data->set_username_value(kUsernameValue);
-  mutable_password_data->set_password_element(kPasswordElement);
-  mutable_password_data->set_display_name(kPasswordDisplayName);
-  mutable_password_data->set_avatar_url(kPasswordAvatarUrl);
+  mutable_password_group_element_data->set_signon_realm(kSignonRealm);
+  mutable_password_group_element_data->set_origin(kOrigin);
+  mutable_password_group_element_data->set_username_element(kUsernameElement);
+  mutable_password_group_element_data->set_password_element(kPasswordElement);
+  mutable_password_group_element_data->set_display_name(kPasswordDisplayName);
+  mutable_password_group_element_data->set_avatar_url(kPasswordAvatarUrl);
 
   return specifics;
 }
@@ -276,21 +282,6 @@ TEST_F(OutgoingPasswordSharingInvitationSyncBridgeTest,
                            Property(&sync_pb::PasswordSharingInvitationData::
                                         PasswordGroupElementData::signon_realm,
                                     kPslMatchSignonRealm)));
-
-  // The legacy proto format should also be populated with the first password in
-  // the group.
-  const sync_pb::PasswordSharingInvitationData::PasswordData& password_data =
-      invitation_specifics.client_only_unencrypted_data().password_data();
-  EXPECT_EQ(password_data.password_value(), kPasswordValue);
-  EXPECT_EQ(password_data.scheme(),
-            static_cast<int>(PasswordForm::Scheme::kHtml));
-  EXPECT_EQ(password_data.signon_realm(), kSignonRealm);
-  EXPECT_EQ(password_data.origin(), kOrigin);
-  EXPECT_EQ(password_data.username_element(), kUsernameElement);
-  EXPECT_EQ(password_data.username_value(), kUsernameValue);
-  EXPECT_EQ(password_data.password_element(), kPasswordElement);
-  EXPECT_EQ(password_data.display_name(), kPasswordDisplayName);
-  EXPECT_EQ(password_data.avatar_url(), kPasswordAvatarUrl);
 }
 
 TEST_F(OutgoingPasswordSharingInvitationSyncBridgeTest,

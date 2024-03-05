@@ -69,18 +69,22 @@ sync_pb::IncomingPasswordSharingInvitationSpecifics MakeSpecifics() {
       ->mutable_user_display_info()
       ->set_profile_image_url(kSenderProfileImageUrl);
 
-  sync_pb::PasswordSharingInvitationData::PasswordData* mutable_password_data =
-      specifics.mutable_client_only_unencrypted_data()->mutable_password_data();
-  mutable_password_data->set_password_value(kPasswordValue);
-  mutable_password_data->set_scheme(
+  sync_pb::PasswordSharingInvitationData::PasswordGroupData*
+      mutable_password_group_data =
+          specifics.mutable_client_only_unencrypted_data()
+              ->mutable_password_group_data();
+  mutable_password_group_data->set_password_value(kPasswordValue);
+  mutable_password_group_data->set_username_value(kUsernameValue);
+  sync_pb::PasswordSharingInvitationData::PasswordGroupElementData*
+      group_element_data = mutable_password_group_data->add_element_data();
+  group_element_data->set_scheme(
       static_cast<int>(password_manager::PasswordForm::Scheme::kHtml));
-  mutable_password_data->set_signon_realm(kSignonRealm);
-  mutable_password_data->set_origin(kOrigin);
-  mutable_password_data->set_username_element(kUsernameElement);
-  mutable_password_data->set_username_value(kUsernameValue);
-  mutable_password_data->set_password_element(kPasswordElement);
-  mutable_password_data->set_display_name(kPasswordDisplayName);
-  mutable_password_data->set_avatar_url(kPasswordAvatarUrl);
+  group_element_data->set_signon_realm(kSignonRealm);
+  group_element_data->set_origin(kOrigin);
+  group_element_data->set_username_element(kUsernameElement);
+  group_element_data->set_password_element(kPasswordElement);
+  group_element_data->set_display_name(kPasswordDisplayName);
+  group_element_data->set_avatar_url(kPasswordAvatarUrl);
 
   return specifics;
 }
@@ -191,19 +195,24 @@ TEST_F(IncomingPasswordSharingInvitationSyncBridgeTest,
   bridge()->ApplyIncrementalSyncChanges(std::move(metadata_changes),
                                         std::move(entity_changes));
 
-  const sync_pb::PasswordSharingInvitationData::PasswordData&
-      received_credentials =
-          received_invitation.client_only_unencrypted_data().password_data();
+  const sync_pb::PasswordSharingInvitationData::PasswordGroupData&
+      received_credentials = received_invitation.client_only_unencrypted_data()
+                                 .password_group_data();
   EXPECT_EQ(received_credentials.password_value(), kPasswordValue);
-  EXPECT_EQ(static_cast<PasswordForm::Scheme>(received_credentials.scheme()),
-            password_manager::PasswordForm::Scheme::kHtml);
-  EXPECT_EQ(received_credentials.signon_realm(), kSignonRealm);
-  EXPECT_EQ(received_credentials.origin(), kOrigin);
-  EXPECT_EQ(received_credentials.username_element(), kUsernameElement);
   EXPECT_EQ(received_credentials.username_value(), kUsernameValue);
-  EXPECT_EQ(received_credentials.password_element(), kPasswordElement);
-  EXPECT_EQ(received_credentials.display_name(), kPasswordDisplayName);
-  EXPECT_EQ(received_credentials.avatar_url(), kPasswordAvatarUrl);
+  EXPECT_EQ(static_cast<PasswordForm::Scheme>(
+                received_credentials.element_data(0).scheme()),
+            password_manager::PasswordForm::Scheme::kHtml);
+  EXPECT_EQ(received_credentials.element_data(0).signon_realm(), kSignonRealm);
+  EXPECT_EQ(received_credentials.element_data(0).origin(), kOrigin);
+  EXPECT_EQ(received_credentials.element_data(0).username_element(),
+            kUsernameElement);
+  EXPECT_EQ(received_credentials.element_data(0).password_element(),
+            kPasswordElement);
+  EXPECT_EQ(received_credentials.element_data(0).display_name(),
+            kPasswordDisplayName);
+  EXPECT_EQ(received_credentials.element_data(0).avatar_url(),
+            kPasswordAvatarUrl);
 
   EXPECT_EQ(received_invitation.sender_info().user_display_info().email(),
             kSenderEmail);
@@ -236,7 +245,7 @@ TEST_F(IncomingPasswordSharingInvitationSyncBridgeTest,
   // Check only password value for sanity, the other fields are covered by other
   // tests.
   EXPECT_EQ(received_invitation.client_only_unencrypted_data()
-                .password_data()
+                .password_group_data()
                 .password_value(),
             kPasswordValue);
 }

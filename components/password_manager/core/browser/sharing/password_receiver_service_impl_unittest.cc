@@ -45,29 +45,9 @@ const std::u16string kSenderEmail = u"sender@example.com";
 const std::u16string kSenderName = u"Sender Name";
 const std::string kSenderProfileImagerUrl = "https://sender.com/avatar";
 
-// Creates an invitation that represents only one password
-sync_pb::IncomingPasswordSharingInvitationSpecifics
-CreateLegacyIncomingSharingInvitation() {
-  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation;
-  sync_pb::PasswordSharingInvitationData::PasswordData* password_data =
-      invitation.mutable_client_only_unencrypted_data()
-          ->mutable_password_data();
-  password_data->set_origin(kUrl);
-  password_data->set_signon_realm(kUrl);
-  password_data->set_username_value(base::UTF16ToUTF8(kUsername));
-  password_data->set_password_value(base::UTF16ToUTF8(kPassword));
-
-  sync_pb::UserDisplayInfo* sender_info =
-      invitation.mutable_sender_info()->mutable_user_display_info();
-  sender_info->set_email(base::UTF16ToUTF8(kSenderEmail));
-  sender_info->set_display_name(base::UTF16ToUTF8(kSenderName));
-  sender_info->set_profile_image_url(kSenderProfileImagerUrl);
-  return invitation;
-}
-
 // Creates an invitation that represents a group of passwords.
 sync_pb::IncomingPasswordSharingInvitationSpecifics
-CreateModernIncomingSharingInvitation() {
+CreateIncomingSharingInvitation() {
   sync_pb::IncomingPasswordSharingInvitationSpecifics invitation;
   sync_pb::PasswordSharingInvitationData::PasswordGroupData*
       password_group_data = invitation.mutable_client_only_unencrypted_data()
@@ -98,22 +78,7 @@ PasswordForm CreatePasswordForm() {
 }
 
 sync_pb::IncomingPasswordSharingInvitationSpecifics
-PasswordFormToLegacyIncomingSharingInvitation(const PasswordForm& form) {
-  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation;
-  sync_pb::PasswordSharingInvitationData::PasswordData* password_data =
-      invitation.mutable_client_only_unencrypted_data()
-          ->mutable_password_data();
-  password_data->set_origin(form.url.spec());
-  password_data->set_signon_realm(form.signon_realm);
-  password_data->set_username_element(base::UTF16ToUTF8(form.username_element));
-  password_data->set_username_value(base::UTF16ToUTF8(form.username_value));
-  password_data->set_password_element(base::UTF16ToUTF8(form.password_element));
-  password_data->set_password_value(base::UTF16ToUTF8(form.password_value));
-  return invitation;
-}
-
-sync_pb::IncomingPasswordSharingInvitationSpecifics
-PasswordFormToModernIncomingSharingInvitation(const PasswordForm& form) {
+PasswordFormToIncomingSharingInvitation(const PasswordForm& form) {
   sync_pb::IncomingPasswordSharingInvitationSpecifics invitation;
   sync_pb::PasswordSharingInvitationData::PasswordGroupData*
       password_group_data = invitation.mutable_client_only_unencrypted_data()
@@ -134,10 +99,8 @@ PasswordFormToModernIncomingSharingInvitation(const PasswordForm& form) {
 
 }  // namespace
 
-// See GetUseLegacyInvitationTestParam() and GetEnableAccountStoreTestParam()
-// for the meaning of the parameters.
-class PasswordReceiverServiceImplTest
-    : public testing::TestWithParam<std::tuple<bool, bool>> {
+// See GetEnableAccountStoreTestParam() for the meaning of the parameters.
+class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
  public:
   PasswordReceiverServiceImplTest() {
     profile_password_store_ = base::MakeRefCounted<TestPasswordStore>();
@@ -198,51 +161,23 @@ class PasswordReceiverServiceImplTest
     RunUntilIdle();
   }
 
-  sync_pb::IncomingPasswordSharingInvitationSpecifics
-  CreateIncomingSharingInvitation() {
-    return GetUseLegacyInvitationTestParam()
-               ? CreateModernIncomingSharingInvitation()
-               : CreateLegacyIncomingSharingInvitation();
-  }
-
-  sync_pb::IncomingPasswordSharingInvitationSpecifics
-  PasswordFormToIncomingSharingInvitation(const PasswordForm& form) {
-    return GetUseLegacyInvitationTestParam()
-               ? PasswordFormToModernIncomingSharingInvitation(form)
-               : PasswordFormToLegacyIncomingSharingInvitation(form);
-  }
-
-  // Returns the origin of the credentials shared in the invitation. If the
-  // invitation represents a group of credentials, it returns the origin of the
-  // first one.
+  // Returns the origin of the first element in the credential group shared in
+  // the invitation.
   std::string GetInvitationOrigin(
       const sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation) {
-    if (GetUseLegacyInvitationTestParam()) {
-      CHECK(
-          invitation.client_only_unencrypted_data().has_password_group_data());
       return invitation.client_only_unencrypted_data()
           .password_group_data()
           .element_data(0)
           .origin();
-    }
-    CHECK(invitation.client_only_unencrypted_data().has_password_data());
-    return invitation.client_only_unencrypted_data().password_data().origin();
   }
 
-  // Sets ths `password_value` in the `invitation`, using either the credential
-  // or the group invitation format.
+  // Sets ths `password_value` in the `invitation`.
   void SetPasswordValueInInvitation(
       const std::u16string& password_value,
       sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation) {
-    if (GetUseLegacyInvitationTestParam()) {
       invitation.mutable_client_only_unencrypted_data()
           ->mutable_password_group_data()
           ->set_password_value(base::UTF16ToUTF8(password_value));
-      return;
-    }
-    invitation.mutable_client_only_unencrypted_data()
-        ->mutable_password_data()
-        ->set_password_value(base::UTF16ToUTF8(password_value));
   }
 
   PasswordReceiverService* password_receiver_service() {
@@ -282,13 +217,8 @@ class PasswordReceiverServiceImplTest
   TestingPrefServiceSimple& pref_service() { return pref_service_; }
   syncer::TestSyncService& sync_service() { return sync_service_; }
 
-  // Whether the test should use the legacy invitation proto format that
-  // represents one credential, or the modern format that represents a group of
-  // credentials.
-  bool GetUseLegacyInvitationTestParam() { return std::get<0>(GetParam()); }
-
   // Whether the test should enable the account-scoped PasswordStore.
-  bool GetEnableAccountStoreTestParam() { return std::get<1>(GetParam()); }
+  bool GetEnableAccountStoreTestParam() { return GetParam(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -683,10 +613,6 @@ TEST_P(PasswordReceiverServiceImplTest,
 }
 
 TEST_P(PasswordReceiverServiceImplTest, ShouldAddAllCredentialsInInvitation) {
-  // This test is relevant only for the modern invitation proto format.
-  if (!GetUseLegacyInvitationTestParam()) {
-    return;
-  }
   base::HistogramTester histogram_tester;
   sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
       CreateIncomingSharingInvitation();
@@ -697,16 +623,6 @@ TEST_P(PasswordReceiverServiceImplTest, ShouldAddAllCredentialsInInvitation) {
                          ->add_element_data();
   element_data->set_origin(kPslMatchUrl);
   element_data->set_signon_realm(kPslMatchUrl);
-
-  // Add credentials using the legacy proto format that doesn't support password
-  // group. This should be ignored.
-  sync_pb::PasswordSharingInvitationData::PasswordData* password_data =
-      invitation.mutable_client_only_unencrypted_data()
-          ->mutable_password_data();
-  password_data->set_origin("https:/www.to-be-ignored.com");
-  password_data->set_signon_realm("https:/www.to-be-ignored.com");
-  password_data->set_username_value(base::UTF16ToUTF8(kUsername));
-  password_data->set_password_value(base::UTF16ToUTF8(kPassword));
 
   password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
 
@@ -758,8 +674,6 @@ TEST_P(PasswordReceiverServiceImplTest, ShouldIgnoreInvalidPasswordForm) {
       1);
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         PasswordReceiverServiceImplTest,
-                         Combine(Bool(), Bool()));
+INSTANTIATE_TEST_SUITE_P(, PasswordReceiverServiceImplTest, Bool());
 
 }  // namespace password_manager
