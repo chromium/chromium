@@ -114,6 +114,12 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // The writing direction of the container.
     WritingDirectionMode writing_direction = {WritingMode::kHorizontalTb,
                                               TextDirection::kLtr};
+    // inset-area, aligned with an anchor edge, modified the rect
+    // which might require horizontal scroll adjustments.
+    bool needs_scroll_adjustment_in_x = false;
+    // inset-area, aligned with an anchor edge, modified the rect
+    // which might require vertical scroll adjustments.
+    bool needs_scroll_adjustment_in_y = false;
     // Size and offset of the container.
     LogicalRect rect;
     // The relative positioned offset to be applied after fragmentation is

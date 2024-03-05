@@ -553,6 +553,10 @@ OutOfFlowLayoutPart::ApplyInsetArea(
     }
     adjusted_container_info.rect.size.block_size = LayoutUnit();
   }
+  adjusted_container_info.needs_scroll_adjustment_in_x =
+      anchor_evaluator->NeedsScrollAdjustmentInX();
+  adjusted_container_info.needs_scroll_adjustment_in_y =
+      anchor_evaluator->NeedsScrollAdjustmentInY();
   return adjusted_container_info;
 }
 
@@ -588,8 +592,8 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
     const auto& grid_style = containing_grid.StyleRef();
     GridItemData grid_item(candidate.Node(), grid_style);
 
-    return {grid_style.GetWritingDirection(),
-            GridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
+    return {.writing_direction = grid_style.GetWritingDirection(),
+            .rect = GridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
                 containing_grid.CachedPlacementData(), layout_data, grid_style,
                 borders, size, &grid_item)};
   };
@@ -643,7 +647,10 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
       container_offset += fragmentainer_descendant.containing_block.Offset();
 
       ContainingBlockInfo containing_block_info{
-          writing_direction, LogicalRect(container_offset, content_size),
+          writing_direction,
+          /* needs_scroll_adjustment_in_x */ false,
+          /* needs_scroll_adjustment_in_y */ false,
+          LogicalRect(container_offset, content_size),
           fragmentainer_descendant.containing_block.RelativeOffset(),
           fragmentainer_descendant.containing_block.Offset()};
 
@@ -920,6 +927,8 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
         block_info.key.Get(),
         ContainingBlockInfo{
             inline_writing_direction,
+            /* needs_scroll_adjustment_in_x */ false,
+            /* needs_scroll_adjustment_in_y */ false,
             LogicalRect(container_offset, inline_cb_size),
             total_relative_offset,
             containing_block_offset - block_info.value->relative_offset});
@@ -2192,8 +2201,12 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
       offset_info.offset);
 
   layout_result->GetMutableForOutOfFlow().SetNeedsScrollAdjustment(
-      offset_info.needs_scroll_adjustment_in_x,
-      offset_info.needs_scroll_adjustment_in_y);
+      offset_info.needs_scroll_adjustment_in_x ||
+          oof_node_to_layout.node_info.container_info
+              .needs_scroll_adjustment_in_x,
+      offset_info.needs_scroll_adjustment_in_y ||
+          oof_node_to_layout.node_info.container_info
+              .needs_scroll_adjustment_in_y);
 
   if (offset_info.uses_fallback_style) {
     layout_result->GetMutableForOutOfFlow().SetPositionFallbackResult(
