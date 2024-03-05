@@ -414,7 +414,7 @@ void ExtractMediaTypes(const CupsOptionProvider& printer,
   ipp_t* media_col_default =
       ippGetCollection(printer.GetDefaultOptionValue(kIppMediaCol), 0);
   const char* media_type_default = ippGetString(
-      ippFindAttribute(media_col_default, "media-type", IPP_TAG_KEYWORD), 0,
+      ippFindAttribute(media_col_default, kIppMediaType, IPP_TAG_KEYWORD), 0,
       nullptr);
   if (media_type_default) {
     // Don't set the "default" media type if it isn't in the list of supported
@@ -505,7 +505,7 @@ size_t AddAttributes(const CupsOptionProvider& printer,
 size_t AddInputTray(const CupsOptionProvider& printer,
                     AdvancedCapabilities* caps) {
   size_t previous_size = caps->size();
-  KeywordHandler(printer, "media-source", caps);
+  KeywordHandler(printer, kIppMediaSource, caps);
   return caps->size() - previous_size;
 }
 
