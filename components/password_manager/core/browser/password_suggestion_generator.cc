@@ -143,14 +143,11 @@ void MaybeAppendManagePasswordsEntry(
       },
       &autofill::Suggestion::popup_item_id);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Add a separator before the manage option unless there are no suggestions
   // yet.
-  // TODO(crbug.com/1274134): Clean up once improvements are launched.
   if (!suggestions->empty()) {
     suggestions->emplace_back(autofill::PopupItemId::kSeparator);
   }
-#endif
 
   autofill::Suggestion suggestion(l10n_util::GetStringUTF16(
       has_webauthn_credential
