@@ -135,6 +135,9 @@ class CONTENT_EXPORT UtilityProcessHost
   // Provides extra switches to append to the process's command line.
   void SetExtraCommandLineSwitches(std::vector<std::string> switches);
 
+  // Allows the child process to bind viz.mojom.Gpu.
+  void SetAllowGpuClient();
+
 #if BUILDFLAG(IS_WIN)
   // Specifies libraries to preload before the sandbox is locked down. Paths
   // should be absolute.
@@ -226,6 +229,7 @@ class CONTENT_EXPORT UtilityProcessHost
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+  bool allowed_gpu_;
   std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter> gpu_client_;
 #endif
 

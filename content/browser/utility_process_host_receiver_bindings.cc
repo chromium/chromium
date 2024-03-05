@@ -31,10 +31,13 @@ void UtilityProcessHost::BindHostReceiver(
   }
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-  if (auto gpu_receiver = receiver.As<viz::mojom::Gpu>()) {
-    gpu_client_ =
-        content::CreateGpuClient(std::move(gpu_receiver), base::DoNothing());
-    return;
+  if (allowed_gpu_) {
+    // TODO(crbug.com/328099369) Remove once all clients get this directly.
+    if (auto gpu_receiver = receiver.As<viz::mojom::Gpu>()) {
+      gpu_client_ =
+          content::CreateGpuClient(std::move(gpu_receiver), base::DoNothing());
+      return;
+    }
   }
 #endif
   GetContentClient()->browser()->BindUtilityHostReceiver(std::move(receiver));
