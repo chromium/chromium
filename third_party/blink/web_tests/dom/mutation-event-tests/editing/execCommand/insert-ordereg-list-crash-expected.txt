@@ -1,0 +1,11 @@
+CONSOLE WARNING: Listener added for a 'DOMSubtreeModified' mutation event. This event type is deprecated, and will be removed from this browser very soon. Usage of this event listener will cause performance issues today, and represents a large risk of future site breakage. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
+Should not crash if we load a test case from crbug.com/344280.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS event.data is "FINISH"
+PASS Did not crash.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

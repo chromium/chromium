@@ -2426,6 +2426,13 @@
       origin_trial_allows_third_party: true,
       public: true,
     },
+    // crbug.com/1446498: This feature is just used as part of an "early trial"
+    // of disabling Mutation Events in Canary/Dev/Beta. If this feature is
+    // enabled *and* MutationEvents is disabled, then a special console error
+    // message is used to give more information.
+    {
+      name: "MutationEventsSpecialTrialMessage",
+    },
     {
       name: "NavigateEventCommitBehavior",
       status: "experimental",
