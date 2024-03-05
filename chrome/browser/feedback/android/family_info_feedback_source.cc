@@ -14,6 +14,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -23,26 +24,6 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace chrome::android {
-namespace {
-
-// Create keys for Listnr/ feedback.
-std::string RoleToString(kids_chrome_management::FamilyRole role) {
-  switch (role) {
-    case kids_chrome_management::CHILD:
-      return "child";
-    case kids_chrome_management::MEMBER:
-      return "member";
-    case kids_chrome_management::PARENT:
-      return "parent";
-    case kids_chrome_management::HEAD_OF_HOUSEHOLD:
-      return "family_manager";
-    default:
-      // Keep the previous semantics - other values were not allowed.
-      NOTREACHED_NORETURN();
-  }
-}
-
-}  // namespace
 
 void JNI_FamilyInfoFeedbackSource_Start(
     JNIEnv* env,
@@ -108,7 +89,8 @@ void FamilyInfoFeedbackSource::OnSuccess(
       }
       Java_FamilyInfoFeedbackSource_processPrimaryAccountFamilyInfo(
           env, java_ref_,
-          ConvertUTF8ToJavaString(env, RoleToString(member.role())),
+          ConvertUTF8ToJavaString(
+              env, supervised_user::FamilyRoleToString(member.role())),
           child_web_filter_type);
     }
   }
