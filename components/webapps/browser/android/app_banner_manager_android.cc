@@ -625,6 +625,12 @@ void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
     return;
   }
 
+  if (manifest_id_.is_empty()) {
+    // TODO(https://crbug.com/324322110): remove once crash understood.
+    DUMP_WILL_BE_CHECK(false) << "Pipeline state:" << (int)state();
+    return;
+  }
+
   ambient_badge_manager_ = std::make_unique<AmbientBadgeManager>(
       GetWebContents(), delegate_->GetSegmentationPlatformService(),
       *delegate_->GetPrefService());
