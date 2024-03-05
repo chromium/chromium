@@ -184,13 +184,12 @@ void StyleableMarkerPainter::PaintUnderline(const StyleableMarker& marker,
       case UnderlineStyle::kSolid:
         styled_stroke.SetStyle(StrokeStyle::kSolidStroke);
         break;
-      case UnderlineStyle::kNone:
-        styled_stroke.SetStyle(StrokeStyle::kNoStroke);
-        break;
       case UnderlineStyle::kSquiggle:
         // Wavy stroke style is not implemented in DrawLineForText so we handle
         // it specially in the else condition below only for composition
         // markers.
+      case UnderlineStyle::kNone:
+        NOTREACHED();
         break;
     }
     context.SetStrokeColor(marker_color);
