@@ -56,6 +56,8 @@ public class CredManSupportProvider {
         recordCredManAvailability(/*available*/ true);
 
         if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN)) {
+            // TODO(crbug.com/327543609): Use CredManUiRecommender from the
+            // CredManUiRecommenderProvider instead.
             sCredManSupport =
                     DeviceFeatureMap.getInstance()
                                     .getFieldTrialParamByFeatureAsBoolean(

@@ -59,6 +59,8 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/cred_man/CredManRequestDecorator.java",
     "java/src/org/chromium/components/webauthn/cred_man/CredManSupportProvider.java",
     "java/src/org/chromium/components/webauthn/cred_man/CredManUiModeRecommender.java",
+    "java/src/org/chromium/components/webauthn/cred_man/CredManUiRecommender.java",
+    "java/src/org/chromium/components/webauthn/cred_man/CredManUiRecommenderProvider.java",
     "java/src/org/chromium/components/webauthn/cred_man/GpmCredManRequestDecorator.java",
   ]
 
@@ -178,6 +180,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/components/webauthn/cred_man/CredManCreateCredentialRequestHelperRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/cred_man/CredManGetCredentialRequestHelperRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/cred_man/CredManHelperRobolectricTest.java",
+    "junit/src/org/chromium/components/webauthn/cred_man/CredManUiRecommenderProviderRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/cred_man/GpmCredManRequestDecoratorRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/cred_man/ShadowCreateCredentialException.java",
     "junit/src/org/chromium/components/webauthn/cred_man/ShadowCreateCredentialRequest.java",
