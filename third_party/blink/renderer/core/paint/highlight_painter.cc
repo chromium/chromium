@@ -21,12 +21,12 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
-#include "third_party/blink/renderer/core/paint/document_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/highlight_overlay.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/marker_range_mapping_context.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/core/paint/styleable_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
@@ -526,13 +526,12 @@ void HighlightPainter::Paint(Phase phase) {
               styleable_marker.BackgroundColor(), background_auto_dark_mode_);
           break;
         }
-        if (DocumentMarkerPainter::ShouldPaintMarkerUnderline(
-                styleable_marker)) {
+        if (StyleableMarkerPainter::ShouldPaintUnderline(styleable_marker)) {
           const SimpleFontData* font_data =
               originating_style_.GetFont().PrimaryFont();
-          DocumentMarkerPainter::PaintStyleableMarkerUnderline(
-              paint_info_.context, box_origin_, styleable_marker,
-              originating_style_, node_->GetDocument(),
+          StyleableMarkerPainter::PaintUnderline(
+              styleable_marker, paint_info_.context, box_origin_,
+              originating_style_,
               LineRelativeLocalRect(fragment_item_, text, paint_start_offset,
                                     paint_end_offset),
               LayoutUnit(font_data->GetFontMetrics().Height()),

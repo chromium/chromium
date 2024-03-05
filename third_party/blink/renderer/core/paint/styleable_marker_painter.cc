@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/paint/document_marker_painter.h"
+#include "third_party/blink/renderer/core/paint/styleable_marker_painter.h"
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/editing/markers/styleable_marker.h"
@@ -120,26 +120,24 @@ void DrawDocumentMarker(GraphicsContext& context,
 
 }  // namespace
 
-bool DocumentMarkerPainter::ShouldPaintMarkerUnderline(
+bool StyleableMarkerPainter::ShouldPaintUnderline(
     const StyleableMarker& marker) {
   if (marker.HasThicknessNone() ||
       (marker.UnderlineColor() == Color::kTransparent &&
        !marker.UseTextColor()) ||
-      marker.UnderlineStyle() == ui::mojom::ImeTextSpanUnderlineStyle::kNone) {
+      marker.UnderlineStyle() == ui::mojom::blink::ImeTextSpanUnderlineStyle::kNone) {
     return false;
   }
   return true;
 }
 
-void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
-    GraphicsContext& context,
-    const PhysicalOffset& box_origin,
-    const StyleableMarker& marker,
-    const ComputedStyle& style,
-    const Document& document,
-    const LineRelativeRect& marker_rect,
-    LayoutUnit logical_height,
-    bool in_dark_mode) {
+void StyleableMarkerPainter::PaintUnderline(const StyleableMarker& marker,
+                                            GraphicsContext& context,
+                                            const PhysicalOffset& box_origin,
+                                            const ComputedStyle& style,
+                                            const LineRelativeRect& marker_rect,
+                                            LayoutUnit logical_height,
+                                            bool in_dark_mode) {
   // start of line to draw, relative to box_origin.X()
   LayoutUnit start = LayoutUnit(marker_rect.LineLeft());
   LayoutUnit width = LayoutUnit(marker_rect.InlineSize());
@@ -170,25 +168,26 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
       (marker.UseTextColor() || in_dark_mode)
           ? style.VisitedDependentColor(GetCSSPropertyWebkitTextFillColor())
           : marker.UnderlineColor();
-  if (marker.UnderlineStyle() !=
-      ui::mojom::ImeTextSpanUnderlineStyle::kSquiggle) {
+
+  using UnderlineStyle = ui::mojom::blink::ImeTextSpanUnderlineStyle;
+  if (marker.UnderlineStyle() != UnderlineStyle::kSquiggle) {
     StyledStrokeData styled_stroke;
     styled_stroke.SetThickness(line_thickness);
     // Set the style of the underline if there is any.
     switch (marker.UnderlineStyle()) {
-      case ui::mojom::ImeTextSpanUnderlineStyle::kDash:
+      case UnderlineStyle::kDash:
         styled_stroke.SetStyle(StrokeStyle::kDashedStroke);
         break;
-      case ui::mojom::ImeTextSpanUnderlineStyle::kDot:
+      case UnderlineStyle::kDot:
         styled_stroke.SetStyle(StrokeStyle::kDottedStroke);
         break;
-      case ui::mojom::ImeTextSpanUnderlineStyle::kSolid:
+      case UnderlineStyle::kSolid:
         styled_stroke.SetStyle(StrokeStyle::kSolidStroke);
         break;
-      case ui::mojom::ImeTextSpanUnderlineStyle::kNone:
+      case UnderlineStyle::kNone:
         styled_stroke.SetStyle(StrokeStyle::kNoStroke);
         break;
-      case ui::mojom::ImeTextSpanUnderlineStyle::kSquiggle:
+      case UnderlineStyle::kSquiggle:
         // Wavy stroke style is not implemented in DrawLineForText so we handle
         // it specially in the else condition below only for composition
         // markers.
