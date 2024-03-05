@@ -32,6 +32,10 @@ class DestructCounter {
   RAW_PTR_EXCLUSION size_t* where_ = nullptr;
 };
 
+extern "C" void CStyleInvoker(void (*cb)(void*), void* arg) {
+  (*cb)(arg);
+}
+
 }  // namespace
 
 TEST(HeapArray, DefaultConstructor) {
@@ -73,7 +77,7 @@ TEST(HeapArray, MoveAssign) {
 }
 
 TEST(HeapArray, DataAndIndex) {
-  base::HeapArray<uint32_t> empty;
+  HeapArray<uint32_t> empty;
   EXPECT_EQ(nullptr, empty.data());
 
   auto vec = HeapArray<uint32_t>::WithSize(2u);
@@ -84,7 +88,7 @@ TEST(HeapArray, DataAndIndex) {
 }
 
 TEST(HeapArray, IteratorAndIndex) {
-  const base::HeapArray<uint32_t> empty;
+  const HeapArray<uint32_t> empty;
   static_assert(
       std::is_const_v<std::remove_reference_t<decltype(*empty.begin())>>);
   static_assert(
@@ -133,19 +137,19 @@ TEST(HeapArray, Subspan) {
   for (size_t i = 0; i < vec.size(); ++i) {
     vec[i] = i;
   }
-  base::span<uint32_t> empty = vec.subspan(2, 0);
+  span<uint32_t> empty = vec.subspan(2, 0);
   EXPECT_TRUE(empty.empty());
 
-  base::span<uint32_t> first = vec.subspan(0, 1);
+  span<uint32_t> first = vec.subspan(0, 1);
   EXPECT_EQ(first.size(), 1u);
   EXPECT_EQ(first[0], 0u);
 
-  base::span<uint32_t> mids = vec.subspan(1, 2);
+  span<uint32_t> mids = vec.subspan(1, 2);
   EXPECT_EQ(mids.size(), 2u);
   EXPECT_EQ(mids[0], 1u);
   EXPECT_EQ(mids[1], 2u);
 
-  base::span<uint32_t> rest = vec.subspan(3);
+  span<uint32_t> rest = vec.subspan(3);
   EXPECT_EQ(rest.size(), 1u);
   EXPECT_EQ(rest[0], 3u);
 }
@@ -155,10 +159,10 @@ TEST(HeapArray, First) {
   for (size_t i = 0; i < vec.size(); ++i) {
     vec[i] = i;
   }
-  base::span<uint32_t> empty = vec.first(0u);
+  span<uint32_t> empty = vec.first(0u);
   EXPECT_TRUE(empty.empty());
 
-  base::span<uint32_t> some = vec.first(2u);
+  span<uint32_t> some = vec.first(2u);
   EXPECT_EQ(some.size(), 2u);
   EXPECT_EQ(some[0], 0u);
   EXPECT_EQ(some[1], 1u);
@@ -169,17 +173,17 @@ TEST(HeapArray, Last) {
   for (size_t i = 0; i < vec.size(); ++i) {
     vec[i] = i;
   }
-  base::span<uint32_t> empty = vec.first(0u);
+  span<uint32_t> empty = vec.first(0u);
   EXPECT_TRUE(empty.empty());
 
-  base::span<uint32_t> some = vec.first(2u);
+  span<uint32_t> some = vec.first(2u);
   EXPECT_EQ(some.size(), 2u);
   EXPECT_EQ(some[0], 0u);
   EXPECT_EQ(some[1], 1u);
 }
 
 TEST(HeapArray, Init) {
-  auto vec = base::HeapArray<uint32_t>::WithSize(200);
+  auto vec = HeapArray<uint32_t>::WithSize(200);
   EXPECT_EQ(0u, vec[0]);
   EXPECT_EQ(0u, vec[199]);
 
@@ -191,7 +195,7 @@ TEST(HeapArray, Init) {
 }
 
 TEST(HeapArray, Uninit) {
-  auto vec = base::HeapArray<uint32_t>::Uninit(4);
+  auto vec = HeapArray<uint32_t>::Uninit(4);
   vec[0] = 100u;
   vec[1] = 101u;
   EXPECT_EQ(100u, vec[0]);
@@ -204,12 +208,12 @@ TEST(HeapArray, Uninit) {
 }
 
 TEST(HeapArray, CopiedFrom) {
-  base::span<uint32_t> empty_span;
-  auto empty_vec = base::HeapArray<uint32_t>::CopiedFrom(empty_span);
+  span<uint32_t> empty_span;
+  auto empty_vec = HeapArray<uint32_t>::CopiedFrom(empty_span);
   EXPECT_EQ(0u, empty_vec.size());
 
   const uint32_t kData[] = {1000u, 1001u};
-  auto vec = base::HeapArray<uint32_t>::CopiedFrom(kData);
+  auto vec = HeapArray<uint32_t>::CopiedFrom(kData);
   ASSERT_EQ(2u, vec.size());
   EXPECT_EQ(1000u, vec[0]);
   EXPECT_EQ(1001u, vec[1]);
@@ -218,7 +222,7 @@ TEST(HeapArray, CopiedFrom) {
 TEST(HeapArray, RunsDestructor) {
   size_t count = 0;
   {
-    auto vec = base::HeapArray<DestructCounter>::WithSize(2);
+    auto vec = HeapArray<DestructCounter>::WithSize(2);
     vec[0].set_where(&count);
     vec[1].set_where(&count);
     EXPECT_EQ(count, 0u);
@@ -232,7 +236,7 @@ TEST(HeapArray, CopyFrom) {
   HeapArray<uint32_t> other = HeapArray<uint32_t>::Uninit(2);
   const uint32_t kStuff[] = {1000u, 1001u};
 
-  empty.copy_from(base::span<uint32_t>());  // Should not check.
+  empty.copy_from(span<uint32_t>());  // Should not check.
   something.copy_from(kStuff);
   EXPECT_EQ(1000u, something[0]);
   EXPECT_EQ(1001u, something[1]);
@@ -246,19 +250,18 @@ TEST(HeapArray, Leak) {
   size_t count = 0;
   span<DestructCounter> leaked;
   {
-    auto vec = base::HeapArray<DestructCounter>::WithSize(2);
+    auto vec = HeapArray<DestructCounter>::WithSize(2);
     vec[0].set_where(&count);
     vec[1].set_where(&count);
 
     auto* data = vec.data();
     leaked = std::move(vec).leak();
     ASSERT_EQ(data, leaked.data());
-
     EXPECT_EQ(count, 0u);
   }
   EXPECT_EQ(count, 0u);
-
-  delete[] leaked.data();
+  CStyleInvoker(HeapArray<DestructCounter>::DeleteLeakedData, leaked.data());
+  EXPECT_EQ(count, 2u);
 }
 
 }  // namespace base
