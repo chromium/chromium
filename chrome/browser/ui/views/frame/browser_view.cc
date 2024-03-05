@@ -2727,11 +2727,13 @@ void BrowserView::TouchModeChanged() {
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
 void BrowserView::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  enterprise_data_protection::DataProtectionNavigationObserver::
-      CreateForNavigationIfNeeded(
-          GetProfile(), navigation_handle,
-          base::BindOnce(&BrowserView::ApplyDataProtectionSettings,
-                         weak_ptr_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(features::kEnableWatermarkView)) {
+    enterprise_data_protection::DataProtectionNavigationObserver::
+        CreateForNavigationIfNeeded(
+            GetProfile(), navigation_handle,
+            base::BindOnce(&BrowserView::ApplyDataProtectionSettings,
+                           weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 #endif
 
