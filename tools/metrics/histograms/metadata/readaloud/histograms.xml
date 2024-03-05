@@ -58,9 +58,10 @@ chromium-metrics-reviews@google.com.
   <owner>basiaz@google.com</owner>
   <owner>iwells@chromium.org</owner>
   <summary>
-    Histogram for recording why a user is not eligible for the ReadAloud
-    feature. Emitted when the user profile is available and the user is
-    ineligible. Conditions are checked in ReadAloudFeatures.
+    Android only. Histogram for recording why a user is not eligible for the
+    ReadAloud feature. Emitted when the user profile is available and the user
+    is ineligible. Conditions are checked in ReadAloudFeatures. Don't use data
+    from before M123.
   </summary>
 </histogram>
 
@@ -70,8 +71,8 @@ chromium-metrics-reviews@google.com.
   <owner>basiaz@google.com</owner>
   <owner>iwells@chromium.org</owner>
   <summary>
-    Histogram for recording if a user is eligible for ReadAloud. Emitted when
-    the user profile is available.
+    Android only. Histogram for recording if a user is eligible for ReadAloud.
+    Emitted when the user profile is available. Don't use data from before M123.
   </summary>
 </histogram>
 
@@ -149,9 +150,15 @@ chromium-metrics-reviews@google.com.
   <owner>basiaz@google.com</owner>
   <owner>iwells@chromium.org</owner>
   <summary>
-    Histogram for recording if a page readability check comes back isReadable or
-    not. The readability check is run on each page load for Android clients who
-    are eligible for ReadAloud.
+    Android only. Histogram for recording if a page is readable or not. Will be
+    recorded only if ReadAloud is enabled and initialization of all
+    ReadAloud-required objects was successful. Emitted when readability check is
+    requested (on page load, on redirect, on selecting a tab), and cached
+    readability results may be retured. This histogram contain both server side
+    readability responses as well as client side optimizations (client will fail
+    fast readability check for some URL types). For server side only readability
+    ratio, check ReadAloud.ServerReadabilityResult. Do not use data from before
+    M123.
   </summary>
 </histogram>
 
@@ -217,6 +224,21 @@ chromium-metrics-reviews@google.com.
     aloud. Recorded during {Phase}.
   </summary>
   <token key="Phase" variants="Phase"/>
+</histogram>
+
+<histogram name="ReadAloud.ServerReadabilityResult" enum="BooleanEligible"
+    expires_after="2024-08-04">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Android only. Histogram for recording server side responses if a page is
+    readable or not. Will be recorded only if ReadAloud is enabled,
+    initialization of all ReadAloud-required objects was successful and no
+    previously cached readability results are available for the requested URL.
+    Emitted from a server response callback when requesting readability
+    information.
+  </summary>
 </histogram>
 
 <histogram name="ReadAloud.SpeedChange" enum="ReadAloudSpeed"

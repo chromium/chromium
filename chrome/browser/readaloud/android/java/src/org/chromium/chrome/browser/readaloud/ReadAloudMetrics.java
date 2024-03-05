@@ -31,6 +31,7 @@ public class ReadAloudMetrics {
     public static String TIME_SPENT_LISTENING_LOCKED_SCREEN =
             "ReadAloud.DurationListened.LockedScreen";
     public static String HAS_DATE_MODIFIED = "ReadAloud.HasDateModified";
+    public static String READABILITY_SERVER_SIDE = "ReadAloud.ServerReadabilityResult";
 
     /**
      * The reason why we clear the prepared message.
@@ -109,6 +110,10 @@ public class ReadAloudMetrics {
 
     public static void recordIsPageReadable(boolean successful) {
         RecordHistogram.recordBooleanHistogram(IS_READABLE, successful);
+    }
+
+    public static void recordServerReadabilityResult(boolean successful) {
+        RecordHistogram.recordBooleanHistogram(READABILITY_SERVER_SIDE, successful);
     }
 
     public static void recordIsPageReadabilitySuccessful(boolean successful) {

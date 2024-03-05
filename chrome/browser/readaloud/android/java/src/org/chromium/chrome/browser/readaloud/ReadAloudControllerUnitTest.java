@@ -1547,6 +1547,41 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void testMetricRecorded_serverReadability() {
+        final String histogramName = ReadAloudMetrics.READABILITY_SERVER_SIDE;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl).isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        sTestGURL.getSpec(),
+                        /* isReadable= */ true,
+                        /* timepointsSupported= */ false);
+        histogram.assertExpected();
+
+        histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        sTestGURL.getSpec(),
+                        /* isReadable= */ false,
+                        /* timepointsSupported= */ false);
+        histogram.assertExpected();
+
+        // nothing should be emitted on error
+        histogram = HistogramWatcher.newBuilder().expectNoRecords(histogramName).build();
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        mCallbackCaptor
+                .getValue()
+                .onFailure(sTestGURL.getSpec(), new Throwable("Something went wrong"));
+        histogram.assertExpected();
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.READALOUD_PLAYBACK)
     public void testReadAloudPlaybackFlagCheckedAfterReadability() {
         mController.maybeCheckReadability(sTestGURL);
@@ -1656,12 +1691,12 @@ public class ReadAloudControllerUnitTest {
         final String histogramName = ReadAloudMetrics.IS_USER_ELIGIBLE;
 
         var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
-        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
+        mController.onProfileAvailable(mMockProfile);
         histogram.assertExpected();
 
         histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
         when(mPrefService.getBoolean("readaloud.listen_to_this_page_enabled")).thenReturn(false);
-        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
+        mController.onProfileAvailable(mMockProfile);
         histogram.assertExpected();
     }
 
@@ -1673,7 +1708,7 @@ public class ReadAloudControllerUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         histogramName, IneligibilityReason.POLICY_DISABLED);
         when(mPrefService.getBoolean("readaloud.listen_to_this_page_enabled")).thenReturn(false);
-        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
+        mController.onProfileAvailable(mMockProfile);
         histogram.assertExpected();
         when(mPrefService.getBoolean("readaloud.listen_to_this_page_enabled")).thenReturn(true);
 
@@ -1683,7 +1718,7 @@ public class ReadAloudControllerUnitTest {
         doReturn(SearchEngineType.SEARCH_ENGINE_OTHER)
                 .when(mTemplateUrlService)
                 .getSearchEngineTypeFromTemplateUrl(anyString());
-        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
+        mController.onProfileAvailable(mMockProfile);
         histogram.assertExpected();
     }
 
