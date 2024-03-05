@@ -48,13 +48,7 @@ class LegacyOutputAdapter:
   def _ProcessCompileLine(self, line):
     matches = self._ninja_status_re.match(line)
     if matches:
-      # TODO(crbug.com/41492686): Carriage return doesn't clear the existing
-      # line. Ideally writing " " over the remainder of the previous line
-      # wouldn't be necessary but this adapter isn't meant to be supported for
-      # long anyway
-      self._single_line_logger.log(
-          self._current_log_level,
-          line + ' ' * max(len(self._last_line) - len(line), 0) + '\r')
+      self._single_line_logger.log(self._current_log_level, '\33[2K\r' + line)
       if matches.group(1) == matches.group(2):
         logging.log(self._current_log_level, '')
       return

@@ -90,8 +90,8 @@ RBE Stats: down 0 B, up 0 B,"""
         ])
         # The ninja statuses are sent to another logger to remove new lines
         self.assertEqual(compile_steps_log.output, [
-            'INFO:single_line_logger:[1/2] ACTION fake_action          \r',
-            'INFO:single_line_logger:[2/2] ACTION fake_action\r'
+            'INFO:single_line_logger:\x1b[2K\r[1/2] ACTION fake_action',
+            'INFO:single_line_logger:\x1b[2K\r[2/2] ACTION fake_action'
         ])
 
 
