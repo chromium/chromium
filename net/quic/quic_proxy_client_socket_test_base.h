@@ -157,7 +157,17 @@ class QuicProxyClientSocketTestBase
       uint64_t packet_number,
       std::string_view data);
 
+  std::unique_ptr<quic::QuicReceivedPacket> ConstructDatagramPacket(
+      uint64_t packet_number,
+      std::string_view data);
+
   std::unique_ptr<quic::QuicReceivedPacket> ConstructAckAndDataPacket(
+      uint64_t packet_number,
+      uint64_t largest_received,
+      uint64_t smallest_received,
+      std::string_view data);
+
+  std::unique_ptr<quic::QuicReceivedPacket> ConstructAckAndDatagramPacket(
       uint64_t packet_number,
       uint64_t largest_received,
       uint64_t smallest_received,

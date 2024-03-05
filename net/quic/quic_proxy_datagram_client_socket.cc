@@ -121,8 +121,6 @@ int QuicProxyDatagramClientSocket::ConnectUsingNetworkAsync(
 
 void QuicProxyDatagramClientSocket::Close() {
   connect_callback_.Reset();
-  // TODO(crbug.com/1524411): Reset read and write callbacks and buffers once
-  // implemented.
   next_state_ = STATE_DISCONNECTED;
 
   stream_->Reset(quic::QUIC_STREAM_CANCELLED);
@@ -201,13 +199,26 @@ int QuicProxyDatagramClientSocket::Read(IOBuffer* buf,
   return ERR_NOT_IMPLEMENTED;
 }
 
-// TODO(crbug.com/1524411): Implement method.
 int QuicProxyDatagramClientSocket::Write(
     IOBuffer* buf,
     int buf_len,
     CompletionOnceCallback callback,
     const NetworkTrafficAnnotationTag& traffic_annotation) {
-  return ERR_NOT_IMPLEMENTED;
+  DCHECK(connect_callback_.is_null());
+
+  if (next_state_ != STATE_CONNECT_COMPLETE) {
+    return ERR_SOCKET_NOT_CONNECTED;
+  }
+
+  net_log_.AddByteTransferEvent(NetLogEventType::SOCKET_BYTES_SENT, buf_len,
+                                buf->data());
+
+  absl::string_view packet(buf->data(), buf_len);
+  int rv = stream_->WriteConnectUdpPayload(packet);
+  if (rv == OK) {
+    return buf_len;
+  }
+  return rv;
 }
 
 void QuicProxyDatagramClientSocket::OnIOComplete(int result) {

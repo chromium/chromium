@@ -146,6 +146,9 @@ void QuicProxyClientSocketTestBase::InitializeSession() {
       writer, true /* owns_writer */, quic::Perspective::IS_CLIENT,
       quic::test::SupportedVersions(version_), connection_id_generator_);
   connection->set_visitor(&visitor_);
+  connection->SetEncrypter(quic::ENCRYPTION_FORWARD_SECURE,
+                           std::make_unique<quic::test::TaggingEncrypter>(
+                               quic::ENCRYPTION_FORWARD_SECURE));
   quic::test::QuicConnectionPeer::SetSendAlgorithm(connection, send_algorithm_);
 
   // Load a certificate that is valid for *.example.org
@@ -304,6 +307,12 @@ QuicProxyClientSocketTestBase::ConstructDataPacket(uint64_t packet_number,
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
+QuicProxyClientSocketTestBase::ConstructDatagramPacket(uint64_t packet_number,
+                                                       std::string_view data) {
+  return client_maker_.MakeDatagramPacket(packet_number, data);
+}
+
+std::unique_ptr<quic::QuicReceivedPacket>
 QuicProxyClientSocketTestBase::ConstructAckAndDataPacket(
     uint64_t packet_number,
     uint64_t largest_received,
@@ -312,6 +321,16 @@ QuicProxyClientSocketTestBase::ConstructAckAndDataPacket(
   return client_maker_.MakeAckAndDataPacket(
       packet_number, client_data_stream_id1_, largest_received,
       smallest_received, !kFin, data);
+}
+
+std::unique_ptr<quic::QuicReceivedPacket>
+QuicProxyClientSocketTestBase::ConstructAckAndDatagramPacket(
+    uint64_t packet_number,
+    uint64_t largest_received,
+    uint64_t smallest_received,
+    std::string_view data) {
+  return client_maker_.MakeAckAndDatagramPacket(packet_number, largest_received,
+                                                smallest_received, data);
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>

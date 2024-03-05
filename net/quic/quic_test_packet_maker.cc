@@ -14,6 +14,8 @@
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/spdy/spdy_http_utils.h"
+#include "net/third_party/quiche/src/quiche/common/quiche_buffer_allocator.h"
+#include "net/third_party/quiche/src/quiche/common/simple_buffer_allocator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/http_constants.h"
 #include "net/third_party/quiche/src/quiche/quic/core/qpack/qpack_instruction_encoder.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_framer.h"
@@ -69,9 +71,11 @@ quic::QuicFrames CloneFrames(const quic::QuicFrames& frames) {
                 *frame.retire_connection_id_frame);
         break;
       case quic::MESSAGE_FRAME:
-        DCHECK(false) << "Message frame not supported";
-        // frame.message_frame = new
-        // quic::QuicMessageFrame(*frame.message_frame);
+        frame.message_frame = new quic::QuicMessageFrame(
+            frame.message_frame->message_id,
+            quiche::QuicheMemSlice(quiche::QuicheBuffer::Copy(
+                quiche::SimpleBufferAllocator::Get(),
+                frame.message_frame->message_data.data()->AsStringView())));
         break;
       case quic::CRYPTO_FRAME:
         frame.crypto_frame = new quic::QuicCryptoFrame(*frame.crypto_frame);
@@ -688,6 +692,14 @@ std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::MakeDataPacket(
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
+QuicTestPacketMaker::MakeDatagramPacket(uint64_t packet_number,
+                                        std::string_view data) {
+  InitializeHeader(packet_number);
+  AddQuicMessageFrame(data);
+  return BuildPacket();
+}
+
+std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeAckAndDataPacket(uint64_t packet_number,
                                           quic::QuicStreamId stream_id,
                                           uint64_t largest_received,
@@ -698,7 +710,18 @@ QuicTestPacketMaker::MakeAckAndDataPacket(uint64_t packet_number,
 
   AddQuicAckFrame(largest_received, smallest_received);
   AddQuicStreamFrame(stream_id, fin, data);
+  return BuildPacket();
+}
 
+std::unique_ptr<quic::QuicReceivedPacket>
+QuicTestPacketMaker::MakeAckAndDatagramPacket(uint64_t packet_number,
+                                              uint64_t largest_received,
+                                              uint64_t smallest_received,
+                                              std::string_view data) {
+  InitializeHeader(packet_number);
+
+  AddQuicAckFrame(largest_received, smallest_received);
+  AddQuicMessageFrame(data);
   return BuildPacket();
 }
 
@@ -1115,6 +1138,14 @@ void QuicTestPacketMaker::AddQuicStreamsBlockedFrame(
   quic::QuicStreamsBlockedFrame streams_blocked_frame(
       control_frame_id, stream_count, unidirectional);
   frames_.push_back(quic::QuicFrame(streams_blocked_frame));
+  DVLOG(1) << "Adding frame: " << frames_.back();
+}
+
+void QuicTestPacketMaker::AddQuicMessageFrame(std::string_view data) {
+  auto* message_frame = new quic::QuicMessageFrame(
+      /*message_id=*/0, quiche::QuicheMemSlice(quiche::QuicheBuffer::Copy(
+                            quiche::SimpleBufferAllocator::Get(), data)));
+  frames_.push_back(quic::QuicFrame(message_frame));
   DVLOG(1) << "Adding frame: " << frames_.back();
 }
 

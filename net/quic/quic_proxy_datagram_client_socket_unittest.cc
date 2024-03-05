@@ -29,6 +29,7 @@
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_spdy_session_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,6 +48,13 @@ namespace {
 constexpr char kTestHeaderName[] = "Foo";
 
 }  // anonymous namespace
+
+class EstablishedCryptoStream : public quic::test::MockQuicCryptoStream {
+ public:
+  using quic::test::MockQuicCryptoStream::MockQuicCryptoStream;
+
+  bool encryption_established() const override { return true; }
+};
 
 class QuicProxyDatagramClientSocketTest : public QuicProxyClientSocketTestBase {
  public:
@@ -109,11 +117,19 @@ class QuicProxyDatagramClientSocketTest : public QuicProxyClientSocketTestBase {
   }
 
   void AssertWriteReturns(const char* data, int len, int rv) override {
-    CHECK(false);
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(len);
+    memcpy(buf->data(), data, len);
+    EXPECT_EQ(rv,
+              sock_->Write(buf.get(), buf->size(), write_callback_.callback(),
+                           TRAFFIC_ANNOTATION_FOR_TESTS));
   }
 
   void AssertSyncWriteSucceeds(const char* data, int len) override {
-    CHECK(false);
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(len);
+    memcpy(buf->data(), data, len);
+    EXPECT_EQ(len,
+              sock_->Write(buf.get(), buf->size(), CompletionOnceCallback(),
+                           TRAFFIC_ANNOTATION_FOR_TESTS));
   }
 
   void AssertSyncReadEquals(const char* data, int len) override {
@@ -244,6 +260,65 @@ TEST_P(QuicProxyDatagramClientSocketTest, ConnectFails) {
   AssertConnectFails(ERR_QUIC_PROTOCOL_ERROR);
 
   ASSERT_FALSE(sock_->IsConnected());
+}
+
+TEST_P(QuicProxyDatagramClientSocketTest, WriteSendsData) {
+  int packet_number = 1;
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructConnectRequestPacket(packet_number++));
+  mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
+  mock_quic_data_.AddReadPauseForever();
+
+  std::string quarter_stream_id(1, '\0');
+  std::string context_id(1, '\0');
+
+  mock_quic_data_.AddWrite(SYNCHRONOUS, ConstructAckAndDatagramPacket(
+                                            packet_number++, 1, 1,
+                                            {quarter_stream_id + context_id +
+                                             std::string(kMsg1, kLen1)}));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructDatagramPacket(packet_number++, {quarter_stream_id + context_id +
+                                                std::string(kMsg2, kLen2)}));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructRstPacket(packet_number++, quic::QUIC_STREAM_CANCELLED));
+
+  InitializeSession();
+
+  quic::test::QuicSpdySessionPeer::SetHttpDatagramSupport(
+      session_.get(), quic::HttpDatagramSupport::kRfc);
+
+  InitializeClientSocket();
+
+  AssertConnectSucceeds();
+
+  AssertSyncWriteSucceeds(kMsg1, kLen1);
+  AssertSyncWriteSucceeds(kMsg2, kLen2);
+}
+
+TEST_P(QuicProxyDatagramClientSocketTest, WriteOnClosedSocket) {
+  int packet_number = 1;
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructConnectRequestPacket(packet_number++));
+  mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
+  mock_quic_data_.AddReadPauseForever();
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructAckAndRstPacket(packet_number++,
+                                            quic::QUIC_STREAM_CANCELLED, 1, 1));
+
+  InitializeSession();
+  InitializeClientSocket();
+
+  AssertConnectSucceeds();
+
+  sock_->Close();
+
+  AssertWriteReturns(kMsg1, kLen1, ERR_SOCKET_NOT_CONNECTED);
 }
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
