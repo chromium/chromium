@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,11 +37,12 @@ TEST(MD5, MD5SumEmptyData) {
 
   MD5Sum(base::as_byte_span(std::string_view(data)), &digest);
 
-  int expected[] = {0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04,
-                    0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e};
+  const uint8_t expected[] = {0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04,
+                              0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e};
 
-  for (int i = 0; i < 16; ++i)
-    EXPECT_EQ(expected[i], digest.a[i] & 0xFF);
+  for (size_t i = 0; i < 16; ++i) {
+    EXPECT_EQ(expected[i], digest.a[i]);
+  }
 }
 
 TEST(MD5, MD5SumOneByteData) {
@@ -49,29 +51,31 @@ TEST(MD5, MD5SumOneByteData) {
 
   MD5Sum(base::as_byte_span(std::string_view(data)), &digest);
 
-  int expected[] = {0x0c, 0xc1, 0x75, 0xb9, 0xc0, 0xf1, 0xb6, 0xa8,
-                    0x31, 0xc3, 0x99, 0xe2, 0x69, 0x77, 0x26, 0x61};
+  const uint8_t expected[] = {0x0c, 0xc1, 0x75, 0xb9, 0xc0, 0xf1, 0xb6, 0xa8,
+                              0x31, 0xc3, 0x99, 0xe2, 0x69, 0x77, 0x26, 0x61};
 
-  for (int i = 0; i < 16; ++i)
-    EXPECT_EQ(expected[i], digest.a[i] & 0xFF);
+  for (size_t i = 0; i < 16; ++i) {
+    EXPECT_EQ(expected[i], digest.a[i]);
+  }
 }
 
 TEST(MD5, MD5SumLongData) {
   const size_t length = 10 * 1024 * 1024 + 1;
-  std::unique_ptr<char[]> data(new char[length]);
+  auto data = base::HeapArray<uint8_t>::Uninit(length);
 
-  for (size_t i = 0; i < length; ++i) {
-    data[i] = i & 0xFF;
+  size_t i = 0;
+  for (auto& datum : data) {
+    datum = i++ & 0xff;
   }
 
   MD5Digest digest;
-  MD5Sum(base::as_byte_span(base::span(data.get(), length)), &digest);
+  MD5Sum(data, &digest);
 
-  int expected[] = {0x90, 0xbd, 0x6a, 0xd9, 0x0a, 0xce, 0xf5, 0xad,
-                    0xaa, 0x92, 0x20, 0x3e, 0x21, 0xc7, 0xa1, 0x3e};
+  const uint8_t expected[] = {0x90, 0xbd, 0x6a, 0xd9, 0x0a, 0xce, 0xf5, 0xad,
+                              0xaa, 0x92, 0x20, 0x3e, 0x21, 0xc7, 0xa1, 0x3e};
 
-  for (size_t i = 0; i < 16; ++i) {
-    EXPECT_EQ(expected[i], digest.a[i] & 0xFF);
+  for (i = 0; i < 16; ++i) {
+    EXPECT_EQ(expected[i], digest.a[i]);
   }
 }
 
@@ -82,31 +86,34 @@ TEST(MD5, ContextWithEmptyData) {
   MD5Digest digest;
   MD5Final(&digest, &ctx);
 
-  int expected[] = {0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04,
-                    0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e};
+  const uint8_t expected[] = {0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04,
+                              0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e};
 
-  for (int i = 0; i < 16; ++i)
-    EXPECT_EQ(expected[i], digest.a[i] & 0xFF);
+  for (size_t i = 0; i < 16; ++i) {
+    EXPECT_EQ(expected[i], digest.a[i]);
+  }
 }
 
 TEST(MD5, ContextWithLongData) {
   MD5Context ctx;
   MD5Init(&ctx);
 
-  const int length = 10 * 1024 * 1024 + 1;
-  std::unique_ptr<char[]> data(new char[length]);
+  const size_t length = 10 * 1024 * 1024 + 1;
+  auto data = base::HeapArray<uint8_t>::Uninit(length);
 
-  for (int i = 0; i < length; ++i)
-    data[i] = i & 0xFF;
+  size_t i = 0;
+  for (auto& datum : data) {
+    datum = i++ & 0xff;
+  }
 
-  int total = 0;
-  while (total < length) {
-    int len = 4097;  // intentionally not 2^k.
-    if (len > length - total)
+  size_t total = 0;
+  while (total < data.size()) {
+    size_t len = 4097;  // intentionally not 2^k.
+    if (len > length - total) {
       len = length - total;
+    }
 
-    MD5Update(&ctx, std::string_view(
-                        reinterpret_cast<char*>(data.get() + total), len));
+    MD5Update(&ctx, data.subspan(total, len));
     total += len;
   }
 
@@ -115,11 +122,12 @@ TEST(MD5, ContextWithLongData) {
   MD5Digest digest;
   MD5Final(&digest, &ctx);
 
-  int expected[] = {0x90, 0xbd, 0x6a, 0xd9, 0x0a, 0xce, 0xf5, 0xad,
-                    0xaa, 0x92, 0x20, 0x3e, 0x21, 0xc7, 0xa1, 0x3e};
+  const uint8_t expected[] = {0x90, 0xbd, 0x6a, 0xd9, 0x0a, 0xce, 0xf5, 0xad,
+                              0xaa, 0x92, 0x20, 0x3e, 0x21, 0xc7, 0xa1, 0x3e};
 
-  for (int i = 0; i < 16; ++i)
-    EXPECT_EQ(expected[i], digest.a[i] & 0xFF);
+  for (i = 0; i < 16; ++i) {
+    EXPECT_EQ(expected[i], digest.a[i]);
+  }
 }
 
 // Example data from http://www.ietf.org/rfc/rfc1321.txt A.5 Test Suite
