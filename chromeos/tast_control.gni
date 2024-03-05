@@ -149,10 +149,6 @@ tast_disabled_tests_from_lacros_all = [
   # On branch day, Lacros is +3 newer than ash which break the test.
   "lacros.CompareVersionWithAsh",
 
-  # b/325107262
-  "a11y.Smoke",
-  "a11y.Smoke.lacros",
-
   # THIS IS THE LACROS LIST, SCROLL UP FOR CHROME/CHROMEOS.
 ]
 
