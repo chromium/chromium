@@ -128,12 +128,15 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
           }));
 
   base::HistogramTester histograms;
+  views::test::WidgetDestroyedWaiter destroyed_waiter(
+      GetBubbleView(browser())->GetWidget());
   GetBubbleView(browser())->CancelDialog();
   loop.Run();
+  destroyed_waiter.Wait();
 
-    histograms.ExpectUniqueSample(
-        "WebApp.InstallConfirmation.CloseReason",
-        views::Widget::ClosedReason::kCancelButtonClicked, 1);
+  histograms.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kCancelButtonClicked, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,

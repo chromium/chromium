@@ -121,11 +121,12 @@ void ShowPWAInstallBubble(
                                         delegate_weak_ptr),
                          ui::DialogModel::Button::Params().SetLabel(
                              l10n_util::GetStringUTF16(IDS_INSTALL)))
+            .AddCancelButton(base::BindOnce(
+                &WebAppInstallDialogDelegate::OnCancel, delegate_weak_ptr))
             .SetCloseActionCallback(base::BindOnce(
                 &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
             .SetDialogDestroyingCallback(base::BindOnce(
                 &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
-            .OverrideShowCloseButton(true)
             .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
             .AddCustomField(
                 std::make_unique<views::BubbleDialogModelHost::CustomView>(

@@ -423,7 +423,7 @@ void ShowWebAppDetailedInstallDialog(
                     views::BubbleDialogModelHost::FieldType::kControl))
             .SetDialogDestroyingCallback(base::BindOnce(
                 &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
-            .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
+            .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
             .Build();
   } else {
     dialog_model =
