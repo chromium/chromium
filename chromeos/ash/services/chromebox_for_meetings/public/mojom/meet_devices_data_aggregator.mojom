@@ -1,0 +1,62 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 1
+
+module ash.cfm.mojom;
+
+[Stable]
+struct DataFilter {
+  // The filter type used to trigger a watchdog notification
+  // REGEX = Trigger watchdog on a specified regex pattern
+  // CHANGE = Trigger watchdog if the previous output does not match the current
+  // Note: Change filter triggers on first add.
+  [Stable, Extensible]
+  enum FilterType {
+    [Default] REGEX,
+    CHANGE,
+  };
+
+  // The type of filter to trigger the watchdog on
+  FilterType filter_type@0;
+  // The pattern to use in the match, if applicable
+  string? pattern@1;
+};
+
+// A watchdog used to notify a client when input triggers a filter
+[Stable, Uuid="82f840c8-9a52-4c48-9212-b6f45c7a5b08"]
+interface DataWatchDog {
+  // Returns the filter associated with the watchdog
+  GetFilter@0()=>(DataFilter filter);
+  // Notifies the client that their filter was triggered
+  OnNotify@1(string data);
+};
+
+// Describes a single source of data (eg a log file)
+[Stable, Uuid="d2432515-005f-4571-888b-adbb312a9f49"]
+interface DataSource {
+  // Returns Data Source name
+  GetSourceName@0()=>(string source_name);
+  // Returns an array of serialised protos ready for transport
+  Fetch@1()=>(array<string> serialized_payloads);
+  // Adds a watchdog to the log source
+  AddWatchDog@2(pending_remote<DataWatchDog> watch_dog);
+  // Returns true if the data should be uploaded to cloud
+  // logging, else false
+  ShouldBeUploaded@3()=>(bool should_be_uploaded);
+};
+
+// The main implementation that is responsible for aggregating
+// CfM data into batches and processing them (eg uploading).
+// This provides the externally facing API to remote clients.
+[Stable, Uuid="fef40ea8-75b7-4b28-893f-22f55fbb3a8a"]
+interface DataAggregator {
+  // Returns a list of all currently tracked data sources
+  GetDataSourceNames@0()=>(array<string> data_source_names);
+  // Adds a new Data source to be collected
+  AddDataSource@1(pending_remote<DataSource> data_source);
+  // Adds a new Watchdog to a specified data source
+  // to inform a client when a specified trigger occurs
+  AddWatchDog@2(string source_name, pending_remote<DataWatchDog> watch_dog);
+};

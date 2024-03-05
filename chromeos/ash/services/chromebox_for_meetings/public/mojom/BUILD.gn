@@ -20,6 +20,7 @@ mojom("mojom") {
     sources += [
       "cfm_browser.mojom",
       "external_display_brightness.mojom",
+      "meet_devices_data_aggregator.mojom",
       "meet_devices_diagnostics.mojom",
       "meet_devices_info.mojom",
       "meet_devices_logger.mojom",
