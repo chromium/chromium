@@ -222,7 +222,7 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
         agent_group_scheduler_;
 
     // Owned by us, deleted via |close()|.
-    raw_ptr<blink::WebView> web_view_;
+    raw_ptr<blink::WebView, DanglingUntriaged> web_view_;
 
     mojo::AssociatedReceiver<blink::mojom::WidgetHost>
         blink_widget_host_receiver_{this};

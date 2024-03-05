@@ -67,7 +67,8 @@ class PLATFORM_EXPORT WebSourceBufferImpl : public WebSourceBuffer {
   void NotifyParseWarning(const media::SourceBufferParseWarning warning);
 
   std::string id_;
-  raw_ptr<media::ChunkDemuxer> demuxer_;  // Owned by WebMediaPlayerImpl.
+  // Owned by WebMediaPlayerImpl.
+  raw_ptr<media::ChunkDemuxer, DanglingUntriaged> demuxer_;
 
   raw_ptr<WebSourceBufferClient> client_;
 

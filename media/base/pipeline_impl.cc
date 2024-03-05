@@ -217,7 +217,7 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
   double playback_rate_;
   float volume_;
   std::optional<base::TimeDelta> latency_hint_;
-  raw_ptr<CdmContext> cdm_context_;
+  raw_ptr<CdmContext, DanglingUntriaged> cdm_context_ = nullptr;
 
   // By default, apply pitch adjustments.
   bool preserves_pitch_ = true;
@@ -266,7 +266,6 @@ PipelineImpl::RendererWrapper::RendererWrapper(
       demuxer_(nullptr),
       playback_rate_(kDefaultPlaybackRate),
       volume_(kDefaultVolume),
-      cdm_context_(nullptr),
       state_(kCreated),
       status_(PIPELINE_OK),
       renderer_ended_(false) {}
