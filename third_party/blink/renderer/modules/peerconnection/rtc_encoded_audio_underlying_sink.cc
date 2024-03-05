@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_underlying_sink.h"
 
-#include "base/feature_list.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -14,11 +13,6 @@
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
 namespace blink {
-
-// Killswitch base feature
-BASE_FEATURE(kRTCEncodedAudioFrameLimitSize,
-             "RTCEncodedAudioFrameLimitSize",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 RTCEncodedAudioUnderlyingSink::RTCEncodedAudioUnderlyingSink(
     ScriptState* script_state,
@@ -52,13 +46,6 @@ ScriptPromise RTCEncodedAudioUnderlyingSink::write(
   if (!transformer_broker_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Stream closed");
-    return ScriptPromise();
-  }
-
-  if (base::FeatureList::IsEnabled(kRTCEncodedAudioFrameLimitSize) &&
-      encoded_frame->IsDataTooLarge()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Frame too large");
     return ScriptPromise();
   }
 
