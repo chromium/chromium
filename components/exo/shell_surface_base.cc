@@ -160,13 +160,24 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
       return;
     }
 
+    aura::Window* window = GetWidget()->GetNativeWindow();
+    const ash::WindowState* window_state = ash::WindowState::Get(window);
+    std::optional<gfx::RoundedCornersF> window_radii =
+        shell_surface_->window_corners_radii();
+
+    int corner_radius = -1;
+    if (window_state->IsPip()) {
+      corner_radius = chromeos::kPipRoundedCornerRadius;
+    } else if (window_radii) {
+      // TODO(crbug.com/1415486): Support variable window radii.
+      DCHECK(IsRadiiUniform(window_radii.value()));
+      corner_radius = window_radii.value().upper_left();
+    }
+
     // TODO(b/302034956): Use `ApplyRoundedCornersToSurfaceTree()` to round pip
     // window as well.
     // Round a pip window. Pip windows are rounded by applying rounded corner
     // to host window using ui::Layer API.
-    const ash::WindowState* window_state =
-        ash::WindowState::Get(GetWidget()->GetNativeWindow());
-
     // When un-pipped (window state changed from pip), we must undo the
     // rounded corners of the host_window.
     const int pip_corner_radius =
@@ -179,22 +190,15 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
       layer->SetIsFastRoundedCorner(/*enable=*/!pip_radii.IsEmpty());
     }
 
+    // Various window decorations are rounded using `kWindowCornerRadiusKey`
+    // property.
+    window->SetProperty(aura::client::kWindowCornerRadiusKey, corner_radius);
+
     // If we have a pip window, ignore `window_radii`.
-    if (window_state->IsPip()) {
+    if (window_state->IsPip() ||
+        !chromeos::features::IsRoundedWindowsEnabled() || !window_radii) {
       return;
     }
-
-    std::optional<gfx::RoundedCornersF> window_radii =
-        shell_surface_->window_corners_radii();
-
-    if (!chromeos::features::IsRoundedWindowsEnabled() || !window_radii) {
-      return;
-    }
-
-    // TODO(crbug.com/1415486): Support variable window radii.
-    DCHECK(IsRadiiUniform(window_radii.value()));
-
-    const int corner_radius = window_radii->upper_left();
 
     if (GetFrameEnabled()) {
       header_view_->SetHeaderCornerRadius(corner_radius);
