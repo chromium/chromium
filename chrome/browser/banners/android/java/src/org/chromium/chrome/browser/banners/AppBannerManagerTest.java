@@ -683,7 +683,6 @@ public class AppBannerManagerTest {
     @Test
     @MediumTest
     @Feature({"AppBanners"})
-    @DisabledTest(message = "crbug.com/1144199")
     public void testBlockedModalNativeAppBannerResolveUserChoice() throws Exception {
         triggerModalNativeAppBanner(
                 mTabbedActivityTestRule,
