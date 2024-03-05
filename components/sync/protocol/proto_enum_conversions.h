@@ -58,9 +58,6 @@ const char* ProtoEnumToString(
 const char* ProtoEnumToString(
     sync_pb::ContactInfoSpecifics::VerificationStatus verification_status);
 
-const char* ProtoEnumToString(
-    sync_pb::GetUpdatesCallerInfo::GetUpdatesSource updates_source);
-
 const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type);
 
 const char* ProtoEnumToString(

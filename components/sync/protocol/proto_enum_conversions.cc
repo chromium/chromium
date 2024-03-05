@@ -139,17 +139,6 @@ const char* ProtoEnumToString(
   return "";
 }
 
-const char* ProtoEnumToString(
-    sync_pb::GetUpdatesCallerInfo::GetUpdatesSource updates_source) {
-  ASSERT_ENUM_BOUNDS(sync_pb::GetUpdatesCallerInfo, GetUpdatesSource, UNKNOWN,
-                     UNKNOWN);
-  switch (updates_source) {
-    ENUM_CASE(sync_pb::GetUpdatesCallerInfo, UNKNOWN);
-  }
-  NOTREACHED();
-  return "";
-}
-
 const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type) {
   ASSERT_ENUM_BOUNDS(sync_pb::NigoriSpecifics, PassphraseType, UNKNOWN,
                      TRUSTED_VAULT_PASSPHRASE);
