@@ -1,0 +1,1 @@
+preferred-platform=os,report-header-errors

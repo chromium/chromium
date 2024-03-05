@@ -37,8 +37,6 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrationInfo {
   //
   // `preferred-platform=web` or `preferred-platform=os` or
   // `report-header-errors` or `preferred-platform=web,report-header-errors`
-  //
-  // TODO(linnan): Add a fuzzer for Attribution-Reporting-Info header.
   static base::expected<RegistrationInfo, RegistrationInfoError> ParseInfo(
       std::string_view,
       bool cross_app_web_enabled);

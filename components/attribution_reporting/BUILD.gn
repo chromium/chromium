@@ -175,6 +175,18 @@ source_set("test_support") {
   deps = [ "//base" ]
 }
 
+fuzzer_test("parse_info_header_fuzzer") {
+  sources = [ "parse_info_header_fuzzer.cc" ]
+  deps = [
+    ":attribution_reporting",
+    "//base",
+    "//base:i18n",
+  ]
+
+  seed_corpus =
+      "//components/attribution_reporting/parse_info_header_fuzzer_corpus/"
+}
+
 fuzzer_test("parse_os_header_fuzzer") {
   sources = [ "parse_os_header_fuzzer.cc" ]
   deps = [
