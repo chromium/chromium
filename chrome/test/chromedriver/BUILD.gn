@@ -652,11 +652,6 @@ if (is_win || is_posix) {
 action("generate_chromedriver_license") {
   testonly = true
   _license_path = "$root_out_dir/LICENSE.chromedriver"
-  _extra_third_party_dirs = [
-    "third_party/selenium-atoms/sizzle",
-    "third_party/selenium-atoms/wgxpath",
-    "third_party/selenium-atoms/closure-lib",
-  ]
   script = "//tools/licenses/licenses.py"
   outputs = [ _license_path ]
   args = [
@@ -667,7 +662,6 @@ action("generate_chromedriver_license") {
     "--gn-out-dir",
     ".",
   ]
-  args += [ "--extra-third-party-dirs=$_extra_third_party_dirs" ]
   deps = [ ":chromedriver_server" ]
 }
 
