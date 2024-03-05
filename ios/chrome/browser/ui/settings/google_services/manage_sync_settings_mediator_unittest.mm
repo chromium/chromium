@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/central_account_view.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
+#import "ios/chrome/browser/ui/settings/google_services/features.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
@@ -165,6 +166,8 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 
   // Needed for the initialization of authentication service.
   IOSChromeScopedTestingLocalState local_state_;
+
+  base::test::ScopedFeatureList feature_list_;
 
   raw_ptr<syncer::MockSyncService> sync_service_mock_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -542,4 +545,44 @@ TEST_F(ManageSyncSettingsMediatorTest, TestAccountStateTransitionOnSignOut) {
   // Expected sections from the previous kSignedIn state should be showing and
   // no new sections are added in the kSignedOut state.
   EXPECT_EQ(3, [mediator_.consumer.tableViewModel numberOfSections]);
+}
+
+// Test that the GoogleActivityControlsItem is visible when the
+// LinkedServicesSettings flags is disabled.
+TEST_F(ManageSyncSettingsMediatorTest, TestGoogleActivityControlsItem) {
+  // Disable the LinkedServicesSettings flag.
+  feature_list_.InitAndDisableFeature(kLinkedServicesSettingIos);
+
+  // Create mediator with a signed-in account.
+  CreateManageSyncSettingsMediator(SyncSettingsAccountState::kSignedIn);
+  SimulateFirstSetupSyncOffWithSignedInAccount();
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // Get section items.
+  NSArray* items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
+
+  EXPECT_EQ(GoogleActivityControlsItemType,
+            base::apple::ObjCCastStrict<TableViewItem>(items[1]).type);
+}
+
+// Test that the PersonalizeGoogleServices is visible when the
+// LinkedServicesSettings flags is disabled.
+TEST_F(ManageSyncSettingsMediatorTest, TestPersonalizeGoogleServicesItem) {
+  // Enable the LinkedServicesSettings flag.
+  feature_list_.InitAndEnableFeature(kLinkedServicesSettingIos);
+
+  // Create mediator with a signed-in account.
+  CreateManageSyncSettingsMediator(SyncSettingsAccountState::kSignedIn);
+  SimulateFirstSetupSyncOffWithSignedInAccount();
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // Get section items.
+  NSArray* items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
+
+  EXPECT_EQ(PersonalizeGoogleServicesItemType,
+            base::apple::ObjCCastStrict<TableViewItem>(items[1]).type);
 }

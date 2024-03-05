@@ -51,6 +51,7 @@
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
+#import "ios/chrome/browser/ui/settings/google_services/features.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_consumer.h"
@@ -437,21 +438,43 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [model addItem:self.encryptionItem
       toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
 
-  // GoogleActivityControlsItemType.
-  TableViewImageItem* googleActivityControlsItem =
-      [[TableViewImageItem alloc] initWithType:GoogleActivityControlsItemType];
-  googleActivityControlsItem.accessoryView = [[UIImageView alloc]
-      initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
-                        kExternalLinkSymbol)];
-  googleActivityControlsItem.accessoryView.tintColor =
-      [UIColor colorNamed:kTextQuaternaryColor];
-  googleActivityControlsItem.title =
-      GetNSString(IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_TITLE);
-  googleActivityControlsItem.detailText =
-      GetNSString(IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_DESCRIPTION);
-  googleActivityControlsItem.accessibilityTraits |= UIAccessibilityTraitButton;
-  [model addItem:googleActivityControlsItem
-      toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
+  if (IsLinkedServicesSettingIosEnabled()) {
+    // PersonalizeGoogleServicesItemType.
+    TableViewImageItem* personalizeGoogleServicesItem =
+        [[TableViewImageItem alloc]
+            initWithType:PersonalizeGoogleServicesItemType];
+    // TODO(crbug.com/324091979): Different symbol for EEA users.
+    personalizeGoogleServicesItem.accessoryView = [[UIImageView alloc]
+        initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                          kExternalLinkSymbol)];
+    personalizeGoogleServicesItem.accessoryView.tintColor =
+        [UIColor colorNamed:kTextQuaternaryColor];
+    personalizeGoogleServicesItem.title =
+        GetNSString(IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_TITLE);
+    personalizeGoogleServicesItem.detailText = GetNSString(
+        IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION);
+    personalizeGoogleServicesItem.accessibilityTraits |=
+        UIAccessibilityTraitButton;
+    [model addItem:personalizeGoogleServicesItem
+        toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
+  } else {
+    // GoogleActivityControlsItemType.
+    TableViewImageItem* googleActivityControlsItem = [[TableViewImageItem alloc]
+        initWithType:GoogleActivityControlsItemType];
+    googleActivityControlsItem.accessoryView = [[UIImageView alloc]
+        initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                          kExternalLinkSymbol)];
+    googleActivityControlsItem.accessoryView.tintColor =
+        [UIColor colorNamed:kTextQuaternaryColor];
+    googleActivityControlsItem.title =
+        GetNSString(IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_TITLE);
+    googleActivityControlsItem.detailText =
+        GetNSString(IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_DESCRIPTION);
+    googleActivityControlsItem.accessibilityTraits |=
+        UIAccessibilityTraitButton;
+    [model addItem:googleActivityControlsItem
+        toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
+  }
 
   // AdvancedSettingsSectionIdentifier.
   TableViewImageItem* dataFromChromeSyncItem =
@@ -1190,6 +1213,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       case EncryptionItemType:
       case GoogleActivityControlsItemType:
       case DataFromChromeSync:
+      case PersonalizeGoogleServicesItemType:
       case PrimaryAccountReauthErrorItemType:
       case ShowPassphraseDialogErrorItemType:
       case SyncNeedsTrustedVaultKeyErrorItemType:
@@ -1231,6 +1255,10 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       break;
     case DataFromChromeSync:
       [self.commandHandler openDataFromChromeSyncWebPage];
+      break;
+    case PersonalizeGoogleServicesItemType:
+      // TODO(crbug.com/324091979): Different behavior for EEA users.
+      [self.commandHandler openWebAppActivityDialog];
       break;
     case PrimaryAccountReauthErrorItemType: {
       id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(

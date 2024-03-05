@@ -28,6 +28,7 @@ source_set("google_services") {
   ]
   deps = [
     ":constants",
+    ":features",
     ":parcel_tracking",
     "resources:google_services_enterprise",
     "//base",
@@ -228,6 +229,7 @@ source_set("unit_tests") {
     "parcel_tracking_settings_view_controller_unittest.mm",
   ]
   deps = [
+    ":features",
     ":google_services",
     ":parcel_tracking",
     "//base/test:test_support",

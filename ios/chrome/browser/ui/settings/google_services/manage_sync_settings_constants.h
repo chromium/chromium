@@ -92,6 +92,8 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   GoogleActivityControlsItemType,
   // Data from Chrome sync.
   DataFromChromeSync,
+  // Personalize Google services item.
+  PersonalizeGoogleServicesItemType,
   // SyncErrorsSectionIdentifier section.
   // Sync errors.
   PrimaryAccountReauthErrorItemType,
