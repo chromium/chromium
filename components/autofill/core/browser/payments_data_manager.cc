@@ -963,6 +963,17 @@ void PaymentsDataManager::ClearLocalCvcs() {
   Refresh();
 }
 
+void PaymentsDataManager::ClearAllCreditCardBenefits() {
+  if (!GetServerDatabase()) {
+    return;
+  }
+  // Clear all the credit card benefits from the webdata database.
+  GetServerDatabase()->ClearAllCreditCardBenefits();
+
+  // Refresh the local cache and send notifications to observers.
+  Refresh();
+}
+
 void PaymentsDataManager::ClearAllServerDataForTesting() {
   // This could theoretically be called before we get the data back from the
   // database on startup, and it could get called when the wallet pref is

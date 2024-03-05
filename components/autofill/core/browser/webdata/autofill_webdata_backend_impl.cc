@@ -114,7 +114,9 @@ enum class Result {
   kClearLocalCvcs_Failure = 273,
   kUpdateServerIbanMetadata_Success = 274,
   kUpdateServerIbanMetadata_Failure = 275,
-  kMaxValue = kUpdateServerIbanMetadata_Failure,
+  kClearAllCreditCardBenefits_Success = 276,
+  kClearAllCreditCardBenefits_Failure = 277,
+  kMaxValue = kClearAllCreditCardBenefits_Failure,
 };
 
 // Reports the success or failure of various operations on the database via UMA.
@@ -959,6 +961,18 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveOriginURLsModifiedBetween(
   // changes, e.g. by calling the Refresh() method of PersonalDataManager.
   ReportResult(Result::kRemoveOriginURLsModifiedBetween_Success);
   return WebDatabase::COMMIT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::ClearAllCreditCardBenefits(
+    WebDatabase* db) {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (PaymentsAutofillTable::FromWebDatabase(db)
+          ->ClearAllCreditCardBenefits()) {
+    ReportResult(Result::kClearAllCreditCardBenefits_Success);
+    return WebDatabase::COMMIT_NEEDED;
+  }
+  ReportResult(Result::kClearAllCreditCardBenefits_Failure);
+  return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
 }  // namespace autofill

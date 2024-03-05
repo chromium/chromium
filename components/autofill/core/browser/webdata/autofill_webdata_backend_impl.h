@@ -246,6 +246,9 @@ class AutofillWebDataBackendImpl
       const base::Time& delete_end,
       WebDatabase* db);
 
+  // Clears all the credit card benefits from the database.
+  WebDatabase::State ClearAllCreditCardBenefits(WebDatabase* db);
+
  protected:
   ~AutofillWebDataBackendImpl() override;
 

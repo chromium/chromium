@@ -348,6 +348,13 @@ WebDataServiceBase::Handle AutofillWebDataService::GetMaskedBankAccounts(
       consumer);
 }
 
+void AutofillWebDataService::ClearAllCreditCardBenefits() {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::ClearAllCreditCardBenefits,
+                     autofill_backend_));
+}
+
 void AutofillWebDataService::ClearAllServerData() {
   wdbs_->ScheduleDBTask(
       FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::ClearAllServerData,

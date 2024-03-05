@@ -591,6 +591,10 @@ CreditCard* PersonalDataManager::GetCreditCardByServerId(
   return payments_data_manager_->GetCreditCardByServerId(server_id);
 }
 
+void PersonalDataManager::ClearAllCreditCardBenefits() {
+  payments_data_manager_->ClearAllCreditCardBenefits();
+}
+
 bool PersonalDataManager::IsDataLoaded() const {
   return address_data_manager_->has_initial_load_finished_ &&
          payments_data_manager_->is_payments_data_loaded_;

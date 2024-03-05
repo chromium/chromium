@@ -365,6 +365,9 @@ class PersonalDataManager : public KeyedService,
   // match.
   CreditCard* GetCreditCardByServerId(const std::string& server_id);
 
+  // Clears all the credit card benefits from the webdata database.
+  void ClearAllCreditCardBenefits();
+
   // Add the credit-card-linked benefit to local cache for tests. This does
   // not affect data in the real database.
   void AddCreditCardBenefitForTest(CreditCardBenefit benefit) {
@@ -710,7 +713,7 @@ class PersonalDataManager : public KeyedService,
   // TODO(b/322170538): The `PaymentsDataManager` shouldn't depend on the PDM
   // at all, let alone befriend it.
   friend class PaymentsDataManager;
-
+  friend class PersonalDataManagerTestApi;
   // Used to get a pointer to the strike database for migrating existing
   // profiles. Note, the result can be a nullptr, for example, on incognito
   // mode.

@@ -1591,6 +1591,8 @@ Called by update_autofill_enums.py.-->
   <int value="273" label="ClearLocalCvcs: Failure"/>
   <int value="274" label="UpdateServerIbanMetadata: Success"/>
   <int value="275" label="UpdateServerIbanMetadata: Failure"/>
+  <int value="276" label="ClearAllCreditCardBenefits: Success"/>
+  <int value="277" label="ClearAllCreditCardBenefits: Failure"/>
 </enum>
 
 <enum name="AutoScreenBrightnessAlsReaderStatus">

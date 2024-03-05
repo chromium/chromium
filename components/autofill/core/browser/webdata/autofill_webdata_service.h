@@ -208,6 +208,9 @@ class AutofillWebDataService : public WebDataServiceBase {
   WebDataServiceBase::Handle GetMaskedBankAccounts(
       WebDataServiceConsumer* consumer);
 
+  // Clears all the credit card benefits from the database.
+  void ClearAllCreditCardBenefits();
+
   void ClearAllServerData();
   void ClearAllLocalData();
 

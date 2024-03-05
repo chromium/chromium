@@ -204,6 +204,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   void RemoveServerCvc(int64_t instrument_id);
   virtual void ClearServerCvcs();
 
+  // Clears all the credit card benefits from the webdata database.
+  void ClearAllCreditCardBenefits();
+
   // Method to clear all local CVCs from the local web database.
   virtual void ClearLocalCvcs();
 
@@ -245,6 +248,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
  protected:
   // TODO(b/322170538): Remove dependency.
   friend class PersonalDataManager;
+  friend class PersonalDataManagerTestApi;
   friend class TestPersonalDataManager;
 
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
