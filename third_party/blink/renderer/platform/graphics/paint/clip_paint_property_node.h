@@ -60,15 +60,6 @@ class PLATFORM_EXPORT ClipPaintPropertyNodeOrAlias
 
  protected:
   using PaintPropertyNodeBase::PaintPropertyNodeBase;
-
- private:
-  template <bool (TransformPaintPropertyNodeOrAlias::*ChangedMethod)(
-      PaintPropertyChangeType,
-      const TransformPaintPropertyNodeOrAlias&) const>
-  bool ChangedInternal(
-      PaintPropertyChangeType change,
-      const PropertyTreeState& relative_to_state,
-      const TransformPaintPropertyNodeOrAlias* transform_not_to_check) const;
 };
 
 class ClipPaintPropertyNodeAlias final : public ClipPaintPropertyNodeOrAlias {
