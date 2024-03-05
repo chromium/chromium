@@ -56,6 +56,7 @@
 #include "ash/wm/wm_metrics.h"
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -317,12 +318,51 @@ class SplitViewController::DividerSnapAnimation
     DCHECK(split_view_controller_->InSplitViewMode());
     DCHECK(!split_view_controller_->IsResizingWithDivider());
 
+    // TODO(b/327685487): Remove these when the crash is fixed.
+    const int divider_position_before_tween =
+        split_view_controller_->GetDividerPosition();
     split_view_controller_->SetDividerPosition(
         CurrentValueBetween(starting_position_, ending_position_));
+    const int divider_position_after_tween =
+        split_view_controller_->GetDividerPosition();
     split_view_controller_->NotifyDividerPositionChanged();
+    const int divider_position_after_notify =
+        split_view_controller_->GetDividerPosition();
     split_view_controller_->UpdateSnappedWindowsAndDividerBounds();
+    const int divider_position_after_update =
+        split_view_controller_->GetDividerPosition();
+
     // Updating the window may stop animation.
     if (is_animating()) {
+      // Map the tablet resize mode to a string.
+      base::flat_map<SplitViewController::TabletResizeMode, std::string>
+          resize_mode_as_string = {
+              {SplitViewController::TabletResizeMode::kNormal, "kNormal"},
+              {SplitViewController::TabletResizeMode::kFast, "kFast"},
+          };
+      SCOPED_CRASH_KEY_STRING32(
+          "b327685487", "tablet_resize_mode",
+          resize_mode_as_string[split_view_controller_->tablet_resize_mode_]);
+      SCOPED_CRASH_KEY_BOOL("b327685487", "in_tablet_mode", InTabletMode());
+      SCOPED_CRASH_KEY_BOOL(
+          "b327685487", "has_divider_widget",
+          !!split_view_controller_->split_view_divider()->divider_widget());
+      SCOPED_CRASH_KEY_BOOL("b327685487", "in_split_view",
+                            split_view_controller_->InSplitViewMode());
+      SCOPED_CRASH_KEY_BOOL("b327685487", "is_divider_resizing",
+                            split_view_controller_->IsResizingWithDivider());
+      SCOPED_CRASH_KEY_NUMBER("b327685487", "before_tween",
+                              divider_position_before_tween);
+      SCOPED_CRASH_KEY_NUMBER("b327685487", "after_tween",
+                              divider_position_after_tween);
+      SCOPED_CRASH_KEY_NUMBER("b327685487", "after_notify",
+                              divider_position_after_notify);
+      SCOPED_CRASH_KEY_NUMBER("b327685487", "after_update",
+                              divider_position_after_update);
+      SCOPED_CRASH_KEY_NUMBER("b327685487", "starting_position",
+                              starting_position_);
+      SCOPED_CRASH_KEY_NUMBER("b327685487", "ending_position",
+                              ending_position_);
       split_view_controller_->UpdateResizeBackdrop();
       split_view_controller_->SetWindowsTransformDuringResizing();
     }
