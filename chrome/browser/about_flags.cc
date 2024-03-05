@@ -8880,16 +8880,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAlignWakeUpsDescription, kOsAll,
      FEATURE_VALUE_TYPE(base::kAlignWakeUps)},
 
-    {"enable-throttle-display-none-and-visibility-hidden-cross-origin-iframes",
-     flag_descriptions::
-         kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesName,
-     flag_descriptions::
-         kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         blink::features::
-             kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes)},
-
     {"enable-new-base-url-inheritance-behavior",
      flag_descriptions::kNewBaseUrlInheritanceBehaviorName,
      flag_descriptions::kNewBaseUrlInheritanceBehaviorDescription,

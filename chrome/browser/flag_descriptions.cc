@@ -3366,18 +3366,6 @@ const char kTopChromeTouchUiName[] = "Touch UI Layout";
 const char kTopChromeTouchUiDescription[] =
     "Enables touch UI layout in the browser's top chrome.";
 
-const char kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesName[] =
-    "Throttle non-visible cross-origin iframes";
-const char
-    kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesDescription[] =
-        "When enabled, all cross-origin iframes with zero visibility (either "
-        "display:none or zero viewport intersection with non-zero area) will be"
-        " throttled, regardless of whether they are same-process or "
-        "cross-process. When disabled, throttling for cross-process iframes is "
-        "the same, but for same-process iframes throttling only occurs when "
-        "the frame has zero viewport intersection, a non-zero area, and is "
-        "not display:none.";
-
 const char kNewBaseUrlInheritanceBehaviorName[] =
     "Enable new base url inheritance behaviors for srcdoc and about:blank";
 const char kNewBaseUrlInheritanceBehaviorDescription[] =

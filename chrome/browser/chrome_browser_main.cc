@@ -1165,14 +1165,6 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 #endif
 
   if (local_state->IsManagedPreference(
-          prefs::kThrottleNonVisibleCrossOriginIframesAllowed) &&
-      !local_state->GetBoolean(
-          prefs::kThrottleNonVisibleCrossOriginIframesAllowed)) {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        blink::switches::kDisableThrottleNonVisibleCrossOriginIframes);
-  }
-
-  if (local_state->IsManagedPreference(
           prefs::kNewBaseUrlInheritanceBehaviorAllowed) &&
       !local_state->GetBoolean(prefs::kNewBaseUrlInheritanceBehaviorAllowed)) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(

@@ -2235,10 +2235,6 @@ BASE_FEATURE(kThreadedPreloadScanner,
              "ThreadedPreloadScanner",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,
-             "ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable throttling of fetch() requests from service workers in the
 // installing state.  The limit of 3 was chosen to match the limit
 // in background main frames.  In addition, trials showed that this
@@ -2527,17 +2523,6 @@ bool IsParkableImagesToDiskEnabled() {
 
 bool IsSetTimeoutWithoutClampEnabled() {
   return base::FeatureList::IsEnabled(features::kSetTimeoutWithoutClamp);
-}
-
-bool IsThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled() {
-  static bool throttling_disabled =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableThrottleNonVisibleCrossOriginIframes);
-
-  return !throttling_disabled &&
-         base::FeatureList::IsEnabled(
-             features::
-                 kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes);
 }
 
 bool IsUnloadBlocklisted() {

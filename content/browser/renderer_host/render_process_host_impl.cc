@@ -3502,7 +3502,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     blink::switches::kDisableNewBaseUrlInheritanceBehavior,
     blink::switches::kDisablePreferCompositingToLCDText,
     blink::switches::kDisableRGBA4444Textures,
-    blink::switches::kDisableThrottleNonVisibleCrossOriginIframes,
     blink::switches::kEnableLeakDetectionHeapSnapshot,
     blink::switches::kEnableLowResTiling,
     blink::switches::kEnablePreferCompositingToLCDText,

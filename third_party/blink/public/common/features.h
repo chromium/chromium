@@ -1470,14 +1470,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedBodyLoader);
 // If enabled, the HTMLPreloadScanner will run on a worker thread.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedPreloadScanner);
 
-// Forces same-process display:none cross-origin iframes to be throttled in the
-// same manner that OOPIFs are.
-// Note: this feature should never be accessed directly. Instead, use
-// IsThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled defined
-// below.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThrottleInstallingServiceWorker);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kInstallingServiceWorkerOutstandingThrottledLimit;
@@ -1611,12 +1603,6 @@ BLINK_COMMON_EXPORT bool IsParkableImagesToDiskEnabled();
 BLINK_COMMON_EXPORT bool IsPlzDedicatedWorkerEnabled();
 
 BLINK_COMMON_EXPORT bool IsSetTimeoutWithoutClampEnabled();
-
-// Use to determine if iframe throttling is enabled via the feature
-// kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes and not disabled
-// via enterprise policy.
-BLINK_COMMON_EXPORT bool
-IsThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled();
 
 // Returns if unload handlers are considered as a blocklisted reason for
 // back/forward cache.
