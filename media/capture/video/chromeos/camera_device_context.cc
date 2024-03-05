@@ -4,6 +4,8 @@
 
 #include "media/capture/video/chromeos/camera_device_context.h"
 
+#include <string>
+
 #include "base/strings/string_number_conversions.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 
@@ -15,6 +17,9 @@ CameraDeviceContext::CameraDeviceContext()
       screen_rotation_(0),
       frame_rotation_at_source_(true) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+
+  base::SysInfo::GetHardwareInfo(base::BindOnce(
+      &CameraDeviceContext::OnGotHardwareInfo, weak_ptr_factory_.GetWeakPtr()));
 }
 
 CameraDeviceContext::~CameraDeviceContext() = default;
@@ -92,7 +97,10 @@ void CameraDeviceContext::SubmitCapturedVideoCaptureBuffer(
   }
 
   client->second->OnIncomingCapturedBufferExt(
-      std::move(buffer), frame_format, gfx::ColorSpace(), reference_time,
+      std::move(buffer), frame_format,
+      // TODO(b/322448224): It is a workaround and should be removed once we
+      // have a general solution for b/40626119.
+      color_space_override_.value_or(gfx::ColorSpace()), reference_time,
       timestamp, std::nullopt, gfx::Rect(frame_format.frame_size),
       std::move(metadata));
 }
@@ -175,6 +183,14 @@ void CameraDeviceContext::OnCaptureConfigurationChanged() {
   base::AutoLock lock(client_lock_);
   for (const auto& client : clients_) {
     client.second->OnCaptureConfigurationChanged();
+  }
+}
+
+void CameraDeviceContext::OnGotHardwareInfo(
+    base::SysInfo::HardwareInfo hardware_info) {
+  base::AutoLock lock(client_lock_);
+  if (hardware_info.model.starts_with("screebo")) {
+    color_space_override_ = gfx::ColorSpace::CreateSRGB();
   }
 }
 
