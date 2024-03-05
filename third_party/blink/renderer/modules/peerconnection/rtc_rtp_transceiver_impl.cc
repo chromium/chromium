@@ -189,17 +189,17 @@ class RTCRtpTransceiverImpl::RTCRtpTransceiverInternal
           native_peer_connection,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
       RtpTransceiverState state,
-      bool encoded_insertable_streams)
+      bool require_encoded_insertable_streams)
       : main_task_runner_(state.main_task_runner()),
         signaling_task_runner_(state.signaling_task_runner()),
         webrtc_transceiver_(state.webrtc_transceiver()),
         state_(std::move(state)) {
     sender_ = std::make_unique<blink::RTCRtpSenderImpl>(
         native_peer_connection, track_map, state_.MoveSenderState(),
-        encoded_insertable_streams);
+        require_encoded_insertable_streams);
     receiver_ = std::make_unique<blink::RTCRtpReceiverImpl>(
         native_peer_connection, state_.MoveReceiverState(),
-        encoded_insertable_streams);
+        require_encoded_insertable_streams);
   }
 
   const RtpTransceiverState& state() const {

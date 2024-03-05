@@ -45,12 +45,21 @@ class RTCRtpReceiver final : public ScriptWrappable,
  public:
   enum class MediaKind { kAudio, kVideo };
 
-  // Takes ownership of the receiver.
+  // If |require_encoded_insertable_streams| is true, no received frames will be
+  // passed to the decoder until |createEncodedStreams()| has been called and
+  // the frames have been transformed and passed back to the returned
+  // WritableStream. If it's false, during construction a task will be posted to
+  // |encoded_transform_shortcircuit_runner| to check if
+  // |createEncodedStreams()| has been called yet and if not will tell the
+  // underlying WebRTC receiver to 'short circuit' the transform, so frames will
+  // flow directly to the decoder.
   RTCRtpReceiver(RTCPeerConnection*,
                  std::unique_ptr<RTCRtpReceiverPlatform>,
                  MediaStreamTrack*,
                  MediaStreamVector,
-                 bool encoded_insertable_streams);
+                 bool require_encoded_insertable_streams,
+                 scoped_refptr<base::SequencedTaskRunner>
+                     encoded_transform_shortcircuit_runner);
 
   static RTCRtpCapabilities* getCapabilities(ScriptState* state,
                                              const String& kind);
@@ -112,6 +121,10 @@ class RTCRtpReceiver final : public ScriptWrappable,
       RTCEncodedVideoUnderlyingSink* new_underlying_sink);
   void LogMessage(const std::string& message);
 
+  // If createEncodedStreams has not yet been called, instead tell the webrtc
+  // encoded transform to 'short circuit', skipping calling the transform.
+  void MaybeShortCircuitEncodedStreams();
+
   Member<RTCPeerConnection> pc_;
   std::unique_ptr<RTCRtpReceiverPlatform> receiver_;
   Member<MediaStreamTrack> track_;
@@ -127,10 +140,6 @@ class RTCRtpReceiver final : public ScriptWrappable,
   // observed delay may differ depending on the congestion control. |nullopt|
   // means default value must be used.
   absl::optional<double> playout_delay_hint_;
-
-  // Insertable Streams flag, |True| if the receiver has been configured to
-  // use Encoded Insertable Streams.
-  bool encoded_insertable_streams_;
 
   THREAD_CHECKER(thread_checker_);
 
@@ -157,6 +166,7 @@ class RTCRtpReceiver final : public ScriptWrappable,
   Member<RTCInsertableStreams> encoded_video_streams_;
   const scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
       encoded_video_transformer_;
+  bool transform_shortcircuited_;
 };
 
 }  // namespace blink

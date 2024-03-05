@@ -41,6 +41,7 @@ class MockWebRtcTransformedFrameCallback
  public:
   MOCK_METHOD1(OnTransformedFrame,
                void(std::unique_ptr<webrtc::TransformableFrameInterface>));
+  MOCK_METHOD0(StartShortCircuiting, void());
 };
 
 class MockTransformerCallbackHolder {
@@ -135,6 +136,24 @@ TEST_F(RTCEncodedVideoStreamTransformerTest, IgnoresSsrcForSinglecast) {
       .WillRepeatedly(Return(kNonexistentSSRC));
   encoded_video_stream_transformer_.SendFrameToSink(std::move(mock_frame));
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(RTCEncodedVideoStreamTransformerTest, ShortCircuitingPropagated) {
+  EXPECT_CALL(*webrtc_callback_, StartShortCircuiting);
+  encoded_video_stream_transformer_.StartShortCircuiting();
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(RTCEncodedVideoStreamTransformerTest,
+       ShortCircuitingSetOnLateRegisteredCallback) {
+  EXPECT_CALL(*webrtc_callback_, StartShortCircuiting);
+  encoded_video_stream_transformer_.StartShortCircuiting();
+
+  rtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_2(
+      new rtc::RefCountedObject<MockWebRtcTransformedFrameCallback>());
+  EXPECT_CALL(*webrtc_callback_2, StartShortCircuiting);
+  encoded_video_stream_transformer_.RegisterTransformedFrameSinkCallback(
+      webrtc_callback_2, kSSRC + 1);
 }
 
 }  // namespace blink
