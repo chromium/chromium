@@ -231,8 +231,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-collapse.html"));
 }
 
+// TODO(crbug.com/40844027): Flaky on win
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AccessibilityEventsAriaComboBoxExpand \
+  DISABLED_AccessibilityEventsAriaComboBoxExpand
+#else
+#define MAYBE_AccessibilityEventsAriaComboBoxExpand \
+  AccessibilityEventsAriaComboBoxExpand
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsAriaComboBoxExpand) {
+                       MAYBE_AccessibilityEventsAriaComboBoxExpand) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-expand.html"));
 }
 
@@ -369,8 +377,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-treeitem-focus.html"));
 }
 
+// TODO(crbug.com/40844027): Flaky on win
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AccessibilityEventsAriaComboBoxFocus \
+  DISABLED_AccessibilityEventsAriaComboBoxFocus
+#else
+#define MAYBE_AccessibilityEventsAriaComboBoxFocus \
+  AccessibilityEventsAriaComboBoxFocus
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsAriaComboBoxFocus) {
+                       MAYBE_AccessibilityEventsAriaComboBoxFocus) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-focus.html"));
 }
 
@@ -393,8 +409,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-delay-show-list.html"));
 }
 
+// TODO(crbug.com/40844027): Flaky on win
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AccessibilityEventsAriaComboBoxNext \
+  DISABLED_AccessibilityEventsAriaComboBoxNext
+#else
+#define MAYBE_AccessibilityEventsAriaComboBoxNext \
+  AccessibilityEventsAriaComboBoxNext
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsAriaComboBoxNext) {
+                       MAYBE_AccessibilityEventsAriaComboBoxNext) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-next.html"));
 }
 
@@ -764,8 +788,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("listbox-focus.html"));
 }
 
+// TODO(crbug.com/40844027): Flaky on win
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AccessibilityEventsListboxNext \
+  DISABLED_AccessibilityEventsListboxNext
+#else
+#define MAYBE_AccessibilityEventsListboxNext AccessibilityEventsListboxNext
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsListboxNext) {
+                       MAYBE_AccessibilityEventsListboxNext) {
   RunEventTest(FILE_PATH_LITERAL("listbox-next.html"));
 }
 
@@ -833,8 +864,16 @@ IN_PROC_BROWSER_TEST_P(
       FILE_PATH_LITERAL("live-region-change-on-freshly-unignored-node.html"));
 }
 
+// TODO(crbug.com/40844027): Flaky on win
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AccessibilityEventsMenuListCollapse \
+  DISABLED_AccessibilityEventsMenuListCollapse
+#else
+#define MAYBE_AccessibilityEventsMenuListCollapse \
+  AccessibilityEventsMenuListCollapse
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsMenuListCollapse) {
+                       MAYBE_AccessibilityEventsMenuListCollapse) {
   RunEventTest(FILE_PATH_LITERAL("menulist-collapse.html"));
 }
 
