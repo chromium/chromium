@@ -851,7 +851,10 @@ void HTMLInputElement::ParseAttribute(
         autocomplete_ = kOn;
     }
   } else if (name == html_names::kTypeAttr) {
-    if (params.old_value != value) {
+    if ((!RuntimeEnabledFeatures::
+             SkipUpdateTypeForHTMLInputElementCreatedByParserEnabled() ||
+         params.reason != AttributeModificationReason::kByParser) &&
+        params.old_value != value) {
       UpdateType(value);
     }
   } else if (name == html_names::kValueAttr) {
