@@ -81,19 +81,12 @@ import './screens/oobe/oobe_network.js';
 import './screens/oobe/packaged_license.js';
 import './screens/oobe/update.js';
 
-//TODO(b/324392321) Move type definition to oobe_types after its TS migration
-export interface OobeScreen {
-  tag: string;
-  id: string;
-  condition?: string;
-  extra_classes?: string[];
-}
-export interface ScreensList extends Array<OobeScreen>{}
+import {OobeTypes} from './components/oobe_types.js';
 
 /**
  * List of screens that are used for both `oobe` and `login` flows.
  */
-export const commonScreensList: ScreensList = [
+export const commonScreensList: OobeTypes.ScreensList = [
   {tag: 'adb-sideloading-element', id: 'adb-sideloading'},
   {tag: 'add-child-element', id: 'add-child'},
   {tag: 'app-downloading-element', id: 'app-downloading'},
@@ -207,7 +200,7 @@ export const commonScreensList: ScreensList = [
 /**
  * List of screens that are used during the `login` flow only.
  */
-export const loginScreensList: ScreensList = [
+export const loginScreensList: OobeTypes.ScreensList = [
   {
     tag: 'arc-vm-data-migration-element',
     id: 'arc-vm-data-migration',
@@ -238,7 +231,7 @@ export const loginScreensList: ScreensList = [
 /**
  * List of screens that are used during the `oobe` flow only.
  */
-export const oobeScreensList: ScreensList = [
+export const oobeScreensList: OobeTypes.ScreensList = [
   {tag: 'auto-enrollment-check-element', id: 'auto-enrollment-check'},
   {
     tag: 'consumer-update-element',

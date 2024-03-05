@@ -6,7 +6,7 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {$} from '//resources/js/util.js';
 
-import {ScreensList} from './screens.js';
+import {OobeTypes} from './components/oobe_types.js';
 
 /**
  * Listens to key events on input element.
@@ -32,7 +32,8 @@ export function addSubmitListener(
  * the `condition` property associated with a boolean flag. If the condition
  * yields true it will be added, otherwise it is skipped.
  */
-export function addScreensToMainContainer(screenList: ScreensList): void {
+export function addScreensToMainContainer(
+    screenList: OobeTypes.ScreensList): void {
   const screenContainer = $('inner-container');
   assert(screenContainer);
 

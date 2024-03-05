@@ -56,6 +56,14 @@ export namespace OobeTypes {
     selected?: boolean;
   }
 
+  export interface OobeScreen {
+    tag: string;
+    id: string;
+    condition?: string;
+    extra_classes?: string[];
+  }
+  export interface ScreensList extends Array<OobeScreen>{}
+
   /**
    * OOBE configuration, allows automation during OOBE.
    * Keys are also listed in chrome/browser/ash/login/configuration_keys.h
