@@ -4,7 +4,6 @@
 
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
 
-#include <stdint.h>
 #include <algorithm>
 #include <iterator>
 #include <map>
@@ -18,7 +17,6 @@
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stacks/call_stack_profile_encoding.h"
@@ -231,15 +229,6 @@ void CallStackProfileBuilder::OnSampleCompleted(
   if (profile_start_time_.is_null())
     profile_start_time_ = sample_timestamp;
 
-  // Write timestamps to protobuf message. Currently the timestamps are only
-  // used for browser process to apply LCP tags. The browser process will clear
-  // the timestamps information once it is done with LCP tagging. Timestamps
-  // will not be included in the final profile sent to UMA.
-  const int64_t offset =
-      (sample_timestamp - profile_start_time_).InMilliseconds();
-  stack_sample_proto->set_sample_time_offset_ms(
-      base::saturated_cast<int32_t>(offset));
-
   sample_timestamps_.push_back(sample_timestamp);
 }
 
@@ -252,14 +241,6 @@ void CallStackProfileBuilder::OnProfileCompleted(
   call_stack_profile->set_profile_duration_ms(
       profile_duration.InMilliseconds());
   call_stack_profile->set_sampling_period_ms(sampling_period.InMilliseconds());
-
-  // Heap profiler sets `profile_time_offset_ms` through constructor.
-  // For CPU profiles, `profile_time_offset_ms` is the time of the first
-  // sample.
-  if (!call_stack_profile->has_profile_time_offset_ms()) {
-    call_stack_profile->set_profile_time_offset_ms(
-        profile_start_time_.since_origin().InMilliseconds());
-  }
 
   // Write CallStackProfile::ModuleIdentifier protobuf message.
   for (const base::ModuleCache::Module* module : modules_) {
