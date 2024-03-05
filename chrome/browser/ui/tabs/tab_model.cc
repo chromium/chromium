@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace tabs {
@@ -41,6 +42,18 @@ void TabModel::OnRemovedFromModel() {
   pinned_ = false;
   blocked_ = false;
   group_ = std::nullopt;
+}
+
+TabCollection* TabModel::GetParentCollection(
+    base::PassKey<TabCollection>) const {
+  CHECK(base::FeatureList::IsEnabled(features::kTabStripCollectionStorage));
+  return parent_collection_;
+}
+
+void TabModel::OnReparented(TabCollection* parent,
+                            base::PassKey<TabCollection>) {
+  CHECK(base::FeatureList::IsEnabled(features::kTabStripCollectionStorage));
+  parent_collection_ = parent;
 }
 
 void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {

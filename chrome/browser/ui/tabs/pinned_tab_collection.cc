@@ -20,57 +20,56 @@ PinnedTabCollection::~PinnedTabCollection() = default;
 
 void PinnedTabCollection::AddTab(std::unique_ptr<TabModel> tab_model,
                                  size_t index) {
-  NOTIMPLEMENTED();
+  TabModel* inserted_tab_model = impl_->AddTab(std::move(tab_model), index);
+  inserted_tab_model->set_pinned(/*pinned=*/true);
+  inserted_tab_model->OnReparented(this, GetPassKey());
 }
 
 void PinnedTabCollection::AppendTab(std::unique_ptr<TabModel> tab_model) {
-  NOTIMPLEMENTED();
+  AddTab(std::move(tab_model), ChildCount());
 }
 
 void PinnedTabCollection::MoveTab(TabModel* tab_model, size_t index) {
-  NOTIMPLEMENTED();
+  impl_->MoveTab(tab_model, index);
 }
 
 void PinnedTabCollection::CloseTab(TabModel* tab_model) {
-  NOTIMPLEMENTED();
+  impl_->CloseTab(tab_model);
 }
 
 bool PinnedTabCollection::ContainsTabRecursive(TabModel* tab_model) const {
-  NOTIMPLEMENTED();
-  return false;
+  return impl_->ContainsTab(tab_model);
 }
 
 bool PinnedTabCollection::ContainsCollection(TabCollection* collection) const {
-  NOTIMPLEMENTED();
   return false;
 }
 
 std::optional<size_t> PinnedTabCollection::GetIndexOfTabRecursive(
     TabModel* tab_model) const {
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  return impl_->GetIndexOfTab(tab_model);
 }
 
 std::optional<size_t> PinnedTabCollection::GetIndexOfCollection(
     TabCollection* collection) const {
-  NOTIMPLEMENTED();
   return std::nullopt;
 }
 
 std::unique_ptr<TabModel> PinnedTabCollection::MaybeRemoveTab(
     TabModel* tab_model) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  std::unique_ptr<TabModel> removed_tab_model = impl_->RemoveTab(tab_model);
+  removed_tab_model->set_pinned(/*pinned=*/false);
+  removed_tab_model->OnReparented(nullptr, GetPassKey());
+  return removed_tab_model;
 }
 
 size_t PinnedTabCollection::ChildCount() const {
-  NOTIMPLEMENTED();
-  return 0;
+  return impl_->GetChildrenCount();
 }
 
 size_t PinnedTabCollection::TabCountRecursive() const {
-  NOTIMPLEMENTED();
-  return 0;
+  // Same as total number of children since there are no child collections.
+  return ChildCount();
 }
 
 std::unique_ptr<TabCollection> PinnedTabCollection::MaybeRemoveCollection(
