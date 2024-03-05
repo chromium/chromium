@@ -303,6 +303,15 @@ double CSSPrimitiveValue::ComputeDegrees(
   return CSSValueClampingUtils::ClampAngle(result);
 }
 
+double CSSPrimitiveValue::ComputeSeconds(
+    const CSSLengthResolver& length_resolver) const {
+  double result =
+      IsCalculated()
+          ? To<CSSMathFunctionValue>(this)->ComputeSeconds(length_resolver)
+          : To<CSSNumericLiteralValue>(this)->ComputeSeconds();
+  return CSSValueClampingUtils::ClampTime(result);
+}
+
 template <>
 int CSSPrimitiveValue::ComputeLength(
     const CSSLengthResolver& length_resolver) const {
