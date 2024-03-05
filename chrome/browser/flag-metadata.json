@@ -6227,7 +6227,7 @@
   {
     "name": "only-access-clipboard-async",
     "owners": ["rkgibson@google.com", "bling-flags@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 127
   },
   {
     "name": "oobe-hid-detection-revamp",
@@ -6309,7 +6309,7 @@
   {
     "name": "overflow-menu-customization",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 127
   },
   {
     "name": "overlay-scrollbars",
@@ -8485,17 +8485,17 @@
   {
     "name": "webpage-alternative-text-zoom",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 127
   },
   {
     "name": "webpage-default-zoom-from-dynamic-type",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 127
   },
   {
     "name": "webpage-text-zoom-ipad",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 127
   },
   {
     "name": "webrtc-allow-wgc-screen-capturer",
