@@ -10429,13 +10429,16 @@ blink::mojom::PageSwapEventParamsPtr NavigationRequest::WillDispatchPageSwap() {
 }
 
 void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
-  if (navigation_handle_timing_.navigation_commit_sent_time.is_null() ||
-      IsSameDocument() || IsRestore() ||
-      NavigationTypeUtils::IsHistory(common_params_->navigation_type) ||
-      NavigationTypeUtils::IsReload(common_params_->navigation_type) ||
-      !common_params_->url.SchemeIsHTTPOrHTTPS()) {
+  if (navigation_handle_timing_.navigation_commit_sent_time.is_null()) {
     return;
   }
+
+  bool record_uma =
+      !IsSameDocument() && !IsRestore() &&
+      !NavigationTypeUtils::IsHistory(common_params_->navigation_type) &&
+      !NavigationTypeUtils::IsReload(common_params_->navigation_type) &&
+      common_params_->url.SchemeIsHTTPOrHTTPS() &&
+      !IsPrerenderedPageActivation();
 
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
   base::TimeTicks navigation_start_time = common_params_->navigation_start;
@@ -10452,10 +10455,12 @@ void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
                                                        trace_id, begin_time); \
       TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("navigation", name,      \
                                                      trace_id, end_time);     \
-      base::UmaHistogramTimes(                                                \
-          "Navigation.MainFrame.NewNavigation.IgnoreRestore."                 \
-          "IsHTTPOrHTTPS." name ".Time",                                      \
-          end_time - begin_time);                                             \
+      if (record_uma) {                                                       \
+        base::UmaHistogramTimes(                                              \
+            "Navigation.MainFrame.NewNavigation.IgnoreRestore."               \
+            "IsHTTPOrHTTPS." name ".Time2",                                   \
+            end_time - begin_time);                                           \
+      }                                                                       \
     }                                                                         \
   } while (0)
 
@@ -10469,10 +10474,12 @@ void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
           "navigation", name, trace_id, begin_time, arg1_name, arg1_val);    \
       TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("navigation", name,     \
                                                      trace_id, end_time);    \
-      base::UmaHistogramTimes(                                               \
-          "Navigation.MainFrame.NewNavigation.IgnoreRestore."                \
-          "IsHTTPOrHTTPS." name ".Time",                                     \
-          end_time - begin_time);                                            \
+      if (record_uma) {                                                      \
+        base::UmaHistogramTimes(                                             \
+            "Navigation.MainFrame.NewNavigation.IgnoreRestore."              \
+            "IsHTTPOrHTTPS." name ".Time2",                                  \
+            end_time - begin_time);                                          \
+      }                                                                      \
     }                                                                        \
   } while (0)
 
@@ -10484,17 +10491,26 @@ void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
   MAYBE_RECORD_TRACE_AND_HISTOGRAM1("LoaderStartToReceiveResponse",
                                     loader_start_time_, receive_response_time_,
                                     "URL", common_params_->url.spec());
-  MAYBE_RECORD_TRACE_AND_HISTOGRAM0(
-      "LoaderStartToFetchStart", loader_start_time_, first_fetch_start_time_);
-  MAYBE_RECORD_TRACE_AND_HISTOGRAM0(
-      "FetchStart", first_fetch_start_time_,
-      navigation_handle_timing_.first_request_start_time);
-  MAYBE_RECORD_TRACE_AND_HISTOGRAM0(
-      "ReceiveHeaders", navigation_handle_timing_.first_request_start_time,
-      final_receive_headers_end_time_);
-  MAYBE_RECORD_TRACE_AND_HISTOGRAM0("ReceiveHeadersToReceiveResponse",
-                                    final_receive_headers_end_time_,
-                                    receive_response_time_);
+
+  // `first_fetch_start_time_` can be earlier than `loader_start_time_`
+  // when Prefetch or Prerendering is enabled. The following UMAs are
+  // not recorded in such cases because it will skew the data. Also the
+  // following trace events are not recorded in such cases because such
+  // traces will not be rendered correctly.
+  if (loader_start_time_ <= first_fetch_start_time_) {
+    MAYBE_RECORD_TRACE_AND_HISTOGRAM0(
+        "LoaderStartToFetchStart", loader_start_time_, first_fetch_start_time_);
+    MAYBE_RECORD_TRACE_AND_HISTOGRAM0(
+        "FetchStart", first_fetch_start_time_,
+        navigation_handle_timing_.first_request_start_time);
+    MAYBE_RECORD_TRACE_AND_HISTOGRAM0(
+        "ReceiveHeaders", navigation_handle_timing_.first_request_start_time,
+        final_receive_headers_end_time_);
+    MAYBE_RECORD_TRACE_AND_HISTOGRAM0("ReceiveHeadersToReceiveResponse",
+                                      final_receive_headers_end_time_,
+                                      receive_response_time_);
+  }
+
   MAYBE_RECORD_TRACE_AND_HISTOGRAM0(
       "ReceiveResponseToCommitNavigation", receive_response_time_,
       navigation_handle_timing_.navigation_commit_sent_time);
