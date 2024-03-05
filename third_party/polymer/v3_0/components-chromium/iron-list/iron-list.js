@@ -1898,13 +1898,7 @@ Polymer({
     if (!targetModel) {
       return;
     }
-    if (focusedModel === targetModel) {
-      // If the user focused the same item, then bring it into view if it's not
-      // visible.
-      if (!this._isIndexVisible(fidx)) {
-        this.scrollToIndex(fidx);
-      }
-    } else {
+    if (focusedModel !== targetModel) {
       this._restoreFocusedItem();
       // Restore tabIndex for the currently focused item.
       if (focusedModel) {

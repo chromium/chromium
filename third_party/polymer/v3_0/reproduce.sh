@@ -5,7 +5,8 @@
 # found in the LICENSE file.
 
 # - Downloads all dependencies listed in package.json
-# - Makes Chromium specific modifications.
+# - Makes Chromium specific modifications. To make further changes, see
+#   /third_party/polymer/README.chromium.
 # - Places the final output in components-chromium/
 
 check_dep() {

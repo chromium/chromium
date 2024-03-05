@@ -69,3 +69,52 @@ Local Modifications:
 
 To restore the content of the 'components-chromium' directory from scratch, run
 ./v3_0/reproduce.sh on a Linux machine.
+
+To make further changes to the patched components, here's a tutorial. In the
+below example, we update the patch for `iron-list`, an element that we have
+already patched. Patching an element that has never been patched will just skip
+a few steps.
+
+1. Before beginning, make sure Python is installed and accessible as the
+   `python` binary. For example Debian-based systems may need to install the
+   `python-is-python3` package first.
+
+2. `reproduce.sh` is the script used to pull the upstream Polymer repo and
+   apply the Chromium specific patches.
+
+3. If you need to update an already patched element, first comment out the
+   command to patch that element. For example, for iron-list, comment out:
+
+   patch -p1 --forward < iron_list.patch
+
+   If you are patching an element that has never been patched before, you can
+   skip this step.
+
+4. Run `reproduce.sh` locally. Now you should have a copy of the Polymer in the
+   repository that matches the existing committed version, but you'll have the
+   upstream version of `iron-list`, because you commented out that line.
+
+5. Commit this version locally (without the changes to `reproduce.sh`), because
+   that will make it easy to generate a patchset later.
+
+6. Now run the patch you skipped manually. This will apply the Chromium-specific
+   patch, and now `git diff --relative` will print a copy of what's already in
+   `iron_list.patch`.
+
+7. Make the further updates to `iron-list.js` as desired, and test it.
+
+8. Once you're satisfied, generate a new patch into the patch file, like this:
+
+   git diff --relative components-chromium/iron-list/iron-list.js > iron_list.patch
+
+9. Commit both the new patch file and the new patched element source. Be sure to
+   undo and NOT commit any changes you made to `reproduce.sh`.
+
+10. Rerun `reproduce.sh` and confirm that `git diff` shows no changes. This
+    verifies that the above steps were successful and the patch was generated
+    correctly.
+
+11. Upload and submit the CL for review.
+
+12. Probably you also want to clean up the `node_modules` file you created in
+    this directory by `rm -rf node_modules` here.
