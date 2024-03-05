@@ -313,7 +313,11 @@ def dev_list():
   # pre-built NaCl binaries.
   if "ELF 64-bit" in subprocess.check_output(["file", "-L",
                                               "/sbin/init"]).decode():
-    packages.extend(["libc6-i386", "lib32stdc++6"])
+    # ARM64 may not support these.
+    if package_exists("libc6-i386"):
+      packages.append("libc6-i386")
+    if package_exists("lib32stdc++6"):
+      packages.append("lib32stdc++6")
 
     # lib32gcc-s1 used to be called lib32gcc1 in older distros.
     if package_exists("lib32gcc-s1"):
