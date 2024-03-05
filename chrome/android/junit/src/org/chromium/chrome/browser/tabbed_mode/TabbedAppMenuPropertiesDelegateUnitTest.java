@@ -225,7 +225,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 mDecorView,
                                 mAppMenuDelegate,
                                 mLayoutStateProviderSupplier,
-                                null,
                                 mBookmarkModelSupplier,
                                 mFeedLauncher,
                                 mDialogManager,

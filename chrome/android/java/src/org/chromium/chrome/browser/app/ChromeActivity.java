@@ -979,7 +979,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 getToolbarManager(),
                 getWindow().getDecorView(),
                 null,
-                null,
                 mBookmarkModelSupplier,
                 /* incognitoReauthControllerOneshotSupplier= */ null,
                 mRootUiCoordinator.getReadAloudControllerSupplier());

@@ -99,7 +99,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 toolbarManager,
                 decorView,
                 null,
-                null,
                 bookmarkModelSupplier,
                 null,
                 readAloudControllerSupplier);

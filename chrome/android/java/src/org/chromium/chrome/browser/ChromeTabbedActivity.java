@@ -2551,7 +2551,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getWindow().getDecorView(),
                 this,
                 mLayoutStateProviderSupplier,
-                ReturnToChromeUtil.isStartSurfaceEnabled(this) ? mStartSurfaceSupplier : null,
                 mBookmarkModelSupplier,
                 () ->
                         getTabCreator(/* incognito= */ false)

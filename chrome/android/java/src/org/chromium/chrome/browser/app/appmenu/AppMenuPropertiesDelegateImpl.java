@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -75,8 +74,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
-import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.IdentifierType;
@@ -171,27 +168,24 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     protected @Nullable LayoutStateProvider mLayoutStateProvider;
-    private @Nullable OneshotSupplier<StartSurface> mStartSurfaceSupplier;
-    private @Nullable StartSurface.StateObserver mStartSurfaceStateObserver;
-    private @StartSurfaceState int mStartSurfaceState;
     protected Runnable mAppMenuInvalidator;
 
     /**
      * Construct a new {@link AppMenuPropertiesDelegateImpl}.
+     *
      * @param context The activity context.
      * @param activityTabProvider The {@link ActivityTabProvider} for the containing activity.
      * @param multiWindowModeStateDispatcher The {@link MultiWindowModeStateDispatcher} for the
-     *         containing activity.
+     *     containing activity.
      * @param tabModelSelector The {@link TabModelSelector} for the containing activity.
      * @param toolbarManager The {@link ToolbarManager} for the containing activity.
      * @param decorView The decor {@link View}, e.g. from Window#getDecorView(), for the containing
-     *         activity.
-     * @param layoutStateProvidersSupplier An {@link ObservableSupplier} for the
-     *         {@link LayoutStateProvider} associated with the containing activity.
-     * @param startSurfaceSupplier An {@link OneshotSupplier} for the Start surface.
+     *     activity.
+     * @param layoutStateProvidersSupplier An {@link ObservableSupplier} for the {@link
+     *     LayoutStateProvider} associated with the containing activity.
      * @param bookmarkModelSupplier An {@link ObservableSupplier} for the {@link BookmarkModel}
      * @param incognitoReauthControllerOneshotSupplier An {@link OneshotSupplier} for the {@link
-     *         IncognitoReauthController} which is not null for tabbed Activity.
+     *     IncognitoReauthController} which is not null for tabbed Activity.
      */
     public AppMenuPropertiesDelegateImpl(
             Context context,
@@ -201,7 +195,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             ToolbarManager toolbarManager,
             View decorView,
             @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProvidersSupplier,
-            @Nullable OneshotSupplier<StartSurface> startSurfaceSupplier,
             ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             @Nullable
                     OneshotSupplier<IncognitoReauthController>
@@ -232,26 +225,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                             }));
         }
 
-        if (!ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)
-                && startSurfaceSupplier != null
-                && ReturnToChromeUtil.isStartSurfaceEnabled(mContext)) {
-            mStartSurfaceSupplier = startSurfaceSupplier;
-            startSurfaceSupplier.onAvailable(
-                    mCallbackController.makeCancelable(
-                            (startSurface) -> {
-                                mStartSurfaceState = startSurface.getStartSurfaceState();
-                                mStartSurfaceStateObserver =
-                                        (newState, shouldShowToolbar) -> {
-                                            assert ReturnToChromeUtil.isStartSurfaceEnabled(
-                                                    mContext);
-                                            mStartSurfaceState = newState;
-                                        };
-                                // TODO(https://crbug.com/1315679): Remove |mStartSurfaceSupplier|,
-                                // |mStartSurfaceState| and |mStartSurfaceStateObserver| after the
-                                // refactor is enabled by default.
-                                startSurface.addStateChangeObserver(mStartSurfaceStateObserver);
-                            }));
-        }
         mBookmarkModelSupplier = bookmarkModelSupplier;
         mShareUtils = new ShareUtils();
     }
@@ -261,13 +234,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
-        }
-        if (mStartSurfaceSupplier != null) {
-            if (mStartSurfaceSupplier.get() != null) {
-                mStartSurfaceSupplier.get().removeStateChangeObserver(mStartSurfaceStateObserver);
-            }
-            mStartSurfaceSupplier = null;
-            mStartSurfaceStateObserver = null;
         }
     }
 
@@ -338,14 +304,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      */
     @VisibleForTesting
     boolean isInStartSurfaceHomepage() {
-        if (ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)) {
-            return mLayoutStateProvider != null
-                    && mLayoutStateProvider.isLayoutVisible(LayoutType.START_SURFACE);
-        }
-
-        return mStartSurfaceSupplier != null
-                && mStartSurfaceSupplier.get() != null
-                && mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
+        return mLayoutStateProvider != null
+                && mLayoutStateProvider.isLayoutVisible(LayoutType.START_SURFACE);
     }
 
     private void setMenuGroupVisibility(@MenuGroup int menuGroup, Menu menu) {
@@ -1300,10 +1260,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     static void setPageBookmarkedForTesting(Boolean bookmarked) {
         sItemBookmarkedForTesting = bookmarked;
         ResettersForTesting.register(() -> sItemBookmarkedForTesting = null);
-    }
-
-    void setStartSurfaceStateForTesting(@StartSurfaceState int state) {
-        mStartSurfaceState = state;
     }
 
     void setBookmarkModelSupplierForTesting(
