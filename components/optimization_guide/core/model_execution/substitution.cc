@@ -23,6 +23,8 @@ namespace optimization_guide {
 
 namespace {
 
+using google::protobuf::RepeatedPtrField;
+
 // The maximum number of args that can be substituted in the string template.
 static constexpr int kMaxArgs = 32;
 
@@ -57,10 +59,30 @@ bool EvaluateCondition(const google::protobuf::MessageLite& message,
       return AreValuesEqual(*proto_value, condition.value());
     case proto::OPERATOR_TYPE_NOT_EQUAL_TO:
       return !AreValuesEqual(*proto_value, condition.value());
-    case proto::OPERATOR_TYPE_UNSPECIFIED:
+    default:
       NOTREACHED();
       return false;
   }
+}
+
+bool AndConditions(const google::protobuf::MessageLite& message,
+                   const RepeatedPtrField<proto::Condition>& conditions) {
+  for (const auto& condition : conditions) {
+    if (!EvaluateCondition(message, condition)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool OrConditions(const google::protobuf::MessageLite& message,
+                  const RepeatedPtrField<proto::Condition>& conditions) {
+  for (const auto& condition : conditions) {
+    if (EvaluateCondition(message, condition)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // Returns whether `conditions` apply based on `message`.
@@ -70,20 +92,14 @@ bool DoConditionsApply(const google::protobuf::MessageLite& message,
     return true;
   }
 
-  for (const auto& condition : conditions.conditions()) {
-    bool applies = EvaluateCondition(message, condition);
-    if (applies && conditions.condition_evaluation_type() ==
-                       proto::CONDITION_EVALUATION_TYPE_OR) {
-      return true;
-    }
-    if (!applies && conditions.condition_evaluation_type() ==
-                        proto::CONDITION_EVALUATION_TYPE_AND) {
+  switch (conditions.condition_evaluation_type()) {
+    case proto::CONDITION_EVALUATION_TYPE_OR:
+      return OrConditions(message, conditions.conditions());
+    case proto::CONDITION_EVALUATION_TYPE_AND:
+      return AndConditions(message, conditions.conditions());
+    default:
       return false;
-    }
   }
-
-  return conditions.condition_evaluation_type() ==
-         proto::CONDITION_EVALUATION_TYPE_AND;
 }
 
 }  // namespace

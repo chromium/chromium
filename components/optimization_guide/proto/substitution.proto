@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+syntax = "proto3";
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.proto";
 option java_outer_classname = "ModelExecutionProto";
@@ -15,17 +15,17 @@ message SubstitutedString {
   reserved 2, 3;
 
   // String template with %s as the delimiter for substitutions.
-  optional string string_template = 1;
+  string string_template = 1;
 
   // The strings to be substituted in `string_template`.
   repeated StringSubstitution substitutions = 6;
 
   // The conditions for which to apply this substituted string.
-  optional ConditionList conditions = 4;
+  ConditionList conditions = 4;
 
   // Whether the input context should be ignored if this substituted string is
   // applied.
-  optional bool should_ignore_input_context = 5;
+  bool should_ignore_input_context = 5;
 }
 
 message StringSubstitution {
@@ -45,7 +45,7 @@ message StringArg {
   // TODO(b/302402959): Add support for max number of characters to apply.
 
   // The conditions for which to apply this substituted string.
-  optional ConditionList conditions = 3;
+  ConditionList conditions = 3;
 }
 
 // Operators available for comparing the value of fields.
@@ -65,7 +65,7 @@ enum ConditionEvaluationType {
 
 message ConditionList {
   // How to evaluate the below conditions.
-  optional ConditionEvaluationType condition_evaluation_type = 1;
+  ConditionEvaluationType condition_evaluation_type = 1;
 
   // The set of conditions to evaluate.
   repeated Condition conditions = 2;
@@ -73,7 +73,7 @@ message ConditionList {
 
 // Evaluated as "value at proto_field" "operator_type" "value".
 message Condition {
-  optional ProtoField proto_field = 1;
-  optional OperatorType operator_type = 2;
-  optional Value value = 3;
+  ProtoField proto_field = 1;
+  OperatorType operator_type = 2;
+  Value value = 3;
 }

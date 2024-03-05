@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+syntax = "proto3";
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.proto";
 option java_outer_classname = "ModelExecutionProto";
@@ -26,17 +26,17 @@ enum RedactBehavior {
 }
 
 message RedactRule {
-  optional RedactBehavior behavior = 1;
-  optional string regex = 2;
+  RedactBehavior behavior = 1;
+  string regex = 2;
   // If supplied, replaces the matching string.
-  optional string replacement_string = 3;
+  string replacement_string = 3;
   // The minimum length required for the pattern to be considered a match.
-  optional int32 min_pattern_length = 4;
+  int32 min_pattern_length = 4;
   // The maximum length required for the pattern to be considered a match.
-  optional int32 max_pattern_length = 5;
+  int32 max_pattern_length = 5;
   // Specifies a group in the regular expression to be used for matching. Note
   // that group 0 is the whole match, so the value supplied is generally > 0.
-  optional int32 group_index = 6;
+  int32 group_index = 6;
   // TODO: add support for replacement character.
 }
 

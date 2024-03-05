@@ -9,12 +9,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/optimization_guide/proto/redaction.pb.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace optimization_guide {
 
 Redactor::Rule::Rule(std::unique_ptr<re2::RE2> re,
-                     proto::RedactBehavior behavior,
+                     Redactor::Behavior behavior,
                      std::string replacement_string,
                      int matching_group,
                      size_t min_pattern_length,
@@ -40,20 +41,32 @@ std::unique_ptr<Redactor> Redactor::FromProto(
   std::vector<Redactor::Rule> rules;
   for (const auto& proto_rule : proto_rules.rules()) {
     if (proto_rule.regex().empty() ||
-        proto_rule.behavior() ==
-            proto::RedactBehavior::REDACT_BEHAVIOR_UNSPECIFIED ||
         proto_rule.group_index() < 0 || proto_rule.min_pattern_length() < 0 ||
         proto_rule.max_pattern_length() < 0) {
       continue;
+    }
+    Behavior behavior = Redactor::Behavior::kReject;
+    switch (proto_rule.behavior()) {
+      case proto::RedactBehavior::REJECT:
+        behavior = Redactor::Behavior::kReject;
+        break;
+      case proto::RedactBehavior::REDACT_IF_ONLY_IN_OUTPUT:
+        behavior = Redactor::Behavior::kRedactIfOnlyInOutput;
+        break;
+      case proto::RedactBehavior::REDACT_ALWAYS:
+        behavior = Redactor::Behavior::kRedactAlways;
+        break;
+      default:
+        continue;
     }
     auto re = std::make_unique<re2::RE2>(proto_rule.regex());
     if (!re->ok() || re->NumberOfCapturingGroups() < proto_rule.group_index()) {
       continue;
     }
-    rules.emplace_back(
-        std::move(re), proto_rule.behavior(), proto_rule.replacement_string(),
-        proto_rule.group_index(), proto_rule.min_pattern_length(),
-        proto_rule.max_pattern_length());
+    rules.emplace_back(std::move(re), behavior, proto_rule.replacement_string(),
+                       proto_rule.group_index(),
+                       proto_rule.min_pattern_length(),
+                       proto_rule.max_pattern_length());
   }
   return base::WrapUnique(new Redactor(std::move(rules)));
 }
@@ -82,10 +95,10 @@ RedactResult Redactor::Rule::Process(const std::string& input,
                     re2::RE2::UNANCHORED, matches, group + 1)) {
     const std::string_view& match(matches[group]);
     if (IsValidMatch(match)) {
-      if (behavior_ == proto::RedactBehavior::REJECT) {
+      if (behavior_ == Redactor::Behavior::kReject) {
         return RedactResult::kReject;
       }
-      if (behavior_ == proto::RedactBehavior::REDACT_ALWAYS ||
+      if (behavior_ == Redactor::Behavior::kRedactAlways ||
           input.find(match) == std::string::npos) {
         const size_t match_start_offset_in_output =
             match.data() - output_view.data();

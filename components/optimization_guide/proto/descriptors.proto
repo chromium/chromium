@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+syntax = "proto3";
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.proto";
 option java_outer_classname = "ModelExecutionProto";
@@ -11,7 +11,7 @@ package optimization_guide.proto;
 
 message ProtoDescriptor {
   // The tag number of the proto field.
-  optional int32 tag_number = 1;
+  int32 tag_number = 1;
 }
 
 message ProtoField {

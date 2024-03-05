@@ -40,11 +40,16 @@ class Redactor final {
   RedactResult Redact(const std::string& input, std::string& output) const;
 
  private:
+  enum class Behavior {
+    kReject = 1,
+    kRedactIfOnlyInOutput = 2,
+    kRedactAlways = 3,
+  };
   // A validated and compiled proto::RedactRule, see it for details.
   class Rule final {
    public:
     Rule(std::unique_ptr<re2::RE2> re,
-         proto::RedactBehavior behavior,
+         Behavior behavior,
          std::string replacement_string,
          int matching_group,
          size_t min_pattern_length,
@@ -62,7 +67,7 @@ class Redactor final {
     std::string GetReplacementString(std::string_view match) const;
 
     std::unique_ptr<re2::RE2> re_;
-    proto::RedactBehavior behavior_;
+    Behavior behavior_;
     std::string replacement_string_;
     int matching_group_;
     size_t min_pattern_length_;
