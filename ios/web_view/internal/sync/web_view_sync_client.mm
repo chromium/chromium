@@ -206,4 +206,13 @@ void WebViewSyncClient::OnLocalSyncTransportDataCleared() {
   metrics::ClearDemographicsPrefs(pref_service_);
 }
 
+bool WebViewSyncClient::IsPasswordSyncAllowed() {
+  return true;
+}
+
+void WebViewSyncClient::SetPasswordSyncAllowedChangeCb(
+    const base::RepeatingClosure& cb) {
+  // IsPasswordSyncAllowed() doesn't change on //ios/web_view/.
+}
+
 }  // namespace ios_web_view

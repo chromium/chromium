@@ -64,6 +64,9 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
   syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
   bool IsCustomPassphraseAllowed() override;
   void OnLocalSyncTransportDataCleared() override;
+  bool IsPasswordSyncAllowed() override;
+  void SetPasswordSyncAllowedChangeCb(
+      const base::RepeatingClosure& cb) override;
 
  private:
   autofill::AutofillWebDataService* profile_web_data_service_;

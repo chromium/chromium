@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
@@ -71,6 +72,18 @@ class SyncClient {
   // TODO(crbug.com/1137346): Replace this mechanism with a more universal one,
   // e.g. using SyncServiceObserver.
   virtual void OnLocalSyncTransportDataCleared() = 0;
+
+  // Necessary but not sufficient condition for password sync to be enabled,
+  // i.e. it influences the value of SyncUserSettings::GetSelectedTypes().
+  // TODO(crbug.com/328190573): Remove this and SetPasswordSyncAllowedChangeCb()
+  // below when the local UPM migration is gone.
+  virtual bool IsPasswordSyncAllowed() = 0;
+
+  // Causes `cb` to be invoked whenever the value of IsPasswordSyncAllowed()
+  // changes. Spurious invocations can occur too. This method must be called at
+  // most once.
+  virtual void SetPasswordSyncAllowedChangeCb(
+      const base::RepeatingClosure& cb) = 0;
 
   // Queries the count and description/preview of existing local data for
   // `types` data types. This is an asynchronous method which returns the result

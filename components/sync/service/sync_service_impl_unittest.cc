@@ -163,6 +163,7 @@ class SyncServiceImplTest : public ::testing::Test {
     sync_client_ = sync_client.get();
     ON_CALL(*sync_client, CreateDataTypeControllers)
         .WillByDefault(Return(ByMove(std::move(controllers))));
+    ON_CALL(*sync_client, IsPasswordSyncAllowed).WillByDefault(Return(true));
 
     service_ = std::make_unique<SyncServiceImpl>(
         sync_service_impl_bundle_.CreateBasicInitParams(

@@ -289,6 +289,15 @@ void IOSChromeSyncClient::OnLocalSyncTransportDataCleared() {
   }
 }
 
+bool IOSChromeSyncClient::IsPasswordSyncAllowed() {
+  return true;
+}
+
+void IOSChromeSyncClient::SetPasswordSyncAllowedChangeCb(
+    const base::RepeatingClosure& cb) {
+  // IsPasswordSyncAllowed() doesn't change on //ios/chrome.
+}
+
 void IOSChromeSyncClient::GetLocalDataDescriptions(
     syncer::ModelTypeSet types,
     base::OnceCallback<void(

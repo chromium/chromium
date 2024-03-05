@@ -407,6 +407,8 @@ class SyncServiceImpl : public SyncService,
       ModelType type,
       const std::string& waiting_for_updates_histogram_name) const;
 
+  void OnPasswordSyncAllowedChanged();
+
   // This profile's SyncClient, which abstracts away non-Sync dependencies and
   // the Sync API component factory.
   const std::unique_ptr<SyncClient> sync_client_;

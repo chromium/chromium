@@ -1169,6 +1169,8 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SignedOutWithoutPasswords) {
 
 TEST_F(UsesSplitStoresAndUPMForLocalTest, SignedOutWithPasswords) {
   {
+    // Set up a signed-out user, with saved passwords, who already acknowledged
+    // the migration warning.
     base::test::ScopedFeatureList disable_local_upm;
     disable_local_upm.InitWithFeatures(
         {}, {password_manager::features::
@@ -1178,6 +1180,10 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SignedOutWithPasswords) {
     CreateProfile();
     profile_password_store()->AddLogin(MakeExampleForm());
     ASSERT_FALSE(UsesSplitStoresAndUPMForLocal(pref_service()));
+    pref_service()->SetBoolean(
+        password_manager::prefs::
+            kUserAcknowledgedLocalPasswordsMigrationWarning,
+        true);
     DestroyProfile();
   }
 
@@ -1211,8 +1217,8 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SignedOutWithPasswords) {
     SignInAndEnableSync();
     ASSERT_TRUE(
         SyncDataTypeActiveWaiter(sync_service(), syncer::PREFERENCES).Wait());
-    // TODO(b/321217859): Re-implement sync suppression and uncomment.
-    // ASSERT_FALSE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
+    ASSERT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+        syncer::UserSelectableType::kPasswords));
 
     // Pretend the migration finished.
     // TODO(b/324196888): Once the migration is implemented, make this a

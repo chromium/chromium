@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync/glue/extensions_activity_monitor.h"
 #include "components/browser_sync/browser_sync_client.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "extensions/buildflags/buildflags.h"
 
 class Profile;
@@ -60,6 +61,9 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
   bool IsCustomPassphraseAllowed() override;
   void OnLocalSyncTransportDataCleared() override;
+  bool IsPasswordSyncAllowed() override;
+  void SetPasswordSyncAllowedChangeCb(
+      const base::RepeatingClosure& cb) override;
 
  private:
   // Convenience function used during controller creation.
@@ -86,6 +90,11 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
 
   // Generates and monitors the ExtensionsActivity object used by sync.
   ExtensionsActivityMonitor extensions_activity_monitor_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Watches password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores.
+  PrefChangeRegistrar upm_pref_change_registrar_;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace browser_sync

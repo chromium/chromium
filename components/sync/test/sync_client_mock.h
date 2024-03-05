@@ -48,6 +48,11 @@ class SyncClientMock : public SyncClient {
               (override));
   MOCK_METHOD(bool, IsCustomPassphraseAllowed, (), (override));
   MOCK_METHOD(void, OnLocalSyncTransportDataCleared, (), (override));
+  MOCK_METHOD(bool, IsPasswordSyncAllowed, (), (override));
+  MOCK_METHOD(void,
+              SetPasswordSyncAllowedChangeCb,
+              (const base::RepeatingClosure&),
+              (override));
   MOCK_METHOD(
       void,
       GetLocalDataDescriptions,

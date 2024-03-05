@@ -250,6 +250,11 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
   // shouldn't be instantiated.
   DCHECK(IsSyncAllowedByFlag());
 
+  sync_prefs_.SetPasswordSyncAllowed(sync_client_->IsPasswordSyncAllowed());
+  // base::Unretained() is safe, `this` outlives `sync_client_`.
+  sync_client_->SetPasswordSyncAllowedChangeCb(base::BindRepeating(
+      &SyncServiceImpl::OnPasswordSyncAllowedChanged, base::Unretained(this)));
+
   sync_stopped_reporter_ = std::make_unique<SyncStoppedReporter>(
       sync_service_url_, MakeUserAgentForSync(channel_), url_loader_factory_);
 
@@ -2123,6 +2128,10 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
   }
 
   return ModelTypeDownloadStatus::kUpToDate;
+}
+
+void SyncServiceImpl::OnPasswordSyncAllowedChanged() {
+  sync_prefs_.SetPasswordSyncAllowed(sync_client_->IsPasswordSyncAllowed());
 }
 
 CoreAccountInfo SyncServiceImpl::GetAccountInfo() const {
