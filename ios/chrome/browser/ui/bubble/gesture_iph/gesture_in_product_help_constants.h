@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 // Accessibility identifier for the background in the view.
 extern NSString* const kGestureInProductHelpViewBackgroundAXId;
 
@@ -15,5 +19,8 @@ extern NSString* const kGestureInProductHelpViewBubbleAXId;
 
 // Accessibility identifier for the dismiss button.
 extern NSString* const kGestureInProductHelpViewDismissButtonAXId;
+
+// Time for the view to fade in/out from the screen.
+extern const base::TimeDelta kGestureInProductHelpViewAppearDuration;
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_GESTURE_IPH_GESTURE_IN_PRODUCT_HELP_CONSTANTS_H_

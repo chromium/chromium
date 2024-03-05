@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_constants.h"
 
+#import "base/time/time.h"
+
 NSString* const kGestureInProductHelpViewBackgroundAXId =
     @"GestureInProductHelpViewBackgroundAXId";
 
@@ -12,3 +14,6 @@ NSString* const kGestureInProductHelpViewBubbleAXId =
 
 NSString* const kGestureInProductHelpViewDismissButtonAXId =
     @"GestureInProductHelpViewDismissButtonAXId";
+
+base::TimeDelta const kGestureInProductHelpViewAppearDuration =
+    base::Milliseconds(250);

@@ -1497,11 +1497,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Create the view.
   UIView* regularGridView = self.regularTabsViewController.view;
   CGSize expectedSize = CGSize();
-  expectedSize.height =
+  CGFloat expectedHeight =
       regularGridView.frame.size.height - self.topToolbar.bounds.size.height;
+  expectedHeight -=
+      self.view.window.windowScene.statusBarManager.statusBarFrame.size.height;
   if ([self shouldUseCompactLayout]) {
-    expectedSize.height -= self.bottomToolbar.bounds.size.height;
+    expectedHeight -= self.bottomToolbar.bounds.size.height;
   }
+  expectedSize.height = expectedHeight;
   CGFloat safeAreaInsetForArrowDirection =
       UseRTLLayout() ? regularGridView.safeAreaInsets.right
                      : regularGridView.safeAreaInsets.left;

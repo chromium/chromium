@@ -286,6 +286,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
       [self addSubview:_dismissButton];
       [NSLayoutConstraint activateConstraints:[self dismissButtonConstraints]];
     }
+    self.alpha = 0;
   }
   return self;
 }
@@ -297,6 +298,17 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
          bubbleBoundingSize:bubbleBoundingSize
              arrowDirection:direction
       voiceOverAnnouncement:nil];
+}
+
+- (void)didMoveToSuperview {
+  if (self.superview != nil && self.alpha < 1) {
+    GestureInProductHelpView* weakSelf = self;
+    [UIView
+        animateWithDuration:kGestureInProductHelpViewAppearDuration.InSecondsF()
+                 animations:^{
+                   weakSelf.alpha = 1;
+                 }];
+  }
 }
 
 - (CGSize)systemLayoutSizeFittingSize:(CGSize)targetSize {
@@ -482,9 +494,21 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   if (!self.superview) {
     return;
   }
-  [self removeFromSuperview];
   self.dismissCallback(reason,
                        feature_engagement::Tracker::SnoozeAction::DISMISSED);
+  // Avoid multiple taps when fading.
+  self.dismissCallback = ^(IPHDismissalReasonType type,
+                           feature_engagement::Tracker::SnoozeAction action) {
+  };
+  GestureInProductHelpView* weakSelf = self;
+  [UIView
+      animateWithDuration:kGestureInProductHelpViewAppearDuration.InSecondsF()
+      animations:^{
+        weakSelf.alpha = 0;
+      }
+      completion:^(BOOL finished) {
+        [weakSelf removeFromSuperview];
+      }];
 }
 
 #pragma mark - Private

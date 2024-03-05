@@ -26,4 +26,20 @@ source_set("constants") {
     "gesture_in_product_help_constants.h",
     "gesture_in_product_help_constants.mm",
   ]
+  deps = [ "//base" ]
+}
+
+source_set("test_utils") {
+  testonly = true
+  sources = [
+    "gesture_in_product_help_view_egtest_utils.h",
+    "gesture_in_product_help_view_egtest_utils.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base/test:test_support",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
 }
