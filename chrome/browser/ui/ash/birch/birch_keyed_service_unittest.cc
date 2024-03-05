@@ -52,12 +52,15 @@ constexpr char16_t kTabTitle2[] = u"Tab Title 2";
 
 std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
     const std::string& session_name,
-    const std::string& session_tag) {
+    const std::string& session_tag,
+    syncer::DeviceInfo::FormFactor form_factor) {
   auto session = std::make_unique<sync_sessions::SyncedSession>();
   auto window = std::make_unique<sync_sessions::SyncedSessionWindow>();
   auto tab = std::make_unique<sessions::SessionTab>();
 
   session->SetSessionName(session_name);
+  session->SetDeviceTypeAndFormFactor(sync_pb::SyncEnums::TYPE_UNSET,
+                                      form_factor);
 
   window->wrapped_window.tabs.push_back(std::move(tab));
   session->windows[SessionID::NewUnique()] = std::move(window);
@@ -90,11 +93,11 @@ class MockSessionSyncService : public sync_sessions::SessionSyncService {
 class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
  public:
   MockOpenTabsUIDelegate() {
-    foreign_sessions_owned_.push_back(
-        CreateNewSession(kSessionName1, kSessionTag1));
+    foreign_sessions_owned_.push_back(CreateNewSession(
+        kSessionName1, kSessionTag1, syncer::DeviceInfo::FormFactor::kDesktop));
     foreign_sessions_.push_back(foreign_sessions_owned_.back().get());
-    foreign_sessions_owned_.push_back(
-        CreateNewSession(kSessionName2, kSessionTag2));
+    foreign_sessions_owned_.push_back(CreateNewSession(
+        kSessionName2, kSessionTag2, syncer::DeviceInfo::FormFactor::kPhone));
     foreign_sessions_.push_back(foreign_sessions_owned_.back().get());
 
     std::vector<std::unique_ptr<sessions::SessionTab>> session_tabs_one;
@@ -332,10 +335,12 @@ TEST_F(BirchKeyedServiceTest, BirchRecentTabProvider) {
   EXPECT_EQ(tabs[0].title, kTabTitle1);
   EXPECT_EQ(tabs[0].url, GURL(kExampleURL1));
   EXPECT_EQ(tabs[0].session_name, kSessionName1);
+  EXPECT_EQ(tabs[0].form_factor, BirchTabItem::DeviceFormFactor::kDesktop);
 
   EXPECT_EQ(tabs[1].title, kTabTitle2);
   EXPECT_EQ(tabs[1].url, GURL(kExampleURL2));
   EXPECT_EQ(tabs[1].session_name, kSessionName2);
+  EXPECT_EQ(tabs[1].form_factor, BirchTabItem::DeviceFormFactor::kPhone);
 }
 
 }  // namespace ash

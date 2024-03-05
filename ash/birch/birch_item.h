@@ -115,11 +115,14 @@ struct ASH_EXPORT BirchFileItem : public BirchItem {
 
 // A birch item which contains tab and session information.
 struct ASH_EXPORT BirchTabItem : public BirchItem {
+  enum class DeviceFormFactor { kDesktop, kPhone, kTablet };
+
   BirchTabItem(const std::u16string& title,
                const GURL& url,
                const base::Time& timestamp,
                const GURL& favicon_url,
-               const std::string& session_name);
+               const std::string& session_name,
+               const DeviceFormFactor& form_factor);
   BirchTabItem(BirchTabItem&&);
   BirchTabItem(const BirchTabItem&);
   BirchTabItem& operator=(const BirchTabItem&);
@@ -130,6 +133,7 @@ struct ASH_EXPORT BirchTabItem : public BirchItem {
   base::Time timestamp;
   GURL favicon_url;
   std::string session_name;
+  DeviceFormFactor form_factor;
 
   static constexpr char kItemType[] = "TabItem";
 

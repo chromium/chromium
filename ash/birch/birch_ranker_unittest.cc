@@ -288,19 +288,19 @@ TEST(BirchRankerTest, RankRecentTabItems) {
 
   // Create tab with a timestamp in the last 5 minutes.
   BirchTabItem item0(u"item0", GURL(), TimeFromString("22 Feb 2024 08:59 UTC"),
-                     GURL(), "");
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
 
   // Create a tab with timestamp in the last hour.
   BirchTabItem item1(u"item1", GURL(), TimeFromString("22 Feb 2024 08:30 UTC"),
-                     GURL(), "");
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
 
   // Create a tab with timestamp in the last day.
   BirchTabItem item2(u"item2", GURL(), TimeFromString("21 Feb 2024 09:01 UTC"),
-                     GURL(), "");
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
 
   // Create a tab with timestamp more than a day ago.
   BirchTabItem item3(u"item3", GURL(), TimeFromString("21 Feb 2024 08:59 UTC"),
-                     GURL(), "");
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
 
   // Put the items in the vector in reverse order to validate that they are
   // still handled in the correct order (by time) inside the ranker.

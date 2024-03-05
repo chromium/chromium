@@ -255,12 +255,14 @@ BirchTabItem::BirchTabItem(const std::u16string& title,
                            const GURL& url,
                            const base::Time& timestamp,
                            const GURL& favicon_url,
-                           const std::string& session_name)
+                           const std::string& session_name,
+                           const DeviceFormFactor& form_factor)
     : BirchItem(title),
       url(url),
       timestamp(timestamp),
       favicon_url(favicon_url),
-      session_name(session_name) {}
+      session_name(session_name),
+      form_factor(form_factor) {}
 
 BirchTabItem::BirchTabItem(BirchTabItem&&) = default;
 
@@ -281,7 +283,8 @@ std::string BirchTabItem::ToString() const {
   ss << "Tab item: {ranking: " << ranking
      << ", title: " << base::UTF16ToUTF8(title) << ", url:" << url
      << ", timestamp:" << timestamp << ", favicon_url:" << favicon_url
-     << ", session_name:" << session_name << "}";
+     << ", session_name:" << session_name
+     << ", form_factor:" << static_cast<int>(form_factor) << "}";
   return ss.str();
 }
 

@@ -207,7 +207,8 @@ TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
   std::vector<BirchTabItem> tab_item_list;
   tab_item_list.emplace_back(u"tab title", GURL("example.com"),
                              base::Time::Now(), GURL("example.com/favicon_url"),
-                             "session_name");
+                             "session_name",
+                             BirchTabItem::DeviceFormFactor::kDesktop);
   model->SetRecentTabItems(tab_item_list);
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
@@ -254,7 +255,8 @@ TEST_F(BirchModelWithoutWeatherTest, MAYBE_DataFetchTimeout) {
   std::vector<BirchTabItem> tab_item_list;
   tab_item_list.emplace_back(u"tab title", GURL("example.com"),
                              base::Time::Now(), GURL("example.com/favicon_url"),
-                             "session_name");
+                             "session_name",
+                             BirchTabItem::DeviceFormFactor::kDesktop);
   model->SetRecentTabItems(tab_item_list);
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
@@ -381,7 +383,8 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   model->SetWeatherItems(std::move(weather_item_list));
   std::vector<BirchTabItem> tab_item_list;
   tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
-                             GURL("favicon"), "session");
+                             GURL("favicon"), "session",
+                             BirchTabItem::DeviceFormFactor::kDesktop);
   model->SetRecentTabItems(std::move(tab_item_list));
   std::vector<BirchCalendarItem> calendar_item_list;
   calendar_item_list.emplace_back(u"Event 1");
@@ -426,7 +429,8 @@ TEST_F(BirchModelTest, GetAllItems) {
   model->SetAttachmentItems(std::move(attachment_item_list));
   std::vector<BirchTabItem> tab_item_list;
   tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
-                             GURL("favicon"), "session");
+                             GURL("favicon"), "session",
+                             BirchTabItem::DeviceFormFactor::kDesktop);
   model->SetRecentTabItems(std::move(tab_item_list));
   std::vector<BirchFileItem> file_item_list;
   file_item_list.emplace_back(base::FilePath("test path 1"), base::Time());
@@ -462,7 +466,8 @@ TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {
 
   std::vector<BirchTabItem> tab_item_list;
   tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
-                             GURL("favicon"), "session");
+                             GURL("favicon"), "session",
+                             BirchTabItem::DeviceFormFactor::kDesktop);
   tab_item_list.back().ranking = 3.f;
   model->SetRecentTabItems(std::move(tab_item_list));
 
@@ -511,7 +516,8 @@ TEST_F(BirchModelTest, GetItemsForDisplay_AvoidDuplicateTypes) {
 
   std::vector<BirchTabItem> tab_item_list;
   tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
-                             GURL("favicon"), "session");
+                             GURL("favicon"), "session",
+                             BirchTabItem::DeviceFormFactor::kDesktop);
   tab_item_list.back().ranking = 4.f;
   model->SetRecentTabItems(std::move(tab_item_list));
 

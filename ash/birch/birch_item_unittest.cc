@@ -106,7 +106,8 @@ TEST_F(BirchItemTest, Weather_PerformAction) {
 TEST_F(BirchItemTest, Tab_PerformAction_ValidUrl) {
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time(),
-                    /*favicon_url=*/GURL(), /*session_name=*/"");
+                    /*favicon_url=*/GURL(), /*session_name=*/"",
+                    BirchTabItem::DeviceFormFactor::kDesktop);
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_,
             GURL("http://example.com/"));
@@ -115,7 +116,8 @@ TEST_F(BirchItemTest, Tab_PerformAction_ValidUrl) {
 TEST_F(BirchItemTest, Tab_PerformAction_EmptyUrl) {
   BirchTabItem item(u"item", /*url=*/GURL(),
                     /*timestamp=*/base::Time(),
-                    /*favicon_url=*/GURL(), /*session_name=*/"");
+                    /*favicon_url=*/GURL(), /*session_name=*/"",
+                    BirchTabItem::DeviceFormFactor::kDesktop);
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
 }
@@ -156,7 +158,8 @@ TEST_F(BirchItemIconTest, Tab_LoadIcon) {
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time(),
                     /*favicon_url=*/GURL("http://icon.com/"),
-                    /*session_name=*/"");
+                    /*session_name=*/"",
+                    BirchTabItem::DeviceFormFactor::kDesktop);
   item.LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
 }
@@ -165,7 +168,8 @@ TEST_F(BirchItemIconTest, Tab_LoadIcon_InvalidUrl) {
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time(),
                     /*favicon_url=*/GURL("invalid-url"),
-                    /*session_name=*/"");
+                    /*session_name=*/"",
+                    BirchTabItem::DeviceFormFactor::kDesktop);
   item.LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_TRUE(icon.IsEmpty()); }));
 }
