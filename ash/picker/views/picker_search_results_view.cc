@@ -204,7 +204,8 @@ void PickerSearchResultsView::AddResultToSection(
           [&](const PickerSearchResult::FileData& data) {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
-            item_view->SetPrimaryText(data.file_path.AsUTF16Unsafe());
+            item_view->SetHasPreview();
+            item_view->SetPrimaryText(data.title);
             section_view->AddListItem(std::move(item_view));
           },
           [&](const PickerSearchResult::CategoryData& data) {
