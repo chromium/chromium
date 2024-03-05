@@ -7,7 +7,6 @@ package org.chromium.chrome.browser;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -149,6 +148,7 @@ public class ChromeActivityUnitTest {
         assertTrue(
                 chromeActivity.onMenuOrKeyboardAction(
                         R.id.readaloud_menu_id, /* fromMenu= */ true));
-        verify(mReadAloudController, times(1)).playTab(eq(mActivityTab));
+        verify(mReadAloudController)
+                .playTab(eq(mActivityTab), eq(ReadAloudController.Entrypoint.OVERFLOW_MENU));
     }
 }

@@ -20,6 +20,11 @@ public class ReadAloudMetrics {
     public static String IS_TAB_PLAYBACK_CREATION_SUCCESSFUL =
             "ReadAloud.IsTabPlaybackCreationSuccessful";
     public static String HAS_TAP_TO_SEEK_FOUND_MATCH = "ReadAloud.HasTapToSeekFoundMatch";
+
+    public static String TAB_PLAYBACK_CREATION_SUCCESS = "ReadAloud.TabPlaybackCreationSuccess";
+    public static String TAB_PLAYBACK_CREATION_FAILURE = "ReadAloud.TabPlaybackCreationFailure";
+    public static String TAB_PLAYBACK_WITHOUT_READABILITY_CHECK_ERROR =
+            "ReadAloud.ReadAloudPlaybackWithoutReadabilityCheckError";
     public static String VOICE_CHANGED = "ReadAloud.VoiceChanged.";
     public static String VOICE_PREVIEWED = "ReadAloud.VoicePreviewed.";
     public static String TIME_SPENT_LISTENING = "ReadAloud.DurationListened";
@@ -137,6 +142,21 @@ public class ReadAloudMetrics {
 
     public static void recordHasTapToSeekFoundMatch(boolean matchFound) {
         RecordHistogram.recordBooleanHistogram(HAS_TAP_TO_SEEK_FOUND_MATCH, matchFound);
+    }
+
+    public static void recordTabCreationSuccess(int entrypoint, int maxVal) {
+        RecordHistogram.recordEnumeratedHistogram(
+                TAB_PLAYBACK_CREATION_SUCCESS, entrypoint, maxVal);
+    }
+
+    public static void recordTabCreationFailure(int entrypoint, int maxVal) {
+        RecordHistogram.recordEnumeratedHistogram(
+                TAB_PLAYBACK_CREATION_FAILURE, entrypoint, maxVal);
+    }
+
+    public static void recordPlaybackWithoutReadabilityCheck(int entrypoint, int maxVal) {
+        RecordHistogram.recordEnumeratedHistogram(
+                TAB_PLAYBACK_WITHOUT_READABILITY_CHECK_ERROR, entrypoint, maxVal);
     }
 
     public static void recordSpeedChange(float speed) {

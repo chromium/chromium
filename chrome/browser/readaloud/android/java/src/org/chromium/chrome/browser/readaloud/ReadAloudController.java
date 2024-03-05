@@ -11,6 +11,7 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPP
 import android.app.Activity;
 import android.content.Intent;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -53,6 +54,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
@@ -123,6 +125,21 @@ public class ReadAloudController
     @Nullable private Profile mProfile;
 
     private boolean mOnUserLeaveHint;
+
+    /**
+     * ReadAloud entrypoint defined in readaloud/enums.xml.
+     *
+     * <p>Do not reorder or remove items, only add new items before NUM_ENTRIES.
+     */
+    @IntDef({Entrypoint.OVERFLOW_MENU, Entrypoint.MAGIC_TOOLBAR, Entrypoint.RESTORED_PLAYBACK})
+    public @interface Entrypoint {
+        int OVERFLOW_MENU = 0;
+        int MAGIC_TOOLBAR = 1;
+        int RESTORED_PLAYBACK = 2;
+
+        // Be sure to also update enums.xml when updating these values.
+        int NUM_ENTRIES = 3;
+    }
 
     // Information about a tab playback necessary for resuming later. Does not
     // include language or voice which should come from current tab state or
@@ -197,11 +214,10 @@ public class ReadAloudController
         PlaybackData getPlaybackData() {
             return mData;
         }
-
         /** Apply the saved playback state. */
         void restore() {
             maybeInitializePlaybackHooks();
-            createTabPlayback(mTab, mDateModified)
+            createTabPlayback(mTab, mDateModified, Entrypoint.RESTORED_PLAYBACK)
                     .then(
                             playback -> {
                                 if (mPlaying) {
@@ -350,6 +366,30 @@ public class ReadAloudController
             ReadAloudMetrics.recordHighlightingEnabledOnStartup(mHighlightingEnabled.get());
             mTabObserver =
                     new TabModelTabObserver(mTabModel) {
+
+                        @Override
+                        public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
+                            Log.d(TAG, "onLoadStarted");
+                            if (tab != null
+                                    && tab.getUrl() != null
+                                    && tab.getUrl().isValid()
+                                    && toDifferentDocument) {
+                                maybeCheckReadability(tab.getUrl());
+                                maybeHandleTabReload(tab, tab.getUrl());
+                                maybeStopPlayback(tab);
+                            }
+                        }
+
+                        @Override
+                        public void onDidRedirectNavigation(
+                                Tab tab, NavigationHandle navigationHandle) {
+                            Log.d(TAG, "onDidRedirectNavigation");
+                            if (navigationHandle.getUrl() != null
+                                    && navigationHandle.getUrl().isValid()) {
+                                maybeCheckReadability(navigationHandle.getUrl());
+                            }
+                        }
+
                         @Override
                         public void onPageLoadStarted(Tab tab, GURL url) {
                             Log.d(TAG, "onPageLoad called for %s", url.getPossiblyInvalidSpec());
@@ -541,21 +581,25 @@ public class ReadAloudController
      *
      * @param tab Tab to play.
      */
-    public void playTab(Tab tab) {
+    public void playTab(Tab tab, @Entrypoint int entrypoint) {
+        if (!isReadable(tab)) {
+            ReadAloudMetrics.recordPlaybackWithoutReadabilityCheck(
+                    entrypoint, Entrypoint.NUM_ENTRIES);
+        }
         extractDateModified(tab)
                 .then(
                         timestamp -> {
                             ReadAloudMetrics.recordHasDateModified(true);
-                            playTabWithDateModified(tab, timestamp);
+                            playTabWithDateModified(tab, timestamp, entrypoint);
                         },
                         exception -> {
                             ReadAloudMetrics.recordHasDateModified(false);
-                            playTabWithDateModified(tab, 0L);
+                            playTabWithDateModified(tab, 0L, entrypoint);
                         });
     }
 
-    private void playTabWithDateModified(Tab tab, long dateModified) {
-        createTabPlayback(tab, dateModified)
+    private void playTabWithDateModified(Tab tab, long dateModified, @Entrypoint int entrypoint) {
+        createTabPlayback(tab, dateModified, entrypoint)
                 .then(
                         playback -> {
                             mDateModified = dateModified;
@@ -588,7 +632,8 @@ public class ReadAloudController
         }
     }
 
-    private Promise<Playback> createTabPlayback(Tab tab, long dateModified) {
+    private Promise<Playback> createTabPlayback(
+            Tab tab, long dateModified, @Entrypoint int entrypoint) {
         assert tab.getUrl().isValid();
         // only start a new playback if different URL or no active playback for that url
         if (mCurrentlyPlayingTab != null && tab.getUrl().equals(mCurrentlyPlayingTab.getUrl())) {
@@ -618,7 +663,7 @@ public class ReadAloudController
         var voices = mPlaybackHooks.getVoicesFor(playbackLanguage);
         // TODO: Don't show entrypoints for unsupported languages
         if (voices == null || voices.isEmpty()) {
-            onCreatePlaybackFailed();
+            onCreatePlaybackFailed(entrypoint);
             var promise = new Promise<Playback>();
             promise.reject(new Exception("Unsupported language"));
             return promise;
@@ -637,6 +682,7 @@ public class ReadAloudController
         promise.then(
                 playback -> {
                     ReadAloudMetrics.recordIsTabPlaybackCreationSuccessful(true);
+                    ReadAloudMetrics.recordTabCreationSuccess(entrypoint, Entrypoint.NUM_ENTRIES);
                     maybeSetUpHighlighter(playback.getMetadata());
                     updateVoiceMenu(
                             isTranslated
@@ -647,13 +693,14 @@ public class ReadAloudController
                 },
                 exception -> {
                     Log.e(TAG, exception.getMessage());
-                    onCreatePlaybackFailed();
+                    onCreatePlaybackFailed(entrypoint);
                 });
         return promise;
     }
 
-    private void onCreatePlaybackFailed() {
+    private void onCreatePlaybackFailed(@Entrypoint int entrypoint) {
         ReadAloudMetrics.recordIsTabPlaybackCreationSuccessful(false);
+        ReadAloudMetrics.recordTabCreationFailure(entrypoint, Entrypoint.NUM_ENTRIES);
         mPlayerCoordinator.playbackFailed();
     }
 
