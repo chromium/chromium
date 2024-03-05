@@ -11,9 +11,7 @@ class FormStructure;
 
 // Uses context about previous and next fields to select the appropriate type
 // for fields with ambiguous upload types.
-// Note that the case where a single-line street address is ambiguous to address
-// line 1 is handled on the server.
-void DisambiguatePossibleFieldTypes(FormStructure& form);
+void DisambiguatePossibleFieldTypes(FormStructure* form);
 
 }  // namespace autofill
 

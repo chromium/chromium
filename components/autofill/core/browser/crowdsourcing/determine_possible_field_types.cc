@@ -309,7 +309,7 @@ void DeterminePossibleFieldTypesForUpload(
   FindAndSetPossibleFieldTypes(profiles, credit_cards,
                                last_unlocked_credit_card_cvc, app_locale,
                                observed_submission, *form);
-  DisambiguatePossibleFieldTypes(*form);
+  DisambiguatePossibleFieldTypes(form);
 }
 
 }  // namespace autofill
