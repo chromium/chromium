@@ -158,7 +158,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -239,9 +238,7 @@ public class ToolbarManager
     private BookmarkModelObserver mBookmarksObserver;
     private FindToolbarObserver mFindToolbarObserver;
 
-    private @StartSurfaceState int mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
     private boolean mIsStartSurfaceEnabled;
-    private final boolean mIsStartSurfaceRefactorEnabled;
 
     private LayoutStateProvider mLayoutStateProvider;
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
@@ -309,7 +306,6 @@ public class ToolbarManager
     private final ScrimCoordinator mScrimCoordinator;
 
     private StartSurface mStartSurface;
-    private StartSurface.StateObserver mStartSurfaceStateObserver;
     private AppBarLayout.OnOffsetChangedListener mStartSurfaceHeaderOffsetChangeListener;
 
     private OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
@@ -657,8 +653,6 @@ public class ToolbarManager
 
         mActivityTabProvider = tabProvider;
         mIsStartSurfaceEnabled = ReturnToChromeUtil.isStartSurfaceEnabled(mActivity);
-        mIsStartSurfaceRefactorEnabled =
-                ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity);
 
         mToolbarTabController =
                 new ToolbarTabControllerImpl(
@@ -1206,7 +1200,7 @@ public class ToolbarManager
                     public void onStartedHiding(@LayoutType int layoutType) {
                         if (layoutType == LayoutType.TAB_SWITCHER
                                 || layoutType == LayoutType.START_SURFACE) {
-                            mLocationBarModel.updateForNonStaticLayout(false, false);
+                            mLocationBarModel.updateForNonStaticLayout(false);
                             mToolbar.setTabSwitcherMode(false);
                             updateButtonStatus();
                             if (mToolbar.setForceTextureCapture(true)) {
@@ -1256,25 +1250,6 @@ public class ToolbarManager
                 mCallbackController.makeCancelable(
                         (startSurface) -> {
                             mStartSurface = startSurface;
-                            mStartSurfaceState = startSurface.getStartSurfaceState();
-                            mLocationBarModel.setStartSurfaceState(mStartSurfaceState);
-                            if (!mIsStartSurfaceRefactorEnabled) {
-                                mStartSurfaceStateObserver =
-                                        (newState, shouldShowToolbar) -> {
-                                            assert ReturnToChromeUtil.isStartSurfaceEnabled(
-                                                    mActivity);
-                                            mStartSurfaceState = newState;
-                                            mLocationBarModel.setStartSurfaceState(
-                                                    mStartSurfaceState);
-                                            mToolbar.updateStartSurfaceToolbarState(
-                                                    newState, shouldShowToolbar, null);
-                                        };
-                                // TODO(https://crbug.com/1315679): Remove |mStartSurfaceSupplier|,
-                                // |mStartSurfaceState| and |mStartSurfaceStateObserver| after the
-                                // refactor is enabled by default.
-                                mStartSurface.addStateChangeObserver(mStartSurfaceStateObserver);
-                            }
-
                             mStartSurfaceHeaderOffsetChangeListener =
                                     (appbarLayout, verticalOffset) -> {
                                         mToolbar.onStartSurfaceHeaderOffsetChanged(verticalOffset);
@@ -1338,15 +1313,13 @@ public class ToolbarManager
      * @param layoutType The layout being switched to.
      */
     private void updateForLayout(@LayoutType int layoutType) {
-        if (mIsStartSurfaceRefactorEnabled) {
-            boolean shouldShow =
-                    !HubFieldTrial.isHubEnabled() && layoutType == LayoutType.TAB_SWITCHER
-                            || (layoutType == LayoutType.START_SURFACE && !isUrlBarFocused());
-            mToolbar.updateStartSurfaceToolbarState(null, shouldShow, layoutType);
-        }
+        boolean shouldShow =
+                !HubFieldTrial.isHubEnabled() && layoutType == LayoutType.TAB_SWITCHER
+                        || (layoutType == LayoutType.START_SURFACE && !isUrlBarFocused());
+        mToolbar.updateStartSurfaceToolbarState(shouldShow, layoutType);
+
         if (layoutType == LayoutType.TAB_SWITCHER || layoutType == LayoutType.START_SURFACE) {
-            mLocationBarModel.updateForNonStaticLayout(
-                    layoutType == LayoutType.TAB_SWITCHER, layoutType == LayoutType.START_SURFACE);
+            mLocationBarModel.updateForNonStaticLayout(layoutType == LayoutType.START_SURFACE);
             mToolbar.setTabSwitcherMode(layoutType == LayoutType.TAB_SWITCHER);
             updateButtonStatus();
             if (mLocationBarModel.shouldShowLocationBarInOverviewMode()) {
@@ -1403,7 +1376,6 @@ public class ToolbarManager
                         DownloadUtils::downloadOfflinePage,
                         initializeWithIncognitoColors,
                         logoClickedCallback,
-                        mIsStartSurfaceRefactorEnabled,
                         constraintsSupplier,
                         mCompositorViewHolder.getInMotionSupplier(),
                         mControlsVisibilityDelegate,
@@ -1504,12 +1476,8 @@ public class ToolbarManager
             // Without this check, ToolbarPhone#computeVisualState may return
             // VisualState.NEW_TAB_NORMAL even if it's in start surface homepage, which leads
             // ToolbarPhone#getToolbarColorForVisualState to return transparent color.
-            if (mIsStartSurfaceRefactorEnabled
-                    && mLayoutStateProvider != null
+            if (mLayoutStateProvider != null
                     && mLayoutStateProvider.getActiveLayoutType() == LayoutType.START_SURFACE) {
-                return false;
-            } else if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
-                    && ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)) {
                 return false;
             }
 
@@ -1994,10 +1962,8 @@ public class ToolbarManager
         }
 
         if (mStartSurface != null) {
-            mStartSurface.removeStateChangeObserver(mStartSurfaceStateObserver);
             mStartSurface.removeHeaderOffsetChangeListener(mStartSurfaceHeaderOffsetChangeListener);
             mStartSurface = null;
-            mStartSurfaceStateObserver = null;
             mStartSurfaceHeaderOffsetChangeListener = null;
         }
 
@@ -2094,10 +2060,9 @@ public class ToolbarManager
     public void onUrlFocusChange(boolean hasFocus) {
         mToolbar.onUrlFocusChange(hasFocus);
 
-        if (mIsStartSurfaceRefactorEnabled
-                && mLayoutStateProvider != null
+        if (mLayoutStateProvider != null
                 && mLayoutStateProvider.isLayoutVisible(LayoutType.START_SURFACE)) {
-            mToolbar.updateStartSurfaceToolbarState(null, !hasFocus, LayoutType.START_SURFACE);
+            mToolbar.updateStartSurfaceToolbarState(!hasFocus, LayoutType.START_SURFACE);
         }
 
         if (mFindToolbarManager != null && hasFocus) mFindToolbarManager.hideToolbar();

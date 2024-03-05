@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.toolbar.LocationBarModelUnitTest.ShadowTrustedCdn;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizerJni;
@@ -258,7 +257,7 @@ public class LocationBarModelUnitTest {
         verify(mLocationBarDataObserver, never()).onPrimaryColorChanged();
         verify(mLocationBarDataObserver, never()).onSecurityStateChanged();
 
-        locationBarModel.updateForNonStaticLayout(true, false);
+        locationBarModel.updateForNonStaticLayout(false);
 
         // The omnibox is not showing, and we have not switched to a new tab yet, so don't expect
         // notifications of a url change
@@ -291,7 +290,7 @@ public class LocationBarModelUnitTest {
 
         locationBarModel.setShouldShowOmniboxInOverviewMode(true);
         locationBarModel.setLayoutStateProvider(mLayoutStateProvider);
-        locationBarModel.updateForNonStaticLayout(false, true);
+        locationBarModel.updateForNonStaticLayout(true);
 
         verify(mLocationBarDataObserver).onTitleChanged();
         verify(mLocationBarDataObserver).onUrlChanged();
@@ -358,12 +357,12 @@ public class LocationBarModelUnitTest {
         locationBarModel.updateVisibleGurl();
         Assert.assertEquals(locationBarModel.getCurrentGurl(), mExampleGurl);
 
-        locationBarModel.updateForNonStaticLayout(true, false);
-        locationBarModel.setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
+        locationBarModel.updateForNonStaticLayout(false);
+        locationBarModel.updateForNonStaticLayout(/* isShowingStartSurface= */ true);
         verify(mLocationBarDataObserver).onUrlChanged();
         Assert.assertEquals(locationBarModel.getCurrentGurl(), UrlConstants.ntpGurl());
 
-        locationBarModel.setStartSurfaceState(StartSurfaceState.NOT_SHOWN);
+        locationBarModel.updateForNonStaticLayout(/* isShowingStartSurface= */ false);
         verify(mLocationBarDataObserver, times(2)).onUrlChanged();
         Assert.assertEquals(locationBarModel.getCurrentGurl(), mExampleGurl);
 

@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarAlphaInOverviewObserver;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -76,7 +75,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     private final TabModelSelectorObserver mTabModelSelectorObserver;
     private final IncognitoTabModelObserver mIncognitoTabModelObserver;
     private final Callback<LoadUrlParams> mLogoClickedCallback;
-    private final boolean mIsRefactorEnabled;
     private final boolean mShouldFetchDoodle;
     private final ButtonDataProvider mIdentityDiscController;
     private final boolean mShouldCreateLogoInToolbar;
@@ -84,9 +82,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
 
     private TabModelSelector mTabModelSelector;
 
-    @StartSurfaceState private int mStartSurfaceState;
     @LayoutType private int mLayoutType;
-    private boolean mDefaultSearchEngineHasLogo;
 
     private CallbackController mCallbackController = new CallbackController();
     private float mNonIncognitoHomepageTranslationY;
@@ -112,13 +108,11 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
             boolean isTabToGtsFadeAnimationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             Callback<LoadUrlParams> logoClickedCallback,
-            boolean isRefactorEnabled,
             boolean shouldFetchDoodle,
             boolean shouldCreateLogoInToolbar,
             Callback<Boolean> finishedTransitionCallback,
             ToolbarAlphaInOverviewObserver toolbarAlphaInOverviewObserver) {
         mPropertyModel = model;
-        mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
         mShowIdentityIPHCallback = showIdentityIPHCallback;
         mHideIncognitoSwitchWhenNoTabs = hideIncognitoSwitchWhenNoTabs;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -126,12 +120,10 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         mIsTabToGtsFadeAnimationEnabled = isTabToGtsFadeAnimationEnabled;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
         mLogoClickedCallback = logoClickedCallback;
-        mDefaultSearchEngineHasLogo = true;
         mShouldFetchDoodle = shouldFetchDoodle;
         mIdentityDiscController = identityDiscController;
         mIdentityDiscController.addObserver(this);
         mShouldCreateLogoInToolbar = shouldCreateLogoInToolbar;
-        mIsRefactorEnabled = isRefactorEnabled;
         mFinishedTransitionCallback = finishedTransitionCallback;
         mToolbarAlphaInOverviewObserver = toolbarAlphaInOverviewObserver;
         mContext = context;
@@ -188,11 +180,9 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     }
 
     void onStartSurfaceStateChanged(
-            @StartSurfaceState int newState,
             boolean shouldShowStartSurfaceToolbar,
             @LayoutType int newLayoutType) {
         boolean wasOnGridTabSwitcher = isOnGridTabSwitcher();
-        mStartSurfaceState = newState;
         mLayoutType = newLayoutType;
         updateBackgroundColor();
         updateLogoVisibility();
@@ -232,24 +222,17 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
 
     /** Returns whether it's on the start surface homepage. */
     boolean isOnHomepage() {
-        return mIsRefactorEnabled
-                ? mLayoutType == LayoutType.START_SURFACE
-                : mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
+        return mLayoutType == LayoutType.START_SURFACE;
     }
 
     /** Returns whether it's on a normal tab. */
     private boolean isOnATab() {
-        return mIsRefactorEnabled
-                ? (!isOnHomepage() && !isOnGridTabSwitcher())
-                : mStartSurfaceState == StartSurfaceState.NOT_SHOWN;
+        return !isOnHomepage() && !isOnGridTabSwitcher();
     }
 
     /** Returns whether it's on grid tab switcher surface. */
     boolean isOnGridTabSwitcher() {
-        return mIsRefactorEnabled
-                ? mLayoutType == LayoutType.TAB_SWITCHER
-                : (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
-                        || mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER);
+        return mLayoutType == LayoutType.TAB_SWITCHER;
     }
 
     /**
@@ -304,10 +287,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     }
 
     private void updateIncognitoToggleTabVisibility() {
-        if ((mIsRefactorEnabled && mLayoutType != LayoutType.TAB_SWITCHER)
-                || (!mIsRefactorEnabled
-                        && mStartSurfaceState != StartSurfaceState.SHOWN_TABSWITCHER
-                        && mStartSurfaceState != StartSurfaceState.SHOWING_TABSWITCHER)) {
+        if (mLayoutType != LayoutType.TAB_SWITCHER) {
             mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, false);
             updateNewTabViewTextVisibility();
             return;
@@ -434,11 +414,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         if (mLogoCoordinator == null) return;
 
         mLogoCoordinator.updateVisibilityAndMaybeCleanUp(
-                isOnHomepage(),
-                isOnATab()
-                        || isOnGridTabSwitcher()
-                        || mStartSurfaceState == StartSurfaceState.DISABLED,
-                /* animationEnabled= */ false);
+                isOnHomepage(), isOnATab() || isOnGridTabSwitcher(), /* animationEnabled= */ false);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
