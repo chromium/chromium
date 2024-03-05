@@ -81,9 +81,9 @@ class WebAppProvider : public KeyedService {
   // Deprecated: Use GetForWebApps instead.
   static WebAppProvider* GetDeprecated(Profile* profile);
 
+  // On Windows, Mac and Linux, always returns a WebAppProvider.
   // On Chrome OS: In Ash, returns nullptr if Lacros Web App (WebAppsCrosapi) is
-  // enabled and it is not the Shimless RMA app profile. On other platforms,
-  // always returns a WebAppProvider.
+  // enabled and it is not the Shimless RMA app profile.
   static WebAppProvider* GetForWebApps(Profile* profile);
 
   // Returns the WebAppProvider for the current process. In particular:
