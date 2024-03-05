@@ -168,38 +168,6 @@ void CallModuleMethod(const std::string& module_name,
       module_name, method_name, &arguments);
 }
 
-// This handles the "chrome." root API object in script contexts.
-class ChromeNativeHandler : public ObjectBackedNativeHandler {
- public:
-  explicit ChromeNativeHandler(ScriptContext* context)
-      : ObjectBackedNativeHandler(context) {}
-
-  // ObjectBackedNativeHandler:
-  void AddRoutes() override {
-    RouteHandlerFunction("GetChrome",
-                         base::BindRepeating(&ChromeNativeHandler::GetChrome,
-                                             base::Unretained(this)));
-  }
-
-  void GetChrome(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    // Check for the chrome property. If one doesn't exist, create one.
-    v8::Local<v8::String> chrome_string(
-        v8::String::NewFromUtf8(context()->isolate(), "chrome",
-                                v8::NewStringType::kInternalized)
-            .ToLocalChecked());
-    v8::Local<v8::Object> global(context()->v8_context()->Global());
-    // TODO(crbug.com/913942): Possibly replace ToLocalChecked here with
-    // actual error handling.
-    v8::Local<v8::Value> chrome(
-        global->Get(context()->v8_context(), chrome_string).ToLocalChecked());
-    if (chrome->IsUndefined()) {
-      chrome = v8::Object::New(context()->isolate());
-      global->Set(context()->v8_context(), chrome_string, chrome).ToChecked();
-    }
-    args.GetReturnValue().Set(chrome);
-  }
-};
-
 class HandleScopeHelper {
  public:
   HandleScopeHelper(ScriptContext* script_context)
@@ -1415,8 +1383,6 @@ void Dispatcher::RegisterNativeHandlers(
     ScriptContext* context,
     NativeExtensionBindingsSystem* bindings_system,
     V8SchemaRegistry* v8_schema_registry) {
-  module_system->RegisterNativeHandler(
-      "chrome", std::make_unique<ChromeNativeHandler>(context));
   module_system->RegisterNativeHandler(
       "logging", std::make_unique<LoggingNativeHandler>(context));
   module_system->RegisterNativeHandler(
