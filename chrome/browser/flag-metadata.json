@@ -713,6 +713,11 @@
     "expiry_milestone": 127
   },
   {
+    "name": "autofill-enable-vcn-gray-out-for-merchant-opt-out",
+    "owners": ["hvs@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "autofill-enable-virtual-card-metadata",
     "owners": [ "siyua@chromium.org", "siashah@chromium.org"],
     "expiry_milestone": 120

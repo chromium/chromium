@@ -19553,6 +19553,8 @@ from previous Chrome versions.
   <int value="-580897686" label="SharedHighlightingAmp:enabled"/>
   <int value="-579897981" label="EnableEdgeDetection:enabled"/>
   <int value="-579656054" label="CCTResizableSideSheetForThirdParties:enabled"/>
+  <int value="-579655251"
+      label="AutofillEnableVcnGrayOutForMerchantOptOut:enabled"/>
   <int value="-579192400" label="disable-input-view"/>
   <int value="-577982497" label="CupsPrintersUiOverhaul:enabled"/>
   <int value="-577503348" label="GridTabSwitcherForTablets:disabled"/>
@@ -21820,6 +21822,8 @@ from previous Chrome versions.
   <int value="430776375" label="TextureLayerSkipWaitForActivation:disabled"/>
   <int value="430959979" label="SyncStandaloneTransport:disabled"/>
   <int value="431691805" label="MediaDocumentDownloadButton:enabled"/>
+  <int value="432772847"
+      label="AutofillEnableVcnGrayOutForMerchantOptOut:disabled"/>
   <int value="432920820" label="OmniboxActionsInSuggest:enabled"/>
   <int value="433084321" label="WebPrinting:enabled"/>
   <int value="434033638" label="PwaPersistentNotification:disabled"/>

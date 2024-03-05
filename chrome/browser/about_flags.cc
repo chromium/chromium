@@ -11041,6 +11041,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kCrosMall)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+    {"autofill-enable-vcn-gray-out-for-merchant-opt-out",
+     flag_descriptions::kAutofillEnableVcnGrayOutForMerchantOptOutName,
+     flag_descriptions::kAutofillEnableVcnGrayOutForMerchantOptOutDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableVcnGrayOutForMerchantOptOut)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

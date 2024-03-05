@@ -230,6 +230,12 @@ BASE_FEATURE(kAutofillEnableVcnEnrollLoadingAndConfirmation,
              "AutofillEnableVcnEnrollLoadingAndConfirmation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Chrome will display grayed out virtual card suggestions on
+// merchant websites where the merchant has opted-out of virtual cards.
+BASE_FEATURE(kAutofillEnableVcnGrayOutForMerchantOptOut,
+             "AutofillEnableVcnGrayOutForMerchantOptOut",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, uses the refactored VirtualCardEnrollMetricsLogger in
 // VirtualCardEnrollBubbleController on all platforms.
 BASE_FEATURE(kAutofillEnableVirtualCardEnrollMetricsLogger,

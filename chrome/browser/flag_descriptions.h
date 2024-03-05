@@ -342,6 +342,9 @@ extern const char kAutofillEnableSyncingOfPixBankAccountsDescription[];
 extern const char kAutofillEnableVcn3dsAuthenticationName[];
 extern const char kAutofillEnableVcn3dsAuthenticationDescription[];
 
+extern const char kAutofillEnableVcnGrayOutForMerchantOptOutName[];
+extern const char kAutofillEnableVcnGrayOutForMerchantOptOutDescription[];
+
 extern const char kAutofillEnableNewSaveCardBubbleUiName[];
 extern const char kAutofillEnableNewSaveCardBubbleUiDescription[];
 
