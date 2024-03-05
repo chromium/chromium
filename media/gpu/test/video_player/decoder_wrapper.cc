@@ -356,6 +356,7 @@ void DecoderWrapper::OnDecodeDoneTask(DecoderStatus status) {
 
   num_outstanding_decode_requests_--;
 
+  base::TimeDelta delay = base::Milliseconds(0);
   // Queue the next fragment to be decoded.
   // TODO(mcasas): Introduce a minor delay here to avoid overrunning the driver;
   // this is a provision for Mediatek devices and for the erroneous behaviour
@@ -363,17 +364,23 @@ void DecoderWrapper::OnDecodeDoneTask(DecoderStatus status) {
   // encoded chunk enqueued at this point) and not in OnFrameReadyTask as it
   // should (naively moving this task there doesn't work because it prevents the
   // V4L2VideoDecoder backend from polling the device driver).
+#if BUILDFLAG(USE_V4L2_CODEC)
+  delay = base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)
+              ? base::Milliseconds(5)
+              : base::Milliseconds(1);
+  static bool log_delay_message = true;
+  if (log_delay_message) {
+    LOG(INFO) << "Using a delay of " << delay
+              << " between sending encoded chunks to accommodate "
+                 "MTK stateful V4L2 drivers";
+    log_delay_message = false;
+  }
+#endif
+
   worker_task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DecoderWrapper::DecodeNextFragmentTask, weak_this_),
-#if BUILDFLAG(USE_V4L2_CODEC)
-      base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)
-          ? base::Milliseconds(5)
-          : base::Milliseconds(1)
-#else
-      base::Milliseconds(0)
-#endif
-  );
+      delay);
   FireEvent(DecoderListener::Event::kDecoderBufferAccepted);
 }
 
