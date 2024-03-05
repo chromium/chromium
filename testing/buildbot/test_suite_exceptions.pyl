@@ -4859,7 +4859,7 @@
         'args': [
           # TODO(crbug.com/326277739): Remove this once we determine if this
           # has an impact on ANGLE test stability.
-          '--jobs=1',
+          '--jobs=2',
         ],
       },
     },
@@ -4947,7 +4947,7 @@
         'args': [
           # TODO(crbug.com/326277739): Remove this once we determine if this
           # has an impact on ANGLE test stability.
-          '--jobs=1',
+          '--jobs=2',
         ],
       },
     },
