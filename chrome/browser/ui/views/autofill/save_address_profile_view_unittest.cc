@@ -54,6 +54,7 @@ class MockSaveUpdateAddressProfileBubbleController
               (override));
   MOCK_METHOD(void, OnEditButtonClicked, (), (override));
   MOCK_METHOD(void, OnBubbleClosed, (), (override));
+  MOCK_METHOD(bool, IsSaveBubble, (), (const override));
 };
 
 class SaveAddressProfileViewTest : public ChromeViewsTestBase {

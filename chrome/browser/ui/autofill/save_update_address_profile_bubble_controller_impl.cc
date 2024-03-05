@@ -354,6 +354,10 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OnBubbleClosed() {
   UpdatePageActionIcon();
 }
 
+bool SaveUpdateAddressProfileBubbleControllerImpl::IsSaveBubble() const {
+  return !original_profile_;
+}
+
 void SaveUpdateAddressProfileBubbleControllerImpl::OnPageActionIconClicked() {
   // Don't show the bubble if it's already visible.
   if (bubble_view())
@@ -374,10 +378,6 @@ SaveUpdateAddressProfileBubbleControllerImpl::GetPageActionIconTootip() const {
 AutofillBubbleBase*
 SaveUpdateAddressProfileBubbleControllerImpl::GetBubbleView() const {
   return bubble_view();
-}
-
-bool SaveUpdateAddressProfileBubbleControllerImpl::IsSaveBubble() const {
-  return !original_profile_;
 }
 
 void SaveUpdateAddressProfileBubbleControllerImpl::WebContentsDestroyed() {

@@ -7,8 +7,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_icon_controller.h"
 #include "chrome/browser/ui/view_ids.h"
-#include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
-#include "chrome/browser/ui/views/autofill/update_address_profile_view.h"
+#include "chrome/browser/ui/views/autofill/address_bubble_base_view.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -39,11 +38,7 @@ views::BubbleDialogDelegate* SaveUpdateAddressProfileIconView::GetBubble()
     return nullptr;
   }
 
-  if (controller->IsSaveBubble()) {
-    return static_cast<autofill::SaveAddressProfileView*>(
-        controller->GetBubbleView());
-  }
-  return static_cast<autofill::UpdateAddressProfileView*>(
+  return static_cast<autofill::AddressBubbleBaseView*>(
       controller->GetBubbleView());
 }
 

@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/views/autofill/address_bubble_base_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 
 namespace content {
@@ -24,8 +25,7 @@ class SaveUpdateAddressProfileBubbleController;
 
 // This is the bubble views that is part of the flow for when the user submits a
 // form with an address profile that Autofill has not previously saved.
-class SaveAddressProfileView : public AutofillBubbleBase,
-                               public LocationBarBubbleDelegateView {
+class SaveAddressProfileView : public AddressBubbleBaseView {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kEditButtonViewId);

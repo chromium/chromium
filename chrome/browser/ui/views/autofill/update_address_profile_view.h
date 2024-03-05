@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/views/autofill/address_bubble_base_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 
 namespace content {
@@ -22,8 +23,7 @@ class SaveUpdateAddressProfileBubbleController;
 
 // Shown after a user submits a form with an address profile that's slightly
 // different from an address profile previously saved.
-class UpdateAddressProfileView : public AutofillBubbleBase,
-                                 public LocationBarBubbleDelegateView {
+class UpdateAddressProfileView : public AddressBubbleBaseView {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kEditButtonViewId);

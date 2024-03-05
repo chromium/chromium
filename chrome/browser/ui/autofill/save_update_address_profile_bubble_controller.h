@@ -41,6 +41,10 @@ class SaveUpdateAddressProfileBubbleController {
       base::optional_ref<const AutofillProfile> profile) = 0;
   virtual void OnEditButtonClicked() = 0;
   virtual void OnBubbleClosed() = 0;
+
+  // Whether the icon belongs to a save or an update address bubble.
+  // TODO(b/325440757): Remove, split this interface into save/update instead.
+  virtual bool IsSaveBubble() const = 0;
 };
 
 }  // namespace autofill

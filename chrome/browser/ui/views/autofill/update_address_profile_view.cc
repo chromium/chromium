@@ -165,7 +165,7 @@ UpdateAddressProfileView::UpdateAddressProfileView(
     views::View* anchor_view,
     content::WebContents* web_contents,
     SaveUpdateAddressProfileBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : AddressBubbleBaseView(anchor_view, web_contents),
       controller_(controller) {
   // Since this is an update prompt, original profile must be set. Otherwise, it
   // would have been a save prompt.
