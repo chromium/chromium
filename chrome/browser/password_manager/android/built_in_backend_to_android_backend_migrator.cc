@@ -413,9 +413,13 @@ void BuiltInBackendToAndroidBackendMigrator::
       continue;
     }
 
-    // Passwords aren't identical. Pick the most recently created one. This
-    // is aligned with the merge sync logic in PasswordSyncBridge.
-    if (login->date_created > android_login->date_created) {
+    // Passwords aren't identical. Pick the most recentl one. The most recent is
+    // considered the one, which has the newest create, last used or modified
+    // date.
+    if (std::max({login->date_created, login->date_last_used,
+                  login->date_password_modified}) >
+        std::max({android_login->date_created, android_login->date_last_used,
+                  android_login->date_password_modified})) {
       callbacks_chain = base::BindOnce(
           &BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend,
           weak_ptr_factory_.GetWeakPtr(), android_backend_, *login,

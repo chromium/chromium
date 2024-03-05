@@ -413,19 +413,29 @@ struct MigrationParam {
   struct Entry {
     Entry(int index,
           std::string password = "",
-          base::TimeDelta date_created = base::TimeDelta())
-        : index(index), password(password), date_created(date_created) {}
+          base::TimeDelta date_created = base::TimeDelta(),
+          base::TimeDelta date_last_used = base::TimeDelta(),
+          base::TimeDelta date_password_modified = base::TimeDelta())
+        : index(index),
+          password(password),
+          date_created(date_created),
+          date_last_used(date_last_used),
+          date_password_modified(date_password_modified) {}
 
     PasswordForm ToPasswordForm() const {
       PasswordForm form = CreateTestPasswordForm(index);
       form.password_value = base::ASCIIToUTF16(password);
       form.date_created = base::Time() + date_created;
+      form.date_last_used = base::Time() + date_last_used;
+      form.date_password_modified = base::Time() + date_password_modified;
       return form;
     }
 
     int index;
     std::string password;
     base::TimeDelta date_created;
+    base::TimeDelta date_last_used;
+    base::TimeDelta date_password_modified;
   };
 
   std::vector<PasswordForm> GetBuiltInLogins() const {
@@ -664,7 +674,35 @@ INSTANTIATE_TEST_SUITE_P(
             .merged_logins = {{1, "new_password", base::Days(2)}, {2}, {3}},
             .updated_android_logins = {{1, "new_password", base::Days(2)},
                                        {2},
-                                       {3}}}));
+                                       {3}}},
+        MigrationParam{
+            .built_in_logins = {{1, "new_password",
+                                 /*date_created=*/base::Days(1),
+                                 /*date_last_used=*/base::Days(2)}},
+            .android_logins = {{1, "old_password",
+                                /*date_created=*/base::Days(1)}},
+            .merged_logins = {{1, "new_password", base::Days(1),
+                               /*date_last_used=*/base::Days(2)}},
+            .updated_android_logins = {{1, "new_password", base::Days(1),
+                                        /*date_last_used=*/base::Days(2)}}},
+        MigrationParam{
+            .built_in_logins = {{1, "old_password",
+                                 /*date_created=*/base::Days(1),
+                                 /*date_last_used=*/base::Days(2),
+                                 /*date_password_modified=*/base::Days(2)}},
+            .android_logins = {{1, "new_password",
+                                /*date_created=*/base::Days(1),
+                                /*date_last_used=*/base::Days(2),
+                                /*date_password_modified=*/base::Days(3)}},
+            .merged_logins = {{1, "new_password",
+                               /*date_created=*/base::Days(1),
+                               /*date_last_used=*/base::Days(2),
+                               /*date_password_modified=*/base::Days(3)}},
+            .updated_android_logins = {
+                {1, "old_password",
+                 /*date_created=*/base::Days(1),
+                 /*date_last_used=*/base::Days(2),
+                 /*date_password_modified=*/base::Days(2)}}}));
 
 struct MigrationParamForMetrics {
   // Whether migration has already happened.
