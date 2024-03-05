@@ -27,7 +27,10 @@ bool PlatformWindowDelegate::State::ProducesFrameOnUpdateFrom(
   // enough information to determine if it will produce a frame, as it depends
   // on whether native occlusion is enabled and if the ui compositor changes
   // visibility.
-  return old.bounds_dip.size() != bounds_dip.size() || old.size_px != size_px ||
+  // Note: Changing the window state produces a new frame as
+  // OnWindowStateChanged will schedule relayout even without the bounds change.
+  return old.window_state != window_state ||
+         old.bounds_dip.size() != bounds_dip.size() || old.size_px != size_px ||
          old.window_scale != window_scale || old.raster_scale != raster_scale ||
          old.insets != insets;
 }
@@ -35,11 +38,13 @@ bool PlatformWindowDelegate::State::ProducesFrameOnUpdateFrom(
 std::string PlatformWindowDelegate::State::ToString() const {
   std::stringstream result;
   result << "State {";
-  result << "bounds_dip = " << bounds_dip.ToString();
+  result << "window_state = " << static_cast<int>(window_state);
+  result << ", bounds_dip = " << bounds_dip.ToString();
   result << ", size_px = " << size_px.ToString();
   result << ", window_scale = " << window_scale;
   result << ", raster_scale = " << raster_scale;
   result << ", insets = " << insets.ToString();
+  result << ", occlusion_state = " << static_cast<int>(occlusion_state);
   result << "}";
   return result.str();
 }

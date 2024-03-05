@@ -306,12 +306,13 @@ bool WaylandPopup::IsSurfaceConfigured() {
   return shell_popup() ? shell_popup()->IsConfigured() : false;
 }
 
-void WaylandPopup::SetWindowGeometry(gfx::Size size_dip) {
+void WaylandPopup::SetWindowGeometry(
+    const PlatformWindowDelegate::State& state) {
   if (!shell_popup_) {
     return;
   }
   const auto insets = GetDecorationInsetsInDIP();
-  gfx::Rect geometry_dip(size_dip);
+  gfx::Rect geometry_dip(state.bounds_dip.size());
   geometry_dip.Inset(insets);
   shell_popup_->SetWindowGeometry(geometry_dip);
 }

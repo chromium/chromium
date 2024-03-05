@@ -317,7 +317,7 @@ void WaylandWindow::CancelDrag() {
 void WaylandWindow::Show(bool inactive) {
   // Initially send the window geometry. After this, we only update window
   // geometry when the value in latched_state_ updates.
-  SetWindowGeometry(latched_state_.bounds_dip.size());
+  SetWindowGeometry(latched_state_);
   frame_manager_->MaybeProcessPendingFrame();
 }
 
@@ -826,6 +826,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   }
 
   PlatformWindowDelegate::State state;
+  state.window_state = PlatformWindowState::kNormal;
   state.bounds_dip = properties.bounds;
 
   // Make sure we don't store empty bounds, or else later on we might send an
@@ -894,7 +895,8 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   return true;
 }
 
-void WaylandWindow::SetWindowGeometry(gfx::Size size_dip) {}
+void WaylandWindow::SetWindowGeometry(
+    const PlatformWindowDelegate::State& state) {}
 
 gfx::Vector2d WaylandWindow::GetWindowGeometryOffsetInDIP() const {
   if (!frame_insets_px_.has_value()) {
@@ -1203,6 +1205,9 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
   // For values not specified in pending_configure_state_, use the latest
   // requested values.
   auto state = GetLatestRequestedState();
+  if (pending_configure_state_.window_state) {
+    state.window_state = pending_configure_state_.window_state.value();
+  }
   if (pending_configure_state_.bounds_dip.has_value()) {
     state.bounds_dip = pending_configure_state_.bounds_dip.value();
   }
@@ -1413,8 +1418,10 @@ void WaylandWindow::LatchStateRequest(const StateRequest& req) {
   // If geometry is not updated on window scale update, the insets are set in a
   // wrong way. That is, aura provides insets in pixels, which are converted by
   // the device scale factor known from the display. It can be different from
-  // the one that the |latch_state_.window_scale| has. As a result, the geometry
+  // the one that the `latch_state_.window_scale` has. As a result, the geometry
   // is set with wrong values as Wayland requires them to be in DIP.
+  // TODO(b/328011220): Check `req.state.window_state` update here or remove the
+  // window state effect inside SetWindowGeometry.
   if (req.state.bounds_dip.size() != old_state.bounds_dip.size() ||
       req.state.window_scale != old_state.window_scale ||
       // If insets change that is a geometry change even when the bounds or
@@ -1422,7 +1429,7 @@ void WaylandWindow::LatchStateRequest(const StateRequest& req) {
       // of the request, hence the need to check this if there are changes in
       // insets since it latched the last time.
       old_latched_insets != latched_insets_) {
-    SetWindowGeometry(req.state.bounds_dip.size());
+    SetWindowGeometry(req.state);
   }
   UpdateWindowMask();
   if (req.serial != -1) {
