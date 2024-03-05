@@ -80,6 +80,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   static const char kKeyAction[];
   static const char kKeyTabUrl[];
   static constexpr char kKeyContentTransferMethod[] = "contentTransferMethod";
+  static constexpr char kKeyHasWatermarking[] = "hasWatermarking";
 
   // All new event names should be added to the array
   // `enterprise_connectors::ReportingServiceSettings::kAllReportingEvents` in
