@@ -104,7 +104,7 @@ class IOSSSLErrorHandlerTest : public IOSSSLErrorHandlerWithoutTabHelpersTest {
     security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
         web_state());
 
-    CaptivePortalTabHelper::CreateForWebState(web_state());
+    CaptivePortalTabHelper::GetOrCreateForWebState(web_state());
     ASSERT_TRUE(cert());
 
     std::unique_ptr<web::FakeNavigationManager> fake_navigation_manager =

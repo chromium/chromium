@@ -276,7 +276,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageWithSSLInfo) {
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_loader_factory));
 
-  CaptivePortalTabHelper::CreateForWebState(&web_state);
+  CaptivePortalTabHelper::GetOrCreateForWebState(&web_state);
   web_state.SetBrowserState(browser_state());
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/false,

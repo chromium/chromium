@@ -144,8 +144,8 @@
   }
 
   DCHECK(_tabInsertionBrowserAgent);
-  CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
-      _tabInsertionBrowserAgent);
+  CaptivePortalTabHelper::GetOrCreateForWebState(webState)
+      ->SetTabInsertionBrowserAgent(_tabInsertionBrowserAgent);
 
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(
       _NTPTabHelperDelegate);
@@ -219,8 +219,8 @@
     followTabHelper->set_follow_iph_presenter(nil);
   }
 
-  CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
-      nil);
+  CaptivePortalTabHelper::GetOrCreateForWebState(webState)
+      ->SetTabInsertionBrowserAgent(nil);
 
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
 

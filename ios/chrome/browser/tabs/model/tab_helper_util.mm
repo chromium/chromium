@@ -325,7 +325,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     FollowTabHelper::CreateForWebState(web_state);
   }
 
-  CaptivePortalTabHelper::CreateForWebState(web_state);
+  if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    CaptivePortalTabHelper::GetOrCreateForWebState(web_state);
+  }
 
   if (!is_off_the_record) {
     PriceNotificationsTabHelper::CreateForWebState(web_state);
