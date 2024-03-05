@@ -4,10 +4,12 @@
 
 #include "ash/accelerators/shortcut_input_handler.h"
 
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/test/ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
 
@@ -26,6 +28,7 @@ class TestObserver : public ShortcutInputHandler::Observer {
   void OnPrerewrittenShortcutInputEventPressed(
       const mojom::KeyEvent& key_event) override {
     ++num_prerewritten_input_events_pressed_;
+    key_code_ = key_event.vkey;
   }
   void OnPrerewrittenShortcutInputEventReleased(
       const mojom::KeyEvent& key_event) override {
@@ -40,12 +43,14 @@ class TestObserver : public ShortcutInputHandler::Observer {
   int num_prerewritten_input_events_released() {
     return num_prerewritten_input_events_released_;
   }
+  ui::KeyboardCode key_code() { return key_code_; }
 
  private:
   int num_input_events_pressed_ = 0;
   int num_input_events_released_ = 0;
   int num_prerewritten_input_events_pressed_ = 0;
   int num_prerewritten_input_events_released_ = 0;
+  ui::KeyboardCode key_code_ = ui::KeyboardCode::VKEY_UNKNOWN;
 };
 
 }  // namespace
@@ -105,6 +110,16 @@ TEST_F(ShortcutInputHandlerTest, ConsumeTest) {
   ui::KeyEvent released_event(ui::ET_KEY_RELEASED, ui::VKEY_0, ui::EF_NONE);
   shortcut_input_handler_->OnEvent(&released_event);
   EXPECT_TRUE(released_event.stopped_propagation());
+}
+
+TEST_F(ShortcutInputHandlerTest, ShowAllWindows) {
+  ui::KeyEvent prerewritten_pressed_event =
+      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN,
+                   ui::DomCode::SHOW_ALL_WINDOWS, ui::EF_NONE);
+
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_pressed_event);
+  EXPECT_EQ(observer_->key_code(), ui::VKEY_MEDIA_LAUNCH_APP1);
 }
 
 }  // namespace ash

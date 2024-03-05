@@ -106,6 +106,16 @@ void ShortcutInputHandler::OnPrerewriteKeyInputEvent(
     key_code = event.key_code();
   }
 
+  // Some key codes have a Dom code but no VKEY value assigned. They're mapped
+  // to VKEY values here.
+  if (key_code == ui::VKEY_UNKNOWN) {
+    if (event.code() == ui::DomCode::SHOW_ALL_WINDOWS) {
+      // Show all windows is through VKEY_MEDIA_LAUNCH_APP1.
+      key_code = ui::VKEY_MEDIA_LAUNCH_APP1;
+    }
+    // TODO(b/327436148): Fix display mirror icon
+  }
+
   mojom::KeyEvent key_event(key_code, static_cast<int>(event.code()),
                             static_cast<int>(event.GetDomKey()),
                             event.flags() & kKeyboardModifierFlags,
