@@ -95,8 +95,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   using UserGestureRequired = FormTracker::UserGestureRequired;
   using UsesKeyboardAccessoryForSuggestions =
       base::StrongAlias<class UsesKeyboardAccessoryForSuggestionsTag, bool>;
-  using EnableHeavyFormDataScraping =
-      base::StrongAlias<class EnableHeavyFormDataScrapingTag, bool>;
 
   struct Config {
     // Controls whether or not all datalists shall be extracted into
@@ -128,10 +126,6 @@ class AutofillAgent : public content::RenderFrameObserver,
     // information in or near the keyboard instead.
     UsesKeyboardAccessoryForSuggestions uses_keyboard_accessory_for_suggestions{
         BUILDFLAG(IS_ANDROID)};
-
-    // Controls heavy scraping of form data (e.g., button titles for unowned
-    // forms) is enabled.
-    EnableHeavyFormDataScraping enable_heavy_form_data_scraping{false};
   };
 
   // PasswordAutofillAgent is guaranteed to outlive AutofillAgent.
@@ -222,10 +216,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // shown.
   void UpdateStateForTextChange(const blink::WebFormControlElement& element,
                                 FieldPropertiesFlags flag);
-
-  bool is_heavy_form_data_scraping_enabled() const {
-    return *config_.enable_heavy_form_data_scraping;
-  }
 
   bool IsPrerendering() const;
 

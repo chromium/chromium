@@ -295,7 +295,7 @@ using UserGestureRequired = autofill::AutofillAgent::UserGestureRequired;
 using UsesKeyboardAccessoryForSuggestions =
     autofill::AutofillAgent::UsesKeyboardAccessoryForSuggestions;
 using EnableHeavyFormDataScraping =
-    autofill::AutofillAgent::EnableHeavyFormDataScraping;
+    autofill::PasswordAutofillAgent::EnableHeavyFormDataScraping;
 
 namespace {
 
@@ -692,7 +692,10 @@ void ChromeContentRendererClient::RenderFrameCreated(
   if (!render_frame->IsInFencedFrameTree() ||
       base::FeatureList::IsEnabled(blink::features::kFencedFramesAPIChanges)) {
     auto password_autofill_agent = std::make_unique<PasswordAutofillAgent>(
-        render_frame, associated_interfaces);
+        render_frame, associated_interfaces,
+        EnableHeavyFormDataScraping(
+            chrome::GetChannel() == version_info::Channel::CANARY ||
+            chrome::GetChannel() == version_info::Channel::DEV));
     auto password_generation_agent = std::make_unique<PasswordGenerationAgent>(
         render_frame, password_autofill_agent.get(), associated_interfaces);
     new AutofillAgent(
@@ -700,10 +703,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
         {ExtractAllDatalists(false), FocusRequiresScroll(true),
          QueryPasswordSuggestions(false), SecureContextRequired(false),
          UserGestureRequired(true),
-         UsesKeyboardAccessoryForSuggestions(BUILDFLAG(IS_ANDROID)),
-         EnableHeavyFormDataScraping(
-             chrome::GetChannel() == version_info::Channel::CANARY ||
-             chrome::GetChannel() == version_info::Channel::DEV)},
+         UsesKeyboardAccessoryForSuggestions(BUILDFLAG(IS_ANDROID))},
         std::move(password_autofill_agent),
         std::move(password_generation_agent), associated_interfaces);
 

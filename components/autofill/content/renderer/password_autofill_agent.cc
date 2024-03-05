@@ -671,8 +671,10 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
 
 PasswordAutofillAgent::PasswordAutofillAgent(
     content::RenderFrame* render_frame,
-    blink::AssociatedInterfaceRegistry* registry)
+    blink::AssociatedInterfaceRegistry* registry,
+    EnableHeavyFormDataScraping enable_heavy_form_data_scraping)
     : content::RenderFrameObserver(render_frame),
+      enable_heavy_form_data_scraping_(enable_heavy_form_data_scraping),
       last_supplied_password_info_iter_(web_input_to_password_info_.end()),
       logging_state_active_(false),
       sent_request_to_store_(false),
@@ -1555,9 +1557,7 @@ PasswordAutofillAgent::GetFormDataFromUnownedInputElements() {
     return nullptr;
   return CreateFormDataFromUnownedInputElements(
       *web_frame, field_data_manager(), &username_detector_cache_,
-      autofill_agent_->is_heavy_form_data_scraping_enabled()
-          ? &button_titles_cache_
-          : nullptr);
+      *enable_heavy_form_data_scraping_ ? &button_titles_cache_ : nullptr);
 }
 
 void PasswordAutofillAgent::InformAboutFormClearing(
