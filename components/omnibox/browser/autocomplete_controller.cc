@@ -1720,6 +1720,10 @@ AutocompleteController::GetOmniboxPositionExperimentStatsV2() const {
 
 bool AutocompleteController::ShouldRunProvider(
     AutocompleteProvider* provider) const {
+  if (!provider) {
+    return false;
+  }
+
   if (input_.InKeywordMode()) {
     // Only a subset of providers are run when we're in a starter pack keyword
     // mode. Try to grab the TemplateURL to determine if we're in starter pack
@@ -1775,9 +1779,10 @@ bool AutocompleteController::ShouldRunProvider(
         case AutocompleteProvider::TYPE_DOCUMENT:
           return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
                        .limit_document_suggestions) ||
-                 base::StartsWith(keyword_turl->url(),
-                                  "https://drive.google.com",
-                                  base::CompareCase::INSENSITIVE_ASCII);
+                 (keyword_turl &&
+                  base::StartsWith(keyword_turl->url(),
+                                   "https://drive.google.com",
+                                   base::CompareCase::INSENSITIVE_ASCII));
 
         // Don't run on device head provider.
         case AutocompleteProvider::TYPE_ON_DEVICE_HEAD:
