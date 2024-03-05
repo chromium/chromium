@@ -310,8 +310,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       WritingDirectionMode self_writing_direction,
       const ScopedCSSName* default_anchor_specifier,
       const LayoutBox& candidate_layout_box,
-      const LogicalAnchorQueryMap* anchor_queries,
-      const LayoutObject* implicit_anchor);
+      const LogicalAnchorQueryMap* anchor_queries);
 
   const ContainingBlockInfo ApplyInsetArea(
       const InsetArea& inset_area,
@@ -341,7 +340,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       const ComputedStyle& style,
       AnchorEvaluatorImpl*,
       const LogicalAnchorQueryMap* anchor_queries,
-      const LayoutObject* implicit_anchor,
       bool try_fit_available_space,
       bool is_first_run,
       NonOverflowingScrollRange* out_scroll_range);

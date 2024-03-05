@@ -740,7 +740,7 @@ void Document::MarkTopLevelFormsDirty() {
 }
 
 ExplicitlySetAttrElementsMap* Document::GetExplicitlySetAttrElementsMap(
-    Element* element) {
+    const Element* element) {
   DCHECK(element);
   DCHECK(element->GetDocument() == this);
   auto add_result =
@@ -753,7 +753,7 @@ ExplicitlySetAttrElementsMap* Document::GetExplicitlySetAttrElementsMap(
 }
 
 void Document::MoveElementExplicitlySetAttrElementsMapToNewDocument(
-    Element* element,
+    const Element* element,
     Document& new_document) {
   DCHECK(element);
   auto it = element_explicitly_set_attr_elements_map_.find(element);

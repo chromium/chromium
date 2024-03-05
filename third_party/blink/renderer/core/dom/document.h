@@ -1030,9 +1030,9 @@ class CORE_EXPORT Document : public ContainerNode,
     return user_action_elements_;
   }
 
-  ExplicitlySetAttrElementsMap* GetExplicitlySetAttrElementsMap(Element*);
+  ExplicitlySetAttrElementsMap* GetExplicitlySetAttrElementsMap(const Element*);
   void MoveElementExplicitlySetAttrElementsMapToNewDocument(
-      Element*,
+      const Element*,
       Document& new_document);
 
   CachedAttrAssociatedElementsMap* GetCachedAttrAssociatedElementsMap(Element*);
@@ -2748,7 +2748,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Member<FragmentDirective> fragment_directive_;
 
-  HeapHashMap<WeakMember<Element>, Member<ExplicitlySetAttrElementsMap>>
+  HeapHashMap<WeakMember<const Element>, Member<ExplicitlySetAttrElementsMap>>
       element_explicitly_set_attr_elements_map_;
   HeapHashMap<WeakMember<Element>, Member<CachedAttrAssociatedElementsMap>>
       element_cached_attr_associated_elements_map_;

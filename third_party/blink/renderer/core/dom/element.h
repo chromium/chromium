@@ -250,7 +250,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // This is only exposed as an implementation detail to AXRelationCache, which
   // computes aria-owns differently for element reflection.
   bool HasExplicitlySetAttrAssociatedElements(const QualifiedName& name);
-  Element* GetElementAttribute(const QualifiedName& name);
+  Element* GetElementAttribute(const QualifiedName& name) const;
   void SetElementAttribute(const QualifiedName&, Element*);
   HeapVector<Member<Element>>* GetAttrAssociatedElements(
       const QualifiedName& name);
@@ -1320,7 +1320,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Retrieves the element pointed to by this element's 'anchor' content
   // attribute, if that element exists.
-  Element* anchorElement();
+  Element* anchorElement() const;
   void setAnchorElement(Element*);
 
   AnchorPositionScrollData& EnsureAnchorPositionScrollData();
@@ -1337,7 +1337,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   }
 
   // https://drafts.csswg.org/css-anchor-1/#implicit-anchor-element
-  Element* ImplicitAnchorElement();
+  Element* ImplicitAnchorElement() const;
 
   void UpdateDirectionalityAndDescendant(TextDirection direction);
   void UpdateDescendantHasDirAutoAttribute(bool has_dir_auto);

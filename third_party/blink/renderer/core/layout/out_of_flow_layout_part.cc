@@ -454,12 +454,6 @@ OutOfFlowLayoutPart::ApplyInsetArea(
   // position containing block. This method returns a modified
   // ContainingBlockInfo with the rect adjusted by inset-area.
   DCHECK(!inset_area.IsNone());
-  const LayoutObject* implicit_anchor = nullptr;
-  if (Element* element = DynamicTo<Element>(candidate.Node().GetDOMNode())) {
-    if (element->ImplicitAnchorElement()) {
-      implicit_anchor = element->ImplicitAnchorElement()->GetLayoutObject();
-    }
-  }
 
   PhysicalSize container_physical_content_size = ToPhysicalSize(
       container_info.rect.size, GetConstraintSpace().GetWritingMode());
@@ -467,11 +461,11 @@ OutOfFlowLayoutPart::ApplyInsetArea(
   LayoutUnit available_height = container_physical_content_size.height;
 
   std::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
-  CreateAnchorEvaluator(
-      anchor_evaluator_storage, container_info, container_physical_content_size,
-      candidate.Node().Style().GetWritingDirection(),
-      candidate.Node().Style().AnchorDefault(),
-      *candidate.Node().GetLayoutBox(), anchor_queries, implicit_anchor);
+  CreateAnchorEvaluator(anchor_evaluator_storage, container_info,
+                        container_physical_content_size,
+                        candidate.Node().Style().GetWritingDirection(),
+                        candidate.Node().Style().AnchorDefault(),
+                        *candidate.Node().GetLayoutBox(), anchor_queries);
   AnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
   if (!anchor_evaluator) {
     return container_info;
@@ -1583,8 +1577,16 @@ void OutOfFlowLayoutPart::CreateAnchorEvaluator(
     WritingDirectionMode self_writing_direction,
     const ScopedCSSName* default_anchor_specifier,
     const LayoutBox& candidate_layout_box,
-    const LogicalAnchorQueryMap* anchor_queries,
-    const LayoutObject* implicit_anchor) {
+    const LogicalAnchorQueryMap* anchor_queries) {
+  const LayoutObject* implicit_anchor = nullptr;
+  if (const Element* element =
+          DynamicTo<Element>(candidate_layout_box.GetNode())) {
+    if (const Element* implicit_anchor_element =
+            element->ImplicitAnchorElement()) {
+      implicit_anchor = implicit_anchor_element->GetLayoutObject();
+    }
+  }
+
   LogicalSize container_content_size = container_info.rect.size;
   PhysicalSize container_physical_content_size = ToPhysicalSize(
       container_content_size, GetConstraintSpace().GetWritingMode());
@@ -1811,7 +1813,6 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     const NodeInfo& node_info,
     bool is_first_run,
     const LogicalAnchorQueryMap* anchor_queries) {
-  const LayoutObject* implicit_anchor = nullptr;
   gfx::Vector2dF anchor_offset;
   gfx::Vector2dF additional_bounds_offset;
   if (Element* element = DynamicTo<Element>(node_info.node.GetDOMNode())) {
@@ -1819,9 +1820,6 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
             element->GetAnchorPositionScrollData()) {
       anchor_offset = data->AccumulatedOffset();
       additional_bounds_offset = data->AdditionalBoundsOffset();
-    }
-    if (element->ImplicitAnchorElement()) {
-      implicit_anchor = element->ImplicitAnchorElement()->GetLayoutObject();
     }
   }
 
@@ -1835,10 +1833,10 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
                      self_writing_direction.GetWritingMode());
   // Note: This assumes @try rounds can't affect writing-mode/anchor-default.
   std::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
-  CreateAnchorEvaluator(
-      anchor_evaluator_storage, node_info.container_info, available_size,
-      self_writing_direction, node_info.node.Style().AnchorDefault(),
-      *node_info.node.GetLayoutBox(), anchor_queries, implicit_anchor);
+  CreateAnchorEvaluator(anchor_evaluator_storage, node_info.container_info,
+                        available_size, self_writing_direction,
+                        node_info.node.Style().AnchorDefault(),
+                        *node_info.node.GetLayoutBox(), anchor_queries);
   AnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
 
   // If `@position-fallback` exists, let |TryCalculateOffset| check if the
@@ -1852,9 +1850,9 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     // Do @try placement decisions on the *base style* to avoid interference
     // from animations and transitions.
     const ComputedStyle& style = iter.ActivateBaseStyleForTryAttempt();
-    offset_info = TryCalculateOffset(
-        node_info, style, anchor_evaluator, anchor_queries, implicit_anchor,
-        has_next_fallback_style, is_first_run, &non_overflowing_range);
+    offset_info = TryCalculateOffset(node_info, style, anchor_evaluator,
+                                     anchor_queries, has_next_fallback_style,
+                                     is_first_run, &non_overflowing_range);
 
     // Also check if it fits the containing block after applying scroll offset.
     if (offset_info && has_next_fallback_style) {
@@ -1877,7 +1875,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     NonOverflowingScrollRange non_overflowing_range_unused;
     offset_info = TryCalculateOffset(
         node_info, iter.ActivateStyleForChosenFallback(), anchor_evaluator,
-        anchor_queries, implicit_anchor, iter.HasNextStyle(), is_first_run,
+        anchor_queries, iter.HasNextStyle(), is_first_run,
         &non_overflowing_range_unused);
   }
 
@@ -1897,7 +1895,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     const ComputedStyle& candidate_style,
     AnchorEvaluatorImpl* anchor_evaluator,
     const LogicalAnchorQueryMap* anchor_queries,
-    const LayoutObject* implicit_anchor,
     bool try_fit_available_space,
     bool is_first_run,
     NonOverflowingScrollRange* out_non_overflowing_range) {

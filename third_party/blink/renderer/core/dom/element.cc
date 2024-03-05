@@ -415,7 +415,7 @@ bool IsElementReflectionAttribute(const QualifiedName& name) {
 }
 
 HeapLinkedHashSet<WeakMember<Element>>* GetExplicitlySetElementsForAttr(
-    Element* element,
+    const Element* element,
     const QualifiedName& name) {
   ExplicitlySetAttrElementsMap* element_attribute_map =
       element->GetDocument().GetExplicitlySetAttrElementsMap(element);
@@ -888,7 +888,7 @@ Element* getElementByIdIncludingDisconnected(const Element& element,
 }
 }  // namespace
 
-Element* Element::GetElementAttribute(const QualifiedName& name) {
+Element* Element::GetElementAttribute(const QualifiedName& name) const {
   HeapLinkedHashSet<WeakMember<Element>>* element_attribute_vector =
       GetExplicitlySetElementsForAttr(this, name);
   if (element_attribute_vector) {
@@ -1176,14 +1176,13 @@ PopoverData* Element::GetPopoverData() const {
   return HasRareData() ? GetElementRareData()->GetPopoverData() : nullptr;
 }
 
-Element* Element::anchorElement() {
+Element* Element::anchorElement() const {
   // TODO(crbug.com/1425215): Fix GetElementAttribute() for out-of-tree-scope
   // elements, so that we can remove the hack below.
   if (!IsInTreeScope()) {
     return nullptr;
   }
-  Element* element = GetElementAttribute(html_names::kAnchorAttr);
-  return element;
+  return GetElementAttribute(html_names::kAnchorAttr);
 }
 
 void Element::setAnchorElement(Element* new_element) {
@@ -9846,24 +9845,25 @@ AnchorElementObserver& Element::EnsureAnchorElementObserver() {
       To<HTMLElement>(this));
 }
 
-Element* Element::ImplicitAnchorElement() {
+Element* Element::ImplicitAnchorElement() const {
   if (!RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
     return nullptr;
   }
-  if (HTMLElement* html_element = DynamicTo<HTMLElement>(this)) {
+  if (const HTMLElement* html_element = DynamicTo<HTMLElement>(this)) {
     if (Element* anchor = html_element->anchorElement()) {
       return anchor;
     }
     if (Element* select_list = html_element->popoverOwnerSelectListElement()) {
       return select_list;
     }
-    if (auto* datalist = DynamicTo<HTMLDataListElement>(html_element)) {
+    if (const auto* datalist = DynamicTo<HTMLDataListElement>(html_element)) {
       if (auto* select = datalist->ParentSelect()) {
         CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
         return select;
       }
     }
-  } else if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(this)) {
+  } else if (const PseudoElement* pseudo_element =
+                 DynamicTo<PseudoElement>(this)) {
     switch (pseudo_element->GetPseudoId()) {
       case kPseudoIdBefore:
       case kPseudoIdAfter:
