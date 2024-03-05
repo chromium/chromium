@@ -5,7 +5,6 @@
 //! Maps Rust targets to Chromium targets.
 
 use std::collections::BTreeSet;
-use std::iter::Iterator;
 
 use cargo_platform::Cfg;
 use once_cell::sync::OnceCell;

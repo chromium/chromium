@@ -5,42 +5,23 @@ depends on.
 
 ## Automated steps
 
-`//tools/crates/create_update_cl.sh` runs `gnrt update` and then
-uploads the resulting CL to Gerrit.
-`create_update_cl.sh` has to be invoked from within a Chromium repo.  This
-script takes less than 3 minutes to run.
+`//tools/crates/create_update_cl.py` runs `gnrt update`, `gnrt vendor`, and
+`gnrt gen`, and then uploads zero, one, or more resulting CLs to Gerrit.
+`create_update_cl.py` has to be invoked from within a Chromium repo.
 The script depends on `depot_tools` and `git` being present in the `PATH`.
 
-Before the auto-generated CL can be landed, some additional manual steps need
+Before the auto-generated CLs can be landed, some additional manual steps need
 to be done first - see the section below.
 
 ## Manual steps
-
-### `gnrt vendor` and `gnrt gen`
-
-The automated steps only run `gnrt update` and require manual invocation of
-`gnrt vendor` and `gnrt gen` steps.  This approach is motivated by the risk
-that `vendor` and `gen` may require a manual intervention (e.g. to work
-around "License file not found for crate foo" and similar warnings).
-
-1. Invoke `tools/crates/run_gnrt.py vendor` and address any warnings.
-1. `git cl upload -m 'gnrt vendor'`
-1. Invoke `tools/crates/run_gnrt.py gen` and address any warnings.
-1. `git cl upload -m 'gnrt gen'`
-1. Update inclusive language exceptions:
-   ```
-   infra/update_inclusive_language_presubmit_exempt_dirs.sh > \
-     infra/inclusive_language_presubmit_exempt_dirs.txt
-   ```
-1. `git cl upload -m 'inclusive language exemptions'`
-1. Optional: run a smoke test that verifies that the new crates build fine.
-   For example - try building `chrome`.
 
 ### `cargo vet`
 
 The changes in the auto-generated CL need to go through a security audit, which
 will ensure that `cargo vet` criteria (e.g. `ub-risk-0`, `safe-to-deploy`,
-etc.). still hold for the new versions.
+etc.). still hold for the new versions.  The CL description specifies which
+criteria apply to the updated crate (the same criteria should also apply to
+other, transitively-updated crates).
 
 Review the changes to identify:
 
@@ -70,6 +51,12 @@ Once the steps above are done, use `cargo vet` to record the audit results:
 * If updating `cxx`, you may need to also update its version in:
     - `build/rust/BUILD.gn`
     - `third_party/rust/cxx/v1/cxx.h`
+
+* The script may stop early if it detects that `gnrt vendor` or `gnrt gen` have
+  reported any warnings or errors (e.g. a "License file not found for crate foo"
+  warning).  In this case, manual intervention is needed to finish the update
+  CL.  It's probably best to finish and land the CLs created so far before
+  trying to restart the script in order to create the remaining CLs.
 
 ### Landing the CL
 
