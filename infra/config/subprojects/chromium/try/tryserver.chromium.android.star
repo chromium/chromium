@@ -286,12 +286,14 @@ try_.builder(
         "$build/binary_size": {
             "analyze_targets": [
                 "//chrome/android:trichrome_32_minimal_apks",
+                "//chrome/android:trichrome_library_64_apk",
                 "//chrome/android:validate_expectations",
                 "//tools/binary_size:binary_size_trybot_py",
             ],
             "compile_targets": [
                 "check_chrome_static_initializers",
                 "trichrome_32_minimal_apks",
+                "trichrome_library_64_apk",
                 "validate_expectations",
             ],
         },
