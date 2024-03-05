@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
@@ -49,6 +50,7 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "components/user_education/common/tutorial_registry.h"
+#include "components/user_education/common/user_education_metadata.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/webui/help_bubble_handler.h"
@@ -1145,4 +1147,41 @@ void MaybeRegisterChromeTutorials(
               .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
               .SetBubbleBodyText(IDS_TUTORIAL_PASSWORD_MANAGER_SUCCESS_BODY)
               .SetBubbleArrow(HelpBubbleArrow::kNone)));
+}
+
+void MaybeRegisterNewBadges(user_education::NewBadgeRegistry& registry) {
+  // TODO(dfried): Register "New" Badges here.
+}
+
+std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(
+    BrowserView* browser_view) {
+  Profile* const profile = browser_view->GetProfile();
+
+  // Get the user education service.
+  if (!UserEducationServiceFactory::ProfileAllowsUserEducation(profile)) {
+    return nullptr;
+  }
+  UserEducationService* const user_education_service =
+      UserEducationServiceFactory::GetForBrowserContext(profile);
+  if (!user_education_service) {
+    return nullptr;
+  }
+
+  // Consider registering factories, etc.
+  RegisterChromeHelpBubbleFactories(
+      user_education_service->help_bubble_factory_registry());
+  MaybeRegisterChromeFeaturePromos(
+      user_education_service->feature_promo_registry());
+  MaybeRegisterChromeTutorials(user_education_service->tutorial_registry());
+  CHECK(user_education_service->new_badge_registry());
+  MaybeRegisterNewBadges(*user_education_service->new_badge_registry());
+  return std::make_unique<BrowserFeaturePromoController>(
+      browser_view,
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile),
+      &user_education_service->feature_promo_registry(),
+      &user_education_service->help_bubble_factory_registry(),
+      &user_education_service->feature_promo_storage_service(),
+      &user_education_service->feature_promo_session_policy(),
+      &user_education_service->tutorial_service(),
+      &user_education_service->product_messaging_controller());
 }

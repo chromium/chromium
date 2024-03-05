@@ -7,7 +7,10 @@
 #include <memory>
 #include <optional>
 
+#include "build/build_config.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -15,6 +18,10 @@
 #include "components/user_education/common/feature_promo_idle_policy.h"
 #include "components/user_education/common/feature_promo_session_manager.h"
 #include "content/public/browser/browser_context.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
+#endif
 
 namespace {
 
@@ -66,15 +73,40 @@ std::unique_ptr<UserEducationService>
 UserEducationServiceFactory::BuildServiceInstanceForBrowserContextImpl(
     content::BrowserContext* context,
     bool disable_idle_polling) {
+  Profile* const profile = Profile::FromBrowserContext(context);
   auto result = std::make_unique<UserEducationService>(
-      std::make_unique<BrowserFeaturePromoStorageService>(
-          Profile::FromBrowserContext(context)));
+      std::make_unique<BrowserFeaturePromoStorageService>(profile),
+      ProfileAllowsUserEducation(profile));
   result->feature_promo_session_manager().Init(
       &result->feature_promo_storage_service(),
       disable_idle_polling ? std::make_unique<StubIdleObserver>()
                            : CreatePollingIdleObserver(),
       std::make_unique<user_education::FeaturePromoIdlePolicy>());
   return result;
+}
+
+// static
+bool UserEducationServiceFactory::ProfileAllowsUserEducation(Profile* profile) {
+  // In order to do user education, the browser must have a UI and not be an
+  // "off-the-record" or in a demo or guest mode.
+  if (profile->IsIncognitoProfile() || profile->IsGuestSession() ||
+      profiles::IsDemoSession() || profiles::IsChromeAppKioskSession()) {
+    return false;
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::IsManagedGuestSession()) {
+    return false;
+  }
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (profiles::IsWebKioskSession()) {
+    return false;
+  }
+#endif
+  if (headless::IsHeadlessMode()) {
+    return false;
+  }
+  return true;
 }
 
 std::unique_ptr<KeyedService>

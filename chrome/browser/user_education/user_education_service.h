@@ -14,6 +14,7 @@
 #include "components/user_education/common/feature_promo_session_policy.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/new_badge_controller.h"
 #include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/tutorial.h"
 #include "components/user_education/common/tutorial_registry.h"
@@ -28,7 +29,8 @@ class UserEducationService : public KeyedService {
  public:
   explicit UserEducationService(
       std::unique_ptr<user_education::FeaturePromoStorageService>
-          storage_service);
+          storage_service,
+      bool allows_promos);
   ~UserEducationService() override;
 
   user_education::TutorialRegistry& tutorial_registry() {
@@ -55,6 +57,12 @@ class UserEducationService : public KeyedService {
   user_education::FeaturePromoSessionPolicy& feature_promo_session_policy() {
     return *feature_promo_session_policy_;
   }
+  user_education::NewBadgeRegistry* new_badge_registry() {
+    return new_badge_registry_.get();
+  }
+  user_education::NewBadgeController* new_badge_controller() {
+    return new_badge_controller_.get();
+  }
 
  private:
   user_education::TutorialRegistry tutorial_registry_;
@@ -67,6 +75,8 @@ class UserEducationService : public KeyedService {
   user_education::FeaturePromoSessionManager feature_promo_session_manager_;
   std::unique_ptr<user_education::FeaturePromoSessionPolicy>
       feature_promo_session_policy_;
+  std::unique_ptr<user_education::NewBadgeRegistry> new_badge_registry_;
+  std::unique_ptr<user_education::NewBadgeController> new_badge_controller_;
 };
 
 #endif  // CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_SERVICE_H_

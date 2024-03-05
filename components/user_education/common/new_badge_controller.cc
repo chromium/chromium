@@ -32,7 +32,7 @@ NewBadgeController::NewBadgeController(
 NewBadgeController::~NewBadgeController() = default;
 
 bool NewBadgeController::MaybeShowNewBadge(const base::Feature& feature) {
-  if (!CheckPrerequisites(feature)) {
+  if (!CheckPrerequisites(feature, /*allow_not_registered=*/false)) {
     return false;
   }
 
@@ -53,7 +53,17 @@ bool NewBadgeController::MaybeShowNewBadge(const base::Feature& feature) {
 }
 
 void NewBadgeController::NotifyFeatureUsed(const base::Feature& feature) {
-  if (!CheckPrerequisites(feature)) {
+  NotifyFeatureUsedImpl(feature, /*allow_not_registered=*/false);
+}
+
+void NewBadgeController::NotifyFeatureUsedIfValid(
+    const base::Feature& feature) {
+  NotifyFeatureUsedImpl(feature, /*allow_not_registered=*/true);
+}
+
+void NewBadgeController::NotifyFeatureUsedImpl(const base::Feature& feature,
+                                               bool allow_not_registered) {
+  if (!CheckPrerequisites(feature, allow_not_registered)) {
     return;
   }
 
@@ -62,8 +72,8 @@ void NewBadgeController::NotifyFeatureUsed(const base::Feature& feature) {
   storage_service_->SaveNewBadgeData(feature, data);
 }
 
-bool NewBadgeController::CheckPrerequisites(
-    const base::Feature& feature) const {
+bool NewBadgeController::CheckPrerequisites(const base::Feature& feature,
+                                            bool allow_not_registered) const {
   // It's possible the same entry point is being re-used for the new feature as
   // for an older version; just ignore cases where the new feature is not
   // enabled.
@@ -75,7 +85,7 @@ bool NewBadgeController::CheckPrerequisites(
   // possible to correctly calculate the display window if the feature isn't
   // registered. Therefore "New" Badges that are not registered are not allowed.
   if (!registry_->GetParamsForFeature(feature)) {
-    NOTREACHED()
+    DUMP_WILL_BE_CHECK(allow_not_registered)
         << "Tried to access \"New\" Badge data for feature " << feature.name
         << " but new badge was never registered! See "
            "browser_user_education_service.cc for full list of registered "

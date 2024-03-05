@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_handle.h"
@@ -230,6 +231,12 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // critical promo bubble which overlaps a given screen region. Returns true
   // if a bubble is closed as a result.
   bool DismissNonCriticalBubbleInRegion(const gfx::Rect& screen_bounds);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // If `feature` has a registered promo, notifies the tracker that the feature
+  // has been used.
+  void NotifyFeatureUsedIfValid(const base::Feature& feature);
+#endif
 
   // Returns the associated feature engagement tracker.
   feature_engagement::Tracker* feature_engagement_tracker() {

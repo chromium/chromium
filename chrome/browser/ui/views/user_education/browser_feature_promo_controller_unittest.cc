@@ -437,6 +437,12 @@ TEST_F(BrowserFeaturePromoControllerTest, GetForView) {
   EXPECT_EQ(nullptr, BrowserFeaturePromoController::GetForView(&orphan_view));
 }
 
+TEST_F(BrowserFeaturePromoControllerTest, NotifyFeatureUsedIfValidIsValid) {
+  EXPECT_CALL(*mock_tracker_, NotifyUsedEvent(testing::Ref(kTestIPHFeature)))
+      .Times(1);
+  controller_->NotifyFeatureUsedIfValid(kTestIPHFeature);
+}
+
 TEST_F(BrowserFeaturePromoControllerTest, AsksBackendIfPromoShouldBeShown) {
   // If the backend says no, the controller says no.
   EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTestIPHFeature)))

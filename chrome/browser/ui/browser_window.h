@@ -650,11 +650,18 @@ class BrowserWindow : public ui::BaseWindow {
   // `NotifyFeaturePromoFeatureUsed()` for clarity instead.
   virtual void NotifyFeatureEngagementEvent(const char* event_name) = 0;
 
-  // Records that the user has engaged the specific feature associated with
-  // the promo `iph_feature`; this information is used to determine whether to
-  // show the promo in the future. Prefer this to
-  // `NotifyFeatureEngagementEvent()` where possible.
-  virtual void NotifyPromoFeatureUsed(const base::Feature& iph_feature) = 0;
+  // Records that the user has engaged the specific `feature` associated with an
+  // IPH promo or "New" Badge; this information is used to determine whether to
+  // show the promo or badge in the future. Prefer this to
+  // `NotifyFeatureEngagementEvent()` whenever possible (that will only apply to
+  // specific IPH).
+  virtual void NotifyPromoFeatureUsed(const base::Feature& feature) = 0;
+
+  // Returns whether a "New" Badge should be shown on the entry point for
+  // `feature`; the badge must be registered for the feature in
+  // browser_user_education_service.cc. Call exactly once per time the surface
+  // containing the badge will be shown to the user.
+  virtual bool MaybeShowNewBadgeFor(const base::Feature& feature) = 0;
 
   // Shows an Incognito clear browsing data dialog.
   virtual void ShowIncognitoClearBrowsingDataDialog() = 0;

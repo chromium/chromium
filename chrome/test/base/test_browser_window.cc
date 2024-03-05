@@ -402,8 +402,12 @@ TestBrowserWindow::CloseFeaturePromoAndContinue(
 
 void TestBrowserWindow::NotifyFeatureEngagementEvent(const char* event_name) {}
 
-void TestBrowserWindow::NotifyPromoFeatureUsed(
-    const base::Feature& iph_feature) {}
+void TestBrowserWindow::NotifyPromoFeatureUsed(const base::Feature& feature) {}
+
+bool TestBrowserWindow::MaybeShowNewBadgeFor(
+    const base::Feature& new_badge_feature) {
+  return false;
+}
 
 user_education::FeaturePromoController*
 TestBrowserWindow::SetFeaturePromoController(

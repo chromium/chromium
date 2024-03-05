@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "build/build_config.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo_data.h"
@@ -386,6 +387,16 @@ bool FeaturePromoControllerCommon::DismissNonCriticalBubbleInRegion(
   DCHECK(result);
   return result;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void FeaturePromoControllerCommon::NotifyFeatureUsedIfValid(
+    const base::Feature& feature) {
+  if (base::FeatureList::IsEnabled(feature) &&
+      registry_->IsFeatureRegistered(feature)) {
+    feature_engagement_tracker()->NotifyUsedEvent(feature);
+  }
+}
+#endif
 
 FeaturePromoHandle FeaturePromoControllerCommon::CloseBubbleAndContinuePromo(
     const base::Feature& iph_feature) {

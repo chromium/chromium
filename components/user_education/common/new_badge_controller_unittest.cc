@@ -27,6 +27,9 @@ namespace {
 BASE_FEATURE(kNewBadgeTestFeature,
              "NewBadgeTestFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOtherTestFeature,
+             "OtherTestFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Mock for testing `NewBadgeController` without a live `NewBadgePolicy`.
 class MockNewBadgePolicy : public NewBadgePolicy {
@@ -128,6 +131,24 @@ TEST_F(NewBadgeControllerTest, NotifyFeatureUsed) {
   CreateWithMockPolicy();
   controller_->NotifyFeatureUsed(kNewBadgeTestFeature);
   CheckData(kNewBadgeTestFeature, NewBadgeData{0, 1});
+}
+
+TEST_F(NewBadgeControllerTest, NotifyFeatureUsedIfValidIsValid) {
+  CreateWithMockPolicy();
+  controller_->NotifyFeatureUsedIfValid(kNewBadgeTestFeature);
+  CheckData(kNewBadgeTestFeature, NewBadgeData{0, 1});
+}
+
+TEST_F(NewBadgeControllerTest, NotifyFeatureUsedIfValidNotRegistered) {
+  CreateWithMockPolicy();
+  controller_->NotifyFeatureUsedIfValid(kOtherTestFeature);
+  CheckData(kOtherTestFeature, NewBadgeData{0, 0});
+}
+
+TEST_F(NewBadgeControllerTest, NotifyFeatureUsedIfValidNotEnabled) {
+  CreateWithMockPolicy(false);
+  controller_->NotifyFeatureUsedIfValid(kNewBadgeTestFeature);
+  CheckData(kNewBadgeTestFeature, NewBadgeData{0, 0});
 }
 
 TEST_F(NewBadgeControllerTest, DoesNotShowIfFeatureDisabled) {

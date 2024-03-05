@@ -215,6 +215,7 @@
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/user_education/common/feature_promo_handle.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/new_badge_controller.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/version_info/channel.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -874,8 +875,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   // Not all browsers do feature promos. Conditionally create one (or don't) for
   // this browser window.
-  feature_promo_controller_ =
-      BrowserFeaturePromoController::MaybeCreateForBrowserView(this);
+  feature_promo_controller_ = CreateUserEducationResources(this);
 
   browser_->tab_strip_model()->AddObserver(this);
   immersive_mode_controller_ = chrome::CreateImmersiveModeController(this);
@@ -5212,12 +5212,23 @@ void BrowserView::NotifyFeatureEngagementEvent(const char* event_name) {
       event_name);
 }
 
-void BrowserView::NotifyPromoFeatureUsed(const base::Feature& iph_feature) {
-  if (!feature_promo_controller_) {
-    return;
+void BrowserView::NotifyPromoFeatureUsed(const base::Feature& feature) {
+  if (feature_promo_controller_) {
+    feature_promo_controller_->NotifyFeatureUsedIfValid(feature);
   }
-  feature_promo_controller_->feature_engagement_tracker()->NotifyUsedEvent(
-      iph_feature);
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(GetProfile());
+  if (service->new_badge_registry() &&
+      service->new_badge_registry()->IsFeatureRegistered(feature)) {
+    service->new_badge_controller()->NotifyFeatureUsedIfValid(feature);
+  }
+}
+
+bool BrowserView::MaybeShowNewBadgeFor(const base::Feature& feature) {
+  auto* const controller =
+      UserEducationServiceFactory::GetForBrowserContext(GetProfile())
+          ->new_badge_controller();
+  return controller && controller->MaybeShowNewBadge(feature);
 }
 
 bool BrowserView::DoCutCopyPasteForWebContents(WebContents* contents,

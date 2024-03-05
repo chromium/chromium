@@ -32,13 +32,24 @@ class NewBadgeController {
   // so do not call this method unless the badge will actually be displayed.
   bool MaybeShowNewBadge(const base::Feature& feature);
 
-  // Notifies that the feature associated with the badge has been shown. After
-  // a certain (but low) number of uses, the badge will disappear.
+  // Notifies that the `feature` associated with the badge has been shown. After
+  // a certain (but low) number of uses, the badge will disappear. Fails if
+  // there is no new badge registered for this feature.
   void NotifyFeatureUsed(const base::Feature& feature);
 
+  // As NotifyFeatureUsed, but if there is no new badge registered for the given
+  // feature or it is not enabled, does not generate an error.
+  void NotifyFeatureUsedIfValid(const base::Feature& feature);
+
  private:
+  void NotifyFeatureUsedImpl(const base::Feature& feature,
+                             bool allow_not_registered);
+
   // Checks that the `feature` is enabled and has a registered "New" Badge.
-  bool CheckPrerequisites(const base::Feature& feature) const;
+  // If the feature is not registered and `allow_not_registered` is false, will
+  // generate an error.
+  bool CheckPrerequisites(const base::Feature& feature,
+                          bool allow_not_registered) const;
 
   const raw_ref<NewBadgeRegistry> registry_;
   const raw_ref<FeaturePromoStorageService> storage_service_;

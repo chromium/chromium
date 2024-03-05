@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
@@ -23,6 +24,8 @@ class UserEducationServiceFactory : public ProfileKeyedServiceFactory {
   static UserEducationServiceFactory* GetInstance();
   static UserEducationService* GetForBrowserContext(
       content::BrowserContext* context);
+
+  static bool ProfileAllowsUserEducation(Profile* profile);
 
   // Prevents polling of the idle state in cases where the extra observer would
   // interfere with the test.
