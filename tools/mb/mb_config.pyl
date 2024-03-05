@@ -623,7 +623,7 @@
 
     'codesearch_gen_chromium_cronet_bot_reclient': [
       # Set is_cronet_build to true in order to build cronet.
-      'codesearch_reclient', 'android_without_codecs', 'static', 'is_cronet_build',
+      'codesearch_cronet_reclient', 'android_without_codecs', 'static', 'is_cronet_build',
       'cronet_android', 'arm_no_neon',
     ],
 
@@ -1164,6 +1164,12 @@
       'mixins': ['clang'],
     },
 
+    # Same as regulary codesearch without blink_enable_generated_code_formatting
+    'codesearch_cronet_reclient': {
+      'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
+      'mixins': ['reclient', 'clang', 'shared', 'debug', 'minimal_symbols'],
+    },
+
     # Same as regular codesearch except ios does not allow component builds
     'codesearch_ios_reclient': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
@@ -1202,8 +1208,8 @@
       'gn_args': ('disable_file_support=true '
                   'enable_websockets=false '
                   'include_transport_security_state_preload_list=false '
-		  'is_cronet_build=true '
-                  'use_crash_key_stubs=true use_platform_icu_alternatives=true')
+                  'is_cronet_build=true '
+                  'use_platform_icu_alternatives=true ')
     },
 
     'custom_args': {
