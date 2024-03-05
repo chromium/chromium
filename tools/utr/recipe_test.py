@@ -17,12 +17,17 @@ import recipe
 
 class LegacyRunnerTests(unittest.TestCase):
 
+  class AsyncMock(mock.MagicMock):
+
+    async def __call__(self, *args, **kwargs):
+      return super(mock.MagicMock, self).__call__(*args, **kwargs)
+
   def setUp(self):
     self.tmp_dir = pathlib.Path(tempfile.mkdtemp())
     self.tmp_dir.joinpath('recipes').touch()
     self.addCleanup(shutil.rmtree, self.tmp_dir)
 
-    self.subp_mock = mock.Mock()
+    self.subp_mock = self.AsyncMock()
 
     patch_tempdir = mock.patch('tempfile.TemporaryDirectory')
     self.mock_tempdir = patch_tempdir.start()
@@ -46,7 +51,8 @@ class LegacyRunnerTests(unittest.TestCase):
                                  'some-builder', 'swarming-server', [], False,
                                  False)
     self.subp_mock.returncode = 123
-    with mock.patch('subprocess.Popen', return_value=self.subp_mock):
+    with mock.patch('asyncio.create_subprocess_exec',
+                    return_value=self.subp_mock):
       exit_code, _ = runner.run_recipe()
       self.assertEqual(exit_code, 123)
 
@@ -54,7 +60,8 @@ class LegacyRunnerTests(unittest.TestCase):
     runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
                                  'some-builder', 'swarming-server', [], False,
                                  False)
-    with mock.patch('subprocess.Popen', return_value=self.subp_mock):
+    with mock.patch('asyncio.create_subprocess_exec',
+                    return_value=self.subp_mock):
       # Missing json file
       _, error_msg = runner.run_recipe()
       self.assertIsNone(error_msg)
@@ -75,7 +82,8 @@ class LegacyRunnerTests(unittest.TestCase):
     runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
                                  'some-builder', 'swarming-server', [], False,
                                  False)
-    with mock.patch('subprocess.Popen', return_value=self.subp_mock):
+    with mock.patch('asyncio.create_subprocess_exec',
+                    return_value=self.subp_mock):
       # Input "n" to the first re-run prompt.
       self.mock_input.return_value = 'n'
       with open(self.tmp_dir.joinpath('rerun_props.json'), 'w') as f:

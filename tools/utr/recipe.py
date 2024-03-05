@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Utilities for invoking recipes"""
 
+import asyncio
 import json
 import logging
 import os
@@ -10,6 +11,8 @@ import pathlib
 import shutil
 import subprocess
 import tempfile
+
+import output_adapter
 
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
@@ -156,8 +159,26 @@ class LegacyRunner:
       # This env var is read by both the cas and swarming recipe modules to
       # determine where to upload/run things.
       env['SWARMING_SERVER'] = f'https://{self._swarming_server}.appspot.com'
-      p = subprocess.Popen(cmd, stdin=subprocess.PIPE, env=env, text=True)
-      p.communicate(input=json.dumps(input_props))
+
+      async def exec_recipe():
+        proc = await asyncio.create_subprocess_exec(
+            cmd[0],
+            *cmd[1:],
+            env=env,
+            stdin=asyncio.subprocess.PIPE,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE)
+
+        proc.stdin.write(json.dumps(input_props).encode('ascii'))
+        proc.stdin.write_eof()
+        adapter = output_adapter.LegacyOutputAdapter()
+        while not proc.stdout.at_eof():
+          line = await proc.stdout.readline()
+          adapter.ProcessLine(line.decode('utf-8').strip('\n'))
+        await proc.wait()
+        return proc.returncode
+
+      returncode = asyncio.run(exec_recipe())
 
       # Try to pull out the summary markdown from the recipe run.
       failure_reason = None
@@ -182,9 +203,7 @@ class LegacyRunner:
         with open(rerun_props_path) as f:
           rerun_props = json.load(f)
 
-      # TODO(crbug.com/41492688): Support better status message streaming. For
-      # now, just use the recipe engine's overly-verbose stdout.
-      return p.returncode, failure_reason, rerun_props
+      return returncode, failure_reason, rerun_props
 
   def run_recipe(self):
     """Runs the UTR recipe with the settings defined on the CLI.

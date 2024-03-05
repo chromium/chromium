@@ -1,0 +1,64 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+"""Adapter for printing legacy recipe output"""
+
+import logging
+import re
+import sys
+
+
+class LegacyOutputAdapter:
+
+  def __init__(self):
+    self._ninja_status_re = re.compile(r'\[(\d+)\/(\d+)\]')
+    self._current_proccess_fn = self.DefaultProcessLine
+    self._step_to_processors = {
+        'compile': self.ProcessCompileLine,
+        'reclient compile': self.ProcessCompileLine,
+    }
+    self._step_to_log_level = {
+        'compile': logging.INFO,
+        'reclient compile': logging.INFO,
+        'generate_build_files': logging.INFO,
+    }
+    self._last_line = ''
+    self._current_log_level = logging.DEBUG
+    # Setup logger for printing to the same line
+    logger = logging.getLogger('single_line_logger')
+    handler = logging.StreamHandler(sys.stdout)
+    handler.terminator = ''
+    logger.addHandler(handler)
+    logger.propagate = False
+    self._single_line_logger = logger
+
+  def DefaultProcessLine(self, line):
+    if not line.startswith('@@@'):
+      # Pass through any non-engine text
+      logging.log(self._current_log_level, line)
+
+  def ProcessCompileLine(self, line):
+    matches = self._ninja_status_re.match(line)
+    if matches:
+      # TODO(crbug.com/41492686): Carriage return doesn't clear the existing
+      # line. Ideally writing " " over the remainder of the previous line
+      # wouldn't be necessary but this adapter isn't meant to be supported for
+      # long anyway
+      self._single_line_logger.log(
+          self._current_log_level,
+          line + ' ' * max(len(self._last_line) - len(line), 0) + '\r')
+      if matches.group(1) == matches.group(2):
+        logging.log(self._current_log_level, '')
+      return
+    self.DefaultProcessLine(line)
+
+  def ProcessLine(self, line):
+    # If we're in a new step see if it needs to be parsed differently
+    if line.startswith('@@@STEP_CURSOR@'):
+      step_name = line[len('@@@STEP_CURSOR@'):-len('@@@')]
+      self._current_proccess_fn = self._step_to_processors.get(
+          step_name, self.DefaultProcessLine)
+      self._current_log_level = self._step_to_log_level.get(
+          step_name, logging.DEBUG)
+    self._current_proccess_fn(line)
+    self._last_line = line
