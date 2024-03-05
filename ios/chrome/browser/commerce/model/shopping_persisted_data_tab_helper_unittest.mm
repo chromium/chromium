@@ -130,25 +130,16 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     optimization_guide::proto::Any any_metadata;
     any_metadata.set_type_url(kTypeURL);
     price_tracking_data.SerializeToString(any_metadata.mutable_value());
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        optimization_guide::switches::kHintsProtoOverride,
-        optimization_guide::CreateHintsConfig(
-            GURL(kPriceDropUrl), optimization_guide::proto::PRICE_TRACKING,
-            &any_metadata));
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{optimization_guide::features::kOptimizationHints, {}},
-         {optimization_guide::features::kOptimizationGuideMetadataValidation,
-          {}}},
-        {});
-
+    optimization_guide::OptimizationMetadata metadata;
+    metadata.set_any_metadata(any_metadata);
+    OptimizationGuideService* optimization_guide_service =
+        OptimizationGuideServiceFactory::GetForBrowserState(
+            browser_state_.get());
+    optimization_guide_service->AddHintForTesting(
+        GURL(kPriceDropUrl), optimization_guide::proto::PRICE_TRACKING,
+        metadata);
     web_state_.SetBrowserState(browser_state_.get());
     ShoppingPersistedDataTabHelper::CreateForWebState(&web_state_);
-
-    // Wait for the hints override from CLI is picked up.
-    // TODO(crbug.com/1255108) Abstract the following away from
-    // OptimizationGuide client.
-    RetryForHistogramUntilCountReached(
-        &histogram_tester_, "OptimizationGuide.UpdateComponentHints.Result", 1);
   }
 
   void CommitToUrlAndNavigate(const GURL& url) {
