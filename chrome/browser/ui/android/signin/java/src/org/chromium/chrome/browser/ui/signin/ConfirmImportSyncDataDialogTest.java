@@ -184,7 +184,7 @@ public class ConfirmImportSyncDataDialogTest {
                 activity.getString(R.string.sync_import_data_prompt, defaultAccountName);
         final String unexpectedString =
                 activity.getString(R.string.sync_import_data_prompt, "old.testaccount@gmail.com");
-        onView(withText(expectedString)).check(matches(isDisplayed()));
+        onView(withText(expectedString)).inRoot(isDialog()).check(matches(isDisplayed()));
         onView(withText(unexpectedString)).check(doesNotExist());
     }
 
@@ -215,7 +215,7 @@ public class ConfirmImportSyncDataDialogTest {
                 activity.getString(
                         R.string.sync_import_data_prompt_without_passwords,
                         "old.testaccount@gmail.com");
-        onView(withText(expectedString)).check(matches(isDisplayed()));
+        onView(withText(expectedString)).inRoot(isDialog()).check(matches(isDisplayed()));
         onView(withText(unexpectedString)).check(doesNotExist());
     }
 
@@ -239,7 +239,7 @@ public class ConfirmImportSyncDataDialogTest {
                 sActivityTestRule
                         .getActivity()
                         .getString(R.string.sync_import_data_prompt, "old.testaccount@gmail.com");
-        onView(withText(expectedText)).check(matches(isDisplayed()));
+        onView(withText(expectedText)).inRoot(isDialog()).check(matches(isDisplayed()));
     }
 
     @Test
@@ -264,7 +264,7 @@ public class ConfirmImportSyncDataDialogTest {
                         .getString(
                                 R.string.sync_import_data_prompt_without_passwords,
                                 "old.testaccount@gmail.com");
-        onView(withText(expectedText)).check(matches(isDisplayed()));
+        onView(withText(expectedText)).inRoot(isDialog()).check(matches(isDisplayed()));
     }
 
     private void showConfirmImportSyncDataDialog(boolean isCurrentAccountManaged) {
