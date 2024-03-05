@@ -2878,7 +2878,7 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, EnableChromeVox) {
   speech_monitor.Call([generator_ptr]() {
     // Press the search + right. Expects that the browser icon receives the
     // accessibility focus and the hotseat switches to kExtended state.
-    generator_ptr->PressKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
+    generator_ptr->PressKeyAndModifierKeys(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
   });
 
   const int browser_index =

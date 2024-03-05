@@ -1787,10 +1787,10 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppAccessibilityTest,
 
   // Launcher-B to find minimize button.
   speech_monitor_.Call([&]() {
-    // F6 to switch pane.
+    // Search+B to switch pane.
     ui::test::EventGenerator generator(app_window->GetRootWindow());
-    generator.PressAndReleaseKey(ui::VKEY_B,
-                                 ui::EF_COMMAND_DOWN | ui::EF_FINAL);
+    generator.PressAndReleaseKeyAndModifierKeys(
+        ui::VKEY_B, ui::EF_COMMAND_DOWN | ui::EF_FINAL);
   });
   speech_monitor_.ExpectSpeech("Minimize");
   speech_monitor_.ExpectSpeech("Button");

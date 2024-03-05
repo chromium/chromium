@@ -79,6 +79,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsSixPackKeysTest, SixPackKeys) {
       Log("Pressing the 'Left' key"),
       SendKeyPressEvent(ui::KeyboardCode::VKEY_LEFT),
       Log("Pressing 'Alt + Backspace' to generate the 'Delete' action"),
+      SendKeyPressEvent(ui::KeyboardCode::VKEY_MENU),
       SendKeyPressEvent(ui::KeyboardCode::VKEY_BACK, ui::EF_ALT_DOWN),
       Log("Verifying that the 'Delete' action was performed and the search "
           "box now contains the text 'red'"),
