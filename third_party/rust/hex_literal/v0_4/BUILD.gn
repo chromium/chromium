@@ -16,7 +16,7 @@ cargo_crate("lib") {
   sources = [
     "//third_party/rust/chromium_crates_io/vendor/hex-literal-0.4.1/src/lib.rs",
   ]
-  inputs = [ "//third_party/rust/chromium_crates_io/vendor/hex-literal-0.4.1/src/../README.md" ]
+  inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
