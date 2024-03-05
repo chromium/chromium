@@ -99,9 +99,11 @@ ModuleSnapshotSanitized::AnnotationsSimpleMap() const {
   std::map<std::string, std::string> annotations =
       snapshot_->AnnotationsSimpleMap();
   if (allowed_annotations_) {
-    for (auto kv = annotations.begin(); kv != annotations.end(); ++kv) {
-      if (!KeyIsAllowed(kv->first, *allowed_annotations_)) {
-        annotations.erase(kv);
+    for (auto kv = annotations.begin(); kv != annotations.end();) {
+      if (KeyIsAllowed(kv->first, *allowed_annotations_)) {
+        ++kv;
+      } else {
+        kv = annotations.erase(kv);
       }
     }
   }

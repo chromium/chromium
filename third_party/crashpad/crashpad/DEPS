@@ -121,16 +121,6 @@ deps = {
            '0d6902558d92fe3d49ba9a8f638ddea829be595b',
     'condition': 'checkout_fuchsia',
   },
-  'crashpad/third_party/fuchsia/sdk/mac-amd64': {
-    'packages': [
-      {
-        'package': 'fuchsia/sdk/core/mac-amd64',
-        'version': 'latest'
-      },
-    ],
-    'condition': 'checkout_fuchsia and host_os == "mac"',
-    'dep_type': 'cipd'
-  },
   'crashpad/third_party/fuchsia/sdk/linux-amd64': {
     'packages': [
       {
