@@ -88,6 +88,7 @@ public class ReadAloudController
     private final TabModel mIncognitoTabModel;
     @Nullable private Player mPlayerCoordinator;
     private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
+    private final TapToSeekHandler mTapToSeekHandler;
 
     private TabModelTabObserver mTabObserver;
     private TabModelTabObserver mIncognitoTabObserver;
@@ -330,6 +331,7 @@ public class ReadAloudController
         mActivityWindowAndroid = activityWindowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
+        mTapToSeekHandler = new TapToSeekHandler(mTabModel.getCurrentTabSupplier());
     }
 
     public ObservableSupplier<String> getReadabilitySupplier() {
@@ -1152,6 +1154,19 @@ public class ReadAloudController
     public void onUserLeaveHint() {
         Log.d(TAG, "on user leave hint");
         mOnUserLeaveHint = true;
+    }
+
+    /**
+     * Triggered with ContextualSearch's onSelectionChange. Sends the selected webpage content and
+     * playback to TapToSeekHandler to find the selected word in the playback and seek to it.
+     *
+     * @param content Selected word and surrounding content
+     * @param beginOffset index of where the selected word starts within the content
+     * @param endOffset index of where the selected word ends within the content
+     */
+    public void tapToSeek(String content, int beginOffset, int endOffset) {
+        mTapToSeekHandler.tapToSeek(
+                content, beginOffset, endOffset, mPlayback, mCurrentlyPlayingTab);
     }
 
     // Tests.

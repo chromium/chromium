@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.readaloud;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -14,20 +13,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 public class ReadAloudMetrics {
-    @VisibleForTesting public static String IS_READABLE = "ReadAloud.IsPageReadable";
-
-    @VisibleForTesting
+    public static String IS_READABLE = "ReadAloud.IsPageReadable";
     public static String READABILITY_SUCCESS = "ReadAloud.IsPageReadabilitySuccessful";
-
-    @VisibleForTesting
     public static String INELIGIBILITY_REASON = "ReadAloud.Eligibility.IneligiblityReason";
-
-    @VisibleForTesting
     public static String IS_USER_ELIGIBLE = "ReadAloud.Eligibility.IsUserEligible";
-
-    @VisibleForTesting
     public static String IS_TAB_PLAYBACK_CREATION_SUCCESSFUL =
             "ReadAloud.IsTabPlaybackCreationSuccessful";
+    public static String HAS_TAP_TO_SEEK_FOUND_MATCH = "ReadAloud.HasTapToSeekFoundMatch";
     public static String VOICE_CHANGED = "ReadAloud.VoiceChanged.";
     public static String VOICE_PREVIEWED = "ReadAloud.VoicePreviewed.";
     public static String TIME_SPENT_LISTENING = "ReadAloud.DurationListened";
@@ -141,6 +133,10 @@ public class ReadAloudMetrics {
 
     public static void recordIsTabPlaybackCreationSuccessful(boolean successful) {
         RecordHistogram.recordBooleanHistogram(IS_TAB_PLAYBACK_CREATION_SUCCESSFUL, successful);
+    }
+
+    public static void recordHasTapToSeekFoundMatch(boolean matchFound) {
+        RecordHistogram.recordBooleanHistogram(HAS_TAP_TO_SEEK_FOUND_MATCH, matchFound);
     }
 
     public static void recordSpeedChange(float speed) {

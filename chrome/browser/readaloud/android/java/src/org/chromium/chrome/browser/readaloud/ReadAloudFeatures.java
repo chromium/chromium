@@ -133,6 +133,11 @@ public final class ReadAloudFeatures {
                 && !ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_IN_MULTI_WINDOW);
     }
 
+    /** Returns true if Read Aloud tap to seek is enabled. */
+    public static boolean isTapToSeekEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_TAP_TO_SEEK);
+    }
+
     /** Returns the API key override feature param if present, or null otherwise. */
     @Nullable
     public static String getApiKeyOverride() {

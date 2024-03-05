@@ -7,11 +7,13 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/readaloud/BoyerMoore.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudController.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudIPHController.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayer.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefs.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonController.java",
+    "java/src/org/chromium/chrome/browser/readaloud/TapToSeekHandler.java",
   ]
   deps = [
     ":hooks_java",
@@ -180,6 +182,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefsUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonControllerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/TapToSeekHandlerUnitTest.java",
   ]
   deps = [
     ":features_java",
