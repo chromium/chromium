@@ -475,8 +475,6 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
       return "not-main-frame";
     case Reason::kRelatedActiveContentsExist:
       return "related-active-contents";
-    case Reason::kHTTPStatusNotOK:
-      return "http-status-not-ok";
     case Reason::kSchemeNotHTTPOrHTTPS:
       return "not-http-https-scheme";
     case Reason::kLoading:
@@ -510,6 +508,7 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kNoResponseHead:
       return "no-response-head";
     case Reason::kErrorDocument:
+    case Reason::kHTTPStatusNotOK:
       return "navigation-failure";
     case Reason::kUnloadHandlerExistsInMainFrame:
     case Reason::kUnloadHandlerExistsInSubFrame:
