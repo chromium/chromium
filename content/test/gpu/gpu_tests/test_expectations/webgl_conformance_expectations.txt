@@ -525,6 +525,8 @@ crbug.com/1523067 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures
 
 crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-invariant.html [ Failure ]
 
+crbug.com/328102507 [ mac angle-opengl graphite-disabled ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
+
 ## SkiaGraphite on AMD/Intel ##
 
 
