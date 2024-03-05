@@ -12,7 +12,6 @@ import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.ViewConditions.DisplayedCondition;
 import org.chromium.base.test.transit.ViewConditions.GatedDisplayedCondition;
-import org.chromium.base.test.transit.ViewConditions.MatchedViewProvider;
 import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreCondition;
 import org.chromium.base.test.transit.ViewElement.Scope;
 
@@ -40,22 +39,19 @@ class ViewElementInState implements ElementInState {
         mGate = gate;
 
         Matcher<View> viewMatcher = mViewElement.getViewMatcher();
-        MatchedViewProvider matchedViewProvider;
         if (mGate != null) {
             GatedDisplayedCondition gatedDisplayedCondition =
                     new GatedDisplayedCondition(mViewElement.getViewMatcher(), mGate);
             mEnterCondition = gatedDisplayedCondition;
-            matchedViewProvider = gatedDisplayedCondition;
         } else {
             DisplayedCondition displayedCondition = new DisplayedCondition(viewMatcher);
             mEnterCondition = displayedCondition;
-            matchedViewProvider = displayedCondition;
         }
 
         switch (mViewElement.getScope()) {
             case Scope.CONDITIONAL_STATE_SCOPED:
             case Scope.SHARED:
-                mExitCondition = new NotDisplayedAnymoreCondition(viewMatcher, matchedViewProvider);
+                mExitCondition = new NotDisplayedAnymoreCondition(viewMatcher);
                 break;
             case Scope.UNSCOPED:
                 mExitCondition = null;

@@ -10,7 +10,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.any;
-import static org.hamcrest.CoreMatchers.is;
 
 import android.content.res.Resources;
 import android.view.View;
@@ -31,17 +30,6 @@ import java.util.regex.Pattern;
 
 /** {@link Condition}s related to Android {@link View}s. */
 public class ViewConditions {
-    /**
-     * Provides a View that has been matched previously.
-     *
-     * <p>Used by Conditions that want to check elements that had been matched by another
-     * Conditions, e.g. a {@link NotDisplayedAnymoreCondition} needs to check the View matched by a
-     * {@link DisplayedCondition} does not exist anymore.
-     */
-    public interface MatchedViewProvider {
-        View getViewMatched();
-    }
-
     /** Fulfilled when a single matching View exists and is displayed. */
     public static class DisplayedCondition extends ExistsCondition {
         public DisplayedCondition(Matcher<View> matcher) {
@@ -53,8 +41,7 @@ public class ViewConditions {
      * Fulfilled when a single matching View exists and is displayed, but ignored if |gate| returns
      * true.
      */
-    public static class GatedDisplayedCondition extends InstrumentationThreadCondition
-            implements MatchedViewProvider {
+    public static class GatedDisplayedCondition extends InstrumentationThreadCondition {
 
         private final DisplayedCondition mDisplayedCondition;
         private final Condition mGate;
@@ -79,17 +66,10 @@ public class ViewConditions {
             return String.format(
                     "%s (if %s)", mDisplayedCondition.buildDescription(), mGate.buildDescription());
         }
-
-        // interface {@link MatchedViewProvider}
-        @Override
-        public View getViewMatched() {
-            return mDisplayedCondition.getViewMatched();
-        }
     }
 
     /** Fulfilled when a single matching View exists. */
-    public static class ExistsCondition extends InstrumentationThreadCondition
-            implements MatchedViewProvider {
+    public static class ExistsCondition extends InstrumentationThreadCondition {
         private final Matcher<View> mMatcher;
         private View mViewMatched;
 
@@ -144,54 +124,26 @@ public class ViewConditions {
                 return false;
             }
         }
-
-        // interface {@link MatchedViewProvider}
-        @Override
-        public View getViewMatched() {
-            return mViewMatched;
-        }
     }
 
     /** Fulfilled when no matching Views exist and are displayed. */
     public static class NotDisplayedAnymoreCondition extends InstrumentationThreadCondition {
         private final Matcher<View> mMatcher;
-        private Matcher<View> mStricterMatcher;
-        private final MatchedViewProvider mMatchedViewProvider;
 
-        public NotDisplayedAnymoreCondition(
-                Matcher<View> matcher, MatchedViewProvider matchedViewProvider) {
+        public NotDisplayedAnymoreCondition(Matcher<View> matcher) {
             super();
             mMatcher = allOf(matcher, isDisplayed());
-            mMatchedViewProvider = matchedViewProvider;
         }
 
         @Override
         public String buildDescription() {
-            if (mStricterMatcher != null) {
-                return "No more view: "
-                        + ViewConditions.createMatcherDescription(mMatcher)
-                        + " that exactly "
-                        + ViewConditions.createMatcherDescription(mStricterMatcher);
-            } else {
-                return "No more view: " + ViewConditions.createMatcherDescription(mMatcher);
-            }
+            return "No more view: " + ViewConditions.createMatcherDescription(mMatcher);
         }
 
         @Override
         public boolean check() {
-            Matcher<View> matcherToUse;
-            if (mStricterMatcher != null) {
-                matcherToUse = mStricterMatcher;
-            } else if (mMatchedViewProvider.getViewMatched() != null) {
-                mStricterMatcher = allOf(is(mMatchedViewProvider.getViewMatched()), isDisplayed());
-                rebuildDescription();
-                matcherToUse = mStricterMatcher;
-            } else {
-                matcherToUse = mMatcher;
-            }
-
             try {
-                onView(matcherToUse).check(doesNotExist());
+                onView(mMatcher).check(doesNotExist());
                 return true;
             } catch (AssertionError e) {
                 return false;

@@ -54,8 +54,9 @@ public class ViewElement {
      *
      * <p>ViewElements are matched to View instances as ENTER conditions.
      *
-     * <p>Shared ViewElements add an EXIT condition that the View instance matched is gone unless
-     * transitioning to a ConditionalState that declares a ViewElement with an equal Matcher<View>.
+     * <p>Shared ViewElements add an EXIT condition that no View is matched unless transitioning to
+     * a ConditionalState that declares a ViewElement with the same id (which usually means an equal
+     * Matcher<View>).
      *
      * <p>This is a good default method to the declare ViewElements; when in doubt, use this.
      */
@@ -77,7 +78,7 @@ public class ViewElement {
      * <p>ViewElements are matched to View instances as ENTER conditions.
      *
      * <p>ConditionalState-scoped ViewElements are the most restrictive; they generate an EXIT
-     * condition that the View instance matched is gone.
+     * condition that no View is matched under any circumstances.
      */
     public static ViewElement scopedViewElement(Matcher<View> viewMatcher, String id) {
         return new ViewElement(viewMatcher, Scope.CONDITIONAL_STATE_SCOPED, id);
