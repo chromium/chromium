@@ -1180,12 +1180,17 @@ void ChromeAuthenticatorRequestDelegate::OnModelDestroyed(
 void ChromeAuthenticatorRequestDelegate::OnStepTransition() {
   if (dialog_model_->current_step() ==
       AuthenticatorRequestDialogModel::Step::kWaitingForEnclave) {
-    if (dialog_model_->account_state() ==
-            AuthenticatorRequestDialogModel::AccountState::kRecoverable &&
+    if (dialog_model_->account_state() == AccountState::kRecoverable &&
         enclave_manager_->has_pending_keys()) {
       // In this case, we were waiting for the user to create their GPM PIN
       // and the needed enclave action is to set up using that PIN.
       enclave_manager_->AddDeviceAndPINToAccount(dialog_model_->TakeGPMPin());
+      return;
+    }
+
+    if (dialog_model_->account_state() == AccountState::kEmpty) {
+      // The user has set a PIN to create the account.
+      enclave_manager_->SetupWithPIN(dialog_model_->TakeGPMPin());
       return;
     }
 
@@ -1302,7 +1307,8 @@ void ChromeAuthenticatorRequestDelegate::OnEnclaveManagerIdle() {
   }
 
   if (enclave_manager_->is_ready() &&
-      dialog_model_->account_state() == AccountState::kRecoverable) {
+      (dialog_model_->account_state() == AccountState::kRecoverable ||
+       dialog_model_->account_state() == AccountState::kEmpty)) {
     dialog_model_->set_account_state(AccountState::kReady);
 
     if (dialog_model_->current_step() ==

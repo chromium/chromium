@@ -1859,7 +1859,34 @@ void AuthenticatorRequestDialogModel::StartICloudKeychain() {
 }
 
 void AuthenticatorRequestDialogModel::StartEnclave() {
-  SetCurrentStep(Step::kWaitingForEnclave);
+  switch (account_state_) {
+    case AccountState::kReady:
+      SetCurrentStep(Step::kWaitingForEnclave);
+      break;
+
+    case AccountState::kRecoverable:
+      SetCurrentStep(Step::kRecoverSecurityDomain);
+      break;
+
+    case AccountState::kLoading:
+    case AccountState::kChecking:
+      // TODO(enclave): need to disable the UI elements.
+      NOTIMPLEMENTED();
+      break;
+
+    case AccountState::kNone:
+      NOTREACHED();
+      break;
+
+    case AccountState::kIrrecoverable:
+      // TODO(enclave): show the reset flow.
+      NOTIMPLEMENTED();
+      break;
+
+    case AccountState::kEmpty:
+      SetCurrentStep(Step::kGPMCreatePin);
+      break;
+  }
 }
 
 void AuthenticatorRequestDialogModel::ContactPhone(const std::string& name) {
@@ -2201,7 +2228,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   }
 
   if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
-      account_state_ == AccountState::kReady && !is_get_assertion) {
+      account_state_ != AccountState::kNone && !is_get_assertion) {
     const std::u16string name = u"Google Password Manager (UNTRANSLATED)";
     mechanisms_.emplace_back(
         Mechanism::Enclave(), name, name, kIcloudKeychainIcon,
