@@ -4,6 +4,7 @@
 
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -57,6 +58,8 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
     TransitionState(State::kAborted);
     return;
   }
+
+  SCOPED_CRASH_KEY_STRING256("SWRace", "request_url", request.url.spec());
 }
 
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
@@ -402,6 +405,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::WatchDataUpdate() {
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
+  SCOPED_CRASH_KEY_BOOL("SWRace", "state_readable", state.readable());
+  SCOPED_CRASH_KEY_BOOL("SWRace", "state_peer_closed", state.peer_closed());
   if (!IsReadyToHandleReadWrite(result)) {
     return;
   }
