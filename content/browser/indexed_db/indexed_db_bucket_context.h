@@ -499,7 +499,10 @@ class CONTENT_EXPORT IndexedDBBucketContext
   // thread.
   mojo::Remote<storage::mojom::FileSystemAccessContext>
       file_system_access_context_;
-  std::map<base::FilePath, std::unique_ptr<IndexedDBDataItemReader>>
+  // This map's value type contains a closure which will run on destruction.
+  std::map<base::FilePath,
+           std::tuple<std::unique_ptr<IndexedDBDataItemReader>,
+                      base::ScopedClosureRunner /*release_callback*/>>
       file_reader_map_;
 
   std::unique_ptr<IndexedDBPreCloseTaskQueue> pre_close_task_queue_;

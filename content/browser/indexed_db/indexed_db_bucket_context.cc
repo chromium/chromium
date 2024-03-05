@@ -37,6 +37,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
@@ -358,28 +359,20 @@ std::tuple<bool, leveldb::Status> AreSchemasKnown(
 // BlobDataItemReader implementation providing a BlobDataItem -> file adapter.
 class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
  public:
-  IndexedDBDataItemReader(
-      const base::FilePath& file_path,
-      base::Time expected_modification_time,
-      base::OnceClosure release_callback,
-      base::OnceCallback<void(const base::FilePath&)>
-          on_last_receiver_disconnected,
-      scoped_refptr<base::TaskRunner> file_task_runner,
-      scoped_refptr<base::TaskRunner> io_task_runner,
-      mojo::PendingReceiver<storage::mojom::BlobDataItemReader>
-          initial_receiver)
+  IndexedDBDataItemReader(const base::FilePath& file_path,
+                          base::Time expected_modification_time,
+                          base::OnceCallback<void(const base::FilePath&)>
+                              on_last_receiver_disconnected,
+                          scoped_refptr<base::TaskRunner> file_task_runner,
+                          scoped_refptr<base::TaskRunner> io_task_runner)
       : file_path_(file_path),
         expected_modification_time_(std::move(expected_modification_time)),
-        release_callback_(std::move(release_callback)),
         on_last_receiver_disconnected_(
             std::move(on_last_receiver_disconnected)),
         file_task_runner_(std::move(file_task_runner)),
         io_task_runner_(std::move(io_task_runner)) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(file_task_runner_);
     DCHECK(io_task_runner_);
-
-    AddReader(std::move(initial_receiver));
 
     // The `BlobStorageContext` will disconnect when the blob is no longer
     // referenced.
@@ -391,10 +384,7 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
   IndexedDBDataItemReader(const IndexedDBDataItemReader&) = delete;
   IndexedDBDataItemReader& operator=(const IndexedDBDataItemReader&) = delete;
 
-  ~IndexedDBDataItemReader() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    std::move(release_callback_).Run();
-  }
+  ~IndexedDBDataItemReader() override = default;
 
   void AddReader(mojo::PendingReceiver<BlobDataItemReader> receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -409,38 +399,26 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
             ReadCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    auto reader = storage::FileStreamReader::CreateForLocalFile(
-        file_task_runner_.get(), file_path_, offset,
-        expected_modification_time_);
     auto adapter = std::make_unique<FileStreamReaderToDataPipe>(
-        std::move(reader), std::move(pipe));
+        storage::FileStreamReader::CreateForLocalFile(
+            file_task_runner_, file_path_, offset, expected_modification_time_),
+        std::move(pipe));
     auto* raw_adapter = adapter.get();
 
-    // Have the adapter (owning the reader) be owned by the result callback.
-    auto current_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
-    auto result_callback = base::BindOnce(
-        [](std::unique_ptr<FileStreamReaderToDataPipe> reader,
-           scoped_refptr<base::SequencedTaskRunner> task_runner,
-           ReadCallback callback, int result) {
-          // |callback| is expected to be run on the original sequence
-          // that called this Read function, so post it back.
-          task_runner->PostTask(FROM_HERE,
-                                base::BindOnce(std::move(callback), result));
-        },
-        std::move(adapter), std::move(current_task_runner),
-        std::move(callback));
+    ReadCallback result_callback = base::BindPostTask(
+        base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
+    // Let the adapter be owned by the result callback. The adapter must be
+    // destroyed on `io_task_runner_`, hence the order of wrapping callbacks.
+    ReadCallback callback_owning_adapter = base::BindOnce(
+        base::IgnoreArgs<std::unique_ptr<FileStreamReaderToDataPipe>>(
+            std::move(result_callback)),
+        std::move(adapter));
 
-    // On Windows, all async file IO needs to be done on the io thread.
-    // Do this on all platforms for consistency, even if not necessary on posix.
+    // See note above `io_task_runner_`.
     io_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](FileStreamReaderToDataPipe* adapter, uint64_t length,
-               base::OnceCallback<void(int)> result_callback) {
-              adapter->Start(std::move(result_callback), length);
-            },
-            // |raw_adapter| is owned by |result_callback|.
-            base::Unretained(raw_adapter), length, std::move(result_callback)));
+        FROM_HERE, base::BindOnce(&FileStreamReaderToDataPipe::Start,
+                                  base::Unretained(raw_adapter),
+                                  std::move(callback_owning_adapter), length));
   }
 
   void ReadSideData(ReadSideDataCallback callback) override {
@@ -465,10 +443,6 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
   base::FilePath file_path_;
   base::Time expected_modification_time_;
 
-  // Called on destruction. TODO(estade): can this be combined with
-  // `on_last_receiver_disconnected_`?
-  base::OnceClosure release_callback_;
-
   // Called when the last receiver is disconnected. Will destroy `this`.
   base::OnceCallback<void(const base::FilePath&)>
       on_last_receiver_disconnected_;
@@ -481,7 +455,6 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
   // * net::FileStream (used by LocalFileStreamReader) needs to be run
   //   on an IO thread for asynchronous file operations (on Windows), which
   //   is done by passing in an |io_task_runner| to do this.
-  // TODO(estade): can these be simplified?
   scoped_refptr<base::TaskRunner> file_task_runner_;
   scoped_refptr<base::TaskRunner> io_task_runner_;
 
@@ -529,7 +502,6 @@ IndexedDBBucketContext::IndexedDBBucketContext(
       blob_storage_context_(std::move(blob_storage_context)),
       file_system_access_context_(std::move(file_system_access_context)),
       delegate_(std::move(delegate)) {
-  // TODO(estade): is `SequencedTaskRunner::GetCurrentDefault()` actually safe?
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
           this, "IndexedDBBucketContext",
@@ -1329,17 +1301,20 @@ void IndexedDBBucketContext::BindFileReader(
   DCHECK(file_task_runner_);
 
   auto itr = file_reader_map_.find(path);
-  if (itr != file_reader_map_.end()) {
-    itr->second->AddReader(std::move(receiver));
-    return;
+  if (itr == file_reader_map_.end()) {
+    auto reader = std::make_unique<IndexedDBDataItemReader>(
+        path, expected_modification_time,
+        base::BindOnce(&IndexedDBBucketContext::RemoveBoundReaders,
+                       weak_factory_.GetWeakPtr()),
+        file_task_runner_, io_task_runner_);
+    itr = file_reader_map_
+              .insert({path, std::make_tuple(std::move(reader),
+                                             base::ScopedClosureRunner(
+                                                 std::move(release_callback)))})
+              .first;
   }
 
-  auto reader = std::make_unique<IndexedDBDataItemReader>(
-      path, expected_modification_time, std::move(release_callback),
-      base::BindOnce(&IndexedDBBucketContext::RemoveBoundReaders,
-                     weak_factory_.GetWeakPtr()),
-      file_task_runner_, io_task_runner_, std::move(receiver));
-  file_reader_map_.insert({path, std::move(reader)});
+  std::get<0>(itr->second)->AddReader(std::move(receiver));
 }
 
 void IndexedDBBucketContext::RemoveBoundReaders(const base::FilePath& path) {
