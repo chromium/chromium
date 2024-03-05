@@ -7,19 +7,16 @@
  * 'cr-card-radio-button' is a radio button in the style of a card. A checkmark
  * is displayed in the upper right hand corner if the radio button is selected.
  */
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './cr_radio_button_style.css.js';
-import '../cr_shared_vars.css.js';
-import '../icons.html.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrPaperRippleMixin} from '../cr_paper_ripple_mixin.js';
 
-import {getTemplate} from './cr_card_radio_button.html.js';
-import {CrRadioButtonMixin} from './cr_radio_button_mixin.js';
+import {getCss} from './cr_card_radio_button.css.js';
+import {getHtml} from './cr_card_radio_button.html.js';
+import {CrRadioButtonMixinLit} from './cr_radio_button_mixin_lit.js';
 
 const CrCardRadioButtonElementBase =
-    PaperRippleMixin(CrRadioButtonMixin(PolymerElement));
+    CrPaperRippleMixin(CrRadioButtonMixinLit(CrLitElement));
 
 export interface CrCardRadioButtonElement {
   $: {
@@ -32,20 +29,23 @@ export class CrCardRadioButtonElement extends CrCardRadioButtonElementBase {
     return 'cr-card-radio-button';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  // Overridden from CrRadioButtonMixin
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  // Overridden from CrRadioButtonMixinLit
   override getPaperRipple() {
     return this.getRipple();
   }
 
-  // Overridden from PaperRippleMixin
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _createRipple() {
-    this._rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');
-    const ripple = super._createRipple();
+  // Overridden from CrPaperRippleMixin
+  override createRipple() {
+    this.rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');
+    const ripple = super.createRipple();
     ripple.id = 'ink';
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle', 'toggle-ink');

@@ -13,7 +13,6 @@ import type {CrExpandButtonElement, CrInputElement, SettingsSyncEncryptionOption
 import type {CrDialogElement} from 'chrome://settings/lazy_load.js';
 // </if>
 import type {IronCollapseElement} from 'chrome://settings/lazy_load.js';
-
 import type {CrButtonElement, CrRadioButtonElement, CrRadioGroupElement} from 'chrome://settings/settings.js';
 import {OpenWindowProxyImpl, PageStatus, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -22,7 +21,7 @@ import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js
 // <if expr="not chromeos_ash">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // </if>
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 // <if expr="not chromeos_ash">
 import {simulateStoredAccounts} from './sync_test_util.js';
@@ -602,6 +601,7 @@ suite('SyncSettings', function() {
     webUIListenerCallback('sync-prefs-changed', newPrefs);
 
     flush();
+    await microtasksFinished();
 
     // Verify that the encryption radio boxes are shown but disabled.
     assertTrue(encryptionRadioGroup.disabled);

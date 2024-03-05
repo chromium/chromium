@@ -51,19 +51,35 @@ suite('cr-card-radio-button', function() {
   // Setting selection by mouse/keyboard is cr-radio-group's job, so
   // these tests simply set states programmatically and make sure the element
   // is visually correct.
-  test('Checked', () => {
+  test('Checked', async () => {
     assertNotChecked();
     radioButton.checked = true;
+    await radioButton.updateComplete;
     assertChecked();
     radioButton.checked = false;
+    await radioButton.updateComplete;
     assertNotChecked();
   });
 
-  test('Disabled', () => {
+  test('Disabled', async () => {
     assertNotDisabled();
     radioButton.disabled = true;
+    await radioButton.updateComplete;
     assertDisabled();
     radioButton.disabled = false;
+    await radioButton.updateComplete;
     assertNotChecked();
+  });
+
+  test('Ripple', function() {
+    assertFalse(!!radioButton.shadowRoot!.querySelector('paper-ripple'));
+    radioButton.dispatchEvent(
+        new CustomEvent('focus', {bubbles: true, composed: true}));
+    assertTrue(!!radioButton.shadowRoot!.querySelector('paper-ripple'));
+    assertTrue(radioButton.shadowRoot!.querySelector('paper-ripple')!.holdDown);
+    radioButton.dispatchEvent(
+        new CustomEvent('up', {bubbles: true, composed: true}));
+    assertFalse(
+        radioButton.shadowRoot!.querySelector('paper-ripple')!.holdDown);
   });
 });
