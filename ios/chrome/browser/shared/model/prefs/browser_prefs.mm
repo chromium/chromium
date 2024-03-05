@@ -113,24 +113,6 @@
 
 namespace {
 
-// Deprecated 03/2022
-const char kShowReadingListInBookmarkBar[] = "bookmark_bar.show_reading_list";
-
-// Deprecated 03/2022
-const char kPrefReadingListMessagesNeverShow[] =
-    "reading_list_message_never_show";
-
-// Deprecated 04/2022
-const char kFRETrialGroupPrefName[] = "fre_refactoring.trial_group";
-const char kOptimizationGuideRemoteFetchingEnabled[] =
-    "optimization_guide.fetching_enabled";
-
-// Deprecated 05/2022.
-const char kTrialGroupV3PrefName[] = "fre_refactoringV3.trial_group";
-
-// Deprecated 05/2022.
-const char kAccountIdMigrationState[] = "account_id_migration_state";
-
 // Deprecated 09/2022.
 const char kDataSaverEnabled[] = "spdy_proxy.enabled";
 
@@ -432,10 +414,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kLensCameraAssistedSearchPolicyAllowed,
                                 true);
 
-  registry->RegisterIntegerPref(kFRETrialGroupPrefName, 0);
-
-  registry->RegisterIntegerPref(kTrialGroupV3PrefName, 0);
-
   registry->RegisterDictionaryPref(kPrefPromoObject);
 
   // Registers prefs to count the remaining number of times autofill branding
@@ -646,10 +624,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(prefs::kAllowChromeDataInBackups, true);
 
-  registry->RegisterBooleanPref(kShowReadingListInBookmarkBar, true);
-
-  registry->RegisterBooleanPref(kOptimizationGuideRemoteFetchingEnabled, true);
-
   // Register HTTPS related settings.
   registry->RegisterBooleanPref(prefs::kHttpsOnlyModeEnabled, false);
   registry->RegisterBooleanPref(prefs::kMixedContentAutoupgradeEnabled, true);
@@ -662,8 +636,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // already shown.
   registry->RegisterBooleanPref(
       policy::policy_prefs::kUserPolicyNotificationWasShown, false);
-
-  registry->RegisterIntegerPref(kAccountIdMigrationState, 0);
 
   registry->RegisterIntegerPref(prefs::kIosShareChromeCount, 0,
                                 PrefRegistry::LOSSY_PREF);
@@ -795,12 +767,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 // This method should be periodically pruned of year+ old migrations.
 void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
-  // Added 04/2022
-  prefs->ClearPref(kFRETrialGroupPrefName);
-
-  // Added 05/2022
-  prefs->ClearPref(kTrialGroupV3PrefName);
-
   // Added 09/2022
   prefs->ClearPref(kPrefPromoObject);
 
@@ -851,20 +817,6 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
                                       PrefService* prefs) {
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
-
-  // Added 03/2022
-  prefs->ClearPref(kShowReadingListInBookmarkBar);
-
-  // Added 3/2022.
-  if (prefs->FindPreference(kPrefReadingListMessagesNeverShow)) {
-    prefs->ClearPref(kPrefReadingListMessagesNeverShow);
-  }
-
-  // Added 4/2022.
-  prefs->ClearPref(kOptimizationGuideRemoteFetchingEnabled);
-
-  // Added 05/2022
-  prefs->ClearPref(kAccountIdMigrationState);
 
   // Added 09/2022
   prefs->ClearPref(kPrefPromoObject);
