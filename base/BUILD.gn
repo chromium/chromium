@@ -2519,6 +2519,12 @@ buildflag_header("debugging_buildflags") {
   enable_commandline_sequence_checks =
       (is_debug || dcheck_always_on) && !is_android
 
+  if (enable_stack_trace_line_numbers) {
+    assert(
+        symbol_level > 0,
+        "symbol_level must be set to greater than 0 for source line numbers.")
+  }
+
   flags = [
     "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
     "ENABLE_PROFILING=$enable_profiling",
