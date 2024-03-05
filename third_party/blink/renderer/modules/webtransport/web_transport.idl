@@ -21,7 +21,7 @@
 
   void close(optional WebTransportCloseInfo closeInfo = {});
   readonly attribute Promise<void> ready;
-  [CallWith=ScriptState] readonly attribute Promise<WebTransportCloseInfo> closed;
+  readonly attribute Promise<WebTransportCloseInfo> closed;
 
   [CallWith=ScriptState, RuntimeEnabled=WebTransportStats]
   Promise<WebTransportConnectionStats> getStats();

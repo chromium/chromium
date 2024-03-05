@@ -304,6 +304,13 @@ class CORE_EXPORT ScriptPromiseResolver
                                    v8::Local<v8::Object> creation_context,
                                    v8::Isolate* isolate) = delete;
 
+  // Identity operator
+  static v8::Local<v8::Value> ToV8(v8::Local<v8::Value> value,
+                                   v8::Local<v8::Object> creation_context,
+                                   v8::Isolate*) {
+    return value;
+  }
+
   // Undefined
   static v8::Local<v8::Value> ToV8(const ToV8UndefinedGenerator& value,
                                    v8::Local<v8::Object> creation_context,

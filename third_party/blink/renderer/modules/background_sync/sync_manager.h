@@ -28,10 +28,9 @@ class SyncManager final : public ScriptWrappable {
   SyncManager(ServiceWorkerRegistration*,
               scoped_refptr<base::SequencedTaskRunner>);
 
-  ScriptPromiseTyped<IDLUndefined> registerFunction(
-      ScriptState*,
-      const String& tag,
-      ExceptionState& exception_state);
+  ScriptPromise registerFunction(ScriptState*,
+                                 const String& tag,
+                                 ExceptionState& exception_state);
   ScriptPromiseTyped<IDLSequence<IDLString>> getTags(ScriptState*);
 
   void Trace(Visitor*) const override;
@@ -40,7 +39,7 @@ class SyncManager final : public ScriptWrappable {
 
  private:
   // Callbacks
-  void RegisterCallback(ScriptPromiseResolverTyped<IDLUndefined>*,
+  void RegisterCallback(ScriptPromiseResolver*,
                         mojom::blink::BackgroundSyncError,
                         mojom::blink::SyncRegistrationOptionsPtr options);
   static void GetRegistrationsCallback(

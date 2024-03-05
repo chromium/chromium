@@ -332,10 +332,8 @@ class WebCryptoResultAdapter : public ScriptFunction::Callable {
 template <typename T>
 WebCryptoResult ToWebCryptoResult(ScriptState* script_state,
                                   base::RepeatingCallback<void(T)> function) {
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(script_state);
-  auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
-  resolver->Promise().Then(
+  auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state);
+  result->Promise().Then(
       (MakeGarbageCollected<ScriptFunction>(
            script_state, MakeGarbageCollected<WebCryptoResultAdapter<T>>(
                              std::move(function))))

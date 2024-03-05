@@ -34,7 +34,6 @@ class GPUComputePipeline;
 class GPUComputePipelineDescriptor;
 class GPUDeviceDescriptor;
 class GPUDeviceLostInfo;
-class GPUError;
 class GPUExternalTexture;
 class GPUExternalTextureDescriptor;
 class GPUPipelineLayout;
@@ -144,8 +143,7 @@ class GPUDevice final : public EventTarget,
                               ExceptionState& exception_state);
 
   void pushErrorScope(const V8GPUErrorFilter& filter);
-  ScriptPromiseTyped<IDLNullable<GPUError>> popErrorScope(
-      ScriptState* script_state);
+  ScriptPromise popErrorScope(ScriptState* script_state);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(uncapturederror, kUncapturederror)
 
@@ -184,10 +182,9 @@ class GPUDevice final : public EventTarget,
   void OnLogging(WGPULoggingType loggingType, const char* message);
   void OnDeviceLostError(WGPUDeviceLostReason, const char* message);
 
-  void OnPopErrorScopeCallback(
-      ScriptPromiseResolverTyped<IDLNullable<GPUError>>* resolver,
-      WGPUErrorType type,
-      const char* message);
+  void OnPopErrorScopeCallback(ScriptPromiseResolver* resolver,
+                               WGPUErrorType type,
+                               const char* message);
 
   void OnCreateRenderPipelineAsyncCallback(const String& label,
                                            ScriptPromiseResolver* resolver,

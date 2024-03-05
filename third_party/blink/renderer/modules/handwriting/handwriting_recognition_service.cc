@@ -55,15 +55,15 @@ void OnCreateHandwritingRecognizer(
 
 void OnQueryHandwritingRecognizer(
     ScriptState* script_state,
-    ScriptPromiseResolverTyped<IDLNullable<HandwritingRecognizerQueryResult>>*
-        resolver,
+    ScriptPromiseResolver* resolver,
     handwriting::mojom::blink::QueryHandwritingRecognizerResultPtr
         query_result) {
-  HandwritingRecognizerQueryResult* result =
-      query_result ? mojo::ConvertTo<HandwritingRecognizerQueryResult*>(
-                         std::move(query_result))
-                   : nullptr;
-  resolver->Resolve(result);
+  if (query_result) {
+    resolver->Resolve(mojo::ConvertTo<HandwritingRecognizerQueryResult*>(
+        std::move(query_result)));
+  } else {
+    resolver->Resolve(v8::Null(script_state->GetIsolate()));
+  }
 }
 
 }  // namespace
@@ -149,8 +149,7 @@ ScriptPromise HandwritingRecognitionService::CreateHandwritingRecognizer(
 }
 
 // static
-ScriptPromiseTyped<IDLNullable<HandwritingRecognizerQueryResult>>
-HandwritingRecognitionService::queryHandwritingRecognizer(
+ScriptPromise HandwritingRecognitionService::queryHandwritingRecognizer(
     ScriptState* script_state,
     Navigator& navigator,
     const HandwritingModelConstraint* constraint,
@@ -159,17 +158,15 @@ HandwritingRecognitionService::queryHandwritingRecognizer(
       .QueryHandwritingRecognizer(script_state, constraint, exception_state);
 }
 
-ScriptPromiseTyped<IDLNullable<HandwritingRecognizerQueryResult>>
-HandwritingRecognitionService::QueryHandwritingRecognizer(
+ScriptPromise HandwritingRecognitionService::QueryHandwritingRecognizer(
     ScriptState* script_state,
     const HandwritingModelConstraint* constraint,
     ExceptionState& exception_state) {
   if (!BootstrapMojoConnectionIfNeeded(script_state, exception_state)) {
-    return ScriptPromiseTyped<IDLNullable<HandwritingRecognizerQueryResult>>();
+    return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<
-      IDLNullable<HandwritingRecognizerQueryResult>>>(
+  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 

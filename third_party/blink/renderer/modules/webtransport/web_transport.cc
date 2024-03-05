@@ -775,8 +775,6 @@ WebTransport::WebTransport(ScriptState* script_state,
       transport_remote_(context),
       handshake_client_receiver_(this, context),
       client_receiver_(this, context),
-      closed_(MakeGarbageCollected<
-              ScriptPromiseProperty<WebTransportCloseInfo, IDLAny>>(context)),
       inspector_transport_id_(CreateUniqueIdentifier()) {}
 
 ScriptPromise WebTransport::createUnidirectionalStream(
@@ -884,7 +882,7 @@ ReadableStream* WebTransport::datagramReadable() {
   return received_datagrams_;
 }
 
-void WebTransport::close(WebTransportCloseInfo* close_info) {
+void WebTransport::close(const WebTransportCloseInfo* close_info) {
   DVLOG(1) << "WebTransport::close() this=" << this;
   v8::Isolate* isolate = script_state_->GetIsolate();
   if (!connector_.is_bound() && !transport_remote_.is_bound()) {
@@ -898,8 +896,15 @@ void WebTransport::close(WebTransportCloseInfo* close_info) {
         WebTransportError::Create(isolate, /*stream_error_code=*/std::nullopt,
                                   "close() is called while connecting.",
                                   WebTransportError::Source::kSession);
-    Cleanup(nullptr, error, /*abruptly=*/true);
+    Cleanup(error, error, /*abruptly=*/true);
     return;
+  }
+
+  v8::Local<v8::Value> reason;
+  if (close_info) {
+    reason = ToV8Traits<WebTransportCloseInfo>::ToV8(script_state_, close_info);
+  } else {
+    reason = v8::Object::New(isolate);
   }
 
   v8::Local<v8::Value> error = WebTransportError::Create(
@@ -914,8 +919,7 @@ void WebTransport::close(WebTransportCloseInfo* close_info) {
 
   transport_remote_->Close(std::move(close_info_to_pass));
 
-  Cleanup(close_info ? close_info : WebTransportCloseInfo::Create(), error,
-          /*abruptly=*/false);
+  Cleanup(reason, error, /*abruptly=*/false);
 }
 
 void WebTransport::setDatagramWritableQueueExpirationDuration(double duration) {
@@ -924,11 +928,6 @@ void WebTransport::setDatagramWritableQueueExpirationDuration(double duration) {
     transport_remote_->SetOutgoingDatagramExpirationDuration(
         outgoing_datagram_expiration_duration_);
   }
-}
-
-ScriptPromiseTyped<WebTransportCloseInfo> WebTransport::closed(
-    ScriptState* script_state) {
-  return closed_->Promise(script_state->World());
 }
 
 ScriptPromise WebTransport::getStats(ScriptState* script_state) {
@@ -1011,7 +1010,7 @@ void WebTransport::OnHandshakeFailed(
       script_state_->GetIsolate(),
       /*stream_error_code=*/std::nullopt, "Opening handshake failed.",
       WebTransportError::Source::kSession);
-  Cleanup(nullptr, error_to_pass, /*abruptly=*/true);
+  Cleanup(error_to_pass, error_to_pass, /*abruptly=*/true);
 }
 
 void WebTransport::OnDatagramReceived(base::span<const uint8_t> data) {
@@ -1091,12 +1090,14 @@ void WebTransport::OnClosed(
     idl_close_info.setCloseCode(close_info->code);
     idl_close_info.setReason(close_info->reason);
   }
+  v8::Local<v8::Value> reason =
+      ToV8Traits<WebTransportCloseInfo>::ToV8(script_state_, &idl_close_info);
 
   v8::Local<v8::Value> error = WebTransportError::Create(
       isolate, /*stream_error_code=*/std::nullopt, "The session is closed.",
       WebTransportError::Source::kSession);
 
-  Cleanup(&idl_close_info, error, /*abruptly=*/false);
+  Cleanup(reason, error, /*abruptly=*/false);
 }
 
 void WebTransport::OnOutgoingStreamClosed(uint32_t stream_id) {
@@ -1184,6 +1185,7 @@ void WebTransport::Trace(Visitor* visitor) const {
   visitor->Trace(client_receiver_);
   visitor->Trace(ready_resolver_);
   visitor->Trace(ready_);
+  visitor->Trace(closed_resolver_);
   visitor->Trace(closed_);
   visitor->Trace(latest_stats_);
   visitor->Trace(pending_get_stats_resolvers_);
@@ -1238,6 +1240,9 @@ void WebTransport::Init(const String& url_for_diagnostics,
   ready_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
   ready_ = ready_resolver_->Promise();
 
+  closed_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
+  closed_ = closed_resolver_->Promise();
+
   auto* execution_context = GetExecutionContext();
 
   bool is_url_blocked = false;
@@ -1252,7 +1257,7 @@ void WebTransport::Init(const String& url_for_diagnostics,
 
     connection_pending_ = false;
     ready_resolver_->Reject(error);
-    closed_->Reject(ScriptValue(script_state_->GetIsolate(), error));
+    closed_resolver_->Reject(error);
 
     is_url_blocked = true;
   }
@@ -1317,7 +1322,7 @@ void WebTransport::Init(const String& url_for_diagnostics,
 
     connection_pending_ = false;
     ready_resolver_->Reject(dom_exception);
-    closed_->Reject(ScriptValue(script_state_->GetIsolate(), dom_exception));
+    closed_resolver_->Reject(dom_exception);
     is_url_blocked = true;
   }
 
@@ -1399,10 +1404,9 @@ void WebTransport::Dispose() {
 }
 
 // https://w3c.github.io/webtransport/#webtransport-cleanup
-void WebTransport::Cleanup(WebTransportCloseInfo* info,
+void WebTransport::Cleanup(v8::Local<v8::Value> reason,
                            v8::Local<v8::Value> error,
                            bool abruptly) {
-  CHECK_EQ(!info, abruptly);
   v8::Isolate* isolate = script_state_->GetIsolate();
 
   RejectPendingStreamResolvers(error);
@@ -1416,6 +1420,7 @@ void WebTransport::Cleanup(WebTransportCloseInfo* info,
       received_bidirectional_streams_underlying_source_.Get();
   auto* incoming_unidirectional_streams_source =
       received_streams_underlying_source_.Get();
+  auto* closed_resolver = closed_resolver_.Get();
   auto* ready_resolver = ready_resolver_.Get();
   auto incoming_stream_map = std::move(incoming_stream_map_);
   auto outgoing_stream_map = std::move(outgoing_stream_map_);
@@ -1431,13 +1436,12 @@ void WebTransport::Cleanup(WebTransportCloseInfo* info,
 
   if (abruptly) {
     connection_pending_ = false;
-    closed_->Reject(ScriptValue(isolate, error));
+    closed_resolver->Reject(error);
     ready_resolver->Reject(error);
     incoming_bidirectional_streams_source->Error(error);
     incoming_unidirectional_streams_source->Error(error);
   } else {
-    CHECK(info);
-    closed_->Resolve(info);
+    closed_resolver->Resolve(reason);
     DCHECK_EQ(ready_.V8Promise()->State(),
               v8::Promise::PromiseState::kFulfilled);
     incoming_bidirectional_streams_source->Close();
@@ -1455,7 +1459,7 @@ void WebTransport::OnConnectionError() {
       /*stream_error_code=*/std::nullopt, "Connection lost.",
       WebTransportError::Source::kSession);
 
-  Cleanup(nullptr, error, /*abruptly=*/true);
+  Cleanup(error, error, /*abruptly=*/true);
 }
 
 void WebTransport::RejectPendingStreamResolvers(v8::Local<v8::Value> error) {
