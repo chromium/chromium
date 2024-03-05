@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/sheet_view_factory.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
@@ -110,6 +111,12 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
             &AuthenticatorRequestDialogView::ManageDevicesButtonPressed,
             base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_MANAGE_DEVICES)));
+  } else if (sheet_->model()->IsForgotGPMPinButtonVisible()) {
+    SetExtraView(std::make_unique<views::MdTextButton>(
+        base::BindRepeating(
+            &AuthenticatorRequestDialogView::ForgotGPMPinPressed,
+            base::Unretained(this)),
+        u"Forgot PIN (UNTRANSLATED)"));
   } else {
     SetExtraView(std::make_unique<views::View>());
   }
@@ -316,6 +323,10 @@ void AuthenticatorRequestDialogView::OtherMechanismsButtonPressed() {
 
 void AuthenticatorRequestDialogView::ManageDevicesButtonPressed() {
   sheet_->model()->OnManageDevices();
+}
+
+void AuthenticatorRequestDialogView::ForgotGPMPinPressed() {
+  sheet_->model()->OnForgotGPMPin();
 }
 
 void AuthenticatorRequestDialogView::OnDialogClosing() {

@@ -55,6 +55,7 @@ class AuthenticatorRequestSheetModel {
 
   virtual bool IsManageDevicesButtonVisible() const;
   virtual bool IsOtherMechanismButtonVisible() const;
+  virtual bool IsForgotGPMPinButtonVisible() const;
   virtual std::u16string GetOtherMechanismButtonLabel() const;
 
   virtual std::u16string GetStepTitle() const = 0;
@@ -66,6 +67,7 @@ class AuthenticatorRequestSheetModel {
   virtual void OnAccept() = 0;
   virtual void OnCancel() = 0;
   virtual void OnManageDevices();
+  virtual void OnForgotGPMPin();
 
   // Lottie illustrations are represented by their resource ID.
   std::optional<IllustrationPair<int>> lottie_illustrations() const {

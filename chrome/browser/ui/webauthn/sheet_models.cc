@@ -1640,15 +1640,20 @@ std::u16string AuthenticatorGPMPinSheetModel::GetError() const {
 }
 
 bool AuthenticatorGPMPinSheetModel::IsAcceptButtonVisible() const {
-  return true;
+  return mode_ == Mode::kPinCreate;
 }
 
 bool AuthenticatorGPMPinSheetModel::IsAcceptButtonEnabled() const {
-  return static_cast<int>(pin_.length()) == pin_digits_count_;
+  return IsAcceptButtonVisible() &&
+         static_cast<int>(pin_.length()) == pin_digits_count_;
+}
+
+bool AuthenticatorGPMPinSheetModel::IsForgotGPMPinButtonVisible() const {
+  return mode_ == Mode::kPinEntry;
 }
 
 std::u16string AuthenticatorGPMPinSheetModel::GetAcceptButtonLabel() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
+  return u"Confirm (UNTRANSLATED)";
 }
 
 void AuthenticatorGPMPinSheetModel::OnAccept() {

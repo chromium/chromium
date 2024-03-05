@@ -101,6 +101,7 @@ class AuthenticatorRequestDialogView
 
   void OtherMechanismsButtonPressed();
   void ManageDevicesButtonPressed();
+  void ForgotGPMPinPressed();
 
   void OnDialogClosing();
 
