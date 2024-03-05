@@ -118,23 +118,21 @@ bool StringMatchesHiddenValue(const std::u16string& str) {
   return autofill::MatchesRegex<constants::kHiddenValueRe>(str);
 }
 
-// Return true if the |field| is suspected to be a credit card field based on
-// server side predictions, autocomplete attribute, and keywords in field's id
-// and name.
+// Return true if the `field` is suspected to be a credit card field based on
+// autocomplete attribute or keywords in field's id and name.
 bool IsCreditCardField(const ProcessedField& field) {
-  return field.server_hints_credit_card_field ||
-         field.autocomplete_flag == AutocompleteFlag::kCreditCardField ||
+  return field.autocomplete_flag == AutocompleteFlag::kCreditCardField ||
          StringMatchesCVC(field.field->name_attribute) ||
          StringMatchesCVC(field.field->id_attribute);
 }
 
-// Returns true if the |field| is suspected to be not a password field
-// (including CVC fields). The suspicion is based on server-side provided hints
-// and on checking the field's id and name for hinting towards a CVC code,
-// Social Security Number or one-time password.
+// Returns true if the `field` is suspected to be not a password field
+// (including CVC fields). The suspicion is based on checking the
+// field's id and name for hinting towards a CVC code, Social Security
+// Number or one-time password.
 bool IsNotPasswordField(const ProcessedField& field,
                         bool* otp_field_detected_with_regex = nullptr) {
-  if (IsCreditCardField(field) || field.server_hints_not_password ||
+  if (IsCreditCardField(field) ||
       field.autocomplete_flag == AutocompleteFlag::kOneTimeCode ||
       StringMatchesSSN(field.field->name_attribute) ||
       StringMatchesSSN(field.field->id_attribute)) {
@@ -146,11 +144,6 @@ bool IsNotPasswordField(const ProcessedField& field,
     *otp_field_detected_with_regex |= is_otp_field;
   }
   return is_otp_field;
-}
-
-// Returns true if the |field| is suspected to be not the username field.
-bool IsNotUsernameField(const ProcessedField& field) {
-  return field.server_hints_not_username;
 }
 
 // Returns true iff |field_type| is one of password types.
@@ -570,24 +563,20 @@ void ParseUsingAutocomplete(const std::vector<ProcessedField>& processed_fields,
     }
     switch (processed_field.autocomplete_flag) {
       case AutocompleteFlag::kUsername:
-        if (processed_field.is_password || result->username ||
-            processed_field.server_hints_not_username)
+        if (processed_field.is_password || result->username) {
           continue;
+        }
         username_fields_found++;
         field_marked_as_username = processed_field.field;
         break;
       case AutocompleteFlag::kCurrentPassword:
-        if (!processed_field.is_password || result->password ||
-            processed_field.server_hints_not_password ||
-            processed_field.server_hints_credit_card_field) {
+        if (!processed_field.is_password || result->password) {
           continue;
         }
         result->password = processed_field.field;
         break;
       case AutocompleteFlag::kNewPassword:
         if (!processed_field.is_password || new_password_found_by_server ||
-            processed_field.server_hints_not_password ||
-            processed_field.server_hints_credit_card_field ||
             should_ignore_new_password_autocomplete) {
           continue;
         }
@@ -641,17 +630,15 @@ bool IsLikelyPassword(const ProcessedField& field, size_t* ignored_readonly) {
 
 // Filters the available passwords from |processed_fields| using these rules:
 // (0): Filter out all input fields which type is not password.
-// (1) If |mode| == |kFilling|, credit card fields are ignored even for
-// fallback.
-// (2) Passwords with Interactability below |best_interactability| are removed.
-// (3) If |mode| == |kSaving|, passwords with empty values are removed.
-// (4) Passwords for which IsLikelyPassword returns false are removed.
-// (5) The field parsed as username is removed.
-// If applying filters (0)-(1) results in an empty vector, the vector is
+// (1) Passwords with Interactability below |best_interactability| are removed.
+// (2) If |mode| == |kSaving|, passwords with empty values are removed.
+// (3) Passwords for which IsLikelyPassword returns false are removed.
+// (4) The field parsed as username is removed.
+// If applying filter (0) results in an empty vector, the vector is
 // returned.
-// If applying filters (0)-(5) results in a non-empty vector of password fields,
+// If applying filters (0)-(4) results in a non-empty vector of password fields,
 // that vector is returned. Otherwise, roll back to the result after applying
-// (0)-(3) and return it (with |is_fallback=true|) even if the result is empty.
+// (0)-(2) and return it (with |is_fallback=true|) even if the result is empty.
 // Neither of the following output parameters may be null:
 // - |readonly_status| will be updated according to the processing of the parsed
 // fields.
@@ -674,22 +661,7 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
     if (processed_field.is_password)
       passwords.push_back(&processed_field);
   }
-  // Step 1: filter out credit card fields (e.g. CVC). In the filling mode,
-  // don't keep CC fields even for fallback filling and let non-password
-  // Autofill handle these fields. Fallback saving is fine because saving UIs of
-  // Autofill and the password manager are not mutually exclusive.
-  if (mode == FormDataParser::Mode::kFilling &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kDisablePasswordsDropdownForCvcFields)) {
-    std::erase_if(passwords, [](const ProcessedField* processed_field) {
-      // TODO(crbug/1425423): This code does not use |StringMatchesCVC| because
-      // the underlying regex has a high false positive rate, i.e. matches many
-      // real password fields. Reconsider this once the regex becomes better.
-      return processed_field->server_hints_credit_card_field ||
-             processed_field->autocomplete_flag ==
-                 AutocompleteFlag::kCreditCardField;
-    });
-  }
+
   if (passwords.empty())
     return std::vector<const FormFieldData*>();
 
@@ -787,9 +759,6 @@ const FormFieldData* FindUsernameFieldBaseHeuristics(
       continue;
     if (!is_fallback && IsNotPasswordField(*it))
       continue;
-    if (!is_fallback && IsNotUsernameField(*it)) {
-      continue;
-    }
     if (!username)
       username = it->field;
     if (!focusable_username && it->field->is_focusable) {
@@ -1126,6 +1095,14 @@ FormDataParser::ParseAndReturnUsernameDetection(
     }
   }
 
+  // Fields with server prediction `CREDIT_CARD_FIELD`, `CREDIT_CARD_NUMBER`,
+  // `NOT_USERNAME`, and `NOT_PASSWORD` must not be considered in base
+  // heuristics parsing or parsing using autocomplete attributes.
+  base::EraseIf(processed_fields, [](ProcessedField field) {
+    return field.server_hints_credit_card_field ||
+           field.server_hints_not_password || field.server_hints_not_username;
+  });
+
   // (2) If that failed, try to parse with autocomplete attributes.
   if (!significant_fields.is_single_username) {
     ParseUsingAutocomplete(processed_fields, mode, &significant_fields);
@@ -1253,8 +1230,7 @@ const FormFieldData* FindUsernameInPredictions(
   for (autofill::FieldRendererId predicted_id : username_predictions) {
     auto iter = base::ranges::find_if(
         processed_fields, [&](const ProcessedField& processed_field) {
-          return !IsNotUsernameField(processed_field) &&
-                 (processed_field.field->renderer_id == predicted_id) &&
+          return processed_field.field->renderer_id == predicted_id &&
                  MatchesInteractability(processed_field, username_max);
         });
     if (iter != processed_fields.end()) {

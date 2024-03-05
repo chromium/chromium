@@ -31,10 +31,6 @@ BASE_DECLARE_FEATURE(kButterOnDesktopFollowup);
 // Delete undecryptable passwords from the store when Sync is active.
 BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 
-// Disables fallback filling if the server or the autocomplete attribute says it
-// is a credit card field.
-BASE_DECLARE_FEATURE(kDisablePasswordsDropdownForCvcFields);
-
 #if BUILDFLAG(IS_ANDROID)
 // Disables eviction from UPM when error occurs and instead disables password
 // manager until the error is gone.

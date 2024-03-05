@@ -1088,18 +1088,16 @@ TEST_F(FormParserTest, DisabledFields) {
 
 TEST_F(FormParserTest, SkippingFieldsWithCreditCardFields) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kDisablePasswordsDropdownForCvcFields);
   CheckTestData({
       {
           .description_for_logging =
               "Simple form, all fields are credit-card-related",
           .fields =
               {
-                  {.role_saving = ElementRole::USERNAME,
+                  {.role = ElementRole::USERNAME,
                    .autocomplete_attribute = "cc-name",
                    .form_control_type = FormControlType::kInputText},
-                  {.role_saving = ElementRole::CURRENT_PASSWORD,
+                  {.role = ElementRole::CURRENT_PASSWORD,
                    .autocomplete_attribute = "cc-any-string",
                    .form_control_type = FormControlType::kInputPassword},
               },
@@ -1889,8 +1887,6 @@ TEST_F(FormParserTest, ComplementingResults) {
 // The parser should avoid identifying CVC fields as passwords.
 TEST_F(FormParserTest, IgnoreCvcFields) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kDisablePasswordsDropdownForCvcFields);
   CheckTestData({
       {
           .description_for_logging =
@@ -1914,14 +1910,11 @@ TEST_F(FormParserTest, IgnoreCvcFields) {
               "Server hints: CREDIT_CARD_VERIFICATION_CODE on only password.",
           .fields =
               {
-                  {.role_saving = ElementRole::USERNAME,
-                   .form_control_type = FormControlType::kInputText},
-                  {.role_saving = ElementRole::CURRENT_PASSWORD,
-                   .form_control_type = FormControlType::kInputPassword,
+                  {.form_control_type = FormControlType::kInputText},
+                  {.form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type =
                                       autofill::CREDIT_CARD_VERIFICATION_CODE}},
               },
-          .fallback_only = true,
       },
       {
           .description_for_logging = "Name of 'verification_type' matches the "
@@ -1999,20 +1992,15 @@ TEST_F(FormParserTest, ServerHintsForCvcFieldsOverrideAutocomplete) {
 // field as a CC Number field.
 TEST_F(FormParserTest, CCNumber) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kDisablePasswordsDropdownForCvcFields);
   CheckTestData({
       {
           .description_for_logging = "Server hints: CREDIT_CARD_NUMBER.",
           .fields =
               {
-                  {.role_saving = ElementRole::USERNAME,
-                   .form_control_type = FormControlType::kInputText},
-                  {.role_saving = ElementRole::CURRENT_PASSWORD,
-                   .form_control_type = FormControlType::kInputPassword,
+                  {.form_control_type = FormControlType::kInputText},
+                  {.form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::CREDIT_CARD_NUMBER}},
               },
-          .fallback_only = true,
       },
       {
           .description_for_logging =
@@ -2026,36 +2014,30 @@ TEST_F(FormParserTest, CCNumber) {
                    .name = u"ccnumber",
                    .form_control_type = FormControlType::kInputPassword},
               },
-          .fallback_only = false,
       },
-      // The following describes the status quo for documentation purposes. It
-      // is probably not desirable. If we have high confidence in all credit
-      // card fields, the password manager should probably ignore those fields
-      // entirely.
+      // Server prediction `CREDIT_CARD_VERIFICATION_CODE` or
+      // `CREDIT_CARD_NUMBER` on the password field must force Password Manager
+      // to ignore the password field completely.
       {
           .description_for_logging = "Example where CC Number and Expiration "
                                      "date are both password fields.",
           .fields =
               {
-                  {.role_saving = ElementRole::USERNAME,
-                   .name = u"cardholder",
+                  {.name = u"cardholder",
                    .form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::CREDIT_CARD_NAME_FULL}},
-                  {.role_saving = ElementRole::CURRENT_PASSWORD,
-                   .name = u"ccnumber",
+                  {.name = u"ccnumber",
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::CREDIT_CARD_NUMBER}},
                   {.name = u"expiration",
                    .form_control_type = FormControlType::kInputText,
                    .prediction =
                        {.type = autofill::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}},
-                  {.role_saving = ElementRole::NEW_PASSWORD,
-                   .name = u"cvc",
+                  {.name = u"cvc",
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type =
                                       autofill::CREDIT_CARD_VERIFICATION_CODE}},
               },
-          .fallback_only = true,
       },
   });
 }
@@ -2140,13 +2122,10 @@ TEST_F(FormParserTest, NotPasswordField) {
               "Server hints: NOT_PASSWORD on only password.",
           .fields =
               {
-                  {.role = ElementRole::USERNAME,
-                   .form_control_type = FormControlType::kInputText},
-                  {.role = ElementRole::CURRENT_PASSWORD,
-                   .form_control_type = FormControlType::kInputPassword,
+                  {.form_control_type = FormControlType::kInputText},
+                  {.form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::NOT_PASSWORD}},
               },
-          .fallback_only = true,
       },
   });
 }
@@ -2172,13 +2151,10 @@ TEST_F(FormParserTest, OneTimeCodeField) {
               "Server hints: ONE_TIME_CODE on only password.",
           .fields =
               {
-                  {.role = ElementRole::USERNAME,
-                   .form_control_type = FormControlType::kInputText},
-                  {.role = ElementRole::CURRENT_PASSWORD,
-                   .form_control_type = FormControlType::kInputPassword,
+                  {.form_control_type = FormControlType::kInputText},
+                  {.form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::ONE_TIME_CODE}},
               },
-          .fallback_only = true,
       },
   });
 }
@@ -2315,14 +2291,11 @@ TEST_F(FormParserTest, NotPasswordFieldDespiteAutocompleteAttribute) {
               "Server hints: NOT_PASSWORD on only password.",
           .fields =
               {
-                  {.role = ElementRole::USERNAME,
-                   .form_control_type = FormControlType::kInputText},
-                  {.role = ElementRole::CURRENT_PASSWORD,
-                   .autocomplete_attribute = "current-password",
+                  {.form_control_type = FormControlType::kInputText},
+                  {.autocomplete_attribute = "current-password",
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::NOT_PASSWORD}},
               },
-          .fallback_only = true,
       },
   });
 }
@@ -2349,14 +2322,11 @@ TEST_F(FormParserTest, OneTimeCodeFieldDespiteAutocompleteAttribute) {
               "Server hints: ONE_TIME_CODE on only password.",
           .fields =
               {
-                  {.role = ElementRole::USERNAME,
-                   .form_control_type = FormControlType::kInputText},
-                  {.role = ElementRole::CURRENT_PASSWORD,
-                   .autocomplete_attribute = "current-password",
+                  {.form_control_type = FormControlType::kInputText},
+                  {.autocomplete_attribute = "current-password",
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::ONE_TIME_CODE}},
               },
-          .fallback_only = true,
       },
   });
 }

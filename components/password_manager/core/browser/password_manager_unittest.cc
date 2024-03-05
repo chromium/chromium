@@ -3564,53 +3564,9 @@ TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnNonPasswordForm) {
   task_environment_.RunUntilIdle();
 }
 
-// Check that on a credit card form, there is no password filling (can be
-// overwritten with a server override, but it is not tested in this test). For
-// saving, only the fallback is available.
+// Checks that filling and saving fallbacks are available on forms that are
+// suspected to be credit card forms by client-side heuristics.
 TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnCreditCardForm) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kDisablePasswordsDropdownForCvcFields);
-  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
-      .WillRepeatedly(Return(true));
-
-  PasswordForm saved_match(MakeSimpleForm());
-  store_->AddLogin(saved_match);
-  PasswordForm credit_card_form(MakeSimpleCreditCardForm());
-  credit_card_form.only_for_fallback = true;
-
-  PasswordFormFillData form_data;
-  // No filling fallback in order to let non-password Autofill to handle the
-  // form.
-  EXPECT_CALL(driver_, SetPasswordFillData).Times(0);
-
-  manager()->OnPasswordFormsParsed(&driver_, {credit_card_form.form_data});
-  task_environment_.RunUntilIdle();
-
-  // Check that saving fallback is available.
-  std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
-  EXPECT_CALL(client_, ShowManualFallbackForSaving(_, false, false))
-      .WillOnce(MoveArg<0>(&form_manager_to_save));
-  manager()->OnInformAboutUserInput(&driver_, credit_card_form.form_data);
-  ASSERT_TRUE(form_manager_to_save);
-  EXPECT_THAT(form_manager_to_save->GetPendingCredentials(),
-              FormMatches(credit_card_form));
-
-  // Check that no automatic save prompt is shown.
-  OnPasswordFormSubmitted(credit_card_form.form_data);
-  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
-  manager()->DidNavigateMainFrame(true);
-  manager()->OnPasswordFormsRendered(&driver_, {});
-  task_environment_.RunUntilIdle();
-}
-
-// TODO(crbug.com/1425028): Remove the test once
-// |kDisablePasswordsDropdownForCvcFields| is launched.
-// Same as |FillingAndSavingFallbacksOnCreditCardForm|, but password filling is
-// suggested because |kDisablePasswordsDropdownForCvcFields| is disabled.
-TEST_P(PasswordManagerTest,
-       FillingAndSavingFallbacksOnCreditCardForm_OldBehavior) {
   PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(Return(true));
@@ -5427,6 +5383,7 @@ class PasswordManagerWithOtpVariationsTest
 // Tests that only filling and saving fallbacks are available for a field
 // classified as an OTP field. The test is similar to non-parametrized
 // FillingAndSavingFallbacksOnOtpForm*, but tries many different circumstances.
+// TODO: b/40262430 - Simplify or rewrite the test.
 TEST_P(PasswordManagerWithOtpVariationsTest,
        FillingAndSavingFallbacksOnOtpForm) {
   auto [saved_form_username, saved_form_password, another_saved_form_password,
@@ -5515,8 +5472,12 @@ TEST_P(PasswordManagerWithOtpVariationsTest,
   manager()->OnPasswordFormsParsed(&driver_, {one_time_code_form.form_data});
   task_environment_.RunUntilIdle();
 
-  // Check that manual filling fallback available.
-  if (another_saved_form.has_value()) {
+  // Unless the source of classification is a server prediction, manual filling
+  // fallback must be available.
+  if (prediction_type == PredictionSource::SERVER) {
+    EXPECT_THAT(form_data.preferred_login.username_value, IsEmpty());
+    EXPECT_THAT(form_data.preferred_login.password_value, IsEmpty());
+  } else if (another_saved_form.has_value()) {
     // Two credentials are present, one of them is picked.
     if (saved_form.value().username_value ==
         form_data.preferred_login.username_value) {
@@ -5541,11 +5502,20 @@ TEST_P(PasswordManagerWithOtpVariationsTest,
   // Check that no automatic filling available.
   EXPECT_TRUE(form_data.username_element_renderer_id.is_null());
   EXPECT_TRUE(form_data.password_element_renderer_id.is_null());
-  // Check that saving fallback is available.
+  // Check that saving fallback is available, unless the source of
+  // classification is a server prediction.
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
-  EXPECT_CALL(client_, ShowManualFallbackForSaving)
-      .WillOnce(MoveArg<0>(&form_manager_to_save));
+  if (prediction_type == PredictionSource::SERVER) {
+    EXPECT_CALL(client_, ShowManualFallbackForSaving).Times(0);
+  } else {
+    EXPECT_CALL(client_, ShowManualFallbackForSaving)
+        .WillOnce(MoveArg<0>(&form_manager_to_save));
+  }
   manager()->OnInformAboutUserInput(&driver_, one_time_code_form.form_data);
+  if (prediction_type == PredictionSource::SERVER) {
+    ASSERT_FALSE(form_manager_to_save);
+    return;
+  }
   ASSERT_TRUE(form_manager_to_save);
 
   PasswordForm expected_pending_form;

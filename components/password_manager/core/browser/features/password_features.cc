@@ -31,10 +31,6 @@ BASE_FEATURE(kClearUndecryptablePasswordsOnSync,
 #endif
 );
 
-BASE_FEATURE(kDisablePasswordsDropdownForCvcFields,
-             "DisablePasswordsDropdownForCvcFields",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kRemoveUPMUnenrollment,
              "RemoveUPMUnenrollment",
