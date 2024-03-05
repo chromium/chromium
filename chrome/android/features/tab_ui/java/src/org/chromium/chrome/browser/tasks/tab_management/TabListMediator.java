@@ -472,7 +472,11 @@ class TabListMediator {
                             || tab.getUrl().equals(navigationHandle.getUrl())) {
                         return;
                     }
-                    if (mModel.indexFromId(tab.getId()) == TabModel.INVALID_TAB_INDEX) return;
+                    if (mModel.indexFromId(tab.getId()) == TabModel.INVALID_TAB_INDEX
+                            || (mActionsOnAllRelatedTabs
+                                    && mCurrentTabModelFilterSupplier.get().isTabInTabGroup(tab))) {
+                        return;
+                    }
 
                     mModel.get(mModel.indexFromId(tab.getId()))
                             .model
@@ -1748,9 +1752,11 @@ class TabListMediator {
                                 ClosableTabGridView.QuickDeleteAnimationStatus.TAB_RESTORE)
                         .build();
 
-        tabInfo.set(
-                TabProperties.FAVICON_FETCHER,
-                mTabListFaviconProvider.getDefaultFaviconFetcher(pseudoTab.isIncognito()));
+        if (!mActionsOnAllRelatedTabs || !isPseudoTabInTabGroup(pseudoTab)) {
+            tabInfo.set(
+                    TabProperties.FAVICON_FETCHER,
+                    mTabListFaviconProvider.getDefaultFaviconFetcher(pseudoTab.isIncognito()));
+        }
 
         if (mUiType == UiType.SELECTABLE) {
             // Incognito in both light/dark theme is the same as non-incognito mode in dark theme.

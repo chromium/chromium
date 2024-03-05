@@ -649,6 +649,21 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void updatesFaviconFetcher_Navigation_NoOpTabGroup() {
+        mModel.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
+        assertNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
+        when(mTabGroupModelFilter.isTabInTabGroup(mTab1)).thenReturn(true);
+
+        NavigationHandle navigationHandle = mock(NavigationHandle.class);
+
+        when(navigationHandle.isSameDocument()).thenReturn(false);
+        when(navigationHandle.getUrl()).thenReturn(TAB2_URL);
+        mTabObserver.onDidStartNavigationInPrimaryMainFrame(mTab1, navigationHandle);
+
+        assertNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
+    }
+
+    @Test
     public void sendsSelectSignalCorrectly() {
         mModel.get(1)
                 .model
