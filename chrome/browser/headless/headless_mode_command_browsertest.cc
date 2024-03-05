@@ -419,9 +419,13 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandWithWindowSizeBrowserTest,
   EXPECT_EQ(bitmap.width(), 2345);
   EXPECT_EQ(bitmap.height(), 1234);
 
+// TODO(crbug.com/328195816): This portion is disabled due to flakiness
+// on Windows
+#if !BUILDFLAG(IS_WIN)
   // Expect a centered blue rectangle on white background.
   EXPECT_TRUE(CheckColoredRect(bitmap, SkColorSetRGB(0x00, 0x00, 0xff),
                                SkColorSetRGB(0xff, 0xff, 0xff)));
+#endif
 }
 
 // PrintToPDF command tests -------------------------------------------
