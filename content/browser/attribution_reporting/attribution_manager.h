@@ -15,6 +15,11 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 
+namespace attribution_reporting {
+class SuitableOrigin;
+struct RegistrationHeaderError;
+}  // namespace attribution_reporting
+
 namespace base {
 class Time;
 }  // namespace base
@@ -106,6 +111,14 @@ class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
   // falls back to `switches::kAttributionReportingDebugMode`.
   virtual void SetDebugMode(std::optional<bool> enabled,
                             base::OnceClosure done) = 0;
+
+  // Report errors from header validation.
+  virtual void ReportRegistrationHeaderError(
+      attribution_reporting::SuitableOrigin reporting_origin,
+      const attribution_reporting::RegistrationHeaderError&,
+      const attribution_reporting::SuitableOrigin& context_origin,
+      bool is_within_fenced_frame,
+      GlobalRenderFrameHostId render_frame_id) = 0;
 };
 
 }  // namespace content

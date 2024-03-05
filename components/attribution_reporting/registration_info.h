@@ -21,24 +21,37 @@ struct RegistrationInfoError {
                          const RegistrationInfoError&) = default;
 };
 
-// Parses an Attribution-Reporting-Info header for the preferred platform.
-//
-// Currently only 'preferred-platform' field is expected in the
-// Attribution-Reporting-Info header. Any other fields are ignored.
-// Returns an error if the string is not parsable as a structured-header
-// dictionary or the value of 'preferred-platform' is not an allowed token.
-//
-// Example:
-//
-// `preferred-platform=web` or `preferred-platform=os`
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<std::optional<Registrar>, RegistrationInfoError> ParseInfo(
-    std::string_view);
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrationInfo {
+  std::optional<Registrar> preferred_platform;
+  bool report_header_errors = false;
 
-// Same as the above, but using an already-parsed structured-header dictionary.
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<std::optional<Registrar>, RegistrationInfoError> ParseInfo(
-    const net::structured_headers::Dictionary&);
+  // Parses an Attribution-Reporting-Info header for the registration info.
+  //
+  // Currently only 'preferred-platform' and 'report-header-errors' fields are
+  // expected in the Attribution-Reporting-Info header. Any other fields are
+  // ignored. Returns an error if the string is not parsable as a
+  // structured-header dictionary or the value of 'preferred-platform' is not an
+  // allowed token or the value of 'report-header-errors' is not a boolean.
+  //
+  // Example:
+  //
+  // `preferred-platform=web` or `preferred-platform=os` or
+  // `report-header-errors` or `preferred-platform=web,report-header-errors`
+  //
+  // TODO(linnan): Add a fuzzer for Attribution-Reporting-Info header.
+  static base::expected<RegistrationInfo, RegistrationInfoError> ParseInfo(
+      std::string_view,
+      bool cross_app_web_enabled);
+
+  // Same as the above, but using an already-parsed structured-header
+  // dictionary.
+  static base::expected<RegistrationInfo, RegistrationInfoError> ParseInfo(
+      const net::structured_headers::Dictionary&,
+      bool cross_app_web_enabled);
+
+  friend bool operator==(const RegistrationInfo&,
+                         const RegistrationInfo&) = default;
+};
 
 }  // namespace attribution_reporting
 

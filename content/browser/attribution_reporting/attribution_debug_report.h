@@ -15,6 +15,10 @@
 
 class GURL;
 
+namespace attribution_reporting {
+struct RegistrationHeaderError;
+}  // namespace attribution_reporting
+
 namespace content {
 
 class AttributionTrigger;
@@ -40,6 +44,12 @@ class CONTENT_EXPORT AttributionDebugReport {
 
   static std::optional<AttributionDebugReport> Create(const OsRegistration&,
                                                       size_t item_index);
+
+  static std::optional<AttributionDebugReport> Create(
+      attribution_reporting::SuitableOrigin reporting_origin,
+      const attribution_reporting::RegistrationHeaderError&,
+      const attribution_reporting::SuitableOrigin& context_origin,
+      bool is_within_fenced_frame);
 
   ~AttributionDebugReport();
 

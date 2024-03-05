@@ -31,4 +31,10 @@ interface AttributionDataHost {
   // attributionsrc request. The OS will make subsequent requests to
   // to obtain the actual registration.
   OsTriggerDataAvailable(attribution_reporting.mojom.OsRegistration registration);
+
+  // Called when an error occurs during header validation in the renderer for
+  // a given attributionsrc request.
+  ReportRegistrationHeaderError(
+    attribution_reporting.mojom.SuitableOrigin reporting_origin,
+    attribution_reporting.mojom.RegistrationHeaderError error);
 };

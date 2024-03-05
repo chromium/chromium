@@ -573,6 +573,14 @@ ContentBrowserClient::GetAttributionReportingOsReportTypes(
   return {AttributionReportType::kWeb, AttributionReportType::kWeb};
 }
 
+bool ContentBrowserClient::IsAttributionReportingAllowedForContext(
+    content::BrowserContext* browser_context,
+    content::RenderFrameHost* rfh,
+    const url::Origin& context_origin,
+    const url::Origin& reporting_origin) {
+  return true;
+}
+
 bool ContentBrowserClient::IsSharedStorageAllowed(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* rfh,

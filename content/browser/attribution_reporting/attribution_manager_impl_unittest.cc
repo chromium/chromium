@@ -37,6 +37,8 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/os_registration.h"
+#include "components/attribution_reporting/registration_header_error.h"
+#include "components/attribution_reporting/registration_header_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -3835,6 +3837,33 @@ TEST_F(AttributionManagerImplTest,
   task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
 
   histograms.ExpectTotalCount("Conversions.DelayOnAttestationsLoaded", 1);
+}
+
+TEST_F(AttributionManagerImplTest, RegistrationHeaderErrorDebugReport) {
+  for (const bool allowed : {false, true}) {
+    SCOPED_TRACE(allowed);
+
+    base::HistogramTester histograms;
+
+    MockAttributionReportingContentBrowserClient browser_client;
+    EXPECT_CALL(browser_client, IsAttributionReportingAllowedForContext)
+        .WillOnce(Return(allowed));
+    ScopedContentBrowserClientSetting setting(&browser_client);
+
+    EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(allowed);
+
+    attribution_manager_->ReportRegistrationHeaderError(
+        *SuitableOrigin::Deserialize("https://r.test"),
+        attribution_reporting::RegistrationHeaderError(
+            attribution_reporting::mojom::RegistrationHeaderType::kSource,
+            /*header_value=*/"!!!"),
+        *SuitableOrigin::Deserialize("https://c.test"),
+        /*is_within_fenced_frame=*/false, kFrameId);
+
+    // kHeaderParsingError = 28
+    histograms.ExpectUniqueSample(kSentVerboseDebugReportTypeMetric,
+                                  /*sample=*/28, allowed);
+  }
 }
 
 }  // namespace content

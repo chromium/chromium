@@ -50,6 +50,13 @@ class MockAttributionReportingContentBrowserClientBase : public SuperClass {
               AddPrivacySandboxAttestationsObserver,
               (PrivacySandboxAttestationsObserver*),
               (override));
+  MOCK_METHOD(bool,
+              IsAttributionReportingAllowedForContext,
+              (content::BrowserContext*,
+               RenderFrameHost*,
+               const url::Origin& context_origin,
+               const url::Origin& reporting_origin),
+              (override));
 };
 
 using MockAttributionReportingContentBrowserClient =

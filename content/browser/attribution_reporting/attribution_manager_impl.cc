@@ -1707,4 +1707,28 @@ bool AttributionManagerImpl::IsReady() const {
   return !!scheduler_timer_;
 }
 
+void AttributionManagerImpl::ReportRegistrationHeaderError(
+    attribution_reporting::SuitableOrigin reporting_origin,
+    const attribution_reporting::RegistrationHeaderError& error,
+    const attribution_reporting::SuitableOrigin& context_origin,
+    bool is_within_fenced_frame,
+    GlobalRenderFrameHostId render_frame_id) {
+  if (!GetContentClient()->browser()->IsAttributionReportingAllowedForContext(
+          storage_partition_->browser_context(),
+          RenderFrameHost::FromID(render_frame_id), *context_origin,
+          *reporting_origin)) {
+    return;
+  }
+
+  if (std::optional<AttributionDebugReport> debug_report =
+          AttributionDebugReport::Create(std::move(reporting_origin), error,
+                                         context_origin,
+                                         is_within_fenced_frame)) {
+    report_sender_->SendReport(
+        std::move(*debug_report),
+        base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,
+                       weak_factory_.GetWeakPtr()));
+  }
+}
+
 }  // namespace content

@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -95,6 +96,14 @@ class MockAttributionManager : public AttributionManager {
   MOCK_METHOD(void,
               SetDebugMode,
               (std::optional<bool> enabled, base::OnceClosure done),
+              (override));
+  MOCK_METHOD(void,
+              ReportRegistrationHeaderError,
+              (attribution_reporting::SuitableOrigin reporting_origin,
+               const attribution_reporting::RegistrationHeaderError&,
+               const attribution_reporting::SuitableOrigin& context_origin,
+               bool is_within_fenced_frame,
+               GlobalRenderFrameHostId),
               (override));
 
   void AddObserver(AttributionObserver*) override;

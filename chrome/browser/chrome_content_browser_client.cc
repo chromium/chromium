@@ -3337,6 +3337,23 @@ bool ChromeContentBrowserClient::IsAttributionReportingOperationAllowed(
   }
 }
 
+bool ChromeContentBrowserClient::IsAttributionReportingAllowedForContext(
+    content::BrowserContext* browser_context,
+    content::RenderFrameHost* rfh,
+    const url::Origin& context_origin,
+    const url::Origin& reporting_origin) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+
+  auto* privacy_sandbox_settings =
+      PrivacySandboxSettingsFactory::GetForProfile(profile);
+  if (!privacy_sandbox_settings) {
+    return false;
+  }
+
+  return privacy_sandbox_settings->IsAttributionReportingAllowed(
+      context_origin, reporting_origin, rfh);
+}
+
 bool ChromeContentBrowserClient::IsSharedStorageAllowed(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* rfh,

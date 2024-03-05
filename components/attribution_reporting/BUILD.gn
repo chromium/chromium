@@ -8,6 +8,7 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 mojom("mojom") {
   sources = [
     "registration_eligibility.mojom",
+    "registration_header_type.mojom",
     "source_registration_error.mojom",
     "source_registration_time_config.mojom",
     "summary_window_operator.mojom",
@@ -68,6 +69,7 @@ component("attribution_reporting") {
     "registrar.h",
     "registrar_info.cc",
     "registrar_info.h",
+    "registration_header_error.h",
     "registration_info.cc",
     "registration_info.h",
     "source_registration.cc",
@@ -346,6 +348,11 @@ mojom("registration_mojom") {
           cpp = "::attribution_reporting::TriggerSpecs"
           forward_declaration =
               "namespace attribution_reporting { class TriggerSpecs; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.RegistrationHeaderError"
+          cpp = "::attribution_reporting::RegistrationHeaderError"
+          forward_declaration = "namespace attribution_reporting { struct RegistrationHeaderError; }"
         },
       ]
       traits_headers = [ "registration_mojom_traits.h" ]

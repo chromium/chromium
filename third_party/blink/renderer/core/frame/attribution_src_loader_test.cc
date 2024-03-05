@@ -18,6 +18,7 @@
 #include "build/buildflag.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
+#include "components/attribution_reporting/registration_header_error.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -60,6 +61,7 @@ namespace blink {
 
 namespace {
 
+using ::attribution_reporting::mojom::RegistrationHeaderType;
 using ::network::mojom::AttributionReportingEligibility;
 
 using blink::url_test_helpers::RegisterMockedErrorURLLoad;
@@ -125,6 +127,11 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
     return os_triggers_;
   }
 
+  const Vector<attribution_reporting::RegistrationHeaderError>& header_errors()
+      const {
+    return header_errors_;
+  }
+
   size_t disconnects() const { return disconnects_; }
 
   void Flush() { receiver_.FlushForTesting(); }
@@ -159,6 +166,12 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
     os_triggers_.emplace_back(std::move(registration_items));
   }
 
+  void ReportRegistrationHeaderError(
+      attribution_reporting::SuitableOrigin reporting_origin,
+      const attribution_reporting::RegistrationHeaderError& error) override {
+    header_errors_.push_back(error);
+  }
+
   Vector<attribution_reporting::SourceRegistration> source_data_;
 
   Vector<attribution_reporting::TriggerRegistration> trigger_data_;
@@ -169,6 +182,8 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
       os_sources_;
   std::vector<std::vector<attribution_reporting::OsRegistrationItem>>
       os_triggers_;
+
+  Vector<attribution_reporting::RegistrationHeaderError> header_errors_;
 
   size_t disconnects_ = 0;
   mojo::Receiver<mojom::blink::AttributionDataHost> receiver_{this};
@@ -1055,6 +1070,135 @@ TEST_P(AttributionSrcLoaderPreferredPlatformTriggerTest,
               ::testing::SizeIs(test_case.expected_web));
   EXPECT_THAT(mock_data_host->os_triggers(),
               ::testing::SizeIs(test_case.expected_os));
+}
+
+TEST_F(AttributionSrcLoaderTest, InvalidWebHeader_ErrorReported) {
+  const struct {
+    RegistrationHeaderType header_type;
+    AtomicString header_name;
+  } kTestCases[] = {
+      {
+          RegistrationHeaderType::kSource,
+          http_names::kAttributionReportingRegisterSource,
+      },
+      {
+          RegistrationHeaderType::kTrigger,
+          http_names::kAttributionReportingRegisterTrigger,
+      },
+  };
+
+  KURL test_url = ToKURL("https://example.com/foo.html");
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.header_type);
+    for (const bool report_header_errors : {false, true}) {
+      SCOPED_TRACE(report_header_errors);
+
+      ResourceRequest request(test_url);
+      request.SetAttributionReportingEligibility(
+          AttributionReportingEligibility::kEventSourceOrTrigger);
+      request.SetAttributionReportingSupport(
+          network::mojom::AttributionSupport::kWeb);
+      auto* resource = MakeGarbageCollected<MockResource>(test_url);
+      ResourceResponse response(test_url);
+      response.SetHttpStatusCode(200);
+      response.SetHttpHeaderField(test_case.header_name,
+                                  AtomicString(R"(!!!)"));
+      if (report_header_errors) {
+        response.SetHttpHeaderField(http_names::kAttributionReportingInfo,
+                                    AtomicString(R"(report-header-errors)"));
+      }
+
+      MockAttributionHost host(
+          GetFrame().GetRemoteNavigationAssociatedInterfaces());
+      EXPECT_TRUE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+          request, response, resource));
+      host.WaitUntilBoundAndFlush();
+
+      auto* mock_data_host = host.mock_data_host();
+      ASSERT_TRUE(mock_data_host);
+
+      mock_data_host->Flush();
+      if (report_header_errors) {
+        EXPECT_THAT(
+            mock_data_host->header_errors(),
+            ::testing::ElementsAre(testing::AllOf(
+                ::testing::Field(&attribution_reporting::
+                                     RegistrationHeaderError::header_type,
+                                 test_case.header_type),
+                ::testing::Field(&attribution_reporting::
+                                     RegistrationHeaderError::header_value,
+                                 "!!!"))));
+      } else {
+        EXPECT_THAT(mock_data_host->header_errors(), ::testing::IsEmpty());
+      }
+    }
+  }
+}
+
+TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
+       MAYBE(InvalidOsHeader_ErrorReported)) {
+  const struct {
+    RegistrationHeaderType header_type;
+    AtomicString header_name;
+  } kTestCases[] = {
+      {
+          RegistrationHeaderType::kOsSource,
+          http_names::kAttributionReportingRegisterOSSource,
+      },
+      {
+          RegistrationHeaderType::kOsTrigger,
+          http_names::kAttributionReportingRegisterOSTrigger,
+      },
+  };
+
+  KURL test_url = ToKURL("https://example.com/foo.html");
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.header_type);
+    for (const bool report_header_errors : {false, true}) {
+      SCOPED_TRACE(report_header_errors);
+
+      ResourceRequest request(test_url);
+      request.SetAttributionReportingEligibility(
+          AttributionReportingEligibility::kEventSourceOrTrigger);
+      request.SetAttributionReportingSupport(
+          network::mojom::AttributionSupport::kOs);
+      auto* resource = MakeGarbageCollected<MockResource>(test_url);
+      ResourceResponse response(test_url);
+      response.SetHttpStatusCode(200);
+      response.SetHttpHeaderField(test_case.header_name,
+                                  AtomicString(R"(!!!)"));
+      if (report_header_errors) {
+        response.SetHttpHeaderField(http_names::kAttributionReportingInfo,
+                                    AtomicString(R"(report-header-errors)"));
+      }
+
+      MockAttributionHost host(
+          GetFrame().GetRemoteNavigationAssociatedInterfaces());
+      EXPECT_TRUE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+          request, response, resource));
+      host.WaitUntilBoundAndFlush();
+
+      auto* mock_data_host = host.mock_data_host();
+      ASSERT_TRUE(mock_data_host);
+
+      mock_data_host->Flush();
+      if (report_header_errors) {
+        EXPECT_THAT(
+            mock_data_host->header_errors(),
+            ::testing::ElementsAre(testing::AllOf(
+                ::testing::Field(&attribution_reporting::
+                                     RegistrationHeaderError::header_type,
+                                 test_case.header_type),
+                ::testing::Field(&attribution_reporting::
+                                     RegistrationHeaderError::header_value,
+                                 "!!!"))));
+      } else {
+        EXPECT_THAT(mock_data_host->header_errors(), ::testing::IsEmpty());
+      }
+    }
+  }
 }
 
 }  // namespace

@@ -23,6 +23,8 @@
 #include "components/attribution_reporting/registrar.h"
 #include "components/attribution_reporting/registrar_info.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
+#include "components/attribution_reporting/registration_header_error.h"
+#include "components/attribution_reporting/registration_header_type.mojom-shared.h"
 #include "components/attribution_reporting/registration_info.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
@@ -119,24 +121,27 @@ void LogAuditIssue(ExecutionContext* execution_context,
                                       id_string, invalid_parameter);
 }
 
-base::expected<std::optional<attribution_reporting::Registrar>,
+base::expected<attribution_reporting::RegistrationInfo,
                attribution_reporting::RegistrationInfoError>
-GetPreferredPlatform(const HTTPHeaderMap& map,
-                     ExecutionContext* execution_context,
-                     uint64_t request_id) {
+GetRegistrationInfo(const HTTPHeaderMap& map,
+                    ExecutionContext* execution_context,
+                    uint64_t request_id,
+                    bool cross_app_web_enabled) {
   AtomicString info_header = map.Get(http_names::kAttributionReportingInfo);
   if (info_header.IsNull()) {
-    return std::nullopt;
+    return attribution_reporting::RegistrationInfo();
   }
-  auto parsed_preferred_platform = attribution_reporting::ParseInfo(
-      StringUTF8Adaptor(info_header).AsStringPiece());
-  if (!parsed_preferred_platform.has_value()) {
+  auto parsed_registration_info =
+      attribution_reporting::RegistrationInfo::ParseInfo(
+          StringUTF8Adaptor(info_header).AsStringPiece(),
+          cross_app_web_enabled);
+  if (!parsed_registration_info.has_value()) {
     LogAuditIssue(execution_context,
                   AttributionReportingIssueType::kInvalidInfoHeader,
                   /*element=*/nullptr, request_id,
                   /*invalid_parameter=*/info_header);
   }
-  return parsed_preferred_platform;
+  return parsed_registration_info;
 }
 
 template <typename Container>
@@ -354,7 +359,7 @@ class AttributionSrcLoader::ResourceClient
       attribution_reporting::SuitableOrigin reporting_origin,
       const AttributionHeaders&,
       const Vector<network::TriggerVerification>&,
-      std::optional<attribution_reporting::Registrar> preferred_platform);
+      const attribution_reporting::RegistrationInfo&);
 
   void Finish();
 
@@ -365,13 +370,19 @@ class AttributionSrcLoader::ResourceClient
   void HandleSourceRegistration(
       const AttributionHeaders&,
       attribution_reporting::SuitableOrigin reporting_origin,
-      std::optional<attribution_reporting::Registrar> preferred_platform);
+      const attribution_reporting::RegistrationInfo&);
 
   void HandleTriggerRegistration(
       const AttributionHeaders&,
       attribution_reporting::SuitableOrigin reporting_origin,
       const Vector<network::TriggerVerification>&,
-      std::optional<attribution_reporting::Registrar> preferred_platform);
+      const attribution_reporting::RegistrationInfo&);
+
+  void LogAuditIssueAndMaybeReportHeaderError(
+      const AttributionHeaders&,
+      bool report_header_errors,
+      attribution_reporting::mojom::RegistrationHeaderType,
+      attribution_reporting::SuitableOrigin reporting_origin);
 
   // RawResourceClient:
   String DebugName() const override;
@@ -767,15 +778,11 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
       break;
   }
 
-  std::optional<attribution_reporting::Registrar> preferred_platform;
-  if (cross_app_web_enabled) {
-    auto parsed_preferred_platform = GetPreferredPlatform(
-        response.HttpHeaderFields(), local_frame_->DomWindow(), request_id);
-    if (parsed_preferred_platform.has_value()) {
-      preferred_platform = parsed_preferred_platform.value();
-    } else {
-      return false;
-    }
+  auto registration_info = GetRegistrationInfo(
+      response.HttpHeaderFields(), local_frame_->DomWindow(), request_id,
+      cross_app_web_enabled);
+  if (!registration_info.has_value()) {
+    return false;
   }
 
   network::mojom::AttributionSupport support =
@@ -783,15 +790,15 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
 
   if (Document* document = local_frame_->DomWindow()->document();
       document->IsPrerendering()) {
-    document->AddPostPrerenderingActivationStep(
-        WTF::BindOnce(&AttributionSrcLoader::RegisterAttributionHeaders,
-                      WrapPersistentIfNeeded(this), registration_eligibility,
-                      support, std::move(*reporting_origin), std::move(headers),
-                      response.GetTriggerVerifications(), preferred_platform));
+    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
+        &AttributionSrcLoader::RegisterAttributionHeaders,
+        WrapPersistentIfNeeded(this), registration_eligibility, support,
+        std::move(*reporting_origin), std::move(headers),
+        response.GetTriggerVerifications(), registration_info.value()));
   } else {
     RegisterAttributionHeaders(
         registration_eligibility, support, std::move(*reporting_origin),
-        headers, response.GetTriggerVerifications(), preferred_platform);
+        headers, response.GetTriggerVerifications(), registration_info.value());
   }
 
   return true;
@@ -803,7 +810,7 @@ void AttributionSrcLoader::RegisterAttributionHeaders(
     attribution_reporting::SuitableOrigin reporting_origin,
     const AttributionHeaders& headers,
     const Vector<network::TriggerVerification>& trigger_verifications,
-    std::optional<attribution_reporting::Registrar> preferred_platform) {
+    const attribution_reporting::RegistrationInfo& registration_info) {
   mojo::AssociatedRemote<mojom::blink::AttributionHost> conversion_host;
   local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       &conversion_host);
@@ -820,7 +827,7 @@ void AttributionSrcLoader::RegisterAttributionHeaders(
       this, registration_eligibility, SourceType::kEvent, std::move(data_host),
       support);
   client->HandleResponseHeaders(std::move(reporting_origin), headers,
-                                trigger_verifications, preferred_platform);
+                                trigger_verifications, registration_info);
   client->Finish();
 }
 
@@ -899,37 +906,33 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     return;
   }
 
-  std::optional<attribution_reporting::Registrar> preferred_platform;
-  if (cross_app_web_enabled) {
-    auto parsed_preferred_platform =
-        GetPreferredPlatform(response.HttpHeaderFields(),
-                             loader_->local_frame_->DomWindow(), request_id);
-    if (parsed_preferred_platform.has_value()) {
-      preferred_platform = parsed_preferred_platform.value();
-    } else {
-      return;
-    }
+  auto registration_info = GetRegistrationInfo(
+      response.HttpHeaderFields(), loader_->local_frame_->DomWindow(),
+      request_id, cross_app_web_enabled);
+  if (!registration_info.has_value()) {
+    return;
   }
 
   HandleResponseHeaders(std::move(*reporting_origin), headers,
-                        response.GetTriggerVerifications(), preferred_platform);
+                        response.GetTriggerVerifications(),
+                        registration_info.value());
 }
 
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     attribution_reporting::SuitableOrigin reporting_origin,
     const AttributionHeaders& headers,
     const Vector<network::TriggerVerification>& trigger_verifications,
-    std::optional<attribution_reporting::Registrar> preferred_platform) {
+    const attribution_reporting::RegistrationInfo& registration_info) {
   DCHECK_GT(headers.count(), 0);
 
   switch (eligibility_) {
     case RegistrationEligibility::kSource:
       HandleSourceRegistration(headers, std::move(reporting_origin),
-                               preferred_platform);
+                               registration_info);
       break;
     case RegistrationEligibility::kTrigger:
       HandleTriggerRegistration(headers, std::move(reporting_origin),
-                                trigger_verifications, preferred_platform);
+                                trigger_verifications, registration_info);
       break;
     case RegistrationEligibility::kSourceOrTrigger: {
       const bool has_source = headers.source_count() > 0;
@@ -945,13 +948,13 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
 
       if (has_source) {
         HandleSourceRegistration(headers, std::move(reporting_origin),
-                                 preferred_platform);
+                                 registration_info);
         break;
       }
 
       DCHECK(has_trigger);
       HandleTriggerRegistration(headers, std::move(reporting_origin),
-                                trigger_verifications, preferred_platform);
+                                trigger_verifications, registration_info);
       break;
     }
   }
@@ -960,14 +963,14 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
 void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     const AttributionHeaders& headers,
     attribution_reporting::SuitableOrigin reporting_origin,
-    std::optional<attribution_reporting::Registrar> preferred_platform) {
+    const attribution_reporting::RegistrationInfo& registration_info) {
   DCHECK_NE(eligibility_, RegistrationEligibility::kTrigger);
 
   headers.MaybeLogAllTriggerHeadersIgnored(loader_->local_frame_->DomWindow());
 
   auto registrar_info = attribution_reporting::RegistrarInfo::Get(
       !headers.web_source.IsNull(), !headers.os_source.IsNull(),
-      /*is_source=*/true, preferred_platform, support_);
+      /*is_source=*/true, registration_info.preferred_platform, support_);
 
   headers.LogIssues(loader_->local_frame_->DomWindow(), registrar_info.issues);
 
@@ -983,11 +986,10 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
       auto source_data = attribution_reporting::SourceRegistration::Parse(
           StringUTF8Adaptor(headers.web_source).AsStringPiece(), source_type_);
       if (!source_data.has_value()) {
-        LogAuditIssue(
-            loader_->local_frame_->DomWindow(),
-            AttributionReportingIssueType::kInvalidRegisterSourceHeader,
-            /*element=*/nullptr, headers.request_id,
-            /*invalid_parameter=*/headers.web_source);
+        LogAuditIssueAndMaybeReportHeaderError(
+            headers, registration_info.report_header_errors,
+            attribution_reporting::mojom::RegistrationHeaderType::kSource,
+            std::move(reporting_origin));
         return;
       }
 
@@ -1011,11 +1013,10 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
               attribution_reporting::ParseOsSourceOrTriggerHeader(
                   StringUTF8Adaptor(headers.os_source).AsStringPiece());
       if (registration_items.empty()) {
-        LogAuditIssue(
-            loader_->local_frame_->DomWindow(),
-            AttributionReportingIssueType::kInvalidRegisterOsSourceHeader,
-            /*element=*/nullptr, headers.request_id,
-            /*invalid_parameter=*/headers.os_source);
+        LogAuditIssueAndMaybeReportHeaderError(
+            headers, registration_info.report_header_errors,
+            attribution_reporting::mojom::RegistrationHeaderType::kOsSource,
+            std::move(reporting_origin));
         return;
       }
       data_host_->OsSourceDataAvailable(std::move(registration_items));
@@ -1028,14 +1029,14 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     const AttributionHeaders& headers,
     attribution_reporting::SuitableOrigin reporting_origin,
     const Vector<network::TriggerVerification>& trigger_verifications,
-    std::optional<attribution_reporting::Registrar> preferred_platform) {
+    const attribution_reporting::RegistrationInfo& registration_info) {
   DCHECK_NE(eligibility_, RegistrationEligibility::kSource);
 
   headers.MaybeLogAllSourceHeadersIgnored(loader_->local_frame_->DomWindow());
 
   auto registrar_info = attribution_reporting::RegistrarInfo::Get(
       !headers.web_trigger.IsNull(), !headers.os_trigger.IsNull(),
-      /*is_source=*/false, preferred_platform, support_);
+      /*is_source=*/false, registration_info.preferred_platform, support_);
 
   headers.LogIssues(loader_->local_frame_->DomWindow(), registrar_info.issues);
 
@@ -1053,11 +1054,10 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
       auto trigger_data = attribution_reporting::TriggerRegistration::Parse(
           StringUTF8Adaptor(headers.web_trigger).AsStringPiece());
       if (!trigger_data.has_value()) {
-        LogAuditIssue(
-            loader_->local_frame_->DomWindow(),
-            AttributionReportingIssueType::kInvalidRegisterTriggerHeader,
-            /*element=*/nullptr, headers.request_id,
-            /*invalid_parameter=*/headers.web_trigger);
+        LogAuditIssueAndMaybeReportHeaderError(
+            headers, registration_info.report_header_errors,
+            attribution_reporting::mojom::RegistrationHeaderType::kTrigger,
+            std::move(reporting_origin));
         return;
       }
 
@@ -1082,17 +1082,56 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
               attribution_reporting::ParseOsSourceOrTriggerHeader(
                   StringUTF8Adaptor(headers.os_trigger).AsStringPiece());
       if (registration_items.empty()) {
-        LogAuditIssue(
-            loader_->local_frame_->DomWindow(),
-            AttributionReportingIssueType::kInvalidRegisterOsTriggerHeader,
-            /*element=*/nullptr, headers.request_id,
-            /*invalid_parameter=*/headers.os_trigger);
+        LogAuditIssueAndMaybeReportHeaderError(
+            headers, registration_info.report_header_errors,
+            attribution_reporting::mojom::RegistrationHeaderType::kOsTrigger,
+            std::move(reporting_origin));
         return;
       }
       data_host_->OsTriggerDataAvailable(std::move(registration_items));
       ++num_registrations_;
       break;
     }
+  }
+}
+
+void AttributionSrcLoader::ResourceClient::
+    LogAuditIssueAndMaybeReportHeaderError(
+        const AttributionHeaders& headers,
+        bool report_header_errors,
+        attribution_reporting::mojom::RegistrationHeaderType header_type,
+        attribution_reporting::SuitableOrigin reporting_origin) {
+  AttributionReportingIssueType issue_type;
+  AtomicString header;
+  switch (header_type) {
+    case attribution_reporting::mojom::RegistrationHeaderType::kSource:
+      issue_type = AttributionReportingIssueType::kInvalidRegisterSourceHeader;
+      header = headers.web_source;
+      break;
+    case attribution_reporting::mojom::RegistrationHeaderType::kTrigger:
+      issue_type = AttributionReportingIssueType::kInvalidRegisterTriggerHeader;
+      header = headers.web_trigger;
+      break;
+    case attribution_reporting::mojom::RegistrationHeaderType::kOsSource:
+      issue_type =
+          AttributionReportingIssueType::kInvalidRegisterOsSourceHeader;
+      header = headers.os_source;
+      break;
+    case attribution_reporting::mojom::RegistrationHeaderType::kOsTrigger:
+      issue_type =
+          AttributionReportingIssueType::kInvalidRegisterOsTriggerHeader;
+      header = headers.os_trigger;
+      break;
+  }
+  CHECK(!header.IsNull());
+  LogAuditIssue(loader_->local_frame_->DomWindow(), issue_type,
+                /*element=*/nullptr, headers.request_id,
+                /*invalid_parameter=*/header);
+  if (report_header_errors) {
+    data_host_->ReportRegistrationHeaderError(
+        std::move(reporting_origin),
+        attribution_reporting::RegistrationHeaderError(
+            header_type, StringUTF8Adaptor(header).AsStringPiece()));
   }
 }
 

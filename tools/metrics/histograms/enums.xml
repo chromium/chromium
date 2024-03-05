@@ -4100,6 +4100,7 @@ Called by update_net_error_codes.py.-->
   <int value="25" label="os-trigger-delegated"/>
   <int value="26" label="trigger-event-report-window-not-started"/>
   <int value="27" label="trigger-event-no-matching-trigger-data"/>
+  <int value="28" label="header-parsing-error"/>
 </enum>
 
 <enum name="CookieAccessType">

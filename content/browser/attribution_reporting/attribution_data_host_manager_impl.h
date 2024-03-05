@@ -23,6 +23,7 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
+#include "components/attribution_reporting/registration_header_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
@@ -35,6 +36,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 
 class GURL;
 
@@ -44,6 +46,7 @@ class SuitableOrigin;
 enum class Registrar;
 
 struct OsRegistrationItem;
+struct RegistrationInfo;
 struct SourceRegistration;
 struct TriggerRegistration;
 }  // namespace attribution_reporting
@@ -188,6 +191,9 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       std::vector<attribution_reporting::OsRegistrationItem>) override;
   void OsTriggerDataAvailable(
       std::vector<attribution_reporting::OsRegistrationItem>) override;
+  void ReportRegistrationHeaderError(
+      attribution_reporting::SuitableOrigin reporting_origin,
+      const attribution_reporting::RegistrationHeaderError&) override;
 
   const RegistrationContext* GetReceiverRegistrationContextForSource();
   const RegistrationContext* GetReceiverRegistrationContextForTrigger();
@@ -204,9 +210,9 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   using InfoParseResult =
       base::expected<net::structured_headers::Dictionary, std::string>;
   void OnInfoHeaderParsed(RegistrationsId, InfoParseResult);
-  void HandlePreferredPlatform(base::flat_set<Registrations>::iterator,
-                               PendingRegistrationData,
-                               std::optional<attribution_reporting::Registrar>);
+  void HandleRegistrationInfo(base::flat_set<Registrations>::iterator,
+                              PendingRegistrationData,
+                              const attribution_reporting::RegistrationInfo&);
 
   void ParseHeader(base::flat_set<Registrations>::iterator,
                    HeaderPendingDecode,
@@ -226,6 +232,12 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
                               data_decoder::DataDecoder::ValueOrError result);
 
   void HandleNextOsDecode(const Registrations&);
+
+  void MaybeLogAuditIssueAndReportHeaderError(
+      const Registrations&,
+      const HeaderPendingDecode&,
+      blink::mojom::AttributionReportingIssueType,
+      attribution_reporting::mojom::RegistrationHeaderType);
 
   using OsParseResult =
       base::expected<net::structured_headers::List, std::string>;

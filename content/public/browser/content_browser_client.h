@@ -1030,6 +1030,16 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual AttributionReportingOsReportTypes
   GetAttributionReportingOsReportTypes(WebContents* web_contents);
 
+  // Allows the embedder to control if Attribution Reporting API is allowed in a
+  // given context. This method checks the API-level permission.
+  // `IsAttributionReportingOperationAllowed()` should be called to check the
+  // operation-level permission.
+  virtual bool IsAttributionReportingAllowedForContext(
+      content::BrowserContext* browser_context,
+      content::RenderFrameHost* rfh,
+      const url::Origin& context_origin,
+      const url::Origin& reporting_origin);
+
   // Allows the embedder to control if Shared Storage API operations can happen
   // in a given context.
   //

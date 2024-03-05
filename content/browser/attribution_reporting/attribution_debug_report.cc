@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -19,9 +20,12 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/os_registration.h"
+#include "components/attribution_reporting/registration_header_error.h"
+#include "components/attribution_reporting/registration_header_type.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -39,6 +43,8 @@ namespace {
 
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
+
+using ::attribution_reporting::mojom::RegistrationHeaderType;
 
 constexpr char kAttributionDestination[] = "attribution_destination";
 
@@ -73,7 +79,8 @@ enum class DebugDataType {
   kOsTriggerDelegated = 25,
   kTriggerEventReportWindowNotStarted = 26,
   kTriggerEventNoMatchingTriggerData = 27,
-  kMaxValue = kTriggerEventNoMatchingTriggerData,
+  kHeaderParsingError = 28,
+  kMaxValue = kHeaderParsingError,
 };
 
 std::optional<DebugDataType> DataTypeIfCookieSet(DebugDataType data_type,
@@ -250,7 +257,7 @@ std::optional<DebugDataType> GetReportDataType(AggregatableResult result,
   }
 }
 
-std::string SerializeReportDataType(DebugDataType data_type) {
+std::string_view SerializeReportDataType(DebugDataType data_type) {
   switch (data_type) {
     case DebugDataType::kSourceDestinationLimit:
       return "source-destination-limit";
@@ -308,6 +315,8 @@ std::string SerializeReportDataType(DebugDataType data_type) {
       return "os-source-delegated";
     case DebugDataType::kOsTriggerDelegated:
       return "os-trigger-delegated";
+    case DebugDataType::kHeaderParsingError:
+      return "header-parsing-error";
   }
 }
 
@@ -395,6 +404,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kSourceDestinationRateLimit:
     case DebugDataType::kOsSourceDelegated:
     case DebugDataType::kOsTriggerDelegated:
+    case DebugDataType::kHeaderParsingError:
       NOTREACHED_NORETURN();
   }
 
@@ -409,12 +419,26 @@ base::Value::Dict GetReportData(DebugDataType type, base::Value::Dict body) {
 }
 
 void RecordVerboseDebugReportType(DebugDataType type) {
-  static_assert(
-      DebugDataType::kMaxValue ==
-          DebugDataType::kTriggerEventNoMatchingTriggerData,
-      "Bump version of Conversions.SentVerboseDebugReportType4 histogram.");
+  static_assert(DebugDataType::kMaxValue == DebugDataType::kHeaderParsingError,
+                "Update ConversionVerboseDebugReportType enum.");
   base::UmaHistogramEnumeration("Conversions.SentVerboseDebugReportType4",
                                 type);
+}
+
+std::string_view GetHeaderName(RegistrationHeaderType type) {
+  switch (type) {
+    case RegistrationHeaderType::kSource:
+      return kAttributionReportingRegisterSourceHeader;
+    case RegistrationHeaderType::kTrigger:
+      return kAttributionReportingRegisterTriggerHeader;
+    case RegistrationHeaderType::kOsSource:
+      return kAttributionReportingRegisterOsSourceHeader;
+    case RegistrationHeaderType::kOsTrigger:
+      return kAttributionReportingRegisterOsTriggerHeader;
+    default:
+      // Should only be possible with compromised renderers.
+      return "";
+  }
 }
 
 }  // namespace
@@ -546,6 +570,38 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
 
   return AttributionDebugReport(std::move(report_body),
                                 std::move(*registration_origin));
+}
+
+std::optional<AttributionDebugReport> AttributionDebugReport::Create(
+    attribution_reporting::SuitableOrigin reporting_origin,
+    const attribution_reporting::RegistrationHeaderError& error,
+    const attribution_reporting::SuitableOrigin& context_origin,
+    bool is_within_fenced_frame) {
+  if (is_within_fenced_frame) {
+    return std::nullopt;
+  }
+
+  // TODO(linnan): Add interop tests for header error debug reports.
+
+  std::string_view header_type = GetHeaderName(error.header_type);
+  if (header_type.empty()) {
+    return std::nullopt;
+  }
+
+  base::Value::Dict data_body;
+  data_body.Set("context_site", net::SchemefulSite(context_origin).Serialize());
+  data_body.Set("header", header_type);
+  data_body.Set("value", error.header_value);
+
+  const DebugDataType data_type = DebugDataType::kHeaderParsingError;
+
+  base::Value::List report_body;
+  report_body.Append(GetReportData(data_type, std::move(data_body)));
+
+  RecordVerboseDebugReportType(data_type);
+
+  return AttributionDebugReport(std::move(report_body),
+                                std::move(reporting_origin));
 }
 
 AttributionDebugReport::AttributionDebugReport(
