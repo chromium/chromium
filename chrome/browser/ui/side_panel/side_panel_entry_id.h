@@ -38,6 +38,8 @@
   V(kSearchCompanion, kActionSidePanelShowSearchCompanion, "Companion")       \
   V(kShoppingInsights, kActionSidePanelShowShoppingInsights,                  \
     "ShoppingInsights")                                                       \
+  V(kLensOverlayResults, kActionSidePanelShowLensOverlayResults,              \
+    "LensOverlayResults")                                                     \
   /* Extensions (nothing more should be added below here) */                  \
   V(kExtension, std::nullopt, "Extension")
 

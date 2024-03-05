@@ -544,6 +544,7 @@
   E(kActionSidePanelShowFeed) \
   E(kActionSidePanelShowHistoryCluster) \
   E(kActionSidePanelShowLens) \
+  E(kActionSidePanelShowLensOverlayResults) \
   E(kActionSidePanelShowPerformance) \
   E(kActionSidePanelShowReadAnything) \
   E(kActionSidePanelShowReadingList, IDC_READING_LIST_MENU_SHOW_UI) \

@@ -33972,6 +33972,15 @@ should be able to be added at any place in this file.
   <description>Recorded when the Lens side panel entry is shown.</description>
 </action>
 
+<action name="SidePanel.LensOverlayResults.Shown">
+  <owner>lens-chrome-eng@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>mercerd@google.com</owner>
+  <description>
+    Recorded when the Lens Overlay side panel entry is shown.
+  </description>
+</action>
+
 <action name="SidePanel.Performance.Pinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>agale@chromium.org</owner>
