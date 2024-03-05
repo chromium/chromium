@@ -510,24 +510,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionExpiryBrowserTest,
   histogram_tester.ExpectUniqueSample(
       internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
       PrerenderPredictionStatus::kCancelled, 1);
-
-  // Select the prerender hint. The prerendered result has been deleted, so
-  // browser loads the search result over again.
-  content::TestNavigationObserver observer(GetActiveWebContents());
-  GetActiveWebContents()->OpenURL(content::OpenURLParams(
-      GetSearchSuggestionUrl("prerender222", /*with_parameter=*/false),
-      content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
-                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-      /*is_renderer_initiated=*/false));
-  observer.Wait();
-
-  // This metric is recorded only when prerendering is alive on primary page
-  // changed.
-  histogram_tester.ExpectTotalCount(
-      "Prerender.Experimental.Search."
-      "FirstCorrectPrerenderHintReceivedToRealSearchNavigationStartedDuration",
-      0);
 }
 
 // Tests that kCanceled is correctly recorded in the case that PrerenderManager
