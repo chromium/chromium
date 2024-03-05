@@ -18,8 +18,4 @@ std::unique_ptr<AutofillManager> TestContentAutofillClient::CreateManager(
   return std::make_unique<BrowserAutofillManager>(&driver, this, "en-US");
 }
 
-void TestContentAutofillClient::InitAgent(
-    base::PassKey<ContentAutofillDriverFactory> pass_key,
-    const mojo::AssociatedRemote<mojom::AutofillAgent>& agent) {}
-
 }  // namespace autofill

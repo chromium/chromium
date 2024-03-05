@@ -100,7 +100,6 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
       }
       DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(),
                 driver.get());
-      client().InitAgent(/*pass_key=*/{}, driver->GetAutofillAgent());
     } else {
       driver_map_.erase(iter);
       DCHECK_EQ(driver_map_.count(render_frame_host), 0u);

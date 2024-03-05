@@ -158,9 +158,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   std::unique_ptr<autofill::AutofillManager> CreateManager(
       base::PassKey<autofill::ContentAutofillDriver> pass_key,
       autofill::ContentAutofillDriver& driver) override;
-  void InitAgent(base::PassKey<autofill::ContentAutofillDriverFactory> pass_key,
-                 const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>&
-                     agent) override;
 
  private:
   friend class content::WebContentsUserData<AndroidAutofillClient>;

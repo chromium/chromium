@@ -405,9 +405,4 @@ std::unique_ptr<autofill::AutofillManager> AndroidAutofillClient::CreateManager(
   return base::WrapUnique(new autofill::AndroidAutofillManager(&driver, this));
 }
 
-void AndroidAutofillClient::InitAgent(
-    base::PassKey<autofill::ContentAutofillDriverFactory> pass_key,
-    const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>& agent) {
-}
-
 }  // namespace android_autofill

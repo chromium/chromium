@@ -35,12 +35,6 @@ class ContentAutofillClient
       base::PassKey<ContentAutofillDriver> pass_key,
       ContentAutofillDriver& driver) = 0;
 
-  // Called by ContentAutofillDriverFactory to tweak the AutofillAgent in to the
-  // embedder's needs.
-  virtual void InitAgent(
-      base::PassKey<ContentAutofillDriverFactory> pass_key,
-      const mojo::AssociatedRemote<mojom::AutofillAgent>& agent) = 0;
-
  private:
   friend class content::WebContentsUserData<ContentAutofillClient>;
 

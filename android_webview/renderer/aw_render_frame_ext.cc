@@ -45,6 +45,8 @@ using SecureContextRequired = autofill::AutofillAgent::SecureContextRequired;
 using UserGestureRequired = autofill::AutofillAgent::UserGestureRequired;
 using UsesKeyboardAccessoryForSuggestions =
     autofill::AutofillAgent::UsesKeyboardAccessoryForSuggestions;
+using EnableHeavyFormDataScraping =
+    autofill::AutofillAgent::EnableHeavyFormDataScraping;
 
 constexpr char kAddressPrefix[] = "geo:0,0?q=";
 constexpr char kEmailPrefix[] = "mailto:";
@@ -162,7 +164,8 @@ AwRenderFrameExt::AwRenderFrameExt(content::RenderFrame* render_frame)
       render_frame,
       {ExtractAllDatalists(true), FocusRequiresScroll(false),
        QueryPasswordSuggestions(true), SecureContextRequired(true),
-       UserGestureRequired(false), UsesKeyboardAccessoryForSuggestions(false)},
+       UserGestureRequired(false), UsesKeyboardAccessoryForSuggestions(false),
+       EnableHeavyFormDataScraping(false)},
       std::move(password_autofill_agent), nullptr, &registry_);
   if (content_capture::features::IsContentCaptureEnabled())
     new content_capture::ContentCaptureSender(render_frame, &registry_);

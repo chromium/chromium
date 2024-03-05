@@ -88,10 +88,6 @@ interface AutofillAgent {
   // Tells the renderer to preview the generated password.
   PreviewPasswordGenerationSuggestion(mojo_base.mojom.String16 password);
 
-  // Allows heavy scraping of form data (e.g., button titles for
-  // unowned forms).
-  EnableHeavyFormDataScraping();
-
   // Returns a vector of four digit combinations present in the DOM of a
   // webpage. Used to check for the presence of the virtual card last four in
   // the DOM prior to offering CVC autofill for a virtual card saved on a

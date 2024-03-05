@@ -191,19 +191,6 @@ AutoselectFirstSuggestion ShouldAutofillPopupAutoselectFirstSuggestion(
       source == AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
 }
 
-bool ShouldEnableHeavyFormDataScraping(const version_info::Channel channel) {
-  switch (channel) {
-    case version_info::Channel::CANARY:
-    case version_info::Channel::DEV:
-      return true;
-    case version_info::Channel::STABLE:
-    case version_info::Channel::BETA:
-    case version_info::Channel::UNKNOWN:
-      return false;
-  }
-  NOTREACHED_NORETURN();
-}
-
 }  // namespace
 
 // static
@@ -1406,14 +1393,6 @@ std::unique_ptr<AutofillManager> ChromeAutofillClient::CreateManager(
     ContentAutofillDriver& driver) {
   return std::make_unique<BrowserAutofillManager>(
       &driver, this, g_browser_process->GetApplicationLocale());
-}
-
-void ChromeAutofillClient::InitAgent(
-    base::PassKey<ContentAutofillDriverFactory> pass_key,
-    const mojo::AssociatedRemote<mojom::AutofillAgent>& agent) {
-  if (ShouldEnableHeavyFormDataScraping(GetChannel())) {
-    agent->EnableHeavyFormDataScraping();
-  }
 }
 
 }  // namespace autofill

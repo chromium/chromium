@@ -95,6 +95,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   using UserGestureRequired = FormTracker::UserGestureRequired;
   using UsesKeyboardAccessoryForSuggestions =
       base::StrongAlias<class UsesKeyboardAccessoryForSuggestionsTag, bool>;
+  using EnableHeavyFormDataScraping =
+      base::StrongAlias<class EnableHeavyFormDataScrapingTag, bool>;
 
   struct Config {
     // Controls whether or not all datalists shall be extracted into
@@ -126,6 +128,10 @@ class AutofillAgent : public content::RenderFrameObserver,
     // information in or near the keyboard instead.
     UsesKeyboardAccessoryForSuggestions uses_keyboard_accessory_for_suggestions{
         BUILDFLAG(IS_ANDROID)};
+
+    // Controls heavy scraping of form data (e.g., button titles for unowned
+    // forms) is enabled.
+    EnableHeavyFormDataScraping enable_heavy_form_data_scraping{false};
   };
 
   // PasswordAutofillAgent is guaranteed to outlive AutofillAgent.
@@ -186,7 +192,6 @@ class AutofillAgent : public content::RenderFrameObserver,
                                  const std::u16string& password) override;
   void PreviewPasswordGenerationSuggestion(
       const std::u16string& password) override;
-  void EnableHeavyFormDataScraping() override;
   void GetPotentialLastFourCombinationsForStandaloneCvc(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
@@ -218,8 +223,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   void UpdateStateForTextChange(const blink::WebFormControlElement& element,
                                 FieldPropertiesFlags flag);
 
-  bool is_heavy_form_data_scraping_enabled() {
-    return is_heavy_form_data_scraping_enabled_;
+  bool is_heavy_form_data_scraping_enabled() const {
+    return *config_.enable_heavy_form_data_scraping;
   }
 
   bool IsPrerendering() const;
@@ -496,10 +501,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Will be set when accessibility mode changes, depending on what the new mode
   // is.
   bool is_screen_reader_enabled_ = false;
-
-  // Whether agents should enable heavy scraping of form data (e.g., button
-  // titles for unowned forms).
-  bool is_heavy_form_data_scraping_enabled_ = false;
 
   // Map WebFormControlElement to the pair of:
   // 1) The most recent text that user typed or autofilled in input elements.

@@ -294,6 +294,8 @@ using SecureContextRequired = autofill::AutofillAgent::SecureContextRequired;
 using UserGestureRequired = autofill::AutofillAgent::UserGestureRequired;
 using UsesKeyboardAccessoryForSuggestions =
     autofill::AutofillAgent::UsesKeyboardAccessoryForSuggestions;
+using EnableHeavyFormDataScraping =
+    autofill::AutofillAgent::EnableHeavyFormDataScraping;
 
 namespace {
 
@@ -698,7 +700,10 @@ void ChromeContentRendererClient::RenderFrameCreated(
         {ExtractAllDatalists(false), FocusRequiresScroll(true),
          QueryPasswordSuggestions(false), SecureContextRequired(false),
          UserGestureRequired(true),
-         UsesKeyboardAccessoryForSuggestions(BUILDFLAG(IS_ANDROID))},
+         UsesKeyboardAccessoryForSuggestions(BUILDFLAG(IS_ANDROID)),
+         EnableHeavyFormDataScraping(
+             chrome::GetChannel() == version_info::Channel::CANARY ||
+             chrome::GetChannel() == version_info::Channel::DEV)},
         std::move(password_autofill_agent),
         std::move(password_generation_agent), associated_interfaces);
 

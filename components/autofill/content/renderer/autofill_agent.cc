@@ -1019,10 +1019,6 @@ void AutofillAgent::ShowSuggestionsForContentEditable(
   }
 }
 
-void AutofillAgent::EnableHeavyFormDataScraping() {
-  is_heavy_form_data_scraping_enabled_ = true;
-}
-
 void AutofillAgent::GetPotentialLastFourCombinationsForStandaloneCvc(
     base::OnceCallback<void(const std::vector<std::string>&)>
         potential_matches) {
