@@ -4795,6 +4795,7 @@ static_library("ui") {
     ]
     deps += [
       "//components/capture_mode",
+      "//components/media_effects:media_effects",
       "//services/audio/public/mojom",
       "//services/video_capture/public/mojom",
     ]
