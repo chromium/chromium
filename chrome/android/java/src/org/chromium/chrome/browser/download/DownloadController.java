@@ -9,8 +9,10 @@ import android.Manifest.permission;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.download.DownloadCollectionBridge;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
@@ -101,7 +103,14 @@ public class DownloadController {
     }
 
     @CalledByNative
-    private static void onPdfDownloadStarted(Tab tab, DownloadInfo downloadInfo) {}
+    private static void onPdfDownloadStarted(Tab tab, DownloadInfo downloadInfo) {
+        if (!PdfUtils.useAndroidPdfViewer()) {
+            return;
+        }
+        LoadUrlParams param = new LoadUrlParams(downloadInfo.getUrl());
+        param.setIsPdf(true);
+        tab.loadUrl(param);
+    }
 
     @NativeMethods
     interface Natives {

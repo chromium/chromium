@@ -30,5 +30,6 @@ robolectric_library("junit") {
     ":java",
     "//base:base_junit_test_support",
     "//third_party/junit",
+    "//url:url_java",
   ]
 }

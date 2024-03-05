@@ -482,13 +482,15 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     }
 
     @Override
-    public NativePage createNativePage(String url, NativePage candidatePage, Tab tab) {
+    public NativePage createNativePage(
+            String url, NativePage candidatePage, Tab tab, boolean isPdf) {
         // Navigation comes from user pressing "Back to safety" on an interstitial so close the tab.
         // See crbug.com/1270695
         if (UrlConstants.NTP_URL.equals(url) && tab.isShowingErrorPage()) {
             mActivity.finish();
         }
-        // Custom tab does not create native pages.
+        // Custom tab does not create native pages except for pdf native pages.
+        // TODO(shuyng): Create pdf native page when isPdf is true.
         return null;
     }
 

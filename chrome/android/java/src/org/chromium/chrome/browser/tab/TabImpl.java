@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
+import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
@@ -341,7 +342,14 @@ class TabImpl implements Tab {
 
             // Reload the NativePage (if any), since the old NativePage has a reference to the old
             // activity.
-            if (isNativePage()) maybeShowNativePage(getUrl().getSpec(), true);
+            if (isNativePage()) {
+                // TODO(shuyng): Remove the null check of getNativePage() after fix
+                //  TabUnitTest#testFreezeDetachedNativePage.
+                maybeShowNativePage(
+                        getUrl().getSpec(),
+                        true,
+                        getNativePage() != null && getNativePage().isPdf());
+            }
         } else {
             updateIsDetached(window);
         }
@@ -567,7 +575,8 @@ class TabImpl implements Tab {
             // TODO(tedchoc): When showing the android NTP, delay the call to
             // TabImplJni.get().loadUrl until the android view has entirely rendered.
             if (!mIsNativePageCommitPending) {
-                mIsNativePageCommitPending = maybeShowNativePage(params.getUrl(), false);
+                boolean isPdf = PdfUtils.isPdfNavigation(params.getUrl(), params);
+                mIsNativePageCommitPending = maybeShowNativePage(params.getUrl(), false, isPdf);
             }
 
             if ("chrome://java-crash/".equals(params.getUrl())) {
@@ -788,7 +797,7 @@ class TabImpl implements Tab {
             // recreate the NativePage now.
             NativePage nativePage = getNativePage();
             if (nativePage != null && nativePage.isFrozen()) {
-                maybeShowNativePage(nativePage.getUrl(), true);
+                maybeShowNativePage(nativePage.getUrl(), true, nativePage.isPdf());
             }
             NativePageAssassin.getInstance().tabShown(this);
             TabImportanceManager.tabShown(this);
@@ -1206,7 +1215,9 @@ class TabImpl implements Tab {
     void handleDidFinishNavigation(GURL url, int transitionType) {
         mIsNativePageCommitPending = false;
         boolean isReload = (transitionType & PageTransition.CORE_MASK) == PageTransition.RELOAD;
-        if (!maybeShowNativePage(url.getSpec(), isReload)) {
+        // TODO: set isPdf based on NavigationHandle for http/https
+        boolean isPdf = PdfUtils.isPdfNavigation(url.getSpec(), null);
+        if (!maybeShowNativePage(url.getSpec(), isReload, isPdf)) {
             showRenderedPage();
         }
 
@@ -1269,12 +1280,14 @@ class TabImpl implements Tab {
 
     /**
      * Shows a native page for url if it's a valid chrome-native URL. Otherwise, does nothing.
+     *
      * @param url The url of the current navigation.
      * @param forceReload If true, the current native page (if any) will not be reused, even if it
-     *                    matches the URL.
+     *     matches the URL.
+     * @param isPdf Whether the content of the URL is pdf.
      * @return True, if a native page was displayed for url.
      */
-    boolean maybeShowNativePage(String url, boolean forceReload) {
+    boolean maybeShowNativePage(String url, boolean forceReload, boolean isPdf) {
         // While detached for reparenting we don't have an owning Activity, or TabModelSelector,
         // so we can't create the native page. The native page will be created once reparenting is
         // completed.
@@ -1297,7 +1310,8 @@ class TabImpl implements Tab {
         mPendingNativePageHost = nativePageHost;
         mIsAlreadyCreatingNativePage = true;
         NativePage candidateForReuse = forceReload ? null : getNativePage();
-        NativePage nativePage = mDelegateFactory.createNativePage(url, candidateForReuse, this);
+        NativePage nativePage =
+                mDelegateFactory.createNativePage(url, candidateForReuse, this, isPdf);
         mIsAlreadyCreatingNativePage = false;
         mPendingNativePageHost = null;
 

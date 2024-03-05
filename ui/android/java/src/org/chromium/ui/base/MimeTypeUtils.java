@@ -33,6 +33,9 @@ public class MimeTypeUtils {
     /** The MIME type for an image. */
     public static final String IMAGE_MIME_TYPE = "image/*";
 
+    /** The MIME type for pdf. */
+    public static final String PDF_MIME_TYPE = "application/pdf";
+
     /** A set of known mime types. */
     // Note: these values must match the AndroidUtilsMimeTypes enum in enums.xml.
     // Only add new values at the end, right before NUM_ENTRIES. We depend on these specific

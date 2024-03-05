@@ -178,7 +178,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     }
 
     @Override
-    public NativePage createNativePage(String url, NativePage candidatePage, Tab tab) {
+    public NativePage createNativePage(
+            String url, NativePage candidatePage, Tab tab, boolean isPdf) {
         if (mNativePageFactory == null) {
             mNativePageFactory =
                     new NativePageFactory(
@@ -198,7 +199,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                             mTabStripHeightSupplier,
                             mModuleRegistrySupplier);
         }
-        return mNativePageFactory.createNativePage(url, candidatePage, tab);
+        return mNativePageFactory.createNativePage(url, candidatePage, tab, isPdf);
     }
 
     /** Destroy and unhook objects at destruction. */

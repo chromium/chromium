@@ -11,6 +11,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
+import org.chromium.url.GURL;
 
 /** Tests public methods in NativePage. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -70,9 +71,10 @@ public class NativePageTest {
     public void testPositiveIsNativePageUrl() {
         for (UrlCombo urlCombo : VALID_URLS) {
             String url = urlCombo.url;
-            Assert.assertTrue(url, NativePage.isNativePageUrl(url, false));
+            GURL gurl = new GURL(url);
+            Assert.assertTrue(url, NativePage.isNativePageUrl(gurl, false));
             if (isValidInIncognito(urlCombo)) {
-                Assert.assertTrue(url, NativePage.isNativePageUrl(url, true));
+                Assert.assertTrue(url, NativePage.isNativePageUrl(gurl, true));
             }
         }
     }
@@ -84,8 +86,9 @@ public class NativePageTest {
     @Test
     public void testNegativeIsNativePageUrl() {
         for (String invalidUrl : INVALID_URLS) {
-            Assert.assertFalse(invalidUrl, NativePage.isNativePageUrl(invalidUrl, false));
-            Assert.assertFalse(invalidUrl, NativePage.isNativePageUrl(invalidUrl, true));
+            GURL gurl = new GURL(invalidUrl);
+            Assert.assertFalse(invalidUrl, NativePage.isNativePageUrl(gurl, false));
+            Assert.assertFalse(invalidUrl, NativePage.isNativePageUrl(gurl, true));
         }
     }
 }

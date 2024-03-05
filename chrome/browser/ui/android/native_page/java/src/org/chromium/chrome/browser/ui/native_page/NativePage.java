@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.native_page;
 
-import android.net.Uri;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -78,6 +77,13 @@ public interface NativePage {
         return false;
     }
 
+    /**
+     * @return {@code true} if the native page is a pdf page.
+     */
+    default boolean isPdf() {
+        return false;
+    }
+
     /** Notify the native page that it is about to be navigated back or hidden by a back press. */
     default void notifyHidingWithBack() {}
 
@@ -93,7 +99,8 @@ public interface NativePage {
         NativePageType.DOWNLOADS,
         NativePageType.HISTORY,
         NativePageType.EXPLORE,
-        NativePageType.MANAGEMENT
+        NativePageType.MANAGEMENT,
+        NativePageType.PDF
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface NativePageType {
@@ -106,6 +113,7 @@ public interface NativePage {
         int HISTORY = 6;
         int EXPLORE = 7;
         int MANAGEMENT = 8;
+        int PDF = 9;
     }
 
     /**
@@ -116,14 +124,10 @@ public interface NativePage {
      * @return Whether the host and the scheme of the passed in URL matches one of the supported
      *         native pages.
      */
-    @Deprecated // Use GURL-variant instead.
-    static boolean isNativePageUrl(String url, boolean isIncognito) {
-        return nativePageType(url, null, isIncognito) != NativePageType.NONE;
-    }
-
     static boolean isNativePageUrl(GURL url, boolean isIncognito) {
+        // TODO(shuyng): Propagate the real isPdf param.
         return url != null
-                && nativePageType(url.getHost(), url.getScheme(), null, isIncognito)
+                && nativePageType(url, null, isIncognito, /* isPdf= */ false)
                         != NativePageType.NONE;
     }
 
@@ -131,32 +135,42 @@ public interface NativePage {
      * @param url The URL to be checked.
      * @param candidatePage NativePage to return as result if the host is matched.
      * @param isIncognito Whether the page will be displayed in incognito mode.
+     * @param isPdf Whether it is a pdf native page.
      * @return Type of the native page defined in {@link NativePageType}.
      */
     // TODO(crbug/783819) - Convert to using GURL.
     static @NativePageType int nativePageType(
-            String url, NativePage candidatePage, boolean isIncognito) {
+            String url, NativePage candidatePage, boolean isIncognito, boolean isPdf) {
         if (url == null) return NativePageType.NONE;
 
-        Uri uri = Uri.parse(url);
-        return nativePageType(uri.getHost(), uri.getScheme(), candidatePage, isIncognito);
+        GURL gurl = new GURL(url);
+        return nativePageType(gurl, candidatePage, isIncognito, isPdf);
     }
 
     /**
+     * @param url The URL to be checked.
      * @param candidatePage NativePage to return as result if the host is matched.
      * @param isIncognito Whether the page will be displayed in incognito mode.
+     * @param isPdf Whether it is a pdf native page.
      * @return Type of the native page defined in {@link NativePageType}.
      */
     private static @NativePageType int nativePageType(
-            String host, String scheme, NativePage candidatePage, boolean isIncognito) {
-        if (!UrlConstants.CHROME_NATIVE_SCHEME.equals(scheme)
-                && !UrlConstants.CHROME_SCHEME.equals(scheme)) {
+            GURL url, NativePage candidatePage, boolean isIncognito, boolean isPdf) {
+        String host = url.getHost();
+        String scheme = url.getScheme();
+        if (!isPdf
+                && (!UrlConstants.CHROME_NATIVE_SCHEME.equals(scheme)
+                        && !UrlConstants.CHROME_SCHEME.equals(scheme))) {
             return NativePageType.NONE;
         }
 
-        if (candidatePage != null && candidatePage.getHost().equals(host)) {
+        if (candidatePage != null
+                && ((!isPdf && candidatePage.getHost().equals(host))
+                        || (isPdf && candidatePage.getUrl().equals(url.getSpec())))) {
             return NativePageType.CANDIDATE;
         }
+
+        if (isPdf) return NativePageType.PDF;
 
         if (UrlConstants.NTP_HOST.equals(host)) {
             return NativePageType.NTP;

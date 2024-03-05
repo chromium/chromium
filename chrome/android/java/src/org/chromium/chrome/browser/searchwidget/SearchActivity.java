@@ -426,7 +426,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
                     @Override
                     public NativePage createNativePage(
-                            String url, NativePage candidatePage, Tab tab) {
+                            String url, NativePage candidatePage, Tab tab, boolean isPdf) {
                         // SearchActivity does not create native pages.
                         return null;
                     }
