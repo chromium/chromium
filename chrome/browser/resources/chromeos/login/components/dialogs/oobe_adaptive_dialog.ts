@@ -146,6 +146,8 @@ export class OobeAdaptiveDialog extends PolymerElement {
       return;
     }
 
+    scrollContainer.addEventListener(
+      'scroll', this.applyScrollClassTags.bind(this));
     this.resizeObserver = new ResizeObserver(() => void this.onResize());
     this.resizeObserver.observe(scrollContainer);
     this.resizeObserver.observe(contentContainer);

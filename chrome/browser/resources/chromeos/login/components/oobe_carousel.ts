@@ -26,17 +26,13 @@ import './common_styles/oobe_common_styles.css.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {DomRepeatEvent, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeScrollableBehavior, OobeScrollableBehaviorInterface} from './behaviors/oobe_scrollable_behavior.js';
+import {OobeScrollableMixin} from './mixins/oobe_scrollable_mixin.js';
 
 import {getTemplate} from './oobe_carousel.html.js';
 
-const OobeCarouselBase =
-    mixinBehaviors([OobeScrollableBehavior],
-      PolymerElement) as { new (): PolymerElement
-      & OobeScrollableBehaviorInterface,
-    };
+const OobeCarouselBase = OobeScrollableMixin(PolymerElement);
 
 export class OobeCarousel extends OobeCarouselBase {
   static get is() {
@@ -353,7 +349,7 @@ export class OobeCarousel extends OobeCarouselBase {
 
     // Trigger oobe_scroll_behavior to update scroll indicators
     // as scrollbar can appear immediately on unhiding a tall slide
-    this.applyScrollClassTags_();
+    this.applyScrollClassTags();
 
     toElement.classList.add('animated');
     fromElement.classList.add('animated');
@@ -367,7 +363,7 @@ export class OobeCarousel extends OobeCarouselBase {
     // Trigger oobe_scroll_behavior to update scroll indicators
     // in case the transition was from a tall to a narrow slide
     fromElement.addEventListener(
-        'transitionend', () => this.applyScrollClassTags_(), {once: true});
+        'transitionend', () => this.applyScrollClassTags(), {once: true});
   }
 
   private onKeypress(e: DomRepeatEvent< number, KeyboardEvent >): void {

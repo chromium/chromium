@@ -12,19 +12,15 @@ import '../oobe_vars/oobe_shared_vars.css.js';
 import {CrLazyRenderElement} from '//resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeFocusMixin, OobeFocusMixinInterface} from '../mixins/oobe_focus_mixin.js';
-import {OobeScrollableBehavior, OobeScrollableBehaviorInterface} from '../behaviors/oobe_scrollable_behavior.js';
+import {OobeFocusMixin} from '../mixins/oobe_focus_mixin.js';
+import {OobeScrollableMixin} from '../mixins/oobe_scrollable_mixin.js';
 
 import {getTemplate} from './oobe_content_dialog.html.js';
 
 const OobeContentDialogBase =
-    mixinBehaviors(
-        [OobeScrollableBehavior], OobeFocusMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeFocusMixinInterface &
-          OobeScrollableBehaviorInterface,
-    };
+    OobeScrollableMixin(OobeFocusMixin(PolymerElement));
 
 export class OobeContentDialog extends OobeContentDialogBase {
   static get is() {

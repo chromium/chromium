@@ -13,17 +13,17 @@ import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfa
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.js';
-import {OobeScrollableBehavior, OobeScrollableBehaviorInterface} from './behaviors/oobe_scrollable_behavior.js';
+import {OobeScrollableMixin, OobeScrollableMixinInterface} from './mixins/oobe_scrollable_mixin.js';
 import {getTemplate} from './oobe_apps_list.html.js';
 
 const MAX_IMG_LOADING_TIME_SEC = 7;
 
 const OobeAppsListBase =
     mixinBehaviors(
-        [OobeI18nBehavior, OobeScrollableBehavior], PolymerElement) as {
+        [OobeI18nBehavior], OobeScrollableMixin(PolymerElement)) as {
       new (): PolymerElement
           & OobeI18nBehaviorInterface
-          & OobeScrollableBehaviorInterface,
+          & OobeScrollableMixinInterface,
     };
 
 export class OobeAppsList extends OobeAppsListBase {
