@@ -442,6 +442,11 @@ void ViewAccessibility::SetName(const std::string& name,
     if (data_.role == ax::mojom::Role::kUnknown) {
       ui::AXNodeData data;
       view_->GetAccessibleNodeData(&data);
+      if (data.role == ax::mojom::Role::kUnknown) {
+        // TODO(accessibility): Remove this once the OverrideRole functions are
+        // removed.
+        data.role = override_data_.role;
+      }
       data_.role = data.role;
     }
 
