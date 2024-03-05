@@ -488,6 +488,10 @@ int GetDisplayAndMangificationLinkDescriptionResourceId() {
   return IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_NEW_DESCRIPTION;
 }
 
+bool IsAccessibilityReducedAnimationsEnabled() {
+  return ::features::IsAccessibilityReducedAnimationsEnabled();
+}
+
 bool IsAccessibilityFaceGazeEnabled() {
   return ::features::IsAccessibilityFaceGazeEnabled();
 }
@@ -837,6 +841,10 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_COLOR_VISION_DEFICIENCY_TYPE_LABEL},
       {"colorVisionFilterIntensityLabel",
        IDS_SETTINGS_COLOR_VISION_FILTER_INTENSITY_LABEL},
+      {"reducedAnimationsLabel",
+       IDS_SETTINGS_ACCESSIBILITY_REDUCED_ANIMATIONS_LABEL},
+      {"reducedAnimationsDescription",
+       IDS_SETTINGS_ACCESSIBILITY_REDUCED_ANIMATIONS_DESCRIPTION},
       {"faceGazeCursorAccelerationLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_ACCELERATION_LABEL},
       {"faceGazeCursorSmoothingLabel",
@@ -1180,6 +1188,9 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("pdfOcrEnabled",
                           base::FeatureList::IsEnabled(::features::kPdfOcr));
 
+  html_source->AddBoolean("isAccessibilityReducedAnimationsEnabled",
+                          IsAccessibilityReducedAnimationsEnabled());
+
   html_source->AddBoolean("isAccessibilityFaceGazeEnabled",
                           IsAccessibilityFaceGazeEnabled());
 
@@ -1345,6 +1356,7 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kColorCorrectionEnabled,
       mojom::Setting::kColorCorrectionFilterType,
       mojom::Setting::kColorCorrectionFilterAmount,
+      mojom::Setting::kReducedAnimationsEnabled,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageAccessibility,
                             kManageAccessibilitySettings, generator);

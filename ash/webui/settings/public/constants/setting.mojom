@@ -312,6 +312,7 @@ enum Setting {
   kColorCorrectionEnabled = 1534,
   kColorCorrectionFilterType = 1535,
   kColorCorrectionFilterAmount = 1536,
+  kReducedAnimationsEnabled = 1537,
 
   // Reset section.
   kPowerwash = 1600,

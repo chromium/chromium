@@ -133,6 +133,10 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityDictationKeyboardImprovements);
 AX_BASE_EXPORT bool IsAccessibilityDictationKeyboardImprovementsEnabled();
 
+// Adds option to limit the movement on the screen.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityReducedAnimations);
+AX_BASE_EXPORT bool IsAccessibilityReducedAnimationsEnabled();
+
 // Integrate with FaceGaze.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFaceGaze);
 AX_BASE_EXPORT bool IsAccessibilityFaceGazeEnabled();

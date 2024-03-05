@@ -870,6 +870,23 @@ bool AccessibilityManager::IsAutoclickEnabled() const {
                          prefs::kAccessibilityAutoclickEnabled);
 }
 
+void AccessibilityManager::EnableReducedAnimations(bool enabled) {
+  if (!profile_) {
+    return;
+  }
+
+  PrefService* pref_service = profile_->GetPrefs();
+  pref_service->SetBoolean(prefs::kAccessibilityReducedAnimationsEnabled,
+                           enabled);
+  pref_service->CommitPendingWrite();
+}
+
+bool AccessibilityManager::IsReducedAnimationsEnabled() const {
+  return ::features::IsAccessibilityReducedAnimationsEnabled() && profile_ &&
+         profile_->GetPrefs()->GetBoolean(
+             prefs::kAccessibilityReducedAnimationsEnabled);
+}
+
 void AccessibilityManager::EnableFaceGaze(bool enabled) {
   if (!profile_) {
     return;

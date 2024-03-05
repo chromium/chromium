@@ -262,6 +262,16 @@
     </div>
   </div>
 </template>
+<template is="dom-if" if="[[isAccessibilityReducedAnimationsEnabled_]]">
+  <settings-toggle-button
+    id="enableReducedAnimations"
+    icon="os-settings:reduced-animations"
+    pref="{{prefs.settings.a11y.reduced_animations.enabled}}"
+    label="$i18n{reducedAnimationsLabel}"
+    sub-label="$i18n{reducedAnimationsDescription}"
+    deep-link-focus-id$="[[Setting.kReducedAnimationsEnabled]]">
+  </settings-toggle-button>
+</template>
 <template is="dom-if" if="[[!isKioskModeActive_]]">
   <cr-link-row id="displaySubpageButton" class="hr"
       label="$i18n{displaySettingsTitle}" on-click="onDisplayClick_"

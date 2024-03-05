@@ -7647,6 +7647,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityExtraLargeCursorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityExtraLargeCursor)},
 
+    {"enable-accessibility-reduced-animations",
+     flag_descriptions::kAccessibilityReducedAnimationsName,
+     flag_descriptions::kAccessibilityReducedAnimationsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityReducedAnimations)},
+
     {"enable-accessibility-facegaze",
      flag_descriptions::kAccessibilityFaceGazeName,
      flag_descriptions::kAccessibilityFaceGazeDescription, kOsCrOS,

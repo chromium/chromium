@@ -154,6 +154,14 @@ bool IsAccessibilityDictationKeyboardImprovementsEnabled() {
       ::features::kAccessibilityDictationKeyboardImprovements);
 }
 
+BASE_FEATURE(kAccessibilityReducedAnimations,
+             "AccessibilityReducedAnimations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityReducedAnimationsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityReducedAnimations);
+}
+
 BASE_FEATURE(kAccessibilityFaceGaze,
              "AccessibilityFaceGaze",
              base::FEATURE_DISABLED_BY_DEFAULT);

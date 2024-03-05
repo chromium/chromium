@@ -664,6 +664,9 @@ extern const char kAccessibilityDictationKeyboardImprovementsDescription[];
 extern const char kAccessibilityExtraLargeCursorName[];
 extern const char kAccessibilityExtraLargeCursorDescription[];
 
+extern const char kAccessibilityReducedAnimationsName[];
+extern const char kAccessibilityReducedAnimationsDescription[];
+
 extern const char kAccessibilityFaceGazeName[];
 extern const char kAccessibilityFaceGazeDescription[];
 

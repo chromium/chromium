@@ -360,6 +360,7 @@ export class SettingsManageA11ySubpageElement extends
           Setting.kColorCorrectionEnabled,
           Setting.kColorCorrectionFilterType,
           Setting.kColorCorrectionFilterAmount,
+          Setting.kReducedAnimationsEnabled,
         ]),
       },
     };

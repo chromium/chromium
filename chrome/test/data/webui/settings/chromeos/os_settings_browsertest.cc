@@ -79,6 +79,17 @@ class OSSettingsMochaTestApnRevampEnabled : public OSSettingsMochaTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class OSSettingsMochaTestReducedAnimationsEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsMochaTestReducedAnimationsEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityReducedAnimations);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestApnRevampEnabled, ApnSubpage) {
   RunSettingsTest("apn_subpage_test.js");
 }
@@ -970,6 +981,11 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsA11yPageDisplayAndMagnificationSubpage) {
+  RunSettingsTest("os_a11y_page/display_and_magnification_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestReducedAnimationsEnabled,
                        OsA11yPageDisplayAndMagnificationSubpage) {
   RunSettingsTest("os_a11y_page/display_and_magnification_subpage_test.js");
 }

@@ -342,6 +342,7 @@ chromium-metrics-reviews@google.com.
   <int value="1534" label="Color correction"/>
   <int value="1535" label="Color correction: Filter type"/>
   <int value="1536" label="Color correction: Filter amount"/>
+  <int value="1537" label="Reduced Animations"/>
   <int value="1600" label="Powerwash"/>
   <int value="1601" label="Sanitize ChromeOS"/>
   <int value="1700" label="Change Chrome Channel"/>

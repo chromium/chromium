@@ -247,6 +247,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityLargeCursorEnabled,
     prefs::kAccessibilityFaceGazeEnabled,
     prefs::kAccessibilityMonoAudioEnabled,
+    prefs::kAccessibilityReducedAnimationsEnabled,
     prefs::kAccessibilityScreenMagnifierEnabled,
     prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled,
     prefs::kAccessibilityScreenMagnifierMouseFollowingMode,
@@ -1060,6 +1061,11 @@ void AccessibilityController::RegisterProfilePrefs(
                                 false);
     registry->RegisterBooleanPref(
         prefs::kAccessibilityColorCorrectionHasBeenSetup, false);
+
+    if (::features::IsAccessibilityReducedAnimationsEnabled()) {
+      registry->RegisterBooleanPref(
+          prefs::kAccessibilityReducedAnimationsEnabled, false);
+    }
 
   // TODO(b/266816160): Make ChromeVox prefs are syncable, to so that ChromeOS
   // backs up users' ChromeVox settings and reflects across their devices.

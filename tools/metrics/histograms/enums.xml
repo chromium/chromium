@@ -20408,6 +20408,7 @@ from previous Chrome versions.
   <int value="-192919826" label="ViewsSimplifiedFullscreenUI:enabled"/>
   <int value="-192433738" label="AutofillEnableCardBenefits:enabled"/>
   <int value="-192389983" label="NoStatePrefetch:enabled"/>
+  <int value="-191625183" label="AccessibilityReducedAnimations:enabled"/>
   <int value="-191329924" label="WallpaperSearchSettingsVisibility:disabled"/>
   <int value="-190723154" label="AppLaunchAutomation:enabled"/>
   <int value="-190449995" label="CommerceLocalPDPDetection:enabled"/>
@@ -24734,6 +24735,7 @@ from previous Chrome versions.
   <int value="1782210532" label="PerNavigationMojoInterface:disabled"/>
   <int value="1782416979"
       label="AutofillEnableSaveCardLoadingAndConfirmation:disabled"/>
+  <int value="1782798543" label="AccessibilityReducedAnimations:disabled"/>
   <int value="1782808560"
       label="OmniboxUseExistingAutocompleteClient:disabled"/>
   <int value="1783270679" label="AutofillContentEditables:disabled"/>

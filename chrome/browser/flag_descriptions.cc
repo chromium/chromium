@@ -1126,6 +1126,11 @@ const char kAccessibilityExtraLargeCursorName[] =
 const char kAccessibilityExtraLargeCursorDescription[] =
     "This option lets users make their large mouse cursor even larger";
 
+const char kAccessibilityReducedAnimationsName[] =
+    "Experimental Reduced Animations";
+const char kAccessibilityReducedAnimationsDescription[] =
+    "This option enables the setting to limit movement on the screen.";
+
 const char kAccessibilityFaceGazeName[] = "Experimental FaceGaze integration";
 const char kAccessibilityFaceGazeDescription[] =
     "This option enables the experimental FaceGaze ChromeOS integration";

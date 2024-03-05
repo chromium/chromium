@@ -84,6 +84,17 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
         },
       },
 
+      /**
+       * Whether the reduced animations feature is enabled.
+       */
+      isAccessibilityReducedAnimationsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isAccessibilityReducedAnimationsEnabled');
+        },
+      },
+
       colorVisionDeficiencyTypeOptions_: {
         readOnly: true,
         type: Array,
@@ -120,6 +131,7 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
           Setting.kColorCorrectionEnabled,
           Setting.kColorCorrectionFilterType,
           Setting.kColorCorrectionFilterAmount,
+          Setting.kReducedAnimationsEnabled,
           Setting.kFullscreenMagnifier,
           Setting.kFullscreenMagnifierMouseFollowingMode,
           Setting.kFullscreenMagnifierFocusFollowing,
@@ -132,6 +144,7 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
   private isKioskModeActive_: boolean;
   private screenMagnifierMouseFollowingModePrefValues_: {[key: string]: number};
   private screenMagnifierZoomOptions_: Array<{value: number, name: string}>;
+  private isAccessibilityReducedAnimationsEnabled_: boolean;
 
 
   constructor() {

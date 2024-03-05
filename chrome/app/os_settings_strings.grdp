@@ -1386,6 +1386,12 @@
   <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_GRAY" desc="The label for a swatch of gray color which is shown for users to preview the effects of color correction.">
     Gray
   </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_REDUCED_ANIMATIONS_LABEL" desc="Label for a checkbox which enables reduced animations.">
+    Reduced animations
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_REDUCED_ANIMATIONS_DESCRIPTION" desc="Description for a checkbox which enables reduced animations.">
+    Limit movement on the screen
+  </message>
   <message name="IDS_SETTINGS_STICKY_KEYS_LABEL" desc="Label for checkbox which enables sticky keys, with an explanation of the term 'sticky keys'.">
     Sticky keys
   </message>

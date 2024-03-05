@@ -191,6 +191,12 @@ class AccessibilityManager
   // Returns true if autoclick is enabled.
   bool IsAutoclickEnabled() const;
 
+  // Enables or disables ReducedAnimations.
+  void EnableReducedAnimations(bool enabled);
+
+  // Returns true if ReducedAnimations is enabled.
+  bool IsReducedAnimationsEnabled() const;
+
   // Enables or disables FaceGaze.
   void EnableFaceGaze(bool enabled);
 

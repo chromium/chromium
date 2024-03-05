@@ -705,6 +705,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilitySelectToSpeakWordHighlight] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kAccessibilityReducedAnimationsEnabled] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeCursorSpeedUp] =

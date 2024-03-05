@@ -633,6 +633,10 @@ inline constexpr char kAccessibilitySelectToSpeakVoiceSwitching[] =
 inline constexpr char kAccessibilitySelectToSpeakWordHighlight[] =
     "settings.a11y.select_to_speak_word_highlight";
 
+// A boolean pref which determines whether ReducedAnimations is enabled.
+inline constexpr char kAccessibilityReducedAnimationsEnabled[] =
+    "settings.a11y.reduced_animations.enabled";
+
 // A boolean pref which determines whether FaceGaze is enabled.
 inline constexpr char kAccessibilityFaceGazeEnabled[] =
     "settings.a11y.face_gaze.enabled";
