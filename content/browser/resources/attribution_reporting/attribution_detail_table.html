@@ -37,10 +37,28 @@ td {
 
 th {
   background: var(--header-background);
-  border-width: 1px 1px 0 0;
   left: 0;
   position: sticky;
+  text-wrap: nowrap;
   z-index: 1;
+}
+
+th[scope="row"] {
+  border-width: 1px 1px 0 0;
+}
+
+tbody.sectioned th[scope="row"] {
+  padding-inline-start: calc(1.5 * var(--cell-padding));
+}
+
+th[scope="col"] {
+  border-width: 1px 0 0 0;
+  padding-inline-start: 0;
+}
+
+th[scope="col"] span {
+  left: var(--cell-padding);
+  position: sticky;
 }
 
 header, td, th {

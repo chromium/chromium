@@ -254,8 +254,14 @@ function newSource(mojo: WebUISource): Source {
   };
 }
 
-function initSourceTable(t: AttributionInternalsTableElement<Source>):
+function initSourceTable(panel: HTMLElement):
     AttributionInternalsTableElement<Source> {
+  const t = panel.querySelector<AttributionInternalsTableElement<Source>>(
+      'attribution-internals-table')!;
+
+  const d = panel.querySelector<AttributionDetailTableElement<Source>>(
+      'attribution-detail-table')!;
+
   t.init(
       [
         valueColumn('Source Event ID', 'sourceEventId', asNumber),
@@ -266,32 +272,36 @@ function initSourceTable(t: AttributionInternalsTableElement<Source>):
         valueColumn(
             'Registration Time', 'sourceTime', asDate, /*defaultSort=*/ true),
         valueColumn('Expiry', 'expiryTime', asDate),
-        valueColumn('Trigger Specs', 'triggerSpecs', asCode),
-        valueColumn(
-            'Aggregatable Report Window Time', 'aggregatableReportWindowTime',
-            asDate),
-        valueColumn(
-            'Max Event Level Reports', 'maxEventLevelReports', asNumber),
         valueColumn('Source Type', 'sourceType', asStringOrBool),
-        valueColumn('Priority', 'priority', asNumber),
-        valueColumn('Filter Data', 'filterData', asCode),
-        valueColumn('Aggregation Keys', 'aggregationKeys', asCode),
-        valueColumn(
-            'Trigger Data Matching', 'triggerDataMatching', asStringOrBool),
-        valueColumn(
-            'Event-Level Epsilon', 'eventLevelEpsilon',
-            asCustomNumber((v: number) => v.toFixed(3))),
-        valueColumn(
-            'Aggregatable Budget Consumed', 'aggregatableBudgetConsumed',
-            asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
         valueColumn('Debug Key', 'debugKey', allowingUndefined(asNumber)),
-        valueColumn('Debug Cookie Set', 'debugCookieSet', asStringOrBool),
-        valueColumn('Dedup Keys', 'dedupKeys', asList(asNumber)),
-        valueColumn(
-            'Aggregatable Dedup Keys', 'aggregatableDedupKeys',
-            asList(asNumber)),
       ],
-      {getId: source => source.id});
+      {
+        getId: source => source.id,
+        isSelectable: true,
+      });
+
+  d.init([
+    valueColumn('Priority', 'priority', asNumber),
+    valueColumn('Filter Data', 'filterData', asCode),
+    valueColumn('Debug Cookie Set', 'debugCookieSet', asStringOrBool),
+    'Event-Level Fields',
+    valueColumn('Max Reports', 'maxEventLevelReports', asNumber),
+    valueColumn(
+        'Epsilon', 'eventLevelEpsilon',
+        asCustomNumber((v: number) => v.toFixed(3))),
+    valueColumn('Trigger Data Matching', 'triggerDataMatching', asStringOrBool),
+    valueColumn('Trigger Specs', 'triggerSpecs', asCode),
+    valueColumn('Dedup Keys', 'dedupKeys', asList(asNumber)),
+    'Aggregatable Fields',
+    valueColumn('Report Window Time', 'aggregatableReportWindowTime', asDate),
+    valueColumn(
+        'Budget Consumed', 'aggregatableBudgetConsumed',
+        asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
+    valueColumn('Aggregation Keys', 'aggregationKeys', asCode),
+    valueColumn('Dedup Keys', 'aggregatableDedupKeys', asList(asNumber)),
+  ]);
+
+  bindInternalsAndDetailTables(t, d);
   return t;
 }
 
@@ -860,7 +870,8 @@ class AttributionInternals implements ObserverInterface {
           valueColumn('Null', 'isNullReport', asStringOrBool),
         ]);
 
-    this.sources = initSourceTable(document.querySelector('#sourceTable')!);
+    this.sources =
+        initSourceTable(document.querySelector('#active-source-panel')!);
 
     this.sourceRegistrations = initSourceRegistrationTable(
         document.querySelector('#source-registration-panel')!);

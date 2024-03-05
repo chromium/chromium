@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   static constexpr char kScript[] = R"(
-    const table = document.querySelector('#sourceTable')
+    const table = document.querySelector('#active-source-panel attribution-internals-table')
         .shadowRoot.querySelector('tfoot');
     const setTitleIfDone = (_, obs) => {
       if (table.querySelector('td')?.innerText === '0') {
@@ -313,10 +313,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                   net::SchemefulSite::Deserialize("https://b.test"),
               })
               .SetMaxEventLevelReports(3)
-              .BuildStored(),
-          SourceBuilder(now + base::Hours(1))
-              .SetSourceId(StoredSource::Id(2))
-              .SetSourceType(SourceType::kEvent)
               .SetPriority(std::numeric_limits<int64_t>::max())
               .SetDedupKeys({13, 17})
               .SetAggregatableBudgetConsumed(1300)
@@ -325,7 +321,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .SetAggregationKeys(
                   *attribution_reporting::AggregationKeys::FromKeys({{"a", 1}}))
               .SetAggregatableDedupKeys({14, 18})
-              .SetMaxEventLevelReports(1)
+              .BuildStored(),
+          SourceBuilder(now + base::Hours(1))
+              .SetSourceId(StoredSource::Id(2))
+              .SetSourceType(SourceType::kEvent)
               .BuildStored(),
           SourceBuilder(now + base::Hours(2))
               .SetSourceId(StoredSource::Id(3))
@@ -366,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     // make this unnecessary.
     document.querySelector('cr-tab-box').setAttribute('selected-index', 1);
 
-    const table = document.querySelector('#sourceTable')
+    const table = document.querySelector('#active-source-panel attribution-internals-table')
         .shadowRoot.querySelector('tbody');
     const regTable = document.querySelector('#source-registration-panel attribution-internals-table')
         .shadowRoot.querySelector('tbody');
@@ -379,30 +378,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.rows[0].cells[3]?.children[0]?.children[1]?.innerText === 'https://b.test' &&
           table.rows[1].cells[3]?.innerText === 'https://conversion.test' &&
           table.rows[0].cells[0]?.innerText === $1 &&
-          table.rows[0].cells[9]?.innerText === '3' &&
-          table.rows[1].cells[9]?.innerText === '1' &&
-          table.rows[0].cells[10]?.innerText === 'Navigation' &&
-          table.rows[1].cells[10]?.innerText === 'Event' &&
-          table.rows[0].cells[11]?.innerText === '0' &&
-          table.rows[1].cells[11]?.innerText === $2 &&
-          table.rows[0].cells[12]?.innerText === '{}' &&
-          table.rows[1].cells[12]?.innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
-          table.rows[0].cells[13]?.innerText === '{}' &&
-          table.rows[1].cells[13]?.innerText === '{\n "a": "0x1"\n}' &&
-          table.rows[0].cells[14]?.innerText === 'modulus' &&
-          table.rows[0].cells[15]?.innerText === '14.000' &&
-          table.rows[0].cells[16]?.innerText === '0 / 65536' &&
-          table.rows[1].cells[16]?.innerText === '1300 / 65536' &&
-          table.rows[0].cells[17]?.innerText === '19' &&
-          table.rows[1].cells[17]?.innerText === '' &&
-          table.rows[0].cells[18]?.innerText === 'true' &&
-          table.rows[1].cells[18]?.innerText === 'false' &&
-          table.rows[0].cells[19]?.innerText === '' &&
-          table.rows[1].cells[19]?.children[0]?.children[0]?.innerText === '13' &&
-          table.rows[1].cells[19]?.children[0]?.children[1]?.innerText === '17' &&
-          table.rows[0].cells[20]?.innerText === '' &&
-          table.rows[1].cells[20]?.children[0]?.children[0]?.innerText === '14' &&
-          table.rows[1].cells[20]?.children[0]?.children[1]?.innerText === '18' &&
+          table.rows[0].cells[7]?.innerText === 'Navigation' &&
+          table.rows[1].cells[7]?.innerText === 'Event' &&
+          table.rows[0].cells[8]?.innerText === '19' &&
+          table.rows[1].cells[8]?.innerText === '' &&
           table.rows[0].cells[1]?.innerText === 'Unattributable: noised with no reports' &&
           table.rows[1].cells[1]?.innerText === 'Attributable' &&
           table.rows[2].cells[1]?.innerText === 'Attributable: reached event-level attribution limit' &&
@@ -419,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         if (obs) {
           obs.disconnect();
         }
-        document.title = $3;
+        document.title = $2;
         return true;
       }
       return false;
@@ -431,11 +410,65 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     }
   )";
   ASSERT_TRUE(ExecJsInWebUI(
-      JsReplace(kScript, kMaxUint64String, kMaxInt64String, kCompleteTitle)));
+      JsReplace(kScript, kMaxUint64String, kCompleteTitle)));
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   ClickRefreshButton();
-  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+  ASSERT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+
+  const std::u16string kDetailedTitle = u"Detailed";
+  TitleWatcher detailed_title_watcher(shell()->web_contents(), kDetailedTitle);
+
+  ASSERT_TRUE(ExecJsInWebUI(JsReplace(R"(
+    const table = document.querySelector('#active-source-panel attribution-detail-table')
+        .shadowRoot.querySelector('tbody');
+
+    const setTitleIfDone = (_, obs) => {
+      const tds = table.querySelectorAll('td');
+      if (
+        // Priority
+        tds[0]?.innerText === $1 &&
+        // Filter Data
+        tds[1]?.innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
+        // Debug Cookie Set
+        tds[2]?.innerText === 'true' &&
+        // Max Reports
+        tds[3]?.innerText === '3' &&
+        // Epsilon
+        tds[4]?.innerText === '14.000' &&
+        // Trigger Data Matching
+        tds[5]?.innerText === 'modulus' &&
+        // Event-Level Dedup Keys
+        tds[7]?.children[0]?.children[0]?.innerText === '13' &&
+        tds[7]?.children[0]?.children[1]?.innerText === '17' &&
+        // Budget Consumed
+        tds[9]?.innerText === '1300 / 65536' &&
+        // Aggregation Keys
+        tds[10]?.innerText === '{\n "a": "0x1"\n}' &&
+        // Aggregatable Dedup Keys
+        tds[11]?.children[0]?.children[0]?.innerText === '14' &&
+        tds[11]?.children[0]?.children[1]?.innerText === '18'
+      ) {
+        if (obs) {
+          obs.disconnect();
+        }
+        document.title = $2;
+        return true;
+      }
+      return false;
+    };
+
+    document.querySelector('#active-source-panel attribution-internals-table')
+        .shadowRoot.querySelector('tbody').rows[0].cells[0].click();
+
+    if (!setTitleIfDone()) {
+      const obs = new MutationObserver(setTitleIfDone);
+      obs.observe(table, {childList: true, subtree: true, characterData: true});
+    }
+  )",
+                                      kMaxInt64String, kDetailedTitle)));
+
+  ASSERT_EQ(kDetailedTitle, detailed_title_watcher.WaitAndGetTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
@@ -926,7 +959,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // Verify both rows get rendered.
   static constexpr char kScript[] = R"(
-    const table = document.querySelector('#sourceTable')
+    const table = document.querySelector('#active-source-panel attribution-internals-table')
         .shadowRoot.querySelector('tbody');
     const regTable = document.querySelector('#source-registration-panel attribution-internals-table')
         .shadowRoot.querySelector('tbody');
@@ -960,7 +993,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   const std::u16string kDeleteTitle = u"Delete";
   TitleWatcher delete_title_watcher(shell()->web_contents(), kDeleteTitle);
   static constexpr char kObserveEmptySourcesTableScript[] = R"(
-    const table = document.querySelector('#sourceTable')
+    const table = document.querySelector('#active-source-panel attribution-internals-table')
         .shadowRoot.querySelector('tfoot');
     const regTable = document.querySelector('#source-registration-panel attribution-internals-table')
         .shadowRoot.querySelector('tfoot');

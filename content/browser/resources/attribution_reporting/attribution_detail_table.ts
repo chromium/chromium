@@ -25,21 +25,30 @@ export class AttributionDetailTableElement<T> extends CustomElement {
 
   private cols_?: Array<RenderFunc<T>>;
 
-  init(dataCols: Iterable<DataColumn<T>>): void {
+  init(cols: Iterable<string|DataColumn<T>>): void {
     this.cols_ = [];
 
     const tbody = this.$<HTMLTableSectionElement>('tbody')!;
-    for (const col of dataCols) {
-      this.cols_.push(col.render);
-
+    for (const col of cols) {
       const tr = tbody.insertRow();
-
       const th = document.createElement('th');
-      th.scope = 'row';
-      th.innerText = col.label;
       tr.append(th);
 
-      tr.insertCell();
+      if (typeof col === 'string') {
+        th.scope = 'col';
+        th.colSpan = 2;
+
+        const span = document.createElement('span');
+        span.innerText = col;
+        th.append(span);
+
+        tbody.classList.add('sectioned');
+      } else {
+        th.scope = 'row';
+        th.innerText = col.label;
+        tr.insertCell();
+        this.cols_.push(col.render);
+      }
     }
 
     this.$('button')!.addEventListener('click', () => {
@@ -52,8 +61,8 @@ export class AttributionDetailTableElement<T> extends CustomElement {
     if (data === undefined) {
       this.hidden = true;
     } else {
-      const trs = this.$<HTMLTableSectionElement>('tbody')!.rows;
-      this.cols_!.forEach((render, i) => render(trs[i]!.cells[1]!, data));
+      const tds = this.$all<HTMLElement>('tbody > tr > td');
+      this.cols_!.forEach((render, i) => render(tds[i]!, data));
       this.hidden = false;
     }
   }
