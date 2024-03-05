@@ -77,7 +77,6 @@
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
-#include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
@@ -142,8 +141,6 @@ const char kDeviceLocalAccountPendingDataRemoval[] =
 // data.
 const char kDeviceLocalAccountsWithSavedData[] = "PublicAccounts";
 
-constexpr char kBluetoothLoggingUpstartJob[] = "bluetoothlog";
-
 // Callback that is called after user removal is complete.
 void OnRemoveUserComplete(const AccountId& account_id,
                           std::optional<AuthenticationError> error) {
@@ -182,16 +179,6 @@ policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
   return g_browser_process->platform_part()
       ->browser_policy_connector_ash()
       ->GetMinimumVersionPolicyHandler();
-}
-
-// Starts bluetooth logging service for internal accounts and certain devices.
-void MaybeStartBluetoothLogging(const AccountId& account_id) {
-  if (!gaia::IsGoogleInternalAccountEmail(account_id.GetUserEmail())) {
-    return;
-  }
-
-  UpstartClient::Get()->StartJob(kBluetoothLoggingUpstartJob, {},
-                                 base::DoNothing());
 }
 
 void CheckCryptohomeIsMounted(
@@ -737,8 +724,6 @@ void ChromeUserManagerImpl::RegularUserLoggedIn(
     const user_manager::UserType user_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   UserManagerBase::RegularUserLoggedIn(account_id, user_type);
-
-  MaybeStartBluetoothLogging(account_id);
 
   // Make sure that new data is persisted to Local State.
   GetLocalState()->CommitPendingWrite();

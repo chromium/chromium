@@ -58,6 +58,7 @@ namespace ash {
 class AccessibilityEventRewriterDelegateImpl;
 class ApnMigrator;
 class AudioSurveyHandler;
+class BluetoothLogController;
 class BluetoothPrefStateObserver;
 class BulkPrintersCalculatorFactory;
 class CameraGeneralSurveyHandler;
@@ -169,6 +170,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       app_order_loader_;
   std::unique_ptr<NetworkPrefStateObserver> network_pref_state_observer_;
   std::unique_ptr<BluetoothPrefStateObserver> bluetooth_pref_state_observer_;
+  std::unique_ptr<BluetoothLogController> bluetooth_log_controller_;
   std::unique_ptr<IdleActionWarningObserver> idle_action_warning_observer_;
   std::unique_ptr<RendererFreezer> renderer_freezer_;
   std::unique_ptr<PowerMetricsReporter> power_metrics_reporter_;

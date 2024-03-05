@@ -57,6 +57,7 @@
 #include "chrome/browser/ash/arc/memory_pressure/container_app_killer.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/audio/audio_survey_handler.h"
+#include "chrome/browser/ash/bluetooth/bluetooth_log_controller.h"
 #include "chrome/browser/ash/bluetooth/hats_bluetooth_revamp_trigger_impl.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/ash/camera/camera_general_survey_handler.h"
@@ -859,6 +860,9 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // -- just before CreateProfile().
 
   g_browser_process->platform_part()->InitializeUserManager();
+
+  bluetooth_log_controller_ = std::make_unique<ash::BluetoothLogController>(
+      user_manager::UserManager::Get());
 
   if (base::FeatureList::IsEnabled(features::kPerUserMetrics)) {
     // Enable per-user metrics support as soon as user_manager is created.
@@ -1725,6 +1729,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   if (pre_profile_init_called_) {
     network_portal_detector::Shutdown();
   }
+
+  bluetooth_log_controller_.reset();
 
   g_browser_process->platform_part()->ShutdownSessionManager();
   // Ash needs to be closed before UserManager is destroyed.
