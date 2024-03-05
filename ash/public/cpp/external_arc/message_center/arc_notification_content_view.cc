@@ -536,8 +536,11 @@ void ArcNotificationContentView::UpdateSnapshot() {
 void ArcNotificationContentView::AttachSurface() {
   DCHECK(!native_view());
 
-  if (!GetWidget())
+  // If the view is hidden, we attach the surface in
+  // `ArcNotificationContentView::SetVisible()` when it gets visible.
+  if (!GetVisible() || !GetWidget()) {
     return;
+  }
 
   UpdatePreferredSize();
   surface_->Attach(this);

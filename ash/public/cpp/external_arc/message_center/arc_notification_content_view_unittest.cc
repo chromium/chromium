@@ -316,6 +316,25 @@ TEST_F(ArcNotificationContentViewTest, CreateNotificationWithoutSurface) {
   CloseNotificationView();
 }
 
+TEST_F(ArcNotificationContentViewTest,
+       CreateSurfaceAfterCollapsingNotification) {
+  std::string notification_key("notification id");
+
+  auto notification_item =
+      std::make_unique<MockArcNotificationItem>(notification_key);
+  Notification notification = CreateNotification(notification_item.get());
+
+  CreateAndShowNotificationView(notification);
+  GetArcNotificationContentView()->SetVisible(false);
+
+  PrepareSurface(notification_key);
+  EXPECT_FALSE(surface_manager()->GetArcSurface(notification_key)->IsAttached());
+
+  GetArcNotificationContentView()->SetVisible(true);
+  EXPECT_TRUE(surface_manager()->GetArcSurface(notification_key)->IsAttached());
+  CloseNotificationView();
+}
+
 TEST_F(ArcNotificationContentViewTest, CloseButton) {
   std::string notification_key("notification id");
 
