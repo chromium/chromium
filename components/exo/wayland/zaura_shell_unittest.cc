@@ -8,7 +8,6 @@
 
 #include <sys/socket.h>
 #include <memory>
-#include <vector>
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -755,7 +754,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
     auto iter = output_holder_list_.begin();
     while (iter != output_holder_list_.end()) {
       auto* out_ptr = (*iter)->output.get();
-      bool erased = std::erase_if(display_list,
+      bool erased = base::EraseIf(display_list,
                                   [out_ptr](const display::Display& display) {
                                     return display.id() == out_ptr->id();
                                   });

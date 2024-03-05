@@ -5721,7 +5721,7 @@ TEST_F(TabletModeOverviewSessionTest, WindowDestroyWhileScrolling) {
   }
 
   // Delete one of the windows.
-  std::erase(windows, windows[2]);
+  base::Erase(windows, windows[2]);
 
   // Continue scrolling and then end the scroll. There should be no crash.
   for (int i = 0; i < 10; ++i) {

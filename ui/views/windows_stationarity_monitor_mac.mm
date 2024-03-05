@@ -6,8 +6,7 @@
 
 #import <AppKit/AppKit.h>
 
-#include <vector>
-
+#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -53,7 +52,7 @@ WindowsStationarityMonitorMac* WindowsStationarityMonitorMac::GetInstance() {
 
 void WindowsStationarityMonitorMac::OnWidgetDestroying(Widget* widget) {
   widget->RemoveObserver(this);
-  std::erase(tracked_windows_, widget);
+  base::Erase(tracked_windows_, widget);
   NotifyWindowStationaryStateChanged();
 }
 

@@ -5,7 +5,6 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/command_line.h"
 #include "base/location.h"
@@ -309,7 +308,7 @@ void BrowserWithTestWindowTest::SwitchActiveUser(const std::string& email) {
 
 void BrowserWithTestWindowTest::OnProfileWillBeDestroyed(Profile* profile) {
   CHECK(
-      std::erase_if(profile_observations_, [profile](const auto& observation) {
+      base::EraseIf(profile_observations_, [profile](const auto& observation) {
         return observation->IsObservingSource(profile);
       }));
   const AccountId* account_id = ash::AnnotatedAccountId::Get(profile);

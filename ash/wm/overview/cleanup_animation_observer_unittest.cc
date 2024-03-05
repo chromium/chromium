@@ -9,6 +9,7 @@
 
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_delegate.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
@@ -45,7 +46,7 @@ class TestOverviewDelegate : public OverviewDelegate {
   }
   void RemoveAndDestroyExitAnimationObserver(
       DelayedAnimationObserver* animation_observer) override {
-    std::erase_if(observers_, base::MatchesUniquePtr(animation_observer));
+    base::EraseIf(observers_, base::MatchesUniquePtr(animation_observer));
   }
   void AddEnterAnimationObserver(
       std::unique_ptr<DelayedAnimationObserver> animation_observer) override {}

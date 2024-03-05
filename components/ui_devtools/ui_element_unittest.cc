@@ -4,8 +4,6 @@
 
 #include "components/ui_devtools/ui_element.h"
 
-#include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
 #include "components/ui_devtools/ui_element_delegate.h"
@@ -32,7 +30,7 @@ class FakeUIElementDelegate : public UIElementDelegate {
   void OnUIElementReordered(UIElement* parent, UIElement* child) override {}
 
   void OnUIElementRemoved(UIElement* ui_element) override {
-    std::erase(elements_, ui_element);
+    base::Erase(elements_, ui_element);
   }
 
   void OnUIElementBoundsChanged(UIElement* ui_element) override {}

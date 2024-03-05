@@ -10,10 +10,10 @@
 #include <clocale>
 #include <limits>
 #include <utility>
-#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -2467,7 +2467,7 @@ class TestRunner::MainWindowTracker : public blink::WebViewObserver {
       : blink::WebViewObserver(view), test_runner_(test_runner) {}
 
   void OnDestruct() override {
-    std::erase_if(test_runner_->main_windows_, base::MatchesUniquePtr(this));
+    EraseIf(test_runner_->main_windows_, base::MatchesUniquePtr(this));
   }
 
  private:
@@ -2960,7 +2960,7 @@ void TestRunner::RemoveLoadingFrame(blink::WebLocalFrame* frame) {
   // flakiness due to inconsistent state management across renderers.
   // See https://crbug.com/1100223 for details.
 
-  std::erase(loading_frames_, frame);
+  base::Erase(loading_frames_, frame);
   if (!loading_frames_.empty())
     return;
 

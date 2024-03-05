@@ -432,7 +432,7 @@ class AllowCandidateWithMasksSortedMultiOverlayProcessor
       std::vector<OverlayProposedCandidate>* proposed_candidates) override {
     // After sort we should only be left with candidates with rounded-display
     // masks.
-    std::erase_if(*proposed_candidates, [](OverlayProposedCandidate& cand) {
+    base::EraseIf(*proposed_candidates, [](OverlayProposedCandidate& cand) {
       return !cand.candidate.has_rounded_display_masks;
     });
 

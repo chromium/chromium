@@ -10,6 +10,7 @@
 #import <vector>
 
 #import "base/containers/contains.h"
+#import "base/containers/cxx20_erase.h"
 #import "base/containers/flat_set.h"
 #import "base/memory/raw_ptr.h"
 #import "base/ranges/algorithm.h"

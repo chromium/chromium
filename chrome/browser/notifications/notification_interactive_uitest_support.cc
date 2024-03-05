@@ -4,8 +4,6 @@
 
 #include "chrome/browser/notifications/notification_interactive_uitest_support.h"
 
-#include <vector>
-
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -229,7 +227,7 @@ void NotificationsTest::GetDisabledContentSettings(
   *settings = HostContentSettingsMapFactory::GetForProfile(browser()->profile())
                   ->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
 
-  std::erase_if(*settings, [](const ContentSettingPatternSource& setting) {
+  base::EraseIf(*settings, [](const ContentSettingPatternSource& setting) {
     return setting.GetContentSetting() != CONTENT_SETTING_BLOCK ||
            setting.source.compare("preference") != 0;
   });

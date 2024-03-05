@@ -22,6 +22,7 @@
 #include "base/bit_cast.h"
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
@@ -774,7 +775,7 @@ class BASE_EXPORT GSL_OWNER Value {
     // Erases all values for which `predicate` evaluates to true from this list.
     template <typename Predicate>
     size_t EraseIf(Predicate predicate) {
-      return std::erase_if(storage_, predicate);
+      return base::EraseIf(storage_, predicate);
     }
 
     // Estimates dynamic memory usage. Requires tracing support

@@ -10,13 +10,13 @@
 #import <Security/Security.h>
 
 #include <optional>
-#include <vector>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -59,7 +59,7 @@ void FilterKeychainItemsByCreationDate(
     std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>>* keychain_items,
     base::Time not_before,
     base::Time not_after) {
-  std::erase_if(
+  base::EraseIf(
       *keychain_items,
       [not_before, not_after](
           const base::apple::ScopedCFTypeRef<CFDictionaryRef>& attributes)

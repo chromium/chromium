@@ -11,6 +11,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -67,7 +68,7 @@ using sync_pb::WebAppSpecifics_UserDisplayMode_UNSPECIFIED;
 
 void RemoveWebAppFromAppsList(AppsList* apps_list,
                               const webapps::AppId& app_id) {
-  std::erase_if(*apps_list, [app_id](const std::unique_ptr<WebApp>& app) {
+  base::EraseIf(*apps_list, [app_id](const std::unique_ptr<WebApp>& app) {
     return app->app_id() == app_id;
   });
 }

@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_param_associator.h"
@@ -541,7 +542,7 @@ void ScopedFeatureList::InitWithMergedFeatures(
     // set through |merged_features.enabled_feature_list|. In this case,
     // FieldTrialParamAssociator::AssociateFieldTrialParams() will fail.
     // So remove such field trials from |all_states| here.
-    std::erase_if(all_states, [feature](const auto& state) {
+    EraseIf(all_states, [feature](const auto& state) {
       return state.trial_name == feature.StudyNameOrDefault();
     });
 

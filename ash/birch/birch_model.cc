@@ -14,6 +14,7 @@
 #include "ash/birch/birch_weather_provider.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 
@@ -150,7 +151,7 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetItemsForDisplay() {
   std::vector<std::unique_ptr<BirchItem>> all_items = GetAllItems();
 
   // Remove any items with no ranking.
-  std::erase_if(all_items, [](const auto& item) {
+  base::EraseIf(all_items, [](const auto& item) {
     return item->ranking == std::numeric_limits<float>::max();
   });
 

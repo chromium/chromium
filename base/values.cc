@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/checked_iterators.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/map_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -1181,7 +1182,7 @@ Value::List::iterator Value::List::Insert(const_iterator pos, Value&& value) {
 }
 
 size_t Value::List::EraseValue(const Value& value) {
-  return std::erase(storage_, value);
+  return Erase(storage_, value);
 }
 
 size_t Value::List::EstimateMemoryUsage() const {
