@@ -184,7 +184,7 @@ config("absl_test_config") {
   }
 }
 
-if (build_with_chromium) {
+if (absl_build_tests) {
   import("//testing/test.gni")
 
   if (!is_component_build) {
