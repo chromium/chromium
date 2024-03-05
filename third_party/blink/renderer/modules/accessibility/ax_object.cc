@@ -433,6 +433,7 @@ const RoleEntry kAriaRoles[] = {
 // role name, since that is the publicly visible concept.
 const RoleEntry kReverseRoles[] = {
     {"banner", ax::mojom::blink::Role::kHeader},
+    {"generic", ax::mojom::blink::Role::kHeaderAsNonLandmark},
     {"button", ax::mojom::blink::Role::kToggleButton},
     {"button", ax::mojom::blink::Role::kPopUpButton},
     {"contentinfo", ax::mojom::blink::Role::kFooter},
