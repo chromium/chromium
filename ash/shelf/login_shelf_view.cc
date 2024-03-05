@@ -397,12 +397,12 @@ void LoginShelfView::AboutToRequestFocusFromTabTraversal(bool reverse) {
 
 void LoginShelfView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (LockScreen::HasInstance()) {
-    GetViewAccessibility().OverridePreviousFocus(LockScreen::Get()->widget());
+    GetViewAccessibility().SetPreviousFocus(LockScreen::Get()->widget());
   }
 
   Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
 
-  GetViewAccessibility().OverrideNextFocus(shelf->GetStatusAreaWidget());
+  GetViewAccessibility().SetNextFocus(shelf->GetStatusAreaWidget());
   node_data->role = ax::mojom::Role::kToolbar;
   node_data->SetName(l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
 }

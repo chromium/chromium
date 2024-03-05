@@ -851,8 +851,8 @@ void ScrollableShelfView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void ScrollableShelfView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  GetViewAccessibility().OverrideNextFocus(GetShelf()->GetStatusAreaWidget());
-  GetViewAccessibility().OverridePreviousFocus(
+  GetViewAccessibility().SetNextFocus(GetShelf()->GetStatusAreaWidget());
+  GetViewAccessibility().SetPreviousFocus(
       GetShelf()->shelf_widget()->navigation_widget());
 }
 

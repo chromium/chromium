@@ -751,14 +751,14 @@ void ViewAccessibility::ClearPosInSetOverride() {
   override_data_.RemoveIntAttribute(ax::mojom::IntAttribute::kSetSize);
 }
 
-void ViewAccessibility::OverrideNextFocus(Widget* widget) {
+void ViewAccessibility::SetNextFocus(Widget* widget) {
   if (widget)
     next_focus_ = widget->GetWeakPtr();
   else
     next_focus_ = nullptr;
 }
 
-void ViewAccessibility::OverridePreviousFocus(Widget* widget) {
+void ViewAccessibility::SetPreviousFocus(Widget* widget) {
   if (widget)
     previous_focus_ = widget->GetWeakPtr();
   else

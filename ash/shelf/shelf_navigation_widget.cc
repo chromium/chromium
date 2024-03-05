@@ -351,8 +351,8 @@ views::View* ShelfNavigationWidget::Delegate::GetDefaultFocusableChild() {
 
 void ShelfNavigationWidget::Delegate::
     RefreshAccessibilityWidgetNextPreviousFocus(ShelfWidget* shelf) {
-  GetViewAccessibility().OverrideNextFocus(shelf->hotseat_widget());
-  GetViewAccessibility().OverridePreviousFocus(shelf->status_area_widget());
+  GetViewAccessibility().SetNextFocus(shelf->hotseat_widget());
+  GetViewAccessibility().SetPreviousFocus(shelf->status_area_widget());
 }
 
 ShelfNavigationWidget::TestApi::TestApi(ShelfNavigationWidget* widget)

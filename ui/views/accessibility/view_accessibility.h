@@ -316,8 +316,8 @@ class VIEWS_EXPORT ViewAccessibility {
   // such as screen readers, may utilize this information to transition focus
   // from the beginning or end of one widget to another when navigating by its
   // default navigation method.
-  void OverrideNextFocus(Widget* widget);
-  void OverridePreviousFocus(Widget* widget);
+  void SetNextFocus(Widget* widget);
+  void SetPreviousFocus(Widget* widget);
   Widget* GetNextWindowFocus() const;
   Widget* GetPreviousWindowFocus() const;
 

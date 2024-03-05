@@ -306,8 +306,8 @@ void DragHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       // When the hotseat is kHidden, the focus traversal should go to the
       // status area as the next focus and the navigation area as the previous
       // focus.
-      GetViewAccessibility().OverrideNextFocus(shelf_->GetStatusAreaWidget());
-      GetViewAccessibility().OverridePreviousFocus(
+      GetViewAccessibility().SetNextFocus(shelf_->GetStatusAreaWidget());
+      GetViewAccessibility().SetPreviousFocus(
           shelf_->shelf_widget()->navigation_widget());
       break;
     case HotseatState::kExtended:
@@ -315,8 +315,8 @@ void DragHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
       // When the hotseat is kExtended, the focus traversal should go to the
       // hotseat as both the next and previous focus.
-      GetViewAccessibility().OverrideNextFocus(shelf_->hotseat_widget());
-      GetViewAccessibility().OverridePreviousFocus(shelf_->hotseat_widget());
+      GetViewAccessibility().SetNextFocus(shelf_->hotseat_widget());
+      GetViewAccessibility().SetPreviousFocus(shelf_->hotseat_widget());
 
       // The name should be empty when the hotseat is extended but we cannot
       // hide it.

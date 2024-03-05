@@ -161,9 +161,8 @@ void DeskButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
   ShelfWidget* shelf_widget =
       Shelf::ForWindow(GetWidget()->GetNativeWindow())->shelf_widget();
-  GetViewAccessibility().OverridePreviousFocus(
-      shelf_widget->navigation_widget());
-  GetViewAccessibility().OverrideNextFocus(shelf_widget);
+  GetViewAccessibility().SetPreviousFocus(shelf_widget->navigation_widget());
+  GetViewAccessibility().SetNextFocus(shelf_widget);
 }
 
 void DeskButton::OnMouseEvent(ui::MouseEvent* event) {

@@ -160,13 +160,13 @@ void StatusAreaWidgetDelegate::GetAccessibleNodeData(
   // otherwise it should be LockScreen.
   if (!!LoginScreen::Get()->GetLoginWindowWidget() &&
       LoginScreen::Get()->GetLoginWindowWidget()->IsVisible()) {
-    GetViewAccessibility().OverrideNextFocus(
+    GetViewAccessibility().SetNextFocus(
         LoginScreen::Get()->GetLoginWindowWidget());
   } else if (LockScreen::HasInstance()) {
-    GetViewAccessibility().OverrideNextFocus(LockScreen::Get()->widget());
+    GetViewAccessibility().SetNextFocus(LockScreen::Get()->widget());
   }
   Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
-  GetViewAccessibility().OverridePreviousFocus(shelf->shelf_widget());
+  GetViewAccessibility().SetPreviousFocus(shelf->shelf_widget());
 }
 
 views::View* StatusAreaWidgetDelegate::GetDefaultFocusableChild() {

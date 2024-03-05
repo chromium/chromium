@@ -618,8 +618,8 @@ void LockContentsView::AboutToRequestFocusFromTabTraversal(bool reverse) {
 void LockContentsView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
   ShelfWidget* shelf_widget = shelf->shelf_widget();
-  GetViewAccessibility().OverrideNextFocus(shelf_widget);
-  GetViewAccessibility().OverridePreviousFocus(shelf->GetStatusAreaWidget());
+  GetViewAccessibility().SetNextFocus(shelf_widget);
+  GetViewAccessibility().SetPreviousFocus(shelf->GetStatusAreaWidget());
   node_data->role = ax::mojom::Role::kWindow;
   node_data->SetName(
       l10n_util::GetStringUTF16(screen_type_ == LockScreen::ScreenType::kLogin

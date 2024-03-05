@@ -1250,8 +1250,8 @@ void OverviewSession::UpdateAccessibilityFocus() {
   // If there is only one widget left, clear the focus overrides so that they
   // do not point to deleted objects.
   if (a11y_widgets.size() == 1) {
-    get_view_a11y(/*index=*/0).OverridePreviousFocus(nullptr);
-    get_view_a11y(/*index=*/0).OverrideNextFocus(nullptr);
+    get_view_a11y(/*index=*/0).SetPreviousFocus(nullptr);
+    get_view_a11y(/*index=*/0).SetNextFocus(nullptr);
     a11y_widgets[0]->GetContentsView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kTreeChanged, true);
     return;
@@ -1261,8 +1261,8 @@ void OverviewSession::UpdateAccessibilityFocus() {
   for (int i = 0; i < size; ++i) {
     int previous_index = (i + size - 1) % size;
     int next_index = (i + 1) % size;
-    get_view_a11y(i).OverridePreviousFocus(a11y_widgets[previous_index]);
-    get_view_a11y(i).OverrideNextFocus(a11y_widgets[next_index]);
+    get_view_a11y(i).SetPreviousFocus(a11y_widgets[previous_index]);
+    get_view_a11y(i).SetNextFocus(a11y_widgets[next_index]);
     a11y_widgets[i]->GetContentsView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kTreeChanged, true);
   }

@@ -210,7 +210,7 @@ AppListView::AppListView(AppListViewDelegate* delegate)
   // Default role of WidgetDelegate is ax::mojom::Role::kWindow which traps
   // ChromeVox focus within the root view. Assign ax::mojom::Role::kGroup here
   // to allow the focus to move from elements in app list view to search box.
-  // TODO(pbos): Should this be necessary with the OverrideNextFocus() used
+  // TODO(pbos): Should this be necessary with the SetNextFocus() used
   // below?
   SetAccessibleWindowRole(ax::mojom::Role::kGroup);
 }

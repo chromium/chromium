@@ -607,13 +607,13 @@ void TrayBackgroundView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(GetAccessibleNameForTray());
 
   if (LockScreen::HasInstance()) {
-    GetViewAccessibility().OverrideNextFocus(LockScreen::Get()->widget());
+    GetViewAccessibility().SetNextFocus(LockScreen::Get()->widget());
   }
 
   Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
   ShelfWidget* shelf_widget = shelf->shelf_widget();
-  GetViewAccessibility().OverridePreviousFocus(shelf_widget->hotseat_widget());
-  GetViewAccessibility().OverrideNextFocus(shelf_widget->navigation_widget());
+  GetViewAccessibility().SetPreviousFocus(shelf_widget->hotseat_widget());
+  GetViewAccessibility().SetNextFocus(shelf_widget->navigation_widget());
 }
 
 void TrayBackgroundView::ChildPreferredSizeChanged(views::View* child) {

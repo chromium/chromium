@@ -170,8 +170,8 @@ class DisplayOverlayController::FocusCycler {
       const size_t prev_index = (i + widget_list_size - 1u) % widget_list_size;
       const size_t next_index = (i + 1u) % widget_list_size;
 
-      curr_view_a11y.OverridePreviousFocus(widget_list_[prev_index]);
-      curr_view_a11y.OverrideNextFocus(widget_list_[next_index]);
+      curr_view_a11y.SetPreviousFocus(widget_list_[prev_index]);
+      curr_view_a11y.SetNextFocus(widget_list_[next_index]);
       curr_view->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged,
                                           /*send_native_event=*/true);
     }
