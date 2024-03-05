@@ -90,6 +90,13 @@ void MahiWebContentsManager::OnContextMenuClicked(
   client_->OnContextMenuClicked(display_id, button_type, question);
 }
 
+bool MahiWebContentsManager::IsFocusedPageDistillable() {
+  if (!focused_web_content_state_.is_distillable.has_value()) {
+    return false;
+  }
+  return focused_web_content_state_.is_distillable.value();
+}
+
 // static
 void MahiWebContentsManager::SetInstanceForTesting(
     MahiWebContentsManager* test_manager) {
