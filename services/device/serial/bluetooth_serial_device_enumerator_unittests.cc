@@ -10,12 +10,11 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
-#include "services/device/public/cpp/device_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,6 +22,7 @@ namespace device {
 
 namespace {
 
+using ::base::test::TestFuture;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -49,18 +49,12 @@ class BluetoothSerialDeviceEnumeratorTest : public testing::Test {
  public:
   BluetoothSerialDeviceEnumeratorTest() = default;
 
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kEnableBluetoothSerialPortProfileInSerialApi}, {});
-  }
-
   scoped_refptr<base::SingleThreadTaskRunner> adapter_runner() {
     return task_environment_.GetMainThreadTaskRunner();
   }
 
  private:
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
@@ -95,11 +89,47 @@ TEST_F(BluetoothSerialDeviceEnumeratorTest, ConstructWaitForAdapter) {
 
   BluetoothSerialDeviceEnumerator enumerator(adapter_runner());
 
-  {
-    base::RunLoop run_loop;
-    enumerator.OnGotAdapterForTesting(run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  // Wait for the enumerator to complete its initial enumeration.
+  TestFuture<std::vector<device::mojom::SerialPortInfoPtr>> get_devices_future;
+  enumerator.GetDevicesAfterInitialEnumeration(
+      get_devices_future.GetCallback());
+  ASSERT_TRUE(get_devices_future.Wait());
+
+  // Prevent memory leak warning.
+  enumerator.SynchronouslyResetHelperForTesting();
+}
+
+TEST_F(BluetoothSerialDeviceEnumeratorTest, GetDevices) {
+  auto mock_adapter =
+      base::MakeRefCounted<NiceMock<device::MockBluetoothAdapter>>();
+
+  base::RunLoop run_loop;
+  mock_adapter->Initialize(run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_TRUE(mock_adapter->IsInitialized());
+
+  auto mock_device =
+      CreateDevice(mock_adapter.get(), kTestDeviceName, kTestDeviceAddress);
+  mock_device->AddUUID(GetSerialPortProfileUUID());
+  mock_adapter->AddMockDevice(std::move(mock_device));
+  EXPECT_CALL(*mock_adapter, GetDevices())
+      .WillOnce(Return(mock_adapter->GetConstMockDevices()));
+
+  device::BluetoothAdapterFactory::Get()->SetAdapterForTesting(mock_adapter);
+
+  BluetoothSerialDeviceEnumerator enumerator(adapter_runner());
+
+  // Before the initial enumeration GetDevices returns no ports.
+  EXPECT_TRUE(enumerator.GetDevices().empty());
+
+  // Check that the port is found during initial enumeration.
+  TestFuture<std::vector<device::mojom::SerialPortInfoPtr>> get_devices_future;
+  enumerator.GetDevicesAfterInitialEnumeration(
+      get_devices_future.GetCallback());
+  EXPECT_EQ(1u, get_devices_future.Get().size());
+
+  // After the initial enumeration GetDevices returns the port.
+  EXPECT_EQ(1u, enumerator.GetDevices().size());
 
   // Prevent memory leak warning.
   enumerator.SynchronouslyResetHelperForTesting();
@@ -152,7 +182,10 @@ TEST_F(BluetoothSerialDeviceEnumeratorTest, CreateWithDevice) {
     run_loop.Run();
   }
 
-  ASSERT_EQ(1u, enumerator.GetDevices().size());
+  TestFuture<std::vector<device::mojom::SerialPortInfoPtr>> get_devices_future;
+  enumerator.GetDevicesAfterInitialEnumeration(
+      get_devices_future.GetCallback());
+  ASSERT_EQ(1u, get_devices_future.Get().size());
 
   auto address = enumerator.GetAddressFromToken(port_token);
   ASSERT_TRUE(address);
@@ -163,12 +196,6 @@ TEST_F(BluetoothSerialDeviceEnumeratorTest, CreateWithDevice) {
   const base::UnguessableToken unused_token;
   EXPECT_FALSE(enumerator.GetAddressFromToken(unused_token));
   EXPECT_FALSE(enumerator.GetServiceClassIdFromToken(unused_token).IsValid());
-
-  {
-    base::RunLoop run_loop;
-    enumerator.OnGotAdapterForTesting(run_loop.QuitClosure());
-    run_loop.Run();
-  }
 
   // Second add - which will be skipped.
   const BluetoothDevice::UUIDSet service_class_ids = {
@@ -230,6 +257,31 @@ TEST_F(BluetoothSerialDeviceEnumeratorTest,
     enumerator->SynchronouslyResetHelperForTesting();
     run_loop.Run();
   }
+}
+
+TEST_F(BluetoothSerialDeviceEnumeratorTest,
+       PendingCallbacksInvokedOnDestruction) {
+  auto mock_adapter =
+      base::MakeRefCounted<NiceMock<device::MockBluetoothAdapter>>();
+  {
+    base::RunLoop run_loop;
+    mock_adapter->Initialize(run_loop.QuitClosure());
+    run_loop.Run();
+    EXPECT_TRUE(mock_adapter->IsInitialized());
+  }
+
+  device::BluetoothAdapterFactory::Get()->SetAdapterForTesting(mock_adapter);
+  auto enumerator =
+      std::make_unique<BluetoothSerialDeviceEnumerator>(adapter_runner());
+
+  TestFuture<std::vector<mojom::SerialPortInfoPtr>> get_devices_future;
+  enumerator->GetDevicesAfterInitialEnumeration(
+      get_devices_future.GetCallback());
+
+  // Destroy the enumerator and make sure the callback is called.
+  enumerator->SynchronouslyResetHelperForTesting();
+  enumerator.reset();
+  EXPECT_TRUE(get_devices_future.Get().empty());
 }
 
 }  // namespace device

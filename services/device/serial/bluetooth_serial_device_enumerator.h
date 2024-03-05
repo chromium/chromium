@@ -36,6 +36,12 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
       const BluetoothSerialDeviceEnumerator&) = delete;
   ~BluetoothSerialDeviceEnumerator() override;
 
+  // Invokes `callback` with the result of GetDevices(). Runs synchronously if
+  // the enumerator has already completed its initial enumeration, otherwise
+  // waits until enumeration is complete.
+  void GetDevicesAfterInitialEnumeration(
+      mojom::SerialPortManager::GetDevicesCallback callback);
+
   void DeviceAdded(std::string_view device_address,
                    base::StringPiece16 device_name,
                    BluetoothDevice::UUIDSet service_class_ids);
@@ -58,7 +64,6 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
   BluetoothUUID GetServiceClassIdFromToken(
       const base::UnguessableToken& token) const;
 
-  void OnGotAdapterForTesting(base::OnceClosure closure);
   void DeviceAddedForTesting(BluetoothAdapter* adapter,
                              BluetoothDevice* device);
   void DeviceChangedForTesting(BluetoothAdapter* adapter,
@@ -78,6 +83,15 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
   void AddService(std::string_view device_address,
                   base::StringPiece16 device_name,
                   const BluetoothUUID& service_class_id);
+  void OnInitialEnumerationComplete();
+
+  // A flag indicating whether the initial enumeration has completed.
+  bool initial_enumeration_completed_ = false;
+
+  // Pending callbacks for calls to GetDevicesAfterInitialEnumeration, to be
+  // invoked once the initial enumeration is complete.
+  std::vector<mojom::SerialPortManager::GetDevicesCallback>
+      pending_get_devices_;
 
   DevicePortsMap device_ports_;
   base::SequenceBound<AdapterHelper> helper_;
