@@ -32,8 +32,37 @@ export default {
   plugins: [
     license({
       thirdParty: {
+        allow: {
+          test: (dependency) => {
+            let allowed_licenses = ['MIT', 'Apache 2.0'];
+            return allowed_licenses.includes(dependency.license);
+          },
+          failOnUnlicensed: true,
+          failOnViolation: true,
+        },
         output: {
           file: path.join('lib', 'THIRD_PARTY_NOTICES'),
+          template(dependencies) {
+            const stringified_dependencies = dependencies.map((dependency) => {
+              let arr = [];
+              arr.push(`Name: ${dependency.name ?? 'N/A'}`);
+              let url = dependency.homepage ?? dependency.repository;
+              if (url !== null && typeof url !== 'string') {
+                url = url.url;
+              }
+              arr.push(`URL: ${url ?? 'N/A'}`);
+              arr.push(`Version: ${dependency.version ?? 'N/A'}`);
+              arr.push(`License: ${dependency.license ?? 'N/A'}`);
+              if (dependency.licenseText !== null) {
+                arr.push('');
+                arr.push(dependency.licenseText.replaceAll('\r', ''));
+              }
+              return arr.join('\n');
+            });
+            const divider =
+              '\n\n-------------------- DEPENDENCY DIVIDER --------------------\n\n';
+            return stringified_dependencies.join(divider);
+          },
         },
       },
     }),
