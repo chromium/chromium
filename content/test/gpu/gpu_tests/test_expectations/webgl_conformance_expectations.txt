@@ -677,12 +677,6 @@ crbug.com/1276552 [ android-pixel-4 android-r passthrough qualcomm renderer-skia
 
 ## Samsung failures ##
 
-crbug.com/1372155 [ android android-sm-a135m ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
-crbug.com/1372155 [ android android-sm-a135m ] conformance/misc/shader-precision-format.html [ Failure ]
-crbug.com/1372155 [ android android-sm-a135m ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
-crbug.com/1372155 [ android android-sm-a135m ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
-crbug.com/1372155 [ android android-sm-a135m no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1372155 [ android android-sm-a135m ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 crbug.com/1372149 [ android android-sm-a235m no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
