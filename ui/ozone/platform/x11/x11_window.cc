@@ -1918,6 +1918,10 @@ void X11Window::Map(bool inactive) {
   size_hints.flags |= x11::SIZE_HINT_P_POSITION;
   size_hints.x = bounds_in_pixels_.x();
   size_hints.y = bounds_in_pixels_.y();
+  // Set STATIC_GRAVITY so that the window position is not affected by the
+  // frame width when running with window manager.
+  size_hints.flags |= x11::SIZE_HINT_P_WIN_GRAVITY;
+  size_hints.win_gravity = x11::WIN_GRAVITY_HINT_STATIC_GRAVITY;
   connection_->SetWmNormalHints(xwindow_, size_hints);
 
   ignore_keyboard_input_ = inactive;
