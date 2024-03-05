@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<grit latest_public_release="0" current_release="1"
+      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+  <outputs>
+    <output filename="grit/privacy_sandbox_strings.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="privacy_sandbox_strings_af.pak" type="data_package" lang="af" />
+    <output filename="privacy_sandbox_strings_am.pak" type="data_package" lang="am" />
+    <output filename="privacy_sandbox_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="privacy_sandbox_strings_as.pak" type="data_package" lang="as" />
+    <output filename="privacy_sandbox_strings_az.pak" type="data_package" lang="az" />
+    <output filename="privacy_sandbox_strings_be.pak" type="data_package" lang="be" />
+    <output filename="privacy_sandbox_strings_bg.pak" type="data_package" lang="bg" />
+    <output filename="privacy_sandbox_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="privacy_sandbox_strings_bs.pak" type="data_package" lang="bs" />
+    <output filename="privacy_sandbox_strings_ca.pak" type="data_package" lang="ca" />
+    <output filename="privacy_sandbox_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="privacy_sandbox_strings_cy.pak" type="data_package" lang="cy" />
+    <output filename="privacy_sandbox_strings_da.pak" type="data_package" lang="da" />
+    <output filename="privacy_sandbox_strings_de.pak" type="data_package" lang="de" />
+    <output filename="privacy_sandbox_strings_el.pak" type="data_package" lang="el" />
+    <output filename="privacy_sandbox_strings_en-GB.pak" type="data_package" lang="en-GB" />
+    <output filename="privacy_sandbox_strings_en-US.pak" type="data_package" lang="en" />
+    <output filename="privacy_sandbox_strings_es.pak" type="data_package" lang="es" />
+    <if expr="is_ios">
+      <!-- iOS uses es-MX for es-419 -->
+      <output filename="privacy_sandbox_strings_es-MX.pak" type="data_package" lang="es-419" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="privacy_sandbox_strings_es-419.pak" type="data_package" lang="es-419" />
+    </if>
+    <output filename="privacy_sandbox_strings_et.pak" type="data_package" lang="et" />
+    <output filename="privacy_sandbox_strings_eu.pak" type="data_package" lang="eu" />
+    <output filename="privacy_sandbox_strings_fa.pak" type="data_package" lang="fa" />
+    <output filename="privacy_sandbox_strings_fi.pak" type="data_package" lang="fi" />
+    <output filename="privacy_sandbox_strings_fil.pak" type="data_package" lang="fil" />
+    <output filename="privacy_sandbox_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
+    <output filename="privacy_sandbox_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="privacy_sandbox_strings_gl.pak" type="data_package" lang="gl" />
+    <output filename="privacy_sandbox_strings_gu.pak" type="data_package" lang="gu" />
+    <output filename="privacy_sandbox_strings_he.pak" type="data_package" lang="he" />
+    <output filename="privacy_sandbox_strings_hi.pak" type="data_package" lang="hi" />
+    <output filename="privacy_sandbox_strings_hr.pak" type="data_package" lang="hr" />
+    <output filename="privacy_sandbox_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="privacy_sandbox_strings_hy.pak" type="data_package" lang="hy" />
+    <output filename="privacy_sandbox_strings_id.pak" type="data_package" lang="id" />
+    <output filename="privacy_sandbox_strings_is.pak" type="data_package" lang="is" />
+    <output filename="privacy_sandbox_strings_it.pak" type="data_package" lang="it" />
+    <output filename="privacy_sandbox_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="privacy_sandbox_strings_ka.pak" type="data_package" lang="ka" />
+    <output filename="privacy_sandbox_strings_kk.pak" type="data_package" lang="kk" />
+    <output filename="privacy_sandbox_strings_km.pak" type="data_package" lang="km" />
+    <output filename="privacy_sandbox_strings_kn.pak" type="data_package" lang="kn" />
+    <output filename="privacy_sandbox_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="privacy_sandbox_strings_ky.pak" type="data_package" lang="ky" />
+    <output filename="privacy_sandbox_strings_lo.pak" type="data_package" lang="lo" />
+    <output filename="privacy_sandbox_strings_lt.pak" type="data_package" lang="lt" />
+    <output filename="privacy_sandbox_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="privacy_sandbox_strings_mk.pak" type="data_package" lang="mk" />
+    <output filename="privacy_sandbox_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="privacy_sandbox_strings_mn.pak" type="data_package" lang="mn" />
+    <output filename="privacy_sandbox_strings_mr.pak" type="data_package" lang="mr" />
+    <output filename="privacy_sandbox_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="privacy_sandbox_strings_my.pak" type="data_package" lang="my" />
+    <output filename="privacy_sandbox_strings_ne.pak" type="data_package" lang="ne" />
+    <output filename="privacy_sandbox_strings_nl.pak" type="data_package" lang="nl" />
+    <!-- The translation console uses 'no' for Norwegian Bokmål. It should
+         be 'nb'. -->
+    <output filename="privacy_sandbox_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="privacy_sandbox_strings_pa.pak" type="data_package" lang="pa" />
+    <output filename="privacy_sandbox_strings_pl.pak" type="data_package" lang="pl" />
+    <if expr="is_ios">
+      <!-- iOS uses pt for pt-BR -->
+      <output filename="privacy_sandbox_strings_pt.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="privacy_sandbox_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <output filename="privacy_sandbox_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="privacy_sandbox_strings_or.pak" type="data_package" lang="or" />
+    <output filename="privacy_sandbox_strings_ro.pak" type="data_package" lang="ro" />
+    <output filename="privacy_sandbox_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="privacy_sandbox_strings_si.pak" type="data_package" lang="si" />
+    <output filename="privacy_sandbox_strings_sk.pak" type="data_package" lang="sk" />
+    <output filename="privacy_sandbox_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="privacy_sandbox_strings_sq.pak" type="data_package" lang="sq" />
+    <output filename="privacy_sandbox_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+    <output filename="privacy_sandbox_strings_sr.pak" type="data_package" lang="sr" />
+    <output filename="privacy_sandbox_strings_sv.pak" type="data_package" lang="sv" />
+    <output filename="privacy_sandbox_strings_sw.pak" type="data_package" lang="sw" />
+    <output filename="privacy_sandbox_strings_ta.pak" type="data_package" lang="ta" />
+    <output filename="privacy_sandbox_strings_te.pak" type="data_package" lang="te" />
+    <output filename="privacy_sandbox_strings_th.pak" type="data_package" lang="th" />
+    <output filename="privacy_sandbox_strings_tr.pak" type="data_package" lang="tr" />
+    <output filename="privacy_sandbox_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="privacy_sandbox_strings_ur.pak" type="data_package" lang="ur" />
+    <output filename="privacy_sandbox_strings_uz.pak" type="data_package" lang="uz" />
+    <output filename="privacy_sandbox_strings_vi.pak" type="data_package" lang="vi" />
+    <output filename="privacy_sandbox_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="privacy_sandbox_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
+    <output filename="privacy_sandbox_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+    <output filename="privacy_sandbox_strings_zu.pak" type="data_package" lang="zu" />
+    <!-- Pseudolocales -->
+    <output filename="privacy_sandbox_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="privacy_sandbox_strings_en-XA.pak" type="data_package" lang="en-XA" />
+
+    <!-- On Android, output some strings into Android's xml string format.
+         These strings are tagged with formatter_data="android_java" -->
+    <if expr="is_android">
+      <output filename="java/res/values-af/privacy_sandbox_strings.xml" lang="af" type="android" context="android_java" />
+      <output filename="java/res/values-am/privacy_sandbox_strings.xml" lang="am" type="android" context="android_java" />
+      <output filename="java/res/values-ar/privacy_sandbox_strings.xml" lang="ar" type="android" context="android_java" />
+      <output filename="java/res/values-as/privacy_sandbox_strings.xml" lang="as" type="android" context="android_java" />
+      <output filename="java/res/values-az/privacy_sandbox_strings.xml" lang="az" type="android" context="android_java" />
+      <output filename="java/res/values-be/privacy_sandbox_strings.xml" lang="be" type="android" context="android_java" />
+      <output filename="java/res/values-bg/privacy_sandbox_strings.xml" lang="bg" type="android" context="android_java" />
+      <output filename="java/res/values-bn/privacy_sandbox_strings.xml" lang="bn" type="android" context="android_java" />
+      <output filename="java/res/values-bs/privacy_sandbox_strings.xml" lang="bs" type="android" context="android_java" />
+      <output filename="java/res/values-ca/privacy_sandbox_strings.xml" lang="ca" type="android" context="android_java" />
+      <output filename="java/res/values-cs/privacy_sandbox_strings.xml" lang="cs" type="android" context="android_java" />
+      <output filename="java/res/values-da/privacy_sandbox_strings.xml" lang="da" type="android" context="android_java" />
+      <output filename="java/res/values-de/privacy_sandbox_strings.xml" lang="de" type="android" context="android_java" />
+      <output filename="java/res/values-el/privacy_sandbox_strings.xml" lang="el" type="android" context="android_java" />
+      <output filename="java/res/values/privacy_sandbox_strings.xml" lang="en" type="android" context="android_java" />
+      <output filename="java/res/values-en-rGB/privacy_sandbox_strings.xml" lang="en-GB" type="android" context="android_java" />
+      <output filename="java/res/values-es/privacy_sandbox_strings.xml" lang="es" type="android" context="android_java" />
+      <output filename="java/res/values-es-rUS/privacy_sandbox_strings.xml" lang="es-419" type="android" context="android_java" />
+      <output filename="java/res/values-et/privacy_sandbox_strings.xml" lang="et" type="android" context="android_java" />
+      <output filename="java/res/values-eu/privacy_sandbox_strings.xml" lang="eu" type="android" context="android_java" />
+      <output filename="java/res/values-fa/privacy_sandbox_strings.xml" lang="fa" type="android" context="android_java" />
+      <output filename="java/res/values-fi/privacy_sandbox_strings.xml" lang="fi" type="android" context="android_java" />
+      <output filename="java/res/values-tl/privacy_sandbox_strings.xml" lang="fil" type="android" context="android_java" />
+      <output filename="java/res/values-fr/privacy_sandbox_strings.xml" lang="fr" type="android" context="android_java" />
+      <output filename="java/res/values-fr-rCA/privacy_sandbox_strings.xml" lang="fr-CA" type="android" context="android_java" />
+      <output filename="java/res/values-gl/privacy_sandbox_strings.xml" lang="gl" type="android" context="android_java" />
+      <output filename="java/res/values-gu/privacy_sandbox_strings.xml" lang="gu" type="android" context="android_java" />
+      <output filename="java/res/values-iw/privacy_sandbox_strings.xml" lang="he" type="android" context="android_java" />
+      <output filename="java/res/values-hi/privacy_sandbox_strings.xml" lang="hi" type="android" context="android_java" />
+      <output filename="java/res/values-hr/privacy_sandbox_strings.xml" lang="hr" type="android" context="android_java" />
+      <output filename="java/res/values-hu/privacy_sandbox_strings.xml" lang="hu" type="android" context="android_java" />
+      <output filename="java/res/values-hy/privacy_sandbox_strings.xml" lang="hy" type="android" context="android_java" />
+      <output filename="java/res/values-in/privacy_sandbox_strings.xml" lang="id" type="android" context="android_java" />
+      <output filename="java/res/values-is/privacy_sandbox_strings.xml" lang="is" type="android" context="android_java" />
+      <output filename="java/res/values-it/privacy_sandbox_strings.xml" lang="it" type="android" context="android_java" />
+      <output filename="java/res/values-ja/privacy_sandbox_strings.xml" lang="ja" type="android" context="android_java" />
+      <output filename="java/res/values-ka/privacy_sandbox_strings.xml" lang="ka" type="android" context="android_java" />
+      <output filename="java/res/values-kk/privacy_sandbox_strings.xml" lang="kk" type="android" context="android_java" />
+      <output filename="java/res/values-km/privacy_sandbox_strings.xml" lang="km" type="android" context="android_java" />
+      <output filename="java/res/values-kn/privacy_sandbox_strings.xml" lang="kn" type="android" context="android_java" />
+      <output filename="java/res/values-ko/privacy_sandbox_strings.xml" lang="ko" type="android" context="android_java" />
+      <output filename="java/res/values-ky/privacy_sandbox_strings.xml" lang="ky" type="android" context="android_java" />
+      <output filename="java/res/values-lo/privacy_sandbox_strings.xml" lang="lo" type="android" context="android_java" />
+      <output filename="java/res/values-lt/privacy_sandbox_strings.xml" lang="lt" type="android" context="android_java" />
+      <output filename="java/res/values-lv/privacy_sandbox_strings.xml" lang="lv" type="android" context="android_java" />
+      <output filename="java/res/values-mk/privacy_sandbox_strings.xml" lang="mk" type="android" context="android_java" />
+      <output filename="java/res/values-ml/privacy_sandbox_strings.xml" lang="ml" type="android" context="android_java" />
+      <output filename="java/res/values-mn/privacy_sandbox_strings.xml" lang="mn" type="android" context="android_java" />
+      <output filename="java/res/values-mr/privacy_sandbox_strings.xml" lang="mr" type="android" context="android_java" />
+      <output filename="java/res/values-ms/privacy_sandbox_strings.xml" lang="ms" type="android" context="android_java" />
+      <output filename="java/res/values-my/privacy_sandbox_strings.xml" lang="my" type="android" context="android_java" />
+      <output filename="java/res/values-ne/privacy_sandbox_strings.xml" lang="ne" type="android" context="android_java" />
+      <output filename="java/res/values-nl/privacy_sandbox_strings.xml" lang="nl" type="android" context="android_java" />
+      <output filename="java/res/values-nb/privacy_sandbox_strings.xml" lang="no" type="android" context="android_java" />
+      <output filename="java/res/values-or/privacy_sandbox_strings.xml" lang="or" type="android" context="android_java" />
+      <output filename="java/res/values-pa/privacy_sandbox_strings.xml" lang="pa" type="android" context="android_java" />
+      <output filename="java/res/values-pl/privacy_sandbox_strings.xml" lang="pl" type="android" context="android_java" />
+      <output filename="java/res/values-pt-rBR/privacy_sandbox_strings.xml" lang="pt-BR" type="android" context="android_java" />
+      <output filename="java/res/values-pt-rPT/privacy_sandbox_strings.xml" lang="pt-PT" type="android" context="android_java" />
+      <output filename="java/res/values-ro/privacy_sandbox_strings.xml" lang="ro" type="android" context="android_java" />
+      <output filename="java/res/values-ru/privacy_sandbox_strings.xml" lang="ru" type="android" context="android_java" />
+      <output filename="java/res/values-si/privacy_sandbox_strings.xml" lang="si" type="android" context="android_java" />
+      <output filename="java/res/values-sk/privacy_sandbox_strings.xml" lang="sk" type="android" context="android_java" />
+      <output filename="java/res/values-sl/privacy_sandbox_strings.xml" lang="sl" type="android" context="android_java" />
+      <output filename="java/res/values-sq/privacy_sandbox_strings.xml" lang="sq" type="android" context="android_java" />
+      <output filename="java/res/values-sr/privacy_sandbox_strings.xml" lang="sr" type="android" context="android_java" />
+      <output filename="java/res/values-b+sr+Latn/privacy_sandbox_strings.xml" lang="sr-Latn" type="android" context="android_java" />
+      <output filename="java/res/values-sv/privacy_sandbox_strings.xml" lang="sv" type="android" context="android_java" />
+      <output filename="java/res/values-sw/privacy_sandbox_strings.xml" lang="sw" type="android" context="android_java" />
+      <output filename="java/res/values-ta/privacy_sandbox_strings.xml" lang="ta" type="android" context="android_java" />
+      <output filename="java/res/values-te/privacy_sandbox_strings.xml" lang="te" type="android" context="android_java" />
+      <output filename="java/res/values-th/privacy_sandbox_strings.xml" lang="th" type="android" context="android_java" />
+      <output filename="java/res/values-tr/privacy_sandbox_strings.xml" lang="tr" type="android" context="android_java" />
+      <output filename="java/res/values-uk/privacy_sandbox_strings.xml" lang="uk" type="android" context="android_java" />
+      <output filename="java/res/values-ur/privacy_sandbox_strings.xml" lang="ur" type="android" context="android_java" />
+      <output filename="java/res/values-uz/privacy_sandbox_strings.xml" lang="uz" type="android" context="android_java" />
+      <output filename="java/res/values-vi/privacy_sandbox_strings.xml" lang="vi" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rCN/privacy_sandbox_strings.xml" lang="zh-CN" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rHK/privacy_sandbox_strings.xml" lang="zh-HK" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rTW/privacy_sandbox_strings.xml" lang="zh-TW" type="android" context="android_java" />
+      <output filename="java/res/values-zu/privacy_sandbox_strings.xml" lang="zu" type="android" context="android_java" />
+      <!-- Pseudolocales -->
+      <output filename="java/res/values-ar-rXB/privacy_sandbox_strings.xml" lang="ar-XB" type="android" context="android_java" />
+      <output filename="java/res/values-en-rXA/privacy_sandbox_strings.xml" lang="en-XA" type="android" context="android_java" />
+    </if>
+  </outputs>
+  <translations>
+    <file path="strings/privacy_sandbox_strings_af.xtb" lang="af" />
+    <file path="strings/privacy_sandbox_strings_am.xtb" lang="am" />
+    <file path="strings/privacy_sandbox_strings_ar.xtb" lang="ar" />
+    <file path="strings/privacy_sandbox_strings_as.xtb" lang="as" />
+    <file path="strings/privacy_sandbox_strings_az.xtb" lang="az" />
+    <file path="strings/privacy_sandbox_strings_be.xtb" lang="be" />
+    <file path="strings/privacy_sandbox_strings_bg.xtb" lang="bg" />
+    <file path="strings/privacy_sandbox_strings_bn.xtb" lang="bn" />
+    <file path="strings/privacy_sandbox_strings_bs.xtb" lang="bs" />
+    <file path="strings/privacy_sandbox_strings_ca.xtb" lang="ca" />
+    <file path="strings/privacy_sandbox_strings_cs.xtb" lang="cs" />
+    <file path="strings/privacy_sandbox_strings_cy.xtb" lang="cy" />
+    <file path="strings/privacy_sandbox_strings_da.xtb" lang="da" />
+    <file path="strings/privacy_sandbox_strings_de.xtb" lang="de" />
+    <file path="strings/privacy_sandbox_strings_el.xtb" lang="el" />
+    <file path="strings/privacy_sandbox_strings_en-GB.xtb" lang="en-GB" />
+    <file path="strings/privacy_sandbox_strings_es.xtb" lang="es" />
+    <file path="strings/privacy_sandbox_strings_es-419.xtb" lang="es-419" />
+    <file path="strings/privacy_sandbox_strings_et.xtb" lang="et" />
+    <file path="strings/privacy_sandbox_strings_eu.xtb" lang="eu" />
+    <file path="strings/privacy_sandbox_strings_fa.xtb" lang="fa" />
+    <file path="strings/privacy_sandbox_strings_fi.xtb" lang="fi" />
+    <file path="strings/privacy_sandbox_strings_fil.xtb" lang="fil" />
+    <file path="strings/privacy_sandbox_strings_fr.xtb" lang="fr" />
+    <file path="strings/privacy_sandbox_strings_fr-CA.xtb" lang="fr-CA" />
+    <file path="strings/privacy_sandbox_strings_gl.xtb" lang="gl" />
+    <file path="strings/privacy_sandbox_strings_gu.xtb" lang="gu" />
+    <file path="strings/privacy_sandbox_strings_hi.xtb" lang="hi" />
+    <file path="strings/privacy_sandbox_strings_hr.xtb" lang="hr" />
+    <file path="strings/privacy_sandbox_strings_hu.xtb" lang="hu" />
+    <file path="strings/privacy_sandbox_strings_hy.xtb" lang="hy" />
+    <file path="strings/privacy_sandbox_strings_id.xtb" lang="id" />
+    <file path="strings/privacy_sandbox_strings_is.xtb" lang="is" />
+    <file path="strings/privacy_sandbox_strings_it.xtb" lang="it" />
+    <!-- The translation console uses 'iw' for Hebrew, but we use 'he'. -->
+    <file path="strings/privacy_sandbox_strings_iw.xtb" lang="he" />
+    <file path="strings/privacy_sandbox_strings_ja.xtb" lang="ja" />
+    <file path="strings/privacy_sandbox_strings_ka.xtb" lang="ka" />
+    <file path="strings/privacy_sandbox_strings_kk.xtb" lang="kk" />
+    <file path="strings/privacy_sandbox_strings_km.xtb" lang="km" />
+    <file path="strings/privacy_sandbox_strings_kn.xtb" lang="kn" />
+    <file path="strings/privacy_sandbox_strings_ko.xtb" lang="ko" />
+    <file path="strings/privacy_sandbox_strings_ky.xtb" lang="ky" />
+    <file path="strings/privacy_sandbox_strings_lo.xtb" lang="lo" />
+    <file path="strings/privacy_sandbox_strings_lt.xtb" lang="lt" />
+    <file path="strings/privacy_sandbox_strings_lv.xtb" lang="lv" />
+    <file path="strings/privacy_sandbox_strings_mk.xtb" lang="mk" />
+    <file path="strings/privacy_sandbox_strings_ml.xtb" lang="ml" />
+    <file path="strings/privacy_sandbox_strings_mn.xtb" lang="mn" />
+    <file path="strings/privacy_sandbox_strings_mr.xtb" lang="mr" />
+    <file path="strings/privacy_sandbox_strings_ms.xtb" lang="ms" />
+    <file path="strings/privacy_sandbox_strings_my.xtb" lang="my" />
+    <file path="strings/privacy_sandbox_strings_ne.xtb" lang="ne" />
+    <file path="strings/privacy_sandbox_strings_nl.xtb" lang="nl" />
+    <file path="strings/privacy_sandbox_strings_no.xtb" lang="no" />
+    <file path="strings/privacy_sandbox_strings_or.xtb" lang="or" />
+    <file path="strings/privacy_sandbox_strings_pa.xtb" lang="pa" />
+    <file path="strings/privacy_sandbox_strings_pl.xtb" lang="pl" />
+    <file path="strings/privacy_sandbox_strings_pt-BR.xtb" lang="pt-BR" />
+    <file path="strings/privacy_sandbox_strings_pt-PT.xtb" lang="pt-PT" />
+    <file path="strings/privacy_sandbox_strings_ro.xtb" lang="ro" />
+    <file path="strings/privacy_sandbox_strings_ru.xtb" lang="ru" />
+    <file path="strings/privacy_sandbox_strings_si.xtb" lang="si" />
+    <file path="strings/privacy_sandbox_strings_sk.xtb" lang="sk" />
+    <file path="strings/privacy_sandbox_strings_sl.xtb" lang="sl" />
+    <file path="strings/privacy_sandbox_strings_sq.xtb" lang="sq" />
+    <file path="strings/privacy_sandbox_strings_sr.xtb" lang="sr" />
+    <file path="strings/privacy_sandbox_strings_sr-Latn.xtb" lang="sr-Latn" />
+    <file path="strings/privacy_sandbox_strings_sv.xtb" lang="sv" />
+    <file path="strings/privacy_sandbox_strings_sw.xtb" lang="sw" />
+    <file path="strings/privacy_sandbox_strings_ta.xtb" lang="ta" />
+    <file path="strings/privacy_sandbox_strings_te.xtb" lang="te" />
+    <file path="strings/privacy_sandbox_strings_th.xtb" lang="th" />
+    <file path="strings/privacy_sandbox_strings_tr.xtb" lang="tr" />
+    <file path="strings/privacy_sandbox_strings_uk.xtb" lang="uk" />
+    <file path="strings/privacy_sandbox_strings_ur.xtb" lang="ur" />
+    <file path="strings/privacy_sandbox_strings_uz.xtb" lang="uz" />
+    <file path="strings/privacy_sandbox_strings_vi.xtb" lang="vi" />
+    <file path="strings/privacy_sandbox_strings_zh-CN.xtb" lang="zh-CN" />
+    <file path="strings/privacy_sandbox_strings_zh-HK.xtb" lang="zh-HK" />
+    <file path="strings/privacy_sandbox_strings_zh-TW.xtb" lang="zh-TW" />
+    <file path="strings/privacy_sandbox_strings_zu.xtb" lang="zu" />
+  </translations>
+  <release seq="1">
+    <messages fallback_to_english="true">
+      <!-- Strings for Privacy Sandbox go here. -->
+      <!-- b/296570788: Use privacy_sandbox_chrome_strings.grdp for now. -->
+    </messages>
+  </release>
+</grit>

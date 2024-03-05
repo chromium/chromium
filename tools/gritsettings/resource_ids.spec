@@ -979,6 +979,9 @@
     "includes": [7220]
   },
 
+  "components/privacy_sandbox_strings.grd": {
+    "messages": [7240],
+  },
   "components/search_engine_descriptions_strings.grd": {
     "messages": [7260],
   },

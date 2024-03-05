@@ -48,6 +48,7 @@
       "components/components_chromium_strings.grd",
       "components/components_google_chrome_strings.grd",
       "components/components_strings.grd",
+      "components/privacy_sandbox_strings.grd",
       "components/embedder_support/android/java/strings/web_contents_delegate_android_strings.grd",
       "components/javascript_dialogs/android/javascript_dialogs_android_strings.grd",
       "components/media_router/browser/android/java/strings/android_chrome_media_router_strings.grd",
