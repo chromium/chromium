@@ -53,6 +53,7 @@
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-shared.h"
+#include "third_party/blink/public/mojom/script_source_location.mojom.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
 #endif
@@ -1786,11 +1787,19 @@ BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasonsInternal(
         blink::mojom::SameOriginBfcacheNotRestoredDetails::New();
     not_restored_reasons->same_origin_details->url = url_.spec();
     // Populate the reasons for same-origin frames.
-    for (auto& name : GetDocumentResult().GetStringReasons()) {
-      blink::mojom::BFCacheBlockingDetailedReasonPtr reason =
-          blink::mojom::BFCacheBlockingDetailedReason::New();
-      reason->name = name;
-      not_restored_reasons->reasons.push_back(std::move(reason));
+    auto& map = GetDocumentResult().reason_to_source_map();
+    for (const auto& [reason, sources] : map) {
+      if (sources.empty()) {
+        not_restored_reasons->reasons.push_back(
+            blink::mojom::BFCacheBlockingDetailedReason::New(
+                reason, /*source=*/nullptr));
+      } else {
+        for (const auto& source : sources) {
+          not_restored_reasons->reasons.push_back(
+              blink::mojom::BFCacheBlockingDetailedReason::New(reason,
+                                                               source.Clone()));
+        }
+      }
     }
     if (is_root_outermost_main_frame_) {
       int index_copy = exposed_cross_origin_iframe_index;

@@ -30,6 +30,21 @@ class BackForwardCacheBrowserTestWithNotRestoredReasons
   }
 };
 
+namespace {
+constexpr auto* kBlockingPagePath =
+    "/back_forward_cache/page_with_blocking_feature.html";
+constexpr auto* kBlockingReasonString = "webxr";
+constexpr auto kBlockingReasonEnum =
+    blink::scheduler::WebSchedulerTrackedFeature::kWebXR;
+#if !BUILDFLAG(IS_CHROMEOS)
+// WebXR's source location isn't reported on ChromeOS, so those variables won't
+// be used on that OS.
+const std::string kBlockingReasonFunction = "";
+const int kBlockingReasonLineNumber = 5;
+const int kBlockingReasonColumnNumber = 11;
+#endif
+}  // namespace
+
 // NotRestoredReasons are not reported when the page is successfully restored
 // from back/forward cache.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
@@ -139,7 +154,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
       /*src=*/rfh_b_url, /*reasons=*/
       {MatchesDetailedReason("masked", /*source=*/std::nullopt)},
       /*same_origin_details=*/std::nullopt);
-
   auto rfh_a_2_result = MatchesNotRestoredReasons(
       /*id=*/"rfh_a_2_id", /*name=*/"rfh_a_2_name",
       /*src=*/rfh_a_2_url, /*reasons=*/{},
@@ -442,12 +456,21 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
                     {kBlockingReasonEnum}, {}, {}, {}, FROM_HERE);
   // Expect that NotRestoredReasons and the blocking feature's source location
   // are reported.
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/323988021): Source location of WebXR isn't captured only on
+  // ChromeOS, so expect its source location to be null only on this OS.
+  std::optional<SourceLocationMatcher> expected_source = std::nullopt;
+#else
+  std::optional<SourceLocationMatcher> expected_source = MatchesSourceLocation(
+      url_a.spec(), kBlockingReasonFunction, kBlockingReasonLineNumber,
+      kBlockingReasonColumnNumber);
+#endif
   auto rfh_a_result = MatchesNotRestoredReasons(
       /*id=*/std::nullopt, /*name=*/std::nullopt,
       /*src=*/std::nullopt,
       /*reasons=*/
       {MatchesDetailedReason(kBlockingReasonString,
-                             /*source=*/std::nullopt)},
+                             /*source=*/expected_source)},
       MatchesSameOriginDetails(
           /*url=*/url_a.spec(),
           /*children=*/{}));

@@ -17,14 +17,6 @@
 
 namespace content {
 
-namespace {
-constexpr auto* kBlockingPagePath =
-    "/back_forward_cache/page_with_blocking_feature.html";
-constexpr auto* kBlockingReasonString = "webxr";
-constexpr auto kBlockingReasonEnum =
-    blink::scheduler::WebSchedulerTrackedFeature::kWebXR;
-}  // namespace
-
 // `BackForwardCacheMetricsTestMatcher` provides common matchers and
 // expectations to help make test assertions on BackForwardCache-related
 // metrics.
