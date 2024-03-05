@@ -5,8 +5,10 @@
 #include "components/user_education/common/feature_promo_registry.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/new_badge_specification.h"
 
 namespace user_education {
 
@@ -17,29 +19,26 @@ FeaturePromoRegistry& FeaturePromoRegistry::operator=(
     FeaturePromoRegistry&& other) noexcept = default;
 FeaturePromoRegistry::~FeaturePromoRegistry() = default;
 
-bool FeaturePromoRegistry::IsFeatureRegistered(
-    const base::Feature& iph_feature) const {
-  return base::Contains(feature_promo_data_, &iph_feature);
-}
-
-const FeaturePromoSpecification* FeaturePromoRegistry::GetParamsForFeature(
-    const base::Feature& iph_feature) const {
-  const auto data_it = feature_promo_data_.find(&iph_feature);
-  return data_it != feature_promo_data_.end() ? &data_it->second : nullptr;
-}
-
 void FeaturePromoRegistry::RegisterFeature(FeaturePromoSpecification spec) {
   const base::Feature* const iph_feature = spec.feature();
   CHECK(iph_feature);
   CHECK_NE(FeaturePromoSpecification::PromoType::kUnspecified,
            spec.promo_type());
-  const auto result = feature_promo_data_.emplace(iph_feature, std::move(spec));
-  DCHECK(result.second) << "Duplicate IPH feature registered: "
-                        << iph_feature->name;
+  FeatureRegistry<FeaturePromoSpecification>::RegisterFeature(*iph_feature,
+                                                              std::move(spec));
 }
 
-void FeaturePromoRegistry::ClearFeaturesForTesting() {
-  feature_promo_data_.clear();
+NewBadgeRegistry::NewBadgeRegistry() = default;
+NewBadgeRegistry::NewBadgeRegistry(NewBadgeRegistry&& other) noexcept = default;
+NewBadgeRegistry& NewBadgeRegistry::operator=(
+    NewBadgeRegistry&& other) noexcept = default;
+NewBadgeRegistry::~NewBadgeRegistry() = default;
+
+void NewBadgeRegistry::RegisterFeature(NewBadgeSpecification spec) {
+  const base::Feature* const iph_feature = spec.feature;
+  CHECK(iph_feature);
+  FeatureRegistry<NewBadgeSpecification>::RegisterFeature(*iph_feature,
+                                                          std::move(spec));
 }
 
 }  // namespace user_education

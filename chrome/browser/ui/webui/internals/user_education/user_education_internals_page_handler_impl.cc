@@ -93,9 +93,7 @@ const base::Feature* GetFeatureByName(const std::string& feature_name,
                                       Profile* profile) {
   auto* const registry = GetFeaturePromoRegistry(profile);
   if (registry) {
-    const auto& feature_promo_specifications =
-        registry->GetRegisteredFeaturePromoSpecifications();
-    for (const auto& [feature, spec] : feature_promo_specifications) {
+    for (const auto& [feature, spec] : registry->feature_data()) {
       if (feature_name == feature->name) {
         return feature;
       }
@@ -445,9 +443,7 @@ void UserEducationInternalsPageHandlerImpl::GetFeaturePromos(
   auto* const tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
   if (registry) {
-    const auto& feature_promo_specifications =
-        registry->GetRegisteredFeaturePromoSpecifications();
-    for (const auto& [feature, spec] : feature_promo_specifications) {
+    for (const auto& [feature, spec] : registry->feature_data()) {
       info_list.emplace_back(FeaturePromoDemoPageInfo::New(
           GetTitleFromFeaturePromoData(feature, spec),
           spec.metadata().additional_description, feature->name,

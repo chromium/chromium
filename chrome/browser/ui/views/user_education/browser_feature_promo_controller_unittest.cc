@@ -145,7 +145,7 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
       return tracker_initialized_;
     });
 
-    registry()->ClearFeaturesForTesting();
+    registry()->clear_features_for_testing();
 
     // Register placeholder tutorials and IPH journeys.
 

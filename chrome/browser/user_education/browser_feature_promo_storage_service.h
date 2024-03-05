@@ -43,6 +43,12 @@ class BrowserFeaturePromoStorageService
   void SavePolicyData(
       const user_education::FeaturePromoPolicyData& policy_data) override;
   void ResetPolicy() override;
+  user_education::NewBadgeData ReadNewBadgeData(
+      const base::Feature& new_badge_feature) const override;
+  void SaveNewBadgeData(
+      const base::Feature& new_badge_feature,
+      const user_education::NewBadgeData& new_badge_data) override;
+  void ResetNewBadge(const base::Feature& new_badge_feature) override;
 
   const raw_ptr<Profile> profile_;
 };

@@ -60,6 +60,15 @@ class FeaturePromoStorageService {
   // Reset the policy data.
   virtual void ResetPolicy() = 0;
 
+  virtual user_education::NewBadgeData ReadNewBadgeData(
+      const base::Feature& new_badge_feature) const = 0;
+
+  virtual void SaveNewBadgeData(const base::Feature& new_badge_feature,
+                                const NewBadgeData& new_badge_data) = 0;
+
+  // Resets the state of `new_badge_feature`.
+  virtual void ResetNewBadge(const base::Feature& new_badge_feature) = 0;
+
   // Returns the set of apps that `iph_feature` has been shown for.
   std::set<std::string> GetShownForApps(const base::Feature& iph_feature) const;
 

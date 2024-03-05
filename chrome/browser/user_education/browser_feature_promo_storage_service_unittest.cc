@@ -102,6 +102,23 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     EXPECT_EQ(expected.most_recent_active_time, actual.most_recent_active_time);
   }
 
+  void SaveNewBadgeData(const user_education::NewBadgeData& data,
+                        const base::Feature& to_save_data_for) {
+    service_.SaveNewBadgeData(to_save_data_for, data);
+  }
+
+  void CompareNewBadgeData(const user_education::NewBadgeData& expected,
+                           const base::Feature& to_read_data_for) {
+    const auto actual = service_.ReadNewBadgeData(to_read_data_for);
+    EXPECT_EQ(expected.show_count, actual.show_count);
+    EXPECT_EQ(expected.used_count, actual.used_count);
+    EXPECT_EQ(expected.feature_enabled_time, actual.feature_enabled_time);
+  }
+
+  void ResetNewBadgeData(const base::Feature& to_reset_data_for) {
+    service_.ResetNewBadge(to_reset_data_for);
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -179,4 +196,53 @@ TEST_F(BrowserFeaturePromoStorageServiceTest, ResetSessionClearsData) {
   SaveSessionData(data);
   ResetSessionData();
   CompareSessionData(user_education::FeaturePromoSessionData());
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, NoNewBadgeDataByDefault) {
+  CompareNewBadgeData(user_education::NewBadgeData(), kTestIPHFeature);
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, SavesAndReadsNewBadgeData) {
+  user_education::NewBadgeData data;
+  data.show_count = 2;
+  data.used_count = 3;
+  data.feature_enabled_time = base::Time::Now();
+  SaveNewBadgeData(data, kTestIPHFeature);
+  CompareNewBadgeData(data, kTestIPHFeature);
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, SavesAndClearNewBadgeData) {
+  user_education::NewBadgeData data;
+  data.show_count = 2;
+  data.used_count = 3;
+  data.feature_enabled_time = base::Time::Now();
+  SaveNewBadgeData(data, kTestIPHFeature);
+  ResetNewBadgeData(kTestIPHFeature);
+  CompareNewBadgeData(user_education::NewBadgeData(), kTestIPHFeature);
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, SaveNewBadgeDataAgain) {
+  user_education::NewBadgeData data;
+  SaveNewBadgeData(data, kTestIPHFeature);
+  data.show_count = 2;
+  data.used_count = 3;
+  data.feature_enabled_time = base::Time::Now();
+  SaveNewBadgeData(data, kTestIPHFeature);
+  CompareNewBadgeData(data, kTestIPHFeature);
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, SaveMultipleNewBadgeData) {
+  user_education::NewBadgeData data;
+  data.show_count = 2;
+  data.used_count = 3;
+  data.feature_enabled_time = base::Time::Now();
+  user_education::NewBadgeData data2;
+  data2.show_count = 4;
+  data2.used_count = 1;
+  data2.feature_enabled_time = base::Time::Now();
+  SaveNewBadgeData(data, kTestIPHFeature);
+  CompareNewBadgeData(user_education::NewBadgeData(), kTestIPHFeature2);
+  SaveNewBadgeData(data2, kTestIPHFeature2);
+  CompareNewBadgeData(data, kTestIPHFeature);
+  CompareNewBadgeData(data2, kTestIPHFeature2);
 }

@@ -42,6 +42,16 @@ inline constexpr int kDefaultMaxSnoozeCount = 3;
 inline constexpr char kMaxPromoShowCount[] = "max_promo_show_count";
 inline constexpr int kDefaultMaxPromoShowCount = 12;
 
+inline constexpr char kNewBadgeShowCount[] = "new_badge_show_count";
+inline constexpr int kDefaultNewBadgeShowCount = 10;
+
+inline constexpr char kNewBadgeFeatureUsedCount[] =
+    "new_badge_feature_used_count";
+inline constexpr int kDefaultNewBadgeFeatureUsedCount = 2;
+
+inline constexpr char kNewBadgeDisplayWindow[] = "new_badge_display_window";
+inline constexpr base::TimeDelta kDefaultNewBadgeDisplayWindow = base::Days(60);
+
 }  // namespace
 
 BASE_FEATURE(kUserEducationExperienceVersion2,
@@ -98,6 +108,24 @@ int GetMaxPromoShowCount() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kUserEducationExperienceVersion2, kMaxPromoShowCount,
       kDefaultMaxPromoShowCount);
+}
+
+int GetNewBadgeShowCount() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kUserEducationExperienceVersion2, kNewBadgeShowCount,
+      kDefaultNewBadgeShowCount);
+}
+
+int GetNewBadgeFeatureUsedCount() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kUserEducationExperienceVersion2, kNewBadgeFeatureUsedCount,
+      kDefaultNewBadgeFeatureUsedCount);
+}
+
+base::TimeDelta GetNewBadgeDisplayWindow() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kUserEducationExperienceVersion2, kNewBadgeDisplayWindow,
+      kDefaultNewBadgeDisplayWindow);
 }
 
 }  // namespace user_education::features

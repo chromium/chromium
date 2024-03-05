@@ -57,6 +57,18 @@ constexpr char kIPHSessionLastActiveTimePath[] =
 constexpr char kIPHPolicyLastHeavyweightPromoPath[] =
     "in_product_help.policy_last_heavyweight_promo_time";
 
+// New Badge base path.
+constexpr char kNewBadgePath[] = "in_product_help.new_badge";
+
+// The number of times a badge has been shown.
+constexpr char kNewBadgeShowCountPath[] = "show_count";
+
+// The number of times the user has used the badge's entry point.
+constexpr char kNewBadgeUsedCountPath[] = "used_count";
+
+// The time the promoted feature was first enabled.
+constexpr char kNewBadgeFeatureEnabledTimePath[] = "feature_enabled_time";
+
 }  // namespace
 
 BrowserFeaturePromoStorageService::BrowserFeaturePromoStorageService(
@@ -69,6 +81,7 @@ BrowserFeaturePromoStorageService::~BrowserFeaturePromoStorageService() =
 void BrowserFeaturePromoStorageService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kIPHPromoDataPath);
+  registry->RegisterDictionaryPref(kNewBadgePath);
   registry->RegisterTimePref(kIPHSessionStartPath, base::Time());
   // This pref is updated frequently and an exact value is not required on e.g.
   // browser crash, so marking as `LOSSY_PREF` will prevent frequent disk
@@ -239,4 +252,49 @@ void BrowserFeaturePromoStorageService::SavePolicyData(
 
 void BrowserFeaturePromoStorageService::ResetPolicy() {
   profile_->GetPrefs()->ClearPref(kIPHPolicyLastHeavyweightPromoPath);
+}
+
+void BrowserFeaturePromoStorageService::ResetNewBadge(
+    const base::Feature& new_badge_feature) {
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), kNewBadgePath);
+  update->RemoveByDottedPath(new_badge_feature.name);
+}
+
+user_education::NewBadgeData
+BrowserFeaturePromoStorageService::ReadNewBadgeData(
+    const base::Feature& new_badge_feature) const {
+  const std::string path_prefix = std::string(new_badge_feature.name) + ".";
+
+  const auto& pref_data = profile_->GetPrefs()->GetDict(kNewBadgePath);
+
+  std::optional<int> show_count =
+      pref_data.FindIntByDottedPath(path_prefix + kNewBadgeShowCountPath);
+  std::optional<int> used_count =
+      pref_data.FindIntByDottedPath(path_prefix + kNewBadgeUsedCountPath);
+  std::optional<base::Time> enabled_time =
+      base::ValueToTime(pref_data.FindByDottedPath(
+          path_prefix + kNewBadgeFeatureEnabledTimePath));
+
+  user_education::NewBadgeData new_badge_data;
+  new_badge_data.show_count = show_count.value_or(0);
+  new_badge_data.used_count = used_count.value_or(0);
+  new_badge_data.feature_enabled_time = enabled_time.value_or(base::Time());
+  return new_badge_data;
+}
+
+void BrowserFeaturePromoStorageService::SaveNewBadgeData(
+    const base::Feature& new_badge_feature,
+    const user_education::NewBadgeData& new_badge_data) {
+  std::string path_prefix = std::string(new_badge_feature.name) + ".";
+
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), kNewBadgePath);
+  auto& pref_data = update.Get();
+
+  pref_data.SetByDottedPath(path_prefix + kNewBadgeShowCountPath,
+                            new_badge_data.show_count);
+  pref_data.SetByDottedPath(path_prefix + kNewBadgeUsedCountPath,
+                            new_badge_data.used_count);
+  pref_data.SetByDottedPath(
+      path_prefix + kNewBadgeFeatureEnabledTimePath,
+      base::TimeToValue(new_badge_data.feature_enabled_time));
 }

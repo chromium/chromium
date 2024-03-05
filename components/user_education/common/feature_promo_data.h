@@ -53,9 +53,9 @@ struct FeaturePromoData {
   bool is_dismissed = false;
   FeaturePromoClosedReason last_dismissed_by =
       FeaturePromoClosedReason::kCancel;
-  base::Time first_show_time = base::Time();
-  base::Time last_show_time = base::Time();
-  base::Time last_snooze_time = base::Time();
+  base::Time first_show_time;
+  base::Time last_show_time;
+  base::Time last_snooze_time;
   int snooze_count = 0;
   int show_count = 0;
   std::set<std::string> shown_for_apps;
@@ -89,6 +89,18 @@ struct FeaturePromoPolicyData {
 
   // The time of the last heavyweight promotion the user saw
   base::Time last_heavyweight_promo_time;
+};
+
+// Data about the "New" Badge for a particular feature.
+struct NewBadgeData {
+  // The number of times the "New" Badge has been shown.
+  int show_count = 0;
+
+  // The number of times the promoted entry point has been used.
+  int used_count = 0;
+
+  // The first time the promoted feature is enabled.
+  base::Time feature_enabled_time;
 };
 
 }  // namespace user_education

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_FEATURES_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_FEATURES_H_
 
+#include <optional>
 #include "base/feature_list.h"
 #include "base/time/time.h"
 
@@ -48,6 +49,18 @@ extern int GetMaxSnoozeCount();
 // Returns the maximum number of times a low-priority is allowed to show at all
 // before it is permanently blocked.
 extern int GetMaxPromoShowCount();
+
+// Returns the number of times a "New" Badge is shown before it stops appearing.
+extern int GetNewBadgeShowCount();
+
+// Returns the number of times the feature being promoted by a "New" Badge can
+// be used before the badge disappears.
+extern int GetNewBadgeFeatureUsedCount();
+
+// Returns the amount of time from when a feature being promoted by a "New"
+// Badge becomes active that the badge can be displayed to the user. Badges stop
+// being displayed after this period.
+extern base::TimeDelta GetNewBadgeDisplayWindow();
 
 }  // namespace user_education::features
 

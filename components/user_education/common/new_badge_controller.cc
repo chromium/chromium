@@ -1,0 +1,89 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/user_education/common/new_badge_controller.h"
+
+#include "components/user_education/common/feature_promo_data.h"
+#include "components/user_education/common/feature_promo_storage_service.h"
+
+namespace user_education {
+
+NewBadgeController::NewBadgeController(
+    NewBadgeRegistry& registry,
+    FeaturePromoStorageService& storage_service,
+    std::unique_ptr<NewBadgePolicy> policy)
+    : registry_(registry),
+      storage_service_(storage_service),
+      policy_(std::move(policy)) {
+  // Ensure that all registered New Badge features that are enabled have their
+  // `feature_enabled_time` set.
+  for (const auto& [feature, spec] : registry_->feature_data()) {
+    if (base::FeatureList::IsEnabled(*feature)) {
+      auto data = storage_service_->ReadNewBadgeData(*feature);
+      if (data.feature_enabled_time.is_null()) {
+        data.feature_enabled_time = base::Time::Now();
+        storage_service_->SaveNewBadgeData(*feature, data);
+      }
+    }
+  }
+}
+
+NewBadgeController::~NewBadgeController() = default;
+
+bool NewBadgeController::MaybeShowNewBadge(const base::Feature& feature) {
+  if (!CheckPrerequisites(feature)) {
+    return false;
+  }
+
+  NewBadgeData data = storage_service_->ReadNewBadgeData(feature);
+  CHECK(!data.feature_enabled_time.is_null())
+      << "Feature enabled time for " << feature.name
+      << " is null; this value should have been set during initialization.";
+
+  if (!policy_->ShouldShowNewBadge(
+          feature, data.show_count, data.used_count,
+          storage_service_->GetCurrentTime() - data.feature_enabled_time)) {
+    return false;
+  }
+
+  ++data.show_count;
+  storage_service_->SaveNewBadgeData(feature, data);
+  return true;
+}
+
+void NewBadgeController::NotifyFeatureUsed(const base::Feature& feature) {
+  if (!CheckPrerequisites(feature)) {
+    return;
+  }
+
+  NewBadgeData data = storage_service_->ReadNewBadgeData(feature);
+  ++data.used_count;
+  storage_service_->SaveNewBadgeData(feature, data);
+}
+
+bool NewBadgeController::CheckPrerequisites(
+    const base::Feature& feature) const {
+  // It's possible the same entry point is being re-used for the new feature as
+  // for an older version; just ignore cases where the new feature is not
+  // enabled.
+  if (!base::FeatureList::IsEnabled(feature)) {
+    return false;
+  }
+
+  // While the registry is largely present to provide metadata, it's not
+  // possible to correctly calculate the display window if the feature isn't
+  // registered. Therefore "New" Badges that are not registered are not allowed.
+  if (!registry_->GetParamsForFeature(feature)) {
+    NOTREACHED()
+        << "Tried to access \"New\" Badge data for feature " << feature.name
+        << " but new badge was never registered! See "
+           "browser_user_education_service.cc for full list of registered "
+           "badges.";
+    return false;
+  }
+
+  return true;
+}
+
+}  // namespace user_education

@@ -322,8 +322,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
 
   // Iterate through registered IPH and ensure that the configurations are
   // consistent.
-  for (const auto& [feature, spec] :
-       registry.GetRegisteredFeaturePromoSpecifications()) {
+  for (const auto& [feature, spec] : registry.feature_data()) {
     const feature_engagement::FeatureConfig* feature_config =
         &configuration->GetFeatureConfig(*feature);
 
