@@ -33,7 +33,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
@@ -118,10 +117,11 @@ OverviewController::OverviewController()
     : occlusion_pause_duration_for_start_(kOcclusionPauseDurationForStart),
       occlusion_pause_duration_for_end_(kOcclusionPauseDurationForEnd),
       delayed_animation_task_delay_(kTransition),
-      // Currently, lacros windows do not have a snapshot while they are
-      // evicted.
-      windows_have_snapshot_(!base::FeatureList::IsEnabled(
-          standalone_browser::features::kLacrosOnly)) {
+      // TODO(crbug.com/1278648): Lacros windows now have a snapshot, but their
+      // behavior may be a bit worse than ash windows. Keep this snapshot code
+      // until we confirm it is fine to show lacros snapshotted windows all the
+      // time.
+      windows_have_snapshot_(true) {
   Shell::Get()->activation_client()->AddObserver(this);
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
