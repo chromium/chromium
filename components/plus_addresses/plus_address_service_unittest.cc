@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/plus_addresses/plus_address_service.h"
+#include "components/autofill/core/common/aliases.h"
 
 #include <optional>
 #include <string>
@@ -41,6 +42,7 @@
 namespace {
 
 using SuggestionEvent = autofill::AutofillPlusAddressDelegate::SuggestionEvent;
+using autofill::AutofillSuggestionTriggerSource;
 using autofill::EqualsSuggestion;
 using autofill::PopupItemId;
 using autofill::Suggestion;
@@ -1127,8 +1129,10 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   service().SavePlusAddress(origin, plus_address);
 
   // We offer filling if the field is empty.
-  EXPECT_THAT(service().GetSuggestions(origin, /*is_off_the_record=*/false,
-                                       /*focused_field_value=*/u""),
+  EXPECT_THAT(service().GetSuggestions(
+                  origin, /*is_off_the_record=*/false,
+                  /*focused_field_value=*/u"",
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsSingleFillPlusAddressSuggestion(plus_address));
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
@@ -1136,8 +1140,10 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
 
   // If the user types a letter and it matches the plus address (after
   // normalization), the plus address continues to be offered.
-  EXPECT_THAT(service().GetSuggestions(origin, /*is_off_the_record=*/false,
-                                       /*focused_field_value=*/u"P"),
+  EXPECT_THAT(service().GetSuggestions(
+                  origin, /*is_off_the_record=*/false,
+                  /*focused_field_value=*/u"P",
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsSingleFillPlusAddressSuggestion(plus_address));
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
@@ -1145,9 +1151,44 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
 
   // If the value does not match the prefix of the plus address, nothing is
   // shown.
-  EXPECT_THAT(service().GetSuggestions(origin, /*is_off_the_record=*/false,
-                                       /*focused_field_value=*/u"pp"),
+  EXPECT_THAT(service().GetSuggestions(
+                  origin, /*is_off_the_record=*/false,
+                  /*focused_field_value=*/u"pp",
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsEmpty());
+  histogram_tester.ExpectUniqueSample(
+      kPlusAddressSuggestionMetric,
+      SuggestionEvent::kExistingPlusAddressSuggested, 2);
+}
+
+// Tests that fill plus address suggestions regardless of whether there is
+// already text in the field if the trigger source was manual fallback.
+TEST_F(PlusAddressSuggestionsTest,
+       SuggestionsForExistingPlusAddressWithManualFallback) {
+  base::HistogramTester histogram_tester;
+  const auto origin = url::Origin::Create(GURL("https://foo.coom"));
+  const std::string plus_address = "plus+plus@plus.plus";
+  service().SavePlusAddress(origin, plus_address);
+
+  // We offer filling if the field is empty.
+  EXPECT_THAT(
+      service().GetSuggestions(
+          origin, /*is_off_the_record=*/false,
+          /*focused_field_value=*/u"",
+          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
+      IsSingleFillPlusAddressSuggestion(plus_address));
+  histogram_tester.ExpectUniqueSample(
+      kPlusAddressSuggestionMetric,
+      SuggestionEvent::kExistingPlusAddressSuggested, 1);
+
+  // We also offer filling if the field is not empty and the prefix does not
+  // match the address.
+  EXPECT_THAT(
+      service().GetSuggestions(
+          origin, /*is_off_the_record=*/false,
+          /*focused_field_value=*/u"pp",
+          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
+      IsSingleFillPlusAddressSuggestion(plus_address));
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kExistingPlusAddressSuggested, 2);
@@ -1160,20 +1201,53 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForCreateNewPlusAddress) {
   const auto origin = url::Origin::Create(GURL("https://foo.coom"));
 
   // We offer creation if the field is empty.
-  EXPECT_THAT(service().GetSuggestions(origin, /*is_off_the_record=*/false,
-                                       /*focused_field_value=*/u""),
+  EXPECT_THAT(service().GetSuggestions(
+                  origin, /*is_off_the_record=*/false,
+                  /*focused_field_value=*/u"",
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsSingleCreatePlusAddressSuggestion());
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kCreateNewPlusAddressSuggested, 1);
 
   // If the field value is not empty, nothing is shown.
-  EXPECT_THAT(service().GetSuggestions(origin, /*is_off_the_record=*/false,
-                                       /*focused_field_value=*/u"some text"),
+  EXPECT_THAT(service().GetSuggestions(
+                  origin, /*is_off_the_record=*/false,
+                  /*focused_field_value=*/u"some text",
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsEmpty());
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kCreateNewPlusAddressSuggested, 1);
+}
+
+// Tests that a create plus address suggestion is offered regardless of the
+// field's value if there is no existing plus address for the domain and the
+// trigger source is a manual fallback.
+TEST_F(PlusAddressSuggestionsTest,
+       SuggestionsForCreateNewPlusAddressWithManualFallback) {
+  base::HistogramTester histogram_tester;
+  const auto origin = url::Origin::Create(GURL("https://foo.coom"));
+
+  EXPECT_THAT(
+      service().GetSuggestions(
+          origin, /*is_off_the_record=*/false,
+          /*focused_field_value=*/u"",
+          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
+      IsSingleCreatePlusAddressSuggestion());
+  histogram_tester.ExpectUniqueSample(
+      kPlusAddressSuggestionMetric,
+      SuggestionEvent::kCreateNewPlusAddressSuggested, 1);
+
+  EXPECT_THAT(
+      service().GetSuggestions(
+          origin, /*is_off_the_record=*/false,
+          /*focused_field_value=*/u"some text",
+          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
+      IsSingleCreatePlusAddressSuggestion());
+  histogram_tester.ExpectUniqueSample(
+      kPlusAddressSuggestionMetric,
+      SuggestionEvent::kCreateNewPlusAddressSuggested, 2);
 }
 
 // Tests that no suggestions are returned when plus address are disabled.
@@ -1183,7 +1257,8 @@ TEST_F(PlusAddressSuggestionsTest, NoSuggestionsWhenDisabled) {
 
   EXPECT_THAT(service().GetSuggestions(
                   url::Origin::Create(GURL("https://foo.coom")),
-                  /*is_off_the_record=*/false, /*focused_field_value=*/u""),
+                  /*is_off_the_record=*/false, /*focused_field_value=*/u"",
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsEmpty());
 }
 

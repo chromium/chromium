@@ -19,7 +19,10 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
   MOCK_METHOD(bool, IsPlusAddress, (const std::string&), (const override));
   MOCK_METHOD(std::vector<Suggestion>,
               GetSuggestions,
-              (const url::Origin&, bool, std::u16string_view),
+              (const url::Origin&,
+               bool,
+               std::u16string_view,
+               AutofillSuggestionTriggerSource),
               (override));
   MOCK_METHOD(void,
               RecordAutofillSuggestionEvent,

@@ -148,7 +148,9 @@ bool PlusAddressService::IsPlusAddress(
 std::vector<Suggestion> PlusAddressService::GetSuggestions(
     const url::Origin& last_committed_primary_main_frame_origin,
     bool is_off_the_record,
-    std::u16string_view focused_field_value) {
+    std::u16string_view focused_field_value,
+    autofill::AutofillSuggestionTriggerSource trigger_source) {
+  using enum autofill::AutofillSuggestionTriggerSource;
   if (!SupportsPlusAddresses(last_committed_primary_main_frame_origin,
                              is_off_the_record)) {
     return {};
@@ -159,9 +161,8 @@ std::vector<Suggestion> PlusAddressService::GetSuggestions(
   std::optional<std::string> maybe_address =
       GetPlusAddress(last_committed_primary_main_frame_origin);
   if (maybe_address == std::nullopt) {
-    if (!normalized_field_value.empty()) {
-      // TODO(b/327568061): Add suggestion trigger source and do not enforce
-      // non-emptiness for manual fallbacks.
+    if (trigger_source != kManualFallbackPlusAddresses &&
+        !normalized_field_value.empty()) {
       return {};
     }
     Suggestion create_plus_address_suggestion(
@@ -174,7 +175,8 @@ std::vector<Suggestion> PlusAddressService::GetSuggestions(
 
   // Only suggest filling a plus address whose prefix matches the field's value.
   std::u16string address = base::UTF8ToUTF16(*maybe_address);
-  if (!address.starts_with(normalized_field_value)) {
+  if (trigger_source != kManualFallbackPlusAddresses &&
+      !address.starts_with(normalized_field_value)) {
     return {};
   }
   Suggestion existing_plus_address_suggestion(

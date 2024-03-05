@@ -7677,7 +7677,11 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 // Tests that only Plus Address suggestions are shown when the trigger source is
 // a manual fallback for plus addresses.
 TEST_F(BrowserAutofillManagerPlusAddressTest, ManualFallbackPlusAddress) {
-  EXPECT_CALL(plus_address_delegate(), GetSuggestions)
+  EXPECT_CALL(
+      plus_address_delegate(),
+      GetSuggestions(
+          _, _, _,
+          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses))
       .WillOnce(Return(std::vector<Suggestion>{
           Suggestion(PopupItemId::kCreateNewPlusAddress)}));
 

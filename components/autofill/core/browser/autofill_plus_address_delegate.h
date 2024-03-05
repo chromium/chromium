@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "components/autofill/core/common/aliases.h"
 
 namespace url {
 class Origin;
@@ -48,11 +49,15 @@ class AutofillPlusAddressDelegate {
       const std::string& potential_plus_address) const = 0;
 
   // Returns the suggestions to show for the given origin and
-  // `focused_field_value`.
+  // `focused_field_value`. If `trigger_source` indicates that this is a manual
+  // fallback (e.g. the suggestions were triggered from the context menu on
+  // Desktop), then `focused_field_value` is ignored. Otherwise, only
+  // suggestions whose prefix matches `focused_field_value` are shown.
   virtual std::vector<Suggestion> GetSuggestions(
       const url::Origin& last_committed_primary_main_frame_origin,
       bool is_off_the_record,
-      std::u16string_view focused_field_value) = 0;
+      std::u16string_view focused_field_value,
+      AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Logs Autofill suggestion events related to plus addresses.
   virtual void RecordAutofillSuggestionEvent(
