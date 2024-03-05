@@ -19,8 +19,8 @@ content::RenderFrameHost* GetGaiaHost();
 // Get a `JSCheck` instance to run javascript inside Gaia webview.
 ash::test::JSChecker GaiaFrameJS();
 
-// Wait for Gaia screen to be ready.
-void WaitForGaia();
+// Skip to Gaia screen and wait for it to be ready.
+void SkipToGaiaScreenAndWait();
 
 }  // namespace crosier
 

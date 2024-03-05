@@ -221,8 +221,7 @@ void ChromeOSIntegrationLoginMixin::DoTestLogin() {
 void ChromeOSIntegrationLoginMixin::DoGaiaLogin() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Skip to login screen.
-  ash::WizardController::default_controller()->SkipToLoginForTesting();
-  crosier::WaitForGaia();
+  crosier::SkipToGaiaScreenAndWait();
 
   std::string email;
   std::string password;

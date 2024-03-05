@@ -77,8 +77,7 @@ SupervisedUserLoginDelegate::SupervisedUserLoginDelegate() {
 void SupervisedUserLoginDelegate::DoCustomGaiaLogin(std::string& username) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Skip to login screen.
-  ash::WizardController::default_controller()->SkipToLoginForTesting();
-  crosier::WaitForGaia();
+  crosier::SkipToGaiaScreenAndWait();
 
   std::string child_email;
   std::string child_password;

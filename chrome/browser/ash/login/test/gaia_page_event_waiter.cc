@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/test/gaia_page_event_waiter.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -18,13 +19,17 @@ GaiaPageEventWaiter::GaiaPageEventWaiter(const std::string& authenticator_id,
             var authenticator = $AuthenticatorId;
             var f = function() {
               authenticator.removeEventListener('$Event', f);
-              window.domAutomationController.send('Done');
+              window.domAutomationController.send('$Done');
             };
             authenticator.addEventListener('$Event', f);
           })();)";
   base::ReplaceSubstringsAfterOffset(&js, 0, "$AuthenticatorId",
                                      authenticator_id);
   base::ReplaceSubstringsAfterOffset(&js, 0, "$Event", event);
+
+  event_done_ = base::StrCat({event, "_Done"});
+  base::ReplaceSubstringsAfterOffset(&js, 0, "$Done", event_done_);
+
   test::OobeJS().Evaluate(js);
 }
 
@@ -35,10 +40,11 @@ GaiaPageEventWaiter::~GaiaPageEventWaiter() {
 void GaiaPageEventWaiter::Wait() {
   ASSERT_FALSE(wait_called_) << "Wait should be called once";
   wait_called_ = true;
+  std::string target_message = base::StrCat({"\"", event_done_, "\""});
   std::string message;
   do {
     ASSERT_TRUE(message_queue_.WaitForMessage(&message));
-  } while (message != "\"Done\"");
+  } while (message != target_message);
 }
 
 }  // namespace ash

@@ -6,6 +6,8 @@
 
 #include "chrome/browser/ash/login/test/gaia_page_event_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -23,14 +25,23 @@ ash::test::JSChecker GaiaFrameJS() {
   return ash::test::JSChecker(GetGaiaHost());
 }
 
-void WaitForGaia() {
-  // Waits for Gaia screen.
+void SkipToGaiaScreenAndWait() {
+  ash::test::WaitForOobeJSReady();
+
+  // Create gaia waiters before gaia screen is shown so that we don't miss
+  // events.
+  constexpr char kAuthenticatorId[] = "$('gaia-signin').authenticator";
+  ash::GaiaPageEventWaiter gaia_ready_waiter(kAuthenticatorId, "ready");
+  ash::GaiaPageEventWaiter gaia_back_button_waiter(kAuthenticatorId,
+                                                   "backButton");
+
+  // Skip to Gaia screen and wait it to become current.
+  ash::WizardController::default_controller()->SkipToLoginForTesting();
   ash::OobeScreenWaiter(ash::GaiaView::kScreenId).Wait();
 
   // Wait for Gaia page to be ready and update properties..
-  constexpr char kAuthenticatorId[] = "$('gaia-signin').authenticator";
-  ash::GaiaPageEventWaiter(kAuthenticatorId, "ready").Wait();
-  ash::GaiaPageEventWaiter(kAuthenticatorId, "backButton").Wait();
+  gaia_ready_waiter.Wait();
+  gaia_back_button_waiter.Wait();
 }
 
 }  // namespace crosier

@@ -29,6 +29,7 @@ class GaiaPageEventWaiter : public test::TestConditionWaiter {
  private:
   content::DOMMessageQueue message_queue_;
   bool wait_called_ = false;
+  std::string event_done_;
 };
 
 }  // namespace ash
