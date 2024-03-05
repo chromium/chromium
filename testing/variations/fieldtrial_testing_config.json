@@ -1048,32 +1048,6 @@
             ]
         }
     ],
-    "AsyncScriptScheduling": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "LowPriAsyncExec_1_03_20230914",
-                    "params": {
-                        "low_pri_async_exec_cross_site_only": "true",
-                        "low_pri_async_exec_feature_limit": "3s",
-                        "low_pri_async_exec_main_frame_only": "true",
-                        "low_pri_async_exec_timeout": "1s"
-                    },
-                    "enable_features": [
-                        "LowPriorityAsyncScriptExecution"
-                    ]
-                }
-            ]
-        }
-    ],
     "AttributionReportingSourceDeactivationAfterFilterMatching": [
         {
             "platforms": [
@@ -10362,6 +10336,37 @@
                     },
                     "enable_features": [
                         "LogOnDeviceMetricsOnStartup"
+                    ]
+                }
+            ]
+        }
+    ],
+    "LowPriorityAsyncScriptExecution": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "PreviousBest_20240305",
+                    "params": {
+                        "delay_async_exec_opt_out_auto_fetch_priority_hint": "false",
+                        "delay_async_exec_opt_out_high_fetch_priority_hint": "false",
+                        "delay_async_exec_opt_out_low_fetch_priority_hint": "false",
+                        "low_pri_async_exec_cross_site_only": "true",
+                        "low_pri_async_exec_feature_limit": "3s",
+                        "low_pri_async_exec_lower_task_priority": "best_effort",
+                        "low_pri_async_exec_main_frame_only": "true",
+                        "low_pri_async_exec_target": "both",
+                        "low_pri_async_exec_timeout": "1s"
+                    },
+                    "enable_features": [
+                        "LowPriorityAsyncScriptExecution"
                     ]
                 }
             ]
