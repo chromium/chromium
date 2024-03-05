@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
 
+#include <array>
 #include <memory>
+#include <string>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,6 +30,7 @@
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/plus_addresses/features.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,22 +50,20 @@ ACTION_P(QuitMessageLoop, loop) {
 // Checks if the context menu model contains any entries with manual fallback
 // labels or command id. `arg` must be of type ui::SimpleMenuModel.
 MATCHER(ContainsAnyAutofillFallbackEntries, "") {
+  const auto kForbiddenLabels = base::MakeFlatSet<std::u16string>(
+      std::array{IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE,
+                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS,
+                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS},
+      /*comp=*/{},
+      /*proj=*/[](auto id) { return l10n_util::GetStringUTF16(id); });
+  const auto kForbiddenCommands =
+      base::flat_set<int>{IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS,
+                          IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS,
+                          IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS};
+
   for (size_t i = 0; i < arg->GetItemCount(); i++) {
-    if (arg->GetCommandIdAt(i) ==
-        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS) {
-      return true;
-    }
-    const std::u16string label = arg->GetLabelAt(i);
-    if (label == l10n_util::GetStringUTF16(
-                     IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE)) {
-      return true;
-    }
-    if (label == l10n_util::GetStringUTF16(
-                     IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS)) {
-      return true;
-    }
-    if (label == l10n_util::GetStringUTF16(
-                     IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS)) {
+    if (base::Contains(kForbiddenCommands, arg->GetCommandIdAt(i)) ||
+        base::Contains(kForbiddenLabels, arg->GetLabelAt(i))) {
       return true;
     }
   }
@@ -105,8 +106,9 @@ MATCHER(OnlyPlusAddressFallbackAdded, "") {
          arg->GetLabelAt(0) ==
              l10n_util::GetStringUTF16(
                  IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE) &&
-         arg->GetCommandIdAt(1) ==
-             IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS &&
+         arg->GetLabelAt(1) ==
+             l10n_util::GetStringUTF16(
+                 IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU) &&
          arg->GetTypeAt(2) == ui::MenuModel::ItemType::TYPE_SEPARATOR;
 }
 
@@ -715,12 +717,18 @@ INSTANTIATE_TEST_SUITE_P(
 class PlusAddressContextMenuManagerTest
     : public SigninBrowserTestBaseT<BaseAutofillContextMenuManagerTest> {
  public:
+  static constexpr char kExcludedDomainEtldPlus1[] = "muh.mah";
+  static constexpr char kExcludedDomainUrl[] = "https://muh.mah";
+
   PlusAddressContextMenuManagerTest() {
     // TODO(b/327562692): Create and use a `PlusAddressTestEnvironment`.
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{plus_addresses::features::kFeature,
-          {{"server-url", "https://foo.bar"}}},
+          {{plus_addresses::features::kEnterprisePlusAddressServerUrl.name,
+            "https://foo.bar"},
+           {plus_addresses::features::kPlusAddressExcludedSites.name,
+            kExcludedDomainEtldPlus1}}},
          {plus_addresses::features::kPlusAddressFallbackFromContextMenu, {}}},
         /*disabled_features=*/{});
   }
@@ -753,6 +761,31 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, ClassifiedForm) {
       CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id));
   autofill_context_menu_manager()->AppendItems();
 
+  EXPECT_THAT(menu_model(), OnlyPlusAddressFallbackAdded());
+}
+
+// Tests that no Plus Address fallbacks are added on excluded domains.
+IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, ExcludedDomain) {
+  FormData form = CreateAndAttachClassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id));
+
+  // No entries are added on excluded domains.
+  autofill_client()->set_last_committed_primary_main_frame_url(
+      GURL(kExcludedDomainUrl));
+  autofill_context_menu_manager()->AppendItems();
+  EXPECT_THAT(menu_model(), Not(ContainsAnyAutofillFallbackEntries()));
+
+  // That is also true for subdirectories on the domain.
+  autofill_client()->set_last_committed_primary_main_frame_url(
+      GURL(kExcludedDomainUrl).Resolve("sub/index.html"));
+  autofill_context_menu_manager()->AppendItems();
+  EXPECT_THAT(menu_model(), Not(ContainsAnyAutofillFallbackEntries()));
+
+  // On non-excluded sites, the expected context menu entries are added.
+  autofill_client()->set_last_committed_primary_main_frame_url(
+      GURL("https://non-excluded-site.com"));
+  autofill_context_menu_manager()->AppendItems();
   EXPECT_THAT(menu_model(), OnlyPlusAddressFallbackAdded());
 }
 
