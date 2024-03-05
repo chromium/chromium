@@ -17,7 +17,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -41,7 +40,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -576,9 +574,6 @@ class ManagementStateProvider : public StateProvider,
 
   // StateProvider:
   bool IsActive() const override {
-    if (policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
-      return false;
-    }
     return user_accepted_account_management_ &&
            (!IsTransient() || temporarily_showing_);
   }

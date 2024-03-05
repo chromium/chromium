@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -39,8 +38,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/policy/core/common/management/management_service.h"
-#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -758,21 +755,7 @@ class AvatarToolbarButtonEnterpriseBadgingBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkBadgeOnManagedDeviceNotShown) {
-  policy::ScopedManagementServiceOverrideForTesting management(
-      policy::ManagementServiceFactory::GetForPlatform(),
-      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
-
-  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  ASSERT_TRUE(avatar_button->GetText().empty());
-
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      browser()->profile(), true);
-  EXPECT_EQ(avatar_button->GetText(), std::u16string());
-}
-
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkBadgeOnTransientModeTimesOut) {
+                       WorkBadgeOnTranientModeTimesOut) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
 
@@ -785,12 +768,12 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   EXPECT_EQ(avatar_button->GetText(), work_label);
 
   observer.WaitForShowEnterpriseTextEnded();
-  // After timeout the normal state is expect - no text.
+  // After timoue the normal state is expect - no text.
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkBadgeOnNonTransientModeDoesNotTimesOut) {
+                       WorkBadgeOnNonTranientModeDoesNotTimesOut) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
 
