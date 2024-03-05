@@ -57,8 +57,7 @@ void InlineItemResult::Trace(Visitor* visitor) const {
   visitor->Trace(shape_result);
   visitor->Trace(hyphen);
   visitor->Trace(layout_result);
-  if (positioned_float)
-    visitor->Trace(positioned_float.value());
+  visitor->Trace(positioned_float);
 }
 
 }  // namespace blink

@@ -37,6 +37,34 @@ struct PositionedFloat;
 struct CORE_EXPORT InlineItemResult {
   DISALLOW_NEW();
 
+  // A wrapper around PositionedFloat that acts like an std::optional but traces
+  // the underlying value regardless of whether or not it was initialized. It is
+  // uni-directional in the sense that is never reset after being assigned to.
+  class OptionalPositionedFloat {
+    DISALLOW_NEW();
+
+   public:
+    OptionalPositionedFloat& operator=(PositionedFloat value) {
+      has_value_ = true;
+      value_ = value;
+      return *this;
+    }
+    explicit operator bool() const { return has_value_; }
+    PositionedFloat* operator->() {
+      DCHECK(has_value_);
+      return &value_;
+    }
+    const PositionedFloat* operator->() const {
+      return const_cast<OptionalPositionedFloat*>(this)->operator->();
+    }
+
+    void Trace(Visitor* visitor) const { visitor->Trace(value_); }
+
+   private:
+    bool has_value_ = false;
+    PositionedFloat value_;
+  };
+
  public:
   InlineItemResult() = default;
   InlineItemResult(const InlineItem*,
@@ -95,12 +123,7 @@ struct CORE_EXPORT InlineItemResult {
   // PositionedFloat for floating inline items. Should only be present for
   // positioned floats (not unpositioned). It indicates where it was placed
   // within the BFC.
-  GC_PLUGIN_IGNORE(
-      "InlineItemResult is used only either on stack or in a HeapVector (see "
-      "InlineItemResults below). Concurrent marking of InlineItemResult in "
-      "HeapVector is not enabled via VectorTraits, so this std::optional is "
-      "currently safe")
-  std::optional<PositionedFloat> positioned_float;
+  OptionalPositionedFloat positioned_float;
   ExclusionSpace exclusion_space_before_position_float;
 
   // Margins, borders, and padding for open tags.
