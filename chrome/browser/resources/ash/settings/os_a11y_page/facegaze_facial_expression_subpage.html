@@ -1,1 +1,69 @@
-<style include="settings-shared"></style>
+<style include="settings-shared">
+  :host {
+    --cr-section-indent-width: 60px;
+  }
+
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  settings-toggle-button,
+  cr-link-row {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+</style>
+
+<!-- TODO(b:322510392): Implement page to spec when spec is ready. -->
+<!-- TODO(b:322510392): Move strings to strings file for translation. -->
+<!-- TODO(b:322510392): Use Polymer repeat for macros instead of
+    hard-coding them. -->
+
+<h2 class="sub-item">Left click</h2>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Face gesture
+  </div>
+  <settings-dropdown-menu
+      id="leftClickDropdown"
+      menu-options="[[leftClickMenuOptions_]]"
+      pref="{{leftClickPref_}}"
+      label="Facial gesture">
+  </settings-dropdown-menu>
+</div>
+<h2 class="hr">Right click</h2>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Face gesture
+  </div>
+  <settings-dropdown-menu
+      id="rightClickDropdown"
+      menu-options="[[rightClickMenuOptions_]]"
+      pref="{{rightClickPref_}}"
+      label="Facial gesture">
+  </settings-dropdown-menu>
+</div>
+<h2 class="hr">Reset cursor to center</h2>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Face gesture
+  </div>
+  <settings-dropdown-menu
+      id="resetCursorDropdown"
+      menu-options="[[resetCursorMenuOptions_]]"
+      pref="{{resetCursorPref_}}"
+      label="Facial gesture">
+  </settings-dropdown-menu>
+</div>
+<h2 class="hr">Toggle dictation</h2>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Face gesture
+  </div>
+  <settings-dropdown-menu
+      id="toggleDictationDropdown"
+      menu-options="[[toggleDictationMenuOptions_]]"
+      pref="{{toggleDictationPref_}}"
+      label="Facial gesture">
+  </settings-dropdown-menu>
+</div>

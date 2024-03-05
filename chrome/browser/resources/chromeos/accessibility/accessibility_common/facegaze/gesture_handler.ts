@@ -43,18 +43,17 @@ export class GestureHandler {
             if (Object.entries(pref.value).length === 0) {
               // TODO(b:322510392): Remove this hard-coded mapping after
               // settings page lands when users can pick their own mappings.
-              pref.value[FacialGesture.JAW_OPEN] = 'MOUSE_CLICK_LEFT';
-              pref.value[FacialGesture.BROW_INNER_UP] = 'MOUSE_CLICK_RIGHT';
-              pref.value[FacialGesture.BROWS_DOWN] = 'RESET_CURSOR';
+              pref.value[FacialGesture.JAW_OPEN] = MacroName.MOUSE_CLICK_LEFT;
+              pref.value[FacialGesture.BROW_INNER_UP] =
+                  MacroName.MOUSE_CLICK_RIGHT;
+              pref.value[FacialGesture.BROWS_DOWN] = MacroName.RESET_CURSOR;
             }
-            for (const [gesture, assignedAction] of Object.entries(
-                     pref.value)) {
-              if (assignedAction === '') {
+            for (const [gesture, assignedMacro] of Object.entries(pref.value)) {
+              if (assignedMacro === MacroName.UNSPECIFIED) {
                 continue;
               }
               this.gestureToMacroName_.set(
-                  gesture as FacialGesture,
-                  MacroName[assignedAction as keyof typeof MacroName]);
+                  gesture as FacialGesture, Number(assignedMacro));
               // TODO(b/309121742): Set this using the user's preferences.
               this.gestureToConfidence_.set(
                   gesture as FacialGesture,

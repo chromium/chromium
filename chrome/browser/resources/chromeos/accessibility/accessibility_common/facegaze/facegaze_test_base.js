@@ -203,9 +203,7 @@ FaceGazeTestBase = class extends E2ETestBase {
     if (config.gestureToMacroName) {
       const gestureToMacroName = {};
       for (const [gesture, macroName] of config.gestureToMacroName) {
-        // Map from enums to the string version of the macro name.
-        gestureToMacroName[gesture] =
-            Object.keys(MacroName).find(key => MacroName[key] === macroName);
+        gestureToMacroName[gesture] = macroName;
       }
       await this.setPref(
           GestureHandler.GESTURE_TO_MACRO_PREF, gestureToMacroName);
