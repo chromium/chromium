@@ -1603,11 +1603,23 @@ int AuthenticatorGPMPinSheetModel::pin_digits_count() const {
 }
 
 void AuthenticatorGPMPinSheetModel::SetPin(std::u16string pin) {
-  bool accept_button_enabled = IsAcceptButtonEnabled();
+  bool full_pin_typed_before = FullPinTyped();
   pin_ = std::move(pin);
-  if (accept_button_enabled != IsAcceptButtonEnabled()) {
+  bool full_pin_typed = FullPinTyped();
+
+  // When entering an existing PIN, the dialog completes as soon as all the
+  // digits have been typed. When creating a new PIN, the user has to hit enter
+  // to confirm.
+  if (mode_ == Mode::kPinEntry && full_pin_typed) {
+    dialog_model()->OnGPMPinEntered(pin_);
+  } else if (mode_ == Mode::kPinCreate &&
+             full_pin_typed_before != full_pin_typed) {
     dialog_model()->OnButtonsStateChange();
   }
+}
+
+bool AuthenticatorGPMPinSheetModel::FullPinTyped() const {
+  return static_cast<int>(pin_.length()) == pin_digits_count_;
 }
 
 std::u16string AuthenticatorGPMPinSheetModel::GetStepTitle() const {
@@ -1644,8 +1656,7 @@ bool AuthenticatorGPMPinSheetModel::IsAcceptButtonVisible() const {
 }
 
 bool AuthenticatorGPMPinSheetModel::IsAcceptButtonEnabled() const {
-  return IsAcceptButtonVisible() &&
-         static_cast<int>(pin_.length()) == pin_digits_count_;
+  return mode_ == Mode::kPinCreate && FullPinTyped();
 }
 
 bool AuthenticatorGPMPinSheetModel::IsForgotGPMPinButtonVisible() const {

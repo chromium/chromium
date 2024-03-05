@@ -698,6 +698,8 @@ class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
   void SetPin(std::u16string pin);
 
  private:
+  bool FullPinTyped() const;
+
   // AuthenticatorSheetModelBase:
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
