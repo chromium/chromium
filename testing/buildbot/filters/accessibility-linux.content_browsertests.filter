@@ -1,7 +1,7 @@
 # These tests are run on the main builders and don't need to also be
 # run here.
 -Accessibility*
--All/DumpAccessibilityTreeTest.*
+-All/DumpAccessibility*
 -NavigationBrowserTest.SameDocumentLongURL204PopupHashNavigation
 -PortalBrowserTest.OrphanedPortalAccessibilityReset
 -SnapshotAXTree*
