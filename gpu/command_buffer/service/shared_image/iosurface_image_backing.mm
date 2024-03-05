@@ -1641,9 +1641,7 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
     return true;
   }
 
-  if (usage() &
-          (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE) &&
-      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
     // If this image could potentially be shared with WebGPU's Metal
     // device, it's necessary to synchronize between the two devices.
     // If any Metal shared events have been enqueued (the assumption
