@@ -13,7 +13,7 @@ load("./config.star", "config")
 load("./cros.star", "cros")
 
 # TODO: b/323091468 - Propagate target android ABI and android SDK version
-# from GN, and remove remove hardcoded filegroups.
+# from GN, and remove the hardcoded filegroups.
 android_archs = [
     "aarch64-linux-android",
     "arm-linux-androideabi",
