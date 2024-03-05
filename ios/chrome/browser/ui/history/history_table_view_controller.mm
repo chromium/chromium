@@ -1230,9 +1230,10 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   if (!self.browser) {
     return;
   }
+  web::WebState* currentWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
   bool is_ntp =
-      self.browser->GetWebStateList()->GetActiveWebState()->GetVisibleURL() ==
-      kChromeUINewTabURL;
+      currentWebState && currentWebState->GetVisibleURL() == kChromeUINewTabURL;
   new_tab_page_uma::RecordNTPAction(
       self.browser->GetBrowserState()->IsOffTheRecord(), is_ntp,
       new_tab_page_uma::ACTION_OPENED_HISTORY_ENTRY);
