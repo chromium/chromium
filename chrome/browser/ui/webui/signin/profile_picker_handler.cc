@@ -1264,6 +1264,8 @@ void ProfilePickerHandler::OnVisibilityChanged(content::Visibility visibility) {
 void ProfilePickerHandler::HandleOpenAshAccountSettingsPage(
     const base::Value::List& args) {
   std::string settings_url = chrome::kChromeUIOSSettingsURL;
+  // TODO(b/326488045) Update Settings path to kPeopleSectionPath when Settings
+  // revamp is launched.
   settings_url.append(chromeos::settings::mojom::kMyAccountsSubpagePath);
   lacros_url_handling::NavigateInAsh(GURL(settings_url));
 }
