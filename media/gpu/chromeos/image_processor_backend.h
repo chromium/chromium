@@ -33,9 +33,6 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
   // Used when calling the "legacy" Process() method with buffers that are
   // managed by the processor. The first argument is the index of the returned
   // buffer.
-  using LegacyFrameReadyCB =
-      base::OnceCallback<void(size_t, scoped_refptr<VideoFrame>)>;
-  // FrameResource version of LegacyFrameReadyCB
   using LegacyFrameResourceReadyCB =
       base::OnceCallback<void(size_t, scoped_refptr<FrameResource>)>;
 
@@ -111,15 +108,6 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
   virtual void ProcessFrame(scoped_refptr<FrameResource> input_frame,
                             scoped_refptr<FrameResource> output_frame,
                             FrameResourceReadyCB cb) = 0;
-
-  // Process |frame| and store in in a ImageProcessor-owned output buffer. Only
-  // used when output mode is ALLOCATE. After processing, call |cb| with the
-  // buffer.
-  // If ALLOCATE mode is not supported, the implementation is optional. In this
-  // case, this method should not be called and the default implementation will
-  // panic.
-  virtual void ProcessLegacy(scoped_refptr<VideoFrame> frame,
-                             LegacyFrameReadyCB cb);
 
   // Process |frame| and store in in a ImageProcessor-owned output buffer. Only
   // used when output mode is ALLOCATE. After processing, call |cb| with the

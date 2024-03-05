@@ -58,9 +58,6 @@ ImageProcessor::ClientCallback::ClientCallback(FrameReadyCB ready_cb)
 ImageProcessor::ClientCallback::ClientCallback(FrameResourceReadyCB ready_cb)
     : frame_resource_ready_cb(std::move(ready_cb)) {}
 ImageProcessor::ClientCallback::ClientCallback(
-    LegacyFrameReadyCB legacy_ready_cb)
-    : legacy_ready_cb(std::move(legacy_ready_cb)) {}
-ImageProcessor::ClientCallback::ClientCallback(
     LegacyFrameResourceReadyCB legacy_frame_resource_ready_cb)
     : legacy_frame_resource_ready_cb(
           std::move(legacy_frame_resource_ready_cb)) {}
@@ -248,56 +245,6 @@ void ImageProcessor::OnProcessFrameResourceDone(
   pending_cbs_.erase(it);
 
   std::move(cb).Run(std::move(frame));
-}
-
-bool ImageProcessor::Process(scoped_refptr<VideoFrame> frame,
-                             LegacyFrameReadyCB cb) {
-  DVLOGF(4);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-  DCHECK_EQ(output_mode(), OutputMode::ALLOCATE);
-
-  int cb_index = StoreCallback(std::move(cb));
-  auto ready_cb = base::BindOnce(&ImageProcessor::OnProcessLegacyDoneThunk,
-                                 client_task_runner_, weak_this_, cb_index);
-  backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ImageProcessorBackend::ProcessLegacy,
-                                base::Unretained(backend_.get()),
-                                std::move(frame), std::move(ready_cb)));
-  return true;
-}
-
-// static
-void ImageProcessor::OnProcessLegacyDoneThunk(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    std::optional<base::WeakPtr<ImageProcessor>> weak_this,
-    int cb_index,
-    size_t buffer_id,
-    scoped_refptr<VideoFrame> frame) {
-  DVLOGF(4);
-  DCHECK(weak_this);
-
-  task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ImageProcessor::OnProcessLegacyDone, *weak_this, cb_index,
-                     buffer_id, std::move(frame)));
-}
-
-void ImageProcessor::OnProcessLegacyDone(int cb_index,
-                                         size_t buffer_id,
-                                         scoped_refptr<VideoFrame> frame) {
-  DVLOGF(4);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-
-  auto it = pending_cbs_.find(cb_index);
-  // Skip if the callback is dropped by Reset().
-  if (it == pending_cbs_.end())
-    return;
-
-  DCHECK(it->second.legacy_ready_cb);
-  LegacyFrameReadyCB cb = std::move(it->second.legacy_ready_cb);
-  pending_cbs_.erase(it);
-
-  std::move(cb).Run(buffer_id, std::move(frame));
 }
 
 bool ImageProcessor::Process(scoped_refptr<FrameResource> frame,
