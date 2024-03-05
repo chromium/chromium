@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.allOf;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
@@ -33,11 +34,19 @@ public class ViewElement {
 
     private final Matcher<View> mViewMatcher;
     private final @Scope int mScope;
-    private final String mViewMatcherDescription;
+    private final String mId;
 
     /** Alias for {@link #sharedViewElement(Matcher)} as the default way to declare ViewElements. */
     public static ViewElement viewElement(Matcher<View> viewMatcher) {
         return sharedViewElement(viewMatcher);
+    }
+
+    /**
+     * Version of {@link #sharedViewElement(Matcher, String)} using the Matcher |description| as
+     * |id|.
+     */
+    public static ViewElement sharedViewElement(Matcher<View> viewMatcher) {
+        return new ViewElement(viewMatcher, Scope.SHARED, /* id= */ null);
     }
 
     /**
@@ -50,8 +59,16 @@ public class ViewElement {
      *
      * <p>This is a good default method to the declare ViewElements; when in doubt, use this.
      */
-    public static ViewElement sharedViewElement(Matcher<View> viewMatcher) {
-        return new ViewElement(viewMatcher, Scope.SHARED);
+    public static ViewElement sharedViewElement(Matcher<View> viewMatcher, String id) {
+        return new ViewElement(viewMatcher, Scope.SHARED, id);
+    }
+
+    /**
+     * Version of {@link #scopedViewElement(Matcher, String)} using the Matcher |description| as
+     * |id|.
+     */
+    public static ViewElement scopedViewElement(Matcher<View> viewMatcher) {
+        return new ViewElement(viewMatcher, Scope.CONDITIONAL_STATE_SCOPED, /* id= */ null);
     }
 
     /**
@@ -62,8 +79,16 @@ public class ViewElement {
      * <p>ConditionalState-scoped ViewElements are the most restrictive; they generate an EXIT
      * condition that the View instance matched is gone.
      */
-    public static ViewElement scopedViewElement(Matcher<View> viewMatcher) {
-        return new ViewElement(viewMatcher, Scope.CONDITIONAL_STATE_SCOPED);
+    public static ViewElement scopedViewElement(Matcher<View> viewMatcher, String id) {
+        return new ViewElement(viewMatcher, Scope.CONDITIONAL_STATE_SCOPED, id);
+    }
+
+    /**
+     * Version of {@link #unscopedViewElement(Matcher, String)} using the Matcher |description| as
+     * |id|.
+     */
+    public static ViewElement unscopedViewElement(Matcher<View> viewMatcher) {
+        return new ViewElement(viewMatcher, Scope.UNSCOPED, /* id= */ null);
     }
 
     /**
@@ -74,23 +99,29 @@ public class ViewElement {
      * <p>Unscoped ViewElements are the most permissive; they do not generate EXIT conditions,
      * therefore they may or may not be gone.
      */
-    public static ViewElement unscopedViewElement(Matcher<View> viewMatcher) {
-        return new ViewElement(viewMatcher, Scope.UNSCOPED);
+    public static ViewElement unscopedViewElement(Matcher<View> viewMatcher, String id) {
+        return new ViewElement(viewMatcher, Scope.UNSCOPED, id);
     }
 
-    private ViewElement(Matcher<View> viewMatcher, @Scope int scope) {
+    private ViewElement(Matcher<View> viewMatcher, @Scope int scope, @Nullable String id) {
         mViewMatcher = viewMatcher;
         mScope = scope;
 
-        // Capture the description as soon as possible to compare ViewElements added to different
-        // states by their description. Espresso Matcher descriptions are not stable; the integer
-        // resource ids are translated when a View is provided. See examples in
-        // https://crbug.com/41494895#comment7.
-        mViewMatcherDescription = StringDescription.toString(mViewMatcher);
+        if (id != null) {
+            mId = id;
+        } else {
+            // Capture the description as soon as possible to compare ViewElements added to
+            // different
+            // states by their description. Espresso Matcher descriptions are not stable; the
+            // integer
+            // resource ids are translated when a View is provided. See examples in
+            // https://crbug.com/41494895#comment7.
+            mId = StringDescription.toString(mViewMatcher);
+        }
     }
 
-    String getViewMatcherDescription() {
-        return mViewMatcherDescription;
+    String getId() {
+        return "VE/" + mId;
     }
 
     /**

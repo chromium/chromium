@@ -30,7 +30,6 @@ import java.util.Set;
  */
 class ViewElementInState implements ElementInState {
     private final ViewElement mViewElement;
-    private final String mId;
     private final @Nullable Condition mGate;
 
     private final Condition mEnterCondition;
@@ -39,8 +38,6 @@ class ViewElementInState implements ElementInState {
     ViewElementInState(ViewElement viewElement, @Nullable Condition gate) {
         mViewElement = viewElement;
         mGate = gate;
-
-        mId = "VE/" + viewElement.getViewMatcherDescription();
 
         Matcher<View> viewMatcher = mViewElement.getViewMatcher();
         MatchedViewProvider matchedViewProvider;
@@ -71,7 +68,7 @@ class ViewElementInState implements ElementInState {
 
     @Override
     public String getId() {
-        return mId;
+        return mViewElement.getId();
     }
 
     @Override

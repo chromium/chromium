@@ -52,7 +52,7 @@ public class LogicalElement implements ElementInState {
                 /* isScoped= */ true,
                 description,
                 checkFunction,
-                description);
+                /* id= */ null);
     }
 
     /**
@@ -79,7 +79,7 @@ public class LogicalElement implements ElementInState {
                 /* isScoped= */ true,
                 description,
                 checkFunction,
-                description);
+                /* id= */ null);
     }
 
     /**
@@ -105,7 +105,7 @@ public class LogicalElement implements ElementInState {
                 /* isScoped= */ false,
                 description,
                 checkFunction,
-                description);
+                /* id= */ null);
     }
 
     /**
@@ -135,7 +135,7 @@ public class LogicalElement implements ElementInState {
                 /* isScoped= */ false,
                 description,
                 checkFunction,
-                description);
+                /* id= */ null);
     }
 
     LogicalElement(
@@ -143,11 +143,11 @@ public class LogicalElement implements ElementInState {
             boolean isScoped,
             String description,
             Callable<Boolean> checkFunction,
-            String id) {
+            @Nullable String id) {
         mIsRunOnUiThread = isRunOnUiThread;
         mIsScoped = isScoped;
         mDescription = description;
-        mId = "LE/" + id;
+        mId = "LE/" + (id != null ? id : description);
 
         mEnterCondition =
                 new Condition(mIsRunOnUiThread) {
