@@ -3343,7 +3343,7 @@
   {
     "name": "enable-pip-tuck",
     "owners": [ "takise@chromium.org" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
   },
   {
     "name": "enable-pix-detection",
