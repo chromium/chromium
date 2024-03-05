@@ -1270,7 +1270,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 this, getSnackbarManager(), SETTINGS_LAUNCHER);
 
         if (!isWarmOnResume()) {
-            SuggestionsMetrics.recordArticlesListVisible();
+            Callback<ProfileProvider> profileProviderCallback =
+                    (profileProvider) -> {
+                        SuggestionsMetrics.recordArticlesListVisible(
+                                profileProvider.getOriginalProfile());
+                    };
+            if (getProfileProviderSupplier().hasValue()) {
+                profileProviderCallback.onResult(getProfileProviderSupplier().get());
+            } else {
+                getProfileProviderSupplier().onAvailable(profileProviderCallback);
+            }
         } else {
             mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
         }

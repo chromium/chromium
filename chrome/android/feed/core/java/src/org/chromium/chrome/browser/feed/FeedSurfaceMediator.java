@@ -990,7 +990,7 @@ public class FeedSurfaceMediator
         // which is called by the prefService observer.
         getPrefService().setBoolean(Pref.ARTICLES_LIST_VISIBLE, isExpanded);
         FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_TOGGLED_FEED);
-        SuggestionsMetrics.recordArticlesListVisible();
+        SuggestionsMetrics.recordArticlesListVisible(mProfile);
 
         int streamType =
                 mTabToStreamMap

@@ -9,7 +9,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** Exposes methods to report suggestions related events, for UMA or Fetch scheduling purposes. */
@@ -48,10 +48,9 @@ public abstract class SuggestionsMetrics {
     // Histogram recordings
 
     /** Records whether article suggestions are set visible by user. */
-    public static void recordArticlesListVisible() {
+    public static void recordArticlesListVisible(Profile profile) {
         RecordHistogram.recordBooleanHistogram(
                 "NewTabPage.ContentSuggestions.ArticlesListVisible",
-                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                        .getBoolean(Pref.ARTICLES_LIST_VISIBLE));
+                UserPrefs.get(profile).getBoolean(Pref.ARTICLES_LIST_VISIBLE));
     }
 }
