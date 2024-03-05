@@ -157,11 +157,6 @@ tast_disabled_tests_from_lacros_all = [
 ]
 
 if (!is_official_build) {
-  # b/274341001: By design, ui.ChromeCrashEarly.strict fails on non-official
-  # builds.
-  tast_disabled_tests_from_chrome_all += [ "ui.ChromeCrashEarly.strict" ]
-  tast_disabled_tests_from_lacros_all += [ "ui.ChromeCrashEarly.strict_lacros" ]
-
   # b/317943159 public builders fail to install crostini.
   tast_disabled_tests_from_chrome_all += [ "crostini.*" ]
 
