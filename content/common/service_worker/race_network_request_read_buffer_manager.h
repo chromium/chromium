@@ -31,8 +31,14 @@ class CONTENT_EXPORT RaceNetworkRequestReadBufferManager {
   void CancelWatching();
   bool IsWatching() { return watcher_.IsWatching(); }
 
+  // Returns MojoResult of DataPipe::ReadData() result, and actual read data.
+  // The caller must call this only when |RemainingBuffer()| size is zero.
   std::pair<MojoResult, base::span<const char>> ReadData();
+  // Consumes |buffer_| by given |num_bytes_read| bytes.
   void ConsumeData(size_t num_bytes_read);
+
+  size_t BytesRemaining() const;
+  base::span<const char> RemainingBuffer() const;
 
  private:
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;

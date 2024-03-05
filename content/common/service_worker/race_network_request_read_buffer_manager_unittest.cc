@@ -54,8 +54,7 @@ TEST(RaceNetworkRequestReadBufferManagerTest, ReadData) {
   buffer_manager.Watch(base::BindLambdaForTesting(
       [&](MojoResult result, const mojo::HandleSignalsState& state) {
         EXPECT_EQ(result, MOJO_RESULT_OK);
-        // First ReadData() operation, it returns the buffer with the whole
-        // data.
+        // ReadData() operation, it returns the buffer with the whole data.
         std::pair<MojoResult, base::span<const char>> first_result =
             buffer_manager.ReadData();
         EXPECT_EQ(first_result.first, MOJO_RESULT_OK);
@@ -66,14 +65,12 @@ TEST(RaceNetworkRequestReadBufferManagerTest, ReadData) {
         size_t num_bytes_to_consume = 2;
         buffer_manager.ConsumeData(num_bytes_to_consume);
 
-        // Second ReadData() operation, it returns the buffer with the remaining
+        // RemainingBuffer() operation, it returns the buffer with the remaining
         // data.
-        std::pair<MojoResult, base::span<const char>> second_result =
-            buffer_manager.ReadData();
-        EXPECT_EQ(second_result.first, MOJO_RESULT_OK);
-        EXPECT_EQ(second_result.second.size(),
-                  num_bytes - num_bytes_to_consume);
-        EXPECT_EQ(second_result.second.data(),
+        base::span<const char> remaining_buffer =
+            buffer_manager.RemainingBuffer();
+        EXPECT_EQ(remaining_buffer.size(), num_bytes - num_bytes_to_consume);
+        EXPECT_EQ(remaining_buffer.data(),
                   std::string_view(expected_data).substr(num_bytes_to_consume));
 
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
