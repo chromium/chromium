@@ -796,6 +796,17 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
   resource.resource_source =
       viz::TransferableResource::ResourceSource::kDrawingBuffer;
 
+  if (contents_changed_ && !using_swap_chain_) {
+    // Restart SharedImage access on the single SharedImage to ensure a write
+    // fence is generated on the shared image to guarantee display reads this
+    // frame completely. Display may still read parts of subsequent frames,
+    // which is okay.
+    gl_->EndSharedImageAccessDirectCHROMIUM(color_buffer->texture_id);
+    gl_->BeginSharedImageAccessDirectCHROMIUM(
+        color_buffer->texture_id,
+        GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+  }
+
   return ExternalCanvasResource::Create(
       resource, viz::ReleaseCallback(), context_provider_->GetWeakPtr(),
       resource_provider, filter_quality_,
