@@ -108,15 +108,6 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
   [[nodiscard]] bool QueueDMABuf(
       const std::vector<gfx::NativePixmapPlane>& planes,
       V4L2RequestRef* request_ref = nullptr) &&;
-  // Queue a |video_frame| using its file descriptors as DMABUFs. The VideoFrame
-  // must have been constructed from its file descriptors.
-  // The particularity of this method is that a reference to |video_frame| is
-  // kept and made available again when the buffer is dequeued through
-  // |V4L2ReadableBufferRef::GetVideoFrame()|. |video_frame| is thus guaranteed
-  // to be alive until either all the |V4L2ReadableBufferRef| from the dequeued
-  // buffer get out of scope, or |V4L2Queue::Streamoff()| is called.
-  [[nodiscard]] bool QueueDMABuf(scoped_refptr<VideoFrame> video_frame,
-                                 V4L2RequestRef* request_ref = nullptr) &&;
   // Queues |frame_resource| using its file descriptors as DMABUFs. The
   // FrameResource must use DMABUF fd-based storage. When called, this method
   // keeps a reference to |frame_resource| and releases it when the buffer is
@@ -157,18 +148,13 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
   // Set the data offset for |plane|, in bytes.
   void SetPlaneDataOffset(const size_t plane, const size_t data_offset);
 
-  // Return the VideoFrame underlying this buffer. The VideoFrame's layout
+  // Return the FrameResource underlying this buffer. The FrameResource's layout
   // will match that of the V4L2 format. This method will *always* return the
-  // same VideoFrame instance for a given V4L2 buffer. Moreover, the VideoFrame
-  // instance will also be the same across V4L2WritableBufferRef and
-  // V4L2ReadableBufferRef if both references point to the same V4L2 buffer.
+  // same FrameResource instance for a given V4L2 buffer. Moreover, the
+  // FrameResource instance will also be the same across V4L2WritableBufferRef
+  // and V4L2ReadableBufferRef if both references point to the same V4L2 buffer.
   // Note: at the moment, this method is valid for MMAP buffers only. It will
   // return nullptr for any other buffer type.
-  [[nodiscard]] scoped_refptr<VideoFrame> GetVideoFrame();
-
-  // GetFrameResource() is similar to GetVideoFrame(), but is used when the
-  // queue is FrameResource-based. I.e. when the frame is queued with
-  // |V4L2WritableBufferRef::QueueDMABuf(scoped_refptr<FrameResource> ...)|.
   [[nodiscard]] scoped_refptr<FrameResource> GetFrameResource();
 
   // Return the V4L2 buffer ID of the underlying buffer.
@@ -240,18 +226,13 @@ class MEDIA_GPU_EXPORT V4L2ReadableBuffer
   // removed. See crbug/879971
   size_t BufferId() const;
 
-  // Return the VideoFrame underlying this buffer. The VideoFrame's layout
+  // Return the FrameResource underlying this buffer. The FrameResource's layout
   // will match that of the V4L2 format. This method will *always* return the
-  // same VideoFrame instance for a given V4L2 buffer. Moreover, the VideoFrame
-  // instance will also be the same across V4L2WritableBufferRef and
-  // V4L2ReadableBufferRef if both references point to the same V4L2 buffer.
+  // same FrameResource instance for a given V4L2 buffer. Moreover, the
+  // FrameResource instance will also be the same across V4L2WritableBufferRef
+  // and V4L2ReadableBufferRef if both references point to the same V4L2 buffer.
   // Note: at the moment, this method is valid for MMAP buffers only. It will
   // return nullptr for any other buffer type.
-  [[nodiscard]] scoped_refptr<VideoFrame> GetVideoFrame();
-
-  // GetFrameResource() is similar to GetVideoFrame(), but should be used when
-  // the queue is FrameResource-based. I.e. when frames are queued with
-  // |V4L2WritableBufferRef::QueueDMABuf(scoped_refptr<FrameResource> ...)|.
   [[nodiscard]] scoped_refptr<FrameResource> GetFrameResource();
 
  private:
@@ -266,7 +247,6 @@ class MEDIA_GPU_EXPORT V4L2ReadableBuffer
 
   std::unique_ptr<V4L2BufferRefBase> buffer_data_;
   // If this buffer was a DMABUF buffer queued with
-  // QueueDMABuf(scoped_refptr<VideoFrame>) or
   // QueueDMABuf(scoped_refptr<FrameResource>), then this will hold the frame
   // that was passed at the time of queueing.
   scoped_refptr<FrameResource> frame_;
