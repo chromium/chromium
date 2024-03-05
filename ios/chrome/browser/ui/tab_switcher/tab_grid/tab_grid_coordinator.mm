@@ -428,6 +428,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       return;
     }
 
+    strongSelf.baseViewController.childViewControllerForStatusBarStyle = nil;
+
     if (IsNewTabGridTransitionsEnabled()) {
       [self
           performBrowserToTabGridTransitionWithAnimationEnabled:animated
@@ -441,12 +443,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                      completion:
                                                          transitionCompletionBlock];
     }
-    // On iOS 15+, snapshotting views with afterScreenUpdates:YES waits 0.5s
-    // for the status bar style to update. Work around that delay by taking
-    // the snapshot first (during
-    // `transitionFromBrowser:toTabGrid:activePage:withCompletion`) and then
-    // updating the status bar style afterwards.
-    strongSelf.baseViewController.childViewControllerForStatusBarStyle = nil;
   };
 
   // If a BVC is currently being presented, dismiss it.  This will trigger any
@@ -535,6 +531,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     self.firstPresentation = NO;
   };
 
+  self.baseViewController.childViewControllerForStatusBarStyle =
+      self.bvcContainer.currentBVC;
+
   [self.baseViewController contentWillDisappearAnimated:animated];
 
   if (IsNewTabGridTransitionsEnabled()) {
@@ -548,14 +547,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                      completion:
                                                          extendedCompletion];
   }
-
-  // On iOS 15+, snapshotting views with afterScreenUpdates:YES waits 0.5s for
-  // the status bar style to update. Work around that delay by taking the
-  // snapshot first (during
-  // `transitionFromTabGrid:toBrowser:activePage:withCompletion`) and then
-  // updating the status bar style afterwards.
-  self.baseViewController.childViewControllerForStatusBarStyle =
-      self.bvcContainer.currentBVC;
 }
 
 #pragma mark - Private
