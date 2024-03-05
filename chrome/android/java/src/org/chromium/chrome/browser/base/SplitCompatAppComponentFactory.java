@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.BundleUtils;
@@ -34,7 +35,7 @@ import java.lang.annotation.RetentionPolicy;
  * trying to cast between the two ClassLoaders. This class attempts to workaround this bug by
  * explicitly setting the activity's ClassLoader. See b/172602571 for more details.
  *
- * Note: this workaround is not needed for services, since they always uses the base module's
+ * <p>Note: this workaround is not needed for services, since they always uses the base module's
  * ClassLoader, see b/169196314 for more details.
  */
 @RequiresApi(Build.VERSION_CODES.P)
@@ -64,8 +65,10 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
     private static @ProcessCreationReason int sProcessCreationReason =
             ProcessCreationReason.UNINITIALIZED;
 
+    @NonNull
     @Override
-    public Activity instantiateActivity(ClassLoader cl, String className, Intent intent)
+    public Activity instantiateActivity(
+            @NonNull ClassLoader cl, @NonNull String className, Intent intent)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         setProcessCreationReason(ProcessCreationReason.ACTIVITY);
 
@@ -75,8 +78,9 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
         return super.instantiateActivity(getComponentClassLoader(cl, className), className, intent);
     }
 
+    @NonNull
     @Override
-    public ContentProvider instantiateProvider(ClassLoader cl, String className)
+    public ContentProvider instantiateProvider(@NonNull ClassLoader cl, @NonNull String className)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         // Android always initializes all ContentProviders when it initializes the Application, so
         // post a task to set the reason asynchronously which will run after Android creates any
@@ -92,8 +96,10 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
         return super.instantiateProvider(getComponentClassLoader(cl, className), className);
     }
 
+    @NonNull
     @Override
-    public BroadcastReceiver instantiateReceiver(ClassLoader cl, String className, Intent intent)
+    public BroadcastReceiver instantiateReceiver(
+            @NonNull ClassLoader cl, @NonNull String className, Intent intent)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         setProcessCreationReason(ProcessCreationReason.BROADCAST_RECEIVER);
 
@@ -103,8 +109,10 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
         return super.instantiateReceiver(getComponentClassLoader(cl, className), className, intent);
     }
 
+    @NonNull
     @Override
-    public Service instantiateService(ClassLoader cl, String className, Intent intent)
+    public Service instantiateService(
+            @NonNull ClassLoader cl, @NonNull String className, Intent intent)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         setProcessCreationReason(ProcessCreationReason.SERVICE);
         return super.instantiateService(cl, className, intent);
