@@ -581,6 +581,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1444628761356461360">Seadet haldab seadme omanik <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Teemale ei õnnestunud laadida üksust <ph name="IMAGE_PATH" />.</translation>
 <translation id="1447531650545977377">&amp;Sünkroonimise sisselülitamine ...</translation>
+<translation id="1447895950459090752">Vahelehe kohal kursori hõljutamisel kuvatav eelvaatekaart</translation>
 <translation id="1448264954024227422">Saate seda kontot kasutada Androidi rakendustega. Kui soovite konto lisada kellegi teise jaoks, <ph name="LINK_BEGIN" />lisage selle asemel oma seadmesse <ph name="DEVICE_TYPE" /> uus inimene<ph name="LINK_END" />.
 
 Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. Saate Androidi rakenduste lube hallata jaotises <ph name="APPS_LINK_BEGIN" />Rakenduste seaded<ph name="APPS_LINK_END" />.</translation>
@@ -2821,6 +2822,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3094521107841754472">Eelmine hind oli <ph name="PREVIOUS_PRICE" />, uus hind on <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Järjehoidjad, paroolid ja muud brauseri andmed sünkroonitakse teie peamise kontoga.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potentsiaalselt ohtlik laiendus on välja lülitatud. Võite selle ka eemaldada.}other{{NUM_EXTENSIONS} potentsiaalselt ohtlikku laiendust on välja lülitatud. Võite need ka eemaldada.}}</translation>
+<translation id="3101057112460908988">Kuva mälukasutus</translation>
 <translation id="3101126716313987672">Hämar valgus</translation>
 <translation id="3101709781009526431">Kuupäev ja kellaaeg</translation>
 <translation id="310297983047869047">Eelmine slaid</translation>
@@ -2898,6 +2900,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3166443275568926403">Toimivus ja aku olek</translation>
 <translation id="3169930038976362151">Valige enda vajadustele vastav teema. Teema, taustapildi, ekraanisäästja ja muu muutmiseks puudutage töölauda pikalt.</translation>
 <translation id="3170072451822350649">Võite sisselogimise vahele jätta ja <ph name="LINK_START" />sirvida külalisena<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Sisu</translation>
 <translation id="3177430966804511955">Isoleeritud veebirakenduste haldamine (beeta)</translation>
 <translation id="31774765611822736">Uus vaheleht vasakul</translation>
 <translation id="3177909033752230686">Lehe keel:</translation>
@@ -3077,6 +3080,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3315158641124845231">Peida <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Lugejarežiimi sisenemine</translation>
 <translation id="3317459757438853210">Kahepoolne</translation>
+<translation id="3317521105713541270">Loo rühmad</translation>
 <translation id="3317678681329786349">Kaamera ja mikrofon on blokeeritud</translation>
 <translation id="3319306431415395200">Pildil oleva teksti tõlkimine teenusega <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">OneDrive'iga ei saa ühendust luua. Proovige uuesti.</translation>
@@ -4433,6 +4437,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4364830672918311045">Kuva märguanded</translation>
 <translation id="4367513928820380646">Vaadake üle eemaldatud load</translation>
 <translation id="4367971618859387374">Kuvatav nimi</translation>
+<translation id="4368960422722232719">Kuva mälukasutus eelvaatekaardil, mida näidatakse, kui kursorit hõljutatakse vahelehe kohal</translation>
 <translation id="4369215744064167350">Veebisaidi taotlus kinnitati</translation>
 <translation id="4369233657762989723">Dikteerimine sees/väljas</translation>
 <translation id="436926121798828366">Saate seda igal ajal <ph name="SETTINGS_LINK" /> muuta</translation>
@@ -5352,6 +5357,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5093569275467863761">Vahemälu tagasi-edasiliikumiseks inkognito alamraamis: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Võite toetatud faile avada ja redigeerida selle rakendusega rakenduse Failid või muude rakenduste kaudu. Selle haldamiseks, millised failid vaikimisi selles rakenduses avatakse, <ph name="BEGIN_LINK" />vaadake, kuidas oma seadmes vaikerakendusi seadistada<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Side koostööd tegevate omarakendustega</translation>
+<translation id="5095252080770652994">Edenemine</translation>
 <translation id="5095507226704905004">Seda faili ei saa kopeerida, sest seda pole enam olemas</translation>
 <translation id="5095848221827496531">Tühista valik</translation>
 <translation id="5097002363526479830">Võrguga „<ph name="NAME" />” ühenduse loomine ebaõnnestus: <ph name="DETAILS" /></translation>
@@ -5503,6 +5509,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5213891612754844763">Kuva puhverserveri seaded</translation>
 <translation id="5214639857958972833">Järjehoidja „<ph name="BOOKMARK_TITLE" />” on loodud.</translation>
 <translation id="5215502535566372932">Valige riik</translation>
+<translation id="5215665166431745539">Kuva pildid</translation>
 <translation id="5220011581825921581">otsing + ülesnool</translation>
 <translation id="5222403284441421673">Ebaturvaline allalaadimine blokeeriti</translation>
 <translation id="5222676887888702881">Logi välja</translation>

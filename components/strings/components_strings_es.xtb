@@ -1764,6 +1764,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4358461427845829800">Gestiona tus métodos de pago...</translation>
 <translation id="4359160567981085931">Acabas de introducir tu contraseña en un sitio web engañoso. Chrome puede ayudarte. Para cambiar tu contraseña y notificar a Google de que tu cuenta podría estar en peligro, haz clic en Proteger cuenta.</translation>
 <translation id="4363222835916186793">Se han desactivado las alertas de este producto</translation>
+<translation id="4363729811203340554">Si compartes este dispositivo, Chrome puede pedirte que lo verifiques cada vez que pagues usando la función Autocompletar</translation>
 <translation id="4366943895537458493">Lámina</translation>
 <translation id="437040971055499437">Se ha producido una actividad relacionada con la seguridad</translation>
 <translation id="4371591986692297148">Inactivo</translation>
@@ -2284,6 +2285,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5447765697759493033">Este sitio web no va a traducirse</translation>
 <translation id="5452270690849572955">No se puede encontrar esta página (<ph name="HOST_NAME" />)</translation>
 <translation id="5455374756549232013">Marca de tiempo de política incorrecta</translation>
+<translation id="5456839782162429664">Verificar manualmente cada vez que pagues usando Autocompletar</translation>
 <translation id="5457113250005438886">No válido</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}other{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}}</translation>
 <translation id="5463625433003343978">Buscando dispositivos...</translation>
@@ -2381,6 +2383,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5633066919399395251">Es posible que los atacantes que se encuentren en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> intenten instalar programas peligrosos en tu ordenador para robar o eliminar tu información (por ejemplo, fotos, contraseñas, mensajes y tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Contenido engañoso bloqueado.</translation>
 <translation id="563371367637259496">Móvil</translation>
+<translation id="5634725266554983459">¿Activar verificación manual?</translation>
 <translation id="5635478143789726479">Términos y condiciones del vendedor</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Equipos y componentes de sonido</translation>
@@ -3067,6 +3070,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6973988895180423160">3,5 x 5 pulgadas</translation>
 <translation id="6978121630131642226">Buscadores</translation>
 <translation id="6978236010531171013">Compartir igualmente</translation>
+<translation id="6978722349058177832">Si compartes este dispositivo, Chromium puede pedirte que lo verifiques cada vez que pagues usando la función Autocompletar</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Silenciar (predeterminado)</translation>
 <translation id="6987806006823772670">Sobre (revestido)</translation>

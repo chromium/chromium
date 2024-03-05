@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">Schmetterlinge</translation>
 <translation id="188114911237521550">Dunklen Modus ausschalten</translation>
+<translation id="188268299367474594">Aus verfügbaren APNs auswählen</translation>
 <translation id="1885577615937958993">Medien vorspulen</translation>
 <translation id="1887850431809612466">Hardware-Version</translation>
 <translation id="189221451253258459">neongrünen</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">Fenster anzeigen</translation>
 <translation id="2513396635448525189">Anmeldebild</translation>
 <translation id="2517472476991765520">Scannen</translation>
+<translation id="2520213071283358374">Diesen APN verwenden</translation>
 <translation id="2521835766824839541">Vorheriger Titel</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Wird neu gestartet…</translation>
@@ -991,6 +993,7 @@
 <translation id="7177485034254901881">Dieses <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet. Administratoren können das Gerät per Remotezugriff konfigurieren.</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7180865173735832675">Anpassen</translation>
+<translation id="7182063559013288142">Instant-Hotspot</translation>
 <translation id="7184043045742675738">Klicke auf eine beliebige Taste, um deine Schaltfläche zu personalisieren. Du kannst die Taste mit der Maus oder den Pfeiltasten neu positionieren.</translation>
 <translation id="7206979415662233817">Nutzungsbedingungen</translation>
 <translation id="7210635925306941239">türkisen</translation>
@@ -1134,6 +1137,7 @@
 <translation id="8075838845814659848">Akkustand</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8079860070590459552">Blumenwiese</translation>
+<translation id="8081553043098820199">Ungültige APNs können dazu führen, dass deine Mobilfunkverbindung deaktiviert wird. Lege nur APNs fest, die von deinem Mobilfunkanbieter oder Administrator bereitgestellt wurden.</translation>
 <translation id="8082366717211101304">Auflösen des DNS von Android-Apps aus nicht möglich</translation>
 <translation id="8082644724189923105">Tastaturzone</translation>
 <translation id="808894953321890993">Passwort ändern</translation>

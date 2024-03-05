@@ -581,6 +581,7 @@
 <translation id="1444628761356461360">ఈ సెట్టింగ్‌ను పరికరం యజమాని అయిన <ph name="OWNER_EMAIL" /> నిర్వహిస్తున్నారు.</translation>
 <translation id="144518587530125858">థీమ్ కోసం '<ph name="IMAGE_PATH" />'ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="1447531650545977377">ఆన్ చేసి &amp;సింక్ చేయండి...</translation>
+<translation id="1447895950459090752">ట్యాబ్ హోవర్ ప్రివ్యూ కార్డ్</translation>
 <translation id="1448264954024227422">మీరు Android యాప్‌లతో ఈ ఖాతాను ఉపయోగించవచ్చు. వేరెవరి కోసం అయినా మీరు ఖాతాను జోడించాలనుకుంటే, బదులుగా మీ <ph name="DEVICE_TYPE" />‌కు <ph name="LINK_BEGIN" />కొత్త వ్యక్తిని జోడించండి<ph name="LINK_END" />.
 
 మీరు యాప్‌లకు ఇప్పటికే ఇచ్చిన అనుమతులను ఈ ఖాతాకు వర్తించవచ్చు. మీరు Android యాప్‌లకు అనుమతులను <ph name="APPS_LINK_BEGIN" />యాప్‌ల సెట్టింగ్‌లు<ph name="APPS_LINK_END" /> లింక్‌లో కంట్రోల్ చేయవచ్చు.</translation>
@@ -2828,6 +2829,7 @@
 <translation id="3094521107841754472">ధర <ph name="PREVIOUS_PRICE" /> నుండి <ph name="CURRENT_PRICE" />కు మారింది.</translation>
 <translation id="3095871294753148861">బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లతో పాటు ఇతర బ్రౌజింగ్ డేటా ప్రధాన ఖాతాతో సింక్ చేయబడ్డాయి.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 హానికరమైనది అయ్యే అవకాశం ఉన్న ఎక్స్‌టెన్షన్ ఆఫ్ చేయబడింది. మీరు కూడా దానిని తీసివేయవచ్చు.}other{{NUM_EXTENSIONS} హానికరమైనవి అయ్యే అవకాశం ఉన్న ఎక్స్‌టెన్షన్‌లు ఆఫ్ చేయబడ్డాయి. మీరు కూడా వాటిని తీసివేయవచ్చు.}}</translation>
+<translation id="3101057112460908988">మెమరీ వినియోగాన్ని చూపించండి</translation>
 <translation id="3101126716313987672">డిమ్ లైట్</translation>
 <translation id="3101709781009526431">తేదీ మరియు సమయం</translation>
 <translation id="310297983047869047">మునుపటి స్లయిడ్</translation>
@@ -2905,6 +2907,7 @@
 <translation id="3166443275568926403">పనితీరు, బ్యాటరీ స్టేట్</translation>
 <translation id="3169930038976362151">మీ అవసరాలకు తగిన రూపాన్ని ఎంచుకోండి. మీ రూపాన్ని, వాల్‌పేపర్‌ను, స్క్రీన్ సేవర్‌ను, ఇంకా మరిన్నింటిని మార్చడానికి, డెస్క్‌టాప్‌పై తాకి, నొక్కి ఉంచండి.</translation>
 <translation id="3170072451822350649">మీరు సైన్ ఇన్ చేయడాన్ని కూడా దాట వేయవచ్చు. <ph name="LINK_START" />అతిథిగా బ్రౌజ్ చేయవచ్చు<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">విషయం</translation>
 <translation id="3177430966804511955">ఐసోలేటెడ్ వెబ్ యాప్‌లను (బీటా) మేనేజ్ చేయండి</translation>
 <translation id="31774765611822736">ఎడమ వైపున కొత్త ట్యాబ్</translation>
 <translation id="3177909033752230686">పేజీ భాష:</translation>
@@ -2916,6 +2919,7 @@
 <translation id="3183139917765991655">ప్రొఫైల్ ఇంపోర్టర్</translation>
 <translation id="3183143381919926261">మొబైల్ డేటా నెట్‌వర్క్‌లు</translation>
 <translation id="3183613134231754987">ఈ పాస్-కీ కేవలం Windows Helloలో మాత్రమే సేవ్ చేయబడుతుంది. మీరు అజ్ఞాత విండోలన్నింటినీ మూసివేసిన తర్వాత, అది ఈ పరికరంలో అలాగే ఉంటుంది.</translation>
+<translation id="3183700187146209259">స్కానర్ సాఫ్ట్‌వేర్‌ను ఇన్‌స్టాల్ చేయడం సాధ్యపడదు</translation>
 <translation id="3183944777708523606">మానిటర్ అమరిక</translation>
 <translation id="3184536091884214176">CUPS ప్రింటర్‌లను సెటప్ చేయండి లేదా నిర్వహించండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{ఈ యాప్ బ్లాక్ చేయబడింది}other{కొన్ని యాప్‌లు బ్లాక్ చేయబడ్డాయి}}</translation>
@@ -3084,6 +3088,7 @@
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" />ను దాచిపెట్టు</translation>
 <translation id="3315442055907669208">రీడర్ మోడ్‌లోకి ఎంటర్ అవ్వండి</translation>
 <translation id="3317459757438853210">రెండు-వైపులా ఉండేది</translation>
+<translation id="3317521105713541270">గ్రూప్‌లను క్రియేట్ చేయండి</translation>
 <translation id="3317678681329786349">కెమెరా మరియు మైక్రోఫోన్ బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" />తో ఇమేజ్‌లోని టెక్స్ట్‌ను అనువదించండి</translation>
 <translation id="3320271870899888245">OneDriveకు కనెక్ట్ చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి.</translation>
@@ -4440,6 +4445,7 @@
 <translation id="4364830672918311045">నోటిఫికేషన్‌లను ప్రదర్శించడం</translation>
 <translation id="4367513928820380646">తీసివేయబడిన అనుమతులను రివ్యూ చేయండి</translation>
 <translation id="4367971618859387374">డిస్‌ప్లే పేరు</translation>
+<translation id="4368960422722232719">ట్యాబ్ హోవర్ ప్రివ్యూ కార్డ్‌లో మెమరీ వినియోగాన్ని చూపండి</translation>
 <translation id="4369215744064167350">వెబ్‌సైట్ రిక్వెస్ట్ ఆమోదించబడింది</translation>
 <translation id="4369233657762989723">డిక్టేషన్ ఆన్/ఆఫ్</translation>
 <translation id="436926121798828366">మీరు దీన్ని ఎప్పుడైనా <ph name="SETTINGS_LINK" />‌లో మార్చవచ్చు</translation>
@@ -5362,6 +5368,7 @@
 <translation id="5093569275467863761">అజ్ఞాత వెనుకకు-ముందుకు కాష్ సబ్‌ఫ్రేమ్: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">మీ Files యాప్ లేదా ఇతర యాప్‌ల నుండి ఈ యాప్‌తో, సపోర్ట్ ఉన్న ఫైల్స్‌ను మీరు తెరవవచ్చు, ఎడిట్ చేయవచ్చు. ఈ యాప్‌తో ఆటోమేటిక్‌గా ఏ ఫైల్స్ తెరుచుకోవాలి అనే దానిని కంట్రోల్ చేయడానికి, <ph name="BEGIN_LINK" />మీ పరికరంలో ఆటోమేటిక్ యాప్‌లను సెట్ చేయడం ఎలాగో తెలుసుకోండి<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">సహకరిస్తున్న స్థానిక యాప్‌లతో కమ్యూనికేట్ చేయండి</translation>
+<translation id="5095252080770652994">ప్రోగ్రెస్</translation>
 <translation id="5095507226704905004">ఫైల్ ఉనికిలో లేనందున దానిని కాపీ చేయడం సాధ్యపడదు</translation>
 <translation id="5095848221827496531">ఎంచుకోవద్దు</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />' నెట్‌వర్క్‌కు కనెక్ట్ చేయడంలో విఫలమైంది: <ph name="DETAILS" /></translation>
@@ -5513,6 +5520,7 @@
 <translation id="5213891612754844763">ప్రాక్సీ సెట్టింగ్‌లను చూపు</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' బుక్‌మార్క్ క్రియేట్ చేయబడింది.</translation>
 <translation id="5215502535566372932">దేశాన్ని ఎంచుకోండి</translation>
+<translation id="5215665166431745539">ఇమేజ్‌లను చూపించండి</translation>
 <translation id="5220011581825921581">సెర్చ్ + పై వైపు బాణం</translation>
 <translation id="5222403284441421673">సురక్షితం కాని డౌన్‌లోడ్‌ బ్లాక్ చేయబడింది</translation>
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
@@ -9006,6 +9014,7 @@
 <translation id="7943837619101191061">స్థానాన్ని జోడించండి...</translation>
 <translation id="79446453817422139">ఈ ఫైల్ ప్రమాదకరమైనది కావచ్చు</translation>
 <translation id="7944772052836377867">ఇది మీరేనని సింక్ వెరిఫై చేయాలి</translation>
+<translation id="7944847494038629732">స్కానర్ USB కేబుల్‌ను అన్‌ప్లగ్ చేసి, మళ్లీ ట్రై చేయడానికి దాన్ని మళ్లీ ప్లగ్ చేయండి</translation>
 <translation id="7945703887991230167">ఎక్కువగా ఇష్టపడే వాయిస్</translation>
 <translation id="7946586320617670168">మూలం తప్పనిసరిగా సురక్షితంగా ఉండాలి</translation>
 <translation id="794676567536738329">అనుమతులు నిర్ధారించండి</translation>
@@ -9415,6 +9424,7 @@
 <translation id="8260864402787962391">మౌస్</translation>
 <translation id="8261378640211443080">ఈ ఎక్స్‌టెన్షన్‌ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />లో లిస్ట్‌ చేయబడలేదు మరియు మీకు తెలియకుండానే జోడించబడి ఉండవచ్చు.</translation>
 <translation id="8261506727792406068">తొలగించండి</translation>
+<translation id="8261625296061301062">స్కానర్ సాఫ్ట్‌వేర్ ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="8262971894813353037">WebUI కోసం కొత్త డెస్క్‌టాప్ డిజైన్‌ను ఎనేబుల్ చేయండి. Chrome రిఫ్రెష్ 2023ని కూడా తప్పనిసరిగా ఎనేబుల్ చేయాలి.</translation>
 <translation id="8263336784344783289">ఈ గ్రూప్‌నకు పేరు పెట్టండి</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> మీ మౌస్ కర్సర్‌ను నిలిపివేసింది.</translation>
@@ -9598,6 +9608,7 @@
 <translation id="8387361103813440603">మీ లొకేషన్‌ను చూడటానికి అనుమతించబడలేదు</translation>
 <translation id="8388770971141403598">ద్వితీయ ప్రొఫైళ్లు సపోర్ట్ చేయవు</translation>
 <translation id="8389492867173948260">మీరు సందర్శించే వెబ్‌సైట్‌లలో ఉన్న మీ డేటా మొత్తాన్ని చదవడం లేదా మార్చడం కోసం ఈ ఎక్స్‌టెన్షన్‌ను అనుమతించండి:</translation>
+<translation id="8390392581097975659">స్కానర్ సాఫ్ట్‌వేర్‌ను ఇన్‌స్టాల్ చేస్తోంది</translation>
 <translation id="8390449457866780408">సర్వర్ అందుబాటులో లేదు.</translation>
 <translation id="8391218455464584335">వినైల్</translation>
 <translation id="8392726714909453725">'వినడానికి ఎంచుకోండి' ఫీచర్‌కు సంబంధించిన సెట్టింగ్‌లు</translation>

@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">సీతాకోకచిలుకలు</translation>
 <translation id="188114911237521550">డార్క్ మోడ్‌ను ఆఫ్ చేయండి</translation>
+<translation id="188268299367474594">అందుబాటులో ఉన్న APNల నుండి ఎంచుకోండి</translation>
 <translation id="1885577615937958993">మీడియాను ఫాస్ట్ ఫార్వర్డ్ చేస్తుంది</translation>
 <translation id="1887850431809612466">హార్డ్‌వేర్ పునర్విమర్శ</translation>
 <translation id="189221451253258459">నియాన్ పచ్చ రంగు</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">విండోలను చూపుతుంది</translation>
 <translation id="2513396635448525189">లాగిన్ ఇమేజ్</translation>
 <translation id="2517472476991765520">స్కాన్ చేయి</translation>
+<translation id="2520213071283358374">ఈ APNని ఉపయోగించండి</translation>
 <translation id="2521835766824839541">మునుపటి ట్రాక్</translation>
 <translation id="2526590354069164005">డెస్క్‌టాప్</translation>
 <translation id="253029298928638905">రీస్టార్ట్ అవుతోంది…</translation>
@@ -991,6 +993,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" />, ఈ <ph name="DEVICE_TYPE" />ను మేనేజ్ చేస్తోంది. అడ్మినిస్ట్రేటర్‌లు పరికరాన్ని రిమోట్‌గా కాన్ఫిగర్ చేయవచ్చు.</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>
 <translation id="7180865173735832675">అనుకూలంగా మార్చండి</translation>
+<translation id="7182063559013288142">ఇన్‌స్టంట్ హాట్‌స్పాట్</translation>
 <translation id="7184043045742675738">మీ బటన్‌ను అనుకూలంగా మార్చడానికి ఏదైనా కీపై క్లిక్ చేయండి. మౌస్ లేదా బాణం కీలతో కీ స్థానాన్ని మార్చండి.</translation>
 <translation id="7206979415662233817">సర్వీస్ నియమాలు</translation>
 <translation id="7210635925306941239">నీలి ఆకుపచ్చ రంగు</translation>
@@ -1134,6 +1137,7 @@
 <translation id="8075838845814659848">మిగిలిన ఛార్జ్</translation>
 <translation id="8076492880354921740">ట్యాబ్‌లు</translation>
 <translation id="8079860070590459552">పూల తోట</translation>
+<translation id="8081553043098820199">చెల్లని APNలు మీ మొబైల్ కనెక్షన్‌ను డిజేబుల్ చేయడానికి కారణం కావచ్చు. మీ మొబైల్ ప్రొవైడర్ లేదా అడ్మినిస్ట్రేటర్ అందించిన APNలను మాత్రమే సెట్ చేయండి.</translation>
 <translation id="8082366717211101304">Android యాప్‌ల నుండి DNSను పరిష్కరించడం సాధ్యపడదు</translation>
 <translation id="8082644724189923105">కీబోర్డ్ జోన్</translation>
 <translation id="808894953321890993">పాస్‌వర్డ్‌ను మార్చు</translation>

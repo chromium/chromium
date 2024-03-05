@@ -1764,6 +1764,7 @@
 <translation id="4358461427845829800">Керувати способами оплати…</translation>
 <translation id="4359160567981085931">Щойно ви ввели пароль на оманливому сайті. Chrome може допомогти. Щоб змінити пароль і повідомити Google про можливу небезпеку для облікового запису, натисніть "Захистити обліковий запис".</translation>
 <translation id="4363222835916186793">Сповіщення для цього товару вимкнено</translation>
+<translation id="4363729811203340554">Якщо ви користуєтеся цим пристроєм спільно з іншими людьми, Chrome може просити вас підтверджувати особу щоразу, коли ви оплачуєте покупки за допомогою автозаповнення</translation>
 <translation id="4366943895537458493">Друкарська форма</translation>
 <translation id="437040971055499437">Трапляється подія системи безпеки</translation>
 <translation id="4371591986692297148">неактивна</translation>
@@ -2284,6 +2285,7 @@
 <translation id="5447765697759493033">Цей сайт не буде перекладено</translation>
 <translation id="5452270690849572955">Сторінку хосту <ph name="HOST_NAME" /> не знайдено</translation>
 <translation id="5455374756549232013">Недійсна мітка часу правила</translation>
+<translation id="5456839782162429664">Вручну підтверджувати особу щоразу, коли ви сплачуєте за допомогою автозаповнення</translation>
 <translation id="5457113250005438886">Недійсні дані</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Пошук пристроїв…</translation>
@@ -2381,6 +2383,7 @@
 <translation id="5633066919399395251">Зловмисники можуть використати сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, щоб установити на ваш комп’ютер небезпечні програми, що викрадають або видаляють інформацію (фотографії, паролі, повідомленняб дані кредитних карток тощо). <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Заблоковано оманливий вміст.</translation>
 <translation id="563371367637259496">Мобільна</translation>
+<translation id="5634725266554983459">Увімкнути підтвердження вручну?</translation>
 <translation id="5635478143789726479">Умови використання продавця</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Стереосистеми і їх компоненти</translation>
@@ -3067,6 +3070,7 @@
 <translation id="6973988895180423160">3,5 x 5 дюйм.</translation>
 <translation id="6978121630131642226">Пошукові системи</translation>
 <translation id="6978236010531171013">Усе одно поділитися</translation>
+<translation id="6978722349058177832">Якщо ви користуєтеся цим пристроєм спільно з іншими людьми, Chromium може просити вас підтверджувати особу щоразу, коли ви оплачуєте покупки за допомогою автозаповнення</translation>
 <translation id="6979158407327259162">Диск Google</translation>
 <translation id="6979440798594660689">Без звуку (за умовчанням)</translation>
 <translation id="6987806006823772670">Конверт (з покриттям)</translation>

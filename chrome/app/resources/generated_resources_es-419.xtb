@@ -579,6 +579,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1444628761356461360">Esta configuración es administrada por el propietario del dispositivo: <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">No se pudo cargar '<ph name="IMAGE_PATH" />' para el tema.</translation>
 <translation id="1447531650545977377">Activar la &amp;sincronización…</translation>
+<translation id="1447895950459090752">Tarjeta de vista previa al colocar el cursor sobre una pestaña</translation>
 <translation id="1448264954024227422">Puedes usar esta cuenta en las apps para Android. Si quieres agregar una cuenta para otra persona, <ph name="LINK_BEGIN" />agrega una nueva persona<ph name="LINK_END" /> a tu <ph name="DEVICE_TYPE" />.
 
 Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Puedes controlar los permisos de las apps para Android en <ph name="APPS_LINK_BEGIN" />Configuración de apps<ph name="APPS_LINK_END" />.</translation>
@@ -2812,6 +2813,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3094521107841754472">El precio cambió de <ph name="PREVIOUS_PRICE" /> a <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Los favoritos, las contraseñas y otros datos de navegación se sincronizan con la cuenta principal.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Se desactivó 1 extensión potencialmente dañina. También puedes quitarla.}other{Se desactivaron {NUM_EXTENSIONS} extensiones potencialmente dañinas. También puedes quitarlas.}}</translation>
+<translation id="3101057112460908988">Mostrar uso de memoria</translation>
 <translation id="3101126716313987672">Atenuar luz</translation>
 <translation id="3101709781009526431">Fecha y hora</translation>
 <translation id="310297983047869047">Diapositiva anterior</translation>
@@ -2889,6 +2891,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3166443275568926403">Rendimiento y estado de la batería</translation>
 <translation id="3169930038976362151">Elige el tema que se adapte a tus necesidades. Para cambiar el tema, el fondo de pantalla, el protector de pantalla y más, mantén presionado en el escritorio.</translation>
 <translation id="3170072451822350649">También puedes omitir el acceso y <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Cuerpo</translation>
 <translation id="3177430966804511955">Administrar apps web aisladas (beta)</translation>
 <translation id="31774765611822736">Nueva pestaña a la izquierda</translation>
 <translation id="3177909033752230686">Idioma de la página:</translation>
@@ -3068,6 +3071,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3315158641124845231">Ocultar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Ingresar al modo de lectura</translation>
 <translation id="3317459757438853210">Doble cara</translation>
+<translation id="3317521105713541270">Crear grupos</translation>
 <translation id="3317678681329786349">Cámara y micrófono bloqueados</translation>
 <translation id="3319306431415395200">Traducir el texto en la imagen con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">No se puede conectar con OneDrive. Vuelve a intentarlo.</translation>
@@ -4424,6 +4428,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4364830672918311045">Mostrar notificaciones</translation>
 <translation id="4367513928820380646">Revisar los permisos que se quitaron</translation>
 <translation id="4367971618859387374">Nombre visible</translation>
+<translation id="4368960422722232719">Mostrar el uso de memoria en la tarjeta de vista previa al colocar el cursor sobre una pestaña</translation>
 <translation id="4369215744064167350">Se aprobó la solicitud de acceso al sitio web</translation>
 <translation id="4369233657762989723">Dictado activado/desactivado</translation>
 <translation id="436926121798828366">Puedes cambiar este parámetro cuando lo desees en <ph name="SETTINGS_LINK" /></translation>
@@ -5343,6 +5348,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5093569275467863761">Submarco de incógnito en la Memoria caché atrás/adelante: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Puedes abrir y editar los archivos compatibles con esta app desde la app de archivos o desde otras apps. A fin de controlar qué archivos se abren en esta app de forma predeterminada, <ph name="BEGIN_LINK" />obtén más información para establecer apps predeterminadas en tu dispositivo<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Comunicarse con aplicaciones nativas en cooperación</translation>
+<translation id="5095252080770652994">Progreso</translation>
 <translation id="5095507226704905004">No se puede copiar el archivo porque ya no existe</translation>
 <translation id="5095848221827496531">Anular selección</translation>
 <translation id="5097002363526479830">Error al conectar a la red "<ph name="NAME" />": <ph name="DETAILS" /></translation>
@@ -5494,6 +5500,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5213891612754844763">Mostrar la configuración de proxy</translation>
 <translation id="5214639857958972833">Se creó el favorito "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="5215502535566372932">Selecciona un país</translation>
+<translation id="5215665166431745539">Mostrar imágenes</translation>
 <translation id="5220011581825921581">Búsqueda + flecha hacia arriba</translation>
 <translation id="5222403284441421673">Se bloqueó una descarga no segura</translation>
 <translation id="5222676887888702881">Salir</translation>

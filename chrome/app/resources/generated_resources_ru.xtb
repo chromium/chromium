@@ -582,6 +582,7 @@
 <translation id="1444628761356461360">Этот аккаунт контролируется владельцем устройства (<ph name="OWNER_EMAIL" />)</translation>
 <translation id="144518587530125858">Не удалось загрузить "<ph name="IMAGE_PATH" />" для темы.</translation>
 <translation id="1447531650545977377">Включить &amp;синхронизацию</translation>
+<translation id="1447895950459090752">Карточка предпросмотра вкладки</translation>
 <translation id="1448264954024227422">Этот аккаунт можно использовать в приложениях для Android. Если вы хотите добавить аккаунт для другого человека, <ph name="LINK_BEGIN" />создайте профиль пользователя<ph name="LINK_END" /> на <ph name="DEVICE_TYPE" />.
 
 Разрешения, предоставленные приложениям, могут применяться к этому аккаунту. Чтобы изменить их для приложений Android, перейдите в <ph name="APPS_LINK_BEGIN" />настройки приложений<ph name="APPS_LINK_END" />.</translation>
@@ -2817,6 +2818,7 @@
 <translation id="3094521107841754472">Цена изменилась: было <ph name="PREVIOUS_PRICE" />, стало <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Закладки, пароли и другие данные о работе в браузере синхронизируются с основным аккаунтом.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Отключено 1 потенциально опасное расширение. Вы можете удалить его.}one{Отключено {NUM_EXTENSIONS} потенциально опасное расширение. Вы можете удалить их.}few{Отключено {NUM_EXTENSIONS} потенциально опасных расширения. Вы можете удалить их.}many{Отключено {NUM_EXTENSIONS} потенциально опасных расширений. Вы можете удалить их.}other{Отключено {NUM_EXTENSIONS} потенциально опасного расширения. Вы можете удалить их.}}</translation>
+<translation id="3101057112460908988">Показывать использование памяти</translation>
 <translation id="3101126716313987672">Тусклое освещение</translation>
 <translation id="3101709781009526431">Дата и время</translation>
 <translation id="310297983047869047">Предыдущий слайд</translation>
@@ -2894,6 +2896,7 @@
 <translation id="3166443275568926403">Производительность и уровень заряда батареи</translation>
 <translation id="3169930038976362151">Выберите понравившуюся вам тему. Нажмите на рабочий стол и удерживайте, чтобы изменить тему, обои, заставку и многое другое.</translation>
 <translation id="3170072451822350649">Можно пропустить это действие и начать <ph name="LINK_START" />гостевой сеанс<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Текст</translation>
 <translation id="3177430966804511955">Настроить изолированные веб-приложения (бета-версия)</translation>
 <translation id="31774765611822736">Новая вкладка слева</translation>
 <translation id="3177909033752230686">Язык страницы:</translation>
@@ -3073,6 +3076,7 @@
 <translation id="3315158641124845231">Скрыть <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Включить режим чтения</translation>
 <translation id="3317459757438853210">Двусторонняя печать</translation>
+<translation id="3317521105713541270">Создать группу</translation>
 <translation id="3317678681329786349">Доступ к камере и микрофону запрещен</translation>
 <translation id="3319306431415395200">Перевести текст на изображении с помощью <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Не удается подключиться к OneDrive. Повторите попытку.</translation>
@@ -4429,6 +4433,7 @@
 <translation id="4364830672918311045">Показ уведомлений</translation>
 <translation id="4367513928820380646">Посмотреть отозванные разрешения</translation>
 <translation id="4367971618859387374">Отображаемое имя</translation>
+<translation id="4368960422722232719">Показывать использование памяти на карточке предпросмотра вкладки</translation>
 <translation id="4369215744064167350">Запрос на доступ к сайту одобрен</translation>
 <translation id="4369233657762989723">Включить или отключить голосовой ввод</translation>
 <translation id="436926121798828366">Чтобы изменить этот параметр, перейдите в <ph name="SETTINGS_LINK" /></translation>
@@ -4905,6 +4910,7 @@
 <translation id="473775607612524610">Обновить</translation>
 <translation id="473936925429402449">Выбрано, показан дополнительный контент на карточке <ph name="CURRENT_ELEMENT" /> из <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Билеты</translation>
+<translation id="4740546261986864539">Было открыто недавно</translation>
 <translation id="4742334355511750246">Запретить сайтам показывать изображения</translation>
 <translation id="4742970037960872810">Снять выделение</translation>
 <translation id="4743260470722568160">Подробнее о том, <ph name="BEGIN_LINK" />как обновлять приложения<ph name="END_LINK" />…</translation>
@@ -5102,6 +5108,7 @@
 <translation id="488785315393301722">Показать сведения</translation>
 <translation id="488862352499217187">Создать папку</translation>
 <translation id="4890292359366636311">Разрешите автоматически включать режим "картинка в картинке", чтобы вы могли смотреть видео поверх других вкладок и окон.</translation>
+<translation id="4890399733764921729">Ошибка подключения. Оно заблокировано другим мобильным оператором.</translation>
 <translation id="4890773143211625964">Показать дополнительные настройки принтера</translation>
 <translation id="4891089016822695758">Форум бета-версии</translation>
 <translation id="4892229439761351791">Сайт может использовать устройство Bluetooth</translation>
@@ -5348,6 +5355,7 @@
 <translation id="5093569275467863761">Субфрейм возвратного кеша в режиме инкогнито: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Вы можете открывать и редактировать поддерживаемые файлы в этом приложении из Google Файлов и других приложений. Указать, какие типы файлов по умолчанию будут открываться в этом приложении, можно в <ph name="BEGIN_LINK" />настройках приложений по умолчанию на устройстве<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Установка соединения со смежными нативными приложениями</translation>
+<translation id="5095252080770652994">Ход выполнения</translation>
 <translation id="5095507226704905004">Невозможно скопировать файл, так как он больше не существует.</translation>
 <translation id="5095848221827496531">Отменить выбор</translation>
 <translation id="5097002363526479830">Не удалось подключиться к сети <ph name="NAME" />: <ph name="DETAILS" /></translation>
@@ -5499,6 +5507,7 @@
 <translation id="5213891612754844763">Показать настройки прокси-сервера</translation>
 <translation id="5214639857958972833">Закладка "<ph name="BOOKMARK_TITLE" />" создана.</translation>
 <translation id="5215502535566372932">Выберите страну</translation>
+<translation id="5215665166431745539">Показывать значок предварительного просмотра</translation>
 <translation id="5220011581825921581">Поиск + Стрелка вверх</translation>
 <translation id="5222403284441421673">Незащищенное скачивание заблокировано</translation>
 <translation id="5222676887888702881">Выйти</translation>
@@ -8344,6 +8353,7 @@
 <translation id="7465778193084373987">URL отзыва сертификатов Netscape</translation>
 <translation id="7466431077154602932">Компактный вид</translation>
 <translation id="746861123368584540">Расширение загружено.</translation>
+<translation id="7470131554696493512">Запрещать аксессуарам Thunderbolt и USB4 доступ к оперативной памяти и ее совместное использование</translation>
 <translation id="7470424110735398630">Разрешить сайтам просматривать буфер обмена</translation>
 <translation id="747114903913869239">Ошибка: не удается расшифровать расширение</translation>
 <translation id="7471520329163184433">Медленная</translation>

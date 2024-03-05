@@ -2907,6 +2907,7 @@ Quer pará-lo?</translation>
 <translation id="3183139917765991655">Importador de perfis</translation>
 <translation id="3183143381919926261">Redes de dados móveis</translation>
 <translation id="3183613134231754987">Esta token de acesso só é guardada no Windows Hello. Permanece neste dispositivo após fechar todas as janelas de navegação anónima.</translation>
+<translation id="3183700187146209259">Não é possível instalar o software de leitor</translation>
 <translation id="3183944777708523606">Posicionamento do monitor</translation>
 <translation id="3184536091884214176">Configure ou efetue a gestão de impressoras CUPS. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Esta app está bloqueada}other{Estas apps estão bloqueadas}}</translation>
@@ -9002,6 +9003,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7943837619101191061">Adicionar Localização...</translation>
 <translation id="79446453817422139">Este ficheiro pode ser perigoso</translation>
 <translation id="7944772052836377867">A sincronização precisa de validar a sua identidade</translation>
+<translation id="7944847494038629732">Desligue o cabo USB do leitor e volte a ligá-lo para tentar novamente</translation>
 <translation id="7945703887991230167">Voz preferida</translation>
 <translation id="7946586320617670168">A origem tem de ser segura.</translation>
 <translation id="794676567536738329">Confirmar Permissões</translation>
@@ -9414,6 +9416,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8260864402787962391">Rato</translation>
 <translation id="8261378640211443080">Esta extensão não está listada no <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e é possível que tenha sido adicionada sem o seu conhecimento.</translation>
 <translation id="8261506727792406068">Eliminar</translation>
+<translation id="8261625296061301062">Software de leitor instalado</translation>
 <translation id="8262971894813353037">Ativa o novo design para computador da WebUI. Também tem de ativar a experiência Chrome Refresh 2023.</translation>
 <translation id="8263336784344783289">Dar um nome a este grupo</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> desativou o cursor do rato.</translation>
@@ -9597,6 +9600,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8387361103813440603">Sem autorização para ver a sua localização</translation>
 <translation id="8388770971141403598">Os perfis secundários não são suportados</translation>
 <translation id="8389492867173948260">Permitir que esta extensão leia e altere todos os dados nos Websites que visita:</translation>
+<translation id="8390392581097975659">A instalar software de leitor</translation>
 <translation id="8390449457866780408">O servidor não se encontra disponível.</translation>
 <translation id="8391218455464584335">Vinil</translation>
 <translation id="8392726714909453725">Definições de Selecionar para falar</translation>

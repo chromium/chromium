@@ -2904,6 +2904,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3183139917765991655">Uvoz profila</translation>
 <translation id="3183143381919926261">Mobilne mreže za prenos podataka</translation>
 <translation id="3183613134231754987">Ovaj pristupni kôd će se sačuvati samo u funkciji Windows Hello. On će ostati na ovom uređaju kada zatvorite sve prozore bez arhiviranja.</translation>
+<translation id="3183700187146209259">Instaliranje softvera za skener nije uspelo</translation>
 <translation id="3183944777708523606">Raspored monitora</translation>
 <translation id="3184536091884214176">Podesite CUPS štampače ili upravljajte njima. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ova aplikacija je blokirana}one{Neke aplikacije su blokirane}few{Neke aplikacije su blokirane}other{Neke aplikacije su blokirane}}</translation>
@@ -9002,6 +9003,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7943837619101191061">Dodaj lokaciju...</translation>
 <translation id="79446453817422139">Ovaj fajl može da bude opasan</translation>
 <translation id="7944772052836377867">Sinhronizacija mora da potvrdi da ste to vi</translation>
+<translation id="7944847494038629732">Isključite USB kabl skenera i ponovo ga uključite da biste probali ponovo</translation>
 <translation id="7945703887991230167">Željeni glas</translation>
 <translation id="7946586320617670168">Izvor mora da bude bezbedan</translation>
 <translation id="794676567536738329">Potvrđivanje dozvola</translation>
@@ -9414,6 +9416,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8260864402787962391">Miš</translation>
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ne navodi ovaj dodatak i on je možda dodat bez vašeg znanja.</translation>
 <translation id="8261506727792406068">Izbriši</translation>
+<translation id="8261625296061301062">Softver za skeniranje je instaliran</translation>
 <translation id="8262971894813353037">Omogućava novi dizajn radne površine za WebUI. Morate da omogućite i Chrome osvežavanje za 2023.</translation>
 <translation id="8263336784344783289">Dajte naziv ovoj grupi</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> je onemogućio kursor.</translation>
@@ -9597,6 +9600,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8387361103813440603">Nije im dozvoljeno da vide vašu lokaciju</translation>
 <translation id="8388770971141403598">Sekundarni profili nisu podržani</translation>
 <translation id="8389492867173948260">Dozvolite da ovaj dodatak čita i menja sve podatke na veb-sajtovima koje posećujete:</translation>
+<translation id="8390392581097975659">Instalira se softver za skener</translation>
 <translation id="8390449457866780408">Server je nedostupan.</translation>
 <translation id="8391218455464584335">Gramofonska ploča</translation>
 <translation id="8392726714909453725">Podešavanja usluge Izaberite za govor</translation>

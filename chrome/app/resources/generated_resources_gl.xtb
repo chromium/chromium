@@ -579,6 +579,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1444628761356461360">Esta configuración está xestionada polo propietario do dispositivo, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Non se puido cargar "<ph name="IMAGE_PATH" />" para o tema.</translation>
 <translation id="1447531650545977377">Activar &amp;sincronización...</translation>
+<translation id="1447895950459090752">Tarxeta de vista previa que aparece ao pasar por enriba das pestanas</translation>
 <translation id="1448264954024227422">Podes usar esta conta con aplicacións para Android. Se queres engadir unha conta para outra persoa, <ph name="LINK_BEGIN" />engade unha persoa nova<ph name="LINK_END" /> ao teu dispositivo (<ph name="DEVICE_TYPE" />).
 
 Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás aplicacións. Podes controlar os permisos correspondentes ás aplicacións para Android en <ph name="APPS_LINK_BEGIN" />Configuración das aplicacións<ph name="APPS_LINK_END" />.</translation>
@@ -2814,6 +2815,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3094521107841754472">O prezo pasou de <ph name="PREVIOUS_PRICE" /> a <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Os marcadores, os contrasinais e outros datos do navegador sincronízanse coa conta principal.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Desactivouse 1 extensión potencialmente daniña. Tamén podes quitala.}other{Desactiváronse {NUM_EXTENSIONS} extensións potencialmente daniñas. Tamén podes quitalas.}}</translation>
+<translation id="3101057112460908988">Mostrar uso da memoria</translation>
 <translation id="3101126716313987672">Atenuar luz</translation>
 <translation id="3101709781009526431">Data e hora</translation>
 <translation id="310297983047869047">Diapositiva anterior</translation>
@@ -2891,6 +2893,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3166443275568926403">Rendemento e estado da batería</translation>
 <translation id="3169930038976362151">Escolle o tema axeitado para as túas necesidades. Se queres cambiar de tema, fondo e protector de pantalla, entre outras cousas, só tes que manter premido o escritorio.</translation>
 <translation id="3170072451822350649">Tamén podes <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" /> sen iniciar sesión.</translation>
+<translation id="3175067642577044620">Corpo</translation>
 <translation id="3177430966804511955">Xestionar aplicacións web illadas (beta)</translation>
 <translation id="31774765611822736">Pestana nova á esquerda</translation>
 <translation id="3177909033752230686">Idioma da páxina:</translation>
@@ -3070,6 +3073,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3315158641124845231">Ocultar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Acceder ao modo de lector</translation>
 <translation id="3317459757438853210">Dobre cara</translation>
+<translation id="3317521105713541270">Crear grupos</translation>
 <translation id="3317678681329786349">Bloqueáronse a cámara e o micrófono</translation>
 <translation id="3319306431415395200">Traduce o texto da imaxe con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Non se puido establecer a conexión con OneDrive. Téntao de novo.</translation>
@@ -4429,6 +4433,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4364830672918311045">Mostrar notificacións</translation>
 <translation id="4367513928820380646">Revisar permisos quitados</translation>
 <translation id="4367971618859387374">Nome visible</translation>
+<translation id="4368960422722232719">Mostrar uso da memoria na tarxeta de vista previa que aparece ao pasar por enriba das pestanas</translation>
 <translation id="4369215744064167350">Aprobouse a solicitude de sitios web</translation>
 <translation id="4369233657762989723">Activar ou desactivar ditado</translation>
 <translation id="436926121798828366">Podes cambiar esta opción cando queiras na <ph name="SETTINGS_LINK" /></translation>
@@ -5348,6 +5353,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5093569275467863761">Submarco de incógnito almacenado na memoria caché de páxinas anteriores e seguintes: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Podes abrir e editar ficheiros compatibles con esta aplicación desde Ficheiros ou outras aplicacións. Para controlar os ficheiros que se abren nesta aplicación de forma predeterminada, consulta <ph name="BEGIN_LINK" />como definir aplicacións predeterminadas no teu dispositivo<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Comunicarse con aplicacións nativas de cooperación</translation>
+<translation id="5095252080770652994">Progreso</translation>
 <translation id="5095507226704905004">O ficheiro non se pode copiar porque xa non existe</translation>
 <translation id="5095848221827496531">Anular a selección</translation>
 <translation id="5097002363526479830">Erro ao conectar coa rede "<ph name="NAME" />": <ph name="DETAILS" /></translation>
@@ -5499,6 +5505,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5213891612754844763">Mostrar configuración de proxy</translation>
 <translation id="5214639857958972833">Marcador creado: <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="5215502535566372932">Seleccionar país</translation>
+<translation id="5215665166431745539">Mostrar imaxes</translation>
 <translation id="5220011581825921581">busca + frecha arriba</translation>
 <translation id="5222403284441421673">Bloqueouse unha descarga non segura</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>

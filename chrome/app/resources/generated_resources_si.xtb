@@ -582,6 +582,7 @@
 <translation id="1444628761356461360">උපාංග හිමිකරු විසින් සැකසුම් කළමනාකරණය කර ඇත, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">තේමාව සඳහා '<ph name="IMAGE_PATH" />' ප්‍රවේශනය කළ නොහැකි විය.</translation>
 <translation id="1447531650545977377">&amp;සමමුහුර්ත කිරීම ක්‍රියාත්මක කරන්න...</translation>
+<translation id="1447895950459090752">පටිති උඩින් තබා ගැනීමේ පෙරදසුන් කාඩ්පත</translation>
 <translation id="1448264954024227422">ඔබට මෙම ගිණුම Android යෙදුම් සමඟ භාවිත කළ හැකිය. ඔබට වෙනත් යම් කෙනෙකු සඳහා ගිණුමක් එක් කිරීමට අවශ්‍ය නම්, ඒ වෙනුවට ඔබගේ <ph name="DEVICE_TYPE" /> වෙත <ph name="LINK_BEGIN" />නව පුද්ගලයකු එක් කරන්න<ph name="LINK_END" />.
 
 ඔබ දැනටමත් ලබා දී ඇති අවසර මෙම ගිණුමට අදාළ විය හැකිය. ඔබට Android යෙදුම් සඳහා අවසර <ph name="APPS_LINK_BEGIN" />යෙදුම් සැකසීම්<ph name="APPS_LINK_END" /> තුළ පාලනය කිරීමට හැකිය.</translation>
@@ -2819,6 +2820,7 @@
 <translation id="3094521107841754472">මිල<ph name="PREVIOUS_PRICE" /> සිට <ph name="CURRENT_PRICE" /> ලෙස වෙනස් වී ඇත.</translation>
 <translation id="3095871294753148861">පිටුසන්, මුරපද, සහ අනෙකුත් බ්‍රවුසර දත්ත ප්‍රාථමික ගිණුම සමඟ සමමුහූර්ත කෙරේ.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 හානිකර විය හැකි දිගුවක් අක්‍රියයි. ඔබට එය ඉවත් කිරීමට ද හැකිය.}one{හානිකර විය හැකි දිගු {NUM_EXTENSIONS} ක් අක්‍රියයි. ඔබට ඒවා ඉවත් කිරීමට ද හැකිය.}other{හානිකර විය හැකි දිගු {NUM_EXTENSIONS} ක් අක්‍රියයි. ඔබට ඒවා ඉවත් කිරීමට ද හැකිය.}}</translation>
+<translation id="3101057112460908988">මතක භාවිතය පෙන්වන්න</translation>
 <translation id="3101126716313987672">අඳුරු ආලෝකය</translation>
 <translation id="3101709781009526431">දිනය හා වේලාව</translation>
 <translation id="310297983047869047">පෙර ස්ලයිඩය</translation>
@@ -2896,6 +2898,7 @@
 <translation id="3166443275568926403">කාර්ය සාධනය සහ බැටරි තත්ත්වය</translation>
 <translation id="3169930038976362151">ඔබේ අවශ්‍යතාවලට ගැළපෙන තේමාව තෝරා ගන්න. ඔබේ තේමාව, වෝල්පේපරය, තිර සුරැකුම, සහ තවත් දේ වෙනස් කිරීම සඳහා, ඩෙස්ක්ටොප් එක මත ස්පර්ශ කර අල්ලා ගන්න.</translation>
 <translation id="3170072451822350649">ඔබට ප්‍රවිෂ්ට වීම මඟහැර <ph name="LINK_START" />ආගන්තුකයෙකු ලෙස ගවේෂණය<ph name="LINK_END" /> කිරීමට ද හැකියාව ඇත.</translation>
+<translation id="3175067642577044620">අන්තර්ගතය</translation>
 <translation id="3177430966804511955">එකලා වෙබ් යෙදුම් කළමනාකරණය කරන්න (බීටා)</translation>
 <translation id="31774765611822736">වමට නව ටැබය</translation>
 <translation id="3177909033752230686">පිටුවේ භාෂාව:</translation>
@@ -3075,6 +3078,7 @@
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> සඟවන්න</translation>
 <translation id="3315442055907669208">කියවන ප්‍රකාරයට ඇතුළු වන්න</translation>
 <translation id="3317459757438853210">දෙපසම</translation>
+<translation id="3317521105713541270">සමූහ තනන්න</translation>
 <translation id="3317678681329786349">කැමරාව සහ මයික්‍රෆෝනය අවහිරයි</translation>
 <translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" /> සමග රූපයේ පෙළ පරිවර්තනය කරන්න</translation>
 <translation id="3320271870899888245">OneDrive වෙත සම්බන්ධ විය නොහැක. නැවත උත්සාහ කරන්න.</translation>
@@ -4432,6 +4436,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4364830672918311045">සංදර්ශක දැනුම්දීම්</translation>
 <translation id="4367513928820380646">ඉවත් කළ අවසරයන් සමාලෝචනය කරන්න</translation>
 <translation id="4367971618859387374">සංදර්ශක නම</translation>
+<translation id="4368960422722232719">පටිති උඩින් තබා ගැනීමේ පෙරදසුන් කාඩ්පත මත මතක භාවිතය පෙන්වන්න</translation>
 <translation id="4369215744064167350">වෙබ් අඩවි ඉල්ලීම අනුමත කරන ලදි</translation>
 <translation id="4369233657762989723">අනුලේඛනය ක්‍රියාත්මක/ක්‍රියාවිරහිත</translation>
 <translation id="436926121798828366">ඔබට මෙය ඕනෑම වේලාවක <ph name="SETTINGS_LINK" /> තුළ වෙනස් කළ හැක</translation>
@@ -5351,6 +5356,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5093569275467863761">අප්‍රසිද්ධ පසුපසට/ඉදිරියට හැඹිලිගත කළ උපරාමුව: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">ඔබට Files යෙදුමෙන් හෝ වෙනත් යෙදුම්වලින් මෙම යෙදුම සමග සහාය දක්වන ගොනු විවෘත කිරීමට සහ සංස්කරණය කිරීමට හැකිය. පෙරනිමියෙන් මෙම යෙදුම විවෘත කරන්නේ කුමන ගොනුද යන්න පාලනය කිරීමට, <ph name="BEGIN_LINK" />ඔබගේ උපාංගයේ පෙරනිමි යෙදුම් සකසන ආකාරය දැන ගන්න<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">සහය දක්වන දේශීය යෙදුම් හා සන්නිවේදනය කරන්න</translation>
+<translation id="5095252080770652994">ප්‍රගතිය</translation>
 <translation id="5095507226704905004">ගොනුව තවදුරටත් නොපවතින බැවින් එය පිටපත් කළ නොහැක</translation>
 <translation id="5095848221827496531">නොතෝරන්න</translation>
 <translation id="5097002363526479830">ජාලයට සම්බන්ධ විය නොහැකි විය '<ph name="NAME" />': <ph name="DETAILS" /></translation>
@@ -5502,6 +5508,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5213891612754844763">ප්‍රොක්සි සැකසීම් පෙන්වන්න</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' පිටුසන නිර්මාණය කරන ලදී.</translation>
 <translation id="5215502535566372932">රට තෝරන්න</translation>
+<translation id="5215665166431745539">රූප පෙන්වන්න</translation>
 <translation id="5220011581825921581">සෙවීම + ඉහළ ඊතලය</translation>
 <translation id="5222403284441421673">අනාරක්‍ෂිත බාගැනීම අවහිර කළා</translation>
 <translation id="5222676887888702881">පිටවීම</translation>

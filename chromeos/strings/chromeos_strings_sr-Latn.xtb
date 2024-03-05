@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">leptiri</translation>
 <translation id="188114911237521550">Isključite tamni režim</translation>
+<translation id="188268299367474594">Odaberite neki od dostupnih naziva pristupne tačke</translation>
 <translation id="1885577615937958993">premotajte medijski sadržaj unapred</translation>
 <translation id="1887850431809612466">Revizija hardvera</translation>
 <translation id="189221451253258459">fluorescentno zelene</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">pregledajte prozore</translation>
 <translation id="2513396635448525189">Slika za prijavljivanje</translation>
 <translation id="2517472476991765520">Skeniraj</translation>
+<translation id="2520213071283358374">Koristi ovaj naziv pristupne tačke</translation>
 <translation id="2521835766824839541">prethodna pesma</translation>
 <translation id="2526590354069164005">Radna površina</translation>
 <translation id="253029298928638905">Restartuje se...</translation>
@@ -991,6 +993,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem. Administratori mogu da konfigurišu uređaj daljinski.</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7180865173735832675">Prilagodi</translation>
+<translation id="7182063559013288142">Instant hotspot</translation>
 <translation id="7184043045742675738">Kliknite na bilo koji taster da biste prilagodili dugme. Promenite položaj tastera pomoću tastera miša ili tastera sa strelicama.</translation>
 <translation id="7206979415662233817">Uslovi korišćenja usluge</translation>
 <translation id="7210635925306941239">cijan</translation>
@@ -1134,6 +1137,7 @@
 <translation id="8075838845814659848">Preostali nivo napunjenosti baterije</translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8079860070590459552">polje cveća</translation>
+<translation id="8081553043098820199">Nevažeći nazivi pristupnih tačaka mogu da dovedu do onemogućavanja mobilne veze. Podesite samo nazive pristupnih tačaka koje pruža mobilni operater ili administrator.</translation>
 <translation id="8082366717211101304">DNS ne može da se razreši iz Android aplikacija</translation>
 <translation id="8082644724189923105">zona tastature</translation>
 <translation id="808894953321890993">Promeni lozinku</translation>

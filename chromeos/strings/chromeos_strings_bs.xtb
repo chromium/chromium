@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">leptiri</translation>
 <translation id="188114911237521550">Isključi tamni način rada</translation>
+<translation id="188268299367474594">Odaberite jedan od dostupnih APN-ova</translation>
 <translation id="1885577615937958993">premotavanje medija naprijed</translation>
 <translation id="1887850431809612466">Revizija hardvera</translation>
 <translation id="189221451253258459">fluorescentno zelene</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">prikazivanje prozora</translation>
 <translation id="2513396635448525189">Slika prilikom prijave</translation>
 <translation id="2517472476991765520">Skeniraj</translation>
+<translation id="2520213071283358374">Upotrijebi ovaj APN</translation>
 <translation id="2521835766824839541">prethodna numera</translation>
 <translation id="2526590354069164005">Radna površina</translation>
 <translation id="253029298928638905">Ponovno pokretanje...</translation>
@@ -991,6 +993,7 @@
 <translation id="7177485034254901881">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />. Administratori mogu daljinski konfigurirati uređaj.</translation>
 <translation id="7180611975245234373">Osvježi</translation>
 <translation id="7180865173735832675">Prilagodi</translation>
+<translation id="7182063559013288142">Instant pristupna tačka</translation>
 <translation id="7184043045742675738">Kliknite na bilo koju tipku da prilagodite dugme. Premjestite tipku mišem ili tipkama sa strelicama.</translation>
 <translation id="7206979415662233817">Uslovi korištenja usluge</translation>
 <translation id="7210635925306941239">cijan</translation>
@@ -1134,6 +1137,7 @@
 <translation id="8075838845814659848">Preostali nivo napunjenosti</translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8079860070590459552">polje cvijeća</translation>
+<translation id="8081553043098820199">Nevažeći APN-ovi mogu dovesti do onemogućivanja mobilne veze. Postavite samo APN-ove koje ste dobili od davatelja mobilnih usluga ili administratora.</translation>
 <translation id="8082366717211101304">Nije moguće razriješiti DNS iz Android aplikacija</translation>
 <translation id="8082644724189923105">zona tastature</translation>
 <translation id="808894953321890993">Promijeni lozinku</translation>

@@ -579,6 +579,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1444628761356461360">Ky cilësim menaxhohet nga zotëruesi i pajisjes, <ph name="OWNER_EMAIL" /></translation>
 <translation id="144518587530125858">Nuk mundi të ngarkonte "<ph name="IMAGE_PATH" />" për temën.</translation>
 <translation id="1447531650545977377">Aktivizo &amp;sinkronizimin...</translation>
+<translation id="1447895950459090752">Karta e pamjes paraprake pas qëndrimit pezull te skeda</translation>
 <translation id="1448264954024227422">Këtë llogari mund ta përdorësh me aplikacione për Android. Nëse dëshiron të shtosh një llogari për dikë tjetër, <ph name="LINK_BEGIN" />shto një person të ri<ph name="LINK_END" /> në <ph name="DEVICE_TYPE" /> më mirë.
 
 Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbatohen për këtë llogari. Lejet për aplikacionet për Android mund t'i kontrollosh te <ph name="APPS_LINK_BEGIN" />Cilësimet e aplikacioneve<ph name="APPS_LINK_END" />.</translation>
@@ -2813,6 +2814,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3094521107841754472">Çmimi ka ndryshuar nga <ph name="PREVIOUS_PRICE" /> në <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Faqeshënuesit, fjalëkalimet dhe të dhënat e tjera të shfletuesit sinkronizohen me llogarinë parësore.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 shtesë që mund të jetë e dëmshme është çaktivizuar. Mund ta heqësh po ashtu atë.}other{{NUM_EXTENSIONS} shtesa që mund të jenë të dëmshme janë çaktivizuar. Mund t'i heqësh po ashtu ato.}}</translation>
+<translation id="3101057112460908988">Shfaq përdorimin e memories</translation>
 <translation id="3101126716313987672">Errëso dritën</translation>
 <translation id="3101709781009526431">Data dhe ora</translation>
 <translation id="310297983047869047">Diapozitivi i mëparshëm</translation>
@@ -2890,6 +2892,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3166443275568926403">Performanca dhe gjendja e baterisë</translation>
 <translation id="3169930038976362151">Zgjidh një temë që u përshtatet nevojave të tua. Për të ndryshuar temën, imazhin e sfondit, mbrojtësin e ekranit etj., thjesht prek dhe mbaj shtypur në desktop.</translation>
 <translation id="3170072451822350649">Mund ta shmangësh po ashtu identifikimin dhe <ph name="LINK_START" />të shfletosh si "Vizitor"<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Trupi</translation>
 <translation id="3177430966804511955">Menaxho aplikacionet e izoluara të uebit (beta)</translation>
 <translation id="31774765611822736">Skedë e re në të majtë</translation>
 <translation id="3177909033752230686">Gjuha e faqes:</translation>
@@ -3069,6 +3072,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3315158641124845231">Fshih <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Hyr në modalitetin e lexuesit</translation>
 <translation id="3317459757438853210">Me dy anë</translation>
+<translation id="3317521105713541270">Krijo grupe</translation>
 <translation id="3317678681329786349">Kamera dhe mikrofoni lejohen</translation>
 <translation id="3319306431415395200">Përkthe tekstin në imazh me <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Nuk mund të lidhesh me OneDrive. Provo përsëri.</translation>
@@ -4425,6 +4429,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4364830672918311045">Shfaq njoftimet</translation>
 <translation id="4367513928820380646">Rishiko lejet e hequra</translation>
 <translation id="4367971618859387374">Emri prezantues</translation>
+<translation id="4368960422722232719">Shfaq përdorimin e memories në kartën e pamjes paraprake pas qëndrimit pezull te skeda</translation>
 <translation id="4369215744064167350">Kërkesa e uebsajtit u miratua</translation>
 <translation id="4369233657762989723">Diktimi aktiv/joaktiv</translation>
 <translation id="436926121798828366">Këtë mund ta ndryshosh në çdo kohë te "<ph name="SETTINGS_LINK" />"</translation>
@@ -5344,6 +5349,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5093569275467863761">Nënkorniza e memories specifike të faqes së plotë "të fshehtë": <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Mund të hapësh dhe të modifikosh skedarët e mbështetur me këtë aplikacion nga aplikacioni "Skedarët" ose aplikacione të tjera. Për të kontrolluar se cilët skedarë hapin këtë aplikacion si parazgjedhje, <ph name="BEGIN_LINK" />mëso se si të caktosh aplikacionet e parazgjedhura në pajisjen tënde<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Komuniko me aplikacionet origjinale bashkëpunuese</translation>
+<translation id="5095252080770652994">Progresi</translation>
 <translation id="5095507226704905004">Skedari nuk mund të kopjohet sepse nuk ekziston më</translation>
 <translation id="5095848221827496531">Anulo zgjedhjen</translation>
 <translation id="5097002363526479830">Dështoi lidhja me rrjetin "<ph name="NAME" />": <ph name="DETAILS" /></translation>
@@ -5495,6 +5501,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5213891612754844763">Shfaq cilësimet e përfaqësuesit</translation>
 <translation id="5214639857958972833">Faqeshënuesi "<ph name="BOOKMARK_TITLE" />" u krijua.</translation>
 <translation id="5215502535566372932">Zgjidh vendin</translation>
+<translation id="5215665166431745539">Shfaq imazhet</translation>
 <translation id="5220011581825921581">kërko + shigjeta lart</translation>
 <translation id="5222403284441421673">Një shkarkim i pasigurt u bllokua</translation>
 <translation id="5222676887888702881">Dil</translation>

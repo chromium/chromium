@@ -581,6 +581,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1444628761356461360">Toto nastavenie spravuje vlastník zariadenia <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Súbor „<ph name="IMAGE_PATH" />“ sa pre motív nepodarilo načítať.</translation>
 <translation id="1447531650545977377">Zapnúť synchronizáciu…</translation>
+<translation id="1447895950459090752">Plávajúca karta s prehľadom</translation>
 <translation id="1448264954024227422">Tento účet môžete používať s aplikáciami pre Android. Ak chcete pridať účet niekoho iného, pridajte do svojho zariadenia <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />novú osobu<ph name="LINK_END" />.
 
 Povolenia, ktoré ste už udelili aplikáciám, sa môžu vzťahovať na tento účet. Povolenia pre aplikácie pre Android môžete ovládať v <ph name="APPS_LINK_BEGIN" />Nastaveniach aplikácií<ph name="APPS_LINK_END" />.</translation>
@@ -2817,6 +2818,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3094521107841754472">Cena sa zmenila z <ph name="PREVIOUS_PRICE" /> na <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Záložky, heslá a ďalšie dáta prehliadania sú synchronizované s primárnym účtom.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potenciálne škodlivé rozšírenie je vypnuté. Môžete ho tiež odstrániť.}few{{NUM_EXTENSIONS} potenciálne škodlivé rozšírenia sú vypnuté. Môžete ich tiež odstrániť.}many{{NUM_EXTENSIONS} potentially harmful extensions are off. You can also remove them.}other{{NUM_EXTENSIONS} potenciálne škodlivých rozšírení je vypnutých. Môžete ich tiež odstrániť.}}</translation>
+<translation id="3101057112460908988">Zobrazovať využitie pamäte</translation>
 <translation id="3101126716313987672">Stlmiť osvetlenie</translation>
 <translation id="3101709781009526431">Dátum a čas</translation>
 <translation id="310297983047869047">Predchádzajúca snímka</translation>
@@ -2894,6 +2896,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3166443275568926403">Výkonnosť a stav batérie</translation>
 <translation id="3169930038976362151">Vyberte motív, ktorý vyhovuje vašim potrebám. Ak chcete zmeniť motív, tapetu, šetrič obrazovky a ďalšie položky, stačí pridržať ľubovoľné miesto na pracovnej ploche.</translation>
 <translation id="3170072451822350649">Môžete tiež preskočiť prihlásenie a <ph name="LINK_START" />prehliadať ako hosť<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Text</translation>
 <translation id="3177430966804511955">Spravovať izolované webové aplikácie (beta)</translation>
 <translation id="31774765611822736">Nová karta vľavo</translation>
 <translation id="3177909033752230686">Jazyk stránky:</translation>
@@ -3073,6 +3076,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3315158641124845231">Skryť <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Spustiť režim čítačky</translation>
 <translation id="3317459757438853210">Obojstranne</translation>
+<translation id="3317521105713541270">Vytvoriť skupiny</translation>
 <translation id="3317678681329786349">Kamera a mikrofón sú zablokované</translation>
 <translation id="3319306431415395200">Preložiť text na obrázku pomocou služby <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">K službe OneDrive sa nedá pripojiť. Skúste to znova.</translation>
@@ -4429,6 +4433,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="4364830672918311045">Zobrazovať upozornenia</translation>
 <translation id="4367513928820380646">Skontrolovať odstránené povolenia</translation>
 <translation id="4367971618859387374">Zobrazovaný názov</translation>
+<translation id="4368960422722232719">Zobrazovať využitie pamäte na plávajúcej karte s prehľadom</translation>
 <translation id="4369215744064167350">Žiadosť o web bola schválená</translation>
 <translation id="4369233657762989723">Zapnutie alebo vypnutie diktovania</translation>
 <translation id="436926121798828366">Môžete to kedykoľvek zmeniť v sekcii <ph name="SETTINGS_LINK" /></translation>
@@ -5348,6 +5353,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5093569275467863761">Podrám v režime inkognito v spätnej vyrovnávacej pamäti: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Pomocou tejto aplikácie môžete otvárať a upravovať podporované súbory z aplikácie Súbory alebo iných. Ak chcete ovládať, ktoré súbory predvolene otvoria túto aplikáciu, prečítajte si, <ph name="BEGIN_LINK" />ako v zariadení nastaviť predvolené aplikácie<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Komunikovať so spolupracujúcimi natívnymi aplikáciami</translation>
+<translation id="5095252080770652994">Priebeh</translation>
 <translation id="5095507226704905004">Súbor sa nedá skopírovať, pretože už neexistuje</translation>
 <translation id="5095848221827496531">Zrušiť výber</translation>
 <translation id="5097002363526479830">K sieti „<ph name="NAME" />“ sa nepodarilo pripojiť: <ph name="DETAILS" /></translation>
@@ -5499,6 +5505,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5213891612754844763">Zobraziť nastavenia proxy servera</translation>
 <translation id="5214639857958972833">Bola vytvorená záložka <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="5215502535566372932">Vyberte krajinu</translation>
+<translation id="5215665166431745539">Zobrazovať obrázky</translation>
 <translation id="5220011581825921581">kláves vyhľadávania + šípka nahor</translation>
 <translation id="5222403284441421673">Bolo zablokované nezabezpečené sťahovanie</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>

@@ -581,6 +581,7 @@
 <translation id="1444628761356461360">ही सेटिंग डिव्हाइस मालक, <ph name="OWNER_EMAIL" /> द्वारे व्यवस्थापित केली आहे.</translation>
 <translation id="144518587530125858">थीमसाठी '<ph name="IMAGE_PATH" />' लोड करणे शक्य नाही.</translation>
 <translation id="1447531650545977377">सिंक &amp;सुरू करा…</translation>
+<translation id="1447895950459090752">कर्सर फिरवून दिसणारे पूर्वावलोकन कार्ड</translation>
 <translation id="1448264954024227422">तुम्ही हे खाते Android अ‍ॅप्ससह वापरू शकता. तुम्हाला दुसऱ्या व्यक्तीसाठी खाते जोडायचे असल्यास, त्याऐवजी तुमच्या <ph name="DEVICE_TYPE" /> मध्ये <ph name="LINK_BEGIN" />नवीन व्यक्ती जोडा<ph name="LINK_END" />.
 
 तुम्ही अ‍ॅप्सना आधीपासून दिलेल्या परवानग्या या खात्याला लागू होऊ शकतात. तुम्ही <ph name="APPS_LINK_BEGIN" />अ‍ॅप्स सेटिंग्ज<ph name="APPS_LINK_END" /> मध्ये Android अ‍ॅप्ससाठी परवानग्या नियंत्रित करू शकता.</translation>
@@ -2829,6 +2830,7 @@
 <translation id="3094521107841754472">किंमत <ph name="PREVIOUS_PRICE" /> वरून <ph name="CURRENT_PRICE" /> वर बदलली आहे.</translation>
 <translation id="3095871294753148861">बुकमार्क, पासवर्ड आणि इतर ब्राउझर डेटा या गोष्टी प्राथमिक खात्याशी सिंक केल्या आहेत.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{हानीकारक असू शकणारे एक एक्स्टेंशन बंद आहे. तुम्ही ते काढूदेखील शकता.}other{हानीकारक असू शकणारी {NUM_EXTENSIONS} एक्स्टेंशन बंद आहेत. तुम्ही ती काढूदेखील शकता.}}</translation>
+<translation id="3101057112460908988">मेमरीचा वापर दाखवा</translation>
 <translation id="3101126716313987672">मंद लाइट</translation>
 <translation id="3101709781009526431">तारीख आणि वेळ</translation>
 <translation id="310297983047869047">मागील स्लाइड</translation>
@@ -2906,6 +2908,7 @@
 <translation id="3166443275568926403">परफॉर्मन्स आणि बॅटरी स्थिती</translation>
 <translation id="3169930038976362151">तुमच्या आवश्यकतांची पूर्तता करणारी थीम निवडा. तुमची थीम, वॉलपेपर, स्क्रीन सेव्हर आणि आणखी बरेच काही बदलण्यासाठी, डेस्कटॉपवर फक्त स्पर्श करून धरून ठेवा.</translation>
 <translation id="3170072451822350649">तुम्ही साइन इन वगळुन <ph name="LINK_START" />अतिथी म्हणून ब्राउझ<ph name="LINK_END" /> देखील करू शकता.</translation>
+<translation id="3175067642577044620">मुख्य भाग</translation>
 <translation id="3177430966804511955">आयसोलेटेड वेब ॲप्स व्यवस्थापित करा (बीटा)</translation>
 <translation id="31774765611822736">डावीकडील नवीन टॅब</translation>
 <translation id="3177909033752230686">पेज भाषा:</translation>
@@ -2917,6 +2920,7 @@
 <translation id="3183139917765991655">प्रोफाईल आयातकर्ता</translation>
 <translation id="3183143381919926261">मोबाइल डेटा नेटवर्क</translation>
 <translation id="3183613134231754987">ही पासकी फक्त Windows Hello. वर सेव्ह केली जाईल. तुम्ही सर्व गुप्त विंडो बंद केल्यानंतर, ती या डिव्हाइसवर राहील.</translation>
+<translation id="3183700187146209259">स्कॅनर सॉफ्टवेअर इंस्टॉल करू शकत नाही</translation>
 <translation id="3183944777708523606">मॉनिटर व्यवस्था</translation>
 <translation id="3184536091884214176">CUPS प्रिंटर सेट किंवा व्यवस्थापित करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{हे ॲप ब्लॉक केले आहे}other{काही अ‍ॅप्स ब्लॉक केली आहेत}}</translation>
@@ -3085,6 +3089,7 @@
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> लपवा</translation>
 <translation id="3315442055907669208">वाचक मोडमध्ये एंटर करा</translation>
 <translation id="3317459757438853210">दोन्ही बाजूंनी</translation>
+<translation id="3317521105713541270">गट तयार करा</translation>
 <translation id="3317678681329786349">कॅमेरा आणि मायक्रोफोन ब्लॉक केले आहेत</translation>
 <translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून इमेजमधील मजकुराचे भाषांतर करा</translation>
 <translation id="3320271870899888245">OneDrive शी कनेक्ट करू शकत नाही. पुन्हा प्रयत्न करा.</translation>
@@ -4439,6 +4444,7 @@
 <translation id="4364830672918311045">सूचना डिस्प्ले करा</translation>
 <translation id="4367513928820380646">काढून टाकलेल्या परवानग्यांचे पुनरावलोकन करा</translation>
 <translation id="4367971618859387374">दाखवण्याचे नाव</translation>
+<translation id="4368960422722232719">टॅबच्या कर्सर फिरवून दिसणाऱ्या पूर्वावलोकन कार्डवर मेमरीचा वापर दाखवा</translation>
 <translation id="4369215744064167350">वेबसाइट ॲक्सेस करण्याच्या विनंतीला मंजुरी मिळाली</translation>
 <translation id="4369233657762989723">डिक्टेशन सुरू/बंद करा</translation>
 <translation id="436926121798828366">तुम्ही हे <ph name="SETTINGS_LINK" /> मध्ये कधीही बदलू शकता</translation>
@@ -5361,6 +5367,7 @@
 <translation id="5093569275467863761">बॅक/फॉरवर्ड कॅशे केलेली गुप्त सबफ्रेम: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">तुम्ही सपोर्ट असलेल्या फाइल या अ‍ॅपद्वारे Files अ‍ॅप किंवा इतर अ‍ॅप्समध्ये उघडू शकता आणि संपादित करू शकता. या ॲपमध्ये कोणत्या फाइल बाय डीफॉल्ट उघडल्या जाव्यात हे नियंत्रित करण्यासाठी, <ph name="BEGIN_LINK" />तुमच्या डिव्हाइसवर डीफॉल्ट अ‍ॅप्स कशी सेट करायची ते जाणून घ्या<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">मूळ अनुप्रयोगांना सहकार्य करून संवाद प्रस्थापित करा</translation>
+<translation id="5095252080770652994">प्रगती</translation>
 <translation id="5095507226704905004">फाइल यापुढे अस्तित्वात नसल्यामुळे ती उघडता येणार नाही</translation>
 <translation id="5095848221827496531">निवड रद्द करा</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />': नेटवर्कशी कनेक्ट करण्यात अयशस्वी. <ph name="DETAILS" /></translation>
@@ -5512,6 +5519,7 @@
 <translation id="5213891612754844763">प्रॉक्सी सेटिग्ज दर्शवा</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' बुकमार्क तयार केले.</translation>
 <translation id="5215502535566372932">देश निवडा</translation>
+<translation id="5215665166431745539">इमेज दाखवा</translation>
 <translation id="5220011581825921581">search + अप अ‍ॅरो</translation>
 <translation id="5222403284441421673">असुरक्षित डाउनलोड ब्लॉक केले</translation>
 <translation id="5222676887888702881">साइन आउट करा</translation>
@@ -9005,6 +9013,7 @@
 <translation id="7943837619101191061">स्थान जोडा...</translation>
 <translation id="79446453817422139">ही फाइल धोकादायक असू शकते</translation>
 <translation id="7944772052836377867">सिंकला हे तुम्हीच आहात याची पडताळणी करायची आहे</translation>
+<translation id="7944847494038629732">स्कॅनरची USB केबल अनप्लग करा आणि परत प्रयत्न करण्यासाठी पुन्हा प्लग करा</translation>
 <translation id="7945703887991230167">प्राधान्य दिलेला आवाज</translation>
 <translation id="7946586320617670168">मूळ सुरक्षित असणे आवश्यक आहे</translation>
 <translation id="794676567536738329">परवानग्यांची पुष्टी करा</translation>
@@ -9417,6 +9426,7 @@
 <translation id="8260864402787962391">माउस</translation>
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मध्ये हे एक्स्टेंशन सूचीबद्ध केले नाही आणि कदाचित तुमच्या माहिती शिवाय जोडले गेले आहे.</translation>
 <translation id="8261506727792406068">हटवा</translation>
+<translation id="8261625296061301062">स्कॅनर सॉफ्टवेअर इंस्टॉल केले</translation>
 <translation id="8262971894813353037">WebUI साठी नवीन डेस्कटॉप डिझाइन सुरू करते. Chrome Refresh 2023 देखील सुरू करणे आवश्यक आहे.</translation>
 <translation id="8263336784344783289">या गटाला नाव द्या</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> नी तुमचा माउस कर्सर बंद केला आहे.</translation>
@@ -9600,6 +9610,7 @@
 <translation id="8387361103813440603">तुमचे स्थान पाहण्याची अनुमती नाही</translation>
 <translation id="8388770971141403598">दुय्यम प्रोफाइलना सपोर्ट नाही</translation>
 <translation id="8389492867173948260">तुम्ही भेट देता त्या वेबसाइटवरील तुमचा सर्व डेटा वाचण्यासाठी आणि बदलण्यासाठी या एक्स्टेंशनला अनुमती द्या:</translation>
+<translation id="8390392581097975659">स्कॅनर सॉफ्टवेअर इंस्टॉल करत आहे</translation>
 <translation id="8390449457866780408">सर्व्हर अनुपलब्ध.</translation>
 <translation id="8391218455464584335">व्हिनेल</translation>
 <translation id="8392726714909453725">बोलण्यासाठी निवडा सेटिंग्ज</translation>

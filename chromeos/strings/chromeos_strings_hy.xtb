@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">թիթեռներ</translation>
 <translation id="188114911237521550">Անջատել մուգ ռեժիմը</translation>
+<translation id="188268299367474594">Ընտրեք հասանելի APN-ներից</translation>
 <translation id="1885577615937958993">առաջ տալ մեդիաֆայլը</translation>
 <translation id="1887850431809612466">Սարքի տարբերակը</translation>
 <translation id="189221451253258459">նեոնային կանաչ</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">ցուցադրել պատուհանները</translation>
 <translation id="2513396635448525189">Մուտքի պատկեր</translation>
 <translation id="2517472476991765520">Որոնել</translation>
+<translation id="2520213071283358374">Օգտագործել այս APN-ը</translation>
 <translation id="2521835766824839541">նախորդ կատարումը</translation>
 <translation id="2526590354069164005">Աշխատասեղան</translation>
 <translation id="253029298928638905">Վերագործարկում…</translation>
@@ -991,6 +993,7 @@
 <translation id="7177485034254901881">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից։ Ադմինիստրատորները կարող են հեռակա փոխել սարքի կարգավորումները։</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="7180865173735832675">Հարմարեցնել</translation>
+<translation id="7182063559013288142">Ակնթարթային թեժ կետ</translation>
 <translation id="7184043045742675738">Կոճակը կարգավորելու համար սեղմեք ցանկացած ստեղն։ Փոխեք դիրքը մկնիկի կամ սլաքի ստեղների միջոցով։</translation>
 <translation id="7206979415662233817">Օգտագործման պայմաններ</translation>
 <translation id="7210635925306941239">կապտականաչ</translation>
@@ -1134,6 +1137,7 @@
 <translation id="8075838845814659848">Մարտկոցի լիցքը</translation>
 <translation id="8076492880354921740">Ներդիրներ</translation>
 <translation id="8079860070590459552">ծաղիկների դաշտ</translation>
+<translation id="8081553043098820199">Անվավեր APN-ները կարող են հանգեցնել բջջային կապի անջատման։ Ընտրեք միայն ձեր բջջային օպերատորի կամ ադմինիստրատորի կողմից տրամադրված APN-ները։</translation>
 <translation id="8082366717211101304">Չհաջողվեց փոխակերպել DNS-ը Android հավելվածներից</translation>
 <translation id="8082644724189923105">ստեղնաշարի գոտի</translation>
 <translation id="808894953321890993">Փոխել գաղտնաբառը</translation>

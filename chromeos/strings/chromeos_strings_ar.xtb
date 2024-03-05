@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">‏وحدة النقل العظمى (MTU)</translation>
 <translation id="1876997008435570708">فراشات</translation>
 <translation id="188114911237521550">إيقاف تشغيل الوضع المُعتِم</translation>
+<translation id="188268299367474594">‏الاختيار من بين أسماء نقاط الوصول (APN) المتوفّرة</translation>
 <translation id="1885577615937958993">تقديم سريع للوسائط</translation>
 <translation id="1887850431809612466">مراجعة الأجهزة</translation>
 <translation id="189221451253258459">أخضر نيون</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">إظهار النوافذ</translation>
 <translation id="2513396635448525189">صورة الملف الشخصي</translation>
 <translation id="2517472476991765520">فحص</translation>
+<translation id="2520213071283358374">استخدام اسم نقطة الوصول هذا</translation>
 <translation id="2521835766824839541">المقطع الصوتي السابق</translation>
 <translation id="2526590354069164005">سطح المكتب</translation>
 <translation id="253029298928638905">جارٍ إعادة التشغيل…</translation>
@@ -991,6 +993,7 @@
 <translation id="7177485034254901881">يدير <ph name="MANAGER" /> جهاز <ph name="DEVICE_TYPE" /> هذا. ويمكن للمشرفين إعداد هذا الجهاز عن بُعد.</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7180865173735832675">تخصيص</translation>
+<translation id="7182063559013288142">نقطة اتصال فورية</translation>
 <translation id="7184043045742675738">انقر على أي مفتاح لتخصيص الزر. غيِّر موضع المفتاح باستخدام الماوس أو مفاتيح الأسهم.</translation>
 <translation id="7206979415662233817">بنود الخدمة</translation>
 <translation id="7210635925306941239">سماوي</translation>
@@ -1134,6 +1137,7 @@
 <translation id="8075838845814659848">شحن البطارية المتبقي</translation>
 <translation id="8076492880354921740">علامات التبويب</translation>
 <translation id="8079860070590459552">حقل من الأزهار</translation>
+<translation id="8081553043098820199">قد تؤدي أسماء نقاط الوصول غير الصالحة إلى إيقاف الاتصال بشبكة الجوّال. يجب ضبط أسماء نقاط الوصول التي يوفّرها المُشرف أو مُقدِّم خدمات شبكة الجوّال فقط.</translation>
 <translation id="8082366717211101304">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS) من تطبيقات Android.</translation>
 <translation id="8082644724189923105">منطقة لوحة المفاتيح</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>

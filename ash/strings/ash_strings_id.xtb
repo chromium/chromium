@@ -358,6 +358,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2484513351006226581">Tekan <ph name="KEYBOARD_SHORTCUT" /> untuk mengganti tata letak keyboard.</translation>
 <translation id="2486214324139475545">Pratinjau <ph name="DESK_NAME" />. Desktop virtual aktif.</translation>
 <translation id="2487915095798731898">Gabung</translation>
+<translation id="2499445554382787206">Menu profil desktop virtual. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tombol lekat</translation>
 <translation id="2504454902900101003">Tutup penyiapan untuk melihat foto, media, dan notifikasi terbaru ponsel Anda</translation>
 <translation id="2509468283778169019">CAPS LOCK aktif</translation>
@@ -605,6 +606,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3509391053705095206">Tidak dapat menemukan ponsel Anda. Pastikan Bluetooth ponsel Anda aktif.</translation>
 <translation id="3510164367642747937">Sorot kursor mouse</translation>
 <translation id="3513798432020909783">Akun dikelola oleh <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Tugas terakhir diperbarui: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Update perangkat dalam 1 menit}other{Update perangkat dalam # menit}}</translation>
 <translation id="3522979239100719575">Mencari profil yang tersedia. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="3526440770046466733">Buka link di tab baru dan tetap di tab saat ini</translation>
@@ -1144,6 +1146,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5536723544185013515">Aplikasi Terbaru, navigasikan dengan tombol panah kiri atau kanan untuk mengakses semua aplikasi terbaru</translation>
 <translation id="553675580533261935">Keluar dari sesi</translation>
 <translation id="5537725057119320332">Transmisikan</translation>
+<translation id="554017492391497564">Tidak dapat menandai sebagai selesai.</translation>
 <translation id="5546397813406633847">Pulihkan pengguna</translation>
 <translation id="554893713779400387">Aktifkan dikte</translation>
 <translation id="5550417424894892620">Lepaskan file di desktop untuk menambahkannya ke <ph name="HOLDING_SPACE_TITLE" />. Anda tidak dapat menambahkan file ke desktop.</translation>
@@ -1338,6 +1341,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Daya baterai lemah. Penghemat Baterai diaktifkan.</translation>
 <translation id="6247728804802644171">Buka notifikasi</translation>
+<translation id="6249795363855770621">Tidak dapat menandai sebagai selesai. Coba lagi saat online.</translation>
 <translation id="6254629735336163724">Terkunci ke horizontal</translation>
 <translation id="6259254695169772643">Gunakan stilus untuk memilih</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Mengaktifkan...</translation>
@@ -1498,6 +1502,7 @@ Baru diinstal</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6912841030378044227">Fokus ke kolom URL</translation>
 <translation id="6912901278692845878">Tur singkat</translation>
+<translation id="6917259695595127329">Tugas terakhir diperbarui: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Tidak bisa mengenali kartu smart Anda. Coba lagi.</translation>
 <translation id="692135145298539227">hapus, delete</translation>
 <translation id="6929081673585394903">Tampilkan kontrol</translation>

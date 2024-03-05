@@ -2904,6 +2904,7 @@
 <translation id="3183139917765991655">Увоз профила</translation>
 <translation id="3183143381919926261">Мобилне мреже за пренос података</translation>
 <translation id="3183613134231754987">Овај приступни кôд ће се сачувати само у функцији Windows Hello. Он ће остати на овом уређају када затворите све прозоре без архивирања.</translation>
+<translation id="3183700187146209259">Инсталирање софтвера за скенер није успело</translation>
 <translation id="3183944777708523606">Распоред монитора</translation>
 <translation id="3184536091884214176">Подесите CUPS штампаче или управљајте њима. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ова апликација је блокирана}one{Неке апликације су блокиране}few{Неке апликације су блокиране}other{Неке апликације су блокиране}}</translation>
@@ -9002,6 +9003,7 @@
 <translation id="7943837619101191061">Додај локацију...</translation>
 <translation id="79446453817422139">Овај фајл може да буде опасан</translation>
 <translation id="7944772052836377867">Синхронизација мора да потврди да сте то ви</translation>
+<translation id="7944847494038629732">Искључите USB кабл скенера и поново га укључите да бисте пробали поново</translation>
 <translation id="7945703887991230167">Жељени глас</translation>
 <translation id="7946586320617670168">Извор мора да буде безбедан</translation>
 <translation id="794676567536738329">Потврђивање дозвола</translation>
@@ -9414,6 +9416,7 @@
 <translation id="8260864402787962391">Миш</translation>
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не наводи овај додатак и он је можда додат без вашег знања.</translation>
 <translation id="8261506727792406068">Избриши</translation>
+<translation id="8261625296061301062">Софтвер за скенирање је инсталиран</translation>
 <translation id="8262971894813353037">Омогућава нови дизајн радне површине за WebUI. Морате да омогућите и Chrome освежавање за 2023.</translation>
 <translation id="8263336784344783289">Дајте назив овој групи</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> је онемогућио курсор.</translation>
@@ -9597,6 +9600,7 @@
 <translation id="8387361103813440603">Није им дозвољено да виде вашу локацију</translation>
 <translation id="8388770971141403598">Секундарни профили нису подржани</translation>
 <translation id="8389492867173948260">Дозволите да овај додатак чита и мења све податке на веб-сајтовима које посећујете:</translation>
+<translation id="8390392581097975659">Инсталира се софтвер за скенер</translation>
 <translation id="8390449457866780408">Сервер је недоступан.</translation>
 <translation id="8391218455464584335">Грамофонска плоча</translation>
 <translation id="8392726714909453725">Подешавања услуге Изаберите за говор</translation>

@@ -581,6 +581,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1444628761356461360">Cài đặt này do chủ sở hữu thiết bị, <ph name="OWNER_EMAIL" /> quản lý.</translation>
 <translation id="144518587530125858">Không thể tải '<ph name="IMAGE_PATH" />' cho chủ đề.</translation>
 <translation id="1447531650545977377">Bật tính năng &amp;đồng bộ hoá...</translation>
+<translation id="1447895950459090752">Thẻ xem trước khi di chuột qua thẻ</translation>
 <translation id="1448264954024227422">Bạn có thể sử dụng tài khoản này cho các ứng dụng Android. Nếu bạn muốn thêm tài khoản cho người khác, thì hãy chuyển sang <ph name="LINK_BEGIN" />thêm người dùng mới<ph name="LINK_END" /> trên <ph name="DEVICE_TYPE" /> của bạn.
 
 Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả tài khoản này. Bạn có thể kiểm soát các quyền đối với ứng dụng Android trong phần <ph name="APPS_LINK_BEGIN" />Cài đặt ứng dụng<ph name="APPS_LINK_END" />.</translation>
@@ -2830,6 +2831,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3094521107841754472">Giá đã thay đổi từ <ph name="PREVIOUS_PRICE" /> thành <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Dấu trang, mật khẩu và dữ liệu khác của trình duyệt sẽ được đồng bộ hóa với tài khoản chính.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Đã tắt 1 tiện ích có thể gây hại. Bạn cũng có thể xóa tiện ích này.}other{Đã tắt {NUM_EXTENSIONS} tiện ích có thể gây hại. Bạn cũng có thể xóa các tiện ích này.}}</translation>
+<translation id="3101057112460908988">Hiển thị mức sử dụng bộ nhớ</translation>
 <translation id="3101126716313987672">Ánh sáng mờ</translation>
 <translation id="3101709781009526431">Ngày và giờ</translation>
 <translation id="310297983047869047">Trang trình bày trước</translation>
@@ -2907,6 +2909,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3166443275568926403">Hiệu suất và trạng thái pin</translation>
 <translation id="3169930038976362151">Chọn giao diện phù hợp với nhu cầu của bạn. Để thay đổi giao diện, hình nền, trình bảo vệ màn hình, v.v., bạn chỉ cần chạm và giữ trên màn hình.</translation>
 <translation id="3170072451822350649">Bạn cũng có thể bỏ qua việc đăng nhập và <ph name="LINK_START" />duyệt với tư cách khách<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Nội dung</translation>
 <translation id="3177430966804511955">Quản lý ứng dụng web tách biệt (beta)</translation>
 <translation id="31774765611822736">Thẻ mới ở bên trái</translation>
 <translation id="3177909033752230686">Ngôn ngữ trang:</translation>
@@ -3087,6 +3090,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3315158641124845231">Ẩn <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Bật chế độ đọc</translation>
 <translation id="3317459757438853210">Hai mặt</translation>
+<translation id="3317521105713541270">Tạo nhóm</translation>
 <translation id="3317678681329786349">Máy ảnh và micrô bị chặn</translation>
 <translation id="3319306431415395200">Dịch văn bản trong hình ảnh bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Không thể kết nối với OneDrive. Hãy thử lại.</translation>
@@ -4443,6 +4447,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4364830672918311045">Hiện thông báo</translation>
 <translation id="4367513928820380646">Xem xét các quyền đã xoá</translation>
 <translation id="4367971618859387374">Tên hiển thị</translation>
+<translation id="4368960422722232719">Hiển thị mức sử dụng bộ nhớ trên thẻ xem trước khi di chuột qua thẻ</translation>
 <translation id="4369215744064167350">Đã phê duyệt yêu cầu truy cập trang web</translation>
 <translation id="4369233657762989723">Bật/tắt tính năng nhập bằng giọng nói</translation>
 <translation id="436926121798828366">Bạn có thể thay đổi chế độ này bất cứ lúc nào trong phần <ph name="SETTINGS_LINK" /></translation>
@@ -5363,6 +5368,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5093569275467863761">Khung phụ ẩn danh lưu trong bộ nhớ đệm cho thao tác tiến/lùi: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Bạn có thể dùng ứng dụng này trên ứng dụng Files hoặc các ứng dụng khác để mở và chỉnh sửa các tệp được hỗ trợ. Để kiểm soát loại tệp mở được ứng dụng này theo mặc định, hãy <ph name="BEGIN_LINK" />tìm hiểu cách đặt ứng dụng mặc định trên thiết bị<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Kết nối với ứng dụng gốc hợp tác</translation>
+<translation id="5095252080770652994">Tiến độ</translation>
 <translation id="5095507226704905004">Không thể sao chép tệp này vì tệp không còn tồn tại</translation>
 <translation id="5095848221827496531">Bỏ chọn</translation>
 <translation id="5097002363526479830">Không thể kết nối với mạng '<ph name="NAME" />': <ph name="DETAILS" /></translation>
@@ -5514,6 +5520,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5213891612754844763">Hiển thị cài đặt proxy</translation>
 <translation id="5214639857958972833">Đã tạo dấu trang "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="5215502535566372932">Chọn quốc gia</translation>
+<translation id="5215665166431745539">Hiển thị hình ảnh</translation>
 <translation id="5220011581825921581">tìm kiếm + mũi tên lên</translation>
 <translation id="5222403284441421673">Tệp không an toàn đã bị chặn tải xuống</translation>
 <translation id="5222676887888702881">Đăng xuất</translation>

@@ -582,6 +582,7 @@
 <translation id="1444628761356461360">Со поставката управува сопственикот на уредот, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Не може да вчита „<ph name="IMAGE_PATH" />“ за тема.</translation>
 <translation id="1447531650545977377">Вклучете синхронизација…</translation>
+<translation id="1447895950459090752">Kартичка со преглед што се појавува со наместување на курсорот над картичка</translation>
 <translation id="1448264954024227422">Можете да ја користите сметкава со апликации на Android. Ако сакате да додадете сметка за некој друг, <ph name="LINK_BEGIN" />додајте ново лице<ph name="LINK_END" /> наместо тоа во вашиот <ph name="DEVICE_TYPE" />.
 
 Дозволите што веќе сте им ги дале на апликациите можеби ќе важат за оваа сметка. Може да ги контролирате дозволите за апликациите на Android во <ph name="APPS_LINK_BEGIN" />Поставките за апликации<ph name="APPS_LINK_END" />.</translation>
@@ -2831,6 +2832,7 @@
 <translation id="3094521107841754472">Цената се промени од <ph name="PREVIOUS_PRICE" /> на <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Обележувачите, лозинките и другите податоци од прелистувачот се синхронизираат со примарната сметка.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 потенцијално штетна екстензија е исклучена. Може и да ја отстраните.}one{{NUM_EXTENSIONS} потенцијално штетна екстензија е исклучена. Може и да ги отстраните.}other{{NUM_EXTENSIONS} потенцијално штетни екстензии се исклучени. Може и да ги отстраните.}}</translation>
+<translation id="3101057112460908988">Прикажување на искористената меморија</translation>
 <translation id="3101126716313987672">Затемни светло</translation>
 <translation id="3101709781009526431">Датум и време</translation>
 <translation id="310297983047869047">Претходен слајд</translation>
@@ -2908,6 +2910,7 @@
 <translation id="3166443275568926403">Изведба и состојба на батеријата</translation>
 <translation id="3169930038976362151">Изберете ја темата што одговара на вашите потреби. За да промените тема, тапет, штедач на екран и друго, само допрете и задржете на работната површина.</translation>
 <translation id="3170072451822350649">Може да прескокнете и најавување и <ph name="LINK_START" />да прелистувате како Гостин<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Главен текст</translation>
 <translation id="3177430966804511955">Управувајте со изолираните веб-апликации (бета)</translation>
 <translation id="31774765611822736">Нова картичка налево</translation>
 <translation id="3177909033752230686">Јазик на страницата:</translation>
@@ -3087,6 +3090,7 @@
 <translation id="3315158641124845231">Скриј <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Влезете во режим на читач</translation>
 <translation id="3317459757438853210">Двострано</translation>
+<translation id="3317521105713541270">Создавање групи</translation>
 <translation id="3317678681329786349">Камерата и микрофонот се блокирани</translation>
 <translation id="3319306431415395200">Преведете текст во слика со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Не може да се поврзе на OneDrive. Обидете се повторно.</translation>
@@ -4443,6 +4447,7 @@
 <translation id="4364830672918311045">Прикажи ги известувањата</translation>
 <translation id="4367513928820380646">Прегледајте ги отстранетите дозволи</translation>
 <translation id="4367971618859387374">Име за приказ</translation>
+<translation id="4368960422722232719">Прикажување на искористената меморија во картичка со преглед што се појавува со наместување на курсорот над картичка</translation>
 <translation id="4369215744064167350">Барањето за веб-сајт е одобрено</translation>
 <translation id="4369233657762989723">Диктирањето е вклучено/исклучено</translation>
 <translation id="436926121798828366">Ова може да го промените во секое време во <ph name="SETTINGS_LINK" />.</translation>
@@ -4920,6 +4925,7 @@
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="473936925429402449">Избрано, дополнителни содржини под број <ph name="CURRENT_ELEMENT" /> од вкупно <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Билети</translation>
+<translation id="4740546261986864539">Неодамна отворена</translation>
 <translation id="4742334355511750246">Не им е дозволено да прикажуваат слики</translation>
 <translation id="4742970037960872810">Отстрани нагласување</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Дознајте како да ги ажурирате апликациите<ph name="END_LINK" /></translation>
@@ -5117,6 +5123,7 @@
 <translation id="488785315393301722">Прикажи детали</translation>
 <translation id="488862352499217187">Создајте нова папка</translation>
 <translation id="4890292359366636311">Влегувајте во „Слика во слика“ автоматски за да може да ја користите над други картички и прозорци.</translation>
+<translation id="4890399733764921729">Не може да се поврзе. Заклучено од друг мобилен оператор.</translation>
 <translation id="4890773143211625964">Покажи ги напредните опции за печатач</translation>
 <translation id="4891089016822695758">Форум за Beta Chrome</translation>
 <translation id="4892229439761351791">Сајтот може да користи Bluetooth</translation>
@@ -5363,6 +5370,7 @@
 <translation id="5093569275467863761">Подрамка за инкогнито за кеш за движење наназад/нанапред: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Со апликацијава може да отворате и уредувате поддржани датотеки од апликацијата Files или од други апликации. За да контролирате кои датотеки стандардно се отвораат во апликацијава, <ph name="BEGIN_LINK" />дознајте како да поставите стандардни апликации на вашиот уред<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Комуницирај со матични апликации што соработуваат</translation>
+<translation id="5095252080770652994">Напредок</translation>
 <translation id="5095507226704905004">Датотеката не може да се копира затоа што веќе не постои</translation>
 <translation id="5095848221827496531">Поништување на изборот</translation>
 <translation id="5097002363526479830">Не успеа да се поврзе на мрежа „<ph name="NAME" />“: <ph name="DETAILS" /></translation>
@@ -5514,6 +5522,7 @@
 <translation id="5213891612754844763">Покажи ги поставките за прокси</translation>
 <translation id="5214639857958972833">Обележувачот „<ph name="BOOKMARK_TITLE" />“ е создаден.</translation>
 <translation id="5215502535566372932">Изберете држава</translation>
+<translation id="5215665166431745539">Прикажување на сликите</translation>
 <translation id="5220011581825921581">search + стрелка нагоре</translation>
 <translation id="5222403284441421673">Блокирано е небезбедно преземање</translation>
 <translation id="5222676887888702881">Одјави се</translation>
@@ -8355,6 +8364,7 @@
 <translation id="7465778193084373987">URL-адреса за отповикани сертификати на Netscape</translation>
 <translation id="7466431077154602932">Компактен приказ</translation>
 <translation id="746861123368584540">Екстензијата е вчитана</translation>
+<translation id="7470131554696493512">Блокирање додатоците Thunderbolt или USB4 да пристапуваат или споделуваат меморија (RAM)</translation>
 <translation id="7470424110735398630">Дозволено им е да ја гледаат привремената меморија</translation>
 <translation id="747114903913869239">Грешка: Не може да дешифрира наставка</translation>
 <translation id="7471520329163184433">Побавно</translation>

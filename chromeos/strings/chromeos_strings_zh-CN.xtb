@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">蝴蝶</translation>
 <translation id="188114911237521550">关闭深色模式</translation>
+<translation id="188268299367474594">从可用的 APN 中选择</translation>
 <translation id="1885577615937958993">让媒体快进</translation>
 <translation id="1887850431809612466">硬件版本</translation>
 <translation id="189221451253258459">荧光绿</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">显示窗口</translation>
 <translation id="2513396635448525189">登录图片</translation>
 <translation id="2517472476991765520">扫描</translation>
+<translation id="2520213071283358374">使用此 APN</translation>
 <translation id="2521835766824839541">上一首</translation>
 <translation id="2526590354069164005">桌面</translation>
 <translation id="253029298928638905">正在重启…</translation>
@@ -991,6 +993,7 @@
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理员可能会远程配置此设备。</translation>
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7180865173735832675">自定义</translation>
+<translation id="7182063559013288142">即时热点</translation>
 <translation id="7184043045742675738">点击任意键自定义您的按钮。使用鼠标或箭头键调整键的位置。</translation>
 <translation id="7206979415662233817">服务条款</translation>
 <translation id="7210635925306941239">青色</translation>
@@ -1134,6 +1137,7 @@
 <translation id="8075838845814659848">剩余电量</translation>
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8079860070590459552">花田</translation>
+<translation id="8081553043098820199">无效 APN 可能会导致您的移动网络连接被停用。请仅设置您的移动服务商或管理员提供的 APN。</translation>
 <translation id="8082366717211101304">无法从 Android 应用解析 DNS</translation>
 <translation id="8082644724189923105">键盘区域</translation>
 <translation id="808894953321890993">更改密码</translation>

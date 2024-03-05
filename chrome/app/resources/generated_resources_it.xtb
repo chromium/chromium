@@ -579,6 +579,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1444628761356461360">Questa impostazione è controllata dal proprietario del dispositivo, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Impossibile caricare "<ph name="IMAGE_PATH" />" per il tema.</translation>
 <translation id="1447531650545977377">Attiva la &amp;sincronizzazione…</translation>
+<translation id="1447895950459090752">Scheda di anteprima che appare quando passi il mouse sopra la scheda</translation>
 <translation id="1448264954024227422">Puoi usare questo account con le app per Android. Se vuoi aggiungere un account per qualcun altro, <ph name="LINK_BEGIN" />aggiungi invece una nuova persona<ph name="LINK_END" /> a <ph name="DEVICE_TYPE" />.
 
 A questo account potrebbero essere applicate le autorizzazioni già concesse alle app. Puoi gestire le autorizzazioni relative alle app per Android nelle <ph name="APPS_LINK_BEGIN" />Impostazioni app<ph name="APPS_LINK_END" />.</translation>
@@ -2815,6 +2816,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3094521107841754472">Il prezzo è cambiato da <ph name="PREVIOUS_PRICE" /> a <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Preferiti, password e altri dati di navigazione sono sincronizzati con l'account principale.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 estensione potenzialmente dannosa è stata disattivata. Puoi anche rimuoverla.}other{{NUM_EXTENSIONS} estensioni potenzialmente dannose sono state disattivate. Puoi anche rimuoverle.}}</translation>
+<translation id="3101057112460908988">Mostra memoria utilizzata</translation>
 <translation id="3101126716313987672">Attenuare la luce</translation>
 <translation id="3101709781009526431">Data e ora</translation>
 <translation id="310297983047869047">Diapositiva precedente</translation>
@@ -2892,6 +2894,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3166443275568926403">Prestazioni e stato della batteria</translation>
 <translation id="3169930038976362151">Scegli il tema più adatto alle tue esigenze. Per cambiare tema, sfondo, salvaschermo e altro ancora, tocca e tieni premuto sul desktop.</translation>
 <translation id="3170072451822350649">Puoi anche saltare l'accesso e <ph name="LINK_START" />navigare come ospite<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Corpo</translation>
 <translation id="3177430966804511955">Gestisci le app web isolate (beta)</translation>
 <translation id="31774765611822736">Posizionamento nuova scheda a sinistra</translation>
 <translation id="3177909033752230686">Lingua della pagina:</translation>
@@ -3071,6 +3074,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3315158641124845231">Nascondi <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Avvia modalità Reader</translation>
 <translation id="3317459757438853210">Fronte retro</translation>
+<translation id="3317521105713541270">Crea gruppi</translation>
 <translation id="3317678681329786349">Videocamera e microfono bloccati</translation>
 <translation id="3319306431415395200">Traduci il testo nell'immagine con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Impossibile collegarsi a OneDrive. Riprova.</translation>
@@ -4427,6 +4431,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4364830672918311045">Mostrare notifiche</translation>
 <translation id="4367513928820380646">Controlla le autorizzazioni rimosse</translation>
 <translation id="4367971618859387374">Nome visualizzato</translation>
+<translation id="4368960422722232719">Mostra l'utilizzo della memoria su una scheda di anteprima che appare quando passi il mouse sopra la scheda</translation>
 <translation id="4369215744064167350">Richiesta di accesso al sito web approvata</translation>
 <translation id="4369233657762989723">Dettatura on/off</translation>
 <translation id="436926121798828366">Puoi modificare questa impostazione in qualsiasi momento in <ph name="SETTINGS_LINK" /></translation>
@@ -5346,6 +5351,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5093569275467863761">Frame secondario in incognito memorizzato nella cache back-forward: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Puoi aprire e modificare i file supportati con questa app dall'app File o con altre app. Per stabilire quali file aprire per impostazione predefinita in questa app, <ph name="BEGIN_LINK" />scopri come impostare app predefinite sul dispositivo<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Comunicazione con applicazioni native interoperative</translation>
+<translation id="5095252080770652994">Avanzamento</translation>
 <translation id="5095507226704905004">Impossibile copiare il file perché non esiste più</translation>
 <translation id="5095848221827496531">Deseleziona</translation>
 <translation id="5097002363526479830">Connessione alla rete "<ph name="NAME" />" non riuscita: <ph name="DETAILS" /></translation>
@@ -5497,6 +5503,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5213891612754844763">Mostra impostazioni proxy</translation>
 <translation id="5214639857958972833">Preferito "<ph name="BOOKMARK_TITLE" />" creato.</translation>
 <translation id="5215502535566372932">Seleziona il paese</translation>
+<translation id="5215665166431745539">Mostra le immagini</translation>
 <translation id="5220011581825921581">Ricerca + Freccia su</translation>
 <translation id="5222403284441421673">Download non sicuro bloccato</translation>
 <translation id="5222676887888702881">Esci</translation>
@@ -7275,7 +7282,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6635674640674343739">Impossibile stabilire una connessione di rete. Controlla la connessione di rete e riprova.</translation>
 <translation id="663569763553406962">Scopri quali estensioni possono leggere o modificare un sito</translation>
 <translation id="6635944431854494329">Il proprietario può controllare questa funzionalità dalla sezione Impostazioni &gt; Avanzate &gt; Invia automaticamente a Google dati di diagnostica e utilizzo.</translation>
-<translation id="6636623428211296678">Esamina altre impostazioni qui sotto oppure termina ora</translation>
+<translation id="6636623428211296678">Scopri altre impostazioni qui sotto oppure termina ora</translation>
 <translation id="6639554308659482635">Memoria SQLite</translation>
 <translation id="6640268266988685324">Scheda aperta</translation>
 <translation id="6642720633335369752">Per visualizzare le finestre di tutte le app aperte, scorri dal basso verso l'alto e tieni premuto.</translation>
@@ -7525,7 +7532,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6820079682647046800">Autenticazione Kerberos non riuscita</translation>
 <translation id="6821439254917412979">Sblocca <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Tocco per fare clic sul touchpad</translation>
-<translation id="6823561724060793716">Dalla barra degli indirizzi, puoi aprire le informazioni sulla pagina per vedere informazioni aggiuntive sulla pagina che stai visitando</translation>
+<translation id="6823561724060793716">Dalla barra degli indirizzi, puoi aprire le informazioni sulla pagina per trovare maggiori dettagli sulla pagina che stai visitando</translation>
 <translation id="6824564591481349393">Copia indirizzo &amp;email</translation>
 <translation id="6824584962142919697">&amp;Ispeziona elementi</translation>
 <translation id="6824725898506587159">Gestisci lingue</translation>

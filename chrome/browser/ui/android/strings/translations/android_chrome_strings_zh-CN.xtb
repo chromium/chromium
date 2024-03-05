@@ -346,6 +346,7 @@
 <translation id="2891154217021530873">停止加载网页</translation>
 <translation id="2893180576842394309">Google 可能会利用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
 <translation id="2894821468041866720">不会致使浏览器或设备的运行速度明显变慢。</translation>
+<translation id="2895521649038438824">您可以聆听此页面</translation>
 <translation id="2900528713135656174">创建活动</translation>
 <translation id="2901411048554510387">下方显示的是与 <ph name="WEBSITE_TITLE" /> 相关的建议</translation>
 <translation id="2904300462646366554">下载的 PDF 文件会自动使用设备上的一个 PDF 查看器打开</translation>
@@ -617,6 +618,7 @@
 <translation id="4335835283689002019">“安全浏览”功能处于关闭状态</translation>
 <translation id="4351244548802238354">关闭对话框</translation>
 <translation id="4355272626458588338">您可为重要网页添加书签以便返回查看</translation>
+<translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4378154925671717803">电话</translation>
 <translation id="4380055775103003110">如果此问题仍然存在，您可以尝试在 <ph name="SITE_ETLD_PLUS_ONE" /> 上通过其他方法继续操作。</translation>
 <translation id="4384468725000734951">目前使用的搜索引擎是搜狗</translation>

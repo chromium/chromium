@@ -582,6 +582,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1444628761356461360">Eigandi tækisins, <ph name="OWNER_EMAIL" />, stjórnar þessari stillingu.</translation>
 <translation id="144518587530125858">Ekki var hægt að hlaða „<ph name="IMAGE_PATH" />“ fyrir þema.</translation>
 <translation id="1447531650545977377">Kveikja á &amp;samstillingu...</translation>
+<translation id="1447895950459090752">Forskoðunarspjald sem birtist þegar bendli er haldið yfir flipa</translation>
 <translation id="1448264954024227422">Þú getur notað þennan reikning með Android forritum. Ef þú vilt bæta við reikningi fyrir einhvern annan skaltu frekar <ph name="LINK_BEGIN" />bæta við nýjum einstaklingi<ph name="LINK_END" /> í <ph name="DEVICE_TYPE" />.
 
 Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikningi. Hægt er að stjórna heimildum fyrir Android forrit í <ph name="APPS_LINK_BEGIN" />stillingum forrita<ph name="APPS_LINK_END" />.</translation>
@@ -2831,6 +2832,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3094521107841754472">Verð breyttist úr <ph name="PREVIOUS_PRICE" /> í <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Bókamerki, aðgangsorð og önnur vefskoðunargögn eru samstillt við aðalreikninginn.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Slökkt er á einni hugsanlega hættulegri viðbót. Þú getur einnig fjarlægt hana.}one{Slökkt er á {NUM_EXTENSIONS} hugsanlega hættulegri viðbót. Þú getur einnig fjarlægt þessar viðbætur.}other{Slökkt er á {NUM_EXTENSIONS} hugsanlega hættulegum viðbótum. Þú getur einnig fjarlægt þessar viðbætur.}}</translation>
+<translation id="3101057112460908988">Sýna minnisnotkun</translation>
 <translation id="3101126716313987672">Deyfa ljós</translation>
 <translation id="3101709781009526431">Dagsetning og tími</translation>
 <translation id="310297983047869047">Fyrri skyggna</translation>
@@ -2908,6 +2910,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3166443275568926403">Afköst og staða rafhlöðu</translation>
 <translation id="3169930038976362151">Veldu þemað sem hentar þér best. Haltu inni á skjáborðinu til að skipta um þema, veggfóður, skjávara og fleira.</translation>
 <translation id="3170072451822350649">Þú getur líka sleppt því að skrá þig inn og verið <ph name="LINK_START" />gestanotandi<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Meginmál</translation>
 <translation id="3177430966804511955">Stjórna einangruðum vefforritum (beta)</translation>
 <translation id="31774765611822736">Nýr flipi vinstra megin</translation>
 <translation id="3177909033752230686">Tungumál síðu:</translation>
@@ -3087,6 +3090,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3315158641124845231">Fela <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Opna lesstillingu</translation>
 <translation id="3317459757438853210">Tvíhliða</translation>
+<translation id="3317521105713541270">Búa til hópa</translation>
 <translation id="3317678681329786349">Lokað á myndavél og hljóðnema</translation>
 <translation id="3319306431415395200">Þýða texta á mynd með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Ekki er hægt að tengjast við OneDrive. Reyndu aftur.</translation>
@@ -4443,6 +4447,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4364830672918311045">Birta tilkynningar</translation>
 <translation id="4367513928820380646">Yfirfara fjarlægðar heimildir</translation>
 <translation id="4367971618859387374">Skjánafn</translation>
+<translation id="4368960422722232719">Sýna minnisnotkun á forskoðunarspjaldi sem birtist þegar bendli er haldið yfir flipa</translation>
 <translation id="4369215744064167350">Beiðni um vefsvæði samþykkt</translation>
 <translation id="4369233657762989723">Kveikt/slökkt á raddinnslætti</translation>
 <translation id="436926121798828366">Þú getur breytt þessu hvenær sem er í <ph name="SETTINGS_LINK" />.</translation>
@@ -5365,6 +5370,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5093569275467863761">Undirrammi huliðsstillingar í skyndiminni til baka / áfram: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Þú getur opnað og breytt studdum skrám með þessu forriti úr forritinu „Skrár“ eða öðrum forritum. Til að stýra því hvaða skrár opna þetta forrit sjálfkrafa skaltu <ph name="BEGIN_LINK" />kynna þér hvernig sjálfgefin forrit eru sett upp í tækinu þínu<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Eiga samskipti við sérhönnuð forrit í samstarfi</translation>
+<translation id="5095252080770652994">Framvinda</translation>
 <translation id="5095507226704905004">Ekki er hægt að afrita skrána því hún er ekki lengur til</translation>
 <translation id="5095848221827496531">Afturkalla val</translation>
 <translation id="5097002363526479830">Mistókst að tengjast „<ph name="NAME" />“: <ph name="DETAILS" /></translation>
@@ -5516,6 +5522,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5213891612754844763">Sýna stillingar staðgengilsþjóns</translation>
 <translation id="5214639857958972833">Bókamerkið „<ph name="BOOKMARK_TITLE" />“ búið til.</translation>
 <translation id="5215502535566372932">Veldu land</translation>
+<translation id="5215665166431745539">Sýna myndir</translation>
 <translation id="5220011581825921581">leitarlykill + ör upp</translation>
 <translation id="5222403284441421673">Lokað á óöruggt niðurhal</translation>
 <translation id="5222676887888702881">Skrá út</translation>

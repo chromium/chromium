@@ -1764,6 +1764,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4358461427845829800">Gerenciar formas de pagamento…</translation>
 <translation id="4359160567981085931">Você acabou de digitar sua senha em um site suspeito. O Chrome pode ajudar. Para mudar a senha e notificar o Google de que sua conta pode estar em risco, clique em "Proteger conta".</translation>
 <translation id="4363222835916186793">Os alertas para este produto foram desativados</translation>
+<translation id="4363729811203340554">Se você compartilha este dispositivo, o Chrome pode pedir que você faça a verificação sempre que pagar usando o preenchimento automático</translation>
 <translation id="4366943895537458493">Chapa</translation>
 <translation id="437040971055499437">Acontece uma ocorrência de segurança</translation>
 <translation id="4371591986692297148">Inativos</translation>
@@ -2284,6 +2285,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5447765697759493033">Este site não será traduzido</translation>
 <translation id="5452270690849572955">Não foi possível encontrar a página deste <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Carimbo de data/hora da política inválido</translation>
+<translation id="5456839782162429664">Verificar manualmente sempre que você pagar usando o preenchimento automático</translation>
 <translation id="5457113250005438886">Inválidos</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Localizando dispositivos…</translation>
@@ -2381,6 +2383,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5633066919399395251">Invasores que estão em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> no momento podem tentar instalar programas perigosos no seu computador e roubar ou excluir suas informações (por exemplo, fotos, senhas, mensagens e cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Conteúdo enganoso bloqueado.</translation>
 <translation id="563371367637259496">Celular</translation>
+<translation id="5634725266554983459">Ativar a verificação manual?</translation>
 <translation id="5635478143789726479">Termos e Condições do vendedor</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Componentes e sistemas estéreos</translation>
@@ -3068,6 +3071,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6973988895180423160">3,5 x 5 pol.</translation>
 <translation id="6978121630131642226">Mecanismos de pesquisa</translation>
 <translation id="6978236010531171013">Compartilhar mesmo assim</translation>
+<translation id="6978722349058177832">Se você compartilha este dispositivo, o Chromium pode pedir que você faça a verificação sempre que pagar usando o preenchimento automático</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Desativar som (padrão)</translation>
 <translation id="6987806006823772670">Envelope (revestido)</translation>

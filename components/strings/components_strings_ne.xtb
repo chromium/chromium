@@ -1762,6 +1762,7 @@
 <translation id="4358461427845829800">भुक्तानी विधिहरू व्यवस्थित गर्नुहोस्...</translation>
 <translation id="4359160567981085931">तपाईंले भर्खरै कुनै भ्रामक साइटमा आफ्नो पासवर्ड प्रविष्टि गर्नुभएको छ। Chrome ले मद्दत गर्न सक्छ। आफ्नो पासवर्ड परिवर्तन गर्न र आफ्नो खाता जोखिममा हुन सक्छ भनेर Google लाई सूचित गर्न खाता सेभ गर्नुहोस् नामक विकल्पमा क्लिक गर्नुहोस्।</translation>
 <translation id="4363222835916186793">यो उत्पादनका हकमा अलर्ट पठाउने सुविधा अफ गरिएको छ</translation>
+<translation id="4363729811203340554">तपाईं यो डिभाइस साझा रूपमा प्रयोग गर्नुहुन्छ भने अटोफिल सुविधा प्रयोग गरी भुक्तानीसम्बन्धी जानकारी हाल्दा Chrome ले हरेक पटक तपाईंलाई आफ्नो पहिचान पुष्टि गर्न लगाउन सक्छ</translation>
 <translation id="4366943895537458493">प्लेट</translation>
 <translation id="437040971055499437">सुरक्षासम्बन्धी घटना हुँदा</translation>
 <translation id="4371591986692297148">निष्क्रिय</translation>
@@ -2282,6 +2283,7 @@
 <translation id="5447765697759493033">यो साइटलाई अनुवाद गरिने छैन</translation>
 <translation id="5452270690849572955">यो <ph name="HOST_NAME" /> को पृष्ठ फेला पार्न सक्दैन</translation>
 <translation id="5455374756549232013">खराब नीति टाइमस्ट्याम्प</translation>
+<translation id="5456839782162429664">हरेक पटक अटोफिल सुविधा प्रयोग गरी भुक्तानी गर्दा म्यानुअल तरिकाले पुष्टि गर्नुहोस्</translation>
 <translation id="5457113250005438886">अवैध</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">यन्त्रहरू पत्ता लगाइँदै छ...</translation>
@@ -2379,6 +2381,7 @@
 <translation id="5633066919399395251">हाल <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> मा रहेका आक्रमणकारीहरूले तपाईंको कम्प्युटरमा तपाईंको जानकारी (उदाहरणका लागि तस्बिर, पासवर्ड, सन्देश र क्रेडिट कार्डहरू) चोर्ने वा मेट्नसक्ने खतरनाक कार्यक्रमहरू स्थापना गर्ने प्रयास गर्नसक्छन्। <ph name="BEGIN_LEARN_MORE_LINK" />थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">भ्रामक सामग्रीमाथि रोक लगाइयो।</translation>
 <translation id="563371367637259496">मोबाइल</translation>
+<translation id="5634725266554983459">म्यानुअल तरिकाले पुष्टि गर्ने सुविधा अन गर्ने हो?</translation>
 <translation id="5635478143789726479">विक्रेताका सर्तहरू</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />। <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">स्टेरियो सिस्टम तथा कम्पोनेन्ट</translation>
@@ -3065,6 +3068,7 @@
 <translation id="6973988895180423160">३.५ x ५ इन्च</translation>
 <translation id="6978121630131642226">खोज इन्जिनहरू</translation>
 <translation id="6978236010531171013">जे भए तापनि सेयर गर्नुहोस्</translation>
+<translation id="6978722349058177832">तपाईं यो डिभाइस साझा रूपमा प्रयोग गर्नुहुन्छ भने अटोफिल सुविधा प्रयोग गरी भुक्तानीसम्बन्धी जानकारी हाल्दा Chromium ले हरेक पटक तपाईंलाई आफ्नो पहिचान पुष्टि गर्न लगाउन सक्छ</translation>
 <translation id="6979158407327259162">Google ड्राइभ</translation>
 <translation id="6979440798594660689">म्युट गरियोस् (डिफल्ट)</translation>
 <translation id="6987806006823772670">इन्भलप (कोटेड)</translation>

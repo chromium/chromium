@@ -581,6 +581,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1444628761356461360">Hierdie instelling word deur die toesteleienaar, <ph name="OWNER_EMAIL" />, bestuur.</translation>
 <translation id="144518587530125858">Kon nie "<ph name="IMAGE_PATH" />" vir tema laai nie.</translation>
 <translation id="1447531650545977377">Skakel &amp;sinkronisering aan …</translation>
+<translation id="1447895950459090752">Voorskou van oortjie se stilhangkaart</translation>
 <translation id="1448264954024227422">Jy kan hierdie rekening saam met Android-programme gebruik. <ph name="LINK_BEGIN" />Voeg eerder ’n nuwe persoon<ph name="LINK_END" /> by jou <ph name="DEVICE_TYPE" /> as jy ’n rekening vir iemand anders wil byvoeg.
 
 Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van toepassing wees. Jy kan toestemmings vir Android-programme in <ph name="APPS_LINK_BEGIN" />Programinstellings<ph name="APPS_LINK_END" /> beheer.</translation>
@@ -2830,6 +2831,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3094521107841754472">Prys het verander van <ph name="PREVIOUS_PRICE" /> na <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Boekmerke, wagwoorde en ander blaaierdata word met die primêre rekening gesinkroniseer.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potensieel skadelike uitbreiding is af. Jy kan dit ook verwyder.}other{{NUM_EXTENSIONS} potensieel skadelike uitbreidings is af. Jy kan hulle ook verwyder.}}</translation>
+<translation id="3101057112460908988">Wys geheuegebruik</translation>
 <translation id="3101126716313987672">Dowwe lig</translation>
 <translation id="3101709781009526431">Datum en tyd</translation>
 <translation id="310297983047869047">Vorige skyfie</translation>
@@ -2907,6 +2909,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3166443275568926403">Werkverrigting en batterytoestand</translation>
 <translation id="3169930038976362151">Kies die tema wat by jou behoeftes pas. Raak en hou eenvoudig op die werkskerm om jou tema, muurpapier, sluimerskerm en meer te verander.</translation>
 <translation id="3170072451822350649">Jy kan ook aanmelding oorslaan en <ph name="LINK_START" />as 'n gas blaai<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Teksinhoud</translation>
 <translation id="3177430966804511955">Bestuur geïsoleerde webapps (beta)</translation>
 <translation id="31774765611822736">Nuwe oortjie aan die linkerkant</translation>
 <translation id="3177909033752230686">Bladsytaal:</translation>
@@ -3086,6 +3089,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3315158641124845231">Versteek <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Gaan by lesermodus in</translation>
 <translation id="3317459757438853210">Tweekantig</translation>
+<translation id="3317521105713541270">Skep groepe</translation>
 <translation id="3317678681329786349">Kamera en mikrofoon word geblokkeer</translation>
 <translation id="3319306431415395200">Vertaal teks op prent met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Kan nie aan OneDrive koppel nie. Probeer weer.</translation>
@@ -4442,6 +4446,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4364830672918311045">Wys kennisgewings</translation>
 <translation id="4367513928820380646">Gaan verwyderde toestemmings na</translation>
 <translation id="4367971618859387374">Vertoonnaam</translation>
+<translation id="4368960422722232719">Wys geheuegebruik op voorskou van oortjie se stilhangkaart</translation>
 <translation id="4369215744064167350">Webwerfversoek is goedgekeur</translation>
 <translation id="4369233657762989723">Diktering aan/af</translation>
 <translation id="436926121798828366">Jy kan dit enige tyd in <ph name="SETTINGS_LINK" /> verander</translation>
@@ -5362,6 +5367,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5093569275467863761">Incognito-terug-vorentoe-kasgegeue-subraam: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Jy kan met hierdie program gesteunde lêers uit die Lêers-program of ander programme oopmaak en wysig. <ph name="BEGIN_LINK" />Vind uit hoe om verstekprogramme op jou toestel te stel<ph name="END_LINK" /> om te beheer watter lêers hierdie program by verstek oopmaak.</translation>
 <translation id="5094721898978802975">Kommunikeer met plaaslike programme wat saamwerk</translation>
+<translation id="5095252080770652994">Vordering</translation>
 <translation id="5095507226704905004">Die lêer kan nie gekopieer word nie omdat dit nie meer bestaan nie</translation>
 <translation id="5095848221827496531">Ontmerk</translation>
 <translation id="5097002363526479830">Kon nie aan "<ph name="NAME" />"-netwerk koppel nie: <ph name="DETAILS" /></translation>
@@ -5513,6 +5519,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5213891612754844763">Wys instaanbedienerinstellings</translation>
 <translation id="5214639857958972833">Boekmerk “<ph name="BOOKMARK_TITLE" />” is geskep.</translation>
 <translation id="5215502535566372932">Kies land</translation>
+<translation id="5215665166431745539">Wys prente</translation>
 <translation id="5220011581825921581">soek + oppyl</translation>
 <translation id="5222403284441421673">Onveilige aflaai geblokkeer</translation>
 <translation id="5222676887888702881">Meld af</translation>

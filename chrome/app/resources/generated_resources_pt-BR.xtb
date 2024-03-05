@@ -582,6 +582,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1444628761356461360">Esta configuração é gerenciada pelo proprietário do dispositivo, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Não foi possível carregar "<ph name="IMAGE_PATH" />" para o tema.</translation>
 <translation id="1447531650545977377">Ativar &amp;sincronização…</translation>
+<translation id="1447895950459090752">Card de visualização ao passar cursor sobre a guia</translation>
 <translation id="1448264954024227422">Você pode usar essa conta com apps Android. Se quiser adicionar uma conta para outra pessoa, <ph name="LINK_BEGIN" />adicione uma nova pessoa<ph name="LINK_END" /> ao <ph name="DEVICE_TYPE" />.
 
 As permissões que você já concedeu a apps podem ser aplicadas a essa conta. Você pode controlar as permissões para apps Android nas <ph name="APPS_LINK_BEGIN" />Configurações de apps<ph name="APPS_LINK_END" />.</translation>
@@ -2830,6 +2831,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3094521107841754472">O preço mudou de <ph name="PREVIOUS_PRICE" /> para <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Favoritos, senhas e outros dados de navegação são sincronizados com a conta principal.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 extensão possivelmente nociva foi desativada. Você também pode removê-la.}one{{NUM_EXTENSIONS} extensão possivelmente nociva foi desativada. Você também pode removê-la.}other{{NUM_EXTENSIONS} extensões possivelmente nocivas foram desativadas. Você também pode removê-las.}}</translation>
+<translation id="3101057112460908988">Mostrar uso da memória</translation>
 <translation id="3101126716313987672">Diminuir iluminação</translation>
 <translation id="3101709781009526431">Data e hora</translation>
 <translation id="310297983047869047">Slide anterior</translation>
@@ -2907,6 +2909,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3166443275568926403">Desempenho e estado da bateria</translation>
 <translation id="3169930038976362151">Escolha o tema ideal para você. É possível mudar o tema, o plano de fundo, o protetor de tela e muito mais tocando na área de trabalho e a mantendo pressionada.</translation>
 <translation id="3170072451822350649">Também é possível ignorar o login e <ph name="LINK_START" />navegar como visitante<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Corpo</translation>
 <translation id="3177430966804511955">Gerenciar apps isolados da Web (Beta)</translation>
 <translation id="31774765611822736">Nova guia à esquerda</translation>
 <translation id="3177909033752230686">Idioma da página:</translation>
@@ -3086,6 +3089,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3315158641124845231">Ocultar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Entrar no modo leitor</translation>
 <translation id="3317459757438853210">Frente e verso</translation>
+<translation id="3317521105713541270">Criar grupos</translation>
 <translation id="3317678681329786349">Câmera e microfone bloqueados</translation>
 <translation id="3319306431415395200">Traduzir texto na imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Não é possível se conectar ao OneDrive. Tente de novo.</translation>
@@ -4443,6 +4447,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4364830672918311045">Exibir notificações</translation>
 <translation id="4367513928820380646">Analisar permissões removidas</translation>
 <translation id="4367971618859387374">Nome de exibição</translation>
+<translation id="4368960422722232719">Mostrar o uso da memória no card de visualização ao passar cursor sobre a guia</translation>
 <translation id="4369215744064167350">A solicitação de acesso ao site foi aprovada</translation>
 <translation id="4369233657762989723">Ditado ativado/desativado</translation>
 <translation id="436926121798828366">Você pode mudar essa opção quando quiser nas <ph name="SETTINGS_LINK" /></translation>
@@ -5363,6 +5368,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5093569275467863761">Subframe de navegação anônima salvo em cache de avanço e retorno: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Com este app, é possível abrir e editar arquivos com suporte usando o app Arquivos ou outros. Para controlar quais arquivos são abertos nesse app por padrão, <ph name="BEGIN_LINK" />aprenda a definir os apps padrão no seu dispositivo<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Comunicar-se com aplicativos nativos de colaboração</translation>
+<translation id="5095252080770652994">Progresso</translation>
 <translation id="5095507226704905004">Não é possível copiar o arquivo porque ele não existe mais</translation>
 <translation id="5095848221827496531">Desmarcar</translation>
 <translation id="5097002363526479830">Falha na conexão à rede "<ph name="NAME" />": <ph name="DETAILS" /></translation>
@@ -5514,6 +5520,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5213891612754844763">Mostrar configurações de proxy</translation>
 <translation id="5214639857958972833">Favorito "<ph name="BOOKMARK_TITLE" />" criado.</translation>
 <translation id="5215502535566372932">Selecione um país</translation>
+<translation id="5215665166431745539">Mostrar imagens</translation>
 <translation id="5220011581825921581">pesquisar + seta para cima</translation>
 <translation id="5222403284441421673">Download não seguro bloqueado</translation>
 <translation id="5222676887888702881">Sair</translation>

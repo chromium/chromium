@@ -577,6 +577,7 @@
 <translation id="1444628761356461360">यो सेटिङ यन्त्रको मालिक, <ph name="OWNER_EMAIL" /> द्वारा व्यवस्थत छ।</translation>
 <translation id="144518587530125858">विषयवस्तुको लागि '<ph name="IMAGE_PATH" />' लोड गर्न सकिएन।</translation>
 <translation id="1447531650545977377">सिंक गर्ने सुविधा अन गर्नुहोस्…</translation>
+<translation id="1447895950459090752">ट्याबमा होभर गरी प्रिभ्यू देखाउने कार्ड</translation>
 <translation id="1448264954024227422">तपाईं यो खाता Android एपहरूमा प्रयोग गर्न सक्नुहुन्छ। तपाईं अरू कसैको खाता लिंक गर्न चाहनुहुन्छ भने उहाँको खाता लिंक गर्नुको साटो उहाँलाई <ph name="LINK_BEGIN" />नयाँ व्यक्तिका रूपमा<ph name="LINK_END" /> आफ्नो <ph name="DEVICE_TYPE" /> मा सामेल गराउनुहोस्।
 
 तपाईंले एपहरूलाई दिइसक्नुभएका अनुमति यो खाताका हकमा पनि लागू हुन सक्छ। तपाईं <ph name="APPS_LINK_BEGIN" />एपका सेटिङ<ph name="APPS_LINK_END" />मा गई Android एपहरूलाई दिइएको अनुमति नियन्त्रण गर्न सक्नुहुन्छ।</translation>
@@ -2813,6 +2814,7 @@
 <translation id="3094521107841754472">मूल्य <ph name="PREVIOUS_PRICE" /> बाट परिवर्तन भई <ph name="CURRENT_PRICE" /> भएको छ।</translation>
 <translation id="3095871294753148861">बुकमार्क, पासवर्ड र ब्राउजरसम्बन्धी अन्य डेटा प्राथमिक खातामा सिंक गरिन्छन्।</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{हानिकारक हुन सक्ने १ एक्स्टेन्सन निष्क्रिय पारिएको छ। तपाईं यसलाई हटाउन पनि सक्नुहुन्छ।}other{हानिकारक हुन सक्ने {NUM_EXTENSIONS} एक्स्टेन्सनहरू निष्क्रिय पारिएका छन्। तपाईं तिनीहरूलाई हटाउन पनि सक्नुहुन्छ।}}</translation>
+<translation id="3101057112460908988">मेमोरीको प्रयोग देखाइयोस्</translation>
 <translation id="3101126716313987672">मधुरो प्रकाश</translation>
 <translation id="3101709781009526431">मिति र समय</translation>
 <translation id="310297983047869047">अघिल्लो स्लाइड</translation>
@@ -2890,6 +2892,7 @@
 <translation id="3166443275568926403">पर्फर्मेन्स र ब्याट्रीको स्थिति</translation>
 <translation id="3169930038976362151">आफूलाई उपयुक्त हुने थिम छनौट गर्नुहोस्। आफ्ना थिम, वालपेपर, स्क्रिन सेभर र थप कुराहरू बदल्न डेस्कटपमा टच एण्ड होल्ड गरे पुग्छ।</translation>
 <translation id="3170072451822350649">तपाइँले साइन इन गर्न पनि छाड्न सक्नुहुन्छ र <ph name="LINK_START" />पाहनुाको रूपाम ब्राउज गर्न सक्नुहुन्छ<ph name="LINK_END" />।</translation>
+<translation id="3175067642577044620">मुख्य भाग</translation>
 <translation id="3177430966804511955">आइसोलेटेड वेब एपहरू (बिटा) व्यवस्थापन गर्नुहोस्</translation>
 <translation id="31774765611822736">नयाँ ट्याब बायाँतिर देखिन्छ</translation>
 <translation id="3177909033752230686">पृष्ठको भाषा:</translation>
@@ -2901,6 +2904,7 @@
 <translation id="3183139917765991655">प्रोफाइल आयातकर्ता</translation>
 <translation id="3183143381919926261">मोबाइल डेटा नेटवर्क</translation>
 <translation id="3183613134231754987">यो पासकी Windows Hello मा मात्र सेभ गरिने छ। तपाईंले सबै इन्कोग्निटो विन्डो बन्द गरेपछि पनि यो पासकी यस डिभाइसमा रहने छ।</translation>
+<translation id="3183700187146209259">स्क्यानर सफ्टवेयर कनेक्ट गर्न सकिएन</translation>
 <translation id="3183944777708523606">मनिटरको सेटिङ</translation>
 <translation id="3184536091884214176">CUPS प्रिन्टरहरूको सेटअप वा व्यवस्थापन गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{यो एप ब्लक गरिएको छ}other{यी एप ब्लक गरिएका छन्}}</translation>
@@ -3069,6 +3073,7 @@
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> लाई लुकाउनुहोस्</translation>
 <translation id="3315442055907669208">पाठक मोड प्रयोग गर्नुहोस्</translation>
 <translation id="3317459757438853210">दुई-छेउ भएको</translation>
+<translation id="3317521105713541270">समूहहरू बनाउनुहोस्</translation>
 <translation id="3317678681329786349">क्यामेरा र माइक्रोफोन प्रयोग गर्नमाथि रोक लगाइयो</translation>
 <translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" /> प्रयोग गरी फोटोमा भएको टेक्स्ट अनुवाद गरियोस्</translation>
 <translation id="3320271870899888245">OneDrive मा कनेक्ट गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
@@ -4424,6 +4429,7 @@
 <translation id="4364830672918311045">सूचनाहरू देखाउनुहोस्</translation>
 <translation id="4367513928820380646">हटाइएका अनुमतिहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="4367971618859387374">देखाइने नाम</translation>
+<translation id="4368960422722232719">ट्याबमा होभर गरी प्रिभ्यू देखाउने कार्डमा भएको मेमोरीको प्रयोग देखाइयोस्</translation>
 <translation id="4369215744064167350">तपाईंले वेबसाइट हेर्न पाऊँ भनी गर्नुभएको अनुरोध अनुमोदन गरिएको छ</translation>
 <translation id="4369233657762989723">स्पिच-टु-टेक्स्ट अन/अफ गर्नुहोस्</translation>
 <translation id="436926121798828366">तपाईं <ph name="SETTINGS_LINK" /> मा गई जुनसुकै बेला यो सेटिङ बदल्न सक्नुहुन्छ</translation>
@@ -5345,6 +5351,7 @@
 <translation id="5093569275467863761">इन्कोग्निटो मोडमा ब्याक/फर्वार्ड क्यास गरिएको सबफ्रेम: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">तपाईं यो एप प्रयोग गरी खोल्न तथा सम्पादन गर्न मिल्ने फाइलहरू Files एप वा अन्य एपमार्फत खोल्न तथा सम्पादन गर्न सक्नुहुन्छ। तपाईं कुन कुन फाइल यो एपमार्फत स्वतः खुल्छ भन्ने कुरा नियन्त्रण गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />डिभाइसमा डिफल्ट एप कसरी तय गर्ने भन्ने कुरा जान्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="5094721898978802975">सहयोगी मुल अनुप्रयोगहरूसँग सञ्चार गर्नुहोस्</translation>
+<translation id="5095252080770652994">प्रगति</translation>
 <translation id="5095507226704905004">यो फाइल अब उपलब्ध नभएकाले यसलाई कपी गर्न सकिएन</translation>
 <translation id="5095848221827496531">चयन रद्द गर्नुहोस्</translation>
 <translation id="5097002363526479830">नेटवर्क '<ph name="NAME" />' मा जडान हुन असफल भयो: <ph name="DETAILS" /></translation>
@@ -5496,6 +5503,7 @@
 <translation id="5213891612754844763">प्रोक्सी सम्बन्धी सेटिङहरू देखाउनुहोस्‌</translation>
 <translation id="5214639857958972833">"<ph name="BOOKMARK_TITLE" />" नामक बुकमार्क बनाइएको छ।</translation>
 <translation id="5215502535566372932">देश छनौट गर्नुहोस्</translation>
+<translation id="5215665166431745539">फोटोहरू देखाइयोस्</translation>
 <translation id="5220011581825921581">सर्च + अप एरो</translation>
 <translation id="5222403284441421673">असुरक्षित सामग्री डाउनलोड गर्ने कार्यलाई रोक लगाइएको छ</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
@@ -8988,6 +8996,7 @@
 <translation id="7943837619101191061">स्थान थप्नुहोस्...</translation>
 <translation id="79446453817422139">यो फाइल खतरनाक हुन सक्छ</translation>
 <translation id="7944772052836377867">"सिंक" ले तपाईंको पहिचान पुष्टि गर्नु पर्ने हुन्छ</translation>
+<translation id="7944847494038629732">स्क्यानरको USB केबल हटाउनुहोस् र पुनः प्रयास गर्न फेरि बिजुलीको स्रोतमा जोड्नुहोस्</translation>
 <translation id="7945703887991230167">रोजाइको आवाज</translation>
 <translation id="7946586320617670168">स्रोत अनिवार्य रूपमा सुरक्षित हुनु पर्छ</translation>
 <translation id="794676567536738329">अनुमतिहरू पक्का गर्नुहोस्</translation>
@@ -9399,6 +9408,7 @@
 <translation id="8260864402787962391">माउस</translation>
 <translation id="8261378640211443080">तपाइँको विस्तार <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मा सूची गरिएको छैन र तपाइँलाई जानकार नगरीकन त्यो थपिएको हुन सक्छ।</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
+<translation id="8261625296061301062">स्क्यानर सफ्टवेयर इन्स्टल गरिएको छ</translation>
 <translation id="8262971894813353037">यसले WebUI को नयाँ डेस्कटप डिजाइन अन गर्छ। Chrome Refresh 2023 पनि अनिवार्य रूपमा अन गर्नु पर्ने हुन्छ।</translation>
 <translation id="8263336784344783289">यो समूहको नाम राख्नुहोस्</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> ले तपाइँको माउस कर्सरलाई असक्षम गरेको छ।</translation>
@@ -9582,6 +9592,7 @@
 <translation id="8387361103813440603">तपाईंको स्थान हेर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="8388770971141403598">सहायक प्रोफाइल प्रयोग गर्न मिल्दैन</translation>
 <translation id="8389492867173948260">यो विस्तारलाई तपाईं जाने वेबसाइटहरूको तपाईंका सबै डेटा पढ्न र परिवर्तन गर्न दिनुहोस्।</translation>
+<translation id="8390392581097975659">स्क्यानर सफ्टवेयर इन्स्टल गरिँदै छ</translation>
 <translation id="8390449457866780408">सर्भर उपलब्ध छैन।</translation>
 <translation id="8391218455464584335">भाइनल</translation>
 <translation id="8392726714909453725">सेलेक्ट टु स्पिकसम्बन्धी सेटिङ</translation>

@@ -580,6 +580,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1444628761356461360">Denne indstilling administreres af enhedsejeren <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">'<ph name="IMAGE_PATH" />' for temaet kunne ikke indlæses.</translation>
 <translation id="1447531650545977377">Aktivér &amp;synkronisering…</translation>
+<translation id="1447895950459090752">Fanens infokort</translation>
 <translation id="1448264954024227422">Du kan bruge denne konto til Android-apps. Hvis du vil tilføje en konto for en anden person, kan du i stedet <ph name="LINK_BEGIN" />føje en ny person<ph name="LINK_END" /> til din <ph name="DEVICE_TYPE" />.
 
 De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan administrere tilladelser for Android-apps under <ph name="APPS_LINK_BEGIN" />Appindstillinger<ph name="APPS_LINK_END" />.</translation>
@@ -2829,6 +2830,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3094521107841754472">Prisen er blevet ændret fra <ph name="PREVIOUS_PRICE" /> til <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Bogmærker, adgangskoder og andre browserdata synkroniseres med den primære konto.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potentielt skadelig udvidelse er deaktiveret. Du kan også fjerne den.}one{{NUM_EXTENSIONS} potentielt skadelig udvidelse er deaktiveret. Du kan også fjerne den.}other{{NUM_EXTENSIONS} potentielt skadelige udvidelser er deaktiveret. Du kan også fjerne dem.}}</translation>
+<translation id="3101057112460908988">Vis hukommelsesforbrug</translation>
 <translation id="3101126716313987672">Dæmp belysning</translation>
 <translation id="3101709781009526431">Dato og klokkeslæt</translation>
 <translation id="310297983047869047">Forrige dias</translation>
@@ -2905,6 +2907,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3166443275568926403">Ydeevne og batteristatus</translation>
 <translation id="3169930038976362151">Vælg det tema, der passer til dine behov. Du kan ændre dit tema, din baggrund, din pauseskærm og meget mere ved at holde fingeren nede på skrivebordet.</translation>
 <translation id="3170072451822350649">Du kan også springe login over og <ph name="LINK_START" />anvende som gæst<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Brødtekst</translation>
 <translation id="3177430966804511955">Administrer isolerede webapps (beta)</translation>
 <translation id="31774765611822736">Ny fane til venstre</translation>
 <translation id="3177909033752230686">Sidens sprog:</translation>
@@ -3084,6 +3087,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3315158641124845231">Skjul <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Start Læser-tilstand</translation>
 <translation id="3317459757438853210">Tosidet</translation>
+<translation id="3317521105713541270">Opret grupper</translation>
 <translation id="3317678681329786349">Der er blokeret for adgang til kameraet og mikrofonen</translation>
 <translation id="3319306431415395200">Oversæt tekst på billedet med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Der kan ikke oprettes forbindelse til OneDrive. Prøv igen.</translation>
@@ -4438,6 +4442,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4364830672918311045">Vis notifikationer</translation>
 <translation id="4367513928820380646">Gennemgå fjernede tilladelser</translation>
 <translation id="4367971618859387374">Vist navn</translation>
+<translation id="4368960422722232719">Vis hukommelsesforbrug på fanens infokort</translation>
 <translation id="4369215744064167350">Websiteanmodningen blev godkendt</translation>
 <translation id="4369233657762989723">Diktering til/fra</translation>
 <translation id="436926121798828366">Du kan til enhver tid ændre dette i <ph name="SETTINGS_LINK" />.</translation>
@@ -5356,6 +5361,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5093569275467863761">Inkognito-underramme i back/forward-cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Du kan åbne og redigere understøttede filer med denne app via appen Filer eller andre apps. Hvis du vil styre, hvilke filer der som standard skal åbnes i denne app, kan du <ph name="BEGIN_LINK" />se, hvordan du angiver standardapps på din enhed<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Kommunikere med indbyggede apps</translation>
+<translation id="5095252080770652994">Status</translation>
 <translation id="5095507226704905004">Filen kan ikke kopieres, fordi den ikke længere findes</translation>
 <translation id="5095848221827496531">Fjern markering</translation>
 <translation id="5097002363526479830">Der kunne ikke oprettes forbindelse til netværket "<ph name="NAME" />": <ph name="DETAILS" /></translation>
@@ -5507,6 +5513,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5213891612754844763">Vis proxyindstillinger</translation>
 <translation id="5214639857958972833">Bogmærket "<ph name="BOOKMARK_TITLE" />" er oprettet.</translation>
 <translation id="5215502535566372932">Vælg et land</translation>
+<translation id="5215665166431745539">Vis billeder</translation>
 <translation id="5220011581825921581">søgetasten + pil op</translation>
 <translation id="5222403284441421673">Download af usikkert indhold er blokeret</translation>
 <translation id="5222676887888702881">Log ud</translation>

@@ -2909,6 +2909,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3183139917765991655">Importateur de profils</translation>
 <translation id="3183143381919926261">Réseaux de données cellulaires</translation>
 <translation id="3183613134231754987">Cette clé d'accès ne sera enregistrée que dans Windows Hello. Elle restera sur cet appareil après la fermeture de toutes les fenêtres de navigation privée.</translation>
+<translation id="3183700187146209259">Impossible d'installer le logiciel du numériseur</translation>
 <translation id="3183944777708523606">Position des moniteurs</translation>
 <translation id="3184536091884214176">Configurez ou gérez les imprimantes CUPS. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Cette application est bloquée}one{Cette application est bloquée}other{Certaines applications sont bloquées}}</translation>
@@ -9001,6 +9002,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7943837619101191061">Ajouter un dossier...</translation>
 <translation id="79446453817422139">Ce fichier pourrait être dangereux</translation>
 <translation id="7944772052836377867">La synchronisation doit vérifier qu'il s'agit bien de vous</translation>
+<translation id="7944847494038629732">Débranchez le câble USB du numériseur et rebranchez-le pour réessayer</translation>
 <translation id="7945703887991230167">Voix préférée</translation>
 <translation id="7946586320617670168">L'origine doit être sécuritaire</translation>
 <translation id="794676567536738329">Confirmer les autorisations</translation>
@@ -9412,6 +9414,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8260864402787962391">Souris</translation>
 <translation id="8261378640211443080">Cette extension ne figure pas dans la boutique <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et peut avoir été ajoutée à votre insu.</translation>
 <translation id="8261506727792406068">Supprimer</translation>
+<translation id="8261625296061301062">Logiciel du numériseur installé</translation>
 <translation id="8262971894813353037">Active la nouvelle conception du bureau pour l'interface utilisateur Web. L'actualisation de Chrome 2023 doit également être activée.</translation>
 <translation id="8263336784344783289">Nommer ce groupe</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> a désactivé le curseur de votre souris.</translation>
@@ -9595,6 +9598,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8387361103813440603">Non autorisés à consulter votre position</translation>
 <translation id="8388770971141403598">Les profils secondaires ne sont pas pris en charge</translation>
 <translation id="8389492867173948260">Permettez à cette extension de lire et de modifier toutes vos données sur les sites Web que vous consultez :</translation>
+<translation id="8390392581097975659">Installation du logiciel du numériseur en cours…</translation>
 <translation id="8390449457866780408">Serveur inaccessible.</translation>
 <translation id="8391218455464584335">Disque de vinyle</translation>
 <translation id="8392726714909453725">Paramètres de Sélectionner pour énoncer</translation>

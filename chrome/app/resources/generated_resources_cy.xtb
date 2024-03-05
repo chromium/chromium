@@ -585,6 +585,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1444628761356461360">Rheolir y gosodiad hwn gan berchennog y ddyfais, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Methu â llwytho '<ph name="IMAGE_PATH" />' ar gyfer y thema.</translation>
 <translation id="1447531650545977377">Troi &amp;Cysoni ymlaen...</translation>
+<translation id="1447895950459090752">Cerdyn rhagolwg hofran tab</translation>
 <translation id="1448264954024227422">Gallwch ddefnyddio'r cyfrif hwn gydag apiau Android. Os hoffech ychwanegu cyfrif ar gyfer rhywun arall, <ph name="LINK_BEGIN" />ychwanegwch berson newydd<ph name="LINK_END" /> at eich <ph name="DEVICE_TYPE" /> yn lle hynny.
 
 Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'r cyfrif hwn. Gallwch reoli caniatadau ar gyfer apiau Android yn y <ph name="APPS_LINK_BEGIN" />Gosodiadau Apiau<ph name="APPS_LINK_END" />.</translation>
@@ -2833,6 +2834,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3094521107841754472">Mae'r pris wedi newid o <ph name="PREVIOUS_PRICE" /> i <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Caiff nodau tudalen, cyfrineiriau a data pori eraill eu cysoni â'r prif gyfrif.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Mae 1 estyniad a allai fod yn niweidiol wedi'i ddiffodd. Gallwch hefyd ei dynnu.}zero{Mae {NUM_EXTENSIONS} estyniad a allai fod yn niweidiol wedi'u diffodd. Gallwch hefyd eu tynnu.}two{Mae {NUM_EXTENSIONS} estyniad a allai fod yn niweidiol wedi'u diffodd. Gallwch hefyd eu tynnu.}few{Mae {NUM_EXTENSIONS} estyniad a allai fod yn niweidiol wedi'u diffodd. Gallwch hefyd eu tynnu.}many{Mae {NUM_EXTENSIONS} estyniad a allai fod yn niweidiol wedi'u diffodd. Gallwch hefyd eu tynnu.}other{Mae {NUM_EXTENSIONS} estyniad a allai fod yn niweidiol wedi'u diffodd. Gallwch hefyd eu tynnu.}}</translation>
+<translation id="3101057112460908988">Dangos defnydd cof</translation>
 <translation id="3101126716313987672">Golau gwan</translation>
 <translation id="3101709781009526431">Dyddiad ac amser</translation>
 <translation id="310297983047869047">Sleid flaenorol</translation>
@@ -2910,6 +2912,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3166443275568926403">Perfformiad a Chyflwr Batri</translation>
 <translation id="3169930038976362151">Dewiswch y thema sy'n gweddu i'ch anghenion. I newid eich thema, papur wal, arbedwr sgrîn a rhagor, cyffyrddwch a daliwch ar y bwrdd gwaith.</translation>
 <translation id="3170072451822350649">Gallwch hefyd hepgor mewngofnodi a <ph name="LINK_START" />phori fel Gwestai<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Corff</translation>
 <translation id="3177430966804511955">Rheoli apiau gwe wedi'u hynysu (beta)</translation>
 <translation id="31774765611822736">Tab newydd i'r chwith</translation>
 <translation id="3177909033752230686">Iaith y Dudalen:</translation>
@@ -3089,6 +3092,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3315158641124845231">Cuddio <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Dechrau'r modd darllenydd</translation>
 <translation id="3317459757438853210">Dwy ochr</translation>
+<translation id="3317521105713541270">Creu grwpiau</translation>
 <translation id="3317678681329786349">Rwystrir y camera a'r meicroffon</translation>
 <translation id="3319306431415395200">Cyfieithu testun mewn llun gyda <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Methu â chysylltu ag OneDrive. Rhowch gynnig arall arni.</translation>
@@ -4445,6 +4449,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4364830672918311045">Dangos hysbysiadau</translation>
 <translation id="4367513928820380646">Adolygu caniatadau a dynnwyd</translation>
 <translation id="4367971618859387374">Enw arddangos</translation>
+<translation id="4368960422722232719">Dangos defnydd cof ar gerdyn rhagolwg hofran tab</translation>
 <translation id="4369215744064167350">Cais am fynediad at wefan wedi'i gymeradwyo</translation>
 <translation id="4369233657762989723">Arddweud ymlaen/wedi'i ddiffodd</translation>
 <translation id="436926121798828366">Gallwch newid hyn unrhyw bryd yn <ph name="SETTINGS_LINK" /></translation>
@@ -5365,6 +5370,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5093569275467863761">Is-ffrâm Anhysbys yn y Storfa Yn ôl/Ymlaen: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Gallwch agor a golygu ffeiliau a gefnogir gyda'r ap hwn o'r ap Files ac apiau eraill. I reoli pa ffeiliau sy'n agor ap hwn yn ddiofyn, <ph name="BEGIN_LINK" />dysgwch sut i osod apiau diofyn ar eich dyfais<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Cyfathrebu ag apiau brodorol sy'n cydweithredu</translation>
+<translation id="5095252080770652994">Cynnydd</translation>
 <translation id="5095507226704905004">Nid oes modd copïo'r ffeil oherwydd nad yw'n bodoli mwyach</translation>
 <translation id="5095848221827496531">Dad-ddewis</translation>
 <translation id="5097002363526479830">Wedi methu â chysylltu â'r rhwydwaith '<ph name="NAME" />': <ph name="DETAILS" /></translation>
@@ -5516,6 +5522,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5213891612754844763">Dangos y gosodiadau dirprwyol</translation>
 <translation id="5214639857958972833">Nod tudalen '<ph name="BOOKMARK_TITLE" />' wedi'i greu.</translation>
 <translation id="5215502535566372932">Dewiswch wlad</translation>
+<translation id="5215665166431745539">Dangos lluniau</translation>
 <translation id="5220011581825921581">search + saeth i fyny</translation>
 <translation id="5222403284441421673">Mae lawrlwythiad anniogel wedi'i rwystro</translation>
 <translation id="5222676887888702881">Allgofnodi</translation>

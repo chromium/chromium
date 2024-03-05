@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">көбелектер</translation>
 <translation id="188114911237521550">Қараңғы режимді өшіру</translation>
+<translation id="188268299367474594">Қолжетімді APN-дер арасынан таңдаңыз</translation>
 <translation id="1885577615937958993">мультимeдианы жылдам алға айналдыру</translation>
 <translation id="1887850431809612466">Жабдық нұсқасы</translation>
 <translation id="189221451253258459">неон жасыл</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">терезелерді көрсету</translation>
 <translation id="2513396635448525189">Кіру суреті</translation>
 <translation id="2517472476991765520">Іздеу</translation>
+<translation id="2520213071283358374">Осы APN-ді пайдалану</translation>
 <translation id="2521835766824839541">алдыңғы трек</translation>
 <translation id="2526590354069164005">Жұмыс үстелі</translation>
 <translation id="253029298928638905">Қайта қосылуда…</translation>
@@ -991,6 +993,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады. Әкімшілер құрылғыны қашықтан конфигурациялай алады.</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
 <translation id="7180865173735832675">Реттеу</translation>
+<translation id="7182063559013288142">Лезде істейтін хотспот</translation>
 <translation id="7184043045742675738">Түймені бейімдеу үшін кез келген пернені басыңыз. Тінтуір немесе бағыт пернелері көмегімен перне орнын өзгертіңіз.</translation>
 <translation id="7206979415662233817">Қызмет көрсету шарттары</translation>
 <translation id="7210635925306941239">көк жасыл</translation>
@@ -1134,6 +1137,7 @@
 <translation id="8075838845814659848">Қалған заряд</translation>
 <translation id="8076492880354921740">Қойындылар</translation>
 <translation id="8079860070590459552">гүлді алқап</translation>
+<translation id="8081553043098820199">APN-дер жарамсыз болса, мобильдік байланыс өшуі мүмкін. Мобильдік провайдер немесе әкімші берген APN-дерді ғана орнатыңыз.</translation>
 <translation id="8082366717211101304">Android қолданбаларынан DNS-ті анықтау мүмкін емес.</translation>
 <translation id="8082644724189923105">пернетақта аймағы</translation>
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>

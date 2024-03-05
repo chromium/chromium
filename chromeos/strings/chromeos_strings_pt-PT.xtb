@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">borboletas</translation>
 <translation id="188114911237521550">Desativar modo escuro</translation>
+<translation id="188268299367474594">Escolha um dos APNs disponíveis</translation>
 <translation id="1885577615937958993">avançar o conteúdo multimédia</translation>
 <translation id="1887850431809612466">Revisão de hardware</translation>
 <translation id="189221451253258459">verde fluorescente</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">mostrar janelas</translation>
 <translation id="2513396635448525189">Imagem de início de sessão</translation>
 <translation id="2517472476991765520">Digitalizar</translation>
+<translation id="2520213071283358374">Usar APN</translation>
 <translation id="2521835766824839541">faixa anterior</translation>
 <translation id="2526590354069164005">Ambiente de trabalho</translation>
 <translation id="253029298928638905">A reiniciar…</translation>
@@ -991,6 +993,7 @@
 <translation id="7177485034254901881">Este <ph name="DEVICE_TYPE" /> é gerido por <ph name="MANAGER" />. Os administradores podem configurar remotamente o dispositivo.</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
+<translation id="7182063559013288142">Zona Wi-Fi instantânea</translation>
 <translation id="7184043045742675738">Clique numa tecla para personalizar o botão. Reposicione a tecla com o rato ou as teclas de seta.</translation>
 <translation id="7206979415662233817">Termos de Utilização</translation>
 <translation id="7210635925306941239">ciano</translation>
@@ -1134,6 +1137,7 @@
 <translation id="8075838845814659848">Carregamento restante</translation>
 <translation id="8076492880354921740">Separadores</translation>
 <translation id="8079860070590459552">campo de flores</translation>
+<translation id="8081553043098820199">Os APNs inválidos podem fazer com que a ligação móvel seja desativada. Defina apenas os APNs fornecidos pelo administrador ou fornecedor de serviços móveis.</translation>
 <translation id="8082366717211101304">Não é possível resolver o DNS a partir de apps Android</translation>
 <translation id="8082644724189923105">zona do teclado</translation>
 <translation id="808894953321890993">Alterar palavra-passe</translation>

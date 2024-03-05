@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">лептири</translation>
 <translation id="188114911237521550">Искључите тамни режим</translation>
+<translation id="188268299367474594">Одаберите неки од доступних назива приступне тачке</translation>
 <translation id="1885577615937958993">премотајте медијски садржај унапред</translation>
 <translation id="1887850431809612466">Ревизија хардвера</translation>
 <translation id="189221451253258459">флуоресцентно зелене</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">прегледајте прозоре</translation>
 <translation id="2513396635448525189">Слика за пријављивање</translation>
 <translation id="2517472476991765520">Скенирај</translation>
+<translation id="2520213071283358374">Користи овај назив приступне тачке</translation>
 <translation id="2521835766824839541">претходна песма</translation>
 <translation id="2526590354069164005">Радна површина</translation>
 <translation id="253029298928638905">Рестартује се...</translation>
@@ -991,6 +993,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем. Администратори могу да конфигуришу уређај даљински.</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7180865173735832675">Прилагоди</translation>
+<translation id="7182063559013288142">Инстант хотспот</translation>
 <translation id="7184043045742675738">Кликните на било који тастер да бисте прилагодили дугме. Промените положај тастера помоћу тастера миша или тастера са стрелицама.</translation>
 <translation id="7206979415662233817">Услови коришћења услуге</translation>
 <translation id="7210635925306941239">цијан</translation>
@@ -1134,6 +1137,7 @@
 <translation id="8075838845814659848">Преостали ниво напуњености батерије</translation>
 <translation id="8076492880354921740">Картице</translation>
 <translation id="8079860070590459552">поље цвећа</translation>
+<translation id="8081553043098820199">Неважећи називи приступних тачака могу да доведу до онемогућавања мобилне везе. Подесите само називе приступних тачака које пружа мобилни оператер или администратор.</translation>
 <translation id="8082366717211101304">DNS не може да се разреши из Android апликација</translation>
 <translation id="8082644724189923105">зона тастатуре</translation>
 <translation id="808894953321890993">Промени лозинку</translation>

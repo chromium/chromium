@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">પતંગિયાં</translation>
 <translation id="188114911237521550">ઘેરો મોડ બંધ કરો</translation>
+<translation id="188268299367474594">ઉપલબ્ધ APNsમાંથી પસંદ કરો</translation>
 <translation id="1885577615937958993">મીડિયાને ફાસ્ટ ફૉરવર્ડ કરો</translation>
 <translation id="1887850431809612466">હાર્ડવેર પુનરાવર્તન</translation>
 <translation id="189221451253258459">નિઓન લીલો</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">વિન્ડો બતાવો</translation>
 <translation id="2513396635448525189">લૉગ ઇન છબી</translation>
 <translation id="2517472476991765520">સ્કૅન કરો</translation>
+<translation id="2520213071283358374">આ APNનો ઉપયોગ કરો</translation>
 <translation id="2521835766824839541">પહેલાનો ટ્રૅક</translation>
 <translation id="2526590354069164005">ડેસ્કટૉપ</translation>
 <translation id="253029298928638905">ફરી શરૂ કરી રહ્યાં છીએ…</translation>
@@ -991,6 +993,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે. વ્યવસ્થાપકો દ્વારા ડિવાઇસને રિમોટલી કન્ફિગર કરવામાં આવી શકે છે.</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7180865173735832675">કસ્ટમાઇઝ કરો</translation>
+<translation id="7182063559013288142">ઝટપટ હૉટસ્પૉટ</translation>
 <translation id="7184043045742675738">તમારા બટનને કસ્ટમાઇઝ કરવા માટે કોઈપણ કી પર ક્લિક કરો. માઉસ અથવા ઍરો કી વડે કીના સ્થાનમાં ફેરફાર કરો.</translation>
 <translation id="7206979415662233817">સેવાની શરતો</translation>
 <translation id="7210635925306941239">સ્યાન</translation>
@@ -1134,6 +1137,7 @@
 <translation id="8075838845814659848">બાકી રહેલું બૅટરી ચાર્જિંગ</translation>
 <translation id="8076492880354921740">ટૅબ્સ</translation>
 <translation id="8079860070590459552">ફૂલવાડી</translation>
+<translation id="8081553043098820199">અમાન્ય APNsને કારણે તમારું મોબાઇલ કનેક્શન બંધ થઈ શકે છે. માત્ર તમારા મોબાઇલ પ્રદાતા અથવા ઍડમિનિસ્ટ્રેટર દ્વારા આપવામાં આવેલા APNs સેટ કરો.</translation>
 <translation id="8082366717211101304">Android ઍપથી DNSનું નિરાકરણ કરી શકતા નથી</translation>
 <translation id="8082644724189923105">કીબોર્ડ ઝોન</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>

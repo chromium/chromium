@@ -2909,6 +2909,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3183139917765991655">Uvoz profila</translation>
 <translation id="3183143381919926261">Mobilne podatkovne mreže</translation>
 <translation id="3183613134231754987">Ovaj će se pristupni ključ spremiti samo u značajci Windows Hello. Ostat će na ovom uređaju nakon što zatvorite sve anonimne prozore.</translation>
+<translation id="3183700187146209259">Nije moguće instalirati softver skenera</translation>
 <translation id="3183944777708523606">Raspored na monitoru</translation>
 <translation id="3184536091884214176">Postavljanje CUPS pisača ili upravljanje njima. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ta je aplikacija blokirana}one{Neke su aplikacije blokirane}few{Neke su aplikacije blokirane}other{Neke su aplikacije blokirane}}</translation>
@@ -4911,6 +4912,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="473936925429402449">Odabrano, dodatni sadržaj <ph name="CURRENT_ELEMENT" /> od <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tiketi</translation>
+<translation id="4740546261986864539">Nedavno otvoreno</translation>
 <translation id="4742334355511750246">Nije dopušteno prikazivanje slika</translation>
 <translation id="4742970037960872810">Ukloni isticanje</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Saznajte kako ažurirati aplikacije<ph name="END_LINK" /></translation>
@@ -5108,6 +5110,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="488785315393301722">Pokaži pojedinosti</translation>
 <translation id="488862352499217187">Izradite novu mapu</translation>
 <translation id="4890292359366636311">Automatski unesite sliku u slici kako biste je mogli upotrebljavati iznad drugih kartica i prozora.</translation>
+<translation id="4890399733764921729">Povezivanje nije moguće. Zaključao drugi mobilni operater.</translation>
 <translation id="4890773143211625964">Prikaži napredne opcije pisača</translation>
 <translation id="4891089016822695758">Forum za beta verziju</translation>
 <translation id="4892229439761351791">Web-lokacija može upotrebljavati Bluetooth</translation>
@@ -8348,6 +8351,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7465778193084373987">URL za opoziv Netscape certifikata</translation>
 <translation id="7466431077154602932">Sažeti prikaz</translation>
 <translation id="746861123368584540">Proširenje se učitalo</translation>
+<translation id="7470131554696493512">Onemogući Thunderbolt ili USB4 uređajima pristup memoriji (RAM) i njezino dijeljenje</translation>
 <translation id="7470424110735398630">Dopušten je pregled međuspremnika</translation>
 <translation id="747114903913869239">Pogreška: Nije moguće dekodirati proširenje</translation>
 <translation id="7471520329163184433">Sporije</translation>
@@ -9001,6 +9005,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7943837619101191061">Dodaj lokaciju...</translation>
 <translation id="79446453817422139">Ova je datoteka možda opasna</translation>
 <translation id="7944772052836377867">Sinkronizacija treba potvrditi da ste to vi</translation>
+<translation id="7944847494038629732">Iskopčajte USB kabel skenera i ponovo ga ukopčajte da biste pokušali ponovo</translation>
 <translation id="7945703887991230167">Preferirani glas</translation>
 <translation id="7946586320617670168">Podrijetlo mora biti sigurno</translation>
 <translation id="794676567536738329">Potvrda dozvola</translation>
@@ -9413,6 +9418,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8260864402787962391">Miš</translation>
 <translation id="8261378640211443080">To proširenje nije navedeno u trgovini <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i možda je dodano bez vašeg znanja.</translation>
 <translation id="8261506727792406068">Izbriši</translation>
+<translation id="8261625296061301062">Softver skenera je instaliran</translation>
 <translation id="8262971894813353037">Omogućuje novi dizajn za korisničko sučelje za web na računalima. Mora biti omogućeno i osvježavanje Chromea 2023.</translation>
 <translation id="8263336784344783289">Postavite naziv grupe</translation>
 <translation id="8263744495942430914">Stranica <ph name="FULLSCREEN_ORIGIN" /> onemogućila je pokazivač miša.</translation>
@@ -9596,6 +9602,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8387361103813440603">Nije dopušten pregled vaše lokacije</translation>
 <translation id="8388770971141403598">Sekundarni profili nisu podržani</translation>
 <translation id="8389492867173948260">Dopustite ovom proširenju da čita i mijenja sve vaše podatke na web-lokacijama koje posjećujete:</translation>
+<translation id="8390392581097975659">Instaliranje softvera skenera</translation>
 <translation id="8390449457866780408">Poslužitelj nije dostupan.</translation>
 <translation id="8391218455464584335">Vinil</translation>
 <translation id="8392726714909453725">Postavke Odabira za govor</translation>

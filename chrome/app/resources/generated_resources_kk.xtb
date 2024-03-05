@@ -2903,6 +2903,7 @@
 <translation id="3183139917765991655">Profile Importer</translation>
 <translation id="3183143381919926261">Мобильдік интернет желілері</translation>
 <translation id="3183613134231754987">Бұл кіру кілті тек Windows Hello-да сақталады. Барлық инкогнито терезесін жапқаннан кейін, ол осы құрылғыда қалады.</translation>
+<translation id="3183700187146209259">Сканердің бағдарламалық құралын орнату мүмкін емес</translation>
 <translation id="3183944777708523606">Мониторды реттеу</translation>
 <translation id="3184536091884214176">CUPS принтерлерін реттеу және басқару. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Бұл қолданба бөгелді}other{Кейбір қолданба бөгелді}}</translation>
@@ -8989,6 +8990,7 @@
 <translation id="7943837619101191061">Орын қосу…</translation>
 <translation id="79446453817422139">Бұл файл қауіпті болуы мүмкін.</translation>
 <translation id="7944772052836377867">Sync жеке басыңызды растау керек</translation>
+<translation id="7944847494038629732">Әрекетті қайталау үшін сканердің USB кабелін ажыратып, қайта жалғаңыз.</translation>
 <translation id="7945703887991230167">Таңдалған дауыс</translation>
 <translation id="7946586320617670168">Дереккөз қауіпсіз болуы қажет</translation>
 <translation id="794676567536738329">Рұқсаттарды растау</translation>
@@ -9400,6 +9402,7 @@
 <translation id="8260864402787962391">Тінтуір</translation>
 <translation id="8261378640211443080">Бұл кеңейтім <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ішінде көрсетілмеген және сізге білдірмей қосылған болуы мүмкін.</translation>
 <translation id="8261506727792406068">Жою</translation>
+<translation id="8261625296061301062">Сканердің бағдарламалық құралы орнатылды</translation>
 <translation id="8262971894813353037">WebUI үшін жаңа жұмыс үстелі дизайнын іске қосады. Chrome Refresh 2023-ті де қосу қажет.</translation>
 <translation id="8263336784344783289">Топтың атауын енгізіңіз</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> тінтуір курсорын өшірді.</translation>
@@ -9583,6 +9586,7 @@
 <translation id="8387361103813440603">Геодеректеріңізді көруге рұқсаты жоқтар</translation>
 <translation id="8388770971141403598">Қосалқы профильдерге қолдау көрсетілмейді.</translation>
 <translation id="8389492867173948260">Бұл кеңейтімге сіз кіретін веб-сайттардағы барлық деректерді оқуға және өзгертуге рұқсат беру:</translation>
+<translation id="8390392581097975659">Сканердің бағдарламалық құралы орнатылып жатыр</translation>
 <translation id="8390449457866780408">Сервер қолжетімсіз.</translation>
 <translation id="8391218455464584335">Винил пластинка</translation>
 <translation id="8392726714909453725">Select to Speak параметрлері</translation>

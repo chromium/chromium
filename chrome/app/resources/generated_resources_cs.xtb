@@ -581,6 +581,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1444628761356461360">Toto nastavení spravuje vlastník zařízení, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Pro motiv nelze načíst bitovou kopii „<ph name="IMAGE_PATH" />“.</translation>
 <translation id="1447531650545977377">Zapněte &amp;synchronizaci…</translation>
+<translation id="1447895950459090752">Náhled karty při najetí myší</translation>
 <translation id="1448264954024227422">Tento účet můžete používat s aplikacemi pro Android. Pokud chcete přidat účet někoho dalšího, přidejte místo toho do zařízení <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />novou osobu<ph name="LINK_END" />.
 
 Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplikacím. Oprávnění aplikací pro Android můžete ovládat v sekci <ph name="APPS_LINK_BEGIN" />Nastavení aplikací<ph name="APPS_LINK_END" />.</translation>
@@ -2817,6 +2818,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3094521107841754472">Cena se změnila z <ph name="PREVIOUS_PRICE" /> na <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Záložky, hesla a další data prohlížeče se synchronizují s primárním účtem.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Je vypnuto jedno potenciálně škodlivé rozšíření. Můžete ho také odstranit.}few{Jsou vypnuta {NUM_EXTENSIONS} potenciálně škodlivá rozšíření. Můžete je také odstranit.}many{Je vypnuto {NUM_EXTENSIONS} potenciálně škodlivého rozšíření. Můžete je také odstranit.}other{Je vypnuto {NUM_EXTENSIONS} potenciálně škodlivých rozšíření. Můžete je také odstranit.}}</translation>
+<translation id="3101057112460908988">Zobrazovat využití paměti</translation>
 <translation id="3101126716313987672">Ztlumení světla</translation>
 <translation id="3101709781009526431">Datum a čas</translation>
 <translation id="310297983047869047">Předchozí snímek</translation>
@@ -2894,6 +2896,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3166443275568926403">Výkon a stav baterie</translation>
 <translation id="3169930038976362151">Vyberte si motiv, který odpovídá vašim potřebám. Pokud chcete změnit motiv, tapetu, spořič obrazovky a další nastavení, podržte plochu.</translation>
 <translation id="3170072451822350649">Také můžete přihlášení přeskočit a <ph name="LINK_START" />prohlížet v roli hosta<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Hlavní text</translation>
 <translation id="3177430966804511955">Spravovat izolované webové aplikace (beta)</translation>
 <translation id="31774765611822736">Nová karta vlevo</translation>
 <translation id="3177909033752230686">Jazyk stránky:</translation>
@@ -3073,6 +3076,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3315158641124845231">Skrýt <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Zapnout režim čtečky</translation>
 <translation id="3317459757438853210">Oboustranně</translation>
+<translation id="3317521105713541270">Vytvořit skupiny</translation>
 <translation id="3317678681329786349">Kamera a mikrofon jsou blokovány</translation>
 <translation id="3319306431415395200">Přeložit text na obrázku pomocí služby <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">K OneDrive se nelze připojit. Zkuste to znovu.</translation>
@@ -4428,6 +4432,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4364830672918311045">Zobrazování oznámení</translation>
 <translation id="4367513928820380646">Zkontrolujte odstraněná oprávnění</translation>
 <translation id="4367971618859387374">Zobrazované jméno</translation>
+<translation id="4368960422722232719">V náhledu karty při najetí myší zobrazovat využití paměti</translation>
 <translation id="4369215744064167350">Žádost webu byla schválena</translation>
 <translation id="4369233657762989723">Vypínač diktování</translation>
 <translation id="436926121798828366">V <ph name="SETTINGS_LINK" /> to můžete kdykoliv změnit</translation>
@@ -5349,6 +5354,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5093569275467863761">Mezipaměť pro přechod zpět nebo vpřed na anonymním dílčím rámci: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Pomocí této aplikace můžete otevírat a upravovat podporované soubory z aplikace Soubory nebo z jiných aplikací. Pokud chcete určit, které soubory se ve výchozím nastavení otevírají v této aplikaci, přečtěte si, <ph name="BEGIN_LINK" />jak na zařízení nastavit výchozí aplikace<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Komunikovat se spolupracujícími nativními aplikacemi</translation>
+<translation id="5095252080770652994">Průběh</translation>
 <translation id="5095507226704905004">Soubor nelze zkopírovat, protože již neexistuje</translation>
 <translation id="5095848221827496531">Zrušit výběr</translation>
 <translation id="5097002363526479830">Připojení k síti <ph name="NAME" /> se nezdařilo: <ph name="DETAILS" /></translation>
@@ -5500,6 +5506,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5213891612754844763">Zobrazit nastavení proxy serveru</translation>
 <translation id="5214639857958972833">Byla vytvořena záložka <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="5215502535566372932">Vyberte zemi</translation>
+<translation id="5215665166431745539">Zobrazovat obrázky</translation>
 <translation id="5220011581825921581">hledat + šipka nahoru</translation>
 <translation id="5222403284441421673">Bylo zablokováno nezabezpečené stahování</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>

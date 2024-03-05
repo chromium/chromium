@@ -581,6 +581,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1444628761356461360">This setting is managed by the device owner, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Could not load '<ph name="IMAGE_PATH" />' for theme.</translation>
 <translation id="1447531650545977377">Turn on &amp;Sync...</translation>
+<translation id="1447895950459090752">Tab hover preview card</translation>
 <translation id="1448264954024227422">You can use this account with Android apps. If you want to add an account for someone else, <ph name="LINK_BEGIN" />add a new person<ph name="LINK_END" /> to your <ph name="DEVICE_TYPE" /> instead.
 
 Permissions that you've already given to apps may apply to this account. You can control permissions for Android apps in <ph name="APPS_LINK_BEGIN" />Apps settings<ph name="APPS_LINK_END" />.</translation>
@@ -2830,6 +2831,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3094521107841754472">Price has changed from <ph name="PREVIOUS_PRICE" /> to <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Bookmarks, passwords and other browser data are synced with the primary account.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potentially harmful extension is off. You can also remove it.}other{{NUM_EXTENSIONS} potentially harmful extensions are off. You can also remove them.}}</translation>
+<translation id="3101057112460908988">Show memory usage</translation>
 <translation id="3101126716313987672">Dim light</translation>
 <translation id="3101709781009526431">Date and time</translation>
 <translation id="310297983047869047">Previous slide</translation>
@@ -2907,6 +2909,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3166443275568926403">Performance and Battery State</translation>
 <translation id="3169930038976362151">Choose the theme that fits your needs. To change your theme, wallpaper, screen saver and more, just touch and hold on the desktop.</translation>
 <translation id="3170072451822350649">You may also skip signing in and <ph name="LINK_START" />browse as Guest<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Body</translation>
 <translation id="3177430966804511955">Manage isolated web apps (beta)</translation>
 <translation id="31774765611822736">New tab to the left</translation>
 <translation id="3177909033752230686">Page Language:</translation>
@@ -2918,6 +2921,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3183139917765991655">Profile Importer</translation>
 <translation id="3183143381919926261">Mobile data networks</translation>
 <translation id="3183613134231754987">This passkey will be saved only in Windows Hello. It will remain on this device after you close all incognito windows.</translation>
+<translation id="3183700187146209259">Can't install scanner software</translation>
 <translation id="3183944777708523606">Monitor arrangement</translation>
 <translation id="3184536091884214176">Set up or manage CUPS printers. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{This app is blocked}other{Some apps are blocked}}</translation>
@@ -3086,6 +3090,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3315158641124845231">Hide <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Enter reader mode</translation>
 <translation id="3317459757438853210">Two-sided</translation>
+<translation id="3317521105713541270">Create groups</translation>
 <translation id="3317678681329786349">Camera and microphone blocked</translation>
 <translation id="3319306431415395200">Translate text in image with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Can't connect to OneDrive. Try again.</translation>
@@ -4442,6 +4447,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4364830672918311045">Display notifications</translation>
 <translation id="4367513928820380646">Review removed permissions</translation>
 <translation id="4367971618859387374">Display name</translation>
+<translation id="4368960422722232719">Show memory usage on tab hover preview card</translation>
 <translation id="4369215744064167350">Website request approved</translation>
 <translation id="4369233657762989723">Dictation on/off</translation>
 <translation id="436926121798828366">You can change this at any time in <ph name="SETTINGS_LINK" /></translation>
@@ -4919,6 +4925,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="473936925429402449">Selected; extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tickets</translation>
+<translation id="4740546261986864539">Recently opened</translation>
 <translation id="4742334355511750246">Not allowed to show images</translation>
 <translation id="4742970037960872810">Remove highlight</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Find out how to update applications<ph name="END_LINK" /></translation>
@@ -5116,6 +5123,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="488785315393301722">Show details</translation>
 <translation id="488862352499217187">Create new folder</translation>
 <translation id="4890292359366636311">Enter picture-in-picture automatically, so you can use it on top of other tabs and windows.</translation>
+<translation id="4890399733764921729">Cannot connect. Locked by another mobile provider.</translation>
 <translation id="4890773143211625964">Show advanced printer options</translation>
 <translation id="4891089016822695758">Beta forum</translation>
 <translation id="4892229439761351791">Site can use Bluetooth</translation>
@@ -5362,6 +5370,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5093569275467863761">Incognito back-forward cached subframe: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">You can open and edit supported files with this app from the Files app or other apps. To control which files open this app by default, <ph name="BEGIN_LINK" />learn how to set default apps on your device<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Communicate with cooperating native applications</translation>
+<translation id="5095252080770652994">Progress</translation>
 <translation id="5095507226704905004">The file can't be copied because it no longer exists</translation>
 <translation id="5095848221827496531">Unselect</translation>
 <translation id="5097002363526479830">Failed to connect to the network '<ph name="NAME" />': <ph name="DETAILS" /></translation>
@@ -5513,6 +5522,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5213891612754844763">Show proxy settings</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' bookmark created.</translation>
 <translation id="5215502535566372932">Select country</translation>
+<translation id="5215665166431745539">Show images</translation>
 <translation id="5220011581825921581">search + up arrow</translation>
 <translation id="5222403284441421673">Insecure download blocked</translation>
 <translation id="5222676887888702881">Sign out</translation>
@@ -8353,6 +8363,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7465778193084373987">Netscape Certificate Revocation URL</translation>
 <translation id="7466431077154602932">Compact view</translation>
 <translation id="746861123368584540">Extension loaded</translation>
+<translation id="7470131554696493512">Block Thunderbolt or USB4 accessories from accessing and sharing memory (RAM)</translation>
 <translation id="7470424110735398630">Allowed to see your clipboard</translation>
 <translation id="747114903913869239">Error: Unable to decode extension</translation>
 <translation id="7471520329163184433">Slower</translation>
@@ -9006,6 +9017,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7943837619101191061">Add Location...</translation>
 <translation id="79446453817422139">This file may be dangerous</translation>
 <translation id="7944772052836377867">Sync needs to verify that it's you</translation>
+<translation id="7944847494038629732">Unplug the scanner's USB cable and plug it in again to retry</translation>
 <translation id="7945703887991230167">Preferred voice</translation>
 <translation id="7946586320617670168">Origin must be secure</translation>
 <translation id="794676567536738329">Confirm Permission</translation>
@@ -9418,6 +9430,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8260864402787962391">Mouse</translation>
 <translation id="8261378640211443080">This extension is not listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
 <translation id="8261506727792406068">Delete</translation>
+<translation id="8261625296061301062">Scanner software installed</translation>
 <translation id="8262971894813353037">Enables the new desktop design for WebUI. Chrome Refresh 2023 must also be enabled.</translation>
 <translation id="8263336784344783289">Name This Group</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> has disabled your mouse cursor.</translation>
@@ -9601,6 +9614,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8387361103813440603">Not allowed to see your location</translation>
 <translation id="8388770971141403598">Secondary profiles are not supported</translation>
 <translation id="8389492867173948260">Allow this extension to read and change all your data on websites that you visit:</translation>
+<translation id="8390392581097975659">Installing scanner software</translation>
 <translation id="8390449457866780408">Server unavailable.</translation>
 <translation id="8391218455464584335">Vinyl</translation>
 <translation id="8392726714909453725">Select-to-speak settings</translation>

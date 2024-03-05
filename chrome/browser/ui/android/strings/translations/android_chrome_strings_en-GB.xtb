@@ -348,6 +348,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="2891154217021530873">Stop page loading</translation>
 <translation id="2893180576842394309">Google may use your history to personalise Search and other Google services</translation>
 <translation id="2894821468041866720">Doesn't noticeably slow down your browser or device.</translation>
+<translation id="2895521649038438824">You can listen to this page</translation>
 <translation id="2900528713135656174">Create event</translation>
 <translation id="2901411048554510387">Showing suggestions for <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904300462646366554">Downloaded PDFs automatically open with one of the PDF viewers on your device</translation>
@@ -619,6 +620,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="4335835283689002019">Safe Browsing is off</translation>
 <translation id="4351244548802238354">Close dialogue</translation>
 <translation id="4355272626458588338">You can get back to a page that's important to you by adding a bookmark</translation>
+<translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4380055775103003110">If this issue keeps happening, you can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Using Sogou for search</translation>
@@ -632,6 +634,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="4425140285732600465">Tracking price. Get alerts if the price drops on any site.</translation>
 <translation id="4425173294238317796">Passkey confirmation sheet</translation>
 <translation id="442518031075347249">You’ll no longer be able to use your virtual card with Google Pay. <ph name="BEGIN_LINK1" />Learn more about virtual cards<ph name="END_LINK1" /></translation>
+<translation id="4430277756566635951"><ph name="EMAIL" /> currently selected. Choose an account.</translation>
 <translation id="4452411734226507615">Close <ph name="TAB_TITLE" /> tab</translation>
 <translation id="4452548195519783679">Bookmarked to <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">When you link another device with a QR code, it can use this phone as a security key. If you remove it, you’ll have to scan a QR code to link it again.</translation>
@@ -785,6 +788,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5152843274749979095">No supported apps installed</translation>
 <translation id="5161254044473106830">Title required</translation>
 <translation id="5161262286013276579">Passkey confirmation sheet opened</translation>
+<translation id="5163361352003913350"><ph name="NAME" /> currently selected. Choose an account.</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5171045022955879922">Search or type URL</translation>
 <translation id="5174700554036517242">Tab is back to initial height</translation>
@@ -1103,6 +1107,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="674388916582496364">It’s common for sites that you visit to remember things that you’re interested in, to personalise your experience. Sites can also store information with Chrome about your interests.</translation>
 <translation id="6751521182688001123">Quickly open a new tab. To edit this shortcut, touch and hold.</translation>
 <translation id="6756507620369789050">Share feedback</translation>
+<translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">List of devices to share a tab with, opened at half height.</translation>
 <translation id="6770602306803890733">Improves security for you and everyone on the web</translation>
 <translation id="6775840696761158817">When you tap or type in the address bar or search box, you'll see suggestions from your default search engine. This is off in Incognito.</translation>
@@ -1150,6 +1155,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6945221475159498467">Select</translation>
 <translation id="6955535239952325894">This setting is disabled on managed browsers</translation>
 <translation id="6963766334940102469">Delete bookmarks</translation>
+<translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> currently selected. Choose an account.</translation>
 <translation id="696447261358045621">Leave Incognito mode</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Don’t approve</translation>
@@ -1177,6 +1183,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7080806333218412752">Sends URLs to Safe Browsing to check them. Also sends a small sample of pages, downloads, extension activity and system information to help discover new threats. Temporarily links this data to your Google Account when you’re signed in, to protect you across Google apps.</translation>
 <translation id="7085332316435785646">Choose whether to include Chrome history for more personalised experiences in Google services</translation>
 <translation id="7088681679121566888">Chrome is up to date</translation>
+<translation id="7093458400248449925">Safety hub</translation>
 <translation id="7105047059074518658">Sign in to browse across devices more easily.</translation>
 <translation id="7106762743910369165">Your browser is managed by your organisation</translation>
 <translation id="7111394291981742152">Chrome gives you more control over the ads that you see and limits what sites can learn about you when they show you personalised ads.</translation>

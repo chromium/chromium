@@ -2911,6 +2911,7 @@
 <translation id="3183139917765991655">مستورد الملف الشخصي</translation>
 <translation id="3183143381919926261">شبكة بيانات الجوّال</translation>
 <translation id="3183613134231754987">‏سيتم حفظ مفتاح المرور هذا في ميزة Windows Hello فقط. وسيبقى محفوظًا على هذا الجهاز بعد إغلاق جميع نوافذ التصفّح المتخفي.</translation>
+<translation id="3183700187146209259">تعذَّر تثبيت برنامج الماسح الضوئي</translation>
 <translation id="3183944777708523606">ترتيب شاشة العرض</translation>
 <translation id="3184536091884214176">‏إعداد طابعات CUPS أو إدارتها <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{تم حظر هذا التطبيق}zero{تم حظر بعض التطبيقات}two{تم حظر هذين التطبيقين}few{تم حظر بعض التطبيقات}many{تم حظر بعض التطبيقات}other{تم حظر بعض التطبيقات}}</translation>
@@ -9008,6 +9009,7 @@
 <translation id="7943837619101191061">إضافة موقع...</translation>
 <translation id="79446453817422139">قد يكون هذا الملف خطيرًا.</translation>
 <translation id="7944772052836377867">تحتاج ميزة المزامنة إلى التحقّق من هويتك</translation>
+<translation id="7944847494038629732">‏يُرجى فصل كابل USB الخاص بالماسح الضوئي ثم توصيله مرة أخرى لإعادة المحاولة</translation>
 <translation id="7945703887991230167">الصوت المفضّل</translation>
 <translation id="7946586320617670168">يجب أن يكون الأصل آمنًا</translation>
 <translation id="794676567536738329">تأكيد الأذونات</translation>
@@ -9421,6 +9423,7 @@
 <translation id="8260864402787962391">الماوس</translation>
 <translation id="8261378640211443080">هذه الإضافة غير مدرجة في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> وربما تمت إضافتها بدون علمك.</translation>
 <translation id="8261506727792406068">حذف</translation>
+<translation id="8261625296061301062">تم تثبيت برنامج الماسح الضوئي</translation>
 <translation id="8262971894813353037">‏يؤدي هذا لتفعيل تصميم سطح المكتب الجديد في واجهة WebUI. يجب أيضًا تفعيل التصميم الجديد لعام 2023 في Chrome.</translation>
 <translation id="8263336784344783289">تسمية هذه المجموعة</translation>
 <translation id="8263744495942430914">أوقف <ph name="FULLSCREEN_ORIGIN" /> مؤشر الماوس.</translation>
@@ -9604,6 +9607,7 @@
 <translation id="8387361103813440603">المواقع الإلكترونية التي لا يُسمح لها بالاطّلاع على موقعك الجغرافي</translation>
 <translation id="8388770971141403598">لا يمكن استخدام الملفات الشخصية الثانوية.</translation>
 <translation id="8389492867173948260">السماح لهذه الإضافة بقراءة جميع بياناتك وتغييرها على المواقع الإلكترونية التي تزورها:</translation>
+<translation id="8390392581097975659">جارٍ تثبيت برنامج الماسح الضوئي</translation>
 <translation id="8390449457866780408">الخادم غير متاح.</translation>
 <translation id="8391218455464584335">أسطوانة موسيقية</translation>
 <translation id="8392726714909453725">إعدادات ميزة "سماع الاختيار"</translation>

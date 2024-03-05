@@ -1074,7 +1074,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3100422601354996774">Keď v Chrome zavriete všetky karty inkognito, z tohto zariadenia sa odstráni vaša aktivita v nich:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />aktivita prehliadania,<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />história vyhľadávania,<ph name="END_LIST_ITEM" />,
+            <ph name="LIST_ITEM" />história vyhľadávania,<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />informácie zadané do formulárov.<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
 <translation id="3103188521861412364">Akcie a dlhopisy</translation>
@@ -1760,6 +1760,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4358461427845829800">Spravovať spôsoby platby…</translation>
 <translation id="4359160567981085931">Práve ste zadali svoje heslo na podvodnom webe. Chrome vám s tým pomôže. Ak chcete zmeniť heslo a upozorniť Google, že váš účet môže byť ohrozený, kliknite na Ochrániť účet.</translation>
 <translation id="4363222835916186793">Upozornenia na tento výrobok boli vypnuté</translation>
+<translation id="4363729811203340554">Ak toto zariadenie zdieľate, Chrome vás môže požiadať o overenie každej platby využívajúcej automatické dopĺňanie</translation>
 <translation id="4366943895537458493">Doska</translation>
 <translation id="437040971055499437">Vyskytne sa bezpečnostná udalosť</translation>
 <translation id="4371591986692297148">Neaktívne</translation>
@@ -2280,6 +2281,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5447765697759493033">Tento web nebude preložený</translation>
 <translation id="5452270690849572955">Táto stránka webu <ph name="HOST_NAME" /> sa nenašla</translation>
 <translation id="5455374756549232013">Chybná časová pečiatka pravidla</translation>
+<translation id="5456839782162429664">Pri každej platbe využívajúcej automatické dopĺňanie požiadať o manuálne overenie</translation>
 <translation id="5457113250005438886">Neplatné</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalší}few{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalšie}many{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalšieho}other{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalších}}</translation>
 <translation id="5463625433003343978">Hľadajú sa zariadenia…</translation>
@@ -2377,6 +2379,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5633066919399395251">Útočníci na webe <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> sa môžu pokúsiť nainštalovať nebezpečné programy vo vašom počítači, pomocou ktorých ukradnú alebo odstránia informácie (napríklad fotky, heslá, správy a kreditné karty). <ph name="BEGIN_LEARN_MORE_LINK" />Ďalšie informácie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Klamlivý obsah bol zablokovaný.</translation>
 <translation id="563371367637259496">Mobilná</translation>
+<translation id="5634725266554983459">Chcete zapnúť manuálne overenie?</translation>
 <translation id="5635478143789726479">Zmluvné podmienky predajcu</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereofónne systémy a komponenty</translation>
@@ -3062,6 +3065,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6973988895180423160">3,5 × 5 palcov</translation>
 <translation id="6978121630131642226">Vyhľadávače</translation>
 <translation id="6978236010531171013">Aj tak zdieľať</translation>
+<translation id="6978722349058177832">Ak toto zariadenie zdieľate, Chromium vás môže požiadať o overenie každej platby využívajúcej automatické dopĺňanie</translation>
 <translation id="6979158407327259162">Disk Google</translation>
 <translation id="6979440798594660689">Ignorovať (predvolené)</translation>
 <translation id="6987806006823772670">Obálka (poťahovaná)</translation>

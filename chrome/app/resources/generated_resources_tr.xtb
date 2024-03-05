@@ -579,6 +579,7 @@
 <translation id="1444628761356461360">Bu ayar, cihaz sahibi <ph name="OWNER_EMAIL" /> tarafından yönetiliyor.</translation>
 <translation id="144518587530125858">Temaya ilişkin '<ph name="IMAGE_PATH" />' yolu yüklenemedi.</translation>
 <translation id="1447531650545977377">&amp;Senkronizasyonu açın...</translation>
+<translation id="1447895950459090752">Sekme önizleme bilgi kutucuğu</translation>
 <translation id="1448264954024227422">Bu hesabı Android uygulamalarıyla kullanabilirsiniz. Başka biri için hesap eklemek isterseniz bunun yerine <ph name="DEVICE_TYPE" /> cihazınıza <ph name="LINK_BEGIN" />yeni bir kişi ekleyin<ph name="LINK_END" />.
 
 Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Android uygulamalarının izinlerini <ph name="APPS_LINK_BEGIN" />Uygulama Ayarları<ph name="APPS_LINK_END" /> bölümünden kontrol edebilirsiniz.</translation>
@@ -2813,6 +2814,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3094521107841754472"><ph name="PREVIOUS_PRICE" /> olan fiyat <ph name="CURRENT_PRICE" /> olarak değişti.</translation>
 <translation id="3095871294753148861">Yer işaretleri, şifreler ve diğer tarayıcı verileri, birincil hesapla senkronize edilir.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Zararlı olabilecek 1 uzantı kapalı. İsterseniz bunu kaldırabilirsiniz.}other{Zararlı olabilecek {NUM_EXTENSIONS} uzantı kapalı. İsterseniz bunları kaldırabilirsiniz.}}</translation>
+<translation id="3101057112460908988">Bellek kullanımını göster</translation>
 <translation id="3101126716313987672">Loş ışık</translation>
 <translation id="3101709781009526431">Tarih ve saat</translation>
 <translation id="310297983047869047">Önceki slayt</translation>
@@ -2890,6 +2892,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3166443275568926403">Performans ve Pil Durumu</translation>
 <translation id="3169930038976362151">İhtiyaçlarınıza uygun temayı seçin. Temanızı, duvar kağıdınızı, ekran koruyucunuzu ve diğer özellikleri değiştirmek için masaüstüne dokunup basılı tutun.</translation>
 <translation id="3170072451822350649">Ayrıca, oturum açmayı atlayabilir ve <ph name="LINK_START" />misafir olarak göz atabilirsiniz<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Metin</translation>
 <translation id="3177430966804511955">Yalıtılmış web uygulamalarını yönet (Beta)</translation>
 <translation id="31774765611822736">Sola yeni sekme</translation>
 <translation id="3177909033752230686">Sayfanın Dili:</translation>
@@ -3069,6 +3072,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> uygulamasını gizle</translation>
 <translation id="3315442055907669208">Okuyucu moduna geç</translation>
 <translation id="3317459757438853210">İki taraflı</translation>
+<translation id="3317521105713541270">Grup oluştur</translation>
 <translation id="3317678681329786349">Kamera ve mikrofon engellendi</translation>
 <translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" /> ile görseldeki metni çevir</translation>
 <translation id="3320271870899888245">OneDrive'a bağlanılamıyor. Tekrar deneyin.</translation>
@@ -4425,6 +4429,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4364830672918311045">Bildirimleri görüntüleme</translation>
 <translation id="4367513928820380646">Kaldırılan izinleri incele</translation>
 <translation id="4367971618859387374">Görünen ad</translation>
+<translation id="4368960422722232719">Sekme önizleme bilgi kutucuğunda bellek kullanımını göster</translation>
 <translation id="4369215744064167350">Web sitesi isteği onaylandı</translation>
 <translation id="4369233657762989723">Dikteyi aç/kapat</translation>
 <translation id="436926121798828366">Bunu istediğiniz zaman <ph name="SETTINGS_LINK" /> bölümünde değiştirebilirsiniz</translation>
@@ -5344,6 +5349,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5093569275467863761">Gizli Geri/İleri Önbelleğe Alınmış Alt Çerçeve: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Bu uygulamayı kullanarak, desteklenen dosyaları Dosyalar uygulamasından veya diğer uygulamalardan açıp düzenleyebilirsiniz. Bu uygulamada varsayılan olarak hangi dosyaların açılacağını kontrol etmek için <ph name="BEGIN_LINK" />cihazınızda varsayılan uygulamaları nasıl ayarlayacağınızı öğrenin<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">İşbirliği yapan yerel uygulamalarla iletişim kurma</translation>
+<translation id="5095252080770652994">İlerleme durumu</translation>
 <translation id="5095507226704905004">Dosya artık mevcut olmadığı için kopyalanamıyor</translation>
 <translation id="5095848221827496531">Seçimi kaldır</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />' ağına bağlanamadı: <ph name="DETAILS" /></translation>
@@ -5495,6 +5501,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5213891612754844763">Proxy ayarlarını göster</translation>
 <translation id="5214639857958972833">"<ph name="BOOKMARK_TITLE" />" yer işareti oluşturuldu.</translation>
 <translation id="5215502535566372932">Ülke seçin</translation>
+<translation id="5215665166431745539">Görselleri göster</translation>
 <translation id="5220011581825921581">arama + yukarı ok</translation>
 <translation id="5222403284441421673">Güvenli olmayan indirme işlemi engellendi</translation>
 <translation id="5222676887888702881">Çıkış</translation>

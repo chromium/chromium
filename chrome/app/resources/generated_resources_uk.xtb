@@ -584,6 +584,7 @@
 <translation id="1444628761356461360">Цим налаштуванням керує власник пристрою (<ph name="OWNER_EMAIL" />).</translation>
 <translation id="144518587530125858">Не вдалося завантажити "<ph name="IMAGE_PATH" />" для теми.</translation>
 <translation id="1447531650545977377">Увімкніть &amp;синхронізацію…</translation>
+<translation id="1447895950459090752">Картка попереднього перегляду вкладки</translation>
 <translation id="1448264954024227422">Ви можете використовувати цей обліковий запис у додатках для Android. Якщо ви хочете додати обліковий запис для іншого користувача, <ph name="LINK_BEGIN" />зробіть це<ph name="LINK_END" /> натомість на пристрої <ph name="DEVICE_TYPE" />.
 
 Дозволи, надані додаткам, можуть діяти для цього облікового запису. Дозволами для них можна керувати в <ph name="APPS_LINK_BEGIN" />налаштуваннях додатків<ph name="APPS_LINK_END" />.</translation>
@@ -2833,6 +2834,7 @@
 <translation id="3094521107841754472">Ціна змінилася з <ph name="PREVIOUS_PRICE" /> на <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Закладки, паролі й інші дані веб-перегляду синхронізуються з основним обліковим записом.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Вимкнено 1 потенційно шкідливе розширення. Його також можна видалити.}one{Вимкнено {NUM_EXTENSIONS} потенційно шкідливе розширення. Їх також можна видалити.}few{Вимкнено {NUM_EXTENSIONS} потенційно шкідливі розширення. Їх також можна видалити.}many{Вимкнено {NUM_EXTENSIONS} потенційно шкідливих розширень. Їх також можна видалити.}other{Вимкнено {NUM_EXTENSIONS} потенційно шкідливого розширення. Їх також можна видалити.}}</translation>
+<translation id="3101057112460908988">Показувати використання пам’яті</translation>
 <translation id="3101126716313987672">Зменшити яскравість</translation>
 <translation id="3101709781009526431">Дата та час</translation>
 <translation id="310297983047869047">Попередній слайд</translation>
@@ -2910,6 +2912,7 @@
 <translation id="3166443275568926403">Продуктивність і стан акумулятора</translation>
 <translation id="3169930038976362151">Виберіть тему відповідно до своїх потреб. Щоб змінити тему, фоновий малюнок, заставку тощо, натисніть і утримуйте будь-яке місце на робочому столі.</translation>
 <translation id="3170072451822350649">Можна також пропустити вхід і <ph name="LINK_START" />працювати в режимі "Гість"<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Основний розділ</translation>
 <translation id="3177430966804511955">Керувати ізольованими веб-додатками (бета-версія)</translation>
 <translation id="31774765611822736">Нова вкладка ліворуч</translation>
 <translation id="3177909033752230686">Мова сторінки:</translation>
@@ -3089,6 +3092,7 @@
 <translation id="3315158641124845231">Сховати <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Перейти в режим читання</translation>
 <translation id="3317459757438853210">Двосторонній</translation>
+<translation id="3317521105713541270">Створити групи</translation>
 <translation id="3317678681329786349">Заборонено використовувати камеру та мікрофон</translation>
 <translation id="3319306431415395200">Перекласти текст на зображенні за допомогою <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Не вдалося підключитися до OneDrive. Повторіть спробу.</translation>
@@ -4445,6 +4449,7 @@
 <translation id="4364830672918311045">Показувати сповіщення</translation>
 <translation id="4367513928820380646">Переглянути скасовані дозволи</translation>
 <translation id="4367971618859387374">Відображувана назва</translation>
+<translation id="4368960422722232719">Показувати використання пам’яті на картці попереднього перегляду вкладки</translation>
 <translation id="4369215744064167350">Запит на доступ до веб-сайту схвалено</translation>
 <translation id="4369233657762989723">Увімкнути або вимкнути диктування</translation>
 <translation id="436926121798828366">Параметри функції можна будь-коли змінити в розділі "<ph name="SETTINGS_LINK" />"</translation>
@@ -5365,6 +5370,7 @@
 <translation id="5093569275467863761">Додатковий фрейм зворотного кешу в анонімному режимі: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Ви можете відкривати й редагувати підтримувані файли в цьому додатку через додаток Файли або інші додатки. Щоб указати, які файли будуть відкриватися в цьому додатку за умовчанням, <ph name="BEGIN_LINK" />дізнайтеся, як налаштувати стандартні додатки на пристрої<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Підтримувати зв’язок із взаємодійними рідними програмами</translation>
+<translation id="5095252080770652994">Прогрес</translation>
 <translation id="5095507226704905004">Не вдалося скопіювати файл, оскільки він більше не існує</translation>
 <translation id="5095848221827496531">Скасувати вибір</translation>
 <translation id="5097002363526479830">Не вдалося під’єднатися до мережі "<ph name="NAME" />": <ph name="DETAILS" /></translation>
@@ -5516,6 +5522,7 @@
 <translation id="5213891612754844763">Показати налаштування проксі</translation>
 <translation id="5214639857958972833">Створено закладку "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="5215502535566372932">Вибрати країну</translation>
+<translation id="5215665166431745539">Показувати зображення</translation>
 <translation id="5220011581825921581">клавіша пошуку + стрілка вгору</translation>
 <translation id="5222403284441421673">Незахищене завантаження заблоковано</translation>
 <translation id="5222676887888702881">Вийти</translation>

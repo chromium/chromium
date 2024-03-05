@@ -580,6 +580,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1444628761356461360">Ce paramètre est géré par le propriétaire de l'appareil : <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Impossible de charger "<ph name="IMAGE_PATH" />" pour le thème.</translation>
 <translation id="1447531650545977377">Activer la &amp;synchronisation…</translation>
+<translation id="1447895950459090752">Fiche d'aperçu du survol de l'onglet</translation>
 <translation id="1448264954024227422">Vous pouvez utiliser ce compte avec les applis Android. Pour ajouter le compte d'une autre personne, <ph name="LINK_BEGIN" />ajoutez plutôt un nouvel utilisateur<ph name="LINK_END" /> à votre <ph name="DEVICE_TYPE" />.
 
 Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer à ce compte. Vous pouvez contrôler les autorisations pour les applis Android dans <ph name="APPS_LINK_BEGIN" />Paramètres des applications<ph name="APPS_LINK_END" />.</translation>
@@ -2816,6 +2817,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3094521107841754472">Le prix est passé de <ph name="PREVIOUS_PRICE" /> à <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Les favoris, les mots de passe et d'autres données du navigateur sont synchronisés avec le compte principal.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 extension potentiellement dangereuse est désactivée. Vous pouvez également la supprimer.}one{{NUM_EXTENSIONS} extension potentiellement dangereuse est désactivée. Vous pouvez également la supprimer.}other{{NUM_EXTENSIONS} extensions potentiellement dangereuses sont désactivées. Vous pouvez également les supprimer.}}</translation>
+<translation id="3101057112460908988">Afficher l'utilisation de la mémoire</translation>
 <translation id="3101126716313987672">Éclairage faible</translation>
 <translation id="3101709781009526431">Date et heure</translation>
 <translation id="310297983047869047">Diapositive précédente</translation>
@@ -2893,6 +2895,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3166443275568926403">Performances et état de la batterie</translation>
 <translation id="3169930038976362151">Choisissez le thème adapté à vos besoins. Pour changer de thème, de fond d'écran, d'économiseur d'écran, etc., appuyez de manière prolongée sur le bureau.</translation>
 <translation id="3170072451822350649">Vous pouvez également ignorer l'étape de connexion et <ph name="LINK_START" />naviguer en tant qu'invité<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Corps</translation>
 <translation id="3177430966804511955">Gérer les applications Web isolées (bêta)</translation>
 <translation id="31774765611822736">Nouvel onglet à gauche</translation>
 <translation id="3177909033752230686">Langue de la page :</translation>
@@ -3072,6 +3075,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3315158641124845231">Masquer <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Accéder au mode Lecteur</translation>
 <translation id="3317459757438853210">Recto verso</translation>
+<translation id="3317521105713541270">Créer des groupes</translation>
 <translation id="3317678681329786349">Caméra et micro bloqués</translation>
 <translation id="3319306431415395200">Traduisez le texte d'une image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Impossible de se connecter à OneDrive. Réessayez.</translation>
@@ -4428,6 +4432,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4364830672918311045">Afficher les notifications</translation>
 <translation id="4367513928820380646">Examiner les autorisations retirées</translation>
 <translation id="4367971618859387374">Nom à afficher</translation>
+<translation id="4368960422722232719">Afficher l'utilisation de la mémoire sur la fiche d'aperçu du survol de l'onglet</translation>
 <translation id="4369215744064167350">Demande de site Web approuvée</translation>
 <translation id="4369233657762989723">Activer/Désactiver la dictée</translation>
 <translation id="436926121798828366">Vous pouvez modifier cela à tout moment dans les <ph name="SETTINGS_LINK" /></translation>
@@ -5347,6 +5352,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5093569275467863761">Sous-cadre de navigation privée en cache amélioré : <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Vous pouvez ouvrir et modifier les fichiers compatibles avec cette appli depuis l'appli Fichiers ou d'autres applis. Pour contrôler quels fichiers s'ouvrent dans cette appli par défaut, découvrez comment <ph name="BEGIN_LINK" />définir les applis par défaut sur votre appareil<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Communiquer avec les applications natives associées</translation>
+<translation id="5095252080770652994">Progression</translation>
 <translation id="5095507226704905004">Impossible de copier le fichier, car il n'existe plus</translation>
 <translation id="5095848221827496531">Désélectionner</translation>
 <translation id="5097002363526479830">Échec de la connexion au réseau "<ph name="NAME" />" : <ph name="DETAILS" /></translation>
@@ -5498,6 +5504,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5213891612754844763">Afficher les paramètres de proxy</translation>
 <translation id="5214639857958972833">Favori "<ph name="BOOKMARK_TITLE" />" créé.</translation>
 <translation id="5215502535566372932">Sélectionnez un pays</translation>
+<translation id="5215665166431745539">Afficher les images</translation>
 <translation id="5220011581825921581">Recherche+Flèche vers le haut</translation>
 <translation id="5222403284441421673">Téléchargement non sécurisé bloqué</translation>
 <translation id="5222676887888702881">Déconnexion</translation>

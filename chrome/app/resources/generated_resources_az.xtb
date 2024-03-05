@@ -577,6 +577,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1444628761356461360">Bu ayar cihaz sahibi tərəfindən idarə olunur, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Tema üçün '<ph name="IMAGE_PATH" />' yüklənə bilmədi.</translation>
 <translation id="1447531650545977377">Sinxronlaşdırmanı &amp;aktiv edin...</translation>
+<translation id="1447895950459090752">Tab üzərində popap önizləmə kartı</translation>
 <translation id="1448264954024227422">Bu hesabı Android tətbiqləri ilə istifadə edə bilərsiniz. Başqa birisi üçün hesab əlavə etmək istəyirsinizsə, əvəzində <ph name="DEVICE_TYPE" /> cihazınıza <ph name="LINK_BEGIN" />yeni şəxs əlavə edin<ph name="LINK_END" />.
 
 Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. Android tətbiqləri üçün icazələrə <ph name="APPS_LINK_BEGIN" />Tətbiq Ayarlarında<ph name="APPS_LINK_END" /> nəzarət edə bilərsiniz.</translation>
@@ -2814,6 +2815,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3094521107841754472">Əvvəlki qiymət: <ph name="PREVIOUS_PRICE" />, hazırkı qiymət: <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Əlfəcinlər, parollar və digər brauzer datası əsas hesabla sinxronizasiya edilir.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potensial zərərli artırma deaktiv edilib. Onu silə də bilərsiniz.}other{{NUM_EXTENSIONS} potensial zərərli artırma deaktiv edilib. Onları silə də bilərsiniz.}}</translation>
+<translation id="3101057112460908988">Yaddaş istifadəsini göstərin</translation>
 <translation id="3101126716313987672">İşığın qaraldılması</translation>
 <translation id="3101709781009526431">Tarix və saat</translation>
 <translation id="310297983047869047">Əvvəlki slayd</translation>
@@ -2891,6 +2893,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3166443275568926403">Performans və batareya vəziyyəti</translation>
 <translation id="3169930038976362151">Ehtiyaclarınıza uyğun olan mövzunu seçin. Mövzu, divar kağızı, ekran qoruyucusu və daha çoxunu dəyişmək üçün masaüstünə toxunub saxlayın.</translation>
 <translation id="3170072451822350649">Hesaba girişi atlayaraq <ph name="LINK_START" />Qonaq qismində girə bilərsiniz<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">Mətn</translation>
 <translation id="3177430966804511955">Təcrid edilmiş veb-tətbiqləri idarə edin (beta)</translation>
 <translation id="31774765611822736">Sola yeni tab</translation>
 <translation id="3177909033752230686">Səhifə Dili:</translation>
@@ -3070,6 +3073,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> gizlədin</translation>
 <translation id="3315442055907669208">Oxucu rejiminə daxil olun</translation>
 <translation id="3317459757438853210">İkitərəfli</translation>
+<translation id="3317521105713541270">Qruplar yaradın</translation>
 <translation id="3317678681329786349">Kamera və mikrofon blok edildi</translation>
 <translation id="3319306431415395200">Şəkildəki mətni <ph name="VISUAL_SEARCH_PROVIDER" /> ilə tərcümə edin</translation>
 <translation id="3320271870899888245">OneDrive-a qoşulmaq olmur. Yenidən cəhd edin.</translation>
@@ -4424,6 +4428,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4364830672918311045">Bildirişləri görüntüləyin</translation>
 <translation id="4367513928820380646">Silinmiş icazələri nəzərdən keçirin</translation>
 <translation id="4367971618859387374">Displey adı</translation>
+<translation id="4368960422722232719">Yaddaş istifadəsini tab üzərində popap önizləmə kartında göstərin</translation>
 <translation id="4369215744064167350">Veb sayt sorğusu təsdiq edildi</translation>
 <translation id="4369233657762989723">Diktəni aktiv/deaktiv edin</translation>
 <translation id="436926121798828366"><ph name="SETTINGS_LINK" /> bölməsində dəyişə bilərsiniz</translation>
@@ -5345,6 +5350,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5093569275467863761">Anonim Geri/İrəli Keşlənmiş Alt-çərçivə: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Fayllar tətbiqindən və ya digər tətbiqlərdən dəstəklənən faylları bu tətbiqlə aça və redaktə edə bilərsiniz. Defolt olaraq bu tətbiqin hansı faylları açdığına nəzarət etmək üçün <ph name="BEGIN_LINK" />cihazınızda defolt tətbiqlərin necə ayarlanmasını öyrənin<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Nativ tətbiqlərlə əməkdaşlıqla ünsiyyət qurun</translation>
+<translation id="5095252080770652994">Gediş</translation>
 <translation id="5095507226704905004">Fayl mövcud olmadığı üçün kopyalana bilməz</translation>
 <translation id="5095848221827496531">Seçimi silin</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />': <ph name="DETAILS" /> şəbəkəsinə qoşulmaq uğursuz oldu</translation>
@@ -5496,6 +5502,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5213891612754844763">Proksi ayarlarını göstərin</translation>
 <translation id="5214639857958972833">"<ph name="BOOKMARK_TITLE" />" əlfəcini yaradıldı.</translation>
 <translation id="5215502535566372932">Ölkə seçin</translation>
+<translation id="5215665166431745539">Şəkilləri göstərin</translation>
 <translation id="5220011581825921581">axtarış + yuxarı ox</translation>
 <translation id="5222403284441421673">Təhlükəli endirmə blok edildi</translation>
 <translation id="5222676887888702881">Hesabdan çıxın</translation>

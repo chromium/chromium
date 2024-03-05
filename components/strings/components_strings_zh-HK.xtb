@@ -1763,6 +1763,7 @@
 <translation id="4358461427845829800">管理付款方法…</translation>
 <translation id="4359160567981085931">您剛才在欺詐網站上輸入了密碼。Chrome 可以就此提供協助。如需變更密碼或通知 Google 您的帳戶可能面臨風險，請按 [保護帳戶]。</translation>
 <translation id="4363222835916186793">此產品的通知已關閉</translation>
+<translation id="4363729811203340554">如共用此裝置，Chrome 可在每次透過自動填入功能付款時要求你驗證身分</translation>
 <translation id="4366943895537458493">印版</translation>
 <translation id="437040971055499437">發生安全性事件</translation>
 <translation id="4371591986692297148">未啟用</translation>
@@ -2283,6 +2284,7 @@
 <translation id="5447765697759493033">系統不會翻譯此網站</translation>
 <translation id="5452270690849572955">找不到此 <ph name="HOST_NAME" /> 網頁</translation>
 <translation id="5455374756549232013">政策時間戳記有誤</translation>
+<translation id="5456839782162429664">每次透過自動填入功能付款時都要手動驗證</translation>
 <translation id="5457113250005438886">無效</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資料}other{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資料}}</translation>
 <translation id="5463625433003343978">正在尋找裝置…</translation>
@@ -2380,6 +2382,7 @@
 <translation id="5633066919399395251">目前在 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻擊者可能會試圖在您的電腦上安裝危險的應用程式，以竊取或刪除您的資料 (例如相片、密碼、訊息和信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">已封鎖欺詐內容。</translation>
 <translation id="563371367637259496">流動網絡</translation>
+<translation id="5634725266554983459">要開啟手動驗證嗎？</translation>
 <translation id="5635478143789726479">賣家的條款及細則</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />。<ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">音響系統和設備</translation>
@@ -3066,6 +3069,7 @@
 <translation id="6973988895180423160">3.5 x 5 吋</translation>
 <translation id="6978121630131642226">搜尋引擎</translation>
 <translation id="6978236010531171013">仍要分享</translation>
+<translation id="6978722349058177832">如共用此裝置，Chromium 可在每次透過自動填入功能付款時要求你驗證身分</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6979440798594660689">靜音 (預設)</translation>
 <translation id="6987806006823772670">信封 (塗布紙)</translation>

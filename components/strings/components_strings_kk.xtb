@@ -1763,6 +1763,7 @@
 <translation id="4358461427845829800">Төлем әдістерін басқару...</translation>
 <translation id="4359160567981085931">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chrome көмектесе алады. Құпия сөзді өзгертіп, Google-ға аккаунтқа төніп тұрған қауіп туралы хабарлау үшін "Аккаунтты қорғау" түймесін басыңыз.</translation>
 <translation id="4363222835916186793">Осы өнімге қатысты хабарландырулар өшірілді.</translation>
+<translation id="4363729811203340554">Бұл құрылғыны бөліссеңіз, автотолтыру функциясымен төлеген сайын, Chrome өзіңіздің растауыңызды сұрайды.</translation>
 <translation id="4366943895537458493">Пластина</translation>
 <translation id="437040971055499437">Қауіпсіздік іс-шарасы анықталды</translation>
 <translation id="4371591986692297148">Өшірілген</translation>
@@ -2283,6 +2284,7 @@
 <translation id="5447765697759493033">Бұл сайт аударылмайды</translation>
 <translation id="5452270690849572955">Бұл <ph name="HOST_NAME" /> бетін табу мүмкін емес</translation>
 <translation id="5455374756549232013">Саясат уақыт белгісі жарамсыз</translation>
+<translation id="5456839782162429664">Автотолтыру функциясымен төлеген сайын өз бетінше растау</translation>
 <translation id="5457113250005438886">Жарамсыз</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Құрылғылар ізделуде...</translation>
@@ -2380,6 +2382,7 @@
 <translation id="5633066919399395251">Қазір <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындағы шабуылдаушылар ақпаратыңызды (мысалы, фотосуреттер, құпия сөздер, хабарлар және несиелік карталар) ұрлайтын не жоятын қауіпті бағдарламаларды компьютеріңізде орнатуға әрекет етуі мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Жалған контент бөгелді.</translation>
 <translation id="563371367637259496">Мобильдік</translation>
+<translation id="5634725266554983459">Өз бетінше растау функциясын қосу керек пе?</translation>
 <translation id="5635478143789726479">Сатушының шарттары мен талаптары</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Стерео жүйелер және құрамдастар</translation>
@@ -3066,6 +3069,7 @@
 <translation id="6973988895180423160">3,5 x 5 дюйм</translation>
 <translation id="6978121630131642226">Іздеу жүйелері</translation>
 <translation id="6978236010531171013">Бәрібір бөлісу</translation>
+<translation id="6978722349058177832">Бұл құрылғыны бөліссеңіз, автотолтыру функциясымен төлеген сайын, Chromium өзіңіздің растауыңызды сұрайды.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Дыбысын өшіру (әдепкі)</translation>
 <translation id="6987806006823772670">Хатқалта (жылтыратылған)</translation>

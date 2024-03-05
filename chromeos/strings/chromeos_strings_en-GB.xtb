@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">butterflies</translation>
 <translation id="188114911237521550">Turn dark mode off</translation>
+<translation id="188268299367474594">Choose from available APNs</translation>
 <translation id="1885577615937958993">fast forward media</translation>
 <translation id="1887850431809612466">Hardware revision</translation>
 <translation id="189221451253258459">neon green</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">show windows</translation>
 <translation id="2513396635448525189">Login image</translation>
 <translation id="2517472476991765520">Scan</translation>
+<translation id="2520213071283358374">Use this APN</translation>
 <translation id="2521835766824839541">previous track</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Restarting...</translation>
@@ -991,6 +993,7 @@
 <translation id="7177485034254901881">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />. Administrators may remotely configure the device.</translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7180865173735832675">Customise</translation>
+<translation id="7182063559013288142">Instant hotspot</translation>
 <translation id="7184043045742675738">Click on any key to customise your button. Reposition key with mouse or arrow keys.</translation>
 <translation id="7206979415662233817">Terms of Service</translation>
 <translation id="7210635925306941239">cyan</translation>
@@ -1134,6 +1137,7 @@
 <translation id="8075838845814659848">Remaining charge</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8079860070590459552">field of flowers</translation>
+<translation id="8081553043098820199">Invalid APNs could cause your mobile connection to be disabled. Only set APNs provided by your mobile provider or administrator.</translation>
 <translation id="8082366717211101304">Can't resolve DNS from Android apps</translation>
 <translation id="8082644724189923105">keyboard zone</translation>
 <translation id="808894953321890993">Change password</translation>

@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">មេអំបៅ</translation>
 <translation id="188114911237521550">បិទ​មុខងារ​ងងឹត</translation>
+<translation id="188268299367474594">ជ្រើសរើសពី APN ដែលអាចប្រើបាន</translation>
 <translation id="1885577615937958993">ខាមេឌៀ​ទៅមុខ</translation>
 <translation id="1887850431809612466">ការផ្លាស់ប្តូរផ្នែករឹង</translation>
 <translation id="189221451253258459">បៃតងណេអុង</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">បង្ហាញ​វិនដូ</translation>
 <translation id="2513396635448525189">រូបភាពចូលគណនី</translation>
 <translation id="2517472476991765520">ស្កេន</translation>
+<translation id="2520213071283358374">ប្រើប្រាស់ APN នេះ</translation>
 <translation id="2521835766824839541">ចម្រៀង​មុន</translation>
 <translation id="2526590354069164005">ដេស៍ថប</translation>
 <translation id="253029298928638905">កំពុងចាប់ផ្ដើមឡើងវិញ...</translation>
@@ -991,6 +993,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> នេះស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" />។ អ្នកគ្រប់គ្រង​អាចកំណត់រចនាសម្ព័ន្ធ​ឧបករណ៍​នេះពីចម្ងាយបាន។</translation>
 <translation id="7180611975245234373">ធ្វើឲ្យថ្មីឡើងវិញ…</translation>
 <translation id="7180865173735832675">កែសម្រួល</translation>
+<translation id="7182063559013288142">ហតស្ប៉តដែលភ្ជាប់បានភ្លាមៗ</translation>
 <translation id="7184043045742675738">ចុច​លើ​គ្រាប់ចុច​ណា​មួយ ដើម្បី​ប្ដូរ​ប៊ូតុង​របស់​អ្នក​តាមបំណង។ ប្ដូរទីតាំងគ្រាប់ចុច ដោយ​ប្រើ​កណ្ដុរ ឬ​គ្រាប់ចុច​ព្រួញ។</translation>
 <translation id="7206979415662233817">លក្ខខណ្ឌ​ប្រើប្រាស់</translation>
 <translation id="7210635925306941239">ស៊ីលៀប</translation>
@@ -1134,6 +1137,7 @@
 <translation id="8075838845814659848">ការសាកថ្ម​ដែលនៅសល់</translation>
 <translation id="8076492880354921740">ផ្ទាំង</translation>
 <translation id="8079860070590459552">វាលផ្កា</translation>
+<translation id="8081553043098820199">APN មិនត្រឹមត្រូវអាចបណ្ដាលឱ្យមានការបិទការ​តភ្ជាប់​បណ្ដាញ​ចល័តរបស់អ្នក។ កំណត់តែ APN ដែលផ្ដល់ដោយក្រុមហ៊ុនផ្ដល់សេវាទូរសព្ទចល័ត ឬអ្នកគ្រប់គ្រងរបស់អ្នកប៉ុណ្ណោះ។</translation>
 <translation id="8082366717211101304">មិនអាចដោះស្រាយ DNS ពីកម្មវិធី Android បានទេ</translation>
 <translation id="8082644724189923105">តំបន់ក្ដារចុច</translation>
 <translation id="808894953321890993">ប្ដូរ​ពាក្យ​សម្ងាត់</translation>

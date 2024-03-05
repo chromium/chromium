@@ -583,7 +583,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1444628761356461360">Ovom postavkom upravlja vlasnik uređaja, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Slika "<ph name="IMAGE_PATH" />" nije učitana kao tema.</translation>
 <translation id="1447531650545977377">Uključi &amp;sinhronizaciju…</translation>
-<translation id="1447895950459090752">Zadržavanje lebdeće kartice pregleda</translation>
+<translation id="1447895950459090752">Kartica pregleda skočnih kartica</translation>
 <translation id="1448264954024227422">Ovaj račun možete koristiti s Android aplikacijama. Ako želite dodati račun za nekog drugog, umjesto toga <ph name="LINK_BEGIN" />dodajte novu osobu<ph name="LINK_END" /> na uređaj <ph name="DEVICE_TYPE" />.
 
 Odobrenja koja ste već dali aplikacijama se mogu primjenjivati na ovaj račun. Odobrenja za Android aplikacije možete kontrolirati u <ph name="APPS_LINK_BEGIN" />Postavkama aplikacija<ph name="APPS_LINK_END" />.</translation>
@@ -2830,7 +2830,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3094521107841754472">Cijena je promijenjena iz <ph name="PREVIOUS_PRICE" /> u <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Oznake, lozinke i drugi podaci iz preglednika se sinhroniziraju s primarnim računom.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Isključena je 1 potencijalno štetna ekstenzija. Možete je i ukloniti.}one{Isključena je {NUM_EXTENSIONS} potencijalno štetna ekstenzija. Možete je i ukloniti.}few{Isključene su {NUM_EXTENSIONS} potencijalno štetne ekstenzije. Možete ih i ukloniti.}other{Isključeno je {NUM_EXTENSIONS} potencijalno štetnih ekstenzija. Možete ih i ukloniti.}}</translation>
-<translation id="3101057112460908988">Prikaži upotrebu memorije</translation>
+<translation id="3101057112460908988">Prikazuj korištenje memorije</translation>
 <translation id="3101126716313987672">Priguši svjetlo</translation>
 <translation id="3101709781009526431">Datum i vrijeme</translation>
 <translation id="310297983047869047">Prethodni slajd</translation>
@@ -2920,6 +2920,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3183139917765991655">Proces za uvoz profila</translation>
 <translation id="3183143381919926261">Mreže za prijenos podataka</translation>
 <translation id="3183613134231754987">Ovaj pristupni ključ će se sačuvati samo u Windows Hellou. Ostat će na ovom uređaju nakon što zatvorite sve anonimne prozore.</translation>
+<translation id="3183700187146209259">Nije moguće instalirati softver skenera</translation>
 <translation id="3183944777708523606">Raspored monitora</translation>
 <translation id="3184536091884214176">Postavite CUPS štampače ili upravljajte njima. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ova aplikacija je blokirana}one{Neke aplikacije su blokirane}few{Neke aplikacije su blokirane}other{Neke aplikacije su blokirane}}</translation>
@@ -3088,7 +3089,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3315158641124845231">Sakrij <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Pokreni način rada za čitanje</translation>
 <translation id="3317459757438853210">Obostrano</translation>
-<translation id="3317521105713541270">Izrada grupa</translation>
+<translation id="3317521105713541270">Kreiraj grupe</translation>
 <translation id="3317678681329786349">Kamera i mikrofon su blokirani</translation>
 <translation id="3319306431415395200">Prevedi tekst na slici putem usluge <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Nije se moguće povezati s uslugom OneDrive. Pokušajte ponovo.</translation>
@@ -4445,7 +4446,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4364830672918311045">Prikaži obavještenja</translation>
 <translation id="4367513928820380646">Pregledajte uklonjena odobrenja</translation>
 <translation id="4367971618859387374">Ime za prikaz</translation>
-<translation id="4368960422722232719">Prikaži upotrebu memorije na kartici zadržavanjem kartice pregleda</translation>
+<translation id="4368960422722232719">Prikazuj korištenje memorije na kartici pregleda skočnih kartica</translation>
 <translation id="4369215744064167350">Zahtjev za web lokaciju je odobren</translation>
 <translation id="4369233657762989723">Uključi/isključi diktiranje</translation>
 <translation id="436926121798828366">Ovo možete promijeniti bilo kada u meniju <ph name="SETTINGS_LINK" /></translation>
@@ -5520,7 +5521,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5213891612754844763">Prikaži postavke proksi servera</translation>
 <translation id="5214639857958972833">Oznaka "<ph name="BOOKMARK_TITLE" />" je kreirana.</translation>
 <translation id="5215502535566372932">Odaberite zemlju</translation>
-<translation id="5215665166431745539">Prikaži slike</translation>
+<translation id="5215665166431745539">Prikazuj slike</translation>
 <translation id="5220011581825921581">tipka za pretraživanje + strelica nagore</translation>
 <translation id="5222403284441421673">Nesigurno preuzimanje je blokirano</translation>
 <translation id="5222676887888702881">Odjava</translation>
@@ -9019,6 +9020,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7943837619101191061">Dodaj lokaciju...</translation>
 <translation id="79446453817422139">Fajl je možda opasan</translation>
 <translation id="7944772052836377867">Sinhronizacija mora potvrditi da ste to vi</translation>
+<translation id="7944847494038629732">Iskopčajte USB kabel skenera i ponovo ga ukopčajte da biste pokušali ponovo</translation>
 <translation id="7945703887991230167">Preferirani glas</translation>
 <translation id="7946586320617670168">Izvor mora biti siguran</translation>
 <translation id="794676567536738329">Potvrdite odobrenja</translation>
@@ -9431,6 +9433,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8260864402787962391">Miš</translation>
 <translation id="8261378640211443080">Ova ekstenzija nije navedena u <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i možda je dodana bez vašeg znanja.</translation>
 <translation id="8261506727792406068">Izbriši</translation>
+<translation id="8261625296061301062">Softver skenera je instaliran</translation>
 <translation id="8262971894813353037">Omogućava novi dizajn za korisnički interfejs za web na računarima. Mora biti omogućeno i osvježavanje Chromea 2023.</translation>
 <translation id="8263336784344783289">Dajte naziv ovoj grupi</translation>
 <translation id="8263744495942430914">Web lokacija <ph name="FULLSCREEN_ORIGIN" /> je onemogućila vaš kursor miša.</translation>
@@ -9614,6 +9617,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8387361103813440603">Nije dozvoljen pregled vaše lokacije</translation>
 <translation id="8388770971141403598">Sekundarni profili nisu podržani</translation>
 <translation id="8389492867173948260">Omogućite ovu ekstenziju da čitate i izmijenite sve svoje podatke na web lokacijama koje posjetite:</translation>
+<translation id="8390392581097975659">Instaliranje softvera skenera</translation>
 <translation id="8390449457866780408">Server je nedostupan.</translation>
 <translation id="8391218455464584335">Vinil</translation>
 <translation id="8392726714909453725">Postavke funkcije Odaberite za govor</translation>

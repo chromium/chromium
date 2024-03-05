@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">پروانه</translation>
 <translation id="188114911237521550">خاموش کردن حالت تاریک</translation>
+<translation id="188268299367474594">‏APN دردسترسی را انتخاب کنید</translation>
 <translation id="1885577615937958993">جلو بردن سریع رسانه</translation>
 <translation id="1887850431809612466">بازبینی سخت‌افزار</translation>
 <translation id="189221451253258459">سبز نئونی</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">نمایش پنجره‌ها</translation>
 <translation id="2513396635448525189">تصویر ورود به سیستم</translation>
 <translation id="2517472476991765520">اسکن</translation>
+<translation id="2520213071283358374">‏استفاده از این APN</translation>
 <translation id="2521835766824839541">آهنگ قبلی</translation>
 <translation id="2526590354069164005">دسک تاپ</translation>
 <translation id="253029298928638905">در حال بازراه‌اندازی…</translation>
@@ -991,6 +993,7 @@
 <translation id="7177485034254901881">این <ph name="DEVICE_TYPE" /> توسط <ph name="MANAGER" /> مدیریت می‌شود. سرپرستان می‌توانند این دستگاه را ازراه‌دور پیکربندی کنند.</translation>
 <translation id="7180611975245234373">بازآوری</translation>
 <translation id="7180865173735832675">سفارشی کردن</translation>
+<translation id="7182063559013288142">نقطه اتصال فوری</translation>
 <translation id="7184043045742675738">برای سفارشی‌سازی دکمه، روی یکی از کلیدها کلیک کنید. موقعیت را با موشواره یا کلیدهای جهت‌نما تغییر دهید.</translation>
 <translation id="7206979415662233817">شرایط خدمات</translation>
 <translation id="7210635925306941239">فیروزه‌ای</translation>
@@ -1134,6 +1137,7 @@
 <translation id="8075838845814659848">شارژ باقی‌مانده</translation>
 <translation id="8076492880354921740">برگه‌ها</translation>
 <translation id="8079860070590459552">دشت گل</translation>
+<translation id="8081553043098820199">‏APN نامعتبر می‌تواند باعث غیرفعال شدن اتصال همراه شود. فقط APN ارائه‌شده ازسوی شرکت مخابرات سیار یا سرپرستتان را تنظیم کنید.</translation>
 <translation id="8082366717211101304">‏نمی‌توان ساناد را از برنامه‌های Android حل‌وفصل کرد</translation>
 <translation id="8082644724189923105">منطقه صفحه‌کلید</translation>
 <translation id="808894953321890993">تغییر گذرواژه</translation>

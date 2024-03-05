@@ -582,6 +582,7 @@
 <translation id="1444628761356461360">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಸಾಧನದ ಮಾಲೀಕರಿಂದ ನಿರ್ವಹಿಸಿಲಾಗುತ್ತದೆ, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">'<ph name="IMAGE_PATH" />' ಅನ್ನು ಥೀಮ್‌ಗಾಗಿ ಲೋಡ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="1447531650545977377">ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ...</translation>
+<translation id="1447895950459090752">ಟ್ಯಾಬ್ ಹೋವರ್ ಪೂರ್ವವೀಕ್ಷಣೆ ಕಾರ್ಡ್</translation>
 <translation id="1448264954024227422">ನೀವು ಈ ಖಾತೆಯನ್ನು Android ಆ್ಯಪ್‌ಗಳ ಜೊತೆ ಬಳಸಬಹುದು. ನೀವು ಬೇರೊಬ್ಬರಿಗಾಗಿ ಖಾತೆಯನ್ನು ಸೇರಿಸಲು ಬಯಸಿದರೆ, ಬದಲಿಗೆ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ <ph name="LINK_BEGIN" />ಹೊಸ ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸಿ<ph name="LINK_END" />.
 
 ಆ್ಯಪ್‌ಗಳಿಗೆ ನೀವು ಈಗಾಗಲೇ ನೀಡಿರುವ ಅನುಮತಿಗಳು ಈ ಖಾತೆಗೆ ಅನ್ವಯಿಸಬಹುದು. ನೀವು <ph name="APPS_LINK_BEGIN" />ಆ್ಯಪ್‌ಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="APPS_LINK_END" /> Android ಆ್ಯಪ್‌ಗಳ ಅನುಮತಿಗಳನ್ನು ನಿಯಂತ್ರಿಸಬಹುದು.</translation>
@@ -2823,6 +2824,7 @@
 <translation id="3094521107841754472">ಬೆಲೆಯು <ph name="PREVIOUS_PRICE" /> ನಿಂದ <ph name="CURRENT_PRICE" /> ಗೆ ಬದಲಾಗಿದೆ.</translation>
 <translation id="3095871294753148861">ಪ್ರಾಥಮಿಕ ಖಾತೆಯ ಜೊತೆಗೆ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಬ್ರೌಸಿಂಗ್‌ ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 ಹಾನಿಕಾರಕ ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌ ಆಫ್ ಆಗಿದೆ. ಈಗಲೂ ನೀವು ಅದನ್ನು ತೆಗೆದುಹಾಕಬಹುದು.}one{{NUM_EXTENSIONS} ಹಾನಿಕಾರಕ ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು ಆಫ್ ಆಗಿವೆ. ಈಗಲೂ ನೀವು ಅವುಗಳನ್ನು ತೆಗೆದುಹಾಕಬಹುದು.}other{{NUM_EXTENSIONS} ಹಾನಿಕಾರಕ ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು ಆಫ್ ಆಗಿವೆ. ಈಗಲೂ ನೀವು ಅವುಗಳನ್ನು ತೆಗೆದುಹಾಕಬಹುದು.}}</translation>
+<translation id="3101057112460908988">ಮೆಮೊರಿ ಬಳಕೆಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3101126716313987672">ಡಿಮ್ ಲೈಟ್</translation>
 <translation id="3101709781009526431">ದಿನಾಂಕ  ಮತ್ತು  ಸಮಯ</translation>
 <translation id="310297983047869047">ಹಿಂದಿನ ಸ್ಲೈಡ್</translation>
@@ -2900,6 +2902,7 @@
 <translation id="3166443275568926403">ಕಾರ್ಯಕ್ಷಮತೆ ಮತ್ತು ಬ್ಯಾಟರಿ ಸ್ಥಿತಿ</translation>
 <translation id="3169930038976362151">ನಿಮ್ಮ ಅಗತ್ಯಗಳಿಗೆ ಸರಿಹೊಂದುವ ಥೀಮ್ ಆಯ್ಕೆಮಾಡಿ. ನಿಮ್ಮ ಥೀಮ್, ವಾಲ್‌ಪೇಪರ್, ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಬದಲಾಯಿಸಲು, ಡೆಸ್ಕ್‌ಟಾಪ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಒತ್ತಿ ಹಿಡಿಯಿರಿ.</translation>
 <translation id="3170072451822350649">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡುವುದನ್ನು ಸ್ಕಿಪ್‌ ಮಾಡಬಹುದು ಹಾಗೂ <ph name="LINK_START" />ಅತಿಥಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬಹುದು<ph name="LINK_END" />.</translation>
+<translation id="3175067642577044620">ಮುಖ್ಯ ಭಾಗ</translation>
 <translation id="3177430966804511955">ಪ್ರತ್ಯೇಕಗೊಳಿಸಲಾದ ವೆಬ್ ಆ್ಯಪ್‌ಗಳು (ಬೀಟಾ) ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="31774765611822736">ಎಡಭಾಗದಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
 <translation id="3177909033752230686">ಪುಟದ ಭಾಷೆ:</translation>
@@ -3079,6 +3082,7 @@
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="3315442055907669208">ರೀಡರ್ ಮೋಡ್ ಅನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="3317459757438853210">ಎರಡು-ಕಡೆಗಳಿಂದ</translation>
+<translation id="3317521105713541270">ಗುಂಪುಗಳನ್ನು ರಚಿಸಿ</translation>
 <translation id="3317678681329786349">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" /> ಮೂಲಕ ಚಿತ್ರದಲ್ಲಿರುವ ಪಠ್ಯವನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="3320271870899888245">OneDrive ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -4436,6 +4440,7 @@
 <translation id="4364830672918311045">ಅಧಿಸೂಚನೆಗಳನ್ನು ಪ್ರದರ್ಶಿಸಿ</translation>
 <translation id="4367513928820380646">ತೆಗೆದುಹಾಕಲಾದ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4367971618859387374">ಡಿಸ್‌ಪ್ಲೇ ಹೆಸರು</translation>
+<translation id="4368960422722232719">ಟ್ಯಾಬ್ ಹೋವರ್ ಪೂರ್ವವೀಕ್ಷಣೆ ಕಾರ್ಡ್‌ನಲ್ಲಿ ಮೆಮೊರಿ ಬಳಕೆಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4369215744064167350">ವೆಬ್‌ಸೈಟ್ ವಿನಂತಿಯನ್ನು ಅನುಮೋದಿಸಲಾಗಿದೆ</translation>
 <translation id="4369233657762989723">ಉಕ್ತಲೇಖನ ಆನ್/ಆಫ್</translation>
 <translation id="436926121798828366">ನೀವು ಇದನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ <ph name="SETTINGS_LINK" /> ನಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು</translation>
@@ -5358,6 +5363,7 @@
 <translation id="5093569275467863761">ಅಜ್ಞಾತ ಬ್ಯಾಕ್-ಫಾರ್ವರ್ಡ್ ಕ್ಯಾಷ್ ಮಾಡಿದ ಸಬ್-ಫ್ರೇಮ್: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Files ಅಥವಾ ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿರುವ ಈ ಆ್ಯಪ್ ಬಳಸಿಕೊಂಡು ನೀವು ಬೆಂಬಲಿತ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಬಹುದು ಮತ್ತು ಎಡಿಟ್ ಮಾಡಬಹುದು. ಈ ಆ್ಯಪ್ ಡೀಫಾಲ್ಟ್ ಆಗಿ ಯಾವ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಬೇಕು ಎಂಬುದನ್ನು ನಿಯಂತ್ರಿಸಲು, <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಡೀಫಾಲ್ಟ್ ಆ್ಯಪ್‌ಗಳನ್ನು ಸೆಟ್ ಮಾಡುವುದು ಹೇಗೆ ಎಂಬುದರ ಕುರಿತು ತಿಳಿಯಿರಿ<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">ಸಹಕರಿಸುವ ಸ್ಥಳೀಯ ಅಪ್ಲಿಕೇಶನ್‌ಗಳೊಂದಿಗೆ ಸಂವಹಿಸಿ</translation>
+<translation id="5095252080770652994">ಪ್ರಗತಿ</translation>
 <translation id="5095507226704905004">ಫೈಲ್ ಇನ್ನು ಮುಂದೆ ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲದ ಕಾರಣ ಅದನ್ನು ಕಾಪಿ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="5095848221827496531">ಆಯ್ಕೆ ಮಾಡಬೇಡಿ</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />' ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಲು ವಿಫಲವಾಗಿದೆ: <ph name="DETAILS" /></translation>
@@ -5509,6 +5515,7 @@
 <translation id="5213891612754844763">ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' ಬುಕ್‌ಮಾರ್ಕ್ ರಚಿಸಲಾಗಿದೆ.</translation>
 <translation id="5215502535566372932">ದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="5215665166431745539">ಚಿತ್ರಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5220011581825921581">ಹುಡುಕಾಟ + ಅಪ್ ಆ್ಯರೋ</translation>
 <translation id="5222403284441421673">ಅಸುರಕ್ಷಿತ ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5222676887888702881">ಸೈನ್ ಔಟ್</translation>
@@ -8814,7 +8821,7 @@
 <translation id="7799650166313181433"><ph name="USER_EMAIL" /> ಗೆ ಸೈನ್ ಇನ್ ಆಗಿರುವ ಸಾಧನಗಳು ಮಾತ್ರ ಈ ಸಾಧನದ ಜೊತೆ ಹಂಚಿಕೊಳ್ಳಬಹುದು. ನಿಮ್ಮ ಸಾಧನಗಳ ನಡುವಿನ ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯನ್ನು ನೀವು ಅನುಮೋದಿಸುವ ಅಗತ್ಯವಿಲ್ಲ.</translation>
 <translation id="7800485561443537737">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನ ಮೊಬೈಲ್ ಡೇಟಾವನ್ನು ಬಳಸುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ವಾಹಕವು ಹೆಚ್ಚುವರಿ ಶುಲ್ಕವನ್ನು ವಿಧಿಸಬಹುದು. ಬ್ಯಾಟರಿ ಬಳಕೆಯನ್ನು ಹೆಚ್ಚಿಸಬಹುದು. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">ಅಪ್ರ&amp;ದಕ್ಷಿಣೆಯಂತೆ ತಿರುಗಿಸಿ</translation>
-<translation id="780301667611848630">ಬೇಡ, ಧನ್ಯವಾದಗಳು</translation>
+<translation id="780301667611848630">ಬೇಡ</translation>
 <translation id="7803657407897251194">ನಿಮ್ಮ Android ಸಾಧನದೊಂದಿಗೆ ಸೆಟಪ್ ಅನ್ನು ಮುಂದುವರಿಸಲು, ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಸಾಧನವೊಂದನ್ನು ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="7804072833593604762">ಟ್ಯಾಬ್ ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="780446144738273886">ಸ್ಕ್ರೀನ್ ರೀಡರ್‌ಗಾಗಿ ಪಠ್ಯವನ್ನು ಹೊರತೆಗೆಯಲು PDF ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ. Chrome ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಮಾತ್ರ ಬೆಂಬಲಿತವಾಗಿದೆ</translation>

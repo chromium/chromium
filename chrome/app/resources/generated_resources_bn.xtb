@@ -582,6 +582,7 @@
 <translation id="1444628761356461360">এই সেটিংটি ডিভাইসের মালিকের দ্বারা <ph name="OWNER_EMAIL" /> পরিচালিত হয়৷</translation>
 <translation id="144518587530125858">থিমের জন্য '<ph name="IMAGE_PATH" />' লোড করা যায়নি৷</translation>
 <translation id="1447531650545977377">&amp;সিঙ্ক চালু করুন...</translation>
+<translation id="1447895950459090752">ট্যাবের উপরে কার্সর নিয়ে যাওয়ার সময় প্রিভিউ দেখার কার্ড</translation>
 <translation id="1448264954024227422">Android অ্যাপের সাথে আপনি এই অ্যাকাউন্ট ব্যবহার করতে পারবেন। অন্য কোনও ব্যক্তির জন্য অ্যাকাউন্ট যোগ করতে চাইলে, তার পরিবর্তে <ph name="DEVICE_TYPE" />-এ <ph name="LINK_BEGIN" />নতুন ব্যক্তিকে যোগ করুন<ph name="LINK_END" />।
 
 বিভিন্ন অ্যাপকে আপনার আগে দেওয়া অনুমতি এই অ্যাকাউন্টের ক্ষেত্রেও প্রযোজ্য হবে। আপনি <ph name="APPS_LINK_BEGIN" />অ্যাপ সেটিংস<ph name="APPS_LINK_END" /> থেকে Android অ্যাপের অনুমতি নিয়ন্ত্রণ করতে পারবেন।</translation>
@@ -2831,6 +2832,7 @@
 <translation id="3094521107841754472">দাম <ph name="PREVIOUS_PRICE" /> থেকে <ph name="CURRENT_PRICE" />-এ পরিবর্তন করা হয়েছে।</translation>
 <translation id="3095871294753148861">বুকমার্ক, পাসওয়ার্ড, এবং ব্রাউজারের অন্যান্য ডেটা প্রাথমিক অ্যাকাউন্টের সাথে সিঙ্ক করা আছে।</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{১টি সম্ভাব্য ক্ষতিকারক এক্সটেনশন বন্ধ করে দেওয়া হয়েছে। আপনি এটি সরিয়েও দিতে পারেন।}one{{NUM_EXTENSIONS}টি সম্ভাব্য ক্ষতিকারক এক্সটেনশন বন্ধ করে দেওয়া হয়েছে। আপনি এগুলি সরিয়েও দিতে পারেন।}other{{NUM_EXTENSIONS}টি সম্ভাব্য ক্ষতিকারক এক্সটেনশন বন্ধ করে দেওয়া হয়েছে। আপনি এগুলি সরিয়েও দিতে পারেন।}}</translation>
+<translation id="3101057112460908988">মেমরির ব্যবহার দেখুন</translation>
 <translation id="3101126716313987672">কম আলো</translation>
 <translation id="3101709781009526431">তারিখ এবং সময়</translation>
 <translation id="310297983047869047">আগের স্লাইড</translation>
@@ -2908,6 +2910,7 @@
 <translation id="3166443275568926403">পারফর্ম্যান্স ও ব্যাটারির অবস্থা</translation>
 <translation id="3169930038976362151">প্রয়োজন অনুযায়ী মানানসই থিম বেছে নিন। আপনার থিম, ওয়ালপেপার, স্ক্রিন সেভার ও আরও অনেক কিছু পরিবর্তন করতে, ডেস্কটপের উপরে শুধু টাচ করে ধরে থাকুন।</translation>
 <translation id="3170072451822350649">এছাড়াও আপনি সাইন-ইন এড়িয়ে যেতে ও <ph name="LINK_START" />অতিথি হিসাবে ব্রাউজ<ph name="LINK_END" /> করতে পারেন৷</translation>
+<translation id="3175067642577044620">মূল অংশ</translation>
 <translation id="3177430966804511955">আইসোলেটেড ওয়েব অ্যাপ (বিটা) ম্যানেজ করুন</translation>
 <translation id="31774765611822736">বাঁদিকে নতুন ট্যাব</translation>
 <translation id="3177909033752230686">পৃষ্ঠার ভাষা:</translation>
@@ -3087,6 +3090,7 @@
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> লুকান</translation>
 <translation id="3315442055907669208">রিডার মোডে যান</translation>
 <translation id="3317459757438853210">দ্বি-পার্শ্বযুক্ত</translation>
+<translation id="3317521105713541270">গ্রুপ তৈরি করুন</translation>
 <translation id="3317678681329786349">ক্যামেরা এবং মাইক্রোফোনের ব্যবহার ব্লক করা হয়েছে</translation>
 <translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" />-এর মাধ্যমে ছবির মধ্যে টেক্সট অনুবাদ করুন</translation>
 <translation id="3320271870899888245">OneDrive-এ কানেক্ট করা যাচ্ছে না। আবার চেষ্টা করুন।</translation>
@@ -4443,6 +4447,7 @@
 <translation id="4364830672918311045">বিজ্ঞপ্তিগুলি প্রদর্শন করুন</translation>
 <translation id="4367513928820380646">সরিয়ে দেওয়া অনুমতি পর্যালোচনা করুন</translation>
 <translation id="4367971618859387374">যে নাম দেখানো হবে</translation>
+<translation id="4368960422722232719">ট্যাবের উপরে কার্সর নিয়ে যাওয়ার সময় প্রিভিউ দেখার কার্ডে মেমরির ব্যবহার দেখুন</translation>
 <translation id="4369215744064167350">ওয়েবসাইট অ্যাক্সেস করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4369233657762989723">ডিকটেশন চালু/বন্ধ করা আছে</translation>
 <translation id="436926121798828366">যেকোনও সময় <ph name="SETTINGS_LINK" /> থেকে আপনি এটি পরিবর্তন করতে পারবেন</translation>
@@ -5364,6 +5369,7 @@
 <translation id="5093569275467863761">ব্যাক-ফরোয়ার্ড ক্যাশেতে স্টোর করা ছদ্মবেশী সাবফ্রেম: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Files অ্যাপ বা অন্য অ্যাপ থেকে এই অ্যাপে কাজ করে এমন ফাইল খুলতে ও এডিট করতে পারবেন। ডিফল্ট হিসেবে কোন কোন ফাইল এই অ্যাপে খোলে তা নিয়ন্ত্রণ করতে, <ph name="BEGIN_LINK" />আপনার ডিভাইসে কীভাবে ডিফল্ট হিসেবে অ্যাপ সেট করবেন তা জানুন<ph name="END_LINK" />।</translation>
 <translation id="5094721898978802975">সহযোগী ন্যাটিভ অ্যাপ্লিকেশানগুলির সাথে যোগাযোগ করুন</translation>
+<translation id="5095252080770652994">প্রোগ্রেস</translation>
 <translation id="5095507226704905004">ফাইলটি কপি করা যাচ্ছে না কারণ এর আর অস্তিত্ব নেই</translation>
 <translation id="5095848221827496531">বাদ দিন</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />': <ph name="DETAILS" /> নেটওয়ার্কে সংযোগ করা গেল না </translation>
@@ -5515,6 +5521,7 @@
 <translation id="5213891612754844763">প্রক্সি সেটিংস দেখুন</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' বুকমার্ক তৈরি করা হয়েছে।</translation>
 <translation id="5215502535566372932">দেশ বেছে নিন</translation>
+<translation id="5215665166431745539">ছবি দেখুন</translation>
 <translation id="5220011581825921581">search + up arrow</translation>
 <translation id="5222403284441421673">ডাউনলোড হওয়া অসুরক্ষিত ফাইল ব্লক করা হয়েছে</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>

@@ -170,6 +170,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">motyle</translation>
 <translation id="188114911237521550">Wyłącz tryb ciemny</translation>
+<translation id="188268299367474594">Wybierz spośród dostępnych punktów APN</translation>
 <translation id="1885577615937958993">przewiń do przodu</translation>
 <translation id="1887850431809612466">Wersja sprzętu</translation>
 <translation id="189221451253258459">neonowa zieleń</translation>
@@ -272,6 +273,7 @@
 <translation id="2512979179176933762">pokaż okna</translation>
 <translation id="2513396635448525189">Obraz użytkownika</translation>
 <translation id="2517472476991765520">Skanuj</translation>
+<translation id="2520213071283358374">Używaj tego punktu APN</translation>
 <translation id="2521835766824839541">poprzedni utwór</translation>
 <translation id="2526590354069164005">Pulpit</translation>
 <translation id="253029298928638905">Uruchamiam ponownie…</translation>
@@ -991,6 +993,7 @@
 <translation id="7177485034254901881">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />. Administratorzy mogą je zdalnie konfigurować.</translation>
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7180865173735832675">Dostosuj</translation>
+<translation id="7182063559013288142">Błyskawiczny hotspot</translation>
 <translation id="7184043045742675738">Aby dostosować przycisk, kliknij dowolny klawisz. Zmień położenie klawisza przy użyciu myszy lub klawiszy strzałek.</translation>
 <translation id="7206979415662233817">Warunki korzystania z usługi</translation>
 <translation id="7210635925306941239">błękitny</translation>
@@ -1132,6 +1135,7 @@
 <translation id="8075838845814659848">Stan naładowania</translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8079860070590459552">pola kwiatów</translation>
+<translation id="8081553043098820199">Nieprawidłowe punkty APN mogą spowodować wyłączenie połączenia mobilnego. Skonfiguruj tylko te punkty APN, które udostępnia operator komórkowy lub administrator.</translation>
 <translation id="8082366717211101304">Nie udało się znaleźć DNS w aplikacjach na Androida</translation>
 <translation id="8082644724189923105">strefa klawiatury</translation>
 <translation id="808894953321890993">Zmień hasło</translation>
