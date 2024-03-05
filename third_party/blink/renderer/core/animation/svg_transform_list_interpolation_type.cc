@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/animation/non_interpolable_value.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/svg_interpolation_environment.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/svg/svg_transform.h"
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -67,10 +68,15 @@ InterpolableValue* TranslateToInterpolableValue(SVGTransform* transform) {
 SVGTransform* TranslateFromInterpolableValue(const InterpolableValue& value) {
   const auto& list = To<InterpolableList>(value);
 
+  // Note: using default CSSToLengthConversionData here as it's
+  // guaranteed to be a double.
+  // TODO(crbug.com/325821290): Avoid InterpolableNumber in this file.
+  CSSToLengthConversionData length_resolver;
   auto* transform =
       MakeGarbageCollected<SVGTransform>(SVGTransformType::kTranslate);
-  transform->SetTranslate(To<InterpolableNumber>(list.Get(0))->Value(),
-                          To<InterpolableNumber>(list.Get(1))->Value());
+  transform->SetTranslate(
+      To<InterpolableNumber>(list.Get(0))->Value(length_resolver),
+      To<InterpolableNumber>(list.Get(1))->Value(length_resolver));
   return transform;
 }
 
@@ -85,10 +91,12 @@ InterpolableValue* ScaleToInterpolableValue(SVGTransform* transform) {
 SVGTransform* ScaleFromInterpolableValue(const InterpolableValue& value) {
   const auto& list = To<InterpolableList>(value);
 
+  CSSToLengthConversionData length_resolver;
   auto* transform =
       MakeGarbageCollected<SVGTransform>(SVGTransformType::kScale);
-  transform->SetScale(To<InterpolableNumber>(list.Get(0))->Value(),
-                      To<InterpolableNumber>(list.Get(1))->Value());
+  transform->SetScale(
+      To<InterpolableNumber>(list.Get(0))->Value(length_resolver),
+      To<InterpolableNumber>(list.Get(1))->Value(length_resolver));
   return transform;
 }
 
@@ -104,11 +112,13 @@ InterpolableValue* RotateToInterpolableValue(SVGTransform* transform) {
 SVGTransform* RotateFromInterpolableValue(const InterpolableValue& value) {
   const auto& list = To<InterpolableList>(value);
 
+  CSSToLengthConversionData length_resolver;
   auto* transform =
       MakeGarbageCollected<SVGTransform>(SVGTransformType::kRotate);
-  transform->SetRotate(To<InterpolableNumber>(list.Get(0))->Value(),
-                       To<InterpolableNumber>(list.Get(1))->Value(),
-                       To<InterpolableNumber>(list.Get(2))->Value());
+  transform->SetRotate(
+      To<InterpolableNumber>(list.Get(0))->Value(length_resolver),
+      To<InterpolableNumber>(list.Get(1))->Value(length_resolver),
+      To<InterpolableNumber>(list.Get(2))->Value(length_resolver));
   return transform;
 }
 
@@ -119,7 +129,8 @@ InterpolableValue* SkewXToInterpolableValue(SVGTransform* transform) {
 SVGTransform* SkewXFromInterpolableValue(const InterpolableValue& value) {
   auto* transform =
       MakeGarbageCollected<SVGTransform>(SVGTransformType::kSkewx);
-  transform->SetSkewX(To<InterpolableNumber>(value).Value());
+  transform->SetSkewX(
+      To<InterpolableNumber>(value).Value(CSSToLengthConversionData()));
   return transform;
 }
 
@@ -130,7 +141,8 @@ InterpolableValue* SkewYToInterpolableValue(SVGTransform* transform) {
 SVGTransform* SkewYFromInterpolableValue(const InterpolableValue& value) {
   auto* transform =
       MakeGarbageCollected<SVGTransform>(SVGTransformType::kSkewy);
-  transform->SetSkewY(To<InterpolableNumber>(value).Value());
+  transform->SetSkewY(
+      To<InterpolableNumber>(value).Value(CSSToLengthConversionData()));
   return transform;
 }
 
