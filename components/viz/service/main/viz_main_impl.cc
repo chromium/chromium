@@ -29,9 +29,8 @@
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "skia/ext/legacy_display_globals.h"
 
-#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
-#include "third_party/dawn/include/dawn/dawn_proc.h"          // nogncheck
-#include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif
 
 namespace {
@@ -102,18 +101,22 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
         dependencies_.ukm_recorder->GetWeakPtr());
   }
 
-#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
-  // Setup the global procs table for GPU process.
-  dawnProcSetProcs(&dawn::native::GetProcs());
-#endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+  GpuServiceImpl::InitParams init_params;
+  init_params.watchdog_thread = gpu_init_->TakeWatchdogThread();
+  init_params.io_runner = io_task_runner();
+  init_params.vulkan_implementation = gpu_init_->vulkan_implementation();
+#if BUILDFLAG(SKIA_USE_DAWN)
+  init_params.dawn_context_provider = gpu_init_->TakeDawnContextProvider();
+#endif
+  init_params.exit_callback =
+      base::BindOnce(&VizMainImpl::ExitProcess, base::Unretained(this));
 
+  init_params.vulkan_implementation = gpu_init_->vulkan_implementation();
   gpu_service_ = std::make_unique<GpuServiceImpl>(
-      gpu_init_->gpu_info(), gpu_init_->TakeWatchdogThread(), io_task_runner(),
-      gpu_init_->gpu_feature_info(), gpu_init_->gpu_preferences(),
-      gpu_init_->gpu_info_for_hardware_gpu(),
+      gpu_init_->gpu_preferences(), gpu_init_->gpu_info(),
+      gpu_init_->gpu_feature_info(), gpu_init_->gpu_info_for_hardware_gpu(),
       gpu_init_->gpu_feature_info_for_hardware_gpu(),
-      gpu_init_->gpu_extra_info(), gpu_init_->vulkan_implementation(),
-      base::BindOnce(&VizMainImpl::ExitProcess, base::Unretained(this)));
+      gpu_init_->gpu_extra_info(), std::move(init_params));
 
   {
     // Gather the thread IDs of display GPU, and IO for performance hint.

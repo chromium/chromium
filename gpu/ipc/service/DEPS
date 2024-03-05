@@ -8,6 +8,8 @@ include_rules = [
   "+components/viz/common/resources/shared_image_format.h",
   "+components/viz/common/resources/shared_image_format_utils.h",
   "+mojo/public",
+  "+skia/buildflags.h",
+  "+third_party/dawn/include",
   "+third_party/skia",
   "+ui/accelerated_widget_mac",
   "+ui/base",

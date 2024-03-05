@@ -30,8 +30,11 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/config/gpu_driver_bug_list.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_feature_type.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_info_collector.h"
+#include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/config/gpu_switching.h"
 #include "gpu/config/gpu_util.h"
@@ -78,6 +81,15 @@
 #include "ui/gl/gl_fence_egl.h"
 #endif
 
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+#include "third_party/dawn/include/dawn/dawn_proc.h"          // nogncheck
+#include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#endif
+
 namespace gpu {
 
 namespace {
@@ -88,6 +100,13 @@ bool CollectGraphicsInfo(GPUInfo* gpu_info) {
   if (!success)
     LOG(ERROR) << "CollectGraphicsInfo failed.";
   return success;
+}
+
+void InitializeDawnProcs() {
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+  // Setup the global procs table for GPU process.
+  dawnProcSetProcs(&dawn::native::GetProcs());
+#endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
 }
 
 void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
@@ -193,6 +212,22 @@ void DisableInProcessGpuVulkan(GpuFeatureInfo* gpu_feature_info,
     gpu_preferences->gr_context_type = GrContextType::kGL;
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// TODO(https://crbug.com/324468229): We currently do not handle Dawn device
+// lost with in-process-gpu.
+void DisableInProcessGpuGraphite(GpuFeatureInfo& gpu_feature_info,
+                                 GpuPreferences& gpu_preferences) {
+  if (gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+          kGpuFeatureStatusEnabled ||
+      gpu_preferences.gr_context_type == GrContextType::kGraphiteDawn) {
+    LOG(ERROR) << "Graphite not supported with in process gpu";
+    gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
+        kGpuFeatureStatusDisabled;
+    gpu_preferences.gr_context_type = GrContextType::kGL;
+  }
+}
+#endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
 bool MatchGLInfo(const std::string& field, const std::string& patterns) {
@@ -818,6 +853,17 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   }
   UMA_HISTOGRAM_BOOLEAN("GPU.Sandboxed", gpu_info_.sandboxed);
 
+  InitializeDawnProcs();
+
+  if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn) {
+    // TODO(crbug.com/325000752): Check if GPU_FEATURE_TYPE_SKIA_GRAPHITE is
+    // blocklisted and fail GPU process initialization if so.
+    if (!InitializeDawn()) {
+      // Fail initialization and restart the GPU process.
+      return false;
+    }
+  }
+
   init_successful_ = true;
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
@@ -870,12 +916,14 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
     CHECK(result);
   } else {
     DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);
+    DisableInProcessGpuGraphite(gpu_feature_info_, gpu_preferences_);
   }
 
   default_offscreen_surface_ =
       gl::init::CreateOffscreenGLSurface(gl_display, gfx::Size());
 
   UMA_HISTOGRAM_ENUMERATION("GPU.GLImplementation", gl::GetGLImplementation());
+  InitializeDawnProcs();
 }
 #else
 void GpuInit::InitializeInProcess(base::CommandLine* command_line,
@@ -1032,6 +1080,13 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);
 
   UMA_HISTOGRAM_ENUMERATION("GPU.GLImplementation", gl::GetGLImplementation());
+
+  InitializeDawnProcs();
+  if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn) {
+    // For non-Android platforms in-process GPU is only used in tests. Just
+    // crash if it doesn't work to expose the test failures early.
+    CHECK(InitializeDawn());
+  }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1050,6 +1105,21 @@ void GpuInit::AdjustInfoToSwiftShader() {
 
 scoped_refptr<gl::GLSurface> GpuInit::TakeDefaultOffscreenSurface() {
   return std::move(default_offscreen_surface_);
+}
+
+bool GpuInit::InitializeDawn() {
+#if BUILDFLAG(SKIA_USE_DAWN)
+  dawn_context_provider_ = gpu::DawnContextProvider::Create(
+      gpu_preferences_,
+      GpuDriverBugWorkarounds(
+          gpu_feature_info_.enabled_gpu_driver_bug_workarounds));
+  if (dawn_context_provider_) {
+    return true;
+  }
+#endif
+
+  LOG(ERROR) << "Failed to create Dawn context provider for Graphite";
+  return false;
 }
 
 bool GpuInit::InitializeVulkan() {

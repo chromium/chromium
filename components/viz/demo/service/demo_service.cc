@@ -54,13 +54,18 @@ DemoService::DemoService(
     pref.texture_target_exception_list =
         gpu::CreateBufferUsageAndFormatExceptionList();
 
+    viz::GpuServiceImpl::InitParams init_params;
+    init_params.watchdog_thread = gpu_init_->TakeWatchdogThread();
+    init_params.io_runner = io_thread_->task_runner();
+    init_params.vulkan_implementation = gpu_init_->vulkan_implementation();
+    init_params.exit_callback =
+        base::BindOnce(&DemoService::ExitProcess, base::Unretained(this));
+
     gpu_service_ = std::make_unique<viz::GpuServiceImpl>(
-        gpu_init_->gpu_info(), gpu_init_->TakeWatchdogThread(),
-        io_thread_->task_runner(), gpu_init_->gpu_feature_info(), pref,
-        gpu_init_->gpu_info_for_hardware_gpu(),
+        gpu_init_->gpu_preferences(), gpu_init_->gpu_info(),
+        gpu_init_->gpu_feature_info(), gpu_init_->gpu_info_for_hardware_gpu(),
         gpu_init_->gpu_feature_info_for_hardware_gpu(),
-        gpu_init_->gpu_extra_info(), gpu_init_->vulkan_implementation(),
-        base::BindOnce(&DemoService::ExitProcess, base::Unretained(this)));
+        gpu_init_->gpu_extra_info(), std::move(init_params));
 
     mojo::PendingRemote<viz::mojom::GpuHost> gpu_host_proxy;
     std::ignore = gpu_host_proxy.InitWithNewPipeAndPassReceiver();

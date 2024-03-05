@@ -57,6 +57,7 @@ specific_include_rules = {
   ],
 
   "test_gpu_service_holder\.cc": [
+    "+gpu/command_buffer/service/dawn_context_provider.h",
     "+gpu/command_buffer/service/scheduler_sequence.h",
     "+gpu/command_buffer/service/service_utils.h",
     "+gpu/config",

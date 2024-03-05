@@ -320,31 +320,28 @@ bool WillGetGmbConfigFromGpu() {
 }  // namespace
 
 GpuServiceImpl::GpuServiceImpl(
-    const gpu::GPUInfo& gpu_info,
-    std::unique_ptr<gpu::GpuWatchdogThread> watchdog_thread,
-    scoped_refptr<base::SingleThreadTaskRunner> io_runner,
-    const gpu::GpuFeatureInfo& gpu_feature_info,
     const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GPUInfo& gpu_info,
+    const gpu::GpuFeatureInfo& gpu_feature_info,
     const std::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
     const std::optional<gpu::GpuFeatureInfo>& gpu_feature_info_for_hardware_gpu,
     const gfx::GpuExtraInfo& gpu_extra_info,
-    gpu::VulkanImplementation* vulkan_implementation,
-    base::OnceCallback<void(ExitCode)> exit_callback)
+    InitParams init_params)
     : main_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      io_runner_(std::move(io_runner)),
-      watchdog_thread_(std::move(watchdog_thread)),
+      io_runner_(std::move(init_params.io_runner)),
+      watchdog_thread_(std::move(init_params.watchdog_thread)),
       gpu_preferences_(gpu_preferences),
       gpu_info_(gpu_info),
       gpu_feature_info_(gpu_feature_info),
       gpu_driver_bug_workarounds_(
-          gpu_feature_info.enabled_gpu_driver_bug_workarounds),
+          gpu_feature_info_.enabled_gpu_driver_bug_workarounds),
       gpu_info_for_hardware_gpu_(gpu_info_for_hardware_gpu),
       gpu_feature_info_for_hardware_gpu_(gpu_feature_info_for_hardware_gpu),
       gpu_extra_info_(gpu_extra_info),
 #if BUILDFLAG(ENABLE_VULKAN)
-      vulkan_implementation_(vulkan_implementation),
+      vulkan_implementation_(init_params.vulkan_implementation),
 #endif
-      exit_callback_(std::move(exit_callback)) {
+      exit_callback_(std::move(init_params.exit_callback)) {
   DCHECK(!io_runner_->BelongsToCurrentThread());
   DCHECK(exit_callback_);
 
@@ -371,7 +368,7 @@ GpuServiceImpl::GpuServiceImpl(
     vulkan_context_provider_ = VulkanInProcessContextProvider::Create(
         vulkan_implementation_, gpu_preferences_.vulkan_heap_memory_limit,
         gpu_preferences_.vulkan_sync_cpu_memory_limit, is_thread_safe,
-        (is_native_vulkan && is_native_gl) ? &gpu_info : nullptr);
+        (is_native_vulkan && is_native_gl) ? &gpu_info_ : nullptr);
     if (!vulkan_context_provider_) {
       DLOG(ERROR) << "Failed to create Vulkan context provider.";
     }
@@ -385,8 +382,8 @@ GpuServiceImpl::GpuServiceImpl(
 
   if (gpu_preferences_.gr_context_type == gpu::GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
-    dawn_context_provider_ = gpu::DawnContextProvider::Create(
-        gpu_preferences, gpu_driver_bug_workarounds_);
+    dawn_context_provider_ = std::move(init_params.dawn_context_provider);
+
     if (dawn_context_provider_) {
       // GpuServiceImpl holds the instance of DawnContextProvider, so it
       // outlives the DawnContextProvider.
@@ -400,8 +397,6 @@ GpuServiceImpl::GpuServiceImpl(
       auto caching_interface = dawn_caching_interface_factory_->CreateInstance(
           gpu::kGraphiteDawnGpuDiskCacheHandle, std::move(cache_blob_callback));
       dawn_context_provider_->SetCachingInterface(std::move(caching_interface));
-    } else {
-      DLOG(ERROR) << "Failed to create Dawn context provider for Graphite.";
     }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
   } else if (gpu_preferences_.gr_context_type ==
@@ -1756,5 +1751,11 @@ void GpuServiceImpl::SetHostProcessId(base::ProcessId pid) {
   host_process_id_ = pid;
 }
 #endif
+
+GpuServiceImpl::InitParams::InitParams() = default;
+GpuServiceImpl::InitParams::InitParams(InitParams&& other) = default;
+GpuServiceImpl::InitParams& GpuServiceImpl::InitParams::operator=(
+    InitParams&& other) = default;
+GpuServiceImpl::InitParams::~InitParams() = default;
 
 }  // namespace viz
