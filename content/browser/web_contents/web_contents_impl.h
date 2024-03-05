@@ -2348,13 +2348,14 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // manifest. This is in frame space coordinates.
   gfx::Rect window_controls_overlay_rect_;
 
-  // Observe native theme for changes to dark mode, preferred color scheme, and
-  // preferred contrast. Used to notify the renderer of preferred color scheme
-  // and preferred contrast changes.
+  // Observe native theme for changes to dark mode, forced_colors, preferred
+  // color scheme, and preferred contrast. Used to notify the renderer of
+  // preferred color scheme and preferred contrast changes.
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
 
   bool using_dark_colors_ = false;
+  bool in_forced_colors_ = false;
   ui::NativeTheme::PreferredColorScheme preferred_color_scheme_ =
       ui::NativeTheme::PreferredColorScheme::kLight;
   ui::NativeTheme::PreferredContrast preferred_contrast_ =

@@ -753,6 +753,10 @@ void WebSettingsImpl::SetForceDarkModeEnabled(bool enabled) {
   settings_->SetForceDarkModeEnabled(enabled);
 }
 
+void WebSettingsImpl::SetInForcedColors(bool in_forced_colors) {
+  settings_->SetInForcedColors(in_forced_colors);
+}
+
 void WebSettingsImpl::SetPreferredColorScheme(
     mojom::blink::PreferredColorScheme color_scheme) {
   settings_->SetPreferredColorScheme(color_scheme);

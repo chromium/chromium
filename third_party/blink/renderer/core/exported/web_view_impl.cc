@@ -1791,6 +1791,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
                                        ::features::UseSurfaceLayerForVideo());
 
   settings->SetLazyLoadEnabled(prefs.lazy_load_enabled);
+  settings->SetInForcedColors(prefs.in_forced_colors);
   settings->SetPreferredColorScheme(prefs.preferred_color_scheme);
   settings->SetPreferredContrast(prefs.preferred_contrast);
 

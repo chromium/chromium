@@ -709,6 +709,10 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.require_transient_activation_for_html_fullscreen;
   }
 
+  static bool in_forced_colors(const blink::web_pref::WebPreferences& r) {
+    return r.in_forced_colors;
+  }
+
   static blink::mojom::PreferredColorScheme preferred_color_scheme(
       const blink::web_pref::WebPreferences& r) {
     return r.preferred_color_scheme;

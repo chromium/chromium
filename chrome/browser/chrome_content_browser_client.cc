@@ -4196,6 +4196,8 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       break;
   }
 
+  web_prefs->in_forced_colors = GetWebTheme()->InForcedColorsMode();
+
   UpdatePreferredColorScheme(
       web_prefs,
       web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL(),
@@ -4296,6 +4298,8 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
     prefs_changed |=
         parts->OverrideWebPreferencesAfterNavigation(web_contents, web_prefs);
   }
+
+  prefs_changed |= GetWebTheme()->InForcedColorsMode();
 
   prefs_changed |=
       UpdatePreferredColorScheme(web_prefs, web_contents->GetLastCommittedURL(),

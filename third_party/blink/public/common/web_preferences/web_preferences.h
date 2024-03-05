@@ -350,6 +350,11 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // `SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins` policy.
   bool subapps_apis_require_user_gesture_and_authorization = true;
 
+  // The forced colors state for the web content. The forced colors state
+  // is used to evaluate the forced-colors media query, as well as determining
+  // when to apply system color overrides to author specified styles.
+  bool in_forced_colors = false;
+
   // The preferred color scheme for the web content. The scheme is used to
   // evaluate the prefers-color-scheme media query and resolve UA color scheme
   // to be used based on the supported-color-schemes META tag and CSS property.

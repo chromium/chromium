@@ -1082,6 +1082,16 @@
       type: "int",
     },
 
+    // The forced colors state for the web content. The forced colors state
+    // is used to evaluate the forced-colors media query, as well as determining
+    // when to apply system color overrides to author specified styles.
+    {
+      name: "inForcedColors",
+      initial: false,
+      invalidate: ["ColorScheme"],
+      type: "bool",
+    },
+
     // Preferred color scheme from the OS/application passed to the renderer for
     // evaluating the prefers-color-scheme media query.
     {

@@ -1168,6 +1168,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
   native_theme_observation_.Observe(native_theme);
   using_dark_colors_ = native_theme->ShouldUseDarkColors();
+  in_forced_colors_ = native_theme->InForcedColorsMode();
   preferred_color_scheme_ = native_theme->GetPreferredColorScheme();
   preferred_contrast_ = native_theme->GetPreferredContrast();
   prefers_reduced_transparency_ = native_theme->GetPrefersReducedTransparency();
@@ -10156,6 +10157,7 @@ void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   DCHECK(native_theme_observation_.IsObservingSource(observed_theme));
 
   bool using_dark_colors = observed_theme->ShouldUseDarkColors();
+  bool in_forced_colors = observed_theme->InForcedColorsMode();
   ui::NativeTheme::PreferredColorScheme preferred_color_scheme =
       observed_theme->GetPreferredColorScheme();
   ui::NativeTheme::PreferredContrast preferred_contrast =
@@ -10167,6 +10169,10 @@ void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 
   if (using_dark_colors_ != using_dark_colors) {
     using_dark_colors_ = using_dark_colors;
+    preferences_changed = true;
+  }
+  if (in_forced_colors_ != in_forced_colors) {
+    in_forced_colors_ = in_forced_colors;
     preferences_changed = true;
   }
   if (preferred_color_scheme_ != preferred_color_scheme) {
