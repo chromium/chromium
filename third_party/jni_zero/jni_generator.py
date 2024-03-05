@@ -8,6 +8,7 @@ import collections
 import dataclasses
 import hashlib
 import os
+import pickle
 import re
 import shutil
 from string import Template
@@ -1195,14 +1196,6 @@ def _WriteHeaders(jni_objs, output_names, output_dir):
       f.write(content)
 
 
-def _ParseSourceFiles(args):
-  jni_objs = []
-  for f in args.input_files:
-    parsed_file = parse.parse_java_file(f, package_prefix=args.package_prefix)
-    jni_objs.append(JNIFromJavaSource(parsed_file, args))
-  return jni_objs
-
-
 def GenerateFromSource(parser, args):
   # Remove existing headers so that moving .java source files but not updating
   # the corresponding C++ include will be a compile failure (otherwise
@@ -1210,7 +1203,11 @@ def GenerateFromSource(parser, args):
   _RemoveStaleHeaders(args.output_dir, args.output_names)
 
   try:
-    jni_objs = _ParseSourceFiles(args)
+    parsed_files = [
+        parse.parse_java_file(f, package_prefix=args.package_prefix)
+        for f in args.input_files
+    ]
+    jni_objs = [JNIFromJavaSource(x, args) for x in parsed_files]
     _CheckNotEmpty(jni_objs)
     _CheckSameModule(jni_objs)
   except parse.ParseError as e:
@@ -1237,6 +1234,9 @@ def GenerateFromSource(parser, args):
     else:
       # Only @CalledByNatives.
       zipfile.ZipFile(args.srcjar_path, 'w').close()
+  if args.jni_pickle:
+    with common.atomic_output(args.jni_pickle, 'wb') as f:
+      pickle.dump(parsed_files, f)
 
   if args.placeholder_srcjar_path:
     if jni_objs_with_proxy_natives:

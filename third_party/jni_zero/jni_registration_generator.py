@@ -5,9 +5,11 @@
 
 import collections
 import functools
+import itertools
 import multiprocessing
 import os
 import pathlib
+import pickle
 import posixpath
 import re
 import string
@@ -36,6 +38,45 @@ MERGEABLE_KEYS = [
 ]
 
 
+def _ParseHelper(package_prefix, path):
+  return parse.parse_java_file(path, package_prefix=package_prefix)
+
+
+def _LoadJniObjs(paths, options):
+  ret = {}
+  if all(p.endswith('.jni.pickle') for p in paths):
+    for pickle_path in paths:
+      with open(pickle_path, 'rb') as f:
+        parsed_files = pickle.load(f)
+      ret[pickle_path] = [
+          jni_generator.JNIFromJavaSource(pf, options) for pf in parsed_files
+      ]
+  else:
+    func = functools.partial(_ParseHelper, options.package_prefix)
+    with multiprocessing.Pool() as pool:
+      for pf in pool.imap_unordered(func, paths):
+        ret[pf.filename] = [jni_generator.JNIFromJavaSource(pf, options)]
+
+  return ret
+
+
+def _FilterJniObjs(jni_objs_by_path, options):
+  for jni_objs in jni_objs_by_path.values():
+    # Remove test-only methods.
+    if not options.include_test_only:
+      for jni_obj in jni_objs:
+        jni_obj.RemoveTestOnlyNatives()
+    # Ignoring non-active modules and empty natives lists.
+    jni_objs[:] = [
+        o for o in jni_objs
+        if o.natives and o.module_name == options.module_name
+    ]
+
+
+def _Flatten(jni_objs_by_path, paths):
+  return itertools.chain(*(jni_objs_by_path[p] for p in paths))
+
+
 def _Generate(options, native_sources, java_sources):
   """Generates files required to perform JNI registration.
 
@@ -47,35 +88,27 @@ def _Generate(options, native_sources, java_sources):
 
   Args:
     options: arguments from the command line
-    native_sources: A list of java file paths. The source of truth.
-    java_sources: A list of java file paths. Used to assert against
-      native_sources.
+    native_sources: A list of .jni.pickle or .java file paths taken from native
+        dependency tree. The source of truth.
+    java_sources: A list of .jni.pickle or .java file paths. Used to assert
+        against native_sources.
   """
-  # Without multiprocessing, script takes ~13 seconds for chrome_public_apk
-  # on a z620. With multiprocessing, takes ~2 seconds.
-  results = []
-  cached_results_for_stubs = {}
-  with multiprocessing.Pool() as pool:
-    # The native-based sources are the "source of truth" - the Java based ones
-    # will be used later to generate stubs and make assertions.
-    for result in pool.imap_unordered(functools.partial(_DictForPath, options),
-                                      native_sources):
-      d, path, jni_obj = result
-      if d:
-        results.append(d)
-      cached_results_for_stubs[path] = jni_obj
+  # The native-based sources are the "source of truth" - the Java based ones
+  # will be used later to generate stubs and make assertions.
+  jni_objs_by_path = _LoadJniObjs(set(native_sources + java_sources), options)
+  _FilterJniObjs(jni_objs_by_path, options)
 
-  native_sources_set = {d['FILE_PATH'] for d in results}
-  java_sources_set = set(java_sources)
-  stub_dicts = _GenerateStubsAndAssert(options, native_sources_set,
-                                       java_sources_set,
-                                       cached_results_for_stubs)
+  dicts = []
+  for jni_obj in _Flatten(jni_objs_by_path, native_sources):
+    dicts.append(DictionaryGenerator(jni_obj, options).Generate())
   # Sort to make output deterministic.
-  results.sort(key=lambda d: d['FULL_CLASS_NAME'])
+  dicts.sort(key=lambda d: d['FULL_CLASS_NAME'])
 
+  stubs = _GenerateStubsAndAssert(options, jni_objs_by_path, native_sources,
+                                  java_sources)
   combined_dict = {}
   for key in MERGEABLE_KEYS:
-    combined_dict[key] = ''.join(d.get(key, '') for d in results)
+    combined_dict[key] = ''.join(d.get(key, '') for d in dicts)
 
   short_gen_jni_class = proxy.get_gen_jni_class(
       short=True,
@@ -100,7 +133,7 @@ def _Generate(options, native_sources, java_sources):
     combined_dict['PROXY_NATIVE_METHOD_ARRAY'] = '},\n'.join(
         p for p in proxy_native_array_list if p != '') + '}'
     signature_to_cases = collections.defaultdict(list)
-    for d in results:
+    for d in dicts:
       for signature, cases in d['SIGNATURE_TO_CASES'].items():
         signature_to_cases[signature].extend(cases)
     combined_dict[
@@ -119,7 +152,7 @@ def _Generate(options, native_sources, java_sources):
     with common.atomic_output(options.header_path, mode='w') as f:
       f.write(header_content)
 
-  stub_methods_string = ''.join(d['STUBS'] for d in stub_dicts)
+  stub_methods_string = ''.join(stubs)
 
   with common.atomic_output(options.srcjar_path) as f:
     with zipfile.ZipFile(f, 'w') as srcjar:
@@ -154,73 +187,48 @@ def _Generate(options, native_sources, java_sources):
                                          stub_methods=stub_methods_string))
 
 
-def _GenerateStubsAndAssert(options, native_sources_set, java_sources_set,
-                            cached_results_for_stubs):
+def _GenerateStubsAndAssert(options, jni_objs_by_path, native_sources,
+                            java_sources):
+  native_sources_set = set(native_sources)
+  java_sources_set = set(java_sources)
   native_only = native_sources_set - java_sources_set
   java_only = java_sources_set - native_sources_set
-  # Using stub_only because we just need this to do a boolean check to see if
-  # the files have JNI - we don't need any actual output.
-  dict_by_path = {
-      f: _DictForPath(options,
-                      f,
-                      stub_only=True,
-                      cached_results_for_stubs=cached_results_for_stubs)[0]
-      for f in java_only
-  }
-  dict_by_path = {k: v for k, v in sorted(dict_by_path.items()) if v}
+
+  java_only_jni_objs = sorted(_Flatten(jni_objs_by_path, java_only),
+                              key=lambda jni_obj: jni_obj.filename)
+  native_only_jni_objs = sorted(_Flatten(jni_objs_by_path, native_only),
+                                key=lambda jni_obj: jni_obj.filename)
   failed = False
-  if not options.add_stubs_for_missing_native and dict_by_path:
+  if not options.add_stubs_for_missing_native and java_only_jni_objs:
     failed = True
     warning_message = '''Failed JNI assertion!
 We reference Java files which use JNI, but our native library does not depend on
 the corresponding generate_jni().
-To bypass this check, you can add stubs to Java with add_stubs_for_missing_jni.
-Excess Java files below:
+To bypass this check, add stubs to Java with --add-stubs-for-missing-jni.
+Excess Java files:
 '''
     sys.stderr.write(warning_message)
-    sys.stderr.write(', '.join(dict_by_path))
+    sys.stderr.write('\n'.join(jni_obj.filename
+                               for jni_obj in java_only_jni_objs))
     sys.stderr.write('\n')
-  if not options.remove_uncalled_methods and native_only:
+  if not options.remove_uncalled_methods and native_only_jni_objs:
     failed = True
     warning_message = '''Failed JNI assertion!
 Our native library depends on generate_jnis which reference Java files that we
 do not include in our final dex.
-To bypass this check, delete these extra JNI methods with remove_uncalled_jni.
-Unneeded Java files below:
+To bypass this check, delete these extra methods with --remove-uncalled-jni.
+Unneeded Java files:
 '''
     sys.stderr.write(warning_message)
-    sys.stderr.write(str(native_only))
+    sys.stderr.write('\n'.join(native_only_jni_objs.filename
+                               for jni_obj in native_only_jni_objs))
     sys.stderr.write('\n')
   if failed:
     sys.exit(1)
-  return list(dict_by_path.values())
 
-
-def _DictForPath(options, path, stub_only=False, cached_results_for_stubs=None):
-  # The cached results are generated by the real runs, which happen first, so
-  # the cache is only for the stub checks after.
-  assert (cached_results_for_stubs is not None) == stub_only
-  jni_obj = stub_only and cached_results_for_stubs.get(path)
-  if not jni_obj:
-    parsed_file = parse.parse_java_file(path,
-                                        package_prefix=options.package_prefix)
-    jni_obj = jni_generator.JNIFromJavaSource(parsed_file, options)
-    if not options.include_test_only:
-      jni_obj.RemoveTestOnlyNatives()
-
-  if jni_obj.module_name != options.module_name:
-    # Ignoring any code from modules we aren't looking at.
-    return None, path, jni_obj
-
-  if not jni_obj.natives:
-    return None, path, jni_obj
-  if stub_only:
-    return {'STUBS': _GenerateStubs(jni_obj.proxy_natives)}, path, jni_obj
-
-  # The namespace for the content is separate from the namespace for the
-  # generated header file.
-  dict_generator = DictionaryGenerator(jni_obj, options)
-  return dict_generator.Generate(), path, jni_obj
+  return [
+      _GenerateStubs(jni_obj.proxy_natives) for jni_obj in java_only_jni_objs
+  ]
 
 
 def _GenerateStubs(natives):
