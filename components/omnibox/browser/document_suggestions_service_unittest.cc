@@ -56,7 +56,7 @@ class DocumentSuggestionsServiceTest : public testing::Test {
             shared_url_loader_factory_)) {
     // Set up identity manager.
     identity_test_env_.SetPrimaryAccount("foo@gmail.com",
-                                         signin::ConsentLevel::kSync);
+                                         signin::ConsentLevel::kSignin);
     identity_test_env_.SetRefreshTokenForPrimaryAccount();
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
 

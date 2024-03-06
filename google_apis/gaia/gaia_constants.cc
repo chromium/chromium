@@ -181,6 +181,10 @@ const char kCalendarReadOnlyOAuth2Scope[] =
 const char kPasskeysEnclaveOAuth2Scope[] =
   "https://www.googleapis.com/auth/secureidentity.action";
 
+// OAuth2 scope for Cloud Search query API.
+const char kCloudSearchQueryOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cloud_search.query";
+
 // OAuth 2 scopes for Google Tasks API.
 const char kTasksReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/tasks.readonly";

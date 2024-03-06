@@ -46,6 +46,7 @@ include_rules = [
   "+content/public/common",
   "+extensions/buildflags/buildflags.h",
   "+extensions/common/constants.h",
+  "+google_apis/gaia/gaia_constants.h",
   "+net",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
