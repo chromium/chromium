@@ -46,7 +46,7 @@ div[slot='panel'][selected] {
   column-gap: 1rem;
   display: flex;
   width: 100%;
-  padding-top: 1rem;
+  padding: 1rem 0;
 }
 
 header button {

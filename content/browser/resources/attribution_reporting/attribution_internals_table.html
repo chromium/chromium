@@ -1,11 +1,18 @@
 <style>
+  div, td, th {
+    border-color: var(--border-color);
+    border-style: solid;
+  }
+
   div {
-    border: 1px solid var(--border-color);
+    border-width: 1px;
+    max-height: 100%;
     overflow: auto;
   }
 
   table {
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     /* Per
      * https://limebrains.com/blog/2021-03-02T13:00-heigh-100-inside-table-td
      * this forces the header buttons to expand vertically, making them easier
@@ -18,14 +25,11 @@
   thead, tfoot {
     background: var(--header-background);
     position: sticky;
+    z-index: 1;
   }
 
   thead {
     top: 0;
-  }
-
-  tbody tr, tfoot tr {
-    border-top: 1px solid var(--border-color);
   }
 
   tbody > tr[aria-selected="false"]:hover {
@@ -43,6 +47,18 @@
 
   tfoot th {
     text-align: right;
+  }
+
+  thead th {
+    border-width: 0 0 1px 0;
+  }
+
+  td, tfoot th {
+    border-width: 1px 0 0 0;
+  }
+
+  tbody > tr:first-child > td {
+    border-width: 0;
   }
 
   td, th {
