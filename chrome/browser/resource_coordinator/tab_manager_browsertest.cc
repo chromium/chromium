@@ -929,7 +929,10 @@ void EnsureTabsInBrowser(Browser* browser, int num_tabs) {
 // Creates a browser with |num_tabs| tabs.
 Browser* CreateBrowserWithTabs(int num_tabs) {
   Browser* current_browser = BrowserList::GetInstance()->GetLastActive();
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::NewWindow(current_browser);
+  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
   Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
   EXPECT_NE(new_browser, current_browser);
 
