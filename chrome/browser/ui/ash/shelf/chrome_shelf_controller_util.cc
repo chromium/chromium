@@ -42,6 +42,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
@@ -67,6 +68,9 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   // item that does nothing.
   const char* kNoPinAppIds[] = {
       ash::eche_app::kEcheAppId,
+      // The Mall web app is force pinned to the shelf and cannot be removed.
+      // This app is only installed as part of a Finch experiment.
+      web_app::kMallAppId,
   };
   if (base::Contains(kNoPinAppIds, app_id))
     return AppListControllerDelegate::NO_PIN;

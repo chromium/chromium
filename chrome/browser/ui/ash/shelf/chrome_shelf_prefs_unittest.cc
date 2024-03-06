@@ -18,8 +18,10 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync/model/string_ordinal.h"
@@ -283,4 +285,20 @@ TEST_F(ChromeShelfPrefsTest, ShelfPositionAfterLacrosMigration) {
   // Confirm that the ash-chrome position gets replaced by lacros-chrome.
   EXPECT_TRUE(base::Contains(pinned_apps_strs, app_constants::kLacrosAppId));
   EXPECT_FALSE(base::Contains(pinned_apps_strs, app_constants::kChromeAppId));
+}
+
+TEST_F(ChromeShelfPrefsTest, PinMallBeforeDefaultApps) {
+  std::string second_pin_app_id;
+  {
+    std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
+    second_pin_app_id = pinned_apps_strs[1];
+  }
+  {
+    base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
+
+    std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
+    EXPECT_EQ(pinned_apps_strs[1], web_app::kMallAppId);
+    // Mall should have pushed back any default apps.
+    EXPECT_EQ(pinned_apps_strs[2], second_pin_app_id);
+  }
 }
