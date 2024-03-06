@@ -237,7 +237,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 false,
                 backPressManager,
                 null,
-                /* overviewIncognitoSupplier= */ null,
+                /* overviewColorSupplier= */ null,
                 baseChromeLayout);
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;

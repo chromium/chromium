@@ -112,7 +112,6 @@ import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.hub.DefaultPaneOrderController;
-import org.chromium.chrome.browser.hub.HubColorScheme;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.hub.HubManager;
@@ -270,7 +269,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleConsumer;
 
 /**
@@ -417,6 +415,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             new ObservableSupplierImpl<>();
     private HubProvider mHubProvider;
     private OneshotSupplierImpl<HubManager> mHubManagerSupplier = new OneshotSupplierImpl<>();
+    private Runnable mCleanUpHubOverviewColorObserver;
     private ObservableSupplierImpl<TabModelStartupInfo> mTabModelStartupInfoSupplier;
 
     private CallbackController mCallbackController = new CallbackController();
@@ -933,16 +932,23 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 .onAvailable(manager -> mHubManagerSupplier.set(manager));
     }
 
-    private @Nullable BooleanSupplier getOverviewIncognitoSupplier() {
-        return HubFieldTrial.isHubEnabled() ? this::isHubCurrentlyShowingIncognito : null;
-    }
+    private @Nullable ObservableSupplier<Integer> getHubOverviewColorSupplier() {
+        if (!HubFieldTrial.isHubEnabled()) return null;
 
-    private boolean isHubCurrentlyShowingIncognito() {
-        if (!mHubManagerSupplier.hasValue()) {
-            return false;
-        }
-        Pane pane = mHubManagerSupplier.get().getPaneManager().getFocusedPaneSupplier().get();
-        return pane == null ? false : pane.getColorScheme() == HubColorScheme.INCOGNITO;
+        ObservableSupplierImpl<Integer> overviewIncognitoSupplier = new ObservableSupplierImpl<>();
+        mHubManagerSupplier.onAvailable(
+                (hubManager) -> {
+                    ObservableSupplier<Pane> paneSupplier =
+                            hubManager.getPaneManager().getFocusedPaneSupplier();
+                    Callback<Pane> paneObserver =
+                            pane ->
+                                    overviewIncognitoSupplier.set(
+                                            hubManager.getHubController().getBackgroundColor(pane));
+                    paneSupplier.addObserver(paneObserver);
+                    mCleanUpHubOverviewColorObserver =
+                            () -> paneSupplier.removeObserver(paneObserver);
+                });
+        return overviewIncognitoSupplier;
     }
 
     private Pane createTabSwitcherPane(boolean isIncognito) {
@@ -2219,7 +2225,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mBackPressManager,
                 getSavedInstanceState(),
                 mMultiInstanceManager,
-                getOverviewIncognitoSupplier(),
+                getHubOverviewColorSupplier(),
                 getBaseChromeLayout());
     }
 
@@ -3594,6 +3600,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         if (mHubProvider != null) mHubProvider.destroy();
+
+        if (mCleanUpHubOverviewColorObserver != null) {
+            mCleanUpHubOverviewColorObserver.run();
+            mCleanUpHubOverviewColorObserver = null;
+        }
 
         if (mTabGroupVisualDataManager != null) {
             mTabGroupVisualDataManager.destroy();

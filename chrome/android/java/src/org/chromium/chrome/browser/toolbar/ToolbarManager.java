@@ -190,7 +190,6 @@ import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
 /**
  * Contains logic for managing the toolbar visual component.  This class manages the interactions
@@ -509,8 +508,7 @@ public class ToolbarManager
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
      * @param backPressManager The {@link BackPressManager} handling back press gesture.
-     * @param overviewIncognitoSupplier Incognito supplier specifically for the overview. During
-     *     animations especially this might diverge from the tab model version.
+     * @param overviewColorSupplier Notifies when the overview color changes.
      * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
      *     suggestion list) will position themselves relative to. If null, the content view will be
      *     used.
@@ -562,7 +560,7 @@ public class ToolbarManager
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             boolean initializeWithIncognitoColors,
             @Nullable BackPressManager backPressManager,
-            @Nullable BooleanSupplier overviewIncognitoSupplier,
+            @Nullable ObservableSupplier<Integer> overviewColorSupplier,
             @Nullable View baseChromeLayout) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
@@ -1244,7 +1242,7 @@ public class ToolbarManager
                     }
                 };
 
-        mToolbar.setIncognitoStateProvider(mIncognitoStateProvider, overviewIncognitoSupplier);
+        mToolbar.setIncognitoStateProvider(mIncognitoStateProvider, overviewColorSupplier);
 
         ChromeAccessibilityUtil.get().addObserver(this);
         mLocationBarModel.setShouldShowOmniboxInOverviewMode(mIsStartSurfaceEnabled);

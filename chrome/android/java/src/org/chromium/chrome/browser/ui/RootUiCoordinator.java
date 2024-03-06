@@ -336,7 +336,7 @@ public class RootUiCoordinator
     private @Nullable EdgeToEdgeController mEdgeToEdgeController;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
     private @Nullable BoardingPassController mBoardingPassController;
-    private @Nullable BooleanSupplier mOverviewIncognitoSupplier;
+    private @Nullable ObservableSupplier<Integer> mOverviewColorSupplier;
     private @Nullable View mBaseChromeLayout;
 
     /**
@@ -384,7 +384,7 @@ public class RootUiCoordinator
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
      * @param backPressManager The {@link BackPressManager} handling back press.
      * @param savedInstanceState The saved bundle for the last recorded state.
-     * @param overviewIncognitoSupplier Whether the overview is showing incognito UI.
+     * @param overviewColorSupplier Notifies when the overview color changes.
      * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
      *     suggestion list) will position themselves relative to. If null, the content view will be
      *     used.
@@ -432,7 +432,7 @@ public class RootUiCoordinator
             boolean initializeUiWithIncognitoColors,
             @Nullable BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
-            @Nullable BooleanSupplier overviewIncognitoSupplier,
+            @Nullable ObservableSupplier<Integer> overviewColorSupplier,
             @Nullable View baseChromeLayout) {
         mCallbackController = new CallbackController();
         mActivity = activity;
@@ -568,7 +568,7 @@ public class RootUiCoordinator
                         new Handler());
         mExpandedBottomSheetHelper =
                 new ExpandedSheetHelperImpl(mModalDialogManagerSupplier, getTabObscuringHandler());
-        mOverviewIncognitoSupplier = overviewIncognitoSupplier;
+        mOverviewColorSupplier = overviewColorSupplier;
         mBaseChromeLayout = baseChromeLayout;
     }
 
@@ -1457,7 +1457,7 @@ public class RootUiCoordinator
                             mEphemeralTabCoordinatorSupplier,
                             mInitializeUiWithIncognitoColors,
                             mBackPressManager,
-                            mOverviewIncognitoSupplier,
+                            mOverviewColorSupplier,
                             mBaseChromeLayout);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();

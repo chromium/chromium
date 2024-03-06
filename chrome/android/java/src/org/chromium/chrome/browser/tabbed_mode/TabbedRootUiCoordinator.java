@@ -275,8 +275,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param backPressManager The {@link BackPressManager} handling back press.
      * @param savedInstanceState The saved bundle for the last recorded state.
      * @param multiInstanceManager Manages multi-instance mode.
-     * @param overviewIncognitoSupplier An optional incognito state for the overview. When not set,
-     *     the tab model is used to determine incognito state.
+     * @param overviewColorSupplier Notifies when the overview color changes.
      * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
      *     suggestion list) will position themselves relative to. If null, the content view will be
      *     used.
@@ -330,7 +329,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
             @Nullable MultiInstanceManager multiInstanceManager,
-            @Nullable BooleanSupplier overviewIncognitoSupplier,
+            @Nullable ObservableSupplier<Integer> overviewColorSupplier,
             @Nullable View baseChromeLayout) {
         super(
                 activity,
@@ -375,7 +374,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 initializeUiWithIncognitoColors,
                 backPressManager,
                 savedInstanceState,
-                overviewIncognitoSupplier,
+                overviewColorSupplier,
                 baseChromeLayout);
         mControlContainerHeightResource = controlContainerHeightResource;
         mInsetObserverViewSupplier = insetObserverViewSupplier;
