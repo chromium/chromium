@@ -1475,6 +1475,17 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   ASSERT_TRUE(GetLabel()->GetVisible());
   ASSERT_FALSE(GetDownloadProgressLabel()->GetVisible());
 }
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       AutomaticLanguageDownload) {
+  OnLanguageIdentificationEvent("fr-FR");
+  OnSodaProgress(12);
+
+  EXPECT_TRUE(IsWidgetVisible());
+  ASSERT_TRUE(GetDownloadProgressLabel()->GetVisible());
+  ASSERT_EQ(u"Downloading French language pack\x2026 12%",
+            GetDownloadProgressLabel()->GetText());
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace captions

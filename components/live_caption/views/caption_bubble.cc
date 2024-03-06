@@ -1017,6 +1017,7 @@ void CaptionBubble::SetModel(CaptionBubbleModel* model) {
   if (model_) {
     model_->SetObserver(this);
     back_to_tab_button_->SetVisible(model_->GetContext()->IsActivatable());
+    UpdateLanguageLabelText();
   } else {
     UpdateBubbleVisibility();
   }
@@ -1057,6 +1058,8 @@ void CaptionBubble::OnDownloadProgressTextChanged() {
 
   // Do not display captions while language packs are downloading.
   label_->SetVisible(false);
+
+  UpdateBubbleAndTitleVisibility();
 
   if (GetWidget()->IsVisible()) {
     ResetInactivityTimer();
