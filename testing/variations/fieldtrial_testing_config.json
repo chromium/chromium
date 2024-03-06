@@ -10171,24 +10171,6 @@
             ]
         }
     ],
-    "LegacyTechReportEnableCookieIssueReports": [
-        {
-            "platforms": [
-                "android",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LegacyTechReportEnableCookieIssueReports"
-                    ]
-                }
-            ]
-        }
-    ],
     "LightweightUAFDetector": [
         {
             "platforms": [

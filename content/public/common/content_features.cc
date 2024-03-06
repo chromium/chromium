@@ -542,7 +542,7 @@ BASE_FEATURE(kLazyInitializeMediaControls,
 // Enables reporting of Cookie Issues for Legacy Technology Report.
 BASE_FEATURE(kLegacyTechReportEnableCookieIssueReports,
              "LegacyTechReportEnableCookieIssueReports",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Using top-level document URL when create an enterprise report for legacy
 // technologies usage
