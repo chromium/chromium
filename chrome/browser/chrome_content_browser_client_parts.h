@@ -38,8 +38,6 @@ namespace storage {
 class FileSystemBackend;
 }
 
-class Profile;
-
 // Implements a platform or feature specific part of ChromeContentBrowserClient.
 // All the public methods corresponds to the methods of the same name in
 // content::ContentBrowserClient.
@@ -76,12 +74,10 @@ class ChromeContentBrowserClientParts {
       std::vector<std::unique_ptr<storage::FileSystemBackend>>*
           additional_backends) {}
 
-  // Append extra switches to |command_line| for |process|. If |process| is not
-  // NULL, then neither is |profile|.
+  // Append extra switches to |command_line| for |process|.
   virtual void AppendExtraRendererCommandLineSwitches(
       base::CommandLine* command_line,
-      content::RenderProcessHost* process,
-      Profile* profile) {}
+      content::RenderProcessHost& process) {}
 
   // Allows to register browser interfaces exposed through the
   // RenderProcessHost. Note that interface factory callbacks added to
@@ -104,4 +100,3 @@ class ChromeContentBrowserClientParts {
 };
 
 #endif  // CHROME_BROWSER_CHROME_CONTENT_BROWSER_CLIENT_PARTS_H_
-

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -919,22 +920,16 @@ void ChromeContentBrowserClientExtensionsPart::GetAdditionalFileSystemBackends(
 }
 
 void ChromeContentBrowserClientExtensionsPart::
-    AppendExtraRendererCommandLineSwitches(base::CommandLine* command_line,
-                                           content::RenderProcessHost* process,
-                                           Profile* profile) {
-  if (!process) {
+    AppendExtraRendererCommandLineSwitches(
+        base::CommandLine* command_line,
+        content::RenderProcessHost& process) {
+  if (AreExtensionsDisabledForProfile(process.GetBrowserContext())) {
     return;
   }
 
-  DCHECK(profile);
-  if (AreExtensionsDisabledForProfile(profile)) {
-    return;
-  }
-
-  auto* process_map = ProcessMap::Get(profile);
-  CHECK(process_map);
+  auto& process_map = CHECK_DEREF(ProcessMap::Get(process.GetBrowserContext()));
   std::set<ExtensionId> extensions =
-      process_map->GetExtensionsInProcess(process->GetID());
+      process_map.GetExtensionsInProcess(process.GetID());
   if (!extensions.empty()) {
     command_line->AppendSwitch(switches::kExtensionProcess);
 
