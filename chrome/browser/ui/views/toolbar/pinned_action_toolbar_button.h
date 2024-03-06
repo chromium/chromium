@@ -39,6 +39,10 @@ class PinnedActionToolbarButton : public ToolbarButton,
   void SetIconVisibility(bool is_visible);
   bool NeedsDelayedDestruction() { return needs_delayed_destruction_; }
   void SetIsPinnable(bool is_pinnable) { is_pinnable_ = is_pinnable; }
+  void SetShouldShowEphemerallyInToolbar(bool should_show_in_toolbar) {
+    should_show_in_toolbar_ = should_show_in_toolbar;
+  }
+  bool ShouldShowEphemerallyInToolbar() { return should_show_in_toolbar_; }
   bool IsIconVisible() { return is_icon_visible_; }
   bool IsPinned() { return pinned_; }
 
@@ -73,6 +77,10 @@ class PinnedActionToolbarButton : public ToolbarButton,
   bool needs_delayed_destruction_ = false;
   bool is_pinnable_ = false;
   bool is_icon_visible_ = true;
+  // Set when a button should be shown in the toolbar regardless of whether it
+  // is pinned or active. This is used in cases like when the recent download
+  // button should be visible after a download.
+  bool should_show_in_toolbar_ = false;
   raw_ptr<PinnedToolbarActionsContainer> container_;
 };
 

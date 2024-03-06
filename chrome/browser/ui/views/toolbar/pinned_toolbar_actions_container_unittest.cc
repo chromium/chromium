@@ -578,3 +578,37 @@ TEST_F(PinnedToolbarActionsContainerTest,
   ASSERT_EQ(toolbar_buttons[1]->GetActionId(), actions::kActionCut);
   ASSERT_EQ(toolbar_buttons[2]->GetActionId(), actions::kActionPaste);
 }
+
+TEST_F(PinnedToolbarActionsContainerTest,
+       ActionRemainsInToolbarWhenSetToBeEphemerallyVisible) {
+  actions::ActionItem* browser_action_item =
+      BrowserActions::FromBrowser(browser_view()->browser())
+          ->root_action_item();
+  browser_action_item->AddChild(CreateActionItem(actions::kActionCut));
+
+  // Verify there are no buttons.
+  auto toolbar_buttons = GetChildToolbarButtons();
+  ASSERT_EQ(toolbar_buttons.size(), 0u);
+  // Verify setting as ephemerally visible pops out the button.
+  container()->ShowActionEphemerallyInToolbar(actions::kActionCut, true);
+  CheckIsPoppedOut(actions::kActionCut, true);
+  CheckIsPinned(actions::kActionCut, false);
+  // Verify pinning the button switches it to pinned.
+  model()->UpdatePinnedState(actions::kActionCut, true);
+  CheckIsPoppedOut(actions::kActionCut, false);
+  CheckIsPinned(actions::kActionCut, true);
+  // Verify it is still pinned when it does not need to be ephemerally shown.
+  container()->ShowActionEphemerallyInToolbar(actions::kActionCut, false);
+  CheckIsPoppedOut(actions::kActionCut, false);
+  CheckIsPinned(actions::kActionCut, true);
+  // Set as ephemerally visible again and verify it is still popped out when
+  // unpinned.
+  container()->ShowActionEphemerallyInToolbar(actions::kActionCut, true);
+  model()->UpdatePinnedState(actions::kActionCut, false);
+  CheckIsPoppedOut(actions::kActionCut, true);
+  CheckIsPinned(actions::kActionCut, false);
+  // Verify setting as not ephemerally visible remove the popped out button.
+  container()->ShowActionEphemerallyInToolbar(actions::kActionCut, false);
+  CheckIsPoppedOut(actions::kActionCut, false);
+  CheckIsPinned(actions::kActionCut, false);
+}

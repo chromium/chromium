@@ -42,6 +42,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
@@ -237,12 +238,31 @@ void PinnedToolbarActionsContainer::UpdateActionState(actions::ActionId id,
     button->ResetHighlight();
   }
 
-  if (!pinned && !is_active) {
-    RemovePoppedOutButtonFor(id);
+  if (!is_active) {
+    MaybeRemovePoppedOutButtonFor(id);
   }
 
   UpdateDividerFlexSpecification();
   InvalidateLayout();
+}
+
+void PinnedToolbarActionsContainer::ShowActionEphemerallyInToolbar(
+    actions::ActionId id,
+    bool show) {
+  auto* button = GetButtonFor(id);
+  // If the button doesn't exist and shouldn't be shown, do nothing.
+  if (!button && !show) {
+    return;
+  }
+  // Create the button if it doesn't exist.
+  if (!button) {
+    button = AddPopOutButtonFor(id);
+  }
+  button->SetShouldShowEphemerallyInToolbar(show);
+
+  if (!show) {
+    MaybeRemovePoppedOutButtonFor(id);
+  }
 }
 
 void PinnedToolbarActionsContainer::UpdateDividerFlexSpecification() {
@@ -474,12 +494,13 @@ PinnedActionToolbarButton* PinnedToolbarActionsContainer::AddPopOutButtonFor(
   return button;
 }
 
-void PinnedToolbarActionsContainer::RemovePoppedOutButtonFor(
+void PinnedToolbarActionsContainer::MaybeRemovePoppedOutButtonFor(
     const actions::ActionId& id) {
   const auto iter = base::ranges::find(
       popped_out_buttons_, id,
       [](PinnedActionToolbarButton* button) { return button->GetActionId(); });
-  if (iter == popped_out_buttons_.end()) {
+  if (iter == popped_out_buttons_.end() ||
+      ShouldRemainPoppedOutInToolbar(*iter)) {
     return;
   }
   GetAnimatingLayoutManager()->FadeOut(*iter);
@@ -528,7 +549,7 @@ void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
   if (iter == pinned_buttons_.end()) {
     return;
   }
-  if (!(*iter)->IsActive()) {
+  if (!ShouldRemainPoppedOutInToolbar(*iter)) {
     GetAnimatingLayoutManager()->FadeOut(*iter);
     GetAnimatingLayoutManager()->PostOrQueueAction(
         base::BindOnce(&PinnedToolbarActionsContainer::RemoveButton,
@@ -558,6 +579,19 @@ PinnedActionToolbarButton* PinnedToolbarActionsContainer::GetPoppedOutButtonFor(
       popped_out_buttons_, id,
       [](PinnedActionToolbarButton* button) { return button->GetActionId(); });
   return iter == popped_out_buttons_.end() ? nullptr : *iter;
+}
+
+PinnedActionToolbarButton* PinnedToolbarActionsContainer::GetButtonFor(
+    const actions::ActionId& id) {
+  if (auto* button = GetPinnedButtonFor(id)) {
+    return button;
+  }
+  return GetPoppedOutButtonFor(id);
+}
+
+bool PinnedToolbarActionsContainer::ShouldRemainPoppedOutInToolbar(
+    PinnedActionToolbarButton* button) {
+  return button->IsActive() || button->ShouldShowEphemerallyInToolbar();
 }
 
 void PinnedToolbarActionsContainer::RemoveButton(
