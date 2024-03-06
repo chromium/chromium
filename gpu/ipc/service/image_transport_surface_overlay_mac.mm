@@ -375,27 +375,33 @@ base::TimeTicks ImageTransportSurfaceOverlayMacEGL::GetDisplaytime(
   // |next_display_time_| ~= |current_display_time_| + |frame_interval|.
   // params.display_time ~= params.callback_time + 1.5x |frame_interval|.
 
-  if (latch_time < current_display_time_) {
-    return current_display_time_;
-  }
-
-  // We missed the current display_time, the presentation will happen in
-  // |next_display_time_|.
-  if (latch_time < next_display_time_ && !current_display_time_.is_null()) {
+  // From the experiment, frames committed before (|current_display_time_| - 1.5
+  // ms) will be displayed at the next display time. 1.5 ms is roughly the safe
+  // zone for the latch deadline. The result is inconsistent in the experiment
+  // if commit is too close to the display_time.
+  constexpr base::TimeDelta kLatchBufferTime = base::Microseconds(1500);
+  auto latch_deadline_for_next_display =
+      current_display_time_ - kLatchBufferTime;
+  if (latch_time < latch_deadline_for_next_display) {
     return next_display_time_;
   }
 
-  // For the situation of the first frame after BeginFrame, or when
-  // CVDisplayLink is heavily delayed, try to get an estimate.
-  if (!next_display_time_.is_null() && !frame_interval_.is_zero()) {
-    return latch_time.SnappedToNextTick(next_display_time_, frame_interval_);
+  // We just missed the |current_display_time|, the display will be at the next
+  // one after |next_display_time_|.
+  if (!frame_interval_.is_zero() && next_display_time_ != base::TimeTicks()) {
+    base::TimeTicks present_time =
+        latch_time.SnappedToNextTick(next_display_time_ - kLatchBufferTime,
+                                     frame_interval_) +
+        kLatchBufferTime + frame_interval_;
+    return present_time;
   }
 
   // When there is no display_time info, just use the latch_time.
-  // This could be the very first frame after the browser starts,
+  // This only happens at the very first frame after the browser starts,
   return latch_time;
 }
 
+// The CVDisplayLink callback on the GPU thread.
 void ImageTransportSurfaceOverlayMacEGL::OnVSyncPresentation(
     ui::VSyncParamsMac params) {
   // Documentation for the CVDisplayLink display_time
