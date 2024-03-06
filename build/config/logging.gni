@@ -11,6 +11,5 @@ declare_args() {
   enable_log_error_not_reached =
       is_chromeos_ash && !(is_debug || dcheck_always_on)
 
-  # Without optimizations, extracting line numbers is extremely slow.
-  enable_stack_trace_line_numbers = symbol_level > 0 && !is_debug
+  enable_stack_trace_line_numbers = symbol_level > 0
 }
