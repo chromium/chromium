@@ -459,8 +459,3 @@ Exemption updated to 2.0.50 when updating the crate in Feb 2024.
 
 Exemption updated to 2.0.52 when updating the crate in Mar 2024.
 """
-
-[[exemptions.unicode-ident]]
-version = "1.0.12"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
