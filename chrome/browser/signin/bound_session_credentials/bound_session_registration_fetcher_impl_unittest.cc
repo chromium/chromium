@@ -26,6 +26,7 @@
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
+#include "crypto/unexportable_key.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -227,12 +228,13 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
                     // called.
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  unexportable_keys::UnexportableKeyTaskManager task_manager_;
-  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
   // Provides a mock key provider by default.
   absl::variant<crypto::ScopedMockUnexportableKeyProvider,
                 crypto::ScopedNullUnexportableKeyProvider>
       scoped_key_provider_;
+  unexportable_keys::UnexportableKeyTaskManager task_manager_{
+      crypto::UnexportableKeyProvider::Config()};
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
   network::TestURLLoaderFactory url_loader_factory_;
   base::HistogramTester histogram_tester_;
 

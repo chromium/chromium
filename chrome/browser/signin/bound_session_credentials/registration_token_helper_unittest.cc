@@ -13,6 +13,7 @@
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
+#include "crypto/unexportable_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class RegistrationTokenHelperTest : public testing::Test {
@@ -43,7 +44,8 @@ class RegistrationTokenHelperTest : public testing::Test {
       base::test::TaskEnvironment::ThreadPoolExecutionMode::
           QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
                     // called.
-  unexportable_keys::UnexportableKeyTaskManager task_manager_;
+  unexportable_keys::UnexportableKeyTaskManager task_manager_{
+      crypto::UnexportableKeyProvider::Config()};
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
 };
 

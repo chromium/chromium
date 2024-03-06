@@ -204,10 +204,10 @@ internal::TPMSupport MeasureVirtualTpmOperations() {
   return supported_virtual_algo;
 }
 
-void MeasureTpmOperationsInternal() {
+void MeasureTpmOperationsInternal(UnexportableKeyProvider::Config config) {
   internal::TPMSupport supported_algo = internal::TPMSupport::kNone;
   std::unique_ptr<UnexportableKeyProvider> provider =
-      GetUnexportableKeyProvider();
+      GetUnexportableKeyProvider(std::move(config));
   if (!provider) {
     return;
   }
@@ -286,12 +286,12 @@ void MeasureTpmOperationsInternal() {
 namespace internal {
 
 void MeasureTpmOperationsInternalForTesting() {
-  MeasureTpmOperationsInternal();
+  MeasureTpmOperationsInternal(/*config=*/{});
 }
 
 }  // namespace internal
 
-void MaybeMeasureTpmOperations() {
+void MaybeMeasureTpmOperations(UnexportableKeyProvider::Config config) {
   static BASE_FEATURE(kTpmLatencyMetrics, "TpmLatencyMetrics",
                       base::FEATURE_ENABLED_BY_DEFAULT);
   if (base::FeatureList::IsEnabled(kTpmLatencyMetrics)) {
@@ -299,7 +299,7 @@ void MaybeMeasureTpmOperations() {
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&MeasureTpmOperationsInternal));
+        base::BindOnce(&MeasureTpmOperationsInternal, std::move(config)));
   }
 }
 

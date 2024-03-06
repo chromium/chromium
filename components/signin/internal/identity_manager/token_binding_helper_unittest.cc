@@ -13,6 +13,7 @@
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
+#include "crypto/unexportable_key.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -65,7 +66,8 @@ class TokenBindingHelperTest : public testing::Test {
           QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
                     // called.
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
-  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
+  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_{
+      crypto::UnexportableKeyProvider::Config()};
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
   TokenBindingHelper helper_;
 };

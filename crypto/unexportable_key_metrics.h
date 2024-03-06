@@ -6,12 +6,14 @@
 #define CRYPTO_UNEXPORTABLE_KEY_METRICS_H_
 
 #include "crypto/crypto_export.h"
+#include "crypto/unexportable_key.h"
 
 namespace crypto {
 
 // Records UMA metrics of TPM availability, latency and successful usage.
 // Does the work on a new background task.
-CRYPTO_EXPORT void MaybeMeasureTpmOperations();
+CRYPTO_EXPORT void MaybeMeasureTpmOperations(
+    UnexportableKeyProvider::Config config);
 
 // internal namespace to be used by tests only
 namespace internal {

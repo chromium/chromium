@@ -33,7 +33,8 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderMac(
 std::unique_ptr<UnexportableKeyProvider>
 GetUnexportableKeyProviderSoftwareUnsecure();
 
-std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProvider() {
+std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProvider(
+    UnexportableKeyProvider::Config config) {
   if (g_mock_provider) {
     return g_mock_provider();
   }
@@ -41,8 +42,7 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProvider() {
 #if BUILDFLAG(IS_WIN)
   return GetUnexportableKeyProviderWin();
 #elif BUILDFLAG(IS_MAC)
-  // TODO(nsatragno): inject the keychain access group from the embedder.
-  return GetUnexportableKeyProviderMac("keychain-group-for-test");
+  return GetUnexportableKeyProviderMac(std::move(config.keychain_access_group));
 #else
   return nullptr;
 #endif

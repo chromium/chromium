@@ -54,6 +54,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
+#include "crypto/unexportable_key.h"
 #include "crypto/unexportable_key_metrics.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/browser_metrics.h"
 #include "ui/base/pointer/pointer_device.h"
@@ -118,11 +119,21 @@
 #include "components/power_metrics/system_power_monitor.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/common/chrome_version.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace {
 
 // The number of restarts to wait until removing the enable-benchmarking flag.
 constexpr int kEnableBenchmarkingCountdownDefault = 3;
 constexpr char kEnableBenchmarkingPrefId[] = "enable_benchmarking_countdown";
+
+#if BUILDFLAG(IS_MAC)
+constexpr char kUnexportableKeysKeychainAccessGroup[] =
+    MAC_TEAM_IDENTIFIER_STRING "." MAC_BUNDLE_IDENTIFIER_STRING
+                               ".unexportable-keys";
+#endif  // BUILDFLAG(IS_MAC)
 
 void RecordMemoryMetrics();
 
@@ -834,9 +845,16 @@ void RecordStartupMetrics() {
   base::UmaHistogramBoolean("Windows.ParallelDllLoadingEnabled",
                             IsParallelDllLoadingEnabled());
   RecordAppCompatMetrics();
-  crypto::MaybeMeasureTpmOperations();
   key_credential_manager_support::ReportKeyCredentialManagerSupport();
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  crypto::UnexportableKeyProvider::Config config;
+#if BUILDFLAG(IS_MAC)
+  config.keychain_access_group = kUnexportableKeysKeychainAccessGroup;
+#endif  // BUILDFLAG(IS_MAC)
+  crypto::MaybeMeasureTpmOperations(std::move(config));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   // Record whether Chrome is the default browser or not.
   // Disabled on Linux due to hanging browser tests, see crbug.com/1216328.

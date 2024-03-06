@@ -25,13 +25,17 @@ const crypto::SignatureVerifier::SignatureAlgorithm kAllAlgorithms[] = {
     crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
 };
 
+#if BUILDFLAG(IS_MAC)
+constexpr char kTestKeychainAccessGroup[] = "test-keychain-access-group";
+#endif  // BUILDFLAG(IS_MAC)
+
 class UnexportableKeySigningTest
     : public testing::TestWithParam<
           std::tuple<crypto::SignatureVerifier::SignatureAlgorithm, bool>> {
  private:
 #if BUILDFLAG(IS_MAC)
   crypto::ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
-      "keychain-group-for-test"};
+      kTestKeychainAccessGroup};
 
   base::test::ScopedFeatureList scoped_feature_list_{
       crypto::kEnableMacUnexportableKeys};
@@ -69,8 +73,13 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
 
   const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {algo};
 
+  crypto::UnexportableKeyProvider::Config config{
+#if BUILDFLAG(IS_MAC)
+      .keychain_access_group = kTestKeychainAccessGroup
+#endif  // BUILDLFAG(IS_MAC)
+  };
   std::unique_ptr<crypto::UnexportableKeyProvider> provider =
-      crypto::GetUnexportableKeyProvider();
+      crypto::GetUnexportableKeyProvider(std::move(config));
   if (!provider) {
     LOG(INFO) << "Skipping test because of lack of hardware support.";
     return;

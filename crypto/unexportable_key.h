@@ -61,6 +61,18 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
  public:
   virtual ~UnexportableKeyProvider();
 
+  // Platform-specific configuration parameters for the provider.
+  struct Config {
+#if BUILDFLAG(IS_MAC)
+    // The keychain access group the key is shared with. The binary must be
+    // codesigned with the corresponding entitlement.
+    // https://developer.apple.com/documentation/bundleresources/entitlements/keychain-access-groups?language=objc
+    // This must be set to a non empty value when using unexportable keys on
+    // macOS.
+    std::string keychain_access_group;
+#endif  // BUILDFLAG(IS_MAC)
+  };
+
   // SelectAlgorithm returns which signature algorithm from
   // |acceptable_algorithms| would be used if |acceptable_algorithms| was passed
   // to |GenerateSigningKeySlowly|.
@@ -185,7 +197,7 @@ class CRYPTO_EXPORT VirtualUnexportableKeyProvider {
 // from any thread but, in tests, but be sequenced with
 // |SetUnexportableSigningKeyProvider|.
 CRYPTO_EXPORT std::unique_ptr<UnexportableKeyProvider>
-GetUnexportableKeyProvider();
+GetUnexportableKeyProvider(UnexportableKeyProvider::Config config);
 
 // GetVirtualUnexportableKeyProvider_DO_NOT_USE_METRICS_ONLY returns a
 // |VirtualUnexportableKeyProvider| for the current platform, or nullptr if

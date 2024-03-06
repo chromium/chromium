@@ -115,8 +115,10 @@ UnexportableKeyServiceImpl::UnexportableKeyServiceImpl(
 UnexportableKeyServiceImpl::~UnexportableKeyServiceImpl() = default;
 
 // static
-bool UnexportableKeyServiceImpl::IsUnexportableKeyProviderSupported() {
-  return UnexportableKeyTaskManager::GetUnexportableKeyProvider() != nullptr;
+bool UnexportableKeyServiceImpl::IsUnexportableKeyProviderSupported(
+    crypto::UnexportableKeyProvider::Config config) {
+  return UnexportableKeyTaskManager::GetUnexportableKeyProvider(
+             std::move(config)) != nullptr;
 }
 
 void UnexportableKeyServiceImpl::GenerateSigningKeySlowlyAsync(

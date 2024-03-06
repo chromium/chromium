@@ -14,6 +14,7 @@
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
+#include "crypto/unexportable_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace unexportable_keys {
@@ -30,7 +31,8 @@ constexpr BackgroundTaskPriority kTaskPriority =
 class UnexportableKeyLoaderTest : public testing::Test {
  public:
   UnexportableKeyLoaderTest()
-      : task_manager_(std::make_unique<UnexportableKeyTaskManager>()),
+      : task_manager_(std::make_unique<UnexportableKeyTaskManager>(
+            crypto::UnexportableKeyProvider::Config())),
         service_(std::make_unique<UnexportableKeyServiceImpl>(*task_manager_)) {
   }
 
@@ -39,7 +41,8 @@ class UnexportableKeyLoaderTest : public testing::Test {
   void RunBackgroundTasks() { task_environment_.RunUntilIdle(); }
 
   void ResetService() {
-    task_manager_ = std::make_unique<UnexportableKeyTaskManager>();
+    task_manager_ = std::make_unique<UnexportableKeyTaskManager>(
+        crypto::UnexportableKeyProvider::Config());
     service_ = std::make_unique<UnexportableKeyServiceImpl>(*task_manager_);
   }
 

@@ -98,6 +98,8 @@ source_set("unit_tests") {
     "ec_private_key_unittest.cc",
     "key_upload_client_unittest.cc",
     "private_key_factory_unittest.cc",
+    "unexportable_private_key_factory_unittest.cc",
+    "unexportable_private_key_unittest.cc",
   ]
 
   deps = [
@@ -114,15 +116,8 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_win) {
-    sources += [
-      "unexportable_private_key_factory_unittest.cc",
-      "unexportable_private_key_unittest.cc",
-    ]
-
-    deps += [
-      "//crypto",
-      "//crypto:test_support",
-    ]
-  }
+  deps += [
+    "//crypto",
+    "//crypto:test_support",
+  ]
 }

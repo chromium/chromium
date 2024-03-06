@@ -98,7 +98,7 @@ constexpr std::array<
 class KeyRotationManagerTest : public testing::Test {
  protected:
   KeyRotationManagerTest()
-      : key_provider_(crypto::GetUnexportableKeyProvider()) {
+      : key_provider_(crypto::GetUnexportableKeyProvider(/*config=*/{})) {
     ResetHistograms();
     auto mock_network_delegate =
         std::make_unique<StrictMock<MockKeyNetworkDelegate>>();

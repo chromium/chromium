@@ -18,7 +18,7 @@ TEST(UnexportablePrivateKeyFactoryTest, SupportedCreateKey_LoadKey) {
   base::test::TaskEnvironment task_environment;
   crypto::ScopedMockUnexportableKeyProvider scoped_provider;
 
-  auto factory = UnexportablePrivateKeyFactory::TryCreate();
+  auto factory = UnexportablePrivateKeyFactory::TryCreate(/*config=*/{});
 
   ASSERT_TRUE(factory);
 
@@ -45,7 +45,7 @@ TEST(UnexportablePrivateKeyFactoryTest, SupportedCreateKey_LoadKey) {
 TEST(UnexportablePrivateKeyFactoryTest, UnsupportedCreateKey) {
   crypto::ScopedNullUnexportableKeyProvider scoped_provider;
 
-  auto factory = UnexportablePrivateKeyFactory::TryCreate();
+  auto factory = UnexportablePrivateKeyFactory::TryCreate(/*config=*/{});
 
   EXPECT_FALSE(factory);
 }

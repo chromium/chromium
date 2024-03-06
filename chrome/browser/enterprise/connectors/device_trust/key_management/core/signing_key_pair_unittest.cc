@@ -43,7 +43,7 @@ std::unique_ptr<crypto::UnexportableSigningKey> GenerateSigningKey(
     BPKUR::KeyTrustLevel trust_level) {
   std::unique_ptr<crypto::UnexportableKeyProvider> provider;
   if (trust_level == BPKUR::CHROME_BROWSER_HW_KEY) {
-    provider = crypto::GetUnexportableKeyProvider();
+    provider = crypto::GetUnexportableKeyProvider(/*config=*/{});
   } else {
     provider = std::make_unique<ECSigningKeyProvider>();
   }

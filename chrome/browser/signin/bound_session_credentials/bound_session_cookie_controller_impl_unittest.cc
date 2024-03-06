@@ -31,6 +31,7 @@
 #include "content/public/test/test_storage_partition.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
+#include "crypto/unexportable_key.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -281,7 +282,8 @@ class BoundSessionCookieControllerImplTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
-  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
+  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_{
+      crypto::UnexportableKeyProvider::Config()};
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
   BoundSessionTestCookieManager cookie_manager_;
   content::TestStoragePartition storage_partition_;

@@ -277,6 +277,10 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderMac(
   if (!base::FeatureList::IsEnabled(crypto::kEnableMacUnexportableKeys)) {
     return nullptr;
   }
+  CHECK(!keychain_access_group.empty())
+      << "A keychain access group must be set when using unexportable keys on "
+         "macOS";
+
   // TODO(nsatragno): this code assumes the secure enclave is always available.
   return std::make_unique<UnexportableKeyProviderMac>(
       std::move(keychain_access_group));

@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/enterprise/client_certificates/core/private_key_factory.h"
+#include "crypto/unexportable_key.h"
 
 namespace client_certificates {
 
@@ -17,7 +18,8 @@ class UnexportablePrivateKeyFactory : public PrivateKeyFactory {
   // Will return a factory instance only if the creation of
   // crypto::UnexportableSigningKeys is supported on the current device (e.g. a
   // TPM is present on Windows). Otherwise, will return nullptr.
-  static std::unique_ptr<UnexportablePrivateKeyFactory> TryCreate();
+  static std::unique_ptr<UnexportablePrivateKeyFactory> TryCreate(
+      crypto::UnexportableKeyProvider::Config config);
 
   ~UnexportablePrivateKeyFactory() override;
 
@@ -28,7 +30,12 @@ class UnexportablePrivateKeyFactory : public PrivateKeyFactory {
       PrivateKeyCallback callback) override;
 
  private:
-  UnexportablePrivateKeyFactory();
+  explicit UnexportablePrivateKeyFactory(
+      crypto::UnexportableKeyProvider::Config config);
+
+  // |config_| holds platform specific configuration needed when instantiating
+  // the unexportable key provider.
+  const crypto::UnexportableKeyProvider::Config config_;
 
   base::WeakPtrFactory<UnexportablePrivateKeyFactory> weak_factory_{this};
 };

@@ -18,7 +18,7 @@ namespace client_certificates {
 
 TEST(UnexportablePrivateKeyTest, SupportedCreateKey) {
   crypto::ScopedMockUnexportableKeyProvider scoped_provider;
-  auto provider = crypto::GetUnexportableKeyProvider();
+  auto provider = crypto::GetUnexportableKeyProvider(/*config=*/{});
   ASSERT_TRUE(provider);
 
   // The mock only works with the ECDSA_SHA256 algorithm.

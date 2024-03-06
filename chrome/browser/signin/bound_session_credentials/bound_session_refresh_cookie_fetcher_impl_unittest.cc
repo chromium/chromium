@@ -30,6 +30,7 @@
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/unexportable_key.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/http/http_status_code.h"
@@ -192,7 +193,8 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
-  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
+  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_{
+      crypto::UnexportableKeyProvider::Config()};
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
   UnexportableKeyId binding_key_id_;
   std::unique_ptr<SessionBindingHelper> session_binding_helper_;
