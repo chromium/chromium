@@ -968,15 +968,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AttributionSrcLoaderPreferredPlatformSourceTest,
                          ::testing::ValuesIn(kPreferredPlatformTestCases));
 
-// TODO(linnan): These tests are flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE(TEST_NAME) DISABLED_##TEST_NAME
-#else
-#define MAYBE(TEST_NAME) TEST_NAME
-#endif
-
-TEST_P(AttributionSrcLoaderPreferredPlatformSourceTest,
-       MAYBE(PreferredPlatform)) {
+TEST_P(AttributionSrcLoaderPreferredPlatformSourceTest, PreferredPlatform) {
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
   const auto& test_case = GetParam();
@@ -1027,8 +1019,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AttributionSrcLoaderPreferredPlatformTriggerTest,
                          ::testing::ValuesIn(kPreferredPlatformTestCases));
 
-TEST_P(AttributionSrcLoaderPreferredPlatformTriggerTest,
-       MAYBE(PreferredPlatform)) {
+TEST_P(AttributionSrcLoaderPreferredPlatformTriggerTest, PreferredPlatform) {
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
   const auto& test_case = GetParam();
@@ -1137,7 +1128,7 @@ TEST_F(AttributionSrcLoaderTest, InvalidWebHeader_ErrorReported) {
 }
 
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
-       MAYBE(InvalidOsHeader_ErrorReported)) {
+       InvalidOsHeader_ErrorReported) {
   const struct {
     RegistrationHeaderType header_type;
     AtomicString header_name;

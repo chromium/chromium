@@ -54,8 +54,9 @@ class AssociatedInterfaceProvider::LocalProvider
       mojo::PendingAssociatedReceiver<mojom::AssociatedInterface> receiver)
       override {
     auto it = binders_.find(name);
-    if (it != binders_.end())
+    if (it != binders_.end()) {
       it->second.Run(receiver.PassHandle());
+    }
   }
 
   std::map<std::string, Binder> binders_;
