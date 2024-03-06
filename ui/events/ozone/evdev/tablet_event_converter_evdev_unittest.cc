@@ -789,7 +789,9 @@ TEST_F(TabletEventConverterEvdevTest, StylusButtonPress) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(TabletEventConverterEvdevTest, TabletButtonPress) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kPeripheralCustomization);
+  feature_list.InitWithFeatures({ash::features::kInputDeviceSettingsSplit,
+                                 ash::features::kPeripheralCustomization},
+                                {});
 
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
       CreateDevice(kWacomIntuos5SPen);

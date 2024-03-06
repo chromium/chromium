@@ -3557,6 +3557,8 @@ TEST_P(EventRewriterTest, MouseWheelEventDispatchImpl) {
 // Tests that if modifier keys are remapped, the flags of a mouse wheel event
 // will be rewritten properly.
 TEST_P(EventRewriterTest, MouseWheelEventModifiersRewritten) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+
   // For EF_CONTROL_DOWN modifier.
   SendKeyEvent(KeyLControl::Pressed());
 
@@ -3706,6 +3708,12 @@ TEST_P(EventRewriterTest, ScrollEventDispatchImpl) {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_P(EventRewriterTest, RemapHangulOnCros1p) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  IntegerPrefMember alt;
+  InitModifierKeyPref(&alt, ::prefs::kLanguageRemapAltKeyTo,
+                      ui::mojom::ModifierKey::kAlt,
+                      ui::mojom::ModifierKey::kAlt);
+
   scoped_refptr<input_method::MockInputMethodManagerImpl::State> state =
       base::MakeRefCounted<input_method::MockInputMethodManagerImpl::State>(
           input_method_manager_mock_);
@@ -4175,6 +4183,8 @@ TEST_P(StickyKeysOverlayTest, ModifierVisibility) {
 }
 
 TEST_P(EventRewriterTest, RewrittenModifier) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+
   // Register Control + B as an extension shortcut.
   SetExtensionCommands({{{ui::VKEY_B, ui::EF_CONTROL_DOWN}}});
 
@@ -4228,8 +4238,9 @@ TEST_P(EventRewriterTest, RewriteNumpadExtensionCommand) {
 TEST_P(EventRewriterTest, RecordRewritingToFunctionKeys) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      ::features::kImprovedKeyboardShortcuts);
+  scoped_feature_list.InitWithFeatures(
+      {features::kInputDeviceSettingsSplit},
+      {::features::kImprovedKeyboardShortcuts});
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("ChromeOS.Inputs.Keyboard.F1Pressed", 0);

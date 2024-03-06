@@ -98,6 +98,13 @@ class InputDeviceSettingsMetricsManagerTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {
+            features::kInputDeviceSettingsSplit,
+            features::kAltClickAndSixPackCustomization,
+            ::features::kSupportF11AndF12KeyShortcuts,
+        },
+        /*disabled_features=*/{});
     AshTestBase::SetUp();
     manager_ = std::make_unique<InputDeviceSettingsMetricsManager>();
   }
@@ -105,6 +112,7 @@ class InputDeviceSettingsMetricsManagerTest : public AshTestBase {
   void TearDown() override {
     manager_.reset();
     AshTestBase::TearDown();
+    scoped_feature_list_.Reset();
   }
 
   // Add a fake keyboard to DeviceDataManagerTestApi and provide layout info to
@@ -136,13 +144,6 @@ class InputDeviceSettingsMetricsManagerTest : public AshTestBase {
 };
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
-  scoped_feature_list_.InitWithFeatures(
-      {
-          features::kInputDeviceSettingsSplit,
-          features::kAltClickAndSixPackCustomization,
-          ::features::kSupportF11AndF12KeyShortcuts,
-      },
-      /*disabled_features=*/{});
   mojom::Keyboard keyboard_external;
   keyboard_external.device_key = kExternalKeyboardId;
   keyboard_external.is_external = true;
@@ -556,10 +557,6 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordPointingStickSettings) {
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kInputDeviceSettingsSplit,
-       features::kAltClickAndSixPackCustomization},
-      /*disabled_features=*/{});
   mojom::Touchpad touchpad_external;
   touchpad_external.device_key = kExternalTouchpadId;
   touchpad_external.is_external = true;

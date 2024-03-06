@@ -81,7 +81,9 @@ TEST_F(SystemTrayClientImplTest, ShowTouchpadSettings) {
 
 TEST_F(SystemTrayClientImplTest, ShowMouseSettings) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kPeripheralCustomization);
+  feature_list.InitWithFeatures({ash::features::kInputDeviceSettingsSplit,
+                                 ash::features::kPeripheralCustomization},
+                                {});
   base::UserActionTester user_action_tester;
   client_impl_->ShowMouseSettings();
   EXPECT_EQ(settings_window_manager_->last_url(),
@@ -92,7 +94,9 @@ TEST_F(SystemTrayClientImplTest, ShowMouseSettings) {
 
 TEST_F(SystemTrayClientImplTest, ShowGraphicsTabletSettings) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kPeripheralCustomization);
+  feature_list.InitWithFeatures({ash::features::kInputDeviceSettingsSplit,
+                                 ash::features::kPeripheralCustomization},
+                                {});
   base::UserActionTester user_action_tester;
   client_impl_->ShowGraphicsTabletSettings();
   EXPECT_EQ(settings_window_manager_->last_url(),

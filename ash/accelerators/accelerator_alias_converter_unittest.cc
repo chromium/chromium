@@ -106,6 +106,17 @@ class FakeDeviceManager {
 
 class AcceleratorAliasConverterTest : public AshTestBase {
  public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kInputDeviceSettingsSplit);
+    AshTestBase::SetUp();
+  }
+
+  void TearDown() override {
+    AshTestBase::TearDown();
+    scoped_feature_list_.Reset();
+  }
+
   void SetTopRowAsFKeysForKeyboard(const ui::InputDevice& keyboard,
                                    bool enabled) {
     if (!features::IsInputDeviceSettingsSplitEnabled()) {
@@ -163,6 +174,9 @@ class AcceleratorAliasConverterTest : public AshTestBase {
     Shell::Get()->keyboard_capability()->SetKeyboardInfoForTesting(
         keyboard, std::move(keyboard_info));
   }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AcceleratorAliasConverterTest, CheckTopRowAliasNoAlias) {
@@ -364,9 +378,6 @@ TEST_F(AcceleratorAliasConverterTest, CheckCapsLockAlias) {
 }
 
 TEST_F(AcceleratorAliasConverterTest, MetaFKeyRewritesSuppressed) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kInputDeviceSettingsSplit);
-
   // Needs to be in user session to edit input device settings.
   SimulateGuestLogin();
 
