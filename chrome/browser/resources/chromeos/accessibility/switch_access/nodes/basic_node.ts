@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AutomationPredicate} from '/common/automation_predicate.js';
 import {constants} from '/common/constants.js';
 import {RepeatedEventHandler} from '/common/repeated_event_handler.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
@@ -17,99 +18,106 @@ import {SwitchAccessPredicate} from '../switch_access_predicate.js';
 import {BackButtonNode} from './back_button_node.js';
 import {SAChildNode, SARootNode} from './switch_access_node.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
-const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+import AutomationActionType = chrome.automation.ActionType;
+type AutomationNode = chrome.automation.AutomationNode;
+import EventType = chrome.automation.EventType;
+import MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+type Rect = chrome.automation.Rect;
+type RoleType = chrome.automation.RoleType;
+
+interface Creator {
+  predicate: AutomationPredicate.Unary;
+  creator: (node: AutomationNode, parent: SARootNode | null) => BasicNode;
+}
+
+interface RootBuilder {
+  predicate: AutomationPredicate.Unary;
+  builder: (node: AutomationNode) => BasicRootNode;
+}
 
 /**
  * This class handles interactions with an onscreen element based on a single
  * AutomationNode.
  */
 export class BasicNode extends SAChildNode {
-  /**
-   * @param {!AutomationNode} baseNode
-   * @param {?SARootNode} parent
-   * @protected
-   */
-  constructor(baseNode, parent) {
+  private baseNode_: AutomationNode;
+  private parent_: SARootNode | null;
+  private locationChangedHandler_?: RepeatedEventHandler;
+  private static creators_: Creator[] = [];
+
+  protected constructor(baseNode: AutomationNode, parent: SARootNode | null) {
     super();
-    /** @private {!AutomationNode} */
     this.baseNode_ = baseNode;
-
-    /** @private {?SARootNode} */
     this.parent_ = parent;
-
-    /** @private {RepeatedEventHandler} */
-    this.locationChangedHandler_;
   }
 
   // ================= Getters and setters =================
 
-  /** @override */
-  get actions() {
-    const actions = [];
+  override get actions(): MenuAction[] {
+    const actions: MenuAction[] = [];
     actions.push(MenuAction.SELECT);
 
     const ancestor = this.getScrollableAncestor_();
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     if (ancestor.scrollable) {
-      if (ancestor.scrollX > ancestor.scrollXMin) {
+      if (ancestor.scrollX! > ancestor.scrollXMin!) {
         actions.push(MenuAction.SCROLL_LEFT);
       }
-      if (ancestor.scrollX < ancestor.scrollXMax) {
+      if (ancestor.scrollX! < ancestor.scrollXMax!) {
         actions.push(MenuAction.SCROLL_RIGHT);
       }
-      if (ancestor.scrollY > ancestor.scrollYMin) {
+      if (ancestor.scrollY! > ancestor.scrollYMin!) {
         actions.push(MenuAction.SCROLL_UP);
       }
-      if (ancestor.scrollY < ancestor.scrollYMax) {
+      if (ancestor.scrollY! < ancestor.scrollYMax!) {
         actions.push(MenuAction.SCROLL_DOWN);
       }
     }
-    const standardActions = /** @type {!Array<!MenuAction>} */ (
-        this.baseNode_.standardActions.filter(
-            action => Object.values(MenuAction).includes(action)));
-
-    return actions.concat(standardActions);
+    // Coerce enums to string arrays for comparison.
+    const menuActions: string[] = Object.values(MenuAction);
+    const standardActions: string[] = this.baseNode_.standardActions!
+      .filter((action: string) => menuActions.includes(action));
+    return actions.concat(standardActions as MenuAction[]);
   }
 
-  /** @override */
-  get automationNode() {
+  override get automationNode(): AutomationNode {
     return this.baseNode_;
   }
 
-  /** @override */
-  get location() {
+  override get location(): Rect | undefined {
     return this.baseNode_.location;
   }
 
-  /** @override */
-  get role() {
-    return this.baseNode_.role;
+  override get role(): RoleType {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    return this.baseNode_.role!;
   }
 
   // ================= General methods =================
 
-  /** @override */
-  asRootNode() {
+  override asRootNode(): SARootNode | undefined {
     if (!this.isGroup()) {
-      return null;
+      return undefined;
     }
     return BasicRootNode.buildTree(this.baseNode_);
   }
 
-  /** @override */
-  equals(other) {
-    if (!other || !(other instanceof BasicNode)) {
+  override equals(rhs: SAChildNode | null | undefined): boolean {
+    if (!rhs || !(rhs instanceof BasicNode)) {
       return false;
     }
 
-    other = /** @type {!BasicNode} */ (other);
+    const other = rhs as BasicNode;
     return other.baseNode_ === this.baseNode_;
   }
 
-  /** @override */
-  isEquivalentTo(node) {
-    if (node instanceof BasicNode || node instanceof BasicRootNode) {
+  override isEquivalentTo(
+      node: AutomationNode | SAChildNode | SARootNode | null): boolean {
+    if (node instanceof BasicNode) {
       return this.baseNode_ === node.baseNode_;
+    }
+    if (node instanceof BasicRootNode) {
+      return this.baseNode_ === node.automationNode;
     }
 
     if (node instanceof SAChildNode) {
@@ -118,14 +126,12 @@ export class BasicNode extends SAChildNode {
     return this.baseNode_ === node;
   }
 
-  /** @override */
-  isGroup() {
+  override isGroup(): boolean {
     const cache = new SACache();
     return SwitchAccessPredicate.isGroup(this.baseNode_, this.parent_, cache);
   }
 
-  /** @override */
-  isValidAndVisible() {
+  override isValidAndVisible(): boolean {
     // Nodes may have been deleted or orphaned.
     if (!this.baseNode_ || !this.baseNode_.role) {
       return false;
@@ -134,11 +140,10 @@ export class BasicNode extends SAChildNode {
         super.isValidAndVisible();
   }
 
-  /** @override */
-  onFocus() {
+  override onFocus(): void {
     super.onFocus();
     this.locationChangedHandler_ = new RepeatedEventHandler(
-        this.baseNode_, chrome.automation.EventType.LOCATION_CHANGED, () => {
+        this.baseNode_, EventType.LOCATION_CHANGED, () => {
           if (this.isValidAndVisible()) {
             FocusRingManager.setFocusedNode(this);
           } else {
@@ -147,16 +152,14 @@ export class BasicNode extends SAChildNode {
         }, {exactMatch: true, allAncestors: true});
   }
 
-  /** @override */
-  onUnfocus() {
+  override onUnfocus(): void {
     super.onUnfocus();
     if (this.locationChangedHandler_) {
       this.locationChangedHandler_.stop();
     }
   }
 
-  /** @override */
-  performAction(action) {
+  override performAction(action: MenuAction): ActionResponse {
     let ancestor;
     switch (action) {
       case MenuAction.SELECT:
@@ -169,31 +172,32 @@ export class BasicNode extends SAChildNode {
       case MenuAction.SCROLL_DOWN:
         ancestor = this.getScrollableAncestor_();
         if (ancestor.scrollable) {
-          ancestor.scrollDown();
+          ancestor.scrollDown(() => {});
         }
         return ActionResponse.RELOAD_MENU;
       case MenuAction.SCROLL_UP:
         ancestor = this.getScrollableAncestor_();
         if (ancestor.scrollable) {
-          ancestor.scrollUp();
+          ancestor.scrollUp(() => {});
         }
         return ActionResponse.RELOAD_MENU;
       case MenuAction.SCROLL_RIGHT:
         ancestor = this.getScrollableAncestor_();
         if (ancestor.scrollable) {
-          ancestor.scrollRight();
+          ancestor.scrollRight(() => {});
         }
         return ActionResponse.RELOAD_MENU;
       case MenuAction.SCROLL_LEFT:
         ancestor = this.getScrollableAncestor_();
         if (ancestor.scrollable) {
-          ancestor.scrollLeft();
+          ancestor.scrollLeft(() => {});
         }
         return ActionResponse.RELOAD_MENU;
       default:
-        if (Object.values(chrome.automation.ActionType).includes(action)) {
-          this.baseNode_.performStandardAction(
-              /** @type {chrome.automation.ActionType} */ (action));
+        const actions = Object.values(AutomationActionType);
+        const automationAction = actions.find((a: string) => a === action);
+        if (automationAction) {
+          this.baseNode_.performStandardAction(automationAction);
         }
         return ActionResponse.CLOSE_MENU;
     }
@@ -201,11 +205,7 @@ export class BasicNode extends SAChildNode {
 
   // ================= Private methods =================
 
-  /**
-   * @return {AutomationNode}
-   * @protected
-   */
-  getScrollableAncestor_() {
+  protected getScrollableAncestor_(): AutomationNode {
     let ancestor = this.baseNode_;
     while (!ancestor.scrollable && ancestor.parent) {
       ancestor = ancestor.parent;
@@ -215,70 +215,57 @@ export class BasicNode extends SAChildNode {
 
   // ================= Static methods =================
 
-  /**
-   * @param {!AutomationNode} baseNode
-   * @param {?SARootNode} parent
-   * @return {!BasicNode}
-   */
-  static create(baseNode, parent) {
+  static create(
+      baseNode: AutomationNode, parent: SARootNode | null): BasicNode {
     const item =
-        BasicNode.creators.find(({predicate, creator}) => predicate(baseNode));
+        BasicNode.creators.find(
+            (creator: Creator) => creator.predicate(baseNode));
     if (item) {
       return item.creator(baseNode, parent);
     }
     return new BasicNode(baseNode, parent);
   }
 
-  /**
-   * @return {!Array<!{predicate: function(AutomationNode), creator:
-   *     function(AutomationNode, SARootNode)}>}
-   */
-  static get creators() {
+  static get creators(): Creator[] {
     return BasicNode.creators_;
   }
 }
-
-BasicNode.creators_ = [];
 
 /**
  * This class handles constructing and traversing a group of onscreen elements
  * based on all the interesting descendants of a single AutomationNode.
  */
 export class BasicRootNode extends SARootNode {
+  private static builders_: RootBuilder[] = [];
+
+  private childrenChangedHandler_?: RepeatedEventHandler;
+  private invalidated_ = false;
+
   /**
    * WARNING: If you call this constructor, you must *explicitly* set children.
    *     Use the static function BasicRootNode.buildTree for most use cases.
-   * @param {!AutomationNode} baseNode
    */
-  constructor(baseNode) {
+  constructor(baseNode: AutomationNode) {
     super(baseNode);
-
-    /** @private {boolean} */
-    this.invalidated_ = false;
-
-    /** @private {RepeatedEventHandler} */
-    this.childrenChangedHandler_;
   }
 
   // ================= Getters and setters =================
 
-  /** @override */
-  get location() {
+  override get location(): Rect {
     return this.automationNode.location || super.location;
   }
 
   // ================= General methods =================
 
-  /** @override */
-  equals(other) {
+  override equals(other: SARootNode | null | undefined): boolean {
     if (!(other instanceof BasicRootNode)) {
       return false;
     }
     return super.equals(other) && this.automationNode === other.automationNode;
   }
 
-  /** @override */
-  isEquivalentTo(node) {
+  override isEquivalentTo(
+      node: AutomationNode | SAChildNode | SARootNode | null): boolean {
     if (node instanceof BasicRootNode || node instanceof BasicNode) {
       return this.automationNode === node.automationNode;
     }
@@ -289,8 +276,7 @@ export class BasicRootNode extends SARootNode {
     return this.automationNode === node;
   }
 
-  /** @override */
-  isValidGroup() {
+  override isValidGroup(): boolean {
     if (!this.automationNode.role) {
       // If the underlying automation node has been invalidated, return false.
       return false;
@@ -300,11 +286,10 @@ export class BasicRootNode extends SARootNode {
         super.isValidGroup();
   }
 
-  /** @override */
-  onFocus() {
+  override onFocus(): void {
     super.onFocus();
     this.childrenChangedHandler_ = new RepeatedEventHandler(
-        this.automationNode, chrome.automation.EventType.CHILDREN_CHANGED,
+        this.automationNode, EventType.CHILDREN_CHANGED,
         event => {
           const cache = new SACache();
           if (SwitchAccessPredicate.isInterestingSubtree(event.target, cache)) {
@@ -313,17 +298,16 @@ export class BasicRootNode extends SARootNode {
         });
   }
 
-  /** @override */
-  onUnfocus() {
+  override onUnfocus(): void {
     super.onUnfocus();
     if (this.childrenChangedHandler_) {
       this.childrenChangedHandler_.stop();
     }
   }
 
-  /** @override */
-  refreshChildren() {
-    const childConstructor = node => BasicNode.create(node, this);
+  override refreshChildren(): void {
+    const childConstructor =
+        (node: AutomationNode): BasicNode => BasicNode.create(node, this);
     try {
       BasicRootNode.findAndSetChildren(this, childConstructor);
     } catch (e) {
@@ -331,10 +315,9 @@ export class BasicRootNode extends SARootNode {
     }
   }
 
-  /** @override */
-  refresh() {
+  override refresh(): void {
     // Find the currently focused child.
-    let focusedChild = null;
+    let focusedChild: SAChildNode | null = null;
     for (const child of this.children) {
       if (child.isFocused()) {
         focusedChild = child;
@@ -366,19 +349,16 @@ export class BasicRootNode extends SARootNode {
 
   // ================= Static methods =================
 
-  /**
-   * @param {!AutomationNode} rootNode
-   * @return {!BasicRootNode}
-   */
-  static buildTree(rootNode) {
+  static buildTree(rootNode: AutomationNode): BasicRootNode {
     const item = BasicRootNode.builders.find(
-        ({predicate, builder}) => predicate(rootNode));
+        (builder: RootBuilder) => builder.predicate(rootNode));
     if (item) {
       return item.builder(rootNode);
     }
 
     const root = new BasicRootNode(rootNode);
-    const childConstructor = node => BasicNode.create(node, root);
+    const childConstructor =
+        (node: AutomationNode): BasicNode => BasicNode.create(node, root);
 
     BasicRootNode.findAndSetChildren(root, childConstructor);
     return root;
@@ -387,11 +367,11 @@ export class BasicRootNode extends SARootNode {
   /**
    * Helper function to connect tree elements, given the root node and a
    * constructor for the child type.
-   * @param {!BasicRootNode} root
-   * @param {function(!AutomationNode): !SAChildNode} childConstructor
-   *     Constructs a child node from an automation node.
+   * @param childConstructor Constructs a child node from an automation node.
    */
-  static findAndSetChildren(root, childConstructor) {
+  static findAndSetChildren(
+      root: BasicRootNode,
+      childConstructor: (node: AutomationNode) => SAChildNode): void {
     const interestingChildren = BasicRootNode.getInterestingChildren(root);
     const children = interestingChildren.map(childConstructor)
                          .filter(child => child.isValidAndVisible());
@@ -406,11 +386,8 @@ export class BasicRootNode extends SARootNode {
     root.children = children;
   }
 
-  /**
-   * @param {!BasicRootNode|!AutomationNode} root
-   * @return {!Array<!AutomationNode>}
-   */
-  static getInterestingChildren(root) {
+  static getInterestingChildren(
+      root: BasicRootNode | AutomationNode): AutomationNode[] {
     if (root instanceof BasicRootNode) {
       root = root.automationNode;
     }
@@ -418,7 +395,7 @@ export class BasicRootNode extends SARootNode {
     if (root.children.length === 0) {
       return [];
     }
-    const interestingChildren = [];
+    const interestingChildren: AutomationNode[] = [];
     const treeWalker = new AutomationTreeWalker(
         root, constants.Dir.FORWARD, SwitchAccessPredicate.restrictions(root));
     let node = treeWalker.next().node;
@@ -431,15 +408,9 @@ export class BasicRootNode extends SARootNode {
     return interestingChildren;
   }
 
-  /**
-   * @return {!Array<!{predicate: function(AutomationNode), builder:
-   *     function(AutomationNode)}>}
-   */
-  static get builders() {
+  static get builders(): RootBuilder[] {
     return BasicRootNode.builders_;
   }
 }
-
-BasicRootNode.builders_ = [];
 
 TestImportManager.exportForTesting(BasicNode, BasicRootNode);
