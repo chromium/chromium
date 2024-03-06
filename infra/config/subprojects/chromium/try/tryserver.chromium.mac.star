@@ -549,6 +549,7 @@ ios_builder(
     mirrors = ["ci/ios-fieldtrial-rel"],
     gn_args = "ci/ios-fieldtrial-rel",
     builderless = True,
+    cpu = cpu.ARM64,
 )
 
 ios_builder(
