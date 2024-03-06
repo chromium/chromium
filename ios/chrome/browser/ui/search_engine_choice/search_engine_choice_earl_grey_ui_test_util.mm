@@ -27,7 +27,7 @@
                  grey_sufficientlyVisible(), nil);
   // Scroll down to find the search engine cell.
   id<GREYMatcher> scrollView =
-      grey_accessibilityID(kSearchEngineTableViewIdentifier);
+      grey_accessibilityID(kSearchEngineChoiceScrollViewIdentifier);
   [[[EarlGrey selectElementWithMatcher:searchEngineRowMatcher]
          usingSearchAction:grey_scrollInDirection(scrollDirection, scrollAmount)
       onElementWithMatcher:scrollView] assertWithMatcher:grey_notNil()];

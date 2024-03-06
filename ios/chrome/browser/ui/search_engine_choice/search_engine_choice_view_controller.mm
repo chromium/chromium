@@ -10,9 +10,10 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_item.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/search_engine_choice_table_view_controller.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_mutator.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
+#import "ios/chrome/browser/ui/search_engine_choice/snippet_search_engine_button.h"
+#import "ios/chrome/browser/ui/search_engine_choice/snippet_search_engine_element.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -35,20 +36,35 @@ constexpr CGFloat kTopSpacing = 40.;
 constexpr CGFloat kDefaultMargin = 16.;
 // Logo dimensions.
 constexpr CGFloat kLogoSize = 50.;
-// The minimum height of the search engines table.
-// TODO(b/280753739): Figure out a way to make this the height of five rows.
-constexpr CGFloat kMinimumTableHeight = 300.;
+// Stack view margin.
+constexpr CGFloat kStackViewMargin = 24.;
 
 // URL for the "Learn more" link.
 const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
 
+SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
+    SnippetSearchEngineElement* element) {
+  CHECK(element.keyword);
+  SnippetSearchEngineButton* button = [[SnippetSearchEngineButton alloc] init];
+  button.faviconImage = element.faviconImage;
+  button.nameLabel.text = element.name;
+  button.snippetText = element.snippetDescription;
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.searchEngineKeyword = element.keyword;
+  button.accessibilityIdentifier =
+      [NSString stringWithFormat:@"%@%@", kSnippetSearchEngineIdentifierPrefix,
+                                 element.name];
+  return button;
+}
+
 }  // namespace
+
+@interface SearchEngineChoiceViewController () <UITextViewDelegate>
+@end
 
 @implementation SearchEngineChoiceViewController {
   // The screen's title
   NSString* _titleString;
-  // The table containing the list of search engine choices.
-  SearchEngineChoiceTableViewController* _searchEngineTableViewController;
   // Button to confirm the default search engine selection.
   UIButton* _primaryButton;
   // View that contains all the UI elements above the search engine table.
@@ -66,24 +82,26 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   UIView* _scrollContentView;
   // Whether the choice screen is being displayed for the FRE.
   BOOL _isForFRE;
+  BOOL _didReachBottom;
+  // Search engine element chosen by the user.
+  SnippetSearchEngineElement* _chosenSearchEngineElement;
+  UIStackView* _searchEngineStackView;
+  SnippetSearchEngineButton* _selectedSearchEngineButton;
 }
 
-- (instancetype)initWithSearchEngineTableViewController:
-                    (SearchEngineChoiceTableViewController*)tableViewController
-                                                 forFRE:(BOOL)isForFRE {
-  CHECK(tableViewController);
+@synthesize searchEngines = _searchEngines;
+
+- (instancetype)initWithFirstRunMode:(BOOL)isForFRE {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    _searchEngineTableViewController = tableViewController;
     _isForFRE = isForFRE;
   }
   return self;
 }
 
 - (void)updatePrimaryActionButton {
-  UpdatePrimaryButton(_primaryButton,
-                      _searchEngineTableViewController.didReachBottom,
-                      self.didUserSelectARow);
+  UpdatePrimaryButton(_primaryButton, _didReachBottom,
+                      _selectedSearchEngineButton != nil);
 }
 
 #pragma mark - UIViewController
@@ -91,9 +109,7 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  [self addChildViewController:_searchEngineTableViewController];
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-  [_searchEngineTableViewController didMoveToParentViewController:self];
 
   _scrollContentView = [[UIView alloc] init];
   _scrollContentView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -172,11 +188,22 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   _subtitleTextView.editable = NO;
   _subtitleTextView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  UIView* searchEngineTableView = _searchEngineTableViewController.view;
-  [_scrollContentView addSubview:searchEngineTableView];
-  searchEngineTableView.translatesAutoresizingMaskIntoConstraints = NO;
+  _searchEngineStackView = [[UIStackView alloc] init];
+  // Add semantic group, so the user can skip all the search engine stack view,
+  // and jump to the primary button, using VoiceOver.
+  _searchEngineStackView.accessibilityContainerType =
+      UIAccessibilityContainerTypeSemanticGroup;
+  _searchEngineStackView.backgroundColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  _searchEngineStackView.layer.cornerRadius = 12.;
+  _searchEngineStackView.layer.masksToBounds = YES;
+  _searchEngineStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  _searchEngineStackView.axis = UILayoutConstraintAxisVertical;
+  [_scrollContentView addSubview:_searchEngineStackView];
 
   _scrollView = [[UIScrollView alloc] init];
+  _scrollView.accessibilityIdentifier = kSearchEngineChoiceScrollViewIdentifier;
+  _scrollView.delegate = self;
   [_scrollView addSubview:_scrollContentView];
   [self.view addSubview:_scrollView];
   _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -187,19 +214,14 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   [self.view bringSubviewToFront:_separatorView];
   _separatorView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  if (_searchEngineTableViewController.didReachBottom) {
-    _primaryButton = CreateDisabledPrimaryButton();
-  } else {
-    _primaryButton = CreateMorePrimaryButton();
-  }
+  _primaryButton = CreateMorePrimaryButton();
 
   [self.view addSubview:_primaryButton];
   [_primaryButton addTarget:self
                      action:@selector(primaryButtonAction)
            forControlEvents:UIControlEventTouchUpInside];
-  // Add semantic group, so the user can skip all the table view cells, and
-  // jump to the primary button, using VoiceOver. This requires to set
-  // `semantic group` to the button too.
+  // Add semantic group, so the user can skip all the search engine stack view,
+  // and jump to the primary button, using VoiceOver.
   _primaryButton.accessibilityContainerType =
       UIAccessibilityContainerTypeSemanticGroup;
 
@@ -244,14 +266,17 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
         constraintEqualToAnchor:_primaryButton.topAnchor
                        constant:-kDefaultMargin],
 
-    [searchEngineTableView.widthAnchor
-        constraintEqualToAnchor:_scrollContentView.widthAnchor],
-    [searchEngineTableView.topAnchor
+    [_searchEngineStackView.topAnchor
         constraintEqualToAnchor:_subtitleTextView.bottomAnchor],
-    [searchEngineTableView.bottomAnchor
-        constraintEqualToAnchor:_scrollContentView.bottomAnchor],
-    [searchEngineTableView.heightAnchor
-        constraintGreaterThanOrEqualToConstant:kMinimumTableHeight],
+    [_searchEngineStackView.bottomAnchor
+        constraintEqualToAnchor:_scrollContentView.bottomAnchor
+                       constant:-kStackViewMargin],
+    [_searchEngineStackView.leadingAnchor
+        constraintEqualToAnchor:_scrollContentView.leadingAnchor
+                       constant:kStackViewMargin],
+    [_searchEngineStackView.trailingAnchor
+        constraintEqualToAnchor:_scrollContentView.trailingAnchor
+                       constant:-kStackViewMargin],
 
     [self.view.centerXAnchor
         constraintEqualToAnchor:_primaryButton.centerXAnchor],
@@ -263,6 +288,28 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
     [_scrollView.centerXAnchor
         constraintEqualToAnchor:_scrollContentView.centerXAnchor],
   ]];
+  [self updatePrimaryActionButton];
+  [self loadSearchEngineButtons];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  // Update all views sizes before checking if the scroll view is at the bottom.
+  [self.view layoutIfNeeded];
+  [self updateDidReachBottomFlag];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  [self updateDidReachBottomFlag];
+}
+
+#pragma mark - SearchEngineChoiceTableConsumer
+
+- (void)setSearchEngines:(NSArray<SnippetSearchEngineElement*>*)searchEngines {
+  _searchEngines = searchEngines;
+  [self loadSearchEngineButtons];
 }
 
 #pragma mark - UITraitEnvironment
@@ -276,15 +323,80 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
 
 #pragma mark - Private
 
+// Called when the tap on a SnippetSearchEngineButton.
+- (void)searchEngineTapAction:(SnippetSearchEngineButton*)button {
+  [self.mutator selectSearchEnginewWithKeyword:button.searchEngineKeyword];
+  _selectedSearchEngineButton.checked = NO;
+  _selectedSearchEngineButton = button;
+  _selectedSearchEngineButton.checked = YES;
+  [self updatePrimaryActionButton];
+}
+
+// Called when the user tap on the primary button.
 - (void)primaryButtonAction {
-  if (_searchEngineTableViewController.didReachBottom) {
+  if (_didReachBottom) {
     [self.actionDelegate didTapPrimaryButton];
   } else {
-    [_searchEngineTableViewController scrollToBottom];
     CGPoint bottomOffset = CGPointMake(0, _scrollView.contentSize.height -
                                               _scrollView.bounds.size.height +
                                               _scrollView.contentInset.bottom);
     [_scrollView setContentOffset:bottomOffset animated:YES];
+  }
+}
+
+// Loads the search engine buttons from `_searchEngines`.
+- (void)loadSearchEngineButtons {
+  NSString* selectedSearchEngineKeyword =
+      _selectedSearchEngineButton.searchEngineKeyword;
+  _selectedSearchEngineButton = nil;
+  // This set saves the list of search engines that are expanded to keep them
+  // expanded after loading the search engine list.
+  NSMutableSet<NSString*>* expandedSearchEngineKeyword = [NSMutableSet set];
+  for (SnippetSearchEngineButton* oldSearchEngineButton in
+           _searchEngineStackView.arrangedSubviews) {
+    if (oldSearchEngineButton.snippetButtonState ==
+        SnippetButtonState::kExpanded) {
+      [expandedSearchEngineKeyword
+          addObject:oldSearchEngineButton.searchEngineKeyword];
+    }
+    [_searchEngineStackView removeArrangedSubview:oldSearchEngineButton];
+    [oldSearchEngineButton removeFromSuperview];
+  }
+  SnippetSearchEngineButton* button = nil;
+  for (SnippetSearchEngineElement* element in _searchEngines) {
+    button = CreateSnippetSearchEngineButtonWithElement(element);
+    button.animatedLayoutView = _scrollView;
+    if ([expandedSearchEngineKeyword containsObject:element.keyword]) {
+      button.snippetButtonState = SnippetButtonState::kExpanded;
+    }
+    if ([selectedSearchEngineKeyword isEqualToString:element.keyword]) {
+      button.checked = YES;
+      _selectedSearchEngineButton = button;
+    }
+    [button addTarget:self
+                  action:@selector(searchEngineTapAction:)
+        forControlEvents:UIControlEventTouchUpInside];
+    [_searchEngineStackView addArrangedSubview:button];
+  }
+  // Hide the horizontal seperator for the last button.
+  button.horizontalSeparatorHidden = YES;
+  [self.view layoutSubviews];
+  [self updateDidReachBottomFlag];
+}
+
+- (void)updateDidReachBottomFlag {
+  if (_didReachBottom || !self.presentingViewController) {
+    // Don't update the value if the bottom was reached at least once.
+    // Don't update the value if the view is not presented yet.
+    return;
+  }
+  CGFloat scrollPosition =
+      _scrollView.contentOffset.y + _scrollView.frame.size.height;
+  CGFloat scrollLimit =
+      _scrollView.contentSize.height + _scrollView.contentInset.bottom;
+  if (scrollPosition >= scrollLimit) {
+    _didReachBottom = YES;
+    [self updatePrimaryActionButton];
   }
 }
 

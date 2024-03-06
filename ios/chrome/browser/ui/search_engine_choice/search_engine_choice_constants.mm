@@ -13,7 +13,7 @@ NSString* const kSnippetSearchEngineIdentifierPrefix =
     @"SnippetSearchEngineIdentifierPrefix_";
 NSString* const kSetAsDefaultSearchEngineIdentifier =
     @"SetAsDefaultSearchEngineIdentifier";
-NSString* const kSearchEngineTableViewIdentifier =
-    @"SearchEngineTableViewIdentifier";
+NSString* const kSearchEngineChoiceScrollViewIdentifier =
+    @"SearchEngineChoiceScrollViewIdentifier";
 NSString* const kSearchEngineMoreButtonIdentifier =
     @"SearchEngineMoreButtonIdentifier";

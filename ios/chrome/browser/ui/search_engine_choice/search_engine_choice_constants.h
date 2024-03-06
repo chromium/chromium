@@ -7,14 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-// State of the snippet in SnippetSearchEngineItem/Cell.
-enum class SnippetState {
-  // The chevron is pointing down, the snippet is hidden.
-  kHidden,
-  // The chevron is pointing up, the snippet is shown.
-  kShown,
-};
-
 // Favicon size and radius.
 extern const CGFloat kFaviconImageViewSize;
 extern const CGFloat kFaviconImageViewRadius;
@@ -25,8 +17,8 @@ extern NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier;
 extern NSString* const kSnippetSearchEngineIdentifierPrefix;
 // `Set as Default` button accessibility identifier.
 extern NSString* const kSetAsDefaultSearchEngineIdentifier;
-// Search engine table view identifier.
-extern NSString* const kSearchEngineTableViewIdentifier;
+// Search engine choice scroll view identifier.
+extern NSString* const kSearchEngineChoiceScrollViewIdentifier;
 // `More` button accessibility identifier.
 extern NSString* const kSearchEngineMoreButtonIdentifier;
 
