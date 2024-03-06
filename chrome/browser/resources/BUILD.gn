@@ -34,7 +34,7 @@ group("resources") {
       "hats:resources",
       "history:resources",
       "identity_internals:resources",
-      "lens:untrusted_resources",
+      "lens/overlay:resources",
       "management:resources",
       "new_tab_page:resources",
       "new_tab_page_instant:resources",
