@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -43,6 +44,7 @@
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/providers/app_distribution/test_app_distribution.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #import "ios/testing/ocmock_complex_type_helper.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -194,7 +196,12 @@ class AppStateTest : public BlockCleanupTest {
   void SetUp() override {
     BlockCleanupTest::SetUp();
     TestChromeBrowserState::Builder test_cbs_builder;
-    browser_state_ = test_cbs_builder.Build();
+    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
+        test_cbs_builder.Build());
+    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
+        browser_state_manager_.get());
+
+    browser_state_ = browser_state_manager_->GetLastUsedBrowserState();
   }
 
   void TearDown() override {
@@ -248,7 +255,7 @@ class AppStateTest : public BlockCleanupTest {
 
       main_scene_state_ =
           [main_scene_state_ initWithAppState:app_state_
-                                 browserState:browser_state_.get()];
+                                 browserState:GetBrowserState()];
       main_scene_state_.window = GetWindowMock();
 
       if (with_safe_mode_agent) {
@@ -288,7 +295,7 @@ class AppStateTest : public BlockCleanupTest {
 
       main_scene_state_ =
           [main_scene_state_ initWithAppState:app_state_
-                                 browserState:browser_state_.get()];
+                                 browserState:GetBrowserState()];
       main_scene_state_.window = window;
       [window makeKeyAndVisible];
 
@@ -334,7 +341,8 @@ class AppStateTest : public BlockCleanupTest {
   std::unique_ptr<ScopedBlockSwizzler> safe_mode_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> connected_scenes_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> handle_startup_swizzler_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  raw_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
 };
 
 #pragma mark - Tests.

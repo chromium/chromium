@@ -641,11 +641,15 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self scheduleLowPriorityStartupTasks];
 
   // Run after UI created to avoid trying to update UI before it is available.
-  // TODO(crbug.com/325596559): This should run for all browser states.
   if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
-    enterprise_idle::IdleServiceFactory::GetForBrowserState(
-        self.appState.mainBrowserState)
-        ->OnApplicationWillEnterForeground();
+    std::vector<ChromeBrowserState*> loadedBrowserStates =
+        GetApplicationContext()
+            ->GetChromeBrowserStateManager()
+            ->GetLoadedBrowserStates();
+    for (ChromeBrowserState* browserState : loadedBrowserStates) {
+      enterprise_idle::IdleServiceFactory::GetForBrowserState(browserState)
+          ->OnApplicationWillEnterForeground();
+    }
   }
 
   // Now that everything is properly set up, run the tests.

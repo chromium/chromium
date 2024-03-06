@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -252,14 +253,15 @@ void FlushCookieStoreOnIOThread(
     return;
   }
 
-  // TODO(crbug.com/325596559): Do this for every loaded browser state. Remove
-  // the test condition. mainBrowserState may be empty in tests e.g.
-  // `AppStateTest.applicationWillEnterForeground`.
-  if (self.mainBrowserState &&
-      base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
-    enterprise_idle::IdleServiceFactory::GetForBrowserState(
-        self.mainBrowserState)
-        ->OnApplicationWillEnterBackground();
+  if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
+    std::vector<ChromeBrowserState*> loadedBrowserStates =
+        GetApplicationContext()
+            ->GetChromeBrowserStateManager()
+            ->GetLoadedBrowserStates();
+    for (ChromeBrowserState* browserState : loadedBrowserStates) {
+      enterprise_idle::IdleServiceFactory::GetForBrowserState(browserState)
+          ->OnApplicationWillEnterBackground();
+    }
   }
 
   [MetricsMediator
