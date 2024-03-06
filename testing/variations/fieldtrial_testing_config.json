@@ -9308,22 +9308,6 @@
             ]
         }
     ],
-    "IOSTabGridCompositionalLayout": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "CompositionalWithAlwaysBounce_20240201",
-                    "enable_features": [
-                        "TabGridAlwaysBounce",
-                        "TabGridCompositionalLayout"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSTabPickup": [
         {
             "platforms": [
