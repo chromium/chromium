@@ -30,6 +30,7 @@ class EventGenerator;
 namespace ash {
 class AppsGridView;
 class AppListModel;
+class ContinueTaskView;
 class PaginationModel;
 class AppListItemView;
 class SearchResultListView;
@@ -173,6 +174,8 @@ class ASH_EXPORT AppListTestApi {
 
   // Returns the recent app item item specified by `index`.
   views::View* GetRecentAppAt(int index);
+
+  std::vector<ContinueTaskView*> GetContinueTaskViews();
 
   // Returns the list of app IDs shown in recent apps view, in order they appear
   // in the  UI.

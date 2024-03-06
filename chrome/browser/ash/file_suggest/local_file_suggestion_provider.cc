@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/app_list/search/files/justifications.h"
 #include "chrome/browser/ash/app_list/search/ranking/util.h"
 #include "chrome/browser/ash/app_list/search/util/mrfu_cache.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggestion_provider.h"
@@ -177,7 +178,11 @@ void LocalFileSuggestionProvider::OnFilesOpened(
     // 2. The open relates to a Drive file, which is handled by another
     // provider. Filter this out by checking if the file resides in the user's
     // cryptohome.
-    if (!profile_path.AppendRelativePath(file_open.path, nullptr)) {
+    if (!profile_path.IsParent(file_open.path) &&
+        !file_manager::util::GetMyFilesFolderForProfile(profile_).IsParent(
+            file_open.path) &&
+        !file_manager::util::GetDownloadsFolderForProfile(profile_).IsParent(
+            file_open.path)) {
       continue;
     }
 
