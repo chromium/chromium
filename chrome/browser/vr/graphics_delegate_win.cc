@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/vr/win/graphics_delegate_win.h"
+#include "chrome/browser/vr/graphics_delegate_win.h"
 
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "content/public/browser/gpu_utils.h"

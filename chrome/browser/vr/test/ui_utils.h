@@ -14,7 +14,7 @@
 namespace vr {
 
 class BrowserRenderer;
-class VRBrowserRendererThreadWin;
+class VRBrowserRendererThread;
 
 // Port of the equivalent NativeUiUtils.java for instrumentation tests. Contains
 // utility functions for interacting with the native VR UI, e.g. notifications
@@ -47,7 +47,7 @@ class UiUtils {
 
  private:
   static void PollForBrowserRenderer(base::RunLoop* wait_loop);
-  static VRBrowserRendererThreadWin* GetRendererThread();
+  static VRBrowserRendererThread* GetRendererThread();
   static BrowserRenderer* GetBrowserRenderer();
 
   void WatchElementForVisibilityStatusForTesting(

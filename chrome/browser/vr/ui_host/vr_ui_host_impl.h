@@ -25,7 +25,7 @@
 
 namespace vr {
 
-class VRBrowserRendererThreadWin;
+class VRBrowserRendererThread;
 
 // Concrete implementation of VRBrowserRendererHost, part of the "browser"
 // component. Used on the browser's main thread.
@@ -89,7 +89,7 @@ class VRUiHostImpl : public content::VrUiHost,
   void InitCapturingStates();
   void PollCapturingState();
 
-  std::unique_ptr<VRBrowserRendererThreadWin> ui_rendering_thread_;
+  std::unique_ptr<VRBrowserRendererThread> ui_rendering_thread_;
   base::WeakPtr<content::WebContents> web_contents_ = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 

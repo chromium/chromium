@@ -10,7 +10,7 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/vr/win/vr_browser_renderer_thread_win.h"
+#include "chrome/browser/vr/vr_browser_renderer_thread.h"
 #endif  // BUILDFLAG(IS_WIN)
 #include "chrome/browser/vr/test/xr_browser_test.h"
 
@@ -94,15 +94,15 @@ void UiUtils::WatchElementForVisibilityStatusForTesting(
 
 void UiUtils::DisableOverlayForTesting() {
 #if BUILDFLAG(IS_WIN)
-  VRBrowserRendererThreadWin::DisableOverlayForTesting();
+  VRBrowserRendererThread::DisableOverlayForTesting();
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-VRBrowserRendererThreadWin* UiUtils::GetRendererThread() {
+VRBrowserRendererThread* UiUtils::GetRendererThread() {
 #if BUILDFLAG(IS_WIN)
-  return VRBrowserRendererThreadWin::GetInstanceForTesting();
+  return VRBrowserRendererThread::GetInstanceForTesting();
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(IS_WIN)
@@ -113,7 +113,7 @@ BrowserRenderer* UiUtils::GetBrowserRenderer() {
   auto* renderer_thread = GetRendererThread();
   if (renderer_thread == nullptr)
     return nullptr;
-  return static_cast<VRBrowserRendererThreadWin*>(renderer_thread)
+  return static_cast<VRBrowserRendererThread*>(renderer_thread)
       ->GetBrowserRendererForTesting();
 #else
   NOTREACHED();

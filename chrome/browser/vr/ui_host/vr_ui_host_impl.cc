@@ -11,8 +11,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/vr/vr_browser_renderer_thread.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
-#include "chrome/browser/vr/win/vr_browser_renderer_thread_win.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/device_service.h"
@@ -145,7 +145,7 @@ VRUiHostImpl::VRUiHostImpl(
   VrTabHelper::SetIsContentDisplayedInHeadset(&contents, true);
 
   ui_rendering_thread_ =
-      std::make_unique<VRBrowserRendererThreadWin>(std::move(overlay), views);
+      std::make_unique<VRBrowserRendererThread>(std::move(overlay), views);
 
   InitCapturingStates();
   PollCapturingState();

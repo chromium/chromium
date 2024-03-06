@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_VR_WIN_GRAPHICS_DELEGATE_WIN_H_
-#define CHROME_BROWSER_VR_WIN_GRAPHICS_DELEGATE_WIN_H_
+#ifndef CHROME_BROWSER_VR_GRAPHICS_DELEGATE_WIN_H_
+#define CHROME_BROWSER_VR_GRAPHICS_DELEGATE_WIN_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -59,4 +59,4 @@ class GraphicsDelegateWin : public GraphicsDelegate {
 
 }  // namespace vr
 
-#endif  // CHROME_BROWSER_VR_WIN_GRAPHICS_DELEGATE_WIN_H_
+#endif  // CHROME_BROWSER_VR_GRAPHICS_DELEGATE_WIN_H_

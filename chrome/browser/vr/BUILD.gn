@@ -154,11 +154,11 @@ component("vr_common") {
     "frame_type.h",
     "graphics_delegate.cc",
     "graphics_delegate.h",
+    "vr_browser_renderer_thread.cc",
+    "vr_browser_renderer_thread.h",
     "vr_export.h",
     "vr_web_contents_observer.cc",
     "vr_web_contents_observer.h",
-    "win/vr_browser_renderer_thread_win.cc",
-    "win/vr_browser_renderer_thread_win.h",
   ]
 
   public_deps = [
@@ -194,8 +194,8 @@ component("vr_common") {
 
   if (is_win) {
     sources += [
-      "win/graphics_delegate_win.cc",
-      "win/graphics_delegate_win.h",
+      "graphics_delegate_win.cc",
+      "graphics_delegate_win.h",
     ]
 
     deps += [ "//services/viz/public/cpp/gpu" ]

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_VR_WIN_VR_BROWSER_RENDERER_THREAD_WIN_H_
-#define CHROME_BROWSER_VR_WIN_VR_BROWSER_RENDERER_THREAD_WIN_H_
+#ifndef CHROME_BROWSER_VR_VR_BROWSER_RENDERER_THREAD_H_
+#define CHROME_BROWSER_VR_VR_BROWSER_RENDERER_THREAD_H_
 
 #include <memory>
 
@@ -27,12 +27,12 @@ class BrowserUiInterface;
 class SchedulerUiInterface;
 class GraphicsDelegate;
 
-class VR_EXPORT VRBrowserRendererThreadWin {
+class VR_EXPORT VRBrowserRendererThread {
  public:
-  VRBrowserRendererThreadWin(
+  VRBrowserRendererThread(
       mojo::PendingRemote<device::mojom::ImmersiveOverlay> overlay,
       const std::vector<device::mojom::XRViewPtr>& views);
-  ~VRBrowserRendererThreadWin();
+  ~VRBrowserRendererThread();
 
   void SetFramesThrottled(bool throttled);
 
@@ -44,7 +44,7 @@ class VR_EXPORT VRBrowserRendererThreadWin {
                          const CapturingStateModel& background_capturing,
                          const CapturingStateModel& potential_capturing);
 
-  static VRBrowserRendererThreadWin* GetInstanceForTesting();
+  static VRBrowserRendererThread* GetInstanceForTesting();
   BrowserRenderer* GetBrowserRendererForTesting();
   static void DisableOverlayForTesting();
 
@@ -110,13 +110,13 @@ class VR_EXPORT VRBrowserRendererThreadWin {
   // This class is effectively a singleton, although it's not actually
   // implemented as one. Since tests need to access the thread to post tasks,
   // just keep a static reference to the existing instance.
-  static VRBrowserRendererThreadWin* instance_for_testing_;
+  static VRBrowserRendererThread* instance_for_testing_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  base::WeakPtrFactory<VRBrowserRendererThreadWin> weak_ptr_factory_{this};
+  base::WeakPtrFactory<VRBrowserRendererThread> weak_ptr_factory_{this};
 };
 
 }  // namespace vr
 
-#endif  // CHROME_BROWSER_VR_WIN_VR_BROWSER_RENDERER_THREAD_WIN_H_
+#endif  // CHROME_BROWSER_VR_VR_BROWSER_RENDERER_THREAD_H_

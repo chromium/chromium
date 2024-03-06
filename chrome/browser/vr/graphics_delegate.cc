@@ -19,7 +19,7 @@
 #include "ui/gfx/geometry/transform.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/vr/win/graphics_delegate_win.h"
+#include "chrome/browser/vr/graphics_delegate_win.h"
 #elif BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/vr/graphics_delegate_android.h"
 #endif
