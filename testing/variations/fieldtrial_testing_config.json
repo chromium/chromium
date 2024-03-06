@@ -650,7 +650,7 @@
             ]
         }
     ],
-    "AndroidTabGroupBundle": [
+    "AndroidTabGroupStableIds": [
         {
             "platforms": [
                 "android"
