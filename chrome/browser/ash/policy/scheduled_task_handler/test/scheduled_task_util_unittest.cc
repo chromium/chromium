@@ -91,6 +91,38 @@ TEST(ScheduledTaskUtilTest,
       data, TimeFromUtcString("Jan 31 2021, 09:33"), *GetUtcTimeZone());
 
   ASSERT_TRUE(delay.has_value());
+  EXPECT_EQ(delay.value(), base::Hours(23) + base::Minutes(19));
+}
+
+TEST(ScheduledTaskUtilTest, DailyTaskShouldBeScheduledNextDayBeforeLeapDay) {
+  ScheduledTaskExecutor::ScheduledTaskData data;
+  data.frequency = ScheduledTaskExecutor::Frequency::kDaily;
+  data.hour = 8;
+  data.minute = 52;
+
+  const base::Time current_time = TimeFromUtcString("Feb 28 1964, 09:33");
+
+  const std::optional<base::TimeDelta> delay =
+      CalculateNextScheduledTaskTimerDelay(data, current_time,
+                                           *GetUtcTimeZone());
+
+  ASSERT_TRUE(delay.has_value());
+  EXPECT_EQ(delay.value(), base::Hours(23) + base::Minutes(19));
+}
+
+TEST(ScheduledTaskUtilTest, DailyTaskShouldBeScheduledNextDayOnLeapDay) {
+  ScheduledTaskExecutor::ScheduledTaskData data;
+  data.frequency = ScheduledTaskExecutor::Frequency::kDaily;
+  data.hour = 8;
+  data.minute = 52;
+
+  const base::Time current_time = TimeFromUtcString("Feb 29 1964, 09:33");
+
+  const std::optional<base::TimeDelta> delay =
+      CalculateNextScheduledTaskTimerDelay(data, current_time,
+                                           *GetUtcTimeZone());
+
+  ASSERT_TRUE(delay.has_value());
   EXPECT_EQ(delay.value(), base::TimeDeltaFromString("23h19m"));
 }
 
