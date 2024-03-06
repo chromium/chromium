@@ -16,9 +16,6 @@ inline constexpr char kFontScale[] = "dom_distiller.font_scale";
 // Path to the boolean whether Reader Mode for Accessibility option is enabled.
 inline constexpr char kReaderForAccessibility[] =
     "dom_distiller.reader_for_accessibility";
-// A boolean pref set to true if the option to use reader mode should be visible
-// on articles, when available.
-inline constexpr char kOfferReaderMode[] = "dom_distiller.offer_reader_mode";
 
 }  // namespace dom_distiller::prefs
 

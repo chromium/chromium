@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="PreferencesMigratedToBasic"/>
   <int value="27" label="PriceEmailNotificationsEnabled"/>
   <int value="28" label="Font"/>
-  <int value="29" label="OfferReaderMode"/>
+  <int value="29" label="(obsolete) OfferReaderMode"/>
   <int value="30" label="ReaderForAccessibility"/>
   <int value="31" label="Theme"/>
   <int value="32" label="AcceptLanguages"/>

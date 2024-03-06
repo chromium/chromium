@@ -67,7 +67,7 @@ enum {
   kPreferencesMigratedToBasic = 26,
   kPriceEmailNotificationsEnabled = 27,
   kFont = 28,
-  kOfferReaderMode = 29,
+  // kOfferReaderMode = 29, (deprecated)
   kReaderForAccessibility = 30,
   kTheme = 31,
   kAcceptLanguages = 32,
@@ -204,9 +204,6 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
         {dom_distiller::prefs::kFont,
          {syncable_prefs_ids::kFont, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {dom_distiller::prefs::kOfferReaderMode,
-         {syncable_prefs_ids::kOfferReaderMode, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
         {dom_distiller::prefs::kReaderForAccessibility,
          {syncable_prefs_ids::kReaderForAccessibility, syncer::PREFERENCES,

@@ -7,17 +7,9 @@
 
 #include "base/feature_list.h"
 
-class PrefService;
-
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
-
 namespace dom_distiller {
 
 BASE_DECLARE_FEATURE(kReaderMode);
-
-void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 // Returns true when flag enable-dom-distiller is set or reader mode is enabled
 // from flags or Finch.
@@ -28,10 +20,9 @@ bool IsDomDistillerEnabled();
 bool OfferReaderModeInSettings();
 
 // Returns true if a user should be shown the option to view pages in reader
-// mode, when available. This happens when either:
-// A. OfferReaderModeInSettings is true and kOfferReaderMode pref is enabled,
-// B. or OfferReaderModeInSettings is false, but IsDomDistillerEnabled is true.
-bool ShowReaderModeOption(PrefService* pref_service);
+// mode, when available. This happens when:
+// OfferReaderModeInSettings is false, but IsDomDistillerEnabled is true.
+bool ShowReaderModeOption();
 
 bool ShouldStartDistillabilityService();
 

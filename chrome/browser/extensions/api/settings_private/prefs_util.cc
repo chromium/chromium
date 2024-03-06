@@ -242,8 +242,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kConfirmToQuitEnabled] =
       settings_api::PrefType::kBoolean;
 #endif
-  (*s_allowlist)[dom_distiller::prefs::kOfferReaderMode] =
-      settings_api::PrefType::kBoolean;
   (*s_allowlist)[prefs::kHoverCardImagesEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[prefs::kHoverCardMemoryUsageEnabled] =

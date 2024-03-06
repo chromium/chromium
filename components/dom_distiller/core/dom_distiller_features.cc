@@ -10,19 +10,10 @@
 #include "base/metrics/field_trial_params.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/dom_distiller/core/pref_names.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
 
 namespace dom_distiller {
 
 BASE_FEATURE(kReaderMode, "ReaderMode", base::FEATURE_DISABLED_BY_DEFAULT);
-
-void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  // Whether the reader mode option should be shown on distillable pages.
-  registry->RegisterBooleanPref(
-      dom_distiller::prefs::kOfferReaderMode, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-}
 
 bool IsDomDistillerEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -40,9 +31,9 @@ bool OfferReaderModeInSettings() {
   return parameter == switches::kReaderModeOfferInSettings;
 }
 
-bool ShowReaderModeOption(PrefService* pref_service) {
+bool ShowReaderModeOption() {
   if (OfferReaderModeInSettings())
-    return pref_service->GetBoolean(prefs::kOfferReaderMode);
+    return false;
   return IsDomDistillerEnabled();
 }
 
