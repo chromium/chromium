@@ -8,15 +8,26 @@ import("//build/config/ios/rules.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
 
-tweak_info_plist("tweak_info_plist") {
+tweak_info_plist("tweak_content_process_plist") {
   info_plist = "ios-content.plist"
 }
 
-compile_entitlements("entitlements") {
+tweak_info_plist("tweak_network_process_plist") {
+  info_plist = "ios-network.plist"
+}
+
+compile_entitlements("content_process_entitlements") {
   substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
   output_name = "$target_gen_dir/content_process.appex.entitlements"
   entitlements_templates =
       [ "../../../app/ios/appex/content_process.appex.entitlements" ]
+}
+
+compile_entitlements("network_process_entitlements") {
+  substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
+  output_name = "$target_gen_dir/network_process.appex.entitlements"
+  entitlements_templates =
+      [ "../../../app/ios/appex/network_process.appex.entitlements" ]
 }
 
 ios_appex_bundle("content_process") {
@@ -38,7 +49,31 @@ ios_appex_bundle("content_process") {
     "//content/shell/app/ios/resources",
   ]
 
-  entitlements_target = ":entitlements"
-  info_plist_target = ":tweak_info_plist"
+  entitlements_target = ":content_process_entitlements"
+  info_plist_target = ":tweak_content_process_plist"
   bundle_identifier = "$shared_bundle_id_for_test_apps.ContentProcess"
+}
+
+ios_appex_bundle("network_process") {
+  testonly = true
+  output_name = "network_process"
+
+  sources = [ "../shell_main.cc" ]
+
+  ldflags = [ "-Wl,--ignore-auto-link-option=CoreAudioTypes" ]
+
+  deps = [
+    "//content/app/ios/appex:network_process",
+    "//content/public/app",
+    "//content/shell:content_shell_app",
+    "//content/shell:content_shell_lib",
+  ]
+  bundle_deps = [
+    "//content/shell:content_shell_framework_resources",
+    "//content/shell/app/ios/resources",
+  ]
+
+  entitlements_target = ":network_process_entitlements"
+  info_plist_target = ":tweak_network_process_plist"
+  bundle_identifier = "$shared_bundle_id_for_test_apps.NetworkProcess"
 }

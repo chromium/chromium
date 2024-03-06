@@ -4,13 +4,15 @@
 
 #include <list>
 
-#import <BrowserEngineKit/BEWebContentProcess.h>
+#import <BrowserEngineKit/BrowserEngineKit.h>
 
 #include "base/mac/mach_port_rendezvous.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/child_process_launcher_helper.h"
 #include "content/browser/child_process_launcher_helper_posix.h"
 #include "content/public/browser/child_process_launcher_utils.h"
+#include "content/public/common/content_switches.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace content {
 namespace internal {
@@ -19,20 +21,58 @@ namespace internal {
 // dispatch_queue to the LauncherThread.
 class LaunchResult {
  public:
-  BEWebContentProcess* process;
-  NSError* error;
+  void Invalidate() {
+    if ([process isKindOfClass:[BEWebContentProcess class]]) {
+      [(BEWebContentProcess*)process invalidate];
+    } else if ([process isKindOfClass:[BENetworkingProcess class]]) {
+      [(BENetworkingProcess*)process invalidate];
+    } else if ([process isKindOfClass:[BERenderingProcess class]]) {
+      [(BERenderingProcess*)process invalidate];
+    }
+  }
+
+  id<BEProcessCapabilityGrant> GrantForeground(NSError** error) {
+    id<BEProcessCapabilityGrant> grant;
+    BEProcessCapability* cap = [BEProcessCapability foreground];
+    if ([process isKindOfClass:[BEWebContentProcess class]]) {
+      grant = [(BEWebContentProcess*)process grantCapability:cap error:error];
+    } else if ([process isKindOfClass:[BENetworkingProcess class]]) {
+      grant = [(BENetworkingProcess*)process grantCapability:cap error:error];
+    } else if ([process isKindOfClass:[BERenderingProcess class]]) {
+      grant = [(BERenderingProcess*)process grantCapability:cap error:error];
+    }
+    return grant;
+  }
+
+  xpc_connection_t CreateXPCConnection(NSError** error) {
+    if ([process isKindOfClass:[BEWebContentProcess class]]) {
+      return [(BEWebContentProcess*)process makeLibXPCConnectionError:error];
+    } else if ([process isKindOfClass:[BENetworkingProcess class]]) {
+      return [(BENetworkingProcess*)process makeLibXPCConnectionError:error];
+    } else if ([process isKindOfClass:[BERenderingProcess class]]) {
+      return [(BERenderingProcess*)process makeLibXPCConnectionError:error];
+    }
+    return {};
+  }
+
+  NSObject* process;
+  NSError* launch_error;
 };
 
 // Object to store the process handles.
 class ProcessStorage : public ProcessStorageBase {
  public:
-  ProcessStorage(BEWebContentProcess* process, xpc_connection_t connection)
-      : process_(process), ipc_channel_(connection) {}
-  ~ProcessStorage() override = default;
+  ProcessStorage(NSObject* process,
+                 xpc_connection_t connection,
+                 id<BEProcessCapabilityGrant> grant)
+      : process_(process), ipc_channel_(connection), grant_(grant) {}
+
+  ~ProcessStorage() override { [grant_ invalidate]; }
 
  private:
-  [[maybe_unused]] BEWebContentProcess* process_;
+  [[maybe_unused]] NSObject* process_;
   [[maybe_unused]] xpc_connection_t ipc_channel_;
+  id<BEProcessCapabilityGrant> grant_;
 };
 
 std::optional<mojo::NamedPlatformChannel>
@@ -80,19 +120,43 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     // make an implementation. Reported to Apple via feedback (13657030).
     LOG(ERROR) << "Process died";
   };
-  void (^process_launch_complete)(BEWebContentProcess* process,
-                                  NSError* error) =
-      ^void(BEWebContentProcess* process, NSError* error) {
-        auto result = std::make_unique<LaunchResult>(process, error);
-        GetProcessLauncherTaskRunner()->PostTask(
-            FROM_HERE,
-            base::BindOnce(&ChildProcessLauncherHelper::OnChildProcessStarted,
-                           this, std::move(result)));
-      };
+  std::string process_type = GetProcessType();
+  std::string utility_sub_type =
+      command_line()->GetSwitchValueASCII(switches::kUtilitySubType);
+  if (process_type == switches::kUtilityProcess &&
+      utility_sub_type == network::mojom::NetworkService::Name_) {
+    void (^process_launch_complete)(BENetworkingProcess* process,
+                                    NSError* error) =
+        ^void(BENetworkingProcess* process, NSError* error) {
+          auto result = std::make_unique<LaunchResult>(process, error);
+          GetProcessLauncherTaskRunner()->PostTask(
+              FROM_HERE,
+              base::BindOnce(&ChildProcessLauncherHelper::OnChildProcessStarted,
+                             this, std::move(result)));
+        };
 
-  [BEWebContentProcess
-      webContentProcessWithInterruptionHandler:process_terminated
-                                    completion:process_launch_complete];
+    [BENetworkingProcess
+        networkProcessWithInterruptionHandler:process_terminated
+                                   completion:process_launch_complete];
+
+  } else if (process_type == switches::kGpuProcess) {
+    // TODO(dtapuska): bring process up.
+  } else {
+    // This can be both kUtility and kRenderProcess.
+    void (^process_launch_complete)(BEWebContentProcess* process,
+                                    NSError* error) =
+        ^void(BEWebContentProcess* process, NSError* error) {
+          auto result = std::make_unique<LaunchResult>(process, error);
+          GetProcessLauncherTaskRunner()->PostTask(
+              FROM_HERE,
+              base::BindOnce(&ChildProcessLauncherHelper::OnChildProcessStarted,
+                             this, std::move(result)));
+        };
+
+    [BEWebContentProcess
+        webContentProcessWithInterruptionHandler:process_terminated
+                                      completion:process_launch_complete];
+  }
   AddRef();
   return Process();
 }
@@ -105,10 +169,16 @@ void ChildProcessLauncherHelper::OnChildProcessStarted(
 
   int launch_result_code = LAUNCH_RESULT_FAILURE;
 
-  if (!launch_result->error) {
+  if (!launch_result->launch_error) {
     NSError* error = nil;
+
+    // TODO(dtapuska): For now we grant everything foreground capability. We
+    // need to hook this grant up to the
+    // `RenderProcessHostImpl::UpdateProcessPriority()`.
+    id<BEProcessCapabilityGrant> grant = launch_result->GrantForeground(&error);
+
     xpc_connection_t xpc_connection =
-        [launch_result->process makeLibXPCConnectionError:&error];
+        launch_result->CreateXPCConnection(&error);
     if (xpc_connection) {
       xpc_connection_set_event_handler(xpc_connection, ^(xpc_object_t msg){
                                        });
@@ -125,11 +195,13 @@ void ChildProcessLauncherHelper::OnChildProcessStarted(
       xpc_connection_send_message(xpc_connection, message);
       launch_result_code = LAUNCH_RESULT_SUCCESS;
 
-      // Keep reference to BEWebContentProcess.
+      // Keep reference to process, xpc_connection and the grant for the process
+      // life.
       process_storage_ = std::make_unique<ProcessStorage>(
-          launch_result->process, xpc_connection);
+          launch_result->process, xpc_connection, grant);
     } else {
-      [launch_result->process invalidate];
+      [grant invalidate];
+      launch_result->Invalidate();
     }
   }
 

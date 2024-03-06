@@ -33,3 +33,17 @@ swift_source_set("content_process") {
 
   deps = [ ":content_main_thunk" ]
 }
+
+swift_source_set("network_process") {
+  sources = [ "network_process.swift" ]
+  bridge_header = "content_main_thunk.h"
+
+  frameworks = [
+    "Foundation.framework",
+    "ExtensionFoundation.framework",
+    "BrowserEngineCore.framework",
+    "BrowserEngineKit.framework",
+  ]
+
+  deps = [ ":content_main_thunk" ]
+}

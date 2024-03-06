@@ -646,8 +646,10 @@ if (is_android) {
     sources = [ "app/shell_main.cc" ]
 
     deps = [
+      ":content_process_bundle",
       ":content_shell_app",
       ":content_shell_lib",
+      ":network_process_bundle",
       "//base",
       "//build:ios_buildflags",
       "//content/public/app",
@@ -656,20 +658,21 @@ if (is_android) {
       ":content_shell_framework_resources",
       "app/ios/resources",
     ]
-    if (ios_deployment_target == "17.4") {
-      deps += [ ":content_process_bundle" ]
-    }
     entitlements_path = ios_content_shell_entitlements_path
     bundle_identifier = ios_content_shell_bundle_identifier
   }
 
-  if (ios_deployment_target == "17.4" &&
-      current_toolchain == default_toolchain) {
+  if (current_toolchain == default_toolchain) {
     _extension_toolchain = "${current_toolchain}_blink_app_ext"
     extension2_bundle_data("content_process_bundle") {
       extension_name = "content_process.appex"
       extension_target =
           "//content/shell/app/ios:content_process(${_extension_toolchain})"
+    }
+    extension2_bundle_data("network_process_bundle") {
+      extension_name = "network_process.appex"
+      extension_target =
+          "//content/shell/app/ios:network_process(${_extension_toolchain})"
     }
   }
 } else {
