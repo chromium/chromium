@@ -93,7 +93,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   struct Data {
     Data();
     Data(Data&& other);
-    Data& operator=(Data&&);
+    Data& operator=(Data&& other);
     ~Data();
 
     // Helper function to populate `text` and `image` with the data in a
@@ -171,6 +171,15 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   using CompletionCallback =
       base::OnceCallback<void(const Data& data, Result& result)>;
 
+  // Callback used with CreateForFilesInWebContents() that informs caller of
+  // verdict of deep scans.  `data` is the object passed to
+  // CreateForFilesInWebContents(). The boolean vector holds the same number of
+  // elements as `data.paths` and each corresponds to a path in `data.paths`
+  // with the same index.
+  using ForFilesCompletionCallback =
+      base::OnceCallback<void(std::vector<base::FilePath> paths,
+                              std::vector<bool>)>;
+
   // A factory function used in tests to create fake ContentAnalysisDelegate
   // instances.
   using Factory =
@@ -237,6 +246,20 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
       content::WebContents* web_contents,
       Data data,
       CompletionCallback callback,
+      safe_browsing::DeepScanAccessPoint access_point);
+
+  // Helper function for calling CreateForWebContents() when the data to
+  // process is a collection of files on disk.  This requires first expanding
+  // any directories in the given paths in order analyze all the files.
+  // If the calling code has already done the directory expansion then it can
+  // call `CreateForWebContents()` directly.
+  //
+  // `data.paths` is expected to contain the files and/or directories to
+  // analyze.  `text` and `page` are expected to be null/empty.
+  static void CreateForFilesInWebContents(
+      content::WebContents* web_contents,
+      Data data,
+      ForFilesCompletionCallback callback,
       safe_browsing::DeepScanAccessPoint access_point);
 
   // In tests, sets a factory function for creating fake

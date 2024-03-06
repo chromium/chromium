@@ -41,6 +41,7 @@
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/common/files_scan_data.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/prefs/pref_service.h"
@@ -80,6 +81,45 @@ ContentAnalysisDelegate::OnAckAllRequestsCallback* OnAckAllRequestsStorage() {
   static base::NoDestructor<ContentAnalysisDelegate::OnAckAllRequestsCallback>
       callback;
   return callback.get();
+}
+
+void OnContentAnalysisComplete(
+    std::unique_ptr<FilesScanData> files_scan_data,
+    ContentAnalysisDelegate::ForFilesCompletionCallback callback,
+    const ContentAnalysisDelegate::Data& data,
+    ContentAnalysisDelegate::Result& result) {
+  std::set<size_t> file_indexes_to_block =
+      files_scan_data->IndexesToBlock(result.paths_results);
+
+  std::vector<bool> allowed;
+  allowed.reserve(files_scan_data->base_paths().size());
+  for (size_t i = 0; i < files_scan_data->base_paths().size(); ++i) {
+    allowed.push_back(file_indexes_to_block.count(i) == 0);
+  }
+
+  std::move(callback).Run(files_scan_data->take_base_paths(),
+                          std::move(allowed));
+}
+
+void OnPathsExpanded(
+    base::WeakPtr<content::WebContents> web_contents,
+    safe_browsing::DeepScanAccessPoint access_point,
+    ContentAnalysisDelegate::Data data,
+    std::unique_ptr<FilesScanData> files_scan_data,
+    ContentAnalysisDelegate::ForFilesCompletionCallback callback) {
+  if (!web_contents) {
+    size_t size = files_scan_data->base_paths().size();
+    std::move(callback).Run(files_scan_data->take_base_paths(),
+                            std::vector<bool>(size, true));
+    return;
+  }
+
+  data.paths = files_scan_data->expanded_paths();
+  ContentAnalysisDelegate::CreateForWebContents(
+      web_contents.get(), std::move(data),
+      base::BindOnce(&OnContentAnalysisComplete, std::move(files_scan_data),
+                     std::move(callback)),
+      access_point);
 }
 
 }  // namespace
@@ -426,6 +466,23 @@ void ContentAnalysisDelegate::CreateForWebContents(
   if (upload_data_status == UploadDataStatus::kInProgress) {
     delegate.release();
   }
+}
+
+// static
+void ContentAnalysisDelegate::CreateForFilesInWebContents(
+    content::WebContents* web_contents,
+    Data data,
+    ForFilesCompletionCallback callback,
+    safe_browsing::DeepScanAccessPoint access_point) {
+  DCHECK(data.text.empty());
+  DCHECK(data.image.empty());
+  DCHECK(!data.page.IsValid());
+
+  auto files_scan_data = std::make_unique<FilesScanData>(std::move(data.paths));
+  auto* files_scan_data_ptr = files_scan_data.get();
+  files_scan_data_ptr->ExpandPaths(base::BindOnce(
+      &OnPathsExpanded, web_contents->GetWeakPtr(), access_point,
+      std::move(data), std::move(files_scan_data), std::move(callback)));
 }
 
 // static

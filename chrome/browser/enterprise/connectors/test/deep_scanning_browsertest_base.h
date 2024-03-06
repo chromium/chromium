@@ -40,9 +40,16 @@ class DeepScanningBrowserTestBase : public InProcessBrowserTest {
                                          const base::FilePath& path);
 
   // Creates temporary files for testing in |temp_dir_|, and add them to |data|.
+  // Strings in |paths| must not contain path separators.
+  //
+  // If |parent| is not the empty string, a subdirectory with this name is
+  // created, and the the new files are created there.  Only a FilePath for
+  // the subdirectory is added to |data|.  Use this option to help test with
+  // testing directory expansion.
   void CreateFilesForTest(const std::vector<std::string>& paths,
                           const std::vector<std::string>& contents,
-                          ContentAnalysisDelegate::Data* data);
+                          ContentAnalysisDelegate::Data* data,
+                          const std::string& parent = std::string());
 
   const std::vector<base::FilePath>& created_file_paths() const;
 

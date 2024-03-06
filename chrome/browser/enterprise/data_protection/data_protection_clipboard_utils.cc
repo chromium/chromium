@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 
+#include <algorithm>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/data_controls/data_controls_dialog.h"
@@ -18,38 +20,26 @@ namespace enterprise_data_protection {
 
 namespace {
 
-void HandleExpandedPaths(
-    std::unique_ptr<enterprise_connectors::FilesScanData> fsd,
-    base::WeakPtr<content::WebContents> web_contents,
+void HandleFileData(
+    content::WebContents* web_contents,
     enterprise_connectors::ContentAnalysisDelegate::Data dialog_data,
-    enterprise_connectors::AnalysisConnector connector,
-    std::vector<base::FilePath> paths,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
-  if (!web_contents) {
-    return;
-  }
-
-  dialog_data.paths = fsd->expanded_paths();
-  enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
-      web_contents.get(), std::move(dialog_data),
+  enterprise_connectors::ContentAnalysisDelegate::CreateForFilesInWebContents(
+      web_contents, std::move(dialog_data),
       base::BindOnce(
-          [](std::unique_ptr<enterprise_connectors::FilesScanData> fsd,
-             std::vector<base::FilePath> paths,
-             content::ContentBrowserClient::IsClipboardPasteAllowedCallback
+          [](content::ContentBrowserClient::IsClipboardPasteAllowedCallback
                  callback,
-             const enterprise_connectors::ContentAnalysisDelegate::Data& data,
-             enterprise_connectors::ContentAnalysisDelegate::Result& result) {
+             std::vector<base::FilePath> paths, std::vector<bool> results) {
             std::optional<content::ClipboardPasteData> clipboard_paste_data;
-            auto blocked = fsd->IndexesToBlock(result.paths_results);
-            if (blocked.size() != paths.size()) {
+            bool all_blocked =
+                std::all_of(results.begin(), results.end(),
+                            [](bool allowed) { return !allowed; });
+            if (!all_blocked) {
               std::vector<base::FilePath> allowed_paths;
               allowed_paths.reserve(paths.size());
               for (size_t i = 0; i < paths.size(); ++i) {
-                if (base::Contains(blocked, i)) {
-                  result.paths_results[i] = false;
-                } else {
-                  allowed_paths.push_back(paths[i]);
-                  DCHECK(result.paths_results[i]);
+                if (results[i]) {
+                  allowed_paths.emplace_back(std::move(paths[i]));
                 }
               }
               clipboard_paste_data = content::ClipboardPasteData();
@@ -57,7 +47,7 @@ void HandleExpandedPaths(
             }
             std::move(callback).Run(std::move(clipboard_paste_data));
           },
-          std::move(fsd), std::move(paths), std::move(callback)),
+          std::move(callback)),
       safe_browsing::DeepScanAccessPoint::PASTE);
 }
 
@@ -65,7 +55,6 @@ void HandleStringData(
     content::WebContents* web_contents,
     content::ClipboardPasteData clipboard_paste_data,
     enterprise_connectors::ContentAnalysisDelegate::Data dialog_data,
-    enterprise_connectors::AnalysisConnector connector,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
   enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
       web_contents, std::move(dialog_data),
@@ -156,17 +145,12 @@ void PasteIfAllowedByContentAnalysis(
       enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE;
 
   if (is_files) {
-    auto paths = std::move(clipboard_paste_data.file_paths);
-    auto fsd = std::make_unique<enterprise_connectors::FilesScanData>(paths);
-    auto* fsd_ptr = fsd.get();
-    fsd_ptr->ExpandPaths(base::BindOnce(&HandleExpandedPaths, std::move(fsd),
-                                        web_contents->GetWeakPtr(),
-                                        std::move(dialog_data), connector,
-                                        std::move(paths), std::move(callback)));
+    dialog_data.paths = std::move(clipboard_paste_data.file_paths);
+    HandleFileData(web_contents, std::move(dialog_data), std::move(callback));
   } else {
     dialog_data.AddClipboardData(clipboard_paste_data);
     HandleStringData(web_contents, std::move(clipboard_paste_data),
-                     std::move(dialog_data), connector, std::move(callback));
+                     std::move(dialog_data), std::move(callback));
   }
 }
 
