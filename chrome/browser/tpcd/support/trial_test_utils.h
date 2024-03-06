@@ -26,13 +26,14 @@ inline constexpr char kTestTokenPublicKey[] =
 
 inline constexpr char kTrialEnabledDomain[] = "example.test";
 inline constexpr char kTrialEnabledSubdomain[] = "sub.example.test";
+inline constexpr char kOtherTrialEnabledDomain[] = "other.test";
 inline constexpr char kTrialEnabledIframePath[] = "origin-trial-iframe";
 inline constexpr char kTrialEnabledTopLevelPath[] = "origin-trial-top-level";
 inline constexpr char kEmbeddedScriptPagePath[] =
     "tpcd/page_with_cross_site_tpcd_support_ot.html";
 inline constexpr char kSubdomainMatchingEmbeddedScriptPagePath[] =
     "tpcd/page_with_cross_site_tpcd_support_ot_with_subdomain_matching.html";
-// Origin Trials token for `kTrialEnabledSite` generated with:
+// Origin Trials token for `kTrialEnabledDomain` generated with:
 // tools/origin_trials/generate_token.py  https://example.test Tpcd
 // --expire-days 5000
 inline constexpr char kTrialToken[] =
@@ -41,7 +42,7 @@ inline constexpr char kTrialToken[] =
     "9leGFtcGxlLnRlc3Q6NDQzIiwgImZlYXR1cmUiOiAiVHBjZCIsICJleHBpcnkiO"
     "iAyMTI0MzA4MDY1fQ==";
 
-// Origin Trials token for `kTrialEnabledSite` (and all its subdomains)
+// Origin Trials token for `kTrialEnabledDomain` (and all its subdomains)
 // generated with:
 // tools/origin_trials/generate_token.py https://example.test Tpcd
 // --is-subdomain --expire-days 5000
@@ -62,7 +63,7 @@ inline constexpr char kSubdomainTrialSubdomainMatchingToken[] =
     "ICJmZWF0dXJlIjogIlRwY2QiLCAiZXhwaXJ5IjogMjEzMzk2NzQwOCwgImlzU3ViZG9tYWluIj"
     "ogdHJ1ZX0=";
 
-// Origin Trials token for `kTrialEnabledSite` generated with:
+// Origin Trials token for `kTrialEnabledDomain` generated with:
 // tools/origin_trials/generate_token.py  https://example.test TopLevelTpcd
 // --expire-days 5000
 const char kTopLevelTrialToken[] =
@@ -71,7 +72,7 @@ const char kTopLevelTrialToken[] =
     "A3NvgAtwIAAABXeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLnRlc3Q6NDQzIiwgImZlYXR1"
     "cmUiOiAiVG9wTGV2ZWxUcGNkIiwgImV4cGlyeSI6IDIxMzkzMjU5MjZ9";
 
-// Origin Trials token for `kTrialEnabledSite` (and all its subdomains)
+// Origin Trials token for `kTrialEnabledDomain` (and all its subdomains)
 // generated with:
 // tools/origin_trials/generate_token.py https://example.test TopLevelTpcd
 // --is-subdomain --expire-days 5000
@@ -101,6 +102,15 @@ const char kSubdomainTopLevelTrialSubdomainMatchingToken[] =
     "IbnFBxzGXwMAAABweyJvcmlnaW4iOiAiaHR0cHM6Ly9zdWIuZXhhbXBsZS50ZXN0OjQ0MyIsIC"
     "JmZWF0dXJlIjogIlRvcExldmVsVHBjZCIsICJleHBpcnkiOiAyMTM5MzM4NTIzLCAiaXNTdWJk"
     "b21haW4iOiB0cnVlfQ==";
+
+// Origin Trials token for `kOtherTrialEnabledDomain` generated with:
+// tools/origin_trials/generate_token.py  https://example.test TopLevelTpcd
+// --expire-days 5000
+const char kOtherDomainTopLevelTrialToken[] =
+    "A7Dsv5nB89HuyiPl64hqJ0V0FporBq7g33dvjUABxJ3K4z3QdjCuurIGcF9wJJE0s1piYA2y4T"
+    "0B+"
+    "oO2n6sbIQwAAABVeyJvcmlnaW4iOiAiaHR0cHM6Ly9vdGhlci50ZXN0OjQ0MyIsICJmZWF0dXJ"
+    "lIjogIlRvcExldmVsVHBjZCIsICJleHBpcnkiOiAyMTQxNzQyODU5fQ==";
 
 // Helper function for performing client side cookie access via JS.
 void AccessCookieViaJsIn(content::WebContents* web_contents,

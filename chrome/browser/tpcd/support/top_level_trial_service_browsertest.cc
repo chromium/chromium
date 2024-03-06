@@ -33,7 +33,6 @@
 #include "net/base/features.h"
 #include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 
 using content::URLLoaderInterceptor;
 using content::WebContents;
@@ -59,7 +58,6 @@ class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("*", "127.0.0.1");
 
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
@@ -117,7 +115,8 @@ class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
     std::string path = params->url_request.url.path().substr(1);
     std::string query = params->url_request.url.query();
 
-    if (host != kTrialEnabledDomain && host != kTrialEnabledSubdomain) {
+    if (host != kTrialEnabledDomain && host != kTrialEnabledSubdomain &&
+        host != kOtherTrialEnabledDomain) {
       return false;
     }
 
@@ -145,19 +144,27 @@ class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
       }
     }
 
-    if (path.find("meta_tag") == 0) {
-      body =
-          "<html>\n"
-          "<head>\n"
-          "<meta http-equiv='origin-trial' "
-          "content='" +
-          token +
-          "'>\n"
-          "</head>\n"
-          "<body></body>\n"
-          "</html>\n";
-    } else {
-      base::StrAppend(&headers, {"Origin-Trial: ", token, "\n"});
+    if (host == kOtherTrialEnabledDomain) {
+      if (query != "no_token") {
+        token = kOtherDomainTopLevelTrialToken;
+      }
+    }
+
+    if (!token.empty()) {
+      if (path.find("meta_tag") == 0) {
+        body =
+            "<html>\n"
+            "<head>\n"
+            "<meta http-equiv='origin-trial' "
+            "content='" +
+            token +
+            "'>\n"
+            "</head>\n"
+            "<body></body>\n"
+            "</html>\n";
+      } else {
+        base::StrAppend(&headers, {"Origin-Trial: ", token, "\n"});
+      }
     }
 
     content::URLLoaderInterceptor::WriteResponse(headers, body,
@@ -171,6 +178,8 @@ class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
   const GURL kTrialEnabledSite{base::StrCat({"https://", kTrialEnabledDomain})};
   const GURL kTrialEnabledSiteSubdomain{
       base::StrCat({"https://", kTrialEnabledSubdomain})};
+  const GURL kOtherTrialEnabledSite{
+      base::StrCat({"https://", kOtherTrialEnabledDomain})};
 };
 
 IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest, EnabledAfterHttpResponse) {
@@ -319,6 +328,84 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
   EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
             CONTENT_SETTING_ALLOW);
 
+  EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
+                GURL(), kTrialEnabledSiteSubdomain, {}, nullptr),
+            content_settings::CookieSettingsBase::
+                ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
+  EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
+                GURL(), kTrialEnabledSite, {}, nullptr),
+            content_settings::CookieSettingsBase::
+                ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
+}
+
+// This test verifies (when enabled using a subdomain matching token) the trial
+// is only disabled if a document from the token origin is loaded, even if one
+// of its subdomains originally enabled the trial.
+IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
+                       OnlyTokenOriginCanDisableTrial) {
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  // Navigate to a |kTrialEnabledSiteSubdomain| page that returns the subdomain
+  // matching origin trial token for it's eTLD+1 (|kTrialEnabledSite|) in the
+  // HTTP response headers.
+  {
+    GURL url = GURL(kTrialEnabledSiteSubdomain.spec() + "?etld_plus_1_token");
+    ContentSettingChangeObserver setting_observer =
+        CreateTopLevelTrialSettingsObserver(url);
+    ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+    setting_observer.Wait();
+  }
+
+  // Check that Top-level 3pcd Trial grants now permit third-party cookie access
+  // under |kTrialEnabledSite| and |kTrialEnabledSiteSubdomain|.
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(GetProfile()).get();
+  EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
+                GURL(), kTrialEnabledSiteSubdomain, {}, nullptr),
+            content_settings::CookieSettingsBase::
+                ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
+  EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
+                GURL(), kTrialEnabledSite, {}, nullptr),
+            content_settings::CookieSettingsBase::
+                ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
+
+  // Verify that subsequent loads of a pages from |kTrialEnabledSiteSubdomain|
+  // and other subdomains of the token origin (|kTrialEnabledSite|) without the
+  // token do not affect the |TOP_LEVEL_TPCD_TRIAL| content setting for them.
+  {
+    GURL enabled_site_subdomain_no_token =
+        GURL(kTrialEnabledSiteSubdomain.spec() + "?no_token");
+    ASSERT_TRUE(
+        content::NavigateToURL(web_contents, enabled_site_subdomain_no_token));
+
+    GURL other_subdomain_no_token = https_server_->GetURL(
+        base::StrCat({"random-subdomain.", kTrialEnabledDomain}),
+        "/title1.html");
+    ASSERT_TRUE(content::NavigateToURL(web_contents, other_subdomain_no_token));
+  }
+
+  // Since we can't deterministically wait for the TopLevelTrialService to do
+  // nothing in response to page loads that shouldn't affect trial state,
+  // navigate to a page that enables the trial for a different origin and wait
+  // for the associated |TOP_LEVEL_TPCD_TRIAL| settings to be created, then
+  // check that the subdomain matching content setting for |kTrialEnabledSite|
+  // still remains.
+  {
+    ContentSettingChangeObserver setting_observer =
+        CreateTopLevelTrialSettingsObserver(kOtherTrialEnabledSite);
+    ASSERT_TRUE(content::NavigateToURL(web_contents, kOtherTrialEnabledSite));
+    setting_observer.Wait();
+
+    // Check that a Top-level 3pcd Trial grant now permits third-party cookie
+    // access under |kOtherTrialEnabledSite|.
+    EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
+                  GURL(), kOtherTrialEnabledSite, {}, nullptr),
+              content_settings::CookieSettingsBase::
+                  ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
+  }
+
+  // Check that Top-level 3pcd Trial grants still permit third-party cookie
+  // access under |kTrialEnabledSite| and |kTrialEnabledSiteSubdomain|.
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
                 GURL(), kTrialEnabledSiteSubdomain, {}, nullptr),
             content_settings::CookieSettingsBase::
