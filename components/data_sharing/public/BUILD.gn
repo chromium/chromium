@@ -14,12 +14,15 @@ source_set("public") {
     "data_sharing_service.h",
     "features.cc",
     "features.h",
+    "group_data.cc",
+    "group_data.h",
   ]
 
   public_deps = [
     "//base",
     "//components/keyed_service/core",
     "//net/traffic_annotation",
+    "//url",
   ]
 }
 

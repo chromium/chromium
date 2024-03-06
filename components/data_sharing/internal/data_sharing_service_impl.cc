@@ -4,6 +4,8 @@
 
 #include "components/data_sharing/internal/data_sharing_service_impl.h"
 
+#include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "components/data_sharing/internal/data_sharing_network_loader_impl.h"
 
 namespace data_sharing {
@@ -24,6 +26,43 @@ bool DataSharingServiceImpl::IsEmptyService() {
 DataSharingNetworkLoader*
 DataSharingServiceImpl::GetDataSharingNetworkLoader() {
   return data_sharing_network_loader_.get();
+}
+
+void DataSharingServiceImpl::ReadAllGroups(
+    base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback) {
+  NOTIMPLEMENTED();
+}
+
+void DataSharingServiceImpl::ReadGroup(
+    const std::string& group_id,
+    base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {
+  NOTIMPLEMENTED();
+}
+
+void DataSharingServiceImpl::CreateGroup(
+    const std::string& group_name,
+    base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {
+  NOTIMPLEMENTED();
+}
+
+void DataSharingServiceImpl::DeleteGroup(
+    const std::string& group_id,
+    base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {
+  NOTIMPLEMENTED();
+}
+
+void DataSharingServiceImpl::InviteMember(
+    const std::string& group_id,
+    const std::string& invitee_gaia_id,
+    base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {
+  NOTIMPLEMENTED();
+}
+
+void DataSharingServiceImpl::RemoveMember(
+    const std::string& group_id,
+    const std::string& member_gaia_id,
+    base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace data_sharing

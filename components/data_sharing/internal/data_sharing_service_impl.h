@@ -34,6 +34,26 @@ class DataSharingServiceImpl : public DataSharingService {
   // DataSharingService implementation.
   bool IsEmptyService() override;
   DataSharingNetworkLoader* GetDataSharingNetworkLoader() override;
+  void ReadAllGroups(
+      base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback)
+      override;
+  void ReadGroup(const std::string& group_id,
+                 base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
+                     callback) override;
+  void CreateGroup(const std::string& group_name,
+                   base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
+                       callback) override;
+  void DeleteGroup(
+      const std::string& group_id,
+      base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
+  void InviteMember(
+      const std::string& group_id,
+      const std::string& invitee_gaia_id,
+      base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
+  void RemoveMember(
+      const std::string& group_id,
+      const std::string& member_gaia_id,
+      base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
 
  private:
   std::unique_ptr<DataSharingNetworkLoader> data_sharing_network_loader_;
