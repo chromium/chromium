@@ -2792,6 +2792,9 @@ message DeviceInitialEnrollmentStateRequest {
 
   // The 4-character brand code of the device.
   optional string brand_code = 2;
+
+  // The enrollment token for Flex Auto Enrollment.
+  optional string enrollment_token = 3;
 }
 
 // Response from server DeviceInitialEnrollmentStateRequest.
