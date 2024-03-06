@@ -413,6 +413,8 @@ base::File::Error NetErrorToFileError(int error) {
       return base::File::FILE_ERROR_NOT_FOUND;
     case net::ERR_ACCESS_DENIED:
       return base::File::FILE_ERROR_ACCESS_DENIED;
+    case net::ERR_INSUFFICIENT_RESOURCES:
+      return base::File::FILE_ERROR_TOO_MANY_OPENED;
     case net::ERR_OUT_OF_MEMORY:
       return base::File::FILE_ERROR_NO_MEMORY;
     case net::ERR_FILE_NO_SPACE:
