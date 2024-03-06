@@ -513,9 +513,13 @@ void Cronet_UrlRequestImpl::GetStatus(
     base::AutoLock lock(lock_);
     if (started_ && request_) {
       status_listeners_.insert(listener);
+      // UnsafeDanglingUntriaged triggered by test:
+      // UrlRequestTest.GetStatus
+      // TODO(https://crbug.com/1380714): Remove `UnsafeDanglingUntriaged`
       request_->GetStatus(
           base::BindOnce(&Cronet_UrlRequestImpl::NetworkTasks::OnStatus,
-                         base::Unretained(network_tasks_), listener));
+                         base::Unretained(network_tasks_),
+                         base::UnsafeDanglingUntriaged(listener)));
       return;
     }
   }

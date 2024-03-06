@@ -2076,9 +2076,13 @@ int QuicChromiumClientSession::HandleWriteError(
   // Post a task to migrate the session onto a new network.
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&QuicChromiumClientSession::MigrateSessionOnWriteError,
-                     weak_factory_.GetWeakPtr(), error_code,
-                     connection()->writer()));
+      base::BindOnce(
+          &QuicChromiumClientSession::MigrateSessionOnWriteError,
+          weak_factory_.GetWeakPtr(), error_code,
+          // UnsafeDanglingUntriaged triggered by test:
+          // QuicSessionPoolTest.MigrateSessionOnSyncWriteErrorPauseBeforeConnected
+          // TODO(https://crbug.com/1380714): Remove `UnsafeDanglingUntriaged`
+          base::UnsafeDanglingUntriaged(connection()->writer())));
 
   ignore_read_error_ = true;
 

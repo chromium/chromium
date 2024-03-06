@@ -129,7 +129,9 @@ QsBatteryInfoViewBase::QsBatteryInfoViewBase(
                            QsButtonCatalogName::kBatteryButton);
                        controller->HandleOpenPowerSettingsAction();
                      },
-                     controller),
+                     // TODO(https://crbug.com/1380714): Remove
+                     // `UnsafeDanglingUntriaged`
+                     base::UnsafeDanglingUntriaged(controller)),
                  PowerStatus::Get()->GetInlinedStatusString(),
                  type,
                  icon,
@@ -285,7 +287,8 @@ QuickSettingsFooter::QuickSettingsFooter(
                   QsButtonCatalogName::kAvatarButton);
               controller->ShowUserChooserView();
             },
-            base::Unretained(controller))));
+            // TODO(https://crbug.com/1380714): Remove `UnsafeDanglingUntriaged`
+            base::UnsafeDanglingUntriaged(controller))));
     user_avatar_button->SetEnabled(
         UserChooserDetailedViewController::IsUserChooserEnabled());
     user_avatar_button->SetID(VIEW_ID_QS_USER_AVATAR_BUTTON);
@@ -300,7 +303,9 @@ QuickSettingsFooter::QuickSettingsFooter(
                       QsButtonCatalogName::kSignOutButton);
                   controller->HandleSignOutAction();
                 },
-                base::Unretained(controller)),
+                // TODO(https://crbug.com/1380714): Remove
+                // `UnsafeDanglingUntriaged`
+                base::UnsafeDanglingUntriaged(controller)),
             user::GetLocalizedSignOutStringForStatus(
                 Shell::Get()->session_controller()->login_status(),
                 /*multiline=*/false),

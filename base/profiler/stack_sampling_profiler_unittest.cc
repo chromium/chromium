@@ -323,8 +323,9 @@ void TestLibraryUnload(bool wait_until_unloaded, ModuleCache* module_cache) {
 
   NativeLibrary other_library = LoadOtherLibrary();
 
-  UnwindScenario scenario(
-      BindRepeating(&CallThroughOtherLibrary, Unretained(other_library)));
+  // TODO(https://crbug.com/1380714): Remove `UnsafeDanglingUntriaged`
+  UnwindScenario scenario(BindRepeating(
+      &CallThroughOtherLibrary, UnsafeDanglingUntriaged(other_library)));
 
   UnwindScenario::SampleEvents events;
   TargetThread target_thread(

@@ -201,7 +201,9 @@ class DefaultProgressIndicatorAnimationRegistry
               if (registry->GetProgressRingAnimationForKey(key) == animation)
                 registry->SetProgressRingAnimationForKey(key, nullptr);
             },
-            weak_ptr_factory_.GetWeakPtr(), animation));
+            weak_ptr_factory_.GetWeakPtr(),
+            // TODO(https://crbug.com/1380714): Remove `UnsafeDanglingUntriaged`
+            base::UnsafeDanglingUntriaged(animation)));
   }
 
   // Ensures that a progress icon animation exists and is started.

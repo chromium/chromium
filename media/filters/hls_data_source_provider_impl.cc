@@ -133,7 +133,10 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
   // TRACE_EVENT_NESTABLE_ASYNC_END.
   it->second->Read(base::checked_cast<int64_t>(pos), int_read_size, buffer_data,
                    base::BindOnce(&OnMultiBufferReadComplete, std::move(stream),
-                                  std::move(callback), int_read_size, this));
+                                  std::move(callback), int_read_size,
+                                  // TODO(https://crbug.com/1380714): Remove
+                                  // `UnsafeDanglingUntriaged`
+                                  base::UnsafeDanglingUntriaged(this)));
 }
 
 void HlsDataSourceProviderImpl::OnDataSourceCreated(
