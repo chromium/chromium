@@ -89,10 +89,10 @@ Polymer({
    *     text ID.
    * @private
    */
-  getButtonTextFromId_(textId) {
+  getButtonTextFromId_(locale, textId) {
     if (!textId) {
       return '';
     }
-    return this.i18n(textId);
+    return this.i18nDynamic(locale, textId);
   },
 });

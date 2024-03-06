@@ -191,6 +191,7 @@ export const MultiDeviceSetup = Polymer({
   updateLocalizedContent() {
     this.$.ironPages.querySelectorAll('.ui-page')
         .forEach(page => page.i18nUpdateLocale());
+    this.$.buttonBar.i18nUpdateLocale();
   },
 
   initializeSetupFlow() {
