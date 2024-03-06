@@ -167,9 +167,8 @@ void CastNotificationController::PressedCallback(
     std::optional<int> button_index) {
   if (freeze_button_index_ && button_index == freeze_button_index_) {
     FreezePressed();
-  } else {
-    // Handles the case that the stop button is pressed, or the notification is
-    // pressed not on a button.
+  } else if (button_index) {
+    // Handles the case that the stop button is pressed
     StopCasting();
   }
 }

@@ -136,13 +136,12 @@ TEST_F(CastNotificationControllerTest, StopCasting) {
   EXPECT_TRUE(GetNotification()->pinned());
 
   ClickOnNotificationBody();
-  EXPECT_EQ(cast_config_.stop_casting_count(), 1u);
-  EXPECT_EQ(cast_config_.stop_casting_route_id(), device.route.id);
+  EXPECT_EQ(cast_config_.stop_casting_count(), 0u);
 
   cast_config_.ResetRouteIds();
 
   ClickOnNotificationButton(0);
-  EXPECT_EQ(cast_config_.stop_casting_count(), 2u);
+  EXPECT_EQ(cast_config_.stop_casting_count(), 1u);
   EXPECT_EQ(cast_config_.stop_casting_route_id(), device.route.id);
 }
 
@@ -171,12 +170,6 @@ TEST_F(CastNotificationControllerTest, FreezeUi) {
 
   cast_config_.ResetRouteIds();
 
-  // Clicking on the notification body should still stop casting.
-  ClickOnNotificationBody();
-  EXPECT_EQ(cast_config_.freeze_route_count(), 1u);
-  EXPECT_EQ(cast_config_.stop_casting_count(), 2u);
-  EXPECT_EQ(cast_config_.stop_casting_route_id(), device.route.id);
-
   // Set the device to a frozen state, then regenerate the notification.
   device.route.freeze_info.is_frozen = true;
   notification_controller_->OnDevicesUpdated({device});
@@ -184,7 +177,7 @@ TEST_F(CastNotificationControllerTest, FreezeUi) {
   // The first button should now call unfreeze.
   ClickOnNotificationButton(0);
   EXPECT_EQ(cast_config_.unfreeze_route_count(), 1u);
-  EXPECT_EQ(cast_config_.stop_casting_count(), 2u);
+  EXPECT_EQ(cast_config_.stop_casting_count(), 1u);
   EXPECT_EQ(cast_config_.unfreeze_route_route_id(), device.route.id);
 }
 
@@ -296,6 +289,19 @@ TEST_F(CastNotificationControllerTest, NewRouteStop) {
   EXPECT_EQ(cast_config_.unfreeze_route_count(), 0u);
   EXPECT_EQ(cast_config_.stop_casting_count(), 1u);
   EXPECT_EQ(cast_config_.stop_casting_route_id(), device.route.id);
+}
+
+TEST_F(CastNotificationControllerTest, ClickNotificationBody) {
+  // Create notification.
+  SinkAndRoute device = CreateDeviceLocalRoute();
+  // Make the device "freezable" so the freeze (pause) button appears.
+  device.route.freeze_info.can_freeze = true;
+  notification_controller_->OnDevicesUpdated({device});
+
+  // Clicking on the body of the notification should not triggerany action.
+  ClickOnNotificationBody();
+  EXPECT_EQ(cast_config_.stop_casting_count(), 0u);
+  EXPECT_EQ(cast_config_.freeze_route_count(), 0u);
 }
 
 }  // namespace ash
