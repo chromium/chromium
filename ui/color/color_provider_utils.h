@@ -76,8 +76,13 @@ RendererColorMap COMPONENT_EXPORT(COLOR)
 ColorProvider COMPONENT_EXPORT(COLOR) CreateColorProviderFromRendererColorMap(
     const RendererColorMap& renderer_color_map);
 
+// Adds colors for emulating Windows 10 default high contrast color themes
+// to `mixer`. Used to support the devtools forced colors emulation feature.
+void COMPONENT_EXPORT(COLOR)
+    AddEmulatedForcedColorsToMixer(ColorMixer& mixer, bool dark_mode);
+
 // Creates a color provider emulating Windows 10 default high contrast color
-// themes. Currently only defines colors for scrollbar parts.
+// themes.
 ColorProvider COMPONENT_EXPORT(COLOR)
     CreateEmulatedForcedColorsColorProvider(bool dark_mode);
 

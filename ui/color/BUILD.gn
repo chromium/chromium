@@ -147,10 +147,10 @@ component("mixers") {
     "color_provider_manager.h",
     "core_default_color_mixer.cc",
     "core_default_color_mixer.h",
+    "css_system_color_mixer.cc",
+    "css_system_color_mixer.h",
     "fluent_ui_color_mixer.cc",
     "fluent_ui_color_mixer.h",
-    "forced_colors_mixer.cc",
-    "forced_colors_mixer.h",
     "material_ui_color_mixer.cc",
     "material_ui_color_mixer.h",
     "native_color_mixers.cc",
@@ -186,7 +186,7 @@ component("mixers") {
     frameworks = [ "AppKit.framework" ]
   } else if (is_win) {
     sources += [
-      "win/forced_colors_mixer_win.cc",
+      "win/css_system_color_mixer_win.cc",
       "win/native_color_mixers_win.cc",
     ]
     deps += [ ":accent_color_observer" ]
