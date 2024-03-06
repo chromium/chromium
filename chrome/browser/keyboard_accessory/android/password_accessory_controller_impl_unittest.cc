@@ -126,8 +126,11 @@ MockPasswordGenerationController::MockPasswordGenerationController(
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
-  explicit MockPasswordManagerClient(PasswordStoreInterface* password_store)
-      : password_store_(password_store) {}
+  explicit MockPasswordManagerClient(
+      PasswordStoreInterface* account_password_store,
+      PasswordStoreInterface* profile_password_store)
+      : account_password_store_(account_password_store),
+        profile_password_store_(profile_password_store) {}
 
   MOCK_METHOD(void, UpdateFormManagers, (), (override));
 
@@ -151,13 +154,19 @@ class MockPasswordManagerClient
               (password_manager::PasswordManagerDriver*),
               (override));
 
+  password_manager::PasswordStoreInterface* GetAccountPasswordStore()
+      const override {
+    return account_password_store_;
+  }
+
   password_manager::PasswordStoreInterface* GetProfilePasswordStore()
       const override {
-    return password_store_;
+    return profile_password_store_;
   }
 
  private:
-  raw_ptr<PasswordStoreInterface> password_store_;
+  raw_ptr<PasswordStoreInterface> account_password_store_;
+  raw_ptr<PasswordStoreInterface> profile_password_store_;
 };
 
 class MockPasswordManagerDriver
@@ -256,8 +265,13 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
               web_contents()->GetFocusedFrame()->GetLastCommittedOrigin());
 
     MockPasswordGenerationController::CreateForWebContents(web_contents());
+    profile()->GetPrefs()->SetInteger(
+        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
     mock_pwd_manager_client_ = std::make_unique<MockPasswordManagerClient>(
-        CreateInternalPasswordStore());
+        CreateInternalAccountPasswordStore(),
+        CreateInternalProfilePasswordStore());
     NavigateAndCommit(GURL(kExampleSite));
 
     webauthn_credentials_delegate_ =
@@ -270,6 +284,12 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(Return(cred_man_delegate()));
     ON_CALL(*webauthn_credentials_delegate(), IsAndroidHybridAvailable)
         .WillByDefault(Return(false));
+    ON_CALL(*password_client()->GetPasswordFeatureManager(),
+            IsOptedInForAccountStorage)
+        .WillByDefault(Return(false));
+    ON_CALL(*password_client()->GetPasswordFeatureManager(),
+            GetDefaultPasswordStore)
+        .WillByDefault(Return(PasswordForm::Store::kProfileStore));
   }
 
   webauthn::WebAuthnCredManDelegate* cred_man_delegate() {
@@ -308,9 +328,16 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  virtual PasswordStoreInterface* CreateInternalPasswordStore() {
-    mock_password_store_ = base::MakeRefCounted<MockPasswordStoreInterface>();
-    return mock_password_store_.get();
+  virtual PasswordStoreInterface* CreateInternalAccountPasswordStore() {
+    mock_account_password_store_ =
+        base::MakeRefCounted<MockPasswordStoreInterface>();
+    return mock_account_password_store_.get();
+  }
+
+  virtual PasswordStoreInterface* CreateInternalProfilePasswordStore() {
+    mock_profile_password_store_ =
+        base::MakeRefCounted<MockPasswordStoreInterface>();
+    return mock_profile_password_store_.get();
   }
 
   StrictMock<MockManualFillingController> mock_manual_filling_controller_;
@@ -319,7 +346,8 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
   base::MockCallback<
       PasswordAccessoryControllerImpl::ShowMigrationWarningCallback>
       show_migration_warning_callback_;
-  scoped_refptr<MockPasswordStoreInterface> mock_password_store_;
+  scoped_refptr<MockPasswordStoreInterface> mock_account_password_store_;
+  scoped_refptr<MockPasswordStoreInterface> mock_profile_password_store_;
 
  private:
   password_manager::PasswordManagerDriver* GetBaseDriver(
@@ -874,16 +902,40 @@ TEST_F(PasswordAccessoryControllerTest, SavePasswordsToggledUpdatesCache) {
       autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS, true);
 }
 
-TEST_F(PasswordAccessoryControllerTest, SavePasswordsEnabledUpdatesStore) {
+TEST_F(PasswordAccessoryControllerTest,
+       SavePasswordsEnabledUpdatesAccountStore) {
+  ON_CALL(*password_client()->GetPasswordFeatureManager(),
+          IsOptedInForAccountStorage)
+      .WillByDefault(Return(true));
+  ON_CALL(*password_client()->GetPasswordFeatureManager(),
+          GetDefaultPasswordStore)
+      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
   CreateSheetController();
   password_manager::PasswordFormDigest form_digest(
       PasswordForm::Scheme::kHtml, kExampleSignonRealm, GURL(kExampleSite));
-  EXPECT_CALL(*mock_password_store_, Unblocklist(form_digest, _));
+  EXPECT_CALL(*mock_account_password_store_, Unblocklist(form_digest, _));
   controller()->OnToggleChanged(
       autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS, true);
 }
 
-TEST_F(PasswordAccessoryControllerTest, SavePasswordsDisabledUpdatesStore) {
+TEST_F(PasswordAccessoryControllerTest,
+       SavePasswordsEnabledUpdatesProfileStore) {
+  CreateSheetController();
+  password_manager::PasswordFormDigest form_digest(
+      PasswordForm::Scheme::kHtml, kExampleSignonRealm, GURL(kExampleSite));
+  EXPECT_CALL(*mock_profile_password_store_, Unblocklist(form_digest, _));
+  controller()->OnToggleChanged(
+      autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS, true);
+}
+
+TEST_F(PasswordAccessoryControllerTest,
+       SavePasswordsDisabledUpdatesAccountStore) {
+  ON_CALL(*password_client()->GetPasswordFeatureManager(),
+          IsOptedInForAccountStorage)
+      .WillByDefault(Return(true));
+  ON_CALL(*password_client()->GetPasswordFeatureManager(),
+          GetDefaultPasswordStore)
+      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
   CreateSheetController();
   PasswordForm expected_form;
   expected_form.blocked_by_user = true;
@@ -891,7 +943,21 @@ TEST_F(PasswordAccessoryControllerTest, SavePasswordsDisabledUpdatesStore) {
   expected_form.signon_realm = kExampleSignonRealm;
   expected_form.url = GURL(kExampleSite);
   expected_form.date_created = base::Time::Now();
-  EXPECT_CALL(*mock_password_store_, AddLogin(Eq(expected_form), _));
+  EXPECT_CALL(*mock_account_password_store_, AddLogin(Eq(expected_form), _));
+  controller()->OnToggleChanged(
+      autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS, false);
+}
+
+TEST_F(PasswordAccessoryControllerTest,
+       SavePasswordsDisabledUpdatesProfileStore) {
+  CreateSheetController();
+  PasswordForm expected_form;
+  expected_form.blocked_by_user = true;
+  expected_form.scheme = PasswordForm::Scheme::kHtml;
+  expected_form.signon_realm = kExampleSignonRealm;
+  expected_form.url = GURL(kExampleSite);
+  expected_form.date_created = base::Time::Now();
+  EXPECT_CALL(*mock_profile_password_store_, AddLogin(Eq(expected_form), _));
   controller()->OnToggleChanged(
       autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS, false);
 }
@@ -1338,32 +1404,43 @@ TEST_F(PasswordAccessoryControllerTest, DontShowMigrationSheetlIfDisabled) {
 class PasswordAccessoryControllerWithTestStoreTest
     : public PasswordAccessoryControllerTest {
  public:
-  TestPasswordStore& test_store() { return *test_store_; }
+  TestPasswordStore& test_account_store() { return *test_account_store_; }
+  TestPasswordStore& test_profile_store() { return *test_profile_store_; }
 
   void SetUp() override {
     PasswordAccessoryControllerTest::SetUp();
-    test_store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+    test_account_store_->Init(/*prefs=*/nullptr,
+                              /*affiliated_match_helper=*/nullptr);
+    test_profile_store_->Init(/*prefs=*/nullptr,
+                              /*affiliated_match_helper=*/nullptr);
   }
 
   void TearDown() override {
-    test_store_->ShutdownOnUIThread();
+    test_account_store_->ShutdownOnUIThread();
+    test_profile_store_->ShutdownOnUIThread();
     task_environment()->RunUntilIdle();
     PasswordAccessoryControllerTest::TearDown();
   }
 
  protected:
-  PasswordStoreInterface* CreateInternalPasswordStore() override {
-    test_store_ = CreateAndUseTestPasswordStore(profile());
-    return test_store_.get();
+  PasswordStoreInterface* CreateInternalAccountPasswordStore() override {
+    test_account_store_ = CreateAndUseTestAccountPasswordStore(profile());
+    return test_account_store_.get();
+  }
+
+  PasswordStoreInterface* CreateInternalProfilePasswordStore() override {
+    test_profile_store_ = CreateAndUseTestPasswordStore(profile());
+    return test_profile_store_.get();
   }
 
  private:
-  scoped_refptr<TestPasswordStore> test_store_;
+  scoped_refptr<TestPasswordStore> test_account_store_;
+  scoped_refptr<TestPasswordStore> test_profile_store_;
 };
 
 TEST_F(PasswordAccessoryControllerWithTestStoreTest,
        AddsShowOtherPasswordsForPasswordField) {
-  test_store().AddLogin(MakeSavedPassword());
+  test_profile_store().AddLogin(MakeSavedPassword());
   task_environment()->RunUntilIdle();
   CreateSheetController();
 
@@ -1387,7 +1464,7 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
 
 TEST_F(PasswordAccessoryControllerWithTestStoreTest,
        AddsShowOtherPasswordsForUsernameField) {
-  test_store().AddLogin(MakeSavedPassword());
+  test_profile_store().AddLogin(MakeSavedPassword());
   task_environment()->RunUntilIdle();
   CreateSheetController();
 
@@ -1411,7 +1488,7 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
 
 TEST_F(PasswordAccessoryControllerWithTestStoreTest,
        AddsShowOtherPasswordForOnlyCryptographicSchemeSites) {
-  test_store().AddLogin(MakeSavedPassword());
+  test_profile_store().AddLogin(MakeSavedPassword());
   task_environment()->RunUntilIdle();
   CreateSheetController();
   // `Setup` method sets the URL to https but http is required for this method.
@@ -1434,7 +1511,7 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
 
 TEST_F(PasswordAccessoryControllerWithTestStoreTest,
        HideShowOtherPasswordForLowSecurityLevelSites) {
-  test_store().AddLogin(MakeSavedPassword());
+  test_profile_store().AddLogin(MakeSavedPassword());
   task_environment()->RunUntilIdle();
   CreateSheetController(security_state::WARNING);
 

@@ -563,8 +563,18 @@ void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
   password_manager::PasswordFormDigest form_digest(
       password_manager::PasswordForm::Scheme::kHtml,
       password_manager::GetSignonRealm(origin_as_gurl), origin_as_gurl);
-  password_manager::PasswordStoreInterface* store =
-      password_client_->GetProfilePasswordStore();
+
+  password_manager::PasswordStoreInterface* store;
+  if (password_client_->GetPasswordFeatureManager()
+          ->IsOptedInForAccountStorage() &&
+      password_client_->GetPasswordFeatureManager()
+              ->GetDefaultPasswordStore() ==
+          password_manager::PasswordForm::Store::kAccountStore) {
+    store = password_client_->GetAccountPasswordStore();
+  } else {
+    store = password_client_->GetProfilePasswordStore();
+  }
+
   if (saving_enabled) {
     store->Unblocklist(form_digest);
   } else {
