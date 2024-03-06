@@ -9,17 +9,23 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
+@class TableViewTextHeaderFooterItem;
+
 @protocol TableViewFaviconDataSource;
 
 // This class presents a list of fallback item in a table view.
 @interface FallbackViewController : LegacyChromeTableViewController
 
+// Data source for images.
+@property(nonatomic, weak) id<TableViewFaviconDataSource> imageDataSource;
+
+// Header item displayed when there are no data items to show.
+@property(nonatomic, strong)
+    TableViewTextHeaderFooterItem* noDataItemsToShowHeaderItem;
+
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
-
-// Data source for images.
-@property(nonatomic, weak) id<TableViewFaviconDataSource> imageDataSource;
 
 // Presents a given item as a header section above data.
 - (void)presentHeaderItem:(TableViewHeaderFooterItem*)item;

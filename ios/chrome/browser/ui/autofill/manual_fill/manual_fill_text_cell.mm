@@ -4,11 +4,17 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_text_cell.h"
 
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
 
 @implementation ManualFillTextItem
 
 - (instancetype)initWithType:(NSInteger)type {
+  // TODO(crbug.com/326398845): Completely remove the ManualFillTextItem/Cell
+  // classes once the Keyboard Accessory Upgrade feature has launched both on
+  // iPhone and iPad.
+  CHECK(!IsKeyboardAccessoryUpgradeEnabled());
+
   self = [super initWithType:type];
   if (self) {
     self.cellClass = [ManualFillTextCell class];

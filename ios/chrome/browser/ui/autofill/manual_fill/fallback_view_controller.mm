@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -197,6 +199,25 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
   return kSectionHeaderHeight;
 }
 
+- (UIView*)tableView:(UITableView*)tableView
+    viewForHeaderInSection:(NSInteger)section {
+  UIView* headerView = [super tableView:tableView
+                 viewForHeaderInSection:section];
+
+  // Set the font and text color of the text label for headers of type
+  // TableViewTextHeaderFooterView.
+  if ([headerView isKindOfClass:[TableViewTextHeaderFooterView class]]) {
+    TableViewTextHeaderFooterView* textHeaderView =
+        base::apple::ObjCCastStrict<TableViewTextHeaderFooterView>(headerView);
+    textHeaderView.textLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    textHeaderView.textLabel.textColor =
+        [UIColor colorNamed:kTextSecondaryColor];
+  }
+
+  return headerView;
+}
+
 #pragma mark - Private
 
 // Calls `presentationBlock` to update the items in `tableView` after
@@ -234,6 +255,8 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
   DCHECK(self.queuedDataItems);
 
   [self createModelIfNeeded];
+
+  [self updateEmptyStateMessage];
 
   BOOL sectionExists = [self.tableViewModel
       hasSectionForSectionIdentifier:DataItemsSectionIdentifier];
@@ -277,8 +300,13 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 
   BOOL sectionExists = [self.tableViewModel
       hasSectionForSectionIdentifier:ActionsSectionIdentifier];
-  // If there are no passed items, remove section if it exists.
-  if (!self.queuedActionItems.count && sectionExists) {
+  BOOL sectionHasHeader =
+      sectionExists &&
+      [self.tableViewModel
+          headerForSectionWithIdentifier:ActionsSectionIdentifier];
+  // If there are no passed items, remove section if it exists and it doesn't
+  // have a header.
+  if (!self.queuedActionItems.count && sectionExists && !sectionHasHeader) {
     [self.tableViewModel removeSectionWithIdentifier:ActionsSectionIdentifier];
   } else if (self.queuedActionItems.count && !sectionExists) {
     [self.tableViewModel addSectionWithIdentifier:ActionsSectionIdentifier];
@@ -363,6 +391,54 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
             hasSectionForSectionIdentifier:sectionIdentifier]) {
       [self.tableViewModel removeSectionWithIdentifier:sectionIdentifier];
     }
+  }
+}
+
+// Adds or removes the `noDataItemsToShowHeaderItem` if needed. This header item
+// is displayed to let the user know that there are no data items to show. Given
+// the table view style, `noDataItemsToShowHeaderItem` needs to be set as the
+// actions section's header in order to achieve the desired spacing between this
+// item and the action items.
+- (void)updateEmptyStateMessage {
+  if (!IsKeyboardAccessoryUpgradeEnabled()) {
+    return;
+  }
+
+  BOOL needsEmptyStateHeader =
+      !self.queuedDataItems.count && self.noDataItemsToShowHeaderItem;
+  BOOL hasActionsSection = [self.tableViewModel
+      hasSectionForSectionIdentifier:ActionsSectionIdentifier];
+  BOOL hasEmptyStateHeader =
+      hasActionsSection &&
+      [self.tableViewModel
+          headerForSectionWithIdentifier:ActionsSectionIdentifier];
+
+  if (needsEmptyStateHeader == hasEmptyStateHeader) {
+    return;
+  }
+
+  if (needsEmptyStateHeader) {
+    // The header needs to be added to the model: Add the actions section if it
+    // doesn't already exist. Then, set `noDataItemsToShowHeaderItem` as the
+    // actions section's header.
+    if (!hasActionsSection) {
+      [self.tableViewModel addSectionWithIdentifier:ActionsSectionIdentifier];
+    }
+    [self.tableViewModel setHeader:self.noDataItemsToShowHeaderItem
+          forSectionWithIdentifier:ActionsSectionIdentifier];
+  } else {
+    // The header needs to be removed from the model: If the actions section
+    // contains items, set its header to `nil`. Otherwise, remove the whole
+    // section.
+    if ([self.tableViewModel
+            itemsInSectionWithIdentifier:ActionsSectionIdentifier]) {
+      [self.tableViewModel setHeader:nil
+            forSectionWithIdentifier:ActionsSectionIdentifier];
+    } else {
+      [self.tableViewModel
+          removeSectionWithIdentifier:ActionsSectionIdentifier];
+    }
+    self.noDataItemsToShowHeaderItem = nil;
   }
 }
 

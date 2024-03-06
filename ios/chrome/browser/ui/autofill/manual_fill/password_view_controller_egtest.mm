@@ -123,7 +123,7 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   // Open the password manual fill view.
   OpenPasswordManualFillView();
 
-  //  // Simulate failed authentication.
+  // Simulate failed authentication.
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
   [PasswordSettingsAppInterface
@@ -897,6 +897,30 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
   // Assert the password icon is not enabled and not visible.
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the "no passwords found" message is visible when no password
+// suggestions are available for the current website.
+- (void)testNoPasswordsFoundMessageIsVisibleWhenNoPasswordSuggestions {
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the Keyboard "
+                           @"Accessory Upgrade feature is disabled.");
+  }
+
+  [AutofillAppInterface clearProfilePasswordStore];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementUsername)];
+
+  // Open the password manual fill view.
+  OpenPasswordManualFillView();
+
+  // Assert that the "no passwords found" message is visible.
+  id<GREYMatcher> noPasswordsFoundMessage = grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE));
+  [[EarlGrey selectElementWithMatcher:noPasswordsFoundMessage]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests password generation on manual fallback.

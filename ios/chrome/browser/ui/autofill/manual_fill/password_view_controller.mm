@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -32,13 +33,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
-typedef NS_ENUM(NSInteger, ManualFallbackItemType) {
-  ManualFallbackItemTypeUnkown = kItemTypeEnumZero,
-  ManualFallbackItemTypeHeader,
-  ManualFallbackItemTypeCredential,
-  ManualFallbackItemTypeEmptyCredential,
-};
-
 namespace manual_fill {
 
 NSString* const kPasswordDoneButtonAccessibilityIdentifier =
@@ -47,6 +41,12 @@ NSString* const kPasswordSearchBarAccessibilityIdentifier =
     @"kManualFillPasswordSearchBarAccessibilityIdentifier";
 NSString* const kPasswordTableViewAccessibilityIdentifier =
     @"kManualFillPasswordTableViewAccessibilityIdentifier";
+
+enum ManualFallbackItemType : NSInteger {
+  kHeader = kItemTypeEnumZero,
+  kCredential,
+  kNoCredentialsMessage,
+};
 
 }  // namespace manual_fill
 
@@ -106,7 +106,7 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
 
   switch (itemType) {
-    case ManualFallbackItemTypeCredential:
+    case manual_fill::ManualFallbackItemType::kCredential:
       // Retrieve favicons for credential cells.
       [self loadFaviconForCell:cell indexPath:indexPath];
       break;
@@ -147,20 +147,31 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
   }
 
   for (ManualFillCredentialItem* credentialItem in credentials) {
-    credentialItem.type = ManualFallbackItemTypeCredential;
+    credentialItem.type = manual_fill::ManualFallbackItemType::kCredential;
   }
 
   // If no items were posted and there is no search bar, present the empty item
   // and return.
   if (!credentials.count && !self.searchController) {
-    ManualFillTextItem* emptyCredentialItem = [[ManualFillTextItem alloc]
-        initWithType:ManualFallbackItemTypeEmptyCredential];
-    emptyCredentialItem.text =
-        l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE);
-    emptyCredentialItem.textColor = [UIColor colorNamed:kDisabledTintColor];
-    emptyCredentialItem.showSeparator = YES;
-    [self presentDataItems:@[ emptyCredentialItem ]];
-    return;
+    if (IsKeyboardAccessoryUpgradeEnabled()) {
+      TableViewTextHeaderFooterItem* textHeaderFooterItem =
+          [[TableViewTextHeaderFooterItem alloc]
+              initWithType:manual_fill::ManualFallbackItemType::
+                               kNoCredentialsMessage];
+      textHeaderFooterItem.text =
+          l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE);
+      self.noDataItemsToShowHeaderItem = textHeaderFooterItem;
+    } else {
+      ManualFillTextItem* emptyCredentialItem = [[ManualFillTextItem alloc]
+          initWithType:manual_fill::ManualFallbackItemType::
+                           kNoCredentialsMessage];
+      emptyCredentialItem.text =
+          l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE);
+      emptyCredentialItem.textColor = [UIColor colorNamed:kDisabledTintColor];
+      emptyCredentialItem.showSeparator = YES;
+      [self presentDataItems:@[ emptyCredentialItem ]];
+      return;
+    }
   }
 
   [self presentDataItems:credentials];
@@ -224,7 +235,7 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
 - (void)addHeaderItem {
   TableViewLinkHeaderFooterItem* headerItem =
       [[TableViewLinkHeaderFooterItem alloc]
-          initWithType:ManualFallbackItemTypeHeader];
+          initWithType:manual_fill::ManualFallbackItemType::kHeader];
 
   headerItem.text =
       l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER);
