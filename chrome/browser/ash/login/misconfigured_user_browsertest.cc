@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/auth/chrome_safe_mode_delegate.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -33,7 +35,9 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/account_id_util.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
@@ -43,6 +47,7 @@ namespace ash {
 namespace {
 
 constexpr char kMisconfiguredUserPref[] = "incomplete_login_user_account";
+constexpr char kMisconfiguredUserPrefV2[] = "incomplete_login_user_account_v2";
 constexpr char kNewUserGaiaId[] = "1234";
 constexpr char kNewUserPassword[] = "password";
 constexpr char kNewUserEmail[] = "new-user@gmail.com";
@@ -230,8 +235,30 @@ IN_PROC_BROWSER_TEST_F(MisconfiguredUserTest,
   InitiateUserCreation(kNewUserEmail, kNewUserPassword);
   ASSERT_TRUE(add_auth_factor_waiter_->Wait());
   PrefService* local_state = g_browser_process->local_state();
-  std::string incomplete_user = local_state->GetString(kMisconfiguredUserPref);
-  EXPECT_EQ(incomplete_user, kNewUserEmail);
+  ASSERT_TRUE(local_state->HasPrefPath(kMisconfiguredUserPrefV2));
+  const base::Value::Dict& pref_dict =
+      local_state->GetDict(kMisconfiguredUserPrefV2);
+  std::optional<AccountId> account_id = user_manager::LoadAccountId(pref_dict);
+  ASSERT_TRUE(account_id);
+  EXPECT_EQ(account_id->GetUserEmail(), kNewUserEmail);
+}
+
+IN_PROC_BROWSER_TEST_F(MisconfiguredUserTest,
+                       PRE_MisconfiguredUserSuccessfullyRecordedLegacy) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetString(kMisconfiguredUserPref, kNewUserEmail);
+  local_state->CommitPendingWrite();
+}
+
+IN_PROC_BROWSER_TEST_F(MisconfiguredUserTest,
+                       MisconfiguredUserSuccessfullyRecordedLegacy) {
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(FakeUserDataAuthClient::Get()
+                  ->WasCalled<FakeUserDataAuthClient::Operation::kRemove>());
+  ::user_data_auth::RemoveRequest last_remove_request =
+      FakeUserDataAuthClient::Get()
+          ->GetLastRequest<FakeUserDataAuthClient::Operation::kRemove>();
+  EXPECT_EQ(last_remove_request.identifier().account_id(), kNewUserEmail);
 }
 
 IN_PROC_BROWSER_TEST_F(MisconfiguredUserTest,

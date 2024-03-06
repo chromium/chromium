@@ -52,6 +52,7 @@ class USER_MANAGER_EXPORT UserDirectoryIntegrityManager {
 
  private:
   std::optional<std::string> GetMisconfiguredUserEmail();
+  std::optional<AccountId> GetMisconfiguredUserAccountIdLegacy();
 
   const raw_ptr<PrefService> local_state_;
 };
