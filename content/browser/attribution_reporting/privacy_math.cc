@@ -12,12 +12,12 @@
 #include <iterator>
 #include <map>
 #include <optional>
-#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -81,10 +81,14 @@ absl::uint128 GetNumStatesRecursive(
   }
 
   // Store these as 8 bit to optimize storage.
-  absl::uint128& cached =
-      map[std::make_tuple(base::checked_cast<uint8_t>(max_reports), it.index(),
-                          base::checked_cast<uint8_t>(window_val),
-                          base::checked_cast<uint8_t>(max_reports_per_type))];
+  const uint8_t key[4] = {
+      base::checked_cast<uint8_t>(max_reports),           //
+      it.index(),                                         //
+      base::checked_cast<uint8_t>(window_val),            //
+      base::checked_cast<uint8_t>(max_reports_per_type),  //
+  };
+
+  absl::uint128& cached = map[base::numerics::U32FromNativeEndian(key)];
   if (cached != 0) {
     return cached;
   }
