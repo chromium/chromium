@@ -19,6 +19,7 @@ source_set("coordinators") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/infobars:constants",
     "//ios/chrome/browser/ui/infobars:public",

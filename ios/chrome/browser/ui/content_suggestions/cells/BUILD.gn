@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/build/chrome_build.gni")
+
 source_set("cells") {
   sources = [
     "content_suggestions_most_visited_action_item.h",
@@ -95,6 +97,9 @@ source_set("most_visited_tiles") {
     "//ui/base",
   ]
   public_deps = [ "//ios/third_party/material_components_ios" ]
+  if (ios_enable_widget_kit_extension) {
+    deps += [ "//ios/chrome/browser/widget_kit/model:model_swift" ]
+  }
 }
 
 source_set("shortcuts") {

@@ -24,6 +24,7 @@ source_set("layout_guide") {
     ":layout_guide_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
   ]
 }
 

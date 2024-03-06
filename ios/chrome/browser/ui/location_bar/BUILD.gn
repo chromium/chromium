@@ -60,6 +60,7 @@ source_set("location_bar") {
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/ssl/model",
     "//ios/chrome/browser/ui/badges",
     "//ios/chrome/browser/ui/badges:public",

@@ -24,6 +24,7 @@ source_set("row") {
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",
     "//ios/chrome/browser/ui/omnibox/popup:popup_icon",

@@ -34,6 +34,7 @@ source_set("keyboard_assist") {
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/ui/bubble",
     "//ios/chrome/browser/ui/lens:lens_availability",
     "//ios/chrome/browser/ui/lens:lens_entrypoint",

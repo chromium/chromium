@@ -169,6 +169,7 @@ source_set("unit_tests") {
   deps = [
     ":overflow_menu",
     ":overflow_menu_constants",
+    ":overflow_menu_swift",
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",

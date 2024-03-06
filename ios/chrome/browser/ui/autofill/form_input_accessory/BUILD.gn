@@ -54,6 +54,7 @@ source_set("form_input_accessory") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/ui/autofill/branding",
     "//ios/chrome/browser/ui/autofill/branding:branding_ui",
     "//ios/chrome/browser/ui/autofill/manual_fill",
