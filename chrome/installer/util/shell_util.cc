@@ -10,6 +10,7 @@
 #include "chrome/installer/util/shell_util.h"
 
 #include <objbase.h>
+#include <shellapi.h>
 #include <shlobj.h>
 #include <shobjidl.h>
 #include <wrl/client.h>
@@ -2078,10 +2079,26 @@ bool ShellUtil::ShowMakeChromeDefaultSystemUI(
 
   bool succeeded = true;
   bool is_default = (GetChromeDefaultState() == IS_DEFAULT);
+  bool is_win11_or_greater =
+      base::win::GetVersion() >= base::win::Version::WIN11;
   if (!is_default) {
-    // Launch the Windows Apps Settings dialog.
-    succeeded = base::win::LaunchDefaultAppsSettingsModernDialog(L"http");
-    is_default = (succeeded && GetChromeDefaultState() == IS_DEFAULT);
+    if (is_win11_or_greater) {
+      // Launch the Windows Apps Settings dialog and navigate to the settings
+      // page for Chrome.
+      bool is_per_user_install = InstallUtil::IsPerUserInstall();
+      std::wstring settings_url =
+          base::StrCat({L"ms-settings:defaultapps?",
+                        is_per_user_install ? L"registeredAppUser="
+                                            : L"registeredAppMachine=",
+                        ShellUtil::GetBrowserModelId(is_per_user_install)});
+      succeeded = reinterpret_cast<intptr_t>(
+                      ShellExecute(nullptr, L"open", settings_url.c_str(),
+                                   nullptr, nullptr, SW_SHOWNORMAL)) > 32;
+    }
+    if (!is_win11_or_greater || !succeeded) {
+      // Launch the Windows Apps Settings dialog.
+      succeeded = base::win::LaunchDefaultAppsSettingsModernDialog(L"http");
+    }
   }
   if (succeeded && is_default)
     RegisterChromeAsDefaultXPStyle(CURRENT_USER, chrome_exe);
