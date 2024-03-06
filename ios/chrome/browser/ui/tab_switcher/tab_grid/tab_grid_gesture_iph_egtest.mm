@@ -68,7 +68,7 @@ using ::chrome_test_util::TabGridSearchTabsButton;
     GREYAssertTrue(
         appearance,
         @"IPH doesn't show after the user taps to go to incognito twice.");
-    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(9.2));
+    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(9.5));
   }
   appearance = HasGestureIPHAppeared();
   GREYAssertFalse(appearance, @"IPH still displaying after the timeout.");
@@ -85,6 +85,7 @@ using ::chrome_test_util::TabGridSearchTabsButton;
         appearance,
         @"IPH doesn't show after the user taps to go to incognito twice.");
   }
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
   TapDismissButton();
   appearance = HasGestureIPHAppeared();
   GREYAssertFalse(

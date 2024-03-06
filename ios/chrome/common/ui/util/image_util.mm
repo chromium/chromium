@@ -167,16 +167,20 @@ void CalculateProjection(CGSize originalSize,
 UIImage* BlurredImageWithImage(UIImage* image, CGFloat blurRadius) {
   CIImage* inputImage = [CIImage imageWithCGImage:image.CGImage];
 
-  // Blur the UIImage with a CIFilter
-  CIFilter* filter = [CIFilter filterWithName:@"CIGaussianBlur"];
-  [filter setValue:inputImage forKey:kCIInputImageKey];
-  [filter setValue:[NSNumber numberWithFloat:blurRadius] forKey:@"inputRadius"];
+  // Extend the edges with a Affline Clamp filter.
+  CIFilter* clampFilter = [CIFilter filterWithName:@"CIAffineClamp"];
+  [clampFilter setDefaults];
+  [clampFilter setValue:inputImage forKey:kCIInputImageKey];
 
-  CIImage* outputImage = filter.outputImage;
-  CGFloat scale = 1 / image.scale;
-  outputImage = [outputImage
-      imageByApplyingTransform:CGAffineTransformMakeScale(scale, scale)];
-  UIImage* blurredImage = [UIImage imageWithCIImage:outputImage];
-  return
-      [blurredImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  // Blur the UIImage with a Gaussian blur filter.
+  CIFilter* blurFilter = [CIFilter filterWithName:@"CIGaussianBlur"];
+  [blurFilter setValue:clampFilter.outputImage forKey:kCIInputImageKey];
+  [blurFilter setValue:[NSNumber numberWithFloat:blurRadius]
+                forKey:@"inputRadius"];
+
+  CIContext* context = [CIContext contextWithOptions:nil];
+  UIImage* blurredImage =
+      [UIImage imageWithCGImage:[context createCGImage:blurFilter.outputImage
+                                              fromRect:inputImage.extent]];
+  return blurredImage;
 }

@@ -250,8 +250,9 @@ using ::chrome_test_util::ForwardButton;
 // timeout.
 - (void)testSwipeBackForwardIPHDirections {
   // Single direction swipe IPH takes 9s, while bi-direction swipe IPH takes
-  // 12s; use a fixed wait time of 10s to distinguish between the two.
-  const base::TimeDelta waitTime = base::Seconds(10);
+  // 12s; use a fixed wait time between the two to distinguish between the two
+  // kinds of swipe IPHs.
+  const base::TimeDelta waitTime = base::Seconds(11.5);
   [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSSwipeBackForward"];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 

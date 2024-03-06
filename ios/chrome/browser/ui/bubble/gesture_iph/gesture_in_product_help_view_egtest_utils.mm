@@ -15,7 +15,7 @@ BOOL HasGestureIPHAppeared() {
   // Disable scoped synchronization to perform checks with animation running.
   ScopedSynchronizationDisabler sync_disabler;
   // Wait for the time it takes for the in-product help to appear/disappear with
-  // an extra buffer.
+  // an extra buffer to generate blurred background.
   base::test::ios::SpinRunLoopWithMinDelay(
       kGestureInProductHelpViewAppearDuration + base::Milliseconds(100));
   return
