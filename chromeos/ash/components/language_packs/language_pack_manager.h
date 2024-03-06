@@ -223,6 +223,8 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // If the state marks the Language Pack as ready, then there's no need to
   // call Install(), otherwise the client should call Install() and not call
   // this method a second time.
+  // This will automatically mount the DLC if it exists on disk (is_verified),
+  // and return a PackState of kInstalled.
   static void GetPackState(const std::string& feature_id,
                            const std::string& locale,
                            GetPackStateCallback callback);

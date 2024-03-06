@@ -4,17 +4,22 @@
 
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 using ::dlcservice::DlcState;
 using ::testing::_;
@@ -22,7 +27,9 @@ using ::testing::AllOf;
 using ::testing::Field;
 using ::testing::FieldsAre;
 using ::testing::Invoke;
+using ::testing::Property;
 using ::testing::Return;
+using ::testing::StartsWith;
 using ::testing::WithArg;
 
 namespace ash::language_packs {
@@ -239,6 +246,38 @@ TEST_F(LanguagePackManagerTest, GetPackStateSuccessTest) {
   // Test UMA metrics: post-condition.
   histogram_tester.ExpectBucketCount(kHistogramGetPackStateFeatureId,
                                      FeatureIdsEnum::kHandwriting, 1);
+}
+
+TEST_F(LanguagePackManagerTest, GetPackStateSuccessNotInstalledButVerified) {
+  dlcservice_client_.set_get_dlc_state_error(dlcservice::kErrorNone);
+  dlcservice::DlcState dlc_state;
+  dlc_state.set_id(
+      *GetDlcIdForLanguagePack(kHandwritingFeatureId, kSupportedLocale));
+  dlc_state.set_state(dlcservice::DlcState_State_NOT_INSTALLED);
+  dlc_state.set_is_verified(true);
+  dlcservice_client_.set_install_root_path("/path");
+  dlcservice_client_.set_dlc_state(dlc_state);
+
+  LanguagePackManager::GetPackState(
+      kHandwritingFeatureId, kSupportedLocale,
+      base::BindOnce(&LanguagePackManagerTest::GetPackStateTestCallback,
+                     base::Unretained(this)));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
+  EXPECT_EQ(pack_result_.path, "/path");
+  EXPECT_EQ(pack_result_.feature_id, kHandwritingFeatureId);
+  EXPECT_EQ(pack_result_.language_code, kSupportedLocale);
+  base::test::TestFuture<const std::string&, const dlcservice::DlcsWithContent&>
+      future;
+  dlcservice_client_.GetExistingDlcs(future.GetCallback());
+  const dlcservice::DlcsWithContent& dlcs = future.Get<1>();
+  EXPECT_THAT(
+      dlcs.dlc_infos(),
+      ElementsAre(Property(
+          "id", &dlcservice::DlcsWithContent::DlcInfo::id,
+          *GetDlcIdForLanguagePack(kHandwritingFeatureId, kSupportedLocale))));
 }
 
 TEST_F(LanguagePackManagerTest, GetPackStateFailureTest) {
