@@ -58,13 +58,22 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
     };
 
     if (isSelectable) {
-      this.$('tbody')!.addEventListener('click', e => this.onTbodyClick(e));
+      const tbody = this.$<HTMLElement>('tbody')!;
+      tbody.addEventListener('click', e => this.onTbodyClick(e));
+      tbody.addEventListener('keydown', e => {
+        if (e.code === 'Enter' || e.code === 'Space') {
+          this.onTbodyClick(e);
+        }
+      });
 
       this.addEventListener(
           'rows-change',
           () => this.dispatchSelectionChange_(this.selectedData()));
 
-      this.styleNewRow_ = tr => tr.ariaSelected = 'false';
+      this.styleNewRow_ = tr => {
+        tr.ariaSelected = 'false';
+        tr.tabIndex = 0;
+      };
     }
 
     for (const col of dataCols) {
@@ -264,7 +273,8 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
   }
 
   private onTbodyClick(e: Event): void {
-    if (!(e.target instanceof HTMLElement)) {
+    if (!(e.target instanceof HTMLElement) ||
+        e.target instanceof HTMLAnchorElement) {
       return;
     }
     const tr = e.target.closest('tr');
