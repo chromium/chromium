@@ -82,6 +82,13 @@ void FakeSystemIdentityManager::AddIdentity(id<SystemIdentity> identity) {
       true);
 }
 
+void FakeSystemIdentityManager::AddIdentityWithUnknownCapabilities(
+    id<SystemIdentity> identity) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  [storage_ addIdentity:identity];
+  FireIdentityListChanged(/*notify_user*/ false);
+}
+
 void FakeSystemIdentityManager::AddIdentities(NSArray<NSString*>* names) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (NSString* name in names) {

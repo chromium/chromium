@@ -42,6 +42,10 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // Does nothing if the identity is already in the manager.
   void AddIdentity(id<SystemIdentity> identity);
 
+  // Adds `identity` to the available idendities without setting up
+  // capabilities.
+  void AddIdentityWithUnknownCapabilities(id<SystemIdentity> identity);
+
   // Adds fake identities given their names. Ignore the identities that are
   // already added.
   void AddIdentities(NSArray<NSString*>* names);

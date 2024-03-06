@@ -8,14 +8,9 @@
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_consumer.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
-@protocol HistorySyncViewControllerAudience;
-
 // View controller for history sync.
 @interface HistorySyncViewController
     : PromoStyleViewController <HistorySyncConsumer>
-
-// Audience to notify when the view changes.
-@property(nonatomic, weak) id<HistorySyncViewControllerAudience> audience;
 
 @end
 

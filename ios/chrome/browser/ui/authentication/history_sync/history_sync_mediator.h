@@ -7,11 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller_audience.h"
-
 class AuthenticationService;
 class ChromeAccountManagerService;
 @protocol HistorySyncConsumer;
+@class HistorySyncCapabilitiesFetcher;
 @class HistorySyncMediator;
 
 namespace signin {
@@ -31,12 +30,15 @@ class SyncService;
 @end
 
 // Mediator that handles the sync operations.
-@interface HistorySyncMediator : NSObject <HistorySyncViewControllerAudience>
+@interface HistorySyncMediator : NSObject
 
 // Consumer for this mediator.
 @property(nonatomic, weak) id<HistorySyncConsumer> consumer;
 // Delegate.
 @property(nonatomic, weak) id<HistorySyncMediatorDelegate> delegate;
+
+@property(nonatomic, strong)
+    HistorySyncCapabilitiesFetcher* capabilitiesFetcher;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -53,10 +55,6 @@ class SyncService;
 
 // Opts in for history sync.
 - (void)enableHistorySyncOptin;
-
-// Starts fetching capabilities to determine minor mode restriction status.
-- (void)startFetchingCapabilitiesWithCompletion:
-    (ProcessCapabilityCompletionCallback)completion;
 
 @end
 

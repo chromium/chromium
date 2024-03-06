@@ -10,7 +10,6 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller_audience.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -77,9 +76,6 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(200);
       base::UmaHistogramBoolean(
           "Signin.AccountCapabilities.ImmediatelyAvailable", false);
       _userVisibileLatency = std::make_unique<base::ElapsedTimer>();
-
-      // Notify audience.
-      [self.audience viewAppearedWithHiddenButtonsWithCompletion:nil];
     }
   }
 }

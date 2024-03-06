@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_mediator.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_capabilities_fetcher.h"
 
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/scoped_mock_clock_override.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -17,24 +19,18 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_consumer.h"
-#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
-#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 
 const char kTestEmail[] = "test@gmail.com";
 
-class HistorySyncMediatorTest : public PlatformTest {
+class HistorySyncCapabilitiesFetcherTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
@@ -51,7 +47,8 @@ class HistorySyncMediatorTest : public PlatformTest {
   }
 
   void TearDown() override {
-    EXPECT_OCMOCK_VERIFY((id)consumer_mock_);
+    ASSERT_TRUE(fetcher_);
+    [fetcher_ shutdown];
     PlatformTest::TearDown();
   }
 
@@ -64,22 +61,16 @@ class HistorySyncMediatorTest : public PlatformTest {
     return identity_test_env_.identity_manager();
   }
 
-  HistorySyncMediator* BuildHistorySyncMediator(bool show_user_email) {
-    ChromeAccountManagerService* chrome_account_manager_service =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser_state_.get());
+  HistorySyncCapabilitiesFetcher* BuildHistorySyncCapabilitiesFetcher(
+      CapabilityFetchCompletionCallback callback) {
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
-    syncer::SyncService* sync_service =
-        SyncServiceFactory::GetForBrowserState(browser_state_.get());
-    HistorySyncMediator* mediator = [[HistorySyncMediator alloc]
-        initWithAuthenticationService:auth_service
-          chromeAccountManagerService:chrome_account_manager_service
-                      identityManager:identity_manager()
-                          syncService:sync_service
-                        showUserEmail:show_user_email];
-    mediator.consumer = consumer_mock_;
-    return mediator;
+    HistorySyncCapabilitiesFetcher* fetcher =
+        [[HistorySyncCapabilitiesFetcher alloc]
+            initWithAuthenticationService:auth_service
+                          identityManager:identity_manager()
+                                 callback:std::move(callback)];
+    return fetcher;
   }
 
   AccountInfo SignInPrimaryAccountWithCanShowUnrestrictedOptInsCapability(
@@ -106,57 +97,68 @@ class HistorySyncMediatorTest : public PlatformTest {
   }
 
  protected:
-  id<HistorySyncConsumer> consumer_mock_ =
-      OCMProtocolMock(@protocol(HistorySyncConsumer));
-  web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::Options::DEFAULT,
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  web::WebTaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   base::test::ScopedFeatureList feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
+  HistorySyncCapabilitiesFetcher* fetcher_ = nil;
 };
 
-// Tests that startFetchingCapabilities will process the AccountInfo capability
-// CanShowHistorySyncOptInsWithoutMinorModeRestrictions if its value is already
-// available.
-TEST_F(HistorySyncMediatorTest,
+// Tests that startFetchingRestrictionCapability will process the AccountInfo
+// capability CanShowHistorySyncOptInsWithoutMinorModeRestrictions if its value
+// is already available.
+TEST_F(HistorySyncCapabilitiesFetcherTest,
        TestStartFetchingCapabilitiesWithAccountCapabilityValueTrue) {
-  OCMExpect([consumer_mock_ displayButtonsWithRestrictionStatus:NO]);
-
   // Make account capabilities available before the mediator is created.
   SignInPrimaryAccountWithCanShowUnrestrictedOptInsCapability(true);
 
-  // Create the mediator and attempt to fetch existing capabilities.
-  HistorySyncMediator* mediator =
-      BuildHistorySyncMediator(/*show_user_email=*/false);
-  [mediator startFetchingCapabilitiesWithCompletion:nil];
+  base::RunLoop run_loop;
+  CapabilityFetchCompletionCallback callback =
+      base::BindLambdaForTesting([&run_loop](bool capability) {
+        EXPECT_TRUE(capability);
+        run_loop.Quit();
+      });
+
+  // Create the fetcher and attempt to fetch existing capabilities.
+  fetcher_ = BuildHistorySyncCapabilitiesFetcher(std::move(callback));
+  [fetcher_ startFetchingRestrictionCapability];
+
+  run_loop.Run();
 }
 
-// Tests that startFetchingCapabilities will process the AccountInfo capability
-// if its value is already available.
-TEST_F(HistorySyncMediatorTest,
+// Tests that startFetchingRestrictionCapability will process the AccountInfo
+// capability if its value is already available.
+TEST_F(HistorySyncCapabilitiesFetcherTest,
        TestStartFetchingCapabilitiesWithAccountCapabilityValueFalse) {
-  OCMExpect([consumer_mock_ displayButtonsWithRestrictionStatus:YES]);
-
   // Make account capabilities available before the mediator is created.
   SignInPrimaryAccountWithCanShowUnrestrictedOptInsCapability(false);
 
-  // Create the mediator and attempt to fetch existing capabilities.
-  HistorySyncMediator* mediator =
-      BuildHistorySyncMediator(/*show_user_email=*/false);
-  [mediator startFetchingCapabilitiesWithCompletion:nil];
+  base::RunLoop run_loop;
+  CapabilityFetchCompletionCallback callback =
+      base::BindLambdaForTesting([&run_loop](bool capability) {
+        EXPECT_FALSE(capability);
+        run_loop.Quit();
+      });
+
+  // Create the fetcher and attempt to fetch existing capabilities.
+  fetcher_ = BuildHistorySyncCapabilitiesFetcher(std::move(callback));
+  [fetcher_ startFetchingRestrictionCapability];
+
+  run_loop.Run();
 }
 
 // Tests that the account capability is processed on AccountInfo received.
-TEST_F(HistorySyncMediatorTest,
+TEST_F(HistorySyncCapabilitiesFetcherTest,
        TestAccountInfoReceivedWithCapabilityValuedTrue) {
-  OCMExpect([consumer_mock_ displayButtonsWithRestrictionStatus:NO]);
+  base::RunLoop run_loop;
+  CapabilityFetchCompletionCallback callback =
+      base::BindLambdaForTesting([&run_loop](bool capability) {
+        EXPECT_TRUE(capability);
+        run_loop.Quit();
+      });
 
-  // Create the mediator and ensure its lifetime.
-  HistorySyncMediator* mediator =
-      BuildHistorySyncMediator(/*show_user_email=*/false);
-  ASSERT_TRUE(mediator);
+  fetcher_ = BuildHistorySyncCapabilitiesFetcher(std::move(callback));
 
   // Create AccountInfo and trigger onExtendedAccountInfoUpdated.
   AccountInfo account =
@@ -165,17 +167,21 @@ TEST_F(HistorySyncMediatorTest,
       account.account_id, account.email, account.gaia,
       /*hosted_domain=*/"", "full_name", "given_name", "locale",
       /*picture_url=*/"");
+
+  run_loop.Run();
 }
 
 // Tests that the account capability is processed on AccountInfo received.
-TEST_F(HistorySyncMediatorTest,
+TEST_F(HistorySyncCapabilitiesFetcherTest,
        TestAccountInfoReceivedWithCapabilityValuedFalse) {
-  OCMExpect([consumer_mock_ displayButtonsWithRestrictionStatus:YES]);
+  base::RunLoop run_loop;
+  CapabilityFetchCompletionCallback callback =
+      base::BindLambdaForTesting([&run_loop](bool capability) {
+        EXPECT_FALSE(capability);
+        run_loop.Quit();
+      });
 
-  // Create the mediator and ensure its lifetime.
-  HistorySyncMediator* mediator =
-      BuildHistorySyncMediator(/*show_user_email=*/false);
-  ASSERT_TRUE(mediator);
+  fetcher_ = BuildHistorySyncCapabilitiesFetcher(std::move(callback));
 
   // Create AccountInfo and trigger onExtendedAccountInfoUpdated.
   AccountInfo account =
@@ -184,69 +190,70 @@ TEST_F(HistorySyncMediatorTest,
       account.account_id, account.email, account.gaia,
       /*hosted_domain=*/"", "full_name", "given_name", "locale",
       /*picture_url=*/"");
-}
 
-// Tests that the system capability is processed.
-TEST_F(HistorySyncMediatorTest, TestSystemCapabilityValuedTrue) {
-  OCMExpect([consumer_mock_ displayButtonsWithRestrictionStatus:NO]);
-
-  // Create the mediator.
-  HistorySyncMediator* mediator =
-      BuildHistorySyncMediator(/*show_user_email=*/false);
-
-  SystemSignInWithCanShowUnrestrictedOptInsCapability(true);
-
-  // Start fetching and wait until the capability is processed.
-  base::RunLoop run_loop;
-  base::RunLoop* run_loop_ptr = &run_loop;
-  [mediator
-      startFetchingCapabilitiesWithCompletion:^(BOOL actionButtonsUpdated) {
-        if (actionButtonsUpdated) {
-          run_loop_ptr->Quit();
-        }
-      }];
   run_loop.Run();
 }
 
 // Tests that the system capability is processed.
-TEST_F(HistorySyncMediatorTest, TestSystemCapabilityValuedFalse) {
-  OCMExpect([consumer_mock_ displayButtonsWithRestrictionStatus:YES]);
+TEST_F(HistorySyncCapabilitiesFetcherTest, TestSystemCapabilityValuedTrue) {
+  SystemSignInWithCanShowUnrestrictedOptInsCapability(true);
 
-  // Create the mediator.
-  HistorySyncMediator* mediator =
-      BuildHistorySyncMediator(/*show_user_email=*/false);
+  base::RunLoop run_loop;
+  CapabilityFetchCompletionCallback callback =
+      base::BindLambdaForTesting([&run_loop](bool capability) {
+        EXPECT_TRUE(capability);
+        run_loop.Quit();
+      });
 
+  // Create the fetcher and attempt to fetch existing system capabilities.
+  fetcher_ = BuildHistorySyncCapabilitiesFetcher(std::move(callback));
+  [fetcher_ startFetchingRestrictionCapability];
+
+  run_loop.Run();
+}
+
+// Tests that the system capability is processed.
+TEST_F(HistorySyncCapabilitiesFetcherTest, TestSystemCapabilityValuedFalse) {
   SystemSignInWithCanShowUnrestrictedOptInsCapability(false);
 
-  // Start fetching and wait until the capability is processed.
   base::RunLoop run_loop;
-  base::RunLoop* run_loop_ptr = &run_loop;
-  [mediator
-      startFetchingCapabilitiesWithCompletion:^(BOOL actionButtonsUpdated) {
-        if (actionButtonsUpdated) {
-          run_loop_ptr->Quit();
-        }
-      }];
+  CapabilityFetchCompletionCallback callback =
+      base::BindLambdaForTesting([&run_loop](bool capability) {
+        EXPECT_FALSE(capability);
+        run_loop.Quit();
+      });
+
+  // Create the fetcher and attempt to fetch existing system capabilities.
+  fetcher_ = BuildHistorySyncCapabilitiesFetcher(std::move(callback));
+  [fetcher_ startFetchingRestrictionCapability];
+
   run_loop.Run();
 }
 
 // Tests that the fallback capability value is processed on fetch deadline.
-TEST_F(HistorySyncMediatorTest, TestCapabilityFetchDeadline) {
-  OCMExpect([consumer_mock_ displayButtonsWithRestrictionStatus:YES]);
+TEST_F(HistorySyncCapabilitiesFetcherTest, TestCapabilityFetchDeadline) {
+  base::ScopedMockClockOverride scoped_clock;
 
-  // Create the mediator without setting up capabilities.
-  HistorySyncMediator* mediator =
-      BuildHistorySyncMediator(/*show_user_email=*/false);
+  // Sign in fake identity without setting up capabilities.
+  const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  GetSystemIdentityManager()->AddIdentityWithUnknownCapabilities(identity);
+  AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+      ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
-  // Start the timer and wait until the fallback capability is processed.
   base::RunLoop run_loop;
-  base::RunLoop* run_loop_ptr = &run_loop;
-  [mediator
-      viewAppearedWithHiddenButtonsWithCompletion:^(BOOL actionButtonsUpdated) {
-        if (actionButtonsUpdated) {
-          run_loop_ptr->Quit();
-        }
-      }];
+  CapabilityFetchCompletionCallback callback =
+      base::BindLambdaForTesting([&run_loop](bool capability) {
+        EXPECT_FALSE(capability);
+        run_loop.Quit();
+      });
+
+  // Create the fetcher and wait for capability fetch timeout.
+  fetcher_ = BuildHistorySyncCapabilitiesFetcher(std::move(callback));
+  [fetcher_ startFetchingRestrictionCapability];
+
+  scoped_clock.Advance(base::Milliseconds(
+      switches::kMinorModeRestrictionsFetchDeadlineMs.Get()));
+
   run_loop.Run();
 }
 

@@ -10,37 +10,19 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/timer/timer.h"
 #import "components/signin/public/base/signin_switches.h"
-#import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
-#import "components/unified_consent/unified_consent_service.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/ui/authentication/account_capabilities_latency_tracker.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_capabilities_fetcher.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_consumer.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-using signin::Tribool;
-
-namespace {
-
-// Fallback value for the capability
-// CanShowHistorySyncOptInsWithoutMinorModeRestrictions if it is not available
-// after `kMinorModeRestrictionsFetchDeadlineMs`.
-const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
-
-}  // namespace
 
 // Mediator that handles the sync operations.
 @interface HistorySyncMediator () <ChromeAccountManagerServiceObserver,
@@ -64,10 +46,9 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
   // Records the latency of capabilities fetch for this view.
   std::unique_ptr<signin::AccountCapabilitiesLatencyTracker>
       _accountCapabilitiesLatencyTracker;
-  // Whether the history sync view buttons are updated.
-  BOOL _actionButtonsUpdated;
-  base::OneShotTimer _capabilitiesFetchTimer;
 }
+
+@synthesize capabilitiesFetcher = _capabilitiesFetcher;
 
 - (instancetype)
     initWithAuthenticationService:(AuthenticationService*)authenticationService
@@ -89,9 +70,22 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
                                                                 self);
     _syncService = syncService;
     _showUserEmail = showUserEmail;
-    _actionButtonsUpdated = NO;
 
-    if (![self useMinorModeRestrictions]) {
+    if ([self useMinorModeRestrictions]) {
+      __weak __typeof(self) weakSelf = self;
+      CapabilityFetchCompletionCallback callback =
+          base::BindRepeating(^(bool capability) {
+            bool isRestricted = !capability;
+            [weakSelf.consumer
+                displayButtonsWithRestrictionStatus:isRestricted];
+          });
+
+      _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
+          initWithAuthenticationService:authenticationService
+                        identityManager:identityManager
+                               callback:std::move(callback)];
+
+    } else {
       _accountCapabilitiesLatencyTracker =
           std::make_unique<signin::AccountCapabilitiesLatencyTracker>(
               identityManager);
@@ -102,7 +96,6 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
 }
 
 - (void)disconnect {
-  _capabilitiesFetchTimer.Stop();
   _accountCapabilitiesLatencyTracker.reset();
   _accountManagerServiceObserver.reset();
   _identityManagerObserver.reset();
@@ -121,64 +114,6 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
   syncer::SyncUserSettings* syncUserSettings = _syncService->GetUserSettings();
   syncUserSettings->SetSelectedType(syncer::UserSelectableType::kHistory, true);
   syncUserSettings->SetSelectedType(syncer::UserSelectableType::kTabs, true);
-}
-
-- (void)startFetchingCapabilitiesWithCompletion:
-    (ProcessCapabilityCompletionCallback)completion {
-  if (![self useMinorModeRestrictions]) {
-    return;
-  }
-
-  // The consumer must be present to receive updates based on successful
-  // capabilities fetches.
-  CHECK(self.consumer);
-
-  // Manually fetch AccountInfo::capabilities and attempt to update buttons. The
-  // capability might have been available and
-  // onExtendedAccountInfoUpdated would not be triggered.
-  CoreAccountInfo primaryAccount =
-      _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  AccountInfo accountInfo =
-      _identityManager->FindExtendedAccountInfo(primaryAccount);
-  [self processCanShowUnrestrictedOptInsCapability:
-            accountInfo.capabilities
-                .can_show_history_sync_opt_ins_without_minor_mode_restrictions()
-                                        completion:completion];
-
-  if (!_actionButtonsUpdated) {
-    // AccountInfo::capabilities is not immediately avaiable and might be
-    // received through onExtendedAccountInfoUpdated. Start fetching system
-    // capabilities.
-    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
-    CHECK(identity);
-    __weak __typeof(self) weakSelf = self;
-    GetApplicationContext()
-        ->GetSystemIdentityManager()
-        ->CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
-            identity, base::BindOnce(^(SystemIdentityCapabilityResult result) {
-              [weakSelf processCanShowUnrestrictedOptInsCapability:
-                            signin::TriboolFromCapabilityResult(result)
-                                                        completion:completion];
-            }));
-  }
-}
-
-#pragma mark - HistorySyncViewControllerAudience
-
-- (void)viewAppearedWithHiddenButtonsWithCompletion:
-    (ProcessCapabilityCompletionCallback)completion {
-  // Set timeout with fallback capability value corresponding to fallback button
-  // style.
-  __weak __typeof(self) weakSelf = self;
-  _capabilitiesFetchTimer.Start(
-      FROM_HERE,
-      base::Milliseconds(switches::kMinorModeRestrictionsFetchDeadlineMs.Get()),
-      base::BindOnce(^{
-        [weakSelf processCanShowUnrestrictedOptInsCapability:
-                      kCanShowUnrestrictedOptInsFallbackValue
-                                                  completion:completion];
-      }));
 }
 
 #pragma mark - Properties
@@ -230,13 +165,7 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if ([self useMinorModeRestrictions]) {
-    [self
-        processCanShowUnrestrictedOptInsCapability:
-            info.capabilities
-                .can_show_history_sync_opt_ins_without_minor_mode_restrictions()
-                                        completion:nil];
-  } else {
+  if (![self useMinorModeRestrictions]) {
     _accountCapabilitiesLatencyTracker->OnExtendedAccountInfoUpdated(info);
   }
 }
@@ -257,28 +186,6 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
         stringWithFormat:@"%@ %@", identity.userFullName, identity.userEmail];
   }
   [self.consumer setPrimaryIdentityAvatarAccessibilityLabel:accessibilityLabel];
-}
-
-// Process the capability given by either the SystemIdentityManager,
-// the IdentityManagerObserverBridge, or a fallback value.
-- (void)
-    processCanShowUnrestrictedOptInsCapability:(Tribool)capability
-                                    completion:
-                                        (ProcessCapabilityCompletionCallback)
-                                            completion {
-  // With known capability value, update buttons visibility if not already
-  // updated.
-  if (capability != Tribool::kUnknown && !_actionButtonsUpdated) {
-    // Stop timer.
-    _capabilitiesFetchTimer.Stop();
-    _actionButtonsUpdated = YES;
-    // Equally weighted buttons are used for the restricted opt-in screen.
-    BOOL isRestricted = (capability == Tribool::kFalse);
-    [self.consumer displayButtonsWithRestrictionStatus:isRestricted];
-  }
-  if (completion) {
-    completion(_actionButtonsUpdated);
-  }
 }
 
 - (BOOL)useMinorModeRestrictions {
