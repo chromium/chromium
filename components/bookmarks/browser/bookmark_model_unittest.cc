@@ -2709,6 +2709,9 @@ class BookmarkDualModelTest : public testing::Test {
         account_model_(TestBookmarkClient::CreateModel()) {
     local_or_syncable_observation_.Observe(local_or_syncable_model_.get());
     account_observation_.Observe(account_model_.get());
+
+    scoped_feature_list_.InitAndDisableFeature(
+        syncer::kEnableBookmarkFoldersForAccountStorage);
   }
 
  protected:
@@ -2720,6 +2723,7 @@ class BookmarkDualModelTest : public testing::Test {
       local_or_syncable_observation_{&local_or_syncable_observer_};
   base::ScopedObservation<BookmarkModel, BookmarkModelObserver>
       account_observation_{&account_observer_};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(BookmarkDualModelTest, MoveToOtherModel) {
