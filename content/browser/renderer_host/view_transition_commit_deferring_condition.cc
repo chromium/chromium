@@ -15,16 +15,6 @@
 namespace content {
 namespace {
 
-void OnSnapshotAck(base::OnceClosure closure,
-                   base::WeakPtr<NavigationRequest> navigation_request,
-                   const blink::ViewTransitionState& view_transition_state) {
-  if (navigation_request && view_transition_state.HasElements()) {
-    navigation_request->SetViewTransitionState(
-        std::move(view_transition_state));
-  }
-  std::move(closure).Run();
-}
-
 }  // namespace
 
 // static
@@ -93,15 +83,50 @@ ViewTransitionCommitDeferringCondition::WillCommitNavigation(
       navigation_request->WillDispatchPageSwap();
   CHECK(page_swap_event_params);
 
-  // TODO(crbug.com/1372584):  Implement a timeout, to avoid blocking the
-  // navigation for too long.
   CHECK(render_frame_host->IsRenderFrameLive());
+  resume_processing_callback_ = std::move(resume);
+
+  // Request a snapshot. This includes running any associaged script in the
+  // renderer process.
   render_frame_host->GetAssociatedLocalFrame()
       ->SnapshotDocumentForViewTransition(
           std::move(page_swap_event_params),
-          base::BindOnce(&OnSnapshotAck, std::move(resume),
+          base::BindOnce(&ViewTransitionCommitDeferringCondition::OnSnapshotAck,
+                         weak_factory_.GetWeakPtr(),
                          navigation_request->GetWeakPtr()));
+  // Also post a timeout task to resume even if the renderer has not acked.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ViewTransitionCommitDeferringCondition::OnSnapshotTimeout,
+                     weak_factory_.GetWeakPtr()),
+      GetSnapshotCallbackTimeout());
   return Result::kDefer;
+}
+
+void ViewTransitionCommitDeferringCondition::OnSnapshotAck(
+    base::WeakPtr<NavigationRequest> navigation_request,
+    const blink::ViewTransitionState& view_transition_state) {
+  if (!resume_processing_callback_) {
+    return;
+  }
+
+  if (navigation_request && view_transition_state.HasElements()) {
+    navigation_request->SetViewTransitionState(
+        std::move(view_transition_state));
+  }
+  std::move(resume_processing_callback_).Run();
+}
+
+void ViewTransitionCommitDeferringCondition::OnSnapshotTimeout() {
+  if (resume_processing_callback_) {
+    std::move(resume_processing_callback_).Run();
+  }
+}
+
+base::TimeDelta
+ViewTransitionCommitDeferringCondition::GetSnapshotCallbackTimeout() const {
+  // TODO(vmpstr): Figure out if we need to increase this in tests.
+  return base::Seconds(4);
 }
 
 }  // namespace content

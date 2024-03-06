@@ -10,8 +10,13 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/commit_deferring_condition.h"
+
+namespace blink {
+struct ViewTransitionState;
+}
 
 namespace content {
 class NavigationRequest;
@@ -34,6 +39,16 @@ class CONTENT_EXPORT ViewTransitionCommitDeferringCondition
  private:
   explicit ViewTransitionCommitDeferringCondition(
       NavigationRequest& navigation_request);
+
+  void OnSnapshotAck(base::WeakPtr<NavigationRequest> navigation_request,
+                     const blink::ViewTransitionState& view_transition_state);
+  void OnSnapshotTimeout();
+  base::TimeDelta GetSnapshotCallbackTimeout() const;
+
+  base::OnceClosure resume_processing_callback_;
+
+  base::WeakPtrFactory<ViewTransitionCommitDeferringCondition> weak_factory_{
+      this};
 };
 
 }  // namespace content
