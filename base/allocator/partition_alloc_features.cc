@@ -36,7 +36,7 @@ const base::FeatureParam<UnretainedDanglingPtrMode>
     kUnretainedDanglingPtrModeParam = {
         &kPartitionAllocUnretainedDanglingPtr,
         "mode",
-        UnretainedDanglingPtrMode::kDumpWithoutCrashing,
+        UnretainedDanglingPtrMode::kCrash,
         &kUnretainedDanglingPtrModeOption,
 };
 
