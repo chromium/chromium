@@ -1638,37 +1638,12 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
 
   ContainingBlockInfo container_info = GetContainingBlockInfo(oof_node);
   const ComputedStyle& oof_style = node.Style();
-  const auto oof_writing_direction = oof_style.GetWritingDirection();
   const InsetArea inset_area = oof_style.GetInsetArea().ToPhysical(
       container_info.writing_direction, oof_style.GetWritingDirection());
   if (!inset_area.IsNone()) {
     container_info =
         ApplyInsetArea(inset_area, container_info, oof_node, anchor_queries);
   }
-
-  LogicalSize container_content_size = container_info.rect.size;
-  PhysicalSize container_physical_content_size = ToPhysicalSize(
-      container_content_size, GetConstraintSpace().GetWritingMode());
-
-  // Adjust the |static_position| (which is currently relative to the default
-  // container's border-box). absolute_utils expects the static position to
-  // be relative to the container's padding-box. Since
-  // |container_info.rect.offset| is relative to its fragmentainer in this
-  // case, we also need to adjust the offset to account for this.
-  LogicalStaticPosition static_position = oof_node.static_position;
-  static_position.offset -= container_info.rect.offset;
-  if (containing_block_fragment) {
-    const auto& containing_block_for_fragmentation =
-        To<LogicalOofNodeForFragmentation>(oof_node).containing_block;
-    static_position.offset += containing_block_for_fragmentation.Offset();
-  }
-
-  LogicalStaticPosition oof_static_position =
-      static_position
-          .ConvertToPhysical({GetConstraintSpace().GetWritingDirection(),
-                              container_physical_content_size})
-          .ConvertToLogical(
-              {oof_writing_direction, container_physical_content_size});
 
   OofContainingBlock<LogicalOffset> containing_block;
   OofContainingBlock<LogicalOffset> fixedpos_containing_block;
@@ -1682,7 +1657,7 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
         To<LogicalOofNodeForFragmentation>(oof_node).fixedpos_inline_container;
   }
 
-  return NodeInfo(node, oof_static_position, container_info,
+  return NodeInfo(node, oof_node.static_position, container_info,
                   GetConstraintSpace().GetWritingDirection(),
                   /* is_fragmentainer_descendant */ containing_block_fragment,
                   containing_block, fixedpos_containing_block,
@@ -1873,10 +1848,9 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   const auto container_writing_direction =
       node_info.container_info.writing_direction;
   const LogicalRect& container_rect = node_info.container_info.rect;
-  const LogicalSize container_content_size_in_candidate_writing_mode =
+  const PhysicalSize container_physical_content_size =
       ToPhysicalSize(container_rect.size,
-                     node_info.default_writing_direction.GetWritingMode())
-          .ConvertToLogical(candidate_writing_direction.GetWritingMode());
+                     node_info.default_writing_direction.GetWritingMode());
 
   // Create a constraint space to resolve border/padding/insets.
   const ConstraintSpace space = ([&]() -> ConstraintSpace {
@@ -1911,10 +1885,25 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       ComputeAnchorCenterPosition(alignment, candidate_writing_direction,
                                   space.AvailableSize(), anchor_evaluator);
 
+  // Adjust the |static_position| (which is currently relative to the default
+  // container's border-box) to be relative to the padding-box.
+  // Since |container_rect.offset| is relative to its fragmentainer in this
+  // case, we also need to adjust the offset to account for this.
+  LogicalStaticPosition static_position = node_info.static_position;
+  static_position.offset +=
+      node_info.containing_block.Offset() - container_rect.offset;
+
+  // Convert to the candidate's writing-direction.
+  static_position = static_position
+                        .ConvertToPhysical({node_info.default_writing_direction,
+                                            container_physical_content_size})
+                        .ConvertToLogical({candidate_writing_direction,
+                                           container_physical_content_size});
+
   const InsetModifiedContainingBlock imcb = ComputeInsetModifiedContainingBlock(
-      node_info.node, space.AvailableSize(), alignment, insets,
-      node_info.static_position, anchor_center_position,
-      container_writing_direction, candidate_writing_direction);
+      node_info.node, space.AvailableSize(), alignment, insets, static_position,
+      anchor_center_position, container_writing_direction,
+      candidate_writing_direction);
 
   {
     auto& document = node_info.node.GetDocument();
@@ -2007,7 +1996,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   std::optional<LayoutUnit> additional_inline_scroll_max;
   if (try_fit_available_space) {
     imcb_for_position_fallback = ComputeIMCBForPositionFallback(
-        space.AvailableSize(), alignment, insets, node_info.static_position,
+        space.AvailableSize(), alignment, insets, static_position,
         candidate_style, container_writing_direction,
         candidate_writing_direction);
     if (!CalculateNonOverflowingRangeInOneAxis(
@@ -2067,7 +2056,8 @@ OutOfFlowLayoutPart::TryCalculateOffset(
 
   offset_info.block_estimate = node_dimensions.size.block_size;
   offset_info.container_content_size =
-      container_content_size_in_candidate_writing_mode;
+      container_physical_content_size.ConvertToLogical(
+          candidate_writing_direction.GetWritingMode());
 
   // Calculate the offsets.
   const BoxStrut inset =
