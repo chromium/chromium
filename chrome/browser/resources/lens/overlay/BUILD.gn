@@ -8,6 +8,10 @@ assert(toolkit_views)
 
 build_webui("build_overlay") {
   grd_prefix = "lens_untrusted"
-  static_files = [ "region_search_untrusted.html" ]
-  non_web_component_files = [ "app-untrusted.ts" ]
+
+  static_files = [ "lens_overlay.html" ]
+
+  web_component_files = [ "app.ts" ]
+
+  ts_deps = [ "//third_party/polymer/v3_0:library" ]
 }
