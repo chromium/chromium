@@ -77,6 +77,9 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   // host fails. The test will fail if the load fails.
   content::RenderFrameHost* LoadPdfGetExtensionHost(const GURL& url);
 
+  // Same as `LoadPdfGetExtensionHost()`, but loads the PDF into a new tab.
+  content::RenderFrameHost* LoadPdfInNewTabGetExtensionHost(const GURL& url);
+
   // Same as `LoadPdfInFirstChild()`, but also returns a pointer to the
   // extension host for the loaded PDF. Returns nullptr if the load fails or
   // getting the extension host fails. The test will fail if the load fails.

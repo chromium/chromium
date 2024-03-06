@@ -153,6 +153,16 @@ content::RenderFrameHost* PDFExtensionTestBase::LoadPdfGetExtensionHost(
   return GetOnlyPdfExtensionHostEnsureValid();
 }
 
+content::RenderFrameHost* PDFExtensionTestBase::LoadPdfInNewTabGetExtensionHost(
+    const GURL& url) {
+  if (!LoadPdfInNewTab(url)) {
+    ADD_FAILURE() << "Failed to load PDF";
+    return nullptr;
+  }
+
+  return GetOnlyPdfExtensionHostEnsureValid();
+}
+
 content::RenderFrameHost*
 PDFExtensionTestBase::LoadPdfInFirstChildGetExtensionHost(const GURL& url) {
   if (!LoadPdfInFirstChild(url)) {

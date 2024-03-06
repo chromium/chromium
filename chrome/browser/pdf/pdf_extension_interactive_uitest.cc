@@ -63,13 +63,14 @@ class PDFExtensionInteractiveUITest : public base::test::WithFeatureOverride,
       : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    PDFExtensionTestBase::SetUpCommandLine(command_line);
+
     content::IsolateAllSitesForTesting(command_line);
   }
 
-  content::FocusedNodeDetails TabAndWait(
-      extensions::MimeHandlerViewGuest* guest,
-      bool forward) {
-    content::FocusChangedObserver focus_observer(guest->web_contents());
+  content::FocusedNodeDetails TabAndWait(content::WebContents* web_contents,
+                                         bool forward) {
+    content::FocusChangedObserver focus_observer(web_contents);
     if (!ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB,
                                          /*control=*/false,
                                          /*shift=*/!forward,
@@ -113,19 +114,15 @@ class TabChangedWaiter : public TabStripModelObserver {
 // For crbug.com/1038918
 IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
                        CtrlPageUpDownSwitchesTabs) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  extensions::MimeHandlerViewGuest* guest = LoadPdfInNewTabGetMimeHandlerView(
+  content::RenderFrameHost* extension_host = LoadPdfInNewTabGetExtensionHost(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(extension_host);
 
   auto* tab_strip_model = browser()->tab_strip_model();
   ASSERT_EQ(2, tab_strip_model->count());
   EXPECT_EQ(1, tab_strip_model->active_index());
 
-  SetInputFocusOnPlugin(guest);
+  SetInputFocusOnPlugin(extension_host, GetEmbedderWebContents());
 
   {
     TabChangedWaiter tab_changed_waiter(browser());
@@ -153,38 +150,36 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  extensions::MimeHandlerViewGuest* guest = LoadPdfInNewTabGetMimeHandlerView(
+  content::RenderFrameHost* extension_host = LoadPdfInNewTabGetExtensionHost(
       embedded_test_server()->GetURL("/pdf/test.pdf#toolbar=0"));
+  ASSERT_TRUE(extension_host);
+  auto* target_web_contents =
+      content::WebContents::FromRenderFrameHost(extension_host);
 
   // Tab in.
-  content::FocusedNodeDetails details = TabAndWait(guest, /*forward=*/true);
+  content::FocusedNodeDetails details =
+      TabAndWait(target_web_contents, /*forward=*/true);
   EXPECT_EQ(blink::mojom::FocusType::kForward, details.focus_type);
 
   // Tab out.
-  details = TabAndWait(guest, /*forward=*/true);
+  details = TabAndWait(target_web_contents, /*forward=*/true);
   EXPECT_EQ(blink::mojom::FocusType::kNone, details.focus_type);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, FocusReverseTraversal) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  extensions::MimeHandlerViewGuest* guest = LoadPdfInNewTabGetMimeHandlerView(
+  content::RenderFrameHost* extension_host = LoadPdfInNewTabGetExtensionHost(
       embedded_test_server()->GetURL("/pdf/test.pdf#toolbar=0"));
+  ASSERT_TRUE(extension_host);
+  auto* target_web_contents =
+      content::WebContents::FromRenderFrameHost(extension_host);
 
   // Tab in.
-  content::FocusedNodeDetails details = TabAndWait(guest, /*forward=*/false);
+  content::FocusedNodeDetails details =
+      TabAndWait(target_web_contents, /*forward=*/false);
   EXPECT_EQ(blink::mojom::FocusType::kBackward, details.focus_type);
 
   // Tab out.
-  details = TabAndWait(guest, /*forward=*/false);
+  details = TabAndWait(target_web_contents, /*forward=*/false);
   EXPECT_EQ(blink::mojom::FocusType::kNone, details.focus_type);
 }
 
