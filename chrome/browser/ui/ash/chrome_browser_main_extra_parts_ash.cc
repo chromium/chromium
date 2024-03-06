@@ -382,7 +382,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   game_mode_controller_ = std::make_unique<game_mode::GameModeController>();
   refresh_rate_controller_ = std::make_unique<ash::RefreshRateController>(
       ash::Shell::Get()->display_configurator(), ash::PowerStatus::Get(),
-      game_mode_controller_.get(), force_throttle);
+      game_mode_controller_.get(),
+      ash::Shell::Get()->display_performance_mode_controller(), force_throttle);
 
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();

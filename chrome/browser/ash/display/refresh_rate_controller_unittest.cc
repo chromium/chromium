@@ -40,6 +40,10 @@ using display::test::TestNativeDisplayDelegate;
 using game_mode::GameModeController;
 using power_manager::PowerSupplyProperties;
 
+using ModeState = DisplayPerformanceModeController::ModeState;
+using DisplayStateList = display::DisplayConfigurator::DisplayStateList;
+using GameMode = ResourcedClient::GameMode;
+
 class MockNativeDisplayDelegate : public TestNativeDisplayDelegate {
  public:
   explicit MockNativeDisplayDelegate(ActionLogger* logger)
@@ -115,14 +119,17 @@ class RefreshRateControllerTest : public AshTestBase {
     display_manager()->configurator()->SetDelegateForTesting(
         std::unique_ptr<NativeDisplayDelegate>(native_display_delegate_));
     game_mode_controller_ = std::make_unique<GameModeController>();
+    performance_controller_ =
+        Shell::Get()->display_performance_mode_controller();
     controller_ = std::make_unique<RefreshRateController>(
         Shell::Get()->display_configurator(), PowerStatus::Get(),
-        game_mode_controller_.get());
+        game_mode_controller_.get(), performance_controller_.get());
   }
 
   void TearDown() override {
     controller_.reset();
     game_mode_controller_.reset();
+    performance_controller_ = nullptr;
     AshTestBase::TearDown();
   }
 
@@ -149,6 +156,8 @@ class RefreshRateControllerTest : public AshTestBase {
   std::unique_ptr<ActionLogger> logger_;
   std::unique_ptr<RefreshRateController> controller_;
   std::unique_ptr<GameModeController> game_mode_controller_;
+  // Not owned.
+  raw_ptr<DisplayPerformanceModeController> performance_controller_;
   // Owned by DisplayConfigurator.
   raw_ptr<MockNativeDisplayDelegate, DanglingUntriaged>
       native_display_delegate_;
@@ -176,7 +185,7 @@ TEST_F(RefreshRateControllerTest, ThrottleStateSetAtConstruction) {
   std::unique_ptr<RefreshRateController> controller =
       std::make_unique<RefreshRateController>(
           Shell::Get()->display_configurator(), PowerStatus::Get(),
-          game_mode_controller_.get(), force_throttle);
+          game_mode_controller_.get(), performance_controller_, force_throttle);
 
   // Expect the state to be 60 Hz.
   {
@@ -240,7 +249,7 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleWithBatterySaverMode) {
   PowerStatus::Get()->SetProtoForTesting(
       BuildFakePowerSupplyProperties(PowerSupplyProperties::AC, 100.f));
   PowerStatus::Get()->SetBatterySaverStateForTesting(true);
-  controller_->OnPowerStatusChanged();
+  performance_controller_->OnPowerStatusChanged();
 
   // Expect the new state to be 60Hz.
   {
@@ -646,7 +655,7 @@ TEST_F(RefreshRateControllerTest, ShouldDisableVrrWithBatterySaverMode) {
   PowerStatus::Get()->SetProtoForTesting(
       BuildFakePowerSupplyProperties(PowerSupplyProperties::AC, 100.f));
   PowerStatus::Get()->SetBatterySaverStateForTesting(true);
-  controller_->OnPowerStatusChanged();
+  performance_controller_->OnPowerStatusChanged();
 
   // Expect the new state to have VRR disabled.
   {
@@ -711,5 +720,71 @@ TEST_F(RefreshRateControllerTest, RequestSeamlessRefreshRatesMultipleDisplays) {
               GetSeamlessRefreshRates(kExternalDisplayId, testing::_));
   controller_->OnDisplayModeChanged(state_list);
 }
+
+TEST_F(RefreshRateControllerTest, TestBorealisWithHighPerformance) {
+  const int64_t internal_id = GetPrimaryDisplay().id();
+  std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
+  snapshots.push_back(BuildVrrPanelSnapshot(
+      internal_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+  ScopedSetInternalDisplayIds set_internal(internal_id);
+  SetUpDisplays(std::move(snapshots));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
+
+  game_mode_controller_->NotifySetGameMode(GameMode::OFF,
+                                           WindowState::Get(window.get()));
+  performance_controller_->SetHighPerformanceModeByUser(true);
+
+  // Expect VRR to be disabled. The VrrEnabled feature is specifically only for
+  // borealis gaming, and it hasn't been vetted for other applications.
+  {
+    const DisplaySnapshot* internal_snapshot = GetDisplaySnapshot(internal_id);
+    ASSERT_TRUE(internal_snapshot);
+    ASSERT_TRUE(internal_snapshot->IsVrrCapable());
+    EXPECT_FALSE(internal_snapshot->IsVrrEnabled());
+  }
+
+  // Set the game mode to indicate the user is gaming.
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS,
+                                           WindowState::Get(window.get()));
+
+  // Expect the new state to have VRR enabled on the Borealis display only.
+  {
+    const DisplaySnapshot* internal_snapshot = GetDisplaySnapshot(internal_id);
+    ASSERT_TRUE(internal_snapshot);
+    EXPECT_TRUE(internal_snapshot->IsVrrEnabled());
+  }
+
+  game_mode_controller_->NotifySetGameMode(GameMode::OFF,
+                                           WindowState::Get(window.get()));
+}
+
+TEST_F(RefreshRateControllerTest, TestThrottlingWithHighPerformance) {
+  constexpr int64_t display_id = 12345;
+  std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
+  snapshots.push_back(BuildDualRefreshPanelSnapshot(
+      display_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+  ScopedSetInternalDisplayIds set_internal(display_id);
+  SetUpDisplays(std::move(snapshots));
+
+  // Expect the initial state to be 120 Hz.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
+    ASSERT_TRUE(snapshot);
+    ASSERT_NE(snapshot->current_mode(), nullptr);
+    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
+  }
+
+  performance_controller_->SetHighPerformanceModeByUser(true);
+
+  // Expect the new state to be unchanged.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
+    ASSERT_TRUE(snapshot);
+    ASSERT_NE(snapshot->current_mode(), nullptr);
+    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
+  }
+}
+
 }  // namespace
 }  // namespace ash
