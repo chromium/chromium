@@ -963,19 +963,23 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, RestrictedEnabled) {
           "runMochaSuite('RestrictedEnabled')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, TopicsSubpage) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
+                       TopicsSubpageWithProactiveTopicsBlockingDisabled) {
   RunTest("settings/privacy_sandbox_page_test.js",
-          "runMochaSuite('TopicsSubpage')");
+          "runMochaSuite('TopicsSubpageWithProactiveTopicsBlockingDisabled')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, TopicsSubpageEmpty) {
-  RunTest("settings/privacy_sandbox_page_test.js",
-          "runMochaSuite('TopicsSubpageEmpty')");
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
+                       TopicsSubpageEmptyWithProactiveTopicsBlockingDisabled) {
+  RunTest(
+      "settings/privacy_sandbox_page_test.js",
+      "runMochaSuite('TopicsSubpageEmptyWithProactiveTopicsBlockingDisabled')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, FledgeSubpage) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
+                       FledgeSubpageWithProactiveTopicsBlockingDisabled) {
   RunTest("settings/privacy_sandbox_page_test.js",
-          "runMochaSuite('FledgeSubpage')");
+          "runMochaSuite('FledgeSubpageWithProactiveTopicsBlockingDisabled')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, FledgeSubpageEmpty) {
