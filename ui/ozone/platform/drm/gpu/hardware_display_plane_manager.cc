@@ -34,7 +34,7 @@ namespace {
 // from plane color space to output color space.
 BASE_FEATURE(kCtmColorManagement,
              "CtmColorManagement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 gfx::Rect OverlayPlaneToDrmSrcRect(const DrmOverlayPlane& plane) {
   const gfx::Size& size = plane.buffer->size();
