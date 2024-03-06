@@ -105,6 +105,29 @@ void OpenPaymentMethodManualFillView() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Opens the payment method manual fill view when there are no saved payment
+// methods and verifies that the card view controller is visible afterwards.
+// Only useful when the `kIOSKeyboardAccessoryUpgrade` feature is enabled.
+void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
+  // Tap the button to open the expanded manual fill view.
+  id<GREYMatcher> manual_fill_view_button = grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA));
+  [[EarlGrey selectElementWithMatcher:manual_fill_view_button]
+      performAction:grey_tap()];
+
+  // Tap the payment method tab from the segmented control.
+  id<GREYMatcher> payment_method_tab =
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_EXPANDED_MANUAL_FILL_PAYMENT_TAB_ACCESSIBILITY_LABEL));
+  [[EarlGrey selectElementWithMatcher:payment_method_tab]
+      performAction:grey_tap()];
+
+  // Verify the card table view controller is visible.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 }  // namespace
 
 // Integration Tests for Manual Fallback credit cards View Controller.
@@ -177,6 +200,30 @@ void OpenPaymentMethodManualFillView() {
   // Open the payment method manual fill view and verify that the card table
   // view controller is visible.
   OpenPaymentMethodManualFillView();
+}
+
+// Tests that the the "no payment methods found" message is visible when no
+// payment method suggestions are available.
+- (void)testNoPaymentMethodsFoundMessageIsVisibleWhenNoSuggestions {
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the Keyboard "
+                           @"Accessory Upgrade feature is disabled.");
+  }
+
+  [AutofillAppInterface clearCreditCardStore];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+
+  // Open the payment method manual fill view.
+  OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods();
+
+  // Assert that the "no payment methods found" message is visible.
+  id<GREYMatcher> noPaymentMethodsFoundMessage = grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PAYMENT_METHODS));
+  [[EarlGrey selectElementWithMatcher:noPaymentMethodsFoundMessage]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that the cards view controller contains the "Manage Payment

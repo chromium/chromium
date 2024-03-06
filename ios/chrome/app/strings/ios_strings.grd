@@ -2378,6 +2378,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE" desc="The title for disabled buttons when a list of credentials for manual fallback is empty. [30em]">
         No passwords found for this site
       </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_NO_PAYMENT_METHODS" desc="The message displayed in the payment method manual fallback view when there are no payment methods to display. [30em]">
+        No payment methods found
+      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_NO_USERNAME" desc="The title for disabled buttons on the manual fallback passwords UI when a credential doesn't contains a username. [30em]">
         No Username
       </message>

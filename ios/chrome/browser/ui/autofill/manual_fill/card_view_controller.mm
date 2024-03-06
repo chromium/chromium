@@ -6,6 +6,8 @@
 
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_action_cell.h"
@@ -16,6 +18,10 @@ namespace manual_fill {
 
 NSString* const CardTableViewAccessibilityIdentifier =
     @"kManualFillCardTableViewAccessibilityIdentifier";
+
+enum ManualFallbackItemType : NSInteger {
+  kNoCardsMessage = kItemTypeEnumZero,
+};
 
 }  // namespace manual_fill
 
@@ -33,6 +39,16 @@ NSString* const CardTableViewAccessibilityIdentifier =
 - (void)presentCards:(NSArray<ManualFillCardItem*>*)cards {
   UMA_HISTOGRAM_COUNTS_100("ManualFallback.PresentedOptions.CreditCards",
                            cards.count);
+
+  if (!cards.count && IsKeyboardAccessoryUpgradeEnabled()) {
+    TableViewTextHeaderFooterItem* textHeaderFooterItem =
+        [[TableViewTextHeaderFooterItem alloc]
+            initWithType:manual_fill::ManualFallbackItemType::kNoCardsMessage];
+    textHeaderFooterItem.text =
+        l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PAYMENT_METHODS);
+    self.noDataItemsToShowHeaderItem = textHeaderFooterItem;
+  }
+
   [self presentDataItems:(NSArray<TableViewItem*>*)cards];
 }
 
