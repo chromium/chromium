@@ -2458,8 +2458,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     delta += tab.getTrailingMargin();
                 }
             } else {
-                view.setDrawX(tabPosition);
-                delta = view.getWidth();
+                // Other views don't overlap like tabs, so we need to account for that here.
+                float folioFootLength = StripLayoutTab.FOLIO_FOOT_LENGTH_DP;
+                float drawXOffset = mTabOverlapWidth - folioFootLength;
+                float deltaOffset = drawXOffset - folioFootLength;
+                view.setDrawX(tabPosition + drawXOffset);
+                delta = view.getWidth() + deltaOffset;
             }
 
             delta = MathUtils.flipSignIf(delta, LocalizationUtils.isLayoutRtl());

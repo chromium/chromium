@@ -112,6 +112,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     stripLayoutTabsToRender,
                     selectedTabId,
                     hoveredTabId);
+            pushGroupTitles(stripLayoutGroupTitlesToRender);
         }
         TabStripSceneLayerJni.get().finishBuildingFrame(mNativePtr, TabStripSceneLayer.this);
     }
@@ -253,6 +254,27 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         }
     }
 
+    private void pushGroupTitles(StripLayoutGroupTitle[] groupTitles) {
+        final int titlesCount = groupTitles != null ? groupTitles.length : 0;
+
+        for (int i = 0; i < titlesCount; i++) {
+            final StripLayoutGroupTitle gt = groupTitles[i];
+
+            TabStripSceneLayerJni.get()
+                    .putGroupTitleLayer(
+                            mNativePtr,
+                            TabStripSceneLayer.this,
+                            gt.getTint(),
+                            gt.getDrawX() * mDpToPx,
+                            gt.getDrawY() * mDpToPx,
+                            gt.getWidth() * mDpToPx,
+                            gt.getHeight() * mDpToPx,
+                            gt.getDefaultMargin() * mDpToPx,
+                            gt.getTopMargin() * mDpToPx,
+                            gt.getCornerRadius() * mDpToPx);
+        }
+    }
+
     @Override
     public void destroy() {
         super.destroy();
@@ -377,6 +399,18 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float opacity,
                 LayerTitleCache layerTitleCache,
                 ResourceManager resourceManager);
+
+        void putGroupTitleLayer(
+                long nativeTabStripSceneLayer,
+                TabStripSceneLayer caller,
+                int tint,
+                float x,
+                float y,
+                float width,
+                float height,
+                float defaultMargin,
+                float topMargin,
+                float cornerRadius);
 
         void setContentTree(
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, SceneLayer contentTree);

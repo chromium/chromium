@@ -16,6 +16,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager_impl.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform.h"
 
 using base::android::JavaParamRef;
@@ -37,7 +38,6 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
       model_selector_button_(cc::slim::UIResourceLayer::Create()),
       model_selector_button_background_(cc::slim::UIResourceLayer::Create()),
       scrim_layer_(cc::slim::SolidColorLayer::Create()),
-      write_index_(0),
       content_tree_(nullptr) {
   new_tab_button_->SetIsDrawable(true);
   new_tab_button_background_->SetIsDrawable(true);
@@ -98,6 +98,7 @@ void TabStripSceneLayer::BeginBuildingFrame(JNIEnv* env,
                                             const JavaParamRef<jobject>& jobj,
                                             jboolean visible) {
   write_index_ = 0;
+  group_write_index_ = 0;
   tab_strip_layer_->SetHideLayerAndSubtree(!visible);
 }
 
@@ -107,11 +108,17 @@ void TabStripSceneLayer::FinishBuildingFrame(
   if (tab_strip_layer_->hide_layer_and_subtree())
     return;
 
-  for (unsigned i = write_index_; i < tab_handle_layers_.size(); ++i)
+  for (unsigned i = write_index_; i < tab_handle_layers_.size(); ++i) {
     tab_handle_layers_[i]->layer()->RemoveFromParent();
+  }
+  for (unsigned i = group_write_index_; i < group_title_layers_.size(); ++i) {
+    group_title_layers_[i]->RemoveFromParent();
+  }
 
   tab_handle_layers_.erase(tab_handle_layers_.begin() + write_index_,
                            tab_handle_layers_.end());
+  group_title_layers_.erase(group_title_layers_.begin() + group_write_index_,
+                            group_title_layers_.end());
 }
 
 void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
@@ -469,6 +476,32 @@ void TabStripSceneLayer::PutStripTabLayer(
       opacity);
 }
 
+void TabStripSceneLayer::PutGroupTitleLayer(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jobj,
+    jint tint,
+    jfloat x,
+    jfloat y,
+    jfloat width,
+    jfloat height,
+    jfloat default_margin,
+    jfloat top_margin,
+    jfloat corner_radius) {
+  // Reuse existing layer if it exists.
+  scoped_refptr<cc::slim::SolidColorLayer> layer = GetNextGroupTitleLayer();
+
+  // Set container properties.
+  layer->SetPosition(gfx::PointF(x + default_margin, y + top_margin));
+  layer->SetBounds(gfx::Size(width - (default_margin * 2),
+                             height - default_margin - top_margin));
+  layer->SetRoundedCorner(gfx::RoundedCornersF(corner_radius, corner_radius,
+                                               corner_radius, corner_radius));
+  layer->SetBackgroundColor(SkColor4f::FromColor(tint));
+
+  // Set title.
+  // TODO(crbug.com/327289979): Add title bitmap.
+}
+
 scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextLayer(
     LayerTitleCache* layer_title_cache) {
   if (write_index_ < tab_handle_layers_.size())
@@ -480,6 +513,21 @@ scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextLayer(
   scrollable_strip_layer_->AddChild(layer_tree->layer());
   write_index_++;
   return layer_tree;
+}
+
+scoped_refptr<cc::slim::SolidColorLayer>
+TabStripSceneLayer::GetNextGroupTitleLayer() {
+  if (group_write_index_ < group_title_layers_.size()) {
+    return group_title_layers_[group_write_index_++];
+  }
+
+  scoped_refptr<cc::slim::SolidColorLayer> layer =
+      cc::slim::SolidColorLayer::Create();
+  layer->SetIsDrawable(true);
+  group_title_layers_.push_back(layer);
+  scrollable_strip_layer_->AddChild(layer);
+  group_write_index_++;
+  return layer;
 }
 
 bool TabStripSceneLayer::ShouldShowBackground() {

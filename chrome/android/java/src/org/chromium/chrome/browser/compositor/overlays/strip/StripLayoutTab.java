@@ -173,7 +173,7 @@ public class StripLayoutTab extends StripLayoutView {
     // Strip Tab Offset Constants
     private static final float TOP_MARGIN_DP = 2.f;
     private static final float FOLIO_CONTENT_OFFSET_Y = 8.f;
-    private static final float TOUCH_TARGET_INSET = 16.f;
+    protected static final float FOLIO_FOOT_LENGTH_DP = 16.f;
 
     // Divider Constants
     private static final int DIVIDER_OFFSET_X = 13;
@@ -308,9 +308,9 @@ public class StripLayoutTab extends StripLayoutView {
         mCloseButton.setClickSlop(0.f);
         if (LocalizationUtils.isLayoutRtl()) {
             mLeftInset = getCloseButtonOffsetX();
-            mRightInset = TOUCH_TARGET_INSET;
+            mRightInset = FOLIO_FOOT_LENGTH_DP;
         } else {
-            mLeftInset = TOUCH_TARGET_INSET;
+            mLeftInset = FOLIO_FOOT_LENGTH_DP;
             mRightInset = getCloseButtonOffsetX();
         }
     }

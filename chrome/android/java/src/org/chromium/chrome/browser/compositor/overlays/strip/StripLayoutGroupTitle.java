@@ -8,13 +8,11 @@ import android.content.Context;
 import android.graphics.RectF;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 
 /**
  * {@link StripLayoutGroupTitle} is used to keep track of the strip position and rendering
@@ -24,11 +22,17 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 public class StripLayoutGroupTitle extends StripLayoutView {
     // Position constants.
     // TODO(crbug.com/326492662): Update min/max width once finalized.
-    private static final int MIN_WIDTH = 54;
-    private static final int MAX_WIDTH = 156;
+    private static final int MIN_VISUAL_WIDTH_DP = 24;
+    private static final int MAX_VISUAL_WIDTH_DP = 156;
+    private static final int DEFAULT_MARGIN_DP = 9;
+    private static final int TOP_MARGIN_DP = 7;
+    private static final int CORNER_RADIUS_DP = 7;
+
+    private final float mEffectiveMinWidth;
+    private final float mEffectiveMaxWidth;
 
     // External dependencies.
-    private Context mContext;
+    private final Context mContext;
 
     // Position variables.
     private float mDrawX;
@@ -38,13 +42,16 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     // Tab group variables
     int mRootId;
-    String mTitle = "";
+    String mTitle;
 
     public StripLayoutGroupTitle(Context context, int rootId) {
         assert rootId != Tab.INVALID_TAB_ID : "Tried to create a group title for an invalid group.";
 
         mContext = context;
-        mRootId = rootId;
+        mEffectiveMinWidth = MIN_VISUAL_WIDTH_DP + (DEFAULT_MARGIN_DP * 2);
+        mEffectiveMaxWidth = MAX_VISUAL_WIDTH_DP + (DEFAULT_MARGIN_DP * 2);
+
+        updateRootId(rootId);
         updateTitle(TabGroupTitleUtils.getTabGroupTitle(mRootId));
     }
 
@@ -75,7 +82,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     @Override
     public void setWidth(float width) {
-        width = MathUtils.clamp(width, MIN_WIDTH, MAX_WIDTH);
+        width = MathUtils.clamp(width, mEffectiveMinWidth, mEffectiveMaxWidth);
         mWidth = width;
     }
 
@@ -92,7 +99,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     @Override
     public String getAccessibilityDescription() {
         // TODO(crbug.com/326494015): Update when official descriptions are finalized.
-        return "Tab group: " + mTitle;
+        return "Tab group";
     }
 
     @Override
@@ -112,14 +119,6 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     }
 
     /**
-     * @return The Android resource that represents the tab group title indicator background.
-     */
-    public @DrawableRes int getResourceId() {
-        // TODO(crbug.com/326492662): Replace with new 9-patch if needed.
-        return TabUiThemeUtil.getDetachedResource();
-    }
-
-    /**
      * @return The tint color resource that represents the tab group title indicator background.
      */
     public @ColorInt int getTint() {
@@ -129,7 +128,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     protected void updateTitle(String title) {
         mTitle = title;
-        // TODO(crbug.com/326488897): Generate title bitmap and update width if necessary.
+        // TODO(crbug.com/327289979): Generate title bitmap and update width if necessary.
         setWidth(0);
     }
 
@@ -146,5 +145,26 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      */
     protected void updateRootId(int rootId) {
         mRootId = rootId;
+    }
+
+    /**
+     * @return The default margin for the title container. The top margin will be different.
+     */
+    public int getDefaultMargin() {
+        return DEFAULT_MARGIN_DP;
+    }
+
+    /**
+     * @return The top margin for the title container.
+     */
+    public int getTopMargin() {
+        return TOP_MARGIN_DP;
+    }
+
+    /**
+     * @return The corner radius for the title container.
+     */
+    public int getCornerRadius() {
+        return CORNER_RADIUS_DP;
     }
 }

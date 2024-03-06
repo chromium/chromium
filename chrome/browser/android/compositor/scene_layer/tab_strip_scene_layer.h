@@ -157,12 +157,25 @@ class TabStripSceneLayer : public SceneLayer {
       const base::android::JavaParamRef<jobject>& jlayer_title_cache,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
+  void PutGroupTitleLayer(JNIEnv* env,
+                          const base::android::JavaParamRef<jobject>& jobj,
+                          jint tint,
+                          jfloat x,
+                          jfloat y,
+                          jfloat width,
+                          jfloat height,
+                          jfloat default_margin,
+                          jfloat top_margin,
+                          jfloat corner_radius);
+
   bool ShouldShowBackground() override;
   SkColor GetBackgroundColor() override;
 
  private:
   scoped_refptr<TabHandleLayer> GetNextLayer(
       LayerTitleCache* layer_title_cache);
+
+  scoped_refptr<cc::slim::SolidColorLayer> GetNextGroupTitleLayer();
 
   typedef std::vector<scoped_refptr<TabHandleLayer>> TabHandleLayerList;
 
@@ -182,8 +195,10 @@ class TabStripSceneLayer : public SceneLayer {
   scoped_refptr<cc::slim::UIResourceLayer> model_selector_button_background_;
   scoped_refptr<cc::slim::SolidColorLayer> scrim_layer_;
 
-  unsigned write_index_;
+  unsigned write_index_ = 0;
   TabHandleLayerList tab_handle_layers_;
+  unsigned group_write_index_ = 0;
+  std::vector<scoped_refptr<cc::slim::SolidColorLayer>> group_title_layers_;
   raw_ptr<SceneLayer> content_tree_;
 };
 
