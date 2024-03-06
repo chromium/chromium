@@ -18,6 +18,7 @@
 #include "android_webview/browser/metrics/system_state_util.h"
 #include "android_webview/browser/network_service/aw_network_change_notifier_factory.h"
 #include "android_webview/browser/tracing/background_tracing_field_trial.h"
+#include "android_webview/browser_jni_headers/AwInterfaceRegistrar_jni.h"
 #include "android_webview/common/aw_descriptors.h"
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/common/aw_resource.h"
@@ -314,6 +315,9 @@ int AwBrowserMainParts::PreMainMessageLoopRun() {
   // This should be done as soon as possible in the start-up process, in order
   // to load the database from disk.
   AwBrowserContext::GetDefault()->GetOriginTrialsControllerDelegate();
+
+  Java_AwInterfaceRegistrar_registerMojoInterfaces(
+      base::android::AttachCurrentThread());
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }

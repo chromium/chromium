@@ -304,6 +304,8 @@ source_set("browser") {
     "//content/public/browser",
     "//media/mojo:buildflags",
     "//services/cert_verifier/public/mojom",
+    "//services/device/public/cpp:device_feature_list",
+    "//services/device/public/java:device_feature_list_jni",
     "//services/network/public/mojom",
     "//services/proxy_resolver:lib",
     "//third_party/blink/public/common",
