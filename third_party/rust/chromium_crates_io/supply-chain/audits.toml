@@ -155,6 +155,17 @@ who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.4.0 -> 1.5.0"
 
+[[audits.cfg-if]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "1.0.0"
+notes = '''
+I grepped for \"unsafe\", \"crypt\", \"cipher\", \"fs\", \"net\" - there were
+no hits.  This is a really small crate (only `lib.rs` which is less than 200
+lines + one end-to-end test) so I also skimmed through the macro's definition
+and everything looks okay to me.
+'''
+
 [[audits.clap]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
