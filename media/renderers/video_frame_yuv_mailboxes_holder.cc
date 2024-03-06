@@ -32,7 +32,7 @@ namespace media {
 namespace {
 
 BASE_FEATURE(kAddSharedImageRasterUsageWithNonOOPR,
-             "AddSharedImageRasterUsageWithNonOOPR",
+             "VideoFrameYUVAddSharedImageRasterUsageWithNonOOPR",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 viz::SharedImageFormat PlaneSharedImageFormat(int num_channels,

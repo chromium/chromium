@@ -87,7 +87,7 @@ namespace media {
 namespace {
 
 BASE_FEATURE(kAddSharedImageRasterUsageWithNonOOPR,
-             "AddSharedImageRasterUsageWithNonOOPR",
+             "PCVRAddSharedImageRasterUsageWithNonOOPR",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Return the full-range RGB component of the color space of this frame's
