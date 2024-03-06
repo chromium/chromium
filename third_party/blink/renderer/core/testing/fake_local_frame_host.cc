@@ -307,4 +307,8 @@ void FakeLocalFrameHost::StartDragging(
     const gfx::Rect& drag_obj_rect_in_dip,
     mojom::blink::DragEventSourceInfoPtr event_info) {}
 
+void FakeLocalFrameHost::IssueKeepAliveHandle(
+    mojo::PendingReceiver<mojom::blink::NavigationStateKeepAliveHandle>
+        receiver) {}
+
 }  // namespace blink

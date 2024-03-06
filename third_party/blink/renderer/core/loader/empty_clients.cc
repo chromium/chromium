@@ -128,7 +128,7 @@ void EmptyLocalFrameClient::BeginNavigation(
     const std::optional<Impression>&,
     const LocalFrameToken* initiator_frame_token,
     std::unique_ptr<SourceLocation>,
-    mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>,
+    mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>,
     bool is_container_initiated,
     bool is_fullscreen_requested) {}
 

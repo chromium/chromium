@@ -33,13 +33,14 @@
 
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/remote_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -127,8 +128,8 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
       LocalDOMWindow* origin_window,
       const LocalFrameToken& initiator_frame_token,
       std::unique_ptr<SourceLocation> source_location,
-      mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
-          initiator_policy_container_keep_alive_handle);
+      mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
+          initiator_navigation_state_keep_alive_handle);
   // FormSubmission for DialogMethod
   explicit FormSubmission(const String& result);
 
@@ -171,10 +172,10 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
   std::unique_ptr<SourceLocation> source_location_;
 
   // Since form submissions are scheduled asynchronously, we need to keep a
-  // handle to the initiator PolicyContainerHost. This ensures that it remains
-  // available in the browser until we create the NavigationRequest.
-  mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
-      initiator_policy_container_keep_alive_handle_;
+  // handle to the initiator NavigationStateKeepAliveHandle. This ensures that
+  // it remains available in the browser until we create the NavigationRequest.
+  mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
+      initiator_navigation_state_keep_alive_handle_;
 };
 
 }  // namespace blink

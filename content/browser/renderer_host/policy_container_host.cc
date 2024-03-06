@@ -21,19 +21,6 @@ namespace content {
 
 namespace {
 
-// KeepAliveHandle is simply a class referencing a PolicyContainerHost through a
-// scoped_refptr, hence maintaining it alive.
-class KeepAliveHandle
-    : public blink::mojom::PolicyContainerHostKeepAliveHandle {
- public:
-  explicit KeepAliveHandle(
-      scoped_refptr<PolicyContainerHost> policy_container_host)
-      : host_(std::move(policy_container_host)) {}
-
- private:
-  const scoped_refptr<PolicyContainerHost> host_;
-};
-
 using TokenPolicyContainerMap =
     std::unordered_map<blink::LocalFrameToken,
                        PolicyContainerHost*,
@@ -299,14 +286,6 @@ void PolicyContainerHost::Bind(
   scoped_refptr<PolicyContainerHost> copy = this;
   policy_container_host_receiver_.set_disconnect_handler(base::BindOnce(
       [](scoped_refptr<PolicyContainerHost>) {}, std::move(copy)));
-}
-
-void PolicyContainerHost::IssueKeepAliveHandle(
-    mojo::PendingReceiver<blink::mojom::PolicyContainerHostKeepAliveHandle>
-        receiver) {
-  keep_alive_handles_receiver_set_.Add(
-      std::make_unique<KeepAliveHandle>(base::WrapRefCounted(this)),
-      std::move(receiver));
 }
 
 }  // namespace content

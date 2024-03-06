@@ -268,16 +268,6 @@ class CONTENT_EXPORT PolicyContainerHost
   void Bind(
       blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params);
 
-  // Register a keep alive handle by passing the mojo receiver. The
-  // PolicyContainerHost is kept alive as long as the corresponding remote
-  // exists.
-  // See also:
-  // - PolicyContainerHost::AssociateWithFrameToken(token)
-  // - PolicyContainerHost::FromFrameToken(token)
-  void IssueKeepAliveHandle(
-      mojo::PendingReceiver<blink::mojom::PolicyContainerHostKeepAliveHandle>
-          receiver) override;
-
  private:
   friend class base::RefCounted<PolicyContainerHost>;
   ~PolicyContainerHost() override;
@@ -289,9 +279,6 @@ class CONTENT_EXPORT PolicyContainerHost
 
   mojo::AssociatedReceiver<blink::mojom::PolicyContainerHost>
       policy_container_host_receiver_{this};
-
-  mojo::UniqueReceiverSet<blink::mojom::PolicyContainerHostKeepAliveHandle>
-      keep_alive_handles_receiver_set_;
 
   std::optional<blink::LocalFrameToken> frame_token_ = std::nullopt;
   int process_id_ = ChildProcessHost::kInvalidUniqueID;

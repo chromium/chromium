@@ -43,15 +43,6 @@ interface PolicyContainerHost {
 
   // Append these content security policies.
   AddContentSecurityPolicies(array<network.mojom.ContentSecurityPolicy> content_security_policies);
-
-  // Register the remote corresponding to |receiver| as a keep alive handle for
-  // this PolicyContainerHost.
-  IssueKeepAliveHandle(pending_receiver<PolicyContainerHostKeepAliveHandle> receiver);
-};
-
-// This is a dummy interface used only to keep alive a PolicyContainerHost via
-// the mojo disconnect handler mechanism.
-interface PolicyContainerHostKeepAliveHandle {
 };
 
 // Struct containing Blink's copy of the policy container together with a remote

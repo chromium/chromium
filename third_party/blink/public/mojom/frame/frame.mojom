@@ -747,6 +747,11 @@ interface LocalFrameHost {
                 gfx.mojom.Vector2d cursor_offset_in_dip,
                 gfx.mojom.Rect drag_obj_rect_in_dip,
                 DragEventSourceInfo event_info);
+
+  // Register the remote corresponding to |receiver| as a keep alive handle for
+  // browser-process navigation state associated with this LocalFrameHost.
+  IssueKeepAliveHandle(
+      pending_receiver<NavigationStateKeepAliveHandle> receiver);
 };
 
 // Implemented in Browser, this interface defines frame-specific methods

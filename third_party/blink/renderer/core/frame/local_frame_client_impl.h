@@ -139,8 +139,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       const std::optional<Impression>& impression,
       const LocalFrameToken* initiator_frame_token,
       std::unique_ptr<SourceLocation> source_location,
-      mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
-          initiator_policy_container_keep_alive_handle,
+      mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
+          initiator_navigation_state_keep_alive_handle,
       bool is_container_initiated,
       bool is_fullscreen_requested) override;
   void DispatchWillSendSubmitEvent(HTMLFormElement*) override;

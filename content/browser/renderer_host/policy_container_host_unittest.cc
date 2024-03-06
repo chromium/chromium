@@ -138,33 +138,4 @@ TEST(PolicyContainerHostTest, KeepAliveThroughBlinkPolicyContainerRemote) {
   EXPECT_FALSE(PolicyContainerHost::FromFrameToken(token));
 }
 
-// Test that the disconnect handler is called when all keep alive handles
-// disconnect.
-TEST(PolicyContainerHostTest, KeepAliveThroughKeepAlives) {
-  // Enable tasks and RunLoop on the main thread and satisfy
-  // DCHECK_CURRENTLY_ON(BrowserThread::UI).
-  content::BrowserTaskEnvironment task_environment;
-
-  scoped_refptr<PolicyContainerHost> policy_container_host =
-      base::MakeRefCounted<PolicyContainerHost>();
-  blink::LocalFrameToken token;
-  policy_container_host->AssociateWithFrameToken(token);
-
-  mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>
-      keep_alive;
-  policy_container_host->IssueKeepAliveHandle(
-      keep_alive.InitWithNewPipeAndPassReceiver());
-
-  PolicyContainerHost* raw_pointer = policy_container_host.get();
-  EXPECT_EQ(raw_pointer, PolicyContainerHost::FromFrameToken(token));
-
-  policy_container_host.reset();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(raw_pointer, PolicyContainerHost::FromFrameToken(token));
-
-  keep_alive.reset();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(PolicyContainerHost::FromFrameToken(token));
-}
-
 }  // namespace content

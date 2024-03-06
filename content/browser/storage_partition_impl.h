@@ -49,6 +49,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom.h"
+#include "third_party/blink/public/mojom/frame/remote_frame.mojom.h"
 
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
@@ -96,6 +97,7 @@ class HostZoomLevelContext;
 class IndexedDBControlWrapper;
 class InterestGroupManagerImpl;
 class LockManager;
+class NavigationStateKeepAlive;
 class PaymentAppContextImpl;
 class PrivateAggregationDataModel;
 class PrivateAggregationManager;
@@ -461,6 +463,15 @@ class CONTENT_EXPORT StoragePartitionImpl
   // Called by BrowserContextImpl prior to destruction.
   void OnBrowserContextWillBeDestroyed();
 
+  // Store `receiver` and its corresponding `handle`. These will be kept alive
+  // as long as the remote endpoint of `receiver` is still alive on the renderer
+  // side. The receiver will be automatically deleted when the endpoint is
+  // disconnected.
+  void RegisterKeepAliveHandle(
+      mojo::PendingReceiver<blink::mojom::NavigationStateKeepAliveHandle>
+          receiver,
+      std::unique_ptr<NavigationStateKeepAlive> handle);
+
   enum class ContextType {
     kRenderFrameHostContext,
     kNavigationRequestContext,
@@ -803,6 +814,21 @@ class CONTENT_EXPORT StoragePartitionImpl
       url_loader_network_observers_;
 
   int next_pending_trust_token_issuance_callback_key_ = 0;
+
+  // Active keepalive handles for in-flight navigations. They are retained
+  // on `StoragePartition` because, by design, they may need to outlive the
+  // `RenderFrameHostImpl` that initiated the navigation, but shouldn't be used
+  // in a different StoragePartition.
+  // Note that this set may contain in-flight navigations for different
+  // RenderFrameHosts, and furthermore, there may even be multiple in-flight
+  // navigations for a single RenderFrameHost.
+  // Lookups should not be done from this set. Accessing PolicyContainerHosts
+  // kept alive by NavigationStateKeepAlive should be done through
+  // PolicyContainerHost::FromFrameToken.
+  // TODO(crbug.com/323753235, yangsharon): Add token keep alive map to
+  // StoragePartition.
+  mojo::UniqueReceiverSet<blink::mojom::NavigationStateKeepAliveHandle>
+      keep_alive_handles_receiver_set_;
 
 #if DCHECK_IS_ON()
   bool on_browser_context_will_be_destroyed_called_ = false;

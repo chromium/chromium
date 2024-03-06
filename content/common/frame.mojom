@@ -763,14 +763,14 @@ interface FrameHost {
   // url in |common_params|, the navigation will result in a network error.
   // |navigation_client| is passed to the renderer to allow for further control
   // of the navigation. Allows for Commit and Cancels/Aborts.
-  // Passing the |initiator_policy_container_keep_alive_handle| is just a means
-  // to ensure that the PolicyContainerHost of the initiator RenderFrameHost is
-  // kept alive, even if the RenderFrameHost itself has already been deleted in
-  // the meantime. If this can be ensured in other ways, it is safe to pass a
-  // mojo::NullRemote. In particular, if the initiator LocalFrame is alive when
-  // issuing this mojo call, there is no need to pass
-  // |initiator_policy_container_keep_alive_handle|, since the initiator
-  // PolicyContainerHost is kept alive by LocalFrame's PolicyContainer.
+  // Passing the |initiator_navigation_state_keep_alive_handle| is just a means
+  // to ensure that the NavigationStateKeepAlive of the initiator
+  // RenderFrameHost is kept alive, even if the RenderFrameHost itself has
+  // already been deleted in the meantime. If this can be ensured in other ways,
+  // it is safe to pass a mojo::NullRemote. In particular, if the initiator
+  // LocalFrame is alive when issuing this mojo call, there is no need to pass
+  // |initiator_navigation_state_keep_alive_handle|, since the initiator
+  // NavigationStateKeepAlive is kept alive by LocalFrame's PolicyContainer.
   // TODO(https://crbug.com/1467502): |navigation_client| should not be
   // optional. Make it mandatory.
   // |renderer_cancellation_listener| is a per-navigation interface used to
@@ -782,8 +782,8 @@ interface FrameHost {
       blink.mojom.BeginNavigationParams begin_params,
       pending_remote<blink.mojom.BlobURLToken>? blob_url_token,
       pending_associated_remote<NavigationClient>? navigation_client,
-      pending_remote<blink.mojom.PolicyContainerHostKeepAliveHandle>?
-          initiator_policy_container_keep_alive_handle,
+      pending_remote<blink.mojom.NavigationStateKeepAliveHandle>?
+          initiator_navigation_state_keep_alive_handle,
       pending_receiver<NavigationRendererCancellationListener>
           renderer_cancellation_listener);
 

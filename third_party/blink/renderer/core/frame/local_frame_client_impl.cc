@@ -561,17 +561,17 @@ void LocalFrameClientImpl::BeginNavigation(
     const std::optional<Impression>& impression,
     const LocalFrameToken* initiator_frame_token,
     std::unique_ptr<SourceLocation> source_location,
-    mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
-        initiator_policy_container_keep_alive_handle,
+    mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
+        initiator_navigation_state_keep_alive_handle,
     bool is_container_initiated,
     bool is_fullscreen_requested) {
   if (!web_frame_->Client())
     return;
 
-  // |initiator_frame_token| and |initiator_policy_container_keep_alive_handle|
+  // |initiator_frame_token| and |initiator_navigation_state_keep_alive_handle|
   // should either be both specified or both null.
   DCHECK(!initiator_frame_token ==
-         !initiator_policy_container_keep_alive_handle);
+         !initiator_navigation_state_keep_alive_handle);
 
   auto navigation_info = std::make_unique<WebNavigationInfo>();
   navigation_info->url_request.CopyFrom(WrappedResourceRequest(request));
@@ -591,8 +591,8 @@ void LocalFrameClientImpl::BeginNavigation(
   navigation_info->input_start = input_start_time;
   navigation_info->initiator_frame_token =
       base::OptionalFromPtr(initiator_frame_token);
-  navigation_info->initiator_policy_container_keep_alive_handle =
-      std::move(initiator_policy_container_keep_alive_handle);
+  navigation_info->initiator_navigation_state_keep_alive_handle =
+      std::move(initiator_navigation_state_keep_alive_handle);
   LocalFrame* origin_frame =
       origin_window ? origin_window->GetFrame() : nullptr;
   if (origin_frame) {
@@ -603,15 +603,15 @@ void LocalFrameClientImpl::BeginNavigation(
           origin_frame->GetLocalFrameToken();
     }
     // Similarly, many navigation paths do not pass an
-    // |initiator_policy_container_keep_alive_handle|.
-    if (!navigation_info->initiator_policy_container_keep_alive_handle) {
-      navigation_info->initiator_policy_container_keep_alive_handle =
-          origin_window->GetPolicyContainer()->IssueKeepAliveHandle();
+    // |initiator_navigation_state_keep_alive_handle|.
+    if (!navigation_info->initiator_navigation_state_keep_alive_handle) {
+      navigation_info->initiator_navigation_state_keep_alive_handle =
+          origin_frame->IssueKeepAliveHandle();
     }
   } else {
     // TODO(https://crbug.com/1173409 and https://crbug.com/1059959): Check that
     // we always pass an |initiator_frame_token| and an
-    // |initiator_policy_container_keep_alive_handle| if |origin_window| is not
+    // |initiator_navigation_state_keep_alive_handle| if |origin_window| is not
     // set.
   }
 

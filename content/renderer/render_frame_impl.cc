@@ -5784,8 +5784,8 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
           GetWebView()->HistoryForwardListCount() + 1;
   params->user_gesture = info->has_transient_user_activation;
   params->is_unfenced_top_navigation = info->is_unfenced_top_navigation;
-  params->initiator_policy_container_keep_alive_handle =
-      std::move(info->initiator_policy_container_keep_alive_handle);
+  params->initiator_navigation_state_keep_alive_handle =
+      std::move(info->initiator_navigation_state_keep_alive_handle);
 
   params->initiator_frame_token = info->initiator_frame_token;
 
@@ -6144,9 +6144,9 @@ void RenderFrameImpl::BeginNavigationInternal(
       current_frame_has_download_sandbox_flag;
   bool from_ad = info->initiator_frame_is_ad || frame_->IsAdFrame();
 
-  mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>
-      initiator_policy_container_keep_alive_handle =
-          std::move(info->initiator_policy_container_keep_alive_handle);
+  mojo::PendingRemote<blink::mojom::NavigationStateKeepAliveHandle>
+      initiator_navigation_state_keep_alive_handle =
+          std::move(info->initiator_navigation_state_keep_alive_handle);
 
   network::mojom::RequestDestination request_destination =
       blink::GetRequestDestinationForWebURLRequest(info->url_request);
@@ -6158,7 +6158,7 @@ void RenderFrameImpl::BeginNavigationInternal(
                                  request_destination),
       std::move(begin_navigation_params), std::move(blob_url_token),
       std::move(navigation_client_remote),
-      std::move(initiator_policy_container_keep_alive_handle),
+      std::move(initiator_navigation_state_keep_alive_handle),
       std::move(renderer_cancellation_listener_receiver));
 }
 
