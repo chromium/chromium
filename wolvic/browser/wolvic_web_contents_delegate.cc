@@ -11,6 +11,7 @@
 #include "wolvic/jni_headers/WolvicWebContentsDelegate_jni.h"
 #include "url/android/gurl_android.h"
 #include "wolvic/browser/dialogs/color_chooser_manager.h"
+#include "wolvic/browser/dialogs/file_select_manager.h"
 #include "wolvic/browser/dialogs/wolvic_javascript_dialog_manager.h"
 
 namespace wolvic {
@@ -74,6 +75,14 @@ std::unique_ptr<content::ColorChooser> WolvicWebContentsDelegate::OpenColorChoos
     SkColor color,
     const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
   return std::make_unique<ColorChooserManager>(web_contents, color, suggestions);
+}
+
+void WolvicWebContentsDelegate::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+    scoped_refptr<content::FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  FileSelectManager::RunFileChooser(render_frame_host, std::move(listener),
+                                   params);
 }
 
 } // namespace wolvic
