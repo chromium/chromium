@@ -37,6 +37,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/display/display_switches.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
@@ -352,6 +353,17 @@ class HeadlessModeScreenshotCommandBrowserTest
  public:
   HeadlessModeScreenshotCommandBrowserTest() = default;
 
+#if BUILDFLAG(IS_WIN)
+  void SetUp() override {
+    // Use software compositing instead of GL which causes blank screenshots on
+    // Windows, especially under ASAN. See https://crbug.com/1442606 and
+    // https://crbug.com/328195816.
+    UseSoftwareCompositing();
+
+    HeadlessModeCommandBrowserTestWithTempDir::SetUp();
+  }
+#endif
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     HeadlessModeCommandBrowserTestWithTempDir::SetUpCommandLine(command_line);
 
@@ -365,14 +377,8 @@ class HeadlessModeScreenshotCommandBrowserTest
   base::FilePath screenshot_filename_;
 };
 
-// TODO(crbug.com/1442606): Disabled due to flakiness on Windows ASAN.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HeadlessScreenshot DISABLED_HeadlessScreenshot
-#else
-#define MAYBE_HeadlessScreenshot HeadlessScreenshot
-#endif
 IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandBrowserTest,
-                       MAYBE_HeadlessScreenshot) {
+                       HeadlessScreenshot) {
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
@@ -399,6 +405,7 @@ class HeadlessModeScreenshotCommandWithWindowSizeBrowserTest
     HeadlessModeScreenshotCommandBrowserTest::SetUpCommandLine(command_line);
 
     command_line->AppendSwitchASCII(::switches::kWindowSize, "2345,1234");
+    command_line->AppendSwitchASCII(::switches::kForceDeviceScaleFactor, "1");
   }
 };
 
@@ -419,13 +426,9 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandWithWindowSizeBrowserTest,
   EXPECT_EQ(bitmap.width(), 2345);
   EXPECT_EQ(bitmap.height(), 1234);
 
-// TODO(crbug.com/328195816): This portion is disabled due to flakiness
-// on Windows
-#if !BUILDFLAG(IS_WIN)
   // Expect a centered blue rectangle on white background.
   EXPECT_TRUE(CheckColoredRect(bitmap, SkColorSetRGB(0x00, 0x00, 0xff),
                                SkColorSetRGB(0xff, 0xff, 0xff)));
-#endif
 }
 
 // PrintToPDF command tests -------------------------------------------
