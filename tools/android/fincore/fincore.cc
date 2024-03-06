@@ -11,6 +11,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <vector>
 
 void PrintUsage(char* prog) {
   std::cout << "Usage: " << prog << " FILE" << std::endl
@@ -53,15 +54,15 @@ int main(int argc, char* argv[]) {
   }
 
   size_t total_pages = (len + PAGE_SIZE - 1) / PAGE_SIZE;
-  std::unique_ptr<uint8_t[]> page_residency(new uint8_t[total_pages]);
-  if (mincore(start_address, len, page_residency.get())) {
+  std::vector<uint8_t> page_residencies(total_pages);
+  if (mincore(start_address, len, page_residencies.data())) {
     perror("mincore");
     return 1;
   }
 
   size_t resident_pages = 0;
-  for (size_t i = 0; i < total_pages; ++i) {
-    if (page_residency[i] != 0) {
+  for (auto page_residency : page_residencies) {
+    if (page_residency != 0) {
       resident_pages++;
     }
   }
