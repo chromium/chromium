@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PERSONALIZATION_PERSONALIZATION_SECTION_H_
 
 #include "base/values.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/multitasking/multitasking_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -43,6 +44,7 @@ class PersonalizationSection : public OsSettingsSection {
  private:
   PrefChangeRegistrar pref_change_registrar_;
   bool isRevampEnabled_;
+  std::optional<MultitaskingSection> multitasking_subsection_;
 };
 
 }  // namespace ash::settings

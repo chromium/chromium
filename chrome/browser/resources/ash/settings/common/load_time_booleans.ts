@@ -68,6 +68,11 @@ export function isAccountManagerEnabled(): boolean {
   return loadTimeData.getBoolean('isAccountManagerEnabled');
 }
 
+// Personalization page
+export function shouldShowMultitaskingInPersonalization(): boolean {
+  return loadTimeData.getBoolean('shouldShowMultitaskingInPersonalization');
+}
+
 // Reset page
 export function isPowerwashAllowed(): boolean {
   return loadTimeData.getBoolean('allowPowerwash');

@@ -10,6 +10,14 @@
           on-click="openPersonalizationHub_"
           external>
       </cr-link-row>
+
+      <template is="dom-if" if="[[shouldShowMultitaskingInPersonalization_]]">
+        <settings-toggle-button id="snapWindowSuggestionsSubsection"
+          pref="{{prefs.ash.snap_window_suggestions.enabled}}"
+          label="[[getWindowSuggestionsLabelText_()]]"
+          sub-label="[[getWindowSuggestionsDescriptionText_()]]">
+        </settings-toggle-button>
+      </template>
     </settings-card>
   </div>
 

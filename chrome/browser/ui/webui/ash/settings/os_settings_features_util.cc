@@ -76,4 +76,9 @@ bool ShouldShowMultitasking() {
          ash::features::IsFasterSplitScreenSetupEnabled();
 }
 
+bool ShouldShowMultitaskingInPersonalization() {
+  return !ash::features::IsOsSettingsRevampWayfindingEnabled() &&
+         ash::features::IsFasterSplitScreenSetupEnabled();
+}
+
 }  // namespace ash::settings

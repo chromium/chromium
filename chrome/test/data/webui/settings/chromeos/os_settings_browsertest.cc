@@ -1772,8 +1772,8 @@ class OSSettingsMochaTestRevampAndLacrosOnlyDisabled
  protected:
   OSSettingsMochaTestRevampAndLacrosOnlyDisabled() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/{},
-        /*disabled=*/{
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
             ash::standalone_browser::features::kLacrosOnly,
             ash::features::kOsSettingsRevampWayfinding,
         });

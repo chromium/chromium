@@ -5,9 +5,10 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {PersonalizationHubBrowserProxyImpl, SettingsPersonalizationPageElement} from 'chrome://os-settings/os_settings.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPersonalizationHubBrowserProxy} from './test_personalization_hub_browser_proxy.js';
 
@@ -15,18 +16,17 @@ let personalizationPage: SettingsPersonalizationPageElement;
 let personalizationHubBrowserProxy: TestPersonalizationHubBrowserProxy;
 
 suite('<settings-personalization-page>', () => {
+  async function createPersonalizationPage(): Promise<void> {
+    personalizationPage =
+        document.createElement('settings-personalization-page');
+    document.body.appendChild(personalizationPage);
+    await flushTasks();
+  }
+
   suiteSetup(() => {
     personalizationHubBrowserProxy = new TestPersonalizationHubBrowserProxy();
     PersonalizationHubBrowserProxyImpl.setInstanceForTesting(
         personalizationHubBrowserProxy);
-  });
-
-  setup(async () => {
-    personalizationPage =
-        document.createElement('settings-personalization-page');
-    document.body.appendChild(personalizationPage);
-    flush();
-    await waitAfterNextRender(personalizationPage);
   });
 
   teardown(() => {
@@ -34,7 +34,8 @@ suite('<settings-personalization-page>', () => {
     personalizationHubBrowserProxy.reset();
   });
 
-  test('Personalization hub feature shows only link to hub', () => {
+  test('Personalization hub feature shows only link to hub', async () => {
+    await createPersonalizationPage();
     const crLinks =
         personalizationPage.shadowRoot!.querySelectorAll('cr-link-row');
 
@@ -43,6 +44,7 @@ suite('<settings-personalization-page>', () => {
   });
 
   test('Opens personalization hub when clicked', async () => {
+    await createPersonalizationPage();
     const hubLink =
         personalizationPage.shadowRoot!.querySelector<HTMLButtonElement>(
             '#personalizationHubButton');
@@ -51,4 +53,33 @@ suite('<settings-personalization-page>', () => {
 
     await personalizationHubBrowserProxy.whenCalled('openPersonalizationHub');
   });
+
+  test(
+      'Multitasking settings subsection is visible with feature enabled',
+      async () => {
+        loadTimeData.overrideValues(
+            {shouldShowMultitaskingInPersonalization: true});
+        await createPersonalizationPage();
+        const multitaskingSettingsSubsection =
+            personalizationPage.shadowRoot!.querySelector<HTMLButtonElement>(
+                '#snapWindowSuggestionsSubsection');
+        assertTrue(
+            isVisible(multitaskingSettingsSubsection),
+            'Multitasking settings subsection should be visible.');
+      });
+
+  test(
+      'Multitasking settings subsection is not visible with feature disabled',
+      async () => {
+        loadTimeData.overrideValues(
+            {shouldShowMultitaskingInPersonalization: false});
+        await createPersonalizationPage();
+
+        const multitaskingSettingsSubsection =
+            personalizationPage.shadowRoot!.querySelector<HTMLButtonElement>(
+                '#snapWindowSuggestionsSubsection');
+        assertFalse(
+            isVisible(multitaskingSettingsSubsection),
+            'Multitasking settings subsection should not be visible.');
+      });
 });

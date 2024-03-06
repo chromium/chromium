@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/settings/pages/personalization/personalization_section.h"
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/multitasking/multitasking_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/personalization/personalization_hub_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
@@ -26,13 +29,18 @@ PersonalizationSection::PersonalizationSection(
     SearchTagRegistry* search_tag_registry,
     PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
-      isRevampEnabled_(ash::features::IsOsSettingsRevampWayfindingEnabled()) {}
+      isRevampEnabled_(ash::features::IsOsSettingsRevampWayfindingEnabled()),
+      multitasking_subsection_(
+          ShouldShowMultitaskingInPersonalization()
+              ? std::make_optional<MultitaskingSection>(profile,
+                                                        search_tag_registry)
+              : std::nullopt) {}
 
 PersonalizationSection::~PersonalizationSection() = default;
 
 void PersonalizationSection::AddLoadTimeData(
     content::WebUIDataSource* html_source) {
-  webui::LocalizedString kLocalizedStrings[] = {
+  webui::LocalizedString kWallpaperLocalizedStrings[] = {
       {"personalizationPageTitle", isRevampEnabled_
                                        ? IDS_OS_SETTINGS_REVAMP_PERSONALIZATION
                                        : IDS_OS_SETTINGS_PERSONALIZATION},
@@ -44,11 +52,18 @@ void PersonalizationSection::AddLoadTimeData(
            ? IDS_OS_SETTINGS_REVAMP_OPEN_PERSONALIZATION_HUB_SUBTITLE
            : IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE},
   };
-  html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddLocalizedStrings(kWallpaperLocalizedStrings);
+  if (ShouldShowMultitaskingInPersonalization()) {
+    multitasking_subsection_->AddLoadTimeData(html_source);
+  }
 }
 
 void PersonalizationSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<PersonalizationHubHandler>());
+  if (ShouldShowMultitaskingInPersonalization()) {
+    multitasking_subsection_->AddHandlers(web_ui);
+  }
 }
 
 int PersonalizationSection::GetSectionNameMessageId() const {
@@ -77,6 +92,9 @@ bool PersonalizationSection::LogMetric(mojom::Setting setting,
 void PersonalizationSection::RegisterHierarchy(
     HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kOpenWallpaper);
+  if (ShouldShowMultitaskingInPersonalization()) {
+    multitasking_subsection_->RegisterHierarchy(generator);
+  }
 }
 
 }  // namespace ash::settings

@@ -16,10 +16,11 @@
 namespace ash::settings {
 
 namespace mojom {
-using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
-using ::chromeos::settings::mojom::Section;
-using ::chromeos::settings::mojom::Setting;
-using ::chromeos::settings::mojom::Subpage;
+using chromeos::settings::mojom::kPersonalizationSectionPath;
+using chromeos::settings::mojom::kSystemPreferencesSectionPath;
+using chromeos::settings::mojom::Section;
+using chromeos::settings::mojom::Setting;
+using chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
@@ -48,9 +49,8 @@ MultitaskingSection::MultitaskingSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry) {
   CHECK(profile);
   CHECK(search_tag_registry);
-  CHECK(ash::features::IsOsSettingsRevampWayfindingEnabled());
 
-  if (ShouldShowMultitasking()) {
+  if (ash::features::IsFasterSplitScreenSetupEnabled()) {
     SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
     updater.AddSearchTags(GetSnapWindowSuggestionsSearchConcepts());
   }
@@ -70,6 +70,8 @@ void MultitaskingSection::AddLoadTimeData(
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddBoolean("shouldShowMultitasking", ShouldShowMultitasking());
+  html_source->AddBoolean("shouldShowMultitaskingInPersonalization",
+                          ShouldShowMultitaskingInPersonalization());
 }
 
 void MultitaskingSection::AddHandlers(content::WebUI* web_ui) {
@@ -84,16 +86,17 @@ mojom::Section MultitaskingSection::GetSection() const {
   // Note: This is a subsection that exists under System Preferences. This is
   // not a top-level section and does not have a respective declaration in
   // chromeos::settings::mojom::Section.
-  return mojom::Section::kSystemPreferences;
+  return ShouldShowMultitasking() ? mojom::Section::kSystemPreferences
+                                  : mojom::Section::kPersonalization;
 }
 
 mojom::SearchResultIcon MultitaskingSection::GetSectionIcon() const {
-  // TODO(sophiewen): See if we should use a different section icon.
-  return mojom::SearchResultIcon::kSystemPreferences;
+  return mojom::SearchResultIcon::kSnapWindowSuggestions;
 }
 
 const char* MultitaskingSection::GetSectionPath() const {
-  return mojom::kSystemPreferencesSectionPath;
+  return ShouldShowMultitasking() ? mojom::kSystemPreferencesSectionPath
+                                  : mojom::kPersonalizationSectionPath;
 }
 
 bool MultitaskingSection::LogMetric(mojom::Setting setting,
