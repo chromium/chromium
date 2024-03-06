@@ -190,5 +190,13 @@ TEST_F(BirchItemIconTest, Weather_LoadIcon_NoIcon) {
       [](const ui::ImageModel& icon) { EXPECT_TRUE(icon.IsEmpty()); }));
 }
 
+TEST_F(BirchItemIconTest, File_LoadIcon) {
+  const base::FilePath excel_path("/my/test/mySheet.xlsx");
+  BirchFileItem item(excel_path, base::Time());
+
+  item.LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
+}
+
 }  // namespace
 }  // namespace ash

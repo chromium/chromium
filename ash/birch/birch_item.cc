@@ -15,6 +15,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ui/base/file_icon_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/models/image_model.h"
 
@@ -200,9 +201,8 @@ void BirchFileItem::PerformAction() {
 }
 
 void BirchFileItem::LoadIcon(LoadIconCallback callback) {
-  // TODO(jamescook): Figure out how to show the file icon based on its type.
-  // See chromeos/ui/base/file_icon_util.h for ideas.
-  std::move(callback).Run(ui::ImageModel());
+  std::move(callback).Run(
+      ui::ImageModel::FromVectorIcon(chromeos::GetIconForPath(file_path)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
