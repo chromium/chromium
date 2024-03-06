@@ -52,8 +52,11 @@ constexpr uint64_t kPtrUntagMask = ~kPtrTagMask;
 
 #if BUILDFLAG(IS_ANDROID)
 // Changes the memory tagging mode for all threads in the current process.
+// Returns true on success. Most likely reason for failure is because heap
+// tagging may not be re-enabled after being disabled.
+// https://android.googlesource.com/platform/bionic/+/446b4dde724ee64a336a78188c3c9a15aebca87c/libc/include/malloc.h#235
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-void ChangeMemoryTaggingModeForAllThreadsPerProcess(TagViolationReportingMode);
+bool ChangeMemoryTaggingModeForAllThreadsPerProcess(TagViolationReportingMode);
 #endif
 
 // Gets the memory tagging mode for the calling thread. Returns kUndefined if

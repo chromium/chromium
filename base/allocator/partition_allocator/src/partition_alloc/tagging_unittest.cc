@@ -163,12 +163,14 @@ TEST(PartitionAllocMemoryTaggingTest,
 
   // Skip changing to kDisabled, because scudo does not support enabling MTE
   // once it is disabled.
-  ChangeMemoryTaggingModeForAllThreadsPerProcess(
+  bool success = ChangeMemoryTaggingModeForAllThreadsPerProcess(
       TagViolationReportingMode::kAsynchronous);
+  EXPECT_TRUE(success);
   EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
             TagViolationReportingMode::kAsynchronous);
-  ChangeMemoryTaggingModeForAllThreadsPerProcess(
+  success = ChangeMemoryTaggingModeForAllThreadsPerProcess(
       TagViolationReportingMode::kSynchronous);
+  EXPECT_TRUE(success);
   // End with mode changed back to synchronous.
   EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
             TagViolationReportingMode::kSynchronous);

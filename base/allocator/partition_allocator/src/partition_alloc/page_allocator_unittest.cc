@@ -311,8 +311,9 @@ TEST(PartitionAllocPageAllocatorTest,
       {
   // Switch to synchronous mode.
 #if BUILDFLAG(IS_ANDROID)
-        ChangeMemoryTaggingModeForAllThreadsPerProcess(
+        bool success = ChangeMemoryTaggingModeForAllThreadsPerProcess(
             TagViolationReportingMode::kSynchronous);
+        EXPECT_TRUE(success);
 #else
         ChangeMemoryTaggingModeForCurrentThread(
             TagViolationReportingMode::kSynchronous);
@@ -363,8 +364,9 @@ TEST(PartitionAllocPageAllocatorTest,
       {
   // Switch to asynchronous mode.
 #if BUILDFLAG(IS_ANDROID)
-        ChangeMemoryTaggingModeForAllThreadsPerProcess(
+        bool success = ChangeMemoryTaggingModeForAllThreadsPerProcess(
             TagViolationReportingMode::kAsynchronous);
+        EXPECT_TRUE(success);
 #else
         ChangeMemoryTaggingModeForCurrentThread(
             TagViolationReportingMode::kAsynchronous);

@@ -1166,18 +1166,18 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         }
         partition_alloc::PermissiveMte::SetEnabled(base::FeatureList::IsEnabled(
             base::features::kPartitionAllocPermissiveMte));
-        partition_alloc::internal::
-            ChangeMemoryTaggingModeForAllThreadsPerProcess(
-                memory_tagging_reporting_mode);
+        CHECK(partition_alloc::internal::
+                  ChangeMemoryTaggingModeForAllThreadsPerProcess(
+                      memory_tagging_reporting_mode));
         CHECK_EQ(
             partition_alloc::internal::GetMemoryTaggingModeForCurrentThread(),
             memory_tagging_reporting_mode);
       } else if (base::CPU::GetInstanceNoAllocation().has_mte()) {
         memory_tagging_reporting_mode =
             partition_alloc::TagViolationReportingMode::kDisabled;
-        partition_alloc::internal::
-            ChangeMemoryTaggingModeForAllThreadsPerProcess(
-                memory_tagging_reporting_mode);
+        CHECK(partition_alloc::internal::
+                  ChangeMemoryTaggingModeForAllThreadsPerProcess(
+                      memory_tagging_reporting_mode));
         CHECK_EQ(
             partition_alloc::internal::GetMemoryTaggingModeForCurrentThread(),
             memory_tagging_reporting_mode);
