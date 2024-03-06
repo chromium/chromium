@@ -34,4 +34,29 @@ serial_test(async (t, fake) => {
 
   ports = await navigator.serial.getPorts();
   assert_equals(ports.length, 0);
-}, 'A "disconnect" event is fired when ports are added.');
+}, 'A "disconnect" event is fired when ports are removed.');
+
+serial_test(async (t, fake) => {
+  const eventWatcher =
+      new EventWatcher(t, navigator.serial, ['connect', 'disconnect']);
+
+  // Wait for getPorts() to resolve in order to ensure that the Mojo client
+  // interface has been configured.
+  let ports = await navigator.serial.getPorts();
+  assert_equals(ports.length, 0);
+
+  // Add a connected port.
+  const token = fake.addPort();
+  const port = (await eventWatcher.wait_for(['connect'])).target;
+
+  // Disconnect the port but do not remove it.
+  fake.setPortConnectedState(token, false);
+  const event = await eventWatcher.wait_for(['disconnect']);
+  assert_true(event instanceof Event);
+  assert_equals(event.target, port);
+
+  // The disconnected port is included in the ports returned by getPorts.
+  ports = await navigator.serial.getPorts();
+  assert_equals(ports.length, 1);
+  assert_false(ports[0].connected);
+}, 'A "disconnect" event is fired when a connected port becomes disconnected.');

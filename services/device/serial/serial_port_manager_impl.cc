@@ -178,4 +178,12 @@ void SerialPortManagerImpl::OnPortRemoved(const mojom::SerialPortInfo& port) {
     client->OnPortRemoved(port.Clone());
 }
 
+void SerialPortManagerImpl::OnPortConnectedStateChanged(
+    const mojom::SerialPortInfo& port) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& client : clients_) {
+    client->OnPortConnectedStateChanged(port.Clone());
+  }
+}
+
 }  // namespace device

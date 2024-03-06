@@ -48,6 +48,17 @@ struct SerialPortInfo {
   // The USB device serial number.
   // Note: This field is not populated on Windows nor for non-USB devices.
   string? serial_number;
+
+  // True if the port was connected when the SerialPortInfo was returned from
+  // the SerialPortManager. SerialPortManagerClients are notified on port
+  // connected state changes.
+  //
+  // A wired serial port is considered connected if it is physically attached
+  // to the system.
+  //
+  // A wireless serial port is considered connected if the wireless device
+  // hosting the port has any active connections to the system.
+  bool connected = true;
 };
 
 enum SerialSendError {
@@ -173,6 +184,10 @@ interface SerialPortManagerClient {
 
   // This message indicates that a port has been removed from the host.
   OnPortRemoved(SerialPortInfo port_info);
+
+  // This message indicates that the connected state of a port has changed. No
+  // message is sent if the port is added or removed.
+  OnPortConnectedStateChanged(SerialPortInfo port_info);
 };
 
 // Performs asynchronous I/O on serial devices.

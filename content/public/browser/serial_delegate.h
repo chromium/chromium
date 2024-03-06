@@ -29,6 +29,8 @@ class CONTENT_EXPORT SerialDelegate {
     // Events forwarded from SerialChooserContext::PortObserver:
     virtual void OnPortAdded(const device::mojom::SerialPortInfo& port) = 0;
     virtual void OnPortRemoved(const device::mojom::SerialPortInfo& port) = 0;
+    virtual void OnPortConnectedStateChanged(
+        const device::mojom::SerialPortInfo& port) = 0;
     virtual void OnPortManagerConnectionError() = 0;
 
     // Event forwarded from

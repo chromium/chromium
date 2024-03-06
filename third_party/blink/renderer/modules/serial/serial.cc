@@ -125,14 +125,16 @@ void Serial::ContextDestroyed() {
     entry.value->ContextDestroyed();
 }
 
-void Serial::OnPortAdded(mojom::blink::SerialPortInfoPtr port_info) {
+void Serial::OnPortConnectedStateChanged(
+    mojom::blink::SerialPortInfoPtr port_info) {
+  bool connected = port_info->connected;
   SerialPort* port = GetOrCreatePort(std::move(port_info));
-  port->DispatchEvent(*Event::CreateBubble(event_type_names::kConnect));
-}
-
-void Serial::OnPortRemoved(mojom::blink::SerialPortInfoPtr port_info) {
-  SerialPort* port = GetOrCreatePort(std::move(port_info));
-  port->DispatchEvent(*Event::CreateBubble(event_type_names::kDisconnect));
+  port->set_connected(connected);
+  if (connected) {
+    port->DispatchEvent(*Event::CreateBubble(event_type_names::kConnect));
+  } else {
+    port->DispatchEvent(*Event::CreateBubble(event_type_names::kDisconnect));
+  }
 }
 
 ScriptPromiseTyped<IDLSequence<SerialPort>> Serial::getPorts(

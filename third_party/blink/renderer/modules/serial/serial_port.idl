@@ -12,6 +12,7 @@
     attribute EventHandler onconnect;
     attribute EventHandler ondisconnect;
 
+    [RuntimeEnabled=SerialPortConnected] readonly attribute boolean connected;
     [CallWith=ScriptState, RaisesException]
     readonly attribute ReadableStream readable;
     [CallWith=ScriptState, RaisesException]

@@ -56,8 +56,8 @@ class MockSerialServiceClient : public blink::mojom::SerialServiceClient {
   }
 
   // blink::mojom::SerialPortManagerClient
-  MOCK_METHOD1(OnPortAdded, void(blink::mojom::SerialPortInfoPtr));
-  MOCK_METHOD1(OnPortRemoved, void(blink::mojom::SerialPortInfoPtr));
+  MOCK_METHOD1(OnPortConnectedStateChanged,
+               void(blink::mojom::SerialPortInfoPtr));
 
  private:
   mojo::Receiver<blink::mojom::SerialServiceClient> receiver_{this};
@@ -335,7 +335,7 @@ TEST_F(SerialTest, AddAndRemovePorts) {
   {
     base::RunLoop run_loop;
     auto closure = base::BarrierClosure(2, run_loop.QuitClosure());
-    EXPECT_CALL(client, OnPortAdded(_))
+    EXPECT_CALL(client, OnPortConnectedStateChanged)
         .Times(2)
         .WillRepeatedly(base::test::RunClosure(closure));
 
@@ -347,7 +347,7 @@ TEST_F(SerialTest, AddAndRemovePorts) {
   {
     base::RunLoop run_loop;
     auto closure = base::BarrierClosure(2, run_loop.QuitClosure());
-    EXPECT_CALL(client, OnPortRemoved(_))
+    EXPECT_CALL(client, OnPortConnectedStateChanged)
         .Times(2)
         .WillRepeatedly(base::test::RunClosure(closure));
 
@@ -355,6 +355,54 @@ TEST_F(SerialTest, AddAndRemovePorts) {
       observer()->OnPortRemoved(*port);
     run_loop.Run();
   }
+}
+
+TEST_F(SerialTest, PortConnectedState) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  mojo::Remote<blink::mojom::SerialService> service;
+  contents()->GetPrimaryMainFrame()->BindSerialService(
+      service.BindNewPipeAndPassReceiver());
+
+  MockSerialServiceClient client;
+  service->SetClient(client.BindNewPipeAndPassRemote());
+  service.FlushForTesting();
+
+  ASSERT_TRUE(observer());
+
+  // Create a disconnected port.
+  auto port = device::mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+  port->connected = false;
+
+  EXPECT_CALL(delegate(), HasPortPermission).WillRepeatedly(Return(true));
+
+  // Add the disconnected port. The client is not notified.
+  EXPECT_CALL(client, OnPortConnectedStateChanged).Times(0);
+  observer()->OnPortAdded(*port);
+  base::RunLoop().RunUntilIdle();
+
+  // Connect the port.
+  TestFuture<blink::mojom::SerialPortInfoPtr> connect_future;
+  EXPECT_CALL(client, OnPortConnectedStateChanged)
+      .WillOnce([&connect_future](blink::mojom::SerialPortInfoPtr port) {
+        connect_future.SetValue(std::move(port));
+      });
+  port->connected = true;
+  observer()->OnPortConnectedStateChanged(*port);
+  EXPECT_EQ(connect_future.Get()->token, port->token);
+  EXPECT_TRUE(connect_future.Get()->connected);
+
+  // Disconnect the port.
+  TestFuture<blink::mojom::SerialPortInfoPtr> disconnect_future;
+  EXPECT_CALL(client, OnPortConnectedStateChanged)
+      .WillOnce([&disconnect_future](blink::mojom::SerialPortInfoPtr port) {
+        disconnect_future.SetValue(std::move(port));
+      });
+  port->connected = false;
+  observer()->OnPortConnectedStateChanged(*port);
+  EXPECT_EQ(disconnect_future.Get()->token, port->token);
+  EXPECT_FALSE(disconnect_future.Get()->connected);
 }
 
 TEST_F(SerialTest, OpenAndClosePortManagerConnection) {

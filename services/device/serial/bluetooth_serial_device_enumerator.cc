@@ -24,13 +24,15 @@ namespace {
 
 mojom::SerialPortInfoPtr CreatePort(std::string_view device_address,
                                     base::StringPiece16 device_name,
-                                    const BluetoothUUID& service_class_id) {
+                                    const BluetoothUUID& service_class_id,
+                                    bool connected) {
   auto port = mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
   port->path = base::FilePath::FromUTF8Unsafe(device_address);
   port->type = mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM;
   port->bluetooth_service_class_id = service_class_id;
   port->display_name = base::UTF16ToUTF8(device_name);
+  port->connected = connected;
   return port;
 }
 
@@ -74,6 +76,7 @@ class BluetoothSerialDeviceEnumerator::AdapterHelper
   // |adapter_|'s reset during destruction.
   base::ScopedObservation<BluetoothAdapter, BluetoothAdapter::Observer>
       observation_{this};
+
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<AdapterHelper> weak_ptr_factory_{this};
 };
@@ -107,14 +110,15 @@ void BluetoothSerialDeviceEnumerator::AdapterHelper::OnGotClassicAdapter(
 }
 
 void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceAdded(
-    BluetoothAdapter*,
+    BluetoothAdapter* adapter,
     BluetoothDevice* device) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   enumerator_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&BluetoothSerialDeviceEnumerator::DeviceAdded, enumerator_,
-                     device->GetAddress(), device->GetNameForDisplay(),
-                     device->GetUUIDs()));
+      base::BindOnce(&BluetoothSerialDeviceEnumerator::DeviceAddedOrChanged,
+                     enumerator_, device->GetAddress(),
+                     device->GetNameForDisplay(), device->GetUUIDs(),
+                     device->IsConnected()));
 }
 
 void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceRemoved(
@@ -129,12 +133,7 @@ void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceRemoved(
 void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceChanged(
     BluetoothAdapter* adapter,
     BluetoothDevice* device) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  enumerator_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BluetoothSerialDeviceEnumerator::DeviceAdded, enumerator_,
-                     device->GetAddress(), device->GetNameForDisplay(),
-                     device->GetUUIDs()));
+  DeviceAdded(adapter, device);
 }
 
 void BluetoothSerialDeviceEnumerator::AdapterHelper::OpenPort(
@@ -177,26 +176,36 @@ void BluetoothSerialDeviceEnumerator::GetDevicesAfterInitialEnumeration(
   pending_get_devices_.push_back(std::move(callback));
 }
 
-void BluetoothSerialDeviceEnumerator::DeviceAdded(
+void BluetoothSerialDeviceEnumerator::DeviceAddedOrChanged(
     std::string_view device_address,
     base::StringPiece16 device_name,
-    BluetoothDevice::UUIDSet service_class_ids) {
+    BluetoothDevice::UUIDSet service_class_ids,
+    bool is_connected) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& service_class_id : service_class_ids) {
-    AddService(device_address, device_name, service_class_id);
+    AddOrUpdateService(device_address, device_name, service_class_id,
+                       is_connected);
   }
 }
 
-void BluetoothSerialDeviceEnumerator::AddService(
+void BluetoothSerialDeviceEnumerator::AddOrUpdateService(
     std::string_view device_address,
     base::StringPiece16 device_name,
-    const BluetoothUUID& service_class_id) {
+    const BluetoothUUID& service_class_id,
+    bool is_connected) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DeviceServiceInfo key =
       std::make_pair(std::string(device_address), service_class_id);
-  if (base::Contains(device_ports_, key))
+  auto find_it = device_ports_.find(key);
+  if (find_it != device_ports_.end()) {
+    if (base::FeatureList::IsEnabled(features::kSerialPortConnected)) {
+      UpdatePortConnectedState(find_it->second, is_connected);
+    }
     return;
+  }
 
-  auto port = CreatePort(device_address, device_name, service_class_id);
+  auto port =
+      CreatePort(device_address, device_name, service_class_id, is_connected);
 
   device_ports_.insert(std::make_pair(std::move(key), port->token));
   AddPort(std::move(port));

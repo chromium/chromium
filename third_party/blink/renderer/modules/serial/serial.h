@@ -59,8 +59,8 @@ class MODULES_EXPORT Serial final : public EventTarget,
   void ContextDestroyed() override;
 
   // SerialServiceClient
-  void OnPortAdded(mojom::blink::SerialPortInfoPtr port_info) override;
-  void OnPortRemoved(mojom::blink::SerialPortInfoPtr port_info) override;
+  void OnPortConnectedStateChanged(
+      mojom::blink::SerialPortInfoPtr port_info) override;
 
   // Web-exposed interfaces
   DEFINE_ATTRIBUTE_EVENT_LISTENER(connect, kConnect)

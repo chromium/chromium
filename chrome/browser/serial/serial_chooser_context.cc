@@ -635,6 +635,13 @@ void SerialChooserContext::OnPortRemoved(
   }
 }
 
+void SerialChooserContext::OnPortConnectedStateChanged(
+    device::mojom::SerialPortInfoPtr port) {
+  for (auto& observer : port_observer_list_) {
+    observer.OnPortConnectedStateChanged(*port);
+  }
+}
+
 void SerialChooserContext::EnsurePortManagerConnection() {
   if (port_manager_)
     return;

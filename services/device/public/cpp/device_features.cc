@@ -40,5 +40,11 @@ BASE_FEATURE(kEnableBluetoothSerialPortProfileInSerialApi,
 BASE_FEATURE(kGeolocationDiagnosticsObserver,
              "GeolocationDiagnosticsObserver",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Expose serial port logical connection state and dispatch connection events
+// for Bluetooth serial ports when the Bluetooth device connection state
+// changes.
+BASE_FEATURE(kSerialPortConnected,
+             "SerialPortConnected",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -42,9 +42,10 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
   void GetDevicesAfterInitialEnumeration(
       mojom::SerialPortManager::GetDevicesCallback callback);
 
-  void DeviceAdded(std::string_view device_address,
-                   base::StringPiece16 device_name,
-                   BluetoothDevice::UUIDSet service_class_ids);
+  void DeviceAddedOrChanged(std::string_view device_address,
+                            base::StringPiece16 device_name,
+                            BluetoothDevice::UUIDSet service_class_ids,
+                            bool is_connected);
   void DeviceRemoved(const std::string& device_address);
 
   void OpenPort(const std::string& address,
@@ -80,9 +81,10 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
   using DevicePortsMap =
       base::flat_map<DeviceServiceInfo, base::UnguessableToken>;
 
-  void AddService(std::string_view device_address,
-                  base::StringPiece16 device_name,
-                  const BluetoothUUID& service_class_id);
+  void AddOrUpdateService(std::string_view device_address,
+                          base::StringPiece16 device_name,
+                          const BluetoothUUID& service_class_id,
+                          bool is_connected);
   void OnInitialEnumerationComplete();
 
   // A flag indicating whether the initial enumeration has completed.

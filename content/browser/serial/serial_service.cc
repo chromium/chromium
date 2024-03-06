@@ -39,6 +39,7 @@ blink::mojom::SerialPortInfoPtr ToBlinkType(
   if (port.bluetooth_service_class_id) {
     info->bluetooth_service_class_id = port.bluetooth_service_class_id;
   }
+  info->connected = port.connected;
   return info;
 }
 
@@ -164,21 +165,35 @@ void SerialService::ForgetPort(const base::UnguessableToken& token,
 }
 
 void SerialService::OnPortAdded(const device::mojom::SerialPortInfo& port) {
-  SerialDelegate* delegate = GetContentClient()->browser()->GetSerialDelegate();
-  if (!delegate || !delegate->HasPortPermission(&render_frame_host(), port))
-    return;
-
-  for (const auto& client : clients_)
-    client->OnPortAdded(ToBlinkType(port));
+  // Notify clients that a connect event should be dispatched for an added port.
+  //
+  // In some cases `port` may be disconnected. Wired serial ports are always
+  // connected when first added. Bluetooth serial ports are added in the
+  // disconnected state if the underlying Bluetooth device is paired with the
+  // system but the system has no open connections to the device.
+  //
+  // Do not notify clients if `port` is disconnected since it would cause a
+  // disconnect event to be dispatched for a port that did not previously
+  // receive a 'connect' event and hasn't been returned by getPorts().
+  if (port.connected) {
+    OnPortConnectedStateChanged(port);
+  }
 }
 
 void SerialService::OnPortRemoved(const device::mojom::SerialPortInfo& port) {
-  SerialDelegate* delegate = GetContentClient()->browser()->GetSerialDelegate();
-  if (!delegate || !delegate->HasPortPermission(&render_frame_host(), port))
-    return;
+  OnPortConnectedStateChanged(port);
+}
 
-  for (const auto& client : clients_)
-    client->OnPortRemoved(ToBlinkType(port));
+void SerialService::OnPortConnectedStateChanged(
+    const device::mojom::SerialPortInfo& port) {
+  SerialDelegate* delegate = GetContentClient()->browser()->GetSerialDelegate();
+  if (!delegate || !delegate->HasPortPermission(&render_frame_host(), port)) {
+    return;
+  }
+
+  for (const auto& client : clients_) {
+    client->OnPortConnectedStateChanged(ToBlinkType(port));
+  }
 }
 
 void SerialService::OnPortManagerConnectionError() {

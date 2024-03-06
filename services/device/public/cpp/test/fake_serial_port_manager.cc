@@ -109,6 +109,7 @@ void FakeSerialPortManager::RemovePort(base::UnguessableToken token) {
   DCHECK(it != ports_.end());
   mojom::SerialPortInfoPtr info = std::move(it->second);
   ports_.erase(it);
+  info->connected = false;
 
   for (auto& client : clients_)
     client->OnPortRemoved(info.Clone());

@@ -20,6 +20,17 @@ struct SerialPortInfo {
 
   // Bluetooth service class UUID if the port is from a Bluetooth device.
   bluetooth.mojom.UUID? bluetooth_service_class_id;
+
+  // True if the serial port was connected when the SerialPortInfo was returned
+  // from the SerialService. SerialServiceClients are notified on port connected
+  // state changes.
+  //
+  // A wired serial port is considered connected if it is physically attached
+  // to the system.
+  //
+  // A wireless serial port is considered connected if the wireless device
+  // hosting the port has any active connections to the system.
+  bool connected;
 };
 
 struct SerialPortFilter {
@@ -62,9 +73,6 @@ interface SerialService {
 
 // Client interface for receiving events from SerialService.
 interface SerialServiceClient {
-  // Called when a port described by |port_info| is added to the system.
-  OnPortAdded(SerialPortInfo port_info);
-
-  // Called when a port described by |port_info| is removed from the system.
-  OnPortRemoved(SerialPortInfo port_info);
+  // Called when a port described by |port_info| is connected or disconnected.
+  OnPortConnectedStateChanged(SerialPortInfo port_info);
 };

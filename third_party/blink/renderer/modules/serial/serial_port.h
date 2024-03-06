@@ -53,6 +53,7 @@ class SerialPort final : public EventTarget,
   ScriptPromise open(ScriptState*,
                      const SerialOptions* options,
                      ExceptionState&);
+  bool connected() { return connected_; }
   ReadableStream* readable(ScriptState*, ExceptionState&);
   WritableStream* writable(ScriptState*, ExceptionState&);
   ScriptPromise getSignals(ScriptState*, ExceptionState&);
@@ -64,6 +65,7 @@ class SerialPort final : public EventTarget,
 
   const base::UnguessableToken& token() const { return info_->token; }
 
+  void set_connected(bool connected) { connected_ = connected; }
   ScriptPromise ContinueClose(ScriptState*);
   void AbortClose();
   void StreamsClosed();
@@ -104,6 +106,7 @@ class SerialPort final : public EventTarget,
   void OnForget(ScriptPromiseResolver*);
 
   const mojom::blink::SerialPortInfoPtr info_;
+  bool connected_;
   const Member<Serial> parent_;
 
   uint32_t buffer_size_ = 0;

@@ -11327,6 +11327,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4875" label="DOMClobberedNotShadowedFormPropertyAccessed"/>
   <int value="4876" label="TpcdCookieReadBlockedByAdHeuristics"/>
   <int value="4877" label="UsedColorSchemeRootScrollbarsDark"/>
+  <int value="4878" label="SerialPortConnected"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

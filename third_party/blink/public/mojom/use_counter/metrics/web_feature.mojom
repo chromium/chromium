@@ -4241,6 +4241,7 @@ enum WebFeature {
   kDOMClobberedNotShadowedFormPropertyAccessed = 4875,
   kTpcdCookieReadBlockedByAdHeuristics = 4876,
   kUsedColorSchemeRootScrollbarsDark = 4877,
+  kSerialPortConnected = 4878,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

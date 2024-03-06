@@ -95,6 +95,8 @@ class SerialChooserContext
   // SerialPortManagerClient implementation.
   void OnPortAdded(device::mojom::SerialPortInfoPtr port) override;
   void OnPortRemoved(device::mojom::SerialPortInfoPtr port) override;
+  void OnPortConnectedStateChanged(
+      device::mojom::SerialPortInfoPtr port) override;
 
  private:
   void EnsurePortManagerConnection();

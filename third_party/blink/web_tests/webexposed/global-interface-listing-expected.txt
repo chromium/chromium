@@ -9334,6 +9334,7 @@ interface Serial : EventTarget
     setter ondisconnect
 interface SerialPort : EventTarget
     attribute @@toStringTag
+    getter connected
     getter onconnect
     getter ondisconnect
     getter readable

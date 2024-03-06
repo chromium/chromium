@@ -30,6 +30,8 @@ class SerialDeviceEnumerator {
    public:
     virtual void OnPortAdded(const mojom::SerialPortInfo& port) = 0;
     virtual void OnPortRemoved(const mojom::SerialPortInfo& port) = 0;
+    virtual void OnPortConnectedStateChanged(
+        const mojom::SerialPortInfo& port) = 0;
   };
 
   static std::unique_ptr<SerialDeviceEnumerator> Create(
@@ -52,6 +54,8 @@ class SerialDeviceEnumerator {
   // passed to RemovePort() must have previously been added.
   void AddPort(mojom::SerialPortInfoPtr port);
   void RemovePort(base::UnguessableToken token);
+  void UpdatePortConnectedState(base::UnguessableToken token,
+                                bool is_connected);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
