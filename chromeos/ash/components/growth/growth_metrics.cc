@@ -17,8 +17,12 @@ inline constexpr char kCampaignsManagerErrorHistogramName[] =
 inline constexpr char kGetCampaignBySlotHistogramName[] =
     "Ash.Growth.CampaignsManager.GetCampaignBySlot";
 
-inline constexpr char kCampaignsComponentDownloadDurationHistogram[] =
-    "Ash.Growth.CampaignsComponent.DownloadDuration";
+inline constexpr char
+    kCampaignsComponentDownloadDurationSessionStartHistogram[] =
+        "Ash.Growth.CampaignsComponent.DownloadDurationSessionStart";
+
+inline constexpr char kCampaignsComponentDownloadDurationInOobeHistogram[] =
+    "Ash.Growth.CampaignsComponent.DownloadDurationInOobe";
 
 inline constexpr char kCampaignsComponentReadDurationHistogram[] =
     "Ash.Growth.CampaignsComponent.ParseDuration";
@@ -36,9 +40,12 @@ void RecordGetCampaignBySlot(Slot slot) {
   base::UmaHistogramEnumeration(kGetCampaignBySlotHistogramName, slot);
 }
 
-void RecordCampaignsComponentDownloadDuration(const base::TimeDelta duration) {
-  base::UmaHistogramLongTimes100(kCampaignsComponentDownloadDurationHistogram,
-                                 duration);
+void RecordCampaignsComponentDownloadDuration(const base::TimeDelta duration,
+                                              bool in_oobe) {
+  base::UmaHistogramLongTimes100(
+      in_oobe ? kCampaignsComponentDownloadDurationInOobeHistogram
+              : kCampaignsComponentDownloadDurationSessionStartHistogram,
+      duration);
 }
 
 void RecordCampaignsComponentReadDuration(const base::TimeDelta duration) {

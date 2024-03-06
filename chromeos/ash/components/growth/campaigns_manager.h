@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // Download and install campaigns. Once installed, trigger the
   // `OnCampaignsLoaded` to install campaigns and notifier observers when
   // complete loading campaigns.
-  void LoadCampaigns(base::OnceClosure load_callback);
+  void LoadCampaigns(base::OnceClosure load_callback, bool in_oobe = false);
 
   // Get campaigns by slot and register sythetical trial for current session.
   // This is used by reactive slots to query campaign that targets the given
@@ -65,6 +65,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // Triggred when campaigns component loaded.
   void OnCampaignsComponentLoaded(
       base::OnceClosure load_callback,
+      bool in_oobe,
       const std::optional<const base::FilePath>& file_path);
 
   // Triggered when campaigns are loaded from the campaigns component mounted

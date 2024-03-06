@@ -40,7 +40,8 @@ void RecordCampaignsManagerError(CampaignsManagerError error_code);
 // Records how many times a campaign is fetched for the given `slot`.
 void RecordGetCampaignBySlot(Slot slot);
 
-void RecordCampaignsComponentDownloadDuration(const base::TimeDelta duration);
+void RecordCampaignsComponentDownloadDuration(const base::TimeDelta duration,
+                                              bool in_oobe);
 
 void RecordCampaignsComponentReadDuration(const base::TimeDelta duration);
 

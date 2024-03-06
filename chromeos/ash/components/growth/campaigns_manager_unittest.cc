@@ -81,8 +81,12 @@ constexpr char kCampaignsFileName[] = "campaigns.json";
 inline constexpr char kCampaignsManagerErrorHistogramName[] =
     "Ash.Growth.CampaignsManager.Error";
 
-inline constexpr char kCampaignsComponentDownloadDurationHistogram[] =
-    "Ash.Growth.CampaignsComponent.DownloadDuration";
+inline constexpr char
+    kCampaignsComponentDownloadDurationSessionStartHistogram[] =
+        "Ash.Growth.CampaignsComponent.DownloadDurationSessionStart";
+
+inline constexpr char kCampaignsComponentDownloadDurationOobeHistogram[] =
+    "Ash.Growth.CampaignsComponent.DownloadDurationInOobe";
 
 inline constexpr char kCampaignsComponentReadDurationHistogram[] =
     "Ash.Growth.CampaignsComponent.ParseDuration";
@@ -137,7 +141,8 @@ class CampaignsManagerTest : public testing::Test {
   }
 
  protected:
-  void LoadComponentAndVerifyLoadComplete(std::string_view file_content) {
+  void LoadComponentAndVerifyLoadComplete(std::string_view file_content,
+                                          bool in_oobe = false) {
     TestCampaignsManagerObserver observer;
     campaigns_manager_->AddObserver(&observer);
 
@@ -152,7 +157,8 @@ class CampaignsManagerTest : public testing::Test {
             temp_dir_.GetPath()));
 
     base::test::TestFuture<void> load_completed_waiter;
-    campaigns_manager_->LoadCampaigns(load_completed_waiter.GetCallback());
+    campaigns_manager_->LoadCampaigns(load_completed_waiter.GetCallback(),
+                                      in_oobe);
     ASSERT_TRUE(load_completed_waiter.Wait());
     observer.Wait();
 
@@ -250,7 +256,7 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
       base::StringPrintf(kValidCampaignsFileTemplate, kValidDemoModeTargeting));
 
   histogram_tester.ExpectTotalCount(
-      kCampaignsComponentDownloadDurationHistogram, 1);
+      kCampaignsComponentDownloadDurationSessionStartHistogram, 1);
   histogram_tester.ExpectTotalCount(kCampaignsComponentReadDurationHistogram,
                                     1);
   histogram_tester.ExpectTotalCount(kCampaignMatchDurationHistogram, 0);
@@ -276,7 +282,7 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
                                      CampaignsManagerError::kInvalidCampaign,
                                      /*count=*/1);
   histogram_tester.ExpectTotalCount(
-      kCampaignsComponentDownloadDurationHistogram, 1);
+      kCampaignsComponentDownloadDurationSessionStartHistogram, 1);
   histogram_tester.ExpectTotalCount(kCampaignsComponentReadDurationHistogram,
                                     1);
   histogram_tester.ExpectTotalCount(kCampaignMatchDurationHistogram, 1);
@@ -284,6 +290,20 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
   histogram_tester.ExpectUniqueSample(kGetCampaignBySlotHistogramName,
                                       Slot::kDemoModeApp,
                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaignInOobe) {
+  base::HistogramTester histogram_tester;
+
+  LoadComponentAndVerifyLoadComplete(
+      base::StringPrintf(kValidCampaignsFileTemplate, kValidDemoModeTargeting),
+      /*in_oobe=*/true);
+
+  histogram_tester.ExpectTotalCount(
+      kCampaignsComponentDownloadDurationSessionStartHistogram, 0);
+
+  histogram_tester.ExpectTotalCount(
+      kCampaignsComponentDownloadDurationOobeHistogram, 1);
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignNoTargeting) {
@@ -654,7 +674,7 @@ TEST_F(CampaignsManagerTest, LoadCampaignsFailed) {
   campaigns_manager_->LoadCampaigns(base::DoNothing());
   observer.Wait();
   histogram_tester.ExpectTotalCount(
-      kCampaignsComponentDownloadDurationHistogram, 1);
+      kCampaignsComponentDownloadDurationSessionStartHistogram, 1);
   histogram_tester.ExpectTotalCount(kCampaignsComponentReadDurationHistogram,
                                     0);
 
@@ -683,7 +703,7 @@ TEST_F(CampaignsManagerTest, LoadCampaignsNoFile) {
   campaigns_manager_->LoadCampaigns(base::DoNothing());
   observer.Wait();
   histogram_tester.ExpectTotalCount(
-      kCampaignsComponentDownloadDurationHistogram, 1);
+      kCampaignsComponentDownloadDurationSessionStartHistogram, 1);
   histogram_tester.ExpectTotalCount(kCampaignsComponentReadDurationHistogram,
                                     1);
 
@@ -703,7 +723,7 @@ TEST_F(CampaignsManagerTest, LoadCampaignsInvalidFile) {
 
   LoadComponentAndVerifyLoadComplete("abc");
   histogram_tester.ExpectTotalCount(
-      kCampaignsComponentDownloadDurationHistogram, 1);
+      kCampaignsComponentDownloadDurationSessionStartHistogram, 1);
   histogram_tester.ExpectTotalCount(kCampaignsComponentReadDurationHistogram,
                                     1);
 

@@ -3950,13 +3950,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.Growth.CampaignsComponent.DownloadDuration" units="ms"
-    expires_after="2024-10-17">
+<histogram name="Ash.Growth.CampaignsComponent.DownloadDurationInOobe"
+    units="ms" expires_after="2024-10-17">
   <owner>llin@google.com</owner>
   <owner>cros-growth@google.com</owner>
   <summary>
     The amount of time in ms that the Campaigns Manager takes to download the
-    campaigns component from Omaha. Recorded when a component loading complete.
+    campaigns component from Omaha. Recorded when a component loading complete
+    in the OOBE flow. This metric is splitted from
+    Ash.Growth.CampaignsComponent.DownloadDuration in M124.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Growth.CampaignsComponent.DownloadDurationSessionStart"
+    units="ms" expires_after="2024-10-17">
+  <owner>llin@google.com</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    The amount of time in ms that the Campaigns Manager takes to download the
+    campaigns component from Omaha. Recorded when a component loading complete
+    at session start. This metric is splitted from
+    Ash.Growth.CampaignsComponent.DownloadDuration in M124.
   </summary>
 </histogram>
 

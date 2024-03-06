@@ -104,11 +104,12 @@ void CampaignsManager::SetPrefs(PrefService* prefs) {
   matcher_.SetPrefs(prefs);
 }
 
-void CampaignsManager::LoadCampaigns(base::OnceClosure load_callback) {
+void CampaignsManager::LoadCampaigns(base::OnceClosure load_callback,
+                                     bool in_oobe) {
   campaigns_download_start_time_ = base::TimeTicks::Now();
-  client_->LoadCampaignsComponent(
-      base::BindOnce(&CampaignsManager::OnCampaignsComponentLoaded,
-                     weak_factory_.GetWeakPtr(), std::move(load_callback)));
+  client_->LoadCampaignsComponent(base::BindOnce(
+      &CampaignsManager::OnCampaignsComponentLoaded, weak_factory_.GetWeakPtr(),
+      std::move(load_callback), in_oobe));
 }
 
 const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
@@ -130,9 +131,10 @@ const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
 
 void CampaignsManager::OnCampaignsComponentLoaded(
     base::OnceClosure load_callback,
+    bool in_oobe,
     const std::optional<const base::FilePath>& path) {
-  RecordCampaignsComponentDownloadDuration(base::TimeTicks::Now() -
-                                           campaigns_download_start_time_);
+  RecordCampaignsComponentDownloadDuration(
+      base::TimeTicks::Now() - campaigns_download_start_time_, in_oobe);
   if (!path.has_value()) {
     LOG(ERROR) << "Failed to load campaign component.";
     RecordCampaignsManagerError(

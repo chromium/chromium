@@ -555,7 +555,8 @@ void DemoSetupController::LoadDemoComponents() {
   if (is_growth_campaigns_enabled_in_demo_mode) {
     // Growth campaign is enabled in demo mode, also load growth campaigns
     // component.
-    growth::CampaignsManager::Get()->LoadCampaigns(barrier_closure);
+    growth::CampaignsManager::Get()->LoadCampaigns(barrier_closure,
+                                                   /*in_oobe=*/true);
   }
 }
 
