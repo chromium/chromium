@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/gwp_asan/client/lightweight_detector/random_eviction_quarantine.h"
+
 #include "base/check_is_test.h"
+#include "components/gwp_asan/client/thread_local_random_bit_generator.h"
 
 namespace gwp_asan::internal::lud {
 
@@ -56,7 +58,10 @@ bool RandomEvictionQuarantineBase::Add(const AllocationInfo& new_allocation) {
   RecordAndZap(new_allocation.address, new_allocation.size);
 
   // Pick an index to potentially replace before we acquire the lock.
-  size_t idx = base::RandGenerator(max_allocation_count_);
+  std::uniform_int_distribution<size_t> distribution(0,
+                                                     max_allocation_count_ - 1);
+  ThreadLocalRandomBitGenerator generator;
+  size_t idx = distribution(generator);
 
   AllocationInfo evicted_allocation;
   bool update_succeeded = false;
@@ -90,7 +95,10 @@ void RandomEvictionQuarantineBase::PeriodicTrim() {
   std::vector<AllocationInfo> allocations_to_evict;
   allocations_to_evict.reserve(eviction_chunk_size_);
 
-  size_t evict_start_idx = base::RandGenerator(max_allocation_count_);
+  std::uniform_int_distribution<size_t> distribution(0,
+                                                     max_allocation_count_ - 1);
+  ThreadLocalRandomBitGenerator generator;
+  size_t evict_start_idx = distribution(generator);
   {
     base::AutoLock lock(lock_);
 
