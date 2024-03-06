@@ -20,6 +20,7 @@
 
 namespace ui {
 class MotionEventAndroid;
+struct AXTreeUpdate;
 }
 
 namespace content {
@@ -334,6 +335,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& view_structure_root,
       const base::android::JavaParamRef<jobject>& on_done_callback);
+  void ProcessCompletedAccessibilityTreeSnapshot(
+      const ui::AXTreeUpdate& result);
 
   // --------------------------------------------------------------------------
   // Methods called from the BrowserAccessibilityManager

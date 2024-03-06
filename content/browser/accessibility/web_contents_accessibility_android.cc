@@ -16,6 +16,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
+#include "content/browser/accessibility/accessibility_tree_snapshot_combiner.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl_android.h"
@@ -1706,8 +1707,34 @@ void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
   // This method should only be called by the unified snapshots feature.
   CHECK(base::FeatureList::IsEnabled(features::kAccessibilityUnifiedSnapshots));
 
+  // This is the callback provided by the Java-side code and will be called
+  // after the snapshot has been requested and fully processed. This is not to
+  // be confused with the ProcessCompletedAccessibilityTreeSnapshot callback
+  // below, which is called once the renderer has returned all AXTreeUpdates.
   on_done_callback_ = std::move(on_done_callback);
 
+  // Define snapshot parameters:
+  auto params = mojom::SnapshotAccessibilityTreeParams::New();
+  params->ax_mode =
+      ui::AXMode(ui::kAXModeComplete.flags() | ui::AXMode::kHTMLMetadata)
+          .flags();
+  params->max_nodes = 5000;
+  params->timeout = base::Seconds(2);
+
+  // Use AccessibilityTreeSnapshotCombiner to perform snapshots
+  auto combiner = base::MakeRefCounted<AccessibilityTreeSnapshotCombiner>(
+      base::BindOnce(&WebContentsAccessibilityAndroid::
+                         ProcessCompletedAccessibilityTreeSnapshot,
+                     GetWeakPtr()),
+      std::move(params));
+  web_contents_->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [&combiner](RenderFrameHostImpl* rfhi) {
+        combiner->RequestSnapshotOnRenderFrameHost(rfhi);
+      });
+}
+
+void WebContentsAccessibilityAndroid::ProcessCompletedAccessibilityTreeSnapshot(
+    const ui::AXTreeUpdate& result) {
   // Stubbed.
 }
 
