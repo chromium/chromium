@@ -1853,7 +1853,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Prerender.Experimental.PredictionStatus.DefaultSearchEngine"
     enum="PrerenderPredictionStatus" expires_after="2024-09-01">
-  <owner>asamidoi@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
     Records the prediction status started by omnibox. In particular, this
@@ -1865,7 +1865,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Prerender.Experimental.PredictionStatus.DirectUrlInput"
     enum="PrerenderPredictionStatus" expires_after="2024-04-28">
-  <owner>asamidoi@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
     Records the prediction status started by omnibox. In particular, this
@@ -1944,7 +1944,7 @@ chromium-metrics-reviews@google.com.
   <owner>nhiroki@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>lingqi@chromium.org</owner>
-  <owner>asamidoi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
   <summary>
     Final status for a prerendering attempt. Recorded by PrerenderHost or
     PrerenderHostRegistry in the browser process when the attempt finishes.
