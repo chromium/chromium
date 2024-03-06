@@ -55,7 +55,6 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -377,11 +376,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      */
     public void setMinimizeDelegate(@NonNull CustomTabMinimizeDelegate delegate) {
         mMinimizeButton.setOnClickListener(view -> delegate.minimize());
-    }
-
-    /** Enables the interactive Omnibox in CCT. */
-    public void setOmniboxEnabled() {
-        mLocationBar.setOmniboxEnabled();
     }
 
     private void setButtonsVisibility() {
@@ -1784,13 +1778,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         void setIPHControllerForTesting(PageInfoIPHController pageInfoIPHController) {
             mPageInfoIPHController = pageInfoIPHController;
-        }
-
-        void setOmniboxEnabled() {
-            mTitleUrlContainer.setOnClickListener(
-                    v -> {
-                        RecordUserAction.record("CustomTabs.OmniboxClicked");
-                    });
         }
     }
 
