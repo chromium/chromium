@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_AUTOFILL_ISSUES_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_AUTOFILL_ISSUES_H_
 
+#include <vector>
+
 #include "components/autofill/core/common/form_field_data.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/web_autofill_client.h"
 
 namespace blink {
 class WebFormControlElement;
@@ -16,26 +19,22 @@ class WebLocalFrame;
 }  // namespace blink
 
 // Responsible for processing form issues that are emitted to devtools.
-// TODO(crbug.com/1399414): `GetFormIssues()` and
-// `CheckForLabelsWithIncorrectForAttribute()` are not used outside this class.
-// Move them inside the unnamed namespace.
 namespace autofill::form_issues {
 
-// Looks for form issues in `control_elements`, e.g., inputs with duplicate ids
-// and returns a vector that is the union of `form_issues` and the new issues
-// found.
-std::vector<blink::WebAutofillClient::FormIssue> GetFormIssues(
-    const blink::WebVector<blink::WebFormControlElement>& control_elements,
-    std::vector<blink::WebAutofillClient::FormIssue> form_issues);
+struct FormIssue {
+  FormIssue(blink::mojom::GenericIssueErrorType type,
+            int node,
+            blink::WebString attribute)
+      : issue_type(type),
+        violating_node(node),
+        violating_node_attribute(attribute) {}
+  FormIssue(blink::mojom::GenericIssueErrorType type, int node)
+      : issue_type(type), violating_node(node) {}
 
-// Method specific to find issues regarding label `for` attribute. This needs to
-// be called after label extraction. Similar to `GetFormIssues` it returns
-// a vector that is the union of `form_issues` and the new issues found.
-std::vector<blink::WebAutofillClient::FormIssue>
-CheckForLabelsWithIncorrectForAttribute(
-    const blink::WebDocument& document,
-    const std::vector<FormFieldData>& fields,
-    std::vector<blink::WebAutofillClient::FormIssue> form_issues);
+  blink::mojom::GenericIssueErrorType issue_type;
+  int violating_node;
+  blink::WebString violating_node_attribute;
+};
 
 // Given a `render_frame` and a list of `FormData` associated with it, emits
 // the `FormIssue`(s) found.
@@ -48,6 +47,15 @@ CheckForLabelsWithIncorrectForAttribute(
 // have to pass `forms`.
 void MaybeEmitFormIssuesToDevtools(blink::WebLocalFrame& web_local_frame,
                                    base::span<const FormData> forms);
+
+std::vector<FormIssue> GetFormIssuesForTesting(
+    const blink::WebVector<blink::WebFormControlElement>& control_elements,
+    std::vector<FormIssue> form_issues);
+
+std::vector<FormIssue> CheckForLabelsWithIncorrectForAttributeForTesting(
+    const blink::WebDocument& document,
+    const std::vector<FormFieldData>& fields,
+    std::vector<FormIssue> form_issues);
 
 }  // namespace autofill::form_issues
 

@@ -47,20 +47,6 @@ class WebElement;
 
 class WebAutofillClient {
  public:
-  struct FormIssue {
-    FormIssue(blink::mojom::GenericIssueErrorType type,
-              int node,
-              blink::WebString attribute)
-        : issue_type(type),
-          violating_node(node),
-          violating_node_attribute(attribute) {}
-    FormIssue(blink::mojom::GenericIssueErrorType type, int node)
-        : issue_type(type), violating_node(node) {}
-
-    blink::mojom::GenericIssueErrorType issue_type;
-    int violating_node;
-    blink::WebString violating_node_attribute;
-  };
   // These methods are called when the users edits a text-field.
   virtual void TextFieldDidEndEditing(const WebInputElement&) {}
   virtual void TextFieldDidChange(const WebFormControlElement&) {}
@@ -114,10 +100,9 @@ class WebAutofillClient {
   // Called when the given form element is reset.
   virtual void FormElementReset(const WebFormElement&) {}
 
-  // Processes the current forms and returns an array of issues found.
-  virtual std::vector<FormIssue> ProccessFormsAndReturnIssues() {
-    return std::vector<FormIssue>();
-  }
+  // Determines the form-related issues in the WebAutofillClient's document and
+  // adds them to the associated frame's DevTools issues.
+  virtual void EmitFormIssuesToDevtools() {}
 
   // Called when the empty value is set for the given input element, which is
   // or has been a password field.

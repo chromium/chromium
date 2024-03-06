@@ -1150,11 +1150,9 @@ void AutofillAgent::ExtractForm(
   std::move(callback).Run(std::nullopt);
 }
 
-std::vector<WebAutofillClient::FormIssue>
-AutofillAgent::ProccessFormsAndReturnIssues() {
+void AutofillAgent::EmitFormIssuesToDevtools() {
   // TODO(crbug.com/1399414,crbug.com/1444566): Throttle this call if possible.
   ExtractFormsUnthrottled(/*callback=*/{});
-  return {};
 }
 
 void AutofillAgent::ExtractForms(base::OneShotTimer& timer,
