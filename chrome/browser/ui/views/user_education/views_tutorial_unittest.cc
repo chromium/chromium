@@ -134,6 +134,8 @@ TEST_F(ViewsTutorialTest, BubbleDismissOnViewHiddenDoesNotEndTutorial) {
                          completed);
   UNCALLED_MOCK_CALLBACK(user_education::TutorialService::AbortedCallback,
                          aborted);
+  UNCALLED_MOCK_CALLBACK(user_education::TutorialService::RestartedCallback,
+                         restarted);
 
   static const user_education::TutorialIdentifier kTutorialId = "Tutorial";
   constexpr user_education::HelpBubbleArrow kArrow =
@@ -155,7 +157,7 @@ TEST_F(ViewsTutorialTest, BubbleDismissOnViewHiddenDoesNotEndTutorial) {
   tutorial_service_.StartTutorial(
       kTutorialId,
       views::ElementTrackerViews::GetContextForWidget(widget_.get()),
-      completed.Get(), aborted.Get());
+      completed.Get(), aborted.Get(), restarted.Get());
   ASSERT_TRUE(tutorial_service_.IsRunningTutorial());
 
   hide_button_on_press_ = true;
@@ -187,6 +189,8 @@ TEST_F(ViewsTutorialTest, FinalBubbleDismissOnViewHiddenDoesEndTutorial) {
                          completed);
   UNCALLED_MOCK_CALLBACK(user_education::TutorialService::AbortedCallback,
                          aborted);
+  UNCALLED_MOCK_CALLBACK(user_education::TutorialService::RestartedCallback,
+                         restarted);
 
   static const user_education::TutorialIdentifier kTutorialId = "Tutorial";
   constexpr user_education::HelpBubbleArrow kArrow =
@@ -208,7 +212,7 @@ TEST_F(ViewsTutorialTest, FinalBubbleDismissOnViewHiddenDoesEndTutorial) {
   tutorial_service_.StartTutorial(
       kTutorialId,
       views::ElementTrackerViews::GetContextForWidget(widget_.get()),
-      completed.Get(), aborted.Get());
+      completed.Get(), aborted.Get(), restarted.Get());
   ASSERT_TRUE(tutorial_service_.IsRunningTutorial());
 
   views::test::InteractionTestUtilSimulatorViews::PressButton(

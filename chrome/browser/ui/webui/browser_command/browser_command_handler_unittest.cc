@@ -163,7 +163,8 @@ class TestTutorialService : public user_education::TutorialService {
       user_education::TutorialIdentifier id,
       ui::ElementContext context,
       base::OnceClosure completed_callback = base::DoNothing(),
-      base::OnceClosure aborted_callback = base::DoNothing()) override {
+      base::OnceClosure aborted_callback = base::DoNothing(),
+      base::RepeatingClosure restart_callback = base::DoNothing()) override {
     running_id_ = id;
   }
 
@@ -189,7 +190,8 @@ class MockTutorialService : public TestTutorialService {
               (user_education::TutorialIdentifier,
                ui::ElementContext,
                base::OnceClosure,
-               base::OnceClosure));
+               base::OnceClosure,
+               base::RepeatingClosure));
   MOCK_METHOD(void,
               LogStartedFromWhatsNewPage,
               (user_education::TutorialIdentifier, bool));

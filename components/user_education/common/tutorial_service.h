@@ -42,6 +42,7 @@ class TutorialService {
 
   using CompletedCallback = base::OnceClosure;
   using AbortedCallback = base::OnceClosure;
+  using RestartedCallback = base::RepeatingClosure;
 
   // Returns true if there is a currently running tutorial.
   // If `id` is specified, specifically returns whether *that* tutorial is
@@ -63,7 +64,8 @@ class TutorialService {
       TutorialIdentifier id,
       ui::ElementContext context,
       CompletedCallback completed_callback = base::DoNothing(),
-      AbortedCallback aborted_callback = base::DoNothing());
+      AbortedCallback aborted_callback = base::DoNothing(),
+      RestartedCallback restart_callback = base::DoNothing());
 
   void LogIPHLinkClicked(TutorialIdentifier id, bool iph_link_was_clicked);
   virtual void LogStartedFromWhatsNewPage(TutorialIdentifier id,
@@ -146,6 +148,9 @@ class TutorialService {
 
   // Called if the current tutorial is aborted.
   AbortedCallback aborted_callback_ = base::DoNothing();
+
+  // Called if the current tutorial is restarted.
+  RestartedCallback restarted_callback_ = base::DoNothing();
 
   // The current help bubble displayed by the tutorial. This is owned by the
   // service so that when the tutorial exits, the bubble can continue existing.
