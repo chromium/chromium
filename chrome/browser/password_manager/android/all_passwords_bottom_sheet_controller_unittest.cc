@@ -84,6 +84,10 @@ class MockPasswordManagerClient
               GetDeviceAuthenticator,
               (),
               (override));
+  MOCK_METHOD(bool,
+              CanUseBiometricAuthForFilling,
+              (device_reauth::DeviceAuthenticator*),
+              (override));
 };
 
 class MockPasswordReuseDetectionManagerClient
@@ -277,8 +281,7 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthNotAvailable) {
 
   auto authenticator = std::make_unique<MockDeviceAuthenticator>();
 
-  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometrics)
-      .WillOnce(Return(false));
+  EXPECT_CALL(client(), CanUseBiometricAuthForFilling).WillOnce(Return(false));
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
   EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)));
@@ -291,8 +294,7 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthNotAvailable) {
 TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthSuccessful) {
   auto authenticator = std::make_unique<MockDeviceAuthenticator>();
 
-  ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
-      .WillByDefault(Return(true));
+  ON_CALL(client(), CanUseBiometricAuthForFilling).WillByDefault(Return(true));
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(true));
   EXPECT_CALL(client(), GetDeviceAuthenticator)
@@ -308,8 +310,7 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthSuccessful) {
 TEST_F(AllPasswordsBottomSheetControllerTest, DoesntFillPasswordIfAuthFailed) {
   auto authenticator = std::make_unique<MockDeviceAuthenticator>();
 
-  ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
-      .WillByDefault(Return(true));
+  ON_CALL(client(), CanUseBiometricAuthForFilling).WillByDefault(Return(true));
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(false));
   EXPECT_CALL(client(), GetDeviceAuthenticator)
@@ -327,8 +328,7 @@ TEST_F(AllPasswordsBottomSheetControllerTest, CancelsAuthIfDestroyed) {
   auto authenticator = std::make_unique<MockDeviceAuthenticator>();
   auto* authenticator_ptr = authenticator.get();
 
-  ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
-      .WillByDefault(Return(true));
+  ON_CALL(client(), CanUseBiometricAuthForFilling).WillByDefault(Return(true));
   EXPECT_CALL(*authenticator_ptr, AuthenticateWithMessage);
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));

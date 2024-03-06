@@ -18,7 +18,6 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
-#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/web_contents.h"
@@ -143,8 +142,7 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
     DCHECK(client_);
     std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
         client_->GetDeviceAuthenticator();
-    if (password_manager_util::CanUseBiometricAuth(authenticator.get(),
-                                                   client_)) {
+    if (client_->CanUseBiometricAuthForFilling(authenticator.get())) {
       authenticator_ = std::move(authenticator);
       authenticator_->AuthenticateWithMessage(
           u"",
