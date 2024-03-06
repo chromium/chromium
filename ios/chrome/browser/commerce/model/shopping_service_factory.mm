@@ -14,7 +14,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/variations/service/variations_service_utils.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -77,9 +76,9 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
       GetApplicationContext()->GetApplicationLocale(),
       ios::LocalOrSyncableBookmarkModelFactory::GetInstance()
-          ->GetForBrowserState(chrome_state),
-      ios::AccountBookmarkModelFactory::GetInstance()->GetForBrowserState(
-          chrome_state),
+          ->GetDedicatedUnderlyingModelForBrowserState(chrome_state),
+      ios::AccountBookmarkModelFactory::GetInstance()
+          ->GetDedicatedUnderlyingModelForBrowserState(chrome_state),
       OptimizationGuideServiceFactory::GetForBrowserState(chrome_state),
       pref_service, IdentityManagerFactory::GetForBrowserState(chrome_state),
       SyncServiceFactory::GetForBrowserState(chrome_state),

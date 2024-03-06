@@ -9,6 +9,8 @@
 #import "base/format_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/bookmarks/browser/bookmark_node.h"
+#import "components/bookmarks/browser/bookmark_utils.h"
 #import "components/bookmarks/browser/titled_url_match.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/prefs/pref_service.h"
@@ -230,14 +232,16 @@
   LegacyBookmarkModel* bookmarkModel =
       [BookmarkEarlGreyAppInterface bookmarkModelOfStorage:storageType];
 
-  // Verify the correct number of bookmarks exist.
-  std::u16string matchString = base::SysNSStringToUTF16(title);
   int const kMaxCountOfBookmarks = 50;
-  std::vector<bookmarks::TitledUrlMatch> matches =
-      bookmarkModel->GetBookmarksMatching(
-          matchString, kMaxCountOfBookmarks,
-          query_parser::MatchingAlgorithm::DEFAULT);
-  if (matches.size() != expectedCount) {
+  bookmarks::QueryFields query;
+  query.title =
+      std::make_unique<std::u16string>(base::SysNSStringToUTF16(title));
+
+  // Verify the correct number of bookmarks exist.
+  std::vector<const bookmarks::BookmarkNode*> nodes;
+  bookmarkModel->GetBookmarksMatchingProperties(query, kMaxCountOfBookmarks,
+                                                &nodes);
+  if (nodes.size() != expectedCount) {
     return testing::NSErrorWithLocalizedDescription(
         @"Unexpected number of bookmarks");
   }

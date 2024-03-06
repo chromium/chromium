@@ -300,6 +300,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/model:test_support",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/favicon/model",

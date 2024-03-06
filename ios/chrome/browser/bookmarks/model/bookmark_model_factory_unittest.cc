@@ -76,11 +76,6 @@ TEST_F(BookmarkModelFactoryTest, GetUniqueUrls) {
   account_bookmark_model_->AddURL(account_bookmark_model_->bookmark_bar_node(),
                                   0, u"title4", kUrl3);
 
-  ASSERT_THAT(local_or_syncable_bookmark_model_->GetUniqueUrls(),
-              UnorderedElementsAre(HasUrl(kUrl1), HasUrl(kUrl3)));
-  ASSERT_THAT(account_bookmark_model_->GetUniqueUrls(),
-              UnorderedElementsAre(HasUrl(kUrl2), HasUrl(kUrl3)));
-
   EXPECT_THAT(
       bookmark_model_->GetUniqueUrls(),
       UnorderedElementsAre(HasUrl(kUrl1), HasUrl(kUrl2), HasUrl(kUrl3)));

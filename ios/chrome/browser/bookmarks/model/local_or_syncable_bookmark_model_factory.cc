@@ -17,7 +17,7 @@
 #include "ios/chrome/browser/bookmarks/model/bookmark_client_impl.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
-#include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
+#include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model_with_dedicated_underlying_model.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
@@ -33,18 +33,19 @@ namespace {
 std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  std::unique_ptr<LegacyBookmarkModel> bookmark_model = std::make_unique<
-      LegacyBookmarkModel>(std::make_unique<BookmarkClientImpl>(
-      browser_state,
-      ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
-      ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
-          browser_state),
-      ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state),
-      BookmarkModelType::kLocalOrSyncable));
+  auto bookmark_model = std::make_unique<bookmarks::BookmarkModel>(
+      std::make_unique<BookmarkClientImpl>(
+          browser_state,
+          ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
+          ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
+              browser_state),
+          ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state),
+          BookmarkModelType::kLocalOrSyncable));
   bookmark_model->Load(browser_state->GetStatePath());
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
       ->StartObservingBookmarkModel(bookmark_model.get());
-  return bookmark_model;
+  return std::make_unique<LegacyBookmarkModelWithDedicatedUnderlyingModel>(
+      std::move(bookmark_model));
 }
 
 }  // namespace
@@ -62,6 +63,14 @@ LocalOrSyncableBookmarkModelFactory::GetForBrowserStateIfExists(
     ChromeBrowserState* browser_state) {
   return static_cast<LegacyBookmarkModel*>(
       GetInstance()->GetServiceForBrowserState(browser_state, false));
+}
+
+// static
+bookmarks::BookmarkModel*
+LocalOrSyncableBookmarkModelFactory::GetDedicatedUnderlyingModelForBrowserState(
+    ChromeBrowserState* browser_state) {
+  LegacyBookmarkModel* model = GetForBrowserState(browser_state);
+  return model ? model->underlying_model() : nullptr;
 }
 
 // static

@@ -954,8 +954,8 @@ bool IsABookmarkNodeSectionForIdentifier(
                    bookmarkModel:(LegacyBookmarkModel*)model
            displayCloudSlashIcon:(BOOL)displayCloudSlashIcon {
   std::vector<const BookmarkNode*> nodes;
-  GetBookmarksMatchingProperties(model, query, kMaxBookmarksSearchResults,
-                                 &nodes);
+  model->GetBookmarksMatchingProperties(query, kMaxBookmarksSearchResults,
+                                        &nodes);
   for (const BookmarkNode* node : nodes) {
     BookmarksHomeNodeItem* nodeItem = [[BookmarksHomeNodeItem alloc]
         initWithType:BookmarksHomeItemTypeBookmark

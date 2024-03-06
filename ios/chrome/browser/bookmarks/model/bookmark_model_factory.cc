@@ -17,7 +17,6 @@
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
-#include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -116,8 +115,10 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<MergedBookmarkModel>(
-      LocalOrSyncableBookmarkModelFactory::GetForBrowserState(browser_state),
-      AccountBookmarkModelFactory::GetForBrowserState(browser_state));
+      LocalOrSyncableBookmarkModelFactory::
+          GetDedicatedUnderlyingModelForBrowserState(browser_state),
+      AccountBookmarkModelFactory::GetDedicatedUnderlyingModelForBrowserState(
+          browser_state));
 }
 
 }  // namespace

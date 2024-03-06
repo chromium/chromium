@@ -51,12 +51,11 @@ class BookmarkActivityTest : public BookmarkIOSUnitTestSupport {
 
   // Creates a BookmarkActivity instance with the given `URL`.
   BookmarkActivity* CreateActivity(const GURL& URL) {
-    return
-        [[BookmarkActivity alloc] initWithURL:URL
-                                        title:kTestTitle
-                                bookmarkModel:local_or_syncable_bookmark_model_
-                                      handler:mocked_handler_
-                                  prefService:&testing_pref_service_];
+    return [[BookmarkActivity alloc] initWithURL:URL
+                                           title:kTestTitle
+                                   bookmarkModel:bookmark_model_
+                                         handler:mocked_handler_
+                                     prefService:&testing_pref_service_];
   }
 
   TestingPrefServiceSimple testing_pref_service_;

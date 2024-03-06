@@ -15,7 +15,7 @@ class ChromeBrowserState;
 // Provides a convenient interface to the UndoManager.
 // The general usage of this class should be:
 //  - startGroupingActions
-//  - *make changes to BookmarkModel*
+//  - *make changes to LegacyBookmarkModel*
 //  - stopGroupingActions
 //  - resetUndoManagerChanged
 // At a later point in time, an undo should only be attempted if

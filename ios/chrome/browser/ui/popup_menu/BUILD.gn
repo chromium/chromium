@@ -164,6 +164,7 @@ source_set("unit_tests") {
     "//components/translate/core/browser",
     "//components/translate/core/language_detection",
     "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/model:test_support",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/overlays/model/test",

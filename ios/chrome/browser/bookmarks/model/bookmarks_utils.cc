@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/browser/core_bookmark_model.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
@@ -109,8 +110,7 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
         prefs::kIosBookmarkLastUsedStorageReceivingBookmarks));
     LegacyBookmarkModel* bookmark_model = GetBookmarkModelForType(
         type, local_or_syncable_bookmark_model, account_bookmark_model);
-    const BookmarkNode* result =
-        bookmarks::GetBookmarkNodeByID(bookmark_model, node_id);
+    const BookmarkNode* result = bookmark_model->GetNodeById(node_id);
     if (result && result->is_folder()) {
       // Make sure the bookmark node is a folder. See crbug.com/1450146.
       return result;

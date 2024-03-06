@@ -11,16 +11,14 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/bookmarks/browser/bookmark_node.h"
+#import "components/bookmarks/browser/core_bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
-#import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_consumer.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -79,28 +77,12 @@ enum class TestParam {
 @end
 
 class BookmarksFolderChooserSubDataSourceImplTest
-    : public PlatformTest,
+    : public BookmarkIOSUnitTestSupport,
       public testing::WithParamInterface<TestParam> {
  protected:
   BookmarksFolderChooserSubDataSourceImplTest() {
-    TestChromeBrowserState::Builder builder;
-    builder.AddTestingFactory(
-        ios::LocalOrSyncableBookmarkModelFactory::GetInstance(),
-        ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
-    builder.AddTestingFactory(
-        ios::AccountBookmarkModelFactory::GetInstance(),
-        ios::AccountBookmarkModelFactory::GetDefaultFactory());
-
-    browser_state_ = builder.Build();
-    model_ = GetParam() == TestParam::kAccountModel
-                 ? ios::AccountBookmarkModelFactory::GetForBrowserState(
-                       browser_state_.get())
-                 : ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-                       browser_state_.get());
-    bookmarks::test::WaitForBookmarkModelToLoad(model_);
     mock_consumer_ =
         OCMStrictProtocolMock(@protocol(BookmarksFolderChooserConsumer));
-    edited_nodes_.insert(AddURL(model_->mobile_node(), @"Test URL"));
   }
 
   ~BookmarksFolderChooserSubDataSourceImplTest() override {
@@ -109,7 +91,17 @@ class BookmarksFolderChooserSubDataSourceImplTest
     sub_data_source_ = nil;
     mock_consumer_ = nil;
     fake_parent_data_source_ = nil;
-    model_ = nullptr;
+  }
+
+  void SetUp() override {
+    BookmarkIOSUnitTestSupport::SetUp();
+    edited_nodes_.insert(AddURL(model()->mobile_node(), @"Test URL"));
+  }
+
+  LegacyBookmarkModel* model() {
+    return GetParam() == TestParam::kAccountModel
+               ? account_bookmark_model_
+               : local_or_syncable_bookmark_model_;
   }
 
   void CreateSubDataSource() {
@@ -117,7 +109,7 @@ class BookmarksFolderChooserSubDataSourceImplTest
         [[FakeBookmarksFolderChooserParentDataSource alloc]
             initWithNodes:edited_nodes_];
     sub_data_source_ = [[BookmarksFolderChooserSubDataSourceImpl alloc]
-        initWithBookmarkModel:model_
+        initWithBookmarkModel:model()
              parentDataSource:fake_parent_data_source_];
     sub_data_source_.consumer = mock_consumer_;
   }
@@ -126,34 +118,30 @@ class BookmarksFolderChooserSubDataSourceImplTest
     std::u16string c_title = base::SysNSStringToUTF16(title);
     GURL url(base::SysNSStringToUTF16(@"http://example.com/bookmark") +
              c_title);
-    return model_->AddURL(parent, parent->children().size(), c_title, url);
+    return model()->AddURL(parent, parent->children().size(), c_title, url);
   }
 
   const BookmarkNode* AddFolder(const BookmarkNode* parent, NSString* title) {
     std::u16string c_title = base::SysNSStringToUTF16(title);
-    return model_->AddFolder(parent, parent->children().size(), c_title);
+    return model()->AddFolder(parent, parent->children().size(), c_title);
   }
 
   void ChangeTitle(const BookmarkNode* node, NSString* title) {
     std::u16string c_title = base::SysNSStringToUTF16(title);
-    model_->SetTitle(node, c_title,
-                     bookmarks::metrics::BookmarkEditSource::kUser);
+    model()->SetTitle(node, c_title,
+                      bookmarks::metrics::BookmarkEditSource::kUser);
   }
 
   void RemoveNode(const BookmarkNode* node) {
-    model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
+    model()->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
   }
 
-  void RemoveAllNodes() { model_->RemoveAllUserBookmarks(); }
+  void RemoveAllNodes() { bookmark_model_->RemoveAllUserBookmarks(); }
 
   void MoveNode(const BookmarkNode* node, const BookmarkNode* new_parent) {
-    model_->Move(node, new_parent, new_parent->children().size());
+    model()->Move(node, new_parent, new_parent->children().size());
   }
 
-  IOSChromeScopedTestingLocalState local_state_;
-  web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
-  raw_ptr<LegacyBookmarkModel> model_;
   BookmarksFolderChooserSubDataSourceImpl* sub_data_source_;
   id mock_consumer_;
   FakeBookmarksFolderChooserParentDataSource* fake_parent_data_source_;
@@ -165,7 +153,7 @@ class BookmarksFolderChooserSubDataSourceImplTest
 // Tests that the sub data source correctly fetches visible folders.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestVisibleFolderNodes) {
   const BookmarkNode* test_folder_node_1 =
-      AddFolder(model_->mobile_node(), test_folder_title_1);
+      AddFolder(model()->mobile_node(), test_folder_title_1);
   const BookmarkNode* test_folder_node_2 =
       AddFolder(test_folder_node_1, test_folder_title_2);
   edited_nodes_.insert(test_folder_node_2);
@@ -183,7 +171,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestVisibleFolderNodes) {
 // Tests that changing title of bookmarked folder node updates the UI.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderTitleChange) {
   const BookmarkNode* test_folder_node =
-      AddFolder(model_->mobile_node(), test_folder_title_1);
+      AddFolder(model()->mobile_node(), test_folder_title_1);
   CreateSubDataSource();
 
   [[mock_consumer_ expect] notifyModelUpdated];
@@ -202,7 +190,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderTitleChange) {
 // Tests that adding a folder node in the bookmark model updates the UI.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderAdded) {
   const BookmarkNode* test_folder_node_1 =
-      AddFolder(model_->mobile_node(), test_folder_title_1);
+      AddFolder(model()->mobile_node(), test_folder_title_1);
   CreateSubDataSource();
 
   [[mock_consumer_ expect] notifyModelUpdated];
@@ -223,7 +211,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderAdded) {
 // Tests that removing a folder node from the bookmark model updates the UI.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderRemoved) {
   const BookmarkNode* test_folder_node_1 =
-      AddFolder(model_->mobile_node(), test_folder_title_1);
+      AddFolder(model()->mobile_node(), test_folder_title_1);
   const BookmarkNode* test_folder_node_2 =
       AddFolder(test_folder_node_1, test_folder_title_2);
   CreateSubDataSource();
@@ -250,15 +238,16 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderRemoved) {
 // Tests that removing all nodes in the bookmark model updates the UI.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestAllFoldersRemoved) {
   const BookmarkNode* test_folder_node_1 =
-      AddFolder(model_->mobile_node(), test_folder_title_1);
+      AddFolder(model()->mobile_node(), test_folder_title_1);
   AddFolder(test_folder_node_1, test_folder_title_2);
   CreateSubDataSource();
 
   [[mock_consumer_ expect] notifyModelUpdated];
+
   RemoveAllNodes();
 
   [mock_consumer_ verify];
-  ASSERT_EQ(model_,
+  ASSERT_EQ(model(),
             fake_parent_data_source_.bookmarkModelWillRemoveAllNodesArg);
   std::vector<const BookmarkNode*> visible_folder_nodes =
       [sub_data_source_ visibleFolderNodes];
@@ -271,13 +260,13 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestAllFoldersRemoved) {
 // Tests that moving a node in the bookmark model updates the UI.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderMoved) {
   const BookmarkNode* test_folder_node_1 =
-      AddFolder(model_->mobile_node(), test_folder_title_1);
+      AddFolder(model()->mobile_node(), test_folder_title_1);
   const BookmarkNode* test_folder_node_2 =
       AddFolder(test_folder_node_1, test_folder_title_2);
   CreateSubDataSource();
 
   [[mock_consumer_ expect] notifyModelUpdated];
-  MoveNode(test_folder_node_2, model_->mobile_node());
+  MoveNode(test_folder_node_2, model()->mobile_node());
 
   [mock_consumer_ verify];
   std::vector<const BookmarkNode*> visible_folder_nodes =

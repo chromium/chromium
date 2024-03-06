@@ -1106,10 +1106,10 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   // BookmarkModel.
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL bookmarkedURL = self.testServer->GetURL("/fullscreen.html");
-  NSString* const bookmarkedURLString =
-      base::SysUTF8ToNSString(bookmarkedURL.spec());
+  NSString* bookmarkedTitle = @"Full Screen";  // See fullscreen.html.
+
   [BookmarkEarlGrey
-      verifyBookmarksWithTitle:bookmarkedURLString
+      verifyBookmarksWithTitle:bookmarkedTitle
                  expectedCount:0
                      inStorage:kindOfTestToStorageType(kindOfTest)];
   // Open the page.
@@ -1155,7 +1155,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 
   // Verify that the newly-created bookmark is in the BookmarkModel.
   [BookmarkEarlGrey
-      verifyBookmarksWithTitle:bookmarkedURLString
+      verifyBookmarksWithTitle:bookmarkedTitle
                  expectedCount:1
                      inStorage:kindOfTestToStorageType(kindOfTest)];
 
@@ -1311,7 +1311,8 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 - (void)util_testAddBookmarkInNewFolder:(KindOfTest)kindOfTest {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL bookmarkedURL = self.testServer->GetURL("/pony.html");
-  std::string expectedURLContent = bookmarkedURL.GetContent();
+  const std::string expectedURLContent = bookmarkedURL.GetContent();
+  NSString* expectedTitle = @"ponies";  // See pony.html.
 
   [ChromeEarlGrey loadURL:bookmarkedURL];
   [[EarlGrey selectElementWithMatcher:OmniboxText(expectedURLContent)]
@@ -1354,7 +1355,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 
   // Verify that the newly-created bookmark is in the BookmarkModel.
   [BookmarkEarlGrey
-      verifyBookmarksWithTitle:base::SysUTF8ToNSString(expectedURLContent)
+      verifyBookmarksWithTitle:expectedTitle
                  expectedCount:1
                      inStorage:kindOfTestToStorageType(kindOfTest)];
 

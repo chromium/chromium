@@ -5,9 +5,9 @@
 #include "ios/chrome/browser/bookmarks/model/bookmark_remover_helper.h"
 
 #include "base/test/test_future.h"
-#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
+#include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model_test_helpers.h"
 #include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 
 class BookmarkRemoverHelperUnitTest : public BookmarkIOSUnitTestSupport {
@@ -23,9 +23,8 @@ TEST_F(BookmarkRemoverHelperUnitTest,
   BookmarkRemoverHelper helper(chrome_browser_state_.get());
   helper.RemoveAllUserBookmarksIOS(test_future.GetCallback());
   ASSERT_FALSE(test_future.IsReady());
-  bookmarks::test::WaitForBookmarkModelToLoad(
-      local_or_syncable_bookmark_model_);
-  bookmarks::test::WaitForBookmarkModelToLoad(account_bookmark_model_);
+  WaitForLegacyBookmarkModelToLoad(local_or_syncable_bookmark_model_);
+  WaitForLegacyBookmarkModelToLoad(account_bookmark_model_);
   ASSERT_TRUE(test_future.Get());
 }
 

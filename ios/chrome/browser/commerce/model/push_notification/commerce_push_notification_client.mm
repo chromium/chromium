@@ -15,7 +15,6 @@
 #import "components/commerce/core/proto/price_tracking.pb.h"
 #import "components/optimization_guide/core/hints_manager.h"
 #import "components/optimization_guide/proto/push_notification.pb.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -127,8 +126,8 @@ CommercePushNotificationClient::GetShoppingService() {
 }
 
 bookmarks::BookmarkModel* CommercePushNotificationClient::GetBookmarkModel() {
-  return ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-      GetLastUsedBrowserState());
+  return ios::LocalOrSyncableBookmarkModelFactory::
+      GetDedicatedUnderlyingModelForBrowserState(GetLastUsedBrowserState());
 }
 
 void CommercePushNotificationClient::HandleNotificationInteraction(

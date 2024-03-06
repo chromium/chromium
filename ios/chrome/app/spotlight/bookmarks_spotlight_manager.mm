@@ -17,6 +17,7 @@
 #import "base/timer/elapsed_timer.h"
 #import "base/version.h"
 #import "components/bookmarks/browser/base_bookmark_model_observer.h"
+#import "components/bookmarks/browser/bookmark_node.h"
 #import "ios/chrome/app/spotlight/searchable_item_factory.h"
 #import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
@@ -325,15 +326,7 @@ class SpotlightBookmarkModelBridge;
     return nullptr;
   }
 
-  const bookmarks::BookmarkNode* node = model->GetNodeByUuid(
-      uuid, bookmarks::BookmarkModel::NodeTypeForUuidLookup::kAccountNodes);
-  if (!node) {
-    node = model->GetNodeByUuid(
-        uuid,
-        bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
-  }
-
-  return node;
+  return model->GetNodeByUuid(uuid);
 }
 
 - (void)indexNextBatchInStack {

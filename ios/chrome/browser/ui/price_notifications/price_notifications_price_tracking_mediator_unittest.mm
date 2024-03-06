@@ -145,12 +145,13 @@ class PriceNotificationsPriceTrackingMediatorTest
     image_fetcher_ = std::make_unique<image_fetcher::ImageDataFetcher>(
         test_chrome_browser_state->GetSharedURLLoaderFactory());
     local_or_syncable_bookmark_model_ =
-        ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-            test_chrome_browser_state.get());
+        ios::LocalOrSyncableBookmarkModelFactory::
+            GetDedicatedUnderlyingModelForBrowserState(
+                test_chrome_browser_state.get());
     bookmarks::test::WaitForBookmarkModelToLoad(
         local_or_syncable_bookmark_model_);
-    account_bookmark_model_ =
-        ios::AccountBookmarkModelFactory::GetForBrowserState(
+    account_bookmark_model_ = ios::AccountBookmarkModelFactory::
+        GetDedicatedUnderlyingModelForBrowserState(
             test_chrome_browser_state.get());
     bookmarks::test::WaitForBookmarkModelToLoad(account_bookmark_model_);
 

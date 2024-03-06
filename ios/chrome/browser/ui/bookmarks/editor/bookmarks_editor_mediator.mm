@@ -110,7 +110,7 @@
   DCHECK(!_localOrSyncableBookmarkModel);
 }
 
-#pragma mark - Public
+#pragma mark - Public
 
 - (void)manuallyChangeFolder:(const bookmarks::BookmarkNode*)folder {
   _manuallyChangedTheFolder = YES;
@@ -268,6 +268,8 @@
 
   // When launched from the star button, removing the current bookmark
   // removes all matching nodes.
+  // TODO(crbug.com/326185948): Clarify if this should remove the matching
+  // bookmarks from both BookmarkModel instances.
   std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
       nodesVector = [self bookmarkModel]->GetNodesByURL([self bookmark]->url());
   std::set<const bookmarks::BookmarkNode*> nodes(nodesVector.begin(),

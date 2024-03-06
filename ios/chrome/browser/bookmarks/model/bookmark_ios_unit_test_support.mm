@@ -9,10 +9,10 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
-#import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
+#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -56,15 +56,14 @@ void BookmarkIOSUnitTestSupport::SetUp() {
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           chrome_browser_state_.get());
   if (wait_for_initialization_) {
-    bookmarks::test::WaitForBookmarkModelToLoad(
-        local_or_syncable_bookmark_model_);
+    WaitForLegacyBookmarkModelToLoad(local_or_syncable_bookmark_model_);
   }
 
   account_bookmark_model_ =
       ios::AccountBookmarkModelFactory::GetForBrowserState(
           chrome_browser_state_.get());
   if (wait_for_initialization_ && account_bookmark_model_) {
-    bookmarks::test::WaitForBookmarkModelToLoad(account_bookmark_model_);
+    WaitForLegacyBookmarkModelToLoad(account_bookmark_model_);
   }
 
   bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(

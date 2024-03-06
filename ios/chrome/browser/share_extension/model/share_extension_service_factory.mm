@@ -50,8 +50,8 @@ ShareExtensionServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<ShareExtensionService>(
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          chrome_browser_state),
+      ios::LocalOrSyncableBookmarkModelFactory::
+          GetDedicatedUnderlyingModelForBrowserState(chrome_browser_state),
       ReadingListModelFactory::GetForBrowserState(chrome_browser_state));
 }
 
