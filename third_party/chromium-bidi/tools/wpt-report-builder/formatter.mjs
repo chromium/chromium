@@ -217,22 +217,21 @@ function generateHtml(map, commitHash) {
         })
 
         const expand = document.querySelector('.expand');
-        let toggleState = 'collapse';
+        let expandState = 'collapse';
         expand.addEventListener('click', () => {
-          console.log(toggleState)
           document.body.querySelectorAll('details')
             .forEach((element) => {
-              if(toggleState === 'collapse'){
+              if(expandState === 'collapse'){
                 element.setAttribute('open', true);
               } else {
                 element.removeAttribute('open');
               }
             });
-          expand.innerText = toggleState.charAt(0).toUpperCase() + toggleState.slice(1);
-          if(toggleState === 'collapse'){
-              toggleState = 'expand';
+          expand.innerText = expandState.charAt(0).toUpperCase() + expandState.slice(1);
+          if(expandState === 'collapse'){
+              expandState = 'expand';
           } else {
-            toggleState = 'collapse';
+            expandState = 'collapse';
           }
         })
       </script>
