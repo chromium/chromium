@@ -18,7 +18,7 @@ import pytest
 from anys import ANY_STR
 from syrupy.filters import props
 from test_helpers import (execute_command, get_tree, send_JSON_command,
-                          subscribe, wait_for_command, wait_for_filtered_event)
+                          subscribe, wait_for_filtered_event)
 
 
 @pytest.mark.asyncio
@@ -435,31 +435,40 @@ async def test_scriptEvaluate_dedicated_worker(websocket, context_id, html,
     realm = worker_realm_created_event["params"]["realm"]
 
     # Set up a listener on the page.
-    command_id = await send_JSON_command(
+    await execute_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
                 "target": {
                     "context": context_id
                 },
-                "expression": "new Promise(resolve => window.w.addEventListener('message', ({data}) => resolve(data), {once: true}))",
-                "awaitPromise": True
+                "expression": "window.p = new Promise(resolve => window.w.addEventListener('message', ({data}) => resolve(data), {once: true}))",
+                "awaitPromise": False
             }
         })
 
     # Post a message from the worker.
-    await send_JSON_command(
+    await execute_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
                 "target": {
                     "realm": realm
                 },
-                "expression": "self.postMessage('hello world')",
-                "awaitPromise": True
+                "expression": "self.postMessage('hello world');",
+                "awaitPromise": False
             }
         })
 
     # Check the promise
-    assert await wait_for_command(
-        websocket, command_id) == snapshot(exclude=props("realm"))
+    assert await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "target": {
+                    "context": context_id
+                },
+                "expression": "window.p",
+                "awaitPromise": True
+            }
+        }) == snapshot(exclude=props("realm"))
