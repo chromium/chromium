@@ -51,7 +51,7 @@ void InstallableTask::RunCallback() {
         page_data_->primary_icon_purpose() ==
             blink::mojom::ManifestImageResource_Purpose::MASKABLE,
         page_data_->screenshots(),
-        installability_check_passed,
+        installability_check_passed_,
     };
     std::move(callback_).Run(data);
   }
@@ -156,9 +156,9 @@ void InstallableTask::CheckEligibility() {
 }
 
 void InstallableTask::CheckInstallability() {
-  auto new_errors = evaluator_->CheckInstallability();
-  if (new_errors.has_value()) {
-    for (auto new_error : new_errors.value()) {
+  auto installable_errors = evaluator_->CheckInstallability();
+  if (installable_errors.has_value()) {
+    for (auto new_error : installable_errors.value()) {
       if (base::Contains(errors_, new_error)) {
         // Don't add duplicated errors.
         continue;
@@ -166,7 +166,8 @@ void InstallableTask::CheckInstallability() {
       errors_.push_back(new_error);
     }
   }
-  installability_check_passed = new_errors.has_value() && new_errors->empty();
+  installability_check_passed_ =
+      installable_errors.has_value() && installable_errors->empty();
   IncrementStateAndWorkOnNextTask();
 }
 

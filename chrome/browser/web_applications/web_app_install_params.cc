@@ -19,6 +19,8 @@ std::ostream& operator<<(std::ostream& os, FallbackBehavior state) {
   switch (state) {
     case FallbackBehavior::kCraftedManifestOnly:
       return os << "kCraftedManifestOnly";
+    case FallbackBehavior::kUseFallbackInfoWhenNotInstallable:
+      return os << "kUseFallbackInfoWhenNotInstallable";
     case FallbackBehavior::kAllowFallbackDataAlways:
       return os << "kAllowFallbackDataAlways";
   }

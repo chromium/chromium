@@ -3625,10 +3625,16 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_INSTALL_TO_OS_LAUNCH_SURFACE" desc="In Title Case: Menu text for installing a web app to the operating system.">
           &amp;Install <ph name="APP">$1<ex>Gmail</ex></ph>...
         </message>
+        <message name="IDS_INSTALL_DIY_TO_OS_LAUNCH_SURFACE" desc="In Title Case: Menu text for installing a web page as a web app to the operating system.">
+          &amp;Install Page as App...
+        </message>
       </if>
       <if expr="not use_titlecase">
         <message name="IDS_INSTALL_TO_OS_LAUNCH_SURFACE" desc="Menu text for installing a web app to the operating system.">
           &amp;Install <ph name="APP">$1<ex>Gmail</ex></ph>...
+        </message>
+        <message name="IDS_INSTALL_DIY_TO_OS_LAUNCH_SURFACE" desc="Menu text for installing a web page as a web app to the operating system.">
+          &amp;Install page as app...
         </message>
       </if>
 

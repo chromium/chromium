@@ -45,6 +45,7 @@
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
@@ -830,9 +831,7 @@ TEST_F(FetchManifestAndInstallCommandUniversalInstallTest, CraftedApp) {
       webapps::InstallResultCode::kSuccessNewInstall);
 }
 
-// TODO(https://crbug.com/291778116): Enable this test.
-TEST_F(FetchManifestAndInstallCommandUniversalInstallTest,
-       DISABLED_NoManifest) {
+TEST_F(FetchManifestAndInstallCommandUniversalInstallTest, NoManifest) {
   SetupPageTitleAndIcons();
   auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);
   page_state.error_code = webapps::InstallableStatusCode::NO_MANIFEST;
@@ -841,9 +840,7 @@ TEST_F(FetchManifestAndInstallCommandUniversalInstallTest,
       InstallAndWait(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
                      CreateDialogCallback(/*accept=*/true,
                                           mojom::UserDisplayMode::kStandalone),
-                     // TODO(https://crbug.com/291778116): change this to a new
-                     // fallback behavior.
-                     FallbackBehavior::kAllowFallbackDataAlways),
+                     FallbackBehavior::kUseFallbackInfoWhenNotInstallable),
       webapps::InstallResultCode::kSuccessNewInstall);
 }
 
@@ -855,7 +852,7 @@ using ManifestConfig = std::tuple<
     /*display_mode=*/std::optional<blink::mojom::DisplayMode>,
     /*manifest_icons=*/std::optional<blink::Manifest::ImageResource>>;
 
-class DiyAppManifestTest
+class UniversalInstallComboTest
     : public FetchManifestAndInstallCommandUniversalInstallTest,
       public testing::WithParamInterface<ManifestConfig> {
  public:
@@ -884,7 +881,7 @@ class DiyAppManifestTest
          "_ManifestIcons", icons_name_part});
   }
 
-  DiyAppManifestTest() = default;
+  UniversalInstallComboTest() = default;
 
   std::optional<std::u16string> GetAppName() {
     return std::get<std::optional<std::u16string>>(GetParam());
@@ -903,15 +900,23 @@ class DiyAppManifestTest
     return std::get<std::optional<blink::Manifest::ImageResource>>(GetParam());
   }
 
-  bool IsCraftedApp() {
+  bool IsInstallableOtherThanDisplay() {
     return GetAppName() && GetStartUrl() && GetIcon() &&
            !base::Contains(GetIcon()->src.spec(), "not_found");
   }
 
+  bool IsCraftedApp() {
+    return IsInstallableOtherThanDisplay() &&
+           GetDisplayMode().value_or(blink::mojom::DisplayMode::kBrowser) !=
+               blink::mojom::DisplayMode::kBrowser;
+  }
+
+  bool IsDiyApp() { return !IsCraftedApp(); }
+
   SkBitmap GenerateExpected256Icon() {
     if (GetIcon() && !base::Contains(GetIcon()->src.spec(), "not_found")) {
       return CreateSquareIcon(icon_size::k256, kIconColor);
-    } else if (!IsCraftedApp() && GetFaviconColor()) {
+    } else if (IsDiyApp() && GetFaviconColor()) {
       return CreateSquareIcon(icon_size::k256, GetFaviconColor().value());
     } else {
       // This generates the letter icons.
@@ -975,11 +980,16 @@ class DiyAppManifestTest
     } else {
       page_state.error_code = webapps::InstallableStatusCode::NO_ICON_AVAILABLE;
     }
+
+    if (!blink::IsEmptyManifest(manifest)) {
+      page_state.manifest_url = kWebAppManifestUrl;
+    }
+
+    page_state.valid_manifest_for_web_app = IsInstallableOtherThanDisplay();
   }
 };
 
-// TODO(https://crbug.com/291778116): Enable this test.
-TEST_P(DiyAppManifestTest, DISABLED_DiyAppInstall) {
+TEST_P(UniversalInstallComboTest, InstallStateValid) {
   SetupPageFromParams();
 
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
@@ -990,9 +1000,7 @@ TEST_P(DiyAppManifestTest, DISABLED_DiyAppInstall) {
       CreateDialogCallback(/*accept=*/true,
                            mojom::UserDisplayMode::kStandalone),
       install_future.GetCallback(),
-      // TODO(https://crbug.com/291778116): change this to a new fallback
-      // behavior.
-      FallbackBehavior::kCraftedManifestOnly);
+      FallbackBehavior::kUseFallbackInfoWhenNotInstallable);
   EXPECT_TRUE(install_future.Wait());
   EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kSuccessNewInstall);
@@ -1024,11 +1032,13 @@ TEST_P(DiyAppManifestTest, DISABLED_DiyAppInstall) {
   std::map<SquareSizePx, SkBitmap> bitmaps = icons_future.Get();
   EXPECT_THAT(bitmaps[icon_size::k256],
               EqualsBitmap(GenerateExpected256Icon()));
+
+  EXPECT_EQ(IsDiyApp(), provider()->registrar_unsafe().IsDiyApp(app_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    DiyAppManifestTest,
+    UniversalInstallComboTest,
     ::testing::Combine(
         testing::Values(u"AppName", std::nullopt),
         testing::Values(SK_ColorBLUE, std::nullopt),
@@ -1050,7 +1060,7 @@ INSTANTIATE_TEST_SUITE_P(
                 144,
                 {IconPurpose::ANY}),
             std::nullopt)),
-    DiyAppManifestTest::ParamToString);
+    UniversalInstallComboTest::ParamToString);
 
 }  // namespace
 }  // namespace web_app

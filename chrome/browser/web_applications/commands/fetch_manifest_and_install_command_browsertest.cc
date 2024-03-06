@@ -410,9 +410,8 @@ class FetchManifestAndInstallCommandUniversalInstallTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(https://crbug.com/291778116): Enable this test.
 IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandUniversalInstallTest,
-                       DISABLED_NoManifest) {
+                       NoManifest) {
   GURL test_url = https_server()->GetURL(
       "/banners/"
       "no_manifest_test_page.html");
@@ -424,9 +423,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandUniversalInstallTest,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
       CreateDialogCallback(), install_future.GetCallback(),
-      // TODO(https://crbug.com/291778116): change this to a new fallback
-      // behavior.
-      FallbackBehavior::kAllowFallbackDataAlways);
+      FallbackBehavior::kUseFallbackInfoWhenNotInstallable);
   ASSERT_TRUE(install_future.Wait());
   EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kSuccessNewInstall);

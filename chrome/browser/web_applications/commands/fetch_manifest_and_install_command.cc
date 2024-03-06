@@ -232,6 +232,7 @@ void FetchManifestAndInstallCommand::StartWithLock(
     case FallbackBehavior::kCraftedManifestOnly:
       FetchManifest();
       return;
+    case FallbackBehavior::kUseFallbackInfoWhenNotInstallable:
     case FallbackBehavior::kAllowFallbackDataAlways:
       data_retriever_->GetWebAppInstallInfo(
           web_contents_.get(),
@@ -339,6 +340,7 @@ void FetchManifestAndInstallCommand::FetchManifest() {
       params.check_eligibility = true;
       break;
     case FallbackBehavior::kAllowFallbackDataAlways:
+    case FallbackBehavior::kUseFallbackInfoWhenNotInstallable:
       break;
   }
 
@@ -385,6 +387,27 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
       }
       web_app_info_ = std::make_unique<WebAppInstallInfo>(opt_manifest->id);
       break;
+    case FallbackBehavior::kUseFallbackInfoWhenNotInstallable: {
+      webapps::InstallableStatusCode display_installable =
+          webapps::InstallableEvaluator::GetDisplayError(
+              *opt_manifest,
+              webapps::InstallableCriteria::kValidManifestWithIcons);
+      GetMutableDebugValue().Set("display_installable_code",
+                                 base::ToString(display_installable));
+      // Since the valid_manifest_for_web_app used the
+      // `kValidManifestIgnoreDisplay` criteria, add the display check to see if
+      // this app was fully promotable/crafted.
+      bool promotable = valid_manifest_for_web_app &&
+                        display_installable ==
+                            webapps::InstallableStatusCode::NO_ERROR_DETECTED;
+      // If the manifest is crafted, override the fallback install info.
+      if (promotable) {
+        web_app_info_ = std::make_unique<WebAppInstallInfo>(opt_manifest->id);
+      } else {
+        web_app_info_->is_diy_app = true;
+      }
+      break;
+    }
     case FallbackBehavior::kAllowFallbackDataAlways:
       CHECK(web_app_info_);
       break;
@@ -425,6 +448,9 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
       CHECK(!opt_manifest_->icons.empty())
           << "kValidManifestIgnoreDisplay guarantees a manifest icon.";
       skip_page_favicons_on_initial_download_ = true;
+      break;
+    case FallbackBehavior::kUseFallbackInfoWhenNotInstallable:
+      skip_page_favicons_on_initial_download_ = valid_manifest_for_web_app;
       break;
     case FallbackBehavior::kAllowFallbackDataAlways:
       skip_page_favicons_on_initial_download_ = false;
@@ -564,6 +590,29 @@ void FetchManifestAndInstallCommand::OnIconsRetrievedShowDialog(
       sizes->Append(bitmap.width());
     }
   }
+
+  // In kUseFallbackInfoWhenNotInstallable mode, we skip favicons if the
+  // manifest looks valid. However, if the icon download fails, we are no longer
+  // installable & thus fall back to favicons.
+  if (skip_page_favicons_on_initial_download_ &&
+      valid_manifest_for_crafted_web_app_ && icons_map.empty() &&
+      fallback_behavior_ ==
+          FallbackBehavior::kUseFallbackInfoWhenNotInstallable) {
+    GetMutableDebugValue().Set("used_fallback_after_icon_download_failed",
+                               true);
+    valid_manifest_for_crafted_web_app_ = false;
+    web_app_info_->is_diy_app = true;
+    GetMutableDebugValue().Set("is_diy_app", true);
+    data_retriever_->GetIcons(
+        web_contents_.get(), {},
+        /*skip_page_favicons=*/false,
+        /*fail_all_if_any_fail=*/false,
+        base::BindOnce(
+            &FetchManifestAndInstallCommand::OnIconsRetrievedShowDialog,
+            weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   DCHECK(web_app_info_);
 
   PopulateProductIcons(web_app_info_.get(), &icons_map);

@@ -114,7 +114,7 @@ bool MLPromotionBrowserTestBase::InstallAppForCurrentWebContents(
       WebappInstallSource::OMNIBOX_INSTALL_ICON, web_contents()->GetWeakPtr(),
       base::BindOnce(web_app::test::TestAcceptDialogCallback),
       install_future.GetCallback(),
-      web_app::FallbackBehavior::kAllowFallbackDataAlways);
+      web_app::FallbackBehavior::kUseFallbackInfoWhenNotInstallable);
 
   bool success = install_future.Wait();
   if (!success) {

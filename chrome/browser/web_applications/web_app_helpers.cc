@@ -5,12 +5,14 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "components/crx_file/id_util.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/webapps/common/web_app_id.h"
@@ -142,10 +144,19 @@ bool IsValidWebAppUrl(const GURL& app_url) {
   if (app_url.is_empty() || app_url.inner_url())
     return false;
 
+  bool allow_extension_apps = true;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+  // Stop allowing apps to be extension urls when the shortcuts are separated -
+  // they can be extension urls instead.
+  allow_extension_apps =
+      !base::FeatureList::IsEnabled(features::kShortcutsNotApps);
+#endif
+
   // TODO(crbug.com/1253234): Remove chrome-extension scheme.
   return app_url.SchemeIs(url::kHttpScheme) ||
          app_url.SchemeIs(url::kHttpsScheme) ||
-         app_url.SchemeIs("chrome-extension") ||
+         (allow_extension_apps && app_url.SchemeIs("chrome-extension")) ||
          (app_url.SchemeIs(content::kChromeUIScheme) &&
           ((app_url.host() == password_manager::kChromeUIPasswordManagerHost) ||
            ValidChromeUrlHosts().contains(app_url.host())));

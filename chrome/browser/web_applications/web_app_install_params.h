@@ -128,6 +128,10 @@ enum class FallbackBehavior {
   // Installation will use the crafted manifest, and error if the manifest is
   // not installable.
   kCraftedManifestOnly,
+  // Installation will use whatever is available - if the site is installable
+  // then crafted app UX will be used, and if not then DIY WebApp UX will be
+  // used. See go/dpwa-universal-install.
+  kUseFallbackInfoWhenNotInstallable,
   // Installation uses the legacy 'create shortcut' flow, which uses the crafted
   // manifest if possible, and otherwise fallback information (which has an
   // empty

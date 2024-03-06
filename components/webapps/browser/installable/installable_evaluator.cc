@@ -212,8 +212,11 @@ bool IsInstallableDisplayMode(blink::mojom::DisplayMode display_mode) {
          display_mode == blink::mojom::DisplayMode::kTabbed;
 }
 
-InstallableStatusCode GetDisplayError(const blink::mojom::Manifest& manifest,
-                                      InstallableCriteria criteria) {
+}  // namespace
+
+InstallableStatusCode InstallableEvaluator::GetDisplayError(
+    const blink::mojom::Manifest& manifest,
+    InstallableCriteria criteria) {
   blink::mojom::DisplayMode display_mode_to_evaluate = manifest.display;
   InstallableStatusCode error_type_if_invalid =
       InstallableStatusCode::MANIFEST_DISPLAY_NOT_SUPPORTED;
@@ -248,8 +251,6 @@ InstallableStatusCode GetDisplayError(const blink::mojom::Manifest& manifest,
   }
   return InstallableStatusCode::NO_ERROR_DETECTED;
 }
-
-}  // namespace
 
 InstallableEvaluator::InstallableEvaluator(content::WebContents* web_contents,
                                            const InstallablePageData& data,
@@ -298,8 +299,8 @@ InstallableEvaluator::CheckInstallability() const {
         InstallableStatusCode::MANIFEST_MISSING_NAME_OR_SHORT_NAME);
   }
 
-  InstallableStatusCode display_error =
-      GetDisplayError(page_data_->GetManifest(), criteria_);
+  InstallableStatusCode display_error = InstallableEvaluator::GetDisplayError(
+      page_data_->GetManifest(), criteria_);
   if (display_error != InstallableStatusCode::NO_ERROR_DETECTED) {
     errors.push_back(display_error);
   }

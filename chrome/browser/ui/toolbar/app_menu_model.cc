@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/debug/debugging_buildflags.h"
@@ -64,6 +65,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -96,6 +98,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/banners/installable_web_app_check_result.h"
+#include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/profiling.h"
@@ -191,13 +195,47 @@ std::u16string GetInstallPWALabel(const Browser* browser) {
   if (!web_contents) {
     return std::u16string();
   }
+  if (!web_app::CanCreateWebApp(browser)) {
+    return std::u16string();
+  }
+  // Don't allow apps created from chrome-extension urls.
+  if (web_contents->GetLastCommittedURL().SchemeIs("chrome-extension")) {
+    return std::u16string();
+  }
 
-  const std::u16string app_name =
-      webapps::AppBannerManager::GetInstallableWebAppName(web_contents);
-  return app_name.empty() ? app_name
-                          : l10n_util::GetStringFUTF16(
-                                IDS_INSTALL_TO_OS_LAUNCH_SURFACE,
-                                ui::EscapeMenuLabelAmpersands(app_name));
+  webapps::AppBannerManager* banner =
+      webapps::AppBannerManager::FromWebContents(web_contents);
+  if (!banner) {
+    return std::u16string();
+  }
+
+  std::optional<webapps::WebAppBannerData> install_config =
+      banner->GetCurrentWebAppBannerData();
+  if (!install_config) {
+    return std::u16string();
+  }
+  webapps::InstallableWebAppCheckResult installable =
+      banner->GetInstallableWebAppCheckResult();
+  std::u16string app_name;
+  switch (installable) {
+    case webapps::InstallableWebAppCheckResult::kUnknown:
+    case webapps::InstallableWebAppCheckResult::kNo_AlreadyInstalled:
+      return std::u16string();
+    case webapps::InstallableWebAppCheckResult::kNo:
+      if (base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
+        return l10n_util::GetStringUTF16(IDS_INSTALL_DIY_TO_OS_LAUNCH_SURFACE);
+      }
+      return std::u16string();
+    case webapps::InstallableWebAppCheckResult::kYes_ByUserRequest:
+    case webapps::InstallableWebAppCheckResult::kYes_Promotable:
+      app_name = install_config->GetAppName();
+      break;
+  }
+  if (app_name.empty()) {
+    return std::u16string();
+  }
+  return l10n_util::GetStringFUTF16(IDS_INSTALL_TO_OS_LAUNCH_SURFACE,
+                                    ui::EscapeMenuLabelAmpersands(app_name));
 }
 
 // Returns the appropriate menu label for the IDC_OPEN_IN_PWA_WINDOW command if

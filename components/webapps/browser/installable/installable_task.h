@@ -85,7 +85,7 @@ class InstallableTask {
   int state_ = kInactive;
 
   std::vector<InstallableStatusCode> errors_;
-  bool installability_check_passed = false;
+  bool installability_check_passed_ = false;
 };
 
 }  // namespace webapps

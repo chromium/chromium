@@ -333,7 +333,7 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
   // to use the metadata from the page too.
   FallbackBehavior fallback_behavior =
       install_source == webapps::WebappInstallSource::ML_PROMOTION
-          ? FallbackBehavior::kAllowFallbackDataAlways
+          ? FallbackBehavior::kUseFallbackInfoWhenNotInstallable
           : FallbackBehavior::kCraftedManifestOnly;
 
   // TODO(b/307145346): Eventually, this should also be primary install for
