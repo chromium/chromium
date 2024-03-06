@@ -133,6 +133,8 @@ class NetworkServiceClient
   void Clone(
       mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
           listener) override;
+  void OnWebSocketConnectedToPrivateNetwork(
+      network::mojom::IPAddressSpace ip_address_space) override;
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 

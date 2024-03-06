@@ -342,6 +342,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   void Clone(
       mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
           listener) override;
+  void OnWebSocketConnectedToPrivateNetwork(
+      network::mojom::IPAddressSpace ip_address_space) override;
   void OnAuthRequired(
       const std::optional<base::UnguessableToken>& window_id,
       uint32_t request_id,
@@ -657,6 +659,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::optional<blink::StorageKey> CalculateStorageKey(
       const url::Origin& origin,
       const base::UnguessableToken* nonce);
+
+  GlobalRenderFrameHostId GetRenderFrameHostIdFromNetworkContext();
 
   // Raw pointer that should always be valid. The BrowserContext owns the
   // StoragePartitionImplMap which then owns StoragePartitionImpl. When the

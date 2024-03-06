@@ -4,11 +4,13 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/policy_constants.h"
@@ -21,6 +23,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/test_data_directory.h"
 #include "pdf/buildflags.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/features.h"
@@ -151,8 +155,8 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
     };
   }
 
- private:
-  void SetUpOnMainThread() final {
+ protected:
+  void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
 
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
@@ -168,6 +172,7 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
     EXPECT_TRUE(content::NavigateToURL(web_contents(), GURL("about:blank")));
   }
 
+ private:
   void SetUpCommandLine(base::CommandLine* command_line) final {
     // For https_server()
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
@@ -179,6 +184,34 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
   base::HistogramTester histogram_;
   WebFeature monitored_feature_;
   base::test::ScopedFeatureList features_;
+};
+
+class PrivateNetworkAccessWebSocketMetricBrowserTest
+    : public ChromeWebPlatformSecurityMetricsBrowserTest {
+ public:
+  PrivateNetworkAccessWebSocketMetricBrowserTest()
+      : ws_server_(net::SpawnedTestServer::TYPE_WS,
+                   net::GetWebSocketTestDataDirectory()) {}
+
+  net::SpawnedTestServer& ws_server() { return ws_server_; }
+
+  std::string WaitAndGetTitle() {
+    return base::UTF16ToUTF8(watcher_->WaitAndGetTitle());
+  }
+
+ private:
+  void SetUpOnMainThread() override {
+    ChromeWebPlatformSecurityMetricsBrowserTest::SetUpOnMainThread();
+
+    watcher_ = std::make_unique<content::TitleWatcher>(
+        browser()->tab_strip_model()->GetActiveWebContents(), u"PASS");
+    watcher_->AlsoWaitForTitle(u"FAIL");
+  }
+
+  void TearDownOnMainThread() override { watcher_.reset(); }
+
+  net::SpawnedTestServer ws_server_;
+  std::unique_ptr<content::TitleWatcher> watcher_;
 };
 
 // Return the child of `parent`.
@@ -404,6 +437,44 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
   CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
+}
+
+// When WebSocket is connected to a more-private ip address space, log a use
+// counter.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebSocketMetricBrowserTest,
+                       PrivateNetworkAccessWebSocketConnectedPublicToLocal) {
+  // Launch a WebSocket server.
+  ASSERT_TRUE(ws_server().Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), http_server().GetURL(
+                     "a.com",
+                     "/private_network_access/"
+                     "websocket-treat-as-public-address.html"
+                     "?url=" +
+                         ws_server().GetURL("echo-with-no-extension").spec())));
+
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+  CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 1);
+}
+
+// When WebSocket is connected to the same ip address space, do not log a use
+// counter.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebSocketMetricBrowserTest,
+                       PrivateNetworkAccessWebSocketConnectedLocalToLocal) {
+  // Launch a WebSocket server.
+  ASSERT_TRUE(ws_server().Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), http_server().GetURL(
+                     "a.com",
+                     "/private_network_access/"
+                     "websocket.html"
+                     "?url=" +
+                         ws_server().GetURL("echo-with-no-extension").spec())));
+
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+  CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,

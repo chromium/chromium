@@ -72,6 +72,8 @@ class TestURLLoaderNetworkObserver
       OnSharedStorageHeaderReceivedCallback callback) override;
   void Clone(
       mojo::PendingReceiver<URLLoaderNetworkServiceObserver> observer) override;
+  void OnWebSocketConnectedToPrivateNetwork(
+      network::mojom::IPAddressSpace ip_address_space) override;
 
  private:
   mojo::ReceiverSet<mojom::URLLoaderNetworkServiceObserver> receivers_;

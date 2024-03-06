@@ -67,6 +67,10 @@ class Delegate : public URLRequest::Delegate {
   ~Delegate() override = default;
 
   // Implementation of URLRequest::Delegate methods.
+  int OnConnected(URLRequest* request,
+                  const TransportInfo& info,
+                  CompletionOnceCallback callback) override;
+
   void OnReceivedRedirect(URLRequest* request,
                           const RedirectInfo& redirect_info,
                           bool* defer_redirect) override;
@@ -342,6 +346,13 @@ class SSLErrorCallbacks : public WebSocketEventInterface::SSLErrorCallbacks {
  private:
   base::WeakPtr<URLRequest> url_request_;
 };
+
+int Delegate::OnConnected(URLRequest* request,
+                          const TransportInfo& info,
+                          CompletionOnceCallback callback) {
+  owner_->connect_delegate()->OnURLRequestConnected(request, info);
+  return OK;
+}
 
 void Delegate::OnReceivedRedirect(URLRequest* request,
                                   const RedirectInfo& redirect_info,

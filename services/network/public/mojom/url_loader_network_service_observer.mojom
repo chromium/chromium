@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/cookie_partition_key.mojom";
 import "services/network/public/mojom/ip_address.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/optional_bool.mojom";
 import "url/mojom/origin.mojom";
@@ -226,4 +227,8 @@ interface URLLoaderNetworkServiceObserver {
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's
   // observer).
   Clone(pending_receiver<URLLoaderNetworkServiceObserver> listener);
+
+  // Called when a WebSocket is connected to a private or local IP address
+  // space.
+  OnWebSocketConnectedToPrivateNetwork(IPAddressSpace ip_address_space);
 };

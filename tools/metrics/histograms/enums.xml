@@ -11303,6 +11303,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4880" label="DevicePosture"/>
   <int value="4881" label="ViewportSegmentsMediaFeature"/>
   <int value="4882" label="ViewportSegments"/>
+  <int value="4883" label="PrivateNetworkAccessWebSocketConnected"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

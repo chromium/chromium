@@ -91,6 +91,8 @@ class BruschettaNetworkContext
   void Clone(
       mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
           listener) override;
+  void OnWebSocketConnectedToPrivateNetwork(
+      network::mojom::IPAddressSpace ip_address_space) override;
 
  private:
   void ContinueWithCertificate(

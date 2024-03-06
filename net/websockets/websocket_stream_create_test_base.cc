@@ -45,6 +45,9 @@ class WebSocketStreamCreateTestBase::TestConnectDelegate
     owner_->url_request_ = request;
   }
 
+  void OnURLRequestConnected(URLRequest* request,
+                             const TransportInfo& info) override {}
+
   void OnSuccess(
       std::unique_ptr<WebSocketStream> stream,
       std::unique_ptr<WebSocketHandshakeResponseInfo> response) override {

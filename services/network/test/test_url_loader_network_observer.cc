@@ -89,4 +89,7 @@ void TestURLLoaderNetworkObserver::Clone(
   receivers_.Add(this, std::move(observer));
 }
 
+void TestURLLoaderNetworkObserver::OnWebSocketConnectedToPrivateNetwork(
+    network::mojom::IPAddressSpace ip_address_space) {}
+
 }  // namespace network

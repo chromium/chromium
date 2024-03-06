@@ -27,6 +27,7 @@ class IPEndPoint;
 class HttpResponseHeaders;
 class SSLInfo;
 class URLRequest;
+struct TransportInfo;
 struct WebSocketHandshakeRequestInfo;
 struct WebSocketHandshakeResponseInfo;
 
@@ -43,6 +44,10 @@ class NET_EXPORT WebSocketEventInterface {
 
   // Called when a URLRequest is created for handshaking.
   virtual void OnCreateURLRequest(URLRequest* request) = 0;
+
+  // Called when OnConnected is called on the URLRequest for handshaking.
+  virtual void OnURLRequestConnected(URLRequest* request,
+                                     const TransportInfo& info) = 0;
 
   // Called in response to an AddChannelRequest. This means that a response has
   // been received from the remote server.

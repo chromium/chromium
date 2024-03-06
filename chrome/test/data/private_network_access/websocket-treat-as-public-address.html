@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="icon" href="data:,">
+<title>test websocket connection</title>
+<script type="text/javascript">
+var url = new URL(location).searchParams.get('url');
+
+// Do connection test.
+var ws = new WebSocket(url);
+
+ws.onopen = function()
+{
+  // Close WebSocket connection once it is established.
+  ws.close();
+}
+
+ws.onclose = function(event)
+{
+  // Check wasClean, then set proper title.
+  if (event.wasClean)
+    document.title = 'PASS';
+  else
+    document.title = 'FAIL';
+}
+
+</script>
+</head>
+</html>

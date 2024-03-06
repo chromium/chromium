@@ -50,6 +50,7 @@ class WebSocketBasicHandshakeStream;
 class WebSocketHttp2HandshakeStream;
 class WebSocketHttp3HandshakeStream;
 struct NetworkTrafficAnnotationTag;
+struct TransportInfo;
 struct WebSocketFrame;
 struct WebSocketHandshakeRequestInfo;
 struct WebSocketHandshakeResponseInfo;
@@ -102,6 +103,10 @@ class NET_EXPORT_PRIVATE WebSocketStream {
     virtual ~ConnectDelegate();
     // Called when the URLRequest is created.
     virtual void OnCreateRequest(URLRequest* url_request) = 0;
+
+    // Called when the URLRequest::OnConnected() is called.
+    virtual void OnURLRequestConnected(URLRequest* request,
+                                       const TransportInfo& info) = 0;
 
     // Called on successful connection. The parameter is an object derived from
     // WebSocketStream.

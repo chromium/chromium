@@ -204,6 +204,11 @@ class WebSocketChannel::ConnectDelegate
     creator_->OnCreateURLRequest(request);
   }
 
+  void OnURLRequestConnected(URLRequest* request,
+                             const TransportInfo& info) override {
+    creator_->OnURLRequestConnected(request, info);
+  }
+
   void OnSuccess(
       std::unique_ptr<WebSocketStream> stream,
       std::unique_ptr<WebSocketHandshakeResponseInfo> response) override {
@@ -457,6 +462,11 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
 
 void WebSocketChannel::OnCreateURLRequest(URLRequest* request) {
   event_interface_->OnCreateURLRequest(request);
+}
+
+void WebSocketChannel::OnURLRequestConnected(URLRequest* request,
+                                             const TransportInfo& info) {
+  event_interface_->OnURLRequestConnected(request, info);
 }
 
 void WebSocketChannel::OnConnectSuccess(

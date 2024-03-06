@@ -202,6 +202,10 @@ class NET_EXPORT WebSocketChannel {
   // Called when a URLRequest is created for handshaking.
   void OnCreateURLRequest(URLRequest* request);
 
+  // Called when a URLRequest's OnConnected is called. Forwards the call to the
+  // |event_interface_|
+  void OnURLRequestConnected(URLRequest* request, const TransportInfo& info);
+
   // Success callback from WebSocketStream::CreateAndConnectStream(). Reports
   // success to the event interface. May delete |this|.
   void OnConnectSuccess(

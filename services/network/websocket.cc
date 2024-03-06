@@ -43,6 +43,7 @@
 #include "net/websockets/websocket_handshake_request_info.h"
 #include "net/websockets/websocket_handshake_response_info.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/throttling/throttling_controller.h"
 #include "services/network/throttling/throttling_network_interceptor.h"
 #include "services/network/websocket_factory.h"
@@ -142,6 +143,8 @@ class WebSocket::WebSocketEventHandler final
   // net::WebSocketEventInterface implementation
 
   void OnCreateURLRequest(net::URLRequest* url_request) override;
+  void OnURLRequestConnected(net::URLRequest* request,
+                             const net::TransportInfo& info) override;
   void OnAddChannelResponse(
       std::unique_ptr<net::WebSocketHandshakeResponseInfo> response,
       const std::string& selected_subprotocol,
@@ -196,6 +199,20 @@ void WebSocket::WebSocketEventHandler::OnCreateURLRequest(
   if (impl_->throttling_profile_id_) {
     impl_->frame_interceptor_ = std::make_unique<WebSocketInterceptor>(
         url_request->net_log().source().id, impl_->throttling_profile_id_);
+  }
+}
+
+void WebSocket::WebSocketEventHandler::OnURLRequestConnected(
+    net::URLRequest* request,
+    const net::TransportInfo& info) {
+  if (impl_->url_loader_network_observer_) {
+    mojom::IPAddressSpace ip_address_space =
+        TransportInfoToIPAddressSpace(info);
+    if (ip_address_space == network::mojom::IPAddressSpace::kLocal ||
+        ip_address_space == network::mojom::IPAddressSpace::kPrivate) {
+      impl_->url_loader_network_observer_->OnWebSocketConnectedToPrivateNetwork(
+          ip_address_space);
+    }
   }
 }
 

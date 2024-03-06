@@ -271,4 +271,7 @@ void BruschettaNetworkContext::Clone(
   url_loader_observers_.Add(this, std::move(observer));
 }
 
+void BruschettaNetworkContext::OnWebSocketConnectedToPrivateNetwork(
+    network::mojom::IPAddressSpace ip_address_space) {}
+
 }  // namespace bruschetta
