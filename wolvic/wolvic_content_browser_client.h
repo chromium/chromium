@@ -45,6 +45,15 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
       bool is_integration_test) override;
   std::unique_ptr<content::DevToolsManagerDelegate>
   CreateDevToolsManagerDelegate() override;
+  std::unique_ptr<LoginDelegate> CreateLoginDelegate(
+      const net::AuthChallengeInfo& auth_info,
+      WebContents* web_contents,
+      const GlobalRequestID& request_id,
+      bool is_request_for_primary_main_frame,
+      const GURL& url,
+      scoped_refptr<net::HttpResponseHeaders> response_headers,
+      bool first_auth_attempt,
+      LoginAuthRequiredCallback auth_required_callback) override;
 #if BUILDFLAG(ENABLE_VR)
   XrIntegrationClient* GetXrIntegrationClient() override;
 #endif

@@ -15,6 +15,7 @@
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
 #include "media/mojo/mojom/media_drm_storage.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "wolvic/browser/dialogs/http_auth_manager.h"
 #include "wolvic/browser/session_settings.h"
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_main_delegate.h"
@@ -98,6 +99,21 @@ std::unique_ptr<content::DevToolsManagerDelegate>
 WolvicContentBrowserClient::CreateDevToolsManagerDelegate() {
   return std::make_unique<content::ShellDevToolsManagerDelegate>(
       browser_context());
+}
+
+std::unique_ptr<content::LoginDelegate>
+WolvicContentBrowserClient::CreateLoginDelegate(
+    const net::AuthChallengeInfo& auth_info,
+    content::WebContents* web_contents,
+    const content::GlobalRequestID& request_id,
+    bool is_request_for_primary_main_frame,
+    const GURL& url,
+    scoped_refptr<net::HttpResponseHeaders> response_headers,
+    bool first_auth_attempt,
+    LoginAuthRequiredCallback auth_required_callback) {
+  return std::make_unique<wolvic::HttpAuthManager>(
+      auth_info, web_contents, first_auth_attempt,
+      std::move(auth_required_callback));
 }
 
 #if BUILDFLAG(ENABLE_VR)
