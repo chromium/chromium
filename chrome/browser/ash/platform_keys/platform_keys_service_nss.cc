@@ -305,6 +305,60 @@ class GenerateECKeyState : public NSSOperationState {
   GenerateKeyCallback callback_;
 };
 
+class EncryptState : public NSSOperationState {
+ public:
+  EncryptState(ServiceWeakPtr weak_ptr,
+               std::vector<uint8_t> key_id,
+               std::vector<uint8_t> data,
+               const std::string& encrypt_algorithm,
+               std::vector<uint8_t> init_vector,
+               EncryptCallback callback)
+      : NSSOperationState(weak_ptr),
+        key_id_(std::move(key_id)),
+        data_(std::move(data)),
+        encrypt_algorithm_(encrypt_algorithm),
+        init_vector_(std::move(init_vector)),
+        callback_(std::move(callback)) {}
+
+  ~EncryptState() override = default;
+
+  void OnError(const base::Location& from, Status status) override {
+    CallBack(from, /*encrypted_data=*/std::vector<uint8_t>(), status);
+  }
+
+  void OnSuccess(const base::Location& from,
+                 std::vector<uint8_t> encrypted_data) {
+    CallBack(from, std::move(encrypted_data), Status::kSuccess);
+  }
+
+  // Symmetric key id.
+  const std::vector<uint8_t> key_id_;
+
+  // The data that will be encrypted.
+  const std::vector<uint8_t> data_;
+
+  // Determines the hash algorithm that is used to encrypt.
+  const std::string encrypt_algorithm_;
+
+  // Initializition vector that is required for encryption.
+  // Must have a length of 16 bytes.
+  const std::vector<uint8_t> init_vector_;
+
+ private:
+  void CallBack(const base::Location& from,
+                std::vector<uint8_t> encrypted_data,
+                Status status) {
+    auto bound_callback =
+        base::BindOnce(std::move(callback_), std::move(encrypted_data), status);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        from, base::BindOnce(&NSSOperationState::RunCallback,
+                             std::move(bound_callback), service_weak_ptr_));
+  }
+
+  // Must be called on origin thread, therefore use CallBack().
+  EncryptCallback callback_;
+};
+
 class SignState : public NSSOperationState {
  public:
   SignState(ServiceWeakPtr weak_ptr,
@@ -812,6 +866,8 @@ crypto::ScopedPK11SymKey GetSymKey(
                                                     /*wincx=*/nullptr));
 }
 
+// Does the actual symmetric key generation on a worker thread. Used by
+// GenerateSymKeyWithDB().
 void GenerateSymKeyOnWorkerThread(std::unique_ptr<GenerateSymKeyState> state) {
   if (!state->slot_) {
     LOG(ERROR) << "No slot.";
@@ -842,6 +898,8 @@ void GenerateSymKeyOnWorkerThread(std::unique_ptr<GenerateSymKeyState> state) {
   state->OnSuccess(FROM_HERE);
 }
 
+// Continues generating a symmetric key with the obtained NSSCertDatabase. Used
+// by GenerateSymKey().
 void GenerateSymKeyWithDB(std::unique_ptr<GenerateSymKeyState> state,
                           net::NSSCertDatabase* cert_db) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -957,6 +1015,67 @@ void GenerateECKeyWithDB(std::unique_ptr<GenerateECKeyState> state,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&GenerateECKeyOnWorkerThread, std::move(state)));
+}
+
+// Does the actual AES encryption on a worker thread.
+// Used by EncryptAESWithDB().
+void EncryptAESOnWorkerThread(std::unique_ptr<EncryptState> state) {
+  if (!state->slot_) {
+    LOG(ERROR) << "No slot.";
+    state->OnError(FROM_HERE, Status::kErrorInternal);
+    return;
+  }
+
+  if (state->encrypt_algorithm_ != "AES-CBC") {
+    LOG(ERROR) << "Only AES-CBC encryption is supported.";
+    state->OnError(FROM_HERE, Status::kErrorAlgorithmNotSupported);
+    return;
+  }
+
+  std::vector<uint8_t> iv = state->init_vector_;
+  if (iv.size() != 16) {
+    LOG(ERROR) << "Initialization vector's length should be equal to 16.";
+    state->OnError(FROM_HERE, Status::kErrorAlgorithmNotSupported);
+    return;
+  }
+
+  crypto::ScopedPK11SymKey key = GetSymKey(state->key_id_, state->slot_.get());
+  if (!key) {
+    LOG(ERROR) << "Couldn't find the symmetric key.";
+    state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
+    return;
+  }
+
+  SECItem sec_iv{siUTF8String, iv.data(), static_cast<unsigned int>(iv.size())};
+  // Input string might be padded so its length would be a multiple of 16, which
+  // means the encrypted string could be larger than the initial one.
+  std::vector<uint8_t> result(state->data_.size() + 16);
+  unsigned int result_len;
+
+  if (PK11_Encrypt(key.get(), CKM_AES_CBC_PAD, &sec_iv, result.data(),
+                   &result_len, result.size(), state->data_.data(),
+                   state->data_.size()) != SECSuccess) {
+    LOG(ERROR) << "Encryption failed.";
+    state->OnError(FROM_HERE, Status::kErrorInternal);
+    return;
+  }
+
+  result.resize(result_len);
+  state->OnSuccess(FROM_HERE, std::move(result));
+}
+
+// Continues AES encryption with the obtained NSSCertDatabase.
+// Used by EncryptAES().
+void EncryptAESWithDB(std::unique_ptr<EncryptState> state,
+                      net::NSSCertDatabase* cert_db) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
+  // This task interacts with the TPM, hence MayBlock().
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&EncryptAESOnWorkerThread, std::move(state)));
 }
 
 // Checks whether |input_length| is lower or equal to the maximum input length
@@ -1457,7 +1576,7 @@ void RemoveSymKeyOnWorkerThread(std::unique_ptr<RemoveSymKeyState> state) {
     return;
   }
 
-  auto key = GetSymKey(state->key_id_, state->slot_.get());
+  crypto::ScopedPK11SymKey key = GetSymKey(state->key_id_, state->slot_.get());
   if (!key) {
     LOG(ERROR) << "Couldn't find the symmetric key.";
     state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
@@ -1758,6 +1877,33 @@ void PlatformKeysServiceImpl::GenerateECKey(TokenId token_id,
   NSSOperationState* state_ptr = state.get();
   GetCertDatabase(token_id,
                   base::BindOnce(&GenerateECKeyWithDB, std::move(state)),
+                  delegate_.get(), state_ptr);
+}
+
+void PlatformKeysServiceImpl::EncryptAES(
+    chromeos::platform_keys::TokenId token_id,
+    std::vector<uint8_t> key_id,
+    std::vector<uint8_t> data,
+    const std::string& encrypt_algorithm,
+    std::vector<uint8_t> init_vector,
+    EncryptCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto state = std::make_unique<EncryptState>(
+      weak_factory_.GetWeakPtr(), std::move(key_id), std::move(data),
+      encrypt_algorithm, std::move(init_vector), std::move(callback));
+  if (delegate_->IsShutDown()) {
+    state->OnError(FROM_HERE, Status::kErrorShutDown);
+    return;
+  }
+
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
+  NSSOperationState* state_ptr = state.get();
+
+  // The NSSCertDatabase object is not required. But in case it's not available
+  // we would get more informative status codes and we can double check that we
+  // use a key of the correct token.
+  GetCertDatabase(token_id, base::BindOnce(&EncryptAESWithDB, std::move(state)),
                   delegate_.get(), state_ptr);
 }
 

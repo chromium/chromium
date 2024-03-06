@@ -28,6 +28,10 @@ class ClientCertStore;
 
 namespace ash::platform_keys {
 
+using EncryptCallback =
+    base::OnceCallback<void(std::vector<uint8_t> encrypted_data,
+                            chromeos::platform_keys::Status status)>;
+
 using GenerateKeyCallback =
     base::OnceCallback<void(std::vector<uint8_t> key_identifier,
                             chromeos::platform_keys::Status status)>;
@@ -156,6 +160,16 @@ class PlatformKeysService : public KeyedService {
   virtual void GenerateECKey(chromeos::platform_keys::TokenId token_id,
                              const std::string& named_curve,
                              GenerateKeyCallback callback) = 0;
+
+  // Encrypts the |data| string using a symmetric key. Currently only
+  // AES-CBC |encrypt_algorithm| is supported and it requires a 16-byte
+  // initialization vector |init_vector|.
+  virtual void EncryptAES(chromeos::platform_keys::TokenId token_id,
+                          std::vector<uint8_t> key_id,
+                          std::vector<uint8_t> data,
+                          const std::string& encrypt_algorithm,
+                          std::vector<uint8_t> init_vector,
+                          EncryptCallback callback) = 0;
 
   // Digests |data|, applies PKCS1 padding and afterwards signs the data with
   // the private key matching |public_key_spki_der|. If the key is not found in
@@ -363,6 +377,12 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
   void GenerateECKey(chromeos::platform_keys::TokenId token_id,
                      const std::string& named_curve,
                      GenerateKeyCallback callback) override;
+  void EncryptAES(chromeos::platform_keys::TokenId token_id,
+                  std::vector<uint8_t> key_id,
+                  std::vector<uint8_t> data,
+                  const std::string& encrypt_algorithm,
+                  std::vector<uint8_t> init_vector,
+                  EncryptCallback callback) override;
   void SignRsaPkcs1(std::optional<chromeos::platform_keys::TokenId> token_id,
                     std::vector<uint8_t> data,
                     std::vector<uint8_t> public_key_spki_der,

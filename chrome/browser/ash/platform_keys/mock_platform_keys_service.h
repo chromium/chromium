@@ -59,6 +59,16 @@ class MockPlatformKeysService : public PlatformKeysService {
               (override));
 
   MOCK_METHOD(void,
+              EncryptAES,
+              (chromeos::platform_keys::TokenId token_id,
+               std::vector<uint8_t> key_id,
+               std::vector<uint8_t> data,
+               const std::string& encrypt_algorithm,
+               std::vector<uint8_t> init_vector,
+               EncryptCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
               SignRsaPkcs1,
               (std::optional<chromeos::platform_keys::TokenId> token_id,
                std::vector<uint8_t> data,
