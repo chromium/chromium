@@ -9,5 +9,5 @@
     RuntimeEnabled=DevicePosture,
     ImplementedAs=NavigatorDevicePosture
 ] partial interface Navigator {
-    readonly attribute DevicePosture devicePosture;
+    [MeasureAs=DevicePosture] readonly attribute DevicePosture devicePosture;
 };

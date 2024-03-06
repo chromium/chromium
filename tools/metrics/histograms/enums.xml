@@ -11328,6 +11328,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4876" label="TpcdCookieReadBlockedByAdHeuristics"/>
   <int value="4877" label="UsedColorSchemeRootScrollbarsDark"/>
   <int value="4878" label="SerialPortConnected"/>
+  <int value="4879" label="DevicePostureMediaFeature"/>
+  <int value="4880" label="DevicePosture"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

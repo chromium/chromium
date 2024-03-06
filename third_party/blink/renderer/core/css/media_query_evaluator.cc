@@ -1460,6 +1460,8 @@ static bool OverflowBlockMediaFeatureEval(const MediaQueryExpValue& value,
 static bool DevicePostureMediaFeatureEval(const MediaQueryExpValue& value,
                                           MediaQueryOperator,
                                           const MediaValues& media_values) {
+  UseCounter::Count(media_values.GetDocument(),
+                    WebFeature::kDevicePostureMediaFeature);
   // isValid() is false if there is no parameter. Without parameter we should
   // return true to indicate that device posture is enabled in the
   // browser.
