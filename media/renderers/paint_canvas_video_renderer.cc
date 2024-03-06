@@ -90,6 +90,39 @@ BASE_FEATURE(kAddSharedImageRasterUsageWithNonOOPR,
              "AddSharedImageRasterUsageWithNonOOPR",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Return the full-range RGB component of the color space of this frame's
+// content. This will replace several color spaces (Rec601, Rec709, and
+// Apple's Rec709) with sRGB, for compatibility with existing behavior.
+gfx::ColorSpace GetVideoFrameRGBColorSpacePreferringSRGB(
+    const VideoFrame* frame) {
+  const auto rgb_color_space = frame->ColorSpace().GetAsFullRangeRGB();
+  auto primary_id = rgb_color_space.GetPrimaryID();
+  switch (primary_id) {
+    case gfx::ColorSpace::PrimaryID::CUSTOM:
+      return rgb_color_space;
+    case gfx::ColorSpace::PrimaryID::SMPTE170M:
+    case gfx::ColorSpace::PrimaryID::SMPTE240M:
+      primary_id = gfx::ColorSpace::PrimaryID::BT709;
+      break;
+    default:
+      break;
+  }
+  auto transfer_id = rgb_color_space.GetTransferID();
+  switch (transfer_id) {
+    case gfx::ColorSpace::TransferID::CUSTOM:
+    case gfx::ColorSpace::TransferID::CUSTOM_HDR:
+      return rgb_color_space;
+    case gfx::ColorSpace::TransferID::BT709_APPLE:
+    case gfx::ColorSpace::TransferID::SMPTE170M:
+    case gfx::ColorSpace::TransferID::SMPTE240M:
+      transfer_id = gfx::ColorSpace::TransferID::SRGB;
+      break;
+    default:
+      break;
+  }
+  return gfx::ColorSpace(primary_id, transfer_id);
+}
+
 // This class keeps the last image drawn.
 // We delete the temporary resource if it is not used for 3 seconds.
 const int kTemporaryResourceDeletionDelay = 3;  // Seconds;
@@ -722,10 +755,10 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
   VideoImageGenerator() = delete;
 
   VideoImageGenerator(scoped_refptr<VideoFrame> frame)
-      : cc::PaintImageGenerator(SkImageInfo::MakeN32Premul(
-            frame->visible_rect().width(),
-            frame->visible_rect().height(),
-            frame->CompatRGBColorSpace().ToSkColorSpace())),
+      : cc::PaintImageGenerator(
+            SkImageInfo::MakeN32Premul(frame->visible_rect().width(),
+                                       frame->visible_rect().height(),
+                                       frame->ColorSpace().ToSkColorSpace())),
         frame_(std::move(frame)) {
     DCHECK(!frame_->HasTextures());
   }
@@ -1822,7 +1855,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
 
     yuv_cache_.shared_image = sii->CreateSharedImage(
         {SHARED_IMAGE_FORMAT, video_frame->coded_size(),
-         video_frame->CompatRGBColorSpace(), usage, "PaintCanvasVideoRenderer"},
+         GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()), usage,
+         "PaintCanvasVideoRenderer"},
         gpu::kNullSurfaceHandle);
     CHECK(yuv_cache_.shared_image);
     token = sii->GenUnverifiedSyncToken();
@@ -2054,7 +2088,7 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
         }
         client_shared_image = sii->CreateSharedImage(
             {SHARED_IMAGE_FORMAT, video_frame->coded_size(),
-             video_frame->CompatRGBColorSpace(), flags,
+             GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()), flags,
              "PaintCanvasVideoRenderer"},
             gpu::kNullSurfaceHandle);
         CHECK(client_shared_image);
@@ -2126,10 +2160,9 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
             std::move(source_image), std::move(access));
       }
     } else if (!cache_->texture_backing) {
-      SkImageInfo sk_image_info = SkImageInfo::Make(
-          gfx::SizeToSkISize(cache_->coded_size), kRGBA_8888_SkColorType,
-          kPremul_SkAlphaType,
-          video_frame->CompatRGBColorSpace().ToSkColorSpace());
+      SkImageInfo sk_image_info =
+          SkImageInfo::Make(gfx::SizeToSkISize(cache_->coded_size),
+                            kRGBA_8888_SkColorType, kPremul_SkAlphaType);
       cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
           mailbox, std::move(client_shared_image), sk_image_info,
           wraps_video_frame_texture, raster_context_provider);
