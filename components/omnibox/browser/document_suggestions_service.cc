@@ -148,7 +148,7 @@ void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
                      std::move(request_body), traffic_annotation,
                      std::move(start_callback), std::move(completion_callback)),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-      signin::ConsentLevel::kSignin);
+      signin::ConsentLevel::kSync);
 }
 
 void DocumentSuggestionsService::StopCreatingDocumentSuggestionsRequest() {
