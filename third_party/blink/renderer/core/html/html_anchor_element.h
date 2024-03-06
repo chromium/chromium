@@ -107,6 +107,8 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
 
   Element* interestTargetElement();
 
+  AtomicString interestAction() const;
+
   void Trace(Visitor*) const override;
 
  protected:

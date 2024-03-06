@@ -362,6 +362,7 @@ html element a
     property href
     property hrefTranslate
     property hreflang
+    property interestAction
     property interestTargetElement
     property name
     property origin
@@ -509,6 +510,7 @@ html element button
     property formMethod
     property formNoValidate
     property formTarget
+    property interestAction
     property interestTargetElement
     property invokeAction
     property invokeTargetElement
@@ -766,6 +768,7 @@ html element input
     property height
     property incremental
     property indeterminate
+    property interestAction
     property interestTargetElement
     property invokeAction
     property invokeTargetElement

@@ -123,6 +123,8 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   AtomicString invokeAction() const;
   void setInvokeAction(const AtomicString& value);
 
+  AtomicString interestAction() const;
+
   void DefaultEventHandler(Event&) override;
 
   void SetHovered(bool hovered) override;

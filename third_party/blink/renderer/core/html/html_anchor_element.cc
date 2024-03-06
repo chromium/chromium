@@ -587,6 +587,17 @@ Element* HTMLAnchorElement::interestTargetElement() {
   return GetElementAttribute(html_names::kInteresttargetAttr);
 }
 
+AtomicString HTMLAnchorElement::interestAction() const {
+  DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+  const AtomicString& attribute_value =
+      FastGetAttribute(html_names::kInterestactionAttr);
+  if (attribute_value && !attribute_value.IsNull() &&
+      !attribute_value.empty()) {
+    return attribute_value;
+  }
+  return g_empty_atom;
+}
+
 void HTMLAnchorElement::HandleClick(Event& event) {
   event.SetDefaultHandled();
 
