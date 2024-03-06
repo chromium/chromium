@@ -46,7 +46,10 @@
 #import "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 using base::apple::CFCast;
+using base::apple::CFToNSPtrCast;
 using base::apple::GetValueFromDictionary;
+using base::apple::NSToCFOwnershipCast;
+using base::apple::NSToCFPtrCast;
 using base::apple::ScopedCFTypeRef;
 
 namespace blink {
@@ -117,7 +120,7 @@ CTFontSymbolicTraits ComputeDesiredTraits(FontSelectionValue desired_weight,
                                           FontSelectionValue desired_slant,
                                           FontSelectionValue desired_width) {
   CTFontSymbolicTraits traits = 0;
-  if (desired_weight > kNormalWeightValue) {
+  if (desired_weight >= kBoldThreshold) {
     traits |= kCTFontTraitBold;
   }
   if (desired_slant != kNormalSlopeValue) {
@@ -132,6 +135,25 @@ CTFontSymbolicTraits ComputeDesiredTraits(FontSelectionValue desired_weight,
   return traits;
 }
 
+NSFontTraitMask ComputeDesiredTraitsNS(FontSelectionValue desired_weight,
+                                       FontSelectionValue desired_slant,
+                                       FontSelectionValue desired_width) {
+  NSFontTraitMask traits = 0;
+  if (desired_weight >= kBoldThreshold) {
+    traits |= NSBoldFontMask;
+  }
+  if (desired_slant != kNormalSlopeValue) {
+    traits |= NSItalicFontMask;
+  }
+  if (desired_width > kNormalWidthValue) {
+    traits |= NSExpandedFontMask;
+  }
+  if (desired_width < kNormalWidthValue) {
+    traits |= NSCondensedFontMask;
+  }
+  return traits;
+}
+
 bool BetterChoiceCT(CTFontSymbolicTraits desired_traits,
                     int desired_weight,
                     CTFontSymbolicTraits chosen_traits,
@@ -141,10 +163,22 @@ bool BetterChoiceCT(CTFontSymbolicTraits desired_traits,
   // A list of the traits we care about.
   // The top item in the list is the worst trait to mismatch; if a font has this
   // and we didn't ask for it, we'd prefer any other font in the family.
-  const CTFontSymbolicTraits kMasks[] = {
-      kCTFontTraitCondensed, kCTFontTraitExpanded, kCTFontTraitItalic};
+  const CTFontSymbolicTraits kMasks[] = {kCTFontTraitCondensed,
+                                         kCTFontTraitExpanded,
+                                         kCTFontTraitItalic, kCTFontTraitBold};
 
   for (CTFontSymbolicTraits mask : kMasks) {
+    // CoreText reports that "HiraginoSans-W5" font with AppKit weight 6 (which
+    // we map to CSS weight 500), has a bold trait. Since we consider bold
+    // threshold to be CSS weight 600, we will not match this font even if
+    // `desired_weight=500` was requested, but instead we will match
+    // "HiraginoSans-W4" with AppKit font weight 5 (CSS font weight 400).
+    // This check ignores the bold trait value if the `candidate_weight` is the
+    // same as requested.
+    if (mask == kCTFontBoldTrait && candidate_weight == desired_weight &&
+        chosen_weight != desired_weight) {
+      return true;
+    }
     bool desired = (desired_traits & mask) != 0;
     bool chosen_has_unwanted_trait = desired != ((chosen_traits & mask) != 0);
     bool candidate_has_unwanted_trait =
@@ -171,7 +205,7 @@ bool BetterChoiceCT(CTFontSymbolicTraits desired_traits,
 }
 
 ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
-    ScopedCFTypeRef<CFStringRef> family_name,
+    CFStringRef family_name,
     CTFontSymbolicTraits desired_traits,
     int desired_weight,
     float size) {
@@ -179,7 +213,7 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
       kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks,
       &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(attributes.get(), kCTFontFamilyNameAttribute,
-                       family_name.get());
+                       family_name);
 
   ScopedCFTypeRef<CTFontDescriptorRef> family_descriptor(
       CTFontDescriptorCreateWithAttributes(attributes.get()));
@@ -241,6 +275,19 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
     }
   }
   return matched_font_in_family;
+}
+
+NSFont* MatchByPostscriptNameNS(const AtomicString& desired_family_string,
+                                float size) {
+  NSString* desired_family = desired_family_string;
+  for (NSString* available_font in NSFontManager.sharedFontManager
+           .availableFonts) {
+    if ([desired_family caseInsensitiveCompare:available_font] ==
+        NSOrderedSame) {
+      return [NSFont fontWithName:available_font size:size];
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -396,10 +443,14 @@ ScopedCFTypeRef<CTFontRef> MatchSystemUIFont(FontSelectionValue desired_weight,
       ct_font.get(), size, nullptr, var_font_desc.get()));
 }
 
-// For legacy reasons, we first attempt to find an
-// exact match comparing the `desired_family_string` to the PostScript name of
-// the installed fonts.  If that fails we then do a search based on the family
-// names of the installed fonts.
+// We first attempt to find a match by `desired_family_string` family name. If
+// we failed to do so, we then try to find a match by postscript name. If during
+// postscript matching we found font that has desired traits we will return it,
+// otherwise we will do one more pass of family matching with the found with
+// postscript matching font's family name.
+// We perform matching by PostScript name for legacy and compatibility reasons
+// (Safari also does it), although CSS specs do not require that, see
+// crbug.com/641861.
 ScopedCFTypeRef<CTFontRef> MatchFontFamily(
     const AtomicString& desired_family_string,
     FontSelectionValue desired_weight,
@@ -422,50 +473,58 @@ ScopedCFTypeRef<CTFontRef> MatchFontFamily(
     return ScopedCFTypeRef<CTFontRef>(nullptr);
   }
 
-  ScopedCFTypeRef<CTFontRef> matched_font(
-      CTFontCreateWithName(desired_name.get(), size, nullptr));
-  // CoreText should give us *something* but not always an exactly matched font.
-  DCHECK(matched_font);
-
-  // We perform matching by PostScript name for legacy and compatibility reasons
-  // (Safari also does it), although CSS specs do not require that, see
-  // crbug.com/641861.
-  ScopedCFTypeRef<CFStringRef> matched_postscript_name(
-      CTFontCopyPostScriptName(matched_font.get()));
-  ScopedCFTypeRef<CFStringRef> matched_family_name(
-      CTFontCopyFamilyName(matched_font.get()));
-
-  // If the found font does not match in PostScript name or font family name,
-  // it's not the exact match that is required, so return nullptr.
-  if (matched_postscript_name &&
-      CFStringCompare(matched_postscript_name.get(), desired_name.get(),
-                      kCFCompareCaseInsensitive) != kCFCompareEqualTo &&
-      matched_family_name &&
-      CFStringCompare(matched_family_name.get(), desired_name.get(),
-                      kCFCompareCaseInsensitive) != kCFCompareEqualTo) {
-    return ScopedCFTypeRef<CTFontRef>(nullptr);
-  }
-
   CTFontSymbolicTraits desired_traits =
       ComputeDesiredTraits(desired_weight, desired_slant, desired_width);
 
-  if (matched_postscript_name &&
-      CFStringCompare(matched_postscript_name.get(), desired_name.get(),
-                      kCFCompareCaseInsensitive) == kCFCompareEqualTo) {
-    CTFontSymbolicTraits traits = CTFontGetSymbolicTraits(matched_font.get());
-    // Matched a font by PostScript name that has desired traits, so we
-    // can skip matching by family name.
-    if ((desired_traits & traits) == desired_traits) {
-      return matched_font;
+  ScopedCFTypeRef<CTFontRef> match_in_family = BestStyleMatchForFamily(
+      desired_name.get(), desired_traits, desired_weight, size);
+
+  if (!match_in_family) {
+    // We first try to find font by postscript name. If the found font has
+    // desired traits we will return it otherwise we will try to find the best
+    // match in the found font's family.
+    if (RuntimeEnabledFeatures::
+            FontFamilyPostscriptMatchingCTMigrationEnabled()) {
+      ScopedCFTypeRef<CTFontRef> matched_font(
+          CTFontCreateWithName(desired_name.get(), size, nullptr));
+      ScopedCFTypeRef<CFStringRef> matched_postscript_name(
+          CTFontCopyPostScriptName(matched_font.get()));
+      if (matched_postscript_name &&
+          CFStringCompare(matched_postscript_name.get(), desired_name.get(),
+                          kCFCompareCaseInsensitive) == kCFCompareEqualTo) {
+        CTFontSymbolicTraits traits =
+            CTFontGetSymbolicTraits(matched_font.get());
+        if ((desired_traits & traits) == desired_traits) {
+          return matched_font;
+        }
+
+        ScopedCFTypeRef<CFStringRef> matched_family_name(
+            CTFontCopyFamilyName(matched_font.get()));
+        return BestStyleMatchForFamily(matched_family_name.get(),
+                                       desired_traits, desired_weight, size);
+      }
+    } else {
+      NSFont* postscript_match_font =
+          MatchByPostscriptNameNS(desired_family_string, size);
+      if (postscript_match_font) {
+        NSFontTraitMask desired_traits_ns = ComputeDesiredTraitsNS(
+            desired_weight, desired_slant, desired_width);
+        NSFontManager* font_manager = NSFontManager.sharedFontManager;
+        NSFontTraitMask traits =
+            [font_manager traitsOfFont:postscript_match_font];
+        if ((traits & desired_traits_ns) == desired_traits_ns) {
+          return ScopedCFTypeRef<CTFontRef>(NSToCFOwnershipCast([font_manager
+              convertFont:postscript_match_font
+              toHaveTrait:desired_traits_ns]));
+        }
+
+        return BestStyleMatchForFamily(
+            NSToCFPtrCast(postscript_match_font.familyName), desired_traits,
+            desired_weight, size);
+      }
     }
   }
-
-  if (!matched_family_name) {
-    return ScopedCFTypeRef<CTFontRef>(nullptr);
-  }
-
-  return BestStyleMatchForFamily(matched_family_name, desired_traits,
-                                 desired_weight, size);
+  return match_in_family;
 }
 
 // Family name is somewhat of a misnomer here.  We first attempt to find an
@@ -499,35 +558,29 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
   NSInteger app_kit_font_weight = ToAppKitFontWeight(desired_weight);
   if (!available_family) {
     // Match by PostScript name.
-    NSEnumerator* available_fonts =
-        font_manager.availableFonts.objectEnumerator;
-    NSString* available_font;
-    NSFont* name_matched_font = nil;
+    NSFont* name_matched_font =
+        MatchByPostscriptNameNS(desired_family_string, size);
+    if (!name_matched_font) {
+      return nil;
+    }
+
+    available_family = name_matched_font.familyName;
     NSFontTraitMask desired_traits_for_name_match =
         desired_traits | (app_kit_font_weight >= 7 ? NSBoldFontMask : 0);
-    while ((available_font = [available_fonts nextObject])) {
-      if ([desired_family caseInsensitiveCompare:available_font] ==
-          NSOrderedSame) {
-        name_matched_font = [NSFont fontWithName:available_font size:size];
 
-        // Special case Osaka-Mono.  According to <rdar://problem/3999467>, we
-        // need to treat Osaka-Mono as fixed pitch.
-        if ([desired_family caseInsensitiveCompare:@"Osaka-Mono"] ==
-                NSOrderedSame &&
-            desired_traits_for_name_match == 0) {
-          return name_matched_font;
-        }
+    // Special case Osaka-Mono.  According to <rdar://problem/3999467>, we
+    // need to treat Osaka-Mono as fixed pitch.
+    if ([available_family caseInsensitiveCompare:@"Osaka-Mono"] ==
+            NSOrderedSame &&
+        desired_traits_for_name_match == 0) {
+      return name_matched_font;
+    }
 
-        NSFontTraitMask traits = [font_manager traitsOfFont:name_matched_font];
-        if ((traits & desired_traits_for_name_match) ==
-            desired_traits_for_name_match) {
-          return [font_manager convertFont:name_matched_font
-                               toHaveTrait:desired_traits_for_name_match];
-        }
-
-        available_family = name_matched_font.familyName;
-        break;
-      }
+    NSFontTraitMask traits = [font_manager traitsOfFont:name_matched_font];
+    if ((traits & desired_traits_for_name_match) ==
+        desired_traits_for_name_match) {
+      return [font_manager convertFont:name_matched_font
+                           toHaveTrait:desired_traits_for_name_match];
     }
   }
 
