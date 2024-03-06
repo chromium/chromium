@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observation.h"
 
-#include "base/debug/stack_trace.h"
+#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
@@ -59,14 +59,35 @@ int64_t IntersectionObservation::ComputeIntersection(
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
   std::optional<IntersectionGeometry::CachedRects> cached_rects_backup;
 #endif
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
-      cached_rects_.valid && cached_rects_.min_scroll_delta_to_update.x() > 0 &&
-      cached_rects_.min_scroll_delta_to_update.y() > 0) {
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    enum UpdateType {
+      kNoUpdate = 0,
+      kScrollOnly = 1,
+      kCachedRectInvalid = 2,
+      kFullUpdate = 3,
+      kMaxValue = 3,
+    };
+    UpdateType update_type = kNoUpdate;
+    if (accumulated_scroll_delta_since_last_update.x() >=
+        std::numeric_limits<float>::max()) {
+      update_type = kFullUpdate;
+    } else if (!cached_rects_.valid) {
+      update_type = kCachedRectInvalid;
+    } else if (cached_rects_.min_scroll_delta_to_update.x() <= 0 ||
+               cached_rects_.min_scroll_delta_to_update.y() <= 0) {
+      update_type = kScrollOnly;
+    }
+    UMA_HISTOGRAM_ENUMERATION("Blink.IntersectionObservation.UpdateType",
+                              update_type);
+    if (update_type == kNoUpdate) {
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
-    cached_rects_backup.emplace(cached_rects_);
+      cached_rects_backup.emplace(cached_rects_);
 #else
-    return 0;
+      return 0;
 #endif
+    }
   }
 
   unsigned geometry_flags = GetIntersectionGeometryFlags(compute_flags);
