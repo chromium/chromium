@@ -302,11 +302,13 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
       theme_.play_button_container_color_id,
       kPlayPauseButtonSize.height() / 2));
 
-  // |controls_row| holds all the available media action buttons and the
+  // `controls_row` holds all the available media action buttons and the
   // progress view.
   auto* controls_row = AddChildView(std::make_unique<views::BoxLayoutView>());
-  controls_row->SetCrossAxisAlignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
+  // TODO(b/328317702): The fllowing lines are removed as a temp fix of the
+  // tobo bug.
+  // controls_row->SetCrossAxisAlignment(
+  //     views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // Create the previous track button.
   CreateMediaButton(
