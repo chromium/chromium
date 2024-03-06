@@ -122,9 +122,10 @@ try_.builder(
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Runs Dawn tests on Apple silicon at Chromium's pinned Dawn revision",
     mirrors = [
+        "ci/Dawn Mac arm64 DEPS Builder",
         "ci/Dawn Mac arm64 DEPS Release (Apple M2)",
     ],
-    gn_args = "ci/Dawn Mac arm64 DEPS Release (Apple M2)",
+    gn_args = "ci/Dawn Mac arm64 DEPS Builder",
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
     main_list_view = "try",
@@ -300,9 +301,10 @@ try_.builder(
     name = "mac-arm64-dawn-rel",
     description_html = "Runs Dawn tests on Apple silicon on Dawn ToT",
     mirrors = [
+        "ci/Dawn Mac arm64 Builder",
         "ci/Dawn Mac arm64 Release (Apple M2)",
     ],
-    gn_args = "ci/Dawn Mac arm64 Release (Apple M2)",
+    gn_args = "ci/Dawn Mac arm64 Builder",
     os = os.MAC_ANY,
     cpu = None,
     test_presentation = resultdb.test_presentation(
@@ -355,9 +357,27 @@ try_.builder(
 try_.builder(
     name = "dawn-try-mac-arm64-deps-rel",
     mirrors = [
+        "ci/Dawn Mac arm64 DEPS Builder",
         "ci/Dawn Mac arm64 DEPS Release (Apple M2)",
     ],
-    gn_args = "ci/Dawn Mac arm64 DEPS Release (Apple M2)",
+    gn_args = "ci/Dawn Mac arm64 DEPS Builder",
+    pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
+    builderless = True,
+    os = os.MAC_ANY,
+    cpu = None,
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+)
+
+try_.builder(
+    name = "dawn-try-mac-arm64-m2-exp",
+    description_html = "Manual-only trybot for running ToT Dawn tests on experimental M2 machines",
+    mirrors = [
+        "ci/Dawn Mac arm64 Builder",
+        "ci/Dawn Mac arm64 Experimental Release (Apple M2)",
+    ],
+    gn_args = "ci/Dawn Mac arm64 Builder",
     pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
     builderless = True,
     os = os.MAC_ANY,
@@ -370,9 +390,10 @@ try_.builder(
 try_.builder(
     name = "dawn-try-mac-arm64-rel",
     mirrors = [
+        "ci/Dawn Mac arm64 Builder",
         "ci/Dawn Mac arm64 Release (Apple M2)",
     ],
-    gn_args = "ci/Dawn Mac arm64 Release (Apple M2)",
+    gn_args = "ci/Dawn Mac arm64 Builder",
     pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
     builderless = True,
     os = os.MAC_ANY,

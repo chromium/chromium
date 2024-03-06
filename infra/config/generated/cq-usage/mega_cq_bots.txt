@@ -42,6 +42,7 @@ chromium/try/dawn-mac-x64-deps-rel
 chromium/try/dawn-try-linux-tsan-rel
 chromium/try/dawn-try-mac-amd-exp
 chromium/try/dawn-try-mac-arm64-deps-rel
+chromium/try/dawn-try-mac-arm64-m2-exp
 chromium/try/dawn-try-mac-arm64-rel
 chromium/try/dawn-try-mac-intel-exp
 chromium/try/dawn-try-win-x64-intel-exp
