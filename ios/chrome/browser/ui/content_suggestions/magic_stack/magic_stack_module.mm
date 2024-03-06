@@ -9,14 +9,6 @@
   NSUInteger _hash;
 }
 
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    _hash = @(int(_type)).hash;
-  }
-  return self;
-}
-
 #pragma mark - NSObject
 
 - (BOOL)isEqual:(id)object {
@@ -27,11 +19,11 @@
     return NO;
   }
   MagicStackModule* moduleObject = static_cast<MagicStackModule*>(object);
-  return _type == moduleObject.type;
+  return self.type == moduleObject.type;
 }
 
 - (NSUInteger)hash {
-  return _hash;
+  return @(int(self.type)).hash;
 }
 
 @end

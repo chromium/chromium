@@ -240,6 +240,7 @@ source_set("ntp_internal") {
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:constants",
     "//ios/chrome/browser/ui/lens:lens_availability",
     "//ios/chrome/browser/ui/lens:lens_entrypoint",

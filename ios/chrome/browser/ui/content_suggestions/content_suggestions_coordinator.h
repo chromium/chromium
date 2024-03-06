@@ -14,6 +14,7 @@ class WebState;
 @protocol ContentSuggestionsDelegate;
 @class ContentSuggestionsMediator;
 @class ContentSuggestionsViewController;
+@class MagicStackCollectionViewController;
 @protocol NewTabPageControllerDelegate;
 @protocol NewTabPageDelegate;
 @protocol NewTabPageMetricsDelegate;
@@ -36,7 +37,7 @@ class WebState;
 
 // The Magic Stack UICollectionView.
 @property(nonatomic, strong, readonly)
-    UIViewController* magicStackCollectionView;
+    MagicStackCollectionViewController* magicStackCollectionView;
 
 // The mediator used by this coordinator.
 // TODO(crbug.com/1403298): Replace this with a delegate to avoid exposing this.

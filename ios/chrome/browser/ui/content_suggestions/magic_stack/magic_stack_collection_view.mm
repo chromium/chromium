@@ -48,6 +48,33 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
                               constraintEqualToConstant:kModuleMaxHeight] ]];
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+  __weak UICollectionView* weakCollectionView = _collectionView;
+  [coordinator
+      animateAlongsideTransition:^(
+          id<UIViewControllerTransitionCoordinatorContext> context) {
+        UICollectionView* strongRefCollectionView = weakCollectionView;
+        if (!strongRefCollectionView) {
+          return;
+        }
+        [strongRefCollectionView.collectionViewLayout invalidateLayout];
+        [strongRefCollectionView setNeedsLayout];
+      }
+                      completion:nil];
+}
+
+#pragma mark - Public
+
+- (void)moduleWidthDidUpdate {
+  if (_collectionView) {
+    _collectionView.clipsToBounds = [self shouldHaveWideLayout];
+    [self snapToNearestMagicStackModule];
+  }
+}
+
 #pragma mark - MagicStackConsumer
 
 - (void)populateItems:(NSArray<MagicStackModule*>*)items {
@@ -231,7 +258,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   NSMutableArray<MagicStackModule*>* items =
       [[NSMutableArray<MagicStackModule*> alloc] init];
   [items addObject:[[PlaceholderConfig alloc] init]];
-  [items addObject:[[PlaceholderConfig alloc] init]];
   [self populateItems:items arePlaceholders:YES];
 }
 
@@ -301,6 +327,24 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   // UICollectionView render the adjacent module.
   return [self shouldHaveWideLayout] ? kMagicStackPeekInsetLandscape
                                      : kMagicStackPeekInset + 1;
+}
+
+// Snaps the MagicStack ScrollView's contentOffset to the nearest module. Can
+// be used after the width of the MagicStack changes to ensure that it doesn't
+// end up scrolled to the middle of a module.
+- (void)snapToNearestMagicStackModule {
+  CGFloat moduleWidth =
+      self.view.frame.size.width -
+      ModuleNarrowerWidthToAllowPeekingForTraitCollection(self.traitCollection);
+  CGPoint offset = _collectionView.contentOffset;
+  offset.x = _magicStackPage * (moduleWidth + kMagicStackSpacing) -
+             [self peekOffsetForMagicStackPage:_magicStackPage];
+  // Do not allow scrolling beyond the end of content, which also ensures that
+  // the "edit menu" page doesn't end up left-aligned after a rotation.
+  CGFloat maxOffset = MAX(
+      0, _collectionView.contentSize.width - _collectionView.bounds.size.width);
+  offset.x = MIN(offset.x, maxOffset);
+  _collectionView.contentOffset = offset;
 }
 
 @end

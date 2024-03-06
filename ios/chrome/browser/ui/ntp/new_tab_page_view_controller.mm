@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_collection_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
@@ -1747,7 +1748,11 @@ const CGFloat kModuleMinMargin = 16;
     [self.view layoutIfNeeded];
   }
   if (existingConstraintUpdated) {
-    [self.contentSuggestionsViewController moduleWidthDidUpdate];
+    if (IsIOSMagicStackCollectionViewEnabled()) {
+      [self.magicStackCollectionView moduleWidthDidUpdate];
+    } else {
+      [self.contentSuggestionsViewController moduleWidthDidUpdate];
+    }
   }
 }
 
