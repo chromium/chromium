@@ -6,6 +6,8 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_SUGGESTION_GENERATOR_TEST_API_H_
 
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
 
@@ -26,9 +28,14 @@ class AutofillSuggestionGeneratorTestApi {
   }
 
   std::vector<CreditCard> GetOrderedCardsToSuggest(
-      bool suppress_disused_cards) {
+      const FormFieldData& trigger_field,
+      FieldType trigger_field_type,
+      bool suppress_disused_cards,
+      bool prefix_match,
+      bool include_virtual_cards) {
     return suggestion_generator_->GetOrderedCardsToSuggest(
-        suppress_disused_cards);
+        trigger_field, trigger_field_type, suppress_disused_cards, prefix_match,
+        include_virtual_cards);
   }
 
   std::vector<Suggestion> CreateSuggestionsFromProfiles(

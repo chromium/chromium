@@ -87,7 +87,9 @@ class AutofillSuggestionGenerator {
           virtual_card_guid_to_last_four_map);
 
   // Returns the credit cards to be shown in touch to fill suggestions.
-  std::vector<CreditCard> GetTouchToFillCardsToSuggest();
+  std::vector<CreditCard> GetTouchToFillCardsToSuggest(
+      const FormFieldData& trigger_field,
+      FieldType trigger_field_type);
 
   // Generates a separator suggestion.
   static Suggestion CreateSeparator();
@@ -138,10 +140,16 @@ class AutofillSuggestionGenerator {
                        bool field_is_autofilled,
                        const FieldTypeSet& field_types);
 
-  // Returns the local and server cards ordered by the Autofill ranking. The
-  // cards which are expired and disused aren't included if
-  // |suppress_disused_cards| is true.
-  std::vector<CreditCard> GetOrderedCardsToSuggest(bool suppress_disused_cards);
+  // Returns the local and server cards ordered by the Autofill ranking.
+  // If `suppress_disused_cards`, local expired disused cards are removed.
+  // If `prefix_match`, cards are matched with the contents of `trigger_field`.
+  // If `include_virtual_cards`, virtual cards will be added when possible.
+  std::vector<CreditCard> GetOrderedCardsToSuggest(
+      const FormFieldData& trigger_field,
+      FieldType trigger_field_type,
+      bool suppress_disused_cards,
+      bool prefix_match,
+      bool include_virtual_cards);
 
   // Returns a list of Suggestion objects, each representing an element in
   // `profiles`.

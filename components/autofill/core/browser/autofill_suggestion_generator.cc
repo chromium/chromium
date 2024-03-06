@@ -6,10 +6,12 @@
 
 #include <functional>
 #include <string>
+#include <vector>
 
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -50,6 +52,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -1443,68 +1446,37 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     bool& with_offer,
     bool& with_cvc,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
-  std::vector<Suggestion> suggestions;
   // Manual fallback entries are shown for all non credit card fields.
   const bool is_manual_fallback_for_non_credit_card_field =
       GroupTypeOfFieldType(trigger_field_type) != FieldTypeGroup::kCreditCard;
-  const std::string& app_locale = personal_data().app_locale();
 
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
       GetCardLinkedOffers(*autofill_client_);
   with_offer = !card_linked_offers_map.empty();
 
-  // The field value is sanitized before attempting to match it to the user's
-  // data.
-  auto field_contents = SanitizeCreditCardFieldValue(trigger_field.value);
-
   std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
-      field_contents.empty() &&
-      trigger_source !=
-          AutofillSuggestionTriggerSource::kManualFallbackPayments);
-
-  std::u16string field_contents_lower = base::i18n::ToLower(field_contents);
-
+      trigger_field, trigger_field_type,
+      /*suppress_disused_cards=*/
+      SanitizeCreditCardFieldValue(trigger_field.value).empty() &&
+          trigger_source !=
+              AutofillSuggestionTriggerSource::kManualFallbackPayments,
+      /*prefix_match=*/!is_manual_fallback_for_non_credit_card_field,
+      /*include_virtual_cards=*/true);
+  std::vector<Suggestion> suggestions;
+  for (const CreditCard& credit_card : cards_to_suggest) {
+    suggestions.push_back(CreateCreditCardSuggestion(
+        credit_card, trigger_field_type,
+        credit_card.record_type() == CreditCard::RecordType::kVirtualCard,
+        base::Contains(card_linked_offers_map, credit_card.guid()),
+        trigger_field.origin));
+  }
   metadata_logging_context =
       autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
-
-  for (const CreditCard& credit_card : cards_to_suggest) {
-    // The value of the stored data for this field type in the |credit_card|.
-    std::u16string creditcard_field_value =
-        credit_card.GetInfo(trigger_field_type, app_locale);
-    if (!is_manual_fallback_for_non_credit_card_field &&
-        creditcard_field_value.empty()) {
-      continue;
-    }
-    // Manual fallback suggestions aren't filtered based on the field's content.
-    if (is_manual_fallback_for_non_credit_card_field ||
-        IsValidPaymentsSuggestionForFieldContents(
-            base::i18n::ToLower(creditcard_field_value), field_contents_lower,
-            trigger_field_type,
-            credit_card.record_type() ==
-                CreditCard::RecordType::kMaskedServerCard,
-            trigger_field.is_autofilled)) {
-      bool card_linked_offer_available =
-          base::Contains(card_linked_offers_map, credit_card.guid());
-      if (ShouldShowVirtualCardOption(&credit_card)) {
-        suggestions.push_back(CreateCreditCardSuggestion(
-            credit_card, trigger_field_type,
-            /*virtual_card_option=*/true, card_linked_offer_available,
-            trigger_field.origin));
-      }
-      if (!credit_card.cvc().empty()) {
-        with_cvc = true;
-      }
-      suggestions.push_back(CreateCreditCardSuggestion(
-          credit_card, trigger_field_type,
-          /*virtual_card_option=*/false, card_linked_offer_available,
-          trigger_field.origin));
-    }
-  }
-
+  with_cvc = !base::ranges::all_of(cards_to_suggest, &std::u16string::empty,
+                                   &CreditCard::cvc);
   if (suggestions.empty()) {
     return suggestions;
   }
-
   const bool display_gpay_logo = base::ranges::none_of(
       cards_to_suggest,
       [](const CreditCard& card) { return CreditCard::IsLocalCard(&card); });
@@ -1513,7 +1485,6 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
           should_show_scan_credit_card, should_show_cards_from_account,
           trigger_field.is_autofilled, display_gpay_logo),
       std::back_inserter(suggestions));
-
   return suggestions;
 }
 
@@ -1526,8 +1497,10 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
   // TODO(crbug.com/1453739): Refactor credit card suggestion code by moving
   // duplicate logic to helper functions.
   std::vector<Suggestion> suggestions;
-  std::vector<CreditCard> cards_to_suggest =
-      GetOrderedCardsToSuggest(/*suppress_disused_cards=*/true);
+  std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
+      trigger_field, CREDIT_CARD_VERIFICATION_CODE,
+      /*suppress_disused_cards=*/true, /*prefix_match=*/false,
+      /*include_virtual_cards=*/false);
   metadata_logging_context =
       autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
 
@@ -1581,27 +1554,21 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
 }
 
 std::vector<CreditCard>
-AutofillSuggestionGenerator::GetTouchToFillCardsToSuggest() {
+AutofillSuggestionGenerator::GetTouchToFillCardsToSuggest(
+    const FormFieldData& trigger_field,
+    FieldType trigger_field_type) {
+  // TouchToFill actually has a trigger field which must be classified in some
+  // way, but we intentionally fetch suggestions irrelevant of them.
   std::vector<CreditCard> cards_to_suggest =
       AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
-          /*suppress_disused_cards=*/true);
-  if (base::ranges::none_of(cards_to_suggest,
-                            &CreditCard::IsCompleteValidCard)) {
-    return {};
-  }
-  // If a virtual card should be shown, create a copy of the
-  // card with `CreditCard::RecordType::kVirtualCard` as the record type, and
-  // insert it before the actual card.
-  std::vector<autofill::CreditCard> real_and_virtual_cards;
-  for (const CreditCard& card : cards_to_suggest) {
-    if (ShouldShowVirtualCardOption(&card) &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillVirtualCardsOnTouchToFillAndroid)) {
-      real_and_virtual_cards.push_back(CreditCard::CreateVirtualCard(card));
-    }
-    real_and_virtual_cards.push_back(card);
-  }
-  return real_and_virtual_cards;
+          trigger_field, trigger_field_type,
+          /*suppress_disused_cards=*/true, /*prefix_match=*/false,
+          base::FeatureList::IsEnabled(
+              features::kAutofillVirtualCardsOnTouchToFillAndroid));
+  return base::ranges::any_of(cards_to_suggest,
+                              &CreditCard::IsCompleteValidCard)
+             ? cards_to_suggest
+             : std::vector<CreditCard>();
 }
 
 // static
@@ -1664,7 +1631,11 @@ Suggestion AutofillSuggestionGenerator::CreateClearFormSuggestion() {
 
 // static
 std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
-    bool suppress_disused_cards) {
+    const FormFieldData& trigger_field,
+    FieldType trigger_field_type,
+    bool suppress_disused_cards,
+    bool prefix_match,
+    bool include_virtual_cards) {
   std::vector<CreditCard*> available_cards =
       personal_data().GetCreditCardsToSuggest();
   // If a card has available card linked offers on the last committed url, rank
@@ -1688,9 +1659,27 @@ std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
                                                            available_cards);
   }
   std::vector<CreditCard> cards_to_suggest;
-  cards_to_suggest.reserve(available_cards.size());
-  for (const CreditCard* card : available_cards) {
-    cards_to_suggest.push_back(*card);
+  std::u16string field_contents =
+      base::i18n::ToLower(SanitizeCreditCardFieldValue(trigger_field.value));
+  for (const CreditCard* credit_card : available_cards) {
+    std::u16string suggested_value =
+        credit_card->GetInfo(trigger_field_type, personal_data().app_locale());
+    if (prefix_match && suggested_value.empty()) {
+      continue;
+    }
+    if (prefix_match &&
+        !IsValidPaymentsSuggestionForFieldContents(
+            /*suggestion_canon=*/base::i18n::ToLower(suggested_value),
+            field_contents, trigger_field_type,
+            credit_card->record_type() ==
+                CreditCard::RecordType::kMaskedServerCard,
+            trigger_field.is_autofilled)) {
+      continue;
+    }
+    if (include_virtual_cards && ShouldShowVirtualCardOption(credit_card)) {
+      cards_to_suggest.push_back(CreditCard::CreateVirtualCard(*credit_card));
+    }
+    cards_to_suggest.push_back(*credit_card);
   }
   return cards_to_suggest;
 }

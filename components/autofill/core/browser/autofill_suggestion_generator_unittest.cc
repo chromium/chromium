@@ -2410,14 +2410,13 @@ TEST_F(AutofillSuggestionGeneratorTest,
 // standalone CVC field.
 TEST_F(AutofillSuggestionGeneratorTest,
        GetSuggestionsForVirtualCardStandaloneCvc) {
-  CreditCard virtual_card = test::GetVirtualCard();
-  personal_data().AddServerCreditCard(virtual_card);
+  CreditCard server_card = CreateServerCard();
+  personal_data().AddServerCreditCard(server_card);
 
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
       virtual_card_guid_to_last_four_map;
   virtual_card_guid_to_last_four_map.insert(
-      {virtual_card.guid(),
-       VirtualCardUsageData::VirtualCardLastFour(u"1234")});
+      {server_card.guid(), VirtualCardUsageData::VirtualCardLastFour(u"1234")});
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForVirtualCardStandaloneCvc(
@@ -2433,15 +2432,13 @@ TEST_F(AutofillSuggestionGeneratorTest,
        GetSuggestionsForVirtualCardStandaloneCvc_ClearForm) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kAutofillUndo);
-
-  CreditCard virtual_card = test::GetVirtualCard();
-  personal_data().AddServerCreditCard(virtual_card);
+  CreditCard server_card = CreateServerCard();
+  personal_data().AddServerCreditCard(CreateServerCard());
 
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
       virtual_card_guid_to_last_four_map;
   virtual_card_guid_to_last_four_map.insert(
-      {virtual_card.guid(),
-       VirtualCardUsageData::VirtualCardLastFour(u"4444")});
+      {server_card.guid(), VirtualCardUsageData::VirtualCardLastFour(u"4444")});
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   FormFieldData field;
   field.is_autofilled = true;
@@ -2462,15 +2459,13 @@ TEST_F(AutofillSuggestionGeneratorTest,
 TEST_F(AutofillSuggestionGeneratorTest,
        GetSuggestionsForVirtualCardStandaloneCvc_UndoAutofill) {
   base::test::ScopedFeatureList features(features::kAutofillUndo);
-
-  CreditCard virtual_card = test::GetVirtualCard();
-  personal_data().AddServerCreditCard(virtual_card);
+  CreditCard server_card = CreateServerCard();
+  personal_data().AddServerCreditCard(CreateServerCard());
 
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
       virtual_card_guid_to_last_four_map;
   virtual_card_guid_to_last_four_map.insert(
-      {virtual_card.guid(),
-       VirtualCardUsageData::VirtualCardLastFour(u"4444")});
+      {server_card.guid(), VirtualCardUsageData::VirtualCardLastFour(u"4444")});
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   FormFieldData field;
   field.is_autofilled = true;

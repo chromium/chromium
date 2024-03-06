@@ -116,12 +116,14 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
   if (!manager_->CanShowAutofillUi()) {
     return {TriggerOutcome::kCannotShowAutofillUi, {}};
   }
-  // Trigger only if there is at least 1 complete valid credit card on file.
+  // Fetch all complete valid credit cards on file.
   // Complete = contains number, expiration date and name on card.
   // Valid = unexpired with valid number format.
+  // TODO(b/40227496): `*field` must contain the updated field information.
   std::vector<CreditCard> cards_to_suggest =
       AutofillSuggestionGenerator(manager_->client())
-          .GetTouchToFillCardsToSuggest();
+          .GetTouchToFillCardsToSuggest(*field,
+                                        field->Type().GetStorableType());
   return cards_to_suggest.empty()
              ? DryRunResult(TriggerOutcome::kNoValidCards, {})
              : DryRunResult(TriggerOutcome::kShown,
