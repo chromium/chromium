@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
@@ -61,16 +62,10 @@ class OnDeviceModelExecutionConfigInterpreter {
       proto::ModelExecutionFeature feature) const;
 
  private:
-  // Contains the state applicable to a feature.
-  struct FeatureData {
-    FeatureData();
-    ~FeatureData();
-    proto::OnDeviceModelExecutionFeatureConfig config;
-    std::unique_ptr<Redactor> redactor;
-  };
-
-  void RegisterFeature(
-      const proto::OnDeviceModelExecutionFeatureConfig& config);
+  // Get the adapter for a particular feature.
+  // Return value is owned by this and may be null.
+  const OnDeviceModelFeatureAdapter* GetAdapter(
+      proto::ModelExecutionFeature feature) const;
 
   // Populates `feature_to_data_` based on `config`.
   void PopulateFeatureConfigs(
@@ -80,8 +75,9 @@ class OnDeviceModelExecutionConfigInterpreter {
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   // Map from feature to associated state.
-  base::flat_map<proto::ModelExecutionFeature, std::unique_ptr<FeatureData>>
-      feature_to_data_;
+  base::flat_map<proto::ModelExecutionFeature,
+                 std::unique_ptr<OnDeviceModelFeatureAdapter>>
+      adapters_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

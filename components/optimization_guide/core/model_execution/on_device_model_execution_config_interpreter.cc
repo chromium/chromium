@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 
+#include <memory>
+
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -13,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -75,51 +78,33 @@ bool OnDeviceModelExecutionConfigInterpreter::HasConfigForFeature(
     proto::ModelExecutionFeature feature) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return base::Contains(feature_to_data_, feature);
+  return base::Contains(adapters_, feature);
+}
+
+const OnDeviceModelFeatureAdapter*
+OnDeviceModelExecutionConfigInterpreter::GetAdapter(
+    proto::ModelExecutionFeature feature) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto iter = adapters_.find(feature);
+  return iter != adapters_.end() ? iter->second.get() : nullptr;
 }
 
 std::string
 OnDeviceModelExecutionConfigInterpreter::GetStringToCheckForRedacting(
     proto::ModelExecutionFeature feature,
     const google::protobuf::MessageLite& message) const {
-  auto feature_iter = feature_to_data_.find(feature);
-  if (feature_iter == feature_to_data_.end() ||
-      !feature_iter->second->redactor) {
-    return std::string();
-  }
-  const auto& feature_config = feature_iter->second->config;
-  for (const auto& proto_field :
-       feature_config.output_config().redact_rules().fields_to_check()) {
-    std::optional<proto::Value> value = GetProtoValue(message, proto_field);
-    if (value.has_value()) {
-      const std::string string_value = GetStringFromValue(*value);
-      if (!string_value.empty()) {
-        return string_value;
-      }
-    }
+  if (const auto* adapter = GetAdapter(feature)) {
+    return adapter->GetStringToCheckForRedacting(message);
   }
   return std::string();
 }
 
 const Redactor* OnDeviceModelExecutionConfigInterpreter::GetRedactorForFeature(
     proto::ModelExecutionFeature feature) const {
-  const auto feature_iter = feature_to_data_.find(feature);
-  return feature_iter != feature_to_data_.end()
-             ? feature_iter->second->redactor.get()
-             : nullptr;
-}
-
-void OnDeviceModelExecutionConfigInterpreter::RegisterFeature(
-    const proto::OnDeviceModelExecutionFeatureConfig& config) {
-  std::unique_ptr<FeatureData> feature_data = std::make_unique<FeatureData>();
-  feature_data->config = config;
-  if (config.has_output_config() && config.output_config().has_redact_rules() &&
-      config.output_config().redact_rules().fields_to_check_size() &&
-      !config.output_config().redact_rules().rules().empty()) {
-    feature_data->redactor =
-        Redactor::FromProto(config.output_config().redact_rules());
+  if (const auto* adapter = GetAdapter(feature)) {
+    return adapter->redactor();
   }
-  feature_to_data_[config.feature()] = std::move(feature_data);
+  return nullptr;
 }
 
 void OnDeviceModelExecutionConfigInterpreter::PopulateFeatureConfigs(
@@ -130,15 +115,16 @@ void OnDeviceModelExecutionConfigInterpreter::PopulateFeatureConfigs(
     return;
   }
 
-  for (const auto& feature_config : config->feature_configs()) {
-    RegisterFeature(feature_config);
+  for (auto& feature_config : *config->mutable_feature_configs()) {
+    auto feature = feature_config.feature();
+    adapters_[feature] = std::make_unique<OnDeviceModelFeatureAdapter>(
+        std::move(feature_config));
   }
 }
 
 void OnDeviceModelExecutionConfigInterpreter::ClearState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  feature_to_data_.clear();
+  adapters_.clear();
 }
 
 std::optional<SubstitutionResult>
@@ -146,50 +132,20 @@ OnDeviceModelExecutionConfigInterpreter::ConstructInputString(
     proto::ModelExecutionFeature feature,
     const google::protobuf::MessageLite& request,
     bool want_input_context) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Get the config to construct the input string.
-  auto feature_iter = feature_to_data_.find(feature);
-  if (feature_iter == feature_to_data_.end()) {
-    return std::nullopt;
+  if (const auto* adapter = GetAdapter(feature)) {
+    return adapter->ConstructInputString(request, want_input_context);
   }
-  const auto& feature_config = feature_iter->second->config;
-  if (!feature_config.has_input_config()) {
-    return std::nullopt;
-  }
-  const auto input_config = feature_config.input_config();
-  if (input_config.request_base_name() != request.GetTypeName()) {
-    return std::nullopt;
-  }
-  google::protobuf::RepeatedPtrField<proto::SubstitutedString>
-      config_substitutions =
-          want_input_context ? input_config.input_context_substitutions()
-                             : input_config.execute_substitutions();
-
-  return CreateSubstitutions(request, config_substitutions);
+  return std::nullopt;
 }
 
 std::optional<proto::Any>
 OnDeviceModelExecutionConfigInterpreter::ConstructOutputMetadata(
     proto::ModelExecutionFeature feature,
     const std::string& output) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto iter = feature_to_data_.find(feature);
-  if (iter == feature_to_data_.end()) {
-    return std::nullopt;
+  if (const auto* adapter = GetAdapter(feature)) {
+    return adapter->ConstructOutputMetadata(output);
   }
-  const auto& feature_config = iter->second->config;
-  if (!feature_config.has_output_config()) {
-    return std::nullopt;
-  }
-  auto output_config = feature_config.output_config();
-
-  return SetProtoValue(output_config.proto_type(), output_config.proto_field(),
-                       output);
+  return std::nullopt;
 }
-
-OnDeviceModelExecutionConfigInterpreter::FeatureData::FeatureData() = default;
-OnDeviceModelExecutionConfigInterpreter::FeatureData::~FeatureData() = default;
 
 }  // namespace optimization_guide
