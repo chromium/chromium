@@ -171,7 +171,7 @@ template("single_apple_toolchain") {
       }
 
       # C/C++ (clang) rewrapper prefix to use when use_remoteexec is true.
-      compiler_prefix = "${rbe_bin_dir}/rewrapper -cfg=${toolchain_rbe_cc_cfg_file} -exec_root=${rbe_exec_root} "
+      compiler_prefix = "${rbe_bin_dir}/rewrapper -cfg=${toolchain_rbe_cc_cfg_file}${rbe_bug_326584510_missing_inputs} -exec_root=${rbe_exec_root} "
     } else if (toolchain_uses_goma) {
       assert(toolchain_cc_wrapper == "",
              "Goma and cc_wrapper can't be used together.")

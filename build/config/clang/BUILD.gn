@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/rust.gni")
 import("clang.gni")
 
@@ -82,6 +83,28 @@ config("find_bad_constructs") {
       ]
     }
   }
+}
+
+# A plugin for incrementally applying the -Wunsafe-buffer-usage warning.
+config("unsafe_buffers") {
+  if (clang_use_chrome_plugins) {
+    cflags = [
+      "-Xclang",
+      "-add-plugin",
+      "-Xclang",
+      "unsafe-buffers",
+
+      "-Xclang",
+      "-plugin-arg-unsafe-buffers",
+      "-Xclang",
+      rebase_path("//build/config/unsafe_buffers_paths.txt", root_build_dir),
+    ]
+  }
+}
+
+buildflag_header("unsafe_buffers_buildflags") {
+  header = "unsafe_buffers_buildflags.h"
+  flags = [ "UNSAFE_BUFFERS_WARNING_ENABLED=$clang_use_chrome_plugins" ]
 }
 
 # Enables some extra Clang-specific warnings. Some third-party code won't
