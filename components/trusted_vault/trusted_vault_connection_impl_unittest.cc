@@ -436,9 +436,9 @@ TEST_P(TrustedVaultConnectionImplTest,
   trusted_vault_pb::JoinSecurityDomainsRequest deserialized_body;
   ASSERT_TRUE(deserialized_body.ParseFromString(
       network::GetUploadData(resource_request)));
-  EXPECT_THAT(
-      deserialized_body.security_domain_member().member_type(),
-      Eq(trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_USER_DEFINED_PIN));
+  EXPECT_THAT(deserialized_body.security_domain_member().member_type(),
+              Eq(trusted_vault_pb::SecurityDomainMember::
+                     MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN));
   EXPECT_THAT(deserialized_body.security_domain_member()
                   .member_metadata()
                   .google_password_manager_pin_metadata()

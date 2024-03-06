@@ -61,8 +61,9 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
 
   size_t num_pin_members() const override {
     return base::ranges::count_if(members_, [](const auto& member) -> bool {
-      return member.member_type() == trusted_vault_pb::SecurityDomainMember::
-                                         MEMBER_TYPE_USER_DEFINED_PIN;
+      return member.member_type() ==
+             trusted_vault_pb::SecurityDomainMember::
+                 MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN;
     });
   }
 

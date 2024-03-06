@@ -127,7 +127,7 @@ trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
           },
           [&member](const GpmPin& gpm_pin) {
             member.set_member_type(trusted_vault_pb::SecurityDomainMember::
-                                       MEMBER_TYPE_USER_DEFINED_PIN);
+                                       MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN);
             auto* member_metadata = member.mutable_member_metadata();
             auto* pin_metadata =
                 member_metadata->mutable_google_password_manager_pin_metadata();
