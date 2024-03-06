@@ -549,8 +549,8 @@ bool IsGen9Gpu() {
   return is_gen9_gpu;
 }
 
-// Returns true if the SoC has a 9.5 GPU. CPU model IDs are referenced from the
-// following file in the kernel source:  arch/x86/include/asm/intel-family.h.
+// Returns true if the SoC has a Gen9.5 GPU. CPU model IDs are referenced from
+// the following file in the kernel source: arch/x86/include/asm/intel-family.h.
 bool IsGen95Gpu() {
   constexpr int kPentiumAndLaterFamily = 0x06;
   constexpr int kKabyLakeModelId = 0x9E;
@@ -567,6 +567,17 @@ bool IsGen95Gpu() {
                                     cpuid->model() == kCometLakeModelId ||
                                     cpuid->model() == kCometLake_LModelId);
   return is_gen95_gpu;
+}
+
+// Returns true if the SoC has a Gen11 GPU. CPU model IDs are referenced from
+// the following file in the kernel source: arch/x86/include/asm/intel-family.h.
+bool IsGen11Gpu() {
+  constexpr int kPentiumAndLaterFamily = 0x06;
+  constexpr int kJasperLakeModelId = 0x9C;
+  static const base::NoDestructor<base::CPU> cpuid;
+  static const bool is_gen11_gpu = cpuid->family() == kPentiumAndLaterFamily &&
+                                   (cpuid->model() == kJasperLakeModelId);
+  return is_gen11_gpu;
 }
 
 // Returns true if the intel hybrid driver is used for decoding |va_profile|.
@@ -3080,7 +3091,17 @@ bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
     pipeline_param->output_region = &output_region;
     pipeline_param->output_background_color = 0xff000000;
     pipeline_param->output_color_standard = VAProcColorStandardNone;
-    pipeline_param->filter_flags = VA_FILTER_SCALING_DEFAULT;
+    // SFC-AVS is the default iHD driver scaling setting on all Intel platforms,
+    // however, it has limitation on the older GPU before Gen12, EU-Bilinear is
+    // reconmmended on Intel GPUs before Gen12.
+    if (IsGen8Gpu() || IsGen9Gpu() || IsGen95Gpu() || IsGen11Gpu()) {
+      // EU-bilinear.
+      pipeline_param->filter_flags =
+          VA_FILTER_SCALING_HQ | VA_FILTER_INTERPOLATION_BILINEAR;
+    } else {
+      // SFC-AVS on Intel iHD driver.
+      pipeline_param->filter_flags = VA_FILTER_SCALING_DEFAULT;
+    }
     pipeline_param->rotation_state = VA_ROTATION_NONE;
   }
 
