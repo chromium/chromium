@@ -26,6 +26,7 @@ try_.defaults.set(
     siso_configs = ["builder"],
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
+    siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
@@ -172,7 +173,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(),
     use_clang_coverage = True,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -185,7 +185,6 @@ try_.compilator_builder(
     branch_selector = branches.selector.MAC_BRANCHES,
     cpu = cpu.ARM64,
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -584,7 +583,6 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(),
     use_clang_coverage = True,
 )
@@ -597,7 +595,6 @@ try_.compilator_builder(
     cpu = cpu.ARM64,
     ssd = None,
     main_list_view = "try",
-    siso_enabled = True,
     xcode = xcode.xcode_default,
 )
 
