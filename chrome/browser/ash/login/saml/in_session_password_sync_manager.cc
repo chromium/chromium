@@ -211,7 +211,7 @@ void InSessionPasswordSyncManager::OnCookiesTransfered() {
         base::MakeRefCounted<AuthSessionAuthenticator>(
             this, std::make_unique<ChromeSafeModeDelegate>(),
             /*user_recorder=*/base::DoNothing(),
-            g_browser_process->local_state());
+            /* new_user_can_be_owner=*/false, g_browser_process->local_state());
   }
   // Perform a fast ("verify-only") check of the current password. This is an
   // optimization: if the password wasn't actually changed the check will

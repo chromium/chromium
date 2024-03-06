@@ -62,10 +62,12 @@ class FakeAuthSessionAuthenticator : public AuthSessionAuthenticator {
       std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
       base::RepeatingCallback<void(const AccountId&)> user_recorder,
       PrefService* local_state,
+      bool new_user_can_become_owner,
       base::OnceClosure on_record_auth_factor_added)
       : AuthSessionAuthenticator(consumer,
                                  std::move(safe_mode_delegate),
                                  user_recorder,
+                                 new_user_can_become_owner,
                                  local_state) {
     on_record_auth_factor_added_ = std::move(on_record_auth_factor_added);
   }
@@ -91,9 +93,10 @@ class FakeAuthSessionAuthenticator : public AuthSessionAuthenticator {
 
 class FakeAuthenticatorBuilder : public AuthenticatorBuilder {
  public:
-  explicit FakeAuthenticatorBuilder(
-      base::OnceClosure on_record_auth_factor_added)
-      : on_record_auth_factor_added_(std::move(on_record_auth_factor_added)) {}
+  FakeAuthenticatorBuilder(base::OnceClosure on_record_auth_factor_added,
+                           bool new_user_can_become_owner)
+      : new_user_can_become_owner_(new_user_can_become_owner),
+        on_record_auth_factor_added_(std::move(on_record_auth_factor_added)) {}
 
   FakeAuthenticatorBuilder(const FakeAuthenticatorBuilder&) = delete;
   FakeAuthenticatorBuilder& operator=(const FakeAuthenticatorBuilder&) = delete;
@@ -107,10 +110,11 @@ class FakeAuthenticatorBuilder : public AuthenticatorBuilder {
     return new FakeAuthSessionAuthenticator(
         consumer, std::make_unique<ChromeSafeModeDelegate>(),
         /*user_recorder=*/base::DoNothing(), g_browser_process->local_state(),
-        std::move(on_record_auth_factor_added_));
+        new_user_can_become_owner_, std::move(on_record_auth_factor_added_));
   }
 
  private:
+  bool new_user_can_become_owner_;
   base::OnceClosure on_record_auth_factor_added_;
 };
 
@@ -118,6 +122,9 @@ class FakeAuthenticatorBuilder : public AuthenticatorBuilder {
 
 class MisconfiguredOwnerUserTest : public LoginManagerTest {
  public:
+  explicit MisconfiguredOwnerUserTest(bool new_user_can_become_owner = true)
+      : new_user_can_become_owner_(new_user_can_become_owner) {}
+
   void SetUpOnMainThread() override {
     add_auth_factor_waiter_ = std::make_unique<base::test::TestFuture<void>>();
     if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
@@ -134,7 +141,8 @@ class MisconfiguredOwnerUserTest : public LoginManagerTest {
               UserSessionManager::GetInstance());
       user_session_manager_test_api->InjectAuthenticatorBuilder(
           std::make_unique<FakeAuthenticatorBuilder>(
-              add_auth_factor_waiter_->GetCallback()));
+              add_auth_factor_waiter_->GetCallback(),
+              new_user_can_become_owner_));
     }
     LoginManagerTest::SetUpOnMainThread();
   }
@@ -165,6 +173,7 @@ class MisconfiguredOwnerUserTest : public LoginManagerTest {
                                    &cryptohome_mixin_};
   FakeGaiaMixin fake_gaia_mixin_{&mixin_host_};
   std::unique_ptr<base::test::TestFuture<void>> add_auth_factor_waiter_;
+  bool new_user_can_become_owner_;
 };
 
 IN_PROC_BROWSER_TEST_F(MisconfiguredOwnerUserTest,
@@ -182,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(MisconfiguredOwnerUserTest,
 
 class MisconfiguredUserTest : public MisconfiguredOwnerUserTest {
  public:
-  MisconfiguredUserTest() {
+  MisconfiguredUserTest() : MisconfiguredOwnerUserTest(false) {
     login_manager_.AppendRegularUsers(1);
     test_account_id_ = login_manager_.users().front().account_id;
     scoped_testing_cros_settings_.device_settings()->Set(

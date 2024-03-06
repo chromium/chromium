@@ -16,7 +16,6 @@
 #include "components/user_manager/user_manager.h"
 
 namespace user_manager {
-
 namespace {
 
 // Initial version of the preference, contained String value of user's e-mail.
@@ -29,8 +28,11 @@ const char kUserDirectoryIntegrityAccountPref[] =
 // AccountId, and might contain additional information.
 const char kUserDirectoryIntegrityAccountPrefV2[] =
     "incomplete_login_user_account_v2";
+const char kCleanupStrategyKey[] = "cleanup_strategy";
 
 }  // namespace
+
+using CleanupStrategy = UserDirectoryIntegrityManager::CleanupStrategy;
 
 UserDirectoryIntegrityManager::UserDirectoryIntegrityManager(
     PrefService* local_state)
@@ -45,10 +47,12 @@ void UserDirectoryIntegrityManager::RegisterLocalStatePrefs(
 }
 
 void UserDirectoryIntegrityManager::RecordCreatingNewUser(
-    const AccountId& account_id) {
+    const AccountId& account_id,
+    CleanupStrategy strategy) {
   LOG(WARNING) << "Creating new user, don't have credentials yet.";
   base::Value::Dict serialized_account;
   StoreAccountId(account_id, serialized_account);
+  serialized_account.Set(kCleanupStrategyKey, static_cast<int>(strategy));
   local_state_->SetDict(kUserDirectoryIntegrityAccountPrefV2,
                         std::move(serialized_account));
   local_state_->CommitPendingWrite();
@@ -75,6 +79,20 @@ UserDirectoryIntegrityManager::GetMisconfiguredUserAccountId() {
     return result;
   }
   return GetMisconfiguredUserAccountIdLegacy();
+}
+
+CleanupStrategy
+UserDirectoryIntegrityManager::GetMisconfiguredUserCleanupStrategy() {
+  const base::Value::Dict& account_dict =
+      local_state_->GetDict(kUserDirectoryIntegrityAccountPrefV2);
+  std::optional<int> raw_strategy = account_dict.FindInt(kCleanupStrategyKey);
+  if (raw_strategy) {
+    CHECK(0 <= *raw_strategy);
+    CHECK(*raw_strategy <= static_cast<int>(CleanupStrategy::kMaxValue));
+    return static_cast<CleanupStrategy>(*raw_strategy);
+  }
+  // Default value
+  return CleanupStrategy::kRemoveUser;
 }
 
 std::optional<AccountId>

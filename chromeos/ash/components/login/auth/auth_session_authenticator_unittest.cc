@@ -299,7 +299,8 @@ class AuthSessionAuthenticatorTest : public testing::Test,
     RegisterPrefs();
     authenticator_ = base::MakeRefCounted<AuthSessionAuthenticator>(
         &auth_status_consumer_, std::move(owned_safe_mode_delegate),
-        /*user_recorder=*/base::DoNothing(), &local_state_);
+        /*user_recorder=*/base::DoNothing(), /* new_user_can_be_owner=*/false,
+        &local_state_);
   }
 
   MockUserDataAuthClient& userdataauth() { return userdataauth_; }

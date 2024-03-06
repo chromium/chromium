@@ -53,6 +53,7 @@ AuthSessionAuthenticator::AuthSessionAuthenticator(
     AuthStatusConsumer* consumer,
     std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
     base::RepeatingCallback<void(const AccountId&)> user_recorder,
+    bool new_user_can_become_owner,
     PrefService* local_state)
     : Authenticator(consumer),
       user_recorder_(std::move(user_recorder)),
@@ -63,7 +64,8 @@ AuthSessionAuthenticator::AuthSessionAuthenticator(
           std::make_unique<AuthPerformer>(UserDataAuthClient::Get(),
                                           base::DefaultClock::GetInstance())),
       mount_performer_(std::make_unique<MountPerformer>()),
-      local_state_(local_state) {
+      local_state_(local_state),
+      new_user_can_become_owner_(new_user_can_become_owner) {
   DCHECK(safe_mode_delegate_);
   DCHECK(!user_recorder_.is_null());
 }
@@ -214,10 +216,11 @@ void AuthSessionAuthenticator::StartAuthSessionForLoggedIn(
 }
 
 void AuthSessionAuthenticator::RecordCreatingNewUser(
+    user_manager::UserDirectoryIntegrityManager::CleanupStrategy strategy,
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   user_manager::UserDirectoryIntegrityManager integrity_manager(local_state_);
-  integrity_manager.RecordCreatingNewUser(context->GetAccountId());
+  integrity_manager.RecordCreatingNewUser(context->GetAccountId(), strategy);
   std::move(callback).Run(std::move(context),
                           /*authentication_error=*/std::nullopt);
 }
@@ -264,9 +267,24 @@ void AuthSessionAuthenticator::DoCompleteLogin(
       steps.push_back(base::BindOnce(&MountPerformer::MountEphemeralDirectory,
                                      mount_performer_->AsWeakPtr()));
     } else {  // New persistent user
+      using CleanupStrategy =
+          user_manager::UserDirectoryIntegrityManager::CleanupStrategy;
+      CleanupStrategy strategy = new_user_can_become_owner_
+                                     ? CleanupStrategy::kSilentPowerwash
+                                     : CleanupStrategy::kRemoveUser;
+      bool ignore_owner_in_tests =
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              ash::switches::kCryptohomeIgnoreCleanupOwnershipForTesting);
+
+      if (ignore_owner_in_tests &&
+          strategy == CleanupStrategy::kSilentPowerwash) {
+        LOG(WARNING) << "Overriding cleanup strategy due to testing";
+        strategy = CleanupStrategy::kRemoveUser;
+      }
+
       steps.push_back(
           base::BindOnce(&AuthSessionAuthenticator::RecordCreatingNewUser,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr(), strategy));
       // We need to store a user information as it would be used by
       // CryptohomeKeyDelegateServiceProvider and MisconfiguredUserCleaner
       // If the user creation process is interrupted, the known user record
@@ -724,7 +742,9 @@ void AuthSessionAuthenticator::DoLoginAsKiosk(
   } else {
     steps.push_back(
         base::BindOnce(&AuthSessionAuthenticator::RecordCreatingNewUser,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(),
+                       user_manager::UserDirectoryIntegrityManager::
+                           CleanupStrategy::kRemoveUser));
     steps.push_back(base::BindOnce(&MountPerformer::CreateNewUser,
                                    mount_performer_->AsWeakPtr()));
     steps.push_back(base::BindOnce(&MountPerformer::MountPersistentDirectory,
