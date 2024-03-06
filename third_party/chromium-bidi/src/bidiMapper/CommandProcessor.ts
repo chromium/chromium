@@ -24,6 +24,7 @@ import {
   UnsupportedOperationException,
   type ChromiumBidi,
   type Browser,
+  type Script,
 } from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
@@ -299,15 +300,21 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       case 'script.callFunction':
         return await this.#scriptProcessor.callFunction(
-          this.#parser.parseCallFunctionParams(command.params)
+          this.#parser.parseCallFunctionParams(
+            this.#processTargetParams(command.params)
+          )
         );
       case 'script.disown':
         return await this.#scriptProcessor.disown(
-          this.#parser.parseDisownParams(command.params)
+          this.#parser.parseDisownParams(
+            this.#processTargetParams(command.params)
+          )
         );
       case 'script.evaluate':
         return await this.#scriptProcessor.evaluate(
-          this.#parser.parseEvaluateParams(command.params)
+          this.#parser.parseEvaluateParams(
+            this.#processTargetParams(command.params)
+          )
         );
       case 'script.getRealms':
         return this.#scriptProcessor.getRealms(
@@ -356,6 +363,22 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     // ESLint @typescript-eslint/switch-exhaustiveness-check triggers if a new
     // command is added.
     throw new UnknownCommandException(`Unknown command '${command.method}'.`);
+  }
+
+  // Workaround for as zod.union always take the first schema
+  // https://github.com/w3c/webdriver-bidi/issues/635
+  #processTargetParams(params: {target: Script.Target}) {
+    if (
+      typeof params === 'object' &&
+      params &&
+      'target' in params &&
+      typeof params.target === 'object' &&
+      params.target &&
+      'context' in params.target
+    ) {
+      delete (params.target as any)['realm'];
+    }
+    return params;
   }
 
   async processCommand(command: ChromiumBidi.Command): Promise<void> {

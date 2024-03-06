@@ -152,12 +152,12 @@ export class ScriptProcessor {
   }
 
   async #getRealm(target: Script.Target): Promise<Realm> {
-    if ('realm' in target) {
-      return this.#realmStorage.getRealm({
-        realmId: target.realm,
-      });
+    if ('context' in target) {
+      const context = this.#browsingContextStorage.getContext(target.context);
+      return await context.getOrCreateSandbox(target.sandbox);
     }
-    const context = this.#browsingContextStorage.getContext(target.context);
-    return await context.getOrCreateSandbox(target.sandbox);
+    return this.#realmStorage.getRealm({
+      realmId: target.realm,
+    });
   }
 }
