@@ -54,13 +54,13 @@ class PLATFORM_EXPORT PaintChunker final {
                                          const DisplayItemClient&,
                                          const PropertyTreeStateOrAlias&);
 
-  // Sets the forcing new chunk status on or off. If the status is on, even the
+  // Sets the forcing new chunk status on. When the status is on, even the
   // properties haven't change, we'll force a new paint chunk for the next
   // display item and then automatically resets the status. Some special display
   // item (e.g. ForeignLayerDisplayItem) also automatically sets the status on
   // before and after the item to force a dedicated paint chunk.
-  void SetWillForceNewChunk(bool force) {
-    will_force_new_chunk_ = force;
+  void SetWillForceNewChunk() {
+    will_force_new_chunk_ = true;
     next_chunk_id_ = std::nullopt;
   }
   bool WillForceNewChunkForTesting() const { return will_force_new_chunk_; }

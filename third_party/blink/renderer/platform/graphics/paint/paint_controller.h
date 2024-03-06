@@ -107,10 +107,6 @@ class PLATFORM_EXPORT PaintController {
   const PropertyTreeStateOrAlias& CurrentPaintChunkProperties() const {
     return paint_chunker_.CurrentPaintChunkProperties();
   }
-  // See PaintChunker for documentation of the following methods.
-  void SetWillForceNewChunk(bool force) {
-    paint_chunker_.SetWillForceNewChunk(force);
-  }
   void SetCurrentEffectivelyInvisible(bool invisible) {
     paint_chunker_.SetCurrentEffectivelyInvisible(invisible);
   }

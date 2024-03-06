@@ -1833,11 +1833,13 @@ TEST_P(PaintControllerTest, SkipCacheDuplicatedItemAndChunkIds) {
     CommitCycleScope cycle_scope(paint_controller);
     GraphicsContext context(paint_controller);
     paint_controller.BeginSkippingCache();
-    paint_controller.SetWillForceNewChunk(true);
-    paint_controller.UpdateCurrentPaintChunkProperties(chunk_id, chunk_client,
-                                                       properties);
-    DrawRect(context, item_client, kBackgroundType, gfx::Rect(0, 0, 100, 100));
-    paint_controller.SetWillForceNewChunk(true);
+    {
+      SubsequenceRecorder r(context, chunk_client);
+      paint_controller.UpdateCurrentPaintChunkProperties(chunk_id, chunk_client,
+                                                         properties);
+      DrawRect(context, item_client, kBackgroundType,
+               gfx::Rect(0, 0, 100, 100));
+    }
     paint_controller.UpdateCurrentPaintChunkProperties(chunk_id, chunk_client,
                                                        properties);
     DrawRect(context, item_client, kBackgroundType, gfx::Rect(0, 0, 100, 100));
@@ -2050,19 +2052,16 @@ TEST_P(PaintControllerTest, AllowDuplicatedIdForTransientPaintController) {
     CommitCycleScope cycle_scope(*paint_controller);
     InitRootChunk(*paint_controller);
     {
-      paint_controller->SetWillForceNewChunk(true);
+      SubsequenceRecorder r(context, client);
       ScopedPaintChunkProperties p(*paint_controller,
                                    DefaultPaintChunkProperties(), client,
                                    kBackgroundType);
       DrawRect(context, client, kBackgroundType, gfx::Rect(100, 100, 50, 50));
     }
-    {
-      paint_controller->SetWillForceNewChunk(true);
-      ScopedPaintChunkProperties p(*paint_controller,
-                                   DefaultPaintChunkProperties(), client,
-                                   kBackgroundType);
-      DrawRect(context, client, kBackgroundType, gfx::Rect(100, 100, 50, 50));
-    }
+    ScopedPaintChunkProperties p(*paint_controller,
+                                 DefaultPaintChunkProperties(), client,
+                                 kBackgroundType);
+    DrawRect(context, client, kBackgroundType, gfx::Rect(100, 100, 50, 50));
   }
   EXPECT_EQ(2u, paint_controller->GetDisplayItemList().size());
   EXPECT_EQ(2u, paint_controller->PaintChunks().size());
