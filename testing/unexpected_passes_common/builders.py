@@ -5,6 +5,7 @@
 
 from __future__ import print_function
 
+import concurrent.futures
 import json
 import logging
 import os
@@ -15,7 +16,6 @@ import six
 
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
-from unexpected_passes_common import multiprocessing_utils
 
 TESTING_BUILDBOT_DIR = os.path.realpath(
     os.path.join(os.path.dirname(__file__), '..', 'buildbot'))
@@ -157,13 +157,15 @@ class Builders():
     mirrored_builders = set()
     no_output_builders = set()
 
-    with multiprocessing_utils.GetProcessPoolContext() as pool:
-      results = pool.map(self._GetMirroredBuildersForCiBuilder, ci_builders)
-    for (builders, found_mirror) in results:
-      if found_mirror:
-        mirrored_builders |= builders
-      else:
-        no_output_builders |= builders
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=os.cpu_count()) as pool:
+      results_iter = pool.map(self._GetMirroredBuildersForCiBuilder,
+                              ci_builders)
+      for (builders, found_mirror) in results_iter:
+        if found_mirror:
+          mirrored_builders |= builders
+        else:
+          no_output_builders |= builders
 
     if no_output_builders:
       raise RuntimeError(

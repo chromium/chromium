@@ -5,7 +5,7 @@
 
 from __future__ import print_function
 
-from typing import Any, Callable, Iterable, List, Optional, Set, Tuple, Type
+from typing import Iterable, List, Optional, Set, Tuple, Type
 import unittest.mock as mock
 
 from unexpected_passes_common import builders
@@ -95,44 +95,6 @@ def GetArgsForMockCall(call_args_list: List[tuple],
   args = call_args_list[call_number][0]
   kwargs = call_args_list[call_number][1]
   return args, kwargs
-
-
-class FakePool():
-  """A fake pathos.pools.ProcessPool instance.
-
-  Real pools don't like being given MagicMocks, so this allows testing of
-  code that uses pathos.pools.ProcessPool by returning this from
-  multiprocessing_utils.GetProcessPool().
-  """
-
-  def map(self, f: Callable[[Any], Any], inputs: Iterable[Any]) -> List[Any]:
-    retval = []
-    for i in inputs:
-      retval.append(f(i))
-    return retval
-
-  def apipe(self, f: Callable[[Any], Any],
-            inputs: Iterable[Any]) -> 'FakeAsyncResult':
-    return FakeAsyncResult(f(inputs))
-
-  def close(self) -> None:
-    pass
-
-  def join(self) -> None:
-    pass
-
-
-class FakeAsyncResult():
-  """A fake AsyncResult like the one from multiprocessing or pathos."""
-
-  def __init__(self, result: Any):
-    self._result = result
-
-  def ready(self) -> bool:
-    return True
-
-  def get(self) -> Any:
-    return self._result
 
 
 class FakeProcess():

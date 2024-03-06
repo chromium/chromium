@@ -21,7 +21,6 @@ from pyfakefs import fake_filesystem_unittest
 from unexpected_passes_common import builders
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
-from unexpected_passes_common import multiprocessing_utils
 from unexpected_passes_common import unittest_utils
 
 
@@ -395,11 +394,6 @@ class GetTryBuildersUnittest(FakeFilesystemTestCaseWithFileCreation):
                                                 '_BuilderRunsTestOfInterest')
     self._runs_test_mock = self._runs_test_patcher.start()
     self.addCleanup(self._runs_test_patcher.stop)
-    self._pool_patcher = mock.patch.object(multiprocessing_utils,
-                                           'GetProcessPool')
-    self._pool_mock = self._pool_patcher.start()
-    self._pool_mock.return_value = unittest_utils.FakePool()
-    self.addCleanup(self._pool_patcher.stop)
 
     self.setUpPyfakefs()
     # Make sure the directory exists.

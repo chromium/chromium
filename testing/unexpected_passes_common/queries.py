@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Methods related to querying the ResultDB BigQuery tables."""
 
+import concurrent.futures
 import json
 import logging
 import math
@@ -21,7 +22,6 @@ from unexpected_passes_common import builders as builders_module
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 from unexpected_passes_common import expectations
-from unexpected_passes_common import multiprocessing_utils
 
 DEFAULT_NUM_SAMPLES = 100
 MAX_ROWS = (2**31) - 1
@@ -148,19 +148,15 @@ class BigQueryQuerier(object):
     num_jobs = self._num_jobs or len(builders)
     args = [(b, expectation_map) for b in builders]
 
-    with multiprocessing_utils.GetProcessPoolContext(num_jobs) as pool:
-      results = pool.map(self._QueryAddCombined, args)
-
     tmp_expectation_map = data_types.TestExpectationMap()
     all_unmatched_results = {}
 
-    # results is potentially rather large, so reduce the list as we iterate over
-    # it to avoid using excessive memory.
-    while results:
-      (unmatched_results, prefixed_builder_name, merge_map) = results.pop()
-      tmp_expectation_map.Merge(merge_map, expectation_map)
-      if unmatched_results:
-        all_unmatched_results[prefixed_builder_name] = unmatched_results
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_jobs) as pool:
+      for result in pool.map(self._QueryAddCombined, args):
+        unmatched_results, prefixed_builder_name, merge_map = result
+        tmp_expectation_map.Merge(merge_map, expectation_map)
+        if unmatched_results:
+          all_unmatched_results[prefixed_builder_name] = unmatched_results
 
     expectation_map.clear()
     expectation_map.update(tmp_expectation_map)
