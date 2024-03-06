@@ -579,6 +579,7 @@ public class PageInsightsCoordinatorTest {
     @Test
     @MediumTest
     @Ignore("TODO: b/325577847 - Animation is not finished when PIH finishes dismiss")
+    @DisabledTest(message = "crbug.com/328462350")
     public void testDismissAfterExpandedState_scrimNotShown() throws Exception {
         createAndLaunchPageInsightsCoordinator();
         mScrimCoordinator.disableAnimationForTesting(true);
