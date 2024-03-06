@@ -84,7 +84,7 @@ ui::Shadow::ElevationToColorsMap ShadowElevationToColorsMap(
   return colors_map;
 }
 
-enum BubbleArrowPart { kFill, kBorder };
+enum class BubbleArrowPart { kFill, kBorder };
 
 SkPath GetVisibleArrowPath(BubbleBorder::Arrow arrow,
                            const gfx::Rect& bounds,
