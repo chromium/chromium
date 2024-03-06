@@ -5203,7 +5203,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.OSAuth.Login.AuthFactorMigrationResult.{AuthFactorMigrationName}"
     enum="AuthFactorMigrationResult" expires_after="2024-07-07">
-  <owner>anastasiian@chromium.org</owner>
+  <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
     The result of {AuthFactorMigrationName} migration. Reported on each login
@@ -5217,7 +5217,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.OSAuth.Login.ConfiguredAuthFactors.{AuthFactor}"
     enum="Boolean" expires_after="2024-07-07">
-  <owner>anastasiian@chromium.org</owner>
+  <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
     Whether the logged in user has {AuthFactor} auth factor configured. Recorded
