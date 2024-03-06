@@ -43,6 +43,12 @@ luci.bucket(
 luci.bucket(
     name = "build.shadow",
     shadows = "build",
+    constraints = luci.bucket_constraints(
+        pools = [ci.DEFAULT_POOL],
+        service_accounts = [
+            "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+        ],
+    ),
     bindings = [
         # for led permissions.
         luci.binding(
