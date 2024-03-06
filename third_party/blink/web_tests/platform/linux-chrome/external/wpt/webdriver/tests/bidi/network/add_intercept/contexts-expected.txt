@@ -1,12 +1,10 @@
 This is a wdspec test.
 [FAIL] test_other_context[beforeRequestSent]
-  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: AbortError: signal is aborted without reason
 [FAIL] test_other_context[responseStarted]
-  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: AbortError: signal is aborted without reason
 [FAIL] test_other_context_with_event_subscription
-  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
-[FAIL] test_two_contexts_same_intercept
-  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+  AssertionError
 [FAIL] test_two_contexts_global_intercept
-  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+  AssertionError
 Harness: the test ran to completion.

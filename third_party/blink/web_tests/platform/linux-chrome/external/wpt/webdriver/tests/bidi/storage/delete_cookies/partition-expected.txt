@@ -1,22 +1,22 @@
 This is a wdspec test.
 [FAIL] test_default_partition[with document cookie]
-  AttributeError: 'Storage' object has no attribute 'delete_cookies'
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
 [FAIL] test_default_partition[with set cookie]
-  AttributeError: 'Storage' object has no attribute 'delete_cookies'
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
 [FAIL] test_partition_context[with document cookie]
-  AttributeError: 'Storage' object has no attribute 'delete_cookies'
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
 [FAIL] test_partition_context[with set cookie]
-  AttributeError: 'Storage' object has no attribute 'delete_cookies'
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
 [FAIL] test_partition_context_iframe[same_origin]
-  AttributeError: 'Storage' object has no attribute 'delete_cookies'
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
 [FAIL] test_partition_context_iframe[cross_origin]
-  AttributeError: 'Storage' object has no attribute 'delete_cookies'
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
 [FAIL] test_partition_source_origin[http]
-  AttributeError: 'Storage' object has no attribute 'delete_cookies'
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
 [FAIL] test_partition_source_origin[https]
-  AttributeError: 'Storage' object has no attribute 'delete_cookies'
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
 [FAIL] test_partition_user_context[with document cookie]
-  AttributeError: 'Storage' object has no attribute 'delete_cookies'
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
 [FAIL] test_partition_user_context[with set cookie]
-  AttributeError: 'Storage' object has no attribute 'delete_cookies'
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
 Harness: the test ran to completion.

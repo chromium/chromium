@@ -14,7 +14,7 @@ external/wpt/webdriver/tests/bidi/input/perform_actions/invalid.py [ Failure Tim
 external/wpt/webdriver/tests/classic/element_click/navigate.py [ Failure ]  # Flaky output
 external/wpt/webdriver/tests/bidi/input/perform_actions/wheel.py [ Failure ]  # Flaky output
 external/wpt/webdriver/tests/bidi/network/add_intercept/invalid.py [ Timeout ]
-external/wpt/webdriver/tests/bidi/network/add_intercept/phases.py [ Timeout ]
+external/wpt/webdriver/tests/bidi/network/add_intercept/phases.py [ Failure Timeout ]
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/network/remove_intercept/remove_intercept.py [ Failure Timeout ]
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/network/response_started/response_started.py [ Failure Timeout ]
 external/wpt/webdriver/tests/bidi/network/response_started/response_started_cached.py [ Timeout ]
@@ -51,6 +51,13 @@ crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_node
 crbug.com/1499775 external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_multiclick.py [ Failure Timeout ]
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/browsing_context/print/context.py [ Failure Pass Timeout ]
 crbug.com/324436866 external/wpt/webdriver/tests/classic/get_current_url/file.py [ Failure Pass Timeout ]
+[ Debug ] external/wpt/webdriver/tests/bidi/input/set_files/invalid.py [ Timeout ]
+external/wpt/webdriver/tests/bidi/input/set_files/set_files.py [ Timeout ]
+[ Debug ] external/wpt/webdriver/tests/bidi/network/add_intercept/contexts.py [ Timeout ]
+[ Debug ] external/wpt/webdriver/tests/bidi/storage/delete_cookies/filter.py [ Timeout ]
+[ Debug ] external/wpt/webdriver/tests/bidi/storage/delete_cookies/invalid.py [ Timeout ]
+[ Debug ] external/wpt/webdriver/tests/bidi/storage/delete_cookies/partition.py [ Timeout ]
+[ Debug ] external/wpt/webdriver/tests/bidi/storage/get_cookies/invalid.py [ Timeout ]
 
 # Gardener 2024-03-04
 crbug.com/328129675 external/wpt/credential-management/fedcm-button-mode-basics.https.html [ Failure ]
