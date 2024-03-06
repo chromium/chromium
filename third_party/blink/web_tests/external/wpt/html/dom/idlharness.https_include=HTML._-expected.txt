@@ -1,13 +1,17 @@
 This is a testharness.js-based test.
-Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] HTMLElement interface: attribute accessKeyLabel
   assert_true: The prototype object must have a property "accessKeyLabel" expected true got false
 [FAIL] HTMLElement interface: document.createElement("noscript") must inherit property "accessKeyLabel" with the proper type
   assert_inherits: property "accessKeyLabel" not found in prototype chain
 [FAIL] HTMLBodyElement interface: attribute onpagereveal
   assert_true: The prototype object must have a property "onpagereveal" expected true got false
+[FAIL] HTMLBodyElement interface: attribute onpageswap
+  assert_true: The prototype object must have a property "onpageswap" expected true got false
 [FAIL] HTMLBodyElement interface: document.createElement("body") must inherit property "onpagereveal" with the proper type
   assert_inherits: property "onpagereveal" not found in prototype chain
+[FAIL] HTMLBodyElement interface: document.createElement("body") must inherit property "onpageswap" with the proper type
+  assert_inherits: property "onpageswap" not found in prototype chain
 [FAIL] HTMLMediaElement interface: document.createElement("video") must inherit property "fastSeek(double)" with the proper type
   assert_inherits: property "fastSeek" not found in prototype chain
 [FAIL] HTMLMediaElement interface: calling fastSeek(double) on document.createElement("video") with too few arguments must throw TypeError
@@ -32,7 +36,11 @@ Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: interface prototype object missing non-static operation expected property "getStartDate" missing
 [FAIL] HTMLFrameSetElement interface: attribute onpagereveal
   assert_true: The prototype object must have a property "onpagereveal" expected true got false
+[FAIL] HTMLFrameSetElement interface: attribute onpageswap
+  assert_true: The prototype object must have a property "onpageswap" expected true got false
 [FAIL] HTMLFrameSetElement interface: document.createElement("frameset") must inherit property "onpagereveal" with the proper type
   assert_inherits: property "onpagereveal" not found in prototype chain
+[FAIL] HTMLFrameSetElement interface: document.createElement("frameset") must inherit property "onpageswap" with the proper type
+  assert_inherits: property "onpageswap" not found in prototype chain
 Harness: the test ran to completion.
 

@@ -2612,6 +2612,8 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box-005.html [ Failure ]
+crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-box/svgbox-stroke-box-005.html [ Failure ]
 crbug.com/626703 external/wpt/mathml/presentation-markup/mrow/semantics-005.html [ Failure ]
 crbug.com/626703 virtual/webnn-service-without-gpu/external/wpt/webnn/conformance_tests/gpu/elementwise_logical.https.any.worker.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-percent-001.html [ Failure ]

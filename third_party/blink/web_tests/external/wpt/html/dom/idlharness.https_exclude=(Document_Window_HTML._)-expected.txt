@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] TextTrack interface: attribute inBandMetadataTrackDispatchType
   assert_true: The prototype object must have a property "inBandMetadataTrackDispatchType" expected true got false
 [FAIL] TextTrack interface: document.createElement("track").track must inherit property "inBandMetadataTrackDispatchType" with the proper type
@@ -20,6 +20,10 @@ Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: expected property "duration" missing
 [FAIL] Location interface: stringifier
   assert_own_property: interface prototype object missing non-static operation expected property "toString" missing
+[FAIL] PageSwapEvent interface object length
+  assert_equals: wrong value for PageSwapEvent.length expected 1 but got 0
+[FAIL] PageSwapEvent interface: attribute viewTransition
+  assert_true: The prototype object must have a property "viewTransition" expected true got false
 [FAIL] PageRevealEvent interface object length
   assert_equals: wrong value for PageRevealEvent.length expected 1 but got 0
 [FAIL] PageRevealEvent interface: attribute viewTransition
@@ -60,6 +64,8 @@ Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: The prototype object must have a property "onpagereveal" expected true got false
 [FAIL] SVGSVGElement interface: attribute onpageshow
   assert_true: The prototype object must have a property "onpageshow" expected true got false
+[FAIL] SVGSVGElement interface: attribute onpageswap
+  assert_true: The prototype object must have a property "onpageswap" expected true got false
 [FAIL] SVGSVGElement interface: attribute onpopstate
   assert_true: The prototype object must have a property "onpopstate" expected true got false
 [FAIL] SVGSVGElement interface: attribute onrejectionhandled

@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
-Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] shadowed pagereveal (document.body)
+  assert_equals: alternative body should reflect expected (function) function "() => 0" but got (undefined) undefined
+[FAIL] shadowed pageswap (document.body)
   assert_equals: alternative body should reflect expected (function) function "() => 0" but got (undefined) undefined
 [FAIL] shadowed unload (document.body)
   assert_equals: alternative body should reflect expected (function) function "() => 0" but got (object) null
@@ -12,7 +14,11 @@ Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: window should reflect expected (object) null but got (undefined) undefined
 [FAIL] shadowed pagereveal removal (document.body)
   assert_equals: body should reflect changes to itself expected (object) null but got (undefined) undefined
+[FAIL] shadowed pageswap removal (document.body)
+  assert_equals: body should reflect changes to itself expected (object) null but got (undefined) undefined
 [FAIL] shadowed pagereveal (document.createElement("frameset"))
+  assert_equals: body should reflect expected (function) function "() => 0" but got (undefined) undefined
+[FAIL] shadowed pageswap (document.createElement("frameset"))
   assert_equals: body should reflect expected (function) function "() => 0" but got (undefined) undefined
 [FAIL] shadowed unload (document.createElement("frameset"))
   assert_equals: body should reflect expected (function) function "() => 0" but got (object) null
@@ -24,11 +30,17 @@ Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: window should reflect expected (object) null but got (undefined) undefined
 [FAIL] shadowed pagereveal removal (document.createElement("frameset"))
   assert_equals: alternative body should reflect changes to itself expected (object) null but got (undefined) undefined
+[FAIL] shadowed pageswap removal (document.createElement("frameset"))
+  assert_equals: alternative body should reflect changes to itself expected (object) null but got (undefined) undefined
 [FAIL] shadowed pagereveal (window)
+  assert_equals: body should reflect expected (function) function "() => 0" but got (undefined) undefined
+[FAIL] shadowed pageswap (window)
   assert_equals: body should reflect expected (function) function "() => 0" but got (undefined) undefined
 [FAIL] shadowed unload (window)
   assert_equals: body should reflect expected (function) function "() => 0" but got (object) null
 [FAIL] shadowed pagereveal removal (window)
+  assert_equals: body should reflect expected (object) null but got (undefined) undefined
+[FAIL] shadowed pageswap removal (window)
   assert_equals: body should reflect expected (object) null but got (undefined) undefined
 Harness: the test ran to completion.
 

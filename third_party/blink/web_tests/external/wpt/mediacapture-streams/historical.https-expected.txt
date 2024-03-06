@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
 [FAIL] webkitMediaStream interface should not exist
   assert_false: expected false got true
+[FAIL] navigator.getUserMedia should not exist
+  assert_false: expected false got true
 [FAIL] navigator.webkitGetUserMedia should not exist
   assert_false: expected false got true
 [FAIL] MediaStream.onactive should not exist
