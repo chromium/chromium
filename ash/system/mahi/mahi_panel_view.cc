@@ -58,7 +58,6 @@ namespace ash {
 namespace {
 
 constexpr SkScalar kContentScrollViewCornerRadius = 16;
-constexpr int kPanelCornerRadius = 16;
 constexpr gfx::Insets kPanelPadding = gfx::Insets(16);
 constexpr int kPanelChildSpacing = 8;
 constexpr int kHeaderRowSpacing = 8;
@@ -116,19 +115,22 @@ MahiPanelView::MahiPanelView() {
   SetDefault(views::kMarginsKey, gfx::Insets::VH(kPanelChildSpacing, 0));
   SetIgnoreDefaultMainAxisMargins(true);
   SetCollapseMargins(true);
+  SetID(mahi_constants::ViewId::kMahiPanelView);
 
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemBaseElevated, kPanelCornerRadius));
+      cros_tokens::kCrosSysSystemBaseElevated,
+      mahi_constants::kPanelCornerRadius));
 
   // Create a layer for the view for background blur and rounded corners.
   SetPaintToLayer();
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kPanelCornerRadius});
+  layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF{mahi_constants::kPanelCornerRadius});
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetIsFastRoundedCorner(true);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   SetBorder(std::make_unique<views::HighlightBorder>(
-      kPanelCornerRadius,
+      mahi_constants::kPanelCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow,
       /*insets_type=*/views::HighlightBorder::InsetsType::kHalfInsets));
 

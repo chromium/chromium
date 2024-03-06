@@ -18,6 +18,8 @@ enum ViewId {
   kThumbsUpButton,
   kThumbsDownButton,
   kLearnMoreLink,
+  kRefreshView,
+  kMahiPanelView,
 };
 
 // The size of the icon that appears in the panel's source row.
@@ -27,6 +29,9 @@ inline constexpr char kMahiFeedbackHistogramName[] = "Ash.Mahi.Feedback";
 
 // TODO(b/319264190): Replace the string here with the correct URL.
 inline constexpr char kLearnMorePage[] = "https://google.com";
+
+inline constexpr int kRefreshBannerStackDepth = 25;
+inline constexpr int kPanelCornerRadius = 16;
 
 }  // namespace ash::mahi_constants
 

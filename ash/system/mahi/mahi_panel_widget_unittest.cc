@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/system/mahi/fake_mahi_manager.h"
+#include "ash/system/mahi/mahi_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/aura/window.h"
@@ -56,6 +57,32 @@ TEST_F(MahiPanelWidgetTest, WidgetBounds) {
               ShelfConfig::Get()->shelf_size() - kPanelBoundsShelfPadding,
           kPanelDefaultWidth, kPanelDefaultHeight),
       widget->GetRestoredBounds());
+}
+
+TEST_F(MahiPanelWidgetTest, WidgetBoundsWithRefreshBanner) {
+  auto widget = MahiPanelWidget::CreatePanelWidget(GetPrimaryDisplay().id());
+
+  auto* panel_view = widget->GetContentsView()->GetViewByID(
+      mahi_constants::ViewId::kMahiPanelView);
+
+  auto* refresh_view = widget->GetContentsView()->GetViewByID(
+      mahi_constants::ViewId::kRefreshView);
+
+  auto panel_view_bounds = panel_view->GetBoundsInScreen();
+  auto widget_bounds = widget->GetRestoredBounds();
+
+  refresh_view->SetVisible(true);
+
+  // Make sure the `MahiPanelView` has the exact same location on the screen
+  // after the `RefreshBannerView` changes visibility.
+  EXPECT_EQ(panel_view_bounds, panel_view->GetBoundsInScreen());
+
+  // The widget's height should increase by the height of the
+  // `RefreshBannerView` subtracted by `kRefreshBannerStackDepth`.
+  int height_delta =
+      widget->GetRestoredBounds().height() - widget_bounds.height();
+  EXPECT_EQ(height_delta, refresh_view->GetBoundsInScreen().height() -
+                              mahi_constants::kRefreshBannerStackDepth);
 }
 
 }  // namespace

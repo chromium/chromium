@@ -6,15 +6,18 @@
 #define ASH_SYSTEM_MAHI_MAHI_PANEL_WIDGET_H_
 
 #include "ash/ash_export.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
+class RefreshBannerView;
+
 // The widget that contains the Mahi panel.
 // TODO(b/319329379): Use this class in `CreatePanelWidget()` when resizing and
 // closing capability is added.
-class ASH_EXPORT MahiPanelWidget : public views::Widget {
+class ASH_EXPORT MahiPanelWidget : public views::Widget, views::ViewObserver {
  public:
   explicit MahiPanelWidget(InitParams params);
 
@@ -28,6 +31,18 @@ class ASH_EXPORT MahiPanelWidget : public views::Widget {
 
   // Shows/hides the refresh UI in the panel.
   void SetRefreshViewVisible(bool visible);
+
+ private:
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
+
+  // Owned by views hierarchy.
+  raw_ptr<RefreshBannerView> refresh_view_ = nullptr;
+
+  base::ScopedObservation<views::View, views::ViewObserver>
+      refresh_view_observation_{this};
 };
 
 }  // namespace ash
