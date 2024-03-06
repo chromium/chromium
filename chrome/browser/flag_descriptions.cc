@@ -1439,10 +1439,9 @@ const char kPrivateNetworkAccessIgnoreNavigationErrorsName[] =
     "Ignore Private Network Access errors for navigation-related requests";
 const char kPrivateNetworkAccessIgnoreNavigationErrorsDescription[] =
     "Ignore Private Network Access errors for navigation-related requests, "
-    "including worker script fetches, and fetches initiated in a worker. "
-    "Instead of blocking the requests, the errors will be shown as an issue in "
-    "DevTools. See "
-    "also: https://developer.chrome.com/blog/private-network-access-update/ "
+    "including iframes and popups. Instead of blocking the requests, the errors"
+    "will be shown as an issue in DevTools. See also: "
+    "https://developer.chrome.com/blog/private-network-access-update/ "
     "and https://developer.chrome.com/blog/private-network-access-preflight/";
 
 const char kDeprecateAltClickName[] =
