@@ -869,7 +869,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.AutocompleteUnrecognized.FieldFillingStat"
+<histogram name="Autofill.AutocompleteUnrecognized.FieldFillingStats"
     enum="FieldFillingStat" expires_after="2024-12-12">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
