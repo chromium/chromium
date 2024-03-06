@@ -356,6 +356,7 @@ class DropdownItemViewInfoListBuilder {
         var viewInfoList = new ArrayList<DropdownItemViewInfo>();
         var currentGroupMatches = new ArrayList<AutocompleteMatch>();
         var nextSuggestionLogicalIndex = 0;
+        var groupsInfo = autocompleteResult.getGroupsInfo();
 
         GroupConfig previousGroupConfig = null;
 
@@ -364,10 +365,17 @@ class DropdownItemViewInfoListBuilder {
             int currentGroupId = newMatches.get(index).getGroupId();
             currentGroupMatches.clear();
 
+            var currentGroupConfig =
+                    groupsInfo.getGroupConfigsOrDefault(
+                            currentGroupId, GroupConfig.getDefaultInstance());
+
             // Inner loop to populate AutocompleteMatch objects belonging to this group.
             while (index < newMatchesCount) {
                 var match = newMatches.get(index);
-                if (currentGroupId != match.getGroupId()) break;
+                var matchGroupConfig =
+                        groupsInfo.getGroupConfigsOrDefault(
+                                match.getGroupId(), GroupConfig.getDefaultInstance());
+                if (currentGroupConfig.getSection() != matchGroupConfig.getSection()) break;
                 currentGroupMatches.add(match);
                 index++;
             }
@@ -375,11 +383,6 @@ class DropdownItemViewInfoListBuilder {
             // Append this suggestions group/section to resulting model, following the render type
             // dictated by GroupConfig.
             // The default instance holds safe values, applicable to non-Google DSE.
-            var currentGroupConfig =
-                    autocompleteResult
-                            .getGroupsInfo()
-                            .getGroupConfigsOrDefault(
-                                    currentGroupId, GroupConfig.getDefaultInstance());
             if (currentGroupConfig.getRenderType() == GroupConfig.RenderType.DEFAULT_VERTICAL) {
                 viewInfoList.addAll(
                         buildVerticalSuggestionsGroup(
