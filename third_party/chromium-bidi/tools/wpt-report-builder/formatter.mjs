@@ -169,6 +169,16 @@ function generateHtml(map, commitHash) {
       .headings {
         flex-grow: 1;
       }
+
+      .button {
+        padding: 5px 10px;
+        margin: 10px;
+        background-color: white;
+        border: none;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15), 0 1px 6px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        font-weight: bold;
+      }
     </style>
     <div class="top">
       <div class="header">
@@ -179,7 +189,8 @@ function generateHtml(map, commitHash) {
           } remaining)</h2>
         </div>
         <div>
-          <button class="toggle" type="button">Long</button>
+          <button class="expand button" type="button">Expand</button>
+          <button class="toggle button" type="button">Long</button>
         </div>
       </div>
       <div>
@@ -188,20 +199,40 @@ function generateHtml(map, commitHash) {
           .join('')}
       </div>
       <script>
-        const button = document.querySelector('.toggle');
-        let state = 'short';
-        button.addEventListener('click', () => {
-          button.innerText = state.charAt(0).toUpperCase() + state.slice(1);
+        const toggle = document.querySelector('.toggle');
+        let toggleState = 'short';
+        toggle.addEventListener('click', () => {
+          toggle.innerText = toggleState.charAt(0).toUpperCase() + toggleState.slice(1);
 
-          const toHide = document.querySelectorAll(\`.\${state}-name\`);
+          const toHide = document.querySelectorAll(\`.\${toggleState}-name\`);
           for(const element of toHide){
             element.classList.add("hidden");
           }
 
-          state = state === 'short' ? 'long' : 'short';
-          const toShow = document.querySelectorAll(\`.\${state}-name\`);
+          toggleState = toggleState === 'short' ? 'long' : 'short';
+          const toShow = document.querySelectorAll(\`.\${toggleState}-name\`);
           for(const element of toShow){
             element.classList.remove("hidden");
+          }
+        })
+
+        const expand = document.querySelector('.expand');
+        let toggleState = 'collapse';
+        expand.addEventListener('click', () => {
+          console.log(toggleState)
+          document.body.querySelectorAll('details')
+            .forEach((element) => {
+              if(toggleState === 'collapse'){
+                element.setAttribute('open', true);
+              } else {
+                element.removeAttribute('open');
+              }
+            });
+          expand.innerText = toggleState.charAt(0).toUpperCase() + toggleState.slice(1);
+          if(toggleState === 'collapse'){
+              toggleState = 'expand';
+          } else {
+            toggleState = 'collapse';
           }
         })
       </script>
