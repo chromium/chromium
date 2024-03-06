@@ -869,4 +869,23 @@ suite('<settings-display>', () => {
     assertFalse(temperature.hidden);
     assertFalse(schedule.hidden);
   });
+
+  test('Display Performance', async () => {
+    await initPage();
+
+    // Set up a single display.
+    addDisplay(1);
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await fakeSystemDisplay.getInfoCalled.promise;
+    await fakeSystemDisplay.getLayoutCalled.promise;
+    assertEquals(1, displayPage.displays.length);
+
+    const displayPerformanceToggle = strictQuery(
+        '#displayPerformanceModeToggle', displayPage.shadowRoot, HTMLElement);
+    assertTrue(!!displayPerformanceToggle);
+    displayPerformanceToggle.click();
+
+    assertTrue(displaySettingsProvider.getShinyPerformance());
+  });
+
 });

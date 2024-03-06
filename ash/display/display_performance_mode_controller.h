@@ -69,6 +69,10 @@ class ASH_EXPORT DisplayPerformanceModeController
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
 
+  // For testing. Clients should observe the mode change instead of calling
+  // this.
+  ModeState GetCurrentStateForTesting() const { return current_state_; }
+
  private:
   void UpdateCurrentStateAndNotifyIfChanged();
   void NotifyObservers();

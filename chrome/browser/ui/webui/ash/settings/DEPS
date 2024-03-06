@@ -23,6 +23,11 @@ specific_include_rules = {
   'display_settings_provider\.cc': [
     '+ash/shell.h',
     "+ash/display/display_prefs.h",
+    "+ash/display/display_performance_mode_controller.h",
+  ],
+  'display_settings_provider_unittest\.cc': [
+    '+ash/shell.h',
+    "+ash/display/display_performance_mode_controller.h",
   ],
   'fast_pair_.*': [
     "+ash/quick_pair",

@@ -207,4 +207,24 @@ TEST_F(DisplayPerformanceModeControllerTest, TestModeStateOnAddObserver) {
   EXPECT_EQ(current_state, ModeState::kHighPerformance);
 }
 
+TEST_F(DisplayPerformanceModeControllerTest, TestHighPerformanceReadBack) {
+  Shell::Get()
+      ->display_performance_mode_controller()
+      ->SetHighPerformanceModeByUser(true);
+
+  EXPECT_EQ(Shell::Get()
+                ->display_performance_mode_controller()
+                ->GetCurrentStateForTesting(),
+            ModeState::kHighPerformance);
+
+  Shell::Get()
+      ->display_performance_mode_controller()
+      ->SetHighPerformanceModeByUser(false);
+
+  EXPECT_NE(Shell::Get()
+                ->display_performance_mode_controller()
+                ->GetCurrentStateForTesting(),
+            ModeState::kHighPerformance);
+}
+
 }  // namespace ash

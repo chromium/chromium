@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.h"
 
+#include "ash/display/display_performance_mode_controller.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "ash/shell.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -347,6 +349,20 @@ TEST_F(DisplaySettingsProviderTest, UserOverrideDefaultSettingsHistogram) {
       "UserOverrideDisplayDefaultSettingsTimeElapsed.Resolution",
       base::Minutes(kTimeDeltaInMinute) / base::Minutes(1).InMilliseconds(),
       /*expected_count=*/1);
+}
+
+TEST_F(DisplaySettingsProviderTest, UserToggleDisplayPerformance) {
+  provider_->SetShinyPerformance(true);
+  EXPECT_EQ(Shell::Get()
+                ->display_performance_mode_controller()
+                ->GetCurrentStateForTesting(),
+            DisplayPerformanceModeController::ModeState::kHighPerformance);
+
+  provider_->SetShinyPerformance(false);
+  EXPECT_NE(Shell::Get()
+                ->display_performance_mode_controller()
+                ->GetCurrentStateForTesting(),
+            DisplayPerformanceModeController::ModeState::kHighPerformance);
 }
 
 }  // namespace ash::settings

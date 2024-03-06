@@ -65,6 +65,8 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
       mojom::DisplaySettingsType type,
       mojom::DisplaySettingsValuePtr value) override;
 
+  void SetShinyPerformance(bool enabled) override;
+
   // TabletModeObserver:
   void OnTabletModeEventsBlockingChanged() override;
 

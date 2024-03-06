@@ -1408,7 +1408,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
 
   private toggleDisplayPerformanceEnabled_(): void {
     this.isDisplayPerformanceEnabled_ = !this.isDisplayPerformanceEnabled_;
-    // TODO(b/320526769): Create a mojom call to Ash
+    this.displaySettingsProvider.setShinyPerformance(
+        this.isDisplayPerformanceEnabled_);
   }
 
   getInvalidDisplayId(): string {

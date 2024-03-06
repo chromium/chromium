@@ -108,4 +108,7 @@ interface DisplaySettingsProvider {
   // Record metrics when clients request to change display settings.
   RecordChangingDisplaySettings(DisplaySettingsType type,
     DisplaySettingsValue value);
+
+  // Allows users to set the higher performance mode for display features.
+  SetShinyPerformance(bool enabled);
 };
