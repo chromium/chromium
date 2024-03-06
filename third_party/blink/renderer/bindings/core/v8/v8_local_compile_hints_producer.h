@@ -26,6 +26,11 @@ class CORE_EXPORT V8LocalCompileHintsProducer
     : public GarbageCollected<V8LocalCompileHintsProducer> {
  public:
   explicit V8LocalCompileHintsProducer(LocalFrame* frame);
+
+  V8LocalCompileHintsProducer(const V8LocalCompileHintsProducer&) = delete;
+  V8LocalCompileHintsProducer& operator=(const V8LocalCompileHintsProducer&) =
+      delete;
+
   ~V8LocalCompileHintsProducer() = default;
   void RecordScript(ExecutionContext* execution_context,
                     const v8::Local<v8::Script> script,

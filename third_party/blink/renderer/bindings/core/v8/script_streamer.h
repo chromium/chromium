@@ -14,8 +14,6 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_decoder.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_consumer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/script/script_scheduling_type.h"
@@ -31,6 +29,11 @@ class SimpleWatcher;
 }
 
 namespace blink {
+
+namespace v8_compile_hints {
+class CompileHintsForStreaming;
+class V8LocalCompileHintsConsumer;
+}  // namespace v8_compile_hints
 
 class ScriptResource;
 class SourceStream;
@@ -153,9 +156,7 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
   }
 
   v8_compile_hints::V8LocalCompileHintsConsumer*
-  GetV8LocalCompileHintsConsumer() const {
-    return local_compile_hints_consumer_.get();
-  }
+  GetV8LocalCompileHintsConsumerForTest() const;
 
  private:
   friend class SourceStream;
@@ -269,14 +270,8 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
 
   v8::ScriptType script_type_;
 
-  // For transmitting crowdsourced compile hints to V8 while streaming.
-  std::unique_ptr<v8_compile_hints::V8CrowdsourcedCompileHintsConsumer::
-                      DataAndScriptNameHash>
-      crowdsourced_compile_hint_callback_data_;
-
-  // For transmitting local compile hints to V8 while streaming.
-  std::unique_ptr<v8_compile_hints::V8LocalCompileHintsConsumer>
-      local_compile_hints_consumer_;
+  // For transmitting crowdsourced or local compile hints to V8 while streaming.
+  std::unique_ptr<v8_compile_hints::CompileHintsForStreaming> compile_hints_;
 };
 
 // BackgroundInlineScriptStreamer allows parsing and compiling inline scripts in

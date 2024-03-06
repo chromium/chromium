@@ -27,13 +27,8 @@ std::atomic<bool>
         false;
 
 namespace {
-bool ShouldThisProcessGenerateData() {
-  bool compile_hints_forced =
-      base::FeatureList::IsEnabled(features::kForceProduceCompileHints);
-  if (compile_hints_forced) {
-    return true;
-  }
 
+bool RandomlySelectedToGenerateData() {
   // Data collection is only enabled on Windows. TODO(chromium:1406506): enable
   // on more platforms.
 #if BUILDFLAG(IS_WIN)
@@ -49,17 +44,27 @@ bool ShouldThisProcessGenerateData() {
   double data_production_level =
       features::kProduceCompileHintsDataProductionLevel.Get();
   return base::RandDouble() < data_production_level;
-#else
+#else   //  BUILDFLAG(IS_WIN)
   return false;
-#endif
+#endif  //  BUILDFLAG(IS_WIN)
 }
+
+bool ShouldThisProcessGenerateData() {
+  if (base::FeatureList::IsEnabled(features::kForceProduceCompileHints)) {
+    return true;
+  }
+  static bool randomly_selected_to_generate_data =
+      RandomlySelectedToGenerateData();
+  return randomly_selected_to_generate_data;
+}
+
 }  // namespace
 
 V8CrowdsourcedCompileHintsProducer::V8CrowdsourcedCompileHintsProducer(
     Page* page)
     : page_(page) {
   // Decide whether to produce the data once per renderer process.
-  static bool should_generate_data = ShouldThisProcessGenerateData();
+  bool should_generate_data = ShouldThisProcessGenerateData();
   if (should_generate_data && !data_generated_for_this_process_) {
     state_ = State::kCollectingData;
   }

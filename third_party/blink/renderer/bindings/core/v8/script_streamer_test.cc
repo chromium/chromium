@@ -452,7 +452,7 @@ TEST_F(ScriptStreamingTest, ConsumeLocalCompileHints) {
   EXPECT_TRUE(resource_script_streamer);
 
   v8_compile_hints::V8LocalCompileHintsConsumer* local_compile_hints_consumer =
-      resource_script_streamer->GetV8LocalCompileHintsConsumer();
+      resource_script_streamer->GetV8LocalCompileHintsConsumerForTest();
   EXPECT_TRUE(local_compile_hints_consumer);
 
   EXPECT_TRUE(local_compile_hints_consumer->GetCompileHint(200));
