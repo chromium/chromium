@@ -8743,21 +8743,6 @@
             ]
         }
     ],
-    "IOSAppStoreRatingDBExclusionJan2024": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AppStoreRatingDBExclusionJan2024"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSBackgroundPasteboardAccess": [
         {
             "platforms": [
@@ -9239,21 +9224,6 @@
             ]
         }
     ],
-    "IOSSharedHighlightingV2": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSSharedHighlightingV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSSignInUff": [
         {
             "platforms": [
@@ -9360,22 +9330,6 @@
                     "name": "EnabledWebChannels",
                     "enable_features": [
                         "EnableWebChannels"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSWhatsNewM116": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Whats_New_M116",
-                    "enable_features": [
-                        "IPH_WhatsNew",
-                        "WhatsNewIOSM116"
                     ]
                 }
             ]
