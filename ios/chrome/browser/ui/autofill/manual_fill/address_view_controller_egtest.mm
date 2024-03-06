@@ -65,6 +65,28 @@ void OpenAddressManualFillView() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Opens the address manual fill view when there are no saved addresses and
+// verifies that the address view controller is visible afterwards. Only useful
+// when the `kIOSKeyboardAccessoryUpgrade` feature is enabled.
+void OpenAddressManualFillViewWithNoSavedAddresses() {
+  // Tap the button to open the expanded manual fill view.
+  id<GREYMatcher> manual_fill_view_button = grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA));
+  [[EarlGrey selectElementWithMatcher:manual_fill_view_button]
+      performAction:grey_tap()];
+
+  // Tap the address tab from the segmented control.
+  id<GREYMatcher> address_method_tab =
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL));
+  [[EarlGrey selectElementWithMatcher:address_method_tab]
+      performAction:grey_tap()];
+
+  // Verify the address table view controller is visible.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 }  // namespace
 
 // Integration Tests for Mannual Fallback Addresses View Controller.
@@ -300,6 +322,30 @@ void OpenAddressManualFillView() {
       assertWithMatcher:grey_userInteractionEnabled()];
   [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+}
+
+// Tests that the the "no addresses found" message is visible when no address
+// suggestions are available.
+- (void)testNoAddressesFoundMessageIsVisibleWhenNoAddressSuggestions {
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the Keyboard "
+                           @"Accessory Upgrade feature is disabled.");
+  }
+
+  [AutofillAppInterface clearProfilesStore];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
+
+  // Open the address manual fill view.
+  OpenAddressManualFillViewWithNoSavedAddresses();
+
+  // Assert that the "no addresses found" message is visible.
+  id<GREYMatcher> noAddressesFoundMessage = grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_ADDRESSES));
+  [[EarlGrey selectElementWithMatcher:noAddressesFoundMessage]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

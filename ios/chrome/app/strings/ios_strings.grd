@@ -2372,6 +2372,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MANUAL_FALLBACK_NOT_SECURE_TITLE" desc="The title of the alert informing a user the content they selected won't be filled on the form." meaning="The form is not secure [20em]">
         Not secure
       </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_NO_ADDRESSES" desc="The message displayed in the address manual fallback view when there are no addresses to display. [30em]">
+        No addresses found
+      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE" desc="The title for disabled buttons when a list of credentials for manual fallback is empty. [30em]">
         No passwords found for this site
       </message>
