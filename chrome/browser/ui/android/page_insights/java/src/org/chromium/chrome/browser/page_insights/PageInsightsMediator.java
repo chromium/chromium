@@ -803,7 +803,9 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             } else if (heightFraction < peekHeightRatio) {
                 // Set the content height to zero in advance when user drags/scrolls the sheet down
                 // below the peeking state. This helps hide the white patch (blank bottom controls).
-                setBottomControlsHeight(0);
+                // The actual value to be set is not 0 but 1, due to a limitation in browser
+                // controls animation. See crbug.com/40941684
+                setBottomControlsHeight(1);
             }
         }
 
