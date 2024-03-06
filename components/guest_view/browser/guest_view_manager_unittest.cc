@@ -39,6 +39,8 @@ class StubGuestView : public GuestView<StubGuestView> {
   ~StubGuestView() override = default;
 
   static const char Type[];
+  static const GuestViewHistogramValue HistogramValue =
+      GuestViewHistogramValue::kInvalid;
 
   void AssignNewGuestContents(std::unique_ptr<WebContents> guest_web_contents) {
     ClearOwnedGuestContents();

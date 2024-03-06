@@ -39,6 +39,9 @@ namespace extensions {
 
 // static
 const char ExtensionOptionsGuest::Type[] = "extensionoptions";
+const guest_view::GuestViewHistogramValue
+    ExtensionOptionsGuest::HistogramValue =
+        guest_view::GuestViewHistogramValue::kExtensionOptions;
 
 ExtensionOptionsGuest::ExtensionOptionsGuest(
     content::RenderFrameHost* owner_rfh)

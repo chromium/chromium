@@ -5066,6 +5066,17 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
+<histogram name="GuestView.GuestViewCreated" enum="GuestViewType"
+    expires_after="2025-01-10">
+  <owner>mcnee@chromium.org</owner>
+  <owner>wjmaclean@chromium.org</owner>
+  <owner>src/components/guest_view/OWNERS</owner>
+  <summary>
+    Indicates the type of guest view created. Emitted once per guest view
+    object.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

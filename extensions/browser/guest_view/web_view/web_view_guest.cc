@@ -310,6 +310,8 @@ std::string WebViewGuest::GetPartitionID(
 
 // static
 const char WebViewGuest::Type[] = "webview";
+const guest_view::GuestViewHistogramValue WebViewGuest::HistogramValue =
+    guest_view::GuestViewHistogramValue::kWebView;
 
 // static
 int WebViewGuest::GetOrGenerateRulesRegistryID(int embedder_process_id,

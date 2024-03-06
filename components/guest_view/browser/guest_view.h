@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
 #define COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
 
+#include "base/metrics/histogram_functions.h"
 #include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/guest_view_histogram_value.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -50,7 +52,10 @@ class GuestView : public GuestViewBase {
 
  protected:
   explicit GuestView(content::RenderFrameHost* owner_rfh)
-      : GuestViewBase(owner_rfh) {}
+      : GuestViewBase(owner_rfh) {
+    base::UmaHistogramEnumeration("GuestView.GuestViewCreated",
+                                  T::HistogramValue);
+  }
   ~GuestView() override = default;
 
   T* GetOpener() const { return AsDerivedGuest(GuestViewBase::GetOpener()); }

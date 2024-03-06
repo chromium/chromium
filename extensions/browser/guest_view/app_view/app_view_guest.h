@@ -23,6 +23,7 @@ class Extension;
 class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
  public:
   static const char Type[];
+  static const guest_view::GuestViewHistogramValue HistogramValue;
 
   ~AppViewGuest() override;
   AppViewGuest(const AppViewGuest&) = delete;

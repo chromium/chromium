@@ -55,6 +55,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
                       int view_instance_id);
 
   static const char Type[];
+  static const guest_view::GuestViewHistogramValue HistogramValue;
 
   // Returns the WebView partition ID associated with the render process
   // represented by |render_process_host|, if any. Otherwise, an empty string is

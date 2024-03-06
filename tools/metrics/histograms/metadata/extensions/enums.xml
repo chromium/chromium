@@ -3213,6 +3213,14 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Not Available, Incognito mode"/>
 </enum>
 
+<enum name="GuestViewType">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="webview"/>
+  <int value="2" label="mime handler view"/>
+  <int value="3" label="extension options"/>
+  <int value="4" label="app view"/>
+</enum>
+
 <enum name="HostPermissionsAccess">
   <int value="0" label="CANNOT_AFFECT"/>
   <int value="1" label="NOT_REQUESTED"/>

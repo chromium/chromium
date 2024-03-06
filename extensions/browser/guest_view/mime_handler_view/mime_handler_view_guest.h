@@ -92,6 +92,7 @@ class MimeHandlerViewGuest
       content::RenderFrameHost* owner_rfh);
 
   static const char Type[];
+  static const guest_view::GuestViewHistogramValue HistogramValue;
 
   // GuestViewBase overrides.
   bool CanBeEmbeddedInsideCrossProcessFrames() const override;

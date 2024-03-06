@@ -62,6 +62,8 @@ base::LazyInstance<PendingResponseMap>::DestructorAtExit
 
 // static.
 const char AppViewGuest::Type[] = "appview";
+const guest_view::GuestViewHistogramValue AppViewGuest::HistogramValue =
+    guest_view::GuestViewHistogramValue::kAppView;
 
 // static.
 bool AppViewGuest::CompletePendingRequest(

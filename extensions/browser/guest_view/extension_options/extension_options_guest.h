@@ -19,6 +19,7 @@ class ExtensionOptionsGuest
     : public guest_view::GuestView<ExtensionOptionsGuest> {
  public:
   static const char Type[];
+  static const guest_view::GuestViewHistogramValue HistogramValue;
 
   ~ExtensionOptionsGuest() override;
   ExtensionOptionsGuest(const ExtensionOptionsGuest&) = delete;

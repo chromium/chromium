@@ -77,6 +77,8 @@ StreamContainer::TakeTransferrableURLLoader() {
 
 // static
 const char MimeHandlerViewGuest::Type[] = "mimehandler";
+const guest_view::GuestViewHistogramValue MimeHandlerViewGuest::HistogramValue =
+    guest_view::GuestViewHistogramValue::kMimeHandler;
 
 // static
 std::unique_ptr<GuestViewBase> MimeHandlerViewGuest::Create(
