@@ -164,6 +164,7 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
     const syncer::SyncService* sync_service);
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
 // Sets opt-in to using account storage for passwords for the current
 // signed-in user (unconsented primary account).
 // |pref_service| and |sync_service| must not be null.
@@ -217,6 +218,15 @@ void MigrateOptInPrefToSyncSelectedTypes(PrefService* pref_service);
 // Opt-in offers from other flows are unaffected (e.g. filling).
 // See crbug.com/1509865.
 void MigrateDeclinedSaveOptInToExplicitOptOut(PrefService* pref_service);
+
+// Whether the user toggle for account storage is shown in settings.
+bool ShouldShowAccountStorageSettingToggle(
+    const PrefService* pref_service,
+    const syncer::SyncService* sync_service);
+
+// Whether the account storage is enabled by default.
+bool IsAccountStorageEnabledByDefault(const PrefService* prefs);
+
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager::features_util

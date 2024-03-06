@@ -58,10 +58,9 @@ AccountInfo ImplicitSignInUnconsentedAccount(
     network::TestURLLoaderFactory* test_url_loader_factory,
     const std::string& email);
 
-// Clears signin cookies and removes the refresh token for the given account.
-void SignOutAccount(Profile* profile,
-                    network::TestURLLoaderFactory* test_url_loader_factory,
-                    const CoreAccountId& account_id);
+// Clears signin cookies and signs out of the primary account.
+void SignOut(Profile* profile,
+             network::TestURLLoaderFactory* test_url_loader_factory);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Grants sync consent to an account (`signin::ConsentLevel::kSync`). The

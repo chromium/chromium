@@ -14,6 +14,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -31,6 +32,8 @@ class PasswordFeatureManagerImplTest : public ::testing::Test {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     pref_service_.registry()->RegisterDictionaryPref(
         password_manager::prefs::kAccountStoragePerAccountSettings);
+    pref_service_.registry()->RegisterBooleanPref(
+        ::prefs::kExplicitBrowserSignin, false);
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
     account_.email = "account@gmail.com";

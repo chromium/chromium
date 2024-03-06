@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Setup Sync without consent (i.e. in transport mode).
-  AccountInfo account_info = secondary_account_helper::SignInUnconsentedAccount(
+  secondary_account_helper::SignInUnconsentedAccount(
       GetProfile(0), &test_url_loader_factory_, "user@email.com");
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
@@ -449,8 +449,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
 
   // Sign out again.
-  secondary_account_helper::SignOutAccount(
-      GetProfile(0), &test_url_loader_factory_, account_info.account_id);
+  secondary_account_helper::SignOut(GetProfile(0), &test_url_loader_factory_);
 
   // Make sure the password is gone from the store.
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);

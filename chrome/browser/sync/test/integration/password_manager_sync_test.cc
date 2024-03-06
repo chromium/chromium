@@ -163,7 +163,7 @@ class PasswordManagerSyncTest : public SyncTest {
     // updating a password become flaky.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{password_manager::features::kFillOnAccountSelect,
-                              switches::kUnoDesktop,
+                              switches::kExplicitBrowserSigninUIOnDesktop,
                               password_manager::features::
                                   kButterOnDesktopFollowup},
         /*disabled_features=*/{});
@@ -269,9 +269,7 @@ class PasswordManagerSyncTest : public SyncTest {
   // Should only be called after SetupSyncTransportWithPasswordAccountStorage().
   void SignOut() {
     ASSERT_FALSE(signed_in_account_.IsEmpty());
-    secondary_account_helper::SignOutAccount(GetProfile(0),
-                                             &test_url_loader_factory_,
-                                             signed_in_account_.account_id);
+    secondary_account_helper::SignOut(GetProfile(0), &test_url_loader_factory_);
     signed_in_account_ = AccountInfo();
   }
 
@@ -1007,7 +1005,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, OptInOutHistograms) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, Resignin) {
+IN_PROC_BROWSER_TEST_P(PasswordManagerSyncExplicitParamTest, Resignin) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Re-signin should be offered if the user is signed out now but in the past
   // some account opted in. No opt-in yet, so no re-signin.
@@ -1015,15 +1013,20 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, Resignin) {
       password_manager::features_util::ShouldShowAccountStorageReSignin(
           GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
 
-  SignIn();
+  SignIn(kTestUserEmail, is_explicit_signin());
 
   // Still no opt-in. Plus, the user is signed-in already.
   EXPECT_FALSE(
       password_manager::features_util::ShouldShowAccountStorageReSignin(
           GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
 
-  password_manager::features_util::OptInToAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  if (!is_explicit_signin()) {
+    //  Opt-in if account storage is not enabled by default.
+    password_manager::features_util::OptInToAccountStorage(
+        GetProfile(0)->GetPrefs(), GetSyncService(0));
+  }
+  EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+      GetProfile(0)->GetPrefs(), GetSyncService(0)));
 
   // Now there's an opt-in but the user is signed-in already.
   EXPECT_FALSE(
@@ -1035,14 +1038,18 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, Resignin) {
   // The preconditions are now met. Re-signin should be offered for all pages,
   // except the Gaia sign-in page where it's useless. Native UI can offer
   // re-signin too, in that case the GURL is empty.
-  EXPECT_TRUE(password_manager::features_util::ShouldShowAccountStorageReSignin(
-      GetProfile(0)->GetPrefs(), GetSyncService(0),
-      GURL("http://www.example.com")));
-  EXPECT_TRUE(password_manager::features_util::ShouldShowAccountStorageReSignin(
-      GetProfile(0)->GetPrefs(), GetSyncService(0),
-      GURL("https://www.example.com")));
-  EXPECT_TRUE(password_manager::features_util::ShouldShowAccountStorageReSignin(
-      GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
+  // Re-signin is never shown when the signin is explicit.
+  EXPECT_EQ(password_manager::features_util::ShouldShowAccountStorageReSignin(
+                GetProfile(0)->GetPrefs(), GetSyncService(0),
+                GURL("http://www.example.com")),
+            !is_explicit_signin());
+  EXPECT_EQ(password_manager::features_util::ShouldShowAccountStorageReSignin(
+                GetProfile(0)->GetPrefs(), GetSyncService(0),
+                GURL("https://www.example.com")),
+            !is_explicit_signin());
+  EXPECT_EQ(password_manager::features_util::ShouldShowAccountStorageReSignin(
+                GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()),
+            !is_explicit_signin());
   EXPECT_FALSE(
       password_manager::features_util::ShouldShowAccountStorageReSignin(
           GetProfile(0)->GetPrefs(), GetSyncService(0),
@@ -1052,7 +1059,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, Resignin) {
           GetProfile(0)->GetPrefs(), GetSyncService(0),
           GaiaUrls::GetInstance()->gaia_url().Resolve("path")));
 
-  SignIn();
+  SignIn(kTestUserEmail, is_explicit_signin());
 
   // Once the user signs in, no re-signin offered anymore.
   EXPECT_FALSE(

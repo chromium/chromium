@@ -15,6 +15,8 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -98,6 +100,12 @@ class ScopedAccountStorageSettingsUpdate {
 
 bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
                                    const syncer::SyncService* sync_service) {
+  // When signin is explicit, account storage is enabled by default. Users who
+  // disabled it manually should not be prompted to re-enable it.
+  if (IsAccountStorageEnabledByDefault(pref_service)) {
+    return false;
+  }
+
   // Show the opt-in if the user is eligible, but not yet opted in.
   return internal::IsUserEligibleForAccountStorage(pref_service,
                                                    sync_service) &&
@@ -107,6 +115,12 @@ bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
 bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
                                       const syncer::SyncService* sync_service,
                                       const GURL& current_page_url) {
+  // When signin is explicit, account storage is enabled by default. Users who
+  // disabled it manually should not be prompted to re-enable it.
+  if (IsAccountStorageEnabledByDefault(pref_service)) {
+    return false;
+  }
+
   // Checks that the sync_service is not null and the feature is enabled.
   // IsUserEligibleForAccountStorage() doesn't fit because it's false for
   // signed-out users.
@@ -379,6 +393,24 @@ void MigrateDeclinedSaveOptInToExplicitOptOut(PrefService* pref_service) {
           ->Set(syncer::prefs::internal::kSyncPasswords, false);
     }
   }
+}
+
+bool ShouldShowAccountStorageSettingToggle(
+    const PrefService* pref_service,
+    const syncer::SyncService* sync_service) {
+  return IsAccountStorageEnabledByDefault(pref_service)
+             ? internal::IsUserEligibleForAccountStorage(pref_service,
+                                                         sync_service)
+             : (IsOptedInForAccountStorage(pref_service, sync_service) ||
+                ShouldShowAccountStorageOptIn(pref_service, sync_service));
+}
+
+bool IsAccountStorageEnabledByDefault(const PrefService* prefs) {
+  // When signin is explicit, account storage is enabled by default. Users who
+  // disabled it manually should not be prompted to re-enable it.
+  return prefs->GetBoolean(::prefs::kExplicitBrowserSignin) &&
+         switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+             switches::ExplicitBrowserSigninPhase::kFull);
 }
 
 // Note: See also password_manager_features_util_common.cc for shared

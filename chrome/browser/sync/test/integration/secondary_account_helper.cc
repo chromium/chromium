@@ -138,9 +138,8 @@ AccountInfo ImplicitSignInUnconsentedAccount(
   return account_info;
 }
 
-void SignOutAccount(Profile* profile,
-                    network::TestURLLoaderFactory* test_url_loader_factory,
-                    const CoreAccountId& account_id) {
+void SignOut(Profile* profile,
+             network::TestURLLoaderFactory* test_url_loader_factory) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   CoreAccountInfo account =
@@ -149,7 +148,8 @@ void SignOutAccount(Profile* profile,
   SetCookieForGaiaId(account.gaia, account.email,
                      /*signed_out=*/true, identity_manager,
                      test_url_loader_factory);
-  signin::RemoveRefreshTokenForAccount(identity_manager, account_id);
+  signin::ClearPrimaryAccount(identity_manager);
+  signin::RemoveRefreshTokenForPrimaryAccount(identity_manager);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

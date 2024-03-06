@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -41,6 +42,11 @@ AccountStorageAuthHelper::~AccountStorageAuthHelper() = default;
 void AccountStorageAuthHelper::TriggerOptInReauth(
     signin_metrics::ReauthAccessPoint access_point,
     base::OnceCallback<void(ReauthSucceeded)> reauth_callback) {
+  // When account storage is enabled by default, don't require reauth to
+  // re-enable it.
+  CHECK(!password_manager::features_util::IsAccountStorageEnabledByDefault(
+      profile_->GetPrefs()));
+
   SigninViewController* signin_view_controller =
       signin_view_controller_getter_.Run();
   if (!signin_view_controller) {

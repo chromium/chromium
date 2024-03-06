@@ -112,6 +112,10 @@ class PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest
         static_cast<int>(
             password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
 #endif  //  BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+    pref_service_.registry()->RegisterBooleanPref(
+        ::prefs::kExplicitBrowserSignin, false);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   }
 
  private:
@@ -307,6 +311,57 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
   EXPECT_FALSE(
       ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
 }
+
+TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+       NoOptInOfferedIfExplicitSignin) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{password_manager::features::
+                                kButterOnDesktopFollowup,
+                            switches::kExplicitBrowserSigninUIOnDesktop},
+      /*disabled_features=*/{});
+  pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
+  CoreAccountInfo account;
+  account.email = "foo@account.com";
+  account.gaia = "foo";
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+  SetSyncStateTransportActive(account);
+  OptOutOfAccountStorage(&pref_service_, &sync_service_);
+  ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+
+  // The optin is only shown if the account storage is off by default.
+  EXPECT_TRUE(IsAccountStorageEnabledByDefault(&pref_service_));
+  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  // The toggle is shown regardless of the default state of account storage.
+  EXPECT_TRUE(
+      ShouldShowAccountStorageSettingToggle(&pref_service_, &sync_service_));
+}
+
+TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+       OptInOfferedIfImplicitSignin) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{password_manager::features::
+                                kButterOnDesktopFollowup,
+                            switches::kExplicitBrowserSigninUIOnDesktop},
+      /*disabled_features=*/{});
+  pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, false);
+  CoreAccountInfo account;
+  account.email = "foo@account.com";
+  account.gaia = "foo";
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+  SetSyncStateTransportActive(account);
+  OptOutOfAccountStorage(&pref_service_, &sync_service_);
+  ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+
+  // The optin is only shown if the account storage is off by default.
+  EXPECT_FALSE(IsAccountStorageEnabledByDefault(&pref_service_));
+  EXPECT_TRUE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  // The toggle is shown regardless of the default state of account storage.
+  EXPECT_TRUE(
+      ShouldShowAccountStorageSettingToggle(&pref_service_, &sync_service_));
+}
+
 #else
 TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        AccountStorageOptInOnMobile) {
@@ -541,10 +596,6 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
   // storage if the default store has not been set to kProfileStore.
   base::test::ScopedFeatureList scoped_feature_list{switches::kUnoDesktop};
   syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
-  // Pref is registered in signin internal `PrimaryAccountManager`.
-  pref_service_.registry()->RegisterBooleanPref(::prefs::kExplicitBrowserSignin,
-                                                false);
-
   pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
 
   CoreAccountInfo account1;
