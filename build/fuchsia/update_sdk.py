@@ -36,19 +36,22 @@ def _GetHostArch():
 
 
 def GetSDKOverrideGCSPath() -> Optional[str]:
-  """Fetches the sdk override path from a file.
+  """Fetches the sdk override path from a file or an environment variable.
 
   Returns:
-    The contents of the file, stripped of white space.
+    The override sdk location, stripped of white space.
       Example: gs://fuchsia-artifacts/development/some-id/sdk
   """
+  if os.getenv('FUCHSIA_SDK_OVERRIDE'):
+    return os.environ['FUCHSIA_SDK_OVERRIDE'].strip()
+
   path = os.path.join(os.path.dirname(__file__), 'sdk_override.txt')
 
-  if not os.path.isfile(path):
-    return None
+  if os.path.isfile(path):
+    with open(path, 'r') as f:
+      return f.read().strip()
 
-  with open(path, 'r') as f:
-    return f.read().strip()
+  return None
 
 
 def _GetTarballPath(gcs_tarball_prefix: str) -> str:
