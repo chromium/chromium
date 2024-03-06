@@ -35,6 +35,7 @@ class MockPseudoFocusHandler : public PickerPseudoFocusHandler {
   bool MovePseudoFocusDown() override { return true; }
   bool MovePseudoFocusLeft() override { return true; }
   bool MovePseudoFocusRight() override { return true; }
+  void AdvancePseudoFocus(PseudoFocusDirection direction) override { return; }
 };
 
 TEST(PickerKeyEventHandlerTest,
@@ -69,6 +70,23 @@ TEST(PickerKeyEventHandlerTest, DoesNotHandleModifiedArrowKeyEvent) {
 
   EXPECT_FALSE(key_event_handler.HandleKeyEvent(
       CreateKeyEvent(ui::VKEY_UP, ui::EF_SHIFT_DOWN)));
+}
+
+TEST(PickerKeyEventHandlerTest, HandlesTabKeyEvent) {
+  PickerKeyEventHandler key_event_handler;
+  MockPseudoFocusHandler pseudo_focus_handler;
+  key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
+
+  EXPECT_TRUE(key_event_handler.HandleKeyEvent(CreateKeyEvent(ui::VKEY_TAB)));
+}
+
+TEST(PickerKeyEventHandlerTest, HandlesShiftTabKeyEvent) {
+  PickerKeyEventHandler key_event_handler;
+  MockPseudoFocusHandler pseudo_focus_handler;
+  key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
+
+  EXPECT_TRUE(key_event_handler.HandleKeyEvent(
+      CreateKeyEvent(ui::VKEY_TAB, ui::EF_SHIFT_DOWN)));
 }
 
 }  // namespace

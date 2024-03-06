@@ -13,10 +13,13 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
+namespace views {
+class View;
+}
+
 namespace ash {
 
 class PickerAssetFetcher;
-class PickerItemView;
 class PickerSearchResult;
 class PickerSectionListView;
 class PickerSectionView;
@@ -44,6 +47,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   bool MovePseudoFocusDown() override;
   bool MovePseudoFocusLeft() override;
   bool MovePseudoFocusRight() override;
+  void AdvancePseudoFocus(PseudoFocusDirection direction) override;
 
   // Clears the search results.
   void ClearSearchResults();
@@ -52,7 +56,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   // TODO: b/325840864 - Merge with existing sections if needed.
   void AppendSearchResults(PickerSearchResultsSection section);
 
-  const PickerSectionListView* section_list_view_for_testing() const {
+  PickerSectionListView* section_list_view_for_testing() {
     return section_list_view_;
   }
 
@@ -71,9 +75,9 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   void AddResultToSection(const PickerSearchResult& result,
                           PickerSectionView* section_view);
 
-  void SetPseudoFocusedItem(PickerItemView* item);
+  void SetPseudoFocusedView(views::View* view);
 
-  void ScrollPseudoFocusedItemToVisible();
+  void ScrollPseudoFocusedViewToVisible();
 
   SelectSearchResultCallback select_search_result_callback_;
 
@@ -86,9 +90,9 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   // Used to track the views for each section of results.
   std::vector<raw_ptr<PickerSectionView>> section_views_;
 
-  // The currently pseudo focused item, which responds to user actions that
+  // The currently pseudo focused view, which responds to user actions that
   // trigger `DoPseudoFocusedAction`.
-  raw_ptr<PickerItemView> pseudo_focused_item_ = nullptr;
+  raw_ptr<views::View> pseudo_focused_view_ = nullptr;
 };
 
 }  // namespace ash

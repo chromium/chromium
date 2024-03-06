@@ -16,6 +16,12 @@ namespace ash {
 // needed (e.g. to select an item when the user presses the enter key).
 class ASH_EXPORT PickerPseudoFocusHandler {
  public:
+  // Direction to traverse pseudo focusable elements.
+  enum class PseudoFocusDirection {
+    kForward,
+    kBackward,
+  };
+
   virtual ~PickerPseudoFocusHandler() = default;
 
   // Returns true if an action was performed.
@@ -26,6 +32,9 @@ class ASH_EXPORT PickerPseudoFocusHandler {
   virtual bool MovePseudoFocusDown() = 0;
   virtual bool MovePseudoFocusLeft() = 0;
   virtual bool MovePseudoFocusRight() = 0;
+
+  // Moves pseudo focus to the next (or previous) pseudo focusable element.
+  virtual void AdvancePseudoFocus(PseudoFocusDirection direction) = 0;
 };
 
 }  // namespace ash

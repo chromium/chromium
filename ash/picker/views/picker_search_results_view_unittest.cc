@@ -185,6 +185,54 @@ TEST_F(PickerSearchResultsViewTest, MovesPseudoFocusDown) {
             PickerSearchResult::Category(PickerCategory::kEmoticons));
 }
 
+TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusForward) {
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  widget->SetFullscreen(true);
+  base::test::TestFuture<const PickerSearchResult&> future;
+  MockPickerAssetFetcher asset_fetcher;
+  auto* view =
+      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
+          kPickerWidth, future.GetCallback(), &asset_fetcher));
+  view->AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kCategories,
+      {{PickerSearchResult::Category(PickerCategory::kEmojis),
+        PickerSearchResult::Category(PickerCategory::kSymbols),
+        PickerSearchResult::Category(PickerCategory::kEmoticons)}}));
+  ViewDrawnWaiter().Wait(view->section_list_view_for_testing()->GetTopItem());
+
+  view->AdvancePseudoFocus(
+      PickerPseudoFocusHandler::PseudoFocusDirection::kForward);
+  ASSERT_TRUE(view->DoPseudoFocusedAction());
+
+  EXPECT_EQ(future.Get(),
+            PickerSearchResult::Category(PickerCategory::kSymbols));
+}
+
+TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusBackward) {
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  widget->SetFullscreen(true);
+  base::test::TestFuture<const PickerSearchResult&> future;
+  MockPickerAssetFetcher asset_fetcher;
+  auto* view =
+      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
+          kPickerWidth, future.GetCallback(), &asset_fetcher));
+  view->AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kCategories,
+      {{PickerSearchResult::Category(PickerCategory::kEmojis),
+        PickerSearchResult::Category(PickerCategory::kSymbols),
+        PickerSearchResult::Category(PickerCategory::kEmoticons)}}));
+  ViewDrawnWaiter().Wait(view->section_list_view_for_testing()->GetTopItem());
+
+  view->AdvancePseudoFocus(
+      PickerPseudoFocusHandler::PseudoFocusDirection::kForward);
+  view->AdvancePseudoFocus(
+      PickerPseudoFocusHandler::PseudoFocusDirection::kBackward);
+  ASSERT_TRUE(view->DoPseudoFocusedAction());
+
+  EXPECT_EQ(future.Get(),
+            PickerSearchResult::Category(PickerCategory::kEmojis));
+}
+
 struct PickerSearchResultTestCase {
   std::string test_name;
   PickerSearchResult result;

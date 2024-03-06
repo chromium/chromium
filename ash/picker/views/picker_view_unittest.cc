@@ -757,5 +757,64 @@ TEST_F(PickerViewTest, DownArrowKeyNavigatesSearchResults) {
                   GURL("http://bar.com"), u"Bar", ui::ImageModel())));
 }
 
+TEST_F(PickerViewTest, TabKeyNavigatesSearchResults) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate(base::BindLambdaForTesting(
+      [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+        future.SetValue();
+        callback.Run({
+            PickerSearchResultsSection(
+                PickerSectionType::kExpressions,
+                {{PickerSearchResult::Emoji(u"😊"),
+                  PickerSearchResult::Symbol(u"♬"),
+                  PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")}}),
+        });
+      }));
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  ViewDrawnWaiter().Wait(GetPickerViewFromWidget(*widget)
+                             ->search_results_view_for_testing()
+                             .section_list_view_for_testing()
+                             ->GetTopItem());
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_THAT(delegate.last_inserted_result(),
+              Optional(PickerSearchResult::Symbol(u"♬")));
+}
+
+TEST_F(PickerViewTest, ShiftTabKeyNavigatesSearchResults) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate(base::BindLambdaForTesting(
+      [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+        future.SetValue();
+        callback.Run({
+            PickerSearchResultsSection(
+                PickerSectionType::kExpressions,
+                {{PickerSearchResult::Emoji(u"😊"),
+                  PickerSearchResult::Symbol(u"♬"),
+                  PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")}}),
+        });
+      }));
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  ViewDrawnWaiter().Wait(GetPickerViewFromWidget(*widget)
+                             ->search_results_view_for_testing()
+                             .section_list_view_for_testing()
+                             ->GetTopItem());
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_THAT(delegate.last_inserted_result(),
+              Optional(PickerSearchResult::Emoji(u"😊")));
+}
+
 }  // namespace
 }  // namespace ash

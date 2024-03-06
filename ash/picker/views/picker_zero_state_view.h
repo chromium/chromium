@@ -19,11 +19,14 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
+namespace views {
+class View;
+}
+
 namespace ash {
 
 class PickerCapsNudgeView;
 class PickerClipboardProvider;
-class PickerItemView;
 class PickerListItemView;
 class PickerSearchResult;
 class PickerSectionListView;
@@ -55,6 +58,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   bool MovePseudoFocusDown() override;
   bool MovePseudoFocusLeft() override;
   bool MovePseudoFocusRight() override;
+  void AdvancePseudoFocus(PseudoFocusDirection direction) override;
 
   std::map<PickerCategoryType, raw_ptr<PickerSectionView>>
   section_views_for_testing() const {
@@ -77,9 +81,9 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   // Gets or creates the section to contain `category`.
   PickerSectionView* GetOrCreateSectionView(PickerCategory category);
 
-  void SetPseudoFocusedItem(PickerItemView* item);
+  void SetPseudoFocusedView(views::View* view);
 
-  void ScrollPseudoFocusedItemToVisible();
+  void ScrollPseudoFocusedViewToVisible();
 
   void OnFetchSuggestedResult(std::unique_ptr<PickerListItemView> item_view);
 
@@ -90,9 +94,9 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   std::map<PickerCategoryType, raw_ptr<PickerSectionView>> section_views_;
 
   raw_ptr<PickerCapsNudgeView> caps_nudge_view_;
-  // The currently pseudo focused item, which responds to user actions that
+  // The currently pseudo focused view, which responds to user actions that
   // trigger `DoPseudoFocusedAction`.
-  raw_ptr<PickerItemView> pseudo_focused_item_ = nullptr;
+  raw_ptr<views::View> pseudo_focused_view_ = nullptr;
 
   raw_ptr<PickerSectionView> suggested_section_view_;
   std::unique_ptr<PickerClipboardProvider> clipboard_provider_;

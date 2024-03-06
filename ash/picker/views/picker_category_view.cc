@@ -51,6 +51,10 @@ bool PickerCategoryView::MovePseudoFocusRight() {
   return search_results_view_->MovePseudoFocusRight();
 }
 
+void PickerCategoryView::AdvancePseudoFocus(PseudoFocusDirection direction) {
+  search_results_view_->AdvancePseudoFocus(direction);
+}
+
 void PickerCategoryView::SetResults(
     std::vector<PickerSearchResultsSection> sections) {
   search_results_view_->ClearSearchResults();
