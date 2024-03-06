@@ -137,7 +137,7 @@ describe('NetworkProcessor', () => {
             protocol: '%',
           },
         ])
-      ).to.throw(/TypeError.*: Invalid URL/);
+      ).to.throw(/Forbidden characters/);
     });
 
     it('valid pattern', () => {

@@ -30,7 +30,6 @@ import type {NetworkStorage} from './NetworkStorage.js';
 import {
   cdpFetchHeadersFromBidiNetworkHeaders,
   cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
-  buildUrlPatternString,
 } from './NetworkUtils.js';
 
 /** Dispatches Network domain commands. */
@@ -296,6 +295,40 @@ export class NetworkProcessor {
             return urlPattern;
           }
 
+          if (urlPattern.protocol) {
+            urlPattern.protocol = unescapeURLPattern(urlPattern.protocol);
+            if (!urlPattern.protocol.match(/^[a-zA-Z+-.]+$/)) {
+              throw new InvalidArgumentException('Forbidden characters');
+            }
+          }
+          if (urlPattern.hostname) {
+            urlPattern.hostname = unescapeURLPattern(urlPattern.hostname);
+          }
+          if (urlPattern.port) {
+            urlPattern.port = unescapeURLPattern(urlPattern.port);
+          }
+          if (urlPattern.pathname) {
+            urlPattern.pathname = unescapeURLPattern(urlPattern.pathname);
+            if (urlPattern.pathname[0] !== '/') {
+              urlPattern.search = `/${urlPattern.search}`;
+            }
+            if (
+              urlPattern.pathname.includes('#') ||
+              urlPattern.pathname.includes('?')
+            ) {
+              throw new InvalidArgumentException('Forbidden characters');
+            }
+          }
+          if (urlPattern.search) {
+            urlPattern.search = unescapeURLPattern(urlPattern.search);
+            if (urlPattern.search[0] !== '?') {
+              urlPattern.search = `?${urlPattern.search}`;
+            }
+            if (urlPattern.search.includes('#')) {
+              throw new InvalidArgumentException('Forbidden characters');
+            }
+          }
+
           if (urlPattern.protocol === '') {
             throw new InvalidArgumentException(
               `URL pattern must specify a protocol`
@@ -329,12 +362,36 @@ export class NetworkProcessor {
           }
 
           try {
-            new URL(buildUrlPatternString(urlPattern));
+            new URLPattern(urlPattern);
           } catch (error) {
             throw new InvalidArgumentException(`${error}`);
           }
+
           return urlPattern;
       }
     });
   }
+}
+
+/**
+ * See https://w3c.github.io/webdriver-bidi/#unescape-url-pattern
+ */
+function unescapeURLPattern(pattern: string) {
+  const forbidden = new Set(['(', ')', '*', '{', '}']);
+  let result = '';
+  let isEscaped = false;
+  for (const c of pattern) {
+    if (!isEscaped) {
+      if (forbidden.has(c)) {
+        throw new InvalidArgumentException('Forbidden characters');
+      }
+      if (c === '\\') {
+        isEscaped = true;
+        continue;
+      }
+    }
+    result += c;
+    isEscaped = false;
+  }
+  return result;
 }

@@ -240,58 +240,6 @@ export function sameSiteBiDiToCdp(
   }
   throw new InvalidArgumentException(`Unknown 'sameSite' value ${sameSite}`);
 }
-
-export function buildUrlPatternString({
-  protocol,
-  hostname,
-  port,
-  pathname,
-  search,
-}: Network.UrlPatternPattern): string {
-  if (!protocol && !hostname && !port && !pathname && !search) {
-    return '*';
-  }
-
-  let url: string = '';
-
-  if (protocol) {
-    url += protocol;
-
-    if (!protocol.endsWith(':')) {
-      url += ':';
-    }
-
-    if (isSpecialScheme(protocol)) {
-      url += '//';
-    }
-  }
-
-  if (hostname) {
-    url += hostname;
-  }
-
-  if (port) {
-    url += `:${port}`;
-  }
-
-  if (pathname) {
-    if (!pathname.startsWith('/')) {
-      url += '/';
-    }
-
-    url += pathname;
-  }
-
-  if (search) {
-    if (!search.startsWith('?')) {
-      url += '?';
-    }
-
-    url += search;
-  }
-
-  return url;
-}
 /**
  * Returns true if the given protocol is special.
  * Special protocols are those that have a default port.
