@@ -31,10 +31,10 @@ The bot provides analysis using:
 
 ### Binary Size Increase
 
-- **What:** Checks that [normalized apk size] increases by no more than 16kb.
-- **Why:** While we hope that binary size impact of all commits are looked at
-  to ensure they make sense, this check is to ensure they are looked at for
-  larger than average commits.
+- **What:** Checks that [normalized apk size] increases by no more than 16kb on
+  arm32, and 64kb on high-end arm64.
+- **Why:** To ensure that larger-than-average size changes are understood and
+  intentional.
 
 [normalized apk size]: /docs/speed/binary_size/metrics.md#normalized-apk-size
 

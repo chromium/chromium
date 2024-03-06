@@ -134,17 +134,13 @@ def main():
     files_to_copy.append(args.size_config_json)
   _copy_files_to_staging_dir(files_to_copy, make_staging_path)
 
+  config_32 = config['to_resource_sizes_py']
+  _generate_resource_sizes(config_32, make_chromium_output_path,
+                           make_staging_path, 'resource_sizes_32.json')
   config_64 = config.get('to_resource_sizes_py_64')
   if config_64:
     _generate_resource_sizes(config_64, make_chromium_output_path,
                              make_staging_path, 'resource_sizes_64.json')
-
-  config_32 = config['to_resource_sizes_py']
-  _generate_resource_sizes(config_32, make_chromium_output_path,
-                           make_staging_path, 'resource_sizes_32.json')
-  # TODO(41492030). Remove copy.
-  shutil.copy(make_staging_path('resource_sizes_32.json'),
-              make_staging_path('results-chart.json'))
 
   _generate_supersize_archive(supersize_input_file, make_chromium_output_path,
                               make_staging_path)
