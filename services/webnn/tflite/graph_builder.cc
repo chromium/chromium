@@ -85,11 +85,10 @@ base::expected<ClampRange, std::string> GetClampRange(
 // static
 base::expected<flatbuffers::DetachedBuffer, std::string>
 GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info) {
-  GraphBuilder builder;
+  GraphBuilder builder(graph_info);
 
   for (const auto& [operand_id, operand] : graph_info.id_to_operand_map) {
-    RETURN_IF_ERROR(builder.SerializeOperand(
-        operand_id, *operand, graph_info.constant_id_to_buffer_map));
+    RETURN_IF_ERROR(builder.SerializeOperand(operand_id, *operand));
   }
 
   for (const mojom::OperationPtr& operation : graph_info.operations) {
@@ -100,7 +99,8 @@ GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info) {
                                          graph_info.output_operands);
 }
 
-GraphBuilder::GraphBuilder() {
+GraphBuilder::GraphBuilder(const mojom::GraphInfo& graph_info)
+    : graph_info_(graph_info) {
   // TFLite requires the first entry in FlatBuffer to be an empty buffer.
   buffers_.push_back(
       ::tflite::CreateBuffer(builder_, builder_.CreateVector({})));
@@ -110,9 +110,7 @@ GraphBuilder::~GraphBuilder() = default;
 
 base::expected<void, std::string> GraphBuilder::SerializeOperand(
     uint64_t operand_id,
-    const mojom::Operand& operand,
-    const base::flat_map<uint64_t, mojo_base::BigBuffer>&
-        constant_id_to_buffer_map) {
+    const mojom::Operand& operand) {
   // The index of `tflite::Tensor` array, each `Operand` (input, constant,
   // output) will be converted and pushed back into the array, so it's increased
   // by one after each serialization in flat buffer.
@@ -125,7 +123,8 @@ base::expected<void, std::string> GraphBuilder::SerializeOperand(
   if (operand.kind == mojom::Operand::Kind::kConstant) {
     // Serialize buffer and return buffer index which starts from 1, it is
     // used to create the constant's tensor.
-    buffer_index = SerializeBuffer(constant_id_to_buffer_map.at(operand_id));
+    buffer_index =
+        SerializeBuffer(graph_info_->constant_id_to_buffer_map.at(operand_id));
   }
 
   // Create `Tensor` with operand shape, the index of buffer and the name.
@@ -168,6 +167,12 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
           SerializeElementWiseUnary(*op.get_element_wise_unary());
       RETURN_IF_ERROR(elementwise_result);
       operator_offset = elementwise_result.value();
+      break;
+    }
+    case mojom::Operation::Tag::kReshape: {
+      const auto reshape_result = SerializeReshape(*op.get_reshape());
+      RETURN_IF_ERROR(reshape_result);
+      operator_offset = reshape_result.value();
       break;
     }
     case mojom::Operation::Tag::kSigmoid:
@@ -216,8 +221,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("relu is not implemented");
     case mojom::Operation::Tag::kResample2d:
       return base::unexpected("resample2d is not implemented");
-    case mojom::Operation::Tag::kReshape:
-      return base::unexpected("reshape is not implemented");
     case mojom::Operation::Tag::kSlice:
       return base::unexpected("slice is not implemented");
     case mojom::Operation::Tag::kSoftplus:
@@ -304,6 +307,10 @@ uint32_t GraphBuilder::GetOperatorCodeIndex(::tflite::BuiltinOperator code) {
   // The type of operation is determined by the index into the list of the valid
   // OperatorCodes.
   return operator_code_index;
+}
+
+const mojom::Operand& GraphBuilder::GetOperand(uint64_t operand_id) const {
+  return *graph_info_->id_to_operand_map.at(operand_id);
 }
 
 auto GraphBuilder::SerializeUnaryOperator(::tflite::BuiltinOperator code,
@@ -459,6 +466,31 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
       return base::unexpected(
           base::StrCat({base::ToString(op.kind), " is not implemented."}));
   }
+}
+
+auto GraphBuilder::SerializeReshape(const mojom::Reshape& reshape)
+    -> base::expected<OperatorOffset, std::string> {
+  // Get the shape of the output tensor, such that this operator can reshape the
+  // input to it.
+  const mojom::Operand& output_operand = GetOperand(reshape.output_operand_id);
+  auto signed_output_dimensions = ToSignedDimensions(output_operand.dimensions);
+  RETURN_IF_ERROR(signed_output_dimensions);
+
+  const auto reshape_options = ::tflite::CreateReshapeOptions(
+      builder_,
+      /*new_shape=*/builder_.CreateVector<int32_t>(
+          *std::move(signed_output_dimensions)));
+
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_RESHAPE);
+  const std::array<int32_t, 1> op_inputs = {
+      operand_to_index_map_.at(reshape.input_operand_id)};
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(reshape.output_operand_id)};
+  return ::tflite::CreateOperator(
+      builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
+      builder_.CreateVector<int32_t>(op_outputs),
+      ::tflite::BuiltinOptions_ReshapeOptions, reshape_options.Union());
 }
 
 auto GraphBuilder::SerializeSigmoid(const mojom::Sigmoid& sigmoid)

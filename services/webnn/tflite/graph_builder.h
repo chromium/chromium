@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/stack_allocated.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
@@ -26,6 +28,8 @@ namespace webnn::tflite {
 // The instances of the class may not be allocated on the heap, but as a member
 // variable of a non-stack-allocated and be single-use per conversion.
 class GraphBuilder final {
+  STACK_ALLOCATED();
+
  public:
   GraphBuilder(const GraphBuilder&) = delete;
   GraphBuilder& operator=(const GraphBuilder&) = delete;
@@ -43,7 +47,7 @@ class GraphBuilder final {
   using TensorOffset = flatbuffers::Offset<::tflite::Tensor>;
   using StringOffset = flatbuffers::Offset<flatbuffers::String>;
 
-  GraphBuilder();
+  explicit GraphBuilder(const mojom::GraphInfo& graph_info);
   ~GraphBuilder();
 
   // Serialize tensor for input, constant and output operand. It's output
@@ -51,9 +55,7 @@ class GraphBuilder final {
   // in the `tflite::Tensor` array if it's successful.
   base::expected<void, std::string> SerializeOperand(
       uint64_t operand_id,
-      const mojom::Operand& operand,
-      const base::flat_map<uint64_t, mojo_base::BigBuffer>&
-          constant_id_to_buffer_map);
+      const mojom::Operand& operand);
 
   // The following steps implement the `SerializeOperation` function:
   // 1. Create `tflite::OperatorCode` with the kind of operator.
@@ -75,6 +77,10 @@ class GraphBuilder final {
 
   uint32_t GetOperatorCodeIndex(::tflite::BuiltinOperator code);
 
+  // Returns the Operand corresponding to an `operand_id` from `graph_info_`.
+  // Will craash if `graph_info_` does not contain `operand_id`.
+  const mojom::Operand& GetOperand(uint64_t operand_id) const;
+
   OperatorOffset SerializeUnaryOperator(::tflite::BuiltinOperator code,
                                         uint64_t input_operand_id,
                                         uint64_t output_operand_id);
@@ -88,6 +94,8 @@ class GraphBuilder final {
       const mojom::ElementWiseBinary& op);
   base::expected<OperatorOffset, std::string> SerializeElementWiseUnary(
       const mojom::ElementWiseUnary& op);
+  base::expected<OperatorOffset, std::string> SerializeReshape(
+      const mojom::Reshape& reshape);
   OperatorOffset SerializeSigmoid(const mojom::Sigmoid& sigmoid);
   OperatorOffset SerializeSoftmax(const mojom::Softmax& softmax);
 
@@ -97,6 +105,11 @@ class GraphBuilder final {
   flatbuffers::DetachedBuffer FinishAndTakeFlatBuffer(
       base::span<const uint64_t> input_operands,
       base::span<const uint64_t> output_operands);
+
+  // A reference to the WebNN compute graph that `this` instance is converting
+  // to TFLite. The creator of `this` must ensure the GraphInfo reference passed
+  // into `CreateAndBuild()` is valid for as long as `this` exists.
+  base::raw_ref<const mojom::GraphInfo> graph_info_;
 
   flatbuffers::FlatBufferBuilder builder_;
   // `is_created_model_` indicates whether the tflite model is created and the
