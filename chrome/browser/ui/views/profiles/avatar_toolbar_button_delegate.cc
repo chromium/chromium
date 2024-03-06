@@ -225,11 +225,9 @@ class ExplicitStateProvider : public StateProvider {
   base::WeakPtrFactory<ExplicitStateProvider> weak_ptr_factory_{this};
 };
 
-class ShowIdentityNameStateProvider
-    : public StateProvider,
-      public signin::IdentityManager::Observer,
-      public AvatarToolbarButton::Observer,
-      public ProfileAttributesStorage::Observer {
+class ShowIdentityNameStateProvider : public StateProvider,
+                                      public signin::IdentityManager::Observer,
+                                      public AvatarToolbarButton::Observer {
  public:
   explicit ShowIdentityNameStateProvider(
       StateObserver& state_observer,
@@ -247,16 +245,13 @@ class ShowIdentityNameStateProvider
     }
 
     avatar_button_observation_.Observe(&avatar_toolbar_button);
-    profile_observation_.Observe(&GetProfileAttributesStorage());
   }
 
   ~ShowIdentityNameStateProvider() override {
     avatar_button_observation_.Reset();
   }
 
-  bool IsActive() const override {
-    return waiting_for_image_ || show_identity_request_count_ > 0;
-  }
+  bool IsActive() const override { return show_identity_request_count_ > 0; }
 
   // IdentityManager::Observer:
   // Needed if the first sync promo account should be displayed.
@@ -301,19 +296,6 @@ class ShowIdentityNameStateProvider
     OnUserIdentityChanged();
   }
 
-  void OnAccountsInCookieUpdated(const signin::AccountsInCookieJarInfo&,
-                                 const GoogleServiceAuthError&) override {
-    UpdateButtonIcon();
-  }
-
-  void OnExtendedAccountInfoUpdated(const AccountInfo&) override {
-    UpdateButtonIcon();
-  }
-
-  void OnExtendedAccountInfoRemoved(const AccountInfo&) override {
-    UpdateButtonIcon();
-  }
-
   void OnIdentityManagerShutdown(signin::IdentityManager*) override {
     identity_manager_observation_.Reset();
   }
@@ -337,20 +319,6 @@ class ShowIdentityNameStateProvider
   }
 
   void OnIconUpdated() override { MaybeShowIdentityName(); }
-
-  //  ProfileAttributesStorage::Observer:
-  void OnProfileAvatarChanged(const base::FilePath&) override {
-    UpdateButtonIcon();
-  }
-
-  void OnProfileHighResAvatarLoaded(const base::FilePath&) override {
-    UpdateButtonIcon();
-  }
-
-  void OnProfileNameChanged(const base::FilePath&,
-                            const std::u16string&) override {
-    RequestUpdate(ElementToUpdate::kText);
-  }
 
  private:
   void UpdateButtonIcon() {
@@ -458,9 +426,6 @@ class ShowIdentityNameStateProvider
       identity_manager_observation_{this};
   base::ScopedObservation<AvatarToolbarButton, AvatarToolbarButton::Observer>
       avatar_button_observation_{this};
-  base::ScopedObservation<ProfileAttributesStorage,
-                          ProfileAttributesStorage::Observer>
-      profile_observation_{this};
 
   base::WeakPtrFactory<ShowIdentityNameStateProvider> weak_ptr_factory_{this};
 };
@@ -478,7 +443,9 @@ class SyncErrorStateProvider : public StateProvider,
     }
   }
 
-  bool IsActive() const override { return last_avatar_error_.has_value(); }
+  bool IsActive() const override {
+    return ::GetAvatarSyncErrorType(&profile_.get()).has_value();
+  }
 
  private:
   void OnStateChanged(syncer::SyncService*) override {
@@ -660,7 +627,12 @@ class NormalStateProvider : public StateProvider {
 // `ExplicitStateProvider`  which is the only state that can be added
 // dynamically and controlled externally. It has to be part of the
 // `StateManager` however to properly compute the current active state.
-class StateManager : public StateObserver {
+// This class also listens to Profile changes that should affect the global
+// state of the button, for chanhges that should occur regardless of the current
+// active state for Regular Profiles.
+class StateManager : public StateObserver,
+                     public signin::IdentityManager::Observer,
+                     public ProfileAttributesStorage::Observer {
  public:
   explicit StateManager(AvatarToolbarButton& avatar_toolbar_button,
                         Browser* browser)
@@ -703,6 +675,14 @@ class StateManager : public StateObserver {
             std::make_unique<SigninPausedStateProvider>(
                 /*state_observer=*/*this, profile);
       }
+
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile);
+      scoped_identity_manager_observation_.Observe(identity_manager);
+      if (identity_manager->AreRefreshTokensLoaded()) {
+        OnRefreshTokensLoaded();
+      }
+      profile_observation_.Observe(&GetProfileAttributesStorage());
 
     } else if (profile->IsGuestSession()) {
       // This state is always active.
@@ -797,11 +777,56 @@ class StateManager : public StateObserver {
     }
   }
 
+  // Make sure to notify obsers, the `ShowIdentityNameStateProvider` being one
+  // of the observers.
+  void UpdateIconWithObservers() { avatar_toolbar_button_->UpdateIcon(); }
+
+  // signin::IdentityManager::Observer:
+  void OnIdentityManagerShutdown(signin::IdentityManager*) override {
+    scoped_identity_manager_observation_.Reset();
+  }
+
+  void OnRefreshTokensLoaded() override { UpdateIconWithObservers(); }
+
+  void OnAccountsInCookieUpdated(const signin::AccountsInCookieJarInfo&,
+                                 const GoogleServiceAuthError&) override {
+    UpdateIconWithObservers();
+  }
+
+  void OnExtendedAccountInfoUpdated(const AccountInfo&) override {
+    UpdateIconWithObservers();
+  }
+
+  void OnExtendedAccountInfoRemoved(const AccountInfo&) override {
+    UpdateIconWithObservers();
+  }
+
+  //  ProfileAttributesStorage::Observer:
+  void OnProfileAvatarChanged(const base::FilePath&) override {
+    UpdateIconWithObservers();
+  }
+
+  void OnProfileHighResAvatarLoaded(const base::FilePath&) override {
+    UpdateIconWithObservers();
+  }
+
+  void OnProfileNameChanged(const base::FilePath&,
+                            const std::u16string&) override {
+    Update(ElementToUpdate::kText);
+  }
+
   base::flat_map<ButtonState, std::unique_ptr<StateProvider>> states_;
   raw_ref<AvatarToolbarButton> avatar_toolbar_button_;
 
   // Active state per the last request to `ComputeButtonActiveState()`.
   raw_ptr<StateProvider> current_active_state_ = nullptr;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      scoped_identity_manager_observation_{this};
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      profile_observation_{this};
 };
 
 }  // namespace internal
