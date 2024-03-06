@@ -11304,6 +11304,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4881" label="ViewportSegmentsMediaFeature"/>
   <int value="4882" label="ViewportSegments"/>
   <int value="4883" label="PrivateNetworkAccessWebSocketConnected"/>
+  <int value="4884" label="WebAppTitle"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

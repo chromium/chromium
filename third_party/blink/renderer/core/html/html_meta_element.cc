@@ -729,6 +729,7 @@ void HTMLMetaElement::ProcessContent() {
         ->OnMetaTagChanged(content_value);
   } else if (RuntimeEnabledFeatures::AppTitleEnabled(GetExecutionContext()) &&
              EqualIgnoringASCIICase(name_value, "app-title")) {
+    UseCounter::Count(&GetDocument(), WebFeature::kWebAppTitle);
     GetDocument().UpdateAppTitle();
   }
 }
