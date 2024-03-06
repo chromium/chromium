@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_decoder.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_consumer.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -220,7 +221,7 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
   // The four methods below should not be called synchronously, as they can
   // trigger script resource client callbacks.
 
-  // Streaming completed with loading in the given |state|.
+  // Streaming completed with loading in the given `state`.
   void StreamingComplete(LoadingState loading_state);
   // Loading completed in the given state, without ever starting streaming.
   void LoadCompleteWithoutStreaming(LoadingState loading_state,
@@ -244,13 +245,7 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
   Member<ScriptResource> script_resource_;
   Member<ResponseBodyLoaderClient> response_body_loader_client_;
 
-  // |script_decoder_| should only be accessed on the decoding thread.
-  class ScriptDecoder;
-  struct ScriptDecoderDeleter {
-    void operator()(const ScriptDecoder* ptr);
-  };
-  using ScriptDecoderPtr = std::unique_ptr<ScriptDecoder, ScriptDecoderDeleter>;
-  ScriptDecoderPtr script_decoder_;
+  ScriptDecoderWithClientPtr script_decoder_;
 
   // Fields active during asynchronous (non-streaming) reads.
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
