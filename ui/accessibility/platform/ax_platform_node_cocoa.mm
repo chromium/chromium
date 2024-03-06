@@ -2319,6 +2319,10 @@ void CollectAncestorRoles(
   return [self AXChildren];
 }
 
+- (id)accessibilityParent {
+  return [self AXParent];
+}
+
 // NSAccessibility: Assigning Roles.
 - (BOOL)isAccessibilityRequired {
   TRACE_EVENT1("accessibility", "accessibilityRequired",
