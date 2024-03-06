@@ -10,6 +10,7 @@
 #include "base/barrier_closure.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -66,7 +67,10 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
     mojom::WebNNContext::CreateGraphCallback callback) {
   CHECK(graph_info);
   // Generate the .mlmodel file
+  const base::ElapsedTimer ml_model_translate_timer;
   auto build_result = GraphBuilder::CreateAndBuild(*graph_info.get());
+  UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelTranslate",
+                             ml_model_translate_timer.Elapsed());
   if (!build_result.has_value()) {
     originating_sequence->PostTask(
         FROM_HERE,
@@ -74,6 +78,7 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
                        "Model graph build error: " + build_result.error()));
     return;
   }
+  base::ElapsedTimer ml_model_write_timer;
   auto graph_builder = std::move(build_result.value());
   std::string model_contents = graph_builder->GetSerializedCoreMLModel();
   base::ScopedTempDir model_file_dir;
@@ -103,7 +108,8 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
   }
   model_file.Flush();
   model_file.Close();
-
+  UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelWrite",
+                             ml_model_write_timer.Elapsed());
   // Collect information about model inputs that are required
   // later for model evaluation.
   ComputeResourceInfo compute_resource_info(graph_info);
@@ -151,6 +157,9 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
   [MLModel
       compileModelAtURL:base::apple::FilePathToNSURL(model_file_path)
       completionHandler:^(NSURL* compiled_model_url, NSError* error) {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "WebNN.CoreML.TimingMs.MLModelCompile",
+            compilation_context->compilation_timer.Elapsed());
         // compiled_model_url refers to a directory placed directly inside
         // NSTemporaryDirectory(), it is not inside model_file_dir.
         // We track compiled_model_url seperately so that it may be deleted
@@ -170,10 +179,13 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
                              "Model compilation error."));
           return;
         }
+        base::ElapsedTimer model_load_timer;
         NSError* model_load_error = nil;
         compilation_context->ml_model =
             [MLModel modelWithContentsOfURL:compiled_model_url
                                       error:&model_load_error];
+        UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.CompiledModelLoad",
+                                   model_load_timer.Elapsed());
         if (model_load_error) {
           DLOG(ERROR) << model_load_error;
           originating_sequence->PostTask(
@@ -297,6 +309,7 @@ GraphImpl::~GraphImpl() = default;
 void GraphImpl::ComputeImpl(
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
     mojom::WebNNGraph::ComputeCallback callback) {
+  base::ElapsedTimer model_predict_timer;
   TRACE_EVENT0("gpu", "webnn::coreml::GraphImpl::ComputeImpl");
   CHECK(ml_model_);
   // Create MLFeatureValue for each of the named_inputs
@@ -328,6 +341,8 @@ void GraphImpl::ComputeImpl(
   NSError* error;
   id<MLFeatureProvider> output_features =
       [ml_model_ predictionFromFeatures:feature_provider error:&error];
+  UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.ModelPredict",
+                             model_predict_timer.Elapsed());
   if (error) {
     DLOG(ERROR) << "webnn::coreml predictionError : " << error;
     std::move(callback).Run(mojom::ComputeResult::NewError(mojom::Error::New(
@@ -335,6 +350,7 @@ void GraphImpl::ComputeImpl(
     return;
   }
 
+  base::ElapsedTimer model_output_read_timer;
   // Read back the outputs
   // named_outputs is owned by the BarrierClosure. named_outputs
   // is allocated here with make unique and then moved into the
@@ -350,11 +366,15 @@ void GraphImpl::ComputeImpl(
       base::BindOnce(
           [](mojom::WebNNGraph::ComputeCallback callback,
              std::unique_ptr<std::vector<
-                 std::pair<std::string, mojo_base::BigBuffer>>> named_outputs) {
+                 std::pair<std::string, mojo_base::BigBuffer>>> named_outputs,
+             base::ElapsedTimer model_output_read_timer) {
+            UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.ModelOutputRead",
+                                       model_output_read_timer.Elapsed());
             std::move(callback).Run(mojom::ComputeResult::NewNamedOutputs(
                 std::move(*named_outputs)));
           },
-          std::move(callback), std::move(named_outputs)));
+          std::move(callback), std::move(named_outputs),
+          std::move(model_output_read_timer)));
   for (NSString* feature_name in output_features.featureNames) {
     MLFeatureValue* feature_value =
         [output_features featureValueForName:feature_name];

@@ -255,6 +255,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/webapps/histograms.xml",
   "//tools/metrics/histograms/metadata/webauthn/enums.xml",
   "//tools/metrics/histograms/metadata/webauthn/histograms.xml",
+  "//tools/metrics/histograms/metadata/webnn/histograms.xml",
   "//tools/metrics/histograms/metadata/windows/enums.xml",
   "//tools/metrics/histograms/metadata/windows/histograms.xml",
   "//tools/metrics/histograms/metadata/xr/enums.xml",
