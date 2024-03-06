@@ -238,7 +238,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   // callbacks are called from the same thread as API methods.
   scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
 
-  media::VideoCaptureFeedback last_feedback_;
+  base::TimeTicks last_premapped_request_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

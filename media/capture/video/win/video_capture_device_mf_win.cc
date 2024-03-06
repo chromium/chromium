@@ -108,6 +108,14 @@ std::vector<mojom::EyeGazeCorrectionMode> ExtendedPlatformFlagsToCaptureModes(
 
 namespace {
 
+// How long premapped frames will be premapped after corresponding feedback
+// message is received. Too high value would cause unnecessary premapped frames
+// when a VideoTrack is disconnected from the source requiring premapped frames.
+// If he value is less than the frame duration, the feedback might be ignored
+// completely and a costly mapping will be happening instead of the premapping.
+constexpr base::TimeDelta kMaxFeedbackPremappingEffectDuration =
+    base::Milliseconds(500);
+
 // Provide an unique GUID for reusing |handle| and |token| by
 // SetPrivateDataInterface/GetPrivateData.
 // {79BFE1AB-CE47-4C3D-BDB2-06E6B886368C}
@@ -2053,7 +2061,9 @@ void VideoCaptureDeviceMFWin::SetPhotoOptions(
 void VideoCaptureDeviceMFWin::OnUtilizationReport(
     media::VideoCaptureFeedback feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  last_feedback_ = feedback;
+  if (feedback.require_mapped_frame) {
+    last_premapped_request_ = base::TimeTicks::Now();
+  }
 }
 
 void VideoCaptureDeviceMFWin::OnCameraControlChange(REFGUID control_set,
@@ -2238,7 +2248,8 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
   }
 
   capture_buffer.is_premapped = false;
-  if (last_feedback_.require_mapped_frame) {
+  if (last_premapped_request_ >
+      base::TimeTicks::Now() - kMaxFeedbackPremappingEffectDuration) {
     // Only a flag on the Buffer is set here; the region itself isn't passed
     // anywhere because it was passed when the buffer was created.
     // Now the flag would tell the consumer that the region contains actual
