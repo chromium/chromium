@@ -127,7 +127,9 @@ void LayoutSVGTransformableContainer::StyleDidChange(
 }
 
 void LayoutSVGTransformableContainer::WillBeDestroyed() {
-  SVGResources::ClearPaints(*this, Style());
+  if (IsA<SVGUseElement>(GetElement())) {
+    SVGResources::ClearPaints(*this, Style());
+  }
   LayoutSVGContainer::WillBeDestroyed();
 }
 

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<title>SVGResourceClient bookkeeping</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<svg id="svg" xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+  <defs>
+    <radialGradient id="gradient" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="white"/>
+      <stop offset="1" stop-color="blue"/>
+    </radialGradient>
+  </defs>
+  <g id="container" style="filter:blur(5px)">
+    <circle cx="50" cy="50" r="25" fill="green"/>
+  </g>
+</svg>
+<script>
+promise_test(async function(t) {
+  // Test passe if it does not crash.
+  const svg = document.getElementById('svg');
+  let container = document.getElementById('container');
+
+  await new Promise(requestAnimationFrame).then(() => new Promise(setTimeout));
+  container.style = "fill:url(#gradient)";
+  await new Promise(requestAnimationFrame).then(() => new Promise(setTimeout));
+  container.remove();
+  await new Promise(requestAnimationFrame).then(() => new Promise(setTimeout));
+  t.done();
+});
+</script>
