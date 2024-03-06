@@ -347,9 +347,16 @@ public class TabGridDialogMediator
         setupToolbarEditText();
 
         mModel.set(TabGridDialogProperties.MENU_CLICK_LISTENER, getMenuButtonClickListener());
+
+        // TODO(b/325082444): Only a subset should be visible at a time. Only set the listeners that
+        // can be seen and used.
+        mModel.set(TabGridDialogProperties.SHARE_INVITE_CLICK_LISTENER, getShareBarClickListener());
         mModel.set(
-                TabGridDialogProperties.SHARE_INVITE_CLICK_LISTENER,
-                getShareInviteButtonClickListener());
+                TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER,
+                getShareBarClickListener());
+        mModel.set(
+                TabGridDialogProperties.SHARE_MANAGE_ADD_CLICK_LISTENER,
+                getShareBarClickListener());
     }
 
     void hideDialog(boolean showAnimation) {
@@ -668,10 +675,13 @@ public class TabGridDialogMediator
                 mToolbarMenuCallback);
     }
 
-    private View.OnClickListener getShareInviteButtonClickListener() {
+    private View.OnClickListener getShareBarClickListener() {
         return view -> {
             // TODO(b/325082444): Ask data sharing service about if the tab group is shared.
             mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
+            if (mSharedImageTilesCoordinator != null) {
+                mSharedImageTilesCoordinator.updateTilesCount(0);
+            }
         };
     }
 

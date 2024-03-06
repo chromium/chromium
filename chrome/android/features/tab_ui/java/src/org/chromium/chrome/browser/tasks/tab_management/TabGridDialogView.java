@@ -44,6 +44,7 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
+import org.chromium.ui.widget.ChromeImageButton;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -1008,6 +1009,32 @@ public class TabGridDialogView extends FrameLayout {
                 mDialogContainerView.findViewById(R.id.dialog_share_invite_button);
         if (inviteButton != null) {
             inviteButton.setOnClickListener(listener);
+        }
+    }
+
+    /**
+     * Set click listener for the share bar image tiles.
+     *
+     * @param listener {@link android.view.View.OnClickListener} for the View.
+     */
+    void setShareImageTilesOnClickListener(OnClickListener listener) {
+        ViewGroup imageTilesView =
+                mDialogContainerView.findViewById(R.id.dialog_data_sharing_shared_image_tiles);
+        if (imageTilesView != null) {
+            imageTilesView.setOnClickListener(listener);
+        }
+    }
+
+    /**
+     * Set click listener for the share bar manage add button.
+     *
+     * @param listener {@link android.view.View.OnClickListener} for the button.
+     */
+    void setShareManageAddOnClickListener(OnClickListener listener) {
+        ChromeImageButton manageAddButton =
+                mDialogContainerView.findViewById(R.id.dialog_data_sharing_manage_add);
+        if (manageAddButton != null) {
+            manageAddButton.setOnClickListener(listener);
         }
     }
 

@@ -34,8 +34,10 @@ class SharedImageTilesViewBinder {
             text.setText(countText);
         } else if (BACKGROUND_COLOR == propertyKey) {
             LinearLayout container = (LinearLayout) view.findViewById(R.id.tiles_count_container);
-            Drawable drawable = container.getBackground();
-            drawable.setColorFilter(model.get(BACKGROUND_COLOR), PorterDuff.Mode.SRC_IN);
+            if (container != null) {
+                Drawable drawable = container.getBackground();
+                drawable.setColorFilter(model.get(BACKGROUND_COLOR), PorterDuff.Mode.SRC_IN);
+            }
         }
     }
 }

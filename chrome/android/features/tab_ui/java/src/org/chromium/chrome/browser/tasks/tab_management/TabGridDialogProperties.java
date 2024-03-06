@@ -28,6 +28,10 @@ class TabGridDialogProperties {
             ADD_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<OnClickListener>
             SHARE_INVITE_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<OnClickListener>
+            SHARE_IMAGE_TILES_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<OnClickListener>
+            SHARE_MANAGE_ADD_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<String> HEADER_TITLE =
             new PropertyModel.WritableObjectPropertyKey<>(true);
     public static final PropertyModel.WritableIntPropertyKey CONTENT_TOP_MARGIN =
@@ -96,6 +100,8 @@ class TabGridDialogProperties {
                 COLLAPSE_CLICK_LISTENER,
                 ADD_CLICK_LISTENER,
                 SHARE_INVITE_CLICK_LISTENER,
+                SHARE_IMAGE_TILES_CLICK_LISTENER,
+                SHARE_MANAGE_ADD_CLICK_LISTENER,
                 HEADER_TITLE,
                 PRIMARY_COLOR,
                 DIALOG_BACKGROUND_COLOR,

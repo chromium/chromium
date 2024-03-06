@@ -47,6 +47,7 @@ found in the LICENSE file.
             android:layout_weight="1" />
         <org.chromium.ui.widget.ChromeImageButton
             android:src="@drawable/ic_person_add_40dp"
+            android:id="@+id/dialog_data_sharing_manage_add"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:background="@android:color/transparent"

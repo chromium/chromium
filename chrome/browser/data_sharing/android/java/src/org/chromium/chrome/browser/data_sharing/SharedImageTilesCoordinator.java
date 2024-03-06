@@ -20,7 +20,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class SharedImageTilesCoordinator {
 
     // The maximum amount of tiles that can show, including icon tile and count tile.
-    private static final int MAX_TILES_TO_SHOW = 5;
+    private static final int MAX_TILES_UI_LIMIT = 5;
     // The maximum number appearing on the count number tile.
     private static final int MAX_COUNT_TILE_NUMBER = 99;
 
@@ -28,6 +28,7 @@ public class SharedImageTilesCoordinator {
     private final Context mContext;
     private final PropertyModel mModel;
     private final ViewGroup mView;
+    private int mAvailableTileCount;
 
     /**
      * Constructor for SharedImageTilesCoordinator component.
@@ -50,15 +51,12 @@ public class SharedImageTilesCoordinator {
 
     /** Populate the shared_image_tiles container with the specific icons. */
     private void initializeSharedImageTiles() {
-        // TODO(b/325533985): |tilesCount| should be replace by the actual number of icons
-        // needed.
-        int tilesCount = 8;
-        int maxTilesToShowWithNumberTile = MAX_TILES_TO_SHOW - 1;
-        boolean showNumberTile = tilesCount > MAX_TILES_TO_SHOW;
+        int maxTilesToShowWithNumberTile = MAX_TILES_UI_LIMIT - 1;
+        boolean showNumberTile = mAvailableTileCount > MAX_TILES_UI_LIMIT;
         int numIconTiles =
                 showNumberTile
-                        ? maxTilesToShowWithNumberTile
-                        : Math.min(tilesCount, MAX_TILES_TO_SHOW);
+                        ? MAX_TILES_UI_LIMIT - 1
+                        : Math.min(mAvailableTileCount, MAX_TILES_UI_LIMIT);
 
         // Add icon tile(s).
         for (int i = 0; i < numIconTiles; i++) {
@@ -68,7 +66,7 @@ public class SharedImageTilesCoordinator {
         // Add number tile.
         if (showNumberTile) {
             // Compute a count bubble.
-            appendNumberTile(tilesCount - maxTilesToShowWithNumberTile);
+            appendNumberTile(mAvailableTileCount - maxTilesToShowWithNumberTile);
         }
     }
 
@@ -97,5 +95,13 @@ public class SharedImageTilesCoordinator {
      */
     public void updateBackgroundColor(int backgroundColor) {
         mModel.set(SharedImageTilesProperties.BACKGROUND_COLOR, backgroundColor);
+    }
+
+    public void updateTilesCount(int count) {
+        // TODO(b/325533985): |mAvailableTileCount| should be replace by the actual number of icons
+        // needed.
+        mAvailableTileCount = mAvailableTileCount + 1;
+        mView.removeAllViews();
+        initializeSharedImageTiles();
     }
 }
