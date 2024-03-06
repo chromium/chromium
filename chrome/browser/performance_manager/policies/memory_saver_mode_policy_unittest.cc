@@ -128,6 +128,16 @@ TEST_F(MemorySaverModeTest, DiscardAfterBackgrounded) {
 }
 
 TEST_F(MemorySaverModeTest, DontDiscardAfterBackgroundedIfSuspended) {
+  // TODO(crbug/40925329): When cleaning up this feature, consider also
+  // cleaning up the "user managed time" code, or making it controllable
+  // via a mechanism other than `modal_memory_saver_mode` if it should
+  // be kept.
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeaturesAndParameters(
+      {
+          {features::kModalMemorySaver, {{"modal_memory_saver_mode", "0"}}},
+      },
+      /*disabled_features=*/{});
   policy()->SetTimeBeforeDiscard(base::Hours(2));
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
@@ -184,6 +194,16 @@ TEST_F(MemorySaverModeTest, DontDiscardIfPlayingAudio) {
 }
 
 TEST_F(MemorySaverModeTest, TimeBeforeDiscardChangedBeforeTimerStarted) {
+  // TODO(crbug/40925329): When cleaning up this feature, consider also
+  // cleaning up the "user managed time" code, or making it controllable
+  // via a mechanism other than `modal_memory_saver_mode` if it should
+  // be kept.
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeaturesAndParameters(
+      {
+          {features::kModalMemorySaver, {{"modal_memory_saver_mode", "0"}}},
+      },
+      /*disabled_features=*/{});
   base::TimeDelta original_time_before_discard =
       policy()->GetTimeBeforeDiscardForTesting();
   base::TimeDelta increased_time_before_discard = base::Seconds(10);
@@ -206,6 +226,16 @@ TEST_F(MemorySaverModeTest, TimeBeforeDiscardChangedBeforeTimerStarted) {
 }
 
 TEST_F(MemorySaverModeTest, TimeBeforeDiscardReduced) {
+  // TODO(crbug/40925329): When cleaning up this feature, consider also
+  // cleaning up the "user managed time" code, or making it controllable
+  // via a mechanism other than `modal_memory_saver_mode` if it should
+  // be kept.
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeaturesAndParameters(
+      {
+          {features::kModalMemorySaver, {{"modal_memory_saver_mode", "0"}}},
+      },
+      /*disabled_features=*/{});
   base::TimeDelta original_time_before_discard =
       policy()->GetTimeBeforeDiscardForTesting();
   constexpr base::TimeDelta kNewTimeBeforeDiscard = base::Minutes(20);
@@ -238,6 +268,16 @@ TEST_F(MemorySaverModeTest, TimeBeforeDiscardReduced) {
 }
 
 TEST_F(MemorySaverModeTest, TimeBeforeDiscardReducedBelowBackgroundedTime) {
+  // TODO(crbug/40925329): When cleaning up this feature, consider also
+  // cleaning up the "user managed time" code, or making it controllable
+  // via a mechanism other than `modal_memory_saver_mode` if it should
+  // be kept.
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeaturesAndParameters(
+      {
+          {features::kModalMemorySaver, {{"modal_memory_saver_mode", "0"}}},
+      },
+      /*disabled_features=*/{});
   base::TimeDelta original_time_before_discard =
       policy()->GetTimeBeforeDiscardForTesting();
   constexpr base::TimeDelta kNewTimeBeforeDiscard = base::Minutes(5);
@@ -268,6 +308,16 @@ TEST_F(MemorySaverModeTest, TimeBeforeDiscardReducedBelowBackgroundedTime) {
 }
 
 TEST_F(MemorySaverModeTest, TimeBeforeDiscardIncreased) {
+  // TODO(crbug/40925329): When cleaning up this feature, consider also
+  // cleaning up the "user managed time" code, or making it controllable
+  // via a mechanism other than `modal_memory_saver_mode` if it should
+  // be kept.
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeaturesAndParameters(
+      {
+          {features::kModalMemorySaver, {{"modal_memory_saver_mode", "0"}}},
+      },
+      /*disabled_features=*/{});
   base::TimeDelta original_time_before_discard =
       policy()->GetTimeBeforeDiscardForTesting();
   constexpr base::TimeDelta kNewTimeBeforeDiscard = base::Hours(3);

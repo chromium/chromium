@@ -110,12 +110,12 @@ const base::FeatureParam<bool> kDownvoteAdFrames{&kPMProcessPriorityPolicy,
 
 BASE_FEATURE(kModalMemorySaver,
              "ModalMemorySaver",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kModalMemorySaverMode{
     &kModalMemorySaver,
     "modal_memory_saver_mode",
-    0,
+    2,
 };
 
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,
