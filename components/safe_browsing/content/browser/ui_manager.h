@@ -248,12 +248,14 @@ class SafeBrowsingUIManager : public BaseUIManager {
   // user has opted in to extended reporting and is not currently in incognito
   // mode.
   bool ShouldSendClientSafeBrowsingWarningShownReport(
-      ClientSafeBrowsingReportRequest* report,
       content::WebContents* web_contents);
 
  private:
   friend class SafeBrowsingUIManagerTest;
   friend class TestSafeBrowsingUIManager;
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingUIManagerTest,
+      DontSendClientSafeBrowsingWarningShownReportNullWebContents);
 
   static GURL GetMainFrameAllowlistUrlForResourceForTesting(
       const safe_browsing::SafeBrowsingUIManager::UnsafeResource& resource);

@@ -694,4 +694,11 @@ TEST_F(SafeBrowsingUIManagerTest, InvalidRenderFrameHostId) {
   EXPECT_FALSE(IsAllowlisted(resource));
 }
 
+// Regression test for https://g-issues.chromium.org/issues/327838835
+TEST_F(SafeBrowsingUIManagerTest,
+       DontSendClientSafeBrowsingWarningShownReportNullWebContents) {
+  ASSERT_FALSE(
+      ui_manager()->ShouldSendClientSafeBrowsingWarningShownReport(nullptr));
+}
+
 }  // namespace safe_browsing

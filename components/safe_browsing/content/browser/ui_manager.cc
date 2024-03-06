@@ -252,10 +252,12 @@ bool SafeBrowsingUIManager::ShouldSendHitReport(HitReport* hit_report,
 }
 
 bool SafeBrowsingUIManager::ShouldSendClientSafeBrowsingWarningShownReport(
-    ClientSafeBrowsingReportRequest* report,
     WebContents* web_contents) {
+  if (!web_contents || !web_contents->GetBrowserContext()) {
+    return false;
+  }
   const auto& prefs = *delegate_->GetPrefs(web_contents->GetBrowserContext());
-  return web_contents && GetExtendedReportingLevel(prefs) != SBER_LEVEL_OFF &&
+  return GetExtendedReportingLevel(prefs) != SBER_LEVEL_OFF &&
          !web_contents->GetBrowserContext()->IsOffTheRecord();
 }
 
@@ -289,8 +291,7 @@ void SafeBrowsingUIManager::MaybeSendClientSafeBrowsingWarningShownReport(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Send report if user opted-in to extended reporting and is not in incognito
   // mode.
-  if (ShouldSendClientSafeBrowsingWarningShownReport(report.get(),
-                                                     web_contents)) {
+  if (ShouldSendClientSafeBrowsingWarningShownReport(web_contents)) {
     SendThreatDetails(web_contents->GetBrowserContext(), std::move(report));
   }
 }

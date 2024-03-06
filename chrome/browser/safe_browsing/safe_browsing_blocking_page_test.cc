@@ -376,7 +376,7 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
       std::unique_ptr<ClientSafeBrowsingReportRequest> report,
       WebContents* web_contents) override {
     if (SafeBrowsingUIManager::ShouldSendClientSafeBrowsingWarningShownReport(
-            report.get(), web_contents)) {
+            web_contents)) {
       report_sent_ = true;
       if (report->has_client_properties() &&
           report->client_properties().has_is_async_check()) {
