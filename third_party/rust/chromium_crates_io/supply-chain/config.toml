@@ -253,7 +253,7 @@ criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 [policy."syn:1.0.109"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."syn:2.0.50"]
+[policy."syn:2.0.52"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
 [policy."termcolor:1.4.1"]
@@ -451,7 +451,7 @@ criteria = ["safe-to-deploy", "ub-risk-2"]
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
 [[exemptions.syn]]
-version = "2.0.50"
+version = "2.0.52"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -461,6 +461,8 @@ Delta audit of 2.0.39 -> syn-2.0.48 has been done in Jan 2024 (including an
 a fully-audited baseline nothing was recorded in audits.toml
 
 Exemption updated to 2.0.50 when updating the crate in Feb 2024.
+
+Exemption updated to 2.0.52 when updating the crate in Mar 2024.
 """
 
 [[exemptions.unicode-ident]]

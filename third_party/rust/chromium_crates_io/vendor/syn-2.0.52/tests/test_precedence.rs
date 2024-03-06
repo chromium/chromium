@@ -278,7 +278,7 @@ fn librustc_parenthesize(mut librustc_expr: P<ast::Expr>) -> P<ast::Expr> {
                         e,
                         P(Expr {
                             id: ast::DUMMY_NODE_ID,
-                            kind: ExprKind::Err,
+                            kind: ExprKind::Dummy,
                             span: DUMMY_SP,
                             attrs: ThinVec::new(),
                             tokens: None,

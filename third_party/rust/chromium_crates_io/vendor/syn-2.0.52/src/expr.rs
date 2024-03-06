@@ -1185,6 +1185,122 @@ pub(crate) mod parsing {
         pub fn parse_without_eager_brace(input: ParseStream) -> Result<Expr> {
             ambiguous_expr(input, AllowStruct(false))
         }
+
+        /// An alternative to the primary `Expr::parse` parser (from the
+        /// [`Parse`] trait) for syntactic positions in which expression
+        /// boundaries are placed more eagerly than done by the typical
+        /// expression grammar. This includes expressions at the head of a
+        /// statement or in the right-hand side of a `match` arm.
+        ///
+        /// Compare the following cases:
+        ///
+        /// 1.
+        ///   ```
+        ///   # let result = ();
+        ///   # let guard = false;
+        ///   # let cond = true;
+        ///   # let f = true;
+        ///   # let g = f;
+        ///   #
+        ///   let _ = match result {
+        ///       () if guard => if cond { f } else { g }
+        ///       () => false,
+        ///   };
+        ///   ```
+        ///
+        /// 2.
+        ///   ```
+        ///   # let cond = true;
+        ///   # let f = ();
+        ///   # let g = f;
+        ///   #
+        ///   let _ = || {
+        ///       if cond { f } else { g }
+        ///       ()
+        ///   };
+        ///   ```
+        ///
+        /// 3.
+        ///   ```
+        ///   # let cond = true;
+        ///   # let f = || ();
+        ///   # let g = f;
+        ///   #
+        ///   let _ = [if cond { f } else { g } ()];
+        ///   ```
+        ///
+        /// The same sequence of tokens `if cond { f } else { g } ()` appears in
+        /// expression position 3 times. The first two syntactic positions use
+        /// eager placement of expression boundaries, and parse as `Expr::If`,
+        /// with the adjacent `()` becoming `Pat::Tuple` or `Expr::Tuple`. In
+        /// contrast, the third case uses standard expression boundaries and
+        /// parses as `Expr::Call`.
+        ///
+        /// As with [`parse_without_eager_brace`], this ambiguity in the Rust
+        /// grammar is independent of precedence.
+        ///
+        /// [`parse_without_eager_brace`]: Self::parse_without_eager_brace
+        #[cfg(feature = "full")]
+        #[cfg_attr(doc_cfg, doc(cfg(all(feature = "full", feature = "parsing"))))]
+        pub fn parse_with_earlier_boundary_rule(input: ParseStream) -> Result<Expr> {
+            let mut attrs = input.call(expr_attrs)?;
+            let mut expr = if input.peek(token::Group) {
+                let allow_struct = AllowStruct(true);
+                let atom = expr_group(input, allow_struct)?;
+                if continue_parsing_early(&atom) {
+                    trailer_helper(input, atom)?
+                } else {
+                    atom
+                }
+            } else if input.peek(Token![if]) {
+                Expr::If(input.parse()?)
+            } else if input.peek(Token![while]) {
+                Expr::While(input.parse()?)
+            } else if input.peek(Token![for])
+                && !(input.peek2(Token![<]) && (input.peek3(Lifetime) || input.peek3(Token![>])))
+            {
+                Expr::ForLoop(input.parse()?)
+            } else if input.peek(Token![loop]) {
+                Expr::Loop(input.parse()?)
+            } else if input.peek(Token![match]) {
+                Expr::Match(input.parse()?)
+            } else if input.peek(Token![try]) && input.peek2(token::Brace) {
+                Expr::TryBlock(input.parse()?)
+            } else if input.peek(Token![unsafe]) {
+                Expr::Unsafe(input.parse()?)
+            } else if input.peek(Token![const]) && input.peek2(token::Brace) {
+                Expr::Const(input.parse()?)
+            } else if input.peek(token::Brace) {
+                Expr::Block(input.parse()?)
+            } else if input.peek(Lifetime) {
+                atom_labeled(input)?
+            } else {
+                let allow_struct = AllowStruct(true);
+                unary_expr(input, allow_struct)?
+            };
+
+            if continue_parsing_early(&expr) {
+                attrs.extend(expr.replace_attrs(Vec::new()));
+                expr.replace_attrs(attrs);
+
+                let allow_struct = AllowStruct(true);
+                return parse_expr(input, expr, allow_struct, Precedence::Any);
+            }
+
+            if input.peek(Token![.]) && !input.peek(Token![..]) || input.peek(Token![?]) {
+                expr = trailer_helper(input, expr)?;
+
+                attrs.extend(expr.replace_attrs(Vec::new()));
+                expr.replace_attrs(attrs);
+
+                let allow_struct = AllowStruct(true);
+                return parse_expr(input, expr, allow_struct, Precedence::Any);
+            }
+
+            attrs.extend(expr.replace_attrs(Vec::new()));
+            expr.replace_attrs(attrs);
+            Ok(expr)
+        }
     }
 
     #[cfg(feature = "full")]
@@ -2008,67 +2124,6 @@ pub(crate) mod parsing {
                 len: content.parse()?,
             })
         }
-    }
-
-    #[cfg(feature = "full")]
-    pub(crate) fn expr_early(input: ParseStream) -> Result<Expr> {
-        let mut attrs = input.call(expr_attrs)?;
-        let mut expr = if input.peek(token::Group) {
-            let allow_struct = AllowStruct(true);
-            let atom = expr_group(input, allow_struct)?;
-            if continue_parsing_early(&atom) {
-                trailer_helper(input, atom)?
-            } else {
-                atom
-            }
-        } else if input.peek(Token![if]) {
-            Expr::If(input.parse()?)
-        } else if input.peek(Token![while]) {
-            Expr::While(input.parse()?)
-        } else if input.peek(Token![for])
-            && !(input.peek2(Token![<]) && (input.peek3(Lifetime) || input.peek3(Token![>])))
-        {
-            Expr::ForLoop(input.parse()?)
-        } else if input.peek(Token![loop]) {
-            Expr::Loop(input.parse()?)
-        } else if input.peek(Token![match]) {
-            Expr::Match(input.parse()?)
-        } else if input.peek(Token![try]) && input.peek2(token::Brace) {
-            Expr::TryBlock(input.parse()?)
-        } else if input.peek(Token![unsafe]) {
-            Expr::Unsafe(input.parse()?)
-        } else if input.peek(Token![const]) && input.peek2(token::Brace) {
-            Expr::Const(input.parse()?)
-        } else if input.peek(token::Brace) {
-            Expr::Block(input.parse()?)
-        } else if input.peek(Lifetime) {
-            atom_labeled(input)?
-        } else {
-            let allow_struct = AllowStruct(true);
-            unary_expr(input, allow_struct)?
-        };
-
-        if continue_parsing_early(&expr) {
-            attrs.extend(expr.replace_attrs(Vec::new()));
-            expr.replace_attrs(attrs);
-
-            let allow_struct = AllowStruct(true);
-            return parse_expr(input, expr, allow_struct, Precedence::Any);
-        }
-
-        if input.peek(Token![.]) && !input.peek(Token![..]) || input.peek(Token![?]) {
-            expr = trailer_helper(input, expr)?;
-
-            attrs.extend(expr.replace_attrs(Vec::new()));
-            expr.replace_attrs(attrs);
-
-            let allow_struct = AllowStruct(true);
-            return parse_expr(input, expr, allow_struct, Precedence::Any);
-        }
-
-        attrs.extend(expr.replace_attrs(Vec::new()));
-        expr.replace_attrs(attrs);
-        Ok(expr)
     }
 
     #[cfg(feature = "full")]
@@ -2900,7 +2955,7 @@ pub(crate) mod parsing {
                 },
                 fat_arrow_token: input.parse()?,
                 body: {
-                    let body = input.call(expr_early)?;
+                    let body = Expr::parse_with_earlier_boundary_rule(input)?;
                     requires_comma = requires_terminator(&body);
                     Box::new(body)
                 },

@@ -334,7 +334,7 @@ pub(crate) mod parsing {
         allow_nosemi: AllowNoSemi,
         mut attrs: Vec<Attribute>,
     ) -> Result<Stmt> {
-        let mut e = expr::parsing::expr_early(input)?;
+        let mut e = Expr::parse_with_earlier_boundary_rule(input)?;
 
         let mut attr_target = &mut e;
         loop {

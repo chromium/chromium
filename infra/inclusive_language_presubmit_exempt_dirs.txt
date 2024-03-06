@@ -204,7 +204,7 @@ extensions/common/manifest_handlers 1 1
 extensions/shell/common 1 1
 google_apis/gaia 1 1
 gpu/config 1 1
-infra 4 2
+infra 5 3
 infra/config/generated/luci 1 1
 infra/config/gn_args 1 1
 infra/config/subprojects/webrtc/consoles 1 1
@@ -699,6 +699,7 @@ third_party/rust/chromium_crates_io/vendor/rand_chacha-0.3.1 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4/src 3 1
 third_party/rust/chromium_crates_io/vendor/rand_pcg-0.3.1 4 1
+third_party/rust/chromium_crates_io/vendor/read-fonts-0.15.6/src/tables 2 1
 third_party/rust/chromium_crates_io/vendor/regex-1.10.3 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.10.3/src 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.10.3/tests 7 6
@@ -731,8 +732,6 @@ third_party/rust/chromium_crates_io/vendor/strum-0.25.0/src 1 1
 third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3 1 1
 third_party/rust/chromium_crates_io/vendor/syn-1.0.109 1 1
 third_party/rust/chromium_crates_io/vendor/syn-1.0.109/src 4 2
-third_party/rust/chromium_crates_io/vendor/syn-2.0.50 1 1
-third_party/rust/chromium_crates_io/vendor/syn-2.0.50/src 2 1
 third_party/rust/chromium_crates_io/vendor/termcolor-1.4.1/.github/workflows 3 1
 third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.12 1 1
 third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.12/.github/workflows 2 1
