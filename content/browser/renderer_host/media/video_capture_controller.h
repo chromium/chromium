@@ -136,7 +136,7 @@ class CONTENT_EXPORT VideoCaptureController
       const media::VideoCaptureParams& params,
       VideoCaptureDeviceLaunchObserver* callbacks,
       base::OnceClosure done_cb,
-      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+      mojo::PendingRemote<media::mojom::VideoEffectsManager>
           video_effects_manager);
   void ReleaseDeviceAsync(base::OnceClosure done_cb);
   bool IsDeviceAlive() const;

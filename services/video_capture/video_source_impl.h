@@ -49,7 +49,7 @@ class VideoSourceImpl : public mojom::VideoSource {
       CreatePushSubscriptionCallback callback) override;
 
   void RegisterVideoEffectsManager(
-      mojo::PendingRemote<mojom::VideoEffectsManager> remote) override;
+      mojo::PendingRemote<media::mojom::VideoEffectsManager> remote) override;
 
  private:
   enum class DeviceStatus {
@@ -87,8 +87,8 @@ class VideoSourceImpl : public mojom::VideoSource {
   DeviceStatus device_status_;
   raw_ptr<Device, AcrossTasksDanglingUntriaged> device_{nullptr};
   media::VideoCaptureParams device_start_settings_;
-  bool restart_device_once_when_stop_complete_;
-  mojo::PendingRemote<mojom::VideoEffectsManager>
+  bool restart_device_once_when_stop_complete_ = false;
+  mojo::PendingRemote<media::mojom::VideoEffectsManager>
       pending_video_effects_manager_;
   base::TimeTicks device_startup_start_time_;
 

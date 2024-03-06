@@ -6,15 +6,15 @@
 #define COMPONENTS_MEDIA_EFFECTS_MEDIA_EFFECTS_MANAGER_BINDER_H_
 
 #include "content/public/browser/browser_context.h"
+#include "media/capture/mojom/video_effects_manager.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/video_capture/public/mojom/video_effects_manager.mojom.h"
 
 namespace media_effects {
 
 void BindVideoEffectsManager(
     const std::string& device_id,
     content::BrowserContext* browser_context,
-    mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
+    mojo::PendingReceiver<media::mojom::VideoEffectsManager>
         video_effects_manager);
 
 }  // namespace media_effects

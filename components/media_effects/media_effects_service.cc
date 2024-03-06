@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/media_effects/media_effects_service.h"
-#include "services/video_capture/public/mojom/video_effects_manager.mojom.h"
+#include "media/capture/mojom/video_effects_manager.mojom.h"
 
 MediaEffectsService::MediaEffectsService(PrefService* prefs) : prefs_(prefs) {}
 
@@ -11,7 +11,7 @@ MediaEffectsService::~MediaEffectsService() = default;
 
 void MediaEffectsService::BindVideoEffectsManager(
     const std::string& device_id,
-    mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
+    mojo::PendingReceiver<media::mojom::VideoEffectsManager>
         effects_manager_receiver) {
   auto& effects_manager = GetOrCreateVideoEffectsManager(device_id);
   effects_manager.Bind(std::move(effects_manager_receiver));

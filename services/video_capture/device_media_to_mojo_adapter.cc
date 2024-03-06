@@ -102,7 +102,7 @@ void DeviceMediaToMojoAdapter::Start(
 void DeviceMediaToMojoAdapter::StartInProcess(
     const media::VideoCaptureParams& requested_settings,
     const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
-    mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+    mojo::PendingRemote<media::mojom::VideoEffectsManager>
         video_effects_manager) {
   DCHECK(thread_checker_.CalledOnValidThread());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
@@ -120,7 +120,7 @@ void DeviceMediaToMojoAdapter::StartInternal(
         handler_pending_remote,
     const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
     bool start_in_process,
-    mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+    mojo::PendingRemote<media::mojom::VideoEffectsManager>
         video_effects_manager) {
   DCHECK(thread_checker_.CalledOnValidThread());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),

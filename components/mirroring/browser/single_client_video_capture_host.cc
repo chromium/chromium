@@ -100,7 +100,7 @@ void SingleClientVideoCaptureHost::Start(
                         std::unique_ptr<DeviceLauncherCallbacks>) {},
                      std::move(device_launcher),
                      std::move(device_launcher_callbacks)),
-      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>{});
+      mojo::PendingRemote<media::mojom::VideoEffectsManager>{});
 }
 
 void SingleClientVideoCaptureHost::Stop(

@@ -88,7 +88,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "services/video_capture/public/mojom/video_effects_manager.mojom.h"
+#include "media/capture/mojom/video_effects_manager.mojom.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace net {
@@ -2802,7 +2802,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void BindVideoEffectsManager(
       const std::string& device_id,
       content::BrowserContext* browser_context,
-      mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
+      mojo::PendingReceiver<media::mojom::VideoEffectsManager>
           video_effects_manager);
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -199,8 +199,7 @@ class VideoCaptureControllerTest
     device_client_ = std::make_unique<media::VideoCaptureDeviceClient>(
         std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
             controller_->GetWeakPtrForIOThread(), GetIOThreadTaskRunner({})),
-        buffer_pool_,
-        mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>{});
+        buffer_pool_, mojo::PendingRemote<media::mojom::VideoEffectsManager>{});
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 

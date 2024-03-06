@@ -17,10 +17,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/capture/capture_export.h"
+#include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_capture/public/mojom/video_effects_manager.mojom.h"
 
 namespace media {
 class VideoCaptureBufferPool;
@@ -60,7 +60,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
   VideoCaptureDeviceClient(
       std::unique_ptr<VideoFrameReceiver> receiver,
       scoped_refptr<VideoCaptureBufferPool> buffer_pool,
-      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+      mojo::PendingRemote<media::mojom::VideoEffectsManager>
           video_effects_manager);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -164,7 +164,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<base::SequencedTaskRunner> mojo_task_runner_;
-  mojo::Remote<video_capture::mojom::VideoEffectsManager> effects_manager_;
+  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager_;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Thread collision warner to ensure that producer-facing API is not called

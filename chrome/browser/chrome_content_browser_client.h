@@ -989,7 +989,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void BindVideoEffectsManager(
       const std::string& device_id,
       content::BrowserContext* browser_context,
-      mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
+      mojo::PendingReceiver<media::mojom::VideoEffectsManager>
           video_effects_manager) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -8,7 +8,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/media_effects/video_effects_manager_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "services/video_capture/public/mojom/video_effects_manager.mojom.h"
+#include "media/capture/mojom/video_effects_manager.mojom-forward.h"
 
 class MediaEffectsService : public KeyedService {
  public:
@@ -41,7 +41,7 @@ class MediaEffectsService : public KeyedService {
   //   * Automatic cleanup when all remotes are disconnected
   void BindVideoEffectsManager(
       const std::string& device_id,
-      mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
+      mojo::PendingReceiver<media::mojom::VideoEffectsManager>
           effects_manager_receiver);
 
  private:

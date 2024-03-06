@@ -236,7 +236,7 @@ class MockBrowserClient : public content::ContentBrowserClient {
               BindVideoEffectsManager,
               (const std::string& device_id,
                content::BrowserContext* browser_context,
-               mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
+               mojo::PendingReceiver<media::mojom::VideoEffectsManager>
                    video_effects_manager),
               (override));
 };
@@ -432,7 +432,7 @@ TEST_F(VideoCaptureManagerTest, CreateAndClose) {
 TEST_F(VideoCaptureManagerTest, CreateWithVideoEffectsManager) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kCameraMicEffects);
-  mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager> receiver;
+  mojo::PendingReceiver<media::mojom::VideoEffectsManager> receiver;
   EXPECT_CALL(browser_client_, BindVideoEffectsManager(devices_.front().id,
                                                        &browser_context_, _))
       .Times(1);

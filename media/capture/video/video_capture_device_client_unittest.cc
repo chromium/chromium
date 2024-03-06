@@ -55,15 +55,14 @@ std::unique_ptr<VideoCaptureJpegDecoder> ReturnNullPtrAsJpecDecoder() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-class FakeVideoEffectsManagerImpl
-    : public video_capture::mojom::VideoEffectsManager {
+class FakeVideoEffectsManagerImpl : public media::mojom::VideoEffectsManager {
   void GetConfiguration(GetConfigurationCallback callback) override {}
   void SetConfiguration(
-      video_capture::mojom::VideoEffectsConfigurationPtr configuration,
+      media::mojom::VideoEffectsConfigurationPtr configuration,
       SetConfigurationCallback callback) override {}
-  void AddObserver(::mojo::PendingRemote<
-                   video_capture::mojom::VideoEffectsConfigurationObserver>
-                       observer) override {}
+  void AddObserver(
+      ::mojo::PendingRemote<media::mojom::VideoEffectsConfigurationObserver>
+          observer) override {}
 };
 
 class FakeVideoCaptureBufferHandle : public VideoCaptureBufferHandle {
@@ -143,7 +142,7 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
   std::unique_ptr<unittest_internal::MockGpuMemoryBufferManager>
       gpu_memory_buffer_manager_;
   FakeVideoEffectsManagerImpl fake_video_effects_manager_;
-  mojo::Receiver<video_capture::mojom::VideoEffectsManager>
+  mojo::Receiver<media::mojom::VideoEffectsManager>
       video_effects_manager_receiver_{&fake_video_effects_manager_};
 
   // Must outlive `receiver_`.

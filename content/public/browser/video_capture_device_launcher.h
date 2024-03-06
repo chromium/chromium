@@ -13,12 +13,12 @@
 #include "base/token.h"
 #include "content/common/content_export.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
+#include "media/capture/mojom/video_effects_manager.mojom-forward.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_capture/public/mojom/video_effects_manager.mojom-forward.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -63,7 +63,7 @@ class CONTENT_EXPORT VideoCaptureDeviceLauncher {
       base::OnceClosure connection_lost_cb,
       Callbacks* callbacks,
       base::OnceClosure done_cb,
-      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+      mojo::PendingRemote<media::mojom::VideoEffectsManager>
           video_effects_manager) = 0;
 
   virtual void AbortLaunch() = 0;

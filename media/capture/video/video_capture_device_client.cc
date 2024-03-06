@@ -249,7 +249,7 @@ VideoCaptureDeviceClient::VideoCaptureDeviceClient(
 VideoCaptureDeviceClient::VideoCaptureDeviceClient(
     std::unique_ptr<VideoFrameReceiver> receiver,
     scoped_refptr<VideoCaptureBufferPool> buffer_pool,
-    mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+    mojo::PendingRemote<media::mojom::VideoEffectsManager>
         video_effects_manager)
     : receiver_(std::move(receiver)),
       buffer_pool_(std::move(buffer_pool)),

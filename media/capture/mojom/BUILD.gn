@@ -114,6 +114,15 @@ mojom("video_capture_types") {
   blink_cpp_typemaps = [ shared_video_capture_cpp_typemap ]
 }
 
+mojom("video_effects_manager") {
+  sources = [ "video_effects_manager.mojom" ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+  ]
+}
+
 component("video_capture_mojom_support") {
   sources = [
     "video_capture_types_mojom_traits.cc",

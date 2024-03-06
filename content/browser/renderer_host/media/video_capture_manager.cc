@@ -33,8 +33,8 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_facing.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
+#include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "media/capture/video/video_capture_device.h"
-#include "services/video_capture/public/mojom/video_effects_manager.mojom.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace {
@@ -64,13 +64,13 @@ class VideoCaptureManager::CaptureDeviceStartRequest {
       VideoCaptureController* controller,
       const media::VideoCaptureSessionId& session_id,
       const media::VideoCaptureParams& params,
-      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+      mojo::PendingRemote<media::mojom::VideoEffectsManager>
           video_effects_manager);
   VideoCaptureController* controller() const { return controller_; }
   const base::UnguessableToken& session_id() const { return session_id_; }
   media::VideoCaptureParams params() const { return params_; }
 
-  mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>&&
+  mojo::PendingRemote<media::mojom::VideoEffectsManager>&&
   TakeVideoEffectsManager() {
     return std::move(video_effects_manager_);
   }
@@ -79,15 +79,14 @@ class VideoCaptureManager::CaptureDeviceStartRequest {
   const raw_ptr<VideoCaptureController> controller_;
   const base::UnguessableToken session_id_;
   const media::VideoCaptureParams params_;
-  mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
-      video_effects_manager_;
+  mojo::PendingRemote<media::mojom::VideoEffectsManager> video_effects_manager_;
 };
 
 VideoCaptureManager::CaptureDeviceStartRequest::CaptureDeviceStartRequest(
     VideoCaptureController* controller,
     const media::VideoCaptureSessionId& session_id,
     const media::VideoCaptureParams& params,
-    mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+    mojo::PendingRemote<media::mojom::VideoEffectsManager>
         video_effects_manager)
     : controller_(controller),
       session_id_(session_id),
@@ -260,7 +259,7 @@ void VideoCaptureManager::QueueStartDevice(
     const media::VideoCaptureSessionId& session_id,
     VideoCaptureController* controller,
     const media::VideoCaptureParams& params,
-    mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+    mojo::PendingRemote<media::mojom::VideoEffectsManager>
         video_effects_manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(lock_time_.is_null());
@@ -450,7 +449,7 @@ void VideoCaptureManager::ConnectClient(
         << "VideoCaptureManager queueing device start for device_id = "
         << controller->device_id();
     EmitLogMessage(string_stream.str(), 1);
-    mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+    mojo::PendingRemote<media::mojom::VideoEffectsManager>
         video_effects_manager;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
     if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {

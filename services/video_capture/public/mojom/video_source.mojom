@@ -6,7 +6,7 @@ module video_capture.mojom;
 
 import "media/capture/mojom/image_capture.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
-import "services/video_capture/public/mojom/video_effects_manager.mojom";
+import "media/capture/mojom/video_effects_manager.mojom";
 import "services/video_capture/public/mojom/video_frame_handler.mojom";
 
 enum CreatePushSubscriptionSuccessCode {
@@ -100,5 +100,5 @@ interface VideoSource {
   // Registers a `remote` that the video capture service can use to get
   // effect configuration for the video stream.
   RegisterVideoEffectsManager(
-    pending_remote<VideoEffectsManager> remote);
+    pending_remote<media.mojom.VideoEffectsManager> remote);
 };

@@ -10,7 +10,7 @@ VideoEffectsManagerImpl::VideoEffectsManagerImpl(
     : pref_service_(pref_service),
       last_receiver_disconnected_handler_(
           std::move(last_receiver_disconnected_handler)) {
-  configuration_ = video_capture::mojom::VideoEffectsConfiguration::New();
+  configuration_ = media::mojom::VideoEffectsConfiguration::New();
   receivers_.set_disconnect_handler(
       base::BindRepeating(&VideoEffectsManagerImpl::OnReceiverDisconnected,
                           base::Unretained(this)));
@@ -19,7 +19,7 @@ VideoEffectsManagerImpl::VideoEffectsManagerImpl(
 VideoEffectsManagerImpl::~VideoEffectsManagerImpl() = default;
 
 void VideoEffectsManagerImpl::Bind(
-    mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager> receiver) {
+    mojo::PendingReceiver<media::mojom::VideoEffectsManager> receiver) {
   receivers_.Add(this, std::move(receiver));
 }
 
@@ -29,17 +29,17 @@ void VideoEffectsManagerImpl::GetConfiguration(
 }
 
 void VideoEffectsManagerImpl::SetConfiguration(
-    video_capture::mojom::VideoEffectsConfigurationPtr configuration,
+    media::mojom::VideoEffectsConfigurationPtr configuration,
     SetConfigurationCallback callback) {
   configuration_ = configuration->Clone();
   for (const auto& observer : observers_) {
     observer->OnConfigurationChanged(configuration_->Clone());
   }
-  std::move(callback).Run(video_capture::mojom::SetConfigurationResult::kOk);
+  std::move(callback).Run(media::mojom::SetConfigurationResult::kOk);
 }
 
 void VideoEffectsManagerImpl::AddObserver(
-    mojo::PendingRemote<video_capture::mojom::VideoEffectsConfigurationObserver>
+    mojo::PendingRemote<media::mojom::VideoEffectsConfigurationObserver>
         observer) {
   observers_.Add(std::move(observer));
 }

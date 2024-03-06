@@ -10,7 +10,7 @@ namespace {
 void BindVideoEffectsManagerOnUIThread(
     const std::string& device_id,
     content::BrowserContext* browser_context,
-    mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
+    mojo::PendingReceiver<media::mojom::VideoEffectsManager>
         video_effects_manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* media_effects_service =
@@ -31,7 +31,7 @@ namespace media_effects {
 void BindVideoEffectsManager(
     const std::string& device_id,
     content::BrowserContext* browser_context,
-    mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
+    mojo::PendingReceiver<media::mojom::VideoEffectsManager>
         video_effects_manager) {
   if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
     BindVideoEffectsManagerOnUIThread(device_id, browser_context,

@@ -35,9 +35,8 @@ class MockVideoSource : public video_capture::mojom::VideoSource {
                video_capture::mojom::PushVideoStreamSubscription> subscription,
            CreatePushSubscriptionCallback& callback));
 
-  MOCK_METHOD1(
-      RegisterVideoEffectsManager,
-      void(mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>));
+  MOCK_METHOD1(RegisterVideoEffectsManager,
+               void(mojo::PendingRemote<media::mojom::VideoEffectsManager>));
 };
 
 }  // namespace video_capture

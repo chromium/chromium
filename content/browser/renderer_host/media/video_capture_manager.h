@@ -31,11 +31,11 @@
 #include "content/public/browser/screenlock_observer.h"
 #include "media/base/video_facing.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
+#include "media/capture/mojom/video_effects_manager.mojom-forward.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_capture/public/mojom/video_effects_manager.mojom-forward.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -307,12 +307,11 @@ class CONTENT_EXPORT VideoCaptureManager
   // posts a
   // request to start the device on the device thread unless there is
   // another request pending start.
-  void QueueStartDevice(
-      const media::VideoCaptureSessionId& session_id,
-      VideoCaptureController* controller,
-      const media::VideoCaptureParams& params,
-      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
-          video_effects_manager);
+  void QueueStartDevice(const media::VideoCaptureSessionId& session_id,
+                        VideoCaptureController* controller,
+                        const media::VideoCaptureParams& params,
+                        mojo::PendingRemote<media::mojom::VideoEffectsManager>
+                            video_effects_manager);
   void DoStopDevice(VideoCaptureController* controller);
   void ProcessDeviceStartRequestQueue();
 

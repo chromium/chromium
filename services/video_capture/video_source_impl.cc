@@ -18,8 +18,7 @@ VideoSourceImpl::VideoSourceImpl(
     : device_factory_(device_factory),
       device_id_(device_id),
       on_last_binding_closed_cb_(std::move(on_last_binding_closed_cb)),
-      device_status_(DeviceStatus::kNotStarted),
-      restart_device_once_when_stop_complete_(false) {
+      device_status_(DeviceStatus::kNotStarted) {
   // Unretained(this) is safe because |this| owns |receivers_|.
   receivers_.set_disconnect_handler(base::BindRepeating(
       &VideoSourceImpl::OnClientDisconnected, base::Unretained(this)));
@@ -87,7 +86,7 @@ void VideoSourceImpl::CreatePushSubscription(
 }
 
 void VideoSourceImpl::RegisterVideoEffectsManager(
-    mojo::PendingRemote<mojom::VideoEffectsManager> remote) {
+    mojo::PendingRemote<media::mojom::VideoEffectsManager> remote) {
   pending_video_effects_manager_ = std::move(remote);
 }
 
