@@ -93,8 +93,8 @@ class GraphBuilder final {
   // function because the buffer of `buffer_` is now owned by the detached
   // buffer.
   flatbuffers::DetachedBuffer FinishAndTakeFlatBuffer(
-      const std::vector<uint64_t>& input_operands,
-      const std::vector<uint64_t>& output_operands);
+      base::span<const uint64_t> input_operands,
+      base::span<const uint64_t> output_operands);
 
   flatbuffers::FlatBufferBuilder builder_;
   // `is_created_model_` indicates whether the tflite model is created and the

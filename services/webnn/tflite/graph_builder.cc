@@ -4,6 +4,7 @@
 
 #include "services/webnn/tflite/graph_builder.h"
 
+#include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -21,8 +22,10 @@ namespace {
 // entry in the new tflite root so that we can see that version is not 1.
 #define TFLITE_SCHEMA_VERSION (3)
 
-base::expected<std::vector<int32_t>, std::string> ConvertDimensions(
-    const std::vector<uint32_t>& input_dimensions) {
+// Useful for converting dimension arrays coming from mojo as uint32 to the
+// int32 vectors used by TFLite.
+base::expected<std::vector<int32_t>, std::string> ToSignedDimensions(
+    base::span<const uint32_t> input_dimensions) {
   std::vector<int32_t> output_dimensions;
   output_dimensions.reserve(input_dimensions.size());
   for (auto dimension : input_dimensions) {
@@ -126,10 +129,10 @@ base::expected<void, std::string> GraphBuilder::SerializeOperand(
   }
 
   // Create `Tensor` with operand shape, the index of buffer and the name.
-  const auto dimensions_result = ConvertDimensions(operand.dimensions);
-  RETURN_IF_ERROR(dimensions_result);
+  const auto signed_operand_dimensions = ToSignedDimensions(operand.dimensions);
+  RETURN_IF_ERROR(signed_operand_dimensions);
   const flatbuffers::Offset<flatbuffers::Vector<int32_t>> dimensions =
-      builder_.CreateVector<int32_t>(dimensions_result.value());
+      builder_.CreateVector<int32_t>(*std::move(signed_operand_dimensions));
   const auto operand_type = MojoOperandTypeToTFLite(operand.data_type);
   const StringOffset operand_name =
       operand.name.has_value() ? builder_.CreateString(*operand.name) : 0;
@@ -234,8 +237,8 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
 }
 
 flatbuffers::DetachedBuffer GraphBuilder::FinishAndTakeFlatBuffer(
-    const std::vector<uint64_t>& input_operands,
-    const std::vector<uint64_t>& output_operands) {
+    base::span<const uint64_t> input_operands,
+    base::span<const uint64_t> output_operands) {
   CHECK(!is_created_model_);
 
   int32_t* graph_input_ids = nullptr;
