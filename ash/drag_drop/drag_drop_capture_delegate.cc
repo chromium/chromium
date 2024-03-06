@@ -76,17 +76,22 @@ bool DragDropCaptureDelegate::TakeCapture(
 
 aura::Window* DragDropCaptureDelegate::GetTarget(
     const ui::LocatedEvent& event) {
-  return drag_drop_tracker_->GetTarget(event);
+  return drag_drop_tracker_ ? drag_drop_tracker_->GetTarget(event) : nullptr;
 }
 
 std::unique_ptr<ui::LocatedEvent> DragDropCaptureDelegate::ConvertEvent(
     aura::Window* target,
     const ui::LocatedEvent& event) {
-  return drag_drop_tracker_->ConvertEvent(target, event);
+  return drag_drop_tracker_ ? drag_drop_tracker_->ConvertEvent(target, event)
+                            : nullptr;
 }
 
 aura::Window* DragDropCaptureDelegate::capture_window() {
-  return drag_drop_tracker_->capture_window();
+  return drag_drop_tracker_ ? drag_drop_tracker_->capture_window() : nullptr;
+}
+
+void DragDropCaptureDelegate::ReleaseCapture() {
+  drag_drop_tracker_.reset();
 }
 
 }  // namespace ash

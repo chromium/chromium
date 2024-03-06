@@ -472,6 +472,7 @@ void DragDropController::OnGestureEvent(ui::GestureEvent* event) {
   if (capture_delegate_) {
     translated_event =
         capture_delegate_->ConvertEvent(translated_target, touch_offset_event);
+    DCHECK(translated_event);
   } else {
     translated_event = ConvertEvent(translated_target, touch_offset_event);
   }
@@ -491,9 +492,11 @@ void DragDropController::OnGestureEvent(ui::GestureEvent* event) {
       // message loop ends. Due to this, we have to defer forwarding
       // the long tap.
       if (capture_delegate_) {
+        auto* capture_window =
+            static_cast<aura::Window*>(capture_delegate_->capture_window());
+        CHECK(capture_window);
         pending_long_tap_ = std::make_unique<ui::GestureEvent>(
-            *event,
-            static_cast<aura::Window*>(capture_delegate_->capture_window()),
+            *event, capture_window,
             static_cast<aura::Window*>(drag_source_window_));
       } else {
         pending_long_tap_ = event->Clone();

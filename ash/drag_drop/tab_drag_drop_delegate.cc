@@ -164,6 +164,9 @@ void TabDragDropDelegate::DropAndDeleteSelf(
     const ui::OSExchangeData& drop_data) {
   tab_dragging_recorder_.reset();
 
+  // Release input capture in advance.
+  ReleaseCapture();
+
   auto closure = base::BindOnce(&TabDragDropDelegate::OnNewBrowserWindowCreated,
                                 base::Owned(this), location_in_screen);
   NewWindowDelegate::GetPrimary()->NewWindowForDetachingTab(
