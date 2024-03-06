@@ -55,7 +55,6 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
-#include "components/feed/feed_feature_list.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -1149,55 +1148,6 @@ TEST_F(RenderViewContextMenuPrefsTest,
 
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB));
-}
-
-TEST_F(RenderViewContextMenuPrefsTest, FollowOrUnfollow) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(feed::kWebUiFeed);
-
-  feed::WebFeedTabHelper::CreateForWebContents(web_contents());
-  feed::WebFeedTabHelper* web_feed_tab_helper =
-      feed::WebFeedTabHelper::FromWebContents(web_contents());
-
-  // "Follow site" should be added when the site for the page is not followed.
-  {
-    web_feed_tab_helper->SetWebFeedInfoForTesting(
-        web_contents()->GetLastCommittedURL(),
-        TabWebFeedFollowState::kNotFollowed, std::string());
-    content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
-    TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                   params);
-    menu.Init();
-    EXPECT_TRUE(menu.IsItemPresent(IDC_FOLLOW));
-    EXPECT_FALSE(menu.IsItemPresent(IDC_UNFOLLOW));
-  }
-
-  // "Unfollow site" should be added when the site for the page is followed.
-  {
-    web_feed_tab_helper->SetWebFeedInfoForTesting(
-        web_contents()->GetLastCommittedURL(), TabWebFeedFollowState::kFollowed,
-        std::string());
-    content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
-    TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                   params);
-    menu.Init();
-    EXPECT_FALSE(menu.IsItemPresent(IDC_FOLLOW));
-    EXPECT_TRUE(menu.IsItemPresent(IDC_UNFOLLOW));
-  }
-
-  // Neither "Follow site" nor "Unfollow site" should be added when the follow
-  // state of the site for the page is unknown.
-  {
-    web_feed_tab_helper->SetWebFeedInfoForTesting(
-        web_contents()->GetLastCommittedURL(), TabWebFeedFollowState::kUnknown,
-        std::string());
-    content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
-    TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                   params);
-    menu.Init();
-    EXPECT_FALSE(menu.IsItemPresent(IDC_FOLLOW));
-    EXPECT_FALSE(menu.IsItemPresent(IDC_FOLLOW));
-  }
 }
 
 class RenderViewContextMenuHideAutofillPopupTest

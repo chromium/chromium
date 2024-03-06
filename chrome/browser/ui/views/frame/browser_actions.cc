@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/feed/feed_feature_list.h"
 #include "components/history_clusters/core/features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/performance_manager/public/features.h"
@@ -165,14 +164,6 @@ void BrowserActions::InitializeBrowserActions() {
         SidePanelAction(SidePanelEntryId::kUserNote, IDS_USER_NOTE_TITLE,
                         IDS_USER_NOTE_TITLE, kNoteOutlineIcon,
                         kActionSidePanelShowUserNote, &(browser_.get()), true)
-            .Build());
-  }
-
-  if (base::FeatureList::IsEnabled(feed::kWebUiFeed)) {
-    root_action_item_->AddChild(
-        SidePanelAction(SidePanelEntryId::kFeed, IDS_FEED_TITLE, IDS_FEED_TITLE,
-                        vector_icons::kFeedIcon, kActionSidePanelShowFeed,
-                        &(browser_.get()), true)
             .Build());
   }
 

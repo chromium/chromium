@@ -72,13 +72,6 @@ BASE_DECLARE_FEATURE(kWebFeedSort);
 // on Start Surface.
 BASE_DECLARE_FEATURE(kEnableOpenInNewTabFromStartSurfaceFeed);
 
-// Feature that causes the WebUI version of the Feed to be enabled.
-BASE_DECLARE_FEATURE(kWebUiFeed);
-extern const base::FeatureParam<std::string> kWebUiFeedUrl;
-extern const base::FeatureParam<bool> kWebUiDisableContentSecurityPolicy;
-
-std::string GetFeedReferrerUrl();
-
 bool IsCormorantEnabledForLocale(std::string country);
 
 // Personalize feed for unsigned users.

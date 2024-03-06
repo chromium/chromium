@@ -27,7 +27,6 @@
 #include "components/feed/core/proto/v2/keyvalue_store.pb.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/feed_service.h"
-#include "components/feed/feed_feature_list.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/version_info/version_info.h"
@@ -185,13 +184,6 @@ FeedServiceFactory::~FeedServiceFactory() = default;
 std::unique_ptr<KeyedService>
 FeedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  // Currently feed service is only supported for kWebUiFeed on desktop.
-  // TODO(jianli): Update all other places that depend on FeedServiceFactory
-  // when we want to roll this out.
-#if !BUILDFLAG(IS_ANDROID)
-  CHECK(base::FeatureList::IsEnabled(feed::kWebUiFeed));
-#endif
-
   Profile* profile = Profile::FromBrowserContext(context);
 
   content::StoragePartition* storage_partition =

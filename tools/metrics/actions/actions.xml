@@ -33250,6 +33250,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SharingHubDesktop.FollowSelected">
+  <obsolete>Removed 02/2024</obsolete>
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
@@ -33303,6 +33304,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SharingHubDesktop.UnfollowSelected">
+  <obsolete>Removed 02/2024</obsolete>
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>

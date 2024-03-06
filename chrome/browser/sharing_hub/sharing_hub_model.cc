@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/feed/feed_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -130,16 +129,6 @@ void SharingHubModel::PopulateFirstPartyActions() {
         l10n_util::GetStringUTF16(IDS_SHARING_HUB_MEDIA_ROUTER_LABEL),
         &vector_icons::kMediaRouterIdleIcon, "SharingHubDesktop.CastSelected",
         0);
-  }
-
-  if (base::FeatureList::IsEnabled(feed::kWebUiFeed)) {
-    first_party_action_list_.emplace_back(
-        IDC_FOLLOW, l10n_util::GetStringUTF16(IDS_SHARING_HUB_FOLLOW_LABEL),
-        &kAddIcon, "SharingHubDesktop.FollowSelected", 0);
-    first_party_action_list_.emplace_back(
-        IDC_UNFOLLOW,
-        l10n_util::GetStringUTF16(IDS_SHARING_HUB_FOLLOWING_LABEL),
-        &views::kMenuCheckIcon, "SharingHubDesktop.UnfollowSelected", 0);
   }
 
   first_party_action_list_.emplace_back(

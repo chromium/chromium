@@ -9097,11 +9097,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Log in as another user to view and take notes on this page.
       </message>
 
-      <!-- Feed button and menu -->
-      <message name="IDS_FEED_TITLE" desc="Title of the feed menu">
-        Feed
-      </message>
-
       <!-- Google Lens side panel -->
       <message name="IDS_GOOGLE_LENS_TITLE" desc="Title of the Google Lens side panel">
         Google Lens

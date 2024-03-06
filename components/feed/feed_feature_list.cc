@@ -67,8 +67,6 @@ BASE_FEATURE(kFeedBottomSyncStringRemoval,
 #endif
 BASE_FEATURE(kFeedStamp, "FeedStamp", base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kDefaultReferrerUrl[] = "https://www.google.com/";
-
 BASE_FEATURE(kWebFeedAwareness,
              "WebFeedAwareness",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -82,16 +80,6 @@ BASE_FEATURE(kWebFeedSort, "WebFeedSort", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableOpenInNewTabFromStartSurfaceFeed,
              "EnableOpenInNewTabFromStartSurfaceFeed",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWebUiFeed, "FeedWebUi", base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kWebUiFeedUrl{
-    &kWebUiFeed, "feedurl", "https://www.google.com/feed-api/following"};
-const base::FeatureParam<bool> kWebUiDisableContentSecurityPolicy{
-    &kWebUiFeed, "disableCsp", false};
-
-std::string GetFeedReferrerUrl() {
-  return kDefaultReferrerUrl;
-}
 
 bool IsCormorantEnabledForLocale(std::string country) {
   const std::vector<std::string> launched_countries = {"AU", "CA", "GB",

@@ -4424,11 +4424,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "following-feed-sidepanel",
-    "owners": [ "//chrome/android/feed/OWNERS", "freedjm@chromium.org" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "force-color-profile",
     "owners": [ "ccameron@chromium.org" ],
     // Used by developers and manual testing to test custom color profiles.

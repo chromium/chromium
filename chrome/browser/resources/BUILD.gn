@@ -28,7 +28,6 @@ group("resources") {
       "bookmarks:resources",
       "commerce:resources",
       "downloads:resources",
-      "feed:resources",
       "feedback:resources",
       "gaia_auth_host:resources",
       "hats:resources",
