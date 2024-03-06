@@ -462,7 +462,6 @@ OutOfFlowLayoutPart::ApplyInsetArea(
 
   std::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
   CreateAnchorEvaluator(anchor_evaluator_storage, container_info,
-                        container_physical_content_size,
                         candidate.Node().Style().GetWritingDirection(),
                         candidate.Node().Style().AnchorDefault(),
                         *candidate.Node().GetLayoutBox(), anchor_queries);
@@ -1573,7 +1572,6 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 void OutOfFlowLayoutPart::CreateAnchorEvaluator(
     std::optional<AnchorEvaluatorImpl>& anchor_evaluator_storage,
     const ContainingBlockInfo& container_info,
-    const PhysicalSize& available_size,
     WritingDirectionMode self_writing_direction,
     const ScopedCSSName* default_anchor_specifier,
     const LayoutBox& candidate_layout_box,
@@ -1603,7 +1601,7 @@ void OutOfFlowLayoutPart::CreateAnchorEvaluator(
         implicit_anchor, *css_containing_block, container_converter,
         self_writing_direction,
         container_converter.ToPhysical(container_info.rect).offset,
-        available_size);
+        container_physical_content_size);
   } else if (const LogicalAnchorQuery* anchor_query =
                  container_builder_->AnchorQuery()) {
     // Otherwise the |container_builder_| is the containing block.
@@ -1611,7 +1609,7 @@ void OutOfFlowLayoutPart::CreateAnchorEvaluator(
         candidate_layout_box, *anchor_query, default_anchor_specifier,
         implicit_anchor, container_converter, self_writing_direction,
         container_converter.ToPhysical(container_info.rect).offset,
-        available_size);
+        container_physical_content_size);
   } else {
     anchor_evaluator_storage.emplace();
   }
@@ -1694,8 +1692,8 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
         To<LogicalOofNodeForFragmentation>(oof_node).fixedpos_inline_container;
   }
 
-  return NodeInfo(node, oof_static_position, container_physical_content_size,
-                  container_info, GetConstraintSpace().GetWritingDirection(),
+  return NodeInfo(node, oof_static_position, container_info,
+                  GetConstraintSpace().GetWritingDirection(),
                   /* is_fragmentainer_descendant */ containing_block_fragment,
                   containing_block, fixedpos_containing_block,
                   fixedpos_inline_container,
@@ -1812,7 +1810,6 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   // Note: This assumes @try rounds can't affect writing-mode/anchor-default.
   std::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
   CreateAnchorEvaluator(anchor_evaluator_storage, node_info.container_info,
-                        node_info.container_physical_content_size,
                         node_info.node.Style().GetWritingDirection(),
                         node_info.node.Style().AnchorDefault(),
                         *node_info.node.GetLayoutBox(), anchor_queries);
@@ -1893,10 +1890,11 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       candidate_style.GetWritingDirection();
   const auto container_writing_direction =
       node_info.container_info.writing_direction;
-  const LogicalSize container_content_size_in_candidate_writing_mode =
-      node_info.container_physical_content_size.ConvertToLogical(
-          candidate_writing_direction.GetWritingMode());
   const LogicalRect& container_rect = node_info.container_info.rect;
+  const LogicalSize container_content_size_in_candidate_writing_mode =
+      ToPhysicalSize(container_rect.size,
+                     node_info.default_writing_direction.GetWritingMode())
+          .ConvertToLogical(candidate_writing_direction.GetWritingMode());
 
   // Determine if we need to actually run the full OOF-positioned sizing, and
   // positioning algorithm.
@@ -2110,6 +2108,8 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   offset_info.disable_first_tier_cache |=
       anchor_evaluator->HasAnchorFunctions();
   offset_info.block_estimate = node_dimensions.size.block_size;
+  offset_info.container_content_size =
+      container_content_size_in_candidate_writing_mode;
 
   // Calculate the offsets.
   const BoxStrut inset =
@@ -2244,13 +2244,10 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
   const BlockNode& node = node_info.node;
   const auto& style = node.Style();
   const LayoutUnit block_offset = offset_info.offset.block_offset;
-  LogicalSize container_content_size_in_candidate_writing_mode =
-      node_info.container_physical_content_size.ConvertToLogical(
-          style.GetWritingDirection().GetWritingMode());
 
   LayoutUnit inline_size = offset_info.node_dimensions.size.inline_size;
   LayoutUnit block_size = offset_info.block_estimate.value_or(
-      container_content_size_in_candidate_writing_mode.block_size);
+      offset_info.container_content_size.block_size);
   LogicalSize logical_size(inline_size, block_size);
   // Convert from logical size in the writing mode of the child to the logical
   // size in the writing mode of the container. That's what the constraint space
@@ -2265,8 +2262,7 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
                                  style.GetWritingDirection(),
                                  /* is_new_fc */ true);
   builder.SetAvailableSize(available_size);
-  builder.SetPercentageResolutionSize(
-      container_content_size_in_candidate_writing_mode);
+  builder.SetPercentageResolutionSize(offset_info.container_content_size);
   builder.SetIsFixedInlineSize(true);
 
   // In some cases we will need the fragment size in order to calculate the

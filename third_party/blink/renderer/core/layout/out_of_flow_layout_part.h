@@ -151,7 +151,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
    public:
     BlockNode node;
     const LogicalStaticPosition static_position;
-    PhysicalSize container_physical_content_size;
     const ContainingBlockInfo container_info;
     const WritingDirectionMode default_writing_direction;
     const OofContainingBlock<LogicalOffset> containing_block;
@@ -162,7 +161,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
     NodeInfo(BlockNode node,
              const LogicalStaticPosition static_position,
-             PhysicalSize container_physical_content_size,
              const ContainingBlockInfo container_info,
              const WritingDirectionMode default_writing_direction,
              bool is_fragmentainer_descendant,
@@ -173,7 +171,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
              bool requires_content_before_breaking)
         : node(node),
           static_position(static_position),
-          container_physical_content_size(container_physical_content_size),
           container_info(container_info),
           default_writing_direction(default_writing_direction),
           containing_block(containing_block),
@@ -203,8 +200,12 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // offset. If an initial result is set, it will either be re-used or
     // replaced in the final layout pass.
     Member<const LayoutResult> initial_layout_result;
-    // The |block_estimate| is wrt. the candidate's writing mode.
+
+    // The `block_estimate` and `container_content_size` is wrt. the
+    // candidate's writing mode.
     std::optional<LayoutUnit> block_estimate;
+    LogicalSize container_content_size;
+
     LogicalOofDimensions node_dimensions;
 
     // The offset from the OOF to the top of the fragmentation context root.
@@ -302,7 +303,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   void CreateAnchorEvaluator(
       std::optional<AnchorEvaluatorImpl>& anchor_evaluator_storage,
       const ContainingBlockInfo& container_info,
-      const PhysicalSize& available_size,
       WritingDirectionMode self_writing_direction,
       const ScopedCSSName* default_anchor_specifier,
       const LayoutBox& candidate_layout_box,
