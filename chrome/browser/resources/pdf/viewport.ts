@@ -1972,13 +1972,15 @@ class ScrollContent {
   get overlayScrollbarWidth(): number {
     let overlayScrollbarWidth = 0;
 
+    // TODO(crbug.com/1286009): Support overlay scrollbars on all platforms.
+    // <if expr="is_macosx">
+    overlayScrollbarWidth = 16;
+    // </if>
+    // <if expr="not is_macosx">
     if (this.plugin_) {
       overlayScrollbarWidth = this.scrollbarWidth_;
     }
-
-    if (overlayScrollbarWidth === 0) {
-      overlayScrollbarWidth = 16;
-    }
+    // </if>
 
     return overlayScrollbarWidth;
   }
