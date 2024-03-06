@@ -782,6 +782,9 @@ Called by update_protocol_commands_enum.py.-->
              response chunk"/>
   <int value="139"
       label="Console insight generation errored for an unknown reason"/>
+  <int value="140" label="Autofill event received"/>
+  <int value="141"
+      label="Autofill event received and auto-opening Autofill tab"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
