@@ -2206,9 +2206,7 @@ config("export_dynamic") {
 config("thin_archive") {
   # The macOS and iOS default linker ld64 does not support reading thin
   # archives.
-  # TODO(crbug.com/1221615): Enable on is_apple if use_lld once that no longer
-  # confuses lldb.
-  if ((is_posix && !is_nacl && !is_apple) || is_fuchsia) {
+  if ((is_posix && !is_nacl && (!is_apple || use_lld)) || is_fuchsia) {
     arflags = [ "-T" ]
   } else if (is_win && use_lld) {
     arflags = [ "/llvmlibthin" ]
