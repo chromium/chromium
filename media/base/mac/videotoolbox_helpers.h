@@ -12,27 +12,7 @@
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
 
-namespace media {
-
-namespace video_toolbox {
-
-// Create a CFDictionaryRef with the given keys and values.
-MEDIA_EXPORT base::apple::ScopedCFTypeRef<CFDictionaryRef>
-DictionaryWithKeysAndValues(CFTypeRef* keys, CFTypeRef* values, size_t size);
-
-// Create a CFDictionaryRef with the given key and value.
-MEDIA_EXPORT base::apple::ScopedCFTypeRef<CFDictionaryRef>
-DictionaryWithKeyValue(CFTypeRef key, CFTypeRef value);
-
-// Create a CFArrayRef with the given array of integers.
-MEDIA_EXPORT base::apple::ScopedCFTypeRef<CFArrayRef> ArrayWithIntegers(
-    const int* v,
-    size_t size);
-
-// Create a CFArrayRef with the given int and float values.
-MEDIA_EXPORT base::apple::ScopedCFTypeRef<CFArrayRef> ArrayWithIntegerAndFloat(
-    int int_val,
-    float float_val);
+namespace media::video_toolbox {
 
 // Copy a H.264/HEVC frame stored in a CM sample buffer to an Annex B buffer.
 // Copies parameter sets for keyframes before the frame data as well.
@@ -66,8 +46,6 @@ class MEDIA_EXPORT SessionPropertySetter {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> supported_keys_;
 };
 
-}  // namespace video_toolbox
-
-}  // namespace media
+}  // namespace media::video_toolbox
 
 #endif  // MEDIA_BASE_MAC_VIDEOTOOLBOX_HELPERS_H_

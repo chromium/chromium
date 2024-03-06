@@ -15,57 +15,11 @@
 #include "media/base/video_codecs.h"
 #include "media/media_buildflags.h"
 
-namespace media {
-
-namespace video_toolbox {
+namespace media::video_toolbox {
 
 namespace {
 static const char kAnnexBHeaderBytes[4] = {0, 0, 0, 1};
 }  // anonymous namespace
-
-base::apple::ScopedCFTypeRef<CFDictionaryRef>
-DictionaryWithKeysAndValues(CFTypeRef* keys, CFTypeRef* values, size_t size) {
-  return base::apple::ScopedCFTypeRef<CFDictionaryRef>(CFDictionaryCreate(
-      kCFAllocatorDefault, keys, values, size, &kCFTypeDictionaryKeyCallBacks,
-      &kCFTypeDictionaryValueCallBacks));
-}
-
-base::apple::ScopedCFTypeRef<CFDictionaryRef> DictionaryWithKeyValue(
-    CFTypeRef key,
-    CFTypeRef value) {
-  CFTypeRef keys[1] = {key};
-  CFTypeRef values[1] = {value};
-  return DictionaryWithKeysAndValues(keys, values, 1);
-}
-
-base::apple::ScopedCFTypeRef<CFArrayRef> ArrayWithIntegers(const int* v,
-                                                           size_t size) {
-  std::vector<CFNumberRef> numbers;
-  numbers.reserve(size);
-  for (const int* end = v + size; v < end; ++v)
-    numbers.push_back(CFNumberCreate(nullptr, kCFNumberSInt32Type, v));
-  base::apple::ScopedCFTypeRef<CFArrayRef> array(CFArrayCreate(
-      kCFAllocatorDefault, reinterpret_cast<const void**>(&numbers[0]),
-      numbers.size(), &kCFTypeArrayCallBacks));
-  for (auto* number : numbers) {
-    CFRelease(number);
-  }
-  return array;
-}
-
-base::apple::ScopedCFTypeRef<CFArrayRef> ArrayWithIntegerAndFloat(
-    int int_val,
-    float float_val) {
-  std::array<CFNumberRef, 2> numbers = {
-      {CFNumberCreate(nullptr, kCFNumberSInt32Type, &int_val),
-       CFNumberCreate(nullptr, kCFNumberFloat32Type, &float_val)}};
-  base::apple::ScopedCFTypeRef<CFArrayRef> array(CFArrayCreate(
-      kCFAllocatorDefault, reinterpret_cast<const void**>(numbers.data()),
-      numbers.size(), &kCFTypeArrayCallBacks));
-  for (auto* number : numbers)
-    CFRelease(number);
-  return array;
-}
 
 // Wrapper class for writing AnnexBBuffer output into.
 class AnnexBBuffer {
@@ -356,6 +310,4 @@ bool SessionPropertySetter::Set(CFStringRef key, CFArrayRef value) {
   return VTSessionSetProperty(session_.get(), key, value) == noErr;
 }
 
-}  // namespace video_toolbox
-
-}  // namespace media
+}  // namespace media::video_toolbox

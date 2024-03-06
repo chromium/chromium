@@ -4,8 +4,11 @@
 
 #include "media/gpu/mac/vt_video_encode_accelerator_mac.h"
 
+#import <Foundation/Foundation.h>
+
 #include <memory>
 
+#include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/containers/contains.h"
@@ -30,6 +33,9 @@
 #include "media/base/video_types.h"
 #include "media/video/video_encode_accelerator.h"
 
+using base::apple::CFToNSPtrCast;
+using base::apple::NSToCFPtrCast;
+
 // This is a min version of macOS where we want to support SVC encoding via
 // EnableLowLatencyRateControl flag. The flag is actually supported since 11.3,
 // but there we see frame drops even with ample bitrate budget. Excessive frame
@@ -37,7 +43,6 @@
 #define LOW_LATENCY_AND_SVC_AVAILABLE_VER 12.0.1
 
 namespace media {
-
 namespace {
 
 constexpr size_t kMaxFrameRateNumerator = 120;
@@ -67,14 +72,14 @@ bool IsSVCSupported(const VideoCodec& codec) {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER) && defined(ARCH_CPU_ARM_FAMILY)
   // macOS 14.0+ support SVC HEVC encoding for Apple Silicon chips only.
   if (codec == VideoCodec::kHEVC) {
-    if (__builtin_available(macOS 14.0, iOS 17.0, *)) {
+    if (@available(macOS 14.0, iOS 17.0, *)) {
       return true;
     }
     return false;
   }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER) &&
         // defined(ARCH_CPU_ARM_FAMILY)
-  if (__builtin_available(macOS LOW_LATENCY_AND_SVC_AVAILABLE_VER, *)) {
+  if (@available(macOS LOW_LATENCY_AND_SVC_AVAILABLE_VER, *)) {
     return codec == VideoCodec::kH264;
   }
   return false;
@@ -279,7 +284,7 @@ VTVideoEncodeAccelerator::GetSupportedHEVCProfiles() {
   SupportedProfiles profiles;
   if (!base::FeatureList::IsEnabled(kPlatformHEVCEncoderSupport))
     return profiles;
-  if (__builtin_available(macOS 11.0, *)) {
+  if (@available(macOS 11.0, *)) {
     bool supported = CreateCompressionSession(VideoCodec::kHEVC,
                                               kDefaultSupportedResolution);
     DestroyCompressionSession();
@@ -414,7 +419,7 @@ void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
     // WrapVideoFrameInCVPixelBuffer() will do a few different things depending
     // on the input buffer type:
     //   * If it's an IOSurface, the underlying attached color space will
-    //     passthough to the pixel buffer.
+    //     passthrough to the pixel buffer.
     //   * If we're uploading to a new pixel buffer and the provided frame color
     //     space is valid that'll be set on the pixel buffer.
     //   * If the frame color space is not valid, BT709 will be assumed.
@@ -443,10 +448,10 @@ void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
     }
   }
 
-  base::apple::ScopedCFTypeRef<CFDictionaryRef> frame_props =
-      video_toolbox::DictionaryWithKeyValue(
-          kVTEncodeFrameOptionKey_ForceKeyFrame,
-          force_keyframe ? kCFBooleanTrue : kCFBooleanFalse);
+  NSDictionary* frame_props = @{
+    CFToNSPtrCast(kVTEncodeFrameOptionKey_ForceKeyFrame) : force_keyframe ? @YES
+                                                                          : @NO
+  };
 
   // VideoToolbox uses timestamps for rate control purposes, but we can't rely
   // on real frame timestamps to be consistent with configured frame rate.
@@ -468,7 +473,8 @@ void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
   // successful. Otherwise let it fall out of scope.
   OSStatus status = VTCompressionSessionEncodeFrame(
       compression_session_.get(), pixel_buffer.get(), timestamp_cm, duration_cm,
-      frame_props.get(), reinterpret_cast<void*>(request.get()), nullptr);
+      NSToCFPtrCast(frame_props), reinterpret_cast<void*>(request.get()),
+      nullptr);
   if (status != noErr) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
                        "VTCompressionSessionEncodeFrame failed: " +
@@ -739,35 +745,34 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
     const gfx::Size& input_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<CFTypeRef> encoder_keys;
-  std::vector<CFTypeRef> encoder_values;
-  // iOS is always hardware-accelerate while on mac, encoder configuration
+  NSMutableDictionary* encoder_spec = [NSMutableDictionary dictionary];
+
+  // iOS is always hardware-accelerated while on mac, encoder configuration
   // handling is necessary.
 #if BUILDFLAG(IS_MAC)
-  encoder_keys.push_back(
-      kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder);
-  encoder_values.push_back(required_encoder_type_ ==
-                                   Config::EncoderType::kHardware
-                               ? kCFBooleanTrue
-                               : kCFBooleanFalse);
+  if (required_encoder_type_ == Config::EncoderType::kHardware) {
+    encoder_spec[CFToNSPtrCast(
+        kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder)] =
+        @YES;
+  } else {
+    encoder_spec[CFToNSPtrCast(
+        kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder)] =
+        @NO;
+  }
 
   if (required_encoder_type_ == Config::EncoderType::kSoftware) {
-    encoder_keys.push_back(
-        kVTVideoEncoderSpecification_EnableHardwareAcceleratedVideoEncoder);
-    encoder_values.push_back(kCFBooleanFalse);
+    encoder_spec[CFToNSPtrCast(
+        kVTVideoEncoderSpecification_EnableHardwareAcceleratedVideoEncoder)] =
+        @NO;
   }
 #endif
 
-  if (__builtin_available(macOS LOW_LATENCY_AND_SVC_AVAILABLE_VER, *)) {
+  if (@available(macOS LOW_LATENCY_AND_SVC_AVAILABLE_VER, *)) {
     if (require_low_delay_ && IsSVCSupported(codec)) {
-      encoder_keys.push_back(
-          kVTVideoEncoderSpecification_EnableLowLatencyRateControl);
-      encoder_values.push_back(kCFBooleanTrue);
+      encoder_spec[CFToNSPtrCast(
+          kVTVideoEncoderSpecification_EnableLowLatencyRateControl)] = @YES;
     }
   }
-  base::apple::ScopedCFTypeRef<CFDictionaryRef> encoder_spec =
-      video_toolbox::DictionaryWithKeysAndValues(
-          encoder_keys.data(), encoder_values.data(), encoder_keys.size());
 
   // Create the compression session.
   // Note that the encoder object is given to the compression session as the
@@ -780,9 +785,9 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
   // are guaranteed that the output callback will not execute again.
   OSStatus status = VTCompressionSessionCreate(
       kCFAllocatorDefault, input_size.width(), input_size.height(),
-      VideoCodecToCMVideoCodec(codec), encoder_spec.get(),
-      nullptr /* sourceImageBufferAttributes */,
-      nullptr /* compressedDataAllocator */,
+      VideoCodecToCMVideoCodec(codec), NSToCFPtrCast(encoder_spec),
+      /*sourceImageBufferAttributes=*/nullptr,
+      /*compressedDataAllocator=*/nullptr,
       &VTVideoEncodeAccelerator::CompressionCallback,
       reinterpret_cast<void*>(this), compression_session_.InitializeInto());
   if (status != noErr) {
@@ -877,7 +882,7 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession(VideoCodec codec) {
     return false;
   }
 
-  if (__builtin_available(macOS LOW_LATENCY_AND_SVC_AVAILABLE_VER, *)) {
+  if (@available(macOS LOW_LATENCY_AND_SVC_AVAILABLE_VER, *)) {
     if (!session_property_setter.IsSupported(
             kVTCompressionPropertyKey_BaseLayerFrameRateFraction)) {
       NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,

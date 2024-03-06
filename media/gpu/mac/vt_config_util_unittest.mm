@@ -5,7 +5,9 @@
 #include "media/gpu/mac/vt_config_util.h"
 
 #include <CoreMedia/CoreMedia.h>
+#import <Foundation/Foundation.h>
 
+#include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/containers/span.h"
 #include "base/mac/mac_util.h"
@@ -15,6 +17,9 @@
 #include "media/formats/mp4/box_definitions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/hdr_metadata_mac.h"
+
+using base::apple::CFToNSPtrCast;
+using base::apple::NSToCFPtrCast;
 
 namespace {
 
@@ -82,29 +87,24 @@ base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> CreateFormatDescription(
     CFStringRef primaries,
     CFStringRef transfer,
     CFStringRef matrix) {
-  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> extensions(
-      CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                &kCFTypeDictionaryKeyCallBacks,
-                                &kCFTypeDictionaryValueCallBacks));
+  NSMutableDictionary* extensions = [NSMutableDictionary dictionary];
 
   if (primaries) {
-    CFDictionarySetValue(extensions.get(),
-                         kCMFormatDescriptionExtension_ColorPrimaries,
-                         primaries);
+    extensions[CFToNSPtrCast(kCMFormatDescriptionExtension_ColorPrimaries)] =
+        CFToNSPtrCast(primaries);
   }
   if (transfer) {
-    CFDictionarySetValue(extensions.get(),
-                         kCMFormatDescriptionExtension_TransferFunction,
-                         transfer);
+    extensions[CFToNSPtrCast(kCMFormatDescriptionExtension_TransferFunction)] =
+        CFToNSPtrCast(transfer);
   }
   if (matrix) {
-    CFDictionarySetValue(extensions.get(),
-                         kCMFormatDescriptionExtension_YCbCrMatrix, matrix);
+    extensions[CFToNSPtrCast(kCMFormatDescriptionExtension_YCbCrMatrix)] =
+        CFToNSPtrCast(matrix);
   }
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> result;
   CMFormatDescriptionCreate(nullptr, kCMMediaType_Video,
                             kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
-                            extensions.get(), result.InitializeInto());
+                            NSToCFPtrCast(extensions), result.InitializeInto());
   return result;
 }
 
@@ -287,9 +287,9 @@ TEST(VTConfigUtil, CreateFormatExtensions_HDRMetadata) {
 TEST(VTConfigUtil, CreateFormatExtensions_VP9Profile0) {
   constexpr VideoCodecProfile kTestProfile = VP9PROFILE_PROFILE0;
   const auto kTestColorSpace = VideoColorSpace::REC709();
-  base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt(
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt =
       CreateFormatExtensions(kCMVideoCodecType_VP9, kTestProfile, 8,
-                             kTestColorSpace, std::nullopt, std::nullopt));
+                             kTestColorSpace, std::nullopt, std::nullopt);
   EXPECT_EQ(8, GetIntValue(fmt.get(),
                            base::SysUTF8ToCFStringRef(kBitDepthKey).get()));
 

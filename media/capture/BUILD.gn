@@ -171,8 +171,8 @@ component("capture_lib") {
     sources += [
       "video/apple/gpu_memory_buffer_tracker_apple.cc",
       "video/apple/gpu_memory_buffer_tracker_apple.h",
-      "video/apple/pixel_buffer_pool.cc",
       "video/apple/pixel_buffer_pool.h",
+      "video/apple/pixel_buffer_pool.mm",
       "video/apple/pixel_buffer_transferer.cc",
       "video/apple/pixel_buffer_transferer.h",
       "video/apple/sample_buffer_transformer.cc",

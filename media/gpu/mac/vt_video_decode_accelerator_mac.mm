@@ -6,12 +6,14 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreVideo/CoreVideo.h>
+#include <Foundation/Foundation.h>
 #include <stddef.h>
 
 #include <algorithm>
 #include <iterator>
 #include <memory>
 
+#include "base/apple/bridging.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/atomic_sequence_num.h"
 #include "base/containers/contains.h"
@@ -62,6 +64,9 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/scoped_binders.h"
+
+using base::apple::CFToNSPtrCast;
+using base::apple::NSToCFPtrCast;
 
 #define NOTIFY_STATUS(name, status, session_failure) \
   do {                                               \
@@ -126,7 +131,7 @@ constexpr int kNALUHeaderLength = 4;
 // continue to call Decode() as long as it is willing to queue more output
 // frames, which is variable but starts at |limits::kMaxVideoFrames +
 // GetMaxDecodeRequests()|. If we don't have enough picture buffers, it will
-// continue to call Decode() until we stop calling NotifyEndOfBistreamBuffer(),
+// continue to call Decode() until we stop calling NotifyEndOfBitstreamBuffer(),
 // which for VTVDA is when the reorder queue is full. In testing this results in
 // ~20 extra frames held by VTVDA.
 //
@@ -149,49 +154,26 @@ constexpr int kMaxReorderQueueSize = 17;
 constexpr int kMinOutputsBeforeRASL = 5;
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
-// Build an |image_config| dictionary for VideoToolbox initialization.
-base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> BuildImageConfig(
-    CMVideoDimensions coded_dimensions,
-    bool is_hbd,
-    bool has_alpha) {
-  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> image_config;
-
+// Builds an |image_config| dictionary for VideoToolbox initialization.
+NSDictionary* BuildImageConfig(CMVideoDimensions coded_dimensions,
+                               bool is_hbd,
+                               bool has_alpha) {
   // Note that 4:2:0 textures cannot be used directly as RGBA in OpenGL, but are
   // lower power than 4:2:2 when composited directly by CoreAnimation.
   int32_t pixel_format = is_hbd
                              ? kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
                              : kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
-  // macOS support 8 bit (they actually only recommand main profile)
+  // macOS support 8 bit (they actually only recommend main profile)
   // HEVC with alpha layer well.
-  if (has_alpha)
+  if (has_alpha) {
     pixel_format = kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar;
+  }
 
-#define CFINT(i) CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &i)
-  base::apple::ScopedCFTypeRef<CFNumberRef> cf_pixel_format(
-      CFINT(pixel_format));
-  base::apple::ScopedCFTypeRef<CFNumberRef> cf_width(
-      CFINT(coded_dimensions.width));
-  base::apple::ScopedCFTypeRef<CFNumberRef> cf_height(
-      CFINT(coded_dimensions.height));
-#undef CFINT
-  if (!cf_pixel_format.get() || !cf_width.get() || !cf_height.get())
-    return image_config;
-
-  image_config.reset(CFDictionaryCreateMutable(
-      kCFAllocatorDefault,
-      3,  // capacity
-      &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-  if (!image_config.get())
-    return image_config;
-
-  CFDictionarySetValue(image_config.get(), kCVPixelBufferPixelFormatTypeKey,
-                       cf_pixel_format.get());
-  CFDictionarySetValue(image_config.get(), kCVPixelBufferWidthKey,
-                       cf_width.get());
-  CFDictionarySetValue(image_config.get(), kCVPixelBufferHeightKey,
-                       cf_height.get());
-
-  return image_config;
+  return @{
+    CFToNSPtrCast(kCVPixelBufferPixelFormatTypeKey) : @(pixel_format),
+    CFToNSPtrCast(kCVPixelBufferWidthKey) : @(coded_dimensions.width),
+    CFToNSPtrCast(kCVPixelBufferHeightKey) : @(coded_dimensions.height),
+  };
 }
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -216,7 +198,7 @@ base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatHEVC(
   // calling VTDecompressionSessionCreate(), so macOS 11+ is necessary
   // (https://crbug.com/1300444#c9)
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> format;
-  if (__builtin_available(macOS 11.0, *)) {
+  if (@available(macOS 11.0, *)) {
     OSStatus status = CMVideoFormatDescriptionCreateFromHEVCParameterSets(
         kCFAllocatorDefault,
         nalu_data_ptrs.size(),   // parameter_set_count
@@ -326,28 +308,22 @@ bool CreateVideoToolboxSession(
     const VTDecompressionOutputCallbackRecord* callback,
     base::apple::ScopedCFTypeRef<VTDecompressionSessionRef>* session,
     gfx::Size* configured_size) {
-  // Prepare VideoToolbox configuration dictionaries.
-  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> decoder_config(
-      CFDictionaryCreateMutable(kCFAllocatorDefault,
-                                1,  // capacity
-                                &kCFTypeDictionaryKeyCallBacks,
-                                &kCFTypeDictionaryValueCallBacks));
-  if (!decoder_config) {
-    DLOG(ERROR) << "Failed to create CFMutableDictionary";
-    return false;
-  }
-
-#if BUILDFLAG(IS_MAC)
-  // iOS is always hardware-accelerate while on mac, decoder configuration
+  // iOS is always hardware-accelerated while on mac, decoder configuration
   // handling is necessary.
-  CFDictionarySetValue(
-      decoder_config.get(),
-      kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder,
-      kCFBooleanTrue);
-  CFDictionarySetValue(
-      decoder_config.get(),
-      kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder,
-      require_hardware ? kCFBooleanTrue : kCFBooleanFalse);
+  NSDictionary* decoder_config = nil;
+#if BUILDFLAG(IS_MAC)
+  decoder_config = @{
+    CFToNSPtrCast(
+        kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder) :
+        @YES,
+    CFToNSPtrCast(
+        kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder) :
+            require_hardware
+        ? @YES
+        : @NO,
+  };
+#else
+  decoder_config = @{};
 #endif
 
   // VideoToolbox scales the visible rect to the output size, so we set the
@@ -357,19 +333,15 @@ bool CreateVideoToolboxSession(
   CMVideoDimensions visible_dimensions = {
       base::ClampFloor(visible_rect.size.width),
       base::ClampFloor(visible_rect.size.height)};
-  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> image_config(
-      BuildImageConfig(visible_dimensions, is_hbd, has_alpha));
-  if (!image_config) {
-    DLOG(ERROR) << "Failed to create decoder image configuration";
-    return false;
-  }
+  NSDictionary* image_config =
+      BuildImageConfig(visible_dimensions, is_hbd, has_alpha);
 
   OSStatus status = VTDecompressionSessionCreate(
       kCFAllocatorDefault,
-      format,                // video_format_description
-      decoder_config.get(),  // video_decoder_specification
-      image_config.get(),    // destination_image_buffer_attributes
-      callback,              // output_callback
+      format,                         // video_format_description
+      NSToCFPtrCast(decoder_config),  // video_decoder_specification
+      NSToCFPtrCast(image_config),    // destination_image_buffer_attributes
+      callback,                       // output_callback
       session->InitializeInto());
   if (status != noErr) {
     OSSTATUS_DLOG(WARNING, status) << "VTDecompressionSessionCreate()";
@@ -451,7 +423,7 @@ gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
 bool HasPlatformHevcSupport() {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   if (base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
-    if (__builtin_available(macOS 11.0, *)) {
+    if (@available(macOS 11.0, *)) {
       return true;
     }
   }
@@ -597,7 +569,7 @@ void InitializeVideoToolbox() {
 #if BUILDFLAG(IS_MAC)
   static const bool unused = []() {
     // TODO: Enable VP9 for a iOS platform(https://crbug.com/1449877)
-    if (__builtin_available(macOS 11.0, *)) {
+    if (@available(macOS 11.0, *)) {
       VTRegisterSupplementalVideoDecoderIfAvailable(kCMVideoCodecType_VP9);
     }
     return true;

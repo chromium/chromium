@@ -4,21 +4,28 @@
 
 #include "media/gpu/mac/video_toolbox_decompression_session_manager.h"
 
+#include <Foundation/Foundation.h>
+
 #include <memory>
 
+#include "base/apple/bridging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "media/base/media_log.h"
 #include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "media/gpu/mac/video_toolbox_decompression_session.h"
 
+using base::apple::CFToNSPtrCast;
+using base::apple::NSToCFPtrCast;
+
 namespace media {
 
-VideoToolboxDecompressionSessionManager::VideoToolboxDecompressionSessionManager(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    std::unique_ptr<MediaLog> media_log,
-    OutputCB output_cb,
-    ErrorCB error_cb)
+VideoToolboxDecompressionSessionManager::
+    VideoToolboxDecompressionSessionManager(
+        scoped_refptr<base::SequencedTaskRunner> task_runner,
+        std::unique_ptr<MediaLog> media_log,
+        OutputCB output_cb,
+        ErrorCB error_cb)
     : task_runner_(std::move(task_runner)),
       media_log_(std::move(media_log)),
       output_cb_(std::move(output_cb)),
@@ -29,11 +36,12 @@ VideoToolboxDecompressionSessionManager::VideoToolboxDecompressionSessionManager
   decompression_session_ =
       std::make_unique<VideoToolboxDecompressionSessionImpl>(
           task_runner_, media_log_->Clone(),
-          base::BindRepeating(&VideoToolboxDecompressionSessionManager::OnOutput,
-                              weak_this_));
+          base::BindRepeating(
+              &VideoToolboxDecompressionSessionManager::OnOutput, weak_this_));
 }
 
-VideoToolboxDecompressionSessionManager::~VideoToolboxDecompressionSessionManager() {
+VideoToolboxDecompressionSessionManager::
+    ~VideoToolboxDecompressionSessionManager() {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 }
@@ -94,7 +102,8 @@ size_t VideoToolboxDecompressionSessionManager::NumDecodes() {
   return num_decodes;
 }
 
-void VideoToolboxDecompressionSessionManager::NotifyError(DecoderStatus status) {
+void VideoToolboxDecompressionSessionManager::NotifyError(
+    DecoderStatus status) {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!has_error_);
@@ -111,8 +120,9 @@ void VideoToolboxDecompressionSessionManager::NotifyError(DecoderStatus status) 
                      weak_this_, std::move(error_cb_), std::move(status)));
 }
 
-void VideoToolboxDecompressionSessionManager::CallErrorCB(ErrorCB error_cb,
-                                                     DecoderStatus status) {
+void VideoToolboxDecompressionSessionManager::CallErrorCB(
+    ErrorCB error_cb,
+    DecoderStatus status) {
   DVLOG(4) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   std::move(error_cb).Run(std::move(status));
@@ -180,39 +190,24 @@ bool VideoToolboxDecompressionSessionManager::CreateSession(
   DCHECK(!decompression_session_->IsValid());
 
   // Build video decoder specification.
-  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> decoder_config(
-      CFDictionaryCreateMutable(kCFAllocatorDefault,
-                                /*capacity=*/1,
-                                &kCFTypeDictionaryKeyCallBacks,
-                                &kCFTypeDictionaryValueCallBacks));
-  if (!decoder_config) {
-    MEDIA_LOG(ERROR, media_log_.get()) << "CFDictionaryCreateMutable() failed";
-    return false;
-  }
-
+  NSDictionary* decoder_config = nil;
 #if BUILDFLAG(IS_MAC)
-  CFDictionarySetValue(
-      decoder_config.get(),
-      kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder,
-      kCFBooleanTrue);
-  CFDictionarySetValue(
-      decoder_config.get(),
-      kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder,
-      !session_metadata.allow_software_decoding ? kCFBooleanTrue
-                                                : kCFBooleanFalse);
+  decoder_config = @{
+    CFToNSPtrCast(
+        kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder) :
+        @YES,
+    CFToNSPtrCast(
+        kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder) :
+            !session_metadata.allow_software_decoding
+        ? @YES
+        : @NO
+  };
+#else
+  decoder_config = @{};
 #endif
 
   // Build destination image buffer attributes.
   // TODO(crbug.com/1331597): Also set size using the visible rect.
-  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> image_config(
-      CFDictionaryCreateMutable(kCFAllocatorDefault,
-                                /*capacity=*/1,
-                                &kCFTypeDictionaryKeyCallBacks,
-                                &kCFTypeDictionaryValueCallBacks));
-  if (!image_config) {
-    MEDIA_LOG(ERROR, media_log_.get()) << "CFDictionaryCreateMutable() failed";
-    return false;
-  }
 
   // It is possible to create a decompression session with no destination image
   // buffer attributes, but then we must be able to handle any kind of pixel
@@ -238,18 +233,15 @@ bool VideoToolboxDecompressionSessionManager::CreateSession(
       session_metadata.has_alpha
           ? kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar
           : (session_metadata.is_hbd
-              ? kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
-              : kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange);
+                 ? kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
+                 : kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange);
 
-  base::apple::ScopedCFTypeRef<CFNumberRef> cf_pixel_format(
-      CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &pixel_format));
-
-  CFDictionarySetValue(image_config.get(), kCVPixelBufferPixelFormatTypeKey,
-                       cf_pixel_format.get());
+  NSDictionary* image_config =
+      @{CFToNSPtrCast(kCVPixelBufferPixelFormatTypeKey) : @(pixel_format)};
 
   // Create the session.
-  if (!decompression_session_->Create(format, decoder_config.get(),
-                                      image_config.get())) {
+  if (!decompression_session_->Create(format, NSToCFPtrCast(decoder_config),
+                                      NSToCFPtrCast(image_config))) {
     return false;
   }
 
