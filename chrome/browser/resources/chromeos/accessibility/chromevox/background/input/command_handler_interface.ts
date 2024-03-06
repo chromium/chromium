@@ -12,13 +12,12 @@ import {Command} from '../../common/command.js';
  * Interface defining the methods of performing or modifying the performance of
  * commands.
  */
-export class CommandHandlerInterface {
+export abstract class CommandHandlerInterface {
   /**
    * Handles ChromeVox commands.
-   * @param {!Command} command
-   * @return {boolean} True if the command should propagate.
+   * @return True if the command should propagate.
    */
-  onCommand(command) {}
+  abstract onCommand(command: Command): boolean;
 
   /**
    * A helper to object navigation to skip all static text nodes who have
@@ -27,12 +26,13 @@ export class CommandHandlerInterface {
    * @param {constants.Dir} dir
    * @return {CursorRange} The resulting range.
    */
-  skipLabelOrDescriptionFor(current, dir) {}
+  abstract skipLabelOrDescriptionFor(
+      current: CursorRange | undefined,
+      dir: constants.Dir): CursorRange | undefined;
 }
 
-/**
- * @type {CommandHandlerInterface}
- */
-CommandHandlerInterface.instance;
+export namespace CommandHandlerInterface {
+  export let instance: CommandHandlerInterface;
+}
 
 TestImportManager.exportForTesting(CommandHandlerInterface);
