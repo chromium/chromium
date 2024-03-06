@@ -23,7 +23,7 @@ namespace {
 // if text is specified but not the delimiter.
 const char kDefaultSupplementalURLTextDelimiter[] = "•";
 // The max number of lines for the cell title label.
-const int kMaxNumberOfLinesForCellTitleLabel = 4;
+const int kMaxNumberOfLinesForCellTitleLabel = 2;
 }  // namespace
 
 #pragma mark - TableViewURLItem
