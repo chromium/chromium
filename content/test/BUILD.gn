@@ -769,6 +769,7 @@ static_library("test_support") {
 
   if (is_win) {
     deps += [ "//sandbox" ]
+    public_configs = [ "//build/config/win:delayloads" ]
   }
 
   if (v8_use_external_startup_data) {
@@ -1995,8 +1996,6 @@ test("content_browsertests") {
     data_deps += [ "//services/test/echo:echo_preload_library" ]
 
     libs = [ "uiautomationcore.lib" ]
-
-    configs += [ "//build/config/win:delayloads" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -3231,7 +3230,6 @@ test("content_unittests") {
       "dwrite.lib",
       "wtsapi32.lib",
     ]
-    configs += [ "//build/config/win:delayloads" ]
   }
   if (is_mac) {
     deps += [

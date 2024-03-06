@@ -756,7 +756,6 @@ source_set("browser_tests") {
     "//build:chromeos_buildflags",
     "//components/guest_view/browser:test_support",
     "//components/storage_monitor:test_support",
-    "//content/test:test_support",
     "//device/bluetooth:mocks",
     "//extensions:test_support",
     "//extensions/browser:test_support",
@@ -771,6 +770,8 @@ source_set("browser_tests") {
     "//services/service_manager/public/cpp",
     "//ui/display:test_support",
   ]
+
+  public_deps = [ "//content/test:test_support" ]
 
   if (is_chromeos_ash) {
     sources += [

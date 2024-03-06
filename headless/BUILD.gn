@@ -963,6 +963,7 @@ executable("headless_shell") {
       "//build/win:default_exe_manifest",
       "//content/public/app",
     ]
+    configs += [ "//build/config/win:delayloads" ]
   }
 
   if (is_mac) {
