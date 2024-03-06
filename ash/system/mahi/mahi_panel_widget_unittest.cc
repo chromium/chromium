@@ -71,6 +71,10 @@ TEST_F(MahiPanelWidgetTest, WidgetBoundsWithRefreshBanner) {
   auto panel_view_bounds = panel_view->GetBoundsInScreen();
   auto widget_bounds = widget->GetRestoredBounds();
 
+  // Make sure the panel takes up the entire available space in the widget when
+  // `refresh_view` is not shown.
+  EXPECT_EQ(panel_view_bounds, widget_bounds);
+
   refresh_view->SetVisible(true);
 
   // Make sure the `MahiPanelView` has the exact same location on the screen
