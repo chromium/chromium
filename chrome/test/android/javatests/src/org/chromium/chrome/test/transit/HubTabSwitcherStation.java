@@ -6,7 +6,7 @@ package org.chromium.chrome.test.transit;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
+import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
 
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Elements;
@@ -19,7 +19,7 @@ import org.chromium.chrome.test.R;
 /** Regular tab switcher pane station. */
 public class HubTabSwitcherStation extends HubTabSwitcherBaseStation {
     public static final ViewElement EMPTY_STATE_TEXT =
-            scopedViewElement(withText(R.string.tabswitcher_no_tabs_empty_state));
+            sharedViewElement(withText(R.string.tabswitcher_no_tabs_empty_state));
 
     /**
      * @param chromeTabbedActivityTestRule The activity rule under test.

@@ -300,6 +300,8 @@ public class TabSwitcherLayoutTest {
                 cta.findViewById(R.id.tab_list_recycler_view), "10_web_tabs-select_last");
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
+    // TabSwitcherPanePublicTransitTest.
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
@@ -2186,6 +2188,8 @@ public class TabSwitcherLayoutTest {
         assertEquals(INVALID_COLOR_ID, TabGroupColorUtils.getTabGroupColor(groupRootId));
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
+    // TabSwitcherPanePublicTransitTest as a combined testEmptyStateView case.
     @Test
     @MediumTest
     public void testEmptyStateView_DeleteLastNormalTab() throws Exception {
@@ -2215,6 +2219,8 @@ public class TabSwitcherLayoutTest {
                 .check(matches(isDisplayed()));
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
+    // TabSwitcherPanePublicTransitTest as a combined testEmptyStateView case.
     @Test
     @MediumTest
     public void testEmptyStateView_ToggleIncognito() {
@@ -2277,6 +2283,8 @@ public class TabSwitcherLayoutTest {
                 .check(matches(isDisplayed()));
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. It is covered in
+    // HubLayoutUnitTest.
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
