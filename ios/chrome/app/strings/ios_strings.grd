@@ -1056,6 +1056,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_TITLE" desc="Title for the Notifications UI Alert Prompt that redirects the user to the iOS push notifications permission page">
         Turn on Notifications?
       </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATIONS_SEND_FEEDBACK" desc="Send feedback action on long tap for content notifications.">
+        Send Feedback
+      </message>
       <message name="IDS_IOS_CONTENT_NOTIFICATION_FULL_PAGE_PROMO_PRIMARY_BUTTON_TEXT" desc="Text for the Notifications promo secondary button.">
           Turn on Notifications..
       </message>

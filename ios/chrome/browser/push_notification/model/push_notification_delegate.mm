@@ -25,6 +25,9 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 // The time range's expected min and max values for custom histograms.
@@ -102,7 +105,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       [[NSMutableSet alloc] init];
   UNNotificationAction* feedbackAction = [UNNotificationAction
       actionWithIdentifier:kContentNotificationFeedbackActionIdentifier
-                     title:@"Send Feedback"
+                     title:l10n_util::GetNSString(
+                               IDS_IOS_CONTENT_NOTIFICATIONS_SEND_FEEDBACK)
                    options:UNNotificationActionOptionForeground];
   UNNotificationCategory* contentNotificationCategory = [UNNotificationCategory
       categoryWithIdentifier:kContentNotificationFeedbackCategoryIdentifier
