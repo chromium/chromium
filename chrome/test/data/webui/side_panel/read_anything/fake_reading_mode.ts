@@ -24,7 +24,7 @@ export class FakeReadingMode {
 
   // Current audio settings values.
   speechRate: number = 1;
-  highlightGranularity: number = 0;
+  highlightGranularity: number = 1;
 
   // Enum values for various visual theme changes.
   standardLineSpacing: number = 0;
@@ -176,8 +176,12 @@ export class FakeReadingMode {
   onVoiceChange(_voice: string, _lang: string) {}
 
   // Called when the highlight granularity is changed via the webui toolbar.
-  turnedHighlightOn() {}
-  turnedHighlightOff() {}
+  turnedHighlightOn() {
+    this.highlightGranularity = 1;
+  }
+  turnedHighlightOff() {
+    this.highlightGranularity = 0;
+  }
 
   // Returns the actual spacing value to use based on the given lineSpacing
   // category.
