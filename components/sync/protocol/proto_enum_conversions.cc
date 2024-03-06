@@ -139,6 +139,21 @@ const char* ProtoEnumToString(
   return "";
 }
 
+const char* ProtoEnumToString(sync_pb::NigoriSpecifics::
+    AutoUpgradeDebugInfo::AutoUpgradeState auto_upgrade_state) {
+  ASSERT_ENUM_BOUNDS(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo,
+    AutoUpgradeState, STATE_UNSPECIFIED, CONTROL);
+
+  switch (auto_upgrade_state) {
+    ENUM_CASE(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo,
+        STATE_UNSPECIFIED);
+    ENUM_CASE(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo, AUTO_UPGRADED);
+    ENUM_CASE(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo, CONTROL);
+  }
+  NOTREACHED();
+  return "";
+}
+
 const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type) {
   ASSERT_ENUM_BOUNDS(sync_pb::NigoriSpecifics, PassphraseType, UNKNOWN,
                      TRUSTED_VAULT_PASSPHRASE);
