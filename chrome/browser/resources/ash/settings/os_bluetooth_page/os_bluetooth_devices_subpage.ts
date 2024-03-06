@@ -66,7 +66,7 @@ export class SettingsBluetoothDevicesSubpageElement extends
        */
       isBluetoothToggleOn_: {
         type: Boolean,
-        observer: 'onBluetoothToggleChanged_',
+        observer: 'onIsBluetoothToggleOnChanged_',
       },
 
       /**
@@ -221,24 +221,12 @@ export class SettingsBluetoothDevicesSubpageElement extends
    * Observer for isBluetoothToggleOn_ that returns early until the previous
    * value was not undefined to avoid wrongly toggling the Bluetooth state.
    */
-  private onBluetoothToggleChanged_(_newValue: boolean, oldValue?: boolean):
+  private onIsBluetoothToggleOnChanged_(_newValue: boolean, oldValue?: boolean):
       void {
     if (oldValue === undefined) {
       return;
     }
 
-    // If the toggle value changed but the toggle is disabled, the change came
-    // from CrosBluetoothConfig, not the user. Don't attempt to update the
-    // enabled state.
-    if (!this.isToggleDisabled_()) {
-      if (this.isBluetoothDisconnectWarningEnabled_) {
-        getHidPreservingController().tryToSetBluetoothEnabledState(
-            this.isBluetoothToggleOn_);
-      } else {
-        getBluetoothConfig().setBluetoothEnabledState(
-            this.isBluetoothToggleOn_);
-      }
-    }
     this.announceBluetoothStateChange_();
   }
 
@@ -273,6 +261,27 @@ export class SettingsBluetoothDevicesSubpageElement extends
   private isFastPairToggleVisible_(): boolean {
     return this.isFastPairSupportedByDevice_ &&
         loadTimeData.getBoolean('enableFastPairFlag');
+  }
+
+  private onBluetoothToggleChange_(event: CustomEvent): void {
+    event.stopPropagation();
+
+    // If the toggle value changed but the toggle is disabled, the change came
+    // from CrosBluetoothConfig, not the user. Don't attempt to update the
+    // enabled state.
+    if (this.isToggleDisabled_()) {
+      return;
+    }
+
+    const enabled = event.detail;
+    if (this.isBluetoothDisconnectWarningEnabled_) {
+      // Reset Bluetooth toggle state to previous state. Toggle should only be
+      // updated when System properties changes.
+      this.isBluetoothToggleOn_ = !enabled;
+      getHidPreservingController().tryToSetBluetoothEnabledState(enabled);
+    } else {
+      getBluetoothConfig().setBluetoothEnabledState(enabled);
+    }
   }
 
   /**

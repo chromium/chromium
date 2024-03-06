@@ -108,6 +108,7 @@ suite('<os-settings-bluetooth-summary>', () => {
     enableBluetoothToggle.click();
     await flushTasks();
 
+    assertTrue(enableBluetoothToggle.checked);
     assertEquals(hidPreservingController.getDialogShownCount(), 1);
     assertTrue(
         bluetoothSummary.systemProperties.systemState ===
@@ -115,6 +116,7 @@ suite('<os-settings-bluetooth-summary>', () => {
     hidPreservingController.completeShowDialog(true);
     await flushTasks();
 
+    assertFalse(enableBluetoothToggle.checked);
     assertTrue(
         bluetoothSummary.systemProperties.systemState ===
         BluetoothSystemState.kDisabling);
@@ -122,12 +124,14 @@ suite('<os-settings-bluetooth-summary>', () => {
     await flushTasks();
     await enableBluetooth();
     assertEquals(hidPreservingController.getDialogShownCount(), 1);
+    assertTrue(enableBluetoothToggle.checked);
 
     // Disable Bluetooth and simulate showing dialog with user selecting
     // to keep current bluetooth state.
     enableBluetoothToggle.click();
     await flushTasks();
 
+    assertTrue(enableBluetoothToggle.checked);
     assertEquals(hidPreservingController.getDialogShownCount(), 2);
     assertTrue(
         bluetoothSummary.systemProperties.systemState ===
@@ -135,6 +139,7 @@ suite('<os-settings-bluetooth-summary>', () => {
     hidPreservingController.completeShowDialog(false);
 
     await flushTasks();
+    assertTrue(enableBluetoothToggle.checked);
     assertTrue(
         bluetoothSummary.systemProperties.systemState ===
         BluetoothSystemState.kEnabled);

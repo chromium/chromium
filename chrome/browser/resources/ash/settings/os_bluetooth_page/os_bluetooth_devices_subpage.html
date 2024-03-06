@@ -22,6 +22,7 @@
   </div>
   <cr-toggle id="enableBluetoothToggle"
       checked="{{isBluetoothToggleOn_}}"
+      on-change="onBluetoothToggleChange_"
       disabled="[[isToggleDisabled_(systemProperties.systemState)]]"
       aria-label="$i18n{bluetoothToggleA11yLabel}"
       deep-link-focus-id$="[[Setting.kBluetoothOnOff]]">
