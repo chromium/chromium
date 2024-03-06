@@ -631,6 +631,9 @@ void PopupViewViews::SetSelectedCell(
 
   if (cell_index && HasPopupRowViewAt(cell_index->first)) {
     has_keyboard_focus_ = true;
+    // The sub-popup hiding is canceled because the newly selected cell will
+    // rule the sub-pupop visibility from now.
+    no_selection_sub_popup_close_timer_.Stop();
 
     row_with_selected_cell_ = cell_index->first;
     PopupRowView& new_selected_row = GetPopupRowViewAt(cell_index->first);

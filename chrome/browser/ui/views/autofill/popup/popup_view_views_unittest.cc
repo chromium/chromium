@@ -1093,6 +1093,33 @@ TEST_F(PopupViewViewsTest, SubPopupHidingOnNoSelection) {
   EXPECT_EQ(test_api(*sub_view).GetOpenSubPopupRow(), std::nullopt);
 }
 
+TEST_F(PopupViewViewsTest, SubPopupHidingIsCanceledOnSelection) {
+  controller().set_suggestions({
+      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
+      Suggestion(u"Suggestion #2"),
+  });
+  CreateAndShowView();
+  CellIndex cell{0, CellType::kControl};
+  view().SetSelectedCell(cell, PopupCellSelectionSource::kNonUserInput);
+  task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell.first);
+
+  auto [sub_controller, sub_view] = OpenSubView(
+      view(), {CreateSuggestionWithChildren({Suggestion(u"Sub Child #1")})});
+  view().SetSelectedCell(std::nullopt, PopupCellSelectionSource::kNonUserInput);
+
+  // This triggers the no-selection hiding timer.
+  sub_view->OnMouseExited(ui::MouseEvent(ui::ET_MOUSE_MOVED, gfx::Point(),
+                                         gfx::Point(), ui::EventTimeForNow(),
+                                         ui::EF_IS_SYNTHESIZED, 0));
+
+  // A cell is selected - the timer should be canceled.
+  view().SetSelectedCell(cell, PopupCellSelectionSource::kNonUserInput);
+  task_environment()->FastForwardBy(
+      PopupViewViews::kNoSelectionHideSubPopupDelay);
+  EXPECT_NE(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
+}
+
 TEST_F(PopupViewViewsTest, SubPopupOwnSelectionPreventsHiding) {
   ui::MouseEvent fake_event(ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(),
                             ui::EventTimeForNow(), ui::EF_IS_SYNTHESIZED, 0);
