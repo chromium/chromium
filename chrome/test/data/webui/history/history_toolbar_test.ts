@@ -6,6 +6,7 @@ import 'chrome://history/history.js';
 
 import type {HistoryAppElement, HistoryEntry} from 'chrome://history/history.js';
 import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -87,5 +88,35 @@ suite('history-toolbar', function() {
     testService.finishQueryHistory();
     await flushTasks();
     assertFalse(toolbar.spinnerActive);
+  });
+
+  test('updates search icon', async () => {
+    function createToolbar() {
+      const toolbar = document.createElement('history-toolbar');
+      document.body.appendChild(toolbar);
+      return toolbar;
+    }
+
+    // Without history embeddings enabled, search icon should always be default.
+    loadTimeData.overrideValues({enableHistoryEmbeddings: false});
+    let toolbar = createToolbar();
+    await flushTasks();
+    toolbar.selectedPage = 'history';
+    assertEquals(undefined, toolbar.$.mainToolbar.searchIconOverride);
+
+    // With history embeddings enabled, search icon should change.
+    loadTimeData.overrideValues({enableHistoryEmbeddings: true});
+    toolbar = createToolbar();
+    await flushTasks();
+    toolbar.selectedPage = 'history';
+    assertEquals(
+        'history:embeddings', toolbar.$.mainToolbar.searchIconOverride);
+    toolbar.selectedPage = 'grouped';
+    assertEquals(
+        'history:embeddings', toolbar.$.mainToolbar.searchIconOverride);
+
+    // Synced tabs page should have the default icon.
+    toolbar.selectedPage = 'syncedTabs';
+    assertEquals(undefined, toolbar.$.mainToolbar.searchIconOverride);
   });
 });

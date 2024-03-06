@@ -3,7 +3,8 @@
 <div id="content">
   ${this.isSpinnerShown_ ? html`
     <paper-spinner-lite active></paper-spinner-lite>` : ''}
-    <cr-icon-button id="icon" iron-icon="cr:search" title="${this.label}"
+    <cr-icon-button id="icon" iron-icon="${this.iconOverride || 'cr:search'}"
+        title="${this.label}"
         dir="ltr" tabindex="${this.iconTabIndex_}"
         aria-hidden="${this.iconAriaHidden_}"
         @click="${this.onSearchIconClicked_}" ?disabled="${this.disabled}">

@@ -29,7 +29,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
       ?spinner-active="${this.spinnerActive}"
       ?showing-search="${this.showingSearch_}"
       @showing-search-changed="${this.onShowingSearchChanged_}"
-      ?autofocus="${this.autofocus}">
+      ?autofocus="${this.autofocus}" icon-override="${this.searchIconOverride}">
   </cr-toolbar-search-field>
   <iron-media-query query="(max-width: ${this.narrowThreshold}px)"
       ?query-matches="${this.narrow}"

@@ -87,6 +87,8 @@ export class CrToolbarElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+
+      searchIconOverride: {type: String},
     };
   }
 
@@ -102,6 +104,7 @@ export class CrToolbarElement extends CrLitElement {
   narrowThreshold: number = 900;
   alwaysShowLogo: boolean = false;
   protected showingSearch_: boolean;
+  searchIconOverride?: string;
 
   getSearchField(): CrToolbarSearchFieldElement {
     return this.$.search;

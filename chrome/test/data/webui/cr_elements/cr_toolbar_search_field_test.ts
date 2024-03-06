@@ -226,4 +226,14 @@ suite('cr-toolbar-search-field', function() {
     document.body.appendChild(field);
     assertTrue(field.getSearchInput().hasAttribute('autofocus'));
   });
+
+  test('overrides search icon', async () => {
+    assertEquals('cr:search', field.$.icon.ironIcon);
+    field.iconOverride = 'custom-icon';
+    await field.updateComplete;
+    assertEquals('custom-icon', field.$.icon.ironIcon);
+    field.iconOverride = undefined;
+    await field.updateComplete;
+    assertEquals('cr:search', field.$.icon.ironIcon);
+  });
 });

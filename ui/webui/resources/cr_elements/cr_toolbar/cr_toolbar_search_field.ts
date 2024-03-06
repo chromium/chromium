@@ -9,6 +9,7 @@ import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
 import {CrSearchFieldMixinLit} from '../cr_search_field/cr_search_field_mixin_lit.js';
 
 import {getCss} from './cr_toolbar_search_field.css.js';
@@ -16,6 +17,7 @@ import {getHtml} from './cr_toolbar_search_field.html.js';
 
 export interface CrToolbarSearchFieldElement {
   $: {
+    icon: CrIconButtonElement,
     searchInput: HTMLInputElement,
     searchTerm: HTMLElement,
   };
@@ -74,6 +76,7 @@ export class CrToolbarSearchFieldElement extends
         reflect: true,
       },
 
+      iconOverride: {type: String},
       iconAriaHidden_: {type: String},
       iconTabIndex_: {type: Number},
     };
@@ -86,6 +89,7 @@ export class CrToolbarSearchFieldElement extends
   spinnerActive: boolean;
   protected isSpinnerShown_: boolean;
   private searchFocused_: boolean = false;
+  iconOverride?: string;
   protected iconAriaHidden_: string;
   protected iconTabIndex_: number;
 
