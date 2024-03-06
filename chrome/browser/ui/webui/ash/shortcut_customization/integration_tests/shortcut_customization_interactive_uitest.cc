@@ -31,23 +31,10 @@ inline constexpr char kFocusFn[] = "e => e.focus()";
 constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kKbdTopRowLayout1Tag[] = "1";
 
-base::flat_map<base::StringPiece, std::vector<base::StringPiece>>
-    kCategoryTable({
-        {"General", {"General controls", "Apps"}},
-        {"Device", {"Media", "Inputs", "Display"}},
-        {"Browser",
-         {"General", "Browser Navigation", "Pages", "Tabs", "Bookmarks",
-          "Developer tools"}},
-        {"Text", {"Text navigation", "Text editing"}},
-        {"Windows and desks", {"Windows", "Desks"}},
-        {"Accessibility",
-         {"ChromeVox", "Visibility", "Accessibility navigation"}},
-    });
-
-std::string GetSubcategories(const std::string& category) {
+std::string ConvertVectorToJsonList(const std::vector<std::string>& expected) {
   // Safely convert the selector list in `where` to a JSON/JS list.
   base::Value::List selector_list;
-  for (const auto& selector : kCategoryTable[category]) {
+  for (const auto& selector : expected) {
     selector_list.Append(selector);
   }
   std::string selectors;
@@ -294,8 +281,37 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
         .accelerator;
   }
 
-  auto VerifyActiveNavTabAndSubcategories(const std::string& category,
-                                          int category_index) {
+  auto VerifyShortcutForAccelerator(const DeepQuery& query,
+                                    const std::vector<std::string>& expected) {
+    const DeepQuery accel_view_query =
+        query + base::StringPrintf("#container > td");
+    return Steps(
+        WaitForElementExists(webcontents_id_, accel_view_query),
+        CheckJsResultAt(webcontents_id_, accel_view_query,
+                        base::StringPrintf(
+                            R"(
+        (el) => {
+          let accelViewElements = el.querySelectorAll('accelerator-view');
+          const expectedKeys = %s;
+          let results = Array.from(accelViewElements).map(view => {
+            const shortcutInputKeys =
+             Array.from(view.shadowRoot.querySelectorAll('shortcut-input-key'));
+              return shortcutInputKeys.every((element, i) => {
+                const regex = new RegExp(`^(${expectedKeys[i]})$`);
+                return regex.test(element.key);
+                      });
+          });
+          return results.some(res => res);
+        }
+      )",
+
+                            ConvertVectorToJsonList(expected).c_str())));
+  }
+
+  auto VerifyActiveNavTabAndSubcategories(
+      const std::string& category,
+      int category_index,
+      const std::vector<std::string>& expected_subcategories) {
     return Steps(
         Log(std::format("Verifying that '{0}' is the active category when "
                         "the Shortcut Customization app is first launched",
@@ -304,8 +320,10 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
                                    category),
         Log(std::format("Verifying subcategories within the '{0}' category",
                         category)),
-        CheckJsResult(webcontents_id_,
-                      base::StringPrintf(R"(
+        CheckJsResult(
+            webcontents_id_,
+            base::StringPrintf(
+                R"(
         () => {
           const subsections =
            document.querySelector("shortcut-customization-app")
@@ -318,8 +336,8 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
           });
         }
       )",
-                                         category_index,
-                                         GetSubcategories(category).c_str())));
+                category_index,
+                ConvertVectorToJsonList(expected_subcategories).c_str())));
   }
 
  protected:
@@ -561,22 +579,28 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
   const DeepQuery kAccessibilityTabQuery =
       kNavigationSelectorQuery +
       "#navigationSelectorMenu > cr-button:nth-child(6)";
-
   RunTestSequence(
       LaunchShortcutCustomizationApp(),
-      VerifyActiveNavTabAndSubcategories("General", /*category_index=*/0),
+      VerifyActiveNavTabAndSubcategories("General", /*category_index=*/0,
+                                         {"General controls", "Apps"}),
       ExecuteJsAt(webcontents_id_, kDeviceTabQuery, kClickFn),
-      VerifyActiveNavTabAndSubcategories("Device", /*category_index=*/1),
+      VerifyActiveNavTabAndSubcategories("Device", /*category_index=*/1,
+                                         {"Media", "Inputs", "Display"}),
       ExecuteJsAt(webcontents_id_, kBrowserTabQuery, kClickFn),
-      VerifyActiveNavTabAndSubcategories("Browser", /*category_index=*/2),
+      VerifyActiveNavTabAndSubcategories(
+          "Browser", /*category_index=*/2,
+          {"General", "Browser Navigation", "Pages", "Tabs", "Bookmarks",
+           "Developer tools"}),
       ExecuteJsAt(webcontents_id_, kTextTabQuery, kClickFn),
-      VerifyActiveNavTabAndSubcategories("Text", /*category_index=*/3),
+      VerifyActiveNavTabAndSubcategories("Text", /*category_index=*/3,
+                                         {"Text navigation", "Text editing"}),
       ExecuteJsAt(webcontents_id_, kWindowsDesksTabQuery, kClickFn),
-      VerifyActiveNavTabAndSubcategories("Windows and desks",
-                                         /*category_index=*/4),
+      VerifyActiveNavTabAndSubcategories(
+          "Windows and desks", /*category_index=*/4, {"Windows", "Desks"}),
       ExecuteJsAt(webcontents_id_, kAccessibilityTabQuery, kClickFn),
-      VerifyActiveNavTabAndSubcategories("Accessibility",
-                                         /*category_index=*/5));
+      VerifyActiveNavTabAndSubcategories(
+          "Accessibility", /*category_index=*/5,
+          {"ChromeVox", "Visibility", "Accessibility navigation"}));
 }
 
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
@@ -654,6 +678,77 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
           SendShortcutAccelerator(feedback_accel),
           Log("Verifying that 'Open feedback tool' accelerator still works"),
           WaitForShow(kOsFeedbackWebContentsId))));
+}
+
+IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
+                       AddMultiShortcutsAndReset) {
+  const DeepQuery kResetAllShortcutsButtonQuery{
+      "shortcut-customization-app",
+      "#bottomNavContentPanel > shortcuts-bottom-nav-content",
+      "#restoreAllButton",
+  };
+
+  const DeepQuery kConfirmButtonQuery{"shortcut-customization-app",
+                                      "#confirmButton"};
+
+  const DeepQuery kOpenQuickSettingsRowQuery{
+      "shortcut-customization-app",
+      "#navigationPanel",
+      "#category-0",
+      "#container",
+      "accelerator-subsection",
+      "tbody#rowList",
+      // Action 113 corresponds to the "Open Quick Settings" shortcut.
+      "accelerator-row[action='113']",
+  };
+  ui::Accelerator custom_calendar_accel(
+      ui::VKEY_N, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
+
+  ui::Accelerator custom_open_quick_settings_accel(ui::VKEY_Q,
+                                                   ui::EF_COMMAND_DOWN);
+
+  ui::Accelerator default_accel =
+      GetDefaultAcceleratorForAction(AcceleratorAction::kToggleCalendar);
+  RunTestSequence(
+      AddKeyboard(/*is_external=*/false), LaunchShortcutCustomizationApp(),
+      Log("Verifying default shortcut for 'Open/Close Calendar' is visible"),
+      VerifyShortcutForAccelerator(kCalendarAcceleratorRowQuery,
+                                   {"meta|launcher", "c"}),
+      OpenEditShortcutDialog(kCalendarAcceleratorRowQuery),
+      Log("Adding custom Calendar shortcut"),
+      AddCustomShortcut(custom_calendar_accel),
+      Log("Verifying custom shortcut for 'Open/Close Calendar' is visible"),
+      VerifyShortcutForAccelerator(kCalendarAcceleratorRowQuery,
+                                   {"meta|launcher", "ctrl", "n"}),
+      Log("Verifying default shortcut for 'Open Quick Settings' shortcut"),
+      VerifyShortcutForAccelerator(kOpenQuickSettingsRowQuery,
+                                   {"alt", "shift", "s"}),
+      OpenEditShortcutDialog(kOpenQuickSettingsRowQuery),
+      Log("Adding custom 'Open Quick Settings' shortcut"),
+      AddCustomShortcut(custom_open_quick_settings_accel),
+      VerifyShortcutForAccelerator(kOpenQuickSettingsRowQuery,
+                                   {"meta|launcher", "q"}),
+      SendShortcutAccelerator(custom_calendar_accel),
+      WaitForShow(kCalendarViewElementId),
+      Log("Custom shortcut opens calendar"),
+      SendShortcutAccelerator(custom_calendar_accel),
+      Log("Custom shortcut closes calendar"),
+      WaitForHide(kCalendarViewElementId),
+      SendShortcutAccelerator(custom_open_quick_settings_accel),
+      WaitForShow(kQuickSettingsViewElementId),
+      SendShortcutAccelerator(custom_open_quick_settings_accel),
+      WaitForHide(kQuickSettingsViewElementId),
+      Steps(ClickDoneButton(),
+            ClickElement(webcontents_id_, kResetAllShortcutsButtonQuery),
+            WaitForElementExists(webcontents_id_, kConfirmButtonQuery),
+            ClickElement(webcontents_id_, kConfirmButtonQuery),
+            SendShortcutAccelerator(default_accel),
+            WaitForShow(kCalendarViewElementId),
+            SendShortcutAccelerator(default_accel),
+            WaitForHide(kCalendarViewElementId),
+            Log("Default shortcut still works"))
+
+  );
 }
 
 }  // namespace
