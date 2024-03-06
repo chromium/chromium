@@ -25,6 +25,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -172,10 +173,17 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     public void testSwipeNavigateOnNativePage() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes("Navigation.DuringGesture.NavStarted", false, 2)
+                        .expectBooleanRecordTimes(
+                                "Navigation.OnGestureStart.NavigationInProgress", false, 2)
+                        .build();
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
         assertNavigateOnSwipeFrom(LEFT_EDGE, UrlConstants.NTP_URL);
         assertNavigateOnSwipeFrom(RIGHT_EDGE, UrlConstants.RECENT_TABS_URL);
+        histogramWatcher.assertExpected("Wrong histogram recording");
     }
 
     @Test
@@ -244,7 +252,7 @@ public class NavigationHandlerTest {
                 EmbeddedTestServer.createAndStartServer(
                         InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
-        mNavigationHandler.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(mNavigationHandler::destroy);
 
         // |triggerUi| can be invoked by SwipeRefreshHandler on the rendered
         // page. Make sure this won't crash after the handler(and also

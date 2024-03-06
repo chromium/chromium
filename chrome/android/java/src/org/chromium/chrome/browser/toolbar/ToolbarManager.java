@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.back_press.BackPressMetrics;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
@@ -331,6 +332,9 @@ public class ToolbarManager
     private final Callback<String> mOnReadAloudReadabilitySuccess =
             this::onReadAloudReadabilitySuccess;
 
+    private boolean mBackGestureInProgress;
+    private boolean mStartNavDuringOngoingGesture;
+
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
 
@@ -408,6 +412,9 @@ public class ToolbarManager
 
         @Override
         public int handleBackPress() {
+            BackPressMetrics.recordNavStatusDuringGesture(
+                    mStartNavDuringOngoingGesture, mActivity.getWindow());
+            mBackGestureInProgress = false;
             int res = BackPressResult.SUCCESS;
             // When enabled, the content/ native will trigger the navigation.
             if (!ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) {
@@ -425,6 +432,9 @@ public class ToolbarManager
 
         @Override
         public void handleOnBackCancelled() {
+            BackPressMetrics.recordNavStatusDuringGesture(
+                    mStartNavDuringOngoingGesture, mActivity.getWindow());
+            mBackGestureInProgress = false;
             if (mHandler == null) return;
             mHandler.onBackCancelled();
         }
@@ -443,6 +453,11 @@ public class ToolbarManager
 
         @Override
         public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
+            BackPressMetrics.recordNavStatusOnGestureStart(
+                    mActivityTabProvider.get().isNavigationInPrimaryMainFrameInProgress(),
+                    mActivity.getWindow());
+            mStartNavDuringOngoingGesture = false;
+            mBackGestureInProgress = true;
             if (!ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) return;
             mHandler = TabOnBackGestureHandler.from(mActivityTabProvider.get());
             mHandler.onBackStarted(
@@ -908,6 +923,7 @@ public class ToolbarManager
                         // In those cases we actually still want to use the most recently selected
                         // tab, but will update the URL.
                         onBackPressStateChanged();
+                        mBackGestureInProgress = false;
                         if (tab == null) {
                             mLocationBarModel.notifyUrlChanged();
                             return;
@@ -1065,6 +1081,8 @@ public class ToolbarManager
                     @Override
                     public void onDidStartNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigationHandle) {
+                        assert tab == mLocationBarModel.getTab();
+                        mStartNavDuringOngoingGesture |= mBackGestureInProgress;
                         onBackPressStateChanged();
                         mLocationBarModel.notifyDidStartNavigation(
                                 navigationHandle.isSameDocument());

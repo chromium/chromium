@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.back_press;
 
+import android.view.Window;
+
 import androidx.activity.BackEventCompat;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
+import org.chromium.ui.UiUtils;
 
 /**
  * A utility class to record back press related histograms. TODO(https://crbug.com/1509190): Move
@@ -42,5 +45,40 @@ public class BackPressMetrics {
      */
     public static void recordTabNavigationSwipedFromEdge(int edge) {
         RecordHistogram.recordEnumeratedHistogram(TAB_HISTORY_EDGE_HISTOGRAM, edge, 2);
+    }
+
+    /**
+     * @param didNavStartInBetween Whether a navigation is started during the gesture.
+     * @param window The window in which the navigation gesture occurs.
+     */
+    public static void recordNavStatusDuringGesture(boolean didNavStartInBetween, Window window) {
+        RecordHistogram.recordBooleanHistogram(
+                "Navigation.DuringGesture.NavStarted", didNavStartInBetween);
+        if (UiUtils.isGestureNavigationMode(window)) {
+            RecordHistogram.recordBooleanHistogram(
+                    "Navigation.DuringGesture.NavStarted.GestureMode", didNavStartInBetween);
+        } else {
+            RecordHistogram.recordBooleanHistogram(
+                    "Navigation.DuringGesture.NavStarted.3ButtonMode", didNavStartInBetween);
+        }
+    }
+
+    /**
+     * @param isNavigationInProgress Whether a navigation has started and not finished yet.
+     * @param window The window in which the navigation gesture occurs.
+     */
+    public static void recordNavStatusOnGestureStart(
+            boolean isNavigationInProgress, Window window) {
+        RecordHistogram.recordBooleanHistogram(
+                "Navigation.OnGestureStart.NavigationInProgress", isNavigationInProgress);
+        if (UiUtils.isGestureNavigationMode(window)) {
+            RecordHistogram.recordBooleanHistogram(
+                    "Navigation.OnNavigationStart.GestureInProgress.GestureMode",
+                    isNavigationInProgress);
+        } else {
+            RecordHistogram.recordBooleanHistogram(
+                    "Navigation.OnNavigationStart.GestureInProgress.3ButtonMode",
+                    isNavigationInProgress);
+        }
     }
 }

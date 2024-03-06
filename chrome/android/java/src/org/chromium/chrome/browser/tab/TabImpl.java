@@ -161,6 +161,9 @@ class TabImpl implements Tab {
     /** Whether or not the Tab is currently visible to the user. */
     private boolean mIsHidden = true;
 
+    /** Whether or not a navigation in primary main frame is in progress. */
+    private boolean mNavigationInPrimaryMainFrameInProgress;
+
     /**
      * Importance of the WebContents currently attached to this tab. Note the key difference from
      * |mIsHidden| is that a tab is hidden when the application is hidden, but the importance is
@@ -724,6 +727,11 @@ class TabImpl implements Tab {
     }
 
     @Override
+    public boolean isNavigationInPrimaryMainFrameInProgress() {
+        return mNavigationInPrimaryMainFrameInProgress;
+    }
+
+    @Override
     public boolean isBeingRestored() {
         return mIsBeingRestored;
     }
@@ -1207,20 +1215,31 @@ class TabImpl implements Tab {
         mIsBeingRestored = false;
     }
 
+    /** Update internal Tab state when a navigation in primary main frame has started. */
+    void handleDidStartNavigationInPrimaryMainFrame() {
+        assert !mNavigationInPrimaryMainFrameInProgress;
+        mNavigationInPrimaryMainFrameInProgress = true;
+    }
+
     /**
      * Update internal Tab state when provisional load gets committed.
+     *
      * @param url The URL that was loaded.
      * @param transitionType The transition type to the current URL.
+     * @param committed Whether the navigation has been committed.
      */
-    void handleDidFinishNavigation(GURL url, int transitionType) {
+    void handleDidFinishNavigationInPrimaryMainFrame(
+            GURL url, int transitionType, boolean committed) {
+        mNavigationInPrimaryMainFrameInProgress = false;
+        if (!committed) return;
         mIsNativePageCommitPending = false;
+
         boolean isReload = (transitionType & PageTransition.CORE_MASK) == PageTransition.RELOAD;
         // TODO: set isPdf based on NavigationHandle for http/https
         boolean isPdf = PdfUtils.isPdfNavigation(url.getSpec(), null);
         if (!maybeShowNativePage(url.getSpec(), isReload, isPdf)) {
             showRenderedPage();
         }
-
         setLastNavigationCommittedTimestampMillis(System.currentTimeMillis());
     }
 
@@ -1441,6 +1460,8 @@ class TabImpl implements Tab {
             // Simulate the PAGE_LOAD_FINISHED notification that we did not get.
             if (didFinishLoad) didFinishPageLoad(getUrl());
         }
+
+        mNavigationInPrimaryMainFrameInProgress = false;
 
         for (TabObserver observer : mObservers) {
             observer.onWebContentsSwapped(this, didStartLoad, didFinishLoad);

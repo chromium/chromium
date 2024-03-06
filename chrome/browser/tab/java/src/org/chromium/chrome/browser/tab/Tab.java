@@ -272,6 +272,11 @@ public interface Tab extends TabLifecycle {
     boolean isLoading();
 
     /**
+     * @return true iff a navigation in primary main frame is in progress.
+     */
+    boolean isNavigationInPrimaryMainFrameInProgress();
+
+    /**
      * @return true iff the tab is performing a restore page load.
      */
     boolean isBeingRestored();

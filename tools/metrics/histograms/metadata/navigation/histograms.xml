@@ -27,6 +27,12 @@ chromium-metrics-reviews@google.com.
   <variant name="Subframe"/>
 </variants>
 
+<variants name="NavigationMode">
+  <variant name="" summary="both gesture nav mode and 3 button mode"/>
+  <variant name=".3ButtonMode" summary="only 3-button mode"/>
+  <variant name=".GestureMode" summary="only gesture nav mode"/>
+</variants>
+
 <variants name="NavigationStage">
   <variant name="Commit"/>
   <variant name="SwapRFH"/>
@@ -647,6 +653,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.DuringGesture.NavStarted{NavigationMode}"
+    enum="Boolean" expires_after="M126">
+  <owner>lazzzis@google.com</owner>
+  <owner>liuwilliam@chromium.org</owner>
+  <owner>chrome-seamless-core@google.com</owner>
+  <summary>
+    Record if there is navigation started during a gesture is in progress. This
+    records for {NavigationMode} when a gesture is finished. Android only.
+  </summary>
+  <token key="NavigationMode" variants="NavigationMode"/>
+</histogram>
+
 <histogram name="Navigation.Earlyhints.EarlyHintsToResponseStartTime"
     units="ms" expires_after="2025-01-05">
   <owner>bashi@chromium.org</owner>
@@ -1189,6 +1207,20 @@ chromium-metrics-reviews@google.com.
     waiting time for beforeunload dialog is closed if necessary. Recorded only
     when a non-reload navigation occurs.
   </summary>
+</histogram>
+
+<histogram
+    name="Navigation.OnGestureStart.NavigationInProgress{NavigationMode}"
+    enum="Boolean" expires_after="M126">
+  <owner>lazzzis@google.com</owner>
+  <owner>liuwilliam@chromium.org</owner>
+  <owner>chrome-seamless-core@google.com</owner>
+  <summary>
+    Record if a nav is in progress when a gesture has been just started. This
+    records for {NavigationMode} when a gesture has been just started. This
+    records once per navigation gesture. Android only.
+  </summary>
+  <token key="NavigationMode" variants="NavigationMode"/>
 </histogram>
 
 <histogram name="Navigation.OriginAgentCluster.Result"

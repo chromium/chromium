@@ -60,6 +60,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.animation.AnimationPerformanceTracker;
@@ -314,7 +315,7 @@ public class TabSwitcherLayoutPerfTest {
      * @param url The URL to load. Skip loading when null, but the thumbnail for the NTP might not
      *     be saved.
      */
-    private void prepareTabs(int numTabs, @Nullable String url) {
+    private void prepareTabs(int numTabs, @Nullable String url) throws InterruptedException {
         assertTrue(numTabs >= 1);
         assertEquals(1, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
         // Only run the full size when doing local perf tests.
@@ -326,6 +327,7 @@ public class TabSwitcherLayoutPerfTest {
                     InstrumentationRegistry.getInstrumentation(),
                     mActivityTestRule.getActivity(),
                     R.id.new_tab_menu_id);
+            UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
             if (url != null) mActivityTestRule.loadUrl(url);
 
             Tab previousTab =
