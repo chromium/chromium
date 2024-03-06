@@ -144,6 +144,11 @@ class MockPasswordManagerClient
               (),
               (override));
 
+  MOCK_METHOD(bool,
+              CanUseBiometricAuthForFilling,
+              (device_reauth::DeviceAuthenticator*),
+              (override));
+
   MOCK_METHOD(password_manager::WebAuthnCredentialsDelegate*,
               GetWebAuthnCredentialsDelegateForDriver,
               (password_manager::PasswordManagerDriver*),
@@ -1008,7 +1013,7 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
 
   auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
 
-  EXPECT_CALL(*mock_authenticator, CanAuthenticateWithBiometrics)
+  EXPECT_CALL(*password_client(), CanUseBiometricAuthForFilling)
       .WillOnce(Return(false));
   EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))));
@@ -1040,7 +1045,7 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
 
   auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
 
-  ON_CALL(*mock_authenticator, CanAuthenticateWithBiometrics)
+  ON_CALL(*password_client(), CanUseBiometricAuthForFilling)
       .WillByDefault(Return(true));
   EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
@@ -1077,7 +1082,7 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
 
   auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
 
-  ON_CALL(*mock_authenticator, CanAuthenticateWithBiometrics)
+  ON_CALL(*password_client(), CanUseBiometricAuthForFilling)
       .WillByDefault(Return(true));
   EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
@@ -1116,7 +1121,7 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
   auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
   auto* mock_authenticator_ptr = mock_authenticator.get();
 
-  ON_CALL(*mock_authenticator_ptr, CanAuthenticateWithBiometrics)
+  ON_CALL(*password_client(), CanUseBiometricAuthForFilling)
       .WillByDefault(Return(true));
   EXPECT_CALL(*mock_authenticator_ptr, AuthenticateWithMessage);
 

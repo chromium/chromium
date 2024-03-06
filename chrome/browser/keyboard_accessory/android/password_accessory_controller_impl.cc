@@ -667,8 +667,7 @@ bool PasswordAccessoryControllerImpl::ShouldTriggerBiometricReauth(
     return false;
   }
 
-  return password_manager_util::CanUseBiometricAuth(authenticator_.get(),
-                                                    password_client_);
+  return password_client_->CanUseBiometricAuthForFilling(authenticator_.get());
 }
 
 void PasswordAccessoryControllerImpl::OnReauthCompleted(
