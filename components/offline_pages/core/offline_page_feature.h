@@ -10,9 +10,7 @@
 
 namespace offline_pages {
 
-BASE_DECLARE_FEATURE(kOfflinePagesCTFeature);
 BASE_DECLARE_FEATURE(kBackgroundLoaderForDownloadsFeature);
-BASE_DECLARE_FEATURE(kOfflinePagesCTV2Feature);
 BASE_DECLARE_FEATURE(kOfflinePagesInDownloadHomeOpenInCctFeature);
 BASE_DECLARE_FEATURE(kOnTheFlyMhtmlHashComputationFeature);
 BASE_DECLARE_FEATURE(kOfflinePagesNetworkStateLikelyUnknown);
@@ -21,15 +19,9 @@ BASE_DECLARE_FEATURE(kOfflinePagesNetworkStateLikelyUnknown);
 // pages.
 extern const char kPrefetchingOfflinePagesExperimentsOption[];
 
-// Returns true if offline CT features are enabled.  See crbug.com/620421.
-bool IsOfflinePagesCTEnabled();
-
 // Returns true if a command line for test has been set that shortens the
 // snapshot delay.
 bool ShouldUseTestingSnapshotDelay();
-
-// Returns true if we should record request origin as part of custom tabs V2.
-bool IsOfflinePagesCTV2Enabled();
 
 // Controls whether offline pages opened from the Downloads Home should be
 // opened in CCTs instead of new tabs.
