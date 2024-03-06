@@ -194,6 +194,7 @@ aggregate_vector_icons("components_vector_icons") {
     "select_window.icon",
     "select_window_chrome_refresh.icon",
     "select_window_off_chrome_refresh.icon",
+    "send.icon",
     "sensors.icon",
     "sensors_chrome_refresh.icon",
     "sensors_off_chrome_refresh.icon",

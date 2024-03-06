@@ -5,11 +5,11 @@
 #include "ash/system/notification_center/views/ash_notification_input_container.h"
 
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/font_list.h"
@@ -96,11 +96,13 @@ void AshNotificationInputContainer::UpdateButtonImage() {
   UpdateButtonState();
   button()->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kSendIcon, cros_tokens::kColorProminent,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSendIcon,
+                                     cros_tokens::kColorProminent,
                                      kInputReplyButtonSize));
   button()->SetImageModel(
       views::Button::STATE_DISABLED,
-      ui::ImageModel::FromVectorIcon(kSendIcon, cros_tokens::kColorDisabled,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSendIcon,
+                                     cros_tokens::kColorDisabled,
                                      kInputReplyButtonSize));
 }
 

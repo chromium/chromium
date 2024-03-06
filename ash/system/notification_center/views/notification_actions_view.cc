@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/system_textfield.h"
@@ -14,6 +13,7 @@
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/message_center_utils.h"
 #include "base/functional/bind.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -75,7 +75,8 @@ NotificationActionsView::NotificationActionsView() {
       inline_reply_container_->AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&NotificationActionsView::SendButtonPressed,
                               base::Unretained(this)),
-          IconButton::Type::kSmallFloating, &kSendIcon, /*is_togglable=*/false,
+          IconButton::Type::kSmallFloating, &vector_icons::kSendIcon,
+          /*is_togglable=*/false,
           /*has_border*/ true));
   send_button_->SetEnabled(false);
 }

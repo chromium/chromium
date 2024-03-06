@@ -369,7 +369,6 @@ aggregate_vector_icons("ash_vector_icons") {
     "select_to_speak_reading_speed_peppy.icon",
     "select_to_speak_reading_speed_slow.icon",
     "select_to_speak_stop.icon",
-    "send.icon",
     "settings.icon",
     "seven_files.icon",
     "shelf_add_person_button.icon",
