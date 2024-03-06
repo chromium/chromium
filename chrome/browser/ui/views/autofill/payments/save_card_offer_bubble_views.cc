@@ -396,8 +396,9 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateLoadingRow() {
   // the user accepts uploading the card.
   loading_row->SetVisible(false);
 
-  loading_row->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   loading_row->SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
+  loading_row->SetInsideBorderInsets(gfx::Insets::TLBR(10, 0, 0, 40));
+
   loading_throbber_ =
       loading_row->AddChildView(std::make_unique<views::Throbber>());
   loading_throbber_->SetID(DialogViewId::LOADING_THROBBER);

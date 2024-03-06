@@ -254,10 +254,10 @@ VirtualCardEnrollBubbleViews::CreateLoadingProgressRow() {
   // visible after the user accepts virtual card enrollment.
   progress_loading_row->SetVisible(false);
 
-  progress_loading_row->SetOrientation(
-      views::BoxLayout::Orientation::kHorizontal);
   progress_loading_row->SetMainAxisAlignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
+  progress_loading_row->SetInsideBorderInsets(gfx::Insets::TLBR(10, 0, 0, 30));
+
   loading_throbber_ =
       progress_loading_row->AddChildView(std::make_unique<views::Throbber>());
   loading_throbber_->SetID(DialogViewId::LOADING_THROBBER);

@@ -254,15 +254,18 @@ void SaveCardBubbleViews::AssignIdsToDialogButtons() {
 }
 
 void SaveCardBubbleViews::Init() {
+  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
+
   // For server cards, there is an explanation between the title and the
   // controls; use DialogContentType::kText. For local cards, since there is no
   // explanation, use DialogContentType::kControl instead.
   // There are legal messages before the buttons for server cards, so use
   // DialogContentType::kText. For local card, since there is no legal message,
   // use DialogContentType::kControl instead.
-  set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
+  set_margins(provider->GetDialogInsetsForContentType(
       controller_->GetExplanatoryMessage().empty()
           ? views::DialogContentType::kControl
           : views::DialogContentType::kText,
