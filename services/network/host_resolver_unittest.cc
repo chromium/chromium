@@ -1308,6 +1308,7 @@ TEST_F(HostResolverTest, Binding) {
 
   HostResolver resolver(resolver_remote.BindNewPipeAndPassReceiver(),
                         std::move(shutdown_callback), inner_resolver.get(),
+                        /*owned_internal_resolver=*/nullptr,
                         net::NetLog::Get());
 
   base::RunLoop run_loop;
@@ -1350,6 +1351,7 @@ TEST_F(HostResolverTest, CloseBinding) {
 
   HostResolver resolver(resolver_remote.BindNewPipeAndPassReceiver(),
                         std::move(shutdown_callback), inner_resolver.get(),
+                        /*owned_internal_resolver=*/nullptr,
                         net::NetLog::Get());
 
   ASSERT_EQ(0, inner_resolver->num_cancellations());
@@ -1400,6 +1402,7 @@ TEST_F(HostResolverTest, CloseBinding_SubsequentRequest) {
 
   HostResolver resolver(resolver_remote.BindNewPipeAndPassReceiver(),
                         std::move(shutdown_callback), inner_resolver.get(),
+                        /*owned_internal_resolver=*/nullptr,
                         net::NetLog::Get());
 
   base::RunLoop run_loop;

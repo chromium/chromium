@@ -882,11 +882,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   // Created on-demand. Null if unused.
   std::unique_ptr<HostResolver> internal_host_resolver_;
-  // Map values set to non-null only if that HostResolver has its own private
-  // internal net::HostResolver.
-  std::map<std::unique_ptr<HostResolver>,
-           std::unique_ptr<net::HostResolver>,
-           base::UniquePtrComparator>
+  std::set<std::unique_ptr<HostResolver>, base::UniquePtrComparator>
       host_resolvers_;
   std::unique_ptr<net::HostResolver::ProbeRequest> doh_probes_request_;
 

@@ -71,12 +71,16 @@ HostResolver::HostResolver(
     mojo::PendingReceiver<mojom::HostResolver> resolver_receiver,
     ConnectionShutdownCallback connection_shutdown_callback,
     net::HostResolver* internal_resolver,
+    std::unique_ptr<net::HostResolver> owned_internal_resolver,
     net::NetLog* net_log)
     : receiver_(this),
       pending_receiver_(std::move(resolver_receiver)),
       connection_shutdown_callback_(std::move(connection_shutdown_callback)),
+      owned_internal_resolver_(std::move(owned_internal_resolver)),
       internal_resolver_(internal_resolver),
       net_log_(net_log) {
+  DCHECK(!owned_internal_resolver_ ||
+         internal_resolver_ == owned_internal_resolver_.get());
   // Bind the pending receiver asynchronously to give the resolver a chance
   // to set up (some resolvers need to obtain the system config asynchronously).
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

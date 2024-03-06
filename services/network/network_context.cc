@@ -1093,7 +1093,7 @@ size_t NetworkContext::GetNumOutstandingResolveHostRequestsForTesting() const {
   if (internal_host_resolver_)
     sum += internal_host_resolver_->GetNumOutstandingRequestsForTesting();
   for (const auto& host_resolver : host_resolvers_)
-    sum += host_resolver.first->GetNumOutstandingRequestsForTesting();
+    sum += host_resolver->GetNumOutstandingRequestsForTesting();  // IN-TEST
   return sum;
 }
 
@@ -1803,13 +1803,12 @@ void NetworkContext::CreateHostResolver(
     internal_resolver = private_internal_resolver.get();
   }
 
-  host_resolvers_.emplace(
-      std::make_unique<HostResolver>(
-          std::move(receiver),
-          base::BindOnce(&NetworkContext::OnHostResolverShutdown,
-                         base::Unretained(this)),
-          internal_resolver, url_request_context_->net_log()),
-      std::move(private_internal_resolver));
+  host_resolvers_.emplace(std::make_unique<HostResolver>(
+      std::move(receiver),
+      base::BindOnce(&NetworkContext::OnHostResolverShutdown,
+                     base::Unretained(this)),
+      internal_resolver, std::move(private_internal_resolver),
+      url_request_context_->net_log()));
 }
 
 void NetworkContext::VerifyCertForSignedExchange(
