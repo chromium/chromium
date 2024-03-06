@@ -169,10 +169,10 @@ void ShellSurface::OcclusionObserver::MaybeConfigure(aura::Window* window) {
 aura::Window::OcclusionState
 ShellSurface::OcclusionObserver::GetInitialStateForConfigure(
     chromeos::WindowStateType state_type) {
-  // Assume the window is initially visible, unless it is minimized.
-  state_ = state_type == chromeos::WindowStateType::kMinimized
-               ? aura::Window::OcclusionState::HIDDEN
-               : aura::Window::OcclusionState::VISIBLE;
+  // TODO(crbug.com/328172097): Put this back to sending HIDDEN for minimized
+  // when we have some guarantee that the client will produce content while
+  // hidden for the initial configure.
+  state_ = aura::Window::OcclusionState::VISIBLE;
   return state_;
 }
 
