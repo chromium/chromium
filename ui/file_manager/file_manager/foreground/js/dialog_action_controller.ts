@@ -9,7 +9,7 @@ import {isFolderDialogType} from '../../common/js/dialog_type.js';
 import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {str} from '../../common/js/translations.js';
-import {recordViewingVolumeTypeUma} from '../../common/js/uma.js';
+import {recordViewingNavigationSurfaceUma, recordViewingVolumeTypeUma} from '../../common/js/uma.js';
 import {testSendMessage, UserCanceledError} from '../../common/js/util.js';
 import {AllowedPaths, RootTypesForUMA} from '../../common/js/volume_manager_types.js';
 import {DialogType} from '../../state/state.js';
@@ -258,6 +258,8 @@ export class DialogActionController {
     const state = getStore().getState();
     for (const url of selection.urls) {
       recordViewingVolumeTypeUma(state, url);
+      // Recorded per file.
+      recordViewingNavigationSurfaceUma(state);
     }
 
     if (selection.multiple) {

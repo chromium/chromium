@@ -17,7 +17,7 @@ import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordEnum, recordTime} from '../../common/js/metrics.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {bytesToString, str, strf} from '../../common/js/translations.js';
-import {recordViewingVolumeTypeUma} from '../../common/js/uma.js';
+import {recordViewingNavigationSurfaceUma, recordViewingVolumeTypeUma} from '../../common/js/uma.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {descriptorEqual, extractFilePath, isTeleported, makeTaskID, splitExtension} from '../../common/js/util.js';
 import {RootType, RootTypesForUMA, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
@@ -207,6 +207,8 @@ export class FileTasks {
           volumeManager, 'ViewingFileType', FileTasks.getViewFileType(entry),
           UMA_INDEX_KNOWN_EXTENSIONS as string[]);
       recordViewingVolumeTypeUma(state, entry.toURL());
+      // Recorded per file.
+      recordViewingNavigationSurfaceUma(state);
     }
   }
 

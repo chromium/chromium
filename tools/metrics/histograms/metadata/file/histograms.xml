@@ -1581,6 +1581,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.ViewingNavigationSurface.{FilesAppMode}"
+    enum="FileManagerNavigationSurface" expires_after="2025-06-30">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files app: The navigation surface used by the user to reach the
+    file that is being opened.
+  </summary>
+  <token key="FilesAppMode" variants="FilesAppMode"/>
+</histogram>
+
 <histogram name="FileBrowser.ViewingRootType" enum="FileManagerRootType"
     expires_after="2024-09-01">
   <owner>simmonsjosh@google.com</owner>

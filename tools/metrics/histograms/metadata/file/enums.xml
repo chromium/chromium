@@ -254,6 +254,29 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="Manage Bruschetta sharing toast startup"/>
 </enum>
 
+<enum name="FileManagerNavigationSurface">
+  <summary>The UI Surface that user used to navigate to the files.</summary>
+  <int value="0" label="Physical Location">
+    User navigated directly via the volume/directory.
+  </int>
+  <int value="1" label="Search results">
+    User has searched and is acting on the search results.
+  </int>
+  <int value="2" label="Recent">User has navigated via the Recent root.</int>
+  <int value="3" label="Starred files">
+    User has navigated to Starred files or any sub-folder within it.
+  </int>
+  <int value="4" label="Screen captures view">
+    User has navigated to Screen captures view.
+  </int>
+  <int value="5" label="Drive Shared with me root">
+    User has navigated to Google Drive &quot;Shared with me&quot; root.
+  </int>
+  <int value="6" label="Drive Offline root">
+    User has navigated to Google Drive &quot;Offline&quot; root.
+  </int>
+</enum>
+
 <enum name="FileManagerNotificationType">
   <int value="0" label="DEVICE_NAVIGATION_ALLOW_APP_ACCESS"/>
   <int value="1" label="DEVICE_NAVIGATION_APPS_HAVE_ACCESS"/>
