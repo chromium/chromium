@@ -348,9 +348,13 @@ notes = 'Grepped for \"crypt\", \"cipher\" - there were no hits'
 
 [[audits.cxxbridge-flags]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "does-not-implement-crypto"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 version = "1.0.117"
-notes = 'Grepped for \"crypt\", \"cipher\" - there were no hits'
+notes = """
+I grepped for \"crypt\", \"cipher\", \"fs\", \"net\", \"unsafe\" - there were no hits.
+The crate is very straightforward - it just defines a `pub const STD: &str`.
+The crate was added to Chromium in https://crrev.com/c/5029701.
+"""
 
 [[audits.cxxbridge-flags]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"

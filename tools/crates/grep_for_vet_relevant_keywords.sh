@@ -49,7 +49,7 @@ CRATE_DIR=`realpath "$CRATE_DIR" --relative-to="$PWD"`
 
 run_grep () {
   echo "### Grepping $CRATE_DIR for $*..."
-  find "$CRATE_DIR" -type f -print0 | xargs -0 grep $* || true
+  find "$CRATE_DIR" -type f -print0 | xargs -0 grep -n $* || true
   echo
 }
 

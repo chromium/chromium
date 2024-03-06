@@ -302,19 +302,6 @@ Exemption updated to 1.0.116 in Feb 2024.
 Exemption updated to 1.0.117 in Feb 2024.
 """
 
-[[exemptions.cxxbridge-flags]]
-version = "1.0.117"
-criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = """
-Grandparented-in when setting up `cargo vet` in Jan 2024
-
-Delta audit of 1.0.110 -> 1.0.115 has been done in Jan 2024, but because of a
-lack of a fully-audited baseline nothing was recorded in audits.toml
-
-Exemption updated to 1.0.116 in Feb 2024.
-Exemption updated to 1.0.117 in Feb 2024.
-"""
-
 [[exemptions.cxxbridge-macro]]
 version = "1.0.117"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
