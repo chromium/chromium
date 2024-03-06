@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 
+#include <string_view>
+
 #include "ash/public/cpp/default_user_image.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,7 +59,7 @@ TEST(DefaultUserImagesTest, CurrentImageSetShouldBeEligibleWithFlag) {
     const auto url_string = image.url.spec();
 
     // Current image set should have support for 200 percent scale factor.
-    EXPECT_NE(url_string.find(k200PercentPrefix), base::StringPiece::npos);
+    EXPECT_NE(url_string.find(k200PercentPrefix), std::string_view::npos);
   }
 }
 
@@ -75,9 +77,9 @@ TEST(DefaultUserImagesTest, AllDefaultImagesShouldHaveCorrectInfoWithFlag) {
 
     const auto url_string = default_user_image.url.spec();
     if (index <= kLastLegacyImageIndex) {
-      EXPECT_NE(url_string.find(k100PercentPrefix), base::StringPiece::npos);
+      EXPECT_NE(url_string.find(k100PercentPrefix), std::string_view::npos);
     } else {
-      EXPECT_NE(url_string.find(k200PercentPrefix), base::StringPiece::npos);
+      EXPECT_NE(url_string.find(k200PercentPrefix), std::string_view::npos);
     }
   }
 }

@@ -39,10 +39,10 @@ void AppendAmbientVideoAlbums(AmbientVideo currently_selected_video,
 // Returns the |AmbientVideo| for the corresponding |id|. |id| must match that
 // of one of the |AmbientModeAlbum|s returned by |AppendAmbientVideoAlbums()|.
 // Returns nullopt if not.
-std::optional<AmbientVideo> FindAmbientVideoByAlbumId(base::StringPiece id);
+std::optional<AmbientVideo> FindAmbientVideoByAlbumId(std::string_view id);
 
-inline constexpr base::StringPiece kCloudsAlbumId = "AmbientCloudsVideoAlbumId";
-inline constexpr base::StringPiece kNewMexicoAlbumId =
+inline constexpr std::string_view kCloudsAlbumId = "AmbientCloudsVideoAlbumId";
+inline constexpr std::string_view kNewMexicoAlbumId =
     "AmbientNewMexicoVideoAlbumId";
 
 }  // namespace ash::personalization_app

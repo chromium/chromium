@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_ambient_provider_impl.h"
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "ash/ambient/ambient_controller.h"
@@ -337,7 +338,7 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
     ambient_provider_->SetTopicSource(topic_source);
   }
 
-  void SetAlbumSelected(base::StringPiece id,
+  void SetAlbumSelected(std::string_view id,
                         mojom::TopicSource topic_source,
                         bool selected) {
     ambient_provider_->SetAlbumSelected(std::string(id), topic_source,

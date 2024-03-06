@@ -295,7 +295,7 @@ class FakePpdProvider : public PpdProvider {
     std::move(cb).Run(PpdProvider::CallbackResultCode::SUCCESS, "ppd content");
   }
 
-  void ResolvePpdLicense(base::StringPiece effective_make_and_model,
+  void ResolvePpdLicense(std::string_view effective_make_and_model,
                          ResolvePpdLicenseCallback cb) override {
     std::move(cb).Run(PpdProvider::CallbackResultCode::SUCCESS, license_name_);
   }

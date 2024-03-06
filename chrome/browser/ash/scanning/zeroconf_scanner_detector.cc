@@ -56,8 +56,9 @@ class ParsedMetadata {
     for (const std::string& entry : service_description.metadata) {
       const std::string_view key_value(entry);
       const size_t equal_pos = key_value.find("=");
-      if (equal_pos == base::StringPiece::npos)
+      if (equal_pos == std::string_view::npos) {
         continue;
+      }
 
       const std::string_view key = key_value.substr(0, equal_pos);
       const std::string_view value = key_value.substr(equal_pos + 1);

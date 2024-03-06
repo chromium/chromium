@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_untrusted_ui_config.h"
 
 #include <memory>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
@@ -67,9 +68,9 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
       system::StatisticsProvider::GetInstance();
   // MachineStatistics may not exist for browser tests, but it is fine for these
   // to be empty strings.
-  const std::optional<base::StringPiece> customization_id =
+  const std::optional<std::string_view> customization_id =
       provider->GetMachineStatistic(system::kCustomizationIdKey);
-  const std::optional<base::StringPiece> hwid =
+  const std::optional<std::string_view> hwid =
       provider->GetMachineStatistic(system::kHardwareClassKey);
   source->AddString("customizationId",
                     std::string(customization_id.value_or("")));

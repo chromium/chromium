@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -302,7 +303,7 @@ void DoLacrosBackgroundWorkPreLaunch(
       PLOG(WARNING) << "Unable to read from lacros additional args file "
                     << path.value();
     }
-    std::vector<base::StringPiece> delimited_flags =
+    std::vector<std::string_view> delimited_flags =
         base::SplitStringPieceUsingSubstr(data, "\n", base::TRIM_WHITESPACE,
                                           base::SPLIT_WANT_NONEMPTY);
 

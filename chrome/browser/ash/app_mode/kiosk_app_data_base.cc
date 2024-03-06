@@ -53,7 +53,7 @@ void RemoveDictionaryPath(base::Value::Dict& dict, std::string_view path) {
   std::string_view current_path(path);
   base::Value::Dict* current_dictionary = &dict;
   size_t delimiter_position = current_path.rfind('.');
-  if (delimiter_position != base::StringPiece::npos) {
+  if (delimiter_position != std::string_view::npos) {
     current_dictionary =
         dict.FindDictByDottedPath(current_path.substr(0, delimiter_position));
     if (!current_dictionary) {
