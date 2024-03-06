@@ -149,76 +149,22 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
 }
 
 std::vector<std::unique_ptr<BirchItem>> BirchModel::GetItemsForDisplay() {
-  std::vector<std::unique_ptr<BirchItem>> all_items = GetAllItems();
+  std::vector<std::unique_ptr<BirchItem>> results = GetAllItems();
 
-  // Remove any items with no ranking.
-  std::erase_if(all_items, [](const auto& item) {
+  // The items are already sorted by ranking, so truncate the vector to find the
+  // top 4 results.
+  constexpr size_t kMaxResults = 4;
+  if (results.size() > kMaxResults) {
+    results.resize(kMaxResults);
+  }
+
+  // Remove any items with no ranking, as these should not be shown. This is
+  // done after the resize() for efficiency. The unranked items are sorted to
+  // the end, so the resize() has likely already removed them.
+  std::erase_if(results, [](const auto& item) {
     return item->ranking == std::numeric_limits<float>::max();
   });
 
-  std::vector<std::unique_ptr<BirchItem>> results;
-
-  // Make multiple passes through all items, with each pass putting at most one
-  // item of each type in the results vector.
-  constexpr int kMaxResults = 4;
-  for (int pass = 0; pass < 2 && results.size() < kMaxResults; ++pass) {
-    bool have_calendar = false;
-    bool have_attachment = false;
-    bool have_tab = false;
-    bool have_file = false;
-    bool have_weather = false;
-    for (auto it = all_items.begin(); it != all_items.end(); ++it) {
-      // Early exit once enough results are found.
-      if (results.size() == kMaxResults) {
-        break;
-      }
-      // An earlier pass might have left this item null.
-      if (!*it) {
-        continue;
-      }
-      // If this is the first time an item of this type is encountered, move it
-      // into the results list. Set the `all_items` entry to null so the item
-      // will be ignored on future passes through the list.
-      if ((*it)->GetItemType() == BirchCalendarItem::kItemType &&
-          !have_calendar) {
-        results.push_back(std::move(*it));
-        *it = nullptr;
-        have_calendar = true;
-        continue;
-      }
-      if ((*it)->GetItemType() == BirchAttachmentItem::kItemType &&
-          !have_attachment) {
-        results.push_back(std::move(*it));
-        *it = nullptr;
-        have_attachment = true;
-        continue;
-      }
-      if ((*it)->GetItemType() == BirchTabItem::kItemType && !have_tab) {
-        results.push_back(std::move(*it));
-        *it = nullptr;
-        have_tab = true;
-        continue;
-      }
-      if ((*it)->GetItemType() == BirchFileItem::kItemType && !have_file) {
-        results.push_back(std::move(*it));
-        *it = nullptr;
-        have_file = true;
-        continue;
-      }
-      if ((*it)->GetItemType() == BirchWeatherItem::kItemType &&
-          !have_weather) {
-        results.push_back(std::move(*it));
-        *it = nullptr;
-        have_weather = true;
-        continue;
-      }
-    }
-  }
-  // Sort the returned items by ranking.
-  std::sort(results.begin(), results.end(),
-            [](const auto& item_a, const auto& item_b) {
-              return item_a->ranking < item_b->ranking;
-            });
   return results;
 }
 

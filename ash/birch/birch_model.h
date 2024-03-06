@@ -57,10 +57,10 @@ class ASH_EXPORT BirchModel {
     return weather_items_;
   }
 
+  // Returns all items, sorted by ranking. Includes unranked items.
   std::vector<std::unique_ptr<BirchItem>> GetAllItems();
 
-  // Returns at most 4 items. Prefers higher ranked items. Prefers not to
-  // return multiple items of the same type, where possible.
+  // Returns at most 4 items, sorted by ranking.
   std::vector<std::unique_ptr<BirchItem>> GetItemsForDisplay();
 
   // Returns whether all data in the model is currently fresh.

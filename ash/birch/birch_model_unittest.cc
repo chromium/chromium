@@ -518,7 +518,7 @@ TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {
   EXPECT_STREQ(items[3]->GetItemType(), BirchAttachmentItem::kItemType);
 }
 
-TEST_F(BirchModelTest, GetItemsForDisplay_AvoidDuplicateTypes) {
+TEST_F(BirchModelTest, GetItemsForDisplay_IncludesDuplicateTypes) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Insert 2 calendar events with high priority.
@@ -552,16 +552,15 @@ TEST_F(BirchModelTest, GetItemsForDisplay_AvoidDuplicateTypes) {
   // The maximum of 4 items are returned.
   ASSERT_EQ(items.size(), 4u);
 
-  // The second calendar event is skipped, despite being high priority, because
-  // the algorithm avoids duplicate types.
+  // Both calendar events are included.
   EXPECT_FLOAT_EQ(items[0]->ranking, 1.f);
   EXPECT_STREQ(items[0]->GetItemType(), BirchCalendarItem::kItemType);
-  EXPECT_FLOAT_EQ(items[1]->ranking, 3.f);
-  EXPECT_STREQ(items[1]->GetItemType(), BirchAttachmentItem::kItemType);
-  EXPECT_FLOAT_EQ(items[2]->ranking, 4.f);
-  EXPECT_STREQ(items[2]->GetItemType(), BirchTabItem::kItemType);
-  EXPECT_FLOAT_EQ(items[3]->ranking, 5.f);
-  EXPECT_STREQ(items[3]->GetItemType(), BirchFileItem::kItemType);
+  EXPECT_FLOAT_EQ(items[1]->ranking, 2.f);
+  EXPECT_STREQ(items[1]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_FLOAT_EQ(items[2]->ranking, 3.f);
+  EXPECT_STREQ(items[2]->GetItemType(), BirchAttachmentItem::kItemType);
+  EXPECT_FLOAT_EQ(items[3]->ranking, 4.f);
+  EXPECT_STREQ(items[3]->GetItemType(), BirchTabItem::kItemType);
 }
 
 TEST_F(BirchModelTest, GetItemsForDisplay_TwoDuplicateTypes) {
@@ -611,12 +610,14 @@ TEST_F(BirchModelTest, GetItemsForDisplay_NotEnoughItems) {
 
   std::vector<std::unique_ptr<BirchItem>> items = model->GetItemsForDisplay();
 
-  // Only 2 items are returned.
-  ASSERT_EQ(items.size(), 2u);
+  // 3 items are returned.
+  ASSERT_EQ(items.size(), 3u);
   EXPECT_FLOAT_EQ(items[0]->ranking, 1.f);
   EXPECT_STREQ(items[0]->GetItemType(), BirchCalendarItem::kItemType);
   EXPECT_FLOAT_EQ(items[1]->ranking, 2.f);
   EXPECT_STREQ(items[1]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_FLOAT_EQ(items[2]->ranking, 3.f);
+  EXPECT_STREQ(items[2]->GetItemType(), BirchCalendarItem::kItemType);
 }
 
 TEST_F(BirchModelTest, GetItemsForDisplay_NotRankedItem) {
