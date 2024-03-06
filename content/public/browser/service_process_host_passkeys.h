@@ -17,8 +17,6 @@ class FileUtilServiceLauncher;
 }  // namespace chrome
 
 namespace content {
-class VideoCaptureServiceLauncher;
-
 class ServiceProcessHostPreloadLibraries {
  public:
   using PassKey = base::PassKey<ServiceProcessHostPreloadLibraries>;
@@ -55,19 +53,6 @@ class ServiceProcessHostPinUser32 {
   // Tests.
   FRIEND_TEST_ALL_PREFIXES(ServiceProcessHostBrowserTest, PinUser32);
 };
-
-class ServiceProcessHostGpuClient {
- public:
-  using PassKey = base::PassKey<ServiceProcessHostGpuClient>;
-
- private:
-  static PassKey GetPassKey() { return PassKey(); }
-
-  // Service launchers using `ServiceProcessHost::Options::WithGpuClient`
-  // should be added here and must be reviewed by the security team.
-  friend class content::VideoCaptureServiceLauncher;
-};
-
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_SERVICE_PROCESS_HOST_PASSKEYS_H_
