@@ -777,31 +777,32 @@ void MediaRecorderHandler::OnEncodedVideo(
   }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  // TODO(crbug.com/1441395). Once Encoder supports VideoEncoder, then the
+  // TODO(crbug.com/40266540). Once Encoder supports VideoEncoder, then the
   // below code could go away.
 
   // Convert annex stream to avc bit stream for h264.
-  if (IsMp4MuxerRequired(audio_codec_id_) &&
-      video_codec_profile_.codec_id == VideoTrackRecorder::CodecId::kH264 &&
+  if (video_codec_profile_.codec_id == VideoTrackRecorder::CodecId::kH264 &&
       is_key_frame && !codec_description.has_value()) {
+    bool first_key_frame = false;
     if (!h264_converter_) {
       h264_converter_ =
           std::make_unique<media::H264AnnexBToAvcBitstreamConverter>();
+      first_key_frame = true;
     }
 
     // We don't care the config_changed or not, we just pass the configuration
     // data as a codec_descriptions.
     bool config_changed = false;
     size_t desired_size = 0;
-    std::vector<uint8_t> ouput_chunk;
+    std::vector<uint8_t> output_chunk;
     base::span<const uint8_t> data_span(
         reinterpret_cast<const uint8_t*>(encoded_data.data()),
         encoded_data.size());
-    auto status = h264_converter_->ConvertChunk(data_span, ouput_chunk,
+    auto status = h264_converter_->ConvertChunk(data_span, output_chunk,
                                                 &config_changed, &desired_size);
-    DCHECK_EQ(status.code(), media::MP4Status::Codes::kBufferTooSmall);
-    ouput_chunk.resize(desired_size);
-    status = h264_converter_->ConvertChunk(data_span, ouput_chunk,
+    CHECK_EQ(status.code(), media::MP4Status::Codes::kBufferTooSmall);
+    output_chunk.resize(desired_size);
+    status = h264_converter_->ConvertChunk(data_span, output_chunk,
                                            &config_changed, &desired_size);
     DCHECK(status.is_ok());
 
@@ -811,6 +812,10 @@ void MediaRecorderHandler::OnEncodedVideo(
       DVLOG(1) << "Failed to get h264 config";
     }
     codec_description = std::move(avc_config_data);
+
+    if (first_key_frame) {
+      video_codec_profile_.level = config.avc_level;
+    }
   }
 #endif
 

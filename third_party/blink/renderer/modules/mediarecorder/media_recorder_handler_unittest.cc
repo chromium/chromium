@@ -8,7 +8,10 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -238,8 +241,28 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
                              bus.get());
     return bus;
   }
+
+  void OnEncodedH264VideoForTesting(
+      base::TimeTicks timestamp,
+      std::optional<media::VideoEncoder::CodecDescription> codec_description =
+          std::nullopt) {
+    // It provides valid h264 stream.
+    if (h264_video_stream_.empty()) {
+      base::MemoryMappedFile mapped_h264_file;
+      LoadEncodedFile("h264-320x180-frame-0", mapped_h264_file);
+      h264_video_stream_ =
+          std::string(reinterpret_cast<const char*>(mapped_h264_file.data()),
+                      mapped_h264_file.length());
+    }
+    media::Muxer::VideoParameters video_params(
+        gfx::Size(), 1, media::VideoCodec::kH264, gfx::ColorSpace());
+    OnEncodedVideoForTesting(video_params, h264_video_stream_, "alpha",
+                             timestamp, true, std::move(codec_description));
+  }
+
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  void PopulateAVCDecoderConfiguration(std::vector<uint8_t>& code_description) {
+  void PopulateAVCDecoderConfiguration(
+      std::vector<uint8_t>& codec_description) {
     // copied from box_reader_unittest.cc.
     std::vector<uint8_t> test_data{
         0x1,        // configurationVersion = 1
@@ -267,7 +290,7 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
     media::mp4::AVCDecoderConfigurationRecord avc_config;
     ASSERT_TRUE(
         avc_config.Parse(test_data.data(), static_cast<int>(test_data.size())));
-    ASSERT_TRUE(avc_config.Serialize(code_description));
+    ASSERT_TRUE(avc_config.Serialize(codec_description));
   }
 #endif
 
@@ -280,6 +303,26 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   media::SineWaveAudioSource audio_source_;
   raw_ptr<MockMediaStreamVideoSource, DanglingUntriaged> video_source_ =
       nullptr;
+  std::string h264_video_stream_;
+
+ private:
+  void LoadEncodedFile(base::StringPiece filename,
+                       base::MemoryMappedFile& mapped_stream) {
+    base::FilePath file_path = GetTestDataFilePath(filename);
+
+    ASSERT_TRUE(mapped_stream.Initialize(file_path))
+        << "Couldn't open stream file: " << file_path.MaybeAsASCII();
+  }
+
+  base::FilePath GetTestDataFilePath(base::StringPiece name) {
+    base::FilePath file_path;
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
+    file_path = file_path.Append(FILE_PATH_LITERAL("media"))
+                    .Append(FILE_PATH_LITERAL("test"))
+                    .Append(FILE_PATH_LITERAL("data"))
+                    .AppendASCII(name);
+    return file_path;
+  }
 };
 
 class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
@@ -336,6 +379,10 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
 #else
     return codecs.Find("av1") != kNotFound && codecs.Find("av01") != kNotFound;
 #endif
+  }
+
+  bool IsAvc1CodecSupported(const String codecs) {
+    return codecs.Find("avc1") != kNotFound;
   }
 
  private:
@@ -761,16 +808,20 @@ TEST_P(MediaRecorderHandlerTest, PauseRecorderForVideo) {
         gfx::Size(), 1, media::VideoCodec::kH264, gfx::ColorSpace());
     std::vector<uint8_t> codec_description;
     PopulateAVCDecoderConfiguration(codec_description);
-    OnEncodedVideoForTesting(params, "avc1 frame", "", base::TimeTicks::Now(),
-                             true, std::move(codec_description));
+    OnEncodedH264VideoForTesting(base::TimeTicks::Now(),
+                                 std::move(codec_description));
     media_recorder_handler_->Stop();
 #endif
   } else {
     EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
     media::Muxer::VideoParameters params(
         gfx::Size(), 1, media::VideoCodec::kVP9, gfx::ColorSpace());
-    OnEncodedVideoForTesting(params, "vp9 frame", "", base::TimeTicks::Now(),
-                             true);
+    if (IsAvc1CodecSupported(codecs)) {
+      OnEncodedH264VideoForTesting(base::TimeTicks::Now());
+    } else {
+      OnEncodedVideoForTesting(params, "vp9 frame", "alpha",
+                               base::TimeTicks::Now(), true);
+    }
   }
 
   Mock::VerifyAndClearExpectations(recorder);
@@ -811,8 +862,12 @@ TEST_P(MediaRecorderHandlerTest, StartStopStartRecorderForVideo) {
   EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
   media::Muxer::VideoParameters params(gfx::Size(), 1, media::VideoCodec::kVP9,
                                        gfx::ColorSpace());
-  OnEncodedVideoForTesting(params, "vp9 frame", "", base::TimeTicks::Now(),
-                           true);
+  if (IsAvc1CodecSupported(codecs)) {
+    OnEncodedH264VideoForTesting(base::TimeTicks::Now());
+  } else {
+    OnEncodedVideoForTesting(params, "vp9 frame", "alpha",
+                             base::TimeTicks::Now(), true);
+  }
 
   Mock::VerifyAndClearExpectations(recorder);
 
@@ -1104,6 +1159,34 @@ TEST_F(MediaRecorderHandlerAudioVideoTest, EmitsCachedVideoDataOnStop) {
   media_recorder_handler_ = nullptr;
   Mock::VerifyAndClearExpectations(recorder);
 }
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+TEST_F(MediaRecorderHandlerAudioVideoTest, CorrectH264LevelOnWrite) {
+  AddTracks();
+  V8TestingScope scope;
+  auto* recorder = MakeGarbageCollected<MockMediaRecorder>(scope);
+  media_recorder_handler_->Initialize(
+      recorder, registry_.test_stream(), "video/webm", "avc1.640022,opus",
+      AudioTrackRecorder::BitrateMode::kVariable);
+
+  EXPECT_EQ(media_recorder_handler_->ActualMimeType(),
+            "video/x-matroska;codecs=avc1.640022,opus");
+  media_recorder_handler_->Start(std::numeric_limits<int>::max(), "video/webm",
+                                 0, 0);
+
+  // Feed some encoded data into the recorder. Expect that data cached by the
+  // muxer is emitted on the call to Stop.
+  FeedAudio();
+  OnEncodedH264VideoForTesting(base::TimeTicks::Now());
+  EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
+  media_recorder_handler_->Stop();
+
+  EXPECT_EQ(media_recorder_handler_->ActualMimeType(),
+            "video/x-matroska;codecs=avc1.64000d,opus");
+  media_recorder_handler_ = nullptr;
+  Mock::VerifyAndClearExpectations(recorder);
+}
+#endif
 
 TEST_F(MediaRecorderHandlerAudioVideoTest,
        EmitsCachedAudioDataAfterVideoTrackEnded) {
