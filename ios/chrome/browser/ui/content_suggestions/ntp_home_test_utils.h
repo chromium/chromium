@@ -13,6 +13,10 @@
 @class SetUpListItemView;
 
 namespace ntp_home {
+// Returns the parent view containing all NTP content. Returns nil if it is not
+// in the view hierarchy.
+UIView* NTPView();
+
 // Returns the primary collection view of the new tab page. Returns nil if it is
 // not in the view hierarchy.
 UICollectionView* CollectionView();

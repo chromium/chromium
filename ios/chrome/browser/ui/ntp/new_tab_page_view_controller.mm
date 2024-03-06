@@ -193,6 +193,8 @@ const CGFloat kModuleMinMargin = 16;
   DCHECK(self.feedWrapperViewController);
   DCHECK(self.contentSuggestionsViewController);
 
+  self.view.accessibilityIdentifier = kNTPViewIdentifier;
+
   // TODO(crbug.com/1262536): Remove this when bug is fixed.
   [self.feedWrapperViewController loadViewIfNeeded];
   [self.contentSuggestionsViewController loadViewIfNeeded];

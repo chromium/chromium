@@ -17,6 +17,9 @@
                               traitCollection:
                                   (UITraitCollection*)traitCollection;
 
+// Returns the NTP parent view.
++ (UIView*)NTPView;
+
 // Returns the NTP collection view.
 + (UICollectionView*)collectionView;
 

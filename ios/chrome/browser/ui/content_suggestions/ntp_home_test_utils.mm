@@ -49,6 +49,11 @@ SetUpListView* GetSetUpListView() {
 
 namespace ntp_home {
 
+UIView* NTPView() {
+  return base::apple::ObjCCast<UIView>(SubviewWithAccessibilityIdentifier(
+      kNTPViewIdentifier, GetAnyKeyWindow()));
+}
+
 UICollectionView* CollectionView() {
   return base::apple::ObjCCast<UICollectionView>(
       SubviewWithAccessibilityIdentifier(kNTPCollectionViewIdentifier,

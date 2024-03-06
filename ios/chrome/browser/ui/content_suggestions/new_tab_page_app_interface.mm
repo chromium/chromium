@@ -35,6 +35,10 @@ using set_up_list_prefs::SetUpListItemState;
                                                traitCollection);
 }
 
++ (UIView*)NTPView {
+  return ntp_home::NTPView();
+}
+
 + (UICollectionView*)collectionView {
   return ntp_home::CollectionView();
 }

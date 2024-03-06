@@ -7,6 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+// Represents the NTP parent view.
+extern NSString* const kNTPViewIdentifier;
+
 // Represents the NTP collection view.
 extern NSString* const kNTPCollectionViewIdentifier;
 

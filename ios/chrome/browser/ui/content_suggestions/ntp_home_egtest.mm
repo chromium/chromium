@@ -470,14 +470,13 @@ id<GREYMatcher> mostlyNotVisible() {
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   [ChromeEarlGreyUI waitForAppToIdle];
-  CGFloat collectionWidth =
-      [NewTabPageAppInterface collectionView].bounds.size.width;
-  GREYAssertTrue(collectionWidth > 0, @"The collection width is nil.");
+  CGFloat NTPWidth = [NewTabPageAppInterface NTPView].bounds.size.width;
+  GREYAssertTrue(NTPWidth > 0, @"The NTP width is nil.");
 
   // The fake omnibox might be slightly bigger than the screen in order to cover
   // it for all screen scale.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:OmniboxWidthBetween(collectionWidth + 1, 2)];
+      assertWithMatcher:OmniboxWidthBetween(NTPWidth + 1, 2)];
 
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
                                 error:nil];

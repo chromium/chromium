@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 
+NSString* const kNTPViewIdentifier = @"NTPViewIdentifier";
+
 NSString* const kNTPCollectionViewIdentifier = @"NTPCollectionViewIdentifier";
 
 NSString* const kNTPIncognitoViewIdentifier = @"kNTPIncognitoViewIdentifier";
