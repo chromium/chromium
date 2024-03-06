@@ -56,9 +56,10 @@ header button {
 
 div[slot='tab']::before {
   color: transparent;
-  content: '⬤ ';
+  content: '⬤ ' / '';
 }
 
 div[slot='tab'].unread::before {
   color: rgb(26,115,232);
+  content: '⬤ ' / '(Unread) ';
 }
