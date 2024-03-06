@@ -4,7 +4,6 @@
 
 #include "content/browser/background_fetch/background_fetch_scheduler.h"
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"

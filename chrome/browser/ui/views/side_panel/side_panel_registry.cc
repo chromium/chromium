@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"

@@ -15,7 +15,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util_win.h"

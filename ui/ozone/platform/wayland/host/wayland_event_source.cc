@@ -11,7 +11,6 @@
 #include <tuple>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"

@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"

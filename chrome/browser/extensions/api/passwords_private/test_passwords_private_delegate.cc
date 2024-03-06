@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"

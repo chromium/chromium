@@ -14,7 +14,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"

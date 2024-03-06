@@ -21,7 +21,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"

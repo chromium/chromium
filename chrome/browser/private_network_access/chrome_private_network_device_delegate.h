@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PRIVATE_NETWORK_ACCESS_CHROME_PRIVATE_NETWORK_DEVICE_DELEGATE_H_
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"

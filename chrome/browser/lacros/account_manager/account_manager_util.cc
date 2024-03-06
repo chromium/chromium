@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"

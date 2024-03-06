@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/tabs/organization/tab_sensitivity_cache.h"
 
-#include "base/containers/cxx20_erase.h"
 #include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"

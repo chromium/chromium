@@ -7,7 +7,6 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/env.h"

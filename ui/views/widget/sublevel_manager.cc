@@ -4,7 +4,6 @@
 
 #include "ui/views/widget/sublevel_manager.h"
 
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "ui/views/widget/native_widget_private.h"

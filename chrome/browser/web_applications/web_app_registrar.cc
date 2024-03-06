@@ -12,7 +12,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"

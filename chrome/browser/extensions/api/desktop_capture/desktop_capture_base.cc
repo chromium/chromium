@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"

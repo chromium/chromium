@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"

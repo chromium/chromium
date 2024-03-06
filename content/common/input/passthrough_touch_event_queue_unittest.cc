@@ -11,7 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"

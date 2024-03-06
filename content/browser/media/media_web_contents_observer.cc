@@ -7,7 +7,6 @@
 #include <memory>
 #include <tuple>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"

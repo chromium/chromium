@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/layers/picture_layer_impl.h"
 

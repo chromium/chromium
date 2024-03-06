@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check_is_test.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/i18n/case_conversion.h"
 #include "base/json/json_reader.h"

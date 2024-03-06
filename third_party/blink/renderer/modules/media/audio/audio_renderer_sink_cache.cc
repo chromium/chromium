@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"

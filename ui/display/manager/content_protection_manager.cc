@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "ui/display/manager/apply_content_protection_task.h"

@@ -5,7 +5,6 @@
 #include "services/network/public/cpp/content_security_policy/csp_source_list.h"
 
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
