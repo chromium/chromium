@@ -169,13 +169,6 @@ void DesktopWindowTreeHostLacros::OnFullscreenTypeChanged(
 void DesktopWindowTreeHostLacros::OnOverviewModeChanged(bool in_overview) {
   GetContentWindow()->SetProperty(chromeos::kIsShowingInOverviewKey,
                                   in_overview);
-
-  // Window corner radius depends on whether the window is in overview mode or
-  // not. Once the overview property has been updated, the browser window
-  // corners need to be updated.
-  // See `chromeos::GetFrameCornerRadius()` for more details.
-  // TODO(b/301501363): Rename to UpdateWindowHints.
-  UpdateWindowHints();
 }
 
 void DesktopWindowTreeHostLacros::OnTooltipShownOnServer(
