@@ -29,10 +29,12 @@ template("compute_fuchsia_package_sizes") {
     }
 
     # Declares the files that are needed for test execution on the
-    # swarming test client.
+    # swarming test client. Note, fuchsia-arm64 is also running binary-sizes,
+    # so the arm64 tools are included.
     data += [
       "//build/fuchsia/",
       "//tools/fuchsia/size_tests/",
+      "//third_party/fuchsia-sdk/sdk/tools/arm64/",
       "//third_party/fuchsia-sdk/sdk/tools/x64/",
     ]
 
