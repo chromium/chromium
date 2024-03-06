@@ -437,8 +437,14 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SigninBrowser) {
 }
 #endif
 
+// TODO(crbug/327688158): Flaky on chromium/ci/win-asan. Disable for Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowNameOnSignin_ThenSync DISABLED_ShowNameOnSignin_ThenSync
+#else
+#define MAYBE_ShowNameOnSignin_ThenSync ShowNameOnSignin_ThenSync
+#endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       ShowNameOnSignin_ThenSync) {
+                       MAYBE_ShowNameOnSignin_ThenSync) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar_button->GetText().empty());
@@ -463,7 +469,13 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 }
 
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, ShowNameOnSync) {
+// TODO(crbug/327688158): Flaky on chromium/ci/win-asan. Disable for Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowNameOnSync DISABLED_ShowNameOnSync
+#else
+#define MAYBE_ShowNameOnSync ShowNameOnSync
+#endif
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, MAYBE_ShowNameOnSync) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar_button->GetText().empty());
