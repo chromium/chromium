@@ -70,28 +70,19 @@ ScopedDrmColorLutPtr CreateLutBlob(const display::GammaCurve& source,
   return lut;
 }
 
-ScopedDrmColorCtmPtr CreateCTMBlob(const std::vector<float>& color_matrix) {
-  skcms_Matrix3x3 m = {{
-      {1.0f, 0.0f, 0.0f},
-      {0.0f, 1.0f, 0.0f},
-      {0.0f, 0.0f, 1.0f},
-  }};
-  if (color_matrix.size() == 9) {
-    for (size_t i = 0; i < 9; ++i) {
-      m.vals[i / 3][i % 3] = color_matrix[i];
-    }
-  }
-  return CreateCTMBlob(m);
-}
-
-ScopedDrmColorCtmPtr CreateCTMBlob(const skcms_Matrix3x3& color_matrix) {
+ScopedDrmColorCtmPtr CreateCTMBlob(const skcms_Matrix3x3& color_matrix,
+                                   bool negative_values_broken) {
   ScopedDrmColorCtmPtr ctm(
       static_cast<drm_color_ctm*>(malloc(sizeof(drm_color_ctm))));
   for (size_t i = 0; i < 9; ++i) {
     float value = color_matrix.vals[i / 3][i % 3];
     if (value < 0) {
-      ctm->matrix[i] = static_cast<uint64_t>(-value * (1ull << 32));
-      ctm->matrix[i] |= static_cast<uint64_t>(1) << 63;
+      if (negative_values_broken) {
+        ctm->matrix[i] = 0;
+      } else {
+        ctm->matrix[i] = static_cast<uint64_t>(-value * (1ull << 32));
+        ctm->matrix[i] |= static_cast<uint64_t>(1) << 63;
+      }
     } else {
       ctm->matrix[i] = static_cast<uint64_t>(value * (1ull << 32));
     }

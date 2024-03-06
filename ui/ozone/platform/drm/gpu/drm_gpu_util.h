@@ -31,10 +31,10 @@ ScopedDrmColorLutPtr CreateLutBlob(const display::GammaCurve& source,
                                    size_t size);
 
 // Converts |color_matrix| to a drm_color_ctm in U31.32 format where the most
-// significant bit is the sign.
-// |color_matrix| represents a 3x3 matrix in vector form.
-ScopedDrmColorCtmPtr CreateCTMBlob(const std::vector<float>& color_matrix);
-ScopedDrmColorCtmPtr CreateCTMBlob(const skcms_Matrix3x3& color_matrix);
+// significant bit is the sign. If `negative_values_broken` is true, then
+// clamp all negative values to 0.
+ScopedDrmColorCtmPtr CreateCTMBlob(const skcms_Matrix3x3& color_matrix,
+                                   bool negative_values_broken);
 
 // Creates a FB Damage Clip Blob
 ScopedDrmModeRectPtr CreateDCBlob(const gfx::Rect& rect);

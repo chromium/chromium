@@ -312,6 +312,8 @@ class HardwareDisplayPlaneManager {
 
   bool has_universal_planes_ = false;
 
+  bool ctm_negative_values_broken_ = false;
+
   std::vector<std::unique_ptr<HardwareDisplayPlane>> planes_;
   std::vector<CrtcState> crtc_state_;
   std::vector<ConnectorProperties> connectors_props_;

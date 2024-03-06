@@ -109,6 +109,11 @@ bool HardwareDisplayPlaneManager::Initialize() {
   has_universal_planes_ =
       drm_->GetCapability(DRM_CLIENT_CAP_UNIVERSAL_PLANES, &value) && value;
 
+  // Mediatek drivers produce broken results when given negative values. It
+  // is suspected that this is due to incorrect parsing of the CTM blob.
+  // TODO(b/324594144): Address clamping in the driver/kernel
+  ctm_negative_values_broken_ = drm_->GetDriverName() == "mediatek";
+
   // This is to test whether or not it is safe to remove non-universal planes
   // supporting code in a following CL. See crbug.com/1129546 for more details.
   CHECK(has_universal_planes_);
@@ -609,7 +614,8 @@ void HardwareDisplayPlaneManager::UpdateAndCommitCrtcState(
       &plane_to_device_matrix,
       &crtc_state->color_temperature_adjustment.srgb_matrix);
   if (crtc_state->properties.ctm.id) {
-    ScopedDrmColorCtmPtr ctm_blob_data = CreateCTMBlob(ctm);
+    ScopedDrmColorCtmPtr ctm_blob_data =
+        CreateCTMBlob(ctm, ctm_negative_values_broken_);
     crtc_state->pending_ctm_blob =
         drm_->CreatePropertyBlob(ctm_blob_data.get(), sizeof(drm_color_ctm));
   }
