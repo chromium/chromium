@@ -677,4 +677,9 @@ void EnsureStaleArcVmAndArcVmUpstartJobsStopped(
                                       user_id_hash, std::move(callback)));
 }
 
+bool ShouldAlwaysMountAndroidVolumesInFilesForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kArcForceMountAndroidVolumesInFiles);
+}
+
 }  // namespace arc

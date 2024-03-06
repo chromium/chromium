@@ -1380,7 +1380,7 @@ TEST_F(VolumeManagerArcTest, OnArcPlayStoreEnabledChanged_Enabled) {
 
   ASSERT_EQ(5U, observer.events().size());
 
-  unsigned index = 0;
+  size_t index = 0;
   for (const auto& event : observer.events()) {
     EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type);
     EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
@@ -1408,7 +1408,7 @@ TEST_F(VolumeManagerArcTest, OnArcPlayStoreEnabledChanged_Disabled) {
 
   ASSERT_EQ(5U, observer.events().size());
 
-  unsigned index = 0;
+  size_t index = 0;
   for (const auto& event : observer.events()) {
     EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED, event.type);
     EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
@@ -1420,6 +1420,41 @@ TEST_F(VolumeManagerArcTest, OnArcPlayStoreEnabledChanged_Disabled) {
     }
     index++;
   }
+
+  volume_manager()->RemoveObserver(&observer);
+}
+
+TEST_F(VolumeManagerArcTest, ShouldAlwaysMountAndroidVolumesInFilesForTesting) {
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kArcForceMountAndroidVolumesInFiles);
+
+  LoggingObserver observer;
+  volume_manager()->AddObserver(&observer);
+
+  // Volumes are mounted even when Play Store is not enabled for the profile.
+  volume_manager()->OnArcPlayStoreEnabledChanged(false);
+
+  ASSERT_EQ(5U, observer.events().size());
+
+  size_t index = 0;
+  for (const auto& event : observer.events()) {
+    EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type);
+    EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
+    if (index < 4) {
+      EXPECT_EQ(arc::GetMediaViewVolumeId(arc_volume_ids[index]),
+                event.volume_id);
+    } else {
+      EXPECT_EQ(arc_volume_ids[index], event.volume_id);
+    }
+    index++;
+  }
+
+  // No volume-related event happens after Play Store preference changes,
+  // because volumes are just kept being mounted.
+  volume_manager()->OnArcPlayStoreEnabledChanged(true);
+  volume_manager()->OnArcPlayStoreEnabledChanged(false);
+  ASSERT_EQ(5U, observer.events().size());
 
   volume_manager()->RemoveObserver(&observer);
 }

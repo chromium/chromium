@@ -317,6 +317,10 @@ void EnsureStaleArcVmAndArcVmUpstartJobsStopped(
     const std::string& user_id_hash,
     EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback callback);
 
+// Returns if Android volumes (DocumentsProviders and Play files) should be
+// mounted in the Files app regardless of whether Play Store is enabled or not.
+bool ShouldAlwaysMountAndroidVolumesInFilesForTesting();
+
 }  // namespace arc
 
 #endif  // ASH_COMPONENTS_ARC_ARC_UTIL_H_

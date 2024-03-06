@@ -1034,19 +1034,21 @@ void VolumeManager::OnExternalStorageDisabledChangedUnmountCallback(
 void VolumeManager::OnArcPlayStoreEnabledChanged(bool enabled) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(IsArcEnabled(profile_));
+  const bool mounting =
+      arc::ShouldAlwaysMountAndroidVolumesInFilesForTesting() || enabled;
 
-  if (enabled == arc_volumes_mounted_) {
+  if (mounting == arc_volumes_mounted_) {
     return;
   }
 
-  if (enabled) {
+  if (mounting) {
     MountArcRoots();
   } else {
     UnmountArcRoots();
   }
 
-  documents_provider_root_manager_->SetEnabled(enabled);
-  arc_volumes_mounted_ = enabled;
+  documents_provider_root_manager_->SetEnabled(mounting);
+  arc_volumes_mounted_ = mounting;
 }
 
 void VolumeManager::OnExternalStorageDisabledChanged() {

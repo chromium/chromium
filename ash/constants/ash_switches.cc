@@ -130,6 +130,11 @@ const char kArcUseDevCaches[] = "arc-use-dev-caches";
 // Flag that indicates ARC images are formatted with EROFS (go/arcvm-erofs).
 const char kArcErofs[] = "arc-erofs";
 
+// Flag that forces Android volumes (DocumentsProviders and Play files) to be
+// mounted in the Files app. Used for testing.
+const char kArcForceMountAndroidVolumesInFiles[] =
+    "arc-force-mount-android-volumes-in-files";
+
 // If set, forces post boot dexopt to run immediately without device idle
 // requirement.
 const char kArcForcePostBootDexOpt[] = "arc-force-post-boot-dex-opt";
