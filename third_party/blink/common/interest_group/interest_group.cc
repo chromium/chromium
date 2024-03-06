@@ -67,7 +67,10 @@ size_t EstimateFlatMapSize(
 InterestGroup::Ad::Ad() = default;
 
 InterestGroup::Ad::Ad(base::PassKey<content::InterestGroupStorage>,
-                      std::string render_url)
+                      std::string&& render_url)
+    : render_url_(std::move(render_url)) {}
+InterestGroup::Ad::Ad(base::PassKey<content::InterestGroupStorage>,
+                      const std::string& render_url)
     : render_url_(render_url) {}
 InterestGroup::Ad::Ad(
     GURL render_gurl,

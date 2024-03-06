@@ -321,26 +321,27 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
   if (not success || ad_protos.ads().empty()) {
     return std::nullopt;
   }
+
   std::vector<blink::InterestGroup::Ad> out;
   out.reserve(ad_protos.ads_size());
-  for (const auto& ad_proto : ad_protos.ads()) {
+  for (auto& ad_proto : *ad_protos.mutable_ads()) {
     blink::InterestGroup::Ad& ad =
-        out.emplace_back(passkey, ad_proto.render_url());
+        out.emplace_back(passkey, std::move(*ad_proto.mutable_render_url()));
     if (ad_proto.has_size_group()) {
-      ad.size_group = ad_proto.size_group();
+      ad.size_group = std::move(*ad_proto.mutable_size_group());
     }
     if (ad_proto.has_metadata()) {
-      ad.metadata = ad_proto.metadata();
+      ad.metadata = std::move(*ad_proto.mutable_metadata());
     }
     if (ad_proto.has_buyer_reporting_id()) {
-      ad.buyer_reporting_id = ad_proto.buyer_reporting_id();
+      ad.buyer_reporting_id = std::move(*ad_proto.mutable_buyer_reporting_id());
     }
     if (ad_proto.has_buyer_and_seller_reporting_id()) {
       ad.buyer_and_seller_reporting_id =
-          ad_proto.buyer_and_seller_reporting_id();
+          std::move(*ad_proto.mutable_buyer_and_seller_reporting_id());
     }
     if (ad_proto.has_ad_render_id()) {
-      ad.ad_render_id = ad_proto.ad_render_id();
+      ad.ad_render_id = std::move(*ad_proto.mutable_ad_render_id());
     }
     if (!ad_proto.allowed_reporting_origins().empty()) {
       std::vector<url::Origin> allowed_reporting_origins_vector;
