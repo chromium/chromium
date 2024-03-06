@@ -312,6 +312,34 @@ class SyncScreenTester extends ScreenElementApi {
   }
 }
 
+class PasswordSelectionScreenTester extends ScreenElementApi {
+  private localPasswordCrButton: PolymerElementApi;
+  private gaiaPasswordCrButton: PolymerElementApi;
+
+  constructor() {
+    super('password-selection');
+    this.localPasswordCrButton =
+        new PolymerElementApi(this, '#localPasswordButton');
+    this.gaiaPasswordCrButton =
+        new PolymerElementApi(this, '#gaiaPasswordButton');
+    this.nextButton = new PolymerElementApi(this, '#nextButton');
+  }
+
+  /**
+   * Presses Create Chromebook password button to select it.
+   */
+  selectLocalPassword(): void {
+    this.localPasswordCrButton.click();
+  }
+
+  /**
+   * Presses Use Google Account password button to select it.
+   */
+  selectGaiaPassword(): void {
+    this.gaiaPasswordCrButton.click();
+  }
+}
+
 class FingerprintScreenTester extends ScreenElementApi {
   constructor() {
     super('fingerprint-setup');
@@ -1363,6 +1391,7 @@ export class OobeApiProvider {
       UserCreationScreen: new UserCreationScreenTester(),
       GaiaScreen: new GaiaScreenTester(),
       SyncScreen: new SyncScreenTester(),
+      PasswordSelectionScreen: new PasswordSelectionScreenTester(),
       FingerprintScreen: new FingerprintScreenTester(),
       AssistantScreen: new AssistantScreenTester(),
       MarketingOptInScreen: new MarketingOptInScreenTester(),
