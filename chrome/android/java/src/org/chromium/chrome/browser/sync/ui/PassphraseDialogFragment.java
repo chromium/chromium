@@ -35,28 +35,28 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.ProfileDependentSetting;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 /** Dialog to ask to user to enter their sync passphrase. */
-public class PassphraseDialogFragment extends DialogFragment
-        implements OnClickListener, ProfileDependentSetting {
+public class PassphraseDialogFragment extends DialogFragment implements OnClickListener {
     private static final String TAG = "Sync_UI";
 
-    /** A listener for passphrase events. */
-    public interface Listener {
+    /** A delegate for passphrase events/dependencies. */
+    public interface Delegate {
         /**
          * @return whether passphrase was valid.
          */
         boolean onPassphraseEntered(String passphrase);
 
         void onPassphraseCanceled();
-    }
 
-    private Profile mProfile;
+        /** Return the Profile associated with the passphrase. */
+        Profile getProfile();
+    }
 
     private EditText mPassphraseEditText;
     private TextView mVerifyingTextView;
@@ -73,14 +73,17 @@ public class PassphraseDialogFragment extends DialogFragment
         return dialog;
     }
 
-    @Override
-    public void setProfile(Profile profile) {
-        mProfile = profile;
+    private Profile getProfile() {
+        Profile profile = getDelegate().getProfile();
+        assert profile != null : "Attempting to use PassphraseDialogFragment with a null profile";
+        // TODO(crbug/327687076): Remove the following profile fallback assuming no asserts are
+        //                        triggered for the above profile assert.
+        return profile == null ? ProfileManager.getLastUsedRegularProfile() : profile;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        assert SyncServiceFactory.getForProfile(mProfile) != null;
+        assert SyncServiceFactory.getForProfile(getProfile()) != null;
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.sync_enter_passphrase, null);
@@ -169,7 +172,7 @@ public class PassphraseDialogFragment extends DialogFragment
     }
 
     private SpannableString getPromptText() {
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         String accountName =
                 getString(R.string.sync_account_info, syncService.getAccountInfo().getEmail())
                         + "\n\n";
@@ -200,7 +203,7 @@ public class PassphraseDialogFragment extends DialogFragment
     }
 
     private void handleCancel() {
-        getListener().onPassphraseCanceled();
+        getDelegate().onPassphraseCanceled();
     }
 
     private void handleSubmit() {
@@ -208,18 +211,18 @@ public class PassphraseDialogFragment extends DialogFragment
         mVerifyingTextView.setText(R.string.sync_verifying);
 
         String passphrase = mPassphraseEditText.getText().toString();
-        boolean success = getListener().onPassphraseEntered(passphrase);
+        boolean success = getDelegate().onPassphraseEntered(passphrase);
         if (!success) {
             invalidPassphrase();
         }
     }
 
-    private Listener getListener() {
+    private Delegate getDelegate() {
         Fragment target = getTargetFragment();
-        if (target instanceof Listener) {
-            return (Listener) target;
+        if (target instanceof Delegate) {
+            return (Delegate) target;
         }
-        return (Listener) getActivity();
+        return (Delegate) getActivity();
     }
 
     /** Notify this fragment that the passphrase the user entered is incorrect. */

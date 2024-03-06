@@ -27,11 +27,11 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 
 /**
- * This activity is used for requesting a sync passphrase from the user. Typically,
- * this will be the target of an Android notification.
+ * This activity is used for requesting a sync passphrase from the user. Typically, this will be the
+ * target of an Android notification.
  */
 public class PassphraseActivity extends AppCompatActivity
-        implements PassphraseDialogFragment.Listener, FragmentManager.OnBackStackChangedListener {
+        implements PassphraseDialogFragment.Delegate, FragmentManager.OnBackStackChangedListener {
     public static final String FRAGMENT_PASSPHRASE = "passphrase_fragment";
     public static final String FRAGMENT_SPINNER = "spinner_fragment";
 
@@ -127,7 +127,7 @@ public class PassphraseActivity extends AppCompatActivity
         dialog.show(ft, FRAGMENT_SPINNER);
     }
 
-    /** Callback for PassphraseDialogFragment.Listener */
+    /** Callback for {@link PassphraseDialogFragment.Delegate} */
     @Override
     public boolean onPassphraseEntered(String passphrase) {
         if (!passphrase.isEmpty() && mSyncService.setDecryptionPassphrase(passphrase)) {
@@ -143,6 +143,11 @@ public class PassphraseActivity extends AppCompatActivity
         // Re add the notification.
         SyncErrorNotifier.getForProfile(mProfile).syncStateChanged();
         finish();
+    }
+
+    @Override
+    public Profile getProfile() {
+        return mProfile;
     }
 
     @Override
