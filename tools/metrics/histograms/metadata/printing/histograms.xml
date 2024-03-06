@@ -511,7 +511,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Printing.PrintDuration.Success" units="seconds"
+<histogram name="Printing.PrintDuration.LocalPrinter.Success" units="ms"
     expires_after="2024-08-14">
   <owner>awscreen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>

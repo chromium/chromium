@@ -572,7 +572,7 @@ void PrintJob::OnDocDone(int job_id, PrintedDocument* document) {
 
   if (printing_start_time_.has_value()) {
     base::UmaHistogramMediumTimes(
-        "Printing.PrintDuration.Success",
+        "Printing.PrintDuration.LocalPrinter.Success",
         base::TimeTicks::Now() - printing_start_time_.value());
     printing_start_time_.reset();
   }
