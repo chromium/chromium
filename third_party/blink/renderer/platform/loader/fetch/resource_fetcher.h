@@ -352,7 +352,7 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void SetEarlyHintsPreloadedResources(
       HashMap<KURL, EarlyHintsPreloadEntry> resources) {
-    early_hints_preloaded_resources_ = std::move(resources);
+    unused_early_hints_preloaded_resources_ = std::move(resources);
   }
 
   // Access the UKMRecorder.
@@ -443,6 +443,11 @@ class PLATFORM_EXPORT ResourceFetcher
   void StopFetchingIncludingKeepaliveLoaders();
 
   void MaybeSaveResourceToStrongReference(Resource* resource);
+
+  void MarkEarlyHintConsumedAndOverrideInitiatorTypeIfNeeded(
+      const KURL& resource_inital_url,
+      Resource* resource,
+      AtomicString* origin_initiator_type);
 
   enum class RevalidationPolicy {
     kUse,
@@ -606,7 +611,7 @@ class PLATFORM_EXPORT ResourceFetcher
   HeapHashSet<Member<ResourceLoader>> loaders_;
   HeapHashSet<Member<ResourceLoader>> non_blocking_loaders_;
 
-  HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources_;
+  HashMap<KURL, EarlyHintsPreloadEntry> unused_early_hints_preloaded_resources_;
 
   std::unique_ptr<HashSet<String>> preloaded_urls_for_test_;
 

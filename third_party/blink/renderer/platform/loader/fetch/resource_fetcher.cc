@@ -786,12 +786,12 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
     final_response.SetEncodedDataLength(0);
     // Resources loaded from memory cache should be reported the first time
     // they're used.
-    mojom::blink::ResourceTimingInfoPtr info = CreateResourceTimingInfo(
-        now,
+    KURL initial_url =
         resource->GetResourceRequest().GetRedirectInfo().has_value()
             ? resource->GetResourceRequest().GetRedirectInfo()->original_url
-            : resource->GetResourceRequest().Url(),
-        &final_response);
+            : resource->GetResourceRequest().Url();
+    mojom::blink::ResourceTimingInfoPtr info =
+        CreateResourceTimingInfo(now, initial_url, &final_response);
     info->response_end = now;
     info->render_blocking_status =
         render_blocking_behavior == RenderBlockingBehavior::kBlocking;
@@ -808,8 +808,12 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
       }
     }
 
-    scheduled_resource_timing_reports_.push_back(ScheduledResourceTimingInfo{
-        std::move(info), resource->Options().initiator_info.name});
+    AtomicString initiator_type = resource->Options().initiator_info.name;
+    MarkEarlyHintConsumedAndOverrideInitiatorTypeIfNeeded(initial_url, resource,
+                                                          &initiator_type);
+    scheduled_resource_timing_reports_.push_back(
+        ScheduledResourceTimingInfo{std::move(info), initiator_type});
+
     if (!resource_timing_report_timer_.IsActive())
       resource_timing_report_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
   }
@@ -2031,8 +2035,9 @@ void ResourceFetcher::ScheduleWarnUnusedPreloads() {
   // If preloads_ is not empty here, it's full of link
   // preloads, as speculative preloads should have already been cleared when
   // parsing finished.
-  if (preloads_.empty() && early_hints_preloaded_resources_.empty())
+  if (preloads_.empty() && unused_early_hints_preloaded_resources_.empty()) {
     return;
+  }
   unused_preloads_timer_ = PostDelayedCancellableTask(
       *freezable_task_runner_, FROM_HERE,
       WTF::BindOnce(&ResourceFetcher::WarnUnusedPreloads,
@@ -2078,7 +2083,7 @@ void ResourceFetcher::WarnUnusedPreloads() {
   base::UmaHistogramCounts100("Renderer.Preload.UnusedResourceCount",
                               unused_resource_count);
 
-  for (auto& pair : early_hints_preloaded_resources_) {
+  for (auto& pair : unused_early_hints_preloaded_resources_) {
     if (pair.value.state == EarlyHintsPreloadEntry::State::kWarnedUnused)
       continue;
 
@@ -2690,18 +2695,8 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
           ? resource->GetResourceRequest().GetRedirectInfo()->original_url
           : resource->GetResourceRequest().Url();
 
-  auto pair = early_hints_preloaded_resources_.find(initial_url);
-  if (pair != early_hints_preloaded_resources_.end()) {
-    early_hints_preloaded_resources_.erase(pair);
-    const ResourceResponse& response = resource->GetResponse();
-    if (!response.NetworkAccessed() &&
-        (!response.WasFetchedViaServiceWorker() ||
-         response.IsServiceWorkerPassThrough())) {
-      initiator_type = AtomicString("early-hints");
-      resource->SetIsPreloadedByEarlyHints();
-    }
-  }
-
+  MarkEarlyHintConsumedAndOverrideInitiatorTypeIfNeeded(initial_url, resource,
+                                                        &initiator_type);
   mojom::blink::ResourceTimingInfoPtr info = CreateResourceTimingInfo(
       pending_info.start_time, initial_url, &resource->GetResponse());
   if (info->allow_timing_details) {
@@ -2799,6 +2794,26 @@ void ResourceFetcher::RecordLCPPSubresourceMetrics() {
 
   base::UmaHistogramCounts100("Blink.LCPP.PotentiallyLCPResourcePriorityBoosts",
                               potentially_lcp_resource_priority_boosts_);
+}
+
+void ResourceFetcher::MarkEarlyHintConsumedAndOverrideInitiatorTypeIfNeeded(
+    const KURL& resource_initial_url,
+    Resource* resource,
+    AtomicString* origin_initiator_type) {
+  auto iter =
+      unused_early_hints_preloaded_resources_.find(resource_initial_url);
+  if (iter != unused_early_hints_preloaded_resources_.end()) {
+    unused_early_hints_preloaded_resources_.erase(iter);
+    const ResourceResponse& response = resource->GetResponse();
+    // The network service may not reuse the response fetched by the early hints
+    // due to cache control policies.
+    if (!response.NetworkAccessed() &&
+        (!response.WasFetchedViaServiceWorker() ||
+         response.IsServiceWorkerPassThrough())) {
+      *origin_initiator_type = AtomicString("early-hints");
+      resource->SetIsPreloadedByEarlyHints();
+    }
+  }
 }
 
 void ResourceFetcher::Trace(Visitor* visitor) const {
