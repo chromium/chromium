@@ -20,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace tab_groups {
 namespace {
 
 class SingleClientSavedTabGroupsSyncTest : public SyncTest {
@@ -112,17 +113,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
       SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
 
   // Verify they are added to the model.
-  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, group1.saved_guid())
-                  .Wait());
+  EXPECT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, group1.saved_guid())
+          .Wait());
 
-  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, tab1.saved_tab_guid())
-                  .Wait());
+  EXPECT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, tab1.saved_tab_guid())
+          .Wait());
 
-  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, tab2.saved_tab_guid())
-                  .Wait());
+  EXPECT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, tab2.saved_tab_guid())
+          .Wait());
 }
 
 // Save a group with no tabs and validate it is added to the model.
@@ -144,9 +145,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
       SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
 
   // Verify the group is added to the model but not the tab.
-  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, group1.saved_guid())
-                  .Wait());
+  EXPECT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, group1.saved_guid())
+          .Wait());
 
   EXPECT_TRUE(service->model()->Contains(group1.saved_guid()));
   EXPECT_TRUE(service->model()->Get(group1.saved_guid())->saved_tabs().empty());
@@ -176,13 +177,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
   // Verify adding the corresponding group adds the orphaned tab to the model.
   AddDataToFakeServer(*group1.ToSpecifics());
 
-  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, group1.saved_guid())
-                  .Wait());
+  EXPECT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, group1.saved_guid())
+          .Wait());
 
-  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, tab1.saved_tab_guid())
-                  .Wait());
+  EXPECT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, tab1.saved_tab_guid())
+          .Wait());
 }
 
 // Add a tab to an existing group.
@@ -207,15 +208,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, AddToExistingGroup) {
       SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
 
   // Verify they are added to the model.
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, group1.saved_guid())
-                  .Wait());
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, tab1.saved_tab_guid())
-                  .Wait());
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, tab2.saved_tab_guid())
-                  .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, group1.saved_guid())
+          .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, tab1.saved_tab_guid())
+          .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, tab2.saved_tab_guid())
+          .Wait());
 
   // Add another tab to `group1`.
   SavedTabGroupTab tab3(GURL("about:blank"), u"about:blank",
@@ -223,9 +224,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, AddToExistingGroup) {
   AddDataToFakeServer(*tab3.ToSpecifics());
 
   // Verify the group is updated with the additional tab.
-  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, tab3.saved_tab_guid())
-                  .Wait());
+  EXPECT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, tab3.saved_tab_guid())
+          .Wait());
 }
 
 // Remove one tab from a group with two tabs.
@@ -250,23 +251,23 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, RemoveTabFromGroup) {
       SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
 
   // Verify they are added to the model.
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, group1.saved_guid())
-                  .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, group1.saved_guid())
+          .Wait());
 
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, tab1.saved_tab_guid())
-                  .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, tab1.saved_tab_guid())
+          .Wait());
 
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, tab2.saved_tab_guid())
-                  .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, tab2.saved_tab_guid())
+          .Wait());
 
   // Remove tab2.
   RemoveDataFromFakeServer(tab2.saved_tab_guid());
 
   // Verify it was removed from the model.
-  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupDoesNotExistChecker(
+  EXPECT_TRUE(tab_groups::SavedTabOrGroupDoesNotExistChecker(
                   service, tab2.saved_tab_guid())
                   .Wait());
 }
@@ -293,28 +294,28 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, RemoveGroup) {
       SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
 
   // Verify they are added to the model.
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, group1.saved_guid())
-                  .Wait());
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, tab1.saved_tab_guid())
-                  .Wait());
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, tab2.saved_tab_guid())
-                  .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, group1.saved_guid())
+          .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, tab1.saved_tab_guid())
+          .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, tab2.saved_tab_guid())
+          .Wait());
 
   // Simulate that the group was deleted on another device, which
   // corresponds to deleting the group, but not the tab entities.
   RemoveDataFromFakeServer(group1.saved_guid());
 
   // Verify the group and its tabs were removed from the model.
-  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupDoesNotExistChecker(
+  EXPECT_TRUE(tab_groups::SavedTabOrGroupDoesNotExistChecker(
                   service, group1.saved_guid())
                   .Wait());
-  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupDoesNotExistChecker(
+  EXPECT_TRUE(tab_groups::SavedTabOrGroupDoesNotExistChecker(
                   service, tab1.saved_tab_guid())
                   .Wait());
-  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupDoesNotExistChecker(
+  EXPECT_TRUE(tab_groups::SavedTabOrGroupDoesNotExistChecker(
                   service, tab2.saved_tab_guid())
                   .Wait());
 
@@ -342,9 +343,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
       SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
 
   // Verify they are added to the model.
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, group1.saved_guid())
-                  .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, group1.saved_guid())
+          .Wait());
 
   // Update metadata for group1in the server.
   group1.SetTitle(u"Updated Title");
@@ -352,9 +353,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
   AddDataToFakeServer(*group1.ToSpecifics());
 
   // Verify the group's metadata is updated locally.
-  EXPECT_TRUE(
-      saved_tab_groups_helper::SavedTabGroupMatchesChecker(service, group1)
-          .Wait());
+  EXPECT_TRUE(tab_groups::SavedTabGroupMatchesChecker(service, group1).Wait());
 }
 
 // Update the URL and title of a saved tab already in the model.
@@ -377,12 +376,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, UpdatedTabData) {
       SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
 
   // Verify they are added to the model.
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, group1.saved_guid())
-                  .Wait());
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, tab1.saved_tab_guid())
-                  .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, group1.saved_guid())
+          .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, tab1.saved_tab_guid())
+          .Wait());
 
   // Update url and title for tab1 in the server.
   tab1.SetURL(GURL("https://new.url"));
@@ -390,8 +389,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, UpdatedTabData) {
   AddDataToFakeServer(*tab1.ToSpecifics());
 
   // Verify the tab is updated locally to match.
-  EXPECT_TRUE(
-      saved_tab_groups_helper::SavedTabMatchesChecker(service, tab1).Wait());
+  EXPECT_TRUE(tab_groups::SavedTabMatchesChecker(service, tab1).Wait());
 }
 
 // Reorder groups already saved in the model.
@@ -415,12 +413,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, ReorderGroups) {
       SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
 
   // Verify they are added to the model.
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, group1.saved_guid())
-                  .Wait());
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, group2.saved_guid())
-                  .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, group1.saved_guid())
+          .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, group2.saved_guid())
+          .Wait());
 
   // Update the positions of the groups in the server.
   group1.SetPosition(1);
@@ -429,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, ReorderGroups) {
   AddDataToFakeServer(*group2.ToSpecifics());
 
   // Verify the group positions are updated in the local model as well.
-  EXPECT_TRUE(saved_tab_groups_helper::GroupOrderChecker(
+  EXPECT_TRUE(tab_groups::GroupOrderChecker(
                   service, {group2.saved_guid(), group1.saved_guid()})
                   .Wait());
 }
@@ -455,15 +453,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, ReorderTabs) {
       SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
 
   // Verify they are added to the model.
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, group1.saved_guid())
-                  .Wait());
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, tab1.saved_tab_guid())
-                  .Wait());
-  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
-                  service, tab2.saved_tab_guid())
-                  .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, group1.saved_guid())
+          .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, tab1.saved_tab_guid())
+          .Wait());
+  ASSERT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, tab2.saved_tab_guid())
+          .Wait());
 
   // Reorder the tabs in group 1 on the server.
   tab1.SetPosition(1);
@@ -472,10 +470,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, ReorderTabs) {
   AddDataToFakeServer(*tab2.ToSpecifics());
 
   // Verify the tab order was updated in the model.
-  EXPECT_TRUE(saved_tab_groups_helper::TabOrderChecker(
+  EXPECT_TRUE(tab_groups::TabOrderChecker(
                   service, group1.saved_guid(),
                   {tab2.saved_tab_guid(), tab1.saved_tab_guid()})
                   .Wait());
 }
 
 }  // namespace
+}  // namespace tab_groups

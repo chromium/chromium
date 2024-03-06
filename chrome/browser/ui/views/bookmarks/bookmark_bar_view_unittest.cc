@@ -552,24 +552,25 @@ TEST_F(BookmarkBarViewTest, PageNavigatorSet) {
 }
 
 TEST_F(BookmarkBarViewTest, OnSavedTabGroupUpdateBookmarkBarCallsLayout) {
-  SavedTabGroupKeyedService* keyed_service =
-      SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
+  tab_groups::SavedTabGroupKeyedService* keyed_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser()->profile());
   ASSERT_TRUE(keyed_service);
   ASSERT_TRUE(keyed_service->model());
 
   // Add 3 saved tab groups.
-  keyed_service->model()->Add(SavedTabGroup(std::u16string(u"tab group 1"),
-                                            tab_groups::TabGroupColorId::kGrey,
-                                            {}, std::nullopt));
+  keyed_service->model()->Add(tab_groups::SavedTabGroup(
+      std::u16string(u"tab group 1"), tab_groups::TabGroupColorId::kGrey, {},
+      std::nullopt));
 
   base::Uuid button_2_id = base::Uuid::GenerateRandomV4();
-  keyed_service->model()->Add(SavedTabGroup(std::u16string(u"tab group 2"),
-                                            tab_groups::TabGroupColorId::kGrey,
-                                            {}, std::nullopt, button_2_id));
+  keyed_service->model()->Add(tab_groups::SavedTabGroup(
+      std::u16string(u"tab group 2"), tab_groups::TabGroupColorId::kGrey, {},
+      std::nullopt, button_2_id));
 
-  keyed_service->model()->Add(SavedTabGroup(std::u16string(u"tab group 3"),
-                                            tab_groups::TabGroupColorId::kGrey,
-                                            {}, std::nullopt));
+  keyed_service->model()->Add(tab_groups::SavedTabGroup(
+      std::u16string(u"tab group 3"), tab_groups::TabGroupColorId::kGrey, {},
+      std::nullopt));
 
   // Save the position of the 3rd button. The 4th button is an overflow menu
   // that is only visible when there are more than 4 groups saved.

@@ -20,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/view_utils.h"
 
+namespace tab_groups {
 namespace {
 
 const SavedTabGroup kSavedTabGroup1(std::u16string(u"test_title_1"),
@@ -419,3 +420,5 @@ TEST_F(SavedTabGroupBarUnitTest,
   EXPECT_LT(exact_width, new_width);
   EXPECT_GT(new_width, actual_width);
 }
+
+}  // namespace tab_groups

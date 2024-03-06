@@ -9,7 +9,9 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
+namespace tab_groups {
 namespace {
+
 base::Uuid MakeUniqueGUID() {
   static uint64_t unique_value = 0;
   unique_value++;
@@ -213,3 +215,5 @@ TEST(SavedTabGroupTest, RemoveTabFromSyncMaintainsPositions) {
     EXPECT_EQ(second_tab->position(), 1u);
   }
 }
+
+}  // namespace tab_groups

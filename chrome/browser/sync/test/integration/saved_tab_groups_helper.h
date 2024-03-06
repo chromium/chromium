@@ -12,9 +12,9 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 
-class SavedTabGroupKeyedService;
+namespace tab_groups {
 
-namespace saved_tab_groups_helper {
+class SavedTabGroupKeyedService;
 
 // Checks that a tab or group with a particular uuid exists in the model.
 class SavedTabOrGroupExistsChecker : public StatusChangeChecker,
@@ -184,6 +184,6 @@ class TabOrderChecker : public StatusChangeChecker,
 
   raw_ptr<SavedTabGroupKeyedService> const service_;
 };
-}  // namespace saved_tab_groups_helper
+}  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SAVED_TAB_GROUPS_HELPER_H_

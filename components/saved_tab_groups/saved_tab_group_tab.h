@@ -18,6 +18,8 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
+namespace tab_groups {
+
 // A SavedTabGroupTab stores the url, title, and favicon of a tab.
 class SavedTabGroupTab {
  public:
@@ -137,5 +139,7 @@ class SavedTabGroupTab {
   // microseconds.
   base::Time update_time_windows_epoch_micros_;
 };
+
+}  // namespace tab_groups
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_TAB_H_

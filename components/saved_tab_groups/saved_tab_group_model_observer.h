@@ -12,6 +12,8 @@
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/tab_groups/tab_group_id.h"
 
+namespace tab_groups {
+
 // Serves to notify any SavedTabGroupModel listeners that a change has occurred
 // supply the SavedTabGroup that was changed.
 class SavedTabGroupModelObserver {
@@ -75,5 +77,7 @@ class SavedTabGroupModelObserver {
   SavedTabGroupModelObserver() = default;
   virtual ~SavedTabGroupModelObserver() = default;
 };
+
+}  // namespace tab_groups
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_MODEL_OBSERVER_H_

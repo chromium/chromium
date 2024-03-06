@@ -24,7 +24,9 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 
+namespace tab_groups {
 namespace {
+
 void RecordGroupDeletedMetric(const SavedTabGroup* removed_group) {
   const base::TimeDelta duration_saved =
       base::Time::Now() - removed_group->creation_time_windows_epoch_micros();
@@ -616,3 +618,5 @@ void SavedTabGroupModel::UpdateVisualDataImpl(
   saved_group.SetTitle(visual_data->title());
   saved_group.SetColor(visual_data->color());
 }
+
+}  // namespace tab_groups

@@ -389,8 +389,8 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateSavedTabGroupsError) {
       u"Initial title", tab_groups::TabGroupColorId::kBlue);
   tab_group_model->GetTabGroup(group)->SetVisualData(visual_data);
 
-  SavedTabGroupKeyedService* saved_service =
-      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+  tab_groups::SavedTabGroupKeyedService* saved_service =
+      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
           browser()->profile());
   ASSERT_NE(saved_service, nullptr);
   saved_service->SaveGroup(group);

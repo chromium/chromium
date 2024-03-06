@@ -21,6 +21,8 @@ namespace content {
 class WebContents;
 }
 
+namespace tab_groups {
+
 SavedTabGroupModelListener::SavedTabGroupModelListener() = default;
 
 SavedTabGroupModelListener::SavedTabGroupModelListener(
@@ -264,3 +266,5 @@ void SavedTabGroupModelListener::OnBrowserRemoved(Browser* browser) {
 
   browser->tab_strip_model()->RemoveObserver(this);
 }
+
+}  // namespace tab_groups

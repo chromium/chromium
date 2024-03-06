@@ -105,7 +105,7 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
           title_chip_->AddChildView(std::make_unique<views::ImageView>())),
       saved_tab_group_service_(
           tab_slot_controller_->GetBrowser()
-              ? SavedTabGroupServiceFactory::GetForProfile(
+              ? tab_groups::SavedTabGroupServiceFactory::GetForProfile(
                     tab_slot_controller_->GetBrowser()->profile())
               : nullptr),
       group_style_(style),

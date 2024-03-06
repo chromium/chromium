@@ -24,6 +24,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
+namespace tab_groups {
 namespace {
 
 void CompareSavedTabGroupTabs(const std::vector<SavedTabGroupTab>& v1,
@@ -986,3 +987,5 @@ TEST_F(SavedTabGroupModelObserverTest, GetGroupContainingTab) {
   EXPECT_EQ(nullptr,
             saved_tab_group_model_->GetGroupContainingTab(base::Token()));
 }
+
+}  // namespace tab_groups

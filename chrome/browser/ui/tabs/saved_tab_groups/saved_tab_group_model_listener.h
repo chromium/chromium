@@ -15,9 +15,12 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-class SavedTabGroupModel;
 class TabStripModel;
 class Profile;
+
+namespace tab_groups {
+
+class SavedTabGroupModel;
 
 // Serves to maintain and listen to browsers who contain saved tab groups and
 // update the model if a saved tab group was changed.
@@ -90,5 +93,7 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   raw_ptr<SavedTabGroupModel> model_ = nullptr;
   raw_ptr<Profile> profile_;
 };
+
+}  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_MODEL_LISTENER_H_

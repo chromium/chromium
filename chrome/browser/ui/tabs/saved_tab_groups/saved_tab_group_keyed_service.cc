@@ -37,7 +37,9 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/web_contents.h"
 
+namespace tab_groups {
 namespace {
+
 constexpr base::TimeDelta kDelayBeforeMetricsLogged = base::Hours(1);
 
 std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor>
@@ -576,3 +578,5 @@ void SavedTabGroupKeyedService::RecordTabGroupMetrics() {
   base::UmaHistogramCounts10000("TabGroups.UnsavedTabGroupCount",
                                 total_unsaved_groups);
 }
+
+}  // namespace tab_groups

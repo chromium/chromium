@@ -25,6 +25,8 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view_class_properties.h"
 
+namespace tab_groups {
+
 SavedTabGroupOverflowButton::SavedTabGroupOverflowButton(
     PressedCallback callback)
     : views::MenuButton(std::move(callback)) {
@@ -75,3 +77,5 @@ void SavedTabGroupOverflowButton::OnThemeChanged() {
 
 BEGIN_METADATA(SavedTabGroupOverflowButton)
 END_METADATA
+
+}  // namespace tab_groups

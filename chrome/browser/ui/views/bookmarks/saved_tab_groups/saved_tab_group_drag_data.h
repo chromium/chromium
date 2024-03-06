@@ -16,6 +16,8 @@ class OSExchangeData;
 class ThemeProvider;
 }  // namespace ui
 
+namespace tab_groups {
+
 class SavedTabGroupButton;
 
 class SavedTabGroupDragData {
@@ -54,5 +56,7 @@ class SavedTabGroupDragData {
   // A copy of the group being dragged.
   const base::Uuid guid_;
 };
+
+}  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_DRAG_DATA_H_

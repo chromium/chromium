@@ -17,6 +17,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/drag_utils.h"
 
+namespace tab_groups {
 namespace {
 
 // The MIME type for the clipboard format for SavedTabGroupDragData.
@@ -109,3 +110,5 @@ void SavedTabGroupDragData::WriteToOSExchangeData(
   data_pickle.WriteString(button->guid().AsLowercaseString());
   data->SetPickledData(GetFormatType(), data_pickle);
 }
+
+}  // namespace tab_groups

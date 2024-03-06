@@ -18,6 +18,8 @@
 class Profile;
 class TabGroup;
 
+namespace tab_groups {
+
 // Serves to instantiate and own the SavedTabGroup infrastructure for the
 // browser.
 class SavedTabGroupKeyedService : public KeyedService,
@@ -150,5 +152,7 @@ class SavedTabGroupKeyedService : public KeyedService,
   std::vector<std::pair<base::Uuid, tab_groups::TabGroupId>>
       saved_guid_to_local_group_id_mapping_;
 };
+
+}  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_KEYED_SERVICE_H_

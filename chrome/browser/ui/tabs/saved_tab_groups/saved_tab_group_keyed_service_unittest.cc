@@ -25,6 +25,8 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_types.h"
 
+namespace tab_groups {
+
 class SavedTabGroupKeyedServiceUnitTest : public BrowserWithTestWindowTest {
  public:
   SavedTabGroupKeyedServiceUnitTest() = default;
@@ -1037,3 +1039,5 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   // The SavedTabGroupTab should still be at the good URL not the bad one.
   EXPECT_EQ(saved_group->saved_tabs().at(0).url(), good_gurl);
 }
+
+}  // namespace tab_groups

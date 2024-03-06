@@ -11,9 +11,9 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 
-class SavedTabGroupKeyedService;
+namespace tab_groups {
 
-namespace saved_tab_groups_helper {
+class SavedTabGroupKeyedService;
 
 // ====================================
 // --- SavedTabOrGroupExistsChecker ---
@@ -286,4 +286,4 @@ void TabOrderChecker::SavedTabGroupUpdatedFromSync(
     const std::optional<base::Uuid>& tab_uuid) {
   CheckExitCondition();
 }
-}  // namespace saved_tab_groups_helper
+}  // namespace tab_groups

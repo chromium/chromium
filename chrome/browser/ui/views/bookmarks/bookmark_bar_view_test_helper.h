@@ -34,7 +34,9 @@ class BookmarkBarViewTestHelper {
     return bbv_->managed_bookmarks_button_;
   }
 
-  SavedTabGroupBar* saved_tab_group_bar() { return bbv_->saved_tab_group_bar_; }
+  tab_groups::SavedTabGroupBar* saved_tab_group_bar() {
+    return bbv_->saved_tab_group_bar_;
+  }
 
   int GetDropLocationModelIndexForTesting() {
     return bbv_->GetDropLocationModelIndexForTesting();

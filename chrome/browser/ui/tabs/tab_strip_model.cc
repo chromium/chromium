@@ -2519,9 +2519,10 @@ void TabStripModel::DisconnectSavedTabGroups(
     return;
   }
 
-  SavedTabGroupKeyedService* const keyed_service =
-      SavedTabGroupServiceFactory::GetForProfile(profile_);
-  const SavedTabGroupModel* const stg_model = keyed_service->model();
+  tab_groups::SavedTabGroupKeyedService* const keyed_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
+  const tab_groups::SavedTabGroupModel* const stg_model =
+      keyed_service->model();
 
   // Count the tabs in each group in `indices`.
   std::unordered_map<tab_groups::TabGroupId, size_t, tab_groups::TabGroupIdHash>

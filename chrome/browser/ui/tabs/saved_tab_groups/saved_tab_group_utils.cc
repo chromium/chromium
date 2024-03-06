@@ -16,6 +16,8 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
+namespace tab_groups {
+
 SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
     content::WebContents* contents,
     base::Uuid saved_tab_group_id) {
@@ -101,3 +103,5 @@ std::vector<content::WebContents*> SavedTabGroupUtils::GetWebContentsesInGroup(
 bool SavedTabGroupUtils::IsURLValidForSavedTabGroups(const GURL& gurl) {
   return gurl.SchemeIsHTTPOrHTTPS() || gurl == GURL(chrome::kChromeUINewTabURL);
 }
+
+}  // namespace tab_groups

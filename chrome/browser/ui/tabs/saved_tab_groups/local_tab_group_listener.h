@@ -11,14 +11,17 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/tab_groups/tab_group_id.h"
 
+class TabStripModel;
+class Browser;
+
 namespace content {
 class WebContents;
 }
 
+namespace tab_groups {
+
 class SavedTabGroup;
 class SavedTabGroupModel;
-class TabStripModel;
-class Browser;
 
 // Keeps a saved tab group up to date as it's changed locally.
 class LocalTabGroupListener {
@@ -116,5 +119,7 @@ class LocalTabGroupListener {
   const tab_groups::TabGroupId local_id_;
   const base::Uuid saved_guid_;
 };
+
+}  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_LOCAL_TAB_GROUP_LISTENER_H_

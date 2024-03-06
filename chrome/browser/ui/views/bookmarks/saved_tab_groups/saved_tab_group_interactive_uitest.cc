@@ -53,6 +53,8 @@
 #include "ui/views/view_utils.h"
 #include "url/url_constants.h"
 
+namespace tab_groups {
+
 class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
  public:
   SavedTabGroupInteractiveTest() = default;
@@ -708,3 +710,5 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       WaitForHide(kSavedTabGroupOverflowMenuId),
       EnsureNotPresent(kSavedTabGroupOverflowMenuId));
 }
+
+}  // namespace tab_groups

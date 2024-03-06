@@ -33,6 +33,7 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 
+namespace tab_groups {
 namespace {
 
 // Discard orphaned tabs after 30 days if the associated group cannot be found.
@@ -529,3 +530,5 @@ void SavedTabGroupSyncBridge::OnDatabaseSave(
 
   // TODO(dljames): React to store failures when a save is not successful.
 }
+
+}  // namespace tab_groups

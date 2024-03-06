@@ -23,6 +23,8 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace tab_groups {
+
 using SavedTabGroupBarBrowserTest = InProcessBrowserTest;
 
 // Verifies that a saved group can be only be opened in the tabstrip once. If
@@ -135,3 +137,5 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
   stg_model->Remove(group_id);
   EXPECT_FALSE(saved_tab_group_service->model()->Contains(group_id));
 }
+
+}  // namespace tab_groups

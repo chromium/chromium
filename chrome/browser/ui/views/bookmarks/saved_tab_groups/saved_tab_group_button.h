@@ -22,11 +22,14 @@
 #include "ui/views/drag_controller.h"
 
 class Browser;
-class SavedTabGroupKeyedService;
 
 namespace gfx {
 class Canvas;
 }
+
+namespace tab_groups {
+
+class SavedTabGroupKeyedService;
 
 // The visual representation of a SavedTabGroup shown in the bookmarks bar.
 class SavedTabGroupButton : public views::MenuButton,
@@ -115,5 +118,7 @@ class SavedTabGroupButton : public views::MenuButton,
   // Context menu controller used for this View.
   views::DialogModelContextMenuController context_menu_controller_;
 };
+
+}  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_BUTTON_H_

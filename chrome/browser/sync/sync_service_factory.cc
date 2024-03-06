@@ -265,7 +265,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(PowerBookmarkServiceFactory::GetInstance());
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-  DependsOn(SavedTabGroupServiceFactory::GetInstance());
+  DependsOn(tab_groups::SavedTabGroupServiceFactory::GetInstance());
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
   DependsOn(SecurityEventRecorderFactory::GetInstance());

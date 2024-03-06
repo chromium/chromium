@@ -552,8 +552,8 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  SavedTabGroupKeyedService* saved_service =
-      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+  tab_groups::SavedTabGroupKeyedService* saved_service =
+      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
           browser()->profile());
   ASSERT_NE(saved_service, nullptr);
   saved_service->SaveGroup(group);
@@ -728,8 +728,8 @@ TEST_F(TabsApiUnitTest,
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  SavedTabGroupKeyedService* saved_service =
-      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+  tab_groups::SavedTabGroupKeyedService* saved_service =
+      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
           browser()->profile());
   ASSERT_NE(saved_service, nullptr);
   saved_service->SaveGroup(group);
@@ -949,8 +949,8 @@ TEST_F(TabsApiUnitTest, TabsMoveSavedTabGroupTabNotAllowed) {
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  SavedTabGroupKeyedService* saved_service =
-      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+  tab_groups::SavedTabGroupKeyedService* saved_service =
+      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
           browser()->profile());
   ASSERT_NE(saved_service, nullptr);
   saved_service->SaveGroup(group);
@@ -1020,8 +1020,8 @@ TEST_F(TabsApiUnitTest,
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  SavedTabGroupKeyedService* saved_service =
-      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+  tab_groups::SavedTabGroupKeyedService* saved_service =
+      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
           browser()->profile());
   ASSERT_NE(saved_service, nullptr);
   saved_service->SaveGroup(group);
@@ -1321,8 +1321,8 @@ TEST_F(TabsApiUnitTest, TabsGroupForSavedTabGroupTabNotAllowed) {
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  SavedTabGroupKeyedService* saved_service =
-      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+  tab_groups::SavedTabGroupKeyedService* saved_service =
+      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
           browser()->profile());
   ASSERT_NE(saved_service, nullptr);
   saved_service->SaveGroup(group);
@@ -1402,8 +1402,8 @@ TEST_F(TabsApiUnitTest,
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  SavedTabGroupKeyedService* saved_service =
-      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+  tab_groups::SavedTabGroupKeyedService* saved_service =
+      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
           browser()->profile());
   ASSERT_NE(saved_service, nullptr);
   saved_service->SaveGroup(group);
@@ -1518,8 +1518,8 @@ TEST_F(TabsApiUnitTest, TabsUngroupSingleGroupForSavedTabGroupNotAllowed) {
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  SavedTabGroupKeyedService* saved_service =
-      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+  tab_groups::SavedTabGroupKeyedService* saved_service =
+      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
           browser()->profile());
   ASSERT_NE(saved_service, nullptr);
   saved_service->SaveGroup(group);
@@ -1591,8 +1591,8 @@ TEST_F(
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  SavedTabGroupKeyedService* saved_service =
-      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+  tab_groups::SavedTabGroupKeyedService* saved_service =
+      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
           browser()->profile());
   ASSERT_NE(saved_service, nullptr);
   saved_service->SaveGroup(group);
@@ -1782,8 +1782,8 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBackSavedTabGroupTabNotAllowed) {
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  SavedTabGroupKeyedService* saved_service =
-      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+  tab_groups::SavedTabGroupKeyedService* saved_service =
+      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
           browser()->profile());
   ASSERT_NE(saved_service, nullptr);
   saved_service->SaveGroup(group);
@@ -1866,8 +1866,8 @@ TEST_F(
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  SavedTabGroupKeyedService* saved_service =
-      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+  tab_groups::SavedTabGroupKeyedService* saved_service =
+      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
           browser()->profile());
   ASSERT_NE(saved_service, nullptr);
   saved_service->SaveGroup(group);
@@ -2190,8 +2190,8 @@ TEST_F(TabsApiUnitTest, TabsDiscardSavedTabGroupTabNotAllowed) {
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  SavedTabGroupKeyedService* saved_service =
-      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+  tab_groups::SavedTabGroupKeyedService* saved_service =
+      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
           browser()->profile());
   ASSERT_NE(saved_service, nullptr);
   saved_service->SaveGroup(group);
@@ -2255,8 +2255,8 @@ TEST_F(TabsApiUnitTest,
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  SavedTabGroupKeyedService* saved_service =
-      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+  tab_groups::SavedTabGroupKeyedService* saved_service =
+      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
           browser()->profile());
   ASSERT_NE(saved_service, nullptr);
   saved_service->SaveGroup(group);

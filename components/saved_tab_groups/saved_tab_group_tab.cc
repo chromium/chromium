@@ -7,6 +7,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 
+namespace tab_groups {
+
 SavedTabGroupTab::SavedTabGroupTab(
     const GURL& url,
     const std::u16string& title,
@@ -108,3 +110,5 @@ bool SavedTabGroupTab::IsSyncEquivalent(const SavedTabGroupTab& other) const {
          saved_group_guid() == other.saved_group_guid() &&
          title() == other.title() && position() == other.position();
 }
+
+}  // namespace tab_groups

@@ -18,6 +18,8 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 
+namespace tab_groups {
+
 class SavedTabGroupModelObserver;
 class SavedTabGroup;
 
@@ -183,5 +185,7 @@ class SavedTabGroupModel {
   // the positions.
   std::vector<SavedTabGroup> saved_tab_groups_;
 };
+
+}  // namespace tab_groups
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_MODEL_H_

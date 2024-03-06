@@ -2821,8 +2821,9 @@ void TabDragController::MaybePauseTrackingSavedTabGroup() {
       BrowserView::GetBrowserViewForNativeWindow(
           GetAttachedBrowserWidget()->GetNativeWindow())
           ->browser();
-  SavedTabGroupKeyedService* const saved_tab_group_service =
-      SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser->profile());
 
   if (!saved_tab_group_service ||
       !saved_tab_group_service->model()->Contains(group_.value())) {
@@ -2845,8 +2846,9 @@ void TabDragController::MaybeResumeTrackingSavedTabGroup() {
       BrowserView::GetBrowserViewForNativeWindow(
           GetAttachedBrowserWidget()->GetNativeWindow())
           ->browser();
-  SavedTabGroupKeyedService* const saved_tab_group_service =
-      SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser->profile());
 
   if (!saved_tab_group_service) {
     return;

@@ -8,12 +8,14 @@
 #include "base/token.h"
 #include "content/public/browser/web_contents_observer.h"
 
-class SavedTabGroupModel;
-
 namespace content {
 class NavigationHandle;
 class WebContents;
 }  // namespace content
+
+namespace tab_groups {
+
+class SavedTabGroupModel;
 
 class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
  public:
@@ -40,5 +42,7 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
   // `DidFinishNavigation` to prevent synclones.
   raw_ptr<content::NavigationHandle> handle_from_sync_update_ = nullptr;
 };
+
+}  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_WEB_CONTENTS_LISTENER_H_

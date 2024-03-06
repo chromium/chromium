@@ -49,7 +49,9 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
+namespace tab_groups {
 namespace {
+
 // The maximum number of buttons (excluding the overflow menu button) that can
 // appear in the SavedTabGroupBar.
 constexpr int kMaxVisibleButtons = 4;
@@ -860,3 +862,5 @@ SavedTabGroupBar::CalculateDropIndicatorIndexInCombinedSpace() const {
 
 BEGIN_METADATA(SavedTabGroupBar)
 END_METADATA
+
+}  // namespace tab_groups

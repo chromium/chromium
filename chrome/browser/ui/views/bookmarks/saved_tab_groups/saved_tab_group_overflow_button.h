@@ -8,6 +8,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/menu_button.h"
 
+namespace tab_groups {
+
 class SavedTabGroupOverflowButton : public views::MenuButton {
   METADATA_HEADER(SavedTabGroupOverflowButton, views::MenuButton)
 
@@ -24,5 +26,7 @@ class SavedTabGroupOverflowButton : public views::MenuButton {
       const override;
   void OnThemeChanged() override;
 };
+
+}  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_OVERFLOW_BUTTON_H_

@@ -1389,8 +1389,9 @@ void BookmarkBarView::Init() {
   managed_bookmarks_button_->SetEnabled(false);
 
   if (IsSavedTabGroupsEnabled()) {
-    saved_tab_group_bar_ = AddChildView(
-        std::make_unique<SavedTabGroupBar>(browser_, animations_enabled));
+    saved_tab_group_bar_ =
+        AddChildView(std::make_unique<tab_groups::SavedTabGroupBar>(
+            browser_, animations_enabled));
     saved_tab_group_bar_->SetVisible(true);
   }
 

@@ -13,6 +13,8 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace tab_groups {
+
 class SavedTabGroupConversionTest : public testing::Test {
  public:
   SavedTabGroupConversionTest() : time_(base::Time::Now()) {}
@@ -224,3 +226,5 @@ TEST_F(SavedTabGroupConversionTest, MergedTabHoldsCorrectData) {
   tab2.SetUpdateTimeWindowsEpochMicros(old_time);
   EXPECT_FALSE(tab1.ShouldMergeTab(*tab2.ToSpecifics()));
 }
+
+}  // namespace tab_groups

@@ -1315,14 +1315,16 @@ void Browser::OnTabGroupChanged(const TabGroupChange& change) {
           tab_strip_model_->group_model()
               ->GetTabGroup(change.group)
               ->visual_data();
-      const SavedTabGroupKeyedService* const saved_tab_group_keyed_service =
-          base::FeatureList::IsEnabled(features::kTabGroupsSave)
-              ? SavedTabGroupServiceFactory::GetForProfile(profile_)
-              : nullptr;
+      const tab_groups::SavedTabGroupKeyedService* const
+          saved_tab_group_keyed_service =
+              base::FeatureList::IsEnabled(features::kTabGroupsSave)
+                  ? tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+                        profile_)
+                  : nullptr;
       std::optional<std::string> saved_guid;
 
       if (saved_tab_group_keyed_service) {
-        const SavedTabGroup* const saved_group =
+        const tab_groups::SavedTabGroup* const saved_group =
             saved_tab_group_keyed_service->model()->Get(change.group);
         if (saved_group) {
           saved_guid = saved_group->saved_guid().AsLowercaseString();

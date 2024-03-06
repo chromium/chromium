@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 
+namespace tab_groups {
 namespace {
 
 bool IsSaveableNavigation(content::NavigationHandle* navigation_handle) {
@@ -93,3 +94,5 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
   tab->SetFavicon(favicon::TabFaviconFromWebContents(web_contents_));
   model_->UpdateTabInGroup(group->saved_guid(), *tab);
 }
+
+}  // namespace tab_groups

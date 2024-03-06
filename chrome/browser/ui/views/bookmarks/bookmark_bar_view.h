@@ -38,7 +38,6 @@ class BookmarkContextMenu;
 class Browser;
 class BrowserView;
 class Profile;
-class SavedTabGroupBar;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -51,6 +50,10 @@ class PageNavigator;
 
 namespace gfx {
 class FontList;
+}
+
+namespace tab_groups {
+class SavedTabGroupBar;
 }
 
 namespace views {
@@ -399,7 +402,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   std::unique_ptr<BookmarkContextMenu> context_menu_;
 
   // Saved Tab Group section
-  raw_ptr<SavedTabGroupBar> saved_tab_group_bar_ = nullptr;
+  raw_ptr<tab_groups::SavedTabGroupBar> saved_tab_group_bar_ = nullptr;
 
   // Shows the "Other Bookmarks" folder button.
   raw_ptr<views::MenuButton> all_bookmarks_button_ = nullptr;

@@ -64,6 +64,8 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
+namespace tab_groups {
+
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupButton,
                                       kDeleteGroupMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupButton,
@@ -421,3 +423,5 @@ SavedTabGroupButton::CreateDialogModelForContextMenu() {
 
 BEGIN_METADATA(SavedTabGroupButton)
 END_METADATA
+
+}  // namespace tab_groups

@@ -289,8 +289,9 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
             base::BindRepeating(&TabGroupEditorBubbleView::OnSaveTogglePressed,
                                 base::Unretained(this))));
 
-    const SavedTabGroupKeyedService* const saved_tab_group_service =
-        SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
+    const tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
+        tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+            browser_->profile());
     CHECK(saved_tab_group_service);
 
     save_group_toggle_->SetIsOn(
@@ -443,8 +444,9 @@ const std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() {
     return l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP);
   }
 
-  SavedTabGroupKeyedService* const saved_tab_group_service =
-      SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
+  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser_->profile());
 
   if (!saved_tab_group_service) {
     return l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP);
@@ -463,8 +465,9 @@ const std::u16string TabGroupEditorBubbleView::GetSaveToggleAccessibleName() {
 }
 
 void TabGroupEditorBubbleView::OnSaveTogglePressed() {
-  SavedTabGroupKeyedService* const saved_tab_group_service =
-      SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
+  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser_->profile());
   CHECK(saved_tab_group_service);
 
   if (save_group_toggle_->GetIsOn()) {
@@ -508,8 +511,9 @@ void TabGroupEditorBubbleView::UngroupPressed(TabGroupHeader* header_view) {
   if (base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
       browser_->profile()->IsRegularProfile() &&
       save_group_toggle_->GetIsOn()) {
-    SavedTabGroupKeyedService* saved_tab_group_service =
-        SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
+    tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
+        tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+            browser_->profile());
     CHECK(saved_tab_group_service);
     saved_tab_group_service->DisconnectLocalTabGroup(group_);
   }
@@ -538,8 +542,9 @@ void TabGroupEditorBubbleView::CloseGroupPressed() {
   if (base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
       browser_->profile()->IsRegularProfile() &&
       save_group_toggle_->GetIsOn()) {
-    SavedTabGroupKeyedService* saved_tab_group_service =
-        SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
+    tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
+        tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+            browser_->profile());
     CHECK(saved_tab_group_service);
     saved_tab_group_service->DisconnectLocalTabGroup(group_);
   }

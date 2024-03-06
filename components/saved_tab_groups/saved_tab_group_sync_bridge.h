@@ -19,13 +19,14 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
-class SavedTabGroupModel;
-
 namespace syncer {
 class MutableDataBatch;
 class MetadataBatch;
 class ModelError;
 }  // namespace syncer
+
+namespace tab_groups {
+class SavedTabGroupModel;
 
 // The SavedTabGroupSyncBridge is responsible for synchronizing and resolving
 // conflicts between the data stored in the sync server and what is currently
@@ -155,5 +156,7 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   // exists at the time of use.
   base::WeakPtrFactory<SavedTabGroupSyncBridge> weak_ptr_factory_{this};
 };
+
+}  // namespace tab_groups
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_SYNC_BRIDGE_H_

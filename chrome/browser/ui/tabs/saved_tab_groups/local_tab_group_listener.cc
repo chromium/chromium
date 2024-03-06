@@ -16,6 +16,8 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "content/public/browser/web_contents.h"
 
+namespace tab_groups {
+
 LocalTabGroupListener::LocalTabGroupListener(
     const tab_groups::TabGroupId local_id,
     const base::Uuid saved_guid,
@@ -340,3 +342,5 @@ void LocalTabGroupListener::RemoveWebContentsFromSync(
         model_index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
   }
 }
+
+}  // namespace tab_groups

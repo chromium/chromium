@@ -13,10 +13,13 @@
 class Browser;
 class Profile;
 
-class SavedTabGroupTab;
 namespace content {
 class WebContents;
 }
+
+namespace tab_groups {
+
+class SavedTabGroupTab;
 
 class SavedTabGroupUtils {
  public:
@@ -50,5 +53,7 @@ class SavedTabGroupUtils {
   // Returns whether the tab's URL is viable for saving in a saved tab group.
   static bool IsURLValidForSavedTabGroups(const GURL& gurl);
 };
+
+}  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_UTILS_H_

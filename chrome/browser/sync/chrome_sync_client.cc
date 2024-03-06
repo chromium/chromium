@@ -629,7 +629,7 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
     BUILDFLAG(IS_WIN)
     case syncer::SAVED_TAB_GROUP: {
       DCHECK(base::FeatureList::IsEnabled(features::kTabGroupsSave));
-      return SavedTabGroupServiceFactory::GetForProfile(profile_)
+      return tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_)
           ->bridge()
           ->change_processor()
           ->GetControllerDelegate();

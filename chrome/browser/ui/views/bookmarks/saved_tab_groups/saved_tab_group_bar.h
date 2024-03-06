@@ -19,8 +19,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 class Browser;
-class SavedTabGroupButton;
-class SavedTabGroupDragData;
 
 namespace content {
 class PageNavigator;
@@ -29,6 +27,11 @@ class PageNavigator;
 namespace views {
 class Widget;
 }
+
+namespace tab_groups {
+
+class SavedTabGroupButton;
+class SavedTabGroupDragData;
 
 // The view for accessing SavedTabGroups from the bookmarks bar. Is responsible
 // for rendering the SavedTabGroupButtons with the bounds that are defined by
@@ -224,5 +227,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // safety if BookmarkBarView is deleted after getting the callback.
   base::WeakPtrFactory<SavedTabGroupBar> weak_ptr_factory_{this};
 };
+
+}  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_BAR_H_

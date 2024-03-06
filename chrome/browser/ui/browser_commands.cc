@@ -1091,8 +1091,9 @@ void MoveTabsToNewWindow(Browser* browser,
   }
 
   if (group.has_value()) {
-    SavedTabGroupKeyedService* const service =
-        SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+    tab_groups::SavedTabGroupKeyedService* const service =
+        tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+            browser->profile());
     if (service && service->model()->Contains(group.value())) {
       // If the group we are looking to move is saved:
       // 1) Stop listening to changes on it

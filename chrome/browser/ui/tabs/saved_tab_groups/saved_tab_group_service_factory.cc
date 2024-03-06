@@ -9,6 +9,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 
+namespace tab_groups {
+
 SavedTabGroupServiceFactory* SavedTabGroupServiceFactory::GetInstance() {
   static base::NoDestructor<SavedTabGroupServiceFactory> instance;
   return instance.get();
@@ -38,3 +40,5 @@ SavedTabGroupServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<SavedTabGroupKeyedService>(profile);
 }
+
+}  // namespace tab_groups

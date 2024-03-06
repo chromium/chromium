@@ -41,7 +41,9 @@
 
 using testing::_;
 
+namespace tab_groups {
 namespace {
+
 // Discard orphaned tabs after 30 days if the associated group cannot be found.
 constexpr base::TimeDelta kDiscardOrphanedTabsThreshold = base::Days(30);
 
@@ -819,3 +821,5 @@ TEST_F(SavedTabGroupSyncBridgeTest, ReorderGroupLocally) {
 
   saved_tab_group_model_.ReorderGroupLocally(group_guid, 1);
 }
+
+}  // namespace tab_groups

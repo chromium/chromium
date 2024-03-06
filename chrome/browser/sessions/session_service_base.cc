@@ -628,10 +628,12 @@ void SessionServiceBase::BuildCommandsForBrowser(
   TabStripModel* tab_strip = browser->tab_strip_model();
   if (tab_strip->SupportsTabGroups()) {
     TabGroupModel* group_model = tab_strip->group_model();
-    const SavedTabGroupKeyedService* const saved_tab_group_keyed_service =
-        base::FeatureList::IsEnabled(features::kTabGroupsSave)
-            ? SavedTabGroupServiceFactory::GetForProfile(browser->profile())
-            : nullptr;
+    const tab_groups::SavedTabGroupKeyedService* const
+        saved_tab_group_keyed_service =
+            base::FeatureList::IsEnabled(features::kTabGroupsSave)
+                ? tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+                      browser->profile())
+                : nullptr;
 
     for (const tab_groups::TabGroupId& group_id :
          group_model->ListTabGroups()) {
@@ -640,7 +642,7 @@ void SessionServiceBase::BuildCommandsForBrowser(
 
       std::optional<std::string> saved_guid;
       if (saved_tab_group_keyed_service) {
-        const SavedTabGroup* const saved_group =
+        const tab_groups::SavedTabGroup* const saved_group =
             saved_tab_group_keyed_service->model()->Get(group_id);
         if (saved_group) {
           saved_guid = saved_group->saved_guid().AsLowercaseString();

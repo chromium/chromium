@@ -18,6 +18,8 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
+namespace tab_groups {
+
 // Preserves the state of a Tab group that was saved from the
 // tab_group_editor_bubble_view's save toggle button. Additionally, these values
 // may change if the tab groups name, color, or urls are changed from the
@@ -197,5 +199,7 @@ class SavedTabGroup {
   // microseconds.
   base::Time update_time_windows_epoch_micros_;
 };
+
+}  // namespace tab_groups
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_H_
