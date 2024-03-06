@@ -1,23 +1,14 @@
 <style include="cr-icons tangible-sync-style-shared">
   :host {
     --background-color: white;
-    --dummy-omnibox-height: calc(var(--iron-icon-height) +
-        2 * var(--dummy-omnibox-vertical-padding));
-    --dummy-omnibox-vertical-padding: 12px;
-    --iron-icon-height: 24px;
-    --search-engine-omnibox-shadow-color: var(--google-grey-300);
+    --search-engine-icon-size: 24px;
     --scrollbar-height: 116px;
     --action-button-margins: 40px;
-    --omnibox-width: 252px;
     --choice-list-bottom-padding: 50px;
     --choice-list-horizontal-padding: 8px;
     --choice-title-line-height: 20px;
     --content-container-max-width: 500px;
     color: var(--cr-primary-text-color);
-  }
-
-  .hidden {
-    visibility: hidden;
   }
 
   .tangible-sync-style-left-banner {
@@ -65,58 +56,6 @@
     margin: 12px 0 40px;
   }
 
-  /* We need to searchEngineOmnibox to be out of the flow. To do that, we set
-  its position as absolute but we encapsulate it insite this class so that it
-  doesn't position itself on the top of the dialog */
-  .omniboxes {
-    position: relative;
-  }
-
-  #dummyOmnibox {
-    align-items: center;
-    border: 1px dashed var(--google-grey-300);
-    border-radius: calc(var(--dummy-omnibox-height) / 2);
-    display: flex;
-    flex-direction: row;
-    gap: 12px;
-    padding: var(--dummy-omnibox-vertical-padding) 0;
-    width: var(--omnibox-width);
-  }
-
-  /* We modify the bottom and transform parameters so that the
-  searchEngineOmnibox and dummyOmnibox are positioned on top of each other. */
-  #searchEngineOmnibox {
-    --omnibox-height: 52px;
-    --search-engine-omnibox-bottom-value: calc(var(--dummy-omnibox-height) / 2);
-    align-items: center;
-    background-color: white;
-    border-radius: calc(var(--omnibox-height) / 2);
-    bottom: var(--search-engine-omnibox-bottom-value);
-    box-shadow: 0 4px 16px 0 var(--search-engine-omnibox-shadow-color);
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    height: var(--omnibox-height);
-    opacity: 0;
-    position: absolute;
-    transform: translateY(var(--search-engine-omnibox-bottom-value));
-    width: var(--omnibox-width);
-  }
-
-  .fade-in-animation {
-    animation: fade-in-animation 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
-    animation-fill-mode: forwards;
-  }
-
-  .fade-out-animation {
-    animation: fade-out-animation 150ms cubic-bezier(0.34, 1.56, 0.64, 1);
-    animation-fill-mode: forwards;
-  }
-
-  #searchEngineOmnibox .choice-icon {
-    margin-left: 16px;
-  }
-
   #choiceList {
     display: flex;
     flex-direction: column;
@@ -142,24 +81,19 @@
   }
 
   .choice-icon {
-    background-size: var(--iron-icon-height);
+    background-size: var(--search-engine-icon-size);
     border-radius: 4px;
     flex: none;
-    height: var(--iron-icon-height);
-    width: var(--iron-icon-height);
+    height: var(--search-engine-icon-size);
+    width: var(--search-engine-icon-size);
   }
 
-  .omnibox-text,
   .choice-title {
     font-family: Roboto, Arial;
     font-size: 0.8125rem;
     font-weight: 400;
     line-height: var(--choice-title-line-height);
     text-align: start;
-  }
-
-  .omnibox-text {
-    color: var(--google-grey-900);
   }
 
   .choice-title {
@@ -172,8 +106,8 @@
     /* To center the radio button disc inside the content excluding the
     marketing snippet text. */
     --cr-radio-button-disc-margin-block-start:
-        calc((max(var(--choice-title-line-height), var(--iron-icon-height)) -
-        var(--cr-radio-button-size))/2);
+        calc((max(var(--choice-title-line-height),
+        var(--search-engine-icon-size)) - var(--cr-radio-button-size))/2);
     --cr-radio-button-label-spacing: 12px;
     --cr-radio-button-size: 20px;
     align-items: start;
@@ -198,18 +132,6 @@
     height: 48px;
     margin-top: 80px;
     width: 48px;
-  }
-
-  iron-icon {
-    --iron-icon-fill-color: var(--google-blue-700);
-    margin-inline-start: 16px;
-  }
-
-  .hint-placeholder {
-    background: var(--google-grey-100);
-    border-radius: 12px;
-    height: 12px;
-    width: 100px;
   }
 
   #infoLink {
@@ -294,42 +216,9 @@
     color: var(--cr-secondary-text-color);
   }
 
-  @keyframes fade-in-animation {
-    0% {
-      opacity: 0;
-      top: 30px;
-      transform: rotate(5deg);
-    }
-
-    100% {
-      opacity: 1;
-      top: 0;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fade-out-animation {
-    0% {
-      opacity: 1;
-      top: 0;
-      transform: translateY(0);
-    }
-
-    100% {
-      opacity: 0;
-      top: 30px;
-      transform: rotate(5deg);
-    }
-  }
-
   @media (prefers-color-scheme: dark) {
     :host {
       --background-color: var(--md-background-color);
-      --search-engine-omnibox-shadow-color: unset;
-    }
-
-    .hint-placeholder {
-      background-color: var(--google-grey-800);
     }
 
     .tangible-sync-style-left-banner {
@@ -355,10 +244,6 @@
     cr-radio-button {
       --cr-radio-button-unchecked-color: var(--google-grey-100);
       background-color: var(--google-grey-800);
-    }
-
-    iron-icon {
-      --iron-icon-fill-color: var(--google-blue-300);
     }
   }
 
@@ -414,11 +299,6 @@
   }
 
   @media screen and (max-height: 757px) {
-    #dummyOmnibox,
-    #searchEngineOmnibox {
-      display: none;
-    }
-
     .product-logo {
       margin-top: 40px;
     }
@@ -449,17 +329,6 @@
   <img class="product-logo" src="images/product-logo.svg"
       alt="$i18n{productLogoAltText}" aria-hidden="true">
   <h1 class="title">$i18n{title}</h1>
-  <div class="omniboxes">
-    <div id="dummyOmnibox">
-      <iron-icon icon="cr:search" aria-hidden="true"></iron-icon>
-      <div class="hint-placeholder"></div>
-    </div>
-    <div id="searchEngineOmnibox">
-      <div class="choice-icon"
-          style$="background-image: [[fakeOmniboxIconPath_]];"></div>
-      <div class="omnibox-text">[[fakeOmniboxText_]]</div>
-    </div>
-  </div>
   <p class="subtitle">
     $i18n{subtitle}
     <a id="infoLink" href="" on-click="onLinkClicked_"

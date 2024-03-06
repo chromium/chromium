@@ -11,8 +11,6 @@ import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import './strings.m.js';
 
@@ -31,9 +29,7 @@ import type {PageHandlerRemote} from './search_engine_choice.mojom-webui.js';
 
 export interface SearchEngineChoiceAppElement {
   $: {
-    dummyOmnibox: HTMLElement,
     infoDialog: CrDialogElement,
-    searchEngineOmnibox: HTMLElement,
     actionButton: CrButtonElement,
     infoLink: HTMLElement,
     choiceList: CrRadioGroupElement,
@@ -71,23 +67,12 @@ export class SearchEngineChoiceAppElement extends
       selectedChoice_: {
         type: Number,
         value: -1,
-        observer: 'onSelectedChoiceChanged_',
       },
 
       isActionButtonDisabled_: {
         type: Boolean,
         computed: 'computeActionButtonDisabled_(selectedChoice_, ' +
             'hasUserScrolledToTheBottom_)',
-      },
-
-      fakeOmniboxText_: {
-        type: String,
-        value: '',
-      },
-
-      fakeOmniboxIconPath_: {
-        type: String,
-        value: '',
       },
 
       actionButtonText_: {
@@ -104,8 +89,6 @@ export class SearchEngineChoiceAppElement extends
 
   private choiceList_: SearchEngineChoice[];
   private selectedChoice_: string;
-  private fakeOmniboxText_: string;
-  private fakeOmniboxIconPath_: string;
   private pageHandler_: PageHandlerRemote;
   private hasUserScrolledToTheBottom_: boolean;
   private actionButtonText_: string;
@@ -190,66 +173,6 @@ export class SearchEngineChoiceAppElement extends
 
   private onInfoDialogButtonClicked_() {
     this.$.infoDialog.close();
-  }
-
-  private onSelectedChoiceChanged_(selectedChoice: string) {
-    // No search engine selected.
-    if (parseInt(selectedChoice) === -1) {
-      return;
-    }
-
-    // Get the selected engine.
-    const choice = this.choiceList_.find(
-        elem => elem.prepopulateId === parseInt(selectedChoice));
-    const searchEngineOmnibox = this.$.searchEngineOmnibox;
-    const dummyOmnibox = this.$.dummyOmnibox;
-    const fakeOmniboxText = this.i18n('fakeOmniboxText', choice?.name!);
-    const fakeOmniboxIconPath = choice?.iconPath!;
-
-    // Change the previous engine name to the new one and then start
-    // the fade-in-animation when the fade-out-animation finishes running.
-    const handleFadeOutFinished = (event: AnimationEvent) => {
-      if (event.animationName === 'fade-out-animation') {
-        searchEngineOmnibox.classList.remove('fade-out-animation');
-
-        this.fakeOmniboxText_ = fakeOmniboxText;
-        this.fakeOmniboxIconPath_ = fakeOmniboxIconPath;
-        // `requestAnimationFrame` is called to make sure that the previous
-        // animation is fully removed so that the next one can be run.
-        window.requestAnimationFrame(function() {
-          searchEngineOmnibox.classList.add('fade-in-animation');
-        });
-      } else if (event.animationName === 'fade-in-animation') {
-        // Hide the dummy omnibox so that it is not shown behind the
-        // search engine omnibox.
-        if (!dummyOmnibox.classList.contains('hidden')) {
-          dummyOmnibox.classList.add('hidden');
-        }
-      }
-    };
-
-    // Show the dummy omnibox at fade-out start so that it can be seen while
-    // animating the search engine omnibox.
-    const handleAnimationStart = (event: AnimationEvent) => {
-      if (event.animationName === 'fade-out-animation') {
-        dummyOmnibox.classList.remove('hidden');
-      }
-    };
-    searchEngineOmnibox.addEventListener('animationend', handleFadeOutFinished);
-    searchEngineOmnibox.addEventListener(
-        'animationstart', handleAnimationStart);
-
-    if (searchEngineOmnibox.classList.contains('fade-in-animation')) {
-      searchEngineOmnibox.classList.remove('fade-in-animation');
-
-      window.requestAnimationFrame(function() {
-        searchEngineOmnibox.classList.add('fade-out-animation');
-      });
-    } else {
-      this.fakeOmniboxText_ = fakeOmniboxText;
-      this.fakeOmniboxIconPath_ = fakeOmniboxIconPath;
-      searchEngineOmnibox.classList.add('fade-in-animation');
-    }
   }
 
   private onChoiceListScroll_() {
