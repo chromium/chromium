@@ -8,10 +8,8 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -50,10 +48,6 @@ import java.util.Set;
  *
  * <p>After the SelectableListLayout is inflated, it should be initialized through calls to
  * #initializeRecyclerView(), #initializeToolbar(), and #initializeEmptyStateView().
- * #initializeEmptyStateView() must be initialized after #initializeRecyclerView() to accommodate
- * items in recycler view that do not determine whether the empty view should be displayed, e.g.
- * bookmark toolbar. Currently the height of these views are calculated manually and set it as the
- * top margin for the empty view to prevent any overlap.
  *
  * <p>Must call #onDestroyed() to destroy SelectableListLayout properly, otherwise this would cause
  * memory leak consistently.
@@ -65,18 +59,18 @@ public class SelectableListLayout<E> extends FrameLayout
     private static final int WIDE_DISPLAY_MIN_PADDING_DP = 16;
     private RecyclerView.Adapter mAdapter;
     private ViewStub mToolbarStub;
-    private TextView mEmptyHeadingTextView;
-    private TextView mEmptySubHeadingTextView;
+    private TextView mEmptyView;
+    private TextView mEmptyStateSubHeadingView;
     private View mEmptyViewWrapper;
     private ImageView mEmptyImageView;
     private LoadingView mLoadingView;
     private RecyclerView mRecyclerView;
-    private FrameLayout mContentView;
     private ItemAnimator mItemAnimator;
     SelectableListToolbar<E> mToolbar;
     private FadingShadowView mToolbarShadow;
 
     private int mEmptyStringResId;
+
     private UiConfig mUiConfig;
 
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
@@ -123,7 +117,7 @@ public class SelectableListLayout<E> extends FrameLayout
 
         LayoutInflater.from(getContext()).inflate(R.layout.selectable_list_layout, this);
 
-        mEmptyHeadingTextView = findViewById(R.id.empty_view);
+        mEmptyView = findViewById(R.id.empty_view);
         mEmptyViewWrapper = findViewById(R.id.empty_view_wrapper);
         mLoadingView = findViewById(R.id.loading_view);
         mLoadingView.showLoadingUI();
@@ -171,11 +165,11 @@ public class SelectableListLayout<E> extends FrameLayout
             mRecyclerView = recyclerView;
 
             // Replace the inflated recycler view with the one supplied to this method.
-            mContentView = findViewById(R.id.list_content);
+            FrameLayout contentView = findViewById(R.id.list_content);
             RecyclerView existingView =
-                    mContentView.findViewById(R.id.selectable_list_recycler_view);
-            mContentView.removeView(existingView);
-            mContentView.addView(mRecyclerView, 0);
+                    contentView.findViewById(R.id.selectable_list_recycler_view);
+            contentView.removeView(existingView);
+            contentView.addView(mRecyclerView, 0);
         }
 
         mRecyclerView.setAdapter(mAdapter);
@@ -269,100 +263,33 @@ public class SelectableListLayout<E> extends FrameLayout
         // Empty listener to have the touch events dispatched to this view tree for navigation UI.
         mEmptyViewWrapper.setOnTouchListener((v, event) -> true);
 
-        return mEmptyHeadingTextView;
+        return mEmptyView;
     }
 
     /**
      * Initializes the empty state view with an image, heading, and subheading.
-     *
-     * @param emptyImageResId Image view to show when the selectable list is empty.
+     * @param imageResId Image view to show when the selectable list is empty.
      * @param emptyHeadingStringResId Heading string to show when the selectable list is empty.
      * @param emptySubheadingStringResId SubString to show when the selectable list is empty.
-     * @return The empty view displayed when the list is empty.
+     * @return The {@link TextView} displayed when the list is empty.
      */
-    public View initializeEmptyStateView(
-            int emptyImageResId, int emptyHeadingStringResId, int emptySubheadingStringResId) {
+    // @TODO: (crbugs.com/1443648) Refactor return value for ForTesting method
+    public TextView initializeEmptyStateView(
+            int imageResId, int emptyHeadingStringResId, int emptySubheadingStringResId) {
         // Initialize and inflate empty state view stub.
         ViewStub emptyViewStub = findViewById(R.id.empty_state_view_stub);
         View emptyStateView = emptyViewStub.inflate();
 
         // Initialize empty state resource.
-        mEmptyHeadingTextView = emptyStateView.findViewById(R.id.empty_state_text_title);
-        mEmptySubHeadingTextView = emptyStateView.findViewById(R.id.empty_state_text_description);
+        mEmptyView = emptyStateView.findViewById(R.id.empty_state_text_title);
+        mEmptyStateSubHeadingView = emptyStateView.findViewById(R.id.empty_state_text_description);
         mEmptyImageView = emptyStateView.findViewById(R.id.empty_state_icon);
         mEmptyViewWrapper = emptyStateView.findViewById(R.id.empty_state_container);
 
-        // Adjust empty view margin and position based on available space.
-        addMarginOnSizeChanged();
-
         // Set empty state properties.
-        setEmptyStateImageRes(emptyImageResId);
+        setEmptyStateImageRes(imageResId);
         setEmptyStateViewText(emptyHeadingStringResId, emptySubheadingStringResId);
-        return mEmptyViewWrapper;
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        addMarginOnSizeChanged();
-    }
-
-    // TODO:(crbug.com/328128383) Try use RelativeLayout for list_content, so there is no need for
-    // this manual calculation.
-    private void addMarginOnSizeChanged() {
-        if (mAdapter == null || mEmptyViewWrapper == null || !isListEffectivelyEmpty()) {
-            return;
-        }
-
-        ViewGroup emptyScrollView = mEmptyViewWrapper.findViewById(R.id.empty_state_container);
-        if (emptyScrollView == null) {
-            return;
-        }
-
-        mContentView = findViewById(R.id.list_content);
-        FrameLayout.LayoutParams layoutParams =
-                (FrameLayout.LayoutParams) mEmptyViewWrapper.getLayoutParams();
-
-        int mListContentHeight = mContentView.getHeight();
-        int topMargin = 0;
-
-        // Loop to identify views above the empty view in mContentView and accumulate them as a top
-        // margin to prevent overlap.
-        for (int i = 0; i < mContentView.getChildCount(); i++) {
-            ViewGroup childView = (ViewGroup) mContentView.getChildAt(i);
-            if (childView.equals(mEmptyViewWrapper)) {
-                break;
-            }
-            for (int j = 0; j < childView.getChildCount(); j++) {
-                ViewGroup.MarginLayoutParams marginLayoutParams =
-                        (ViewGroup.MarginLayoutParams) childView.getChildAt(j).getLayoutParams();
-                topMargin += childView.getChildAt(j).getHeight() + marginLayoutParams.topMargin;
-
-                // Do not accumulate the bottom margin when it is the last view above an empty view
-                // to avoid additional gaps.
-                if (j < childView.getChildCount() - 1
-                        || (i < mContentView.getChildCount() - 1)
-                                && !mContentView.getChildAt(i + 1).equals(mEmptyViewWrapper)) {
-                    topMargin += marginLayoutParams.bottomMargin;
-                }
-            }
-        }
-
-        int bottomMargin = topMargin;
-
-        // Empty view LinearLayout full height with max margins.
-        int maxEmptyHeight = emptyScrollView.getChildAt(0).getHeight() + bottomMargin + topMargin;
-
-        // Decide gravity and margin based on available space.
-        if (mListContentHeight < maxEmptyHeight) {
-            layoutParams.setMargins(0, topMargin, 0, 0);
-            layoutParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-        } else {
-            // Adding a top margin requires a bottom margin to center the empty view.
-            layoutParams.setMargins(0, topMargin, 0, bottomMargin);
-            layoutParams.gravity = Gravity.CENTER;
-        }
-        mEmptyViewWrapper.setLayoutParams(layoutParams);
+        return mEmptyView;
     }
 
     /**
@@ -380,7 +307,7 @@ public class SelectableListLayout<E> extends FrameLayout
     public void setEmptyViewText(int emptyStringResId) {
         mEmptyStringResId = emptyStringResId;
 
-        mEmptyHeadingTextView.setText(mEmptyStringResId);
+        mEmptyView.setText(mEmptyStringResId);
     }
 
     /**
@@ -391,8 +318,8 @@ public class SelectableListLayout<E> extends FrameLayout
     public void setEmptyStateViewText(int emptyHeadingStringResId, int emptySubheadingStringResId) {
         mEmptyStringResId = emptyHeadingStringResId;
 
-        mEmptyHeadingTextView.setText(mEmptyStringResId);
-        mEmptySubHeadingTextView.setText(emptySubheadingStringResId);
+        mEmptyView.setText(mEmptyStringResId);
+        mEmptyStateSubHeadingView.setText(emptySubheadingStringResId);
     }
 
     /**
@@ -467,7 +394,7 @@ public class SelectableListLayout<E> extends FrameLayout
     public void onStartSearch(String searchEmptyString) {
         mRecyclerView.setItemAnimator(null);
         mToolbarShadow.setVisibility(View.VISIBLE);
-        mEmptyHeadingTextView.setText(searchEmptyString);
+        mEmptyView.setText(searchEmptyString);
         onBackPressStateChanged();
     }
 
@@ -475,7 +402,7 @@ public class SelectableListLayout<E> extends FrameLayout
     public void onEndSearch() {
         mRecyclerView.setItemAnimator(mItemAnimator);
         setToolbarShadowVisibility();
-        mEmptyHeadingTextView.setText(mEmptyStringResId);
+        mEmptyView.setText(mEmptyStringResId);
         onBackPressStateChanged();
     }
 
@@ -511,7 +438,7 @@ public class SelectableListLayout<E> extends FrameLayout
      */
     private void updateEmptyViewVisibility() {
         int visible = isListEffectivelyEmpty() ? View.VISIBLE : View.GONE;
-        mEmptyHeadingTextView.setVisibility(visible);
+        mEmptyView.setVisibility(visible);
         mEmptyViewWrapper.setVisibility(visible);
     }
 

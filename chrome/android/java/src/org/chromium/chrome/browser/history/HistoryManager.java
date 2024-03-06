@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -83,7 +84,7 @@ public class HistoryManager
     private HistoryContentManager mContentManager;
     private SelectionDelegate<HistoryItem> mSelectionDelegate;
     private HistoryManagerToolbar mToolbar;
-    private View mEmptyView;
+    private TextView mEmptyView;
     private final SnackbarManager mSnackbarManager;
     private final ObservableSupplierImpl<Boolean> mShouldShowPrivacyDisclaimerSupplier =
             new ObservableSupplierImpl<>();
@@ -195,7 +196,14 @@ public class HistoryManager
         // 4. Width constrain the SelectableListLayout.
         mSelectableListLayout.configureWideDisplayStyle();
 
-        // 5. Load items.
+        // 5. Initialize empty view.
+        mEmptyView =
+                mSelectableListLayout.initializeEmptyStateView(
+                        R.drawable.history_empty_state_illustration,
+                        R.string.history_manager_empty_state,
+                        R.string.history_manager_empty_state_view_or_clear_page_visited);
+
+        // 6. Load items.
         mContentManager.startLoadingItems();
 
         setContentView(mSelectableListLayout);
@@ -205,13 +213,6 @@ public class HistoryManager
                 .addObserver((x) -> onBackPressStateChanged());
 
         onBackPressStateChanged(); // Initialize back press State.
-
-        // 6. Initialize empty view.
-        mEmptyView =
-                mSelectableListLayout.initializeEmptyStateView(
-                        R.drawable.history_empty_state_illustration,
-                        R.string.history_manager_empty_state,
-                        R.string.history_manager_empty_state_view_or_clear_page_visited);
     }
 
     /**
@@ -539,7 +540,7 @@ public class HistoryManager
     @Override
     public void onHistoryDeletedExternally() {}
 
-    View getEmptyViewForTests() {
+    TextView getEmptyViewForTests() {
         return mEmptyView;
     }
 
