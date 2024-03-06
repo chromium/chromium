@@ -13,8 +13,9 @@
 class ChromeBrowserState;
 
 namespace bookmarks {
+class BookmarkModel;
 class CoreBookmarkModel;
-}
+}  // namespace bookmarks
 
 namespace ios {
 
@@ -26,6 +27,13 @@ class BookmarkModelFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state);
   static bookmarks::CoreBookmarkModel* GetForBrowserStateIfExists(
       ChromeBrowserState* browser_state);
+
+  // Alternative getter that exposes the whole BookmarkModel API. Callers must
+  // ensure that `syncer::kEnableBookmarkFoldersForAccountStorage` is enabled.
+  static bookmarks::BookmarkModel*
+  GetModelForBrowserStateIfUnificationEnabledOrDie(
+      ChromeBrowserState* browser_state);
+
   static BookmarkModelFactory* GetInstance();
 
   BookmarkModelFactory(const BookmarkModelFactory&) = delete;
@@ -41,6 +49,8 @@ class BookmarkModelFactory : public BrowserStateKeyedServiceFactory {
   ~BookmarkModelFactory() override;
 
   // BrowserStateKeyedServiceFactory implementation.
+  void RegisterBrowserStatePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(

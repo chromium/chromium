@@ -10,14 +10,23 @@
 #include <vector>
 
 #include "base/containers/extend.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/core_bookmark_model.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "components/sync/base/features.h"
+#include "components/undo/bookmark_undo_service.h"
 #include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_client_impl.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
+#import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -111,9 +120,35 @@ class MergedBookmarkModel : public bookmarks::CoreBookmarkModel {
   const raw_ptr<bookmarks::CoreBookmarkModel> model2_;
 };
 
+std::unique_ptr<KeyedService> BuildUnifiedBookmarkModel(
+    ChromeBrowserState* browser_state) {
+  CHECK(base::FeatureList::IsEnabled(
+      syncer::kEnableBookmarkFoldersForAccountStorage));
+
+  // TODO(crbug.com/326185948): Inject both instances of BookmarkSyncService.
+  auto bookmark_model = std::make_unique<bookmarks::BookmarkModel>(
+      std::make_unique<BookmarkClientImpl>(
+          browser_state,
+          ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
+          ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
+              browser_state),
+          ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state),
+          BookmarkModelType::kLocalOrSyncable));
+  bookmark_model->Load(browser_state->GetStatePath());
+  ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
+      ->StartObservingBookmarkModel(bookmark_model.get());
+  return bookmark_model;
+}
+
 std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+    return BuildUnifiedBookmarkModel(browser_state);
+  }
+
   return std::make_unique<MergedBookmarkModel>(
       LocalOrSyncableBookmarkModelFactory::
           GetDedicatedUnderlyingModelForBrowserState(browser_state),
@@ -138,6 +173,16 @@ bookmarks::CoreBookmarkModel* BookmarkModelFactory::GetForBrowserStateIfExists(
 }
 
 // static
+bookmarks::BookmarkModel*
+BookmarkModelFactory::GetModelForBrowserStateIfUnificationEnabledOrDie(
+    ChromeBrowserState* browser_state) {
+  CHECK(base::FeatureList::IsEnabled(
+      syncer::kEnableBookmarkFoldersForAccountStorage));
+  return static_cast<bookmarks::BookmarkModel*>(
+      GetInstance()->GetServiceForBrowserState(browser_state, true));
+}
+
+// static
 BookmarkModelFactory* BookmarkModelFactory::GetInstance() {
   static base::NoDestructor<BookmarkModelFactory> instance;
   return instance.get();
@@ -152,11 +197,26 @@ BookmarkModelFactory::BookmarkModelFactory()
     : BrowserStateKeyedServiceFactory(
           "BookmarkModel",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ios::AccountBookmarkModelFactory::GetInstance());
-  DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
+  if (base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+    DependsOn(ios::LocalOrSyncableBookmarkSyncServiceFactory::GetInstance());
+    DependsOn(ios::BookmarkUndoServiceFactory::GetInstance());
+    DependsOn(ManagedBookmarkServiceFactory::GetInstance());
+  } else {
+    DependsOn(ios::AccountBookmarkModelFactory::GetInstance());
+    DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
+  }
 }
 
 BookmarkModelFactory::~BookmarkModelFactory() {}
+
+void BookmarkModelFactory::RegisterBrowserStatePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  if (base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+    bookmarks::RegisterProfilePrefs(registry);
+  }
+}
 
 std::unique_ptr<KeyedService> BookmarkModelFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
