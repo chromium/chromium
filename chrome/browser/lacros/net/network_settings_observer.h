@@ -39,7 +39,7 @@ class NetworkSettingsObserver : public crosapi::mojom::NetworkSettingsObserver {
   void OnProxyChanged(crosapi::mojom::ProxyConfigPtr proxy_config) override;
 
   mojo::Receiver<crosapi::mojom::NetworkSettingsObserver> receiver_{this};
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
   base::WeakPtrFactory<NetworkSettingsObserver> weak_ptr_factory_{this};
 };
 
