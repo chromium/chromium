@@ -56,9 +56,6 @@ class IOSurfaceImageBackingFactoryTest : public SharedImageTestBase {
  public:
   void SetUp() override {
     ASSERT_TRUE(gpu_preferences_.use_passthrough_cmd_decoder);
-    gpu_preferences_.texture_target_exception_list.push_back(
-        gfx::BufferUsageAndFormat(gfx::BufferUsage::SCANOUT,
-                                  gfx::BufferFormat::RGBA_8888));
 
     ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kGL));
 
