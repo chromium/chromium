@@ -191,4 +191,43 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertDate) {
       InContext(browser_context, WaitForWebInputFieldValue(kExpectedDate)));
 }
 
+// Searches for '1 + 1', checks the top result is '2', and inserts it
+// into a web input field.
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertMath) {
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  constexpr std::string_view kMathResultName = "MathResult";
+  constexpr std::u16string_view kExpectedResult = u"2";
+  views::Textfield* picker_search_field = nullptr;
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"1 + 1"),
+      WaitForShow(ash::kPickerSearchResultsListItemElementId),
+      WaitForShow(ash::kPickerSearchResultsPageElementId),
+      NameDescendantView(
+          ash::kPickerSearchResultsPageElementId, kMathResultName,
+          base::BindLambdaForTesting(
+              [kExpectedResult](const views::View* view) {
+                if (const auto* list_item_view =
+                        views::AsViewClass<ash::PickerListItemView>(view)) {
+                  return list_item_view->GetPrimaryTextForTesting() ==
+                         kExpectedResult;
+                }
+                return false;
+              })),
+      PressButton(kMathResultName), WaitForHide(ash::kPickerElementId),
+      InContext(browser_context, WaitForWebInputFieldValue(kExpectedResult)));
+}
+
 }  // namespace

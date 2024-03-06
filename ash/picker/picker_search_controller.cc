@@ -14,6 +14,7 @@
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/search/picker_category_search.h"
 #include "ash/picker/search/picker_date_search.h"
+#include "ash/picker/search/picker_math_search.h"
 #include "ash/picker/search/picker_search_debouncer.h"
 #include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_view_delegate.h"
@@ -105,6 +106,9 @@ void PickerSearchController::StartSearch(
     date_search_start_ = base::TimeTicks::Now();
     // Date results is currently synchronous.
     HandleDateSearchResults(PickerDateSearch(base::Time::Now(), query));
+
+    // Math results is currently synchronous.
+    HandleMathSearchResults(PickerMathSearch(query));
 
     category_search_start_ = base::TimeTicks::Now();
     // Category results are currently synchronous.
@@ -333,6 +337,19 @@ void PickerSearchController::HandleDateSearchResults(
   if (date_search_start_.has_value()) {
     base::TimeDelta elapsed = base::TimeTicks::Now() - *date_search_start_;
     base::UmaHistogramTimes("Ash.Picker.Search.DateProvider.QueryTime",
+                            elapsed);
+  }
+
+  if (result.has_value()) {
+    suggested_results_.push_back(*std::move(result));
+  }
+}
+
+void PickerSearchController::HandleMathSearchResults(
+    std::optional<PickerSearchResult> result) {
+  if (math_search_start_.has_value()) {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - *math_search_start_;
+    base::UmaHistogramTimes("Ash.Picker.Search.MathProvider.QueryTime",
                             elapsed);
   }
 

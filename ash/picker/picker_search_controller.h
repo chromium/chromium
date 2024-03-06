@@ -70,6 +70,7 @@ class ASH_EXPORT PickerSearchController {
                               std::vector<PickerSearchResult> results);
   void HandleEmojiSearchResults(emoji::EmojiSearchResult results);
   void HandleDateSearchResults(std::optional<PickerSearchResult> result);
+  void HandleMathSearchResults(std::optional<PickerSearchResult> result);
 
   const raw_ref<PickerClient> client_;
   std::vector<PickerCategory> available_categories_;
@@ -87,6 +88,7 @@ class ASH_EXPORT PickerSearchController {
   std::optional<base::TimeTicks> gif_search_start_;
   std::optional<base::TimeTicks> emoji_search_start_;
   std::optional<base::TimeTicks> category_search_start_;
+  std::optional<base::TimeTicks> math_search_start_;
 
   std::vector<PickerSearchResult> category_results_;
   std::vector<PickerSearchResult> suggested_results_;

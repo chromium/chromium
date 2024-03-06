@@ -5801,6 +5801,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Emoji"/>
     <variant name="File"/>
     <variant name="Gif"/>
+    <variant name="Math"/>
     <variant name="Omnibox"/>
   </token>
 </histogram>
