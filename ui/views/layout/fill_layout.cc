@@ -22,6 +22,14 @@ FillLayout& FillLayout::SetMinimumSizeEnabled(bool minimum_size_enabled) {
   return *this;
 }
 
+FillLayout& FillLayout::SetIncludeInsets(bool include_insets) {
+  if (include_insets != include_insets_) {
+    include_insets_ = include_insets;
+    InvalidateHost(true);
+  }
+  return *this;
+}
+
 ProposedLayout FillLayout::CalculateProposedLayout(
     const SizeBounds& size_bounds) const {
   // Because we explicitly override GetPreferredSize and
@@ -59,7 +67,7 @@ gfx::Size FillLayout::GetPreferredSize(const View* host) const {
 
   // For backwards compatibility, do not include insets if there are no
   // children.
-  if (has_child) {
+  if (has_child && include_insets_) {
     const gfx::Insets insets = host->GetInsets();
     result.Enlarge(insets.width(), insets.height());
   }
@@ -86,7 +94,7 @@ gfx::Size FillLayout::GetMinimumSize(const View* host) const {
 
   // For backwards compatibility, do not include insets if there are no
   // children.
-  if (has_child) {
+  if (has_child && include_insets_) {
     const gfx::Insets insets = host->GetInsets();
     result.Enlarge(insets.width(), insets.height());
   }

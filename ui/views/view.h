@@ -89,6 +89,7 @@ class Background;
 class Border;
 class ContextMenuController;
 class DragController;
+class FillLayout;
 class FocusManager;
 class FocusTraversable;
 class LayoutProvider;
@@ -1943,21 +1944,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PaintWithUnknownInvalidation);
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PauseAccessibilityEvents);
 
-  // This is the default view layout. It is a very simple version of FillLayout,
-  // which merely sets the bounds of the children to the content bounds. The
-  // actual FillLayout isn't used here because it supports a couple of features
-  // not used in the vast majority of instances. It also descends from
-  // LayoutManagerBase which adds some extra overhead not needed here.
-
-  class DefaultFillLayout : public LayoutManager {
-   public:
-    DefaultFillLayout();
-    ~DefaultFillLayout() override;
-    void Layout(View* host) override;
-    gfx::Size GetPreferredSize(const View* host) const override;
-    int GetPreferredHeightForWidth(const View* host, int width) const override;
-  };
-
   // Painting  -----------------------------------------------------------------
 
   // Responsible for propagating SchedulePaint() to the view's layer. If there
@@ -2068,6 +2054,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Non-templatized backend for SetLayoutManager().
   void SetLayoutManagerImpl(std::unique_ptr<LayoutManager> layout);
+
+  void SetToDefaultFillLayout();
 
   // Transformations -----------------------------------------------------------
 
@@ -2366,10 +2354,20 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Views. The default is absolute positioning according to bounds_.
   std::unique_ptr<LayoutManager> layout_manager_;
 
-  // The default "fill" layout manager. This is set only if |layout_manager_|
-  // isn't set and SetUseDefaultFillLayout(true) is called or
-  // |kUseDefaultFillLayout| is true.
-  std::optional<DefaultFillLayout> default_fill_layout_;
+  // Having UseDefaultFillLayout true by default wreaks a bit of havoc right
+  // now, so it is false for the time being. Once the various sites which
+  // currently use FillLayout are converted to using this and the other places
+  // that either override Layout() or do nothing are also validated, this can
+  // be switched to true.
+  static constexpr bool kUseDefaultFillLayout = false;
+
+  // Is the default "fill" layout manager active? Setting this to true via
+  // SetUseDefaultFillLayout() will set |layout_manager_| to a FillLayout. Call
+  // SetLayoutManager(layout_manager) to override. If this is true and
+  // SetLayoutManager(nullptr) is called, |layout_manager_| be set back to a
+  // FillLayout.
+  bool use_default_fill_layout_ = kUseDefaultFillLayout;
+  bool has_default_fill_layout_ = false;
 
   // Whether this View's layer should be snapped to the pixel boundary.
   bool snap_layer_to_pixel_boundary_ = false;

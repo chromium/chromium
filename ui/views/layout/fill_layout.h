@@ -30,6 +30,9 @@ class VIEWS_EXPORT FillLayout : public LayoutManagerBase {
   bool minimum_size_enabled() const { return minimum_size_enabled_; }
   FillLayout& SetMinimumSizeEnabled(bool minimum_size_enabled);
 
+  bool include_insets() const { return include_insets_; }
+  FillLayout& SetIncludeInsets(bool include_insets);
+
   // LayoutManagerBase:
   ProposedLayout CalculateProposedLayout(
       const SizeBounds& size_bounds) const override;
@@ -47,6 +50,11 @@ class VIEWS_EXPORT FillLayout : public LayoutManagerBase {
   //
   // Off by default for backwards-compatibility with legacy uses of FillLayout.
   bool minimum_size_enabled_ = false;
+
+  // TODO (crbug.com/327247047): Should this even be necessary?
+  // Whether to include the host insets in the preferred size calculations.
+  // Set to off for backwards-compatibility with View default fill layout.
+  bool include_insets_ = true;
 };
 
 }  // namespace views
