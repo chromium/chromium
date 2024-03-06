@@ -861,7 +861,9 @@
                 {
                     "name": "EnabledAC",
                     "params": {
-                        "ignore_battery_for_test": "true"
+                        "delay_ms": "120000",
+                        "ignore_battery_for_test": "true",
+                        "pending_idle_reactivate": "false"
                     },
                     "enable_features": [
                         "ArcIdleManager"
