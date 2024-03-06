@@ -71,7 +71,23 @@ class Signer:
     """A container for a signing operation."""
     def __init__(self, tmpdir, lzma_exe, signtool_exe, tagging_exe, identity,
                  certificate_file_path, certificate_password, sign_flags):
-        """Inits a signer with the necessary tools."""
+        """Inits a signer with the necessary tools.
+
+        Arguments:
+        tmpdir - a path to a temp dir to use.
+        lzma_exe - a path to a lzma executable (7zr.exe works)
+        signtool_exe - a path to a signtool.exe executable
+        tagging_exe - a path to the tagging executable
+        identity - optional. If provided, this identity will be appended to the
+          signing flags for each signing.
+        certificate_file_path - optional. If provided, this path will be
+          appended to the signing flags for each signing.
+        certificate_password - optional. If provided, this password will be
+          appended to the signing flags for each signing.
+        sign_flags - a list of lists. The executable will be signed once per
+          entry in this list, using the provided flags with the additions above.
+          This enables signing with multiple certificates.
+        """
         self._tmpdir = tmpdir
         self._lzma_exe = lzma_exe
         self._signtool_exe = signtool_exe
@@ -92,23 +108,18 @@ class Signer:
     def _sign_item(self, in_file):
         """Sign an executable in-place."""
         # Retries may be required: lore states the timestamp server is flaky.
-        command = [self._signtool_exe, 'sign']
-        if self._sign_flags:
-            command += self._sign_flags
-        else:
-            command += [
-                '/v', '/tr', 'http://timestamp.digicert.com', '/td', 'SHA256',
-                '/fd', 'SHA256'
-            ]
+        for flags in self._sign_flags:
+            command = [self._signtool_exe, 'sign']
+            command += flags
             if self._certificate_file_path:
                 command += ['/f', self._certificate_file_path]
-                if self._certificate_password:
-                    command += ['/p', self._certificate_password]
-            else:
+            if self._certificate_password:
+                command += ['/p', self._certificate_password]
+            if self._identity:
                 command += ['/s', 'My', '/n', self._identity]
 
-        command += [in_file]
-        subprocess.run(command, check=True)
+            command += [in_file]
+            subprocess.run(command, check=True)
 
     def _generate_target_manifest(self, appid, installer_path, manifest_path,
                                   manifest_dict_replacements):
@@ -132,8 +143,9 @@ class Signer:
                     '${INSTALLER_SIZE}': str(size),
                     '${INSTALLER_HASH_SHA256}':
                     hashlib.sha256(data).hexdigest(),
-                    **ast.literal_eval(manifest_dict_replacements)
             }.items():
+                manifest_result = manifest_result.replace(key, value)
+            for key, value in manifest_dict_replacements:
                 manifest_result = manifest_result.replace(key, value)
         return manifest_result
 
@@ -271,10 +283,13 @@ def main():
     with tempfile.TemporaryDirectory() as tmpdir:
         Signer(tmpdir, args.lzma_7z, args.signtool, args.tagging_exe,
                args.identity, args.certificate_file_path,
-               args.certificate_password,
-               []).sign_metainstaller(args.in_file, args.out_file, args.appid,
-                                      args.installer_path, args.manifest_path,
-                                      args.manifest_dict_replacements)
+               args.certificate_password, [[
+                   '/v', '/tr', 'http://timestamp.digicert.com', '/td',
+                   'SHA256', '/fd', 'SHA256'
+               ]]).sign_metainstaller(
+                   args.in_file, args.out_file, args.appid,
+                   args.installer_path, args.manifest_path,
+                   ast.literal_eval(args.manifest_dict_replacements))
 
 
 if __name__ == '__main__':
