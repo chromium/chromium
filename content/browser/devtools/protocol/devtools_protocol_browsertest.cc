@@ -3501,8 +3501,16 @@ class InvalidSystemTracingDevToolsProtocolTest
   }
 };
 
+// TODO(https://crbug.com/328350104): Fails ASAN builds
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_StartTracingFailsWithInvalidSockets \
+  DISABLED_StartTracingFailsWithInvalidSockets
+#else
+#define MAYBE_StartTracingFailsWithInvalidSockets \
+  StartTracingFailsWithInvalidSockets
+#endif
 IN_PROC_BROWSER_TEST_F(InvalidSystemTracingDevToolsProtocolTest,
-                       StartTracingFailsWithInvalidSockets) {
+                       MAYBE_StartTracingFailsWithInvalidSockets) {
   EXPECT_FALSE(StartSystemTrace());
 }
 
