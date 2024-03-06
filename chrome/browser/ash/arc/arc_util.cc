@@ -156,6 +156,7 @@ bool IsArcCompatibleFilesystem(const base::FilePath& path) {
   // If it can be verified it is not on ecryptfs, then it is ok.
   struct statfs statfs_buf;
   if (statfs(path.value().c_str(), &statfs_buf) < 0) {
+    VLOG(1) << "statfs failed, errno=" << errno;
     return false;
   }
   return statfs_buf.f_type != ECRYPTFS_SUPER_MAGIC;
@@ -164,9 +165,13 @@ bool IsArcCompatibleFilesystem(const base::FilePath& path) {
 FileSystemCompatibilityState GetFileSystemCompatibilityPref(
     const AccountId& account_id) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  return static_cast<FileSystemCompatibilityState>(
-      known_user.FindIntPath(account_id, prefs::kArcCompatibleFilesystemChosen)
-          .value_or(kFileSystemIncompatible));
+  if (auto pref = known_user.FindIntPath(account_id,
+                                         prefs::kArcCompatibleFilesystemChosen);
+      pref) {
+    return static_cast<FileSystemCompatibilityState>(pref.value());
+  }
+  VLOG(1) << "arc.compatible_filesystem.chosen not set for user";
+  return kFileSystemIncompatible;
 }
 
 // Stores the result of IsArcCompatibleFilesystem posted back from the blocking
