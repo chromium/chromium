@@ -65,10 +65,6 @@ class LoadingPredictorTabHelper
       network::mojom::RequestDestination request_destination) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
-  // Used by LoadingPredictorPageLoadMetricsObserver.
-  void RecordFirstContentfulPaint(content::RenderFrameHost* render_frame_host,
-                                  base::TimeTicks first_contentful_paint);
-
   void SetLoadingPredictorForTesting(
       base::WeakPtr<LoadingPredictor> predictor) {
     predictor_ = predictor;

@@ -63,7 +63,6 @@ struct PageRequestSummary {
   const GURL initial_url;
   const base::TimeTicks navigation_started;
   base::TimeTicks navigation_committed{base::TimeTicks::Max()};
-  base::TimeTicks first_contentful_paint{base::TimeTicks::Max()};
 
   // Map of origin -> OriginRequestSummary. Only one instance of each origin
   // is kept per navigation, but the summary is updated several times.
@@ -127,11 +126,6 @@ class LoadingDataCollector {
       const std::optional<OptimizationGuidePrediction>&
           optimization_guide_prediction);
 
-  // Called after the main frame's first contentful paint.
-  virtual void RecordFirstContentfulPaint(
-      NavigationId navigation_id,
-      base::TimeTicks first_contentful_paint);
-
  private:
   using NavigationMap =
       std::map<NavigationId, std::unique_ptr<PageRequestSummary>>;
@@ -140,8 +134,6 @@ class LoadingDataCollector {
 
   FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest, HandledResourceTypes);
   FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest, ShouldRecordMainFrameLoad);
-  FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest,
-                           ShouldRecordSubresourceLoadAfterFCP);
   FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest,
                            ShouldRecordSubresourceLoad);
   FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest, SimpleNavigation);

@@ -263,16 +263,6 @@ void LoadingDataCollector::RecordMainFrameLoadComplete(
     predictor_->RecordPageRequestSummary(std::move(summary));
 }
 
-void LoadingDataCollector::RecordFirstContentfulPaint(
-    NavigationId navigation_id,
-    base::TimeTicks first_contentful_paint) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  auto nav_it = inflight_navigations_.find(navigation_id);
-  if (nav_it != inflight_navigations_.end())
-    nav_it->second->first_contentful_paint = first_contentful_paint;
-}
-
 bool LoadingDataCollector::ShouldRecordResourceLoad(
     const blink::mojom::ResourceLoadInfo& resource_load_info) const {
   const GURL& url = resource_load_info.final_url;

@@ -504,21 +504,6 @@ void LoadingPredictorTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   page_data->last_optimization_guide_prediction_ = std::nullopt;
 }
 
-void LoadingPredictorTabHelper::RecordFirstContentfulPaint(
-    content::RenderFrameHost* render_frame_host,
-    base::TimeTicks first_contentful_paint) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!predictor_)
-    return;
-
-  auto* page_data = PageData::GetForDocument(*render_frame_host);
-  if (!page_data)
-    return;
-
-  predictor_->loading_data_collector()->RecordFirstContentfulPaint(
-      page_data->navigation_id_, first_contentful_paint);
-}
-
 void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
     scoped_refptr<PageData> page_data,
     const GURL& main_frame_url,

@@ -780,10 +780,6 @@ class TestLoadingDataCollector : public LoadingDataCollector {
       const std::optional<OptimizationGuidePrediction>&
           optimization_guide_prediction) override {}
 
-  void RecordFirstContentfulPaint(
-      NavigationId navigation_id,
-      base::TimeTicks first_contentful_paint) override {}
-
   void SetExpectedResourcePriority(net::RequestPriority request_priority) {
     expected_request_priority_ = request_priority;
   }
