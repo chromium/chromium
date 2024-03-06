@@ -50,6 +50,7 @@
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/ukm_manager.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom-blink.h"
@@ -62,6 +63,7 @@
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
+#include "third_party/blink/renderer/core/accessibility/histogram_macros.h"
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -4912,8 +4914,21 @@ void WebFrameWidgetImpl::NotifyZoomLevelChanged(LocalFrame* root) {
   if (root) {
     Document* document = root->GetDocument();
     DCHECK(document);
-    if (LocalFrameView* view = document->View())
+    if (LocalFrameView* view = document->View()) {
       view->GetLayoutShiftTracker().NotifyZoomLevelChanged();
+#if BUILDFLAG(IS_ANDROID)
+      if (ForTopMostMainFrame()) {
+        // Zoom levels are the exponent in the calculation of zoom. The zoom
+        // factor is the value shown to the user (e.g. 50% to 300%).
+        // Note: On Android, when the AccessibilityPageZoom feature is disabled,
+        // this histogrm should only include samples at 100% zoom factor.
+        UMA_HISTOGRAM_CUSTOM_EXACT_LINEAR(
+            "Accessibility.Android.PageZoom.MainFrameZoomFactor",
+            blink::PageZoomLevelToZoomFactor(View()->ZoomLevel()) * 100, 50,
+            300, 52);
+      }
+#endif
+    }
   }
 }
 
