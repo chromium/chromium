@@ -6853,6 +6853,12 @@ const char kLauncherContinueSectionWithRecentsDescription[] =
     "Adds Google Drive file suggestions based on users' recent activity to "
     "\"Continue where you left off\" section in Launcher.";
 
+const char kLauncherAppsCollectionsName[] = "Launcher Apps Collections";
+const char kLauncherAppsCollectionsDescription[] =
+    "Enables the Launcher Apps Collection UI in ChromeOS. By enabling this "
+    "flag, the apps list will be substituted by a modular view with different "
+    "categories filled with predefined apps.";
+
 const char kLauncherItemSuggestName[] = "Launcher ItemSuggest";
 const char kLauncherItemSuggestDescription[] =
     "Allows configuration of experiment parameters for ItemSuggest in the "

@@ -3956,6 +3956,9 @@ extern const char kLanguagePacksInSettingsDescription[];
 extern const char kLauncherContinueSectionWithRecentsName[];
 extern const char kLauncherContinueSectionWithRecentsDescription[];
 
+extern const char kLauncherAppsCollectionsName[];
+extern const char kLauncherAppsCollectionsDescription[];
+
 extern const char kLauncherItemSuggestName[];
 extern const char kLauncherItemSuggestDescription[];
 

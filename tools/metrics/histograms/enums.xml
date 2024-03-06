@@ -18208,6 +18208,7 @@ from previous Chrome versions.
   <int value="-1212855900" label="enable-all-bookmarks-view"/>
   <int value="-1212273428" label="enable-experimental-app-list"/>
   <int value="-1212167260" label="disable-app-window-cycling"/>
+  <int value="-1211135778" label="AppsCollections:disabled"/>
   <int value="-1210667312" label="OmniboxInspireMe:enabled"/>
   <int value="-1209720026" label="AppMenuMobileSiteOption:disabled"/>
   <int value="-1208501269" label="AutofillScanThemeDialog:enabled"/>
@@ -18586,6 +18587,7 @@ from previous Chrome versions.
   <int value="-1032545529" label="FileSystemAccessLockingScheme:disabled"/>
   <int value="-1032265414" label="AutocompleteExtendedSuggestions:disabled"/>
   <int value="-1031350684" label="PdfIsolation:disabled"/>
+  <int value="-1031000716" label="AppsCollections:enabled"/>
   <int value="-1030683709" label="OnlyShowNewShortcutsApp:disabled"/>
   <int value="-1030530357" label="PwaInstallUseBottomSheet:disabled"/>
   <int value="-1030513821" label="DetectedSourceLanguageOption:disabled"/>
