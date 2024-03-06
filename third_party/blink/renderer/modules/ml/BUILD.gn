@@ -33,6 +33,8 @@ blink_modules_sources("ml") {
     "navigator_ml.h",
     "webnn/ml_activation.cc",
     "webnn/ml_activation.h",
+    "webnn/ml_error_mojo.cc",
+    "webnn/ml_error_mojo.h",
     "webnn/ml_graph.cc",
     "webnn/ml_graph.h",
     "webnn/ml_graph_builder.cc",
@@ -82,10 +84,6 @@ blink_modules_sources("ml") {
       # into a neutral struct types, it will be built and executed with hardware
       # accelerated OS machine learning API in WebNN Service which run out of
       # renderer process.
-      "webnn/ml_context_mojo.cc",
-      "webnn/ml_context_mojo.h",
-      "webnn/ml_error_mojo.cc",
-      "webnn/ml_error_mojo.h",
       "webnn/ml_graph_mojo.cc",
       "webnn/ml_graph_mojo.h",
       "webnn/ml_graph_type_converter.cc",

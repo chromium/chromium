@@ -1907,12 +1907,7 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
 
 #if !BUILDFLAG(IS_CHROMEOS)
   if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu) {
-    // Reject unsupported error on unimplemented platform when getting
-    // `WebNNContext` mojo interface with BrowserInterfaceBroker's
-    // GetInterface() method before creating `WebNNGraph` message pipe.
-    MLContextMojo* ml_context_mojo =
-        static_cast<MLContextMojo*>(ml_context_.Get());
-    MLGraphMojo::ValidateAndBuild(std::move(scoped_trace), ml_context_mojo,
+    MLGraphMojo::ValidateAndBuild(std::move(scoped_trace), ml_context_,
                                   named_outputs, resolver);
     return promise;
   }

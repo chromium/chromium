@@ -120,7 +120,7 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
 
 // static
 void MLGraphMojo::ValidateAndBuild(ScopedMLTrace scoped_trace,
-                                   MLContextMojo* context,
+                                   MLContext* context,
                                    const MLNamedOperands& named_outputs,
                                    ScriptPromiseResolver* resolver) {
   auto* graph =
@@ -129,16 +129,16 @@ void MLGraphMojo::ValidateAndBuild(ScopedMLTrace scoped_trace,
   graph->Build(std::move(scoped_trace), named_outputs, resolver);
 }
 
-MLGraphMojo::MLGraphMojo(ScriptState* script_state, MLContextMojo* context)
+MLGraphMojo::MLGraphMojo(ScriptState* script_state, MLContext* context)
     : MLGraph(context),
-      ml_context_mojo_(context),
+      ml_context_(context),
       remote_graph_(ExecutionContext::From(script_state)) {}
 
 MLGraphMojo::~MLGraphMojo() = default;
 
 void MLGraphMojo::Trace(Visitor* visitor) const {
   visitor->Trace(remote_graph_);
-  visitor->Trace(ml_context_mojo_);
+  visitor->Trace(ml_context_);
   MLGraph::Trace(visitor);
 }
 
@@ -152,8 +152,7 @@ void MLGraphMojo::BuildImpl(ScopedMLTrace scoped_trace,
         "Failed to build graph: " + graph_info.error()));
     return;
   }
-  // Create `WebNNGraph` message pipe with `WebNNContext` mojo interface.
-  ml_context_mojo_->CreateWebNNGraph(
+  ml_context_->CreateWebNNGraph(
       std::move(graph_info.value()),
       WTF::BindOnce(&MLGraphMojo::OnCreateWebNNGraph, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(resolver)));
@@ -244,9 +243,16 @@ void MLGraphMojo::OnDidCompute(
   resolver->Resolve(result);
 }
 
+// TODO: crbug.com/325612086 - Once all backends use mojo, consider refactoring
+// MLGraph creation such that this logic can live in MLContext.
 void MLGraphMojo::OnCreateWebNNGraph(ScopedMLTrace scoped_trace,
                                      ScriptPromiseResolver* resolver,
                                      blink_mojom::CreateGraphResultPtr result) {
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state) {
+    return;
+  }
+
   // Handle error message and throw exception.
   if (result->is_error()) {
     const auto& create_graph_error = result->get_error();
@@ -256,7 +262,6 @@ void MLGraphMojo::OnCreateWebNNGraph(ScopedMLTrace scoped_trace,
     return;
   }
 
-  auto* script_state = resolver->GetScriptState();
   auto* execution_context = ExecutionContext::From(script_state);
   // Bind the end point of `WebNNGraph` mojo interface in the blink side.
   remote_graph_.Bind(

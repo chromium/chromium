@@ -9,12 +9,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/buildflags.h"
+#include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_context_mojo.h"
-#endif
 
 namespace blink {
 
@@ -72,13 +68,6 @@ ScriptPromise ML::createContext(ScriptState* script_state,
       script_state, exception_state.GetContext());
 
   auto promise = resolver->Promise();
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (options->deviceType() == V8MLDeviceType::Enum::kGpu) {
-    MLContextMojo::ValidateAndCreate(resolver, options, this);
-    return promise;
-  }
-#endif
 
   MLContext::ValidateAndCreate(resolver, options, this);
   return promise;

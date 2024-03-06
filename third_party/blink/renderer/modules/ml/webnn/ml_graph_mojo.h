@@ -7,10 +7,11 @@
 
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
+#include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_context_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -26,11 +27,11 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
   // concrete object if the graph builds successfully out of renderer process.
   // The caller must call `Promise()` on `resolver` before calling this method.
   static void ValidateAndBuild(ScopedMLTrace scoped_trace,
-                               MLContextMojo* context,
+                               MLContext* context,
                                const MLNamedOperands& named_outputs,
                                ScriptPromiseResolver* resolver);
 
-  MLGraphMojo(ScriptState* script_state, MLContextMojo* context);
+  MLGraphMojo(ScriptState* script_state, MLContext* context);
   ~MLGraphMojo() override;
 
   void Trace(Visitor* visitor) const override;
@@ -66,7 +67,7 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
                           ScriptPromiseResolver* resolver,
                           webnn::mojom::blink::CreateGraphResultPtr result);
 
-  Member<MLContextMojo> ml_context_mojo_;
+  Member<MLContext> ml_context_;
 
   // The `WebNNGraph` is compiled graph that can be executed by the hardware
   // accelerated OS machine learning API.

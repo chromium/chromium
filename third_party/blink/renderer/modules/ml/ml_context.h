@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
@@ -70,20 +71,19 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                         const MLNamedArrayBufferViews& outputs,
                         ExceptionState& exception_state);
 
- protected:
-  // Create and initialize a MLContext object. Resolve the promise with this
-  // concrete object if the underlying context gets created successfully.
-  void Create(ScopedMLTrace scoped_trace,
-              ScriptPromiseResolver* resolver,
-              MLContextOptions* options);
-
-  // An MLContext backend should implement this method to create and initialize
-  // a platform specific context asynchronously.
-  virtual void CreateImpl(ScopedMLTrace scoped_trace,
-                          ScriptPromiseResolver* resolver,
-                          MLContextOptions* options);
+  // Creates a platform-specific compute graph described by `graph_info`.
+  void CreateWebNNGraph(
+      webnn::mojom::blink::GraphInfoPtr graph_info,
+      webnn::mojom::blink::WebNNContext::CreateGraphCallback callback);
 
  private:
+  // The callback of creating `WebNNContext` mojo interface from WebNN Service.
+  // Return `CreateContextResult::kNotSupported` on non-supported input
+  // configuration.
+  void OnCreateWebNNContext(ScopedMLTrace scoped_trace,
+                            ScriptPromiseResolver* resolver,
+                            webnn::mojom::blink::CreateContextResultPtr result);
+
   V8MLDevicePreference device_preference_;
   V8MLDeviceType device_type_;
   V8MLPowerPreference power_preference_;
@@ -91,8 +91,16 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   unsigned int num_threads_;
 
   Member<ML> ml_;
+
   // WebNN uses this MLModelLoader to build a computational graph.
+  //
+  // TODO: crbug.com/326356909 - Remove this once the TFLite converter has been
+  // completely moved to a utility process.
   Member<MLModelLoader> ml_model_loader_;
+
+  // The `WebNNContext` is a initialized context that can be used by the
+  // hardware accelerated OS machine learning API.
+  HeapMojoRemote<webnn::mojom::blink::WebNNContext> remote_context_;
 };
 
 }  // namespace blink

@@ -4,28 +4,61 @@
 
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 
+#include "base/notreached.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_model_loader.h"
+#include "third_party/blink/renderer/modules/ml/ml_trace.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_error_mojo.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_mojo.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
+
+namespace {
+
+#if !BUILDFLAG(IS_CHROMEOS)
+webnn::mojom::blink::PowerPreference ConvertBlinkPowerPreferenceToMojo(
+    const V8MLPowerPreference& power_preference_blink) {
+  switch (power_preference_blink.AsEnum()) {
+    case V8MLPowerPreference::Enum::kAuto:
+      return webnn::mojom::blink::PowerPreference::kDefault;
+    case V8MLPowerPreference::Enum::kLowPower:
+      return webnn::mojom::blink::PowerPreference::kLowPower;
+    case V8MLPowerPreference::Enum::kHighPerformance:
+      return webnn::mojom::blink::PowerPreference::kHighPerformance;
+  }
+}
+#endif
+
+}  // namespace
 
 // static
 void MLContext::ValidateAndCreate(ScriptPromiseResolver* resolver,
                                   MLContextOptions* options,
                                   ML* ml) {
-  // Notice that currently, we just create the context in the renderer. In the
-  // future we may add backend query ability to check whether a context is
-  // supportable or not. At that time, this function will be truly asynced.
-  //
-  // TODO(crbug.com/1273291): Support async context creation for all contexts.
-  resolver->Resolve(MakeGarbageCollected<MLContext>(
+  ScopedMLTrace scoped_trace("MLContext::ValidateAndCreate");
+  auto* context = MakeGarbageCollected<MLContext>(
       options->devicePreference(), options->deviceType(),
       options->powerPreference(), options->modelFormat(), options->numThreads(),
-      ml));
+      ml);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (options->deviceType() == V8MLDeviceType::Enum::kGpu) {
+    auto options_mojo = webnn::mojom::blink::CreateContextOptions::New(
+        ConvertBlinkPowerPreferenceToMojo(options->powerPreference()));
+    ml->CreateWebNNContext(
+        std::move(options_mojo),
+        WTF::BindOnce(&MLContext::OnCreateWebNNContext, WrapPersistent(context),
+                      std::move(scoped_trace), WrapPersistent(resolver)));
+    return;
+  }
+#endif
+
+  resolver->Resolve(context);
 }
 
 MLContext::MLContext(const V8MLDevicePreference device_preference,
@@ -39,7 +72,8 @@ MLContext::MLContext(const V8MLDevicePreference device_preference,
       power_preference_(power_preference),
       model_format_(model_format),
       num_threads_(num_threads),
-      ml_(ml) {}
+      ml_(ml),
+      remote_context_(ml->GetExecutionContext()) {}
 
 MLContext::~MLContext() = default;
 
@@ -89,6 +123,7 @@ MLModelLoader* MLContext::GetModelLoaderForWebNN(ScriptState* script_state) {
 void MLContext::Trace(Visitor* visitor) const {
   visitor->Trace(ml_);
   visitor->Trace(ml_model_loader_);
+  visitor->Trace(remote_context_);
 
   ScriptWrappable::Trace(visitor);
 }
@@ -121,18 +156,43 @@ ScriptPromise MLContext::compute(ScriptState* script_state,
   return promise;
 }
 
-void MLContext::Create(ScopedMLTrace scoped_trace,
-                       ScriptPromiseResolver* resolver,
-                       MLContextOptions* options) {
-  CreateImpl(std::move(scoped_trace), resolver, options);
+void MLContext::CreateWebNNGraph(
+    webnn::mojom::blink::GraphInfoPtr graph_info,
+    webnn::mojom::blink::WebNNContext::CreateGraphCallback callback) {
+  if (!remote_context_.is_bound()) {
+    std::move(callback).Run(webnn::mojom::blink::CreateGraphResult::NewError(
+        webnn::mojom::blink::Error::New(
+            webnn::mojom::blink::Error::Code::kUnknownError,
+            "Invalid script state.")));
+    return;
+  }
+
+  remote_context_->CreateGraph(std::move(graph_info),
+                               WTF::BindOnce(std::move(callback)));
 }
 
-void MLContext::CreateImpl(ScopedMLTrace scoped_trace,
-                           ScriptPromiseResolver* resolver,
-                           MLContextOptions* options) {
-  // TODO(crbug.com/1273291): Remove when creation gets implemented for all
-  // context types.
-  NOTIMPLEMENTED();
+void MLContext::OnCreateWebNNContext(
+    ScopedMLTrace scoped_trace,
+    ScriptPromiseResolver* resolver,
+    webnn::mojom::blink::CreateContextResultPtr result) {
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state) {
+    return;
+  }
+
+  if (result->is_error()) {
+    const auto& create_context_error = result->get_error();
+    resolver->RejectWithDOMException(
+        ConvertWebNNErrorCodeToDOMExceptionCode(create_context_error->code),
+        create_context_error->message);
+    return;
+  }
+
+  remote_context_.Bind(std::move(result->get_context_remote()),
+                       ExecutionContext::From(script_state)
+                           ->GetTaskRunner(TaskType::kMiscPlatformAPI));
+
+  resolver->Resolve(this);
 }
 
 }  // namespace blink
