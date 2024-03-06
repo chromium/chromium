@@ -62,7 +62,7 @@ const tests = [
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 43, 1);
 
-    chrome.test.assertEq(isMac ? 16 : 0, viewport.overlayScrollbarWidth);
+    chrome.test.assertEq(16, viewport.overlayScrollbarWidth);
     chrome.test.succeed();
   },
 
