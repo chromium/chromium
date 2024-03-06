@@ -104,6 +104,18 @@ class WebLocalFrame;
 class WebMediaPlayerClient;
 class WebMediaPlayerEncryptedMediaClient;
 
+// The set of split histograms that are supported. Keeping them in an enum
+// helps prevent raw strings from being scattered throughout the source, and
+// can provide a convenient way to remember to update the histograms.xml file
+// when changes or additions are made.
+enum class SplitHistogramName {
+  kTimeToMetadata,
+  kTimeToPlayReady,
+  kUnderflowDuration2,
+  kVideoHeightInitial,
+  kTimeToFirstFrame,
+};
+
 // The canonical implementation of WebMediaPlayer that's backed by
 // Pipeline. Handles normal resource loading, Media Source, and
 // Encrypted Media.
@@ -369,7 +381,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // if it's not specified.
   template <uint32_t Flags, typename... T>
   void WriteSplitHistogram(void (*UmaFunction)(const std::string&, T...),
-                           const std::string& key,
+                           SplitHistogramName key,
                            const T&... value);
 
   void EnableOverlay();

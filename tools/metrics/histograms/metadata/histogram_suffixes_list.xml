@@ -4547,18 +4547,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Webapp.InstallResult"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="WebMediaPlayerImplTypes" separator=".">
-  <suffix name="EME"
-      label="For Encrypted Media Extensions (EME) based playbacks."/>
-  <suffix name="MSE"
-      label="For Media Source Extensions (MSE) based playbacks."/>
-  <suffix name="SRC" label="For src= playbacks."/>
-  <affected-histogram name="Media.TimeToFirstFrame"/>
-  <affected-histogram name="Media.TimeToMetadata"/>
-  <affected-histogram name="Media.TimeToPlayReady"/>
-  <affected-histogram name="Media.UnderflowDuration2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="WebSocketErrorCodesVariants" separator="_">
   <suffix name="Localhost" label=""/>
   <suffix name="NotLocalhost" label=""/>

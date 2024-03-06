@@ -5184,7 +5184,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Media.TimeToFirstFrame" units="ms"
+<histogram base="true" name="Media.TimeToFirstFrame.{PlaybackType}" units="ms"
     expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
 
@@ -5194,9 +5194,16 @@ chromium-metrics-reviews@google.com.
     Time in milliseconds from when WebMediaPlayerImpl starts loading until the
     first video frame has been shown.
   </summary>
+  <token key="PlaybackType">
+    <variant name="All" summary="all"/>
+    <variant name="EME"/>
+    <variant name="HLS"/>
+    <variant name="MSE"/>
+    <variant name="SRC"/>
+  </token>
 </histogram>
 
-<histogram base="true" name="Media.TimeToMetadata" units="ms"
+<histogram base="true" name="Media.TimeToMetadata.{PlaybackType}" units="ms"
     expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
 
@@ -5206,9 +5213,16 @@ chromium-metrics-reviews@google.com.
     Time in milliseconds from when WebMediaPlayerImpl starts loading until
     metadata is known.
   </summary>
+  <token key="PlaybackType">
+    <variant name="All" summary="all"/>
+    <variant name="EME"/>
+    <variant name="HLS"/>
+    <variant name="MSE"/>
+    <variant name="SRC"/>
+  </token>
 </histogram>
 
-<histogram base="true" name="Media.TimeToPlayReady" units="ms"
+<histogram base="true" name="Media.TimeToPlayReady.{PlaybackType}" units="ms"
     expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
 
@@ -5218,6 +5232,13 @@ chromium-metrics-reviews@google.com.
     Time in milliseconds from when WebMediaPlayer starts loading until it has
     buffered enough to start playback.
   </summary>
+  <token key="PlaybackType">
+    <variant name="All" summary="all"/>
+    <variant name="EME"/>
+    <variant name="HLS"/>
+    <variant name="MSE"/>
+    <variant name="SRC"/>
+  </token>
 </histogram>
 
 <histogram name="Media.TotalMBytes" units="MB" expires_after="M85">
@@ -5326,11 +5347,9 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Media.UnderflowDuration2" units="ms"
-    expires_after="never">
+<histogram base="true" name="Media.UnderflowDuration2.{PlaybackType}"
+    units="ms" expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
-
-<!-- Name completed by histogram_suffixes name="WebMediaPlayerImplTypes" -->
 
   <owner>dalecurtis@chromium.org</owner>
   <summary>
@@ -5338,6 +5357,13 @@ chromium-metrics-reviews@google.com.
     for playbacks. This doesn't report initial zero samples, which was
     previously used to compensate for playbacks that don't rebuffer.
   </summary>
+  <token key="PlaybackType">
+    <variant name="All" summary="all"/>
+    <variant name="EME"/>
+    <variant name="HLS"/>
+    <variant name="MSE"/>
+    <variant name="SRC"/>
+  </token>
 </histogram>
 
 <histogram name="Media.URLScheme2" enum="URLSchemeForHistogram"
@@ -6311,6 +6337,7 @@ chromium-metrics-reviews@google.com.
   <token key="PlaybackType">
     <variant name="All" summary="all"/>
     <variant name="EME"/>
+    <variant name="HLS"/>
     <variant name="MSE"/>
     <variant name="SRC"/>
   </token>
