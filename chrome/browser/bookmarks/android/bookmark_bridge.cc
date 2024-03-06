@@ -154,13 +154,19 @@ ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_NativeGetForProfile(
       model->GetUserData(kBookmarkBridgeUserDataKey));
 
   if (!bookmark_bridge) {
+    // BookmarkModel factory redirects to the original profile, so it might
+    // happen that profile refers to the incognito profile, even though we're
+    // building the bridge for the regular profile. Thus, we need to get
+    // IdentityManager for the original profile as well.
+    auto* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
     bookmark_bridge = new BookmarkBridge(
         profile, model, ManagedBookmarkServiceFactory::GetForProfile(profile),
         page_image_service::ImageServiceFactory::GetForBrowserContext(profile),
         ReadingListModelFactory::GetAsDualReadingListForBrowserContext(profile),
         PartnerBookmarksShim::BuildForBrowserContext(
             chrome::GetBrowserContextRedirectedInIncognito(profile)),
-        IdentityManagerFactory::GetForProfile(profile));
+        identity_manager);
     model->SetUserData(kBookmarkBridgeUserDataKey,
                        base::WrapUnique(bookmark_bridge));
   }
@@ -197,6 +203,7 @@ BookmarkBridge::BookmarkBridge(
   CHECK(partner_bookmarks_shim);
   // TODO(crbug.com/1503231): CHECK image_service once a mock is available.
   CHECK(dual_reading_list_model);
+  CHECK(identity_manager_);
 
   profile_observation_.Observe(profile_);
   bookmark_model_observation_.Observe(bookmark_model_);
@@ -204,9 +211,7 @@ BookmarkBridge::BookmarkBridge(
   reading_list_manager_observations_.AddObservation(
       local_or_syncable_reading_list_manager_.get());
   dual_reading_list_model_observation_.Observe(dual_reading_list_model_);
-  if (identity_manager_) {
-    identity_manager_observation_.Observe(identity_manager_);
-  }
+  identity_manager_observation_.Observe(identity_manager_);
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
