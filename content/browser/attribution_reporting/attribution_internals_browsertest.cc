@@ -1023,7 +1023,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       WebUISendReports_ReportsRemoved) {
+                       WebUISendReport_ReportRemoved) {
   EXPECT_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{
           ReportBuilder(AttributionInfoBuilder().Build(),
@@ -1033,10 +1033,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .Build()}))
       .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{}));
 
-  EXPECT_CALL(*manager(),
-              SendReportsForWebUI(ElementsAre(AttributionReport::Id(5)), _))
-      .WillOnce([](const std::vector<AttributionReport::Id>& ids,
-                   base::OnceClosure done) { std::move(done).Run(); });
+  EXPECT_CALL(*manager(), SendReportForWebUI(AttributionReport::Id(5), _))
+      .WillOnce([](AttributionReport::Id, base::OnceClosure done) {
+        std::move(done).Run();
+      });
 
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
@@ -1300,7 +1300,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       WebUISendAggregatableReports_ReportsRemoved) {
+                       WebUISendAggregatableReport_ReportRemoved) {
   EXPECT_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{
           ReportBuilder(AttributionInfoBuilder().Build(),
@@ -1311,10 +1311,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .BuildAggregatableAttribution()}))
       .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{}));
 
-  EXPECT_CALL(*manager(),
-              SendReportsForWebUI(ElementsAre(AttributionReport::Id(5)), _))
-      .WillOnce([](const std::vector<AttributionReport::Id>& ids,
-                   base::OnceClosure done) { std::move(done).Run(); });
+  EXPECT_CALL(*manager(), SendReportForWebUI(AttributionReport::Id(5), _))
+      .WillOnce([](AttributionReport::Id, base::OnceClosure done) {
+        std::move(done).Run();
+      });
 
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 

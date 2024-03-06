@@ -66,9 +66,8 @@ class MockAttributionManager : public AttributionManager {
               (override));
 
   MOCK_METHOD(void,
-              SendReportsForWebUI,
-              (const std::vector<AttributionReport::Id>&,
-               base::OnceClosure done),
+              SendReportForWebUI,
+              (AttributionReport::Id, base::OnceClosure done),
               (override));
 
   MOCK_METHOD(void,

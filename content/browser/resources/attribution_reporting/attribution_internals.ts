@@ -547,40 +547,40 @@ function initReportTable<T extends Report>(
 
   d.init([valueColumn('Body', 'reportBody', asCode)]);
 
-  const sendReportsButton = panel.querySelector('button')!;
+  const sendReportButton = panel.querySelector('button')!;
 
-  sendReportsButton.addEventListener(
-      'click', () => sendReports(t, sendReportsButton, handler));
+  sendReportButton.addEventListener(
+      'click', () => sendReport(t, sendReportButton, handler));
 
   bindInternalsAndDetailTables(t, d, (report: T|undefined) => {
-    sendReportsButton.disabled = !(report?.isPending());
+    sendReportButton.disabled = !(report?.isPending());
   });
 
   return t;
 }
 
 /**
- * Sends all selected reports.
- * Disables the button while the reports are still being sent.
+ * Sends the selected report.
+ * Disables the button while the report is still being sent.
  * Observer.onReportsChanged and Observer.onSourcesChanged will be called
- * automatically as reports are deleted, so there's no need to manually
+ * automatically as the report is deleted, so there's no need to manually
  * refresh the data on completion.
  */
-function sendReports<T extends Report>(
-    t: AttributionInternalsTableElement<T>,
-    sendReportsButton: HTMLButtonElement, handler: HandlerInterface): void {
+function sendReport<T extends Report>(
+    t: AttributionInternalsTableElement<T>, sendReportButton: HTMLButtonElement,
+    handler: HandlerInterface): void {
   const id = t.selectedData()?.id;
   if (id === undefined) {
     return;
   }
 
-  const previousText = sendReportsButton.innerText;
+  const previousText = sendReportButton.innerText;
 
-  sendReportsButton.disabled = true;
-  sendReportsButton.innerText = 'Sending...';
+  sendReportButton.disabled = true;
+  sendReportButton.innerText = 'Sending...';
 
-  handler.sendReports([id]).then(() => {
-    sendReportsButton.innerText = previousText;
+  handler.sendReport(id).then(() => {
+    sendReportButton.innerText = previousText;
   });
 }
 

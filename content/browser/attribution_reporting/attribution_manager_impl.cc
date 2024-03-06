@@ -942,9 +942,8 @@ void AttributionManagerImpl::GetPendingReportsForInternalUse(
 
 // TODO(apaseltiner): Consider `OnUserVisibleTaskStarted()` here, since this is
 // used by the internals UI, which is user-visible.
-void AttributionManagerImpl::SendReportsForWebUI(
-    const std::vector<AttributionReport::Id>& ids,
-    base::OnceClosure done) {
+void AttributionManagerImpl::SendReportForWebUI(AttributionReport::Id id,
+                                                base::OnceClosure done) {
   DCHECK(done);
 
   // TODO(linnan): Consider returning an error to the web UI.
@@ -953,9 +952,9 @@ void AttributionManagerImpl::SendReportsForWebUI(
     return;
   }
 
-  attribution_storage_.AsyncCall(&AttributionStorage::GetReports)
-      .WithArgs(ids)
-      .Then(base::BindOnce(&AttributionManagerImpl::OnGetReportsToSendFromWebUI,
+  attribution_storage_.AsyncCall(&AttributionStorage::GetReport)
+      .WithArgs(id)
+      .Then(base::BindOnce(&AttributionManagerImpl::OnGetReportToSendFromWebUI,
                            weak_factory_.GetWeakPtr(), std::move(done)));
 }
 
@@ -1064,72 +1063,70 @@ void AttributionManagerImpl::GetReportsToSend() {
   attribution_storage_.AsyncCall(&AttributionStorage::GetAttributionReports)
       .WithArgs(/*max_report_time=*/base::Time::Now(), /*limit=*/-1)
       .Then(base::BindOnce(&AttributionManagerImpl::SendReports,
-                           weak_factory_.GetWeakPtr(),
-                           /*web_ui_callback=*/base::NullCallback()));
+                           weak_factory_.GetWeakPtr()));
 }
 
-void AttributionManagerImpl::OnGetReportsToSendFromWebUI(
+void AttributionManagerImpl::OnGetReportToSendFromWebUI(
     base::OnceClosure done,
-    std::vector<AttributionReport> reports) {
+    std::optional<AttributionReport> report) {
   DCHECK(done);
 
-  if (reports.empty()) {
+  if (!report.has_value()) {
     std::move(done).Run();
     return;
   }
 
-  // Give all reports the same report time for consistency in the internals UI.
   const base::Time now = base::Time::Now();
-  for (AttributionReport& report : reports) {
-    report.set_report_time(now);
-  }
-
-  auto barrier = base::BarrierClosure(reports.size(), std::move(done));
-  SendReports(std::move(barrier), std::move(reports));
+  report->set_report_time(now);
+  SendReport(std::move(done), now, std::move(*report));
 }
 
-// If `web_ui_callback` is null, assumes that `reports` are being sent at their
-// intended time, and logs metrics for them. Otherwise, does not log metrics.
 void AttributionManagerImpl::SendReports(
-    base::RepeatingClosure web_ui_callback,
     std::vector<AttributionReport> reports) {
   const base::Time now = base::Time::Now();
-  for (AttributionReport& report : reports) {
-    DCHECK_LE(report.report_time(), now);
-
-    bool inserted = reports_being_sent_.emplace(report.id()).second;
-    if (!inserted) {
-      if (web_ui_callback) {
-        web_ui_callback.Run();
-      }
-
-      continue;
-    }
-
-    if (report.GetReportType() ==
-        AttributionReport::Type::kAggregatableAttribution) {
-      pending_aggregatable_reports_.erase(report.id());
-    }
-
-    if (!IsReportAllowed(report)) {
-      // If measurement is disallowed, just drop the report on the floor. We
-      // need to make sure we forward that the report was "sent" to ensure it is
-      // deleted from storage, etc. This simulates sending the report through a
-      // null channel.
-      OnReportSent(web_ui_callback, std::move(report),
-                   SendResult(SendResult::Status::kDropped));
-      continue;
-    }
-
-    if (!web_ui_callback) {
-      LogMetricsOnReportSend(report, now);
-    }
-
-    PrepareToSendReport(
-        std::move(report), /*is_debug_report=*/false,
-        base::BindOnce(&AttributionManagerImpl::OnReportSent,
-                       weak_factory_.GetWeakPtr(), web_ui_callback));
+  for (auto& report : reports) {
+    SendReport(base::NullCallback(), now, std::move(report));
   }
+}
+
+// If `web_ui_callback` is null, assumes that `report` is being sent at its
+// intended time, and logs metrics for it. Otherwise, does not log metrics.
+void AttributionManagerImpl::SendReport(base::OnceClosure web_ui_callback,
+                                        const base::Time now,
+                                        AttributionReport report) {
+  DCHECK_LE(report.report_time(), now);
+
+  bool inserted = reports_being_sent_.emplace(report.id()).second;
+  if (!inserted) {
+    if (web_ui_callback) {
+      std::move(web_ui_callback).Run();
+    }
+    return;
+  }
+
+  if (report.GetReportType() ==
+      AttributionReport::Type::kAggregatableAttribution) {
+    pending_aggregatable_reports_.erase(report.id());
+  }
+
+  if (!IsReportAllowed(report)) {
+    // If measurement is disallowed, just drop the report on the floor. We
+    // need to make sure we forward that the report was "sent" to ensure it is
+    // deleted from storage, etc. This simulates sending the report through a
+    // null channel.
+    OnReportSent(std::move(web_ui_callback), std::move(report),
+                 SendResult(SendResult::Status::kDropped));
+    return;
+  }
+
+  if (!web_ui_callback) {
+    LogMetricsOnReportSend(report, now);
+  }
+
+  PrepareToSendReport(
+      std::move(report), /*is_debug_report=*/false,
+      base::BindOnce(&AttributionManagerImpl::OnReportSent,
+                     weak_factory_.GetWeakPtr(), std::move(web_ui_callback)));
 }
 
 void AttributionManagerImpl::MarkReportCompleted(

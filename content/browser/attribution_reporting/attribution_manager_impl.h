@@ -135,8 +135,8 @@ class CONTENT_EXPORT AttributionManagerImpl
       int limit,
       base::OnceCallback<void(std::vector<AttributionReport>)> callback)
       override;
-  void SendReportsForWebUI(const std::vector<AttributionReport::Id>& ids,
-                           base::OnceClosure done) override;
+  void SendReportForWebUI(AttributionReport::Id,
+                          base::OnceClosure done) override;
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,
                  StoragePartition::StorageKeyMatcherFunction filter,
@@ -196,11 +196,13 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   void GetReportsToSend();
 
-  void OnGetReportsToSendFromWebUI(base::OnceClosure done,
-                                   std::vector<AttributionReport> reports);
+  void OnGetReportToSendFromWebUI(base::OnceClosure done,
+                                  std::optional<AttributionReport>);
 
-  void SendReports(base::RepeatingClosure web_ui_callback,
-                   std::vector<AttributionReport> reports);
+  void SendReports(std::vector<AttributionReport>);
+  void SendReport(base::OnceClosure web_ui_callback,
+                  base::Time now,
+                  AttributionReport);
   void PrepareToSendReport(AttributionReport report,
                            bool is_debug_report,
                            ReportSentCallback callback);

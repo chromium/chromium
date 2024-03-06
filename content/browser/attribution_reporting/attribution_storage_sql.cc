@@ -897,7 +897,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   }
 
   std::optional<AttributionReport> replaced =
-      GetReport(*conversion_id_with_min_priority);
+      GetReportInternal(*conversion_id_with_min_priority);
   if (!replaced.has_value()) {
     return MaybeReplaceLowerPriorityEventLevelReportResult::kError;
   }
@@ -1702,24 +1702,16 @@ std::optional<base::Time> AttributionStorageSql::GetNextReportTime(
   return std::nullopt;
 }
 
-std::vector<AttributionReport> AttributionStorageSql::GetReports(
-    const std::vector<AttributionReport::Id>& ids) {
+std::optional<AttributionReport> AttributionStorageSql::GetReport(
+    AttributionReport::Id id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
-    return {};
+    return std::nullopt;
   }
-
-  std::vector<AttributionReport> reports;
-  for (AttributionReport::Id id : ids) {
-    std::optional<AttributionReport> report = GetReport(id);
-    if (report.has_value()) {
-      reports.push_back(std::move(*report));
-    }
-  }
-  return reports;
+  return GetReportInternal(id);
 }
 
-std::optional<AttributionReport> AttributionStorageSql::GetReport(
+std::optional<AttributionReport> AttributionStorageSql::GetReportInternal(
     AttributionReport::Id id) {
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetReportSql));

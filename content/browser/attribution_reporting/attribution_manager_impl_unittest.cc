@@ -1560,71 +1560,25 @@ TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
     EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
         .Times(0);
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(InvokeReportSentCallback(SendResult::Status::kSent));
   }
 
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
   attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
   std::vector<AttributionReport> reports = StoredReports();
-  EXPECT_THAT(reports, SizeIs(1));
+  ASSERT_THAT(reports, SizeIs(1));
 
   checkpoint.Call(1);
 
-  attribution_manager_->SendReportsForWebUI({reports.front().id()},
-                                            base::DoNothing());
+  int calls = 0;
+
+  attribution_manager_->SendReportForWebUI(
+      reports.front().id(), base::BindLambdaForTesting([&]() { ++calls; }));
+
   task_environment_.FastForwardBy(base::TimeDelta());
-}
-
-TEST_F(AttributionManagerImplTest,
-       ConversionsSentFromUI_CallbackInvokedWhenAllDone) {
-  std::vector<ReportSentCallback> report_sent_callbacks;
-  std::vector<AttributionReport> sent_reports;
-
-  Checkpoint checkpoint;
-  {
-    InSequence seq;
-
-    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
-        .Times(0);
-    EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
-        .WillRepeatedly([&](AttributionReport report, bool is_debug_report,
-                            ReportSentCallback callback) {
-          report_sent_callbacks.push_back(std::move(callback));
-          sent_reports.push_back(std::move(report));
-        });
-  }
-
-  size_t callback_calls = 0;
-
-  attribution_manager_->HandleSource(
-      SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
-  attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
-  attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
-  std::vector<AttributionReport> reports = StoredReports();
-  EXPECT_THAT(reports, SizeIs(2));
-
-  checkpoint.Call(1);
-
-  attribution_manager_->SendReportsForWebUI(
-      {reports.front().id(), reports.back().id()},
-      base::BindLambdaForTesting([&]() { callback_calls++; }));
-  task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_EQ(callback_calls, 0u);
-
-  ASSERT_THAT(report_sent_callbacks, SizeIs(2));
-  ASSERT_THAT(sent_reports, SizeIs(2));
-
-  std::move(report_sent_callbacks[0])
-      .Run(std::move(sent_reports[0]), SendResult(SendResult::Status::kSent));
-  task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_EQ(callback_calls, 0u);
-
-  std::move(report_sent_callbacks[1])
-      .Run(std::move(sent_reports[1]), SendResult(SendResult::Status::kSent));
-  task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_EQ(callback_calls, 1u);
+  EXPECT_EQ(calls, 1);
 }
 
 TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Delayed) {
@@ -2301,8 +2255,8 @@ TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
 
   EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
 
-  attribution_manager_->SendReportsForWebUI({AttributionReport::Id(1)},
-                                            base::DoNothing());
+  attribution_manager_->SendReportForWebUI(AttributionReport::Id(1),
+                                           base::DoNothing());
   task_environment_.FastForwardBy(base::TimeDelta());
 
   histograms.ExpectTotalCount("Conversions.ExtraReportDelay2", 0);

@@ -50,6 +50,7 @@ mojom("internals_mojo_bindings") {
         {
           mojom = "attribution_internals.mojom.ReportID"
           cpp = "::content::AttributionReport::Id"
+          copyable_pass_by_value = true
         },
       ]
       traits_headers = [

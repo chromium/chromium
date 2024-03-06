@@ -81,11 +81,9 @@ class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
       int limit,
       base::OnceCallback<void(std::vector<AttributionReport>)> callback) = 0;
 
-  // Sends the given reports immediately, and runs |done| once they have all
-  // been sent.
-  virtual void SendReportsForWebUI(
-      const std::vector<AttributionReport::Id>& ids,
-      base::OnceClosure done) = 0;
+  // Sends the given report immediately, and runs |done| once it has been sent.
+  virtual void SendReportForWebUI(AttributionReport::Id,
+                                  base::OnceClosure done) = 0;
 
   // Deletes all data in storage for storage keys matching `filter`, between
   // `delete_begin` and `delete_end` time.

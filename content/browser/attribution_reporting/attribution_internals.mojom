@@ -214,9 +214,9 @@ interface Handler {
   // being sent.
   GetReports() => (array<WebUIReport> reports);
 
-  // Sends the given reports, ignoring delay, returning when the operation has
-  // been completed and the reports have been cleared from storage.
-  SendReports(array<ReportID> ids) => ();
+  // Sends the given report, ignoring delay, returning when the operation has
+  // been completed and the report has been cleared from storage.
+  SendReport(ReportID id) => ();
 
   // Deletes all persisted data for the attribution reporting API, returning when the
   // operation has been completed.

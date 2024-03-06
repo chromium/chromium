@@ -67,10 +67,9 @@ class AttributionStorage {
   // Returns the first report time strictly after `time`.
   virtual std::optional<base::Time> GetNextReportTime(base::Time time) = 0;
 
-  // Returns the reports with the given IDs. This call is logically const, and
+  // Returns the report with the given ID. This call is logically const, and
   // does not modify the underlying storage.
-  virtual std::vector<AttributionReport> GetReports(
-      const std::vector<AttributionReport::Id>& ids) = 0;
+  virtual std::optional<AttributionReport> GetReport(AttributionReport::Id) = 0;
 
   // Returns all active sources in storage. Active sources are all
   // sources that can still convert. Sources that: are past expiry,

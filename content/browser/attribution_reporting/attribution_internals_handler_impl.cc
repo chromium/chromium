@@ -293,12 +293,12 @@ void AttributionInternalsHandlerImpl::GetReports(
   }
 }
 
-void AttributionInternalsHandlerImpl::SendReports(
-    const std::vector<AttributionReport::Id>& ids,
-    attribution_internals::mojom::Handler::SendReportsCallback callback) {
+void AttributionInternalsHandlerImpl::SendReport(
+    AttributionReport::Id id,
+    attribution_internals::mojom::Handler::SendReportCallback callback) {
   if (AttributionManager* manager =
           AttributionManager::FromWebContents(web_ui_->GetWebContents())) {
-    manager->SendReportsForWebUI(ids, std::move(callback));
+    manager->SendReportForWebUI(id, std::move(callback));
   } else {
     std::move(callback).Run();
   }
