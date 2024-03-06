@@ -2081,7 +2081,7 @@
   {
     "name": "elastic-overscroll",
     "owners": [ "arakeri@microsoft.com", "flackr@chromium.org" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 150
   },
   {
     "name": "element-capture",
