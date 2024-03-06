@@ -251,11 +251,11 @@ void SettingsAppMonitor::AutomationControllerDelegate::MaybeInvokeChooser(
 
   // Invoke the dialog and record whether it was successful.
   Microsoft::WRL::ComPtr<IUIAutomationInvokePattern> invoke_pattern;
+  browser_button->GetCachedPatternAs(UIA_InvokePatternId,
+                                     IID_PPV_ARGS(&invoke_pattern));
   if (!invoke_pattern) {
     return;
   }
-  browser_button->GetCachedPatternAs(UIA_InvokePatternId,
-                                     IID_PPV_ARGS(&invoke_pattern));
   invoke_pattern->Invoke();
 }
 
