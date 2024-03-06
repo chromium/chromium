@@ -427,7 +427,8 @@ void ExpectDeviceManagementPolicyFetchWithNewPublicKeyRequest(
     const ::wireless_android_enterprise_devicemanagement::
         OmahaSettingsClientProto& omaha_settings);
 void ExpectDeviceManagementTokenDeletionRequest(ScopedServer* test_server,
-                                                const std::string& dm_token);
+                                                const std::string& dm_token,
+                                                bool invalidate_token);
 void ExpectDeviceManagementPolicyValidationRequest(ScopedServer* test_server,
                                                    const std::string& dm_token);
 

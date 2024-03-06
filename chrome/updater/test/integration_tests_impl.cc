@@ -1381,19 +1381,23 @@ void ExpectDeviceManagementPolicyFetchWithNewPublicKeyRequest(
 }
 
 void ExpectDeviceManagementTokenDeletionRequest(ScopedServer* test_server,
-                                                const std::string& dm_token) {
+                                                const std::string& dm_token,
+                                                bool invalidate_token) {
+  ::enterprise_management::DeviceManagementErrorDetail error_detail =
+      invalidate_token ? ::enterprise_management::
+                             CBCM_DELETION_POLICY_PREFERENCE_INVALIDATE_TOKEN
+                       : ::enterprise_management::
+                             CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN;
   ExpectDeviceManagementRequest(
       test_server, "policy", "GoogleDMToken", dm_token, net::HTTP_GONE,
-      [&dm_token] {
+      [&dm_token, error_detail] {
         std::unique_ptr<::enterprise_management::DeviceManagementResponse>
             dm_response =
                 DMPolicyBuilderForTesting::CreateInstanceWithOptions(
                     /*first_request=*/false, /*rotate_to_new_key=*/false,
                     DMPolicyBuilderForTesting::SigningOption::kSignNormally,
                     dm_token, GetDefaultDMStorage()->GetDeviceID())
-                    ->BuildDMResponseWithError(
-                        enterprise_management::
-                            CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN);
+                    ->BuildDMResponseWithError(error_detail);
         return dm_response->SerializeAsString();
       }());
 }

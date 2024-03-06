@@ -111,8 +111,8 @@ bool TokenService::StoreDmToken(const std::string& token) {
   }
 
   base::win::RegKey legacy_key;
-  if (legacy_key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyLegacyEnrollment,
-                      KEY_WOW64_64KEY | KEY_WRITE) != ERROR_SUCCESS ||
+  if (legacy_key.Create(HKEY_LOCAL_MACHINE, kRegKeyCompanyLegacyEnrollment,
+                        KEY_WOW64_64KEY | KEY_WRITE) != ERROR_SUCCESS ||
       legacy_key.WriteValue(kRegValueDmToken, dm_token.c_str()) !=
           ERROR_SUCCESS) {
     VLOG(1) << "Failed to write DM token at the legacy place.";

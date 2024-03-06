@@ -2570,10 +2570,41 @@ TEST_F(IntegrationTestDeviceManagement, DMTokenDeletion) {
   EXPECT_EQ(dm_storage->GetDmToken(), kDMToken);
 
   // Run a second policy fetch and delete the DM token.
-  ExpectDeviceManagementTokenDeletionRequest(test_server_.get(), kDMToken);
+  ExpectDeviceManagementTokenDeletionRequest(test_server_.get(), kDMToken,
+                                             /*invalidate_token=*/false);
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
   EXPECT_TRUE(dm_storage->GetDmToken().empty());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTestDeviceManagement, DMTokenInvalidation) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/true));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kApp1.appid, kApp1.v1));
+
+  // Do a policy fetch to update the DM token.
+  DMPushEnrollmentToken(kEnrollmentToken);
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken, {});
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectNoUpdateSequence(test_server_.get(), kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  scoped_refptr<DMStorage> dm_storage = GetDefaultDMStorage();
+  EXPECT_EQ(dm_storage->GetDmToken(), kDMToken);
+
+  // Run a second policy fetch and invalidate the DM token.
+  ExpectDeviceManagementTokenDeletionRequest(test_server_.get(), kDMToken,
+                                             /*invalidate_token=*/true);
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  EXPECT_TRUE(dm_storage->IsDeviceDeregistered());
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
