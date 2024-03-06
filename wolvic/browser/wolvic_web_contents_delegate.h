@@ -38,6 +38,10 @@ class WolvicWebContentsDelegate
       SkColor color,
       const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) override;
 
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      scoped_refptr<content::FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override;
+
  private:
   std::unique_ptr<content::WebContents> new_contents_;
   std::unique_ptr<WolvicJavascriptDialogManager> javascript_dialog_manager_;
