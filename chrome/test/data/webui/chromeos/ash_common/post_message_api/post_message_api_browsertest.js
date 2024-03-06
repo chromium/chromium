@@ -7,9 +7,9 @@ GEN_INCLUDE(['//chrome/test/data/webui/chromeos/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
-function PostMessageAPIModuleTest() {}
+function PostMessageApiModuleTest() {}
 
-PostMessageAPIModuleTest.prototype = {
+PostMessageApiModuleTest.prototype = {
 
   __proto__: testing.Test.prototype,
 
@@ -22,6 +22,6 @@ PostMessageAPIModuleTest.prototype = {
 
 // Test the postmessage api server and client by defining server methods, and
 // passing a series of postmessages.
-TEST_F('PostMessageAPIModuleTest', 'PostMessageCommTest', function() {
-  runMochaTest('PostMessageAPIModuleTest', 'PostMessageCommTest');
+TEST_F('PostMessageApiModuleTest', 'PostMessageCommTest', function() {
+  runMochaTest('PostMessageApiModuleTest', 'PostMessageCommTest');
 });
