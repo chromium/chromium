@@ -467,17 +467,15 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onNextGranularityClick_() {
-    this.dispatchEvent(new CustomEvent('next-granularity-click', {
-      bubbles: true,
-      composed: true,
-    }));
+    if (this.contentPage) {
+      this.contentPage.playNextGranularity();
+    }
   }
 
   private onPreviousGranularityClick_() {
-    this.dispatchEvent(new CustomEvent('previous-granularity-click', {
-      bubbles: true,
-      composed: true,
-    }));
+    if (this.contentPage) {
+      this.contentPage.playPreviousGranularity();
+    }
   }
 
   private onTextStyleMenuButtonClick_(event: DomRepeatEvent<MenuButton>) {
