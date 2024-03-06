@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <cstdint>
+#include <cstring>
 
 #include "base/check.h"
 
