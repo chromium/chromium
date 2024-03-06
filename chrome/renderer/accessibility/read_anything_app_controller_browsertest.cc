@@ -1785,6 +1785,10 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, RequestImageDataUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kReadAnythingImagesViaAlgorithm}, {});
+
   ui::AXNodeID ax_node_id = 2;
   EXPECT_CALL(page_handler_, OnImageDataRequested(tree_id_, ax_node_id))
       .Times(1);
