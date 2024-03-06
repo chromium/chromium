@@ -8,12 +8,18 @@ import {WallpaperGridItemElement} from 'chrome://resources/ash/common/personaliz
 import {getSeaPenTemplates} from 'chrome://resources/ash/common/sea_pen/constants.js';
 import {SeaPenPaths, SeaPenRouterElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
 import {SeaPenTemplateQueryElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_template_query_element.js';
+import {setTransitionsEnabled} from 'chrome://resources/ash/common/sea_pen/transition.js';
 import {VcBackgroundApp} from 'chrome://vc-background/js/vc_background_app.js';
 import {VcBackgroundBreadcrumbElement} from 'chrome://vc-background/js/vc_background_breadcrumb_element.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('VcBackgroundUITest', () => {
+  setup(() => {
+    // Disables page transition by default.
+    setTransitionsEnabled(false);
+  });
+
   function getVcBackgroundApp(): VcBackgroundApp {
     const vcBackgroundApp = document.body.querySelector('vc-background-app');
     assertTrue(!!vcBackgroundApp, 'vc-background-app exists');

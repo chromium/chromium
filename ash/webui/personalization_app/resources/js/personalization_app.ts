@@ -146,6 +146,7 @@ export {WallpaperSelectedElement} from './wallpaper/wallpaper_selected_element.j
 export {WallpaperSubpageElement} from './wallpaper/wallpaper_subpage_element.js';
 export {DailyRefreshType} from './wallpaper/wallpaper_state.js';
 export {TimeOfDayAcceptEvent, TimeOfDayWallpaperDialogElement} from './wallpaper/time_of_day_wallpaper_dialog_element.js';
+export {setTransitionsEnabled, maybeDoPageTransition} from 'chrome://resources/ash/common/sea_pen/transition.js';
 
 PersonalizationStore.getInstance().init(emptyState());
 SeaPenStoreAdapter.initSeaPenStore();

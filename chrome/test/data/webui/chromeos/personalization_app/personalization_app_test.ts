@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DynamicColorElement, getThemeProvider, GooglePhotosAlbumsElement, GooglePhotosCollectionElement, GooglePhotosSharedAlbumDialogElement, PersonalizationRouterElement, PersonalizationThemeElement, SeaPenRouterElement, SeaPenTemplateQueryElement, WallpaperCollectionsElement, WallpaperGridItemElement, WallpaperImagesElement} from 'chrome://personalization/js/personalization_app.js';
+import {DynamicColorElement, getThemeProvider, GooglePhotosAlbumsElement, GooglePhotosCollectionElement, GooglePhotosSharedAlbumDialogElement, PersonalizationRouterElement, PersonalizationThemeElement, SeaPenRouterElement, SeaPenTemplateQueryElement, setTransitionsEnabled, WallpaperCollectionsElement, WallpaperGridItemElement, WallpaperImagesElement} from 'chrome://personalization/js/personalization_app.js';
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
@@ -74,6 +74,11 @@ function getBodyColorChannels() {
 }
 
 suite('main page', () => {
+  setup(() => {
+    // Disables transition animation for tests.
+    setTransitionsEnabled(false);
+  });
+
   // Tests that chrome://personalization loads the page and various contents
   // without javascript errors or a 404 or crash. Displays user preview,
   // wallpaper preview, ambient preview, and dynamic color controls.
@@ -154,6 +159,11 @@ suite('main page', () => {
 
 
 suite('ambient mode allowed', () => {
+  setup(() => {
+    // Disables transition animation for tests.
+    setTransitionsEnabled(false);
+  });
+
   test('shows ambient preview', () => {
     const preview = getRouter()
                         .shadowRoot?.querySelector('personalization-main')
@@ -173,6 +183,11 @@ suite('ambient mode allowed', () => {
 
 
 suite('ambient mode disallowed', () => {
+  setup(() => {
+    // Disables transition animation for tests.
+    setTransitionsEnabled(false);
+  });
+
   test('shows ambient preview', () => {
     const preview = getRouter()
                         .shadowRoot?.querySelector('personalization-main')
@@ -244,6 +259,10 @@ suite('wallpaper subpage', () => {
   setup(async () => {
     // Reset to default state before each test to reduce order dependencies.
     await window.personalizationTestApi.reset();
+
+    // Disables transition animation for tests.
+    setTransitionsEnabled(false);
+
     clickWallpaperPreviewLink();
   });
 
@@ -275,6 +294,11 @@ suite('wallpaper subpage', () => {
   });
 
   suite('sea pen', function() {
+    setup(() => {
+      // Disables transition animation for tests.
+      setTransitionsEnabled(false);
+    });
+
     test('has selected wallpaper on root page', async () => {
       const subpage = getWallpaperSubpage();
 
@@ -334,6 +358,11 @@ suite('wallpaper subpage', () => {
   });
 
   suite('backdrop', function() {
+    setup(() => {
+      // Disables transition animation for tests.
+      setTransitionsEnabled(false);
+    });
+
     test('selects wallpaper', async () => {
       const wallpaperSelected = getWallpaperSelected();
       const textContainer =
@@ -404,6 +433,11 @@ suite('wallpaper subpage', () => {
   });
 
   suite('google photos', () => {
+    setup(() => {
+      // Disables transition animation for tests.
+      setTransitionsEnabled(false);
+    });
+
     async function openGooglePhotos(): Promise<GooglePhotosCollectionElement> {
       const subpage = getWallpaperSubpage();
 
@@ -570,6 +604,9 @@ suite('dynamic color', () => {
   setup(async () => {
     // Reset to default state before each test to reduce dependencies.
     await window.personalizationTestApi.reset();
+
+    // Disables transition animation for tests.
+    setTransitionsEnabled(false);
   });
 
   test('shows dynamic color options', () => {

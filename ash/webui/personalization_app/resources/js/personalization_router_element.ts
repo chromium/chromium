@@ -13,6 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {isSeaPenEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
 import {SeaPenQueryParams} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
+import {maybeDoPageTransition} from 'chrome://resources/ash/common/sea_pen/transition.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -105,6 +106,7 @@ export class PersonalizationRouterElement extends PolymerElement {
       },
     };
   }
+
   private path_: string;
   private query_: string;
   private queryParams_: QueryParams;
@@ -170,8 +172,9 @@ export class PersonalizationRouterElement extends PolymerElement {
     this.goToRoute(Paths.AMBIENT_ALBUMS, {topicSource: topicSource.toString()});
   }
 
-  goToRoute(path: Paths, queryParams: QueryParams = {}) {
-    this.setProperties({path_: path, queryParams_: queryParams});
+  async goToRoute(path: Paths, queryParams: QueryParams = {}) {
+    return maybeDoPageTransition(
+        () => this.setProperties({path_: path, queryParams_: queryParams}));
   }
 
   private shouldShowRootPage_(path: string|null): boolean {

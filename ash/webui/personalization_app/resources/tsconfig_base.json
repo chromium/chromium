@@ -1,0 +1,9 @@
+{
+  "extends": "../../../../tools/typescript/tsconfig_base_polymer.json",
+  "compilerOptions": {
+    "typeRoots": ["../../../../third_party/node/node_modules/@types"],
+    "types": [
+      "dom-view-transitions"
+    ]
+  }
+}

@@ -21,6 +21,7 @@ import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {getTemplate} from './sea_pen_router_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
+import {maybeDoPageTransition} from './transition.js';
 
 export enum SeaPenPaths {
   ROOT = '',
@@ -43,6 +44,7 @@ export class SeaPenRouterElement extends WithSeaPenStore {
   static get properties() {
     return {
       basePath: String,
+
       path_: String,
 
       query_: String,
@@ -91,10 +93,12 @@ export class SeaPenRouterElement extends WithSeaPenStore {
     this.goToRoute(SeaPenPaths.ROOT, {seaPenTemplateId: templateId.toString()});
   }
 
-  goToRoute(relativePath: SeaPenPaths, queryParams: SeaPenQueryParams = {}) {
+  async goToRoute(
+      relativePath: SeaPenPaths, queryParams: SeaPenQueryParams = {}) {
     assert(typeof this.basePath === 'string', 'basePath must be set');
-    this.setProperties(
-        {path_: this.basePath + relativePath, queryParams_: queryParams});
+    return maybeDoPageTransition(
+        () => this.setProperties(
+            {path_: this.basePath + relativePath, queryParams_: queryParams}));
   }
 
   /**

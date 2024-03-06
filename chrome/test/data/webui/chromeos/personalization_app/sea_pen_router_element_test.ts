@@ -4,12 +4,12 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {SeaPenInputQueryElement, SeaPenPaths, SeaPenRecentWallpapersElement, SeaPenRouterElement, SeaPenTemplateQueryElement, SeaPenTemplatesElement, SeaPenTermsOfServiceDialogElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenInputQueryElement, SeaPenPaths, SeaPenRecentWallpapersElement, SeaPenRouterElement, SeaPenTemplateQueryElement, SeaPenTemplatesElement, SeaPenTermsOfServiceDialogElement, setTransitionsEnabled} from 'chrome://personalization/js/personalization_app.js';
 import {SeaPenQuery} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
@@ -37,6 +37,9 @@ suite('SeaPenRouterElementTest', function() {
     const mocks = baseSetup();
     personalizationStore = mocks.personalizationStore;
     seaPenProvider = mocks.seaPenProvider;
+
+    // Disables page transition by default.
+    setTransitionsEnabled(false);
   });
 
   teardown(async () => {
@@ -113,7 +116,7 @@ suite('SeaPenRouterElementTest', function() {
     routerElement.goToRoute(
         SeaPenPaths.RESULTS,
         {seaPenTemplateId: SeaPenTemplateId.kCharacters.toString()});
-    await flushTasks();
+    await waitAfterNextRender(routerElement);
 
     assertEquals(
         null, personalizationStore.data.wallpaper.seaPen.thumbnails,
@@ -222,4 +225,18 @@ suite('SeaPenRouterElementTest', function() {
             routerElement.shadowRoot?.querySelector('iron-location')?.path,
             'path remains the same');
       });
+
+  test('supports transition animation', async () => {
+    const routerElement = initElement(SeaPenRouterElement, {basePath: '/base'});
+    setTransitionsEnabled(true);
+    await waitAfterNextRender(routerElement);
+
+    // Forces transition to execute.
+    await routerElement.goToRoute(SeaPenPaths.RESULTS);
+    await waitAfterNextRender(routerElement);
+
+    const seaPenImages =
+        routerElement.shadowRoot!.querySelector('sea-pen-images');
+    assertTrue(!!seaPenImages, 'sea-pen-images now exists');
+  });
 });
