@@ -46,22 +46,22 @@ TEST(AggregationKeysTest, FromJSON) {
       {
           "Not a dictionary",
           "[]",
-          ErrorIs(SourceRegistrationError::kAggregationKeysWrongType),
+          ErrorIs(SourceRegistrationError::kAggregationKeysDictInvalid),
       },
       {
           "key not a string",
           R"({"key":123})",
-          ErrorIs(SourceRegistrationError::kAggregationKeysValueWrongType),
+          ErrorIs(SourceRegistrationError::kAggregationKeysValueInvalid),
       },
       {
           "key doesn't start with 0x",
           R"({"key":"159"})",
-          ErrorIs(SourceRegistrationError::kAggregationKeysValueWrongFormat),
+          ErrorIs(SourceRegistrationError::kAggregationKeysValueInvalid),
       },
       {
           "Invalid key",
           R"({"key":"0xG59"})",
-          ErrorIs(SourceRegistrationError::kAggregationKeysValueWrongFormat),
+          ErrorIs(SourceRegistrationError::kAggregationKeysValueInvalid),
       },
       {
           "One valid key",
@@ -83,7 +83,7 @@ TEST(AggregationKeysTest, FromJSON) {
       {
           "Second key invalid",
           R"({"key1":"0x159","key2":""})",
-          ErrorIs(SourceRegistrationError::kAggregationKeysValueWrongFormat),
+          ErrorIs(SourceRegistrationError::kAggregationKeysValueInvalid),
       },
   };
 

@@ -61,13 +61,14 @@ AggregationKeys::FromJSON(const base::Value* value) {
 
   const base::Value::Dict* dict = value->GetIfDict();
   if (!dict)
-    return base::unexpected(SourceRegistrationError::kAggregationKeysWrongType);
+    return base::unexpected(
+        SourceRegistrationError::kAggregationKeysDictInvalid);
 
   const size_t num_keys = dict->size();
 
   if (num_keys > kMaxAggregationKeysPerSource) {
     return base::unexpected(
-        SourceRegistrationError::kAggregationKeysTooManyKeys);
+        SourceRegistrationError::kAggregationKeysDictInvalid);
   }
 
   RecordAggregatableKeysPerSource(num_keys);
@@ -86,9 +87,8 @@ AggregationKeys::FromJSON(const base::Value* value) {
         [](AggregationKeyPieceError error) {
           switch (error) {
             case AggregationKeyPieceError::kWrongType:
-              return SourceRegistrationError::kAggregationKeysValueWrongType;
             case AggregationKeyPieceError::kWrongFormat:
-              return SourceRegistrationError::kAggregationKeysValueWrongFormat;
+              return SourceRegistrationError::kAggregationKeysValueInvalid;
           }
         });
 

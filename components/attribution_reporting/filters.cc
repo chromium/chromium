@@ -186,16 +186,12 @@ base::expected<FilterData, SourceRegistrationError> FilterData::FromJSON(
 
   base::Value::Dict* dict = input_value->GetIfDict();
   if (!dict) {
-    return base::unexpected(SourceRegistrationError::kFilterDataWrongType);
+    return base::unexpected(SourceRegistrationError::kFilterDataDictInvalid);
   }
 
   if (dict->contains(kSourceTypeFilterKey)) {
     return base::unexpected(
-        SourceRegistrationError::kFilterDataHasSourceTypeKey);
-  }
-  if (dict->contains(FilterConfig::kLookbackWindowKey)) {
-    return base::unexpected(
-        SourceRegistrationError::kFilterDataHasLookbackWindowKey);
+        SourceRegistrationError::kFilterDataKeyReserved);
   }
 
   const auto map_errors = [](FilterValuesError error) {
@@ -203,17 +199,15 @@ base::expected<FilterData, SourceRegistrationError> FilterData::FromJSON(
       case FilterValuesError::kKeyReserved:
         return SourceRegistrationError::kFilterDataKeyReserved;
       case FilterValuesError::kTooManyKeys:
-        return SourceRegistrationError::kFilterDataTooManyKeys;
+        return SourceRegistrationError::kFilterDataDictInvalid;
       case FilterValuesError::kKeyTooLong:
         return SourceRegistrationError::kFilterDataKeyTooLong;
       case FilterValuesError::kListWrongType:
-        return SourceRegistrationError::kFilterDataListWrongType;
       case FilterValuesError::kListTooLong:
-        return SourceRegistrationError::kFilterDataListTooLong;
+        return SourceRegistrationError::kFilterDataListInvalid;
       case FilterValuesError::kValueWrongType:
-        return SourceRegistrationError::kFilterDataValueWrongType;
       case FilterValuesError::kValueTooLong:
-        return SourceRegistrationError::kFilterDataValueTooLong;
+        return SourceRegistrationError::kFilterDataListValueInvalid;
     }
   };
   ASSIGN_OR_RETURN(auto filter_values,

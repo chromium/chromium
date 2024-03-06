@@ -58,11 +58,10 @@ base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
 }  // namespace
 
 void RecordSourceRegistrationError(SourceRegistrationError error) {
-  static_assert(
-      SourceRegistrationError::kMaxValue ==
-          SourceRegistrationError::kTopLevelTriggerDataAndTriggerSpecs,
-      "Bump version of Conversions.SourceRegistrationError11 histogram.");
-  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError11", error);
+  static_assert(SourceRegistrationError::kMaxValue ==
+                    SourceRegistrationError::kEventLevelEpsilonValueInvalid,
+                "Update ConversionSourceRegistrationError enum.");
+  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError12", error);
 }
 
 SourceRegistration::SourceRegistration(mojo::DefaultConstruct::Tag tag)

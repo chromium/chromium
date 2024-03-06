@@ -235,7 +235,7 @@ EventReportWindows::ParseWindowsJSON(const base::Value& v,
     std::optional<int> int_value = start_time_value->GetIfInt();
     if (!int_value.has_value()) {
       return base::unexpected(
-          SourceRegistrationError::kEventReportWindowsStartTimeWrongType);
+          SourceRegistrationError::kEventReportWindowsStartTimeInvalid);
     }
     start_time = base::Seconds(*int_value);
     if (start_time.is_negative() || start_time > expiry) {
@@ -251,18 +251,10 @@ EventReportWindows::ParseWindowsJSON(const base::Value& v,
   }
 
   const base::Value::List* end_times_list = end_times_value->GetIfList();
-  if (!end_times_list) {
+  if (!end_times_list || end_times_list->empty() ||
+      end_times_list->size() > kMaxEventLevelReportWindows) {
     return base::unexpected(
-        SourceRegistrationError::kEventReportWindowsEndTimesWrongType);
-  }
-
-  if (end_times_list->empty()) {
-    return base::unexpected(
-        SourceRegistrationError::kEventReportWindowsEndTimesListEmpty);
-  }
-  if (end_times_list->size() > kMaxEventLevelReportWindows) {
-    return base::unexpected(
-        SourceRegistrationError::kEventReportWindowsEndTimesListTooLong);
+        SourceRegistrationError::kEventReportWindowsEndTimesListInvalid);
   }
 
   std::vector<base::TimeDelta> end_times;
@@ -271,11 +263,7 @@ EventReportWindows::ParseWindowsJSON(const base::Value& v,
   base::TimeDelta start_duration = start_time;
   for (const auto& item : *end_times_list) {
     const std::optional<int> item_int = item.GetIfInt();
-    if (!item_int.has_value()) {
-      return base::unexpected(
-          SourceRegistrationError::kEventReportWindowsEndTimeValueWrongType);
-    }
-    if (item_int.value() <= 0) {
+    if (!item_int.has_value() || item_int.value() <= 0) {
       return base::unexpected(
           SourceRegistrationError::kEventReportWindowsEndTimeValueInvalid);
     }

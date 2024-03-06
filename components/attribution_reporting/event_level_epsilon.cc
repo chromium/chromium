@@ -37,12 +37,7 @@ EventLevelEpsilon::Parse(const base::Value::Dict& dict) {
   }
 
   std::optional<double> d = value->GetIfDouble();
-  if (!d.has_value()) {
-    return base::unexpected(
-        SourceRegistrationError::kEventLevelEpsilonWrongType);
-  }
-
-  if (!IsEventLevelEpsilonValid(*d)) {
+  if (!d.has_value() || !IsEventLevelEpsilonValid(*d)) {
     return base::unexpected(
         SourceRegistrationError::kEventLevelEpsilonValueInvalid);
   }

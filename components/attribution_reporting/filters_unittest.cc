@@ -121,7 +121,7 @@ const struct {
         base::test::ParseJson(R"json({
           "source_type": ["a"]
         })json"),
-        base::unexpected(SourceRegistrationError::kFilterDataHasSourceTypeKey),
+        base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
         FiltersDisjunction({*FilterConfig::Create({{{"source_type", {"a"}}}})}),
     },
     {
@@ -129,8 +129,7 @@ const struct {
         base::test::ParseJson(R"json({
           "_lookback_window": 1
         })json"),
-        base::unexpected(
-            SourceRegistrationError::kFilterDataHasLookbackWindowKey),
+        base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
         FiltersDisjunction(
             {*FilterConfig::Create({}, /*lookback_window=*/base::Seconds(1))}),
     },
@@ -145,33 +144,31 @@ const struct {
     {
         "lookback_window_list",
         base::test::ParseJson(R"json({"_lookback_window": ["a"]})json"),
-        base::unexpected(
-            SourceRegistrationError::kFilterDataHasLookbackWindowKey),
+        base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
         base::unexpected(TriggerRegistrationError::kFiltersValueWrongType),
     },
     {
         "lookback_window_not_positive",
         base::test::ParseJson(R"json({"_lookback_window": 0})json"),
-        base::unexpected(
-            SourceRegistrationError::kFilterDataHasLookbackWindowKey),
+        base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
         base::unexpected(TriggerRegistrationError::kFiltersValueWrongType),
     },
     {
         "wrong_type",
         base::Value("foo"),
-        base::unexpected(SourceRegistrationError::kFilterDataWrongType),
+        base::unexpected(SourceRegistrationError::kFilterDataDictInvalid),
         base::unexpected(TriggerRegistrationError::kFiltersWrongType),
     },
     {
         "value_not_array",
         base::test::ParseJson(R"json({"a": true})json"),
-        base::unexpected(SourceRegistrationError::kFilterDataListWrongType),
+        base::unexpected(SourceRegistrationError::kFilterDataListInvalid),
         base::unexpected(TriggerRegistrationError::kFiltersListWrongType),
     },
     {
         "array_element_not_string",
         base::test::ParseJson(R"json({"a": [true]})json"),
-        base::unexpected(SourceRegistrationError::kFilterDataValueWrongType),
+        base::unexpected(SourceRegistrationError::kFilterDataListValueInvalid),
         base::unexpected(TriggerRegistrationError::kFiltersValueWrongType),
     },
 };
@@ -184,7 +181,7 @@ const struct {
     {
         "too_many_keys",
         MakeFilterValuesWithKeys(51),
-        SourceRegistrationError::kFilterDataTooManyKeys,
+        SourceRegistrationError::kFilterDataDictInvalid,
     },
     {
         "key_too_long",
@@ -194,12 +191,12 @@ const struct {
     {
         "too_many_values",
         MakeFilterValuesWithValues(51),
-        SourceRegistrationError::kFilterDataListTooLong,
+        SourceRegistrationError::kFilterDataListInvalid,
     },
     {
         "value_too_long",
         MakeFilterValuesWithValueLength(26),
-        SourceRegistrationError::kFilterDataValueTooLong,
+        SourceRegistrationError::kFilterDataListValueInvalid,
     },
 };
 

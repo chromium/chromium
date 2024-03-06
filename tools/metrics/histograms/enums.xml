@@ -3860,67 +3860,46 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="destination missing"/>
   <int value="3" label="destination has wrong type"/>
   <int value="4" label="destination not potentially trustworthy"/>
-  <int value="5" label="filter_data has wrong type"/>
-  <int value="6" label="filter_data has too many keys"/>
-  <int value="7" label="filter_data has a source_type key"/>
-  <int value="8" label="filter_data key too long"/>
-  <int value="9" label="filter_data value has wrong type"/>
-  <int value="10" label="filter_data list too long"/>
-  <int value="11" label="filer_data list value has wrong type"/>
-  <int value="12" label="filter_data list value too long"/>
-  <int value="13" label="aggregation_keys has wrong type"/>
-  <int value="14" label="aggregation_keys has too many keys"/>
-  <int value="15" label="aggregation_keys key too long"/>
-  <int value="16" label="aggregation_keys value has wrong type"/>
-  <int value="17" label="aggregation_keys value has wrong format"/>
-  <int value="18" label="number of destinations exceeds limit"/>
-  <int value="19" label="source_event_id value is invalid"/>
-  <int value="20" label="priority value is invalid"/>
-  <int value="21" label="expiry value is invalid"/>
-  <int value="22" label="event_report_window value is invalid"/>
-  <int value="23" label="aggregatable_report_window value is invalid"/>
-  <int value="24" label="filter_data has a _lookback_window key"/>
-  <int value="25" label="max_event_level_reports value is invalid"/>
-  <int value="26" label="event_report_windows has wrong type"/>
-  <int value="27" label="event_report_windows' start_time has wrong type"/>
-  <int value="28" label="event_report_windows' start_time value is invalid"/>
-  <int value="29" label="event_report_windows' end_times missing"/>
-  <int value="30" label="event_report_windows' end_times has wrong type"/>
-  <int value="31" label="event_report_windows' end_times is empty"/>
-  <int value="32" label="event_report_windows' end_times is too long"/>
-  <int value="33" label="event_report_windows' end time value has wrong type"/>
-  <int value="34" label="event_report_windows' end time value is invalid"/>
-  <int value="35"
+  <int value="5" label="number of destinations exceeds limit"/>
+  <int value="6" label="filter_data key too long"/>
+  <int value="7" label="filter_data key reserved"/>
+  <int value="8" label="filter_data not a valid dictionary"/>
+  <int value="9" label="filter_data value not a valid list"/>
+  <int value="10" label="filter_data list value invalid"/>
+  <int value="11" label="aggregation_keys key too long"/>
+  <int value="12" label="aggregation_keys not a valid dictionary"/>
+  <int value="13" label="aggregation_keys value invalid"/>
+  <int value="14" label="source_event_id value is invalid"/>
+  <int value="15" label="priority value is invalid"/>
+  <int value="16" label="expiry value is invalid"/>
+  <int value="17" label="event_report_window value is invalid"/>
+  <int value="18" label="aggregatable_report_window value is invalid"/>
+  <int value="19" label="max_event_level_reports value is invalid"/>
+  <int value="20" label="event_report_windows has wrong type"/>
+  <int value="21" label="event_report_windows' end_times missing"/>
+  <int value="22"
       label="event_report_windows' end duration is less than or equal to
              start duration"/>
-  <int value="36"
+  <int value="23"
       label="event_report_windows and event_report_window are mutually
              exclusive"/>
-  <int value="37" label="trigger_data_matching has wrong type"/>
-  <int value="38" label="trigger_data_matching value is invalid"/>
-  <int value="39" label="trigger_specs has wrong type"/>
-  <int value="40" label="trigger spec has wrong type"/>
-  <int value="41" label="trigger spec's trigger_data missing"/>
-  <int value="42" label="trigger_spec's trigger_data wrong type"/>
-  <int value="43" label="trigger_spec's trigger_data empty"/>
-  <int value="44" label="trigger_spec's trigger_data value wrong type"/>
-  <int value="45" label="trigger_spec's trigger_data value out of range"/>
-  <int value="46" label="excessive trigger data"/>
-  <int value="47" label="duplicate trigger data"/>
-  <int value="48" label="invalid trigger data for matching mode"/>
-  <int value="49" label="filter_data key reserved (starts with &quot;_&quot;)"/>
-  <int value="50" label="summary_window_operator has wrong type"/>
-  <int value="51" label="summary_window_operator value is invalid"/>
-  <int value="52" label="summary_buckets has wrong type"/>
-  <int value="53" label="summary_buckets empty"/>
-  <int value="54" label="summary_buckets too long"/>
-  <int value="55" label="summary_buckets value wrong type"/>
-  <int value="56" label="summary_buckets value out of range"/>
-  <int value="57" label="summary_buckets non-increasing"/>
-  <int value="58" label="event_level_epsilon has wrong type"/>
-  <int value="59" label="event_level_epsilon value is invalid"/>
-  <int value="60"
+  <int value="24" label="event_report_windows' end_times not a valid list"/>
+  <int value="25" label="event_report_windows' start_time value is invalid"/>
+  <int value="26" label="event_report_windows' end time value is invalid"/>
+  <int value="27" label="trigger_data_matching value is invalid"/>
+  <int value="28" label="trigger_specs has wrong type"/>
+  <int value="29" label="trigger spec has wrong type"/>
+  <int value="30" label="trigger spec's trigger_data missing"/>
+  <int value="31" label="trigger_spec's trigger_data not a valid list"/>
+  <int value="32" label="trigger_spec's trigger_data value invalid"/>
+  <int value="33" label="excessive trigger data"/>
+  <int value="34" label="invalid trigger data for matching mode"/>
+  <int value="35"
       label="top-level trigger_data and specs are mutually exclusive"/>
+  <int value="36" label="summary_window_operator value is invalid"/>
+  <int value="37" label="summary_buckets not a valid list"/>
+  <int value="38" label="summary_buckets value invalid"/>
+  <int value="39" label="event_level_epsilon value is invalid"/>
 </enum>
 
 <enum name="ConversionsRegistrationMethod">

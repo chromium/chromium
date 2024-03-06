@@ -54,14 +54,14 @@ ParseSummaryWindowOperator(const base::Value::Dict& dict) {
   const std::string* str = value->GetIfString();
   if (!str) {
     return base::unexpected(
-        SourceRegistrationError::kSummaryWindowOperatorWrongType);
+        SourceRegistrationError::kSummaryWindowOperatorValueInvalid);
   } else if (*str == kSummaryWindowOperatorCount) {
     return SummaryWindowOperator::kCount;
   } else if (*str == kSummaryWindowOperatorValueSum) {
     return SummaryWindowOperator::kValueSum;
   } else {
     return base::unexpected(
-        SourceRegistrationError::kSummaryWindowOperatorUnknownValue);
+        SourceRegistrationError::kSummaryWindowOperatorValueInvalid);
   }
 }
 
@@ -75,17 +75,11 @@ base::expected<SummaryBuckets, SourceRegistrationError> SummaryBuckets::Parse(
   }
 
   const base::Value::List* list = value->GetIfList();
-  if (!list) {
-    return base::unexpected(SourceRegistrationError::kSummaryBucketsWrongType);
-  }
-
-  if (list->empty()) {
-    return base::unexpected(SourceRegistrationError::kSummaryBucketsEmpty);
-  }
-
-  if (base::MakeStrictNum(list->size()) >
-      static_cast<int>(max_event_level_reports)) {
-    return base::unexpected(SourceRegistrationError::kSummaryBucketsTooLong);
+  if (!list || list->empty() ||
+      base::MakeStrictNum(list->size()) >
+          static_cast<int>(max_event_level_reports)) {
+    return base::unexpected(
+        SourceRegistrationError::kSummaryBucketsListInvalid);
   }
 
   std::vector<uint32_t> starts;
@@ -97,12 +91,11 @@ base::expected<SummaryBuckets, SourceRegistrationError> SummaryBuckets::Parse(
     ASSIGN_OR_RETURN(
         uint32_t start,
         ParseUint32(item,
-                    SourceRegistrationError::kSummaryBucketsValueWrongType,
-                    SourceRegistrationError::kSummaryBucketsValueOutOfRange));
+                    SourceRegistrationError::kSummaryBucketsValueInvalid));
 
     if (start <= prev) {
       return base::unexpected(
-          SourceRegistrationError::kSummaryBucketsNonIncreasing);
+          SourceRegistrationError::kSummaryBucketsValueInvalid);
     }
 
     starts.push_back(start);

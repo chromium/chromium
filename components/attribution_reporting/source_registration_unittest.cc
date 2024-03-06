@@ -302,7 +302,7 @@ TEST(SourceRegistrationTest, Parse) {
       {
           "filter_data_wrong_type",
           R"json({"filter_data":5,"destination":"https://d.example"})json",
-          ErrorIs(SourceRegistrationError::kFilterDataWrongType),
+          ErrorIs(SourceRegistrationError::kFilterDataDictInvalid),
       },
       {
           "aggregation_keys_valid",
@@ -314,7 +314,7 @@ TEST(SourceRegistrationTest, Parse) {
       {
           "aggregation_keys_wrong_type",
           R"json({"aggregation_keys":5,"destination":"https://d.example"})json",
-          ErrorIs(SourceRegistrationError::kAggregationKeysWrongType),
+          ErrorIs(SourceRegistrationError::kAggregationKeysDictInvalid),
       },
       {
           "debug_reporting_valid",
@@ -338,12 +338,12 @@ TEST(SourceRegistrationTest, Parse) {
           "event_level_epsilon_invalid",
           R"json({"event_level_epsilon":null,
           "destination":"https://d.example"})json",
-          ErrorIs(SourceRegistrationError::kEventLevelEpsilonWrongType),
+          ErrorIs(SourceRegistrationError::kEventLevelEpsilonValueInvalid),
       },
   };
 
   static constexpr char kSourceRegistrationErrorMetric[] =
-      "Conversions.SourceRegistrationError11";
+      "Conversions.SourceRegistrationError12";
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);

@@ -58,14 +58,14 @@ TEST(TriggerDataMatchingTest, Parse) {
       {
           .desc = "wrong_type",
           .json = R"json({"trigger_data_matching":1})json",
-          .matches =
-              ErrorIs(SourceRegistrationError::kTriggerDataMatchingWrongType),
+          .matches = ErrorIs(
+              SourceRegistrationError::kTriggerDataMatchingValueInvalid),
       },
       {
           .desc = "invalid_value",
           .json = R"json({"trigger_data_matching":"MODULUS"})json",
           .matches = ErrorIs(
-              SourceRegistrationError::kTriggerDataMatchingUnknownValue),
+              SourceRegistrationError::kTriggerDataMatchingValueInvalid),
       },
       {
           .desc = "valid_modulus",
@@ -216,15 +216,15 @@ TEST(TriggerSpecsTest, Parse) {
           .desc = "trigger_data_wrong_type",
           .json = R"json({"trigger_data": 1})json",
           .matches_full_flex = ErrorIs(
-              SourceRegistrationError::kTriggerSpecTriggerDataWrongType),
+              SourceRegistrationError::kTriggerSpecTriggerDataListInvalid),
           .matches_top_level_trigger_data = ErrorIs(
-              SourceRegistrationError::kTriggerSpecTriggerDataWrongType),
+              SourceRegistrationError::kTriggerSpecTriggerDataListInvalid),
       },
       {
           .desc = "spec_trigger_data_empty",
           .json = R"json({"trigger_specs": [{"trigger_data": []}]})json",
-          .matches_full_flex =
-              ErrorIs(SourceRegistrationError::kTriggerSpecTriggerDataEmpty),
+          .matches_full_flex = ErrorIs(
+              SourceRegistrationError::kTriggerSpecTriggerDataListInvalid),
           .matches_top_level_trigger_data = ValueIs(_),
       },
       {
@@ -270,33 +270,33 @@ TEST(TriggerSpecsTest, Parse) {
           .desc = "trigger_data_value_wrong_type",
           .json = R"json({"trigger_data": ["1"]})json",
           .matches_full_flex = ErrorIs(
-              SourceRegistrationError::kTriggerSpecTriggerDataValueWrongType),
+              SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid),
           .matches_top_level_trigger_data = ErrorIs(
-              SourceRegistrationError::kTriggerSpecTriggerDataValueWrongType),
+              SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid),
       },
       {
           .desc = "trigger_data_value_fractional",
           .json = R"json({"trigger_data": [1.5]})json",
           .matches_full_flex = ErrorIs(
-              SourceRegistrationError::kTriggerSpecTriggerDataValueWrongType),
+              SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid),
           .matches_top_level_trigger_data = ErrorIs(
-              SourceRegistrationError::kTriggerSpecTriggerDataValueWrongType),
+              SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid),
       },
       {
           .desc = "trigger_data_value_negative",
           .json = R"json({"trigger_data": [-1]})json",
           .matches_full_flex = ErrorIs(
-              SourceRegistrationError::kTriggerSpecTriggerDataValueOutOfRange),
+              SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid),
           .matches_top_level_trigger_data = ErrorIs(
-              SourceRegistrationError::kTriggerSpecTriggerDataValueOutOfRange),
+              SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid),
       },
       {
           .desc = "trigger_data_value_above_max",
           .json = R"json({"trigger_data": [4294967296]})json",
           .matches_full_flex = ErrorIs(
-              SourceRegistrationError::kTriggerSpecTriggerDataValueOutOfRange),
+              SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid),
           .matches_top_level_trigger_data = ErrorIs(
-              SourceRegistrationError::kTriggerSpecTriggerDataValueOutOfRange),
+              SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid),
       },
       {
           .desc = "trigger_data_value_minimal",
@@ -318,10 +318,10 @@ TEST(TriggerSpecsTest, Parse) {
       {
           .desc = "trigger_data_value_duplicate",
           .json = R"json({"trigger_data": [1, 3, 1, 2]})json",
-          .matches_full_flex =
-              ErrorIs(SourceRegistrationError::kDuplicateTriggerData),
-          .matches_top_level_trigger_data =
-              ErrorIs(SourceRegistrationError::kDuplicateTriggerData),
+          .matches_full_flex = ErrorIs(
+              SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid),
+          .matches_top_level_trigger_data = ErrorIs(
+              SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid),
       },
       {
           .desc = "trigger_data_value_duplicate_across_specs",
@@ -330,8 +330,8 @@ TEST(TriggerSpecsTest, Parse) {
             {"trigger_data": [4, 2]},
             {"trigger_data": [1, 5]},
           ]})json",
-          .matches_full_flex =
-              ErrorIs(SourceRegistrationError::kDuplicateTriggerData),
+          .matches_full_flex = ErrorIs(
+              SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid),
           .matches_top_level_trigger_data = ValueIs(_),
       },
       {

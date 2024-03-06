@@ -46,14 +46,14 @@ TEST(SummaryWindowOperatorTest, Parse) {
       {
           .desc = "wrong_type",
           .json = R"json({"summary_window_operator": 1})json",
-          .matches =
-              ErrorIs(SourceRegistrationError::kSummaryWindowOperatorWrongType),
+          .matches = ErrorIs(
+              SourceRegistrationError::kSummaryWindowOperatorValueInvalid),
       },
       {
           .desc = "invalid_value",
           .json = R"json({"summary_window_operator": "COUNT"})json",
           .matches = ErrorIs(
-              SourceRegistrationError::kSummaryWindowOperatorUnknownValue),
+              SourceRegistrationError::kSummaryWindowOperatorValueInvalid),
       },
       {
           .desc = "valid_count",
@@ -94,48 +94,51 @@ TEST(SummaryBucketsTest, Parse) {
       {
           .desc = "wrong_type",
           .json = R"json({"summary_buckets": 1})json",
-          .matches = ErrorIs(SourceRegistrationError::kSummaryBucketsWrongType),
+          .matches =
+              ErrorIs(SourceRegistrationError::kSummaryBucketsListInvalid),
       },
       {
           .desc = "empty",
           .json = R"json({"summary_buckets": []})json",
-          .matches = ErrorIs(SourceRegistrationError::kSummaryBucketsEmpty),
+          .matches =
+              ErrorIs(SourceRegistrationError::kSummaryBucketsListInvalid),
       },
       {
           .desc = "too_long",
           .json = R"json({"summary_buckets": [1, 2, 3, 4]})json",
           .max_event_level_reports = MaxEventLevelReports(3),
-          .matches = ErrorIs(SourceRegistrationError::kSummaryBucketsTooLong),
+          .matches =
+              ErrorIs(SourceRegistrationError::kSummaryBucketsListInvalid),
       },
       {
           .desc = "value_wrong_type",
           .json = R"json({"summary_buckets": [0.1]})json",
           .matches =
-              ErrorIs(SourceRegistrationError::kSummaryBucketsValueWrongType),
+              ErrorIs(SourceRegistrationError::kSummaryBucketsValueInvalid),
       },
       {
           .desc = "value_out_of_range",
           .json = R"json({"summary_buckets": [-1]})json",
           .matches =
-              ErrorIs(SourceRegistrationError::kSummaryBucketsValueOutOfRange),
+              ErrorIs(SourceRegistrationError::kSummaryBucketsValueInvalid),
       },
       {
           .desc = "value_zero",
           .json = R"json({"summary_buckets": [0]})json",
           .matches =
-              ErrorIs(SourceRegistrationError::kSummaryBucketsNonIncreasing),
+              ErrorIs(SourceRegistrationError::kSummaryBucketsValueInvalid),
       },
       {
           .desc = "non_increasing",
           .json = R"json({"summary_buckets": [1, 3, 5, 2]})json",
           .matches =
-              ErrorIs(SourceRegistrationError::kSummaryBucketsNonIncreasing),
+              ErrorIs(SourceRegistrationError::kSummaryBucketsValueInvalid),
       },
       {
           .desc = "duplicate",
           .json = R"json({"summary_buckets": [1, 3, 3]})json",
           .matches =
-              ErrorIs(SourceRegistrationError::kSummaryBucketsNonIncreasing),
+              ErrorIs(SourceRegistrationError::kSummaryBucketsValueInvalid),
       },
       {
           .desc = "valid",

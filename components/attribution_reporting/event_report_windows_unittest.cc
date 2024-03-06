@@ -289,8 +289,7 @@ TEST(EventReportWindowsTest, Parse) {
             "start_time":"0",
             "end_times":[96000,172800]
           }})json",
-          ErrorIs(
-              SourceRegistrationError::kEventReportWindowsStartTimeWrongType),
+          ErrorIs(SourceRegistrationError::kEventReportWindowsStartTimeInvalid),
       },
       {
           "event_report_windows_start_time_negative",
@@ -324,7 +323,7 @@ TEST(EventReportWindowsTest, Parse) {
             "end_times":96000
           }})json",
           ErrorIs(
-              SourceRegistrationError::kEventReportWindowsEndTimesWrongType),
+              SourceRegistrationError::kEventReportWindowsEndTimesListInvalid),
       },
       {
           "event_report_windows_end_times_list_empty",
@@ -333,7 +332,7 @@ TEST(EventReportWindowsTest, Parse) {
             "end_times":[]
           }})json",
           ErrorIs(
-              SourceRegistrationError::kEventReportWindowsEndTimesListEmpty),
+              SourceRegistrationError::kEventReportWindowsEndTimesListInvalid),
       },
       {
           "event_report_windows_end_times_list_too_long",
@@ -342,7 +341,7 @@ TEST(EventReportWindowsTest, Parse) {
             "end_times":[3600,7200,10800,14400,18000,21600]
           }})json",
           ErrorIs(
-              SourceRegistrationError::kEventReportWindowsEndTimesListTooLong),
+              SourceRegistrationError::kEventReportWindowsEndTimesListInvalid),
       },
       {
           "event_report_windows_end_times_value_wrong_type",
@@ -350,8 +349,8 @@ TEST(EventReportWindowsTest, Parse) {
             "start_time":0,
             "end_times":["3600"]
           }})json",
-          ErrorIs(SourceRegistrationError::
-                      kEventReportWindowsEndTimeValueWrongType),
+          ErrorIs(
+              SourceRegistrationError::kEventReportWindowsEndTimeValueInvalid),
       },
       {
           "event_report_windows_end_times_value_negative",

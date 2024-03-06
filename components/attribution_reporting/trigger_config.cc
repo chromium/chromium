@@ -59,12 +59,12 @@ base::expected<void, SourceRegistrationError> ParseTriggerData(
   const base::Value::List* list = value.GetIfList();
   if (!list) {
     return base::unexpected(
-        SourceRegistrationError::kTriggerSpecTriggerDataWrongType);
+        SourceRegistrationError::kTriggerSpecTriggerDataListInvalid);
   }
 
   if (!allow_empty && list->empty()) {
     return base::unexpected(
-        SourceRegistrationError::kTriggerSpecTriggerDataEmpty);
+        SourceRegistrationError::kTriggerSpecTriggerDataListInvalid);
   }
 
   const size_t new_size = list->size() + trigger_data_indices.size();
@@ -79,13 +79,13 @@ base::expected<void, SourceRegistrationError> ParseTriggerData(
         uint32_t trigger_data,
         ParseUint32(
             item,
-            SourceRegistrationError::kTriggerSpecTriggerDataValueWrongType,
-            SourceRegistrationError::kTriggerSpecTriggerDataValueOutOfRange));
+            SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid));
 
     auto [_, inserted] =
         trigger_data_indices.try_emplace(trigger_data, spec_index);
     if (!inserted) {
-      return base::unexpected(SourceRegistrationError::kDuplicateTriggerData);
+      return base::unexpected(
+          SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid);
     }
   }
 
@@ -132,14 +132,14 @@ ParseTriggerDataMatching(const base::Value::Dict& dict) {
   const std::string* str = value->GetIfString();
   if (!str) {
     return base::unexpected(
-        SourceRegistrationError::kTriggerDataMatchingWrongType);
+        SourceRegistrationError::kTriggerDataMatchingValueInvalid);
   } else if (*str == kTriggerDataMatchingExact) {
     return TriggerDataMatching::kExact;
   } else if (*str == kTriggerDataMatchingModulus) {
     return TriggerDataMatching::kModulus;
   } else {
     return base::unexpected(
-        SourceRegistrationError::kTriggerDataMatchingUnknownValue);
+        SourceRegistrationError::kTriggerDataMatchingValueInvalid);
   }
 }
 
