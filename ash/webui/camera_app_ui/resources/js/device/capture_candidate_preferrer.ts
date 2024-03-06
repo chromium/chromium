@@ -22,6 +22,7 @@ import {
 } from './camera3_device_info.js';
 import {
   CaptureCandidate,
+  MultiStreamVideoCaptureCandidate,
   PhotoCaptureCandidate,
   VideoCaptureCandidate,
 } from './capture_candidate.js';
@@ -430,6 +431,11 @@ export class CaptureCandidatePreferrer {
       CaptureCandidate[] {
     const cameraInfo = this.cameraInfos.get(deviceId);
     assert(cameraInfo !== undefined);
+    const enableMultiStreamRecording =
+        expert.isEnabled(expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING) ||
+        expert.isEnabled(
+            expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING_CHROME);
+
     const candidates = [];
     const prefLevel = this.prefVideoResolutionLevelMap[deviceId];
     const prefResolution = this.prefVideoResolutionMap[deviceId] ?? null;
@@ -448,8 +454,14 @@ export class CaptureCandidatePreferrer {
       const previewResolutions = videoPreviewPair.previewResolutions;
       for (const {constFps, resolutions} of option.fpsOptions) {
         for (const resolution of resolutions) {
-          const candidate = new VideoCaptureCandidate(
-              deviceId, resolution, previewResolutions, constFps, hasAudio);
+          let candidate;
+          if (enableMultiStreamRecording) {
+            candidate = new MultiStreamVideoCaptureCandidate(
+                deviceId, resolution, previewResolutions, constFps, hasAudio);
+          } else {
+            candidate = new VideoCaptureCandidate(
+                deviceId, resolution, previewResolutions, constFps, hasAudio);
+          }
           if (prefFps === constFps) {
             targetFpsCandidates.push(candidate);
           } else {

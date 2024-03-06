@@ -38,6 +38,10 @@ class CAPTURE_EXPORT CameraAppDeviceProviderImpl
   void GetCameraAppDevice(const std::string& source_id,
                           GetCameraAppDeviceCallback callback) override;
   void IsSupported(IsSupportedCallback callback) override;
+  void SetVirtualDeviceEnabled(
+      const std::string& device_id,
+      bool enabled,
+      SetVirtualDeviceEnabledCallback callback) override;
   void IsDeviceInUse(const std::string& source_id,
                      IsDeviceInUseCallback callback) override;
 
@@ -46,6 +50,10 @@ class CAPTURE_EXPORT CameraAppDeviceProviderImpl
       GetCameraAppDeviceCallback callback,
       const std::optional<std::string>& device_id);
 
+  void SetVirtualDeviceEnabledWithDeviceId(
+      bool enable,
+      SetVirtualDeviceEnabledCallback callback,
+      const std::optional<std::string>& device_id);
   void IsDeviceInUseWithDeviceId(IsDeviceInUseCallback callback,
                                  const std::optional<std::string>& device_id);
 

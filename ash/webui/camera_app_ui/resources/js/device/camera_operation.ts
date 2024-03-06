@@ -28,10 +28,10 @@ import {
   FakeCameraCaptureCandidate,
 } from './capture_candidate.js';
 import {CaptureCandidatePreferrer} from './capture_candidate_preferrer.js';
-import {DeviceMonitor} from './device_monitor.js';
 import {Modes, Video} from './mode/index.js';
 import {Preview} from './preview.js';
 import {StreamConstraints} from './stream_constraints.js';
+import {StreamManager} from './stream_manager.js';
 import {
   CameraConfig,
   CameraConfigCandidate,
@@ -409,8 +409,6 @@ export class OperationScheduler {
 
   private readonly togglePausedEventQueue = new AsyncJobQueue('drop');
 
-  private readonly deviceMonitor = new DeviceMonitor();
-
   constructor(
       private readonly listener: EventListener,
       preview: Preview,
@@ -425,7 +423,7 @@ export class OperationScheduler {
         defaultFacing,
     );
     this.capturer = new Capturer(this.modes);
-    this.deviceMonitor.addDeviceChangeListener((devices) => {
+    StreamManager.getInstance().addRealDeviceChangeListener((devices) => {
       const info = new CameraInfo(devices);
       if (this.ongoingOperationType !== null) {
         this.pendingUpdateInfo = info;
@@ -437,7 +435,7 @@ export class OperationScheduler {
 
   async initialize(cameraViewUI: CameraViewUI): Promise<void> {
     this.modes.initialize(cameraViewUI);
-    await this.deviceMonitor.deviceUpdate();
+    await StreamManager.getInstance().deviceUpdate();
     await this.firstInfoUpdate.wait();
   }
 
