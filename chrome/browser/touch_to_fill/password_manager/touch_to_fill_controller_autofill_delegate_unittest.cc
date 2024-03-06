@@ -79,6 +79,10 @@ class MockPasswordManagerClient
               (password_manager::PasswordManagerDriver*),
               (override));
   MOCK_METHOD(void, MarkSharedCredentialsAsNotified, (const GURL&), (override));
+  MOCK_METHOD(bool,
+              CanUseBiometricAuthForFilling,
+              (device_reauth::DeviceAuthenticator*),
+              (override));
 };
 
 struct MockTouchToFillView : TouchToFillView {
@@ -141,7 +145,7 @@ class TouchToFillControllerAutofillTest
         OverrideManagePasswordWhenPasskeysPresentForTesting(false);
 
     // By default, disable biometric authentication.
-    ON_CALL(*authenticator(), CanAuthenticateWithBiometrics)
+    ON_CALL(client(), CanUseBiometricAuthForFilling)
         .WillByDefault(Return(false));
 
     scoped_feature_list_.InitAndEnableFeature(
@@ -445,7 +449,6 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
 
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
-  auto* authenticator_ptr = authenticator();
 
   EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                            ElementsAreArray(credentials),
@@ -463,8 +466,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
   EXPECT_CALL(*last_mock_filler(),
               FillUsernameAndPassword(std::u16string(u"alice"),
                                       std::u16string(u"p4ssw0rd")));
-  ON_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics)
-      .WillByDefault(Return(false));
+  ON_CALL(client(), CanUseBiometricAuthForFilling).WillByDefault(Return(false));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
@@ -503,8 +505,7 @@ TEST_F(TouchToFillControllerAutofillTest,
               FillUsernameAndPassword(std::u16string(u"alice"),
                                       std::u16string(u"p4ssw0rd")));
 
-  ON_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics)
-      .WillByDefault(Return(true));
+  ON_CALL(client(), CanUseBiometricAuthForFilling).WillByDefault(Return(true));
   ExpectAndSimulateAuthenticationSuccess(authenticator_ptr);
   EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(Eq(u"alice")));
 
@@ -531,8 +532,7 @@ TEST_F(TouchToFillControllerAutofillTest,
 
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword(_, _)).Times(0);
 
-  ON_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics)
-      .WillByDefault(Return(true));
+  ON_CALL(client(), CanUseBiometricAuthForFilling).WillByDefault(Return(true));
   EXPECT_CALL(*authenticator_ptr, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
@@ -597,7 +597,6 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_Android_Credential) {
           .time_since_last_use = base::Minutes(3),
       }),
   };
-  auto* authenticator_ptr = authenticator();
 
   EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                            ElementsAreArray(credentials),
@@ -615,8 +614,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_Android_Credential) {
   EXPECT_CALL(*last_mock_filler(),
               FillUsernameAndPassword(std::u16string(u"bob"),
                                       std::u16string(u"s3cr3t")));
-  ON_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics)
-      .WillByDefault(Return(false));
+  ON_CALL(client(), CanUseBiometricAuthForFilling).WillByDefault(Return(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[1]);
 
   auto entries = test_recorder().GetEntriesByName(UkmBuilder::kEntryName);
@@ -755,8 +753,7 @@ TEST_F(TouchToFillControllerAutofillTest, DestroyedWhileAuthRunning) {
           TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
       /*cred_man_delegate=*/nullptr, /*frame_driver=*/nullptr);
 
-  ON_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics)
-      .WillByDefault(Return(true));
+  ON_CALL(client(), CanUseBiometricAuthForFilling).WillByDefault(Return(true));
   EXPECT_CALL(*authenticator_ptr, AuthenticateWithMessage);
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
