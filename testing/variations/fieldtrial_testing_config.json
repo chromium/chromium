@@ -14663,7 +14663,11 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "distillable_urls": "support.google.com,docs.google.com"
+                        "availability": "any",
+                        "distillable_urls": "support.google.com,docs.google.com",
+                        "event_trigger": "name:iph_reading_mode_side_panel_trigger;comparator:<=3;window:360;storage:360",
+                        "event_used": "name:reading_mode_side_panel_shown;comparator:==0;window:360;storage:360",
+                        "session_rate": "==0"
                     },
                     "enable_features": [
                         "IPH_ReadingModeSidePanel"
