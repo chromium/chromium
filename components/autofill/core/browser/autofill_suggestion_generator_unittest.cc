@@ -38,8 +38,10 @@
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -62,6 +64,7 @@ namespace {
 using testing::Field;
 using testing::IsEmpty;
 using testing::Matcher;
+using testing::UnorderedElementsAreArray;
 
 constexpr auto kDefaultTriggerSource =
     AutofillSuggestionTriggerSource::kFormControlElementClicked;
@@ -909,7 +912,7 @@ TEST_P(
     AutofillLabelSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_FullFormFilling_SuggestionsHaveCorrectLabels) {
   AutofillProfile profile = test::GetFullProfile();
-  FieldType trigerring_field_type = GetTriggeringFieldType();
+  FieldType triggering_field_type = GetTriggeringFieldType();
   const std::u16string full_form_filling_label =
       GetFullFormFillingLabel(profile);
 
@@ -918,7 +921,7 @@ TEST_P(
           .CreateSuggestionsFromProfiles(
               {&profile},
               {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP},
-              /*last_targeted_fields=*/std::nullopt, trigerring_field_type,
+              /*last_targeted_fields=*/std::nullopt, triggering_field_type,
               /*trigger_field_max_length=*/0),
       ElementsAre(AllOf(EqualLabels({{full_form_filling_label}}))));
 }
@@ -932,8 +935,8 @@ TEST_P(
   profile2.SetRawInfo(EMAIL_ADDRESS, u"pham@gmail.com");
 
   // The only difference between the two profiles is the email address.
-  // That's why the email address is part of the differentating label.
-  FieldType trigerring_field_type = GetTriggeringFieldType();
+  // That's why the email address is part of the differentiating label.
+  FieldType triggering_field_type = GetTriggeringFieldType();
   const std::u16string full_form_filling_label =
       GetFullFormFillingLabel(profile1) +
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
@@ -942,26 +945,26 @@ TEST_P(
       test_api(suggestion_generator())
           .CreateSuggestionsFromProfiles(
               {&profile1, &profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
-              /*last_targeted_fields=*/std::nullopt, trigerring_field_type,
+              /*last_targeted_fields=*/std::nullopt, triggering_field_type,
               /*trigger_field_max_length=*/0),
       ElementsAre(
           AllOf(EqualLabels({{full_form_filling_label + u"hoa@gmail.com"}})),
           AllOf(EqualLabels({{full_form_filling_label + u"pham@gmail.com"}}))));
 }
 
-// The logic which adds the country as a differentating label is slightly
-// different than the logic which adds any other differentating label. Since the
-// country is the last candidate for a differentiating label, this test also
+// The logic which adds the country as a differentiating label is slightly
+// different than the logic which adds any other differentiating label. Since
+// the country is the last candidate for a differentiating label, this test also
 // prevents random label behaviour (such as non-differentiating label being
 // chosen or label not showing at all).
 TEST_P(
     AutofillLabelSuggestionGeneratorTest,
-    CreateSuggestionsFromProfiles_FullFormFilling_CountryIsChosenAsDifferentatingLabel) {
+    CreateSuggestionsFromProfiles_FullFormFilling_CountryIsChosenAsDifferentiatingLabel) {
   AutofillProfile profile1 = test::GetFullProfile();
   AutofillProfile profile2 = profile1;
   profile2.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CH");
 
-  FieldType trigerring_field_type = GetTriggeringFieldType();
+  FieldType triggering_field_type = GetTriggeringFieldType();
   const std::u16string full_form_filling_label =
       GetFullFormFillingLabel(profile1) +
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
@@ -970,7 +973,7 @@ TEST_P(
       test_api(suggestion_generator())
           .CreateSuggestionsFromProfiles(
               {&profile1, &profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
-              /*last_targeted_fields=*/std::nullopt, trigerring_field_type,
+              /*last_targeted_fields=*/std::nullopt, triggering_field_type,
               /*trigger_field_max_length=*/0),
       ElementsAre(
           AllOf(EqualLabels({{full_form_filling_label + u"United States"}})),
@@ -1185,7 +1188,7 @@ TEST_F(
 // Test similar to the one above. However also makes sure that
 // `ADDRESS_HOME_LINE1` value is added to the label if
 // the target field does not contain street address related information
-// (ADDRESS_LINE1, ADDRESS_LINE2 and ADRRESS_STREET_NAME).
+// (ADDRESS_LINE1, ADDRESS_LINE2 and ADDRESS_STREET_NAME).
 TEST_F(
     AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_GroupFillingLabels_AddFillAddressAddressLine1AndDifferentiatingLabel) {
@@ -1453,7 +1456,7 @@ TEST_F(
 // a "random" field.
 TEST_F(
     AutofillChildrenSuggestionGeneratorTest,
-    CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField_Intenational) {
+    CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField_International) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), kAllFieldTypes, PHONE_HOME_WHOLE_NUMBER);
 
@@ -2126,185 +2129,46 @@ TEST_F(AutofillSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
 
 TEST_F(AutofillSuggestionGeneratorTest,
        RemoveExpiredCreditCardsNotUsedSinceTimestamp) {
-  const char kHistogramName[] = "Autofill.CreditCardsSuppressedForDisuse";
   const base::Time kNow = AutofillClock::Now();
-  constexpr size_t kNumCards = 10;
+  const base::Time kDisuseTime =
+      kNow - kDisusedDataModelTimeDelta - base::Days(1);
+  size_t card_number = 4111111111111111ul;
 
-  // We construct a card vector as below, number indicate days of last used
-  // from |kNow|:
-  // [30, 90, 150, 210, 270, 0, 60, 120, 180, 240]
-  // |expires at 2999     |, |expired at 2001   |
-  std::vector<CreditCard> all_card_data;
-  std::vector<CreditCard*> all_card_ptrs;
-  all_card_data.reserve(kNumCards);
-  all_card_ptrs.reserve(kNumCards);
-  for (size_t i = 0; i < kNumCards; ++i) {
-    constexpr base::TimeDelta k30Days = base::Days(30);
-    all_card_data.emplace_back(
-        base::Uuid::GenerateRandomV4().AsLowercaseString(),
-        "https://example.com");
-    if (i < 5) {
-      all_card_data.back().set_use_date(kNow - (i + i + 1) * k30Days);
-      test::SetCreditCardInfo(&all_card_data.back(), "Clyde Barrow",
-                              "378282246310005" /* American Express */, "04",
-                              "2999", "1");
-    } else {
-      all_card_data.back().set_use_date(kNow - (i + i - 10) * k30Days);
-      test::SetCreditCardInfo(&all_card_data.back(), "John Dillinger",
-                              "4234567890123456" /* Visa */, "04", "2001", "1");
-    }
-    all_card_ptrs.push_back(&all_card_data.back());
-  }
-
-  // Verify that only expired disused card are removed. Note that only the last
-  // two cards have use dates more than 175 days ago and are expired.
-  {
-    // Create a working copy of the card pointers.
-    std::vector<CreditCard*> cards(all_card_ptrs);
-
-    // The first 8 are either not expired or having use dates more recent
-    // than 175 days ago.
-    std::vector<CreditCard*> expected_cards(cards.begin(), cards.begin() + 8);
-
-    // Filter the cards while capturing histograms.
-    base::HistogramTester histogram_tester;
-    AutofillSuggestionGenerator::
-        RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
-            kNow - base::Days(175), cards);
-
-    // Validate that we get the expected filtered cards and histograms.
-    EXPECT_EQ(expected_cards, cards);
-    histogram_tester.ExpectTotalCount(kHistogramName, 1);
-    histogram_tester.ExpectBucketCount(kHistogramName, 2, 1);
-  }
-
-  // Reverse the card order and verify that only expired and disused cards
-  // are removed. Note that the first three cards, post reversal,
-  // have use dates more then 115 days ago.
-  {
-    // Create a reversed working copy of the card pointers.
-    std::vector<CreditCard*> cards(all_card_ptrs.rbegin(),
-                                   all_card_ptrs.rend());
-
-    // The last 7 cards have use dates more recent than 115 days ago.
-    std::vector<CreditCard*> expected_cards(cards.begin() + 3, cards.end());
-
-    // Filter the cards while capturing histograms.
-    base::HistogramTester histogram_tester;
-    AutofillSuggestionGenerator::
-        RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
-            kNow - base::Days(115), cards);
-
-    // Validate that we get the expected filtered cards and histograms.
-    EXPECT_EQ(expected_cards, cards);
-    histogram_tester.ExpectTotalCount(kHistogramName, 1);
-    histogram_tester.ExpectBucketCount(kHistogramName, 3, 1);
-  }
-  // Randomize the card order and validate that the filtered list retains
-  // that order. Note that the three cards have use dates more then 115
-  // days ago and are expired.
-  {
-    // A handy constant.
-    const base::Time k115DaysAgo = kNow - base::Days(115);
-
-    // Created a shuffled primary copy of the card pointers.
-    std::vector<CreditCard*> shuffled_cards(all_card_ptrs);
-    base::RandomShuffle(shuffled_cards.begin(), shuffled_cards.end());
-
-    // Copy the shuffled card pointer collections to use as the working
-    // set.
-    std::vector<CreditCard*> cards(shuffled_cards);
-
-    // Filter the cards while capturing histograms.
-    base::HistogramTester histogram_tester;
-    AutofillSuggestionGenerator::
-        RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(k115DaysAgo, cards);
-
-    // Validate that we have the right cards. Iterate of the the shuffled
-    // primary copy and the filtered copy at the same time. making sure that
-    // the elements in the filtered copy occur in the same order as the shuffled
-    // primary. Along the way, validate that the elements in and out of the
-    // filtered copy have appropriate use dates and expiration states.
-    EXPECT_EQ(7u, cards.size());
-    auto it = shuffled_cards.begin();
-    for (const CreditCard* card : cards) {
-      for (; it != shuffled_cards.end() && (*it) != card; ++it) {
-        EXPECT_LT((*it)->use_date(), k115DaysAgo);
-        ASSERT_TRUE((*it)->IsExpired(kNow));
+  std::vector<CreditCard> credit_cards;
+  for (bool is_local : {false, true}) {
+    for (bool is_expired : {false, true}) {
+      for (bool is_disused : {false, true}) {
+        // Create a credit card based on the current iteration.
+        CreditCard credit_card =
+            is_expired ? test::GetExpiredCreditCard() : test::GetCreditCard();
+        credit_card.SetNumber(base::NumberToString16(card_number++));
+        credit_card.set_use_date(is_disused ? kDisuseTime : kNow);
+        if (is_local) {
+          credit_card.set_record_type(CreditCard::RecordType::kLocalCard);
+          personal_data().AddCreditCard(credit_card);
+        } else {
+          credit_card.set_record_type(
+              CreditCard::RecordType::kMaskedServerCard);
+          personal_data().AddServerCreditCard(credit_card);
+        }
+        credit_cards.push_back(credit_card);
       }
-      ASSERT_TRUE(it != shuffled_cards.end());
-      ASSERT_TRUE(card->use_date() > k115DaysAgo || !card->IsExpired(kNow));
-      ++it;
     }
-    for (; it != shuffled_cards.end(); ++it) {
-      EXPECT_LT((*it)->use_date(), k115DaysAgo);
-      ASSERT_TRUE((*it)->IsExpired(kNow));
-    }
-
-    // Validate the histograms.
-    histogram_tester.ExpectTotalCount(kHistogramName, 1);
-    histogram_tester.ExpectBucketCount(kHistogramName, 3, 1);
   }
+  base::HistogramTester histogram_tester;
+  std::vector<CreditCard> cards_to_suggest =
+      test_api(suggestion_generator())
+          .GetOrderedCardsToSuggest(
+              FormFieldData(), UNKNOWN_TYPE, /*suppress_disused_cards=*/true,
+              /*prefix_match=*/false, /*include_virtual_cards=*/false);
 
-  // Verify all cards are retained if they're sufficiently recently
-  // used.
-  {
-    // Create a working copy of the card pointers.
-    std::vector<CreditCard*> cards(all_card_ptrs);
+  // Expect that only the last card (disused, expired and local) is removed.
+  credit_cards.pop_back();
+  EXPECT_THAT(cards_to_suggest, UnorderedElementsAreArray(credit_cards));
 
-    // Filter the cards while capturing histograms.
-    base::HistogramTester histogram_tester;
-    AutofillSuggestionGenerator::
-        RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
-            kNow - base::Days(720), cards);
-
-    // Validate that we get the expected filtered cards and histograms.
-    EXPECT_EQ(all_card_ptrs, cards);
-    histogram_tester.ExpectTotalCount(kHistogramName, 1);
-    histogram_tester.ExpectBucketCount(kHistogramName, 0, 1);
-  }
-
-  // Verify all cards are removed if they're all disused and expired.
-  {
-    // Create a working copy of the card pointers.
-    std::vector<CreditCard*> cards(all_card_ptrs);
-    for (auto it = all_card_ptrs.begin(); it < all_card_ptrs.end(); it++) {
-      (*it)->SetExpirationYear(2001);
-    }
-
-    // Filter the cards while capturing histograms.
-    base::HistogramTester histogram_tester;
-    AutofillSuggestionGenerator::
-        RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(kNow + base::Days(1),
-                                                           cards);
-
-    // Validate that we get the expected filtered cards and histograms.
-    EXPECT_TRUE(cards.empty());
-    histogram_tester.ExpectTotalCount(kHistogramName, 1);
-    histogram_tester.ExpectBucketCount(kHistogramName, kNumCards, 1);
-  }
-
-  // Verify all expired and disused server cards are not removed.
-  {
-    // Create a working copy of the card pointers. And set one card to be a
-    // masked server card.
-    std::vector<CreditCard*> cards(all_card_ptrs);
-    for (auto it = all_card_ptrs.begin(); it < all_card_ptrs.end(); it++) {
-      (*it)->SetExpirationYear(2001);
-    }
-    cards[0]->set_record_type(CreditCard::RecordType::kMaskedServerCard);
-
-    // Filter the cards while capturing histograms.
-    base::HistogramTester histogram_tester;
-    AutofillSuggestionGenerator::
-        RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(kNow + base::Days(1),
-                                                           cards);
-
-    // Validate that we get the expected filtered cards and histograms.
-    EXPECT_EQ(1U, cards.size());
-    histogram_tester.ExpectTotalCount(kHistogramName, 1);
-    histogram_tester.ExpectBucketCount(kHistogramName, kNumCards - 1, 1);
-  }
+  constexpr char kHistogramName[] = "Autofill.CreditCardsSuppressedForDisuse";
+  histogram_tester.ExpectTotalCount(kHistogramName, 1);
+  histogram_tester.ExpectBucketCount(kHistogramName, 1, 1);
 }
 
 TEST_F(AutofillSuggestionGeneratorTest,
@@ -3048,7 +2912,7 @@ TEST_F(AutofillSuggestionGeneratorTest, TestAddressSuggestion) {
               /*last_targeted_fields=*/kAllFieldTypes, NAME_FIRST,
               /*trigger_field_max_length=*/0);
 
-  // Therere should be test address suggestion and one regular profile
+  // There should be test address suggestion and one regular profile
   // suggestion.
   ASSERT_EQ(suggestions.size(), 2u);
   EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kDevtoolsTestAddresses);

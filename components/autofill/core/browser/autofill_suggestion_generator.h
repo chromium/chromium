@@ -115,12 +115,6 @@ class AutofillSuggestionGenerator {
   static std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
       const std::vector<const AutofillOfferData*>& promo_code_offers);
 
-  // Removes expired local credit cards not used since `min_last_used` from
-  // `cards`. The relative ordering of `cards` is maintained.
-  static void RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
-      base::Time min_last_used,
-      std::vector<CreditCard*>& cards);
-
   // Return a nickname for the |card| to display. This is generally the nickname
   // stored in |card|, unless |card| exists as a local and a server copy. In
   // this case, we prefer the nickname of the local if it is defined. If only
@@ -206,6 +200,12 @@ class AutofillSuggestionGenerator {
   void RemoveProfilesNotUsedSinceTimestamp(
       base::Time min_last_used,
       std::vector<AutofillProfile*>& profiles);
+
+  // Removes expired local credit cards not used since `min_last_used` from
+  // `cards`. The relative ordering of `cards` is maintained.
+  void RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
+      base::Time min_last_used,
+      std::vector<CreditCard*>& cards);
 
   // Creates nested/child suggestions for `suggestion` with the `profile`
   // information. Uses `trigger_field_type` to define what group filling

@@ -155,7 +155,7 @@ bool ShouldSplitCardNameAndLastFourDigits() {
 // Note: Right-to-left languages are only displayed from right to left, the
 // characters are stored from left to right.
 std::pair<size_t, size_t>
-GetFirstAddressFieldPositonAndLengthForNonAddressField(
+GetFirstAddressFieldPositionAndLengthForNonAddressField(
     const AutofillProfile& profile,
     const std::string& app_locale,
     std::u16string_view suggestion_text) {
@@ -196,7 +196,7 @@ GetFirstAddressFieldPositonAndLengthForNonAddressField(
 //
 // The main text is located at the beginning of the aforementioned strings. In
 // order to extract it, we calculate its position into the string and its length
-// using `GetFirstAddressFieldPositonAndLengthForNonAddressField()`. We cannot
+// using `GetFirstAddressFieldPositionAndLengthForNonAddressField()`. We cannot
 // split the string by separators because of two reasons: some languages don't
 // have any separator, and because address fields can have commas inside them in
 // some countries.
@@ -213,7 +213,7 @@ std::u16string GetProfileSuggestionMainTextForNonAddressField(
                                                &suggestion_text_array);
   CHECK_EQ(suggestion_text_array.size(), 1u);
   auto [position, length] =
-      GetFirstAddressFieldPositonAndLengthForNonAddressField(
+      GetFirstAddressFieldPositionAndLengthForNonAddressField(
           profile, app_locale, suggestion_text_array[0]);
   return suggestion_text_array[0].substr(position, length);
 }
@@ -229,13 +229,13 @@ std::vector<std::u16string> GetProfileSuggestionLabelForNonAddressField(
 
   for (size_t index = 0; index < profiles.size(); index++) {
     auto [main_text_position, main_text_length] =
-        GetFirstAddressFieldPositonAndLengthForNonAddressField(
+        GetFirstAddressFieldPositionAndLengthForNonAddressField(
             *profiles[index], app_locale, labels[index]);
     // Erasing the main text results in the label being the first address field
     // in the string.
     labels[index].erase(main_text_position, main_text_length);
     size_t start_position_of_label =
-        GetFirstAddressFieldPositonAndLengthForNonAddressField(
+        GetFirstAddressFieldPositionAndLengthForNonAddressField(
             *profiles[index], app_locale, labels[index])
             .first;
     labels[index] = start_position_of_label < labels[index].size()
@@ -767,7 +767,7 @@ int GetNumberOfMinimalFieldsToShow(
     // If an address field cannot provide sufficient information about the
     // address, then `ADDRESS_HOME_LINE1` should be part of the label.
     // Otherwise, no general labels are needed in group filling mode. Only
-    // differentating labels should exist.
+    // differentiating labels should exist.
     return ShouldAddAddressLine1ToSuggestionLabels(trigger_field_type) ? 1 : 0;
   } else if (GroupTypeOfFieldType(trigger_field_type) ==
              FieldTypeGroup::kPhone) {
@@ -1654,9 +1654,8 @@ std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
   if (suppress_disused_cards) {
     const base::Time min_last_used =
         AutofillClock::Now() - kDisusedDataModelTimeDelta;
-    AutofillSuggestionGenerator::
-        RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(min_last_used,
-                                                           available_cards);
+    RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(min_last_used,
+                                                       available_cards);
   }
   std::vector<CreditCard> cards_to_suggest;
   std::u16string field_contents =
