@@ -97,10 +97,6 @@ BASE_FEATURE(kShadowKidsApiWithSafeSites,
              "ShadowKidsApiWithSafeSites",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kForceGoogleSafeSearchForSupervisedUsers,
-             "ForceGoogleSafeSearchForSupervisedUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers,
              "CustomWebSignInInterceptForSupervisedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
