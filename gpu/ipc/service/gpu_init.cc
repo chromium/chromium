@@ -691,6 +691,15 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       base::LoadNativeLibrary(module_path.Append(L"dxil.dll"), nullptr);
       base::LoadNativeLibrary(module_path.Append(L"dxcompiler.dll"), nullptr);
 #endif
+
+      // Preload a redistributable DirectML.dll that allows testing WebNN
+      // against newer release of DirectML before it is integrated into
+      // Windows OS. Don't handle errors as failure here is non-fatal. The
+      // DirectML.dll within system folder will be loaded at a later point if
+      // the redistributable one fails to be loaded.
+      if (command_line->HasSwitch(switches::kUseRedistributableDirectML)) {
+        base::LoadNativeLibrary(module_path.Append(L"directml.dll"), nullptr);
+      }
     }
 
     ResumeGpuWatchdog(watchdog_thread_.get());

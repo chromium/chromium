@@ -151,4 +151,10 @@ const char kEnableSkiaGraphite[] = "enable-skia-graphite";
 
 const char kShaderCachePath[] = "shader-cache-path";
 
+// Try to use a redistributable DirectML.dll. Used for testing WebNN
+// against newer DirectML release before it is integrated into Windows OS.
+// Please see more info about DirectML releases at:
+// https://learn.microsoft.com/en-us/windows/ai/directml/dml-version-history
+const char kUseRedistributableDirectML[] = "use-redist-dml";
+
 }  // namespace switches
