@@ -18,6 +18,7 @@
 #include "base/version.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
@@ -49,6 +50,7 @@ using base::test::ValueIs;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::VariantWith;
 
 class IsolatedWebAppUpdateDiscoveryTaskTest : public WebAppTest {
  public:
@@ -186,7 +188,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest, AppIsNotIwa) {
 TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest, NoUpdateFound) {
   AddDummyIsolatedAppToRegistry(
       profile(), url_info_.origin().GetURL(), "installed iwa",
-      WebApp::IsolationData(InstalledBundle{.path = base::FilePath()},
+      WebApp::IsolationData(IwaStorageOwnedBundle{"some_folder"},
                             base::Version("3.0.0")));
 
   profile_url_loader_factory().AddResponse(update_manifest_url_.spec(), R"(
@@ -211,11 +213,11 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest,
        UpdateAlreadyPending) {
   AddDummyIsolatedAppToRegistry(
       profile(), url_info_.origin().GetURL(), "installed iwa",
-      WebApp::IsolationData(InstalledBundle{.path = base::FilePath()},
+      WebApp::IsolationData(IwaStorageOwnedBundle{"some_folder"},
                             base::Version("1.0.0"),
                             /*controlled_frame_partitions=*/{},
                             WebApp::IsolationData::PendingUpdateInfo(
-                                InstalledBundle{.path = base::FilePath()},
+                                IwaStorageOwnedBundle{"another_folder"},
                                 base::Version("2.0.0"))));
 
   profile_url_loader_factory().AddResponse(update_manifest_url_.spec(), R"(
@@ -242,10 +244,8 @@ using IsolatedWebAppUpdateDiscoveryTaskWebBundleDownloadTest =
 TEST_F(IsolatedWebAppUpdateDiscoveryTaskWebBundleDownloadTest, NotFound) {
   AddDummyIsolatedAppToRegistry(
       profile(), url_info_.origin().GetURL(), "installed iwa",
-      WebApp::IsolationData(
-          InstalledBundle{.path = base::FilePath(
-                              FILE_PATH_LITERAL("/foo/bar/old-version.swbn"))},
-          base::Version("1.0.0")));
+      WebApp::IsolationData(IwaStorageOwnedBundle{"old_folder"},
+                            base::Version("1.0.0")));
 
   profile_url_loader_factory().AddResponse(update_manifest_url_.spec(), R"(
       {
@@ -334,8 +334,8 @@ class IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest
     return manifest;
   }
 
-  IsolatedWebAppLocation installed_bundle_location_ = InstalledBundle{
-      .path = base::FilePath(FILE_PATH_LITERAL("/foo/bar/old-version.swbn"))};
+  IsolatedWebAppStorageLocation installed_bundle_location_ =
+      IwaStorageOwnedBundle{"old_folder"};
 
   GURL install_url_ = GURL(base::StrCat(
       {chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
@@ -396,9 +396,8 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest, Succeeds) {
               Eq(installed_bundle_location_), Eq(base::Version("1.0.0")),
               /*controlled_frame_partitions=*/_,
               test::PendingUpdateInfoIs(
-                  VariantWith<InstalledBundle>(
-                      Field("path", &InstalledBundle::path,
-                            test::IsInIwaRandomDir(profile()->GetPath()))),
+                  Property("variant", &IsolatedWebAppStorageLocation::variant,
+                           VariantWith<IwaStorageOwnedBundle>(_)),
                   base::Version("3.0.0")))))
       << task.AsDebugValue();
 }
@@ -409,10 +408,9 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
   // App database as a pending update, but the update manifest only contains
   // version 2 (i.e., version 3 was removed from the update manifest at some
   // point before that update had a chance to be applied).
-  InstallIwa(
-      base::Version("1.0.0"),
-      WebApp::IsolationData::PendingUpdateInfo(
-          InstalledBundle{.path = base::FilePath()}, base::Version("3.0.0")));
+  InstallIwa(base::Version("1.0.0"),
+             WebApp::IsolationData::PendingUpdateInfo(
+                 IwaStorageOwnedBundle{"some_path"}, base::Version("3.0.0")));
   CreateUpdateManifesteAndBundle(base::Version("2.0.0"));
 
   Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),
@@ -435,9 +433,8 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
               Eq(installed_bundle_location_), Eq(base::Version("1.0.0")),
               /*controlled_frame_partitions=*/_,
               test::PendingUpdateInfoIs(
-                  VariantWith<InstalledBundle>(
-                      Field("path", &InstalledBundle::path,
-                            test::IsInIwaRandomDir(profile()->GetPath()))),
+                  Property("variant", &IsolatedWebAppStorageLocation::variant,
+                           VariantWith<IwaStorageOwnedBundle>(_)),
                   base::Version("2.0.0")))))
       << task.AsDebugValue();
 }

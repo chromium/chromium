@@ -18,7 +18,7 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -338,15 +338,14 @@ TEST(WebAppTest, IsolationDataDebugValue) {
   WebApp app{GenerateAppId(/*manifest_id_path=*/std::nullopt,
                            GURL("https://example.com"))};
   app.SetIsolationData(WebApp::IsolationData(
-      InstalledBundle{.path = base::FilePath(FILE_PATH_LITERAL("random_path"))},
-      base::Version("1.0.0")));
+      IwaStorageOwnedBundle{"random_name"}, base::Version("1.0.0")));
 
   EXPECT_TRUE(app.isolation_data().has_value());
 
   base::Value expected_isolation_data = base::JSONReader::Read(R"|({
         "isolated_web_app_location": {
-          "installed_bundle": {
-            "path": "random_path"
+          "owned_bundle": {
+            "dir_name_ascii": "random_name"
           }
         },
         "version": "1.0.0",
@@ -366,27 +365,24 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
   WebApp app{GenerateAppId(/*manifest_id_path=*/std::nullopt,
                            GURL("https://example.com"))};
   app.SetIsolationData(WebApp::IsolationData(
-      InstalledBundle{.path = base::FilePath(FILE_PATH_LITERAL("random_path"))},
-      base::Version("1.0.0"), {},
+      IwaStorageOwnedBundle{"random_name"}, base::Version("1.0.0"), {},
       WebApp::IsolationData::PendingUpdateInfo(
-          InstalledBundle{
-              .path = base::FilePath(FILE_PATH_LITERAL("another_path"))},
-          base::Version("2.0.0"))));
+          IwaStorageOwnedBundle{"random_name"}, base::Version("2.0.0"))));
 
   EXPECT_TRUE(app.isolation_data().has_value());
 
   base::Value expected_isolation_data = base::JSONReader::Read(R"|({
         "isolated_web_app_location": {
-          "installed_bundle": {
-            "path": "random_path"
+          "owned_bundle": {
+            "dir_name_ascii": "random_name"
           }
         },
         "version": "1.0.0",
         "controlled_frame_partitions (on-disk)": [],
         "pending_update_info": {
           "isolated_web_app_location": {
-            "installed_bundle": {
-              "path": "another_path"
+            "owned_bundle": {
+              "dir_name_ascii": "random_name"
             }
           },
           "version": "2.0.0"

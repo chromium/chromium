@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
@@ -103,10 +104,15 @@ IsolatedWebAppUrlInfo CreateEd25519IsolatedWebAppUrlInfo() {
       signed_web_bundle_id);
 }
 
-IsolatedWebAppLocation CreateDevProxyLocation(
+DevModeProxy CreateDevProxyDeprecatedLocation(
     base::StringPiece dev_mode_proxy_url = "http://default-proxy-url.org/") {
   return DevModeProxy{.proxy_url =
                           url::Origin::Create(GURL(dev_mode_proxy_url))};
+}
+
+IsolatedWebAppStorageLocation CreateDevProxyLocation(
+    base::StringPiece dev_mode_proxy_url = "http://default-proxy-url.org/") {
+  return IwaStorageProxy{url::Origin::Create(GURL(dev_mode_proxy_url))};
 }
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url) {
@@ -195,8 +201,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperTrustAndSignaturesTest,
       /*response_reader_factory=*/nullptr);
 
   base::test::TestFuture<base::expected<void, std::string>> future;
-  command_helper->CheckTrustAndSignatures(CreateDevProxyLocation(), &*profile(),
-                                          future.GetCallback());
+  command_helper->CheckTrustAndSignatures(CreateDevProxyDeprecatedLocation(),
+                                          &*profile(), future.GetCallback());
   EXPECT_THAT(future.Get(), HasValue());
 }
 
@@ -211,8 +217,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperTrustAndSignaturesTest,
       /*response_reader_factory=*/nullptr);
 
   base::test::TestFuture<base::expected<void, std::string>> future;
-  command_helper->CheckTrustAndSignatures(CreateDevProxyLocation(), &*profile(),
-                                          future.GetCallback());
+  command_helper->CheckTrustAndSignatures(CreateDevProxyDeprecatedLocation(),
+                                          &*profile(), future.GetCallback());
   EXPECT_THAT(
       future.Take(),
       ErrorIs(HasSubstr("Isolated Web App Developer Mode is not enabled")));
@@ -376,7 +382,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
           ".well-known/_generated_install_page.html"),
       WebAppUrlLoader::Result::kUrlLoaded);
 
-  std::optional<IsolatedWebAppLocation> location = std::nullopt;
+  std::optional<IsolatedWebAppStorageLocation> location = std::nullopt;
   url_loader->TrackLoadUrlCalls(base::BindLambdaForTesting(
       [&](const GURL& unused_url, content::WebContents* web_contents,
           WebAppUrlLoader::UrlComparison unused_url_comparison) {
@@ -387,14 +393,12 @@ TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
 
   base::test::TestFuture<base::expected<void, std::string>> future;
   command_helper->LoadInstallUrl(
-      DevModeProxy{.proxy_url = url::Origin::Create(
-                       GURL("http://some-testing-proxy-url.com/"))},
+      IwaStorageProxy{
+          url::Origin::Create(GURL("http://some-testing-proxy-url.com/"))},
       web_contents(), *url_loader, future.GetCallback());
   EXPECT_THAT(future.Get(), HasValue());
-  EXPECT_THAT(location, Optional(VariantWith<DevModeProxy>(Field(
-                            "proxy_url", &DevModeProxy::proxy_url,
-                            Eq(url::Origin::Create(GURL(
-                                "http://some-testing-proxy-url.com/")))))));
+  EXPECT_THAT(location, Optional(Eq(IwaStorageProxy{url::Origin::Create(
+                            GURL("http://some-testing-proxy-url.com/"))})));
 }
 
 TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
@@ -410,7 +414,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
           ".well-known/_generated_install_page.html"),
       WebAppUrlLoader::Result::kUrlLoaded);
 
-  std::optional<IsolatedWebAppLocation> location = std::nullopt;
+  std::optional<IsolatedWebAppStorageLocation> location = std::nullopt;
   url_loader->TrackLoadUrlCalls(base::BindLambdaForTesting(
       [&](const GURL& unused_url, content::WebContents* web_contents,
           WebAppUrlLoader::UrlComparison unused_url_comparison) {
@@ -421,16 +425,13 @@ TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
 
   base::test::TestFuture<base::expected<void, std::string>> future;
   command_helper->LoadInstallUrl(
-      InstalledBundle{
-          .path =
-              base::FilePath{FILE_PATH_LITERAL("/testing/path/to/a/bundle")},
+      IwaStorageUnownedBundle{
+          base::FilePath{FILE_PATH_LITERAL("/testing/path/to/a/bundle")},
       },
       web_contents(), *url_loader, future.GetCallback());
   EXPECT_THAT(future.Get(), HasValue());
-  EXPECT_THAT(location, Optional(VariantWith<InstalledBundle>(
-                            Field("path", &InstalledBundle::path,
-                                  Eq(base::FilePath{FILE_PATH_LITERAL(
-                                      "/testing/path/to/a/bundle")})))));
+  EXPECT_THAT(location, Optional(Eq(IwaStorageUnownedBundle{base::FilePath{
+                            FILE_PATH_LITERAL("/testing/path/to/a/bundle")}})));
 }
 
 TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest, HandlesFailure) {
@@ -825,22 +826,23 @@ struct VerifyRelocationVisitor {
       : profile_dir_(std::move(profile_dir)),
         source_path_(std::move(source_path)) {}
 
-  void operator()(const InstalledBundle& location) {
+  void operator()(const IwaStorageOwnedBundle& location) {
     // Check that the bundle was copied to the profile's IWA directory.
-    EXPECT_TRUE(base::PathExists(location.path));
+    base::FilePath path = location.GetPath(profile_dir_);
+    EXPECT_TRUE(base::PathExists(path));
     EXPECT_TRUE(base::PathExists(source_path_));
-    EXPECT_EQ(location.path.DirName().DirName(),
-              profile_dir_.Append(kIwaDirName));
-    EXPECT_EQ(location.path.BaseName(), base::FilePath(kMainSwbnFileName));
+    EXPECT_NE(path, source_path_);
+    EXPECT_EQ(path.DirName().DirName(), profile_dir_.Append(kIwaDirName));
+    EXPECT_EQ(path.BaseName(), base::FilePath(kMainSwbnFileName));
   }
 
-  void operator()(const DevModeBundle& location) {
+  void operator()(const IwaStorageUnownedBundle& location) {
     // Dev mode bundle should not be relocated.
-    EXPECT_EQ(location.path, source_path_);
-    EXPECT_TRUE(base::PathExists(location.path));
+    EXPECT_EQ(location.path(), source_path_);
+    EXPECT_TRUE(base::PathExists(location.path()));
   }
 
-  void operator()(const DevModeProxy& location) {}
+  void operator()(const IwaStorageProxy& location) { FAIL(); }
 
  private:
   base::FilePath profile_dir_;
@@ -848,22 +850,29 @@ struct VerifyRelocationVisitor {
 };
 
 struct VerifyCleanupVisitor {
-  void operator()(const InstalledBundle& location) {
+  explicit VerifyCleanupVisitor(base::FilePath profile_dir)
+      : profile_dir_(std::move(profile_dir)) {}
+
+  void operator()(const IwaStorageOwnedBundle& location) {
     // The copied to profile directory bundles should be deleted on cleanup.
-    EXPECT_FALSE(base::PathExists(location.path));
+    EXPECT_FALSE(base::PathExists(location.GetPath(profile_dir_)));
   }
 
-  void operator()(const DevModeBundle& location) {
+  void operator()(const IwaStorageUnownedBundle& location) {
     // Dev mode bundle are not copied to the profile dir and because of that
     // should not be deleted.
-    EXPECT_TRUE(base::PathExists(location.path));
+    EXPECT_TRUE(base::PathExists(location.path()));
   }
 
-  void operator()(const DevModeProxy& location) {}
+  void operator()(const IwaStorageProxy& location) { FAIL(); }
+
+ private:
+  base::FilePath profile_dir_;
 };
 
 TEST(InstallIsolatedWebAppCommandHelperRelocationTest, NormalFlow) {
-  using RelocationResult = base::expected<IsolatedWebAppLocation, std::string>;
+  using RelocationResult =
+      base::expected<IsolatedWebAppStorageLocation, std::string>;
   base::test::TaskEnvironment task_environment;
 
   base::ScopedTempDir temp_dir;
@@ -891,16 +900,16 @@ TEST(InstallIsolatedWebAppCommandHelperRelocationTest, NormalFlow) {
     CopyLocationToProfileDirectory(profile_dir, installed_bundle_location,
                                    future.GetCallback());
     RelocationResult result = future.Take();
-    EXPECT_TRUE(result.has_value());
+    ASSERT_TRUE(result.has_value());
     absl::visit(VerifyRelocationVisitor{profile_dir, src_installed_bundle},
-                result.value());
+                result->variant());
 
     // Check that cleanup works.
     base::test::TestFuture<void> cleanup_future;
     CleanupLocationIfOwned(profile_dir, result.value(),
                            cleanup_future.GetCallback());
     ASSERT_TRUE(cleanup_future.Wait());
-    absl::visit(VerifyCleanupVisitor{}, result.value());
+    absl::visit(VerifyCleanupVisitor{profile_dir}, result->variant());
   }
 
   // Dev mode bundle case.
@@ -916,16 +925,16 @@ TEST(InstallIsolatedWebAppCommandHelperRelocationTest, NormalFlow) {
     CopyLocationToProfileDirectory(profile_dir, dev_mode_location,
                                    future.GetCallback());
     RelocationResult result = future.Take();
-    EXPECT_TRUE(result.has_value());
+    ASSERT_TRUE(result.has_value());
     absl::visit(VerifyRelocationVisitor{profile_dir, src_dev_mode_bundle},
-                result.value());
+                result->variant());
 
     // Check that cleanup works.
     base::test::TestFuture<void> cleanup_future;
     CleanupLocationIfOwned(profile_dir, result.value(),
                            cleanup_future.GetCallback());
     ASSERT_TRUE(cleanup_future.Wait());
-    absl::visit(VerifyCleanupVisitor{}, result.value());
+    absl::visit(VerifyCleanupVisitor{profile_dir}, result->variant());
   }
 }
 
@@ -944,7 +953,7 @@ TEST(InstallIsolatedWebAppCommandHelperRelocationTest, CleanupNotOwned) {
   ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &bundle_path));
 
   // Trying to cleanup the location that is not owned.
-  IsolatedWebAppLocation location = InstalledBundle{.path = bundle_path};
+  IwaStorageUnownedBundle location{bundle_path};
   base::test::TestFuture<void> cleanup_future;
   CleanupLocationIfOwned(profile_dir, location, cleanup_future.GetCallback());
   ASSERT_TRUE(cleanup_future.Wait());

@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom-forward.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
@@ -626,9 +626,9 @@ void WebAppInternalsHandler::OnIsolatedWebAppDevModeBundleSelectedForUpdate(
     return;
   }
 
-  web_app::IsolatedWebAppLocation location =
-      web_app::DevModeBundle{.path = *path};
-  ApplyDevModeUpdate(app_id, location, std::move(callback));
+  web_app::IsolatedWebAppStorageLocation location(
+      web_app::IwaStorageUnownedBundle{*path});
+  ApplyDevModeUpdate(app_id, std::move(location), std::move(callback));
 }
 
 void WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy(
@@ -696,24 +696,26 @@ void WebAppInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
     if (!app.isolation_data().has_value()) {
       continue;
     }
+    if (!app.isolation_data()->location.dev_mode()) {
+      continue;
+    }
 
-    absl::visit(
+    app.isolation_data()->location.visitSourceDeprecated(
+        profile_->GetPath(),
         base::Overloaded{
-            [](const web_app::InstalledBundle& location) {},
-            [&](const web_app::DevModeBundle& location) {
+            [&](const web_app::IwaSourceBundle& location) {
               dev_mode_apps.emplace_back(mojom::IwaDevModeAppInfo::New(
                   app.app_id(), app.untranslated_name(),
                   mojom::IwaDevModeLocation::NewBundlePath(location.path),
                   app.isolation_data()->version.GetString()));
             },
-            [&](const web_app::DevModeProxy& location) {
+            [&](const web_app::IwaSourceProxy& location) {
               dev_mode_apps.emplace_back(mojom::IwaDevModeAppInfo::New(
                   app.app_id(), app.untranslated_name(),
                   mojom::IwaDevModeLocation::NewProxyOrigin(location.proxy_url),
                   app.isolation_data()->version.GetString()));
             },
-        },
-        app.isolation_data()->location);
+        });
   }
 
   std::move(callback).Run(std::move(dev_mode_apps));
@@ -730,7 +732,7 @@ void WebAppInternalsHandler::UpdateDevProxyIsolatedWebApp(
 
 void WebAppInternalsHandler::ApplyDevModeUpdate(
     const webapps::AppId& app_id,
-    base::optional_ref<const web_app::IsolatedWebAppLocation> location,
+    base::optional_ref<const web_app::IsolatedWebAppStorageLocation> location,
     base::OnceCallback<void(const std::string&)> callback) {
   if (!web_app::IsIwaDevModeEnabled(&*profile_)) {
     std::move(callback).Run("IWA dev mode is not enabled");
@@ -748,18 +750,8 @@ void WebAppInternalsHandler::ApplyDevModeUpdate(
     std::move(callback).Run("could not find installed IWA");
     return;
   }
-  if (!absl::holds_alternative<web_app::DevModeProxy>(
-          app->isolation_data()->location) &&
-      !absl::holds_alternative<web_app::DevModeBundle>(
-          app->isolation_data()->location)) {
+  if (!app->isolation_data()->location.dev_mode()) {
     std::move(callback).Run("can only update dev-mode apps");
-    return;
-  }
-  if (location.has_value() &&
-      location->index() != app->isolation_data()->location.index()) {
-    // This error will also be caught deeper down in the update pipeline, but
-    // let's also catch it here just in case.
-    std::move(callback).Run("location type mismatch");
     return;
   }
   auto url_info = web_app::IsolatedWebAppUrlInfo::Create(app->manifest_id());

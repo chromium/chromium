@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -47,13 +48,13 @@ enum class WebAppUrlLoaderResult;
 
 struct InstallIsolatedWebAppCommandSuccess {
   InstallIsolatedWebAppCommandSuccess(base::Version installed_version,
-                                      IsolatedWebAppLocation location);
+                                      IsolatedWebAppStorageLocation location);
   InstallIsolatedWebAppCommandSuccess(
       const InstallIsolatedWebAppCommandSuccess& other);
   ~InstallIsolatedWebAppCommandSuccess();
 
   base::Version installed_version;
-  IsolatedWebAppLocation location;
+  IsolatedWebAppStorageLocation location;
 };
 
 std::ostream& operator<<(std::ostream& os,
@@ -152,7 +153,7 @@ class InstallIsolatedWebAppCommand
 
   void OnCopiedToProfileDirectory(
       base::OnceClosure next_step_callback,
-      base::expected<IsolatedWebAppLocation, std::string> new_location);
+      base::expected<IsolatedWebAppStorageLocation, std::string> new_location);
 
   void CheckTrustAndSignatures(base::OnceClosure next_step_callback);
 
@@ -190,6 +191,7 @@ class InstallIsolatedWebAppCommand
 
   std::optional<IsolatedWebAppLocation> source_location_;
   std::optional<IsolatedWebAppLocation> destination_location_;
+  std::optional<IsolatedWebAppStorageLocation> destination_storage_location_;
   std::optional<base::Version> actual_version_;
 
   std::unique_ptr<content::WebContents> web_contents_;

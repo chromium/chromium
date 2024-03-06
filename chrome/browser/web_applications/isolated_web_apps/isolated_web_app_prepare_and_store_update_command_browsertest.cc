@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -151,7 +152,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppUpdatePrepareAndStoreCommandBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       CreateBundle(update_version_, "updated app", update_bundle_path_));
 
-  IsolatedWebAppLocation final_install_location = Install().location;
+  IsolatedWebAppStorageLocation final_install_location = Install().location;
 
   PrepareAndStoreUpdateResult result = PrepareAndStoreUpdateInfo(
       IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(

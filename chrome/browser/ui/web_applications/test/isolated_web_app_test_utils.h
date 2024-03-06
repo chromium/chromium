@@ -9,9 +9,12 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "components/version_info/channel.h"
 #include "extensions/common/features/feature_channel.h"
@@ -92,7 +95,7 @@ webapps::AppId AddDummyIsolatedAppToRegistry(
     const GURL& start_url,
     const std::string& name,
     const WebApp::IsolationData& isolation_data =
-        WebApp::IsolationData(InstalledBundle{.path = base::FilePath()},
+        WebApp::IsolationData(IwaStorageOwnedBundle{/*dir_name_ascii=*/""},
                               base::Version("1.0.0")));
 
 // TODO(cmfcmf): Move more test utils into this `test` namespace
@@ -111,6 +114,19 @@ MATCHER_P(IsInIwaRandomDir, profile_directory, "") {
   *result_listener << "where the profile directory is " << profile_directory;
   return arg.DirName().DirName() == profile_directory.Append(kIwaDirName) &&
          arg.BaseName() == base::FilePath(kMainSwbnFileName);
+}
+
+MATCHER(FileExists, "") {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  return base::PathExists(arg) && !base::DirectoryExists(arg);
+}
+
+MATCHER_P(OwnedIwaBundleExists, profile_directory, "") {
+  *result_listener << "where the profile directory is " << profile_directory;
+  base::FilePath path = arg.GetPath(profile_directory);
+  return ExplainMatchResult(
+      AllOf(IsInIwaRandomDir(profile_directory), FileExists()), path,
+      result_listener);
 }
 
 MATCHER_P2(IwaIs, untranslated_name, isolation_data, "") {

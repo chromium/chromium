@@ -8,12 +8,15 @@
 #include <optional>
 #include <string>
 
+#include "base/files/file_util.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -39,30 +42,31 @@ class CheckIsolatedWebAppBundleInstallabilityCommandTest : public WebAppTest {
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  std::unique_ptr<ScopedBundledIsolatedWebApp> CreateApp(
-      const std::string& version) {
-    std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+  std::unique_ptr<BundledIsolatedWebApp> CreateApp(const std::string& version) {
+    base::FilePath bundle_path =
+        IwaStorageOwnedBundle{"bundle-" + version}.GetPath(
+            profile()->GetPath());
+    EXPECT_TRUE(base::CreateDirectory(bundle_path.DirName()));
+
+    std::unique_ptr<BundledIsolatedWebApp> app =
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion(version))
-            .BuildBundle(key_pair_);
+            .BuildBundle(bundle_path, key_pair_);
     app->TrustSigningKey();
     app->FakeInstallPageState(profile());
     return app;
   }
 
-  SignedWebBundleMetadata GetBundleMetadata(
-      const ScopedBundledIsolatedWebApp& app) {
+  base::expected<SignedWebBundleMetadata, std::string> GetBundleMetadata(
+      const BundledIsolatedWebApp& app) {
     auto url_info =
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(app.web_bundle_id());
-    IsolatedWebAppLocation location = InstalledBundle{.path = app.path()};
 
     base::test::TestFuture<base::expected<SignedWebBundleMetadata, std::string>>
         metadata_future;
     SignedWebBundleMetadata::Create(profile(), &fake_provider(), url_info,
-                                    location, metadata_future.GetCallback());
-    base::expected<SignedWebBundleMetadata, std::string> metadata =
-        metadata_future.Get();
-    CHECK(metadata.has_value()) << metadata.error();
-    return metadata.value();
+                                    IwaSourceBundle{.path = app.path()},
+                                    metadata_future.GetCallback());
+    return metadata_future.Take();
   }
 
   void ScheduleCommand(
@@ -83,8 +87,9 @@ class CheckIsolatedWebAppBundleInstallabilityCommandTest : public WebAppTest {
 
 TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
        SucceedsWhenAppNotInRegistrar) {
-  std::unique_ptr<ScopedBundledIsolatedWebApp> app = CreateApp("7.7.7");
-  SignedWebBundleMetadata metadata = GetBundleMetadata(*app);
+  std::unique_ptr<BundledIsolatedWebApp> app = CreateApp("7.7.7");
+  ASSERT_OK_AND_ASSIGN(SignedWebBundleMetadata metadata,
+                       GetBundleMetadata(*app));
 
   base::test::TestFuture<IsolatedInstallabilityCheckResult,
                          std::optional<base::Version>>
@@ -99,11 +104,12 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
 
 TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
        SucceedsWhenInstalledAppLowerVersion) {
-  std::unique_ptr<ScopedBundledIsolatedWebApp> current_app = CreateApp("7.7.6");
+  std::unique_ptr<BundledIsolatedWebApp> current_app = CreateApp("7.7.6");
   ASSERT_THAT(current_app->Install(profile()), HasValue());
 
-  std::unique_ptr<ScopedBundledIsolatedWebApp> app = CreateApp("7.7.7");
-  SignedWebBundleMetadata metadata = GetBundleMetadata(*app);
+  std::unique_ptr<BundledIsolatedWebApp> app = CreateApp("7.7.7");
+  ASSERT_OK_AND_ASSIGN(SignedWebBundleMetadata metadata,
+                       GetBundleMetadata(*app));
 
   base::test::TestFuture<IsolatedInstallabilityCheckResult,
                          std::optional<base::Version>>
@@ -118,9 +124,10 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
 
 TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
        FailsWhenInstalledAppSameVersion) {
-  std::unique_ptr<ScopedBundledIsolatedWebApp> app = CreateApp("7.7.7");
+  std::unique_ptr<BundledIsolatedWebApp> app = CreateApp("7.7.7");
   ASSERT_THAT(app->Install(profile()), HasValue());
-  SignedWebBundleMetadata metadata = GetBundleMetadata(*app);
+  ASSERT_OK_AND_ASSIGN(SignedWebBundleMetadata metadata,
+                       GetBundleMetadata(*app));
 
   base::test::TestFuture<IsolatedInstallabilityCheckResult,
                          std::optional<base::Version>>
@@ -135,11 +142,12 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
 
 TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
        FailsWhenInstalledAppHigherVersion) {
-  std::unique_ptr<ScopedBundledIsolatedWebApp> current_app = CreateApp("7.7.8");
+  std::unique_ptr<BundledIsolatedWebApp> current_app = CreateApp("7.7.8");
   ASSERT_THAT(current_app->Install(profile()), HasValue());
 
-  std::unique_ptr<ScopedBundledIsolatedWebApp> app = CreateApp("7.7.7");
-  SignedWebBundleMetadata metadata = GetBundleMetadata(*app);
+  std::unique_ptr<BundledIsolatedWebApp> app = CreateApp("7.7.7");
+  ASSERT_OK_AND_ASSIGN(SignedWebBundleMetadata metadata,
+                       GetBundleMetadata(*app));
 
   base::test::TestFuture<IsolatedInstallabilityCheckResult,
                          std::optional<base::Version>>
@@ -161,11 +169,12 @@ class CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest
 
 TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
        SucceedsWhenInstalledAppLowerVersion) {
-  std::unique_ptr<ScopedBundledIsolatedWebApp> current_app = CreateApp("7.7.6");
+  std::unique_ptr<BundledIsolatedWebApp> current_app = CreateApp("7.7.6");
   ASSERT_THAT(current_app->Install(profile()), HasValue());
 
-  std::unique_ptr<ScopedBundledIsolatedWebApp> app = CreateApp("7.7.7");
-  SignedWebBundleMetadata metadata = GetBundleMetadata(*app);
+  std::unique_ptr<BundledIsolatedWebApp> app = CreateApp("7.7.7");
+  ASSERT_OK_AND_ASSIGN(SignedWebBundleMetadata metadata,
+                       GetBundleMetadata(*app));
 
   base::test::TestFuture<IsolatedInstallabilityCheckResult,
                          std::optional<base::Version>>
@@ -180,9 +189,10 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
 
 TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
        SucceedsWhenInstalledAppSameVersion) {
-  std::unique_ptr<ScopedBundledIsolatedWebApp> app = CreateApp("7.7.7");
+  std::unique_ptr<BundledIsolatedWebApp> app = CreateApp("7.7.7");
   ASSERT_THAT(app->Install(profile()), HasValue());
-  SignedWebBundleMetadata metadata = GetBundleMetadata(*app);
+  ASSERT_OK_AND_ASSIGN(SignedWebBundleMetadata metadata,
+                       GetBundleMetadata(*app));
 
   base::test::TestFuture<IsolatedInstallabilityCheckResult,
                          std::optional<base::Version>>
@@ -197,11 +207,12 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
 
 TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
        FailsWhenInstalledAppHigherVersion) {
-  std::unique_ptr<ScopedBundledIsolatedWebApp> current_app = CreateApp("7.7.8");
+  std::unique_ptr<BundledIsolatedWebApp> current_app = CreateApp("7.7.8");
   ASSERT_THAT(current_app->Install(profile()), HasValue());
 
-  std::unique_ptr<ScopedBundledIsolatedWebApp> app = CreateApp("7.7.7");
-  SignedWebBundleMetadata metadata = GetBundleMetadata(*app);
+  std::unique_ptr<BundledIsolatedWebApp> app = CreateApp("7.7.7");
+  ASSERT_OK_AND_ASSIGN(SignedWebBundleMetadata metadata,
+                       GetBundleMetadata(*app));
 
   base::test::TestFuture<IsolatedInstallabilityCheckResult,
                          std::optional<base::Version>>

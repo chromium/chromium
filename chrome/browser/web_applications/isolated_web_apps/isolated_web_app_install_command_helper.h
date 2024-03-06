@@ -33,6 +33,7 @@ namespace web_app {
 
 enum class IconsDownloadedResult;
 class IsolatedWebAppResponseReader;
+class IsolatedWebAppStorageLocation;
 class IsolatedWebAppResponseReaderFactory;
 class UnusableSwbnFileError;
 class WebAppDataRetriever;
@@ -44,13 +45,13 @@ enum class WebAppUrlLoaderResult;
 void CopyLocationToProfileDirectory(
     const base::FilePath& profile_dir,
     const IsolatedWebAppLocation& location,
-    base::OnceCallback<
-        void(base::expected<IsolatedWebAppLocation, std::string>)> callback);
+    base::OnceCallback<void(
+        base::expected<IsolatedWebAppStorageLocation, std::string>)> callback);
 
 // Removes the IWA's randomly named directory in the profile directory.
 // Calls the closure on complete.
 void CleanupLocationIfOwned(const base::FilePath& profile_dir,
-                            const IsolatedWebAppLocation& location,
+                            const IsolatedWebAppStorageLocation& location,
                             base::OnceClosure closure);
 
 // This is a helper class that contains methods which are shared between both
@@ -83,7 +84,7 @@ class IsolatedWebAppInstallCommandHelper {
   void CreateStoragePartitionIfNotPresent(Profile& profile);
 
   void LoadInstallUrl(
-      const IsolatedWebAppLocation& location,
+      const IsolatedWebAppStorageLocation& location,
       content::WebContents& web_contents,
       WebAppUrlLoader& url_loader,
       base::OnceCallback<void(base::expected<void, std::string>)> callback);

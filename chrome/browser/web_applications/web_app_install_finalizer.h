@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
@@ -38,6 +37,7 @@ enum class WebappUninstallSource;
 
 namespace web_app {
 
+class IsolatedWebAppStorageLocation;
 class WebApp;
 class WebAppProvider;
 
@@ -72,10 +72,11 @@ class WebAppInstallFinalizer {
     std::optional<ash::SystemWebAppData> system_web_app_data;
 #endif
 
-    // If set, will set `WebApp::IsolationData` with the given location, as well
-    // as the version from `WebAppInstallInfo::isolated_web_app_version`. Will
-    // `CHECK` if `web_app_info.isolated_web_app_version` is invalid.
-    std::optional<web_app::IsolatedWebAppLocation> isolated_web_app_location;
+    // If set, will set `IsolatedWebAppStorageLocation` with the given
+    // location, as well as the version from
+    // `WebAppInstallInfo::isolated_web_app_version`. Will `CHECK` if
+    // `web_app_info.isolated_web_app_version` is invalid.
+    std::optional<IsolatedWebAppStorageLocation> isolated_web_app_location;
 
     // If true, OsIntegrationManager::InstallOsHooks won't be called at all,
     // meaning that all other OS Hooks related parameters below will be ignored.
@@ -141,7 +142,7 @@ class WebAppInstallFinalizer {
 
   void UpdateIsolationDataAndResetPendingUpdateInfo(
       WebApp* web_app,
-      const IsolatedWebAppLocation& location,
+      const IsolatedWebAppStorageLocation& location,
       const base::Version& version);
 
   void SetWebAppManifestFieldsAndWriteData(

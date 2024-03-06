@@ -21,7 +21,7 @@
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/features.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -363,12 +363,11 @@ class WebApp {
   }
 
   // If present, signals that this app is an Isolated Web App, and contains
-  // IWA-specific information like bundle location.
+  // IWA-specific information like from where the contents should be served.
   struct IsolationData {
-    // If present, signals that an update for this app is available locally and
-    // waiting to be applied.
     struct PendingUpdateInfo {
-      PendingUpdateInfo(IsolatedWebAppLocation location, base::Version version);
+      PendingUpdateInfo(IsolatedWebAppStorageLocation location,
+                        base::Version version);
       ~PendingUpdateInfo();
       PendingUpdateInfo(const PendingUpdateInfo&);
       PendingUpdateInfo& operator=(const PendingUpdateInfo&);
@@ -382,7 +381,7 @@ class WebApp {
         return os << update_info.AsDebugValue();
       }
 
-      IsolatedWebAppLocation location;
+      IsolatedWebAppStorageLocation location;
       base::Version version;
 
       // TODO(cmfcmf): Add further information about the update here, such as
@@ -390,8 +389,9 @@ class WebApp {
       // closed.
     };
 
-    IsolationData(IsolatedWebAppLocation location, base::Version version);
-    IsolationData(IsolatedWebAppLocation location,
+    IsolationData(IsolatedWebAppStorageLocation location,
+                  base::Version version);
+    IsolationData(IsolatedWebAppStorageLocation location,
                   base::Version version,
                   const std::set<std::string>& controlled_frame_partitions,
                   const std::optional<PendingUpdateInfo>& pending_update_info);
@@ -410,10 +410,10 @@ class WebApp {
       return os << isolation_data.AsDebugValue();
     }
 
-    // Sets the pending update info. Will `CHECK` if the type of
-    // `pending_update_info.location` is not the same as `location`. In other
-    // words, a `DevModeBundle` app cannot be updated to, e.g.,
-    // `InstalledBundle`.
+    // Sets the pending update info. Will `CHECK` if dev mode is different
+    // between `pending_update_info.location` and `location`. In other words, a
+    // dev mode owned bundle can never be updated to a prod mode owned bundle,
+    // etc.
     void SetPendingUpdateInfo(
         const std::optional<PendingUpdateInfo>& pending_update_info);
 
@@ -421,11 +421,13 @@ class WebApp {
       return pending_update_info_;
     }
 
-    IsolatedWebAppLocation location;
+    IsolatedWebAppStorageLocation location;
     base::Version version;
     std::set<std::string> controlled_frame_partitions;
 
    private:
+    // If present, signals that an update for this app is available locally and
+    // waiting to be applied.
     std::optional<PendingUpdateInfo> pending_update_info_;
   };
   const std::optional<IsolationData>& isolation_data() const {

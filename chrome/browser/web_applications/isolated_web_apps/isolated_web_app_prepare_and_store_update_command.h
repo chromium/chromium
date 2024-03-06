@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -45,13 +46,13 @@ enum class WebAppUrlLoaderResult;
 struct IsolatedWebAppUpdatePrepareAndStoreCommandSuccess {
   IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
       base::Version update_version,
-      IsolatedWebAppLocation destination_location);
+      IsolatedWebAppStorageLocation destination_location);
   IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
       const IsolatedWebAppUpdatePrepareAndStoreCommandSuccess& other);
   ~IsolatedWebAppUpdatePrepareAndStoreCommandSuccess();
 
   base::Version update_version;
-  IsolatedWebAppLocation location;
+  IsolatedWebAppStorageLocation location;
 };
 
 std::ostream& operator<<(
@@ -161,7 +162,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
   void OnCopiedToProfileDirectory(
       base::OnceClosure next_step_callback,
-      base::expected<IsolatedWebAppLocation, std::string> new_location);
+      base::expected<IsolatedWebAppStorageLocation, std::string> new_location);
 
   void CheckIfUpdateIsStillApplicable(base::OnceClosure next_step_callback);
 
@@ -200,6 +201,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
   std::optional<IsolatedWebAppLocation> source_location_;
   std::optional<IsolatedWebAppLocation> destination_location_;
+  std::optional<IsolatedWebAppStorageLocation> destination_storage_location_;
   std::optional<base::Version> installed_version_;
 
   std::unique_ptr<content::WebContents> web_contents_;

@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
@@ -69,11 +71,13 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
   LocalDevModeUpdateDiscoverer(Profile& profile, WebAppProvider& provider)
       : profile_(profile), provider_(provider) {}
 
-  void DiscoverLocalUpdate(const IsolatedWebAppLocation& location,
+  void DiscoverLocalUpdate(const IsolatedWebAppStorageLocation& location,
                            const IsolatedWebAppUrlInfo& url_info,
                            Callback callback) {
-    if (!absl::holds_alternative<DevModeProxy>(location) &&
-        !absl::holds_alternative<DevModeBundle>(location)) {
+    const WebApp* installed_app =
+        provider_->registrar_unsafe().GetAppById(url_info.app_id());
+    if (!installed_app || !installed_app->isolation_data().has_value() ||
+        !installed_app->isolation_data()->location.dev_mode()) {
       std::move(callback).Run(
           base::unexpected("Discovering a local update is only supported for "
                            "dev mode-installed apps."));
@@ -91,7 +95,17 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
 
     provider_->scheduler().PrepareAndStoreIsolatedWebAppUpdate(
         IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
-            location, /*expected_version=*/std::nullopt),
+            location.visitSourceDeprecated(
+                profile_->GetPath(),
+                base::Overloaded{
+                    [](const IwaSourceBundle& bundle)
+                        -> IsolatedWebAppLocation {
+                      return DevModeBundle{.path = bundle.path};
+                    },
+                    [](const IwaSourceProxy& proxy) -> IsolatedWebAppLocation {
+                      return DevModeProxy{.proxy_url = proxy.proxy_url};
+                    }}),
+            /*expected_version=*/std::nullopt),
         url_info, /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr,
         base::BindOnce(&LocalDevModeUpdateDiscoverer::OnUpdatePrepared,
@@ -310,7 +324,7 @@ size_t IsolatedWebAppUpdateManager::DiscoverUpdatesNow() {
 }
 
 void IsolatedWebAppUpdateManager::DiscoverApplyAndPrioritizeLocalDevModeUpdate(
-    const IsolatedWebAppLocation& location,
+    const IsolatedWebAppStorageLocation& location,
     const IsolatedWebAppUrlInfo& url_info,
     base::OnceCallback<void(base::expected<base::Version, std::string>)>
         callback) {
@@ -383,7 +397,7 @@ size_t IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
     if (!isolation_data) {
       continue;
     }
-    if (!absl::holds_alternative<InstalledBundle>(isolation_data->location)) {
+    if (isolation_data->location.dev_mode()) {
       // Never automatically update IWAs installed in dev mode. Updates for dev
       // mode apps will be triggerable manually from the upcoming dev mode
       // browser UI.

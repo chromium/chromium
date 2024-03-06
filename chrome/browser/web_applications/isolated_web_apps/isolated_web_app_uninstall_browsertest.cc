@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
@@ -126,23 +127,23 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppUninstallBrowserTest, Succeeds) {
   ASSERT_TRUE(web_app_before);
   ASSERT_TRUE(web_app_before->isolation_data().has_value());
 
-  absl::visit(base::Overloaded{
-                  [&](const InstalledBundle& location) {
-                    // Verify that .swbn file was copied to
-                    // the profile directory.
-                    base::ScopedAllowBlockingForTesting allow_blocking;
-                    EXPECT_NE(location.path, src_bundle_path_);
-                    EXPECT_THAT(location.path,
-                                test::IsInIwaRandomDir(profile()->GetPath()));
-                    EXPECT_TRUE(base::PathExists(location.path));
-                    path_to_iwa_in_profile = location.path;
-                  },
-                  [&](const DevModeBundle& location) {
-                    // Dev mode bundle should not be copied.
-                    EXPECT_EQ(location.path, src_bundle_path_);
-                  },
-                  [&](const DevModeProxy& location) {}},
-              web_app_before->isolation_data()->location);
+  absl::visit(
+      base::Overloaded{[&](const IwaStorageOwnedBundle& location) {
+                         // Verify that .swbn file was copied to the profile
+                         // directory.
+                         base::FilePath path =
+                             location.GetPath(profile()->GetPath());
+                         base::ScopedAllowBlockingForTesting allow_blocking;
+                         EXPECT_NE(path, src_bundle_path_);
+                         EXPECT_THAT(location, test::OwnedIwaBundleExists(
+                                                   profile()->GetPath()));
+                         path_to_iwa_in_profile = path;
+                       },
+                       [&](const IwaStorageUnownedBundle& location) {
+                         EXPECT_EQ(location.path(), src_bundle_path_);
+                       },
+                       [&](const IwaStorageProxy& location) { FAIL(); }},
+      web_app_before->isolation_data()->location.variant());
 
   // Uninstall the app and check that the copied to profile directory
   // file has been removed.

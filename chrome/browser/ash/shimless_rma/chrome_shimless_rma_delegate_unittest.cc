@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/common/pref_names.h"
@@ -114,14 +115,12 @@ class FakeWebAppCommandScheduler : public web_app::WebAppCommandScheduler {
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       web_app::WebAppCommandScheduler::InstallIsolatedWebAppCallback callback,
       const base::Location& call_location) override {
-    web_app::IsolatedWebAppLocation destination_location =
-        web_app::InstalledBundle{
-            .path = base::FilePath{FILE_PATH_LITERAL("/some/random/path")}};
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        web_app::InstallIsolatedWebAppCommandSuccess(
-                           base::Version{}, std::move(destination_location))));
+                           base::Version{},
+                           web_app::IwaStorageOwnedBundle{"random_folder"})));
   }
 };
 

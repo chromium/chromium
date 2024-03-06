@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <ostream>
+#include <sstream>
 #include <string>
 #include <utility>
 
@@ -15,11 +16,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -48,7 +50,7 @@ namespace web_app {
 IsolatedWebAppUpdatePrepareAndStoreCommandSuccess::
     IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
         base::Version update_version,
-        IsolatedWebAppLocation destination_location)
+        IsolatedWebAppStorageLocation destination_location)
     : update_version(std::move(update_version)),
       location(std::move(destination_location)) {}
 IsolatedWebAppUpdatePrepareAndStoreCommandSuccess::
@@ -118,8 +120,8 @@ IsolatedWebAppUpdatePrepareAndStoreCommand::
 
 IsolatedWebAppUpdatePrepareAndStoreCommand::
     ~IsolatedWebAppUpdatePrepareAndStoreCommand() {
-  if (destination_location_.has_value()) {
-    CleanupLocationIfOwned(profile().GetPath(), *destination_location_,
+  if (destination_storage_location_.has_value()) {
+    CleanupLocationIfOwned(profile().GetPath(), *destination_storage_location_,
                            base::DoNothing());
   }
 }
@@ -185,13 +187,22 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
                                 expected_version_->GetString()}));
     return;
   }
-  if (installed_app->isolation_data()->location.index() !=
-      source_location_->index()) {
-    ReportFailure(
-        base::StringPrintf("Unable to update between different "
-                           "IsolatedWebAppLocation types (%zu to %zu).",
-                           installed_app->isolation_data()->location.index(),
-                           source_location_->index()));
+
+  bool source_is_dev_mode =
+      absl::visit(base::Overloaded{
+                      [](const InstalledBundle&) { return false; },
+                      [](const DevModeBundle&) { return true; },
+                      [](const DevModeProxy&) { return true; },
+                  },
+                  *source_location_);
+  if (installed_app->isolation_data()->location.dev_mode() !=
+      source_is_dev_mode) {
+    std::stringstream s;
+    s << "Unable to update between dev-mode and non-dev-mode storage location "
+         "types ("
+      << installed_app->isolation_data()->location << " to "
+      << IsolatedWebAppLocationAsDebugValue(*source_location_) << ").";
+    ReportFailure(s.str());
     return;
   }
 
@@ -210,16 +221,20 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CopyToProfileDirectory(
 
 void IsolatedWebAppUpdatePrepareAndStoreCommand::OnCopiedToProfileDirectory(
     base::OnceClosure next_step_callback,
-    base::expected<IsolatedWebAppLocation, std::string> new_location) {
-  ASSIGN_OR_RETURN(destination_location_, new_location,
+    base::expected<IsolatedWebAppStorageLocation, std::string> new_location) {
+  ASSIGN_OR_RETURN(destination_storage_location_, new_location,
                    &IsolatedWebAppUpdatePrepareAndStoreCommand::ReportFailure,
                    this);
+  destination_location_ =
+      destination_storage_location_->ToLocationDeprecated(profile().GetPath());
   // Make sure that `source_location_`, which is now outdated, can no longer
   // be accessed.
   source_location_.reset();
   GetMutableDebugValue().Set(
       "destination_location",
       IsolatedWebAppLocationAsDebugValue(*destination_location_));
+  GetMutableDebugValue().Set("destination_storage_location",
+                             destination_storage_location_->ToDebugValue());
   std::move(next_step_callback).Run();
 }
 
@@ -250,7 +265,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::LoadInstallUrl(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   command_helper_->LoadInstallUrl(
-      *destination_location_, *web_contents_.get(), *url_loader_.get(),
+      *destination_storage_location_, *web_contents_.get(), *url_loader_.get(),
       base::BindOnce(
           &IsolatedWebAppUpdatePrepareAndStoreCommand::RunNextStepOnSuccess<
               void>,
@@ -324,7 +339,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::Finalize(
   WebApp::IsolationData updated_isolation_data =
       *app_to_update->isolation_data();
   updated_isolation_data.SetPendingUpdateInfo(
-      WebApp::IsolationData::PendingUpdateInfo(*destination_location_,
+      WebApp::IsolationData::PendingUpdateInfo(*destination_storage_location_,
                                                info.isolated_web_app_version));
   app_to_update->SetIsolationData(std::move(updated_isolation_data));
 }
@@ -352,12 +367,12 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::ReportFailure(
 void IsolatedWebAppUpdatePrepareAndStoreCommand::ReportSuccess(
     const base::Version& update_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Reset `destination_location_` to prevent cleanup in the destructor.
-  IsolatedWebAppLocation destination_location =
-      std::exchange(destination_location_, std::nullopt).value();
+  // Reset `destination_storage_location_` to prevent cleanup in the destructor.
+  auto destination_storage_location =
+      std::exchange(destination_storage_location_, std::nullopt).value();
   CompleteAndSelfDestruct(CommandResult::kSuccess,
                           IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
-                              update_version, std::move(destination_location)));
+                              update_version, destination_storage_location));
 }
 
 Profile& IsolatedWebAppUpdatePrepareAndStoreCommand::profile() {

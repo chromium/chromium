@@ -24,6 +24,8 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
@@ -108,7 +110,7 @@ SignedWebBundleMetadata CreateMetadata(const std::u16string& app_name,
   auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
       web_package::SignedWebBundleId::CreateRandomForDevelopment());
   return SignedWebBundleMetadata::CreateForTesting(
-      url_info, DevModeBundle(base::FilePath()), app_name,
+      url_info, IwaSourceBundle{.path = base::FilePath()}, app_name,
       base::Version(version), IconBitmaps());
 }
 
@@ -346,7 +348,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   AddDummyIsolatedAppToRegistry(
       profile(), url_info.origin().GetURL(), "app",
-      WebApp::IsolationData(InstalledBundle{.path = base::FilePath()},
+      WebApp::IsolationData(IwaStorageOwnedBundle{/*dir_name_ascii=*/""},
                             base::Version("2.0")));
 
   IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
@@ -382,7 +384,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   AddDummyIsolatedAppToRegistry(
       profile(), url_info.origin().GetURL(), "app",
-      WebApp::IsolationData(InstalledBundle{.path = base::FilePath()},
+      WebApp::IsolationData(IwaStorageOwnedBundle{/*dir_name_ascii=*/""},
                             base::Version("1.0")));
 
   IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
@@ -467,8 +469,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   IsolatedWebAppInstallerModel model(bundle_path);
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
-      url_info, InstalledBundle(bundle_path), u"app name", base::Version("1.0"),
-      IconBitmaps());
+      url_info, IwaSourceBundle{.path = bundle_path}, u"app name",
+      base::Version("1.0"), IconBitmaps());
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
   model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
@@ -501,8 +503,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest, CanLaunchAppAfterInstall) {
 
   IsolatedWebAppInstallerModel model(bundle_path);
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
-      url_info, InstalledBundle(bundle_path), u"app name", base::Version("1.0"),
-      IconBitmaps());
+      url_info, IwaSourceBundle{.path = bundle_path}, u"app name",
+      base::Version("1.0"), IconBitmaps());
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
   model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
@@ -543,8 +545,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   IsolatedWebAppInstallerModel model(bundle_path);
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
-      url_info, InstalledBundle(bundle_path), u"app name", base::Version("2.0"),
-      IconBitmaps());
+      url_info, IwaSourceBundle{.path = bundle_path}, u"app name",
+      base::Version("2.0"), IconBitmaps());
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
   model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{

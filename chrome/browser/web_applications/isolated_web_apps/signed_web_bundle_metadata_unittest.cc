@@ -6,9 +6,12 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -28,6 +31,10 @@
 namespace web_app {
 namespace {
 
+using base::test::ErrorIs;
+using base::test::ValueIs;
+using testing::AllOf;
+using testing::Eq;
 using testing::HasSubstr;
 using testing::Property;
 
@@ -56,9 +63,6 @@ blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
 class SignedWebBundleMetadataTest : public WebAppTest {
  protected:
   void SetUp() override {
-    ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
-    bundle_path_ = scoped_temp_dir_.GetPath().Append(
-        base::FilePath::FromASCII("test_bundle.swbn"));
     WebAppTest::SetUp();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
@@ -68,12 +72,16 @@ class SignedWebBundleMetadataTest : public WebAppTest {
           TestSignedWebBundleBuilder::BuildOptions()) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     auto bundle = TestSignedWebBundleBuilder::BuildDefault(options);
-    CHECK(base::WriteFile(bundle_path_, bundle.data));
+    base::FilePath bundle_path = location_.GetPath(profile()->GetPath());
+    EXPECT_TRUE(base::CreateDirectory(bundle_path.DirName()));
+    EXPECT_TRUE(base::WriteFile(bundle_path, bundle.data));
 
     return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle.id);
   }
 
-  const base::FilePath& bundle_path() const { return bundle_path_; }
+  IwaSourceBundle bundle_source() const {
+    return IwaSourceBundle{.path = location_.GetPath(profile()->GetPath())};
+  }
 
   void MockIconAndPageState(FakeWebContentsManager& fake_web_contents_manager,
                             IsolatedWebAppUrlInfo url_info) {
@@ -98,14 +106,12 @@ class SignedWebBundleMetadataTest : public WebAppTest {
 
  private:
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  base::ScopedTempDir scoped_temp_dir_;
-  base::FilePath bundle_path_;
+  IwaStorageOwnedBundle location_{"some_folder"};
 };
 
 TEST_F(SignedWebBundleMetadataTest, Succeeds) {
   IsolatedWebAppUrlInfo url_info = WriteBundleToDisk();
   SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
-  IsolatedWebAppLocation location = InstalledBundle{.path = bundle_path()};
   FakeWebContentsManager& fake_web_contents_manager =
       static_cast<FakeWebContentsManager&>(
           fake_provider().web_contents_manager());
@@ -114,22 +120,22 @@ TEST_F(SignedWebBundleMetadataTest, Succeeds) {
   base::test::TestFuture<base::expected<SignedWebBundleMetadata, std::string>>
       metadata_future;
   SignedWebBundleMetadata::Create(profile(), &fake_provider(), url_info,
-                                  location, metadata_future.GetCallback());
+                                  bundle_source(),
+                                  metadata_future.GetCallback());
   base::expected<SignedWebBundleMetadata, std::string> metadata =
       metadata_future.Get();
-
-  EXPECT_TRUE(metadata.has_value());
-  EXPECT_THAT(metadata.value(),
-              Property(&SignedWebBundleMetadata::app_name, u"test app name"));
-  EXPECT_THAT(metadata.value(), Property(&SignedWebBundleMetadata::version,
-                                         base::Version("3.4.5")));
-  EXPECT_EQ(metadata.value().app_id(), url_info.app_id());
+  EXPECT_THAT(
+      metadata,
+      ValueIs(AllOf(
+          Property(&SignedWebBundleMetadata::app_name, Eq(u"test app name")),
+          Property(&SignedWebBundleMetadata::version,
+                   Eq(base::Version("3.4.5"))),
+          Property(&SignedWebBundleMetadata::app_id, Eq(url_info.app_id())))));
 }
 
 TEST_F(SignedWebBundleMetadataTest, FailsWhenWebBundleIdNotTrusted) {
   IsolatedWebAppUrlInfo url_info = WriteBundleToDisk();
   SetTrustedWebBundleIdsForTesting({});
-  IsolatedWebAppLocation location = InstalledBundle{.path = bundle_path()};
   FakeWebContentsManager& fake_web_contents_manager =
       static_cast<FakeWebContentsManager&>(
           fake_provider().web_contents_manager());
@@ -138,12 +144,12 @@ TEST_F(SignedWebBundleMetadataTest, FailsWhenWebBundleIdNotTrusted) {
   base::test::TestFuture<base::expected<SignedWebBundleMetadata, std::string>>
       metadata_future;
   SignedWebBundleMetadata::Create(profile(), &fake_provider(), url_info,
-                                  location, metadata_future.GetCallback());
+                                  bundle_source(),
+                                  metadata_future.GetCallback());
   base::expected<SignedWebBundleMetadata, std::string> metadata =
       metadata_future.Get();
 
-  EXPECT_FALSE(metadata.has_value());
-  EXPECT_THAT(metadata.error(), HasSubstr("not trusted"));
+  EXPECT_THAT(metadata, ErrorIs(HasSubstr("not trusted")));
 }
 
 TEST_F(SignedWebBundleMetadataTest, FailsWhenBundleInvalid) {
@@ -152,7 +158,6 @@ TEST_F(SignedWebBundleMetadataTest, FailsWhenBundleInvalid) {
           {web_package::WebBundleSigner::ErrorForTesting::
                kInvalidIntegrityBlockStructure}));
   SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
-  IsolatedWebAppLocation location = InstalledBundle{.path = bundle_path()};
   FakeWebContentsManager& fake_web_contents_manager =
       static_cast<FakeWebContentsManager&>(
           fake_provider().web_contents_manager());
@@ -161,35 +166,12 @@ TEST_F(SignedWebBundleMetadataTest, FailsWhenBundleInvalid) {
   base::test::TestFuture<base::expected<SignedWebBundleMetadata, std::string>>
       metadata_future;
   SignedWebBundleMetadata::Create(profile(), &fake_provider(), url_info,
-                                  location, metadata_future.GetCallback());
+                                  bundle_source(),
+                                  metadata_future.GetCallback());
   base::expected<SignedWebBundleMetadata, std::string> metadata =
       metadata_future.Get();
 
-  EXPECT_FALSE(metadata.has_value());
-  EXPECT_THAT(metadata.error(), HasSubstr("Wrong array size or magic bytes"));
-}
-
-TEST_F(SignedWebBundleMetadataTest, FailsWhenLocationIsDevModeProxy) {
-  IsolatedWebAppUrlInfo url_info =
-      WriteBundleToDisk(TestSignedWebBundleBuilder::BuildOptions());
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
-  IsolatedWebAppLocation location = DevModeProxy{
-      .proxy_url = url::Origin::Create(GURL("http://example.com"))};
-  FakeWebContentsManager& fake_web_contents_manager =
-      static_cast<FakeWebContentsManager&>(
-          fake_provider().web_contents_manager());
-  MockIconAndPageState(fake_web_contents_manager, url_info);
-
-  base::test::TestFuture<base::expected<SignedWebBundleMetadata, std::string>>
-      metadata_future;
-  SignedWebBundleMetadata::Create(profile(), &fake_provider(), url_info,
-                                  location, metadata_future.GetCallback());
-  base::expected<SignedWebBundleMetadata, std::string> metadata =
-      metadata_future.Get();
-
-  EXPECT_FALSE(metadata.has_value());
-  EXPECT_THAT(metadata.error(),
-              HasSubstr("No Signed Web Bundle Metadata for dev-mode proxy"));
+  EXPECT_THAT(metadata, ErrorIs(HasSubstr("Wrong array size or magic bytes")));
 }
 
 }  // namespace

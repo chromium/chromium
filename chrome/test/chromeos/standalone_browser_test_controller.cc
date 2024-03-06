@@ -8,6 +8,7 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected_macros.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -303,24 +305,41 @@ void StandaloneBrowserTestController::InstallIsolatedWebApp(
     crosapi::mojom::IsolatedWebAppLocationPtr location,
     bool dev_mode,
     InstallIsolatedWebAppCallback callback) {
-  web_app::IsolatedWebAppLocation iwa_location_location;
+  web_app::IsolatedWebAppLocation iwa_location;
   if (dev_mode) {
     if (location->is_bundle_path()) {
-      iwa_location_location = web_app::DevModeBundle{
+      iwa_location = web_app::DevModeBundle{
           .path = base::FilePath(location->get_bundle_path())};
     } else {
-      iwa_location_location = web_app::DevModeProxy{
+      iwa_location = web_app::DevModeProxy{
           .proxy_url = url::Origin::Create(location->get_proxy_origin())};
     }
   } else {
-    iwa_location_location = web_app::InstalledBundle{
+    iwa_location = web_app::InstalledBundle{
         .path = base::FilePath(location->get_bundle_path())};
   }
+  auto iwa_source = absl::visit(
+      base::Overloaded{[&](const web_app::InstalledBundle& location)
+                           -> absl::variant<web_app::IwaSourceBundle,
+                                            web_app::IwaSourceProxy> {
+                         return web_app::IwaSourceBundle{.path = location.path};
+                       },
+                       [&](const web_app::DevModeBundle& location)
+                           -> absl::variant<web_app::IwaSourceBundle,
+                                            web_app::IwaSourceProxy> {
+                         return web_app::IwaSourceBundle{.path = location.path};
+                       },
+                       [&](const web_app::DevModeProxy& location)
+                           -> absl::variant<web_app::IwaSourceBundle,
+                                            web_app::IwaSourceProxy> {
+                         return web_app::IwaSourceProxy{.proxy_url =
+                                                            location.proxy_url};
+                       }},
+      iwa_location);
 
-  web_app::IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
-      iwa_location_location,
-      base::BindOnce(&OnIsolatedWebAppUrlInfoCreated, iwa_location_location,
-                     std::move(callback)));
+  web_app::IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
+      std::move(iwa_source), base::BindOnce(&OnIsolatedWebAppUrlInfoCreated,
+                                            iwa_location, std::move(callback)));
 }
 
 void StandaloneBrowserTestController::SetWebAppSettingsPref(

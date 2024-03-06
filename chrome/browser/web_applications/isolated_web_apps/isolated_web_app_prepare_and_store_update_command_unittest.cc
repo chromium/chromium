@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
@@ -196,8 +197,8 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
   IsolatedWebAppUrlInfo url_info_ =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
 
-  IsolatedWebAppLocation installed_location_ =
-      InstalledBundle{.path = base::FilePath(FILE_PATH_LITERAL("a"))};
+  IsolatedWebAppStorageLocation installed_location_ =
+      IwaStorageOwnedBundle{"a"};
   base::Version installed_version_ = base::Version("1.0.0");
 
   base::FilePath update_bundle_path_;
@@ -219,8 +220,7 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, Succeeds) {
       Field("update_version",
             &IsolatedWebAppUpdatePrepareAndStoreCommandSuccess::update_version,
             Eq(update_version_)));
-
-  IsolatedWebAppLocation pending_location = result.location;
+  IsolatedWebAppStorageLocation pending_location = result.location;
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
@@ -350,8 +350,8 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
        FailsIfInstalledAppHasOtherIwaLocationType) {
-  installed_location_ = DevModeProxy{
-      .proxy_url = url::Origin::Create(GURL("https://example.com"))};
+  installed_location_ =
+      IwaStorageProxy{url::Origin::Create(GURL("https://example.com"))};
   InstallIwa();
   const base::flat_set<base::FilePath> existing_dirs = GetIwaDirContent();
 
@@ -359,9 +359,9 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   CreateDefaultPageState();
 
   auto result = PrepareAndStoreUpdateInfo(update_version_);
-  EXPECT_THAT(result,
-              IsErrorWithMessage(HasSubstr("Unable to update between different "
-                                           "IsolatedWebAppLocation types")));
+  EXPECT_THAT(result, IsErrorWithMessage(
+                          HasSubstr("Unable to update between dev-mode and "
+                                    "non-dev-mode storage location types")));
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());

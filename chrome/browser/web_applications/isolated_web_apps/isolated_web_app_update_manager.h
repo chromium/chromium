@@ -23,7 +23,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
@@ -120,7 +120,7 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   // (as opposed to an update discovered through the Update Manifest of a
   // production app), and prioritizes applying it.
   void DiscoverApplyAndPrioritizeLocalDevModeUpdate(
-      const IsolatedWebAppLocation& location,
+      const IsolatedWebAppStorageLocation& location,
       const IsolatedWebAppUrlInfo& url_info,
       base::OnceCallback<void(base::expected<base::Version, std::string>)>
           callback);

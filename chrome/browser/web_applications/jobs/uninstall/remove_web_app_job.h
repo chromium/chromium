@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -67,7 +68,7 @@ class RemoveWebAppJob : public UninstallJob {
   bool errors_ = false;
   bool has_isolated_storage_ = false;
   std::optional<webapps::UninstallResultCode> primary_removal_result_;
-  std::optional<IsolatedWebAppLocation> location_;
+  std::optional<IsolatedWebAppStorageLocation> location_;
 
   std::vector<webapps::AppId> sub_apps_pending_removal_;
   std::unique_ptr<RemoveInstallSourceJob> sub_job_;

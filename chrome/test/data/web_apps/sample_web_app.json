@@ -177,13 +177,13 @@
    "isolation_data": {
       "controlled_frame_partitions (on-disk)": [ "partition_name" ],
       "isolated_web_app_location": {
-         "dev_mode_bundle": {
+         "unowned_bundle": {
             "path": "1234"
          }
       },
       "pending_update_info": {
          "isolated_web_app_location": {
-            "dev_mode_bundle": {
+            "unowned_bundle": {
                "path": "1234"
             }
          },

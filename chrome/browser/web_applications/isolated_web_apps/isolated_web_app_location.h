@@ -15,11 +15,6 @@ class Value;
 
 namespace web_app {
 
-inline constexpr base::FilePath::CharType kIwaDirName[] =
-    FILE_PATH_LITERAL("iwa");
-inline constexpr base::FilePath::CharType kMainSwbnFileName[] =
-    FILE_PATH_LITERAL("main.swbn");
-
 struct InstalledBundle {
   bool operator==(const InstalledBundle& other) const;
   bool operator!=(const InstalledBundle& other) const;

@@ -35,6 +35,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
@@ -361,15 +362,17 @@ TEST_F(InstallIsolatedWebAppCommandTest, LocationSentToFinalizer) {
       }),
       HasValue());
 
-  EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
-              Pointee(AllOf(Property(
-                  "isolation_data", &WebApp::isolation_data,
-                  Optional(Field(
-                      "location", &WebApp::IsolationData::location,
-                      VariantWith<DevModeProxy>(Field(
-                          "proxy_url", &DevModeProxy::proxy_url,
-                          Eq(url::Origin::Create(GURL(
-                              "http://some-testing-proxy-url.com/")))))))))));
+  EXPECT_THAT(
+      web_app_registrar().GetAppById(url_info.app_id()),
+      Pointee(AllOf(Property(
+          "isolation_data", &WebApp::isolation_data,
+          Optional(Field(
+              "location", &WebApp::IsolationData::location,
+              Property("variant", &IsolatedWebAppStorageLocation::variant,
+                       VariantWith<IwaStorageProxy>(Property(
+                           "proxy_url", &IwaStorageProxy::proxy_url,
+                           Eq(url::Origin::Create(GURL(
+                               "http://some-testing-proxy-url.com/"))))))))))));
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest,
@@ -719,16 +722,17 @@ TEST_P(InstallIsolatedWebAppCommandBundleTest, InstallsWhenThereIsNoError) {
 
   if (bundle_info_.want_success) {
     EXPECT_THAT(result, HasValue());
-    absl::visit(base::Overloaded{
-                    [&iwa_root_dir](const InstalledBundle& installed_bundle) {
-                      EXPECT_TRUE(DirectoryExists(iwa_root_dir));
-                      EXPECT_TRUE(PathExists(installed_bundle.path));
-                    },
-                    [&iwa_root_dir](const DevModeBundle&) {
-                      EXPECT_FALSE(DirectoryExists(iwa_root_dir));
-                    },
-                    [](const DevModeProxy&) {}},
-                result->location);
+    absl::visit(
+        base::Overloaded{[&iwa_root_dir](const IwaStorageOwnedBundle& bundle) {
+                           EXPECT_TRUE(DirectoryExists(iwa_root_dir));
+                           EXPECT_TRUE(PathExists(iwa_root_dir.AppendASCII(
+                               bundle.dir_name_ascii())));
+                         },
+                         [&iwa_root_dir](const IwaStorageUnownedBundle&) {
+                           EXPECT_FALSE(DirectoryExists(iwa_root_dir));
+                         },
+                         [](const IwaStorageProxy&) { FAIL(); }},
+        result->location.variant());
   } else {
     EXPECT_THAT(result, Not(HasValue()));
     // Wait till IWA directory is removed.
@@ -741,7 +745,7 @@ TEST_P(InstallIsolatedWebAppCommandBundleTest, InstallsWhenThereIsNoError) {
                          [&iwa_root_dir](const DevModeBundle&) {
                            EXPECT_FALSE(DirectoryExists(iwa_root_dir));
                          },
-                         [](const DevModeProxy&) {}},
+                         [](const DevModeProxy&) { FAIL(); }},
         location_);
   }
 }

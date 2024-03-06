@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -48,7 +49,7 @@ namespace web_app {
 
 InstallIsolatedWebAppCommandSuccess::InstallIsolatedWebAppCommandSuccess(
     base::Version installed_version,
-    IsolatedWebAppLocation location)
+    IsolatedWebAppStorageLocation location)
     : installed_version(std::move(installed_version)),
       location(std::move(location)) {}
 
@@ -121,8 +122,8 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
 }
 
 InstallIsolatedWebAppCommand::~InstallIsolatedWebAppCommand() {
-  if (destination_location_.has_value()) {
-    CleanupLocationIfOwned(profile().GetPath(), *destination_location_,
+  if (destination_storage_location_.has_value()) {
+    CleanupLocationIfOwned(profile().GetPath(), *destination_storage_location_,
                            base::DoNothing());
   }
 }
@@ -165,9 +166,11 @@ void InstallIsolatedWebAppCommand::CopyToProfileDirectory(
 
 void InstallIsolatedWebAppCommand::OnCopiedToProfileDirectory(
     base::OnceClosure next_step_callback,
-    base::expected<IsolatedWebAppLocation, std::string> new_location) {
-  ASSIGN_OR_RETURN(destination_location_, new_location,
+    base::expected<IsolatedWebAppStorageLocation, std::string> new_location) {
+  ASSIGN_OR_RETURN(destination_storage_location_, new_location,
                    &InstallIsolatedWebAppCommand::ReportFailure, this);
+  destination_location_ =
+      destination_storage_location_->ToLocationDeprecated(profile().GetPath());
   // Make sure that `source_location_`, which is now outdated, can no longer be
   // accessed.
   source_location_.reset();
@@ -175,6 +178,8 @@ void InstallIsolatedWebAppCommand::OnCopiedToProfileDirectory(
   GetMutableDebugValue().Set(
       "destination_location",
       IsolatedWebAppLocationAsDebugValue(*destination_location_));
+  GetMutableDebugValue().Set("destination_storage_location",
+                             destination_storage_location_->ToDebugValue());
   std::move(next_step_callback).Run();
 }
 
@@ -196,7 +201,7 @@ void InstallIsolatedWebAppCommand::CreateStoragePartition(
 void InstallIsolatedWebAppCommand::LoadInstallUrl(
     base::OnceClosure next_step_callback) {
   command_helper_->LoadInstallUrl(
-      *destination_location_, *web_contents_.get(), *url_loader_.get(),
+      *destination_storage_location_, *web_contents_.get(), *url_loader_.get(),
       base::BindOnce(&InstallIsolatedWebAppCommand::RunNextStepOnSuccess<void>,
                      weak_factory_.GetWeakPtr(),
                      std::move(next_step_callback)));
@@ -241,7 +246,7 @@ void InstallIsolatedWebAppCommand::RetrieveIconsAndPopulateInstallInfo(
 void InstallIsolatedWebAppCommand::FinalizeInstall(WebAppInstallInfo info) {
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
-  options.isolated_web_app_location = *destination_location_;
+  options.isolated_web_app_location = *destination_storage_location_;
 
   lock_->install_finalizer().FinalizeInstall(
       info, options,
@@ -275,9 +280,9 @@ void InstallIsolatedWebAppCommand::ReportSuccess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   GetMutableDebugValue().Set("result", "success");
-  // Reset `destination_location_` to prevent cleanup in the destructor.
-  IsolatedWebAppLocation location =
-      std::exchange(destination_location_, std::nullopt).value();
+  // Reset `destination_storage_location_` to prevent cleanup in the destructor.
+  IsolatedWebAppStorageLocation location =
+      std::exchange(destination_storage_location_, std::nullopt).value();
   CompleteAndSelfDestruct(CommandResult::kSuccess,
                           InstallIsolatedWebAppCommandSuccess(
                               *actual_version_, std::move(location)));

@@ -20,14 +20,13 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -153,13 +152,14 @@ void IsolatedWebAppApplyUpdateCommand::CheckIfUpdateIsStillPending(
                                 pending_update_info_->version.GetString()}));
     return;
   }
-  if (isolation_data.location.index() !=
-      pending_update_info_->location.index()) {
-    ReportFailure(
-        base::StringPrintf("Unable to update between different "
-                           "IsolatedWebAppLocation types (%zu to %zu).",
-                           isolation_data.location.index(),
-                           pending_update_info_->location.index()));
+  if (isolation_data.location.dev_mode() !=
+      pending_update_info_->location.dev_mode()) {
+    std::stringstream s;
+    s << "Unable to update between dev-mode and non-dev-mode storage location "
+         "types ("
+      << isolation_data.location << " to " << pending_update_info_->location
+      << ").";
+    ReportFailure(s.str());
     return;
   }
 
@@ -171,7 +171,8 @@ void IsolatedWebAppApplyUpdateCommand::CheckTrustAndSignatures(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   command_helper_->CheckTrustAndSignatures(
-      pending_update_info_->location, &profile(),
+      pending_update_info_->location.ToLocationDeprecated(profile().GetPath()),
+      &profile(),
       base::BindOnce(
           &IsolatedWebAppApplyUpdateCommand::RunNextStepOnSuccess<void>,
           weak_factory_.GetWeakPtr(), std::move(next_step_callback)));

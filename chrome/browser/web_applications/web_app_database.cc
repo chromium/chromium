@@ -17,10 +17,11 @@
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/pickle.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -333,60 +334,60 @@ std::optional<base::FilePath> ProtoToFilePath(const std::string& bytes) {
 }
 
 template <typename T>
-void IsolatedWebAppLocationToProto(const IsolatedWebAppLocation& location,
-                                   T* proto) {
+void IsolationDataLocationToProto(const IsolatedWebAppStorageLocation& location,
+                                  T* proto) {
   absl::visit(base::Overloaded{
-                  [&proto](const InstalledBundle& bundle) {
-                    proto->mutable_installed_bundle()->set_path(
-                        FilePathToProto(bundle.path));
+                  [&proto](const IwaStorageOwnedBundle& bundle) {
+                    proto->mutable_owned_bundle()->set_dir_name_ascii(
+                        bundle.dir_name_ascii());
                   },
-                  [&proto](const DevModeBundle& bundle) {
-                    proto->mutable_dev_mode_bundle()->set_path(
-                        FilePathToProto(bundle.path));
+                  [&proto](const IwaStorageUnownedBundle& bundle) {
+                    proto->mutable_unowned_bundle()->set_path(
+                        FilePathToProto(bundle.path()));
                   },
-                  [&proto](const DevModeProxy& proxy) {
-                    DCHECK(!proxy.proxy_url.opaque());
-                    proto->mutable_dev_mode_proxy()->set_proxy_url(
-                        proxy.proxy_url.Serialize());
+                  [&proto](const IwaStorageProxy& proxy) {
+                    DCHECK(!proxy.proxy_url().opaque());
+                    proto->mutable_proxy()->set_proxy_url(
+                        proxy.proxy_url().Serialize());
                   },
               },
-              location);
+              location.variant());
 }
 
 template <typename T>
-base::expected<IsolatedWebAppLocation, std::string>
-ProtoToIsolatedWebAppLocation(const T& proto) {
+base::expected<IsolatedWebAppStorageLocation, std::string>
+ProtoToIsolationDataLocation(const T& proto) {
   switch (proto.location_case()) {
-    case T::LocationCase::kInstalledBundle: {
-      std::optional<base::FilePath> path =
-          ProtoToFilePath(proto.installed_bundle().path());
-      if (!path.has_value()) {
+    case T::LocationCase::kOwnedBundle: {
+      std::string folder_name = proto.owned_bundle().dir_name_ascii();
+      if (!base::IsStringASCII(folder_name)) {
         return base::unexpected(
-            ".installed_bundle.path parse error: cannot deserialize file path");
+            ".owned_bundle.dir_name_ascii parse error: cannot "
+            "deserialize directory name");
       }
-      return InstalledBundle{.path = *path};
+      return IwaStorageOwnedBundle{folder_name};
     }
 
-    case T::LocationCase::kDevModeBundle: {
+    case T::LocationCase::kUnownedBundle: {
       std::optional<base::FilePath> path =
-          ProtoToFilePath(proto.dev_mode_bundle().path());
+          ProtoToFilePath(proto.unowned_bundle().path());
       if (!path.has_value()) {
         return base::unexpected(
-            ".dev_mode_bundle.path parse error: cannot deserialize file path");
+            ".unowned_bundle.path parse error: cannot deserialize file path");
       }
-      return DevModeBundle{.path = *path};
+      return IwaStorageUnownedBundle{*path};
     }
 
-    case T::LocationCase::kDevModeProxy: {
-      GURL gurl_proxy_url = GURL(proto.dev_mode_proxy().proxy_url());
+    case T::LocationCase::kProxy: {
+      GURL gurl_proxy_url = GURL(proto.proxy().proxy_url());
       url::Origin proxy_url = url::Origin::Create(gurl_proxy_url);
       if (!gurl_proxy_url.is_valid() || proxy_url.opaque()) {
         return base::unexpected(
-            ".dev_mode_proxy.proxy_url parse error: cannot deserialize proxy "
+            ".proxy.proxy_url parse error: cannot deserialize proxy "
             "url. Value: " +
-            proto.dev_mode_proxy().proxy_url());
+            proto.proxy().proxy_url());
       }
-      return DevModeProxy{.proxy_url = proxy_url};
+      return IwaStorageProxy{proxy_url};
     }
 
     case T::LocationCase::LOCATION_NOT_SET:
@@ -873,8 +874,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   if (web_app.isolation_data().has_value()) {
     auto* mutable_data = local_data->mutable_isolation_data();
 
-    IsolatedWebAppLocationToProto(web_app.isolation_data()->location,
-                                  mutable_data);
+    IsolationDataLocationToProto(web_app.isolation_data()->location,
+                                 mutable_data);
     mutable_data->set_version(web_app.isolation_data()->version.GetString());
     for (const std::string& partition :
          web_app.isolation_data()->controlled_frame_partitions) {
@@ -887,8 +888,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       auto* mutable_pending_update_info =
           mutable_data->mutable_pending_update_info();
 
-      IsolatedWebAppLocationToProto(pending_update_info.location,
-                                    mutable_pending_update_info);
+      IsolationDataLocationToProto(pending_update_info.location,
+                                   mutable_pending_update_info);
       mutable_pending_update_info->set_version(
           pending_update_info.version.GetString());
     }
@@ -1660,8 +1661,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     base::Version version(
         std::vector(version_components->begin(), version_components->end()));
 
-    base::expected<IsolatedWebAppLocation, std::string> location =
-        ProtoToIsolatedWebAppLocation(local_data.isolation_data());
+    base::expected<IsolatedWebAppStorageLocation, std::string> location =
+        ProtoToIsolationDataLocation(local_data.isolation_data());
     if (!location.has_value()) {
       DLOG(ERROR) << "WebApp proto isolation_data.location" << location.error();
       return nullptr;
@@ -1672,19 +1673,21 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       const auto& pending_update_info_proto =
           local_data.isolation_data().pending_update_info();
 
-      base::expected<IsolatedWebAppLocation, std::string> pending_location =
-          ProtoToIsolatedWebAppLocation(pending_update_info_proto);
+      base::expected<IsolatedWebAppStorageLocation, std::string>
+          pending_location =
+              ProtoToIsolationDataLocation(pending_update_info_proto);
       if (!pending_location.has_value()) {
         DLOG(ERROR)
             << "WebApp proto isolation_data.pending_update_info.location"
             << pending_location.error();
         return nullptr;
       }
-      if (pending_location->index() != location->index()) {
+      if (pending_location->dev_mode() != location->dev_mode()) {
         DLOG(ERROR) << "WebApp proto isolation_data.pending_update_info "
-                       "deserialization "
-                       "error: isolation_data.pending_update_info.location "
-                       "must have the same type as isolation_data.location.";
+                       "deserialization error: "
+                       "isolation_data.pending_update_info.location and "
+                       "isolation_data.location must both be in dev mode or "
+                       "not in dev mode.";
         return nullptr;
       }
 

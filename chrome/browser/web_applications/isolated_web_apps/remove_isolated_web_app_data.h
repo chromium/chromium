@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/web_app.h"
 
 class Profile;
 
@@ -25,7 +26,7 @@ void RemoveIsolatedWebAppBrowsingData(Profile* profile,
 // Closes the reader (if any) that use the singed web bundle in the |location|
 // and deletes the location's directory if it is owned by Chrome.
 void CloseAndDeleteBundle(Profile* profile,
-                          const IsolatedWebAppLocation& location,
+                          const IsolatedWebAppStorageLocation& location,
                           base::OnceClosure callback);
 
 }  // namespace web_app

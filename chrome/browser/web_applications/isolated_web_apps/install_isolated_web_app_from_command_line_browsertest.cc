@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -91,15 +92,18 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest,
   webapps::AppId id = observer.BeginListeningAndWait();
 
   EXPECT_THAT(GetWebAppRegistrar().IsInstalled(id), IsTrue());
-  EXPECT_THAT(GetWebAppRegistrar().GetAppById(id),
-              test::IwaIs(Eq("Simple Isolated App"),
-                          test::IsolationDataIs(
-                              VariantWith<DevModeProxy>(
-                                  Field(&DevModeProxy::proxy_url,
-                                        Eq(url::Origin::Create(GetAppUrl())))),
-                              Eq(base::Version("1.0.0")),
-                              /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt))));
+  EXPECT_THAT(
+      GetWebAppRegistrar().GetAppById(id),
+      test::IwaIs(
+          Eq("Simple Isolated App"),
+          test::IsolationDataIs(
+              Property("variant", &IsolatedWebAppStorageLocation::variant,
+                       VariantWith<IwaStorageProxy>(
+                           Property(&IwaStorageProxy::proxy_url,
+                                    Eq(url::Origin::Create(GetAppUrl()))))),
+              Eq(base::Version("1.0.0")),
+              /*controlled_frame_partitions=*/_,
+              /*pending_update_info=*/Eq(std::nullopt))));
 }
 
 class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
@@ -160,14 +164,17 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
     absolute_path = base::MakeAbsoluteFilePath(signed_web_bundle_path_);
   }
 
-  EXPECT_THAT(GetWebAppRegistrar().GetAppById(id),
-              test::IwaIs(Eq("Simple Isolated App"),
-                          test::IsolationDataIs(
-                              VariantWith<DevModeBundle>(Field(
-                                  &DevModeBundle::path, Eq(absolute_path))),
-                              Eq(base::Version("1.0.0")),
-                              /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt))));
+  EXPECT_THAT(
+      GetWebAppRegistrar().GetAppById(id),
+      test::IwaIs(
+          Eq("Simple Isolated App"),
+          test::IsolationDataIs(
+              Property("variant", &IsolatedWebAppStorageLocation::variant,
+                       VariantWith<IwaStorageUnownedBundle>(Property(
+                           &IwaStorageUnownedBundle::path, Eq(absolute_path)))),
+              Eq(base::Version("1.0.0")),
+              /*controlled_frame_partitions=*/_,
+              /*pending_update_info=*/Eq(std::nullopt))));
 }
 
 }  // namespace

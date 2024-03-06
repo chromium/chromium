@@ -26,7 +26,7 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -929,7 +929,7 @@ TEST_F(WebAppRegistrarTest, GetAllIsolatedWebAppStoragePartitionConfigs) {
 
   isolated_web_app->SetScope(isolated_web_app->start_url());
   isolated_web_app->SetIsolationData(WebApp::IsolationData(
-      InstalledBundle{.path = base::FilePath()}, base::Version("1.0.0")));
+      IwaStorageOwnedBundle{"random_name"}, base::Version("1.0.0")));
   RegisterAppUnsafe(std::move(isolated_web_app));
 
   std::vector<content::StoragePartitionConfig> storage_partition_configs =
@@ -956,7 +956,7 @@ TEST_F(
 
   isolated_web_app->SetScope(isolated_web_app->start_url());
   isolated_web_app->SetIsolationData(WebApp::IsolationData(
-      InstalledBundle{.path = base::FilePath()}, base::Version("1.0.0")));
+      IwaStorageOwnedBundle{"random_name"}, base::Version("1.0.0")));
   isolated_web_app->SetIsLocallyInstalled(false);
   RegisterAppUnsafe(std::move(isolated_web_app));
 
@@ -983,7 +983,7 @@ TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
 
   isolated_web_app->SetScope(isolated_web_app->start_url());
   isolated_web_app->SetIsolationData(WebApp::IsolationData(
-      InstalledBundle{.path = base::FilePath()}, base::Version("1.0.0")));
+      IwaStorageOwnedBundle{"random_name"}, base::Version("1.0.0")));
   RegisterAppUnsafe(std::move(isolated_web_app));
 
   auto output_config =
@@ -1081,8 +1081,7 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
   web_app->SetIsLocallyInstalled(true);
   web_app->SetIsolationData(WebApp::IsolationData(
-      DevModeProxy{.proxy_url =
-                       url::Origin::Create(GURL("http://127.0.0.1:8080"))},
+      IwaStorageProxy{url::Origin::Create(GURL("http://127.0.0.1:8080"))},
       base::Version("1.0.0")));
 
   RegisterAppUnsafe(std::move(web_app));

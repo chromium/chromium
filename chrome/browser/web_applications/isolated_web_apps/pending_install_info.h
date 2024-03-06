@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 
 namespace content {
 class WebContents;
@@ -35,16 +35,16 @@ class IsolatedWebAppPendingInstallInfo {
 
   ~IsolatedWebAppPendingInstallInfo();
 
-  void set_isolated_web_app_location(const IsolatedWebAppLocation& location);
+  void set_location(const IsolatedWebAppStorageLocation& location);
 
-  const std::optional<IsolatedWebAppLocation>& location() const;
+  const std::optional<IsolatedWebAppStorageLocation>& location() const;
 
-  void ResetIsolatedWebAppLocation();
+  void ResetLocation();
 
  private:
   IsolatedWebAppPendingInstallInfo();
 
-  std::optional<IsolatedWebAppLocation> location_ = std::nullopt;
+  std::optional<IsolatedWebAppStorageLocation> location_ = std::nullopt;
 };
 
 }  // namespace web_app

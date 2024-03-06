@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -64,17 +65,17 @@ bool IsolatedWebAppPendingInstallInfo::HasPendingInstallLocation(
 IsolatedWebAppPendingInstallInfo::IsolatedWebAppPendingInstallInfo() = default;
 IsolatedWebAppPendingInstallInfo::~IsolatedWebAppPendingInstallInfo() = default;
 
-void IsolatedWebAppPendingInstallInfo::set_isolated_web_app_location(
-    const IsolatedWebAppLocation& location) {
+void IsolatedWebAppPendingInstallInfo::set_location(
+    const IsolatedWebAppStorageLocation& location) {
   location_ = location;
 }
 
-const std::optional<IsolatedWebAppLocation>&
+const std::optional<IsolatedWebAppStorageLocation>&
 IsolatedWebAppPendingInstallInfo::location() const {
   return location_;
 }
 
-void IsolatedWebAppPendingInstallInfo::ResetIsolatedWebAppLocation() {
+void IsolatedWebAppPendingInstallInfo::ResetLocation() {
   location_ = std::nullopt;
 }
 

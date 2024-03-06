@@ -18,7 +18,7 @@
 #include "base/traits_bag.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
@@ -480,8 +480,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
   info.title = u"Foo Title";
   info.isolated_web_app_version = version;
 
-  const IsolatedWebAppLocation location =
-      DevModeBundle{.path = base::FilePath(FILE_PATH_LITERAL("p"))};
+  const IsolatedWebAppStorageLocation location(
+      IwaStorageUnownedBundle{base::FilePath(FILE_PATH_LITERAL("p"))});
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::EXTERNAL_POLICY);
   options.isolated_web_app_location = location;

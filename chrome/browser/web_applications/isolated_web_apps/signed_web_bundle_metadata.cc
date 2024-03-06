@@ -15,6 +15,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
@@ -35,9 +37,9 @@ class WebAppInstallInfoFetcher {
   explicit WebAppInstallInfoFetcher(Profile* profile,
                                     WebAppProvider* provider,
                                     const IsolatedWebAppUrlInfo& url_info,
-                                    const IsolatedWebAppLocation& location)
+                                    const IwaSourceBundle& bundle)
       : profile_(profile),
-        location_(location),
+        location_(IwaStorageUnownedBundle{bundle.path}),
         web_contents_(
             IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
                 *profile)),
@@ -54,11 +56,6 @@ class WebAppInstallInfoFetcher {
   void FetchAndReply(WebAppInstalInfoCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     callback_ = std::move(callback);
-
-    if (absl::holds_alternative<DevModeProxy>(location_)) {
-      FailWithError("No Signed Web Bundle Metadata for dev-mode proxy.");
-      return;
-    }
 
     auto weak_ptr = weak_factory_.GetWeakPtr();
     RunChainedCallbacks(
@@ -89,7 +86,7 @@ class WebAppInstallInfoFetcher {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(helper_);
     helper_->CheckTrustAndSignatures(
-        location_, profile_,
+        InstalledBundle{location_.path()}, profile_,
         base::BindOnce(&WebAppInstallInfoFetcher::RunNextStepOnSuccess<void>,
                        weak_factory_.GetWeakPtr(),
                        std::move(next_step_callback)));
@@ -171,7 +168,7 @@ class WebAppInstallInfoFetcher {
   SEQUENCE_CHECKER(sequence_checker_);
 
   raw_ptr<Profile> profile_;
-  IsolatedWebAppLocation location_;
+  IwaStorageUnownedBundle location_;
   WebAppInstalInfoCallback callback_;
 
   std::unique_ptr<IsolatedWebAppInstallCommandHelper> helper_ = nullptr;
@@ -189,15 +186,14 @@ class WebAppInstallInfoFetcher {
 void SignedWebBundleMetadata::Create(Profile* profile,
                                      WebAppProvider* provider,
                                      const IsolatedWebAppUrlInfo& url_info,
-                                     const IsolatedWebAppLocation& location,
+                                     const IwaSourceBundle& location,
                                      SignedWebBundleMetadataCallback callback) {
   auto fetcher = std::make_unique<WebAppInstallInfoFetcher>(profile, provider,
                                                             url_info, location);
   WebAppInstallInfoFetcher& fetcher_ref = *fetcher.get();
 
   fetcher_ref.FetchAndReply(base::BindOnce(
-      [](const IsolatedWebAppUrlInfo& url_info,
-         const IsolatedWebAppLocation& location,
+      [](const IsolatedWebAppUrlInfo& url_info, const IwaSourceBundle& location,
          SignedWebBundleMetadataCallback callback,
          base::expected<WebAppInstallInfo, std::string> install_info) {
         std::move(callback).Run(install_info.transform(
@@ -217,7 +213,7 @@ void SignedWebBundleMetadata::Create(Profile* profile,
 // static
 SignedWebBundleMetadata SignedWebBundleMetadata::CreateForTesting(
     const IsolatedWebAppUrlInfo& url_info,
-    const IsolatedWebAppLocation& location,
+    const IwaSourceBundle& location,
     const std::u16string& app_name,
     const base::Version& version,
     const IconBitmaps& icons) {
@@ -226,7 +222,7 @@ SignedWebBundleMetadata SignedWebBundleMetadata::CreateForTesting(
 
 SignedWebBundleMetadata::SignedWebBundleMetadata(
     const IsolatedWebAppUrlInfo& url_info,
-    const IsolatedWebAppLocation& location,
+    const IwaSourceBundle& location,
     const std::u16string& app_name,
     const base::Version& version,
     const IconBitmaps& icons)

@@ -13,7 +13,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/check_isolated_web_app_bundle_installability_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -48,14 +48,14 @@ InstallabilityChecker::InstallabilityChecker(
 }
 
 void InstallabilityChecker::Start(const base::FilePath& bundle_path) {
-  IsolatedWebAppLocation location = DevModeBundle{bundle_path};
-  IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
+  IwaSourceBundle location{.path = bundle_path};
+  IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
       location, base::BindOnce(&InstallabilityChecker::OnLoadedUrlInfo,
                                weak_ptr_factory_.GetWeakPtr(), location));
 }
 
 void InstallabilityChecker::OnLoadedUrlInfo(
-    IsolatedWebAppLocation location,
+    IwaSourceBundle location,
     base::expected<IsolatedWebAppUrlInfo, std::string> url_info) {
   if (!url_info.has_value()) {
     std::move(callback_).Run(BundleInvalid{url_info.error()});

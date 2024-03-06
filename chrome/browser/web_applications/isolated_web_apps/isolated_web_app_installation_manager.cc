@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
@@ -360,8 +361,22 @@ void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromLocation(
     return;
   }
 
-  IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
-      *optional_location,
+  IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
+      absl::visit(base::Overloaded{
+                      [](const InstalledBundle& bundle)
+                          -> absl::variant<IwaSourceBundle, IwaSourceProxy> {
+                        return IwaSourceBundle{.path = bundle.path};
+                      },
+                      [](const DevModeBundle& bundle)
+                          -> absl::variant<IwaSourceBundle, IwaSourceProxy> {
+                        return IwaSourceBundle{.path = bundle.path};
+                      },
+                      [](const DevModeProxy& proxy)
+                          -> absl::variant<IwaSourceBundle, IwaSourceProxy> {
+                        return IwaSourceProxy{.proxy_url = proxy.proxy_url};
+                      },
+                  },
+                  *optional_location),
       base::BindOnce(
           &IsolatedWebAppInstallationManager::OnGetIsolatedWebAppUrlInfo,
           weak_ptr_factory_.GetWeakPtr(), std::move(keep_alive),

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -69,6 +70,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
                        ValidBundleInstallAndLaunch) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
       IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  app->TrustSigningKey();
   webapps::AppId app_id =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(app->web_bundle_id())
           .app_id();
@@ -141,6 +143,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerDisabledBrowserTest,
                        DoesNotLaunchIfUnmanagedInstallIsDisabled) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
       IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  app->TrustSigningKey();
 
   base::test::TestFuture<void> on_closed_future;
 

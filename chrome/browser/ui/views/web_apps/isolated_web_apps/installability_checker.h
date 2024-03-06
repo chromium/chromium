@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/check_isolated_web_app_bundle_installability_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class Profile;
@@ -25,6 +24,7 @@ class Version;
 namespace web_app {
 
 class IsolatedWebAppUrlInfo;
+struct IwaSourceBundle;
 class SignedWebBundleMetadata;
 class WebAppProvider;
 
@@ -66,7 +66,7 @@ class InstallabilityChecker {
 
   void Start(const base::FilePath& bundle_path);
   void OnLoadedUrlInfo(
-      IsolatedWebAppLocation location,
+      IwaSourceBundle location,
       base::expected<IsolatedWebAppUrlInfo, std::string> url_info);
   void OnLoadedMetadata(
       base::expected<SignedWebBundleMetadata, std::string> metadata);

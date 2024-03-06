@@ -94,26 +94,22 @@ IsolatedWebAppUrlInfo IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
 }
 
 // static
-void IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
-    const IsolatedWebAppLocation& location,
+void IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
+    const absl::variant<IwaSourceBundle, IwaSourceProxy>& source,
     base::OnceCallback<void(base::expected<IsolatedWebAppUrlInfo, std::string>)>
         callback) {
   absl::visit(base::Overloaded{
-                  [&](const InstalledBundle& installed_bundle) {
+                  [&](const IwaSourceBundle& installed_bundle) {
                     GetSignedWebBundleIdByPath(installed_bundle.path,
                                                std::move(callback));
                   },
-                  [&](const DevModeBundle& dev_mode_bundle) {
-                    GetSignedWebBundleIdByPath(dev_mode_bundle.path,
-                                               std::move(callback));
-                  },
-                  [&](const DevModeProxy&) {
+                  [&](const IwaSourceProxy&) {
                     std::move(callback).Run(
                         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
                             web_package::SignedWebBundleId::
                                 CreateRandomForDevelopment()));
                   }},
-              location);
+              source);
 }
 
 IsolatedWebAppUrlInfo::IsolatedWebAppUrlInfo(

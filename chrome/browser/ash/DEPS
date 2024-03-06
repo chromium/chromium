@@ -488,6 +488,7 @@ include_rules = [
   "+chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h",
   "+chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h",
   "+chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h",
+  "+chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h",
   "+chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h",
   "+chrome/browser/web_applications/manifest_update_manager.h",
   "+chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h",

@@ -19,6 +19,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
@@ -55,6 +57,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
+#include "components/base32/base32.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
@@ -900,25 +903,30 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   if (random.next_bool()) {
     constexpr size_t kNumLocationTypes =
-        absl::variant_size<IsolatedWebAppLocation>::value;
-    auto path = base::FilePath::FromUTF8Unsafe(seed_str);
-    IsolatedWebAppLocation location_types[] = {
-        InstalledBundle{.path = path},
-        DevModeBundle{.path = path},
-        DevModeProxy{.proxy_url = url::Origin::Create(GURL(
-                         base::StrCat({"https://proxy-", seed_str, ".com/"})))},
-    };
-    static_assert(std::size(location_types) == kNumLocationTypes);
+        absl::variant_size<IsolatedWebAppStorageLocation::Variant>::value;
+    size_t location_index = random.next_uint(kNumLocationTypes);
 
-    IsolatedWebAppLocation location_type =
-        location_types[random.next_uint(kNumLocationTypes)];
+    auto get_location_type = [&seed_str](size_t location_index) {
+      std::array<IsolatedWebAppStorageLocation, kNumLocationTypes>
+          location_types = {
+              IwaStorageOwnedBundle{base32::Base32Encode(
+                  base::as_byte_span(seed_str),
+                  base32::Base32EncodePolicy::OMIT_PADDING)},
+              IwaStorageUnownedBundle{base::FilePath::FromUTF8Unsafe(seed_str)},
+              IwaStorageProxy{url::Origin::Create(
+                  GURL(base::StrCat({"https://proxy-", seed_str, ".com/"})))},
+          };
+      return location_types.at(location_index);
+    };
+
     base::Version version = base::Version({
         random.next_uint(),
         random.next_uint(),
         random.next_uint(),
     });
 
-    WebApp::IsolationData isolation_data(location_type, version);
+    WebApp::IsolationData isolation_data(get_location_type(location_index),
+                                         version);
     if (random.next_bool()) {
       isolation_data.controlled_frame_partitions.insert("partition_name");
     }
@@ -929,7 +937,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
           random.next_uint(),
       });
       WebApp::IsolationData::PendingUpdateInfo pending_update_info(
-          location_type, pending_version);
+          get_location_type(location_index), pending_version);
       isolation_data.SetPendingUpdateInfo(pending_update_info);
     }
     app->SetIsolationData(isolation_data);
