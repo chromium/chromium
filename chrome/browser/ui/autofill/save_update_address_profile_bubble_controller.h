@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_H_
 
 #include <optional>
+#include <string>
 
 #include "components/autofill/core/browser/autofill_client.h"
 
@@ -24,7 +25,8 @@ class SaveUpdateAddressProfileBubbleController {
   virtual void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
       base::optional_ref<const AutofillProfile> profile) = 0;
-  virtual void OnEditButtonClicked() = 0;
+  virtual void OnEditButtonClicked(
+      const std::u16string& editor_footer_message) = 0;
   virtual void OnBubbleClosed() = 0;
 
   // Whether the icon belongs to a save or an update address bubble.

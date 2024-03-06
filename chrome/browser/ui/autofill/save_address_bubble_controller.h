@@ -50,6 +50,7 @@ class SaveAddressBubbleController : public content::WebContentsObserver {
   virtual AutofillClient::SaveAddressProfileOfferUserDecision
   GetCancelCallbackValue() const;
   virtual std::u16string GetFooterMessage() const;
+  virtual std::u16string GetEditorFooterMessage() const;
 
   // Called by the view when the user made their decision. It can be done
   // explicitly (e.g. by pressing the cancel button) or implicitly (e.g. by

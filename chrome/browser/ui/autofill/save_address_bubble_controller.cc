@@ -243,6 +243,19 @@ std::u16string SaveAddressBubbleController::GetFooterMessage() const {
   return {};
 }
 
+std::u16string SaveAddressBubbleController::GetEditorFooterMessage() const {
+  if (is_migration_to_account_ && web_contents()) {
+    std::optional<AccountInfo> account =
+        GetPrimaryAccountInfoFromBrowserContext(
+            web_contents()->GetBrowserContext());
+    return l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE,
+        base::UTF8ToUTF16(account->email));
+  }
+
+  return GetFooterMessage();
+}
+
 void SaveAddressBubbleController::OnUserDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision,
     base::optional_ref<const AutofillProfile> profile) {
@@ -253,7 +266,7 @@ void SaveAddressBubbleController::OnUserDecision(
 
 void SaveAddressBubbleController::OnEditButtonClicked() {
   if (delegate_) {
-    delegate_->OnEditButtonClicked();
+    delegate_->OnEditButtonClicked(GetEditorFooterMessage());
   }
 }
 

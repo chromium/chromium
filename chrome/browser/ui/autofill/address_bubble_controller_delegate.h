@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_ADDRESS_BUBBLE_CONTROLLER_DELEGATE_H_
 #define CHROME_BROWSER_UI_AUTOFILL_ADDRESS_BUBBLE_CONTROLLER_DELEGATE_H_
 
+#include <string>
+
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -19,7 +21,8 @@ class AddressBubbleControllerDelegate {
   virtual void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
       base::optional_ref<const AutofillProfile> profile) = 0;
-  virtual void OnEditButtonClicked() = 0;
+  virtual void OnEditButtonClicked(
+      const std::u16string& editor_footer_message) = 0;
   virtual void OnBubbleClosed() = 0;
 };
 

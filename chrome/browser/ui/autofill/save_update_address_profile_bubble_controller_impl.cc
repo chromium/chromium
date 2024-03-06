@@ -107,20 +107,14 @@ std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetWindowTitle()
 
 std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetFooterMessage()
     const {
+  CHECK(!IsSaveBubble());
   if (address_profile_->source() == AutofillProfile::Source::kAccount) {
     std::optional<AccountInfo> account =
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
-
-    // TODO(b/325440757): The footer is used for the editor dialog as well
-    // (called from the save bubble), pass the footer value from the view via an
-    // `OnEditButtonClicked()` argument and remove this `IsSaveBubble()` check.
-    int string_id =
-        IsSaveBubble()
-            ? IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE
-            : IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE;
-    return l10n_util::GetStringFUTF16(string_id,
-                                      base::UTF8ToUTF16(account->email));
+    return l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
+        base::UTF8ToUTF16(account->email));
   }
 
   return {};
@@ -153,12 +147,16 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OnUserDecision(
   }
 }
 
-void SaveUpdateAddressProfileBubbleControllerImpl::OnEditButtonClicked() {
+void SaveUpdateAddressProfileBubbleControllerImpl::OnEditButtonClicked(
+    const std::u16string& editor_footer_message) {
   EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
   EditAddressProfileDialogControllerImpl* controller =
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   controller->OfferEdit(
-      *address_profile_, GetOriginalProfile(), GetEditorFooterMessage(),
+      *address_profile_, GetOriginalProfile(),
+      // TODO(b/325440757): Remove `GetEditorFooterMessage()` and use
+      // `editor_footer_message` only.
+      IsSaveBubble() ? editor_footer_message : GetEditorFooterMessage(),
       base::BindOnce(
           &SaveUpdateAddressProfileBubbleControllerImpl::OnUserDecision,
           weak_ptr_factory_.GetWeakPtr()),
@@ -238,17 +236,7 @@ void SaveUpdateAddressProfileBubbleControllerImpl::DoShowBubble() {
 
 std::u16string
 SaveUpdateAddressProfileBubbleControllerImpl::GetEditorFooterMessage() const {
-  // TODO(b/325440757): Pass the footer value from the view via an
-  // `OnEditButtonClicked()` argument and remove this check.
-  if (is_migration_to_account_) {
-    std::optional<AccountInfo> account =
-        GetPrimaryAccountInfoFromBrowserContext(
-            web_contents()->GetBrowserContext());
-    return l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE,
-        base::UTF8ToUTF16(account->email));
-  }
-
+  CHECK(!IsSaveBubble());
   return GetFooterMessage();
 }
 

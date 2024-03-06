@@ -41,7 +41,7 @@ class MockDelegate : public AddressBubbleControllerDelegate {
               (AutofillClient::SaveAddressProfileOfferUserDecision decision,
                base::optional_ref<const AutofillProfile> profile),
               (override));
-  MOCK_METHOD(void, OnEditButtonClicked, (), (override));
+  MOCK_METHOD(void, OnEditButtonClicked, (const std::u16string&), (override));
   MOCK_METHOD(void, OnBubbleClosed, (), (override));
 
   base::WeakPtr<AddressBubbleControllerDelegate> GetWeakPtr() {

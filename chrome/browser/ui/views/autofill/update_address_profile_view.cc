@@ -257,7 +257,11 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       /*edit_button_callback=*/
       base::BindRepeating(
           &SaveUpdateAddressProfileBubbleController::OnEditButtonClicked,
-          base::Unretained(controller_)));
+          base::Unretained(controller_),
+          // TODO(b/325440757): `SaveUpdateAddressProfileBubbleController`
+          // ignores this param for the update bubble, create the update
+          // controller and use a real value from it.
+          u""));
 
   if (has_non_empty_original_values) {
     main_content_view->AddPaddingRow(

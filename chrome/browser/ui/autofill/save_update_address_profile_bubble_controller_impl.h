@@ -61,7 +61,8 @@ class SaveUpdateAddressProfileBubbleControllerImpl
   void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
       base::optional_ref<const AutofillProfile> profile) override;
-  void OnEditButtonClicked() override;
+  void OnEditButtonClicked(
+      const std::u16string& editor_footer_message) override;
   void OnBubbleClosed() override;
   bool IsSaveBubble() const override;
 
