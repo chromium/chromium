@@ -199,6 +199,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "save_group.icon",
     "save_group_refresh.icon",
     "save_page.icon",
+    "saved_tab_group_bar_everything.icon",
     "search_menu.icon",
     "security.icon",
     "settings_menu.icon",
