@@ -33,6 +33,10 @@ const char kDynamicSchedulerPercentile[] = "percentile";
 
 namespace features {
 
+BASE_FEATURE(kBackdropFilterMirrorEdgeMode,
+             "BackdropFilterMirrorEdgeMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUseDrmBlackFullscreenOptimization,
              "UseDrmBlackFullscreenOptimization",
 #if BUILDFLAG(IS_CHROMEOS_ASH)

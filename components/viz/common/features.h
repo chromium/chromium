@@ -19,6 +19,7 @@
 
 namespace features {
 
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackdropFilterMirrorEdgeMode);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelegatedCompositing);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelegateTransforms);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRecordSkPicture);

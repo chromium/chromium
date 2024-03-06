@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/layers/solid_color_layer.h"
@@ -14,6 +15,7 @@
 #include "cc/test/layer_tree_pixel_test.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/solid_color_content_layer_client.h"
+#include "components/viz/common/features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 
@@ -1198,10 +1200,11 @@ TEST_P(LayerTreeHostFiltersPixelTestGPU, FilterWithGiantCropRectNoClip) {
 class BackdropFilterOffsetTest : public LayerTreeHostFiltersPixelTest {
  protected:
   void RunPixelTestType(float device_scale_factor) {
+    feature_list_.InitAndEnableFeature(features::kBackdropFilterMirrorEdgeMode);
     scoped_refptr<Layer> root =
         CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorWHITE);
     scoped_refptr<SolidColorLayer> background =
-        CreateSolidColorLayer(gfx::Rect(100, 120), SK_ColorBLACK);
+        CreateSolidColorLayer(gfx::Rect(100, 125), SK_ColorBLACK);
     root->AddChild(background);
     scoped_refptr<SolidColorLayer> filtered = CreateSolidColorLayer(
         gfx::Rect(0, 100, 200, 100), SkColorSetA(SK_ColorGREEN, 127));
@@ -1209,26 +1212,25 @@ class BackdropFilterOffsetTest : public LayerTreeHostFiltersPixelTest {
     // TODO(989329): This test actually also tests how the OffsetPaintFilter
     // handles the edge condition. Because the OffsetPaintFilter is pulling
     // content from outside the filter region (just the bottom 200x100 square),
-    // it must create content for all but the bottom 20px of the filter rect.
-    // The GPU implementation of OffsetPaintFilter effectively clamps to the
-    // edge pixels and copies them into the top 80px of the image. The CPU
-    // implementation, on the other hand, pulls in transparent pixels for those
-    // 80px. The behavior is basically unspecified, though for blur filters the
-    // explicitly specified behavior is edgemode:duplicate, as seen in [1]. And
-    // the default for svg filters, including feOffset, is also duplicate.
-    // [1] https://drafts.fxtf.org/filter-effects-2/#backdrop-filter-operation
-    // [2] https://www.w3.org/TR/SVG11/filters.html#feConvolveMatrixElementEdgeModeAttribute
+    // it must create content for all but the bottom 25px of the filter rect.
+    // After [1], backdrop filters [2] apply the reflect/mirror edge mode to
+    // sample pixels outside of their bounds. This is supported in SkiaRenderer
+    // but not the software compositor. The expected behavior with reflection
+    // is that the 25px dark green (from the overlap with the black background)
+    // is mirrored to a 50px square and then translated 75px down to the bottom.
+    // [1] https://github.com/w3c/fxtf-drafts/issues/374
+    // [2] https://drafts.fxtf.org/filter-effects-2/#backdrop-filter-operation
     filters.Append(FilterOperation::CreateReferenceFilter(
-        sk_make_sp<OffsetPaintFilter>(0, 80, nullptr)));
+        sk_make_sp<OffsetPaintFilter>(0, 75, nullptr)));
     filtered->SetBackdropFilters(filters);
     filtered->ClearBackdropFilterBounds();
     root->AddChild(filtered);
     // This should appear as a grid of 4 100x100 squares which are:
-    // BLACK       WHITE
-    // DARK GREEN*  LIGHT GREEN
+    // BLACK    WHITE
+    //   **     LIGHT GREEN
     //
-    // *except for software (see crbug.com/989329) which will be a
-    // dark-light-dark horizontal sandwich.
+    // ** = Top half light green and bottom half dark green for GPU rendering,
+    // but incorrectly is a dark-light-dark horizontal sandwich for software.
     device_scale_factor_ = device_scale_factor;
 
     base::FilePath expected_result =
@@ -1248,6 +1250,7 @@ class BackdropFilterOffsetTest : public LayerTreeHostFiltersPixelTest {
     LayerTreeHostFiltersPixelTest::SetupTree();
   }
 
+  base::test::ScopedFeatureList feature_list_;
   float device_scale_factor_ = 1;
 };
 

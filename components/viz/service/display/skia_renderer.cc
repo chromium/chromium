@@ -3318,18 +3318,24 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
 
     // Besides ensuring the output of the backdrop filter doesn't go beyond its
     // bounds, it should not read pixels outside of its bounds to prevent color
-    // bleeding. If it's a pixel-moving filter, we compose a kClamp-tiling Crop
-    // image filter to enforce this requirement.
-    // TODO(crbug.com/978031): Revisit the tilemode, perhaps kMirror is better
+    // bleeding. If it's a pixel-moving filter, we compose a kMirror-tiling Crop
+    // image filter to enforce this requirement. Mirror tiling avoids jarring
+    // discontinuities and flickering when content moves in and out of the
+    // background. See https://github.com/w3c/fxtf-drafts/issues/374.
+    // NOTE: The above comment refers to the intended ideal behavior. Originally
+    // the edge mode was kClamp and a feature controls the active mode.
     SkIRect sk_crop_rect = backdrop_rect.roundOut();
     SkIRect sk_src_rect = rpdq_params.backdrop_filter->filterBounds(
         sk_crop_rect, SkMatrix::I(), SkImageFilter::kReverse_MapDirection,
         /*inputRect=*/nullptr);
     if (!sk_crop_rect.contains(sk_src_rect)) {
+      SkTileMode sk_tile_mode =
+          base::FeatureList::IsEnabled(features::kBackdropFilterMirrorEdgeMode)
+              ? SkTileMode::kMirror
+              : SkTileMode::kClamp;
       rpdq_params.backdrop_filter = SkImageFilters::Compose(
           /*outer=*/std::move(rpdq_params.backdrop_filter),
-          /*inner=*/SkImageFilters::Crop(backdrop_rect, SkTileMode::kClamp,
-                                         nullptr));
+          /*inner=*/SkImageFilters::Crop(backdrop_rect, sk_tile_mode, nullptr));
     }
 
     // Update |filter_bounds| to include content produced by the backdrop. Under
