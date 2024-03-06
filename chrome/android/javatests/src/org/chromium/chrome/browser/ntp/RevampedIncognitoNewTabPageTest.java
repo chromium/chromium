@@ -183,10 +183,6 @@ public class RevampedIncognitoNewTabPageTest {
     public void testDescriptionLanguages() throws Exception {
         var context = sActivityTestRule.getActivity().getApplicationContext();
         for (String languageTag : ProductConfig.LOCALES) {
-            // TODO(crbug.com/326858789): These languages have pending suggestions in TC.
-            // Remove these checks when the suggestions are added.
-            if (languageTag.equals("pt-BR")) continue;
-            if (languageTag.equals("sk")) continue;
             var localeContext = createContextForLocale(context, languageTag);
             RevampedIncognitoDescriptionView.getSpannedBulletText(
                     localeContext, R.string.revamped_incognito_ntp_does_description);
