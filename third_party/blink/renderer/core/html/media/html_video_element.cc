@@ -511,11 +511,11 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     return nullptr;
   }
 
-  // TODO(https://crbug.com/1341235): The choice of color type, alpha type,
-  // and color space is inappropriate in many circumstances.
-  const auto resource_provider_info =
-      SkImageInfo::Make(gfx::SizeToSkISize(dest_size), kN32_SkColorType,
-                        kPremul_SkAlphaType, nullptr);
+  // TODO(https://crbug.com/1341235): The choice of color type and alpha type
+  // is inappropriate in many circumstances.
+  const auto resource_provider_info = SkImageInfo::Make(
+      gfx::SizeToSkISize(dest_size), kN32_SkColorType, kPremul_SkAlphaType,
+      media_video_frame->CompatRGBColorSpace().ToSkColorSpace());
   if (!resource_provider_ ||
       allow_accelerated_images != resource_provider_->IsAccelerated() ||
       resource_provider_info != resource_provider_->GetSkImageInfo()) {

@@ -1233,6 +1233,39 @@ gfx::ColorSpace VideoFrame::ColorSpace() const {
   return color_space_;
 }
 
+gfx::ColorSpace VideoFrame::CompatRGBColorSpace() const {
+  const auto rgb_color_space = ColorSpace().GetAsFullRangeRGB();
+  if (!rgb_color_space.IsValid()) {
+    return gfx::ColorSpace::CreateSRGB();
+  }
+
+  auto primary_id = rgb_color_space.GetPrimaryID();
+  switch (primary_id) {
+    case gfx::ColorSpace::PrimaryID::CUSTOM:
+      return rgb_color_space;
+    case gfx::ColorSpace::PrimaryID::SMPTE170M:
+    case gfx::ColorSpace::PrimaryID::SMPTE240M:
+      primary_id = gfx::ColorSpace::PrimaryID::BT709;
+      break;
+    default:
+      break;
+  }
+  auto transfer_id = rgb_color_space.GetTransferID();
+  switch (transfer_id) {
+    case gfx::ColorSpace::TransferID::CUSTOM:
+    case gfx::ColorSpace::TransferID::CUSTOM_HDR:
+      return rgb_color_space;
+    case gfx::ColorSpace::TransferID::BT709_APPLE:
+    case gfx::ColorSpace::TransferID::SMPTE170M:
+    case gfx::ColorSpace::TransferID::SMPTE240M:
+      transfer_id = gfx::ColorSpace::TransferID::SRGB;
+      break;
+    default:
+      break;
+  }
+  return gfx::ColorSpace(primary_id, transfer_id);
+}
+
 bool VideoFrame::RequiresExternalSampler() const {
   const bool is_multiplanar_pixel_format = format() == PIXEL_FORMAT_NV12 ||
                                            format() == PIXEL_FORMAT_YV12 ||
