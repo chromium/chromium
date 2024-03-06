@@ -22,10 +22,9 @@
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/tagging.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "partition_alloc/partition_alloc_base/bits.h"
-#include "partition_alloc/partition_alloc_base/mac/mac_util.h"
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 namespace partition_alloc::internal {
 
@@ -37,12 +36,12 @@ namespace partition_alloc::internal {
 // Placed outside `BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)`
 // intentionally to accommodate usage in contexts also outside
 // this gating.
-PA_ALWAYS_INLINE size_t AlignUpRefCountSizeForMac(size_t ref_count_size) {
-#if BUILDFLAG(IS_MAC)
+PA_ALWAYS_INLINE size_t AlignUpRefCountSizeForApple(size_t ref_count_size) {
+#if BUILDFLAG(IS_APPLE)
   return internal::base::bits::AlignUp<size_t>(ref_count_size, 8);
 #else
   return ref_count_size;
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 }
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)

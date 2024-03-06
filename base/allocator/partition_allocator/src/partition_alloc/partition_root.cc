@@ -1034,7 +1034,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     if (brp_enabled()) {
       size_t ref_count_size = internal::kPartitionRefCountSizeAdjustment;
-      ref_count_size = internal::AlignUpRefCountSizeForMac(ref_count_size);
+      ref_count_size = internal::AlignUpRefCountSizeForApple(ref_count_size);
 #if PA_CONFIG(MAYBE_INCREASE_REF_COUNT_SIZE_FOR_MTE)
       // When MTE is enabled together with BRP (crbug.com/1445816) in the
       // "previous slot" mode (note the brp_enabled() check above), there is a
