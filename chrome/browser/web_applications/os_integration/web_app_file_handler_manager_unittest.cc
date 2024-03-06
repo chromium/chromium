@@ -159,6 +159,7 @@ TEST(FileHandlerUtilsTest, GetMimeTypesFromFileHandlers) {
                   "application/foo", "application/foobar", "application/bar"));
 }
 
+// TODO(crbug/327431493): Rewrite to use OS integration synchronize flow.
 class WebAppFileHandlerManagerTest : public WebAppTest {
  protected:
   void SetUp() override {
@@ -198,62 +199,6 @@ class WebAppFileHandlerManagerTest : public WebAppTest {
 
   webapps::AppId app_id_;
 };
-
-TEST_F(WebAppFileHandlerManagerTest, FileHandlersAreNotAvailableUnlessEnabled) {
-  // TODO(crbug/1288442): re-enable this test
-  if (!ShouldRegisterFileHandlersWithOs()) {
-    GTEST_SKIP();
-  }
-
-  file_handler_manager().InstallFileHandler(
-      app_id(), GURL("https://app.site/handle-foo"),
-      {{"application/foo", {".foo"}}}, std::nullopt,
-      /*enable=*/false);
-
-  file_handler_manager().InstallFileHandler(
-      app_id(), GURL("https://app.site/handle-bar"),
-      {{"application/bar", {".bar"}}}, std::nullopt,
-      /*enable=*/false);
-
-  // File handlers are disabled by default.
-  {
-    const auto* handlers =
-        file_handler_manager().GetEnabledFileHandlers(app_id());
-    EXPECT_EQ(nullptr, handlers);
-  }
-
-  // Ensure they can be enabled.
-  base::RunLoop run_loop;
-  Result file_handling_enabled;
-  file_handler_manager().EnableAndRegisterOsFileHandlers(
-      app_id(), base::BindLambdaForTesting([&](Result result) {
-        file_handling_enabled = result;
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  {
-    EXPECT_EQ(file_handling_enabled, Result::kOk);
-    const auto* handlers =
-        file_handler_manager().GetEnabledFileHandlers(app_id());
-    EXPECT_EQ(2u, handlers->size());
-  }
-
-  // Ensure they can be disabled.
-  base::RunLoop run_loop_disabled;
-  Result file_handling_disabled;
-  file_handler_manager().DisableAndUnregisterOsFileHandlers(
-      app_id(), base::BindLambdaForTesting([&](Result result) {
-        file_handling_disabled = result;
-        run_loop_disabled.Quit();
-      }));
-  run_loop_disabled.Run();
-  {
-    EXPECT_EQ(file_handling_disabled, Result::kOk);
-    const auto* handlers =
-        file_handler_manager().GetEnabledFileHandlers(app_id());
-    EXPECT_EQ(nullptr, handlers);
-  }
-}
 
 TEST_F(WebAppFileHandlerManagerTest, NoHandlersRegistered) {
   // Returns an empty list when no file handlers are registered.

@@ -122,51 +122,24 @@ class RunOnOsLoginSubManagerTestBase : public WebAppTest {
 };
 
 // Configure tests only.
-class RunOnOsLoginSubManagerConfigureTest
-    : public RunOnOsLoginSubManagerTestBase,
-      public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
- public:
-  RunOnOsLoginSubManagerConfigureTest() = default;
-  ~RunOnOsLoginSubManagerConfigureTest() override = default;
+using RunOnOsLoginSubManagerConfigureTest = RunOnOsLoginSubManagerTestBase;
 
-  void SetUp() override {
-    if (GetParam() == OsIntegrationSubManagersState::kSaveStateToDB) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{features::kOsIntegrationSubManagers, {{"stage", "write_config"}}},
-           {features::kDesktopPWAsRunOnOsLogin, {}}},
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kDesktopPWAsRunOnOsLogin},
-          /*disabled_features=*/{features::kOsIntegrationSubManagers});
-    }
-    RunOnOsLoginSubManagerTestBase::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(RunOnOsLoginSubManagerConfigureTest,
+TEST_F(RunOnOsLoginSubManagerConfigureTest,
        VerifyRunOnOsLoginSetProperlyOnInstall) {
   const webapps::AppId& app_id = InstallWebApp();
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
     // on installation, both values are set to NOT_RUN.
     ASSERT_TRUE(os_integration_state.has_run_on_os_login());
     const proto::RunOnOsLogin& run_on_os_login =
         os_integration_state.run_on_os_login();
     ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
                 testing::Eq(proto::RunOnOsLoginMode::NOT_RUN));
-  } else {
-    ASSERT_FALSE(os_integration_state.has_run_on_os_login());
-  }
 }
 
-TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyRunOnOsLoginSetFromCommand) {
+TEST_F(RunOnOsLoginSubManagerConfigureTest, VerifyRunOnOsLoginSetFromCommand) {
   const webapps::AppId& app_id = InstallWebApp();
 
   base::test::TestFuture<void> future;
@@ -177,18 +150,14 @@ TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyRunOnOsLoginSetFromCommand) {
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
     ASSERT_TRUE(os_integration_state.has_run_on_os_login());
     const proto::RunOnOsLogin& run_on_os_login =
         os_integration_state.run_on_os_login();
     ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
                 testing::Eq(proto::RunOnOsLoginMode::WINDOWED));
-  } else {
-    ASSERT_FALSE(os_integration_state.has_run_on_os_login());
-  }
 }
 
-TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingBlocked) {
+TEST_F(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingBlocked) {
   const webapps::AppId& app_id = InstallWebApp();
 
   const char kWebAppSettingPolicyBlockedConfig[] = R"([{
@@ -209,18 +178,14 @@ TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingBlocked) {
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
     ASSERT_TRUE(os_integration_state.has_run_on_os_login());
     const proto::RunOnOsLogin& run_on_os_login =
         os_integration_state.run_on_os_login();
     ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
                 testing::Eq(proto::RunOnOsLoginMode::NOT_RUN));
-  } else {
-    ASSERT_FALSE(os_integration_state.has_run_on_os_login());
-  }
 }
 
-TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingWindowedMode) {
+TEST_F(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingWindowedMode) {
   const webapps::AppId& app_id = InstallWebApp();
 
   const char kWebAppSettingPolicyWindowedConfig[] = R"([{
@@ -241,18 +206,14 @@ TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingWindowedMode) {
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
     ASSERT_TRUE(os_integration_state.has_run_on_os_login());
     const proto::RunOnOsLogin& run_on_os_login =
         os_integration_state.run_on_os_login();
     ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
                 testing::Eq(proto::RunOnOsLoginMode::WINDOWED));
-  } else {
-    ASSERT_FALSE(os_integration_state.has_run_on_os_login());
-  }
 }
 
-TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingAllowedMode) {
+TEST_F(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingAllowedMode) {
   const webapps::AppId& app_id = InstallWebApp();
 
   const char kWebAppSettingPolicyAllowedConfig[] = R"([{
@@ -273,53 +234,26 @@ TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingAllowedMode) {
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
     ASSERT_TRUE(os_integration_state.has_run_on_os_login());
     const proto::RunOnOsLogin& run_on_os_login =
         os_integration_state.run_on_os_login();
     ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
                 testing::Eq(proto::RunOnOsLoginMode::NOT_RUN));
-  } else {
-    ASSERT_FALSE(os_integration_state.has_run_on_os_login());
-  }
 }
 
-TEST_P(RunOnOsLoginSubManagerConfigureTest, StatesEmptyOnUninstall) {
+TEST_F(RunOnOsLoginSubManagerConfigureTest, StatesEmptyOnUninstall) {
   const webapps::AppId& app_id = InstallWebApp();
   test::UninstallAllWebApps(profile());
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_FALSE(state.has_value());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    RunOnOsLoginSubManagerConfigureTest,
-    ::testing::Values(OsIntegrationSubManagersState::kSaveStateToDB,
-                      OsIntegrationSubManagersState::kDisabled),
-    test::GetOsIntegrationSubManagersTestName);
-
 // Configure and Execute tests.
 class RunOnOsLoginSubManagerExecuteTest
-    : public RunOnOsLoginSubManagerTestBase,
-      public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
+    : public RunOnOsLoginSubManagerTestBase {
  public:
   RunOnOsLoginSubManagerExecuteTest() = default;
   ~RunOnOsLoginSubManagerExecuteTest() override = default;
-
-  void SetUp() override {
-    if (GetParam() == OsIntegrationSubManagersState::kSaveStateAndExecute) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{features::kOsIntegrationSubManagers,
-            {{"stage", "execute_and_write_config"}}},
-           {features::kDesktopPWAsRunOnOsLogin, {}}},
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kDesktopPWAsRunOnOsLogin},
-          /*disabled_features=*/{features::kOsIntegrationSubManagers});
-    }
-    RunOnOsLoginSubManagerTestBase::SetUp();
-  }
 
   bool IsRunOnOsLoginExecuteEnabled() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
@@ -328,32 +262,24 @@ class RunOnOsLoginSubManagerExecuteTest
     return false;
 #endif
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(RunOnOsLoginSubManagerExecuteTest, InstallRunOnOsLoginNotRun) {
+TEST_F(RunOnOsLoginSubManagerExecuteTest, InstallRunOnOsLoginNotRun) {
   const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
 
   // A default install should have a Run on OS Login mode of kNotRun, so no
   // OS integration should be triggered.
-  if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
       ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
-  } else {
-    ASSERT_FALSE(os_integration_state.has_run_on_os_login());
-  }
 }
 
-TEST_P(RunOnOsLoginSubManagerExecuteTest,
+TEST_F(RunOnOsLoginSubManagerExecuteTest,
        InstallAndExecuteWindowedRunOnOsLogin) {
   const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
@@ -365,18 +291,13 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest,
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
       ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
-  } else {
-    ASSERT_FALSE(os_integration_state.has_run_on_os_login());
-  }
 }
 
-TEST_P(RunOnOsLoginSubManagerExecuteTest, BlockedPolicySettingNoOsIntegration) {
+TEST_F(RunOnOsLoginSubManagerExecuteTest, BlockedPolicySettingNoOsIntegration) {
   const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
 
@@ -397,18 +318,13 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, BlockedPolicySettingNoOsIntegration) {
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
       ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
-  } else {
-    ASSERT_FALSE(os_integration_state.has_run_on_os_login());
-  }
 }
 
-TEST_P(RunOnOsLoginSubManagerExecuteTest,
+TEST_F(RunOnOsLoginSubManagerExecuteTest,
        WindowedPolicySettingAllowsOsIntegration) {
   const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
@@ -430,18 +346,13 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest,
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
       ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
-  } else {
-    ASSERT_FALSE(os_integration_state.has_run_on_os_login());
-  }
 }
 
-TEST_P(RunOnOsLoginSubManagerExecuteTest, UpdateRunOnOsLoginMode) {
+TEST_F(RunOnOsLoginSubManagerExecuteTest, UpdateRunOnOsLoginMode) {
   const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
 
@@ -452,15 +363,10 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, UpdateRunOnOsLoginMode) {
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
       ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
-  } else {
-    ASSERT_FALSE(os_integration_state.has_run_on_os_login());
-  }
 
   // Changing to kNotRun should update and unregister all OS integrations.
   base::test::TestFuture<void> future_not_run;
@@ -470,19 +376,13 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, UpdateRunOnOsLoginMode) {
 
   auto updated_state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(updated_state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state_updated =
-      updated_state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
       ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
-  } else {
-    ASSERT_FALSE(os_integration_state_updated.has_run_on_os_login());
-  }
 }
 
-TEST_P(RunOnOsLoginSubManagerExecuteTest, UnregisterRunOnOsLogin) {
+TEST_F(RunOnOsLoginSubManagerExecuteTest, UnregisterRunOnOsLogin) {
   const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
 
@@ -493,30 +393,19 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, UnregisterRunOnOsLogin) {
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
       ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
-  } else {
-    ASSERT_FALSE(os_integration_state.has_run_on_os_login());
-  }
 
   test::UninstallAllWebApps(profile());
-  if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
       ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
-  }
 }
 
-TEST_P(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppInRegistry) {
-  if (!AreSubManagersExecuteEnabled()) {
-    GTEST_SKIP()
-        << "Force unregistration is only for sub managers that are enabled";
-  }
+TEST_F(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppInRegistry) {
   const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
 
@@ -542,11 +431,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppInRegistry) {
   }
 }
 
-TEST_P(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
-  if (!AreSubManagersExecuteEnabled()) {
-    GTEST_SKIP()
-        << "Force unregistration is only for sub managers that are enabled";
-  }
+TEST_F(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
   const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
 
@@ -583,13 +468,6 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
   }
   scoped_supress.reset();
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    RunOnOsLoginSubManagerExecuteTest,
-    ::testing::Values(OsIntegrationSubManagersState::kSaveStateAndExecute,
-                      OsIntegrationSubManagersState::kDisabled),
-    test::GetOsIntegrationSubManagersTestName);
 
 }  // namespace
 

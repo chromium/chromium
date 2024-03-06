@@ -74,15 +74,8 @@ bool AreOsHooksSuppressedForTesting() {
 }
 }  // namespace
 
-bool AreOsIntegrationSubManagersEnabled() {
-  return base::FeatureList::IsEnabled(features::kOsIntegrationSubManagers);
-}
-
 bool AreSubManagersExecuteEnabled() {
-  if (!AreOsIntegrationSubManagersEnabled())
-    return false;
-  return (features::kOsIntegrationSubManagersStageParam.Get() ==
-          features::OsIntegrationSubManagersStage::kExecuteAndWriteConfig);
+  return true;
 }
 
 OsIntegrationManager::ScopedSuppressForTesting::ScopedSuppressForTesting() {
@@ -243,7 +236,7 @@ void OsIntegrationManager::Synchronize(
 
   CHECK(set_provider_called_);
 
-  if (!AreOsIntegrationSubManagersEnabled()) {
+  if (!AreSubManagersExecuteEnabled()) {
     std::move(callback).Run();
     return;
   }
@@ -977,7 +970,7 @@ void OsIntegrationManager::StartSubManagerExecutionIfRequired(
   // This can never be a use-case where we execute OS integration registration/
   // unregistration but do not update the WebAppOsIntegrationState proto in the
   // web_app DB.
-  CHECK(AreOsIntegrationSubManagersEnabled());
+  CHECK(AreSubManagersExecuteEnabled());
 
   // The "execute" step is skipped in the following cases:
   // 1. The app is no longer in the registrar. The whole synchronize process is

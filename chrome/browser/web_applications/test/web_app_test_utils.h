@@ -33,18 +33,7 @@ namespace web_app {
 
 class WebApp;
 
-// Intended to be used for parameterizing tests that involve OS integration.
-enum class OsIntegrationSubManagersState {
-  kSaveStateToDB = 0,
-  kSaveStateAndExecute = 1,
-  kDisabled = 2,
-  kMaxValue = kDisabled
-};
-
 namespace test {
-
-std::string GetOsIntegrationSubManagersTestName(
-    const ::testing::TestParamInfo<OsIntegrationSubManagersState>& info);
 
 // Do not use this for installation! Instead, use the utilities in
 // web_app_install_test_util.h.

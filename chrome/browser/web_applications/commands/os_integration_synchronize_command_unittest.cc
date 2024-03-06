@@ -9,7 +9,6 @@
 
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -41,23 +39,11 @@ namespace {
 
 using ::testing::Eq;
 
-class OsIntegrationSynchronizeCommandTest
-    : public WebAppTest,
-      public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
+class OsIntegrationSynchronizeCommandTest : public WebAppTest {
  public:
   const GURL kWebAppUrl = GURL("https://example.com");
 
-  OsIntegrationSynchronizeCommandTest() {
-    if (GetParam() == OsIntegrationSubManagersState::kSaveStateToDB) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{features::kOsIntegrationSubManagers, {{"stage", "write_config"}}}},
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {features::kOsIntegrationSubManagers});
-    }
-  }
-
+  OsIntegrationSynchronizeCommandTest() = default;
   ~OsIntegrationSynchronizeCommandTest() override = default;
 
   void SetUp() override {
@@ -191,12 +177,11 @@ class OsIntegrationSynchronizeCommandTest
 
  private:
   raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
 };
 
-TEST_P(OsIntegrationSynchronizeCommandTest, ProtocolHandlersDBWrite) {
+TEST_F(OsIntegrationSynchronizeCommandTest, ProtocolHandlersDBWrite) {
   auto install_info = std::make_unique<WebAppInstallInfo>();
 
   install_info->start_url = kWebAppUrl;
@@ -225,7 +210,6 @@ TEST_P(OsIntegrationSynchronizeCommandTest, ProtocolHandlersDBWrite) {
   ASSERT_TRUE(updated_states.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state =
       updated_states.value();
-  if (base::FeatureList::IsEnabled(features::kOsIntegrationSubManagers)) {
     EXPECT_THAT(os_integration_state.protocols_handled().protocols_size(),
                 testing::Eq(1));
     const proto::ProtocolsHandled::Protocol& protocol_handler_state =
@@ -234,12 +218,9 @@ TEST_P(OsIntegrationSynchronizeCommandTest, ProtocolHandlersDBWrite) {
                 testing::Eq(protocol_handler.protocol));
     EXPECT_THAT(protocol_handler_state.url(),
                 testing::Eq(protocol_handler.url));
-  } else {
-    ASSERT_FALSE(os_integration_state.has_protocols_handled());
-  }
 }
 
-TEST_P(OsIntegrationSynchronizeCommandTest, FileHandlersDBWrite) {
+TEST_F(OsIntegrationSynchronizeCommandTest, FileHandlersDBWrite) {
   auto install_info = std::make_unique<WebAppInstallInfo>();
 
   install_info->start_url = kWebAppUrl;
@@ -274,8 +255,6 @@ TEST_P(OsIntegrationSynchronizeCommandTest, FileHandlersDBWrite) {
   ASSERT_TRUE(updated_states.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state =
       updated_states.value();
-  if (base::FeatureList::IsEnabled(features::kOsIntegrationSubManagers) &&
-      ShouldRegisterFileHandlersWithOs()) {
     ASSERT_TRUE(os_integration_state.has_file_handling());
     auto file_handling = os_integration_state.file_handling();
     EXPECT_EQ(file_handling.file_handlers(0).accept_size(), 1);
@@ -288,12 +267,9 @@ TEST_P(OsIntegrationSynchronizeCommandTest, FileHandlersDBWrite) {
               1);
     EXPECT_EQ(file_handling.file_handlers(0).accept(0).file_extensions(0),
               ".foo");
-  } else {
-    ASSERT_FALSE(os_integration_state.has_file_handling());
-  }
 }
 
-TEST_P(OsIntegrationSynchronizeCommandTest, RunOnOsLoginDBWrite) {
+TEST_F(OsIntegrationSynchronizeCommandTest, RunOnOsLoginDBWrite) {
   auto install_info = std::make_unique<WebAppInstallInfo>();
 
   install_info->start_url = kWebAppUrl;
@@ -314,18 +290,14 @@ TEST_P(OsIntegrationSynchronizeCommandTest, RunOnOsLoginDBWrite) {
   ASSERT_TRUE(updated_states.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state =
       updated_states.value();
-  if (base::FeatureList::IsEnabled(features::kOsIntegrationSubManagers)) {
     ASSERT_TRUE(os_integration_state.has_run_on_os_login());
     const proto::RunOnOsLogin& run_on_os_login =
         os_integration_state.run_on_os_login();
     EXPECT_THAT(run_on_os_login.run_on_os_login_mode(),
                 testing::Eq(proto::RunOnOsLoginMode::WINDOWED));
-  } else {
-    ASSERT_FALSE(os_integration_state.has_run_on_os_login());
-  }
 }
 
-TEST_P(OsIntegrationSynchronizeCommandTest, ShortcutsMenuDBWrite) {
+TEST_F(OsIntegrationSynchronizeCommandTest, ShortcutsMenuDBWrite) {
   auto install_info = std::make_unique<WebAppInstallInfo>();
 
   install_info->start_url = kWebAppUrl;
@@ -355,7 +327,6 @@ TEST_P(OsIntegrationSynchronizeCommandTest, ShortcutsMenuDBWrite) {
   ASSERT_TRUE(updated_states.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state =
       updated_states.value();
-  if (base::FeatureList::IsEnabled(features::kOsIntegrationSubManagers)) {
     ASSERT_TRUE(os_integration_state.has_shortcut_menus());
     EXPECT_THAT(os_integration_state.shortcut_menus().shortcut_menu_info_size(),
                 testing::Eq(1));
@@ -383,12 +354,9 @@ TEST_P(OsIntegrationSynchronizeCommandTest, ShortcutsMenuDBWrite) {
                     .shortcut_menu_info(0)
                     .icon_data_any(0)
                     .has_timestamp());
-  } else {
-    ASSERT_FALSE(os_integration_state.has_shortcut_menus());
-  }
 }
 
-TEST_P(OsIntegrationSynchronizeCommandTest, ShortcutsDBWrite) {
+TEST_F(OsIntegrationSynchronizeCommandTest, ShortcutsDBWrite) {
   auto install_info = std::make_unique<WebAppInstallInfo>();
 
   install_info->start_url = kWebAppUrl;
@@ -416,7 +384,6 @@ TEST_P(OsIntegrationSynchronizeCommandTest, ShortcutsDBWrite) {
   ASSERT_TRUE(updated_states.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state =
       updated_states.value();
-  if (base::FeatureList::IsEnabled(features::kOsIntegrationSubManagers)) {
     ASSERT_TRUE(os_integration_state.has_shortcut());
     EXPECT_THAT(os_integration_state.shortcut().title(),
                 testing::Eq("Test App"));
@@ -427,12 +394,9 @@ TEST_P(OsIntegrationSynchronizeCommandTest, ShortcutsDBWrite) {
           syncer::ProtoTimeToTime(icon_time_map_data.timestamp()).is_null(),
           testing::IsFalse());
     }
-  } else {
-    ASSERT_FALSE(os_integration_state.has_shortcut());
-  }
 }
 
-TEST_P(OsIntegrationSynchronizeCommandTest, UninstallRegistrationDBWrite) {
+TEST_F(OsIntegrationSynchronizeCommandTest, UninstallRegistrationDBWrite) {
   auto install_info = std::make_unique<WebAppInstallInfo>();
 
   install_info->start_url = kWebAppUrl;
@@ -453,7 +417,6 @@ TEST_P(OsIntegrationSynchronizeCommandTest, UninstallRegistrationDBWrite) {
   ASSERT_TRUE(updated_states.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state =
       updated_states.value();
-  if (base::FeatureList::IsEnabled(features::kOsIntegrationSubManagers)) {
     ASSERT_TRUE(os_integration_state.has_uninstall_registration());
 #if BUILDFLAG(IS_WIN)
     EXPECT_TRUE(
@@ -462,17 +425,7 @@ TEST_P(OsIntegrationSynchronizeCommandTest, UninstallRegistrationDBWrite) {
     EXPECT_FALSE(
         os_integration_state.uninstall_registration().registered_with_os());
 #endif
-  } else {
-    ASSERT_FALSE(os_integration_state.has_uninstall_registration());
-  }
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    OsIntegrationSynchronizeCommandTest,
-    ::testing::Values(OsIntegrationSubManagersState::kSaveStateToDB,
-                      OsIntegrationSubManagersState::kDisabled),
-    test::GetOsIntegrationSubManagersTestName);
 
 }  // namespace
 }  // namespace web_app

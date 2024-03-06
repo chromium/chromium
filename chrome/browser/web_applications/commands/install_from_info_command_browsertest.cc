@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, InstallWithParams) {
   EXPECT_TRUE(options->add_to_desktop);
   EXPECT_TRUE(options->add_to_quick_launch_bar);
   EXPECT_FALSE(options->os_hooks[OsHookType::kRunOnOsLogin]);
-  if (AreOsIntegrationSubManagersEnabled()) {
+  if (AreSubManagersExecuteEnabled()) {
     std::optional<proto::WebAppOsIntegrationState> os_state =
         provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
             result_app_id);
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest,
   EXPECT_FALSE(options->add_to_desktop);
   EXPECT_TRUE(options->add_to_quick_launch_bar);
   EXPECT_TRUE(options->os_hooks[OsHookType::kRunOnOsLogin]);
-  if (AreOsIntegrationSubManagersEnabled()) {
+  if (AreSubManagersExecuteEnabled()) {
     std::optional<proto::WebAppOsIntegrationState> os_state =
         provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
             result_app_id);

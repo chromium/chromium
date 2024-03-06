@@ -114,7 +114,7 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
   // Install a new app to migrate the old one to.
   webapps::AppId new_app_id = test::InstallDummyWebApp(
       profile(), "new_app", GURL("https://new.app.com"));
-  if (AreOsIntegrationSubManagersEnabled()) {
+  if (AreSubManagersExecuteEnabled()) {
     std::optional<proto::WebAppOsIntegrationState> os_state =
         provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
             new_app_id);
@@ -142,7 +142,7 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
   EXPECT_TRUE(options->add_to_desktop);
   EXPECT_TRUE(options->os_hooks[OsHookType::kRunOnOsLogin]);
   EXPECT_FALSE(options->add_to_quick_launch_bar);
-  if (AreOsIntegrationSubManagersEnabled()) {
+  if (AreSubManagersExecuteEnabled()) {
     std::optional<proto::WebAppOsIntegrationState> os_state =
         provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
             new_app_id);

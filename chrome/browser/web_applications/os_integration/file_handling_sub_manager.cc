@@ -99,8 +99,7 @@ void FileHandlingSubManager::Configure(
 
   if (!provider_->registrar_unsafe().IsLocallyInstalled(app_id) ||
       provider_->registrar_unsafe().GetAppFileHandlerApprovalState(app_id) ==
-          ApiApprovalState::kDisallowed ||
-      !ShouldRegisterFileHandlersWithOs()) {
+          ApiApprovalState::kDisallowed) {
     std::move(configure_done).Run();
     return;
   }
@@ -136,6 +135,11 @@ void FileHandlingSubManager::Execute(
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
     base::OnceClosure callback) {
+  if (!ShouldRegisterFileHandlersWithOs()) {
+    std::move(callback).Run();
+    return;
+  }
+
   if (!HasFileHandling(desired_state) && !HasFileHandling(current_state)) {
     std::move(callback).Run();
     return;

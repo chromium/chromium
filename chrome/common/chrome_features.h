@@ -167,18 +167,6 @@ enum class PreinstalledWebAppWindowExperimentUserGroup : int32_t {
 };
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kOsIntegrationSubManagers);
-enum class OsIntegrationSubManagersStage {
-  kWriteConfig,
-  kExecuteAndWriteConfig,
-};
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<OsIntegrationSubManagersStage>
-    kOsIntegrationSubManagersStageParam;
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kDesktopTaskManagerEndProcessDisabledForExtension);
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -1303,7 +1303,7 @@ TEST_F(ExternalAppResolutionCommandTest, SuccessWithUninstallAndReplace) {
   EXPECT_FALSE(options->add_to_desktop);
   EXPECT_TRUE(options->add_to_quick_launch_bar);
   EXPECT_TRUE(options->os_hooks[OsHookType::kRunOnOsLogin]);
-  if (AreOsIntegrationSubManagersEnabled()) {
+  if (AreSubManagersExecuteEnabled()) {
     std::optional<proto::WebAppOsIntegrationState> os_state =
         registrar().GetAppCurrentOsIntegrationState(*result.app_id);
     ASSERT_TRUE(os_state.has_value());

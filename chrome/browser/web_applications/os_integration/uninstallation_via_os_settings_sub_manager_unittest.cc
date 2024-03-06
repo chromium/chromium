@@ -8,7 +8,6 @@
 
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -32,9 +31,7 @@ namespace web_app {
 
 namespace {
 
-class UninstallationViaOsSettingsSubManagerTest
-    : public WebAppTest,
-      public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
+class UninstallationViaOsSettingsSubManagerTest : public WebAppTest {
  public:
   const GURL kWebAppUrl = GURL("https://example.com/path/index.html");
 
@@ -48,20 +45,6 @@ class UninstallationViaOsSettingsSubManagerTest
       test_override_ =
           OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
     }
-    if (GetParam() == OsIntegrationSubManagersState::kSaveStateToDB) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kOsIntegrationSubManagers, {{"stage", "write_config"}});
-    } else if (GetParam() ==
-               OsIntegrationSubManagersState::kSaveStateAndExecute) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kOsIntegrationSubManagers,
-          {{"stage", "execute_and_write_config"}});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{features::kOsIntegrationSubManagers});
-    }
-
     provider_ = FakeWebAppProvider::Get(profile());
 
     auto file_handler_manager =
@@ -122,7 +105,6 @@ class UninstallationViaOsSettingsSubManagerTest
 
  private:
   raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
 };
@@ -135,7 +117,7 @@ bool IsOsUninstallationSupported() {
 #endif
 }
 
-TEST_P(UninstallationViaOsSettingsSubManagerTest, TestUserUninstallable) {
+TEST_F(UninstallationViaOsSettingsSubManagerTest, TestUserUninstallable) {
   const webapps::AppId& app_id =
       InstallWebApp(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
@@ -143,13 +125,9 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest, TestUserUninstallable) {
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
     EXPECT_EQ(
         IsOsUninstallationSupported(),
         os_integration_state.uninstall_registration().registered_with_os());
-  } else {
-    ASSERT_FALSE(os_integration_state.has_uninstall_registration());
-  }
 #if BUILDFLAG(IS_WIN)
   base::expected<bool, std::string> result =
       test_override().IsUninstallRegisteredWithOs(app_id, "Test App",
@@ -160,7 +138,7 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest, TestUserUninstallable) {
 #endif
 }
 
-TEST_P(UninstallationViaOsSettingsSubManagerTest, TestNotUserUninstallable) {
+TEST_F(UninstallationViaOsSettingsSubManagerTest, TestNotUserUninstallable) {
   const webapps::AppId& app_id =
       InstallWebApp(webapps::WebappInstallSource::EXTERNAL_POLICY);
 
@@ -168,12 +146,8 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest, TestNotUserUninstallable) {
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
     EXPECT_FALSE(
         os_integration_state.uninstall_registration().registered_with_os());
-  } else {
-    ASSERT_FALSE(os_integration_state.has_uninstall_registration());
-  }
   if (IsOsUninstallationSupported()) {
     ASSERT_FALSE(
         os_integration_state.uninstall_registration().registered_with_os());
@@ -188,7 +162,7 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest, TestNotUserUninstallable) {
 #endif
 }
 
-TEST_P(UninstallationViaOsSettingsSubManagerTest, UninstallApp) {
+TEST_F(UninstallationViaOsSettingsSubManagerTest, UninstallApp) {
   const webapps::AppId& app_id =
       InstallWebApp(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   test::UninstallAllWebApps(profile());
@@ -199,7 +173,7 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest, UninstallApp) {
 
 // Testing crbug.com/1434577, that OS states can be cleaned up even after
 // the app has been uninstalled.
-TEST_P(UninstallationViaOsSettingsSubManagerTest,
+TEST_F(UninstallationViaOsSettingsSubManagerTest,
        OsStatesCleanupAfterAppUninstallation) {
   const webapps::AppId& app_id =
       InstallWebApp(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
@@ -208,15 +182,10 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest,
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
     EXPECT_EQ(
         IsOsUninstallationSupported(),
         os_integration_state.uninstall_registration().registered_with_os());
-  } else {
-    ASSERT_FALSE(os_integration_state.has_uninstall_registration());
-  }
 
-  if (AreSubManagersExecuteEnabled()) {
 #if BUILDFLAG(IS_WIN)
     base::expected<bool, std::string> install_result =
         test_override().IsUninstallRegisteredWithOs(app_id, "Test App",
@@ -253,16 +222,7 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest,
     EXPECT_FALSE(final_result.value());
     scoped_supress.reset();
 #endif
-  }
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    UninstallationViaOsSettingsSubManagerTest,
-    ::testing::Values(OsIntegrationSubManagersState::kDisabled,
-                      OsIntegrationSubManagersState::kSaveStateToDB,
-                      OsIntegrationSubManagersState::kSaveStateAndExecute),
-    test::GetOsIntegrationSubManagersTestName);
 
 }  // namespace
 

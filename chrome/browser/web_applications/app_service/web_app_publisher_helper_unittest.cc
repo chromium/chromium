@@ -21,6 +21,7 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/web_applications/app_service/web_apps_with_shortcuts_test.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -264,6 +265,8 @@ TEST_F(WebAppPublisherHelperTest,
   }
 }
 
+// TODO(crbug.com/327431493): Use a more holistic approach than adding apps to
+// the registry.
 TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
   const WebApp* app = nullptr;
   {
@@ -274,13 +277,23 @@ TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
     new_app->SetScope(new_app->start_url().GetWithoutFilename());
 
     apps::FileHandler::AcceptEntry accept_entry;
+    proto::WebAppOsIntegrationState test_state;
+
     accept_entry.mime_type = "text/plain";
     accept_entry.file_extensions.insert(".txt");
     apps::FileHandler file_handler;
     file_handler.action = GURL("https://example.com/path/handler.html");
+
+    proto::FileHandling::FileHandler* file_handler_proto =
+        test_state.mutable_file_handling()->add_file_handlers();
+    file_handler_proto->set_action(file_handler.action.spec());
+    auto* accept_entry_proto = file_handler_proto->add_accept();
+    accept_entry_proto->set_mimetype(accept_entry.mime_type);
+    accept_entry_proto->add_file_extensions(".txt");
+
     file_handler.accept.push_back(std::move(accept_entry));
     new_app->SetFileHandlers({std::move(file_handler)});
-    new_app->SetFileHandlerOsIntegrationState(OsIntegrationState::kEnabled);
+    new_app->SetCurrentOsIntegrationStates(test_state);
 
     update->CreateApp(std::move(new_app));
   }

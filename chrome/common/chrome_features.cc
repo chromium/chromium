@@ -253,25 +253,6 @@ BASE_FEATURE(kPreinstalledWebAppWindowExperiment,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-// Enables OS Integration sub managers to execute the
-// registration/unregistration functionality and write the new OS states to the
-// DB.
-BASE_FEATURE(kOsIntegrationSubManagers,
-             "OsIntegrationSubManagers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<OsIntegrationSubManagersStage>::Option
-    sub_manager_stages[] = {
-        {OsIntegrationSubManagersStage::kWriteConfig, "write_config"},
-        {OsIntegrationSubManagersStage::kExecuteAndWriteConfig,
-         "execute_and_write_config"}};
-const base::FeatureParam<OsIntegrationSubManagersStage>
-    kOsIntegrationSubManagersStageParam{
-        &kOsIntegrationSubManagers, "stage",
-        OsIntegrationSubManagersStage::kExecuteAndWriteConfig,
-        &sub_manager_stages};
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 // If enabled, specified extensions cannot be closed via the task manager.
 BASE_FEATURE(kDesktopTaskManagerEndProcessDisabledForExtension,

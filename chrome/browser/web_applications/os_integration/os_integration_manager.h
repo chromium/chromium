@@ -39,14 +39,10 @@ namespace web_app {
 class FakeOsIntegrationManager;
 class WebAppProvider;
 
-// Returns if the sub-manager architecture is enabled. This means that they are
-// writing the expected os integration state to disk. See
-// `AreSubManagersExecuteEnabled` to check if they are also executing.
-bool AreOsIntegrationSubManagersEnabled();
-
 // Returns if the sub-manager architecture is enabled AND the "execute"
 // architecture is enabled. This causes os integration execution to happen from
 // the sub-managers and not the OsIntegrationManager.
+// TODO(b/327431493): Remove when production code is being cleaned up.
 bool AreSubManagersExecuteEnabled();
 
 // OsHooksErrors contains the result of all Os hook deployments.

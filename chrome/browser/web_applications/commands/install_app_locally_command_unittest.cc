@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/files/file_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -36,9 +34,7 @@
 namespace web_app {
 namespace {
 
-class InstallAppLocallyCommandTest
-    : public WebAppTest,
-      public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
+class InstallAppLocallyCommandTest : public WebAppTest {
  public:
   const GURL kWebAppUrl = GURL("https://example.com/path/index.html");
   InstallAppLocallyCommandTest() = default;
@@ -62,20 +58,6 @@ class InstallAppLocallyCommandTest
     auto os_integration_manager = std::make_unique<OsIntegrationManager>(
         profile(), std::move(shortcut_manager), std::move(file_handler_manager),
         std::move(protocol_handler_manager), /*url_handler_manager=*/nullptr);
-
-    if (GetParam() == OsIntegrationSubManagersState::kSaveStateToDB) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kOsIntegrationSubManagers, {{"stage", "write_config"}});
-    } else if (GetParam() ==
-               OsIntegrationSubManagersState::kSaveStateAndExecute) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kOsIntegrationSubManagers,
-          {{"stage", "execute_and_write_config"}});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{features::kOsIntegrationSubManagers});
-    }
 
     provider_->SetOsIntegrationManager(std::move(os_integration_manager));
     test::AwaitStartWebAppProviderAndSubsystems(profile());
@@ -181,12 +163,11 @@ class InstallAppLocallyCommandTest
 
  private:
   raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
 };
 
-TEST_P(InstallAppLocallyCommandTest, BasicBehavior) {
+TEST_F(InstallAppLocallyCommandTest, BasicBehavior) {
   // Create an app that is not locally installed, i.e. has the
   // is_locally_installed bit set to false and there is no OS integration
   // defined for it.
@@ -220,8 +201,7 @@ TEST_P(InstallAppLocallyCommandTest, BasicBehavior) {
 
   // OS integration should be triggered now.
   if (HasShortcutsOsIntegration()) {
-    ASSERT_EQ(AreOsIntegrationSubManagersEnabled(),
-              updated_os_states.has_shortcut());
+    ASSERT_EQ(AreSubManagersExecuteEnabled(), updated_os_states.has_shortcut());
     ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id,
         provider().registrar_unsafe().GetAppShortName(app_id)));
@@ -236,7 +216,7 @@ TEST_P(InstallAppLocallyCommandTest, BasicBehavior) {
   }
 }
 
-TEST_P(InstallAppLocallyCommandTest, AppNotInRegistrar) {
+TEST_F(InstallAppLocallyCommandTest, AppNotInRegistrar) {
   const webapps::AppId app_id = "abcde";
 
   base::test::TestFuture<void> test_future;
@@ -244,14 +224,6 @@ TEST_P(InstallAppLocallyCommandTest, AppNotInRegistrar) {
   EXPECT_TRUE(test_future.Wait());
   EXPECT_FALSE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    InstallAppLocallyCommandTest,
-    ::testing::Values(OsIntegrationSubManagersState::kDisabled,
-                      OsIntegrationSubManagersState::kSaveStateToDB,
-                      OsIntegrationSubManagersState::kSaveStateAndExecute),
-    test::GetOsIntegrationSubManagersTestName);
 
 }  // namespace
 }  // namespace web_app

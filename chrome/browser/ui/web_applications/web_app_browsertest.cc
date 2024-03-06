@@ -1716,28 +1716,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentLastBrowserTab) {
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
 }
 
-class WebAppBrowserTestUpdateShortcutResult
-    : public WebAppBrowserTest,
-      public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
- public:
-  WebAppBrowserTestUpdateShortcutResult() {
-    if (GetParam() == OsIntegrationSubManagersState::kSaveStateToDB) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{features::kOsIntegrationSubManagers, {{"stage", "write_config"}}}},
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {features::kOsIntegrationSubManagers});
-    }
-  }
+using WebAppBrowserTestUpdateShortcutResult = WebAppBrowserTest;
 
-  ~WebAppBrowserTestUpdateShortcutResult() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
@@ -1766,40 +1747,12 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
   }
 
   base::HistogramTester tester;
-  base::test::TestFuture<Result> result;
-
-  base::ConcurrentCallbacks<Result> concurrent;
-  provider->os_integration_manager().UpdateShortcuts(
-      app_id, "Manifest test app", concurrent.CreateCallback());
-  provider->os_integration_manager().Synchronize(
-      app_id, base::BindOnce(concurrent.CreateCallback(), Result::kOk));
-  std::move(concurrent)
-      .Done(base::BindOnce(
-          [&](base::OnceCallback<void(Result)> result_callback,
-              std::vector<Result> final_results) {
-            DCHECK_EQ(2u, final_results.size());
-            Result final_result = Result::kOk;
-            if (final_results[0] == Result::kError ||
-                final_results[1] == Result::kError) {
-              final_result = Result::kError;
-            }
-            std::move(result_callback).Run(final_result);
-          },
-          result.GetCallback()));
-
-  ASSERT_TRUE(result.Wait());
-  EXPECT_THAT(result.Get(), testing::Eq(Result::kOk));
-
-  bool can_create_shortcuts = provider->os_integration_manager()
-                                  .shortcut_manager_for_testing()
-                                  .CanCreateShortcuts();
-  if (can_create_shortcuts) {
-    EXPECT_THAT(tester.GetAllSamples("WebApp.Shortcuts.Update.Result"),
-                BucketsAre(base::Bucket(true, 1)));
-  } else {
-    EXPECT_THAT(tester.GetAllSamples("WebApp.Shortcuts.Update.Result"),
-                testing::IsEmpty());
-  }
+  base::test::TestFuture<void> test_future;
+  provider->os_integration_manager().Synchronize(app_id,
+                                                 test_future.GetCallback());
+  ASSERT_TRUE(test_future.Wait());
+  EXPECT_THAT(tester.GetAllSamples("WebApp.Shortcuts.Update.Result"),
+              BucketsAre(base::Bucket(true, 1)));
 
   base::test::TestFuture<std::unique_ptr<ShortcutInfo>> shortcut_future;
   provider->os_integration_manager().GetShortcutInfoForApp(
@@ -1811,13 +1764,6 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
   test::UninstallAllWebApps(profile());
   EXPECT_FALSE(provider->registrar_unsafe().IsInstalled(app_id));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebAppBrowserTestUpdateShortcutResult,
-    ::testing::Values(OsIntegrationSubManagersState::kSaveStateToDB,
-                      OsIntegrationSubManagersState::kDisabled),
-    test::GetOsIntegrationSubManagersTestName);
 
 // Tests that reparenting a display: browser app tab results in a minimal-ui
 // app window.

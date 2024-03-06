@@ -1688,12 +1688,8 @@ class WebAppPolicyForceUnregistrationTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kOsIntegrationSubManagers,
-          {{"stage", "execute_and_write_config"}}},
-         {web_app::kDesktopPWAsForceUnregisterOSIntegration, {}}},
-        /*disabled_features=*/{});
-
+    scoped_feature_list_.InitAndEnableFeature(
+        web_app::kDesktopPWAsForceUnregisterOSIntegration);
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       test_override_ =

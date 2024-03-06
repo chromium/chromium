@@ -529,18 +529,6 @@ proto::WebAppOsIntegrationState GenerateRandomWebAppOsIntegrationState(
 
 }  // namespace
 
-std::string GetOsIntegrationSubManagersTestName(
-    const ::testing::TestParamInfo<OsIntegrationSubManagersState>& info) {
-  switch (info.param) {
-    case OsIntegrationSubManagersState::kSaveStateToDB:
-      return "OSIntegrationSubManagers_SaveStateToDB";
-    case OsIntegrationSubManagersState::kSaveStateAndExecute:
-      return "OSIntegrationSubManagers_SaveStateAndExecute";
-    case OsIntegrationSubManagersState::kDisabled:
-      return "OSIntegrationSubManagers_Disabled";
-  }
-}
-
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
                                      WebAppManagement::Type source_type) {
   const webapps::AppId app_id =
