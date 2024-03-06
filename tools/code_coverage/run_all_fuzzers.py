@@ -199,6 +199,10 @@ for fuzzer_target in os.listdir(args.fuzzer_corpora_dir):
          'not a directory') % fuzzer_target)
     incomplete_targets.append(fuzzer_target)
   else:
+    env = dict()
+    if 'DISPLAY' in os.environ:
+      # Inherit X settings from the real environment
+      env['DISPLAY'] = os.environ['DISPLAY']
     all_target_details.append({
         'name':
         fuzzer_target,
@@ -207,7 +211,7 @@ for fuzzer_target in os.listdir(args.fuzzer_corpora_dir):
         'profdata_file':
         os.path.join(reportdir, fuzzer_target + ".profdata"),
         'env':
-        dict(),
+        env,
         # RSS limit 8GB. Some of our fuzzers which involve running significant
         # chunks of Chromium code require more than the 2GB default.
         'cmd': [fuzzer_target_binpath, '-runs=0', '-rss_limit_mb=8192'],
