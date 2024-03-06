@@ -6211,6 +6211,52 @@
       },
       {
         "args": [
+          "--use-cmd-decoder=passthrough",
+          "--use-gl=angle",
+          "--use-gpu-in-tests",
+          "--stop-ui",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.volteer.gl_tests_passthrough.filter"
+        ],
+        "autotest_name": "chromium",
+        "bucket": "chromiumos-image-archive",
+        "cros_board": "volteer",
+        "cros_model": "voxel",
+        "dut_pool": "chromium",
+        "name": "gl_tests_passthrough VOLTEER_PUBLIC_RELEASE_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
+        "test": "gl_tests",
+        "test_id_prefix": "ninja://gpu:gl_tests/",
+        "use_lkgm": true,
+        "variant_id": "VOLTEER_PUBLIC_RELEASE_LKGM"
+      },
+      {
+        "args": [
+          "--use-gpu-in-tests",
+          "--stop-ui",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.gl_unittests.filter",
+          "--git-revision=${got_revision}"
+        ],
+        "autotest_name": "chromium",
+        "bucket": "chromiumos-image-archive",
+        "cros_board": "volteer",
+        "cros_model": "voxel",
+        "dut_pool": "chromium",
+        "name": "gl_unittests VOLTEER_PUBLIC_RELEASE_LKGM",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
+        "test": "gl_unittests",
+        "test_id_prefix": "ninja://ui/gl:gl_unittests/",
+        "use_lkgm": true,
+        "variant_id": "VOLTEER_PUBLIC_RELEASE_LKGM"
+      },
+      {
+        "args": [
           "gpu_process",
           "--show-stdout",
           "--browser=cros-chrome",

@@ -1,0 +1,19 @@
+# crbug.com/40221294
+-GLHelperTest.BGRAASyncReadbackTest
+-GLHelperTest.RGBAASyncReadbackTest
+-*GLHelperPixelReadbackTest.ScaleTest*
+
+# crbug.com/40221296
+-TranslatorVariants/EXTBlendFuncExtendedDrawTest.ESSL1FragColor*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindArrayWithSimpleName*
+-TranslatorVariants/EXTBlendFuncExtendedDrawTest.ESSL1FragData*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindArrayAsArray*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3Var*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindSimpleVarAsArrayNoBind*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ES3Getters*
+
+# crbug.com/40278643
+-Service/EGLImageBackingFactoryThreadSafeTest.*
+
+# crbug.com/41491626
+-GLReadbackTest.ReadPixelsFloat

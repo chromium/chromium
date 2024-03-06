@@ -71,6 +71,10 @@ def ChromeOSGtestFilterFile(test_config, _, tester_config):
   else:
     board = _GetChromeOSBoardName(test_config)
   test_name = test_config['name']
+  # Strip off the variant suffix if it's present.
+  if 'variant_id' in test_config:
+    test_name = test_name.replace(test_config['variant_id'], '')
+    test_name = test_name.strip()
   filter_file = 'chromeos.%s.%s.filter' % (board, test_name)
   return [
       '--test-launcher-filter-file=../../testing/buildbot/filters/' +

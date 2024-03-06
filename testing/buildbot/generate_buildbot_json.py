@@ -856,9 +856,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     if not self.should_run_on_tester(waterfall, tester_name, test_config):
       return None
     result = copy.deepcopy(test_config)
-    # Use test_name here instead of test['name'] because test['name'] will be
-    # modified with the variant identifier in a matrix compound suite
-    result['test'] = test_name
+    result.setdefault('test', test_name)
     self.initialize_args_for_test(result, tester_config)
     result = self.update_and_cleanup_test(result, test_name, tester_name,
                                           tester_config, waterfall)

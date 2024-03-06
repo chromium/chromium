@@ -83,6 +83,21 @@ class ChromeOSGtestFilterFileTest(unittest.TestCase):
             'chromeos.eve.test_name.filter',
         ])
 
+  def testSkylabWithVariant(self):
+    test_config = {
+        'name': 'test_name SOME_VARIANT',
+        'cros_board': 'eve',
+        'variant_id': 'SOME_VARIANT',
+    }
+    tester_config = {'browser_config': 'cros-chrome', 'use_swarming': False}
+    self.assertEqual(
+        magic_substitutions.ChromeOSGtestFilterFile(test_config, None,
+                                                    tester_config),
+        [
+            '--test-launcher-filter-file=../../testing/buildbot/filters/'
+            'chromeos.eve.test_name.filter',
+        ])
+
   def testNoPool(self):
     test_config = CreateConfigWithPool(None)
     with self.assertRaisesRegex(RuntimeError, 'No pool *'):

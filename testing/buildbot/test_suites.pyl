@@ -6929,6 +6929,14 @@
       },
     },
 
+    'gpu_fyi_chromeos_release_gtests_volteer_skylab': {
+      'gpu_common_gtests_passthrough': {
+        'variants': [
+          'CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM',
+        ],
+      },
+    },
+
     'gpu_fyi_chromeos_release_telemetry_tests_jacuzzi_skylab': {
       'gpu_common_and_optional_telemetry_tests': {
         'variants': [
