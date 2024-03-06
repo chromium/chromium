@@ -271,7 +271,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.showLoading();
 
     document.onselectionchange = () => {
-      if (!this.hasContent_) {
+      // When Read Aloud is playing, user-selection is disabled on the Read
+      // Anything panel, so don't attempt to update selection, as this can
+      // end up clearing selection in the main part of the browser.
+      if (!this.hasContent_ || !this.speechPlayingState.paused) {
         return;
       }
       const shadowRoot = this.shadowRoot;

@@ -98,3 +98,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, ReadAloudLinksToggled) {
   RunSidePanelTest("side_panel/read_anything/read_aloud_links_toggled.js",
                    "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
+                       ReadAloud_UpdateContentSelection) {
+  RunSidePanelTest(
+      "side_panel/read_anything/read_aloud_update_content_selection.js",
+      "mocha.run()");
+}

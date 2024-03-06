@@ -21,6 +21,7 @@ build_webui_tests("build") {
     "test_color_updater_browser_proxy.ts",
     "read_aloud_links_toggled.ts",
     "common.ts",
+    "read_aloud_update_content_selection.ts",
     "update_content_selection.ts",
   ]
 

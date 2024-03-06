@@ -603,6 +603,9 @@ bool ReadAnythingAppController::PostProcessSelection() {
   bool did_draw = false;
   if (model_.PostProcessSelection()) {
     did_draw = true;
+    // TODO(b/40927698): When Read Aloud is playing and content is selected
+    // in the main panel, don't re-draw with the updated selection until
+    // Read Aloud is paused.
     Draw();
   }
   // Skip drawing the selection in the side panel if the selection originally
