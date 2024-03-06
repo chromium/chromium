@@ -61,6 +61,10 @@ const FourCharCode kWidthTag = 'wdth';
 
 const int kCTNormalTraitsValue = 0;
 
+CTFontSymbolicTraits kImportantTraitsMask =
+    kCTFontTraitItalic | kCTFontTraitBold | kCTFontTraitCondensed |
+    kCTFontTraitExpanded;
+
 const NSFontTraitMask SYNTHESIZED_FONT_TRAITS =
     (NSBoldFontMask | NSItalicFontMask);
 
@@ -209,24 +213,16 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
     CTFontSymbolicTraits desired_traits,
     int desired_weight,
     float size) {
-  ScopedCFTypeRef<CFMutableDictionaryRef> attributes(CFDictionaryCreateMutable(
-      kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks,
-      &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(attributes.get(), kCTFontFamilyNameAttribute,
-                       family_name);
-
-  ScopedCFTypeRef<CTFontDescriptorRef> family_descriptor(
-      CTFontDescriptorCreateWithAttributes(attributes.get()));
-  ScopedCFTypeRef<CFMutableArrayRef> descriptors(
-      CFArrayCreateMutable(kCFAllocatorDefault, 1, &kCFTypeArrayCallBacks));
-  CFArrayAppendValue(descriptors.get(), family_descriptor.get());
-
-  ScopedCFTypeRef<CTFontCollectionRef> collection_from_family(
-      CTFontCollectionCreateWithFontDescriptors(descriptors.get(), nullptr));
+  // We need the order of the fonts in the family be same as in
+  // `availableMembersOfFontFamily` so that the matching results are the same.
+  // That's why we don't pass kCTFontCollectionRemoveDuplicatesOption, it might
+  // change the order and therefore might change the matching result.
+  ScopedCFTypeRef<CTFontCollectionRef> all_system_fonts(
+      CTFontCollectionCreateFromAvailableFonts(nullptr));
 
   ScopedCFTypeRef<CFArrayRef> fonts_in_family(
-      CTFontCollectionCreateMatchingFontDescriptors(
-          collection_from_family.get()));
+      CTFontCollectionCreateMatchingFontDescriptorsForFamily(
+          all_system_fonts.get(), family_name, NULL));
   if (!fonts_in_family) {
     return ScopedCFTypeRef<CTFontRef>(nullptr);
   }
@@ -272,6 +268,15 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
           CTFontCreateWithFontDescriptor(descriptor, size, nullptr));
       chosen_traits = candidate_traits;
       chosen_weight = candidate_weight;
+      // If we found a font with the exact weight and traits we asked for, we
+      // can finish the search and return the font, otherwise we will continue
+      // searching among the fonts in family to find the best (not necessarily
+      // exact) match in traits and weight.
+      if (chosen_weight == desired_weight &&
+          (chosen_traits & kImportantTraitsMask) ==
+              (desired_traits & kImportantTraitsMask)) {
+        return matched_font_in_family;
+      }
     }
   }
   return matched_font_in_family;
