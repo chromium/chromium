@@ -52,17 +52,10 @@ PageSwapEvent::PageSwapEvent(
   if (page_swap_event_params) {
     NavigationApi* navigation = document.domWindow()->navigation();
 
-    // The current entry could be null for the initial about:blank Document, a
-    // detached window, or an opaque origin. We shouldn't be creating the
-    // activation info for the first 2 cases:
-    // 1. We don't fire `pageswap` on the initial about:blank Document.
-    // 2. We shouldn't be firing `pageswap` for detached windows. The event
-    //    only fires when navigating away from a Document and there shouldn't be
-    //    navigations in a detached window, i.e., a disconnected iframe.
-    // 3. The activation info is only provided for same-origin navigations. An
-    //    opaque origin shouldn't be same origin with another opaque origin.
+    // The current entry can be null at this point when navigating away from the
+    // initial empty document.
+    // See https://html.spec.whatwg.org/#navigation-current-entry.
     auto* from = navigation->currentEntry();
-    CHECK(from);
 
     NavigationHistoryEntry* entry = nullptr;
     switch (page_swap_event_params->navigation_type) {
