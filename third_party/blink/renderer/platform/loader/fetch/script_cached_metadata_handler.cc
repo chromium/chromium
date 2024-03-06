@@ -87,7 +87,7 @@ void ScriptCachedMetadataHandler::SetSerializedCachedMetadata(
   // triggers, it indicates an efficiency problem which is most likely
   // unexpected in code designed to improve performance.
   DCHECK(!cached_metadata_);
-  cached_metadata_ = CachedMetadata::CreateFromSerializedData(std::move(data));
+  cached_metadata_ = CachedMetadata::CreateFromSerializedData(data);
 }
 
 String ScriptCachedMetadataHandler::Encoding() const {

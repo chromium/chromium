@@ -34,15 +34,17 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -63,14 +65,6 @@ class PLATFORM_EXPORT CachedMetadata : public RefCounted<CachedMetadata> {
   USING_FAST_MALLOC(CachedMetadata);
 
  public:
-  static scoped_refptr<CachedMetadata> Create(uint32_t data_type_id,
-                                              const uint8_t* data,
-                                              size_t size,
-                                              uint64_t tag = 0) {
-    return base::AdoptRef(new CachedMetadata(
-        data_type_id, data, base::checked_cast<wtf_size_t>(size), tag));
-  }
-
   // Returns a Vector containing the header of serialized metadata.
   // Callers should append the body to the Vector to get the full serialized
   // metadata.
@@ -93,17 +87,29 @@ class PLATFORM_EXPORT CachedMetadata : public RefCounted<CachedMetadata> {
     return vector;
   }
 
+  static scoped_refptr<CachedMetadata> Create(uint32_t data_type_id,
+                                              const uint8_t* data,
+                                              size_t size,
+                                              uint64_t tag = 0);
   static scoped_refptr<CachedMetadata> CreateFromSerializedData(
       const uint8_t* data,
       size_t);
   static scoped_refptr<CachedMetadata> CreateFromSerializedData(
       Vector<uint8_t> data);
   static scoped_refptr<CachedMetadata> CreateFromSerializedData(
-      mojo_base::BigBuffer data);
+      mojo_base::BigBuffer& data);
 
-  ~CachedMetadata() = default;
+  CachedMetadata(Vector<uint8_t> data, base::PassKey<CachedMetadata>);
+  CachedMetadata(uint32_t data_type_id,
+                 const uint8_t* data,
+                 wtf_size_t size,
+                 uint64_t tag,
+                 base::PassKey<CachedMetadata>);
+  CachedMetadata(mojo_base::BigBuffer data, base::PassKey<CachedMetadata>);
+  CachedMetadata(const mojo_base::BigBuffer* data,
+                 base::PassKey<CachedMetadata>);
 
-  base::span<const uint8_t> SerializedData() {
+  base::span<const uint8_t> SerializedData() const {
     return base::make_span(RawData(), RawSize());
   }
 
@@ -127,26 +133,19 @@ class PLATFORM_EXPORT CachedMetadata : public RefCounted<CachedMetadata> {
     return (reinterpret_cast<const CachedMetadataHeader*>(RawData()))->tag;
   }
 
- private:
-  explicit CachedMetadata(Vector<uint8_t> data);
-  CachedMetadata(uint32_t data_type_id,
-                 const uint8_t* data,
-                 wtf_size_t size,
-                 uint64_t tag);
-  explicit CachedMetadata(mojo_base::BigBuffer data);
+  // Drains the serialized data as a Vector<uint8_t> or BigBuffer.
+  absl::variant<Vector<uint8_t>, mojo_base::BigBuffer> DrainSerializedData() &&;
 
-  const uint8_t* RawData() const {
-    return buffer_.size() ? buffer_.data() : vector_.data();
-  }
-  uint32_t RawSize() const {
-    return buffer_.size() ? base::checked_cast<uint32_t>(buffer_.size())
-                          : vector_.size();
-  }
+ private:
+  friend class RefCounted<CachedMetadata>;
+  ~CachedMetadata() = default;
+
+  const uint8_t* RawData() const;
+  uint32_t RawSize() const;
 
   // Since the serialization format supports random access, storing it in
   // serialized form avoids need for a copy during serialization.
-  Vector<uint8_t> vector_;
-  mojo_base::BigBuffer buffer_;
+  absl::variant<Vector<uint8_t>, mojo_base::BigBuffer> buffer_;
 };
 
 }  // namespace blink
