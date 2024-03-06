@@ -1573,11 +1573,6 @@
   "chromeos-octopus-chrome": {
     "additional_compile_targets": [
       "chromiumos_preflight"
-    ]
-  },
-  "chromeos-octopus-chrome-skylab": {
-    "additional_compile_targets": [
-      "chromiumos_preflight"
     ],
     "skylab_tests": [
       {
