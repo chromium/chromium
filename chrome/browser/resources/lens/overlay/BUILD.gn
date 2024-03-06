@@ -13,5 +13,15 @@ build_webui("build_overlay") {
 
   web_component_files = [ "app.ts" ]
 
-  ts_deps = [ "//third_party/polymer/v3_0:library" ]
+  non_web_component_files = [ "browser_proxy.ts" ]
+
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  mojo_files_deps =
+      [ "//chrome/browser/lens/core/mojom:mojo_bindings_ts__generator" ]
+  mojo_files =
+      [ "$root_gen_dir/chrome/browser/lens/core/mojom/lens.mojom-webui.ts" ]
 }
