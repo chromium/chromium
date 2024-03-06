@@ -88,6 +88,7 @@ class GraphBuilder final {
       const mojom::ElementWiseBinary& op);
   base::expected<OperatorOffset, std::string> SerializeElementWiseUnary(
       const mojom::ElementWiseUnary& op);
+  OperatorOffset SerializeSigmoid(const mojom::Sigmoid& sigmoid);
   OperatorOffset SerializeSoftmax(const mojom::Softmax& softmax);
 
   // There are no further methods should be called on this class after this

@@ -170,6 +170,9 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       operator_offset = elementwise_result.value();
       break;
     }
+    case mojom::Operation::Tag::kSigmoid:
+      operator_offset = SerializeSigmoid(*op.get_sigmoid());
+      break;
     case mojom::Operation::Tag::kSoftmax:
       operator_offset = SerializeSoftmax(*op.get_softmax());
       break;
@@ -215,8 +218,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("resample2d is not implemented");
     case mojom::Operation::Tag::kReshape:
       return base::unexpected("reshape is not implemented");
-    case mojom::Operation::Tag::kSigmoid:
-      return base::unexpected("sigmoid is not implemented");
     case mojom::Operation::Tag::kSlice:
       return base::unexpected("slice is not implemented");
     case mojom::Operation::Tag::kSoftplus:
@@ -458,6 +459,13 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
       return base::unexpected(
           base::StrCat({base::ToString(op.kind), " is not implemented."}));
   }
+}
+
+auto GraphBuilder::SerializeSigmoid(const mojom::Sigmoid& sigmoid)
+    -> OperatorOffset {
+  return SerializeUnaryOperator(::tflite::BuiltinOperator_LOGISTIC,
+                                sigmoid.input_operand_id,
+                                sigmoid.output_operand_id);
 }
 
 auto GraphBuilder::SerializeSoftmax(const mojom::Softmax& softmax)
