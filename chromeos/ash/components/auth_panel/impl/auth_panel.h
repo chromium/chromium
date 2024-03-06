@@ -15,6 +15,7 @@
 
 namespace ash {
 
+class AuthHubConnector;
 class AuthPanelEventDispatcher;
 class AuthPanelEventDispatcherFactory;
 class AuthFactorStore;
@@ -36,7 +37,8 @@ class AuthPanel : public views::View, public AuthFactorStatusConsumer {
       std::unique_ptr<FactorAuthViewFactory> view_factory,
       std::unique_ptr<AuthFactorStoreFactory> store_factory,
       std::unique_ptr<AuthPanelEventDispatcherFactory> event_dispatcher_factory,
-      auth_panel::AuthCompletionCallback on_auth_complete);
+      auth_panel::AuthCompletionCallback on_auth_complete,
+      AuthHubConnector* connector);
   AuthPanel(const AuthPanel&) = delete;
   AuthPanel(AuthPanel&&) = delete;
   AuthPanel& operator=(const AuthPanel&) = delete;
@@ -65,6 +67,8 @@ class AuthPanel : public views::View, public AuthFactorStatusConsumer {
   base::flat_map<AshAuthFactor, views::View*> views_;
 
   auth_panel::AuthCompletionCallback on_auth_complete_;
+
+  raw_ptr<AuthHubConnector> auth_hub_connector_;
 };
 
 }  // namespace ash

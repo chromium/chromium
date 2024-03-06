@@ -8,11 +8,15 @@
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "chromeos/ash/components/auth_panel/public/shared_types.h"
+#include "chromeos/ash/components/osauth/public/auth_attempt_consumer.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
-class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController {
+class AuthHubConnector;
+
+class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController,
+                                          public AuthAttemptConsumer {
  public:
   InSessionAuthDialogControllerImpl();
   InSessionAuthDialogControllerImpl(const InSessionAuthDialogControllerImpl&) =
@@ -29,13 +33,34 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController {
   void SetTokenProvider(
       InSessionAuthTokenProvider* auth_token_provider) override;
 
+  // AuthAttemptConsumer:
+  void OnUserAuthAttemptRejected() override;
+  void OnUserAuthAttemptConfirmed(
+      AuthHubConnector* connector,
+      raw_ptr<AuthFactorStatusConsumer>& out_consumer) override;
+  void OnAccountNotFound() override;
+  void OnUserAuthAttemptCancelled() override;
+  void OnFactorAttemptFailed(AshAuthFactor factor) override;
+  void OnUserAuthSuccess(AshAuthFactor factor,
+                         const AuthProofToken& token) override;
+
  private:
+  void CreateAndShowAuthPanel(
+      auth_panel::AuthCompletionCallback on_auth_complete,
+      Reason reason,
+      const AccountId& account_id);
+
   // Non owning pointer, initialized and owned by
   // `ChromeBrowserMainExtraPartsAsh`.
   // `auth_token_provider_` will outlive this controller since the controller
   // is part of `ash::Shell` and will be destroyed as part of `AshShellInit`
   // before `auth_token_provider`.
   raw_ptr<InSessionAuthTokenProvider> auth_token_provider_;
+
+  // Stored temporarily and passed to auth panel's constructor when
+  // we know that the auth attempt has been confirmed.
+  auth_panel::AuthCompletionCallback on_auth_complete_;
+
   std::unique_ptr<views::Widget> dialog_;
 };
 

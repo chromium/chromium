@@ -31,11 +31,13 @@ AuthPanel::AuthPanel(
     std::unique_ptr<FactorAuthViewFactory> view_factory,
     std::unique_ptr<AuthFactorStoreFactory> store_factory,
     std::unique_ptr<AuthPanelEventDispatcherFactory> event_dispatcher_factory,
-    auth_panel::AuthCompletionCallback on_auth_complete)
+    auth_panel::AuthCompletionCallback on_auth_complete,
+    AuthHubConnector* connector)
     : event_dispatcher_factory_(std::move(event_dispatcher_factory)),
       view_factory_(std::move(view_factory)),
       store_factory_(std::move(store_factory)),
-      on_auth_complete_(std::move(on_auth_complete)) {}
+      on_auth_complete_(std::move(on_auth_complete)),
+      auth_hub_connector_(connector) {}
 
 AuthPanel::~AuthPanel() {
   if (on_auth_complete_) {
