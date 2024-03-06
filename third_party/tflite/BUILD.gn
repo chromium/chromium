@@ -31,6 +31,7 @@ proto_library("tflite_op_resolver_proto") {
 
 config("tflite_config") {
   include_dirs = [
+    "shims",
     "src",
     "src/third_party/xla/third_party/tsl",
     "//third_party/pthreadpool/src/include",
@@ -539,6 +540,44 @@ tflite_static_library("tflite_kernels") {
   visibility = [ ":*" ]
 }
 
+# The two below TFLite logging targets are separate since the Chromium one
+# requires //base, which is not allowed to be embedded by non-libchrome shared
+# libraries.
+source_set("tflite_logging") {
+  sources = [ "shims/minimal_logging_chromium.cc" ]
+  deps = [
+    ":tflite_public_headers",
+    "//base",
+  ]
+
+  configs += [
+    ":tflite_config",
+    ":tflite_flags",
+  ]
+
+  visibility = [ ":*" ]
+}
+
+# This target is used in conditional_deps in the ":tflite" target, which
+# requires both a "target" and companion "target_standalone" source set.
+source_set("tflite_logging_standalone") {
+  if (is_ios) {
+    sources = [ "src/tensorflow/lite/minimal_logging_ios.cc" ]
+  } else if (is_android) {
+    sources = [ "src/tensorflow/lite/minimal_logging_android.cc" ]
+  } else {
+    sources = [ "src/tensorflow/lite/minimal_logging_default.cc" ]
+  }
+  deps = [ ":tflite_public_headers" ]
+
+  configs += [
+    ":tflite_config",
+    ":tflite_flags",
+  ]
+
+  visibility = [ ":*" ]
+}
+
 # TODO(crbug.com/1147996): Update to a component build. Will require updating the
 # tflite version.
 tflite_static_library("tflite") {
@@ -662,18 +701,14 @@ tflite_static_library("tflite") {
 
   if (is_ios) {
     sources += [
-      "src/tensorflow/lite/minimal_logging_ios.cc",
       "src/tensorflow/lite/profiling/signpost_profiler.h",
       "src/tensorflow/lite/profiling/signpost_profiler.mm",
     ]
   } else if (is_android) {
     sources += [
-      "src/tensorflow/lite/minimal_logging_android.cc",
       "src/tensorflow/lite/profiling/atrace_profiler.cc",
       "src/tensorflow/lite/profiling/atrace_profiler.h",
     ]
-  } else {
-    sources += [ "src/tensorflow/lite/minimal_logging_default.cc" ]
   }
 
   deps = [
@@ -685,7 +720,10 @@ tflite_static_library("tflite") {
     "//third_party/ruy",
   ]
 
-  conditional_deps = [ "//third_party/pthreadpool:pthreadpool" ]
+  conditional_deps = [
+    ":tflite_logging",
+    "//third_party/pthreadpool:pthreadpool",
+  ]
 
   if (build_tflite_with_xnnpack) {
     deps += [ "//third_party/cpuinfo" ]
