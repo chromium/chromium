@@ -3637,6 +3637,10 @@
       status: "test",
     },
     {
+      name: "StaticAnimationOptimization",
+      status: "experimental",
+    },
+    {
       name: "StorageAccessAPIBeyondCookies",
       status: "experimental",
       origin_trial_feature_name: "StorageAccessAPIBeyondCookies",

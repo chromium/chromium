@@ -950,4 +950,48 @@ TEST_F(KeyframeEffectModelTest, RejectInvalidPropertyValue) {
   EXPECT_EQ(1U, keyframe->Properties().size());
 }
 
+TEST_F(KeyframeEffectModelTest, StaticProperty) {
+  StringKeyframeVector keyframes =
+      KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "3px", "3px");
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+  EXPECT_EQ(1U, effect->Properties().size());
+  EXPECT_EQ(0U, effect->DynamicProperties().size());
+
+  keyframes = KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "3px", "5px");
+  effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+  EXPECT_EQ(1U, effect->Properties().size());
+  EXPECT_EQ(1U, effect->DynamicProperties().size());
+}
+
+TEST_F(AnimationKeyframeEffectModel, BackgroundShorthandStaticProperties) {
+  // Following background properties can be animated:
+  //    background-attachment, background-clip, background-color,
+  //    background-image, background-origin, background-position-x,
+  //    background-position-y, background-repeat, background-size
+  const wtf_size_t kBackgroundProperties = 9U;
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes colorize {
+        from { background: red; }
+        to { background: green; }
+      }
+      #block {
+        container-type: size;
+        animation: colorize 1s linear paused;
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div id=block>
+    </div>
+  )HTML");
+  const auto& animations = GetDocument().getAnimations();
+  EXPECT_EQ(1U, animations.size());
+  auto* effect = animations[0]->effect();
+  auto* model = To<KeyframeEffect>(effect)->Model();
+  EXPECT_EQ(kBackgroundProperties, model->Properties().size());
+  // Background-color is the only property that is changing between keyframes.
+  EXPECT_EQ(1U, model->DynamicProperties().size());
+}
+
 }  // namespace blink

@@ -11,12 +11,12 @@
 
 <div id="parent"></div>
 <script>
-var keyframeValueMap = {
-  translate: '10px 10px 10px',
-  scale: '1 2 3',
-  rotate: '45deg',
-  transform: 'translate(10px, 20px)',
-  opacity: '1',
+const keyframeValueMap = {
+  translate: ['0px 0px 0px', '10px 10px 10px'],
+  scale: ['1 1 1', '1 2 3'],
+  rotate: ['-45deg', '45deg'],
+  transform: ['translate(20px, 10px)', 'translate(10px, 20px)'],
+  opacity: ['0', '1']
 };
 
 /* Test that animation on compositableProperty on compositor is cancelled when 
@@ -25,10 +25,12 @@ function assertAnimationComposited(compositableProperty, cancelProperty, isStill
   var element = document.createElement('div');
   document.getElementById('parent').appendChild(element);
 
-  var keyframe = {};
-  keyframe[compositableProperty] = keyframeValueMap[compositableProperty];
+  const keyframe1 = {};
+  const keyframe2 = {};
+  keyframe1[compositableProperty] = keyframeValueMap[compositableProperty][0];
+  keyframe2[compositableProperty] = keyframeValueMap[compositableProperty][1];
 
-  var animation = element.animate([keyframe, keyframe], {
+  const animation = element.animate([keyframe1, keyframe2], {
     duration: 4000,
     iterations: Infinity
   });
@@ -41,7 +43,7 @@ function assertAnimationComposited(compositableProperty, cancelProperty, isStill
       asyncHandle.step(function() {
         assert_true(internals.isCompositedAnimation(animation), compositableProperty + " animation should be composited");
       });
-      element.style[cancelProperty] = keyframeValueMap[cancelProperty];
+      element.style[cancelProperty] = keyframeValueMap[cancelProperty][1];
 
       requestAnimationFrame(function() {
         requestAnimationFrame(function() {
