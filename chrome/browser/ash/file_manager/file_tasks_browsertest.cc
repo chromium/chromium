@@ -798,11 +798,17 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackSucceedsWithQuickOffice) {
 
   // GetUserFallbackChoice() returns `True` because the Fallback dialog can be
   // shown.
-  ASSERT_TRUE(GetUserFallbackChoice(
-      profile, CreateWebDriveOfficeTask(), {test_url},
-      ash::office_fallback::FallbackReason::kOffline,
+  const TaskDescriptor task = CreateWebDriveOfficeTask();
+  std::vector<FileSystemURL> file_url{test_url};
+  ash::office_fallback::FallbackReason fallback_reason =
+      ash::office_fallback::FallbackReason::kOffline;
+  ash::office_fallback::DialogChoiceCallback callback = base::BindOnce(
+      &OnDialogChoiceReceived, profile, task, file_url, fallback_reason,
       std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-          ash::cloud_upload::CloudProvider::kOneDrive, /*file_count=*/1)));
+          ash::cloud_upload::CloudProvider::kOneDrive, /*file_count=*/1));
+  ASSERT_TRUE(GetUserFallbackChoice(
+      profile, task, file_url, ash::office_fallback::FallbackReason::kOffline,
+      std::move(callback)));
 }
 
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
@@ -820,11 +826,17 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
   // GetUserFallbackChoice() returns `False` because QuickOffice is not
   // installed.
   storage::FileSystemURL test_url;
-  ASSERT_FALSE(GetUserFallbackChoice(
-      browser()->profile(), CreateWebDriveOfficeTask(), {test_url},
-      ash::office_fallback::FallbackReason::kOffline,
+  Profile* const profile = browser()->profile();
+  const TaskDescriptor task = CreateWebDriveOfficeTask();
+  std::vector<FileSystemURL> file_url{test_url};
+  ash::office_fallback::FallbackReason fallback_reason =
+      ash::office_fallback::FallbackReason::kOffline;
+  ash::office_fallback::DialogChoiceCallback callback = base::BindOnce(
+      &OnDialogChoiceReceived, profile, task, file_url, fallback_reason,
       std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-          ash::cloud_upload::CloudProvider::kOneDrive, /*file_count=*/1)));
+          ash::cloud_upload::CloudProvider::kOneDrive, /*file_count=*/1));
+  ASSERT_FALSE(GetUserFallbackChoice(profile, task, file_url, fallback_reason,
+                                     std::move(callback)));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

@@ -146,12 +146,11 @@ void OnDialogChoiceReceived(
 
 // Shows a new dialog for users to choose what to do next. Returns True
 // if a new dialog has been effectively created.
-bool GetUserFallbackChoice(
-    Profile* profile,
-    const TaskDescriptor& task,
-    const std::vector<storage::FileSystemURL>& file_urls,
-    ash::office_fallback::FallbackReason failure_reason,
-    std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics);
+bool GetUserFallbackChoice(Profile* profile,
+                           const TaskDescriptor& task,
+                           const std::vector<storage::FileSystemURL>& file_urls,
+                           ash::office_fallback::FallbackReason failure_reason,
+                           ash::office_fallback::DialogChoiceCallback callback);
 
 bool IsWebDriveOfficeTask(const TaskDescriptor& task);
 
