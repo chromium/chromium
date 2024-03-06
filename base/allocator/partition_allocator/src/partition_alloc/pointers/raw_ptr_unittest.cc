@@ -2398,11 +2398,19 @@ TEST_F(BackupRefPtrTest, RawPtrTraits_DisableBRP) {
     raw_ptr<unsigned int, DanglingUntriaged> ptr = static_cast<unsigned int*>(
         allocator_.root()->Alloc(sizeof(unsigned int), ""));
     *ptr = 0;
+    // Freeing would  update the MTE tag so use |TagPtr()| to dereference it
+    // below.
     allocator_.root()->Free(ptr);
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    EXPECT_DEATH_IF_SUPPORTED(*ptr = 0, "");
+    // Recreate the raw_ptr so we can use a pointer with the updated MTE tag.
+    // Reassigning to |ptr| would hit the PartitionRefCount cookie check rather
+    // than the |IsPointeeAlive()| check.
+    raw_ptr<unsigned int, DanglingUntriaged> dangling_ptr =
+        partition_alloc::internal::TagPtr(ptr.get());
+    EXPECT_DEATH_IF_SUPPORTED(*dangling_ptr = 0, "");
 #else
-    EXPECT_EQ(kQuarantined4Bytes, *ptr);
+    EXPECT_EQ(kQuarantined4Bytes,
+              *partition_alloc::internal::TagPtr(ptr.get()));
 #endif
   }
   // raw_ptr with DisableBRP, BRP is expected to be off.
@@ -2414,7 +2422,10 @@ TEST_F(BackupRefPtrTest, RawPtrTraits_DisableBRP) {
     allocator_.root()->Free(ptr);
     // A tad fragile as a new allocation or free-list pointer may be there, but
     // highly unlikely it'll match 4 quarantine bytes in a row.
-    EXPECT_NE(kQuarantined4Bytes, *ptr);
+    // Use |TagPtr()| for this dereference because freeing would have updated
+    // the MTE tag.
+    EXPECT_NE(kQuarantined4Bytes,
+              *partition_alloc::internal::TagPtr(ptr.get()));
   }
 
   allocator_.root()->Free(sentinel);
