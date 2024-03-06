@@ -7392,21 +7392,21 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OAuth2Login.SessionRestore" enum="GaiaSessionRestoreOutcome"
     expires_after="2024-11-01">
-  <owner>anastasiian@chromium.org</owner>
+  <owner>emaamari@google.com</owner>
   <owner>sinhak@chromium.org</owner>
   <summary>Outcome of Chrome OS GAIA cookie session restore process.</summary>
 </histogram>
 
 <histogram name="OAuth2Login.SessionRestoreTimeToFailure" units="ms"
     expires_after="2024-11-01">
-  <owner>anastasiian@chromium.org</owner>
+  <owner>emaamari@google.com</owner>
   <owner>sinhak@chromium.org</owner>
   <summary>How long it takes for the session restore to fail.</summary>
 </histogram>
 
 <histogram name="OAuth2Login.SessionRestoreTimeToSuccess" units="ms"
     expires_after="2024-11-01">
-  <owner>anastasiian@chromium.org</owner>
+  <owner>emaamari@google.com</owner>
   <owner>sinhak@chromium.org</owner>
   <summary>
     How long it takes for the session restore to finish successfully.

@@ -707,7 +707,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.NumAccounts" units="count" expires_after="2024-09-11">
-  <owner>anastasiian@google.com</owner>
+  <owner>sinhak@google.com</owner>
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -717,7 +717,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.PercentAccounts" units="%" expires_after="2024-09-11">
-  <owner>anastasiian@google.com</owner>
+  <owner>sinhak@google.com</owner>
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
