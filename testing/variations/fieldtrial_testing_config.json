@@ -4746,6 +4746,29 @@
             ]
         }
     ],
+    "CrOSLateBootArcVmVcpuBoost": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootArcVmVcpuBoost"
+                    ],
+                    "hardware_classes": [
+                        "brya",
+                        "dedede",
+                        "myst",
+                        "octopus",
+                        "rex"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootAudioHFPOffload": [
         {
             "platforms": [
