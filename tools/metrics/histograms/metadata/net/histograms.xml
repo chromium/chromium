@@ -3783,12 +3783,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.PacketLossRate" units="1/10th Percent"
-    expires_after="2023-10-01">
+    expires_after="2024-09-06">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The ratio of the number of missing packets, to the maximum packet sequence
     number received, for QUIC connections longer than 21 packets received via
+
+    Warning: this histogram was expired from 2023-10-01 to 2024-03-06; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -3803,13 +3806,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.PacketWriteTime" units="units"
-    expires_after="2023-11-19">
+    expires_after="2024-09-06">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The time taken to Write() a QUIC packet to the socket. Recorded for each
     packet when it is sent. The suffix specifies if the write completed
     synchonously or asynchronously.
+
+    Warning: this histogram was expired from 2023-11-19 to 2024-03-06; data may
+    be missing.
   </summary>
 </histogram>
 
