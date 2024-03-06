@@ -374,7 +374,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Renderer.Images.HasOverfetchedCappedPixels" enum="Boolean"
     expires_after="2024-08-04">
-  <owner>yoavweiss@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Boolean indicating that OverfetchedCappedPixels was a positive integer.
@@ -384,7 +384,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Renderer.Images.HasOverfetchedPixels" enum="Boolean"
     expires_after="2024-09-03">
-  <owner>yoavweiss@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Boolean indicating that OverfetchedPixels was a positive integer. Reported
@@ -394,7 +394,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Renderer.Images.HasSizesAttributeMiss" enum="Boolean"
     expires_after="2024-09-03">
-  <owner>yoavweiss@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Boolean indicating that SizesAttributeMiss was a positive integer. Only set
@@ -405,7 +405,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Renderer.Images.OverfetchedCappedPixels" units="px^2"
     expires_after="2024-09-03">
-  <owner>yoavweiss@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The amount of HTMLImageElement image pixels squared (width * height) that
@@ -418,7 +418,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Renderer.Images.OverfetchedPixels" units="px^2"
     expires_after="2024-07-28">
-  <owner>yoavweiss@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The amount of HTMLImageElement image pixels squared (width * height) that
@@ -431,7 +431,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Renderer.Images.SizesAttributeMiss" units="px"
     expires_after="2024-09-03">
-  <owner>yoavweiss@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The amount of HTMLImageElement pixels by which the eventual layout width was
@@ -527,7 +527,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Renderer.Preload.UnusedResource" enum="BooleanSuccess"
     expires_after="2024-08-11">
-  <owner>yoavweiss@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Counts the number of unused preloads per ResourceType.
