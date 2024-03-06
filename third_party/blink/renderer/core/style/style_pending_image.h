@@ -56,7 +56,8 @@ class CORE_EXPORT StylePendingImage final : public StyleImage {
   CSSValue* CssValue() const override { return value_.Get(); }
 
   CSSValue* ComputedCSSValue(const ComputedStyle& style,
-                             bool allow_visited_style) const override;
+                             bool allow_visited_style,
+                             CSSValuePhase value_phase) const override;
 
   bool IsAccessAllowed(String&) const override { return true; }
   IntrinsicSizingInfo GetNaturalSizingInfo(

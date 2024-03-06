@@ -120,7 +120,8 @@ CSSValue* StyleFetchedImage::CssValue() const {
 }
 
 CSSValue* StyleFetchedImage::ComputedCSSValue(const ComputedStyle&,
-                                              bool allow_visited_style) const {
+                                              bool allow_visited_style,
+                                              CSSValuePhase value_phase) const {
   return CssValue();
 }
 

@@ -59,10 +59,12 @@ CSSValue* StyleGeneratedImage::CssValue() const {
 
 CSSValue* StyleGeneratedImage::ComputedCSSValue(
     const ComputedStyle& style,
-    bool allow_visited_style) const {
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
   if (auto* image_gradient_value =
           DynamicTo<cssvalue::CSSGradientValue>(image_generator_value_.Get())) {
-    return image_gradient_value->ComputedCSSValue(style, allow_visited_style);
+    return image_gradient_value->ComputedCSSValue(style, allow_visited_style,
+                                                  value_phase);
   }
   DCHECK(IsA<CSSPaintValue>(image_generator_value_.Get()));
   return image_generator_value_.Get();

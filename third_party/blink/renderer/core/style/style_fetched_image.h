@@ -58,7 +58,8 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
 
   CSSValue* CssValue() const override;
   CSSValue* ComputedCSSValue(const ComputedStyle&,
-                             bool allow_visited_style) const override;
+                             bool allow_visited_style,
+                             CSSValuePhase value_phase) const override;
 
   bool CanRender() const override;
   bool IsLoaded() const override;

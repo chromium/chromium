@@ -835,8 +835,8 @@ const CSSValue* BorderImage::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForNinePieceImage(style.BorderImage(), style,
-                                                    allow_visited_style);
+  return ComputedStyleUtils::ValueForNinePieceImage(
+      style.BorderImage(), style, allow_visited_style, value_phase);
 }
 
 bool BorderInlineColor::ParseShorthand(
@@ -3927,8 +3927,8 @@ const CSSValue* WebkitMaskBoxImage::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForNinePieceImage(style.MaskBoxImage(), style,
-                                                    allow_visited_style);
+  return ComputedStyleUtils::ValueForNinePieceImage(
+      style.MaskBoxImage(), style, allow_visited_style, value_phase);
 }
 
 bool WebkitMask::ParseShorthand(
@@ -3959,7 +3959,8 @@ const CSSValue* AlternativeMask::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValuesForMaskShorthand(
-      alternativeMaskShorthand(), style, layout_object, allow_visited_style);
+      alternativeMaskShorthand(), style, layout_object, allow_visited_style,
+      value_phase);
 }
 
 bool MaskPosition::ParseShorthand(

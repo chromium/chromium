@@ -10,10 +10,12 @@
 namespace blink {
 
 CSSValue* StylePendingImage::ComputedCSSValue(const ComputedStyle& style,
-                                              bool allow_visited_style) const {
+                                              bool allow_visited_style,
+                                              CSSValuePhase value_phase) const {
   DCHECK(style.IsEnsuredInDisplayNone() ||
          style.Display() == EDisplay::kContents);
-  return StyleImageComputedCSSValueBuilder(style, allow_visited_style)
+  return StyleImageComputedCSSValueBuilder(style, allow_visited_style,
+                                           value_phase)
       .Build(CssValue());
 }
 

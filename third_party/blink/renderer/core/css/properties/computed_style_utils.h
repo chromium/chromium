@@ -63,7 +63,8 @@ class CORE_EXPORT ComputedStyleUtils {
   static const CSSValue* BackgroundImageOrWebkitMaskImage(
       const ComputedStyle&,
       bool allow_visited_style,
-      const FillLayer&);
+      const FillLayer&,
+      CSSValuePhase value_phase);
   static const CSSValue* ValueForFillSize(const FillSize&,
                                           const ComputedStyle&);
   static const CSSValue* BackgroundImageOrWebkitMaskSize(const ComputedStyle&,
@@ -83,7 +84,8 @@ class CORE_EXPORT ComputedStyleUtils {
       const StylePropertyShorthand&,
       const ComputedStyle&,
       const LayoutObject*,
-      bool allow_visited_style);
+      bool allow_visited_style,
+      CSSValuePhase value_phase);
   static const CSSValue* BackgroundPositionOrWebkitMaskPosition(
       const CSSProperty&,
       const ComputedStyle&,
@@ -101,10 +103,12 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForNinePieceImageRepeat(const NinePieceImage&);
   static CSSValue* ValueForNinePieceImage(const NinePieceImage&,
                                           const ComputedStyle&,
-                                          bool allow_visited_style);
+                                          bool allow_visited_style,
+                                          CSSValuePhase value_phase);
   static CSSValue* ValueForReflection(const StyleReflection*,
                                       const ComputedStyle&,
-                                      bool allow_visited_style);
+                                      bool allow_visited_style,
+                                      CSSValuePhase value_phase);
   static CSSValue* ValueForPosition(const LengthPoint& position,
                                     const ComputedStyle&);
 
@@ -240,13 +244,15 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForTransitionProperty(const CSSTransitionData*);
   static CSSValue* ValueForTransitionBehavior(const CSSTransitionData*);
   static CSSValue* ValueForContentData(const ComputedStyle&,
-                                       bool allow_visited_style);
+                                       bool allow_visited_style,
+                                       CSSValuePhase value_phase);
 
   static CSSValue* ValueForCounterDirectives(const ComputedStyle&,
                                              CounterNode::Type type);
   static CSSValue* ValueForShape(const ComputedStyle&,
                                  bool allow_visited_style,
-                                 ShapeValue*);
+                                 ShapeValue*,
+                                 CSSValuePhase value_phase);
   static CSSValueList* ValueForBorderRadiusShorthand(const ComputedStyle&);
   static CSSValue* StrokeDashArrayToCSSValueList(const SVGDashArray&,
                                                  const ComputedStyle&);

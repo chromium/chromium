@@ -273,13 +273,14 @@ const blink::Color ComputedStyleUtils::BorderSideColor(
 const CSSValue* ComputedStyleUtils::BackgroundImageOrWebkitMaskImage(
     const ComputedStyle& style,
     bool allow_visited_style,
-    const FillLayer& fill_layer) {
+    const FillLayer& fill_layer,
+    CSSValuePhase value_phase) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   const FillLayer* curr_layer = &fill_layer;
   for (; curr_layer; curr_layer = curr_layer->Next()) {
     if (curr_layer->GetImage()) {
       list->Append(*curr_layer->GetImage()->ComputedCSSValue(
-          style, allow_visited_style));
+          style, allow_visited_style, value_phase));
     } else {
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
     }
@@ -391,7 +392,7 @@ const CSSValueList* ComputedStyleUtils::ValuesForBackgroundShorthand(
     }
     before_slash->Append(curr_layer->GetImage()
                              ? *curr_layer->GetImage()->ComputedCSSValue(
-                                   style, allow_visited_style)
+                                   style, allow_visited_style, value_phase)
                              : *CSSIdentifierValue::Create(CSSValueID::kNone));
     before_slash->Append(*ValueForFillRepeat(curr_layer));
     before_slash->Append(*CSSIdentifierValue::Create(curr_layer->Attachment()));
@@ -446,7 +447,8 @@ const CSSValueList* ComputedStyleUtils::ValuesForMaskShorthand(
     const StylePropertyShorthand&,
     const ComputedStyle& style,
     const LayoutObject* layout_object,
-    bool allow_visited_style) {
+    bool allow_visited_style,
+    CSSValuePhase value_phase) {
   CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
   // Canonical order (https://drafts.fxtf.org/css-masking/#typedef-mask-layer):
   //   <mask-reference>              ||
@@ -467,8 +469,8 @@ const CSSValueList* ComputedStyleUtils::ValuesForMaskShorthand(
     CSSValueList* list = CSSValueList::CreateSpaceSeparated();
     // <mask-reference>
     if (layer->GetImage()) {
-      list->Append(
-          *layer->GetImage()->ComputedCSSValue(style, allow_visited_style));
+      list->Append(*layer->GetImage()->ComputedCSSValue(
+          style, allow_visited_style, value_phase));
     }
     // <position> [ / <bg-size> ]?
     if (layer->PositionX() !=
@@ -685,7 +687,8 @@ CSSValue* ComputedStyleUtils::ValueForNinePieceImageRepeat(
 CSSValue* ComputedStyleUtils::ValueForNinePieceImage(
     const NinePieceImage& image,
     const ComputedStyle& style,
-    bool allow_visited_style) {
+    bool allow_visited_style,
+    CSSValuePhase value_phase) {
   if (!image.HasImage()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
@@ -693,8 +696,8 @@ CSSValue* ComputedStyleUtils::ValueForNinePieceImage(
   // Image first.
   CSSValue* image_value = nullptr;
   if (image.GetImage()) {
-    image_value =
-        image.GetImage()->ComputedCSSValue(style, allow_visited_style);
+    image_value = image.GetImage()->ComputedCSSValue(style, allow_visited_style,
+                                                     value_phase);
   }
 
   // Create the image slice.
@@ -718,7 +721,8 @@ CSSValue* ComputedStyleUtils::ValueForNinePieceImage(
 CSSValue* ComputedStyleUtils::ValueForReflection(
     const StyleReflection* reflection,
     const ComputedStyle& style,
-    bool allow_visited_style) {
+    bool allow_visited_style,
+    CSSValuePhase value_phase) {
   if (!reflection) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
@@ -754,7 +758,8 @@ CSSValue* ComputedStyleUtils::ValueForReflection(
 
   return MakeGarbageCollected<cssvalue::CSSReflectValue>(
       direction, offset,
-      ValueForNinePieceImage(reflection->Mask(), style, allow_visited_style));
+      ValueForNinePieceImage(reflection->Mask(), style, allow_visited_style,
+                             value_phase));
 }
 
 CSSValue* ComputedStyleUtils::MinWidthOrMinHeightAuto(
@@ -3127,7 +3132,8 @@ CSSValueID ValueForQuoteType(const QuoteType quote_type) {
 }
 
 CSSValue* ComputedStyleUtils::ValueForContentData(const ComputedStyle& style,
-                                                  bool allow_visited_style) {
+                                                  bool allow_visited_style,
+                                                  CSSValuePhase value_phase) {
   if (style.ContentPreventsBoxGeneration()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
@@ -3156,7 +3162,8 @@ CSSValue* ComputedStyleUtils::ValueForContentData(const ComputedStyle& style,
     } else if (content_data->IsImage()) {
       const StyleImage* image = To<ImageContentData>(content_data)->GetImage();
       DCHECK(image);
-      list->Append(*image->ComputedCSSValue(style, allow_visited_style));
+      list->Append(
+          *image->ComputedCSSValue(style, allow_visited_style, value_phase));
     } else if (content_data->IsText()) {
       list->Append(*MakeGarbageCollected<CSSStringValue>(
           To<TextContentData>(content_data)->GetText()));
@@ -3234,7 +3241,8 @@ CSSValue* ComputedStyleUtils::ValueForCounterDirectives(
 
 CSSValue* ComputedStyleUtils::ValueForShape(const ComputedStyle& style,
                                             bool allow_visited_style,
-                                            ShapeValue* shape_value) {
+                                            ShapeValue* shape_value,
+                                            CSSValuePhase value_phase) {
   if (!shape_value) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
@@ -3243,8 +3251,8 @@ CSSValue* ComputedStyleUtils::ValueForShape(const ComputedStyle& style,
   }
   if (shape_value->GetType() == ShapeValue::kImage) {
     if (shape_value->GetImage()) {
-      return shape_value->GetImage()->ComputedCSSValue(style,
-                                                       allow_visited_style);
+      return shape_value->GetImage()->ComputedCSSValue(
+          style, allow_visited_style, value_phase);
     }
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }

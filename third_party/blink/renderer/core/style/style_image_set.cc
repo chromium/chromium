@@ -61,8 +61,10 @@ CSSValue* StyleImageSet::CssValue() const {
 }
 
 CSSValue* StyleImageSet::ComputedCSSValue(const ComputedStyle& style,
-                                          bool allow_visited_style) const {
-  return StyleImageComputedCSSValueBuilder(style, allow_visited_style)
+                                          bool allow_visited_style,
+                                          CSSValuePhase value_phase) const {
+  return StyleImageComputedCSSValueBuilder(style, allow_visited_style,
+                                           value_phase)
       .Build(image_set_value_);
 }
 

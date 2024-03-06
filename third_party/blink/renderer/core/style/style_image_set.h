@@ -47,7 +47,8 @@ class StyleImageSet final : public StyleImage {
 
   CSSValue* CssValue() const override;
   CSSValue* ComputedCSSValue(const ComputedStyle&,
-                             bool allow_visited_style) const override;
+                             bool allow_visited_style,
+                             CSSValuePhase value_phase) const override;
 
   WrappedImagePtr Data() const override;
 

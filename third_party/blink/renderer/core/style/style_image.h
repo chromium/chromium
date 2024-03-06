@@ -46,6 +46,7 @@ class ImageResourceContent;
 class Document;
 class ComputedStyle;
 class ImageResourceObserver;
+enum class CSSValuePhase;
 
 // A const pointer to either an ImageResource or a CSSImageGeneratorValue. It is
 // used as a handle when checking whether ImageResources and generated images
@@ -69,11 +70,13 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   // contain per-client state (like for StyleGeneratedImage.)
   virtual CSSValue* CssValue() const = 0;
 
-  // Returns a CSSValue suitable for using as part of a computed style
-  // value. This often means that any URLs have been made absolute, and similar
-  // actions described by a "Computed value" in the relevant specification.
+  // Returns a CSSValue suitable for using as part of a computed or resolved
+  // style value. This often means that any URLs have been made absolute, and
+  // similar actions described by a "Computed value" in the relevant
+  // specification.
   virtual CSSValue* ComputedCSSValue(const ComputedStyle&,
-                                     bool allow_visited_style) const = 0;
+                                     bool allow_visited_style,
+                                     CSSValuePhase value_phase) const = 0;
 
   // An Image can be provided for rendering by GetImage.
   virtual bool CanRender() const { return true; }
