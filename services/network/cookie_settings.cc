@@ -445,7 +445,15 @@ bool CookieSettings::HasSessionOnlyOrigins() const {
 
 const ContentSettingsForOneType& CookieSettings::GetContentSettings(
     ContentSettingsType type) const {
-  CHECK(IsValidType(type)) << static_cast<int>(type);
+  CHECK(IsValidType(type)) << "network::CookieSettings::GetContentSettings() "
+                              "called with invalid type "
+                           << type;
+  CHECK(absl::holds_alternative<EntryMap>(content_settings_))
+      << "network::CookieSettings::content_settings_ held an EntryIndex "
+         "instead of an EntryMap";
+  CHECK(absl::get<EntryMap>(content_settings_).contains(type))
+      << "network::CookieSettings::content_settings_ did not contain type "
+      << type;
   return absl::get<EntryMap>(content_settings_).at(type);
 }
 
