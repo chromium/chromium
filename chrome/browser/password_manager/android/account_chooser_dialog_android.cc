@@ -20,7 +20,6 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -230,8 +229,7 @@ bool AccountChooserDialogAndroid::HandleCredentialChosen(
 
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
       client_->GetDeviceAuthenticator();
-  if (password_manager_util::CanUseBiometricAuth(authenticator.get(),
-                                                 client_)) {
+  if (client_->CanUseBiometricAuthForFilling(authenticator.get())) {
     authenticator_ = std::move(authenticator);
     authenticator_->AuthenticateWithMessage(
         u"", base::BindOnce(&AccountChooserDialogAndroid::OnReauthCompleted,
