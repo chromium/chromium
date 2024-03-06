@@ -464,8 +464,13 @@ void AutocompleteResult::SortAndCull(
     matches_ = Section::GroupMatches(std::move(sections), matches_);
   } else if (use_grouping_for_non_zps) {
     PSections sections;
-    sections.push_back(
-        std::make_unique<DesktopNonZpsSection>(suggestion_groups_map_));
+    if constexpr (is_android) {
+      sections.push_back(
+          std::make_unique<AndroidTypedSection>(suggestion_groups_map_));
+    } else {
+      sections.push_back(
+          std::make_unique<DesktopNonZpsSection>(suggestion_groups_map_));
+    }
     matches_ = Section::GroupMatches(std::move(sections), matches_);
   } else {
     // Limit history cluster suggestions to 1. This has to be done before

@@ -112,6 +112,20 @@ void ZpsSection::InitFromMatches(ACMatches& matches) {
   });
 }
 
+AndroidTypedSection::AndroidTypedSection(omnibox::GroupConfigMap& group_configs)
+    : Section(
+          15,
+          {{1,  // Default match, not part of the Grouping.
+            {{omnibox::GROUP_SEARCH, {1}}, {omnibox::GROUP_OTHER_NAVS, {1}}}},
+
+           {5,  // Top section / above the keyboard.
+            {{omnibox::GROUP_SEARCH, {5}}, {omnibox::GROUP_OTHER_NAVS, {5}}}},
+
+           {9,  // Bottom section / below the keyboard.
+            {{omnibox::GROUP_SEARCH, {9}}, {omnibox::GROUP_OTHER_NAVS, {9}}}}},
+          group_configs,
+          omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {}
+
 AndroidNTPZpsSection::AndroidNTPZpsSection(
     omnibox::GroupConfigMap& group_configs)
     : ZpsSection(

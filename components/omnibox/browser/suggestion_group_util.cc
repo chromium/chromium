@@ -53,6 +53,8 @@ const GroupConfigMap& BuildDefaultGroups() {
               ? GroupConfig_RenderType_HORIZONTAL
               : GroupConfig_RenderType_DEFAULT_VERTICAL,
               IDS_OMNIBOX_HEADER_POPULAR_TOPICS)},
+        {GROUP_SEARCH, CreateGroup(SECTION_SEARCH)},
+        {GROUP_OTHER_NAVS, CreateGroup(SECTION_SEARCH)},
         // clang-format on
     };
   }

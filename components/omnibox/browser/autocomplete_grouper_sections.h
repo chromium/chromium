@@ -79,6 +79,12 @@ class ZpsSectionWithMVTiles : public ZpsSection {
   void InitFromMatches(ACMatches& matches) override;
 };
 
+// Android prefixed section for Adaptive Suggestions grouping.
+class AndroidTypedSection : public Section {
+ public:
+  explicit AndroidTypedSection(omnibox::GroupConfigMap& group_configs);
+};
+
 // Section expressing the Android ZPS limits and grouping for the NTP.
 // - up to 15 + `max_related_queries` + `max_trending_queries` suggestions
 //   total.
