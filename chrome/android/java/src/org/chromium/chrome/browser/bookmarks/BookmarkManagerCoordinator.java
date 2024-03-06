@@ -162,6 +162,10 @@ public class BookmarkManagerCoordinator
         SelectableListLayout<BookmarkId> selectableList =
                 mMainView.findViewById(R.id.selectable_list);
         mSelectableListLayout = selectableList;
+        mSelectableListLayout.initializeEmptyStateView(
+                R.drawable.bookmark_empty_state_illustration,
+                R.string.bookmark_manager_empty_state,
+                R.string.bookmark_manager_back_to_page_by_adding_bookmark);
         mSelectableListLayout.ignoreItemTypeForEmptyState(ViewType.SEARCH_BOX);
 
         ModelList modelList = new ModelList();
@@ -313,10 +317,6 @@ public class BookmarkManagerCoordinator
                 ViewType.SEARCH_BOX,
                 this::buildSearchBoxRow,
                 BookmarkSearchBoxRowViewBinder.createViewBinder());
-        mSelectableListLayout.initializeEmptyStateView(
-                R.drawable.bookmark_empty_state_illustration,
-                R.string.bookmark_manager_empty_state,
-                R.string.bookmark_manager_back_to_page_by_adding_bookmark);
 
         RecordUserAction.record("MobileBookmarkManagerOpen");
         if (!isDialogUi) {
