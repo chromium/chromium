@@ -457,9 +457,8 @@ class VIEWS_EXPORT TreeView : public View,
   // The model, may be null.
   raw_ptr<ui::TreeModel> model_ = nullptr;
 
-  // Default icons for closed/open.
-  ui::ImageModel closed_icon_;
-  ui::ImageModel open_icon_;
+  // Default folder icon.
+  ui::ImageModel folder_icon_;
 
   // Icons from the model.
   std::vector<ui::ImageModel> icons_;

@@ -95,24 +95,11 @@ TreeView::TreeView()
       drawing_provider_(std::make_unique<TreeViewDrawingProvider>()) {
   // Always focusable, even on Mac (consistent with NSOutlineView).
   SetFocusBehavior(FocusBehavior::ALWAYS);
-#if BUILDFLAG(IS_MAC)
-  constexpr bool kUseMdIcons = true;
-#else
-  constexpr bool kUseMdIcons = false;
-#endif
-  if (kUseMdIcons) {
-    closed_icon_ = open_icon_ = ui::ImageModel::FromVectorIcon(
-        vector_icons::kFolderIcon, ui::kColorIcon);
-  } else {
-    // TODO(ellyjones): if the pre-Harmony codepath goes away, merge
-    // closed_icon_ and open_icon_.
-    closed_icon_ = ui::ImageModel::FromImage(
-        ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-            IDR_FOLDER_CLOSED));
-    open_icon_ = ui::ImageModel::FromImage(
-        ui::ResourceBundle::GetSharedInstance().GetImageNamed(IDR_FOLDER_OPEN));
-  }
-  text_offset_ = closed_icon_.Size().width() + kImagePadding + kImagePadding +
+
+  folder_icon_ = ui::ImageModel::FromVectorIcon(
+      vector_icons::kFolderChromeRefreshIcon, ui::kColorIcon);
+
+  text_offset_ = folder_icon_.Size().width() + kImagePadding + kImagePadding +
                  kArrowRegionSize;
 }
 
@@ -1189,15 +1176,12 @@ void TreeView::PaintNodeIcon(gfx::Canvas* canvas,
     canvas->Translate(gfx::Vector2d(bounds.x(), 0));
     scoped_canvas.FlipIfRTL(bounds.width());
     // Now paint the icon local to that flipped region.
-    PaintRowIcon(canvas,
-                 (node->is_expanded() ? open_icon_ : closed_icon_)
-                     .Rasterize(GetColorProvider()),
-                 icon_x,
+    PaintRowIcon(canvas, folder_icon_.Rasterize(GetColorProvider()), icon_x,
                  gfx::Rect(0, bounds.y(), bounds.width(), bounds.height()));
   } else {
     const gfx::ImageSkia& icon =
         icons_[icon_index.value()].Rasterize(GetColorProvider());
-    icon_x += (open_icon_.Size().width() - icon.width()) / 2;
+    icon_x += (folder_icon_.Size().width() - icon.width()) / 2;
     if (base::i18n::IsRTL())
       icon_x = bounds.width() - icon_x - icon.width();
     PaintRowIcon(canvas, icon, icon_x, bounds);
