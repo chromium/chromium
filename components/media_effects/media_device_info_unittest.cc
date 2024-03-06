@@ -4,6 +4,8 @@
 
 #include "components/media_effects/media_device_info.h"
 
+#include <optional>
+
 #include "base/system/system_monitor.h"
 #include "base/test/test_future.h"
 #include "components/media_effects/test/fake_audio_service.h"
@@ -15,6 +17,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using media_effects::GetRealAudioDeviceCount;
+using media_effects::GetRealDefaultDeviceId;
 
 media::AudioDeviceDescription GetAudioDeviceDescription(size_t index) {
   return media::AudioDeviceDescription{
@@ -226,4 +231,32 @@ TEST_F(MediaDeviceInfoTest, Observers) {
   media_effects::MediaDeviceInfo::GetInstance()->RemoveObserver(&observer);
   AddFakeAudioDevice(3);
   AddFakeVideoDevice(3);
+}
+
+TEST(MediaDeviceInfoTestGeneral, DefaultAudioDeviceHandling) {
+  std::vector<media::AudioDeviceDescription> infos;
+  EXPECT_EQ(GetRealDefaultDeviceId(infos), std::nullopt);
+  EXPECT_EQ(GetRealAudioDeviceCount(infos), 0u);
+
+  infos.push_back(GetAudioDeviceDescription(0));
+  infos.push_back(GetAudioDeviceDescription(1));
+  infos.push_back(GetAudioDeviceDescription(2));
+  EXPECT_EQ(GetRealDefaultDeviceId(infos), std::nullopt);
+  EXPECT_EQ(GetRealAudioDeviceCount(infos), 3u);
+
+  infos.front().is_system_default = true;
+  EXPECT_EQ(GetRealDefaultDeviceId(infos), infos.front().unique_id);
+  EXPECT_EQ(GetRealAudioDeviceCount(infos), 3u);
+
+  infos.front().unique_id = media::AudioDeviceDescription::kDefaultDeviceId;
+  EXPECT_EQ(GetRealDefaultDeviceId(infos), std::nullopt);
+  EXPECT_EQ(GetRealAudioDeviceCount(infos), 2u);
+
+  infos[1].is_system_default = true;
+  EXPECT_EQ(GetRealDefaultDeviceId(infos), infos[1].unique_id);
+  EXPECT_EQ(GetRealAudioDeviceCount(infos), 2u);
+
+  infos[2].unique_id = media::AudioDeviceDescription::kCommunicationsDeviceId;
+  EXPECT_EQ(GetRealDefaultDeviceId(infos), infos[1].unique_id);
+  EXPECT_EQ(GetRealAudioDeviceCount(infos), 1u);
 }

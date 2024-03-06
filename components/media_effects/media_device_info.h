@@ -18,6 +18,10 @@ namespace media_effects {
 std::optional<std::string> GetRealDefaultDeviceId(
     const std::vector<media::AudioDeviceDescription>& infos);
 
+// Returns the real number of mics by excluding virtual devices such as default.
+size_t GetRealAudioDeviceCount(
+    const std::vector<media::AudioDeviceDescription>& infos);
+
 // This class manages a cache of device infos for currently connected audio and
 // video capture devices. It is similar to `MediaCaptureDevicesImpl` from
 // content, but it holds the media::types instead of blink::MediaStreamDevice.

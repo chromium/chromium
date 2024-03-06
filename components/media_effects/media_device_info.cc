@@ -26,6 +26,19 @@ std::optional<std::string> GetRealDefaultDeviceId(
   return std::nullopt;
 }
 
+size_t GetRealAudioDeviceCount(
+    const std::vector<media::AudioDeviceDescription>& infos) {
+  size_t device_count = 0;
+  for (const auto& info : infos) {
+    if (!media::AudioDeviceDescription::IsDefaultDevice(info.unique_id) &&
+        !media::AudioDeviceDescription::IsCommunicationsDevice(
+            info.unique_id)) {
+      ++device_count;
+    }
+  }
+  return device_count;
+}
+
 MediaDeviceInfo::MediaDeviceInfo() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (auto* monitor = base::SystemMonitor::Get(); monitor) {
