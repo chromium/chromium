@@ -48,7 +48,10 @@ template("absl_source_set") {
       if (!defined(public_configs)) {
         public_configs = []
       }
-      public_configs += [ "//third_party/abseil-cpp:absl_include_config" ]
+      public_configs += [
+        "//third_party/abseil-cpp:absl_include_config",
+        "//third_party/abseil-cpp:absl_public_cflags_cc",
+      ]
 
       if (!defined(visibility)) {
         # Within Chromium builds, restrict direct visibility of Abseil sources, so
@@ -110,7 +113,10 @@ template("absl_test") {
       if (!defined(public_configs)) {
         public_configs = []
       }
-      public_configs += [ "//third_party/abseil-cpp:absl_include_config" ]
+      public_configs += [
+        "//third_party/abseil-cpp:absl_include_config",
+        "//third_party/abseil-cpp:absl_public_cflags_cc",
+      ]
 
       visibility = [ "//third_party/abseil-cpp/:*" ]
       deps += [
