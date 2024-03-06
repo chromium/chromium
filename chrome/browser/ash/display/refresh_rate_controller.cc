@@ -13,37 +13,28 @@
 
 namespace ash {
 
-namespace {
-using GameMode = ash::ResourcedClient::GameMode;
-using DisplayStateList = display::DisplayConfigurator::DisplayStateList;
-using ModeState = DisplayPerformanceModeController::ModeState;
-}  // namespace
-
 RefreshRateController::RefreshRateController(
     display::DisplayConfigurator* display_configurator,
     PowerStatus* power_status,
     game_mode::GameModeController* game_mode_controller,
-    DisplayPerformanceModeController* display_performance_mode_controller,
     bool force_throttle)
     : display_configurator_(display_configurator),
       power_status_(power_status),
-      display_performance_mode_controller_(display_performance_mode_controller),
       force_throttle_(force_throttle) {
   power_status_observer_.Observe(power_status);
   game_mode_observer_.Observe(game_mode_controller);
   display_configurator_observer_.Observe(display_configurator);
-  current_performance_mode_ =
-      display_performance_mode_controller_->AddObserver(this);
+
   // Ensure initial states are calculated.
-  UpdateStates();
+  RefreshThrottleState();
+  RefreshVrrState();
 }
 
-RefreshRateController::~RefreshRateController() {
-  display_performance_mode_controller_->RemoveObserver(this);
-}
+RefreshRateController::~RefreshRateController() = default;
 
 void RefreshRateController::OnPowerStatusChanged() {
-  UpdateStates();
+  RefreshThrottleState();
+  RefreshVrrState();
 }
 
 void RefreshRateController::OnSetGameMode(GameMode game_mode,
@@ -57,13 +48,15 @@ void RefreshRateController::OnSetGameMode(GameMode game_mode,
     borealis_window_observer_.Reset();
   }
 
-  UpdateStates();
+  RefreshThrottleState();
+  RefreshVrrState();
 }
 
 void RefreshRateController::OnWindowAddedToRootWindow(aura::Window* window) {
   DCHECK_EQ(window, borealis_window_observer_.GetSource());
   // Refresh state in case the window changed displays.
-  UpdateStates();
+  RefreshThrottleState();
+  RefreshVrrState();
 }
 
 void RefreshRateController::OnDisplayModeChanged(
@@ -98,19 +91,9 @@ void RefreshRateController::OnDisplayMetricsChanged(
       (changed_metrics & DISPLAY_METRIC_PRIMARY)) {
     // Refresh state in case the window is affected by the primary display
     // change.
-    UpdateStates();
+    RefreshThrottleState();
+    RefreshVrrState();
   }
-}
-
-void RefreshRateController::OnDisplayPerformanceModeChanged(
-    ModeState new_state) {
-  current_performance_mode_ = new_state;
-  UpdateStates();
-}
-
-void RefreshRateController::UpdateStates() {
-  RefreshThrottleState();
-  RefreshVrrState();
 }
 
 void RefreshRateController::RefreshThrottleState() {
@@ -139,8 +122,8 @@ void RefreshRateController::RefreshVrrState() {
   }
 
   // Enable VRR on the borealis-hosting display if battery saver is inactive.
-  if (borealis_window_observer_.IsObserving() &&
-      current_performance_mode_ != ModeState::kPowerSaver) {
+  const bool battery_saver_mode_enabled = power_status_->IsBatterySaverActive();
+  if (borealis_window_observer_.IsObserving() && !battery_saver_mode_enabled) {
     display_configurator_->SetVrrEnabled(
         {display::Screen::GetScreen()
              ->GetDisplayNearestWindow(borealis_window_observer_.GetSource())
@@ -156,21 +139,10 @@ RefreshRateController::GetDesiredThrottleState() {
     return display::kRefreshRateThrottleEnabled;
   }
 
-  switch (current_performance_mode_) {
-    case ModeState::kPowerSaver:
-      return display::kRefreshRateThrottleEnabled;
-    case ModeState::kHighPerformance:
-      return display::kRefreshRateThrottleDisabled;
-    case ModeState::kIntelligent:
-      return GetDynamicThrottleState();
-    default:
-      NOTREACHED();
-      return display::kRefreshRateThrottleEnabled;
+  if (power_status_->IsBatterySaverActive()) {
+    return display::kRefreshRateThrottleEnabled;
   }
-}
 
-display::RefreshRateThrottleState
-RefreshRateController::GetDynamicThrottleState() {
   // Do not throttle when Borealis is active on the internal display.
   if (borealis_window_observer_.IsObserving() &&
       display::Screen::GetScreen()

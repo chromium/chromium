@@ -37,7 +37,7 @@ class ASH_EXPORT DisplayPerformanceModeController
   // features. Users can expect that the display features will prioritize
   // power efficiency over performance. This mode is triggered by the system
   // Power Saver mode and is currently not user-configurable.
-  enum class ModeState {
+  enum ModeState {
     kHighPerformance,
     kIntelligent,
     kPowerSaver,
