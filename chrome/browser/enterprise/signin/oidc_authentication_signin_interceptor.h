@@ -67,7 +67,7 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
 
   // Intercept and kick off OIDC registration process if the tokens we received
   // are valid.
-  void MaybeInterceptOidcAuthentication(
+  virtual void MaybeInterceptOidcAuthentication(
       content::WebContents* intercepted_contents,
       ProfileManagementOicdTokens oidc_tokens,
       std::string user_email);

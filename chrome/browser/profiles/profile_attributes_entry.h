@@ -41,6 +41,10 @@ enum class NameForm {
 struct ProfileManagementOicdTokens {
   std::string auth_token;
   std::string id_token;
+
+  bool operator==(const ProfileManagementOicdTokens& other) const {
+    return auth_token == other.auth_token && id_token == other.id_token;
+  }
 };
 
 class ProfileAttributesEntry {
