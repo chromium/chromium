@@ -234,7 +234,8 @@ void TabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
     std::vector<history::mojom::TabPtr> tabs_mojom;
     const int kSampleSessionsCount = 3;
     for (int i = 0; i < kSampleSessionsCount; i++) {
-      auto session_tabs_mojom = SessionToMojom(SampleSession("", 3, 1).get());
+      auto session_tabs_mojom =
+          SessionToMojom(SampleSession("Test Session Name", 3, 1).get());
       for (auto& tab_mojom : session_tabs_mojom) {
         tabs_mojom.push_back(std::move(tab_mojom));
       }

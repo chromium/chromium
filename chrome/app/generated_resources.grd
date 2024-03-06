@@ -8530,6 +8530,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_TAB_RESUMPTION_RECENTLY_OPENED" desc="Default string text for when a tab was opened less than 60 seconds ago.">
         Recently opened
       </message>
+      <message name="IDS_NTP_MODULES_TAB_RESUMPTION_DEVICE_PREFIX" desc="Prefix for device name to be shown in various UIs.">
+        From your
+      </message>
 
       <!-- Extensions NTP Middle Slot Promo -->
       <message name="IDS_EXTENSIONS_PROMO_PERFORMANCE">
