@@ -200,22 +200,6 @@ void JsCommunicationHost::RenderFrameDeleted(
   js_to_browser_messagings_.erase(render_frame_host->GetGlobalId());
 }
 
-void JsCommunicationHost::RenderFrameHostStateChanged(
-    content::RenderFrameHost* render_frame_host,
-    content::RenderFrameHost::LifecycleState old_state,
-    content::RenderFrameHost::LifecycleState new_state) {
-  auto iter = js_to_browser_messagings_.find(render_frame_host->GetGlobalId());
-  if (iter == js_to_browser_messagings_.end())
-    return;
-
-  using LifecycleState = content::RenderFrameHost::LifecycleState;
-  if (old_state == LifecycleState::kInBackForwardCache ||
-      new_state == LifecycleState::kInBackForwardCache) {
-    for (auto& js_to_browser_messaging_ptr : iter->second)
-      js_to_browser_messaging_ptr->OnBackForwardCacheStateChanged();
-  }
-}
-
 void JsCommunicationHost::NotifyFrameForAllDocumentStartJavaScripts(
     content::RenderFrameHost* render_frame_host) {
   for (const auto& script : scripts_) {

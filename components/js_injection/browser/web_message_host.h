@@ -17,10 +17,6 @@ class WebMessageHost {
   virtual ~WebMessageHost() = default;
 
   virtual void OnPostMessage(std::unique_ptr<WebMessage> message) = 0;
-
-  // Called when the value of associated RenderFrameHost's
-  // IsInBackForwardCache() changes.
-  virtual void OnBackForwardCacheStateChanged() {}
 };
 
 }  // namespace js_injection

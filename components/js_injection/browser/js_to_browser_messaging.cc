@@ -78,11 +78,6 @@ JsToBrowserMessaging::JsToBrowserMessaging(
 
 JsToBrowserMessaging::~JsToBrowserMessaging() = default;
 
-void JsToBrowserMessaging::OnBackForwardCacheStateChanged() {
-  if (host_)
-    host_->OnBackForwardCacheStateChanged();
-}
-
 void JsToBrowserMessaging::PostMessage(
     blink::WebMessagePayload message,
     std::vector<blink::MessagePortDescriptor> ports) {
