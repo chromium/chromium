@@ -6,6 +6,7 @@
 
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 
 namespace blink {
 
@@ -41,6 +42,12 @@ webnn::mojom::blink::Operation::Tag ActivationKindToOperationKind(
 
 }  // namespace
 
+// static
+String MLActivation::ActivationKindToString(
+    webnn::mojom::blink::Activation::Tag kind) {
+  return MLOperator::OperatorKindToString(ActivationKindToOperationKind(kind));
+}
+
 MLActivation::MLActivation(MLGraphBuilder* builder,
                            webnn::mojom::blink::Activation::Tag kind,
                            const bindings::DictionaryBase* options)
@@ -48,7 +55,8 @@ MLActivation::MLActivation(MLGraphBuilder* builder,
           MakeGarbageCollected<MLOperator>(builder,
                                            ActivationKindToOperationKind(kind),
                                            /*sub_kind=*/absl::monostate{},
-                                           options)) {}
+                                           options)),
+      kind_(kind) {}
 
 MLActivation::~MLActivation() = default;
 
@@ -60,6 +68,10 @@ void MLActivation::Trace(Visitor* visitor) const {
 const MLOperator* MLActivation::Operator() const {
   DCHECK(operator_);
   return operator_.Get();
+}
+
+webnn::mojom::blink::Activation::Tag MLActivation::Kind() const {
+  return kind_;
 }
 
 }  // namespace blink

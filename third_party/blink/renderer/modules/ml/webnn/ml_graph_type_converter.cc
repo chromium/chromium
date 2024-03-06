@@ -278,40 +278,36 @@ blink_mojom::InputOperandLayout BlinkInputOperandLayoutToMojo(
 
 base::expected<ActivationPtr, String> CreateActivation(
     const OperandToIdMap& operand_to_id_map,
-    const MLOperator* ml_operator) {
-  const auto operator_kind = ml_operator->Kind();
-  switch (operator_kind) {
-    case blink_mojom::Operation::Tag::kClamp:
+    const MLActivation* ml_activation) {
+  switch (ml_activation->Kind()) {
+    case blink_mojom::Activation::Tag::kClamp:
       return blink_mojom::Activation::NewClamp(
-          CreateClamp(operand_to_id_map, ml_operator, true));
-    case blink_mojom::Operation::Tag::kElu:
+          CreateClamp(operand_to_id_map, ml_activation->Operator(), true));
+    case blink_mojom::Activation::Tag::kElu:
       return blink_mojom::Activation::NewElu(
-          CreateElu(operand_to_id_map, ml_operator, true));
-    case blink_mojom::Operation::Tag::kHardSigmoid:
-      return blink_mojom::Activation::NewHardSigmoid(
-          CreateHardSigmoid(operand_to_id_map, ml_operator, true));
-    case blink_mojom::Operation::Tag::kLeakyRelu:
+          CreateElu(operand_to_id_map, ml_activation->Operator(), true));
+    case blink_mojom::Activation::Tag::kHardSigmoid:
+      return blink_mojom::Activation::NewHardSigmoid(CreateHardSigmoid(
+          operand_to_id_map, ml_activation->Operator(), true));
+    case blink_mojom::Activation::Tag::kLeakyRelu:
       return blink_mojom::Activation::NewLeakyRelu(
-          CreateLeakyRelu(operand_to_id_map, ml_operator, true));
-    case blink_mojom::Operation::Tag::kLinear:
+          CreateLeakyRelu(operand_to_id_map, ml_activation->Operator(), true));
+    case blink_mojom::Activation::Tag::kLinear:
       return blink_mojom::Activation::NewLinear(
-          CreateLinear(operand_to_id_map, ml_operator, true));
-    case blink_mojom::Operation::Tag::kRelu:
+          CreateLinear(operand_to_id_map, ml_activation->Operator(), true));
+    case blink_mojom::Activation::Tag::kRelu:
       return blink_mojom::Activation::NewRelu(blink_mojom::Relu::New());
-    case blink_mojom::Operation::Tag::kSigmoid:
+    case blink_mojom::Activation::Tag::kSigmoid:
       return blink_mojom::Activation::NewSigmoid(blink_mojom::Sigmoid::New());
-    case blink_mojom::Operation::Tag::kSoftmax:
+    case blink_mojom::Activation::Tag::kSoftmax:
       return blink_mojom::Activation::NewSoftmax(blink_mojom::Softmax::New());
-    case blink_mojom::Operation::Tag::kSoftplus:
+    case blink_mojom::Activation::Tag::kSoftplus:
       return blink_mojom::Activation::NewSoftplus(
-          CreateSoftplus(operand_to_id_map, ml_operator, true));
-    case blink_mojom::Operation::Tag::kSoftsign:
+          CreateSoftplus(operand_to_id_map, ml_activation->Operator(), true));
+    case blink_mojom::Activation::Tag::kSoftsign:
       return blink_mojom::Activation::NewSoftsign(blink_mojom::Softsign::New());
-    case blink_mojom::Operation::Tag::kTanh:
+    case blink_mojom::Activation::Tag::kTanh:
       return blink_mojom::Activation::NewTanh(blink_mojom::Tanh::New());
-    default:
-      return base::unexpected(MLOperator::OperatorKindToString(operator_kind) +
-                              " is not converted to mojo as activation.");
   }
 }
 
@@ -368,7 +364,7 @@ base::expected<OperationPtr, String> CreateBatchNormalizationOperation(
   batch_normalization_mojo->epsilon = options->epsilon();
   if (options->hasActivation()) {
     auto activation =
-        CreateActivation(operand_to_id_map, options->activation()->Operator());
+        CreateActivation(operand_to_id_map, options->activation());
     if (activation.has_value()) {
       batch_normalization_mojo->activation = std::move(activation.value());
     } else {
@@ -545,7 +541,7 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
   // Convert `MLActivition` to `mojo::Operator` if it's configured.
   if (options->hasActivation()) {
     auto activation =
-        CreateActivation(operand_to_id_map, options->activation()->Operator());
+        CreateActivation(operand_to_id_map, options->activation());
     if (activation.has_value()) {
       conv2d_mojo->activation = std::move(activation.value());
     } else {

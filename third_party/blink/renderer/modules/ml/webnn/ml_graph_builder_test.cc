@@ -3184,12 +3184,11 @@ TEST_F(MLGraphBuilderTest, ReluTest) {
     EXPECT_THAT(relu->Options(), testing::IsNull());
   }
   {
-    // Test building relu operator.
-    auto* relu = builder->relu(scope.GetExceptionState());
+    // Test building relu activation.
+    MLActivation* relu = builder->relu(scope.GetExceptionState());
     ASSERT_THAT(relu, testing::NotNull());
     ASSERT_THAT(relu->Operator(), testing::NotNull());
-    EXPECT_EQ(relu->Operator()->Kind(),
-              webnn::mojom::blink::Operation::Tag::kRelu);
+    EXPECT_EQ(relu->Kind(), webnn::mojom::blink::Activation::Tag::kRelu);
     EXPECT_FALSE(relu->Operator()->IsConnected());
     EXPECT_THAT(relu->Operator()->Options(), testing::IsNull());
   }
@@ -4836,13 +4835,12 @@ TEST_F(MLGraphBuilderTest, ClampTest) {
               "the max value (-3.243432).");
   }
   {
-    // Test building clamp as a standalone operator.
-    auto* clamp =
+    // Test building clamp as an activation.
+    MLActivation* clamp =
         builder->clamp(MLClampOptions::Create(), scope.GetExceptionState());
     ASSERT_THAT(clamp, testing::NotNull());
     ASSERT_THAT(clamp->Operator(), testing::NotNull());
-    EXPECT_EQ(clamp->Operator()->Kind(),
-              webnn::mojom::blink::Operation::Tag::kClamp);
+    EXPECT_EQ(clamp->Kind(), webnn::mojom::blink::Activation::Tag::kClamp);
     EXPECT_FALSE(clamp->Operator()->IsConnected());
     ASSERT_THAT(clamp->Operator()->Options(), testing::NotNull());
   }
@@ -4931,12 +4929,12 @@ TEST_F(MLGraphBuilderTest, EluTest) {
               "The input data type must be one of the float32,float16 types.");
   }
   {
-    // Test building elu as a standalone operator.
-    auto* elu = builder->elu(MLEluOptions::Create(), scope.GetExceptionState());
+    // Test building elu as an activation.
+    MLActivation* elu =
+        builder->elu(MLEluOptions::Create(), scope.GetExceptionState());
     ASSERT_THAT(elu, testing::NotNull());
     ASSERT_THAT(elu->Operator(), testing::NotNull());
-    EXPECT_EQ(elu->Operator()->Kind(),
-              webnn::mojom::blink::Operation::Tag::kElu);
+    EXPECT_EQ(elu->Kind(), webnn::mojom::blink::Activation::Tag::kElu);
     EXPECT_FALSE(elu->Operator()->IsConnected());
     ASSERT_THAT(elu->Operator()->Options(), testing::NotNull());
   }
@@ -5604,13 +5602,13 @@ TEST_F(MLGraphBuilderTest, LeakyReluTest) {
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 3}));
   }
   {
-    // Test building leaky_relu as a standalone operator.
-    auto* leaky_relu = builder->leakyRelu(MLLeakyReluOptions::Create(),
-                                          scope.GetExceptionState());
+    // Test building leaky_relu as an activation.
+    MLActivation* leaky_relu = builder->leakyRelu(MLLeakyReluOptions::Create(),
+                                                  scope.GetExceptionState());
     ASSERT_THAT(leaky_relu, testing::NotNull());
     ASSERT_THAT(leaky_relu->Operator(), testing::NotNull());
-    EXPECT_EQ(leaky_relu->Operator()->Kind(),
-              webnn::mojom::blink::Operation::Tag::kLeakyRelu);
+    EXPECT_EQ(leaky_relu->Kind(),
+              webnn::mojom::blink::Activation::Tag::kLeakyRelu);
     EXPECT_FALSE(leaky_relu->Operator()->IsConnected());
     ASSERT_THAT(leaky_relu->Operator()->Options(), testing::NotNull());
   }
@@ -5660,13 +5658,12 @@ TEST_F(MLGraphBuilderTest, LinearTest) {
               "The input data type must be one of the float32,float16 types.");
   }
   {
-    // Test building linear as a standalone operator.
-    auto* linear =
+    // Test building linear as an activation.
+    MLActivation* linear =
         builder->linear(MLLinearOptions::Create(), scope.GetExceptionState());
     ASSERT_THAT(linear, testing::NotNull());
     ASSERT_THAT(linear->Operator(), testing::NotNull());
-    EXPECT_EQ(linear->Operator()->Kind(),
-              webnn::mojom::blink::Operation::Tag::kLinear);
+    EXPECT_EQ(linear->Kind(), webnn::mojom::blink::Activation::Tag::kLinear);
     EXPECT_FALSE(linear->Operator()->IsConnected());
     ASSERT_THAT(linear->Operator()->Options(), testing::NotNull());
   }
@@ -5923,12 +5920,12 @@ TEST_F(MLGraphBuilderTest, SoftSignTest) {
               "The input data type must be one of the float32,float16 types.");
   }
   {
-    // Test building softsign operator.
-    auto* softsign = builder->softsign(scope.GetExceptionState());
+    // Test building softsign activation.
+    MLActivation* softsign = builder->softsign(scope.GetExceptionState());
     ASSERT_THAT(softsign, testing::NotNull());
     ASSERT_THAT(softsign->Operator(), testing::NotNull());
-    EXPECT_EQ(softsign->Operator()->Kind(),
-              webnn::mojom::blink::Operation::Tag::kSoftsign);
+    EXPECT_EQ(softsign->Kind(),
+              webnn::mojom::blink::Activation::Tag::kSoftsign);
     EXPECT_FALSE(softsign->Operator()->IsConnected());
     EXPECT_THAT(softsign->Operator()->Options(), testing::IsNull());
   }
@@ -5970,12 +5967,11 @@ TEST_F(MLGraphBuilderTest, SigmoidTest) {
               "The input data type must be one of the float32,float16 types.");
   }
   {
-    // Test building sigmoid operator.
-    auto* sigmoid = builder->sigmoid(scope.GetExceptionState());
+    // Test building sigmoid activation.
+    MLActivation* sigmoid = builder->sigmoid(scope.GetExceptionState());
     ASSERT_THAT(sigmoid, testing::NotNull());
     ASSERT_THAT(sigmoid->Operator(), testing::NotNull());
-    EXPECT_EQ(sigmoid->Operator()->Kind(),
-              webnn::mojom::blink::Operation::Tag::kSigmoid);
+    EXPECT_EQ(sigmoid->Kind(), webnn::mojom::blink::Activation::Tag::kSigmoid);
     EXPECT_FALSE(sigmoid->Operator()->IsConnected());
     EXPECT_THAT(sigmoid->Operator()->Options(), testing::IsNull());
   }
@@ -6307,12 +6303,11 @@ TEST_F(MLGraphBuilderTest, TanhTest) {
               "The input data type must be one of the float32,float16 types.");
   }
   {
-    // Test building tanh operator.
-    auto* tanh = builder->tanh(scope.GetExceptionState());
+    // Test building tanh activation.
+    MLActivation* tanh = builder->tanh(scope.GetExceptionState());
     ASSERT_THAT(tanh, testing::NotNull());
     ASSERT_THAT(tanh->Operator(), testing::NotNull());
-    EXPECT_EQ(tanh->Operator()->Kind(),
-              webnn::mojom::blink::Operation::Tag::kTanh);
+    EXPECT_EQ(tanh->Kind(), webnn::mojom::blink::Activation::Tag::kTanh);
     EXPECT_FALSE(tanh->Operator()->IsConnected());
     EXPECT_THAT(tanh->Operator()->Options(), testing::IsNull());
   }

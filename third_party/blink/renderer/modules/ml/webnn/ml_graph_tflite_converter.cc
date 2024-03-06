@@ -210,22 +210,27 @@ GetActivationTypeForClamp(const MLOperator* clamp) {
 base::expected<tflite::ActivationFunctionType, String>
 GetActivationFunctionType(const MLActivation* ml_activation) {
   CHECK(ml_activation);
-  const MLOperator* op = ml_activation->Operator();
-  CHECK(op);
-  // TODO: crbug.com/325598628 - Activations should use
-  // webnn::mojom::blink::Activation rather than
-  // webnn::mojom::blink::Operation.
-  switch (op->Kind()) {
-    case webnn::mojom::blink::Operation::Tag::kClamp: {
-      const auto activation_result = GetActivationTypeForClamp(op);
+  switch (ml_activation->Kind()) {
+    case webnn::mojom::blink::Activation::Tag::kClamp: {
+      const auto activation_result =
+          GetActivationTypeForClamp(ml_activation->Operator());
       RETURN_IF_ERROR(activation_result);
       return activation_result.value();
     }
-    case webnn::mojom::blink::Operation::Tag::kRelu:
+    case webnn::mojom::blink::Activation::Tag::kRelu:
       return tflite::ActivationFunctionType_RELU;
-    default:
-      return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
-                              " activation is not supported.");
+    case webnn::mojom::blink::Activation::Tag::kElu:
+    case webnn::mojom::blink::Activation::Tag::kHardSigmoid:
+    case webnn::mojom::blink::Activation::Tag::kLeakyRelu:
+    case webnn::mojom::blink::Activation::Tag::kLinear:
+    case webnn::mojom::blink::Activation::Tag::kSigmoid:
+    case webnn::mojom::blink::Activation::Tag::kSoftmax:
+    case webnn::mojom::blink::Activation::Tag::kSoftplus:
+    case webnn::mojom::blink::Activation::Tag::kSoftsign:
+    case webnn::mojom::blink::Activation::Tag::kTanh:
+      return base::unexpected(
+          MLActivation::ActivationKindToString(ml_activation->Kind()) +
+          " activation is not supported.");
   }
 }
 

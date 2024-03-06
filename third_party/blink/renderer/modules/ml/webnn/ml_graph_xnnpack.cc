@@ -564,6 +564,8 @@ struct XnnOutputRange {
 };
 
 // Helper to get XNNPACK Node output value range for WebNN activation operators.
+//
+// TODO: crbug.com/325598628 - This should take an MLActivation.
 XnnOutputRange GetXnnOutputRangeForActivation(const MLOperator* ml_operator) {
   DCHECK(ml_operator);
   XnnOutputRange output_range;
@@ -739,16 +741,24 @@ xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
   XnnOutputRange output_range{.min = -std::numeric_limits<float>::infinity(),
                               .max = +std::numeric_limits<float>::infinity()};
   if (options->hasActivation()) {
-    switch (options->activation()->Operator()->Kind()) {
-      case webnn::mojom::blink::Operation::Tag::kClamp:
-      case webnn::mojom::blink::Operation::Tag::kRelu:
+    switch (options->activation()->Kind()) {
+      case webnn::mojom::blink::Activation::Tag::kClamp:
+      case webnn::mojom::blink::Activation::Tag::kRelu:
         output_range =
             GetXnnOutputRangeForActivation(options->activation()->Operator());
         break;
-      default:
+      case webnn::mojom::blink::Activation::Tag::kElu:
+      case webnn::mojom::blink::Activation::Tag::kHardSigmoid:
+      case webnn::mojom::blink::Activation::Tag::kLeakyRelu:
+      case webnn::mojom::blink::Activation::Tag::kLinear:
+      case webnn::mojom::blink::Activation::Tag::kSigmoid:
+      case webnn::mojom::blink::Activation::Tag::kSoftmax:
+      case webnn::mojom::blink::Activation::Tag::kSoftplus:
+      case webnn::mojom::blink::Activation::Tag::kSoftsign:
+      case webnn::mojom::blink::Activation::Tag::kTanh:
         error_message = "The fused operator (" +
-                        MLOperator::OperatorKindToString(
-                            options->activation()->Operator()->Kind()) +
+                        MLActivation::ActivationKindToString(
+                            options->activation()->Kind()) +
                         ") is not supported by conv2d.";
         return xnn_status_unsupported_parameter;
     }
@@ -886,18 +896,26 @@ xnn_status DefineXnnNodeForConvTranspose2d(
   XnnOutputRange output_range{.min = -std::numeric_limits<float>::infinity(),
                               .max = +std::numeric_limits<float>::infinity()};
   if (options->hasActivation()) {
-    switch (options->activation()->Operator()->Kind()) {
-      case webnn::mojom::blink::Operation::Tag::kClamp:
-      case webnn::mojom::blink::Operation::Tag::kRelu:
+    switch (options->activation()->Kind()) {
+      case webnn::mojom::blink::Activation::Tag::kClamp:
+      case webnn::mojom::blink::Activation::Tag::kRelu:
         output_range =
             GetXnnOutputRangeForActivation(options->activation()->Operator());
         break;
-      default:
+      case webnn::mojom::blink::Activation::Tag::kElu:
+      case webnn::mojom::blink::Activation::Tag::kHardSigmoid:
+      case webnn::mojom::blink::Activation::Tag::kLeakyRelu:
+      case webnn::mojom::blink::Activation::Tag::kLinear:
+      case webnn::mojom::blink::Activation::Tag::kSigmoid:
+      case webnn::mojom::blink::Activation::Tag::kSoftmax:
+      case webnn::mojom::blink::Activation::Tag::kSoftplus:
+      case webnn::mojom::blink::Activation::Tag::kSoftsign:
+      case webnn::mojom::blink::Activation::Tag::kTanh:
         // TODO(crbug.com/1273291): Support other fused operators by standalone
         // XNNPACK operators.
         error_message = "The fused operator (" +
-                        MLOperator::OperatorKindToString(
-                            options->activation()->Operator()->Kind()) +
+                        MLActivation::ActivationKindToString(
+                            options->activation()->Kind()) +
                         ") is not supported by convTranspose2d.";
         return xnn_status_unsupported_parameter;
     }

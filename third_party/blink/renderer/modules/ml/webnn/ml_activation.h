@@ -21,6 +21,9 @@ class MODULES_EXPORT MLActivation final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static String ActivationKindToString(
+      webnn::mojom::blink::Activation::Tag kind);
+
   MLActivation(MLGraphBuilder* builder,
                webnn::mojom::blink::Activation::Tag kind,
                const bindings::DictionaryBase* options = nullptr);
@@ -32,11 +35,23 @@ class MODULES_EXPORT MLActivation final : public ScriptWrappable {
 
   void Trace(Visitor* visitor) const override;
 
+  // Note: prefer to use `Kind()` below to check the type of this instance,
+  // rather than Operator()->Kind().
   const MLOperator* Operator() const;
+
+  webnn::mojom::blink::Activation::Tag Kind() const;
 
  private:
   // The `operator_` is immutable and always valid.
+  //
+  // TODO: crbug.com/325598628 - Consider removing this in favor of a mojom
+  // Activation struct member.
   const Member<const MLOperator> operator_;
+
+  // TODO: crbug.com/325598628 - Consider replacing this with a mojom Activation
+  // struct. Only the tag is used for now for the sake of keeping changes
+  // incremental.
+  const webnn::mojom::blink::Activation::Tag kind_;
 };
 
 }  // namespace blink
