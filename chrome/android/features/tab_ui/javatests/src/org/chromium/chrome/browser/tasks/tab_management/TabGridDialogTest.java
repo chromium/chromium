@@ -34,6 +34,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -51,6 +52,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.f
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getSwipeToDismissAction;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getTabSwitcherAncestorId;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.leaveTabSwitcher;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllIncognitoTabsToAGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.prepareTabsWithThumbnail;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyAllTabsHaveThumbnail;
@@ -1586,6 +1588,54 @@ public class TabGridDialogTest {
 
             openDialogFromStripAndVerify(cta, 4, null);
         }
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
+    public void testDataSharing() {
+        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        // Create a tab group.
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Open dialog from tab switcher and verify dialog is showing data sharing bar.
+        openDialogFromTabSwitcherAndVerifyDataSharing(cta, true);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
+    public void testDataSharingIncognitoMode() {
+        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        // Create an incognito tab group.
+        createTabs(cta, true, 2);
+        enterTabSwitcher(cta);
+        mergeAllIncognitoTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Open dialog from tab switcher and verify dialog is not showing data sharing bar.
+        openDialogFromTabSwitcherAndVerifyDataSharing(cta, false);
+    }
+
+    private void openDialogFromTabSwitcherAndVerifyDataSharing(
+            ChromeTabbedActivity cta, boolean shouldShow) {
+        clickFirstCardFromTabSwitcher(cta);
+        onView(
+                        allOf(
+                                withId(R.id.dialog_data_sharing_group_bar),
+                                withParent(withId(R.id.dialog_container_view))))
+                .check(
+                        (v, noMatchException) -> {
+                            if (!shouldShow) {
+                                assertNotNull(noMatchException);
+                            } else {
+                                assertNotNull(v);
+                                assertEquals(v.getVisibility(), View.VISIBLE);
+                            }
+                        });
     }
 
     private void openDialogFromTabSwitcherAndVerify(
