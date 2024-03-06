@@ -338,7 +338,7 @@ export async function testPlayFilesAddedDuringScanningMyFiles() {
   // Dispatch an action to read children of MyFiles. At this moment, the
   // UiChildren of MyFiles is empty so no `StaticReader` will be added to
   // MyFiles.
-  store.dispatch(readSubDirectories(myFilesEntryInStore));
+  store.dispatch(readSubDirectories(myFilesEntryInStore.toURL()));
 
   // Dispatch an action to add an ui entry at the same time.
   const playFilesUiEntry = new GuestOsPlaceholder(

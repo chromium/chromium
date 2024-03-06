@@ -1109,8 +1109,8 @@ export class FileManager {
     if (isNewDirectoryTreeEnabled()) {
       const treeContainer = directoryTree.parentElement!;
       directoryTree.remove();
-      const directoryTreeContainer = new DirectoryTreeContainer(
-          treeContainer, this.directoryModel_, this.volumeManager_);
+      const directoryTreeContainer =
+          new DirectoryTreeContainer(treeContainer, this.directoryModel_);
       this.ui_.initDirectoryTree(directoryTreeContainer);
     } else {
       const fakeEntriesVisible =

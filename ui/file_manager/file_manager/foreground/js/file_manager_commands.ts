@@ -343,15 +343,16 @@ export class NewFolderCommand extends FilesCommand {
                 if (executedFromDirectoryTree) {
                   const directoryTree = fileManager.ui.directoryTree;
                   if (isXfTree(directoryTree)) {
+                    const parentFileKey = directoryEntry.toURL();
                     // After new directory is created on parent directory, we
                     // need to expand it otherwise the new child item won't
                     // show, and also trigger a re-scan for the parent
                     // directory.
                     getStore().dispatch(updateFileData({
-                      key: directoryEntry.toURL(),
+                      key: parentFileKey,
                       partialFileData: {expanded: true},
                     }));
-                    getStore().dispatch(readSubDirectories(directoryEntry));
+                    getStore().dispatch(readSubDirectories(parentFileKey));
                     fileManager.ui.directoryTreeContainer
                         ?.renameItemWithKeyWhenRendered(newDirectory.toURL());
                   } else {

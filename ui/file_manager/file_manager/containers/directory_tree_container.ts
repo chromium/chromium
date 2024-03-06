@@ -5,11 +5,8 @@
 import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {isRTL} from 'chrome://resources/ash/common/util.js';
 
-import type {VolumeManager} from '../background/js/volume_manager.js';
 import {maybeShowTooltip} from '../common/js/dom_utils.js';
-import {isEntryInsideDrive, isFileDataScannalble, isGrandRootEntryInDrives, isMyFilesFileData, isOneDrive, isOneDriveId, isTrashFileData, shouldSupportDriveSpecificIcons} from '../common/js/entry_utils.js';
-import type {EntryList} from '../common/js/files_app_entry_types.js';
-import {VolumeEntry} from '../common/js/files_app_entry_types.js';
+import {canHaveSubDirectories, isEntryInsideDrive, isGrandRootEntryInDrives, isMyFilesFileData, isOneDrive, isOneDriveId, isTrashFileData, shouldSupportDriveSpecificIcons} from '../common/js/entry_utils.js';
 import {vmTypeToIconName} from '../common/js/icon_util.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/translations.js';
@@ -25,7 +22,7 @@ import {refreshNavigationRoots} from '../state/ducks/navigation.js';
 import {clearSearch} from '../state/ducks/search.js';
 import {driveRootEntryListKey} from '../state/ducks/volumes.js';
 import {type AndroidApp, type CurrentDirectory, EntryType, type FileData, type FileKey, type NavigationKey, type NavigationRoot, NavigationType, PropStatus, SearchLocation, type State} from '../state/state.js';
-import {getEntry, getFileData, getStore, getVolume, type Store} from '../state/store.js';
+import {getFileData, getStore, getVolume, type Store} from '../state/store.js';
 import {type TreeSelectedChangedEvent, XfTree} from '../widgets/xf_tree.js';
 import {type TreeItemCollapsedEvent, type TreeItemExpandedEvent, XfTreeItem} from '../widgets/xf_tree_item.js';
 
@@ -72,7 +69,7 @@ export class DirectoryTreeContainer {
    * (e.g. "New folder" command), we store the entry key here in order to attach
    * the rename input to the tree item when it's rendered.
    */
-  private entryKeyToRename_: FileKey|null = null;
+  private fileKeyToRename_: FileKey|null = null;
 
   /**
    * Mark the tree item with a specific entry key as to be focused. When we need
@@ -81,7 +78,7 @@ export class DirectoryTreeContainer {
    * store the entry key here in order to focus the tree item when it's
    * rendered.
    */
-  private entryKeyToFocus_: FileKey|null = null;
+  private fileKeyToFocus_: FileKey|null = null;
 
   /**
    * Deletion of the currently selected item can trigger the selection change
@@ -99,7 +96,7 @@ export class DirectoryTreeContainer {
    * or other operations), we need this variable to see if we need to trigger
    * another read-sub-directories call or not.
    */
-  private entryKeyToSelect_: FileKey|null = null;
+  private fileKeyToSelect_: FileKey|null = null;
 
   private store_: Store;
 
@@ -131,9 +128,7 @@ export class DirectoryTreeContainer {
   /** Android apps data from the store. */
   private androidApps_: State['androidApps']|null = null;
 
-  constructor(
-      container: HTMLElement, private directoryModel_: DirectoryModel,
-      private volumeManager_: VolumeManager) {
+  constructor(container: HTMLElement, private directoryModel_: DirectoryModel) {
     this.tree.id = 'directory-tree';
     container.appendChild(this.tree);
 
@@ -220,12 +215,12 @@ export class DirectoryTreeContainer {
     }
   }
 
-  renameItemWithKeyWhenRendered(entryKey: FileKey) {
-    this.entryKeyToRename_ = entryKey;
+  renameItemWithKeyWhenRendered(fileKey: FileKey) {
+    this.fileKeyToRename_ = fileKey;
   }
 
-  focusItemWithKeyWhenRendered(entryKey: FileKey) {
-    this.entryKeyToFocus_ = entryKey;
+  focusItemWithKeyWhenRendered(fileKey: FileKey) {
+    this.fileKeyToFocus_ = fileKey;
   }
 
   private renderRoots_(newRoots: NavigationRoot[]) {
@@ -298,13 +293,13 @@ export class DirectoryTreeContainer {
       }
       // For newly rendered items, check if they are the next item to
       // focus.
-      if (this.entryKeyToFocus_ === navigationRoot.key) {
+      if (this.fileKeyToFocus_ === navigationRoot.key) {
         // Item with entry to focus is rendered for the first time (e.g. right
         // after rename finishes), focus on it.
-        this.entryKeyToFocus_ = null;
+        this.fileKeyToFocus_ = null;
         this.restoreFocus_(navigationRootItem, /* isExisting= */ false);
       }
-      // No need to handle `entryKeyToRename_` here, because it's not allowed to
+      // No need to handle `fileKeyToRename_` here, because it's not allowed to
       // create a new folder in the directory tree root.
 
       if (!isAndroidApp) {
@@ -447,16 +442,16 @@ export class DirectoryTreeContainer {
         }
         // For newly rendered items, check if they are the next item to
         // rename/focus.
-        if (this.entryKeyToFocus_ === childKey) {
+        if (this.fileKeyToFocus_ === childKey) {
           // Item with entry to focus is rendered for the first time (e.g. right
           // after rename finishes), focus on it.
-          this.entryKeyToFocus_ = null;
+          this.fileKeyToFocus_ = null;
           this.restoreFocus_(navigationItem, /* isExisting= */ false);
         }
-        if (this.entryKeyToRename_ === childKey) {
+        if (this.fileKeyToRename_ === childKey) {
           // Item with entry to rename is rendered for the first time (e.g. "New
           // folder" case), attach the rename input here.
-          this.entryKeyToRename_ = null;
+          this.fileKeyToRename_ = null;
           this.attachRename_(navigationItem);
         }
 
@@ -718,7 +713,7 @@ export class DirectoryTreeContainer {
 
     // Read child entries.
     this.store_.dispatch(
-        readSubDirectories(fileData.entry, /* recursive= */ true, metricName));
+        readSubDirectories(fileData.key, /* recursive= */ true, metricName));
   }
 
   /** Handler for navigation item collapsed. */
@@ -817,7 +812,7 @@ export class DirectoryTreeContainer {
       if (!fileData) {
         continue;
       }
-      if (!isFileDataScannalble(fileData)) {
+      if (!canHaveSubDirectories(fileData)) {
         continue;
       }
       if (shouldDelayLoadingChildren(fileData, this.store_.getState()) &&
@@ -825,7 +820,7 @@ export class DirectoryTreeContainer {
         continue;
       }
       this.store_.dispatch(
-          readSubDirectories(fileData.entry, /* recursive= */ true));
+          readSubDirectories(fileData.key, /* recursive= */ true));
     }
     this.store_.endBatchUpdate();
   }
@@ -1013,12 +1008,9 @@ export class DirectoryTreeContainer {
             // For grand root related changes, we need to re-read child
             // entries from the fake drive root level, because the grand root
             // might be show/hide based on if they have children or not.
-            const driveRootEntry =
-                getEntry(this.store_.getState(), driveRootEntryListKey)! as
-                EntryList;
-            this.store_.dispatch(readSubDirectories(driveRootEntry));
+            this.store_.dispatch(readSubDirectories(driveRootEntryListKey));
           } else {
-            this.store_.dispatch(readSubDirectories(entry));
+            this.store_.dispatch(readSubDirectories(entry.toURL()));
           }
         },
         () => {
@@ -1027,29 +1019,23 @@ export class DirectoryTreeContainer {
           // in this case.
           entry.getParent(
               (parentEntry) => {
-                this.store_.dispatch(readSubDirectories(parentEntry));
+                this.store_.dispatch(readSubDirectories(parentEntry.toURL()));
               },
               () => {
                 // If it fails to get parent, update the subtree by volume.
                 // e.g. /a/b is deleted while watching /a/b/c. getParent of
                 // /a/b/c fails in this case. We falls back to volume update.
-                //
-                // TODO(yawano): Try to get parent path also in this case by
-                // manipulating path string.
-
-                const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
-                if (!volumeInfo) {
+                const state = this.store_.getState();
+                const fileData = getFileData(state, entry.toURL());
+                const volumeId = fileData?.volumeId;
+                if (!volumeId) {
                   return;
                 }
                 for (const root of this.navigationRoots_) {
-                  if (root.type !== NavigationType.VOLUME) {
-                    continue;
-                  }
                   const {fileData} = this.navigationRootMap_.get(root.key)!;
-                  if (fileData && fileData.entry instanceof VolumeEntry &&
-                      fileData.entry.volumeInfo === volumeInfo) {
+                  if (fileData?.volumeId === volumeId) {
                     this.store_.dispatch(readSubDirectories(
-                        fileData.entry, /* recursive= */ true));
+                        fileData.key, /* recursive= */ true));
                   }
                 }
               });
@@ -1160,9 +1146,9 @@ export class DirectoryTreeContainer {
     if (navigationData) {
       const element = navigationData.element;
       if (element && !element.selected) {
-        // Reset entryKeyToSelect_ because we already find the element which
+        // Reset fileKeyToSelect_ because we already find the element which
         // represents current directory.
-        this.entryKeyToSelect_ = null;
+        this.fileKeyToSelect_ = null;
         element.selected = true;
         if (this.shouldFocusOnNextSelectedItem_) {
           this.shouldFocusOnNextSelectedItem_ = false;
@@ -1178,7 +1164,7 @@ export class DirectoryTreeContainer {
     // tree, we need to read sub directory from the root recursively until we
     // find the targeted current directory.
 
-    if (this.entryKeyToSelect_ === currentDirectoryKey) {
+    if (this.fileKeyToSelect_ === currentDirectoryKey) {
       // Do nothing because we already started a reading call to find this exact
       // same "current directory" (see logic below.)
       return;
@@ -1190,7 +1176,7 @@ export class DirectoryTreeContainer {
     // should be selected in the tree.
     this.tree.selectedItem = null;
 
-    this.entryKeyToSelect_ = currentDirectoryKey;
+    this.fileKeyToSelect_ = currentDirectoryKey;
     const pathEntryKeys =
         currentDirectory.pathComponents.map(pathComponent => pathComponent.key);
     this.store_.dispatch(traverseAndExpandPathEntries(pathEntryKeys));

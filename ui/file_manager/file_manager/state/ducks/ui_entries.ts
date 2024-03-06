@@ -88,7 +88,7 @@ export async function*
       const {myFilesEntry: updatedMyFiles} = getMyFiles(getStore().getState());
       // Trigger a re-scan for MyFiles to make FileData.children in the store
       // has this newly added children.
-      for await (const action of readSubDirectories(updatedMyFiles)) {
+      for await (const action of readSubDirectories(updatedMyFiles.toURL())) {
         yield action;
       }
       return;
@@ -142,7 +142,7 @@ export async function* removeUiEntry(key: FileKey): ActionsProducerGen {
       myFilesEntry.removeChildEntry(entry);
       // Trigger a re-scan for MyFiles to make FileData.children in the store
       // removes this children.
-      for await (const action of readSubDirectories(myFilesEntry)) {
+      for await (const action of readSubDirectories(myFilesEntry.toURL())) {
         yield action;
       }
     }

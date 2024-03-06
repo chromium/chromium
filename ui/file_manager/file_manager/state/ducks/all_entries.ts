@@ -5,7 +5,7 @@
 import type {EntryLocation} from '../../background/js/entry_location_impl.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {getParentEntry} from '../../common/js/api.js';
-import {isDriveRootEntryList, isEntryInsideDrive, isEntryScannable, isEntrySupportUiChildren, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, readEntries, shouldSupportDriveSpecificIcons, sortEntries} from '../../common/js/entry_utils.js';
+import {canHaveSubDirectories, isDriveRootEntryList, isEntryInsideDrive, isEntryScannable, isEntrySupportUiChildren, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, readEntries, shouldSupportDriveSpecificIcons, sortEntries} from '../../common/js/entry_utils.js';
 import {getIcon} from '../../common/js/file_type.js';
 import type {FilesAppDirEntry, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
@@ -18,7 +18,7 @@ import type {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import type {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {isDebugStoreEnabled, Slice} from '../../lib/base_store.js';
 import {keepLatest, keyedKeepLatest} from '../../lib/concurrency_models.js';
-import {type CurrentDirectory, DialogType, EntryType, type FileData, type State, type Volume, type VolumeMap} from '../../state/state.js';
+import {type CurrentDirectory, EntryType, type FileData, type State, type Volume, type VolumeMap} from '../../state/state.js';
 import type {FileKey} from '../file_key.js';
 import {getEntry, getFileData, getStore, getVolume} from '../store.js';
 
@@ -533,9 +533,16 @@ function addChildEntriesReducer(currentState: State, payload: {
  */
 export async function*
     readSubDirectoriesInternal(
-        entry: Entry|FilesAppEntry|null, recursive: boolean = false,
+        fileKey: FileKey, recursive: boolean = false,
         metricNameForTracking: string = ''): ActionsProducerGen {
-  if (!isEntryScannable(entry)) {
+  let state = getStore().getState();
+  let fileData = getFileData(state, fileKey);
+  if (!fileData) {
+    console.debug(`failed to find FileData for ${fileKey}`);
+    console.warn(`readSubDirectoriesInternal: failed to find FileData`);
+    return;
+  }
+  if (!canHaveSubDirectories(fileData)) {
     return;
   }
 
@@ -545,27 +552,34 @@ export async function*
   }
 
   const childEntriesToReadDeeper: Array<Entry|FilesAppEntry> = [];
-  if (isDriveRootEntryList(entry)) {
+  const entry = fileData.entry;
+  if (fileKey === driveRootEntryListKey) {
+    if (!isDriveRootEntryList(entry)) {
+      console.warn(
+          `ERROR: ${fileKey} didn't return a EntryList from the Store`);
+      return;
+    }
     for await (const action of readSubDirectoriesForDriveRootEntryList(entry)) {
       yield action;
       if (action) {
         childEntriesToReadDeeper.push(...action.payload.entries);
       }
     }
-  } else {
+  } else if (entry && isEntryScannable(entry)) {
     const childEntries = await readChildEntriesByFullScan(entry);
     // Only dispatch directories.
     const subDirectories =
         childEntries.filter(childEntry => childEntry.isDirectory);
-    yield addChildEntries({parentKey: entry.toURL(), entries: subDirectories});
+    yield addChildEntries({parentKey: fileKey, entries: subDirectories});
     childEntriesToReadDeeper.push(...subDirectories);
     // Fetch metadata if the entry supports Drive specific share icon.
-    const state = getStore().getState();
-    const parentFileData = getFileData(state, entry.toURL());
+    state = getStore().getState();
+    const parentFileData = getFileData(state, fileKey);
     if (parentFileData && isEntryInsideDrive(parentFileData)) {
       const entriesNeedMetadata = subDirectories.filter(subDirectory => {
-        const fileData = getFileData(state, subDirectory.toURL());
-        return fileData && shouldSupportDriveSpecificIcons(fileData);
+        const subDirFileData = getFileData(state, subDirectory.toURL());
+        return subDirFileData &&
+            shouldSupportDriveSpecificIcons(subDirFileData);
       });
       if (entriesNeedMetadata.length > 0) {
         window.fileManager.metadataModel.get(entriesNeedMetadata, [
@@ -574,6 +588,9 @@ export async function*
         ]);
       }
     }
+  } else {
+    // TODO(b/327534506): Add support for Materialize Views.
+    console.warn(`readSubDirectories not supported for ${fileKey}`);
   }
 
   // Track time for reading sub directories if metric for tracking is passed.
@@ -582,33 +599,45 @@ export async function*
   }
 
   // Read sub directories for children when recursive is true.
-  if (recursive) {
+  if (!recursive) {
+    return;
+  }
+
+  // Refresh the fileData from the store because it might have changed during
+  // the async operations above.
+  state = getStore().getState();
+  fileData = getFileData(state, fileKey);
+
+  // We only read deeper if the parent entry is expanded in the tree.
+  if (!fileData?.expanded) {
+    return;
+  }
+
+  // Recursive scan.
+  for (const childEntry of childEntriesToReadDeeper) {
     const state = getStore().getState();
-    // We only read deeper if the parent entry is expanded in the tree.
-    const fileData = getFileData(state, entry.toURL());
-    if (!fileData?.expanded) {
-      return;
+    const childFileData = getFileData(state, childEntry.toURL());
+    if (!childFileData) {
+      continue;
     }
-    for (const childEntry of childEntriesToReadDeeper) {
-      const childFileData = getFileData(state, childEntry.toURL());
-      if (childFileData?.expanded) {
-        // If child item is expanded, we need to do a full scan for it.
-        for await (const action of readSubDirectories(
-            childEntry, /* recursive= */ true)) {
-          yield action;
-        }
-      } else if (childFileData?.canExpand) {
-        // If we already know the child item can be expanded, no partial scan is
-        // required.
-        continue;
-      } else {
-        // If the child item is not expanded, we do a partial scan to check if
-        // it has children or not (so we know if we need to show expand icon
-        // or not).
-        for await (const action of readSubDirectoriesToCheckDirectoryChildren(
-            childEntry)) {
-          yield action;
-        }
+
+    if (childFileData.expanded) {
+      // If child item is expanded, we need to do a full scan for it.
+      for await (const action of readSubDirectories(
+          childEntry.toURL(), /* recursive= */ true)) {
+        yield action;
+      }
+    } else if (childFileData?.canExpand) {
+      // If we already know the child item can be expanded, no partial scan is
+      // required.
+      continue;
+    } else {
+      // If the child item is not expanded, we do a partial scan to check if
+      // it has children or not (so we know if we need to show expand icon
+      // or not).
+      for await (const action of readSubDirectoriesToCheckDirectoryChildren(
+          childEntry)) {
+        yield action;
       }
     }
   }
@@ -620,18 +649,18 @@ export async function*
  */
 export const readSubDirectories = keyedKeepLatest(
     readSubDirectoriesInternal,
-    (entry, recursive?, _metricNameForTracking?) =>
-        entry ? `${entry.toURL()}${recursive ? '-recursive' : ''}` : '');
+    (fileKey, recursive?, _metricNameForTracking?) =>
+        `${fileKey}${recursive ? '-recursive' : ''}`);
 
 /**
  * Read entries for Drive root entry list (aka "Google Drive"), there are some
- * differences compared to the `readSubDirectoriesForDirectoryEntry`:
- * * We don't need to call readEntries to get its child entries. Instead, all
+ * differences compared to the `readSubDirectoriesForDirectoryEntry()`:
+ * * We don't need to call readEntries() to get its child entries. Instead, all
  * its children are from its entry.getUiChildren().
  * * For fake entries children (e.g. Shared with me and Offline), we only show
  * them based on the dialog type.
- * * For curtain children (e.g. team drives and computers grand root), we only
- * show them when there's at least one child entries inside. So we need to read
+ * * For certain children (e.g. team drives and computers grand root), we only
+ * show them when there's at least one child entry inside. So we need to read
  * their children (grand children of drive fake root) first before we can decide
  * if we need to show them or not.
  */
@@ -650,15 +679,10 @@ async function*
    */
   const filteredChildren: Array<Entry|FilesAppEntry> = [];
 
-  const isFakeEntryVisible =
-      window.fileManager.dialogType !== DialogType.SELECT_SAVEAS_FILE;
-
   for (const childEntry of driveChildren) {
     // For fake entries ("Shared with me" and "Offline").
     if (isFakeEntryInDrives(childEntry)) {
-      if (isFakeEntryVisible) {
-        filteredChildren.push(childEntry);
-      }
+      filteredChildren.push(childEntry);
       continue;
     }
     // For non grand roots (also not fake entries), we put them in the children
@@ -776,12 +800,12 @@ export async function*
   const parentDirectory = await getParentEntry(newEntry);
   // Read the children of the parent first to make sure the newly added entry
   // appears in the store.
-  for await (const action of readSubDirectories(parentDirectory)) {
+  for await (const action of readSubDirectories(parentDirectory.toURL())) {
     yield action;
   }
   // Read the children of the newly renamed entry.
-  for await (
-      const action of readSubDirectories(newEntry, /* recursive= */ true)) {
+  for await (const action of readSubDirectories(
+      newEntry.toURL(), /* recursive= */ true)) {
     yield action;
   }
 }
@@ -825,14 +849,13 @@ export async function*
     const state = getStore().getState();
     const currentEntryKey = pathEntryKeys[i]!;
     const parentEntryKey = pathEntryKeys[i - 1]!;
-    const parentEntry = getEntry(state, parentEntryKey)!;
     const parentFileData = getFileData(state, parentEntryKey)!;
     const fileData = getFileData(state, currentEntryKey);
     // Read sub directories if the child entry doesn't exist or it's not in
     // parent entry's children.
     if (!fileData || !parentFileData.children.includes(currentEntryKey)) {
       let foundCurrentEntry = false;
-      for await (const action of readSubDirectories(parentEntry)) {
+      for await (const action of readSubDirectories(parentEntryKey)) {
         yield action;
         const childEntries: Array<Entry|FilesAppEntry> =
             action?.payload.entries || [];

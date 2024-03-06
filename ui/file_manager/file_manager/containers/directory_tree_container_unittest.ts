@@ -41,11 +41,11 @@ export function setUp() {
   };
   installMockChrome(mockChrome);
   // Initialize directory tree container.
-  const {directoryModel, volumeManager} = window.fileManager;
+  const {directoryModel} = window.fileManager;
   window.store = null;
   setupStore();
   directoryTreeContainer =
-      new DirectoryTreeContainer(document.body, directoryModel, volumeManager);
+      new DirectoryTreeContainer(document.body, directoryModel);
 }
 
 export function tearDown() {

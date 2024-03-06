@@ -543,7 +543,7 @@ export async function testReadSubDirectories(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch read sub directories action producer.
-  store.dispatch(readSubDirectories(downloadsEntry));
+  store.dispatch(readSubDirectories(downloadsEntry.toURL()));
 
   // Expect store to have all its sub directories.
   const aDirEntry = fakeFs.entries['/Downloads/a']!;
@@ -594,7 +594,8 @@ export async function testReadSubDirectoriesRecursively(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch read sub directories action producer.
-  store.dispatch(readSubDirectories(downloadsEntry, /* recursive= */ true));
+  store.dispatch(
+      readSubDirectories(downloadsEntry.toURL(), /* recursive= */ true));
 
   // Expect store to have all its sub directories.
   const aDirEntry = fakeFs.entries['/Downloads/a']!;
@@ -632,7 +633,7 @@ export async function testReadSubDirectoriesWithNullEntry(done: () => void) {
   const store = setupStore();
 
   // Check reading null entry will do nothing.
-  store.dispatch(readSubDirectories(null));
+  store.dispatch(readSubDirectories(''));
 
   await waitDeepEquals(store, {}, (state) => state.allEntries);
 
@@ -653,7 +654,7 @@ export async function testReadSubDirectoriesWithNonDirectoryEntry(
       /* opt_clear= */ true);
 
   // Check reading non directory entry will do nothing.
-  store.dispatch(readSubDirectories(fakeFs.entries['/a.txt']!));
+  store.dispatch(readSubDirectories(fakeFs.entries['/a.txt']!.toURL()));
 
   await waitDeepEquals(store, {}, (state) => state.allEntries);
 
@@ -673,7 +674,7 @@ export async function testReadSubDirectoriesWithDisabledEntry(
   downloadsEntry.disabled = true;
 
   // Check reading disabled volume entry will do nothing.
-  store.dispatch(readSubDirectories(downloadsEntry));
+  store.dispatch(readSubDirectories(downloadsEntry.toURL()));
 
   await waitDeepEquals(store, {}, (state) => state.allEntries);
 
@@ -723,7 +724,7 @@ export async function testReadSubDirectoriesForFakeDriveEntry(
   const store = setupStore(initialState);
 
   // Dispatch read sub directories action producer.
-  store.dispatch(readSubDirectories(driveRootEntryList));
+  store.dispatch(readSubDirectories(driveRootEntryList.toURL()));
 
   // Expect its direct sub directories and grand sub directories of /Computers
   // should be in the store.

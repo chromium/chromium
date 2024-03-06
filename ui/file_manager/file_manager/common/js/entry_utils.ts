@@ -111,10 +111,9 @@ export function isDriveRootEntryList(entry: Entry|FilesAppEntry|
 }
 
 /**
- * Given an entry, check if it's a grand root ("Shared drives" and
- * "Computers") inside Drive.
- * Note: if the return value is true, the input entry is guaranteed to be
- * DirectoryEntry type.
+ * Given an entry, check if it's a grand root ("Shared drives" and  "Computers")
+ * inside Drive. Note: if the return value is true, the input entry is
+ * guaranteed to be DirectoryEntry type.
  */
 export function isGrandRootEntryInDrives(entry: Entry|FilesAppEntry):
     entry is DirectoryEntry {
@@ -951,7 +950,7 @@ export function isEntrySupportUiChildren(entry: FilesAppEntry|Entry):
 }
 
 /**
- * A generator version of `entry.readEntries`.
+ * A generator version of `entry.readEntries()`.
  *
  * Example usage:
  * ```
@@ -1010,10 +1009,9 @@ export function isEntryScannable(entry: Entry|FilesAppEntry|null):
 }
 
 /**
- * Check if the given fileData is scannable or not, e.g. can we call
- * `readEntries()` on it.
+ * Check if the given fileData can display sub-directories.
  */
-export function isFileDataScannalble(fileData: FileData|null) {
+export function canHaveSubDirectories(fileData: FileData|null) {
   if (!fileData) {
     return false;
   }
