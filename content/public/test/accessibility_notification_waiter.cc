@@ -143,12 +143,8 @@ bool AccessibilityNotificationWaiter::WaitForNotificationWithTimeout(
 }
 
 const ui::AXTree& AccessibilityNotificationWaiter::GetAXTree() const {
-  static base::NoDestructor<ui::AXTree> empty_tree;
-  WebContentsImpl* web_contents_impl =
-      static_cast<WebContentsImpl*>(web_contents());
-  BrowserAccessibilityManager* manager =
-      web_contents_impl->GetRootBrowserAccessibilityManager();
-  return manager && manager->ax_tree() ? *manager->ax_tree() : *empty_tree;
+  return GetAXTreeForFrame(
+      static_cast<WebContentsImpl*>(web_contents())->GetPrimaryMainFrame());
 }
 
 void AccessibilityNotificationWaiter::BindOnAccessibilityEvent(
@@ -162,8 +158,9 @@ void AccessibilityNotificationWaiter::OnAccessibilityEvent(
     RenderFrameHostImpl* rfhi,
     ax::mojom::Event event_type,
     int event_target_id) {
-  if (IsAboutBlank())
+  if (IsAboutBlank(rfhi)) {
     return;
+  }
 
   VLOG(1) << "OnAccessibilityEvent " << event_type;
 
@@ -209,8 +206,9 @@ void AccessibilityNotificationWaiter::OnGeneratedEvent(
   DCHECK_NE(event_target_id, ui::kInvalidAXNodeID);
   VLOG(1) << "OnGeneratedEvent " << event;
 
-  if (IsAboutBlank())
+  if (IsAboutBlank(/*render_frame=*/nullptr)) {
     return;
+  }
 
   if (generated_event_to_wait_for_ == event) {
     event_target_id_ = event_target_id;
@@ -224,8 +222,9 @@ void AccessibilityNotificationWaiter::OnGeneratedEvent(
 }
 
 void AccessibilityNotificationWaiter::OnLocationsChanged() {
-  if (IsAboutBlank())
+  if (IsAboutBlank(/*render_frame=*/nullptr)) {
     return;
+  }
 
   notification_received_ = true;
   loop_runner_quit_closure_.Run();
@@ -244,11 +243,24 @@ void AccessibilityNotificationWaiter::OnFocusChanged() {
   }
 }
 
-bool AccessibilityNotificationWaiter::IsAboutBlank() {
+const ui::AXTree& AccessibilityNotificationWaiter::GetAXTreeForFrame(
+    RenderFrameHostImpl* render_frame) const {
+  static base::NoDestructor<ui::AXTree> empty_tree;
+  WebContentsImpl* web_contents_impl =
+      WebContentsImpl::FromRenderFrameHostImpl(render_frame);
+  BrowserAccessibilityManager* manager =
+      web_contents_impl->GetRootBrowserAccessibilityManager();
+  return manager && manager->ax_tree() ? *manager->ax_tree() : *empty_tree;
+}
+
+bool AccessibilityNotificationWaiter::IsAboutBlank(
+    RenderFrameHostImpl* render_frame) {
   // Skip any accessibility notifications related to "about:blank",
   // to avoid a possible race condition between the test beginning
   // listening for accessibility events and "about:blank" loading.
-  return GetAXTree().data().url == url::kAboutBlankURL;
+  const auto& ax_tree =
+      render_frame ? GetAXTreeForFrame(render_frame) : GetAXTree();
+  return ax_tree.data().url == url::kAboutBlankURL;
 }
 
 // WebContentsObserver override:

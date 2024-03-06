@@ -64,7 +64,8 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   [[nodiscard]] bool WaitForNotificationWithTimeout(base::TimeDelta timeout);
 
   // After WaitForNotification has returned, this will retrieve
-  // the tree of accessibility nodes received from the renderer process.
+  // the tree of accessibility nodes received from the renderer process for
+  // the observed WebContents (not including the trees of inner WebContents).
   const ui::AXTree& GetAXTree() const;
 
   // After WaitForNotification returns, use this to retrieve the id of the
@@ -123,9 +124,15 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   // for focus changed events.
   void OnFocusChanged();
 
-  // Helper function to determine if the accessibility tree in
-  // GetAXTree() is about the page with the url "about:blank".
-  bool IsAboutBlank();
+  // Returns the tree of accessibility nodes received from renderer processes
+  // for the WebContents that owns `render_frame`. This may not be the observed
+  // WebContents, but rather an inner WebContents (e.g., for a guest view).
+  const ui::AXTree& GetAXTreeForFrame(RenderFrameHostImpl* render_frame) const;
+
+  // Returns true if the accessibility tree for the owner of `render_frame` or
+  // the observed WebContents (if `render_frame` is null) is for the url
+  // "about:blank".
+  bool IsAboutBlank(RenderFrameHostImpl* render_frame);
 
   std::optional<ax::mojom::Event> event_to_wait_for_;
   std::optional<ui::AXEventGenerator::Event> generated_event_to_wait_for_;
