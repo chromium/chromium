@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -266,6 +267,9 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
   PassFieldTrialSharedMemoryHandle(command_line(), options_ptr,
                                    files_to_register.get());
 
+  // Transfer logging switches & handles if necessary.
+  PassLoggingSwitches(options_ptr, command_line());
+
   // Launch the child process.
   Process process;
   if (BeforeLaunchOnLauncherThread(*files_to_register, options_ptr)) {
@@ -384,6 +388,22 @@ void ChildProcessLauncherHelper::ForceNormalProcessTerminationAsync(
       base::BindOnce(
           &ChildProcessLauncherHelper::ForceNormalProcessTerminationSync,
           std::move(process)));
+}
+
+void ChildProcessLauncherHelper::PassLoggingSwitches(
+    base::LaunchOptions* launch_options,
+    base::CommandLine* cmd_line) {
+  const base::CommandLine& browser_command_line =
+      *base::CommandLine::ForCurrentProcess();
+  static const char* const kForwardSwitches[] = {
+      switches::kDisableLogging,
+      switches::kEnableLogging,
+      switches::kLogFile,
+      switches::kLoggingLevel,
+      switches::kV,
+      switches::kVModule,
+  };
+  cmd_line->CopySwitchesFrom(browser_command_line, kForwardSwitches);
 }
 
 }  // namespace internal

@@ -260,6 +260,10 @@ class ChildProcessLauncherHelper
 
   void LaunchOnLauncherThread();
 
+  // Update command line and mapped handles if a log handle is being passed.
+  void PassLoggingSwitches(base::LaunchOptions* launch_options,
+                           base::CommandLine* cmd_line);
+
 #if BUILDFLAG(USE_ZYGOTE)
   // Returns the zygote handle for this particular launch, if any.
   ZygoteCommunication* GetZygoteForLaunch();

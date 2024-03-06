@@ -343,11 +343,9 @@ bool UtilityProcessHost::StartProcess() {
 #endif
       switches::kEnableBackgroundThreadPool,
       switches::kEnableExperimentalCookieFeatures,
-      switches::kEnableLogging,
       switches::kForceTextDirection,
       switches::kForceUIDirection,
       switches::kIgnoreCertificateErrors,
-      switches::kLoggingLevel,
       switches::kOverrideUseSoftwareGLForTests,
       switches::kOverrideEnabledCdmInterfaceVersion,
       switches::kProxyServer,
@@ -361,8 +359,6 @@ bool UtilityProcessHost::StartProcess() {
       switches::kUtilityStartupDialog,
       switches::kUseANGLE,
       switches::kUseGL,
-      switches::kV,
-      switches::kVModule,
       switches::kEnableExperimentalWebPlatformFeatures,
       // These flags are used by the audio service:
       switches::kAudioBufferSize,
