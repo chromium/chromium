@@ -170,6 +170,9 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       operator_offset = elementwise_result.value();
       break;
     }
+    case mojom::Operation::Tag::kSoftmax:
+      operator_offset = SerializeSoftmax(*op.get_softmax());
+      break;
     case mojom::Operation::Tag::kArgMinMax:
       return base::unexpected("argMinMax is not implemented");
     case mojom::Operation::Tag::kBatchNormalization:
@@ -216,8 +219,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("sigmoid is not implemented");
     case mojom::Operation::Tag::kSlice:
       return base::unexpected("slice is not implemented");
-    case mojom::Operation::Tag::kSoftmax:
-      return base::unexpected("softmax is not implemented");
     case mojom::Operation::Tag::kSoftplus:
       return base::unexpected("softplus is not implemented");
     case mojom::Operation::Tag::kSoftsign:
@@ -457,6 +458,23 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
       return base::unexpected(
           base::StrCat({base::ToString(op.kind), " is not implemented."}));
   }
+}
+
+auto GraphBuilder::SerializeSoftmax(const mojom::Softmax& softmax)
+    -> OperatorOffset {
+  const auto softmax_options =
+      ::tflite::CreateSoftmaxOptions(builder_, /*beta=*/1.0);
+
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_SOFTMAX);
+  const std::array<int32_t, 1> op_inputs = {
+      operand_to_index_map_.at(softmax.input_operand_id)};
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(softmax.output_operand_id)};
+  return ::tflite::CreateOperator(
+      builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
+      builder_.CreateVector<int32_t>(op_outputs),
+      ::tflite::BuiltinOptions_SoftmaxOptions, softmax_options.Union());
 }
 
 }  // namespace webnn::tflite
