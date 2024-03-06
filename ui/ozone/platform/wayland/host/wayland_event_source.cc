@@ -90,11 +90,7 @@ EventTarget* GetRootTarget(EventTarget* target) {
 }
 
 gfx::Point GetOriginInScreen(WaylandWindow* target) {
-  // The origin for located events and positions of popup windows is the window
-  // geometry.
-  // See https://crbug.com/1292486
-  gfx::Point origin = target->GetBoundsInDIP().origin() -
-                      target->GetWindowGeometryOffsetInDIP();
+  gfx::Point origin = target->GetBoundsInDIP().origin();
   auto* parent = static_cast<WaylandWindow*>(target->GetParentTarget());
   while (parent) {
     origin += parent->GetBoundsInDIP().origin().OffsetFromOrigin();
