@@ -45,6 +45,12 @@ constexpr gfx::Size kItemsContainerPreferredSize(
         pine::kItemIconBackgroundPreferredSize.height() * pine::kMaxItems +
         pine::kItemsContainerChildSpacing * (pine::kMaxItems - 1));
 
+// The width of the preview that shows the pine image while in landscape or
+// portrait orientation. The width will be fixed and then the height of the
+// preview will be calculated based on the aspect ratio of the pine image.
+constexpr int kPineImageContainerWidthLandscape = 344;
+constexpr int kPineImageContainerWidthPortrait = 384;
+
 constexpr int kButtonContainerChildSpacing = 10;
 constexpr int kContentsChildSpacing = 20;
 constexpr gfx::Insets kContentsInsets = gfx::Insets::VH(15, 15);
@@ -141,9 +147,19 @@ PineContentsView::PineContentsView() {
   } else {
     views::ImageView* preview =
         AddChildView(std::make_unique<views::ImageView>());
-    preview->SetImage(pine_contents_data->image);
-    // TODO(minch): Make this respect the aspect ratio of the screenshot.
-    preview->SetImageSize(kItemsContainerPreferredSize);
+
+    const gfx::ImageSkia& pine_image = pine_contents_data->image;
+    preview->SetImage(pine_image);
+
+    const int image_width = pine_image.width();
+    const int image_height = pine_image.height();
+    const float aspect_ratio = static_cast<float>(image_height) / image_width;
+    const int image_container_width = image_width > image_height
+                                          ? kPineImageContainerWidthLandscape
+                                          : kPineImageContainerWidthPortrait;
+    const int image_container_height = aspect_ratio * image_container_width;
+    preview->SetImageSize(
+        gfx::Size(image_container_width, image_container_height));
   }
 }
 
