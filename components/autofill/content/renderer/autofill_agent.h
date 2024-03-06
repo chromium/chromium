@@ -239,6 +239,7 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // content::RenderFrameObserver:
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
+  void DidCreateDocumentElement() override;
   void DidDispatchDOMContentLoadedEvent() override;
   void DidChangeScrollOffset() override;
   void FocusedElementChanged(const blink::WebElement& element) override;
@@ -294,6 +295,10 @@ class AutofillAgent : public content::RenderFrameObserver,
         "because AutofillAgent destructs itself asynchronously. Use "
         "unsafe_render_frame() instead and make test that it is non-nullptr.");
   }
+
+  // To be called when all forms are irretrievably gone, e.g., when a new
+  // document is loaded.
+  void Reset();
 
   // Fires Mojo messages for a given form submission.
   void FireHostSubmitEvents(const FormData& form_data,

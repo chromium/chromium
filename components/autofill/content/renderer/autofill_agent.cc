@@ -301,6 +301,16 @@ void AutofillAgent::BindPendingReceiver(
 }
 
 void AutofillAgent::DidCommitProvisionalLoad(ui::PageTransition transition) {
+  Reset();
+}
+
+void AutofillAgent::DidCreateDocumentElement() {
+  // Some navigations seem not to call DidCommitProvisionalLoad()
+  // (crbug.com/328161303).
+  Reset();
+}
+
+void AutofillAgent::Reset() {
   // Navigation to a new page or a page refresh.
   last_queried_element_ = {};
   form_cache_ =
