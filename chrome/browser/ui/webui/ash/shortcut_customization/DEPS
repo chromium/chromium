@@ -3,10 +3,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  '.*interactive_uitest\.cc': [
-    '+ash/ash_element_identifiers.h',
-  ],
-  'shortcut_customization_test_base\.h': [
+  'shortcut_customization.interactive_uitest.cc': [
     '+ash/accelerators/accelerator_lookup.h',
     '+ash/ash_element_identifiers.h',
     '+ash/public/cpp/accelerator_actions.h',
