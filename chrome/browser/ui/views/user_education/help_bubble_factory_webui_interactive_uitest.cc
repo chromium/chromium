@@ -52,17 +52,26 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadLaterWebContentsElementId);
 class ViewSizeObserver : public views::ViewObserver,
                          public ui::test::StateObserver<gfx::Size> {
  public:
-  explicit ViewSizeObserver(raw_ptr<views::View>& view) {
+  explicit ViewSizeObserver(raw_ptr<views::View>& view) : view_(view) {
     observation_.Observe(view);
+  }
+
+  // ui::test::StateObserver:
+  gfx::Size GetStateObserverInitialState() const override {
+    return view_->size();
   }
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* view) override {
     OnStateObserverStateChanged(view->size());
   }
-  void OnViewIsDeleting(views::View* view) override { observation_.Reset(); }
+  void OnViewIsDeleting(views::View* view) override {
+    view_ = nullptr;
+    observation_.Reset();
+  }
 
  private:
+  raw_ptr<views::View> view_;
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 };
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ViewSizeObserver, kSidePanelSize);
@@ -174,14 +183,8 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/328140891): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ShowFloatingHelpBubble DISABLED_ShowFloatingHelpBubble
-#else
-#define MAYBE_ShowFloatingHelpBubble ShowFloatingHelpBubble
-#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
-                       MAYBE_ShowFloatingHelpBubble) {
+                       ShowFloatingHelpBubble) {
   const DeepQuery kPathToAddCurrentTabElement{"reading-list-app",
                                               "#currentPageActionButton"};
   RunTestSequence(
@@ -284,16 +287,8 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
 }
 
 // Regression test for item (1) in crbug.com/1422875.
-// TODO(crbug.com/328140891): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden \
-  DISABLED_FloatingHelpBubbleHiddenOnWebUiHidden
-#else
-#define MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden \
-  FloatingHelpBubbleHiddenOnWebUiHidden
-#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
-                       MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden) {
+                       FloatingHelpBubbleHiddenOnWebUiHidden) {
   RunTestSequence(
       OpenReadingListSidePanel(),
       ShowHelpBubble(kAddCurrentTabToReadingListElementId),
@@ -326,14 +321,8 @@ class HelpBubbleFactoryRtlWebUIInteractiveUiTest
 // This verifies that the "element bounds updated" event gets sent when the side
 // panel is resized, even if none of the elements in the side panel are resized.
 // This is a regression test for crbug.com/1425487.
-// TODO(crbug.com/328140891): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ResizeSidePanelSendsUpdate DISABLED_ResizeSidePanelSendsUpdate
-#else
-#define MAYBE_ResizeSidePanelSendsUpdate ResizeSidePanelSendsUpdate
-#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRtlWebUIInteractiveUiTest,
-                       MAYBE_ResizeSidePanelSendsUpdate) {
+                       ResizeSidePanelSendsUpdate) {
   RunTestSequence(
       OpenReadingListSidePanel(),
       InAnyContext(
