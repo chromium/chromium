@@ -107,6 +107,10 @@ using ::chrome_test_util::ForwardButton;
 // Tests that the pull-to-refresh IPH is atttempted when user taps the omnibox
 // to reload the same page, and disappears after the user navigates away.
 - (void)testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // TODO(crbug.com/328416349): Flaky, reenable.
+    EARL_GREY_TEST_DISABLED(@"Test is flaky on iPad simulators.");
+  }
   [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSPullToRefreshFeature"];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
