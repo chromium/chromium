@@ -229,30 +229,6 @@ TEST_F(PlusAddressServiceTest, SupportsPlusAddressNoServer) {
       /*is_off_the_record=*/false));
 }
 
-// Tests for the suggestion label overrides. These tests are not in the
-// enabled/disabled fixtures as they vary parameters.
-TEST_F(PlusAddressServiceTest, SuggestionLabelOverride) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // Setting the override should result in echoing the override back.
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kFeature,
-      {{features::kEnterprisePlusAddressSuggestionLabelOverride.name,
-        "mattwashere"}});
-  PlusAddressService service;
-  EXPECT_EQ(service.GetCreateSuggestionLabel(), u"mattwashere");
-}
-
-TEST_F(PlusAddressServiceTest, LabelOverrideWithSpaces) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // Setting the override should result in echoing the override back.
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kFeature,
-      {{features::kEnterprisePlusAddressSuggestionLabelOverride.name,
-        "matt was here"}});
-  PlusAddressService service;
-  EXPECT_EQ(service.GetCreateSuggestionLabel(), u"matt was here");
-}
-
 TEST_F(PlusAddressServiceTest, NoAccountPlusAddressCreation) {
   signin::IdentityTestEnvironment identity_test_env;
   PlusAddressService service(identity_test_env.identity_manager());
@@ -906,12 +882,6 @@ TEST_F(PlusAddressServiceDisabledTest, FeatureExplicitlyDisabled) {
       /*is_off_the_record=*/false));
 }
 
-TEST_F(PlusAddressServiceDisabledTest, DisabledFeatureLabel) {
-  // Disabled feature? Show the default generic text.
-  PlusAddressService service;
-  EXPECT_EQ(service.GetCreateSuggestionLabel(), u"Lorem Ipsum");
-}
-
 class PlusAddressServiceEnabledTest : public PlusAddressServiceTest {
  public:
   void SetUp() override {
@@ -1037,12 +1007,6 @@ TEST_F(PlusAddressServiceEnabledTest, OTRWithExistingAddress) {
   service.SavePlusAddress(site, "plus@plus.plus");
 
   EXPECT_TRUE(service.SupportsPlusAddresses(site, /*is_off_the_record=*/true));
-}
-
-TEST_F(PlusAddressServiceEnabledTest, DefaultLabel) {
-  // Override not set? Show the default generic text.
-  PlusAddressService service;
-  EXPECT_EQ(service.GetCreateSuggestionLabel(), u"Lorem Ipsum");
 }
 
 TEST_F(PlusAddressServiceEnabledTest, NoIdentityServiceGetEmail) {

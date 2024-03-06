@@ -11,10 +11,6 @@ namespace plus_addresses::features {
 
 namespace {
 
-constexpr char kEnterprisePlusAddressSuggestionLabelOverrideName[] =
-    "suggestion-label";
-constexpr char kEnterprisePlusAddressSettingsLabelOverrideName[] =
-    "settings-label";
 constexpr char kEnterprisePlusAddressOAuthScopeName[] = "oauth-scope";
 constexpr char kEnterprisePlusAddressServerUrlName[] = "server-url";
 constexpr char kSyncWithEnterprisePlusAddressServerName[] = "sync-with-server";
@@ -31,14 +27,6 @@ BASE_FEATURE(kFeature,
              "PlusAddressesEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<std::string>
-    kEnterprisePlusAddressSuggestionLabelOverride{
-        &kFeature, kEnterprisePlusAddressSuggestionLabelOverrideName,
-        "Lorem Ipsum"};
-const base::FeatureParam<std::string>
-    kEnterprisePlusAddressSettingsLabelOverride{
-        &kFeature, kEnterprisePlusAddressSettingsLabelOverrideName,
-        "Lorem Ipsum"};
 const base::FeatureParam<std::string> kEnterprisePlusAddressOAuthScope{
     &kFeature, kEnterprisePlusAddressOAuthScopeName, ""};
 const base::FeatureParam<std::string> kEnterprisePlusAddressServerUrl{
