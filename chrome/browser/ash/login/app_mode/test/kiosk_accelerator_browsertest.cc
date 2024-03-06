@@ -60,7 +60,8 @@ IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, AcceleratorsDontCloseSession) {
       WebKioskAppManager::Get()->kiosk_system_session()->is_shutting_down());
 }
 
-IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, ZoomAccelerators) {
+// TODO(https://crbug.com/328386737): Fails flakily
+IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, DISABLED_ZoomAccelerators) {
   InitializeRegularOnlineKiosk();
   SelectFirstBrowser();
 
