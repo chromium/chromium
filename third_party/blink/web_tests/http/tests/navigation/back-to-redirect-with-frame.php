@@ -20,8 +20,8 @@ window.onload = function() {
     // navigations triggered before and during window.onload to replace the
     // current entry.
     setTimeout(function() {
-        window.location = "resources/go-back.html"
-    }, 0);
+        window.location = "resources/go-back.html";
+    }, 500);
 };
 </script>
 <iframe src="about:blank"></iframe>
