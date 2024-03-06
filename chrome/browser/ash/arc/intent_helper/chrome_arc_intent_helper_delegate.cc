@@ -67,7 +67,7 @@ void ChromeArcIntentHelperDelegate::UpdateLocationSettings(bool is_enabled) {
   VLOG(1) << "Update Location toggle called with value: " << is_enabled;
 
   if (auto* controller = ash::GeolocationPrivacySwitchController::Get()) {
-    controller->SetAccessLevelAsBoolean(is_enabled);
+    controller->ApplyArcLocationUpdate(is_enabled);
   } else {
     LOG(ERROR) << "GeolocationPrivacySwitchController is not available.";
   }

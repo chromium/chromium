@@ -74,14 +74,13 @@ class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
   // or apps started/stopped attempting to use geolocation).
   void UpdateNotification();
 
-  // Use this if the location permission needs to be updated, but the source of
-  // the update does only support boolean permissions (enabled/disabled). This
-  // is used for updates from ARC and browser/PWAs.
-  // In case that `geolocation_enabled=true`, the CrOS geolocation access level
-  // is set to `kAllowed`. Otherwise the access level is set to the previous
-  // state (either `kDisallowed` or `kOnlyAllowedForSystem`) that preceded the
-  // current `kAllowed`.
-  void SetAccessLevelAsBoolean(bool geolocation_enabled);
+  // Handles location change events originated from the ARC world. Enable events
+  // are directly propagated to ChromeOS. ARC doesn't trigger Disable events,
+  // but CrOS need to handle the case when user declines the confirmation dialog
+  // when they switched location from
+  // (`kDisallowed` | `kOnlyAllowedForSystem`) to `kAllowed`. In which case, we
+  // restore to the original state.
+  void ApplyArcLocationUpdate(bool geolocation_enabled);
 
  private:
   int usage_cnt_{};

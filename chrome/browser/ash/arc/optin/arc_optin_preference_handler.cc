@@ -7,6 +7,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/feature_list.h"
@@ -189,9 +190,11 @@ void ArcOptInPreferenceHandler::EnableLocationService(bool is_enabled) {
     pref_service_->SetBoolean(prefs::kArcInitialLocationSettingSyncRequired,
                               false);
     if (auto* controller = ash::GeolocationPrivacySwitchController::Get()) {
-      controller->SetAccessLevelAsBoolean(is_enabled);
+      controller->SetAccessLevel(
+          is_enabled ? ash::GeolocationAccessLevel::kAllowed
+                     : ash::GeolocationAccessLevel::kDisallowed);
     }
-    // We cal also set the value of GeoLocation Accuracy as currently they are
+    // We can also set the value of GeoLocation Accuracy as currently they are
     // in sync with Geo location.
     pref_service_->SetBoolean(ash::prefs::kUserGeolocationAccuracyEnabled,
                               is_enabled);

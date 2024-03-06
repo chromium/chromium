@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
@@ -387,7 +388,9 @@ void PrivacyHubNotificationController::
       // Geolocation notification asks user to allow geolocation for everything
       // (not only system services).
       if (auto* controller = ash::GeolocationPrivacySwitchController::Get()) {
-        controller->SetAccessLevelAsBoolean(enabled);
+        controller->SetAccessLevel(enabled
+                                       ? GeolocationAccessLevel::kAllowed
+                                       : GeolocationAccessLevel::kDisallowed);
       }
       break;
     }

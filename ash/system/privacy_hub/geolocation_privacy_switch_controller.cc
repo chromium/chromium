@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -177,7 +178,7 @@ void GeolocationPrivacySwitchController::UpdateNotification() {
       SensorDisabledNotificationDelegate::Sensor::kLocation);
 }
 
-void GeolocationPrivacySwitchController::SetAccessLevelAsBoolean(
+void GeolocationPrivacySwitchController::ApplyArcLocationUpdate(
     bool geolocation_enabled) {
   if (!features::IsCrosPrivacyHubEnabled() ||
       !features::IsCrosPrivacyHubLocationEnabled()) {
@@ -188,7 +189,7 @@ void GeolocationPrivacySwitchController::SetAccessLevelAsBoolean(
     SetAccessLevel(GeolocationAccessLevel::kAllowed);
   } else if (!geolocation_enabled &&
              AccessLevel() == ash::GeolocationAccessLevel::kAllowed) {
-    // The previous level here is blocking
+    // Restore previous location level, which is blocking.
     SetAccessLevel(PreviousAccessLevel());
   }
 }

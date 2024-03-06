@@ -205,7 +205,7 @@ using BooleanSyncTransitionTableRow = std::tuple<GeolocationAccessLevel,
                                                  GeolocationAccessLevel,
                                                  GeolocationAccessLevel>;
 
-class PrivacyHubGeolocationBooleanSyncTest
+class PrivacyHubGeolocationApplyArcLocationUpdatesTest
     : public PrivacyHubGeolocationTestBase,
       public testing::WithParamInterface<BooleanSyncTransitionTableRow> {
  public:
@@ -224,7 +224,7 @@ class PrivacyHubGeolocationBooleanSyncTest
   }
 };
 
-TEST_P(PrivacyHubGeolocationBooleanSyncTest, UpdateTest) {
+TEST_P(PrivacyHubGeolocationApplyArcLocationUpdatesTest, UpdateTest) {
   ASSERT_NE(CurrentAccessLevel(), PreviousAccessLevel());
   // Test initial values
   EXPECT_EQ(GeolocationAccessLevel::kAllowed, controller_->AccessLevel());
@@ -236,7 +236,7 @@ TEST_P(PrivacyHubGeolocationBooleanSyncTest, UpdateTest) {
   EXPECT_EQ(CurrentAccessLevel(), controller_->AccessLevel());
   EXPECT_EQ(PreviousAccessLevel(), controller_->PreviousAccessLevel());
 
-  controller_->SetAccessLevelAsBoolean(IncomingValueToBeSynced());
+  controller_->ApplyArcLocationUpdate(IncomingValueToBeSynced());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(ExpectedNewAccessLevel(), controller_->AccessLevel());
   EXPECT_EQ(ExpectedNewPreviousAccessLevel(),
@@ -245,7 +245,7 @@ TEST_P(PrivacyHubGeolocationBooleanSyncTest, UpdateTest) {
 
 using BooleanSyncTransitionTable = std::vector<BooleanSyncTransitionTableRow>;
 // Utility function to generate all possible perameter combinations for the
-// PrivacyHubGeolocationBooleanSyncTest test suite.
+// PrivacyHubGeolocationApplyArcLocationUpdatesTest test suite.
 BooleanSyncTransitionTable GenerateTransitionTable() {
   BooleanSyncTransitionTable table;
   const std::array<GeolocationAccessLevel, 3> all_levels{
@@ -280,7 +280,7 @@ BooleanSyncTransitionTable GenerateTransitionTable() {
 }
 
 INSTANTIATE_TEST_SUITE_P(AllCombinations,
-                         PrivacyHubGeolocationBooleanSyncTest,
+                         PrivacyHubGeolocationApplyArcLocationUpdatesTest,
                          testing::ValuesIn(GenerateTransitionTable()));
 
 }  // namespace ash
