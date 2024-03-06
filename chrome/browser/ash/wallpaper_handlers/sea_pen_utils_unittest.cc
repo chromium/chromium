@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 
 #include "ash/test/ash_test_base.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/geometry/size.h"
@@ -13,6 +14,10 @@ namespace wallpaper_handlers {
 namespace {
 
 using SeaPenUtilsTest = ash::AshTestBase;
+using SeaPenTemplateChip = ash::personalization_app::mojom::SeaPenTemplateChip;
+using SeaPenTemplateOption =
+    ash::personalization_app::mojom::SeaPenTemplateOption;
+using SeaPenTemplateId = ash::personalization_app::mojom::SeaPenTemplateId;
 
 TEST_F(SeaPenUtilsTest, GetLargestDisplaySizeSimple) {
   UpdateDisplay("1280x720");
@@ -40,6 +45,122 @@ TEST_F(SeaPenUtilsTest, GetLargestDisplaySizeScaleFactor) {
   // {3840,2160}.
   UpdateDisplay("2560x1440,3840x2160*2/l");
   EXPECT_EQ(gfx::Size(3840, 2160), GetLargestDisplaySizeLandscape());
+}
+
+TEST_F(SeaPenUtilsTest, IsValidTemplate) {
+  base::flat_map<ash::personalization_app::mojom::SeaPenTemplateChip,
+                 ash::personalization_app::mojom::SeaPenTemplateOption>
+      options(
+          {{ash::personalization_app::mojom::SeaPenTemplateChip::kFlowerColor,
+            ash::personalization_app::mojom::SeaPenTemplateOption::
+                kFlowerColorBlue},
+           {ash::personalization_app::mojom::SeaPenTemplateChip::kFlowerType,
+            ash::personalization_app::mojom::SeaPenTemplateOption::
+                kFlowerTypeRose}});
+  ash::personalization_app::mojom::SeaPenTemplateQueryPtr template_query =
+      ash::personalization_app::mojom::SeaPenTemplateQuery::New(
+          ash::personalization_app::mojom::SeaPenTemplateId::kFlower, options,
+          ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
+              "test template query", "test template title"));
+
+  EXPECT_TRUE(IsValidTemplateQuery(template_query));
+}
+
+TEST_F(SeaPenUtilsTest, IsValidTemplate_wrongChip) {
+  base::flat_map<ash::personalization_app::mojom::SeaPenTemplateChip,
+                 ash::personalization_app::mojom::SeaPenTemplateOption>
+      options(
+          {{ash::personalization_app::mojom::SeaPenTemplateChip::kFlowerColor,
+            ash::personalization_app::mojom::SeaPenTemplateOption::
+                kFlowerColorBlue},
+           {ash::personalization_app::mojom::SeaPenTemplateChip::
+                kCharactersColor,
+            ash::personalization_app::mojom::SeaPenTemplateOption::
+                kFlowerTypeRose}});
+  ash::personalization_app::mojom::SeaPenTemplateQueryPtr template_query =
+      ash::personalization_app::mojom::SeaPenTemplateQuery::New(
+          ash::personalization_app::mojom::SeaPenTemplateId::kFlower, options,
+          ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
+              "test template query", "test template title"));
+
+  EXPECT_FALSE(IsValidTemplateQuery(template_query));
+}
+
+TEST_F(SeaPenUtilsTest, IsValidTemplate_wrongOption) {
+  base::flat_map<ash::personalization_app::mojom::SeaPenTemplateChip,
+                 ash::personalization_app::mojom::SeaPenTemplateOption>
+      options(
+          {{ash::personalization_app::mojom::SeaPenTemplateChip::kFlowerColor,
+            ash::personalization_app::mojom::SeaPenTemplateOption::
+                kFlowerColorBlue},
+           {ash::personalization_app::mojom::SeaPenTemplateChip::kFlowerType,
+            ash::personalization_app::mojom::SeaPenTemplateOption::
+                kMineralColorCool}});
+  ash::personalization_app::mojom::SeaPenTemplateQueryPtr template_query =
+      ash::personalization_app::mojom::SeaPenTemplateQuery::New(
+          ash::personalization_app::mojom::SeaPenTemplateId::kFlower, options,
+          ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
+              "test template query", "test template title"));
+
+  EXPECT_FALSE(IsValidTemplateQuery(template_query));
+}
+
+TEST_F(SeaPenUtilsTest, IsValidTemplate_tooManyOptions) {
+  base::flat_map<ash::personalization_app::mojom::SeaPenTemplateChip,
+                 ash::personalization_app::mojom::SeaPenTemplateOption>
+      options(
+          {{ash::personalization_app::mojom::SeaPenTemplateChip::kFlowerColor,
+            ash::personalization_app::mojom::SeaPenTemplateOption::
+                kFlowerColorBlue},
+           {ash::personalization_app::mojom::SeaPenTemplateChip::kMineralColor,
+            ash::personalization_app::mojom::SeaPenTemplateOption::
+                kMineralColorCool},
+           {ash::personalization_app::mojom::SeaPenTemplateChip::kFlowerType,
+            ash::personalization_app::mojom::SeaPenTemplateOption::
+                kFlowerTypeRose}});
+  ash::personalization_app::mojom::SeaPenTemplateQueryPtr template_query =
+      ash::personalization_app::mojom::SeaPenTemplateQuery::New(
+          ash::personalization_app::mojom::SeaPenTemplateId::kFlower, options,
+          ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
+              "test template query", "test template title"));
+
+  EXPECT_FALSE(IsValidTemplateQuery(template_query));
+}
+
+TEST_F(SeaPenUtilsTest, IsValidTemplate_tooFewOptions) {
+  base::flat_map<ash::personalization_app::mojom::SeaPenTemplateChip,
+                 ash::personalization_app::mojom::SeaPenTemplateOption>
+      options({
+          {ash::personalization_app::mojom::SeaPenTemplateChip::kFlowerColor,
+           ash::personalization_app::mojom::SeaPenTemplateOption::
+               kFlowerColorBlue},
+      });
+  ash::personalization_app::mojom::SeaPenTemplateQueryPtr template_query =
+      ash::personalization_app::mojom::SeaPenTemplateQuery::New(
+          ash::personalization_app::mojom::SeaPenTemplateId::kFlower, options,
+          ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
+              "test template query", "test template title"));
+
+  EXPECT_FALSE(IsValidTemplateQuery(template_query));
+}
+
+TEST_F(SeaPenUtilsTest, IsValidTemplate_duplicateChips) {
+  base::flat_map<ash::personalization_app::mojom::SeaPenTemplateChip,
+                 ash::personalization_app::mojom::SeaPenTemplateOption>
+      options(
+          {{ash::personalization_app::mojom::SeaPenTemplateChip::kFlowerType,
+            ash::personalization_app::mojom::SeaPenTemplateOption::
+                kFlowerTypeRose},
+           {ash::personalization_app::mojom::SeaPenTemplateChip::kFlowerType,
+            ash::personalization_app::mojom::SeaPenTemplateOption::
+                kFlowerTypeBirdOfParadise}});
+  ash::personalization_app::mojom::SeaPenTemplateQueryPtr template_query =
+      ash::personalization_app::mojom::SeaPenTemplateQuery::New(
+          ash::personalization_app::mojom::SeaPenTemplateId::kFlower, options,
+          ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
+              "test template query", "test template title"));
+
+  EXPECT_FALSE(IsValidTemplateQuery(template_query));
 }
 
 }  // namespace

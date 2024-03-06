@@ -261,27 +261,41 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="SeaPenTemplateName">
-  <variant name="Art" summary="Template Art"/>
+  <variant name="Art" summary="Template Classic art"/>
   <variant name="Characters" summary="Template Characters"/>
-  <variant name="Curious" summary="Template Curious"/>
-  <variant name="Dreamscapes" summary="Template Dreamscapes"/>
-  <variant name="Flower" summary="Template Airbrush"/>
-  <variant name="Landscape" summary="Template Landscape"/>
+  <variant name="Curious" summary="Template Curious world"/>
+  <variant name="Dreamscapes" summary="Template Dreamscape"/>
+  <variant name="Flower" summary="Template Airbrushed"/>
+  <variant name="Glowscapes" summary="Template Glowscapes"/>
+  <variant name="Landscape"
+      summary="Template Landscape (OBSOLETE: Use Terrain instead)"/>
+  <variant name="Letters" summary="Template Letters"/>
   <variant name="Mineral" summary="Template Minerals"/>
   <variant name="Query" summary="Free-form text query"/>
-  <variant name="Scifi" summary="Template Scifi"/>
-  <variant name="Terrain" summary="Template Terrain"/>
+  <variant name="Scifi" summary="Template Science fiction"/>
+  <variant name="Surreal" summary="Template Surreal"/>
+  <variant name="Terrain" summary="Template Landscape"/>
+  <variant name="TerrainAlternate" summary="Template Landscape"/>
   <variant name="Translucent" summary="Template Translucent"/>
-  <variant name="VcBackgroundArt" summary="VC Background Template Art"/>
-  <variant name="VcBackgroundCafe" summary="VC Background Template Cafe"/>
+  <variant name="VcBackgroundArt" summary="VcBackground Template Classic art"/>
+  <variant name="VcBackgroundCafe" summary="VcBackground Template Cafe"/>
   <variant name="VcBackgroundCharacters"
-      summary="VC Background Template Characters"/>
+      summary="VcBackground Template Characters"/>
   <variant name="VcBackgroundDreamscapes"
-      summary="VC Background Template Dreamscapes"/>
+      summary="VC Background Template Dreamscapes (OBSOLETE: Use
+               VcBackgroundDreamscapesVc instead)"/>
+  <variant name="VcBackgroundDreamscapesVc"
+      summary="VcBackground Template Dreamscapes"/>
+  <variant name="VcBackgroundGlowscapes"
+      summary="VcBackground Template Glowscapes"/>
   <variant name="VcBackgroundOffice"
-      summary="VC Background Template Stylish Office"/>
-  <variant name="VcBackgroundSimple" summary="VC Background Template Simple"/>
-  <variant name="VcBackgroundTerrain" summary="VC Background Template Terrain"/>
+      summary="VcBackground Template Stylish office"/>
+  <variant name="VcBackgroundSimple" summary="VcBackground Template Simple"/>
+  <variant name="VcBackgroundTerrain"
+      summary="VC Background Template Terrain (OBSOLETE: Use
+               VcBackgroundTerrainVc instead)"/>
+  <variant name="VcBackgroundTerrainVc"
+      summary="VcBackground Template Terrain"/>
 </variants>
 
 <variants name="SnapActionSource">

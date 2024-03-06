@@ -12,6 +12,9 @@ build_webui("build_ts") {
   grd_prefix = "ash_common_sea_pen"
 
   static_files = [
+    "sea_pen_images/sea_pen_surreal.jpg",
+    "sea_pen_images/sea_pen_glowscapes.jpg",
+    "sea_pen_images/sea_pen_letters.jpg",
     "sea_pen_images/sea_pen_art.jpg",
     "sea_pen_images/sea_pen_characters.jpg",
     "sea_pen_images/sea_pen_curious.jpg",

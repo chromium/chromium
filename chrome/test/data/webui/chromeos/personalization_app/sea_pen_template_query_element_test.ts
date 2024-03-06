@@ -248,7 +248,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
   test('clicking inspire button triggers search', async () => {
     seaPenTemplateQueryElement = initElement(
         SeaPenTemplateQueryElement,
-        {templateId: SeaPenTemplateId.kMineral.toString()});
+        {templateId: SeaPenTemplateId.kFlower.toString()});
     initElement(SeaPenRouterElement, {basePath: '/base'});
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
@@ -261,7 +261,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
     const query: SeaPenQuery =
         await seaPenProvider.whenCalled('searchWallpaper');
     assertEquals(
-        query.templateQuery!.id, SeaPenTemplateId.kMineral,
+        query.templateQuery!.id, SeaPenTemplateId.kFlower,
         'Query template id should match');
   });
 

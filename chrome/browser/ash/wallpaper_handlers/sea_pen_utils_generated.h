@@ -20,8 +20,13 @@ std::string TemplateChipToString(
 std::string TemplateOptionToString(
     ash::personalization_app::mojom::SeaPenTemplateOption option);
 
-bool IsValidTemplateQuery(
-    const ash::personalization_app::mojom::SeaPenTemplateQueryPtr& query);
+const std::map<ash::personalization_app::mojom::SeaPenTemplateId,
+               std::set<ash::personalization_app::mojom::SeaPenTemplateChip>>&
+TemplateToChipSet();
+
+const std::map<ash::personalization_app::mojom::SeaPenTemplateChip,
+               std::set<ash::personalization_app::mojom::SeaPenTemplateOption>>&
+ChipToOptionSet();
 
 }  // namespace wallpaper_handlers
 

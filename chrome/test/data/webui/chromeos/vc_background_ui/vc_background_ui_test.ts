@@ -82,7 +82,7 @@ suite('VcBackgroundUITest', () => {
     assertTrue(!!seaPenTemplateQuery, 'sea-pen-template-query exists');
 
     assertEquals(
-        'A painting of a canyon in the avant-garde style',
+        'A painting of a field of flowers in the avant-garde style',
         seaPenTemplateQuery?.shadowRoot?.getElementById('template')
             ?.textContent?.trim()
             .replace(/\s+/g, ' '),

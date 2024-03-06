@@ -112,7 +112,7 @@ suite('SeaPenRouterElementTest', function() {
     // breadcrumb dropdown.
     routerElement.goToRoute(
         SeaPenPaths.RESULTS,
-        {seaPenTemplateId: SeaPenTemplateId.kTranslucent.toString()});
+        {seaPenTemplateId: SeaPenTemplateId.kCharacters.toString()});
     await flushTasks();
 
     assertEquals(
@@ -122,7 +122,7 @@ suite('SeaPenRouterElementTest', function() {
 
   test('update template query when templateId changes', async () => {
     routerElement = initElement(SeaPenRouterElement, {basePath: '/base'});
-    const initialTemplate = SeaPenTemplateId.kMineral;
+    const initialTemplate = SeaPenTemplateId.kCharacters;
     const finalTemplate = SeaPenTemplateId.kFlower;
     routerElement.goToRoute(
         SeaPenPaths.RESULTS, {seaPenTemplateId: initialTemplate.toString()});

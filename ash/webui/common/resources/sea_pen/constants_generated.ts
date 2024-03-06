@@ -14,6 +14,213 @@ import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_
 export function getWallpaperTemplates(): SeaPenTemplate[] {
   return [
     {
+      id: SeaPenTemplateId.kLetters,
+      title: loadTimeData.getString('seaPenTemplateTitleLetters'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateLetters', `<${SeaPenTemplateChip.kLettersColor}>`,
+          `<${SeaPenTemplateChip.kLettersLetter}>`),
+      preview: [{
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_letters.jpg',
+      }],
+      options: new Map([
+        [
+          SeaPenTemplateChip.kLettersColor,
+          [
+            {
+              value: SeaPenTemplateOption.kLettersColorPastel,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorPastel'),
+            },
+            {
+              value: SeaPenTemplateOption.kLettersColorBlack,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorBlack'),
+            },
+            {
+              value: SeaPenTemplateOption.kLettersColorYellow,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorYellow'),
+            },
+            {
+              value: SeaPenTemplateOption.kLettersColorRed,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorRed'),
+            },
+            {
+              value: SeaPenTemplateOption.kLettersColorBlue,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorBlue'),
+            },
+            {
+              value: SeaPenTemplateOption.kLettersColorIndigo,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorIndigo'),
+            },
+            {
+              value: SeaPenTemplateOption.kLettersColorGreen,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorGreen'),
+            },
+            {
+              value: SeaPenTemplateOption.kLettersColorCyan,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorCyan'),
+            },
+            {
+              value: SeaPenTemplateOption.kLettersColorPurple,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorPurple'),
+            },
+            {
+              value: SeaPenTemplateOption.kLettersColorOlive,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorOlive'),
+            },
+            {
+              value: SeaPenTemplateOption.kLettersColorGray,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorGray'),
+            },
+            {
+              value: SeaPenTemplateOption.kLettersColorMagenta,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorMagenta'),
+            },
+            {
+              value: SeaPenTemplateOption.kLettersColorNeonGreen,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorNeonGreen'),
+            },
+            {
+              value: SeaPenTemplateOption.kLettersColorLightBlue,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorLightBlue'),
+            },
+            {
+              value: SeaPenTemplateOption.kLettersColorNeonPink,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorNeonPink'),
+            },
+            {
+              value: SeaPenTemplateOption.kLettersColorCoralPink,
+              translation:
+                  loadTimeData.getString('seaPenOptionLettersColorCoralPink'),
+            },
+          ],
+        ],
+        [
+          SeaPenTemplateChip.kLettersLetter,
+          [
+            {
+              value: SeaPenTemplateOption.kLettersLetterA,
+              translation: 'A',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterB,
+              translation: 'B',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterC,
+              translation: 'C',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterD,
+              translation: 'D',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterE,
+              translation: 'E',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterF,
+              translation: 'F',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterG,
+              translation: 'G',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterH,
+              translation: 'H',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterI,
+              translation: 'I',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterJ,
+              translation: 'J',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterK,
+              translation: 'K',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterL,
+              translation: 'L',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterM,
+              translation: 'M',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterN,
+              translation: 'N',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterO,
+              translation: 'O',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterP,
+              translation: 'P',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterQ,
+              translation: 'Q',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterR,
+              translation: 'R',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterS,
+              translation: 'S',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterT,
+              translation: 'T',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterU,
+              translation: 'U',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterV,
+              translation: 'V',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterW,
+              translation: 'W',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterX,
+              translation: 'X',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterY,
+              translation: 'Y',
+            },
+            {
+              value: SeaPenTemplateOption.kLettersLetterZ,
+              translation: 'Z',
+            },
+          ],
+        ],
+      ]),
+    },
+    {
       id: SeaPenTemplateId.kFlower,
       title: loadTimeData.getString('seaPenTemplateTitleFlower'),
       text: loadTimeData.getStringF(
@@ -72,8 +279,9 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           SeaPenTemplateChip.kFlowerType,
           [
             {
-              value: SeaPenTemplateOption.kFlowerTypeRose,
-              translation: loadTimeData.getString('seaPenOptionFlowerTypeRose'),
+              value: SeaPenTemplateOption.kFlowerTypeOrchid,
+              translation:
+                  loadTimeData.getString('seaPenOptionFlowerTypeOrchid'),
             },
             {
               value: SeaPenTemplateOption.kFlowerTypeCallaLily,
@@ -101,9 +309,8 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   'seaPenOptionFlowerTypeBirdOfParadise'),
             },
             {
-              value: SeaPenTemplateOption.kFlowerTypeOrchid,
-              translation:
-                  loadTimeData.getString('seaPenOptionFlowerTypeOrchid'),
+              value: SeaPenTemplateOption.kFlowerTypeRose,
+              translation: loadTimeData.getString('seaPenOptionFlowerTypeRose'),
             },
             {
               value: SeaPenTemplateOption.kFlowerTypeRanunculus,
@@ -125,152 +332,6 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
       ]),
     },
     {
-      id: SeaPenTemplateId.kMineral,
-      title: 'Minerals',
-      text: `A close-up image of <${SeaPenTemplateChip.kMineralName}> with <${
-          SeaPenTemplateChip.kMineralColor}> hues`,
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_mineral.jpg',
-      }],
-      options: new Map([
-        [
-          SeaPenTemplateChip.kMineralName,
-          [
-            {
-              value: SeaPenTemplateOption.kMineralNameAgate,
-              translation: 'agate',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameAmethyst,
-              translation: 'amethyst',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameAquamarine,
-              translation: 'aquamarine',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameAragonite,
-              translation: 'aragonite',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameBismuth,
-              translation: 'bismuth',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameCerussite,
-              translation: 'cerussite',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameChalcopyrite,
-              translation: 'chalcopyrite',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameChrysoprase,
-              translation: 'chrysoprase',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameFluorite,
-              translation: 'fluorite',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameGalena,
-              translation: 'galena',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameJasper,
-              translation: 'jasper',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameLabradorite,
-              translation: 'labradorite',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameMoonstone,
-              translation: 'moonstone',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameOpal,
-              translation: 'opal',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNamePeridot,
-              translation: 'peridot',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameRhondochrosite,
-              translation: 'rhondochrosite',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameRuby,
-              translation: 'ruby',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameSapphire,
-              translation: 'sapphire',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameQuartz,
-              translation: 'quartz',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralNameTourmaline,
-              translation: 'tourmaline',
-            },
-          ],
-        ],
-        [
-          SeaPenTemplateChip.kMineralColor,
-          [
-            {
-              value: SeaPenTemplateOption.kMineralColorWarm,
-              translation: 'warm',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralColorCool,
-              translation: 'cool',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralColorNeutral,
-              translation: 'neutral',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralColorPastel,
-              translation: 'pastel',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralColorMuted,
-              translation: 'muted',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralColorVibrant,
-              translation: 'vibrant',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralColorEarthy,
-              translation: 'earthy',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralColorMetallic,
-              translation: 'metallic',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralColorNeon,
-              translation: 'neon',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralColorTonal,
-              translation: 'tonal',
-            },
-            {
-              value: SeaPenTemplateOption.kMineralColorGray,
-              translation: 'gray',
-            },
-          ],
-        ],
-      ]),
-    },
-    {
       id: SeaPenTemplateId.kArt,
       title: loadTimeData.getString('seaPenTemplateTitleArt'),
       text: loadTimeData.getStringF(
@@ -285,14 +346,14 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           SeaPenTemplateChip.kArtFeature,
           [
             {
-              value: SeaPenTemplateOption.kArtFeatureCanyon,
+              value: SeaPenTemplateOption.kArtFeatureField,
               translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureCanyon'),
+                  loadTimeData.getString('seaPenOptionArtFeatureField'),
             },
             {
-              value: SeaPenTemplateOption.kArtFeatureMountain,
+              value: SeaPenTemplateOption.kArtFeatureSwamp,
               translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureMountain'),
+                  loadTimeData.getString('seaPenOptionArtFeatureSwamp'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureBeach,
@@ -300,13 +361,9 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   loadTimeData.getString('seaPenOptionArtFeatureBeach'),
             },
             {
-              value: SeaPenTemplateOption.kArtFeatureCave,
-              translation: loadTimeData.getString('seaPenOptionArtFeatureCave'),
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureCliff,
+              value: SeaPenTemplateOption.kArtFeatureMeadow,
               translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureCliff'),
+                  loadTimeData.getString('seaPenOptionArtFeatureMeadow'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureForest,
@@ -333,9 +390,9 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
               translation: loadTimeData.getString('seaPenOptionArtFeatureLake'),
             },
             {
-              value: SeaPenTemplateOption.kArtFeatureMeadow,
+              value: SeaPenTemplateOption.kArtFeatureCliff,
               translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureMeadow'),
+                  loadTimeData.getString('seaPenOptionArtFeatureCliff'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureOcean,
@@ -352,9 +409,9 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
               translation: loadTimeData.getString('seaPenOptionArtFeatureDune'),
             },
             {
-              value: SeaPenTemplateOption.kArtFeatureSwamp,
+              value: SeaPenTemplateOption.kArtFeatureMountain,
               translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureSwamp'),
+                  loadTimeData.getString('seaPenOptionArtFeatureMountain'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureValley,
@@ -367,9 +424,9 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   loadTimeData.getString('seaPenOptionArtFeatureWaterfall'),
             },
             {
-              value: SeaPenTemplateOption.kArtFeatureField,
+              value: SeaPenTemplateOption.kArtFeatureCanyon,
               translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureField'),
+                  loadTimeData.getString('seaPenOptionArtFeatureCanyon'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureCityscape,
@@ -461,6 +518,457 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
       ]),
     },
     {
+      id: SeaPenTemplateId.kTerrain,
+      title: loadTimeData.getString('seaPenTemplateTitleTerrain'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateTerrain', `<${SeaPenTemplateChip.kTerrainFeature}>`,
+          `<${SeaPenTemplateChip.kTerrainColor}>`),
+      preview: [{
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_terrain.jpg',
+      }],
+      options: new Map([
+        [
+          SeaPenTemplateChip.kTerrainFeature,
+          [
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureSaltLake,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainFeatureSaltLake'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureRiver,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainFeatureRiver'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureNorthernLights,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureNorthernLights'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureSandDunes,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainFeatureSandDunes'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureClayHills,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainFeatureClayHills'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureSandyLagoon,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureSandyLagoon'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureMountains,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainFeatureMountains'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureBioluminescentBeach,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureBioluminescentBeach'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureFireflyForest,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureFireflyForest'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureDifferentPlanet,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureDifferentPlanet'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureTreeTunnel,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureTreeTunnel'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureBaobabTrees,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureBaobabTrees'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureMistyForest,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureMistyForest'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureCactusForest,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureCactusForest'),
+            },
+          ],
+        ],
+        [
+          SeaPenTemplateChip.kTerrainColor,
+          [
+            {
+              value: SeaPenTemplateOption.kTerrainColorPink,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorPink'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorCyan,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorCyan'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorWhite,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorWhite'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorPurple,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorPurple'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorBlue,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorBlue'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorYellow,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorYellow'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorMaroonPink,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorMaroonPink'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorBluePurple,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorBluePurple'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorPinkYellow,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorPinkYellow'),
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorBluePink,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorBluePink'),
+            },
+          ],
+        ],
+      ]),
+    },
+    {
+      id: SeaPenTemplateId.kDreamscapes,
+      title: loadTimeData.getString('seaPenTemplateTitleDreamscapes'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateDreamscapes',
+          `<${SeaPenTemplateChip.kDreamscapesObject}>`,
+          `<${SeaPenTemplateChip.kDreamscapesMaterial}>`,
+          `<${SeaPenTemplateChip.kDreamscapesColors}>`),
+      preview: [{
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_dreamscapes.jpg',
+      }],
+      options: new Map([
+        [
+          SeaPenTemplateChip.kDreamscapesObject,
+          [
+            {
+              value: SeaPenTemplateOption.kDreamscapesObjectBicycle,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesObjectBicycle'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesObjectCastle,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectCastle'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesObjectBuilding,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesObjectBuilding'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesObjectBoat,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectBoat'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesObjectLamp,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectLamp'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesObjectTable,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectTable'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesObjectBridge,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectBridge'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesObjectLighthouse,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesObjectLighthouse'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesObjectPagoda,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectPagoda'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesObjectPalace,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectPalace'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesObjectTower,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectTower'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesObjectChair,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectChair'),
+            },
+          ],
+        ],
+        [
+          SeaPenTemplateChip.kDreamscapesMaterial,
+          [
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialFlowers,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialFlowers'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialSilk,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialSilk'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialFelt,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialFelt'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialBurlap,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialBurlap'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialChiffon,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialChiffon'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialCotton,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialCotton'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialFur,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialFur'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialLace,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialLace'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialLinen,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialLinen'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialOrganza,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialOrganza'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialTulle,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialTulle'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialWool,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialWool'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialYarn,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialYarn'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialFleece,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialFleece'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialClay,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialClay'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialStone,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialStone'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialWood,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialWood'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialAmethyst,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialAmethyst'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialLapisLuzuli,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialLapisLuzuli'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialObsidian,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialObsidian'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialOpal,
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialOpal'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesMaterialSapphire,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialSapphire'),
+            },
+          ],
+        ],
+        [
+          SeaPenTemplateChip.kDreamscapesColors,
+          [
+            {
+              value: SeaPenTemplateOption.kDreamscapesColorsPinkPurple,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesColorsPinkPurple'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesColorsCoralTan,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesColorsCoralTan'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesColorsCreamOrange,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesColorsCreamOrange'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesColorsBlueIndigo,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesColorsBlueIndigo'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesColorsGreenTeal,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesColorsGreenTeal'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesColorsBurgundyMaroon,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesColorsBurgundyMaroon'),
+            },
+            {
+              value: SeaPenTemplateOption.kDreamscapesColorsYellowTeal,
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesColorsYellowTeal'),
+            },
+          ],
+        ],
+      ]),
+    },
+    {
+      id: SeaPenTemplateId.kSurreal,
+      title: loadTimeData.getString('seaPenTemplateTitleSurreal'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateSurreal', `<${SeaPenTemplateChip.kSurrealLandscape}>`,
+          `<${SeaPenTemplateChip.kSurrealSubject}>`),
+      preview: [{
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_surreal.jpg',
+      }],
+      options: new Map([
+        [
+          SeaPenTemplateChip.kSurrealLandscape,
+          [
+            {
+              value: SeaPenTemplateOption.kSurrealLandscapeMeadow,
+              translation:
+                  loadTimeData.getString('seaPenOptionSurrealLandscapeMeadow'),
+            },
+            {
+              value: SeaPenTemplateOption.kSurrealLandscapeSaltRock,
+              translation: loadTimeData.getString(
+                  'seaPenOptionSurrealLandscapeSaltRock'),
+            },
+            {
+              value: SeaPenTemplateOption.kSurrealLandscapeIsland,
+              translation:
+                  loadTimeData.getString('seaPenOptionSurrealLandscapeIsland'),
+            },
+            {
+              value: SeaPenTemplateOption.kSurrealLandscapeLake,
+              translation:
+                  loadTimeData.getString('seaPenOptionSurrealLandscapeLake'),
+            },
+            {
+              value: SeaPenTemplateOption.kSurrealLandscapeBeach,
+              translation:
+                  loadTimeData.getString('seaPenOptionSurrealLandscapeBeach'),
+            },
+            {
+              value: SeaPenTemplateOption.kSurrealLandscapeCliff,
+              translation:
+                  loadTimeData.getString('seaPenOptionSurrealLandscapeCliff'),
+            },
+          ],
+        ],
+        [
+          SeaPenTemplateChip.kSurrealSubject,
+          [
+            {
+              value: SeaPenTemplateOption.kSurrealSubjectFlowers,
+              translation:
+                  loadTimeData.getString('seaPenOptionSurrealSubjectFlowers'),
+            },
+            {
+              value: SeaPenTemplateOption.kSurrealSubjectPools,
+              translation:
+                  loadTimeData.getString('seaPenOptionSurrealSubjectPools'),
+            },
+            {
+              value: SeaPenTemplateOption.kSurrealSubjectSnow,
+              translation:
+                  loadTimeData.getString('seaPenOptionSurrealSubjectSnow'),
+            },
+            {
+              value: SeaPenTemplateOption.kSurrealSubjectGlowingBubbles,
+              translation: loadTimeData.getString(
+                  'seaPenOptionSurrealSubjectGlowingBubbles'),
+            },
+          ],
+        ],
+      ]),
+    },
+    {
       id: SeaPenTemplateId.kCharacters,
       title: loadTimeData.getString('seaPenTemplateTitleCharacters'),
       text: loadTimeData.getStringF(
@@ -477,14 +985,14 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           SeaPenTemplateChip.kCharactersColor,
           [
             {
-              value: SeaPenTemplateOption.kCharactersColorYellow,
-              translation:
-                  loadTimeData.getString('seaPenOptionCharactersColorYellow'),
-            },
-            {
               value: SeaPenTemplateOption.kCharactersColorPink,
               translation:
                   loadTimeData.getString('seaPenOptionCharactersColorPink'),
+            },
+            {
+              value: SeaPenTemplateOption.kCharactersColorYellow,
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorYellow'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorRed,
@@ -876,830 +1384,74 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
       ]),
     },
     {
-      id: SeaPenTemplateId.kTerrain,
-      title: loadTimeData.getString('seaPenTemplateTitleTerrain'),
+      id: SeaPenTemplateId.kGlowscapes,
+      title: loadTimeData.getString('seaPenTemplateTitleGlowscapes'),
       text: loadTimeData.getStringF(
-          'seaPenTemplateTerrain', `<${SeaPenTemplateChip.kTerrainFeature}>`,
-          `<${SeaPenTemplateChip.kTerrainColor}>`),
+          'seaPenTemplateGlowscapes',
+          `<${SeaPenTemplateChip.kGlowscapesLandscape}>`,
+          `<${SeaPenTemplateChip.kGlowscapesFeature}>`),
       preview: [{
         url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_terrain.jpg',
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_glowscapes.jpg',
       }],
       options: new Map([
         [
-          SeaPenTemplateChip.kTerrainFeature,
+          SeaPenTemplateChip.kGlowscapesLandscape,
           [
             {
-              value: SeaPenTemplateOption.kTerrainFeatureSaltLake,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainFeatureSaltLake'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureRiver,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainFeatureRiver'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureNorthernLights,
+              value: SeaPenTemplateOption.kGlowscapesLandscapeValley,
               translation: loadTimeData.getString(
-                  'seaPenOptionTerrainFeatureNorthernLights'),
+                  'seaPenOptionGlowscapesLandscapeValley'),
             },
             {
-              value: SeaPenTemplateOption.kTerrainFeatureSandDunes,
+              value: SeaPenTemplateOption.kGlowscapesLandscapeHotSpring,
+              translation: loadTimeData.getString(
+                  'seaPenOptionGlowscapesLandscapeHotSpring'),
+            },
+            {
+              value: SeaPenTemplateOption.kGlowscapesLandscapeMeadow,
+              translation: loadTimeData.getString(
+                  'seaPenOptionGlowscapesLandscapeMeadow'),
+            },
+            {
+              value: SeaPenTemplateOption.kGlowscapesLandscapeCoralReef,
+              translation: loadTimeData.getString(
+                  'seaPenOptionGlowscapesLandscapeCoralReef'),
+            },
+            {
+              value: SeaPenTemplateOption.kGlowscapesLandscapePond,
               translation:
-                  loadTimeData.getString('seaPenOptionTerrainFeatureSandDunes'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureClayHills,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainFeatureClayHills'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureSandyLagoon,
-              translation: loadTimeData.getString(
-                  'seaPenOptionTerrainFeatureSandyLagoon'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureMountains,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainFeatureMountains'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureBioluminescentBeach,
-              translation: loadTimeData.getString(
-                  'seaPenOptionTerrainFeatureBioluminescentBeach'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureFireflyForest,
-              translation: loadTimeData.getString(
-                  'seaPenOptionTerrainFeatureFireflyForest'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureDifferentPlanet,
-              translation: loadTimeData.getString(
-                  'seaPenOptionTerrainFeatureDifferentPlanet'),
+                  loadTimeData.getString('seaPenOptionGlowscapesLandscapePond'),
             },
           ],
         ],
         [
-          SeaPenTemplateChip.kTerrainColor,
+          SeaPenTemplateChip.kGlowscapesFeature,
           [
             {
-              value: SeaPenTemplateOption.kTerrainColorPink,
+              value: SeaPenTemplateOption.kGlowscapesFeatureRiver,
               translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorPink'),
+                  loadTimeData.getString('seaPenOptionGlowscapesFeatureRiver'),
             },
             {
-              value: SeaPenTemplateOption.kTerrainColorTeal,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorTeal'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainColorWhite,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorWhite'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainColorPurple,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorPurple'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainColorBlue,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorBlue'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainColorYellow,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorYellow'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainColorMaroonPink,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorMaroonPink'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainColorBluePurple,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorBluePurple'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainColorPinkYellow,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorPinkYellow'),
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainColorBluePink,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorBluePink'),
-            },
-          ],
-        ],
-      ]),
-    },
-    {
-      id: SeaPenTemplateId.kCurious,
-      title: 'Curious world',
-      text: `A <${SeaPenTemplateChip.kCuriousColor}> <${
-          SeaPenTemplateChip.kCuriousFeature}> with <${
-          SeaPenTemplateChip.kCuriousSubject}>`,
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_curious.jpg',
-      }],
-      options: new Map([
-        [
-          SeaPenTemplateChip.kCuriousColor,
-          [
-            {
-              value: SeaPenTemplateOption.kCuriousColorBlue,
-              translation: 'blue',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorRed,
-              translation: 'red',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorYellow,
-              translation: 'yellow',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorGreen,
-              translation: 'green',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorPurple,
-              translation: 'purple',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorOrange,
-              translation: 'orange',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorPink,
-              translation: 'pink',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorBrown,
-              translation: 'brown',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorBlack,
-              translation: 'black',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorTurquoise,
-              translation: 'turquoise',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorMagenta,
-              translation: 'magenta',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorLavender,
-              translation: 'lavender',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorMaroon,
-              translation: 'maroon',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorNavy,
-              translation: 'navy',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorOlive,
-              translation: 'olive',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorCoral,
-              translation: 'coral',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorCream,
-              translation: 'cream',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorIndigo,
-              translation: 'indigo',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousColorFuchsia,
-              translation: 'fuchsia',
-            },
-          ],
-        ],
-        [
-          SeaPenTemplateChip.kCuriousFeature,
-          [
-            {
-              value: SeaPenTemplateOption.kCuriousFeatureAlpineLake,
-              translation: 'alpine lake',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousFeatureGalaxy,
-              translation: 'space galaxy',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousFeatureSandDunes,
-              translation: 'sand dunes',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousFeatureSwamp,
-              translation: 'foggy swamp',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousFeatureBeach,
-              translation: 'beach',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousFeatureMountains,
-              translation: 'mountains',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousFeatureRiver,
-              translation: 'river',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousFeatureWaterfall,
-              translation: 'waterfall',
-            },
-          ],
-        ],
-        [
-          SeaPenTemplateChip.kCuriousSubject,
-          [
-            {
-              value: SeaPenTemplateOption.kCuriousSubjectCherryBlossoms,
-              translation: 'cherry blossoms',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousSubjectJasmineFlowers,
-              translation: 'jasmine flowers',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousSubjectDaisies,
-              translation: 'daisies',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousSubjectTulips,
-              translation: 'tulips',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousSubjectCarnations,
-              translation: 'carnations',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousSubjectDaffodils,
-              translation: 'daffodils',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousSubjectForgetMeNots,
-              translation: 'forget-me-nots',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousSubjectSunflowers,
-              translation: 'sunflowers',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousSubjectBougainvilleas,
-              translation: 'bougainvilleas',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousSubjectAirPlants,
-              translation: 'air plants',
-            },
-            {
-              value: SeaPenTemplateOption.kCuriousSubjectSucculents,
-              translation: 'succulents',
-            },
-          ],
-        ],
-      ]),
-    },
-    {
-      id: SeaPenTemplateId.kDreamscapes,
-      title: loadTimeData.getString('seaPenTemplateTitleDreamscapes'),
-      text: loadTimeData.getStringF(
-          'seaPenTemplateDreamscapes',
-          `<${SeaPenTemplateChip.kDreamscapesObject}>`,
-          `<${SeaPenTemplateChip.kDreamscapesMaterial}>`,
-          `<${SeaPenTemplateChip.kDreamscapesColors}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_dreamscapes.jpg',
-      }],
-      options: new Map([
-        [
-          SeaPenTemplateChip.kDreamscapesObject,
-          [
-            {
-              value: SeaPenTemplateOption.kDreamscapesObjectBicycle,
+              value: SeaPenTemplateOption.kGlowscapesFeatureSaltRock,
               translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesObjectBicycle'),
+                  'seaPenOptionGlowscapesFeatureSaltRock'),
             },
             {
-              value: SeaPenTemplateOption.kDreamscapesObjectCastle,
+              value: SeaPenTemplateOption.kGlowscapesFeatureFlower,
               translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesObjectCastle'),
+                  loadTimeData.getString('seaPenOptionGlowscapesFeatureFlower'),
             },
             {
-              value: SeaPenTemplateOption.kDreamscapesObjectBuilding,
+              value: SeaPenTemplateOption.kGlowscapesFeatureWalkway,
               translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesObjectBuilding'),
+                  'seaPenOptionGlowscapesFeatureWalkway'),
             },
             {
-              value: SeaPenTemplateOption.kDreamscapesObjectBoat,
+              value: SeaPenTemplateOption.kGlowscapesFeaturePool,
               translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesObjectBoat'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesObjectLamp,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesObjectLamp'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesObjectTable,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesObjectTable'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesObjectBridge,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesObjectBridge'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesObjectLighthouse,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesObjectLighthouse'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesObjectPagoda,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesObjectPagoda'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesObjectPalace,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesObjectPalace'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesObjectTower,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesObjectTower'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesObjectChair,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesObjectChair'),
-            },
-          ],
-        ],
-        [
-          SeaPenTemplateChip.kDreamscapesMaterial,
-          [
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialFlowers,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesMaterialFlowers'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialSilk,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesMaterialSilk'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialFelt,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesMaterialFelt'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialBurlap,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesMaterialBurlap'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialChiffon,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesMaterialChiffon'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialCotton,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesMaterialCotton'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialFur,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesMaterialFur'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialLace,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesMaterialLace'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialLinen,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesMaterialLinen'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialOrganza,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesMaterialOrganza'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialTulle,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesMaterialTulle'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialWool,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesMaterialWool'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialYarn,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesMaterialYarn'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialFleece,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesMaterialFleece'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialClay,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesMaterialClay'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialStone,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesMaterialStone'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialWood,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesMaterialWood'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialAmethyst,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesMaterialAmethyst'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialLapisLuzuli,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesMaterialLapisLuzuli'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialObsidian,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesMaterialObsidian'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialOpal,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesMaterialOpal'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesMaterialSapphire,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesMaterialSapphire'),
-            },
-          ],
-        ],
-        [
-          SeaPenTemplateChip.kDreamscapesColors,
-          [
-            {
-              value: SeaPenTemplateOption.kDreamscapesColorsPinkPurple,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesColorsPinkPurple'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesColorsCoralTan,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesColorsCoralTan'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesColorsCreamOrange,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesColorsCreamOrange'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesColorsBlueIndigo,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesColorsBlueIndigo'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesColorsGreenTeal,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesColorsGreenTeal'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesColorsBurgundyMaroon,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesColorsBurgundyMaroon'),
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesColorsYellowTeal,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesColorsYellowTeal'),
-            },
-          ],
-        ],
-      ]),
-    },
-    {
-      id: SeaPenTemplateId.kTranslucent,
-      title: 'Translucent',
-      text: `Translucent <${SeaPenTemplateChip.kTranslucentItem}> in <${
-          SeaPenTemplateChip.kTranslucentColor}>`,
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_translucent.jpg',
-      }],
-      options: new Map([
-        [
-          SeaPenTemplateChip.kTranslucentItem,
-          [
-            {
-              value: SeaPenTemplateOption.kTranslucentItemApple,
-              translation: 'apple slice',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemAzalea,
-              translation: 'azalea',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemBegonia,
-              translation: 'begonia',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemBluebell,
-              translation: 'bluebell',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemCherryBlossom,
-              translation: 'cherry blossom',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemChrysanthemum,
-              translation: 'chrysanthemum',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemClemati,
-              translation: 'clemati',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemDaffodil,
-              translation: 'daffodil',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemDaisy,
-              translation: 'daisy',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemDandelion,
-              translation: 'dandelion',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemRose,
-              translation: 'desert rose',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemDogwood,
-              translation: 'dogwood',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemHibiscus,
-              translation: 'hibiscus',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemHydrangea,
-              translation: 'hydrangea',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemLeaf,
-              translation: 'leaf',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemLily,
-              translation: 'lily',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemPansy,
-              translation: 'pansy',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemPear,
-              translation: 'pear slice',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemPeony,
-              translation: 'peony',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemPhilodendron,
-              translation: 'philodendron',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemPoppy,
-              translation: 'poppy',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemSunflower,
-              translation: 'sunflower',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemPea,
-              translation: 'sweet pea',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentItemTulip,
-              translation: 'tulip',
-            },
-          ],
-        ],
-        [
-          SeaPenTemplateChip.kTranslucentColor,
-          [
-            {
-              value: SeaPenTemplateOption.kTranslucentColorPink,
-              translation: 'pink',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorBlue,
-              translation: 'blue',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorIndigo,
-              translation: 'indigo',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorGreen,
-              translation: 'green',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorEmerald,
-              translation: 'emerald',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorTeal,
-              translation: 'teal',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorCyan,
-              translation: 'cyan',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorPurple,
-              translation: 'purple',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorGold,
-              translation: 'gold',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorRed,
-              translation: 'red',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorRust,
-              translation: 'rust',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorOlive,
-              translation: 'olive',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorGray,
-              translation: 'gray',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorYellow,
-              translation: 'yellow',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorViolet,
-              translation: 'violet',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorIvory,
-              translation: 'ivory',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorMagenta,
-              translation: 'magenta',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorPeach,
-              translation: 'peach',
-            },
-            {
-              value: SeaPenTemplateOption.kTranslucentColorBlack,
-              translation: 'black',
-            },
-          ],
-        ],
-      ]),
-    },
-    {
-      id: SeaPenTemplateId.kScifi,
-      title: 'Science fiction',
-      text: `Otherworldly <${SeaPenTemplateChip.kScifiFeature}> in <${
-          SeaPenTemplateChip.kScifiColor}> colors`,
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_scifi.jpg',
-      }],
-      options: new Map([
-        [
-          SeaPenTemplateChip.kScifiFeature,
-          [
-            {
-              value: SeaPenTemplateOption.kScifiFeatureStreet,
-              translation: 'street',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiFeatureSkyline,
-              translation: 'skyline',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiFeatureSwamp,
-              translation: 'swamp',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiFeatureTransport,
-              translation: 'transport',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiFeatureBusStop,
-              translation: 'bus stop',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiFeatureDesert,
-              translation: 'desert',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiFeatureBeach,
-              translation: 'beach',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiFeatureMountains,
-              translation: 'mountains',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiFeaturePark,
-              translation: 'park',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiFeatureForest,
-              translation: 'forest',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiFeatureSmallTown,
-              translation: 'small town',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiFeatureFarm,
-              translation: 'farm',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiFeatureUnderwater,
-              translation: 'underwater',
-            },
-          ],
-        ],
-        [
-          SeaPenTemplateChip.kScifiColor,
-          [
-            {
-              value: SeaPenTemplateOption.kScifiColorEarthy,
-              translation: 'earthy',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiColorVibrant,
-              translation: 'vibrant',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiColorSilver,
-              translation: 'silver',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiColorEerie,
-              translation: 'eerie',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiColorComplementary,
-              translation: 'complementary',
-            },
-            {
-              value: SeaPenTemplateOption.kScifiColorNeutral,
-              translation: 'neutral',
+                  loadTimeData.getString('seaPenOptionGlowscapesFeaturePool'),
             },
           ],
         ],
@@ -1712,10 +1464,11 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
   return [
     {
       id: SeaPenTemplateId.kVcBackgroundSimple,
-      title: 'Simple',
-      text:
-          `A <${SeaPenTemplateChip.kVcBackgroundSimpleStyle}> bookshelf in a <${
-              SeaPenTemplateChip.kVcBackgroundSimpleTone}> room`,
+      title: loadTimeData.getString('seaPenTemplateTitleVcBackgroundSimple'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateVcBackgroundSimple',
+          `<${SeaPenTemplateChip.kVcBackgroundSimpleStyle}>`,
+          `<${SeaPenTemplateChip.kVcBackgroundSimpleTone}>`),
       preview: [{
         url:
             'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_simple.jpg',
@@ -1763,9 +1516,11 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
     },
     {
       id: SeaPenTemplateId.kVcBackgroundOffice,
-      title: 'Stylish office',
-      text: `A <${SeaPenTemplateChip.kVcBackgroundOfficeStyle}> office with <${
-          SeaPenTemplateChip.kVcBackgroundOfficeColor}> tones`,
+      title: loadTimeData.getString('seaPenTemplateTitleVcBackgroundOffice'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateVcBackgroundOffice',
+          `<${SeaPenTemplateChip.kVcBackgroundOfficeStyle}>`,
+          `<${SeaPenTemplateChip.kVcBackgroundOfficeColor}>`),
       preview: [{
         url:
             'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_office.jpg',
@@ -1817,10 +1572,11 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
     },
     {
       id: SeaPenTemplateId.kVcBackgroundTerrainVc,
-      title: 'Terrain',
-      text:
-          `<${SeaPenTemplateChip.kVcBackgroundTerrainFeature}> in shades of <${
-              SeaPenTemplateChip.kVcBackgroundTerrainColor}>`,
+      title: loadTimeData.getString('seaPenTemplateTitleVcBackgroundTerrainVc'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateVcBackgroundTerrainVc',
+          `<${SeaPenTemplateChip.kVcBackgroundTerrainFeature}>`,
+          `<${SeaPenTemplateChip.kVcBackgroundTerrainColor}>`),
       preview: [{
         url:
             'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_terrain_vc.jpg',
@@ -1874,6 +1630,25 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
                          .kVcBackgroundTerrainFeatureDifferentPlanet,
               translation: 'different planet',
             },
+            {
+              value: SeaPenTemplateOption.kVcBackgroundTerrainFeatureTreeTunnel,
+              translation: 'tree tunnel',
+            },
+            {
+              value:
+                  SeaPenTemplateOption.kVcBackgroundTerrainFeatureBaobabTrees,
+              translation: 'baobab trees',
+            },
+            {
+              value:
+                  SeaPenTemplateOption.kVcBackgroundTerrainFeatureMistyForest,
+              translation: 'misty forest',
+            },
+            {
+              value:
+                  SeaPenTemplateOption.kVcBackgroundTerrainFeatureCactusForest,
+              translation: 'cactus forest',
+            },
           ],
         ],
         [
@@ -1884,8 +1659,8 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
               translation: 'pink',
             },
             {
-              value: SeaPenTemplateOption.kVcBackgroundTerrainColorTeal,
-              translation: 'teal',
+              value: SeaPenTemplateOption.kVcBackgroundTerrainColorCyan,
+              translation: 'cyan',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainColorWhite,
@@ -1925,9 +1700,11 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
     },
     {
       id: SeaPenTemplateId.kVcBackgroundCafe,
-      title: 'Cafe',
-      text: `A <${SeaPenTemplateChip.kVcBackgroundCafeStyle}> <${
-          SeaPenTemplateChip.kVcBackgroundCafeType}> cafe`,
+      title: loadTimeData.getString('seaPenTemplateTitleVcBackgroundCafe'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateVcBackgroundCafe',
+          `<${SeaPenTemplateChip.kVcBackgroundCafeStyle}>`,
+          `<${SeaPenTemplateChip.kVcBackgroundCafeType}>`),
       preview: [{
         url:
             'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_cafe.jpg',
@@ -1987,10 +1764,11 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
     },
     {
       id: SeaPenTemplateId.kVcBackgroundArt,
-      title: 'Classic art',
-      text: `A painting of a <${
-          SeaPenTemplateChip.kVcBackgroundArtFeature}> in the <${
-          SeaPenTemplateChip.kVcBackgroundArtMovement}> style`,
+      title: loadTimeData.getString('seaPenTemplateTitleVcBackgroundArt'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateVcBackgroundArt',
+          `<${SeaPenTemplateChip.kVcBackgroundArtFeature}>`,
+          `<${SeaPenTemplateChip.kVcBackgroundArtMovement}>`),
       preview: [{
         url:
             'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_art.jpg',
@@ -2000,24 +1778,20 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
           SeaPenTemplateChip.kVcBackgroundArtFeature,
           [
             {
-              value: SeaPenTemplateOption.kVcBackgroundArtFeatureCanyon,
-              translation: 'canyon',
+              value: SeaPenTemplateOption.kVcBackgroundArtFeatureField,
+              translation: 'field of flowers ',
             },
             {
-              value: SeaPenTemplateOption.kVcBackgroundArtFeatureMountain,
-              translation: 'mountain',
+              value: SeaPenTemplateOption.kVcBackgroundArtFeatureSwamp,
+              translation: 'swamp',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureBeach,
               translation: 'beach',
             },
             {
-              value: SeaPenTemplateOption.kVcBackgroundArtFeatureCave,
-              translation: 'cave',
-            },
-            {
-              value: SeaPenTemplateOption.kVcBackgroundArtFeatureCliff,
-              translation: 'cliff',
+              value: SeaPenTemplateOption.kVcBackgroundArtFeatureMeadow,
+              translation: 'meadow',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureForest,
@@ -2040,8 +1814,8 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
               translation: 'lake',
             },
             {
-              value: SeaPenTemplateOption.kVcBackgroundArtFeatureMeadow,
-              translation: 'meadow',
+              value: SeaPenTemplateOption.kVcBackgroundArtFeatureCliff,
+              translation: 'cliff',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureOcean,
@@ -2056,8 +1830,8 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
               translation: 'sand dune',
             },
             {
-              value: SeaPenTemplateOption.kVcBackgroundArtFeatureSwamp,
-              translation: 'swamp',
+              value: SeaPenTemplateOption.kVcBackgroundArtFeatureMountain,
+              translation: 'mountain',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureValley,
@@ -2068,8 +1842,8 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
               translation: 'waterfall',
             },
             {
-              value: SeaPenTemplateOption.kVcBackgroundArtFeatureField,
-              translation: 'field of flowers ',
+              value: SeaPenTemplateOption.kVcBackgroundArtFeatureCanyon,
+              translation: 'canyon',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureCityscape,
@@ -2159,11 +1933,13 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
     },
     {
       id: SeaPenTemplateId.kVcBackgroundDreamscapesVc,
-      title: 'Dreamscapes',
-      text: `A surreal <${
-          SeaPenTemplateChip.kVcBackgroundDreamscapesObject}> made of <${
-          SeaPenTemplateChip.kVcBackgroundDreamscapesMaterial}> in <${
-          SeaPenTemplateChip.kVcBackgroundDreamscapesColors}>`,
+      title: loadTimeData.getString(
+          'seaPenTemplateTitleVcBackgroundDreamscapesVc'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateVcBackgroundDreamscapesVc',
+          `<${SeaPenTemplateChip.kVcBackgroundDreamscapesObject}>`,
+          `<${SeaPenTemplateChip.kVcBackgroundDreamscapesMaterial}>`,
+          `<${SeaPenTemplateChip.kVcBackgroundDreamscapesColors}>`),
       preview: [{
         url:
             'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_dreamscapes_vc.jpg',
@@ -2371,10 +2147,13 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
     },
     {
       id: SeaPenTemplateId.kVcBackgroundCharacters,
-      title: 'Characters',
-      text: `<${SeaPenTemplateChip.kVcBackgroundCharactersColor}> <${
-          SeaPenTemplateChip.kVcBackgroundCharactersSubjects}> on a <${
-          SeaPenTemplateChip.kVcBackgroundCharactersBackground}> background`,
+      title:
+          loadTimeData.getString('seaPenTemplateTitleVcBackgroundCharacters'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateVcBackgroundCharacters',
+          `<${SeaPenTemplateChip.kVcBackgroundCharactersColor}>`,
+          `<${SeaPenTemplateChip.kVcBackgroundCharactersSubjects}>`,
+          `<${SeaPenTemplateChip.kVcBackgroundCharactersBackground}>`),
       preview: [{
         url:
             'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_characters.jpg',
@@ -2383,6 +2162,10 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
         [
           SeaPenTemplateChip.kVcBackgroundCharactersColor,
           [
+            {
+              value: SeaPenTemplateOption.kVcBackgroundCharactersColorPink,
+              translation: 'pink',
+            },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorYellow,
               translation: 'yellow',
@@ -2731,6 +2514,76 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
               value: SeaPenTemplateOption
                          .kVcBackgroundCharactersBackgroundCoralPink,
               translation: 'coral pink',
+            },
+          ],
+        ],
+      ]),
+    },
+    {
+      id: SeaPenTemplateId.kVcBackgroundGlowscapes,
+      title:
+          loadTimeData.getString('seaPenTemplateTitleVcBackgroundGlowscapes'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateVcBackgroundGlowscapes',
+          `<${SeaPenTemplateChip.kVcBackgroundGlowscapesLandscape}>`,
+          `<${SeaPenTemplateChip.kVcBackgroundGlowscapesFeature}>`),
+      preview: [{
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_glowscapes.jpg',
+      }],
+      options: new Map([
+        [
+          SeaPenTemplateChip.kVcBackgroundGlowscapesLandscape,
+          [
+            {
+              value:
+                  SeaPenTemplateOption.kVcBackgroundGlowscapesLandscapeValley,
+              translation: 'valley',
+            },
+            {
+              value: SeaPenTemplateOption
+                         .kVcBackgroundGlowscapesLandscapeHotSpring,
+              translation: 'hot spring',
+            },
+            {
+              value:
+                  SeaPenTemplateOption.kVcBackgroundGlowscapesLandscapeMeadow,
+              translation: 'meadow',
+            },
+            {
+              value: SeaPenTemplateOption
+                         .kVcBackgroundGlowscapesLandscapeCoralReef,
+              translation: 'coral reef',
+            },
+            {
+              value: SeaPenTemplateOption.kVcBackgroundGlowscapesLandscapePond,
+              translation: 'pond',
+            },
+          ],
+        ],
+        [
+          SeaPenTemplateChip.kVcBackgroundGlowscapesFeature,
+          [
+            {
+              value: SeaPenTemplateOption.kVcBackgroundGlowscapesFeatureRiver,
+              translation: 'river',
+            },
+            {
+              value:
+                  SeaPenTemplateOption.kVcBackgroundGlowscapesFeatureSaltRock,
+              translation: 'salt rock',
+            },
+            {
+              value: SeaPenTemplateOption.kVcBackgroundGlowscapesFeatureFlower,
+              translation: 'flower',
+            },
+            {
+              value: SeaPenTemplateOption.kVcBackgroundGlowscapesFeatureWalkway,
+              translation: 'walkway',
+            },
+            {
+              value: SeaPenTemplateOption.kVcBackgroundGlowscapesFeaturePool,
+              translation: 'pool',
             },
           ],
         ],
