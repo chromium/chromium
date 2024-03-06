@@ -908,6 +908,13 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_USE_INITIAL_NETWORK_STATE_AT_STARTUP,
                 "Use initial network state at startup"),
+        Flag.baseFeature(
+                BlinkFeatures.AUTOFILL_INCLUDE_FORM_ELEMENTS_IN_SHADOW_DOM,
+                "Extract form elements from shadow DOM"),
+        Flag.baseFeature(
+                BlinkFeatures.AUTOFILL_INCLUDE_SHADOW_DOM_IN_UNASSOCIATED_LISTED_ELEMENTS,
+                "Include elements from shadow DOM in unassociated listed elements"),
+        Flag.baseFeature("ShadowDomSupport", "Improve shadow DOM support in password manager"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
