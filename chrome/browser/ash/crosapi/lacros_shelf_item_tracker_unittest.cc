@@ -41,6 +41,7 @@ class TestShelfItemDelegate : public LacrosShelfItemController {
   ~TestShelfItemDelegate() override = default;
 
   void AddWindow(aura::Window* window) override {}
+  std::u16string GetTitle() override { return u"test title"; }
 
   // ShelfItemDelegate:
   void ExecuteCommand(bool from_context_menu,

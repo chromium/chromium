@@ -23,6 +23,9 @@ class LacrosShelfItemController : public ash::ShelfItemDelegate {
   // This method is called by LacrosShelfItemTracker to hand off a window to the
   // controller.
   virtual void AddWindow(aura::Window* window) = 0;
+
+  // Shelf item must have a non-empty title for accessibility.
+  virtual std::u16string GetTitle() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_LACROS_SHELF_ITEM_CONTROLLER_H_

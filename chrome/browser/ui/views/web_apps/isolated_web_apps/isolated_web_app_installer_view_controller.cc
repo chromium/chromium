@@ -48,6 +48,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -220,30 +221,44 @@ void IsolatedWebAppInstallerViewController::AddOrUpdateWindowToShelf() {
   ash::ShelfModel* shelf_model = ash::ShelfModel::Get();
   ash::ShelfID shelf_id = ash::ShelfID(instance_id_);
 
-  ash::ShelfItem item;
-  item.id = shelf_id;
-  item.status = ash::STATUS_RUNNING;
-  item.type = ash::TYPE_APP;
-  if (icon_.isNull()) {
-    item.image = IsolatedWebAppInstallerShelfItemController::
-        GetDefaultInstallerShelfIcon();
-  } else {
-    item.image = icon_;
-  }
+  int index = ash::ShelfModel::Get()->ItemIndexByID(shelf_id);
 
-  auto item_index = shelf_model->ItemIndexByID(shelf_id);
-  if (item_index == -1) {
-    // Add as new item to the shelf.
+  if (index == -1) {
+    // If there is no existing item by the ID in the Shelf, we add a new item.
     auto delegate =
         std::make_unique<IsolatedWebAppInstallerShelfItemController>(shelf_id);
+
+    ash::ShelfItem item;
+    item.id = shelf_id;
+    item.title = delegate->GetTitle();
+    CHECK(!item.title.empty());
+    item.status = ash::STATUS_RUNNING;
+    item.type = ash::TYPE_APP;
+    if (!icon_.isNull()) {
+      item.image = icon_;
+    } else {
+      item.image = IsolatedWebAppInstallerShelfItemController::
+          GetDefaultInstallerShelfIcon();
+    }
+
     shelf_model->Add(item, std::move(delegate));
-    static_cast<LacrosShelfItemController*>(
-        shelf_model->GetShelfItemDelegate(shelf_id))
-        ->AddWindow(window_);
   } else {
-    // Update existing item on the shelf.
-    shelf_model->Set(item_index, item);
+    // If the item already exists in the Shelf, we update.
+    const ash::ShelfItem* existing_item = shelf_model->ItemByID(shelf_id);
+    CHECK(existing_item);
+
+    ash::ShelfItem item = *existing_item;
+    // Icon is the only thing we update for now.
+    if (!icon_.isNull()) {
+      item.image = icon_;
+    }
+
+    ash::ShelfModel::Get()->Set(index, item);
   }
+
+  static_cast<LacrosShelfItemController*>(
+      shelf_model->GetShelfItemDelegate(shelf_id))
+      ->AddWindow(window_);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
