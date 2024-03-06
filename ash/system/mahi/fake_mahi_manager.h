@@ -38,6 +38,7 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
   void OnContextMenuClicked(
       crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override {
   }
+  void OpenFeedbackDialog() override;
 
   void set_content_title(const std::u16string& content_title) {
     content_title_ = content_title;
@@ -51,10 +52,16 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
     summary_text_ = summary_text;
   }
 
+  int open_feedback_dialog_called_count() {
+    return open_feedback_dialog_called_count_;
+  }
+
  private:
   std::u16string content_title_;
   gfx::ImageSkia content_icon_;
   std::u16string summary_text_;
+
+  int open_feedback_dialog_called_count_ = 0;
 
   // The widget contains the Mahi main panel.
   views::UniqueWidgetPtr mahi_panel_widget_;

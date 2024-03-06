@@ -160,12 +160,17 @@ TEST_F(MahiPanelViewTest, FeedbackButtons) {
   histogram_tester.ExpectBucketCount(mahi_constants::kMahiFeedbackHistogramName,
                                      false, 0);
 
+  EXPECT_EQ(0, fake_mahi_manager()->open_feedback_dialog_called_count());
+
   LeftClickOn(
       panel_view()->GetViewByID(mahi_constants::ViewId::kThumbsDownButton));
   histogram_tester.ExpectBucketCount(mahi_constants::kMahiFeedbackHistogramName,
                                      true, 1);
   histogram_tester.ExpectBucketCount(mahi_constants::kMahiFeedbackHistogramName,
                                      false, 1);
+
+  // Should open feedback dialog when thumbs down button is pressed.
+  EXPECT_EQ(1, fake_mahi_manager()->open_feedback_dialog_called_count());
 }
 
 TEST_F(MahiPanelViewTest, CloseButton) {

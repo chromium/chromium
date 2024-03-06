@@ -37,6 +37,7 @@ class MahiManagerImpl : public chromeos::MahiManager {
   void SetCurrentFocusedPageInfo(crosapi::mojom::MahiPageInfoPtr info) override;
   void OnContextMenuClicked(
       crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override;
+  void OpenFeedbackDialog() override;
 
   // Notifies the panel that refresh is available or not for the corresponding
   // surface.

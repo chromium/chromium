@@ -72,6 +72,9 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
   virtual void OnContextMenuClicked(
       crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) = 0;
 
+  // Opens the feedback dialog.
+  virtual void OpenFeedbackDialog() = 0;
+
  protected:
   MahiManager();
 };

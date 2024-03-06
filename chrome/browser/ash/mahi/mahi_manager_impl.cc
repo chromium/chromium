@@ -12,14 +12,19 @@
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/manta/features.h"
 #include "components/manta/manta_service.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -164,6 +169,23 @@ void MahiManagerImpl::OnGetPageContent(
             }
           },
           std::move(callback)));
+}
+
+void MahiManagerImpl::OpenFeedbackDialog() {
+  const std::string description_template = "#Mahi: ";
+
+  base::Value::Dict ai_metadata;
+  ai_metadata.Set("from_chromeos", "true");
+
+  chrome::ShowFeedbackPage(
+      /*browser=*/chrome::FindBrowserWithActiveWindow(),
+      /*source=*/chrome::kFeedbackSourceAI, description_template,
+      /*description_placeholder_text=*/
+      base::UTF16ToUTF8(
+          l10n_util::GetStringUTF16(IDS_SEA_PEN_FEEDBACK_PLACEHOLDER)),
+      /*category_tag=*/std::string(),
+      /*extra_diagnostics=*/std::string(),
+      /*autofill_metadata=*/base::Value::Dict(), std::move(ai_metadata));
 }
 
 }  // namespace ash

@@ -37,4 +37,8 @@ void FakeMahiManager::GetSummary(MahiSummaryCallback callback) {
   std::move(callback).Run(summary_text_);
 }
 
+void FakeMahiManager::OpenFeedbackDialog() {
+  open_feedback_dialog_called_count_++;
+}
+
 }  // namespace ash

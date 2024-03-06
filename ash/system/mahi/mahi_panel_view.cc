@@ -250,6 +250,14 @@ void MahiPanelView::OnThumbsUpButtonPressed(const ui::Event& event) {
 
 void MahiPanelView::OnThumbsDownButtonPressed(const ui::Event& event) {
   base::UmaHistogramBoolean(mahi_constants::kMahiFeedbackHistogramName, false);
+
+  // Open the feedback dialog if thumbs down button is pressed.
+  auto* manager = chromeos::MahiManager::Get();
+  if (manager) {
+    manager->OpenFeedbackDialog();
+  } else {
+    CHECK_IS_TEST();
+  }
 }
 
 void MahiPanelView::OnCloseButtonPressed(const ui::Event& event) {
