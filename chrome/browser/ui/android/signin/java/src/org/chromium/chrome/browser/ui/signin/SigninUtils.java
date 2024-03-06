@@ -115,6 +115,9 @@ public final class SigninUtils {
         if (!profileData.hasDisplayableEmailAddress()) {
             return profileData.getFullName();
         }
+        if (TextUtils.isEmpty(profileData.getFullName())) {
+            return profileData.getAccountEmail();
+        }
         return context.getString(
                 R.string.signin_account_label_for_non_selected_account,
                 profileData.getFullName(),
