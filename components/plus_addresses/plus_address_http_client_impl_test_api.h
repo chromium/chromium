@@ -20,10 +20,6 @@ class PlusAddressHttpClientImplTestApi {
       PlusAddressHttpClientImpl* http_client)
       : http_client_(*http_client) {}
 
-  void SetClockForTesting(base::Clock* clock) && {
-    http_client_->clock_ = clock;
-  }
-
   std::optional<GURL> GetServerUrlForTesting() && {
     return http_client_->server_url_;
   }

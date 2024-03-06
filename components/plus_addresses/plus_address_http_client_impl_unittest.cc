@@ -15,7 +15,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -81,16 +80,12 @@ class PlusAddressHttpClientRequests : public ::testing::Test {
         features::kFeature,
         {{features::kEnterprisePlusAddressServerUrl.name, server_base_url},
          {features::kEnterprisePlusAddressOAuthScope.name, test_scope}});
-    clock_.SetNow(start_time);
   }
 
  protected:
-  void AdvanceTimeTo(base::Time now) {
-    ASSERT_GE(now, clock_.Now());
-    clock_.SetNow(now);
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
   }
-
-  base::Clock* test_clock() { return &clock_; }
 
   std::string MakeCreationResponse(const std::string& facet,
                                    const std::string& plus_address,
@@ -101,8 +96,8 @@ class PlusAddressHttpClientRequests : public ::testing::Test {
                     .is_confirmed = is_confirmed});
   }
 
-  // Not used directly, but required for `IdentityTestEnvironment` to work.
-  base::test::TaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::string server_base_url = "https://enterprise.foo/";
   std::string test_scope = "scope";
   std::string fullProfileEndpoint =
@@ -113,9 +108,6 @@ class PlusAddressHttpClientRequests : public ::testing::Test {
       base::StrCat({server_base_url, kServerCreatePlusAddressEndpoint});
   std::string token = "myToken";
   std::string email_address = "foo@plus.plus";
-
-  // Issue all requests starting at this time to test the latency metrics.
-  base::Time start_time = base::Time::FromSecondsSinceUnixEpoch(1);
 
   scoped_refptr<network::SharedURLLoaderFactory>
       scoped_shared_url_loader_factory;
@@ -129,7 +121,6 @@ class PlusAddressHttpClientRequests : public ::testing::Test {
 
  private:
   base::test::ScopedFeatureList features_;
-  base::SimpleTestClock clock_;
   data_decoder::test::InProcessDataDecoder decoder_;
 };
 
@@ -211,7 +202,6 @@ class PlusAddressCreationRequests
       : client_(identity_manager, scoped_shared_url_loader_factory) {
     identity_test_env.MakePrimaryAccountAvailable(
         email_address, signin::ConsentLevel::kSignin);
-    test_api(client_).SetClockForTesting(test_clock());
   }
 
  protected:
@@ -307,7 +297,7 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnSuccess) {
       token, base::Time::Max());
 
   // Fulfill the request and the appropriate callback should be run.
-  AdvanceTimeTo(start_time + latency_);
+  task_environment_.FastForwardBy(latency_);
   const std::string json =
       MakeCreationResponse(origin_.Serialize(), plus_address_, true);
   test_url_loader_factory.SimulateResponseForPendingRequest(Endpoint(), json);
@@ -330,8 +320,8 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnNetworkError) {
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       token, base::Time::Max());
 
-  AdvanceTimeTo(start_time + latency_);
-  // TODO (kaklilu): Checks behavior when response body isn't null.
+  FastForwardBy(latency_);
+  //  TODO (kaklilu): Checks behavior when response body isn't null.
   EXPECT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
       Endpoint(), "", net::HTTP_NOT_FOUND));
 
@@ -356,7 +346,7 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnClientError) {
       token, base::Time::Max());
 
   // Return a response missing all of the expected fields.
-  AdvanceTimeTo(start_time + latency_);
+  FastForwardBy(latency_);
   const std::string json = "{}";
   test_url_loader_factory.SimulateResponseForPendingRequest(Endpoint(), json);
 
@@ -459,7 +449,6 @@ TEST_F(PlusAddressHttpClientRequests, GetAllPlusAddressesV1_RunsCallbackOnSucces
   identity_test_env.MakePrimaryAccountAvailable(email_address,
                                                 signin::ConsentLevel::kSignin);
   PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
-  test_api(client).SetClockForTesting(test_clock());
 
   base::test::TestFuture<const PlusAddressMapOrError&> future;
   // Initiate a request...
@@ -475,8 +464,8 @@ TEST_F(PlusAddressHttpClientRequests, GetAllPlusAddressesV1_RunsCallbackOnSucces
   PlusAddressMap expected(
       {{facet_1, plus_address_1}, {facet_2, plus_address_2}});
   // Fulfill the request and the callback should be run
-  base::TimeDelta latency = base::Milliseconds(2400);
-  AdvanceTimeTo(start_time + latency);
+  constexpr base::TimeDelta kLatency = base::Milliseconds(2400);
+  FastForwardBy(kLatency);
   const std::string json =
       test::MakeListResponse({PlusProfile{.facet = facet_1,
                                           .plus_address = plus_address_1,
@@ -491,7 +480,7 @@ TEST_F(PlusAddressHttpClientRequests, GetAllPlusAddressesV1_RunsCallbackOnSucces
 
   // Verify expected metrics.
   histogram_tester.ExpectUniqueTimeSample(
-      LatencyHistogramFor(PlusAddressNetworkRequestType::kList), latency, 1);
+      LatencyHistogramFor(PlusAddressNetworkRequestType::kList), kLatency, 1);
   histogram_tester.ExpectUniqueSample(
       ResponseCodeHistogramFor(PlusAddressNetworkRequestType::kList), 200, 1);
   histogram_tester.ExpectUniqueSample(
@@ -504,7 +493,6 @@ TEST_F(PlusAddressHttpClientRequests,
   identity_test_env.MakePrimaryAccountAvailable(email_address,
                                                 signin::ConsentLevel::kSignin);
   PlusAddressHttpClientImpl client(identity_manager, scoped_shared_url_loader_factory);
-  test_api(client).SetClockForTesting(test_clock());
 
   // Initiate a request...
   base::test::TestFuture<const PlusAddressMapOrError&> callback;
@@ -513,8 +501,8 @@ TEST_F(PlusAddressHttpClientRequests,
       token, base::Time::Max());
 
   // Check that the callback is run with the expected PlusAddressRequestError.
-  base::TimeDelta latency = base::Milliseconds(2400);
-  AdvanceTimeTo(start_time + latency);
+  constexpr base::TimeDelta kLatency = base::Milliseconds(2400);
+  FastForwardBy(kLatency);
   EXPECT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
       fullProfileEndpoint, "", net::HTTP_NOT_FOUND));
   EXPECT_TRUE(callback.IsReady());
@@ -525,7 +513,7 @@ TEST_F(PlusAddressHttpClientRequests,
 
   // Verify expected metrics.
   histogram_tester.ExpectUniqueTimeSample(
-      LatencyHistogramFor(PlusAddressNetworkRequestType::kList), latency, 1);
+      LatencyHistogramFor(PlusAddressNetworkRequestType::kList), kLatency, 1);
   histogram_tester.ExpectUniqueSample(
       ResponseCodeHistogramFor(PlusAddressNetworkRequestType::kList),
       net::HTTP_NOT_FOUND, 1);
@@ -594,40 +582,29 @@ class PlusAddressAuthToken : public ::testing::Test {
     features_.InitAndEnableFeatureWithParameters(
         features::kFeature,
         {{features::kEnterprisePlusAddressOAuthScope.name, test_scope_}});
-
-    // Time-travel back to 1970 so that we can test with
-    // base::Time::FromSecondsSinceUnixEpoch
-    clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
   }
+
+  static constexpr base::TimeDelta kTestTokenLifetime = base::Seconds(1000);
 
  protected:
   signin::IdentityManager* identity_manager() {
     return identity_test_env_.identity_manager();
   }
 
-  void AdvanceTimeTo(base::Time now) {
-    ASSERT_GE(now, clock_.Now());
-    clock_.SetNow(now);
-  }
-
-  base::Clock* test_clock() { return &clock_; }
-
   // Required by `signin::IdentityTestEnvironment`.
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
 
   std::string test_email_address_ = "foo@gmail.com";
   std::string test_token_ = "access_token";
   std::string test_scope_ = "https://googleapis.com/test.scope";
   signin::ScopeSet test_scopes_ = {test_scope_};
-  base::Time test_token_expiration_time_ =
-      base::Time::FromSecondsSinceUnixEpoch(1000);
 
   base::HistogramTester histogram_tester;
 
  private:
   base::test::ScopedFeatureList features_;
-  base::SimpleTestClock clock_;
 };
 
 TEST_F(PlusAddressAuthToken, RequestedBeforeSignin) {
@@ -643,7 +620,8 @@ TEST_F(PlusAddressAuthToken, RequestedBeforeSignin) {
                                                  signin::ConsentLevel::kSignin);
   identity_test_env_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
-          test_token_, test_token_expiration_time_, "unused", test_scopes_);
+          test_token_, base::Time::Now() + kTestTokenLifetime, "unused",
+          test_scopes_);
 
   EXPECT_TRUE(callback.IsReady());
   EXPECT_THAT(histogram_tester.GetAllSamples(kPlusAddressOauthErrorHistogram),
@@ -672,12 +650,12 @@ TEST_F(PlusAddressAuthToken, RequestedAfterExpiration) {
                                                  signin::ConsentLevel::kSignin);
   identity_test_env_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
-          test_token_, test_token_expiration_time_, "unused", test_scopes_);
+          test_token_, base::Time::Now() + kTestTokenLifetime, "unused",
+          test_scopes_);
   EXPECT_TRUE(first_callback.IsReady());
   EXPECT_THAT(histogram_tester.GetAllSamples(kPlusAddressOauthErrorHistogram),
               BucketsAre(base::Bucket(GoogleServiceAuthError::State::NONE, 1)));
-  base::Time now = test_token_expiration_time_ + base::Seconds(1);
-  AdvanceTimeTo(now);
+  task_environment_.FastForwardBy(kTestTokenLifetime + base::Seconds(1));
 
   // Issue another request for an OAuth token.
   base::test::TestFuture<std::optional<std::string>> second_callback;
@@ -687,7 +665,8 @@ TEST_F(PlusAddressAuthToken, RequestedAfterExpiration) {
   EXPECT_FALSE(second_callback.IsReady());
   identity_test_env_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
-          test_token_, now + base::Hours(1), "unused", test_scopes_);
+          test_token_, base::Time::Now() + kTestTokenLifetime, "unused",
+          test_scopes_);
   EXPECT_TRUE(second_callback.IsReady());
   EXPECT_THAT(histogram_tester.GetAllSamples(kPlusAddressOauthErrorHistogram),
               BucketsAre(base::Bucket(GoogleServiceAuthError::State::NONE, 2)));

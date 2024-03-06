@@ -34,12 +34,12 @@ namespace plus_addresses {
 
 namespace {
 
-const base::TimeDelta kRequestTimeout = base::Seconds(5);
+constexpr base::TimeDelta kRequestTimeout = base::Seconds(5);
 
 // See docs/network_traffic_annotations.md for reference.
 // TODO(b/295556954): Update the description and trigger fields when possible.
 //                    Also replace the policy_exception when we have a policy.
-const net::NetworkTrafficAnnotationTag kReservePlusAddressAnnotation =
+constexpr net::NetworkTrafficAnnotationTag kReservePlusAddressAnnotation =
     net::DefineNetworkTrafficAnnotation("plus_address_reservation", R"(
       semantics {
         sender: "Chrome Plus Address Client"
@@ -69,7 +69,7 @@ const net::NetworkTrafficAnnotationTag kReservePlusAddressAnnotation =
 
 // TODO(b/277532955): Update the description and trigger fields when possible.
 //                    Also replace the policy_exception when we have a policy.
-const net::NetworkTrafficAnnotationTag kConfirmPlusAddressAnnotation =
+constexpr net::NetworkTrafficAnnotationTag kConfirmPlusAddressAnnotation =
     net::DefineNetworkTrafficAnnotation("plus_address_confirmation", R"(
       semantics {
         sender: "Chrome Plus Address Client"
@@ -101,7 +101,7 @@ const net::NetworkTrafficAnnotationTag kConfirmPlusAddressAnnotation =
 
 // TODO(b/295556954): Update the description and trigger fields when possible.
 //                    Also replace the policy_exception when we have a policy.
-const net::NetworkTrafficAnnotationTag kGetAllPlusAddressesAnnotation =
+constexpr net::NetworkTrafficAnnotationTag kGetAllPlusAddressesAnnotation =
     net::DefineNetworkTrafficAnnotation("get_all_plus_addresses", R"(
       semantics {
         sender: "Chrome Plus Address Client"
@@ -212,13 +212,14 @@ void PlusAddressHttpClientImpl::ReservePlusAddressInternal(
   // TODO(b/301984623) - Measure average downloadsize and change this.
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete,
-                     // Safe since this class owns the list of loaders.
-                     base::Unretained(this),
-                     loaders_for_creation_.insert(loaders_for_creation_.begin(),
-                                                  std::move(loader)),
-                     PlusAddressNetworkRequestType::kReserve, clock_->Now(),
-                     std::move(on_completed)),
+      base::BindOnce(
+          &PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete,
+          // Safe since this class owns the list of loaders.
+          base::Unretained(this),
+          loaders_for_creation_.insert(loaders_for_creation_.begin(),
+                                       std::move(loader)),
+          PlusAddressNetworkRequestType::kReserve, base::TimeTicks::Now(),
+          std::move(on_completed)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
@@ -258,13 +259,14 @@ void PlusAddressHttpClientImpl::ConfirmPlusAddressInternal(
   // TODO(b/301984623) - Measure average downloadsize and change this.
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete,
-                     // Safe since this class owns the list of loaders.
-                     base::Unretained(this),
-                     loaders_for_creation_.insert(loaders_for_creation_.begin(),
-                                                  std::move(loader)),
-                     PlusAddressNetworkRequestType::kCreate, clock_->Now(),
-                     std::move(on_completed)),
+      base::BindOnce(
+          &PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete,
+          // Safe since this class owns the list of loaders.
+          base::Unretained(this),
+          loaders_for_creation_.insert(loaders_for_creation_.begin(),
+                                       std::move(loader)),
+          PlusAddressNetworkRequestType::kCreate, base::TimeTicks::Now(),
+          std::move(on_completed)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
@@ -297,7 +299,7 @@ void PlusAddressHttpClientImpl::GetAllPlusAddressesInternal(
       url_loader_factory_.get(),
       base::BindOnce(&PlusAddressHttpClientImpl::OnGetAllPlusAddressesComplete,
                      // Safe since this class owns the loader_for_sync_.
-                     base::Unretained(this), clock_->Now(),
+                     base::Unretained(this), base::TimeTicks::Now(),
                      std::move(on_completed)),
       // TODO(b/301984623) - Measure average download size and change this.
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
@@ -306,13 +308,13 @@ void PlusAddressHttpClientImpl::GetAllPlusAddressesInternal(
 void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
     UrlLoaderList::iterator it,
     PlusAddressNetworkRequestType type,
-    base::Time request_start,
+    base::TimeTicks request_start,
     PlusAddressRequestCallback on_completed,
     std::unique_ptr<std::string> response) {
   // Record relevant metrics.
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
   PlusAddressMetrics::RecordNetworkRequestLatency(
-      type, clock_->Now() - request_start);
+      type, base::TimeTicks::Now() - request_start);
   if (loader && loader->ResponseInfo() && loader->ResponseInfo()->headers) {
     PlusAddressMetrics::RecordNetworkRequestResponseCode(
         type, loader->ResponseInfo()->headers->response_code());
@@ -346,12 +348,13 @@ void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
 }
 
 void PlusAddressHttpClientImpl::OnGetAllPlusAddressesComplete(
-    base::Time request_start,
+    base::TimeTicks request_start,
     PlusAddressMapRequestCallback on_completed,
     std::unique_ptr<std::string> response) {
   // Record relevant metrics.
   PlusAddressMetrics::RecordNetworkRequestLatency(
-      PlusAddressNetworkRequestType::kList, clock_->Now() - request_start);
+      PlusAddressNetworkRequestType::kList,
+      base::TimeTicks::Now() - request_start);
   std::optional<int> response_code;
   if (loader_for_sync_ && loader_for_sync_->ResponseInfo() &&
       loader_for_sync_->ResponseInfo()->headers) {

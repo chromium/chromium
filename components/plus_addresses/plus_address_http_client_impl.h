@@ -14,17 +14,12 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/time/default_clock.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "url/gurl.h"
 
 class GoogleServiceAuthError;
-
-namespace base {
-class Clock;
-}  // namespace base
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -95,11 +90,11 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
   void OnReserveOrConfirmPlusAddressComplete(
       UrlLoaderList::iterator it,
       PlusAddressNetworkRequestType type,
-      base::Time request_start,
+      base::TimeTicks request_start,
       PlusAddressRequestCallback on_completed,
       std::unique_ptr<std::string> response);
 
-  void OnGetAllPlusAddressesComplete(base::Time request_start,
+  void OnGetAllPlusAddressesComplete(base::TimeTicks request_start,
                                      PlusAddressMapRequestCallback on_completed,
                                      std::unique_ptr<std::string> response);
 
@@ -110,7 +105,7 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
 
   // The IdentityManager instance for the signed-in user.
   raw_ptr<signin::IdentityManager> identity_manager_;
-  raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
+
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_ GUARDED_BY_CONTEXT(sequence_checker_);
 
