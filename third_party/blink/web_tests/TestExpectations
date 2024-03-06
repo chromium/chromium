@@ -6913,3 +6913,7 @@ crbug.com/327468395 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/c
 
 # Gardener 2024-03-06 (APAC)
 crbug.com/328303424 [ Mac ] css3/blending/svg-blend-color.html [ Failure ]
+
+# Gardener 2024-03-06 (AMER)
+crbug.com/328455892 [ Mac ] virtual/threaded-no-composited-antialiasing/animations/animation-offscreen-to-onscreen.html [ Failure Pass ]
+crbug.com/328449870 [ Mac ] virtual/threaded-no-composited-antialiasing/animations/cascade-important-keyframe-properties.html [ Failure Pass ]
