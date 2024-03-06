@@ -441,7 +441,7 @@ const OutOfFlowLayoutPart::ContainingBlockInfo
 OutOfFlowLayoutPart::ApplyInsetArea(
     const InsetArea& inset_area,
     const ContainingBlockInfo& container_info,
-    const LogicalOofPositionedNode& candidate,
+    const BlockNode& candidate,
     const LogicalAnchorQueryMap* anchor_queries) {
   // A non-'none' inset-area modifies an anchor positioned element's absolute
   // position containing block. This method returns a modified
@@ -455,9 +455,9 @@ OutOfFlowLayoutPart::ApplyInsetArea(
 
   std::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
   CreateAnchorEvaluator(anchor_evaluator_storage, container_info,
-                        candidate.Node().Style().GetWritingDirection(),
-                        candidate.Node().Style().AnchorDefault(),
-                        *candidate.Node().GetLayoutBox(), anchor_queries);
+                        candidate.Style().GetWritingDirection(),
+                        candidate.Style().AnchorDefault(),
+                        *candidate.GetLayoutBox(), anchor_queries);
   AnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
   if (!anchor_evaluator) {
     return container_info;
@@ -1642,7 +1642,7 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
       container_info.writing_direction, oof_style.GetWritingDirection());
   if (!inset_area.IsNone()) {
     container_info =
-        ApplyInsetArea(inset_area, container_info, oof_node, anchor_queries);
+        ApplyInsetArea(inset_area, container_info, node, anchor_queries);
   }
 
   OofContainingBlock<LogicalOffset> containing_block;
