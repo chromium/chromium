@@ -128,8 +128,10 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
                                          payment_method, subframe_origin)));
 }
 
+// TODO(https://crbug.com/1490673): Disabled due to excessive flakiness across
+//   multiple platforms (Mac, Linux, Windows, etc.).
 IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
-                       SameOriginPaymentRequest) {
+                       DISABLED_SameOriginPaymentRequest) {
   // Install a payment app that responds to the abortpayment event, which is
   // used by this test to determine that the app was successfully run.
   std::string payment_method;
