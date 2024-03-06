@@ -8,6 +8,8 @@
 #include <string>
 
 #include "ash/ime/ime_controller_impl.h"
+#include "ash/login/ui/non_accessible_view.h"
+#include "ash/style/system_textfield_controller.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -16,7 +18,6 @@
 #include "chromeos/ash/components/auth_panel/impl/factor_auth_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/views/controls/textfield/textfield_controller.h"
 
 namespace views {
 
@@ -43,10 +44,8 @@ class AuthPanelEventDispatcher;
 // payload. The password submission logic does not live in this class. Here, we
 // only handle UI behavior.
 class PasswordAuthView : public FactorAuthView,
-                         public views::TextfieldController,
                          public ImeControllerImpl::Observer {
   METADATA_HEADER(PasswordAuthView, FactorAuthView)
-
  public:
   PasswordAuthView(AuthPanelEventDispatcher* dispatcher,
                    AuthFactorStore* store);
@@ -55,10 +54,6 @@ class PasswordAuthView : public FactorAuthView,
   // FactorAuthView:
   AshAuthFactor GetFactor() override;
   void OnStateChanged(const AuthFactorStore::State& state) override;
-
-  // views::TextfieldController:
-  void ContentsChanged(views::Textfield* sender,
-                       const std::u16string& new_contents) override;
 
   // views::View:
   bool OnKeyPressed(const ui::KeyEvent& event) override;
@@ -73,10 +68,28 @@ class PasswordAuthView : public FactorAuthView,
   class LoginPasswordRow;
   class DisplayPasswordButton;
 
+  class TextfieldContentsChangedListener : public SystemTextfieldController {
+   public:
+    TextfieldContentsChangedListener(SystemTextfield* textfield,
+                                     PasswordAuthView* password_auth_view);
+    ~TextfieldContentsChangedListener() override;
+
+   private:
+    // views::TextfieldController:
+    void ContentsChanged(views::Textfield* sender,
+                         const std::u16string& new_contents) override;
+
+    raw_ptr<PasswordAuthView> password_auth_view_;
+  };
+
+  friend class TextfieldContentsChangedListener;
+
+  void ContentsChanged(const std::u16string& new_contents);
+
   void ConfigureRootLayout();
   void CreateAndConfigurePasswordRow();
   void CreateAndConfigureCapslockIcon();
-  void CreateAndConfigureLoginTextfield();
+  void CreateAndConfigureTextfieldContainer();
   void CreateAndConfigureDisplayPasswordButton();
   void CreateAndConfigureSubmitButton();
 
@@ -92,11 +105,13 @@ class PasswordAuthView : public FactorAuthView,
 
   raw_ptr<views::ImageView> capslock_icon_ = nullptr;
 
-  raw_ptr<LoginTextfield> textfield_ = nullptr;
-
   raw_ptr<views::ToggleImageButton> display_password_button_ = nullptr;
 
   raw_ptr<ArrowButtonView> submit_button_ = nullptr;
+
+  raw_ptr<LoginTextfield> login_textfield_ = nullptr;
+
+  std::unique_ptr<TextfieldContentsChangedListener> contents_changed_listener_;
 
   base::CallbackListSubscription auth_factor_store_subscription_;
 

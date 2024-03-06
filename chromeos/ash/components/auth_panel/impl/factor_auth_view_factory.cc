@@ -4,19 +4,22 @@
 
 #include "chromeos/ash/components/auth_panel/impl/factor_auth_view_factory.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel_event_dispatcher.h"
+#include "chromeos/ash/components/auth_panel/impl/views/login_textfield.h"
 #include "chromeos/ash/components/auth_panel/impl/views/password_auth_view.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
 [[nodiscard]] std::unique_ptr<FactorAuthView>
 FactorAuthViewFactory::CreateFactorAuthView(
     AshAuthFactor factor,
-    raw_ptr<AuthFactorStore> store,
-    raw_ptr<AuthPanelEventDispatcher> dispatcher) {
+    AuthFactorStore* store,
+    AuthPanelEventDispatcher* dispatcher) {
   switch (factor) {
     case AshAuthFactor::kGaiaPassword:
       return CreatePasswordView(store, dispatcher);
@@ -38,8 +41,8 @@ FactorAuthViewFactory::CreateFactorAuthView(
 }
 
 std::unique_ptr<FactorAuthView> FactorAuthViewFactory::CreatePasswordView(
-    raw_ptr<AuthFactorStore> store,
-    raw_ptr<AuthPanelEventDispatcher> dispatcher) {
+    AuthFactorStore* store,
+    AuthPanelEventDispatcher* dispatcher) {
   return std::make_unique<PasswordAuthView>(dispatcher, store);
 }
 

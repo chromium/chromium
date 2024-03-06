@@ -33,14 +33,14 @@ class FactorAuthViewFactory {
   // enum.
   std::unique_ptr<FactorAuthView> CreateFactorAuthView(
       AshAuthFactor factor,
-      raw_ptr<AuthFactorStore> store,
-      raw_ptr<AuthPanelEventDispatcher> dispatcher);
+      AuthFactorStore* store,
+      AuthPanelEventDispatcher* dispatcher);
 
  private:
   // `FactorAuthView` factory functions:
   std::unique_ptr<FactorAuthView> CreatePasswordView(
-      raw_ptr<AuthFactorStore> store,
-      raw_ptr<AuthPanelEventDispatcher> dispatcher);
+      AuthFactorStore* store,
+      AuthPanelEventDispatcher* dispatcher);
 };
 
 }  // namespace ash

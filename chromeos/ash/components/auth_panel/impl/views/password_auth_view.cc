@@ -12,6 +12,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/system_textfield_controller.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel_event_dispatcher.h"
@@ -91,6 +92,21 @@ class PasswordAuthView::LoginPasswordRow : public views::View {
 BEGIN_METADATA(PasswordAuthView, LoginPasswordRow)
 END_METADATA
 
+PasswordAuthView::TextfieldContentsChangedListener ::
+    TextfieldContentsChangedListener(SystemTextfield* textfield,
+                                     PasswordAuthView* password_auth_view)
+    : SystemTextfieldController(textfield),
+      password_auth_view_(password_auth_view) {}
+
+PasswordAuthView::TextfieldContentsChangedListener ::
+    ~TextfieldContentsChangedListener() = default;
+
+void PasswordAuthView::TextfieldContentsChangedListener::ContentsChanged(
+    views::Textfield* sender,
+    const std::u16string& new_contents) {
+  password_auth_view_->ContentsChanged(new_contents);
+}
+
 void PasswordAuthView::ConfigureRootLayout() {
   // Contains the password layout on the left and the submit button on the
   // right.
@@ -144,7 +160,7 @@ void PasswordAuthView::CreateAndConfigureCapslockIcon() {
       kLockScreenCapsLockIcon, GetDisabledIconColorId());
 }
 
-void PasswordAuthView::CreateAndConfigureLoginTextfield() {
+void PasswordAuthView::CreateAndConfigureTextfieldContainer() {
   auto* textfield_container =
       password_row_->AddChildView(std::make_unique<NonAccessibleView>());
   textfield_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -153,11 +169,16 @@ void PasswordAuthView::CreateAndConfigureLoginTextfield() {
 
   // Password textfield. We control the textfield size by sizing the parent
   // view, as the textfield will expand to fill it.
-  textfield_ = textfield_container->AddChildView(
+  login_textfield_ = textfield_container->AddChildView(
       std::make_unique<LoginTextfield>(dispatcher_));
-  textfield_->set_controller(this);
-  textfield_->SetPlaceholderText(
+
+  login_textfield_->set_controller(contents_changed_listener_.get());
+  login_textfield_->SetPlaceholderText(
       l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_PASSWORD_PLACEHOLDER));
+
+  contents_changed_listener_ =
+      std::make_unique<TextfieldContentsChangedListener>(login_textfield_,
+                                                         this);
 
   password_row_layout_->SetFlexForView(textfield_container, 1);
 }
@@ -203,7 +224,7 @@ void PasswordAuthView::CreateAndConfigureDisplayPasswordButton() {
   display_password_button_->SetToggledImageModel(views::Button::STATE_NORMAL,
                                                  invisible_icon);
 
-  SetEnabled(false);
+  display_password_button_->SetEnabled(false);
 }
 
 PasswordAuthView::PasswordAuthView(AuthPanelEventDispatcher* dispatcher,
@@ -215,8 +236,8 @@ PasswordAuthView::PasswordAuthView(AuthPanelEventDispatcher* dispatcher,
 
   ConfigureRootLayout();
   CreateAndConfigurePasswordRow();
+  CreateAndConfigureTextfieldContainer();
   CreateAndConfigureCapslockIcon();
-  CreateAndConfigureLoginTextfield();
   CreateAndConfigureDisplayPasswordButton();
   CreateAndConfigureSubmitButton();
 }
@@ -228,7 +249,7 @@ AshAuthFactor PasswordAuthView::GetFactor() {
 }
 
 void PasswordAuthView::RequestFocus() {
-  textfield_->RequestFocus();
+  login_textfield_->RequestFocus();
 }
 
 bool PasswordAuthView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -257,13 +278,12 @@ void PasswordAuthView::OnDisplayPasswordButtonPressed() {
       std::nullopt});
 }
 
-void PasswordAuthView::ContentsChanged(views::Textfield* sender,
-                                       const std::u16string& new_contents) {
+void PasswordAuthView::ContentsChanged(const std::u16string& new_contents) {
   // TODO(b/288692954): switch to variant-based implementation of event objects.
   dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
       AuthPanelEventDispatcher::UserAction::Type::
           kPasswordTextfieldContentsChanged,
-      base::UTF16ToUTF8(textfield_->GetText())});
+      base::UTF16ToUTF8(login_textfield_->GetText())});
 }
 
 gfx::Size PasswordAuthView::CalculatePreferredSize() const {
@@ -277,7 +297,7 @@ void PasswordAuthView::OnStateChanged(const AuthFactorStore::State& state) {
   CHECK(state.password_view_state_.has_value());
   const auto& password_view_state = state.password_view_state_.value();
 
-  textfield_->OnStateChanged(password_view_state);
+  login_textfield_->OnStateChanged(password_view_state);
 
   display_password_button_->SetEnabled(password_view_state.is_factor_enabled_ &&
                                        !password_view_state.password_.empty());
