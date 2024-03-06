@@ -26,15 +26,6 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
-// TODO(dpad): Remove this ifdef once Gestures library has been updated on ToT.
-#ifdef GESTURES_BUTTON_SIDE
-#define GESTURES_BUTTON_SIDE_ GESTURES_BUTTON_SIDE
-#define GESTURES_BUTTON_EXTRA_ GESTURES_BUTTON_EXTRA
-#else
-#define GESTURES_BUTTON_SIDE_ GESTURES_BUTTON_BACK
-#define GESTURES_BUTTON_EXTRA_ GESTURES_BUTTON_FORWARD
-#endif
-
 #ifndef REL_WHEEL_HI_RES
 #define REL_WHEEL_HI_RES 0x0b
 #endif
@@ -244,11 +235,11 @@ void GestureInterpreterLibevdevCros::OnLibEvdevCrosEvent(Evdev* evdev,
   if (Event_Get_Button(evdev, BTN_BACK))
     hwstate.buttons_down |= GESTURES_BUTTON_BACK;
   if (Event_Get_Button(evdev, BTN_SIDE))
-    hwstate.buttons_down |= GESTURES_BUTTON_SIDE_;
+    hwstate.buttons_down |= GESTURES_BUTTON_SIDE;
   if (Event_Get_Button(evdev, BTN_FORWARD))
     hwstate.buttons_down |= GESTURES_BUTTON_FORWARD;
   if (Event_Get_Button(evdev, BTN_EXTRA))
-    hwstate.buttons_down |= GESTURES_BUTTON_EXTRA_;
+    hwstate.buttons_down |= GESTURES_BUTTON_EXTRA;
 
   // Check if this event has an MSC_TIMESTAMP field
   if (EvdevBitIsSet(evdev->info.msc_bitmask, MSC_TIMESTAMP)) {
@@ -555,12 +546,10 @@ void GestureInterpreterLibevdevCros::DispatchChangedMouseButtons(
     DispatchMouseButton(BTN_BACK, down, time);
   if (changed_buttons & GESTURES_BUTTON_FORWARD)
     DispatchMouseButton(BTN_FORWARD, down, time);
-#ifdef GESTURES_BUTTON_SIDE
-  if (changed_buttons & GESTURES_BUTTON_EXTRA_)
+  if (changed_buttons & GESTURES_BUTTON_EXTRA)
     DispatchMouseButton(BTN_EXTRA, down, time);
-  if (changed_buttons & GESTURES_BUTTON_SIDE_)
+  if (changed_buttons & GESTURES_BUTTON_SIDE)
     DispatchMouseButton(BTN_SIDE, down, time);
-#endif
 }
 
 void GestureInterpreterLibevdevCros::DispatchMouseButton(unsigned int button,
