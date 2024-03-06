@@ -487,89 +487,177 @@ describe('SubscriptionManager', () => {
     });
   });
 
-  describe('isSubscribedToModule', () => {
-    it('should return true global subscription', () => {
-      subscriptionManager.subscribe(
-        ChromiumBidi.Network.EventNames.ResponseCompleted,
-        null,
-        SOME_CHANNEL
-      );
+  describe('isSubscribedTo', () => {
+    describe('module', () => {
+      it('should return true global subscription', () => {
+        subscriptionManager.subscribe(
+          ChromiumBidi.Network.EventNames.ResponseCompleted,
+          null,
+          SOME_CHANNEL
+        );
 
-      expect(
-        subscriptionManager.isSubscribedToModule(
+        expect(
+          subscriptionManager.isSubscribedTo(
+            ChromiumBidi.BiDiModule.Network,
+            SOME_CONTEXT
+          )
+        ).to.equal(true);
+      });
+
+      it('should return true specific context subscription', () => {
+        subscriptionManager.subscribe(
+          ChromiumBidi.Network.EventNames.ResponseCompleted,
+          SOME_CONTEXT,
+          SOME_CHANNEL
+        );
+
+        expect(
+          subscriptionManager.isSubscribedTo(
+            ChromiumBidi.BiDiModule.Network,
+            SOME_CONTEXT
+          )
+        ).to.equal(true);
+      });
+
+      it('should return true for module subscription', () => {
+        subscriptionManager.subscribe(
           ChromiumBidi.BiDiModule.Network,
-          SOME_CONTEXT
-        )
-      ).to.equal(true);
+          null,
+          SOME_CHANNEL
+        );
+
+        expect(
+          subscriptionManager.isSubscribedTo(
+            ChromiumBidi.BiDiModule.Network,
+            SOME_CONTEXT
+          )
+        ).to.equal(true);
+      });
+
+      it('should return true for nested context when subscribed to top level ancestor context', () => {
+        subscriptionManager.subscribe(
+          ChromiumBidi.BiDiModule.Network,
+          SOME_CONTEXT,
+          SOME_CHANNEL
+        );
+
+        expect(
+          subscriptionManager.isSubscribedTo(
+            ChromiumBidi.BiDiModule.Network,
+            SOME_NESTED_CONTEXT
+          )
+        ).to.equal(true);
+      });
+
+      it('should return false for nested context when subscribed to another context', () => {
+        subscriptionManager.subscribe(
+          ChromiumBidi.BiDiModule.Network,
+          SOME_CONTEXT,
+          SOME_CHANNEL
+        );
+
+        expect(
+          subscriptionManager.isSubscribedTo(
+            ChromiumBidi.BiDiModule.Network,
+            ANOTHER_NESTED_CONTEXT
+          )
+        ).to.equal(false);
+      });
+
+      it('should return false with no subscriptions', () => {
+        expect(
+          subscriptionManager.isSubscribedTo(
+            ChromiumBidi.BiDiModule.Network,
+            SOME_CONTEXT
+          )
+        ).to.equal(false);
+      });
     });
 
-    it('should return true specific context subscription', () => {
-      subscriptionManager.subscribe(
-        ChromiumBidi.Network.EventNames.ResponseCompleted,
-        SOME_CONTEXT,
-        SOME_CHANNEL
-      );
+    describe('event', () => {
+      it('should return true global subscription', () => {
+        subscriptionManager.subscribe(
+          ChromiumBidi.Network.EventNames.ResponseCompleted,
+          null,
+          SOME_CHANNEL
+        );
 
-      expect(
-        subscriptionManager.isSubscribedToModule(
+        expect(
+          subscriptionManager.isSubscribedTo(
+            ChromiumBidi.Network.EventNames.ResponseCompleted,
+            SOME_CONTEXT
+          )
+        ).to.equal(true);
+      });
+
+      it('should return true specific context subscription', () => {
+        subscriptionManager.subscribe(
+          ChromiumBidi.Network.EventNames.ResponseCompleted,
+          SOME_CONTEXT,
+          SOME_CHANNEL
+        );
+
+        expect(
+          subscriptionManager.isSubscribedTo(
+            ChromiumBidi.Network.EventNames.ResponseCompleted,
+            SOME_CONTEXT
+          )
+        ).to.equal(true);
+      });
+
+      it('should return true for module subscription', () => {
+        subscriptionManager.subscribe(
           ChromiumBidi.BiDiModule.Network,
-          SOME_CONTEXT
-        )
-      ).to.equal(true);
-    });
+          null,
+          SOME_CHANNEL
+        );
 
-    it('should return true for module subscription', () => {
-      subscriptionManager.subscribe(
-        ChromiumBidi.BiDiModule.Network,
-        null,
-        SOME_CHANNEL
-      );
+        expect(
+          subscriptionManager.isSubscribedTo(
+            ChromiumBidi.Network.EventNames.ResponseCompleted,
+            SOME_CONTEXT
+          )
+        ).to.equal(true);
+      });
 
-      expect(
-        subscriptionManager.isSubscribedToModule(
-          ChromiumBidi.BiDiModule.Network,
-          SOME_CONTEXT
-        )
-      ).to.equal(true);
-    });
+      it('should return true for nested context when subscribed to top level ancestor context', () => {
+        subscriptionManager.subscribe(
+          ChromiumBidi.Network.EventNames.ResponseCompleted,
+          SOME_CONTEXT,
+          SOME_CHANNEL
+        );
 
-    it('should return true for nested context when subscribed to top level ancestor context', () => {
-      subscriptionManager.subscribe(
-        ChromiumBidi.BiDiModule.Network,
-        SOME_CONTEXT,
-        SOME_CHANNEL
-      );
+        expect(
+          subscriptionManager.isSubscribedTo(
+            ChromiumBidi.Network.EventNames.ResponseCompleted,
+            SOME_NESTED_CONTEXT
+          )
+        ).to.equal(true);
+      });
 
-      expect(
-        subscriptionManager.isSubscribedToModule(
-          ChromiumBidi.BiDiModule.Network,
-          SOME_NESTED_CONTEXT
-        )
-      ).to.equal(true);
-    });
+      it('should return false for nested context when subscribed to another context', () => {
+        subscriptionManager.subscribe(
+          ChromiumBidi.Network.EventNames.ResponseCompleted,
+          SOME_CONTEXT,
+          SOME_CHANNEL
+        );
 
-    it('should return false for nested context when subscribed to another context', () => {
-      subscriptionManager.subscribe(
-        ChromiumBidi.BiDiModule.Network,
-        SOME_CONTEXT,
-        SOME_CHANNEL
-      );
+        expect(
+          subscriptionManager.isSubscribedTo(
+            ChromiumBidi.Network.EventNames.ResponseCompleted,
+            ANOTHER_NESTED_CONTEXT
+          )
+        ).to.equal(false);
+      });
 
-      expect(
-        subscriptionManager.isSubscribedToModule(
-          ChromiumBidi.BiDiModule.Network,
-          ANOTHER_NESTED_CONTEXT
-        )
-      ).to.equal(false);
-    });
-
-    it('should return false with no subscriptions', () => {
-      expect(
-        subscriptionManager.isSubscribedToModule(
-          ChromiumBidi.BiDiModule.Network,
-          SOME_CONTEXT
-        )
-      ).to.equal(false);
+      it('should return false with no subscriptions', () => {
+        expect(
+          subscriptionManager.isSubscribedTo(
+            ChromiumBidi.Network.EventNames.ResponseCompleted,
+            SOME_CONTEXT
+          )
+        ).to.equal(false);
+      });
     });
   });
 });

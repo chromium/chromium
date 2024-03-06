@@ -19,6 +19,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {BiDiModule} from '../../../protocol/chromium-bidi.js';
+import type {ChromiumBidi} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
@@ -125,11 +126,7 @@ export class CdpTarget {
    */
   async #unblock() {
     // Check if the network domain is enabled globally.
-    const enabledNetwork =
-      this.#eventManager.subscriptionManager.isSubscribedToModule(
-        BiDiModule.Network,
-        this.#id
-      );
+    const enabledNetwork = this.isSubscribedTo(BiDiModule.Network);
     this.#networkDomainEnabled = enabledNetwork;
 
     try {
@@ -268,5 +265,12 @@ export class CdpTarget {
     })) {
       await script.initInTarget(this, true);
     }
+  }
+
+  isSubscribedTo(moduleOrEvent: ChromiumBidi.EventNames): boolean {
+    return this.#eventManager.subscriptionManager.isSubscribedTo(
+      moduleOrEvent,
+      this.id
+    );
   }
 }

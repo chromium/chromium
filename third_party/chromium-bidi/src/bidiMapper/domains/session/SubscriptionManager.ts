@@ -170,8 +170,8 @@ export class SubscriptionManager {
    *
    * @returns
    */
-  isSubscribedToModule(
-    module: ChromiumBidi.BiDiModule,
+  isSubscribedTo(
+    moduleOrEvent: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null = null
   ): boolean {
     const topLevelContext =
@@ -187,7 +187,14 @@ export class SubscriptionManager {
         for (const event of eventMap.keys()) {
           // This also covers the `cdp` case where
           // we don't unroll the event names
-          if (event.split('.').at(0) === module) {
+          if (
+            // Event explicitly subscribed
+            event === moduleOrEvent ||
+            // Event subscribed via module
+            event === moduleOrEvent.split('.').at(0) ||
+            // Event explicitly subscribed compared to module
+            event.split('.').at(0) === moduleOrEvent
+          ) {
             return true;
           }
         }

@@ -1005,11 +1005,10 @@ export class BrowsingContextImpl {
   }
 
   async toggleModulesIfNeeded(): Promise<void> {
-    const enableNetwork =
-      this.#eventManager.subscriptionManager.isSubscribedToModule(
-        BiDiModule.Network,
-        this.id
-      );
+    const enableNetwork = this.#eventManager.subscriptionManager.isSubscribedTo(
+      BiDiModule.Network,
+      this.id
+    );
 
     await this.#cdpTarget.toggleNetworkIfNeeded(enableNetwork);
   }

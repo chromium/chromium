@@ -163,6 +163,10 @@ export class NetworkRequest {
   }
 
   #interceptsInPhase(phase: Network.InterceptPhase) {
+    if (!this.#cdpTarget.isSubscribedTo(`network.${phase}`)) {
+      return new Set();
+    }
+
     return this.#networkStorage.getInterceptsForPhase(this, phase);
   }
 

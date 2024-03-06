@@ -344,4 +344,8 @@ export class MockCdpTarget {
     this.#logger('Fetch.enabled called');
     return Promise.resolve();
   }
+
+  isSubscribedTo() {
+    return true;
+  }
 }
