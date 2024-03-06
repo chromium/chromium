@@ -237,8 +237,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_LEGACY_INITWITHPREV_LAYER_SIZING
 
-#define SK_LEGACY_BLEND_FOR_DROP_SHADOWS
-
 #define SK_DONT_PAD_LAYER_IMAGES
 
 /* When --disable-skia-runtime-opts is set in Chrome (or when SkGraphics::Init
