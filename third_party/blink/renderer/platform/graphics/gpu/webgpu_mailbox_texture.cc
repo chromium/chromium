@@ -93,9 +93,13 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
   const gpu::Mailbox& mailbox =
       canvas_resource->GetOrCreateGpuMailbox(kUnverifiedSyncToken);
   gpu::SyncToken sync_token = canvas_resource->GetSyncToken();
+  gfx::Size size = canvas_resource->Size();
 
   WGPUTextureDescriptor desc = {};
   desc.usage = usage;
+  desc.dimension = WGPUTextureDimension_2D;
+  desc.size.width = size.width();
+  desc.size.height = size.height();
   return base::AdoptRef(new WebGPUMailboxTexture(
       std::move(dawn_control_client), device, desc, mailbox, sync_token,
       gpu::webgpu::WEBGPU_MAILBOX_NONE,
