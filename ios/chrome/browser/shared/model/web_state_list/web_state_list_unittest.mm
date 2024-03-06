@@ -49,6 +49,7 @@ class WebStateListTestObserver : public WebStateListObserver {
   // Reset statistics whether events have been called.
   void ResetStatistics() {
     web_state_inserted_count_ = 0;
+    web_state_inserted_group_ = nullptr;
     web_state_moved_count_ = 0;
     web_state_moved_old_group_ = nullptr;
     web_state_moved_new_group_ = nullptr;
@@ -67,7 +68,12 @@ class WebStateListTestObserver : public WebStateListObserver {
   bool web_state_inserted() const { return web_state_inserted_count_ != 0; }
 
   // Returns the number of insertion operations.
-  int web_state_inserted_count() const { return web_state_moved_count_; }
+  int web_state_inserted_count() const { return web_state_inserted_count_; }
+
+  // Returns the number of insertion operations in groups.
+  const TabGroup* web_state_inserted_group() const {
+    return web_state_inserted_group_;
+  }
 
   // Returns whether the move operation was invoked.
   bool web_state_moved() const { return web_state_moved_count_ != 0; }
@@ -181,10 +187,14 @@ class WebStateListTestObserver : public WebStateListObserver {
         EXPECT_TRUE(web_state_list->IsMutating());
         ++web_state_replaced_count_;
         break;
-      case WebStateListChange::Type::kInsert:
+      case WebStateListChange::Type::kInsert: {
+        const WebStateListChangeInsert& insert_change =
+            change.As<WebStateListChangeInsert>();
+        web_state_inserted_group_ = insert_change.group();
         EXPECT_TRUE(web_state_list->IsMutating());
         ++web_state_inserted_count_;
         break;
+      }
     }
 
     if (status.active_web_state_change()) {
@@ -207,6 +217,7 @@ class WebStateListTestObserver : public WebStateListObserver {
 
  private:
   int web_state_inserted_count_ = 0;
+  raw_ptr<const TabGroup> web_state_inserted_group_ = nullptr;
   int web_state_moved_count_ = 0;
   raw_ptr<const TabGroup> web_state_moved_old_group_ = nullptr;
   raw_ptr<const TabGroup> web_state_moved_new_group_ = nullptr;
@@ -424,6 +435,44 @@ class WebStateListTest : public PlatformTest {
 
   void AppendNewWebState(std::unique_ptr<web::FakeWebState> web_state) {
     web_state_list_.InsertWebState(std::move(web_state));
+  }
+
+  // Returns whether for each WebState in `web_state_list_` at an index `index`,
+  // the values returned by `GetGroupOfWebStateAt(...)` for `index - 1`, `index`
+  // and `index + 1` are consistent with the range for this WebState's group.
+  bool RangesOfTabGroupsAreValid() const {
+    for (int index = 0; index < web_state_list_.count(); ++index) {
+      const TabGroup* current_group =
+          web_state_list_.GetGroupOfWebStateAt(index);
+      if (!current_group) {
+        continue;
+      }
+      const WebStateList::Range current_group_range =
+          web_state_list_.GetWebStates(current_group);
+      if (!current_group_range.contains(index)) {
+        return false;
+      }
+      const TabGroup* prev_group =
+          web_state_list_.ContainsIndex(index - 1)
+              ? web_state_list_.GetGroupOfWebStateAt(index - 1)
+              : nullptr;
+      if (current_group != prev_group && current_group_range.start() != index) {
+        // The current TabGroup differs from the previous but the start of the
+        // range does not match the current index.
+        return false;
+      }
+      const TabGroup* next_group =
+          web_state_list_.ContainsIndex(index + 1)
+              ? web_state_list_.GetGroupOfWebStateAt(index + 1)
+              : nullptr;
+      if (current_group != next_group &&
+          current_group_range.end() != index + 1) {
+        // The current TabGroup differs from the next but the end of the range
+        // does not match the current index plus one.
+        return false;
+      }
+    }
+    return true;
   }
 };
 
@@ -1591,6 +1640,481 @@ TEST_F(WebStateListTest, InsertWebState_NoGroup) {
   web_state_list_.InsertWebState(CreateWebState(kURL1));
 
   EXPECT_EQ("| a* _", builder.GetWebStateListDescription(web_state_list_));
+}
+
+// Checks that using `InsertWebState()` on a WebStateList with groups yields the
+// expected result when inserting at an automatically determined index.
+TEST_F(WebStateListTest, InsertWebState_Groups_Automatic) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "a | b [ 0 c ]"));
+
+  auto web_state_x = CreateWebState(kURL0);
+  auto web_state_y = CreateWebState(kURL1);
+  auto web_state_z = CreateWebState(kURL2);
+  builder.SetWebStateIdentifier(web_state_x.get(), 'x');
+  builder.SetWebStateIdentifier(web_state_y.get(), 'y');
+  builder.SetWebStateIdentifier(web_state_z.get(), 'z');
+
+  ASSERT_EQ("a | b [ 0 c ]",
+            builder.GetWebStateListDescription(web_state_list_));
+  web_state_list_.InsertWebState(std::move(web_state_x),
+                                 WebStateList::InsertionParams::Automatic());
+  EXPECT_EQ("a | b [ 0 c ] x",
+            builder.GetWebStateListDescription(web_state_list_));
+  web_state_list_.InsertWebState(std::move(web_state_y),
+                                 WebStateList::InsertionParams::Automatic());
+  EXPECT_EQ("a | b [ 0 c ] x y",
+            builder.GetWebStateListDescription(web_state_list_));
+  web_state_list_.InsertWebState(std::move(web_state_z),
+                                 WebStateList::InsertionParams::Automatic());
+  EXPECT_EQ("a | b [ 0 c ] x y z",
+            builder.GetWebStateListDescription(web_state_list_));
+}
+
+// Checks that using `InsertWebState()` on a WebStateList with groups yields the
+// expected result when inserting at different indices.
+TEST_F(WebStateListTest, InsertWebState_Groups_AtIndex) {
+  constexpr std::string_view web_state_list_description_before_insertion =
+      "a | b [ 0 c d ] e f [ 1 g ]";
+  constexpr std::string_view expected_description_for_insertion_index[]{
+      "a | b [ 0 c d ] e f [ 1 g ] X",  // Insertion at 'a'.
+      "a | X b [ 0 c d ] e f [ 1 g ]",  // Insertion at 'b'.
+      "a | b X [ 0 c d ] e f [ 1 g ]",  // Insertion at 'c'.
+      "a | b [ 0 c X d ] e f [ 1 g ]",  // Insertion at 'd',.
+      "a | b [ 0 c d ] X e f [ 1 g ]",  // Insertion at 'e'.
+      "a | b [ 0 c d ] e X f [ 1 g ]",  // Insertion at 'f'.
+      "a | b [ 0 c d ] e f X [ 1 g ]",  // Insertion at 'g'.
+      "a | b [ 0 c d ] e f [ 1 g ] X",  // Insertion after 'g'.
+  };
+
+  for (int insertion_index = 0;
+       insertion_index < std::ssize(expected_description_for_insertion_index);
+       ++insertion_index) {
+    // Setting up WebStateList and WebState to insert.
+    WebStateListBuilderFromDescription builder;
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+        web_state_list_, web_state_list_description_before_insertion));
+    observer_.ResetStatistics();
+    std::unique_ptr<web::WebState> web_state_to_insert = CreateWebState(kURL0);
+    const web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
+    builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
+    ASSERT_TRUE(RangesOfTabGroupsAreValid());
+
+    // Inserting the WebState at `insertion_index`.
+    web_state_list_.InsertWebState(
+        std::move(web_state_to_insert),
+        WebStateList::InsertionParams::AtIndex(insertion_index));
+
+    // Check everything is as expected after insertion.
+    EXPECT_TRUE(RangesOfTabGroupsAreValid())
+        << "\nContiguity of TabGroups broken in WebStateList after insertion."
+        << "\nInsertion index: " << insertion_index
+        << "\nDescription after insert: "
+        << builder.GetWebStateListDescription(web_state_list_);
+    EXPECT_EQ(expected_description_for_insertion_index[insertion_index],
+              builder.GetWebStateListDescription(web_state_list_));
+    int effective_insertion_index =
+        web_state_list_.GetIndexOfWebState(web_state_to_insert_ptr);
+    const TabGroup* insert_group =
+        web_state_list_.GetGroupOfWebStateAt(effective_insertion_index);
+    EXPECT_EQ(insert_group, observer_.web_state_inserted_group());
+    EXPECT_EQ(1, observer_.web_state_inserted_count());
+
+    // Resetting.
+    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  }
+}
+
+// Checks that using `InsertWebState()` on a WebStateList with groups yields the
+// expected result when inserting at an automatically determined index while
+// setting the WebStateOpener manually.
+TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticWithOpener) {
+  constexpr std::string_view web_state_list_description_before_insertion =
+      "a b | c [ 0 d e ] f g [ 1 h ]";
+  constexpr std::string_view expected_description_for_opener_index[]{
+      "a b | c [ 0 d e ] f g [ 1 h ] X",  // Opener is 'a'.
+      "a b | X c [ 0 d e ] f g [ 1 h ]",  // Opener is 'b'.
+      "a b | c X [ 0 d e ] f g [ 1 h ]",  // Opener is 'c'.
+      "a b | c [ 0 d X e ] f g [ 1 h ]",  // Opener is 'd'.
+      "a b | c [ 0 d e X ] f g [ 1 h ]",  // Opener is 'e'.
+      "a b | c [ 0 d e ] f X g [ 1 h ]",  // Opener is 'f'.
+      "a b | c [ 0 d e ] f g X [ 1 h ]",  // Opener is 'g'.
+      "a b | c [ 0 d e ] f g [ 1 h X ]",  // Opener is 'h'.
+  };
+
+  for (int opener_index = 0;
+       opener_index < std::ssize(expected_description_for_opener_index);
+       ++opener_index) {
+    // Setting up WebStateList, opener and WebState to insert.
+    WebStateListBuilderFromDescription builder;
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+        web_state_list_, web_state_list_description_before_insertion));
+    observer_.ResetStatistics();
+    web::FakeWebState* opener_web_state = static_cast<web::FakeWebState*>(
+        web_state_list_.GetWebStateAt(opener_index));
+    opener_web_state->SetNavigationManager(
+        std::make_unique<FakeNavigationManager>());
+    std::unique_ptr<web::WebState> web_state_to_insert = CreateWebState(kURL0);
+    const web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
+    builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
+    ASSERT_TRUE(RangesOfTabGroupsAreValid());
+
+    // Inserting the WebState with opener at `opener_index`.
+    WebStateOpener opener(opener_web_state);
+    web_state_list_.InsertWebState(
+        std::move(web_state_to_insert),
+        WebStateList::InsertionParams::Automatic().WithOpener(opener));
+
+    // Check everything is as expected after insertion.
+    EXPECT_TRUE(RangesOfTabGroupsAreValid())
+        << "\nContiguity of TabGroups broken in WebStateList after insertion "
+           "with opener."
+        << "\nIndex of opener: " << opener_index
+        << "\nDescription after insert: "
+        << builder.GetWebStateListDescription(web_state_list_);
+    EXPECT_EQ(expected_description_for_opener_index[opener_index],
+              builder.GetWebStateListDescription(web_state_list_));
+    int effective_insertion_index =
+        web_state_list_.GetIndexOfWebState(web_state_to_insert_ptr);
+    const TabGroup* insert_group =
+        web_state_list_.GetGroupOfWebStateAt(effective_insertion_index);
+    EXPECT_EQ(insert_group, observer_.web_state_inserted_group());
+    EXPECT_EQ(1, observer_.web_state_inserted_count());
+
+    // Resetting.
+    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  }
+}
+
+// Checks that using `InsertWebState()` on a WebStateList with groups yields the
+// expected result when inserting at an automatically determined index while
+// inheriting the WebStateOpener i.e. using the currently active WebState as
+// opener.
+TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticInheritOpener) {
+  constexpr std::string_view web_state_list_description_before_insertion =
+      "a b | c [ 0 d e ] f g [ 1 h ]";
+  constexpr std::string_view expected_description_for_opener_index[]{
+      "a* b | c [ 0 d e ] f g [ 1 h ] X",  // Opener is 'a'.
+      "a b* | X c [ 0 d e ] f g [ 1 h ]",  // Opener is 'b'.
+      "a b | c* X [ 0 d e ] f g [ 1 h ]",  // Opener is 'c'.
+      "a b | c [ 0 d* X e ] f g [ 1 h ]",  // Opener is 'd'.
+      "a b | c [ 0 d e* X ] f g [ 1 h ]",  // Opener is 'e'.
+      "a b | c [ 0 d e ] f* X g [ 1 h ]",  // Opener is 'f'.
+      "a b | c [ 0 d e ] f g* X [ 1 h ]",  // Opener is 'g'.
+      "a b | c [ 0 d e ] f g [ 1 h* X ]",  // Opener is 'h'.
+  };
+
+  for (int opener_index = 0;
+       opener_index < std::ssize(expected_description_for_opener_index);
+       ++opener_index) {
+    // Setting up WebStateList, opener and WebState to insert.
+    WebStateListBuilderFromDescription builder;
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+        web_state_list_, web_state_list_description_before_insertion));
+    observer_.ResetStatistics();
+    web::FakeWebState* opener_web_state = static_cast<web::FakeWebState*>(
+        web_state_list_.GetWebStateAt(opener_index));
+    opener_web_state->SetNavigationManager(
+        std::make_unique<FakeNavigationManager>());
+    web_state_list_.ActivateWebStateAt(opener_index);
+    std::unique_ptr<web::WebState> web_state_to_insert = CreateWebState(kURL0);
+    const web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
+    builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
+    ASSERT_TRUE(RangesOfTabGroupsAreValid());
+
+    // Inserting the WebState with opener at `opener_index`.
+    WebStateOpener opener(opener_web_state);
+    web_state_list_.InsertWebState(
+        std::move(web_state_to_insert),
+        WebStateList::InsertionParams::Automatic().InheritOpener());
+
+    // Check everything is as expected after insertion.
+    EXPECT_TRUE(RangesOfTabGroupsAreValid())
+        << "\nContiguity of TabGroups broken in WebStateList after insertion "
+           "with inherited opener."
+        << "\nIndex of opener: " << opener_index
+        << "\nDescription after insert: "
+        << builder.GetWebStateListDescription(web_state_list_);
+    EXPECT_EQ(expected_description_for_opener_index[opener_index],
+              builder.GetWebStateListDescription(web_state_list_));
+    int effective_insertion_index =
+        web_state_list_.GetIndexOfWebState(web_state_to_insert_ptr);
+    const TabGroup* insert_group =
+        web_state_list_.GetGroupOfWebStateAt(effective_insertion_index);
+    EXPECT_EQ(insert_group, observer_.web_state_inserted_group());
+    EXPECT_EQ(1, observer_.web_state_inserted_count());
+
+    // Resetting.
+    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  }
+}
+
+// Checks that using `InsertWebState()` on a WebStateList with groups yields the
+// expected result when inserting at an automatically determined index in a
+// group.
+TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticInGroup) {
+  constexpr std::string_view web_state_list_description_before_insertion =
+      "a b | c [ 0 d e ] f g [ 1 h ] [ 2 i j k ]";
+  const std::map<char, std::string_view>
+      expected_description_for_group_identifier{
+          {'0', "a b | c [ 0 d e X ] f g [ 1 h ] [ 2 i j k ]"},  // In group 0.
+          {'1', "a b | c [ 0 d e ] f g [ 1 h X ] [ 2 i j k ]"},  // In group 1.
+          {'2', "a b | c [ 0 d e ] f g [ 1 h ] [ 2 i j k X ]"},  // In group 2.
+      };
+
+  for (const auto& [group_identifier, expected_description] :
+       expected_description_for_group_identifier) {
+    // Setting up WebStateList, opener and WebState to insert.
+    WebStateListBuilderFromDescription builder;
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+        web_state_list_, web_state_list_description_before_insertion));
+    observer_.ResetStatistics();
+    std::unique_ptr<web::WebState> web_state_to_insert = CreateWebState(kURL0);
+    const web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
+    builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
+    ASSERT_TRUE(RangesOfTabGroupsAreValid());
+
+    // Inserting the WebState with opener at `opener_index`.
+    const TabGroup* insertion_group =
+        builder.GetTabGroupForIdentifier(group_identifier);
+    ASSERT_NE(nullptr, insertion_group);
+    web_state_list_.InsertWebState(
+        std::move(web_state_to_insert),
+        WebStateList::InsertionParams::Automatic().InGroup(insertion_group));
+
+    // Check everything is as expected after insertion.
+    EXPECT_TRUE(RangesOfTabGroupsAreValid())
+        << "\nContiguity of TabGroups broken in WebStateList after insertion "
+           "in group."
+        << "\nIdentifier of group: " << group_identifier
+        << "\nDescription after insert: "
+        << builder.GetWebStateListDescription(web_state_list_);
+    EXPECT_EQ(expected_description,
+              builder.GetWebStateListDescription(web_state_list_));
+    int effective_insertion_index =
+        web_state_list_.GetIndexOfWebState(web_state_to_insert_ptr);
+    const TabGroup* effective_insertion_group =
+        web_state_list_.GetGroupOfWebStateAt(effective_insertion_index);
+    EXPECT_EQ(insertion_group, effective_insertion_group);
+    EXPECT_EQ(insertion_group, observer_.web_state_inserted_group());
+    EXPECT_EQ(1, observer_.web_state_inserted_count());
+
+    // Resetting.
+    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  }
+}
+
+// Checks that using `InsertWebState()` on a WebStateList with groups yields the
+// expected result when inserting at different indices in a group with 1
+// element.
+TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup1) {
+  constexpr std::string_view web_state_list_description_before_insertion =
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]";
+  constexpr std::string_view expected_description_for_insertion_index[]{
+      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'a'.
+      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'b'.
+      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'c'.
+      "a b | c [ 1 X d ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'd'.
+      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'e'.
+      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'f'.
+      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'g'.
+      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'h'.
+      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'i'.
+      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'j'.
+      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'k'.
+      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert after 'k'.
+  };
+
+  for (int insertion_index = 0;
+       insertion_index < std::ssize(expected_description_for_insertion_index);
+       ++insertion_index) {
+    // Setting up WebStateList, opener and WebState to insert.
+    WebStateListBuilderFromDescription builder;
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+        web_state_list_, web_state_list_description_before_insertion));
+    observer_.ResetStatistics();
+    std::unique_ptr<web::WebState> web_state_to_insert = CreateWebState(kURL0);
+    const web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
+    builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
+    ASSERT_TRUE(RangesOfTabGroupsAreValid());
+
+    // Inserting the WebState at `insertion_index` in group 1.
+    const TabGroup* insertion_group = builder.GetTabGroupForIdentifier('1');
+    ASSERT_NE(nullptr, insertion_group);
+    web_state_list_.InsertWebState(
+        std::move(web_state_to_insert),
+        WebStateList::InsertionParams::AtIndex(insertion_index)
+            .InGroup(insertion_group));
+
+    // Check everything is as expected after insertion.
+    EXPECT_TRUE(RangesOfTabGroupsAreValid())
+        << "\nContiguity of TabGroups broken in WebStateList after insertion "
+           "in group 1."
+        << "\nInsertion index: " << insertion_index
+        << "\nDescription after insert: "
+        << builder.GetWebStateListDescription(web_state_list_);
+    EXPECT_EQ(expected_description_for_insertion_index[insertion_index],
+              builder.GetWebStateListDescription(web_state_list_));
+    int effective_insertion_index =
+        web_state_list_.GetIndexOfWebState(web_state_to_insert_ptr);
+    const TabGroup* effective_insertion_group =
+        web_state_list_.GetGroupOfWebStateAt(effective_insertion_index);
+    EXPECT_EQ(insertion_group, effective_insertion_group);
+    EXPECT_EQ(insertion_group, observer_.web_state_inserted_group());
+    EXPECT_EQ(1, observer_.web_state_inserted_count());
+
+    // Resetting.
+    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  }
+}
+
+// Checks that using `InsertWebState()` on a WebStateList with groups yields the
+// expected result when inserting at different indices in a group with 2
+// elements.
+TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup2) {
+  constexpr std::string_view web_state_list_description_before_insertion =
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]";
+  constexpr std::string_view expected_description_for_insertion_index[]{
+      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'a'.
+      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'b'.
+      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'c'.
+      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'd'.
+      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'e'.
+      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'f'.
+      "a b | c [ 1 d ] e f [ 2 X g h ] [ 3 i j k ]",  // Insert at 'g'.
+      "a b | c [ 1 d ] e f [ 2 g X h ] [ 3 i j k ]",  // Insert at 'h'.
+      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'i'.
+      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'j'.
+      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'k'.
+      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert after 'k'.
+  };
+
+  for (int insertion_index = 0;
+       insertion_index < std::ssize(expected_description_for_insertion_index);
+       ++insertion_index) {
+    // Setting up WebStateList, opener and WebState to insert.
+    WebStateListBuilderFromDescription builder;
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+        web_state_list_, web_state_list_description_before_insertion));
+    observer_.ResetStatistics();
+    std::unique_ptr<web::WebState> web_state_to_insert = CreateWebState(kURL0);
+    const web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
+    builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
+    ASSERT_TRUE(RangesOfTabGroupsAreValid());
+
+    // Inserting the WebState at `insertion_index` in group 1.
+    const TabGroup* insertion_group = builder.GetTabGroupForIdentifier('2');
+    ASSERT_NE(nullptr, insertion_group);
+    web_state_list_.InsertWebState(
+        std::move(web_state_to_insert),
+        WebStateList::InsertionParams::AtIndex(insertion_index)
+            .InGroup(insertion_group));
+
+    // Check everything is as expected after insertion.
+    EXPECT_TRUE(RangesOfTabGroupsAreValid())
+        << "\nContiguity of TabGroups broken in WebStateList after insertion "
+           "in group 2."
+        << "\nInsertion index: " << insertion_index
+        << "\nDescription after insert: "
+        << builder.GetWebStateListDescription(web_state_list_);
+    EXPECT_EQ(expected_description_for_insertion_index[insertion_index],
+              builder.GetWebStateListDescription(web_state_list_));
+    int effective_insertion_index =
+        web_state_list_.GetIndexOfWebState(web_state_to_insert_ptr);
+    const TabGroup* effective_insertion_group =
+        web_state_list_.GetGroupOfWebStateAt(effective_insertion_index);
+    EXPECT_EQ(insertion_group, effective_insertion_group);
+    EXPECT_EQ(insertion_group, observer_.web_state_inserted_group());
+    EXPECT_EQ(1, observer_.web_state_inserted_count());
+
+    // Resetting.
+    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  }
+}
+
+// Checks that using `InsertWebState()` on a WebStateList with groups yields the
+// expected result when inserting at different indices in a group with 3
+// elements.
+TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup3) {
+  constexpr std::string_view web_state_list_description_before_insertion =
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]";
+  constexpr std::string_view expected_description_for_insertion_index[]{
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'a'.
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'b'.
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'c'.
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'd'.
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'e'.
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'f'.
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'g'.
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'h'.
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 X i j k ]",  // Insert at 'i'.
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i X j k ]",  // Insert at 'j'.
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j X k ]",  // Insert at 'k'.
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert after 'k'.
+  };
+
+  for (int insertion_index = 0;
+       insertion_index < std::ssize(expected_description_for_insertion_index);
+       ++insertion_index) {
+    // Setting up WebStateList, opener and WebState to insert.
+    WebStateListBuilderFromDescription builder;
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+        web_state_list_, web_state_list_description_before_insertion));
+    observer_.ResetStatistics();
+    std::unique_ptr<web::WebState> web_state_to_insert = CreateWebState(kURL0);
+    const web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
+    builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
+    ASSERT_TRUE(RangesOfTabGroupsAreValid());
+
+    // Inserting the WebState at `insertion_index` in group 1.
+    const TabGroup* insertion_group = builder.GetTabGroupForIdentifier('3');
+    ASSERT_NE(nullptr, insertion_group);
+    web_state_list_.InsertWebState(
+        std::move(web_state_to_insert),
+        WebStateList::InsertionParams::AtIndex(insertion_index)
+            .InGroup(insertion_group));
+
+    // Check everything is as expected after insertion.
+    EXPECT_TRUE(RangesOfTabGroupsAreValid())
+        << "\nContiguity of TabGroups broken in WebStateList after insertion "
+           "in group 3."
+        << "\nInsertion index: " << insertion_index
+        << "\nDescription after insert: "
+        << builder.GetWebStateListDescription(web_state_list_);
+    EXPECT_EQ(expected_description_for_insertion_index[insertion_index],
+              builder.GetWebStateListDescription(web_state_list_));
+    int effective_insertion_index =
+        web_state_list_.GetIndexOfWebState(web_state_to_insert_ptr);
+    const TabGroup* effective_insertion_group =
+        web_state_list_.GetGroupOfWebStateAt(effective_insertion_index);
+    EXPECT_EQ(insertion_group, effective_insertion_group);
+    EXPECT_EQ(insertion_group, observer_.web_state_inserted_group());
+    EXPECT_EQ(1, observer_.web_state_inserted_count());
+
+    // Resetting.
+    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  }
+}
+
+TEST_F(WebStateListTest, InsertWebState_Grouped_Grouped) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "| [ 0 a ]"));
+  observer_.ResetStatistics();
+  const TabGroup* group0 = builder.GetTabGroupForIdentifier('0');
+  ASSERT_NE(nullptr, group0);
+
+  observer_.ResetStatistics();
+  std::unique_ptr<web::WebState> web_state_b = CreateWebState(kURL1);
+  builder.SetWebStateIdentifier(web_state_b.get(), 'b');
+  web_state_list_.InsertWebState(
+      std::move(web_state_b),
+      WebStateList::InsertionParams::Automatic().InGroup(group0));
+
+  EXPECT_EQ(1, observer_.web_state_inserted());
+  EXPECT_EQ(group0, observer_.web_state_inserted_group());
+  EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription(web_state_list_));
 }
 
 // Tests that moving when there are no groups doesn't create any group.

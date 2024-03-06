@@ -47,20 +47,33 @@ class WebStateList {
  public:
   // Parameters used when inserting WebStates.
   struct InsertionParams {
-    WebStateOpener opener;
-    bool inherit_opener = false;
-    bool activate = false;
-    bool pinned = false;
-    int desired_index = kInvalidIndex;
-
     // Lets the WebStateList decide where to insert the WebState.
     static InsertionParams Automatic() { return {}; }
 
     // Provides the WebStateList with a desired index where to insert the
     // WebState.
     static InsertionParams AtIndex(int desired_index) {
-      return {.desired_index = desired_index};
+      InsertionParams params;
+      params.desired_index = desired_index;
+      return params;
     }
+
+    InsertionParams(const InsertionParams&);
+    InsertionParams& operator=(const InsertionParams&);
+    InsertionParams(InsertionParams&&);
+    InsertionParams& operator=(InsertionParams&&);
+
+    WebStateOpener opener;
+    raw_ptr<const TabGroup> in_group = nullptr;
+    int desired_index = kInvalidIndex;
+    bool inherit_opener = false;
+    bool activate = false;
+    bool pinned = false;
+
+    // Used to check that Pinned() or InGroup() have not been
+    // called on the same object.
+    bool pinned_called = false;
+    bool in_group_called = false;
 
     // Sets the potential opener.
     InsertionParams& WithOpener(WebStateOpener an_opener) {
@@ -82,11 +95,29 @@ class WebStateList {
       return *this;
     }
 
-    // Whether the WebState is added to the pinned WebStates.
+    // Whether the WebState is added to the pinned WebStates. This is ignored if
+    // an opener is set or inherited which belongs to a group. The WebState will
+    // then be inserted in that group.
+    // Cannot be called after `InGroup(...)`.
     InsertionParams& Pinned(bool pin = true) {
-      this->pinned = pin;
+      CHECK(!in_group_called);
+      pinned_called = true;
+      pinned = pin;
       return *this;
     }
+
+    // Sets the group the new WebState belongs to.
+    // Cannot be called after `Pinned(...)`.
+    InsertionParams& InGroup(const TabGroup* group) {
+      CHECK(!pinned_called);
+      in_group_called = true;
+      in_group = group;
+      return *this;
+    }
+
+   private:
+    // Client code should use `Automatic()` to make intention explicit.
+    InsertionParams();
   };
 
   // Constants used when closing WebStates.

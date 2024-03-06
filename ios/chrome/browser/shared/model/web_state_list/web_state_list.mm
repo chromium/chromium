@@ -158,6 +158,20 @@ void WebStateList::WebStateWrapper::SetShouldResetOpenerOnActiveWebStateChange(
   should_reset_opener_ = should_reset_opener;
 }
 
+WebStateList::InsertionParams::InsertionParams() = default;
+
+WebStateList::InsertionParams::InsertionParams(const InsertionParams& other) =
+    default;
+
+WebStateList::InsertionParams& WebStateList::InsertionParams::operator=(
+    const InsertionParams& other) = default;
+
+WebStateList::InsertionParams::InsertionParams(InsertionParams&& other) =
+    default;
+
+WebStateList::InsertionParams& WebStateList::InsertionParams::operator=(
+    InsertionParams&& other) = default;
+
 WebStateList::WebStateList(WebStateListDelegate* delegate)
     : delegate_(delegate) {
   DCHECK(delegate_);
@@ -385,8 +399,10 @@ int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
   WebStateOpener opener = params.opener;
   const bool inheriting = params.inherit_opener;
   const bool activating = params.activate;
-  const bool pinned = params.pinned;
   int index = params.desired_index;
+  CHECK(!params.in_group || ContainsGroup(params.in_group));
+  CHECK(!params.in_group || !params.pinned);
+  const TabGroup* group = params.in_group;
 
   if (inheriting) {
     for (const auto& wrapper : web_state_wrappers_) {
@@ -395,18 +411,38 @@ int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
     opener = WebStateOpener(GetActiveWebState());
   }
 
-  const OrderController::Range range{
-      .begin = pinned ? 0 : pinned_tabs_count_,
-      .end = pinned ? pinned_tabs_count_ : count(),
-  };
+  // If group is not set but opener has a group, inherit the group.
+  int opener_index = kInvalidIndex;
+  if (opener.opener) {
+    opener_index = GetIndexOfWebState(opener.opener);
+    CHECK_NE(opener_index, kInvalidIndex);
+    if (!group) {
+      group = web_state_wrappers_[opener_index]->group();
+    }
+  }
 
+  // Tab will be pinned if asked explicitly and no group could be deduced.
+  const bool pinned = params.pinned && !group;
+
+  int range_begin = 0;
+  int range_end = count();
+  if (group) {
+    const Range tab_group_range = GetWebStates(group);
+    range_begin = tab_group_range.start();
+    range_end = tab_group_range.end();
+  } else if (pinned) {
+    range_end = pinned_tabs_count_;
+  } else {
+    range_begin = pinned_tabs_count_;
+  }
+
+  const OrderController::Range range{.begin = range_begin, .end = range_end};
   const OrderControllerSourceFromWebStateList source(*this);
   const OrderController order_controller(source);
   if (index != WebStateList::kInvalidIndex) {
     index = order_controller.DetermineInsertionIndex(
         OrderController::InsertionParams::ForceIndex(index, range));
   } else if (opener.opener) {
-    const int opener_index = GetIndexOfWebState(opener.opener);
     index = order_controller.DetermineInsertionIndex(
         OrderController::InsertionParams::WithOpener(opener_index, range));
   } else {
@@ -447,9 +483,28 @@ int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
     SetOpenerOfWebStateAt(index, opener);
   }
 
-  // TODO(b/325422014): Support Tab Groups when inserting.
-  const WebStateListChangeInsert insert_change(web_state_ptr, index,
-                                               /*group=*/nullptr);
+  // Ensure group contiguity: if the WebStates before and after are part of the
+  // same group, honor that group instead.
+  const TabGroup* prev_group =
+      ContainsIndex(index - 1) ? GetGroupOfWebStateAt(index - 1) : nullptr;
+  const TabGroup* next_group =
+      ContainsIndex(index + 1) ? GetGroupOfWebStateAt(index + 1) : nullptr;
+  if (prev_group == next_group && prev_group != nullptr) {
+    group = prev_group;
+  }
+
+  // Shift groups on the right of `index` towards the right.
+  web_state_wrappers_[index]->SetGroup(group);
+  for (auto group_it = begin(groups_); group_it != end(groups_); ++group_it) {
+    Range& group_range = group_it->second;
+    if (group_it->first.get() == group) {
+      group_range.expandRight();
+    } else if (group_range.start() >= index) {
+      group_range.moveRight();
+    }
+  }
+
+  const WebStateListChangeInsert insert_change(web_state_ptr, index, group);
   const WebStateListStatus status = {
       .old_active_web_state = old_active_web_state,
       .new_active_web_state = GetActiveWebState()};
