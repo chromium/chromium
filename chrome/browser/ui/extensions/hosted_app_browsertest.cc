@@ -384,8 +384,8 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, DISABLED_OpenLinkInNewTab) {
 }
 
 // Tests that Ctrl + Clicking a link opens a foreground tab.
-// TODO(crbug.com/1190448): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1190448): Flaky on Linux and LACROS..
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CtrlClickLink DISABLED_CtrlClickLink
 #else
 #define MAYBE_CtrlClickLink CtrlClickLink
