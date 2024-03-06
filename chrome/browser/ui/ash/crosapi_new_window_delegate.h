@@ -7,11 +7,7 @@
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_multi_source_observation.h"
-#include "base/scoped_observation.h"
-#include "components/exo/wm_helper.h"
 #include "ui/aura/window.h"
-#include "ui/aura/window_observer.h"
 
 // Handles opening new tabs and windows on behalf on ash.
 // Use crosapi to control Lacros Browser.
@@ -19,7 +15,7 @@
 class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
  public:
   // CrosapiNewWindowDelegate forwards methods which are not related to
-  // web browser to the given |delegate|.
+  // web browser to the given `delegate`.
   explicit CrosapiNewWindowDelegate(ash::NewWindowDelegate* delegate);
   CrosapiNewWindowDelegate(const CrosapiNewWindowDelegate&) = delete;
   const CrosapiNewWindowDelegate& operator=(const CrosapiNewWindowDelegate&) =
@@ -53,56 +49,17 @@ class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
   void OpenFile(const base::FilePath& file_path) override;
 
  private:
-  // Observes the aura::Window instances created after the webui tab-drop
-  // has been requested. Its OnWindowPropertyChanged() override checks for
-  // a specific |window_id| to invoke the closure routine.
-  class WindowObserver : public exo::WMHelper::ExoWindowObserver,
-                         public aura::WindowObserver {
-   public:
-    explicit WindowObserver(CrosapiNewWindowDelegate* owner,
-                            NewWindowForDetachingTabCallback closure);
-    ~WindowObserver() override;
+  class DetachedWindowObserver;
 
-    // aura::WindowObserver overrides.
-    void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
-    void OnWindowDestroying(aura::Window* window) override;
-
-    // WMHelper::ExoWindowObserver overrides.
-    void OnExoWindowCreated(aura::Window* window) override;
-
-    void SetWindowID(const std::string& window_id);
-
-   private:
-    raw_ptr<CrosapiNewWindowDelegate> owner_;
-
-    // Observes windows launched after window tab-drop request.
-    base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
-        observed_windows_{this};
-
-    // The callback must be called, even out of the scope of
-    // OnWindowPropertyChanged(), since it owns ownership of its callee
-    // (ash::TabDragDropDelegate).
-    NewWindowForDetachingTabCallback closure_;
-
-    // Stores the window id of the Lacros window created by
-    // CrosapiNewWindowDelegate::NewWindowForDetachingTab().
-    std::string window_id_;
-
-    // Stores the set of Exo aura::Window instances whose surface widget has
-    // been committed prior to |window_id_| is set.
-    std::set<raw_ptr<aura::Window, SetExperimental>>
-        windows_committed_prior_to_window_id_;
-  };
-
-  // Destroys the WindowObserver once the "WebUI tab-drop closure routine has
-  // been invoked".
+  // Destroys the DetachedWindowObserver once the "WebUI tab-drop callback
+  // routine" has been invoked.
   void DestroyWindowObserver();
 
   // Not owned. Practically, this should point to ChromeNewWindowClient in
   // production.
   const raw_ptr<ash::NewWindowDelegate> delegate_;
 
-  std::unique_ptr<WindowObserver> window_observer_;
+  std::unique_ptr<DetachedWindowObserver> window_observer_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CROSAPI_NEW_WINDOW_DELEGATE_H_
