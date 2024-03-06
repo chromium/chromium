@@ -281,16 +281,11 @@ class ImageProcessorPerfTest : public ::testing::Test {
     candidates_ = {candidate_};
   }
 
-  void WriteJsonResult(size_t frames_decoded,
-                       double total_duration_ms,
-                       double fps) {
-    const double frames_decoded_as_double =
-        base::strict_cast<double>(frames_decoded);
-
+  void WriteJsonResult(std::vector<std::pair<std::string, double>> data) {
     base::Value::Dict metrics;
-    metrics.Set("FramesDecoded", frames_decoded_as_double);
-    metrics.Set("TotalDurationMs", total_duration_ms);
-    metrics.Set("FramesPerSecond", fps);
+    for (auto i : data) {
+      metrics.Set(i.first, i.second);
+    }
 
     const auto output_folder_path = base::FilePath(g_output_directory);
     std::string metrics_str;
@@ -362,7 +357,9 @@ TEST_F(ImageProcessorPerfTest, UncappedGLImageProcessorPerfTest) {
   base::TimeDelta delta_time = end_time - start_time;
   const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
 
-  WriteJsonResult(kNumberOfTestCycles, delta_time.InMicrosecondsF(), fps);
+  WriteJsonResult({{"FramesDecoded", kNumberOfTestCycles},
+                   {"TotalDurationMs", delta_time.InMicrosecondsF()},
+                   {"FramesPerSecond", fps}});
 }
 
 // Tests the LibYUV by feeding in |kNumberOfTestFrames| unique input
@@ -405,7 +402,9 @@ TEST_F(ImageProcessorPerfTest, UncappedLibYUVPerfTest) {
   // Preventing integer division inaccuracies with |delta_time|.
   const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
 
-  WriteJsonResult(kNumberOfCappedTestCycles, delta_time.InMicroseconds(), fps);
+  WriteJsonResult({{"FramesDecoded", kNumberOfTestCycles},
+                   {"TotalDurationMs", delta_time.InMicroseconds()},
+                   {"FramesPerSecond", fps}});
 }
 
 // Tests GLImageProcessor by feeding in |kNumberOfTestFrames| unique input
@@ -468,8 +467,9 @@ TEST_F(ImageProcessorPerfTest, CappedGLImageProcessorPerfTest) {
   const double fps =
       (kNumberOfCappedTestCycles / total_delta_time.InSecondsF());
 
-  WriteJsonResult(kNumberOfCappedTestCycles, total_delta_time.InMicroseconds(),
-                  fps);
+  WriteJsonResult({{"FramesDecoded", kNumberOfCappedTestCycles},
+                   {"TotalDurationMs", total_delta_time.InMicroseconds()},
+                   {"FramesPerSecond", fps}});
 }
 
 // Tests LibYUV by feeding in |kNumberOfTestFrames| unique input
@@ -530,15 +530,16 @@ TEST_F(ImageProcessorPerfTest, CappedLibYUVPerfTest) {
   const double fps =
       (kNumberOfCappedTestCycles / total_delta_time.InSecondsF());
 
-  WriteJsonResult(kNumberOfCappedTestCycles, total_delta_time.InMicroseconds(),
-                  fps);
+  WriteJsonResult({{"FramesDecoded", kNumberOfCappedTestCycles},
+                   {"TotalDurationMs", total_delta_time.InMicroseconds()},
+                   {"FramesPerSecond", fps}});
 }
 
 // Tests the GLImageProcessor by feeding in a 1280x720 NV12 input frame and
 // scaling it up to 1920x1080 and then scaling it back down to its original
 // size. Will print out the PSNR calculation for each plane and verify that
 // the PSNR values are greater than 40.0.
-TEST_F(ImageProcessorPerfTest, NV12ScalingComparisonTest) {
+TEST_F(ImageProcessorPerfTest, GLNV12ScalingComparisonTest) {
   InitializeInputImage(/*use_cpu_memory=*/false);
 
   base::RunLoop run_loop;
@@ -684,6 +685,8 @@ TEST_F(ImageProcessorPerfTest, NV12ScalingComparisonTest) {
                                          "PSNR Test");
   reporter.RegisterImportantMetric(".PSNR", "decibels");
   reporter.AddResult(".PSNR", psnr_test);
+
+  WriteJsonResult({{"PSNR", psnr_test}});
 }
 
 // Tests GLImageProcessor by feeding in |kNumberOfTestFrames| unique NV12 input
@@ -722,7 +725,9 @@ TEST_F(ImageProcessorPerfTest, GLImageProcessorNV12DownscalingTest) {
   base::TimeDelta delta_time = end_time - start_time;
   const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
 
-  WriteJsonResult(kNumberOfTestCycles, delta_time.InMicrosecondsF(), fps);
+  WriteJsonResult({{"FramesDecoded", kNumberOfTestCycles},
+                   {"TotalDurationMs", delta_time.InMicrosecondsF()},
+                   {"FramesPerSecond", fps}});
 }
 
 // Tests GLImageProcessor by feeding in |kNumberOfTestFrames| unique NV12 input
@@ -761,7 +766,9 @@ TEST_F(ImageProcessorPerfTest, GLImageProcessorNV12UpscalingTest) {
   base::TimeDelta delta_time = end_time - start_time;
   const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
 
-  WriteJsonResult(kNumberOfTestCycles, delta_time.InMicrosecondsF(), fps);
+  WriteJsonResult({{"FramesDecoded", kNumberOfTestCycles},
+                   {"TotalDurationMs", delta_time.InMicrosecondsF()},
+                   {"FramesPerSecond", fps}});
 }
 
 // Tests LibYUV by feeding in |kNumberOfTestFrames| unique NV12 input
@@ -805,7 +812,9 @@ TEST_F(ImageProcessorPerfTest, LibYUVNV12DownscalingTest) {
   // Preventing integer division inaccuracies with |delta_time|.
   const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
 
-  WriteJsonResult(kNumberOfTestCycles, delta_time.InMicrosecondsF(), fps);
+  WriteJsonResult({{"FramesDecoded", kNumberOfTestCycles},
+                   {"TotalDurationMs", delta_time.InMicrosecondsF()},
+                   {"FramesPerSecond", fps}});
 }
 
 // Tests LibYUV by feeding in |kNumberOfTestFrames| unique NV12 input
@@ -849,7 +858,9 @@ TEST_F(ImageProcessorPerfTest, LibYUVNV12UpscalingTest) {
   // Preventing integer division inaccuracies with |delta_time|.
   const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
 
-  WriteJsonResult(kNumberOfTestCycles, delta_time.InMicrosecondsF(), fps);
+  WriteJsonResult({{"FramesDecoded", kNumberOfTestCycles},
+                   {"TotalDurationMs", delta_time.InMicrosecondsF()},
+                   {"FramesPerSecond", fps}});
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -960,7 +971,9 @@ TEST_F(ImageProcessorPerfTest, VulkanImageProcessorPerfTest) {
   // Preventing integer division inaccuracies with |delta_time|.
   const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
 
-  WriteJsonResult(kNumberOfTestCycles, delta_time.InMicrosecondsF(), fps);
+  WriteJsonResult({{"FramesDecoded", kNumberOfTestCycles},
+                   {"TotalDurationMs", delta_time.InMicrosecondsF()},
+                   {"FramesPerSecond", fps}});
 }
 #endif
 
