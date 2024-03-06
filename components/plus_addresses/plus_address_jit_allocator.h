@@ -7,7 +7,9 @@
 
 #include "components/plus_addresses/plus_address_allocator.h"
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
+#include "url/origin.h"
 
 namespace plus_addresses {
 
@@ -32,6 +34,10 @@ class PlusAddressJitAllocator : public PlusAddressAllocator {
   // Responsible for server communication. Owned by the `PlusAddressService` and
   // outlives `this`.
   const raw_ref<PlusAddressHttpClient> http_client_;
+
+  // Counts how many refresh attempts where made for an `Origin`. Serves to
+  // limit the number of refresh requests per session.
+  base::flat_map<url::Origin, int> refresh_attempts_;
 };
 
 }  // namespace plus_addresses

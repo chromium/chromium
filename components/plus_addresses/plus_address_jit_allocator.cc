@@ -6,11 +6,14 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
+#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "url/origin.h"
 
 namespace plus_addresses {
 
@@ -44,6 +47,13 @@ void PlusAddressJitAllocator::AllocatePlusAddress(
       return;
     }
     case AllocationMode::kNewPlusAddress: {
+      int& attempts_made = refresh_attempts_[origin];
+      if (attempts_made >= kMaxPlusAddressRefreshesPerOrigin) {
+        std::move(callback).Run(base::unexpected(PlusAddressRequestError(
+            PlusAddressRequestErrorType::kMaxRefreshesReached)));
+        return;
+      }
+      ++attempts_made;
       // TODO(b/324557932): Implement.
       std::move(callback).Run(base::unexpected(PlusAddressRequestError(
           PlusAddressRequestErrorType::kRequestNotSupportedError)));
@@ -55,7 +65,12 @@ void PlusAddressJitAllocator::AllocatePlusAddress(
 
 bool PlusAddressJitAllocator::IsRefreshingSupported(
     const url::Origin& origin) const {
-  return false;
+  if (auto it = refresh_attempts_.find(origin);
+      it != refresh_attempts_.cend() &&
+      it->second >= kMaxPlusAddressRefreshesPerOrigin) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(features::kPlusAddressRefresh);
 }
 
 }  // namespace plus_addresses

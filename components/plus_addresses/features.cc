@@ -60,4 +60,9 @@ BASE_FEATURE(kPlusAddressFallbackFromContextMenu,
              "PlusAddressFallbackFromContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, users can refresh the suggested plus address string.
+BASE_FEATURE(kPlusAddressRefresh,
+             "PlusAddressRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace plus_addresses::features

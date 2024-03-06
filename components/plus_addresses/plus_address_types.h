@@ -31,6 +31,9 @@ enum class PlusAddressRequestErrorType {
   // The type of request is not supported by this version of Chrome - e.g.,
   // refreshing plus addresses prior to them being enabled.
   kRequestNotSupportedError = 3,
+  // The refresh request is not allowed because the limit of requests has been
+  // meet.
+  kMaxRefreshesReached = 4
 };
 
 class PlusAddressRequestError {
@@ -38,6 +41,8 @@ class PlusAddressRequestError {
   explicit PlusAddressRequestError(PlusAddressRequestErrorType error_type) {
     error_type_ = error_type;
   }
+
+  bool operator==(const PlusAddressRequestError&) const = default;
 
   PlusAddressRequestErrorType type() const { return error_type_; }
 

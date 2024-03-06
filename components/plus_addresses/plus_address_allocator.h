@@ -20,6 +20,11 @@ class PlusAddressAllocator {
  public:
   virtual ~PlusAddressAllocator() = default;
 
+  // The maximum number of times that a user can choose to refresh the suggested
+  // plus address for a domain. The limit need not be persisted to disk and,
+  // thus, may only be enforced for the lifetime of the browser.
+  static constexpr int kMaxPlusAddressRefreshesPerOrigin = 10;
+
   enum class AllocationMode {
     // The requested plus address can be any (unused) plus address, regardless
     // of whether it has been shown to the user before.
