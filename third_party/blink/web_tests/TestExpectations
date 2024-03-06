@@ -6928,3 +6928,6 @@ crbug.com/40253082 [ Linux ] fast/forms/color-scheme/select/select-multiple-appe
 
 # Gardener 2024-03-05 (APAC)
 crbug.com/327468395 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/smooth-scroll-in-load-event.html [ Failure ]
+
+# Gardener 2024-03-06 (APAC)
+crbug.com/328303424 [ Mac ] css3/blending/svg-blend-color.html [ Failure ]
