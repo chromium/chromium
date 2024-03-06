@@ -44,7 +44,8 @@ ParseAggregatableSourceRegistrationTime(const base::Value* value) {
   const std::string* str = value->GetIfString();
   if (!str) {
     return base::unexpected(
-        TriggerRegistrationError::kAggregatableSourceRegistrationTimeWrongType);
+        TriggerRegistrationError::
+            kAggregatableSourceRegistrationTimeValueInvalid);
   }
 
   if (*str == kInclude) {
@@ -56,7 +57,7 @@ ParseAggregatableSourceRegistrationTime(const base::Value* value) {
   }
 
   return base::unexpected(TriggerRegistrationError::
-                              kAggregatableSourceRegistrationTimeUnknownValue);
+                              kAggregatableSourceRegistrationTimeValueInvalid);
 }
 
 std::string SerializeAggregatableSourceRegistrationTime(

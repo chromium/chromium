@@ -52,18 +52,18 @@ base::expected<std::optional<T>, ParseError> ParseIntegerFromString(
 
 }  // namespace
 
-base::expected<absl::uint128, AggregationKeyPieceError>
-ParseAggregationKeyPiece(const base::Value& value) {
+base::expected<absl::uint128, ParseError> ParseAggregationKeyPiece(
+    const base::Value& value) {
   const std::string* str = value.GetIfString();
   if (!str) {
-    return base::unexpected(AggregationKeyPieceError::kWrongType);
+    return base::unexpected(ParseError());
   }
 
   absl::uint128 key_piece;
 
   if (!base::StartsWith(*str, "0x", base::CompareCase::INSENSITIVE_ASCII) ||
       !base::HexStringToUInt128(*str, &key_piece)) {
-    return base::unexpected(AggregationKeyPieceError::kWrongFormat);
+    return base::unexpected(ParseError());
   }
 
   return key_piece;

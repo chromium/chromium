@@ -3989,47 +3989,39 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Invalid JSON"/>
   <int value="1" label="Root JSON value has wrong type"/>
   <int value="2" label="Filters has wrong type"/>
-  <int value="5" label="Filters value has wrong type"/>
-  <int value="7" label="Filters list value has wrong type"/>
-  <int value="9" label="aggregatable_values has wrong type"/>
-  <int value="11" label="aggregatable_values key too long"/>
-  <int value="12" label="aggregatable_values value has wrong type"/>
-  <int value="13" label="aggregatable_values value out of range"/>
-  <int value="14" label="aggregatable_trigger_data has wrong type"/>
-  <int value="16" label="aggregatable_trigger_data value has wrong type"/>
-  <int value="17" label="aggregatable_trigger_data value key_piece missing"/>
-  <int value="18"
-      label="aggregatable_trigger_data value key_piece has wrong type"/>
-  <int value="19"
-      label="aggregatable_trigger_data value key_piece has wrong format"/>
-  <int value="20"
-      label="aggregatable_trigger_data value source_keys has wrong type"/>
-  <int value="22"
-      label="aggregatable_trigger_data value source_keys key has wrong type"/>
-  <int value="23"
-      label="aggregatable_trigger_data value source_keys key too long"/>
-  <int value="24" label="event_trigger_data has wrong type"/>
-  <int value="25" label="event_trigger_data value is invalid"/>
-  <int value="26" label="event_trigger_data value has wrong type"/>
-  <int value="27" label="event_trigger priority value is invalid"/>
-  <int value="28" label="event_trigger dedup key value is invalid"/>
-  <int value="29" label="aggregation_coordinator_identifier has wrong type"/>
-  <int value="30" label="aggregation_coordinator_identifier has unknown value"/>
-  <int value="31" label="aggregatable_deduplication_keys has wrong type"/>
-  <int value="32" label="aggregatable_deduplication_keys value is invalid"/>
-  <int value="33" label="aggregatable_deduplication_keys value has wrong type"/>
-  <int value="34" label="aggregatable_source_registration_time has wrong type"/>
-  <int value="35"
-      label="aggregatable_source_registration_time has unknown value"/>
-  <int value="36"
+  <int value="3" label="Filters value has wrong type"/>
+  <int value="4" label="Filters list value has wrong type"/>
+  <int value="5"
       label="Filters is using a reserved key (starts with &quot;_&quot;)"/>
-  <int value="37" label="trigger_context_id value is invalid"/>
-  <int value="38"
+  <int value="6" label="aggregatable_values has wrong type"/>
+  <int value="7" label="aggregatable_values key too long"/>
+  <int value="8" label="aggregatable_values list value has wrong type"/>
+  <int value="9"
+      label="aggregatable_values list value is missing values field"/>
+  <int value="10" label="aggregatable_values value is invalid"/>
+  <int value="11" label="aggregatable_trigger_data has wrong type"/>
+  <int value="12" label="aggregatable_trigger_data value has wrong type"/>
+  <int value="13" label="aggregatable_trigger_data value key_piece missing"/>
+  <int value="14"
+      label="aggregatable_trigger_data value source_keys has wrong type"/>
+  <int value="15" label="aggregatable_trigger_data value key_piece is invalid"/>
+  <int value="16"
+      label="aggregatable_trigger_data value source_keys key is invalid"/>
+  <int value="17" label="event_trigger_data has wrong type"/>
+  <int value="18" label="event_trigger_data value is invalid"/>
+  <int value="19" label="event_trigger_data value has wrong type"/>
+  <int value="20" label="event_trigger priority value is invalid"/>
+  <int value="21" label="event_trigger dedup key value is invalid"/>
+  <int value="22" label="aggregation_coordinator_identifier value is invalid"/>
+  <int value="23" label="aggregatable_deduplication_keys has wrong type"/>
+  <int value="24" label="aggregatable_deduplication_keys value is invalid"/>
+  <int value="25" label="aggregatable_deduplication_keys value has wrong type"/>
+  <int value="26"
+      label="aggregatable_source_registration_time valid is invalid"/>
+  <int value="27" label="trigger_context_id value is invalid"/>
+  <int value="28"
       label="trigger_context_id disallowed for
              aggregatable_source_registration_time"/>
-  <int value="39" label="aggregatable_values list value has wrong type"/>
-  <int value="40"
-      label="aggregatable_values list value is missing values field"/>
 </enum>
 
 <enum name="ConversionTriggerVerificationGetHeadersStatus">

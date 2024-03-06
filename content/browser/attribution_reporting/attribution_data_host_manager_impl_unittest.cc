@@ -4274,7 +4274,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
     task_environment_.FastForwardBy(base::TimeDelta());
-    histograms.ExpectUniqueSample("Conversions.TriggerRegistrationError9",
+    histograms.ExpectUniqueSample("Conversions.TriggerRegistrationError10",
                                   TriggerRegistrationError::kInvalidJson, 1);
   }
 }

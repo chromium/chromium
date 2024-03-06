@@ -59,13 +59,13 @@ TEST(AggregatableTriggerConfigTest, ParseAggregatableSourceRegistrationTime) {
           "aggregatable_source_registration_time_wrong_type",
           R"json({"aggregatable_source_registration_time":123})json",
           ErrorIs(TriggerRegistrationError::
-                      kAggregatableSourceRegistrationTimeWrongType),
+                      kAggregatableSourceRegistrationTimeValueInvalid),
       },
       {
           "aggregatable_source_registration_time_invalid_value",
           R"json({"aggregatable_source_registration_time":"unknown"})json",
           ErrorIs(TriggerRegistrationError::
-                      kAggregatableSourceRegistrationTimeUnknownValue),
+                      kAggregatableSourceRegistrationTimeValueInvalid),
       },
   };
 

@@ -277,12 +277,12 @@ TEST(TriggerRegistrationTest, Parse) {
           "aggregatable_source_registration_time_invalid",
           R"json({"aggregatable_source_registration_time":123})json",
           ErrorIs(TriggerRegistrationError::
-                      kAggregatableSourceRegistrationTimeWrongType),
+                      kAggregatableSourceRegistrationTimeValueInvalid),
       },
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError9";
+      "Conversions.TriggerRegistrationError10";
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.description);
@@ -369,18 +369,19 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
       {
           "aggregation_coordinator_origin_wrong_type",
           R"json({"aggregation_coordinator_origin":123})json",
-          ErrorIs(TriggerRegistrationError::kAggregationCoordinatorWrongType),
+          ErrorIs(
+              TriggerRegistrationError::kAggregationCoordinatorValueInvalid),
       },
       {
           "aggregation_coordinator_origin_invalid_value",
           R"json({"aggregation_coordinator_origin":"https://unknown.example.test"})json",
           ErrorIs(
-              TriggerRegistrationError::kAggregationCoordinatorUnknownValue),
+              TriggerRegistrationError::kAggregationCoordinatorValueInvalid),
       },
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError9";
+      "Conversions.TriggerRegistrationError10";
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(

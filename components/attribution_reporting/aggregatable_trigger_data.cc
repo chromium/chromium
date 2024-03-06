@@ -41,17 +41,9 @@ base::expected<absl::uint128, TriggerRegistrationError> ParseKeyPiece(
         TriggerRegistrationError::kAggregatableTriggerDataKeyPieceMissing);
   }
 
-  return ParseAggregationKeyPiece(*v).transform_error(
-      [](AggregationKeyPieceError error) {
-        switch (error) {
-          case AggregationKeyPieceError::kWrongType:
-            return TriggerRegistrationError::
-                kAggregatableTriggerDataKeyPieceWrongType;
-          case AggregationKeyPieceError::kWrongFormat:
-            return TriggerRegistrationError::
-                kAggregatableTriggerDataKeyPieceWrongFormat;
-        }
-      });
+  return ParseAggregationKeyPiece(*v).transform_error([](ParseError error) {
+    return TriggerRegistrationError::kAggregatableTriggerDataKeyPieceInvalid;
+  });
 }
 
 base::expected<AggregatableTriggerData::Keys, TriggerRegistrationError>
@@ -71,14 +63,9 @@ ParseSourceKeys(base::Value::Dict& registration) {
 
   for (auto& maybe_string_value : *l) {
     std::string* s = maybe_string_value.GetIfString();
-    if (!s) {
-      return base::unexpected(
-          TriggerRegistrationError::
-              kAggregatableTriggerDataSourceKeysKeyWrongType);
-    }
-    if (!AggregationKeyIdHasValidLength(*s)) {
+    if (!s || !AggregationKeyIdHasValidLength(*s)) {
       return base::unexpected(TriggerRegistrationError::
-                                  kAggregatableTriggerDataSourceKeysKeyTooLong);
+                                  kAggregatableTriggerDataSourceKeysKeyInvalid);
     }
 
     source_keys.emplace_back(std::move(*s));

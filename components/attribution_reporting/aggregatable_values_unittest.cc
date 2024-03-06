@@ -60,17 +60,17 @@ TEST(AggregatableValuesTest, Parse) {
       {
           "value_not_int",
           R"json({"a": true})json",
-          ErrorIs(TriggerRegistrationError::kAggregatableValuesValueWrongType),
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesValueInvalid),
       },
       {
           "value_below_range",
           R"json({"a": 0})json",
-          ErrorIs(TriggerRegistrationError::kAggregatableValuesValueOutOfRange),
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesValueInvalid),
       },
       {
           "value_above_range",
           R"json({"a": 65537})json",
-          ErrorIs(TriggerRegistrationError::kAggregatableValuesValueOutOfRange),
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesValueInvalid),
       },
       {
           "valid",

@@ -24,15 +24,13 @@ namespace {
 TEST(AttributionReportingParsingUtilsTest, ParseAggregationKeyPiece) {
   const struct {
     base::Value value;
-    base::expected<absl::uint128, AggregationKeyPieceError> expected;
+    base::expected<absl::uint128, ParseError> expected;
   } kTestCases[] = {
-      {base::Value(), base::unexpected(AggregationKeyPieceError::kWrongType)},
-      {base::Value("123"),
-       base::unexpected(AggregationKeyPieceError::kWrongFormat)},
+      {base::Value(), base::unexpected(ParseError())},
+      {base::Value("123"), base::unexpected(ParseError())},
       {base::Value("0x123"), 291},
       {base::Value("0X123"), 291},
-      {base::Value("0xG"),
-       base::unexpected(AggregationKeyPieceError::kWrongFormat)},
+      {base::Value("0xG"), base::unexpected(ParseError())},
   };
 
   for (const auto& test_case : kTestCases) {

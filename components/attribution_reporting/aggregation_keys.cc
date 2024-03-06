@@ -84,12 +84,8 @@ AggregationKeys::FromJSON(const base::Value* value) {
 
     ASSIGN_OR_RETURN(
         absl::uint128 key, ParseAggregationKeyPiece(maybe_string_value),
-        [](AggregationKeyPieceError error) {
-          switch (error) {
-            case AggregationKeyPieceError::kWrongType:
-            case AggregationKeyPieceError::kWrongFormat:
-              return SourceRegistrationError::kAggregationKeysValueInvalid;
-          }
+        [](ParseError) {
+          return SourceRegistrationError::kAggregationKeysValueInvalid;
         });
 
     keys.emplace_back(key_id, key);

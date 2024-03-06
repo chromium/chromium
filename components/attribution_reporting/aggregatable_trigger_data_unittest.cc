@@ -121,13 +121,13 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
           "key_piece_wrong_type",
           base::test::ParseJson(R"json({"key_piece":123})json"),
           ErrorIs(TriggerRegistrationError::
-                      kAggregatableTriggerDataKeyPieceWrongType),
+                      kAggregatableTriggerDataKeyPieceInvalid),
       },
       {
           "key_piece_wrong_format",
           base::test::ParseJson(R"json({"key_piece":"1234"})json"),
           ErrorIs(TriggerRegistrationError::
-                      kAggregatableTriggerDataKeyPieceWrongFormat),
+                      kAggregatableTriggerDataKeyPieceInvalid),
       },
       {
           "source_keys_wrong_type",
@@ -141,14 +141,14 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
           base::test::ParseJson(
               R"json({"key_piece":"0x1234", "source_keys":[123]})json"),
           ErrorIs(TriggerRegistrationError::
-                      kAggregatableTriggerDataSourceKeysKeyWrongType),
+                      kAggregatableTriggerDataSourceKeysKeyInvalid),
       },
       {
           "source_keys_key_too_long",
           make_aggregatable_trigger_data_with_key_length(
               kMaxBytesPerAggregationKeyId + 1),
           ErrorIs(TriggerRegistrationError::
-                      kAggregatableTriggerDataSourceKeysKeyTooLong),
+                      kAggregatableTriggerDataSourceKeysKeyInvalid),
       },
       {
           "filters_wrong_type",

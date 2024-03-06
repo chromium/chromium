@@ -49,14 +49,9 @@ ParseValues(const base::Value::Dict& dict) {
     }
 
     std::optional<int> int_value = key_value.GetIfInt();
-    if (!int_value.has_value()) {
+    if (!int_value.has_value() || !IsValueInRange(*int_value)) {
       return base::unexpected(
-          TriggerRegistrationError::kAggregatableValuesValueWrongType);
-    }
-
-    if (!IsValueInRange(*int_value)) {
-      return base::unexpected(
-          TriggerRegistrationError::kAggregatableValuesValueOutOfRange);
+          TriggerRegistrationError::kAggregatableValuesValueInvalid);
     }
 
     container.emplace_back(id, *int_value);
