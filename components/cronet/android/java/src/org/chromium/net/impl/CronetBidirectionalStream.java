@@ -731,7 +731,10 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 });
     }
 
-    /** Called by the native code to report metrics just before the native adapter is destroyed. */
+    /**
+     * Called by the native code, from the network thread, immediately before the native adapter
+     * destroys itself. Not called if the native adapter was never started.
+     */
     @SuppressWarnings("unused")
     @CalledByNative
     private void onMetricsCollected(

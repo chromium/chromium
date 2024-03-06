@@ -167,7 +167,8 @@ class CronetBidirectionalStreamAdapter
   base::android::ScopedJavaLocalRef<jobjectArray> GetHeadersArray(
       JNIEnv* env,
       const spdy::Http2HeaderBlock& header_block);
-  // Helper method to report metrics to the Java layer.
+  // Reports metrics to the Java layer if the stream was ever started. Called on
+  // the network thread immediately before the adapter destroys itself.
   void MaybeReportMetrics();
   const raw_ptr<CronetContextAdapter> context_;
 

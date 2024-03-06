@@ -110,7 +110,9 @@ class CronetURLRequest {
     // methods will be invoked.
     virtual void OnDestroyed() = 0;
 
-    // Invoked right before request is destroyed to report collected metrics.
+    // Reports metrics data about the request.
+    // This is called immediately before the terminal state callback (i.e.
+    // OnSucceeded()/OnError()/OnCanceled()).
     virtual void OnMetricsCollected(
         const base::Time& request_start_time,
         const base::TimeTicks& request_start,
