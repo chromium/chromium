@@ -4,6 +4,8 @@
 
 #include "ash/wm/window_resizer.h"
 
+#include <optional>
+
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_util.h"
@@ -508,10 +510,15 @@ void WindowResizer::CalculateBoundsWithAspectRatio(float aspect_ratio,
                            ? GetTarget()->delegate()->GetMaximumSize()
                            : gfx::Size();
   DCHECK(!min_size.IsEmpty());
-  DCHECK(!max_size.IsEmpty());
+
+  // gfx::SizeRectToAspectRatio expects std::nullopt when there is no limit, but
+  // GetMaximumSize() returns 0x0 when there is no limit.
+  auto max_size_opt = !max_size.IsEmpty()
+                          ? std::make_optional<gfx::Size>(max_size)
+                          : std::nullopt;
 
   gfx::SizeRectToAspectRatio(GetWindowResizeEdge(details().window_component),
-                             aspect_ratio, min_size, max_size, new_bounds);
+                             aspect_ratio, min_size, max_size_opt, new_bounds);
 }
 
 }  // namespace ash
