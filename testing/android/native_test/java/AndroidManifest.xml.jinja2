@@ -40,7 +40,6 @@ found in the LICENSE file.
             android:memtagMode="sync"
             android:name="org.chromium.native_test.NativeTestApplication">
     {% endif %}
-        <uses-library android:name="android.test.runner"/>
         {% if use_native_activity == 'true' %}
         <activity android:name=".NativeUnitTestNativeActivity"
                 android:label="NativeTest"

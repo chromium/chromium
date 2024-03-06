@@ -11,10 +11,6 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 {% endblock %}
 
-{% block extra_application_definitions_for_test %}
-        <uses-library android:name="android.test.runner" />
-{% endblock %}
-
 {% block extra_root_definitions %}
     <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
         android:targetPackage="{{manifest_package}}"

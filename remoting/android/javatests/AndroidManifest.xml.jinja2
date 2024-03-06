@@ -8,13 +8,7 @@
        doesn't ignore this. -->
   <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="{{ APK_PACKAGE_NAME }}.tests">
-    <!-- We add an application tag here just so that we can indicate that this
-         package needs to link against the android.test library, which is
-         needed when building test cases. -->
     <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
-    <application>
-        <uses-library android:name="android.test.runner" />
-    </application>
     <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
         android:targetPackage="{{ APK_PACKAGE_NAME }}"
         android:label="Tests for {{ APK_PACKAGE_NAME }}"/>

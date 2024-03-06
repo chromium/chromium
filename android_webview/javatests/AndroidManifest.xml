@@ -11,10 +11,6 @@
     <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
     <uses-permission android:name="android.permission.READ_LOGS"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <!-- We add an application tag here just so that we can indicate that this
-         package needs to link against the android.test library, which is
-         needed when building test cases. -->
     <application android:hardwareAccelerated="false">
-        <uses-library android:name="android.test.runner" />
     </application>
 </manifest>

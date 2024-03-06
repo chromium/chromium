@@ -11,11 +11,7 @@
     <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-    <!-- We add an application tag here just so that we can indicate that this
-         package needs to link against the android.test library, which is
-         needed when building test cases. -->
     <application>
-        <uses-library android:name="android.test.runner" />
         <provider
             xmlns:tools="http://schemas.android.com/tools"
             android:name="androidx.startup.InitializationProvider"

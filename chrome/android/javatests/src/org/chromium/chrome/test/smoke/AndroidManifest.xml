@@ -11,13 +11,6 @@
     <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <!-- We add an application tag here just so that we can indicate that this
-         package needs to link against the android.test library, which is
-         needed when building test cases. -->
-    <application>
-        <uses-library android:name="android.test.runner" />
-    </application>
-
     <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
         android:targetPackage="org.chromium.chrome.test.smoke"
         android:label="Runner for org.chromium.chrome.test.smoke"/>

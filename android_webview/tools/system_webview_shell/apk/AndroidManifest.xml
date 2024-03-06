@@ -169,7 +169,5 @@
             <meta-data android:name="android.webkit.WebView.MultiProfileNameTagKey"
                 android:resource="@id/multi_profile_name_tag_key" />
         </service>
-
-        <uses-library android:name="android.test.runner" />
     </application>
 </manifest>

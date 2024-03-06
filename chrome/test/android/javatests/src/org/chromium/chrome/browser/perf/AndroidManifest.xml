@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application>
-        <uses-library android:name="android.test.runner" />
         <!-- We do not need/want androidx.profileinstaller to run on startup -->
         <provider android:authorities="org.chromium.chrome.startup.benchmark.tests.androidx-startup"
                 android:name="androidx.startup.InitializationProvider"

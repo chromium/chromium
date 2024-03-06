@@ -12,9 +12,6 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application android:label="ChromiumNetTestAwSupport">
-
-        <uses-library android:name="android.test.runner" />
-
         <service android:name="org.chromium.android_webview.test.AwEmbeddedTestServerService"
                 android:exported="true"
                 tools:ignore="ExportedService">
@@ -22,7 +19,6 @@
                 <action android:name="org.chromium.net.test.EMBEDDED_TEST_SERVER_SERVICE" />
             </intent-filter>
         </service>
-
     </application>
 
 </manifest>
