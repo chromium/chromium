@@ -1102,7 +1102,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Toggled on"/>
 </enum>
 
-<enum name="IneligibityReason">
+<enum name="IneligibilityReason">
   <int value="0" label="OS version"/>
   <int value="1" label="Form factor (e.g. tablet)"/>
   <int value="2" label="Navigation mode (e.g. 3-button mode)"/>

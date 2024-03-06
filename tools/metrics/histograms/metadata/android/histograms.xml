@@ -1359,8 +1359,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.EdgeToEdge.IneligibityReason" enum="IneligibityReason"
-    expires_after="M130">
+<histogram name="Android.EdgeToEdge.IneligibilityReason"
+    enum="IneligibilityReason" expires_after="M130">
   <owner>lazzzis@google.com</owner>
   <owner>edge-to-edge@chromium.org</owner>
   <summary>
