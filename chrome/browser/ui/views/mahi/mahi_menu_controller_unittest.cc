@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -42,6 +43,29 @@ TEST_F(MahiMenuControllerTest, Widget) {
   // Menu widget should hide when dismissed.
   menu_controller()->OnDismiss(/*is_other_command_executed=*/false);
   EXPECT_FALSE(menu_controller()->menu_widget_for_test());
+}
+
+TEST_F(MahiMenuControllerTest, BoundsChanged) {
+  EXPECT_FALSE(menu_controller()->menu_widget_for_test());
+
+  gfx::Rect anchor_bounds = gfx::Rect(50, 50, 25, 100);
+  menu_controller()->OnTextAvailable(anchor_bounds,
+                                     /*selected_text=*/"",
+                                     /*surrounding_text=*/"");
+  auto* widget = menu_controller()->menu_widget_for_test();
+  EXPECT_TRUE(widget);
+
+  EXPECT_EQ(editor_menu::GetEditorMenuBounds(anchor_bounds,
+                                             widget->GetContentsView()),
+            widget->GetRestoredBounds());
+
+  anchor_bounds = gfx::Rect(0, 50, 55, 80);
+
+  // Widget should change bounds accordingly.
+  menu_controller()->OnAnchorBoundsChanged(anchor_bounds);
+  EXPECT_EQ(editor_menu::GetEditorMenuBounds(anchor_bounds,
+                                             widget->GetContentsView()),
+            widget->GetRestoredBounds());
 }
 
 }  // namespace chromeos::mahi
