@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
@@ -562,6 +563,11 @@ void URLLoader::SetResourceRequestSenderForTesting(
 void URLLoader::Context::SetResourceRequestSenderForTesting(
     std::unique_ptr<blink::ResourceRequestSender> resource_request_sender) {
   resource_request_sender_ = std::move(resource_request_sender);
+}
+
+void URLLoader::SetBackgroundResponseProcessor(
+    scoped_refptr<BackgroundResponseProcessor> background_response_processor) {
+  NOTREACHED();
 }
 
 }  // namespace blink
