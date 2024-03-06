@@ -48,6 +48,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
@@ -326,6 +327,7 @@ public class PageInsightsCoordinatorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/328462350")
     public void testRoundTopCornerAtExpandedStateAfterPeekState() throws Exception {
         createPageInsightsCoordinator();
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
@@ -399,6 +401,7 @@ public class PageInsightsCoordinatorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/328462350")
     public void testResizeContent() throws Exception {
         createPageInsightsCoordinator();
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
