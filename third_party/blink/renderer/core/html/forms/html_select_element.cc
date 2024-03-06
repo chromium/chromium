@@ -1563,4 +1563,8 @@ HTMLDataListElement* HTMLSelectElement::SlottedDatalist() const {
   return select_type_->SlottedDatalist();
 }
 
+bool HTMLSelectElement::IsAppearanceBikeshed() const {
+  return select_type_->IsAppearanceBikeshed();
+}
+
 }  // namespace blink

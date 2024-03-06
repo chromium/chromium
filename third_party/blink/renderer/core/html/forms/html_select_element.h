@@ -205,10 +205,16 @@ class CORE_EXPORT HTMLSelectElement final
 
   // SlottedButton and SlottedDatalist return the first child <button> or
   // <datalist> in the light dom tree. If this select is in a state where the
-  // <button> or <datalist> won't be rendered, such as a <select multiple>, then
-  // nullptr will be returned.
+  // <button> or <datalist> can't be rendered, such as a <select multiple>, then
+  // nullptr will be returned. Since these methods are called during style
+  // calculation to compute internal pseudo-classes, the value of the appearance
+  // property is not checked.
   HTMLButtonElement* SlottedButton() const;
   HTMLDataListElement* SlottedDatalist() const;
+
+  // This method returns true if the computed style is appearance:bikeshed and
+  // the SelectType supports alternate rendering based on appearance:bikeshed.
+  bool IsAppearanceBikeshed() const;
 
   void DefaultEventHandler(Event&) override;
 

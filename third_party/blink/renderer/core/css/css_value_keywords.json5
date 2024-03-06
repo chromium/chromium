@@ -891,6 +891,9 @@
     // stretch
     // repeat
     "round",
+    // TODO(crbug.com/1511354): "bikeshed" is a temporary name for stylable
+    // <select>. It should be renamed when a standardized name is chosen.
+    "bikeshed",
 
     //
     // background-clip/background-origin

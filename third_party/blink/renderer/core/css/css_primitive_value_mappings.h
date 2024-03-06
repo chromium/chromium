@@ -331,6 +331,10 @@ inline CSSIdentifierValue::CSSIdentifierValue(ControlPart e)
     case kTextAreaPart:
       value_id_ = CSSValueID::kTextarea;
       break;
+    case kBikeshedPart:
+      CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+      value_id_ = CSSValueID::kBikeshed;
+      break;
   }
 }
 
@@ -389,6 +393,8 @@ inline ControlPart CSSIdentifierValue::ConvertTo() const {
       return kTextFieldPart;
     case CSSValueID::kTextarea:
       return kTextAreaPart;
+    case CSSValueID::kBikeshed:
+      return kBikeshedPart;
     default:
       NOTREACHED();
       return kNoControlPart;

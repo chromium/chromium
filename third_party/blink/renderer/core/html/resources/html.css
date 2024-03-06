@@ -912,6 +912,9 @@ input[type="week" i], select {
     text-autospace: no-autospace !important;
 }
 
+/* TODO(crbug.com/1511354): These UA styles should be changed based on the
+ * appearance property instead of child DOM content, but there isn't a good
+ * way to do this yet without two style recalcs. */
 select:not(:-internal-select-author-button) {
     appearance: auto;
     box-sizing: border-box;

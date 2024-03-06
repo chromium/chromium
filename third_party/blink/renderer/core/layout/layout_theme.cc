@@ -178,6 +178,9 @@ ControlPart LayoutTheme::AdjustAppearanceWithElementType(
     case kMediaVolumeSliderThumbPart:
     case kMediaControlPart:
       return part;
+    case kBikeshedPart:
+      CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+      return part;
 
     // Aliases of 'auto'.
     // https://drafts.csswg.org/css-ui-4/#typedef-appearance-compat-auto
