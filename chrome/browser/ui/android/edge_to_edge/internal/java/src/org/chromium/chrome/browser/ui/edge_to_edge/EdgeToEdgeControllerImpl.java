@@ -7,13 +7,11 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.shouldDrawToEdge;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -294,13 +292,6 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         for (var observer : mEdgeChangeObservers) {
             observer.onToEdgeChange(isToEdge() ? mSystemInsets.bottom : 0);
         }
-
-        // We only make the Nav Bar transparent because it's the only thing we want to draw
-        // underneath.
-        // TODO(donnd): Use an appropriate background color when not transparent.
-        //     For the web we may need to call Blink or some system background color API.
-        @ColorInt int navBarColor = toEdge ? Color.TRANSPARENT : Color.BLACK;
-        mEdgeToEdgeOSWrapper.setNavigationBarColor(mActivity.getWindow(), navBarColor);
 
         if (webContents != null) pushInsetsToBlink(toEdge, webContents);
     }

@@ -184,6 +184,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final OneshotSupplier<HubManager> mHubManagerSupplier;
     private TouchEventObserver mDragDropTouchObserver;
     private ViewGroup mCoordinator;
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     /**
      * A common {@link CallbackController} used for being notified when {@link TabSwitcher} or
@@ -405,6 +406,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mHubManagerSupplier = hubManagerSupplier;
         mStatusBarColorController.setAllowToolbarColorOnTablets(
                 ToolbarFeatures.shouldUseToolbarBgColorForStripTransitionScrim());
+        mEdgeToEdgeControllerSupplier = edgeToEdgeSupplier;
     }
 
     @Override
@@ -510,7 +512,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivity.getWindow(),
                         mTabModelSelectorSupplier.get(),
                         mLayoutManagerSupplier,
-                        mFullscreenManager);
+                        mFullscreenManager,
+                        mEdgeToEdgeControllerSupplier);
     }
 
     @Override

@@ -40,19 +40,6 @@ public interface EdgeToEdgeOSWrapper {
     void setPadding(View view, int left, int top, int right, int bottom);
 
     /**
-     * Wraps {@link Window#setNavigationBarColor(int color)}
-     * Sets the color of the navigation bar to the given color.
-     * For this to take effect, the window must be drawing
-     * the system bar backgrounds with WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
-     * and WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION must not be set. If is not opaque,
-     * consider setting View.SYSTEM_UI_FLAG_LAYOUT_STABLE and
-     * View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION.
-     * @param window The Android {@link Window} whose bottom Navigation Bar background color to set.
-     * @param color int: The color to use for the Navigation Bar background.
-     */
-    void setNavigationBarColor(@NonNull Window window, int color);
-
-    /**
      * Wraps {@code ViewCompat#setOnApplyWindowInsetsListener}.
      * Set an {@link OnApplyWindowInsetsListener} to take over the policy for applying window insets
      * to this view. This will only take effect on devices with API 21 or above.

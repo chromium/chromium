@@ -26,11 +26,6 @@ public class EdgeToEdgeOSWrapperImpl implements EdgeToEdgeOSWrapper {
     }
 
     @Override
-    public void setNavigationBarColor(@NonNull Window window, int color) {
-        window.setNavigationBarColor(color);
-    }
-
-    @Override
     public void setOnApplyWindowInsetsListener(
             @NonNull View view, @Nullable OnApplyWindowInsetsListener listener) {
         ViewCompat.setOnApplyWindowInsetsListener(view, listener);
