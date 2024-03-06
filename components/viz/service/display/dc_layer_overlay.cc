@@ -62,7 +62,7 @@ enum DCLayerResult {
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA = 18,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_HLG = 19,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_P010_VIDEO_PROCESSOR_SUPPORT = 20,
-  DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_FULLSCREEN = 21,
+  DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_FULLSCREEN [[deprecated]] = 21,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_P010 = 22,
   kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_P010,
 };
@@ -80,7 +80,6 @@ DCLayerResult ValidateYUVOverlay(
     const gfx::ColorSpace& video_color_space,
     const gfx::BufferFormat& buffer_format,
     const std::optional<gfx::HDRMetadata>& hdr_metadata,
-    bool is_page_fullscreen_mode,
     bool has_overlay_support,
     bool has_p010_video_processor_support,
     int allowed_yuv_overlay_count,
@@ -118,12 +117,6 @@ DCLayerResult ValidateYUVOverlay(
       return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA;
     }
 
-    // Do not promote hdr overlay when not in fullscreen mode, as this may cause
-    // inconsistent tone mapping result and may cause low fps page scrolling.
-    if (!is_page_fullscreen_mode) {
-      return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_FULLSCREEN;
-    }
-
     // Do not promote hdr overlay if buffer is not in 10bit P010 format. as this
     // may cause blue output result if content is NV12 8bit HDR10.
     if (buffer_format != gfx::BufferFormat::P010) {
@@ -144,7 +137,6 @@ DCLayerResult ValidateYUVOverlay(
 DCLayerResult ValidateYUVQuad(
     const YUVVideoDrawQuad* quad,
     const std::vector<gfx::Rect>& backdrop_filter_rects,
-    bool is_page_fullscreen_mode,
     bool has_overlay_support,
     bool has_p010_video_processor_support,
     int allowed_yuv_overlay_count,
@@ -200,12 +192,6 @@ DCLayerResult ValidateYUVQuad(
     // could solve the crash issue.
     if (!IsCompatibleHDRMetadata(quad->hdr_metadata)) {
       return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA;
-    }
-
-    // Do not promote hdr overlay when not in fullscreen mode, as this may cause
-    // inconsistent tone mapping result and may cause low fps page scrolling.
-    if (!is_page_fullscreen_mode) {
-      return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_FULLSCREEN;
     }
 
     // Do not promote hdr overlay if buffer is not in 10bit P010 format. as this
@@ -264,7 +250,6 @@ void FromYUVQuad(const YUVVideoDrawQuad* quad,
 DCLayerResult ValidateTextureQuad(
     const TextureDrawQuad* quad,
     const std::vector<gfx::Rect>& backdrop_filter_rects,
-    bool is_page_fullscreen_mode,
     bool has_overlay_support,
     bool has_p010_video_processor_support,
     int allowed_yuv_overlay_count,
@@ -300,9 +285,8 @@ DCLayerResult ValidateTextureQuad(
         resource_provider->GetBufferFormat(quad->resource_id());
     auto result = ValidateYUVOverlay(
         quad->protected_video_type, color_space, buffer_format, hdr_metadata,
-        is_page_fullscreen_mode, has_overlay_support,
-        has_p010_video_processor_support, allowed_yuv_overlay_count,
-        processed_yuv_overlay_count);
+        has_overlay_support, has_p010_video_processor_support,
+        allowed_yuv_overlay_count, processed_yuv_overlay_count);
     return result;
   }
 
@@ -673,7 +657,6 @@ ValidateDrawQuadResult ValidateDrawQuad(
     DisplayResourceProvider* resource_provider,
     const QuadList::ConstIterator& it,
     const std::vector<gfx::Rect>& backdrop_filter_rects,
-    const bool is_page_fullscreen_mode,
     const bool has_overlay_support,
     const bool has_p010_video_processor_support,
     const int allowed_yuv_overlay_count,
@@ -684,9 +667,9 @@ ValidateDrawQuadResult ValidateDrawQuad(
     case DrawQuad::Material::kYuvVideoContent:
       result.code = ValidateYUVQuad(
           YUVVideoDrawQuad::MaterialCast(*it), backdrop_filter_rects,
-          is_page_fullscreen_mode, has_overlay_support,
-          has_p010_video_processor_support, allowed_yuv_overlay_count,
-          processed_yuv_overlay_count, resource_provider);
+          has_overlay_support, has_p010_video_processor_support,
+          allowed_yuv_overlay_count, processed_yuv_overlay_count,
+          resource_provider);
       result.is_yuv_overlay = true;
       break;
 
@@ -699,10 +682,9 @@ ValidateDrawQuadResult ValidateDrawQuad(
         result.code = DC_LAYER_SUCCESS;
       } else {
         result.code = ValidateTextureQuad(
-            tex_quad, backdrop_filter_rects, is_page_fullscreen_mode,
-            has_overlay_support, has_p010_video_processor_support,
-            allowed_yuv_overlay_count, processed_yuv_overlay_count,
-            resource_provider);
+            tex_quad, backdrop_filter_rects, has_overlay_support,
+            has_p010_video_processor_support, allowed_yuv_overlay_count,
+            processed_yuv_overlay_count, resource_provider);
       }
 
       result.is_yuv_overlay = tex_quad->is_video_frame;
@@ -787,11 +769,17 @@ void DCLayerOverlayProcessor::UpdateHasHwOverlaySupport() {
 }
 
 void DCLayerOverlayProcessor::UpdateSystemHDRStatus() {
-  bool hdr_enabled = false;
+  bool hdr_enabled_on_any_display = false;
+  bool hdr_disabled_on_any_display = false;
   auto dxgi_info = gl::GetDirectCompositionHDRMonitorDXGIInfo();
-  for (const auto& output_desc : dxgi_info->output_descs)
-    hdr_enabled |= output_desc->hdr_enabled;
-  system_hdr_enabled_ = hdr_enabled;
+  for (const auto& output_desc : dxgi_info->output_descs) {
+    hdr_enabled_on_any_display |= output_desc->hdr_enabled;
+    hdr_disabled_on_any_display |= !output_desc->hdr_enabled;
+  }
+  system_hdr_enabled_on_any_display_ = hdr_enabled_on_any_display;
+  // If there is no monitor connected, treat it as if there is one SDR monitor.
+  system_hdr_disabled_on_any_display_ =
+      dxgi_info->output_descs.size() > 0 ? hdr_disabled_on_any_display : true;
 }
 
 void DCLayerOverlayProcessor::UpdateP010VideoProcessorSupport() {
@@ -969,8 +957,7 @@ void DCLayerOverlayProcessor::CollectCandidates(
     const FilterOperationsMap& render_pass_backdrop_filters,
     RenderPassOverlayData& overlay_data,
     RenderPassCurrentFrameState& render_pass_state,
-    GlobalOverlayState& global_overlay_state,
-    bool is_page_fullscreen_mode) {
+    GlobalOverlayState& global_overlay_state) {
   // Output rects of child render passes that have backdrop filters in target
   // space. These rects are used to determine if the overlay rect could be read
   // by backdrop filters.
@@ -1004,9 +991,8 @@ void DCLayerOverlayProcessor::CollectCandidates(
     }
 
     ValidateDrawQuadResult result = ValidateDrawQuad(
-        resource_provider, it, backdrop_filter_rects, is_page_fullscreen_mode,
-        has_overlay_support_, has_p010_video_processor_support_,
-        allowed_yuv_overlay_count_,
+        resource_provider, it, backdrop_filter_rects, has_overlay_support_,
+        has_p010_video_processor_support_, allowed_yuv_overlay_count_,
         global_overlay_state.processed_yuv_overlay_count,
         allow_promotion_hinting_);
 
@@ -1178,8 +1164,7 @@ void DCLayerOverlayProcessor::Process(
 
     CollectCandidates(resource_provider, render_pass,
                       render_pass_backdrop_filters, overlay_data,
-                      current_frame_state, global_overlay_state,
-                      is_page_fullscreen_mode);
+                      current_frame_state, global_overlay_state);
   }
 
   // We might not save power if there are more than one videos and only part of
@@ -1291,11 +1276,16 @@ bool DCLayerOverlayProcessor::ShouldSkipOverlay(
         RecordDCLayerResult(DC_LAYER_FAILED_OUTPUT_HDR, it);
         return true;
       }
-      // Skip overlay processing if output colorspace is HDR and system HDR is
-      // not enabled. Since we always want to use Viz do HDR tone mapping, to
-      // avoid a visual difference between Viz and video processor, do not allow
-      // overlay.
-      if (!system_hdr_enabled_) {
+      // Skip overlay processing if output colorspace is HDR and any
+      // non-HDR-enabled display exists. Technically we should use HWND detect
+      // if HDR is enabled on the current display or not, if it is enabled
+      // then promote overlay, otherwise not, but since currently we can't
+      // retrieve HWND in DCLayerOverlayProcessor, in case of very bad
+      // tone-mapping result by video processor on non-HDR-enabled display, we
+      // tend to be strict about the overlay promotion and always let Viz do HDR
+      // tone mapping to avoid a visual difference between Viz and video
+      // processor.
+      if (system_hdr_disabled_on_any_display_) {
         RecordDCLayerResult(DC_LAYER_FAILED_HDR_TONE_MAPPING, it);
         return true;
       }

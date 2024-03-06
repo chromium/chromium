@@ -77,9 +77,15 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
     GetOverlayProcessor()
         ->set_frames_since_last_qualified_multi_overlays_for_testing(value);
   }
-  void set_system_hdr_enabled_for_testing(bool value) {
+  void set_system_hdr_enabled_on_any_display_for_testing(bool value) {
     CHECK_IS_TEST();
-    GetOverlayProcessor()->set_system_hdr_enabled_for_testing(value);
+    GetOverlayProcessor()->set_system_hdr_enabled_on_any_display_for_testing(
+        value);
+  }
+  void set_system_hdr_disabled_on_any_display_for_testing(bool value) {
+    CHECK_IS_TEST();
+    GetOverlayProcessor()->set_system_hdr_disabled_on_any_display_for_testing(
+        value);
   }
   void set_has_p010_video_processor_support_for_testing(bool value) {
     CHECK_IS_TEST();
