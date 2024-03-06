@@ -258,7 +258,12 @@ BASE_FEATURE(kDefaultANGLEOpenGL,
 // Default to using ANGLE's Metal backend.
 BASE_FEATURE(kDefaultANGLEMetal,
              "DefaultANGLEMetal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS) || (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Default to using ANGLE's Vulkan backend.
 BASE_FEATURE(kDefaultANGLEVulkan,
