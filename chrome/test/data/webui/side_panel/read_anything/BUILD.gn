@@ -17,13 +17,11 @@ build_webui_tests("build") {
     "play_pause_test.ts",
     "rate_selection_test.ts",
     "fake_reading_mode.ts",
-    "highlight_toggle_test.ts",
     "app_receives_toolbar_changes_test.ts",
     "test_color_updater_browser_proxy.ts",
     "read_aloud_links_toggled.ts",
     "common.ts",
     "update_content_selection.ts",
-    "speech_uses_max_text_length.ts",
   ]
 
   ts_definitions = [

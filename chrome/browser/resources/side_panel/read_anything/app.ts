@@ -1253,12 +1253,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     });
   }
 
-  private onHighlightToggle_(event: CustomEvent<{highlightOn: boolean}>) {
+  updateHighlight(show: boolean) {
     const highlightBackground =
         this.getCurrentHighlightColorVar(this.currentColorSuffix_);
     this.updateStyles({
-      '--current-highlight-bg-color':
-          event.detail.highlightOn ? highlightBackground : 'transparent',
+      '--current-highlight-bg-color': show ? highlightBackground :
+                                             'transparent',
     });
   }
 
