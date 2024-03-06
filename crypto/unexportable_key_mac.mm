@@ -10,6 +10,7 @@
 #include <vector>
 
 #import <CoreFoundation/CoreFoundation.h>
+#import <CryptoTokenKit/CryptoTokenKit.h>
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
@@ -23,6 +24,7 @@
 #include "base/memory/scoped_policy.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
+#include "crypto/apple_keychain_util.h"
 #include "crypto/apple_keychain_v2.h"
 #include "crypto/features.h"
 #include "crypto/signature_verifier.h"
@@ -280,8 +282,21 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderMac(
   CHECK(!keychain_access_group.empty())
       << "A keychain access group must be set when using unexportable keys on "
          "macOS";
-
-  // TODO(nsatragno): this code assumes the secure enclave is always available.
+  if (![AppleKeychainV2::GetInstance().GetTokenIDs()
+          containsObject:base::apple::CFToNSPtrCast(
+                             kSecAttrTokenIDSecureEnclave)]) {
+    return nullptr;
+  }
+  // Inspecting the binary for the entitlement is not available on iOS, assume
+  // it is available.
+#if !BUILDFLAG(IS_IOS)
+  if (!ExecutableHasKeychainAccessGroupEntitlement(keychain_access_group)) {
+    LOG(ERROR) << "Unexportable keys unavailable because keychain-access-group "
+                  "entitlement missing or incorrect. Expected value: "
+               << keychain_access_group;
+    return nullptr;
+  }
+#endif  // !BUILDFLAG(IS_IOS)
   return std::make_unique<UnexportableKeyProviderMac>(
       std::move(keychain_access_group));
 }

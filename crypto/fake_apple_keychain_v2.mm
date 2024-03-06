@@ -18,6 +18,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "crypto/apple_keychain_v2.h"
 
@@ -29,10 +30,18 @@ FakeAppleKeychainV2::FakeAppleKeychainV2(
           base::SysUTF8ToCFStringRef(keychain_access_group)) {}
 FakeAppleKeychainV2::~FakeAppleKeychainV2() {
   // Avoid shutdown leak of error string in Security.framework.
-  // See https://github.com/apple-oss-distributions/Security/blob/Security-60158.140.3/OSX/libsecurity_keychain/lib/SecBase.cpp#L88
+  // See
+  // https://github.com/apple-oss-distributions/Security/blob/Security-60158.140.3/OSX/libsecurity_keychain/lib/SecBase.cpp#L88
 #if defined(LEAK_SANITIZER)
   __lsan_do_leak_check();
 #endif
+}
+
+NSArray* FakeAppleKeychainV2::GetTokenIDs() {
+  if (is_secure_enclave_available_) {
+    return @[ base::apple::CFToNSPtrCast(kSecAttrTokenIDSecureEnclave) ];
+  }
+  return @[];
 }
 
 base::apple::ScopedCFTypeRef<SecKeyRef> FakeAppleKeychainV2::KeyCreateRandomKey(
@@ -134,7 +143,7 @@ FakeAppleKeychainV2::KeyCopyAttributes(SecKeyRef key) {
 }
 
 OSStatus FakeAppleKeychainV2::ItemCopyMatching(CFDictionaryRef query,
-                                        CFTypeRef* result) {
+                                               CFTypeRef* result) {
   // In practice we don't need to care about limit queries, or leaving out the
   // SecKeyRef or attributes from the result set.
   DCHECK_EQ(
@@ -261,5 +270,24 @@ OSStatus FakeAppleKeychainV2::ItemUpdate(CFDictionaryRef query,
   }
   return errSecItemNotFound;
 }
+
+#if !BUILDFLAG(IS_IOS)
+base::apple::ScopedCFTypeRef<CFTypeRef>
+FakeAppleKeychainV2::TaskCopyValueForEntitlement(SecTaskRef task,
+                                                 CFStringRef entitlement,
+                                                 CFErrorRef* error) {
+  CHECK(task);
+  CHECK(CFEqual(entitlement,
+                base::SysUTF8ToCFStringRef("keychain-access-groups").get()))
+      << "Entitlement " << entitlement << " not supported by fake";
+  base::apple::ScopedCFTypeRef<CFMutableArrayRef> keychain_access_groups(
+      CFArrayCreateMutable(kCFAllocatorDefault, /*capacity=*/1,
+                           &kCFTypeArrayCallBacks));
+  CFArrayAppendValue(
+      keychain_access_groups.get(),
+      CFStringCreateCopy(kCFAllocatorDefault, keychain_access_group_.get()));
+  return keychain_access_groups;
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace crypto

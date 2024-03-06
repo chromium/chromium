@@ -74,6 +74,8 @@ component("crypto") {
   if (is_apple) {
     sources += [
       "apple_keychain.h",
+      "apple_keychain_util.h",
+      "apple_keychain_util.mm",
       "apple_keychain_v2.h",
       "apple_keychain_v2.mm",
     ]
@@ -86,6 +88,7 @@ component("crypto") {
 
     frameworks = [
       "CoreFoundation.framework",
+      "CryptoTokenKit.framework",
       "Foundation.framework",
       "Security.framework",
     ]
@@ -177,8 +180,12 @@ test("crypto_unittests") {
     "unexportable_key_unittest.cc",
   ]
 
-  if (is_win) {
-    sources += [ "unexportable_key_metrics_unittest.cc" ]
+  if (is_win || is_mac) {
+    sources += [
+      "apple_keychain_util_unittest.mm",
+      "unexportable_key_mac_unittest.mm",
+      "unexportable_key_metrics_unittest.cc",
+    ]
   }
 
   # Some files are built when NSS is used for the platform certificate library.

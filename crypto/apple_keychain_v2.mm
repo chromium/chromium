@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <CryptoTokenKit/CryptoTokenKit.h>
 #import <Foundation/Foundation.h>
 
 #include "crypto/apple_keychain_v2.h"
@@ -36,6 +37,10 @@ void AppleKeychainV2::ClearInstanceOverride() {
 
 AppleKeychainV2::AppleKeychainV2() = default;
 AppleKeychainV2::~AppleKeychainV2() = default;
+
+NSArray* AppleKeychainV2::GetTokenIDs() {
+  return [[TKTokenWatcher alloc] init].tokenIDs;
+}
 
 base::apple::ScopedCFTypeRef<SecKeyRef> AppleKeychainV2::KeyCreateRandomKey(
     CFDictionaryRef params,
@@ -84,5 +89,15 @@ OSStatus AppleKeychainV2::ItemUpdate(CFDictionaryRef query,
                                      CFDictionaryRef keychain_data) {
   return SecItemUpdate(query, keychain_data);
 }
+
+#if !BUILDFLAG(IS_IOS)
+base::apple::ScopedCFTypeRef<CFTypeRef>
+AppleKeychainV2::TaskCopyValueForEntitlement(SecTaskRef task,
+                                             CFStringRef entitlement,
+                                             CFErrorRef* error) {
+  return base::apple::ScopedCFTypeRef<CFTypeRef>(
+      SecTaskCopyValueForEntitlement(task, entitlement, error));
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace crypto

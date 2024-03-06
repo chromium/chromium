@@ -5,6 +5,7 @@
 #ifndef CRYPTO_APPLE_KEYCHAIN_V2_H_
 #define CRYPTO_APPLE_KEYCHAIN_V2_H_
 
+#import <CryptoTokenKit/CryptoTokenKit.h>
 #import <Foundation/Foundation.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <Security/Security.h>
@@ -24,6 +25,9 @@ class CRYPTO_EXPORT AppleKeychainV2 {
 
   AppleKeychainV2(const AppleKeychainV2&) = delete;
   AppleKeychainV2& operator=(const AppleKeychainV2&) = delete;
+
+  // Wraps the |TKTokenWatcher.tokenIDs| property.
+  virtual NSArray* GetTokenIDs();
 
   // KeyCreateRandomKey wraps the |SecKeyCreateRandomKey| function.
   virtual base::apple::ScopedCFTypeRef<SecKeyRef> KeyCreateRandomKey(
@@ -54,6 +58,15 @@ class CRYPTO_EXPORT AppleKeychainV2 {
   // ItemDelete wraps the |SecItemUpdate| function.
   virtual OSStatus ItemUpdate(CFDictionaryRef query,
                               CFDictionaryRef keychain_data);
+
+#if !BUILDFLAG(IS_IOS)
+  // TaskCopyValueForEntitlement wraps the |SecTaskCopyValueForEntitlement|
+  // function. Not available on iOS.
+  virtual base::apple::ScopedCFTypeRef<CFTypeRef> TaskCopyValueForEntitlement(
+      SecTaskRef task,
+      CFStringRef entitlement,
+      CFErrorRef* error);
+#endif  // !BUILDFLAG(IS_IOS)
 
  protected:
   AppleKeychainV2();

@@ -31,7 +31,12 @@ class CRYPTO_EXPORT FakeAppleKeychainV2 : public AppleKeychainV2 {
     return items_;
   }
 
+  void set_secure_enclave_available(bool is_secure_enclave_available) {
+    is_secure_enclave_available_ = is_secure_enclave_available;
+  }
+
   // AppleKeychainV2:
+  NSArray* GetTokenIDs() override;
   base::apple::ScopedCFTypeRef<SecKeyRef> KeyCreateRandomKey(
       CFDictionaryRef params,
       CFErrorRef* error) override;
@@ -41,8 +46,16 @@ class CRYPTO_EXPORT FakeAppleKeychainV2 : public AppleKeychainV2 {
   OSStatus ItemDelete(CFDictionaryRef query) override;
   OSStatus ItemUpdate(CFDictionaryRef query,
                       CFDictionaryRef keychain_data) override;
+#if !BUILDFLAG(IS_IOS)
+  base::apple::ScopedCFTypeRef<CFTypeRef> TaskCopyValueForEntitlement(
+      SecTaskRef task,
+      CFStringRef entitlement,
+      CFErrorRef* error) override;
+#endif  // !BUILDFLAG(IS_IOS)
 
  private:
+  bool is_secure_enclave_available_ = true;
+
   // items_ contains the keychain items created by `KeyCreateRandomKey`.
   std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> items_;
   // keychain_access_group_ is the value of `kSecAttrAccessGroup` that this

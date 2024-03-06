@@ -15,12 +15,12 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
-#import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/device_event_log/device_event_log.h"
+#include "crypto/apple_keychain_util.h"
 #include "crypto/apple_keychain_v2.h"
 #include "device/fido/mac/authenticator_config.h"
 
@@ -30,34 +30,6 @@ using base::apple::NSToCFPtrCast;
 namespace device::fido::mac {
 
 namespace {
-
-// Returns whether the main executable is signed with a keychain-access-groups
-// entitlement that contains |keychain_access_group|. This is required for the
-// TouchIdAuthenticator to access key material stored in the Touch ID secure
-// enclave.
-bool ExecutableHasKeychainAccessGroupEntitlement(
-    const std::string& keychain_access_group) {
-  base::apple::ScopedCFTypeRef<SecTaskRef> task(SecTaskCreateFromSelf(nullptr));
-  if (!task) {
-    return false;
-  }
-
-  base::apple::ScopedCFTypeRef<CFTypeRef> entitlement_value_cftype(
-      SecTaskCopyValueForEntitlement(task.get(),
-                                     CFSTR("keychain-access-groups"), nullptr));
-  if (!entitlement_value_cftype) {
-    return false;
-  }
-
-  NSArray* entitlement_value_nsarray = base::apple::CFToNSPtrCast(
-      base::apple::CFCast<CFArrayRef>(entitlement_value_cftype.get()));
-  if (!entitlement_value_nsarray) {
-    return false;
-  }
-
-  return [entitlement_value_nsarray
-      containsObject:base::SysUTF8ToNSString(keychain_access_group)];
-}
 
 // Returns whether creating a key pair in the secure enclave succeeds. Keys are
 // not persisted to the keychain.
@@ -112,7 +84,7 @@ bool TouchIdContext::TouchIdAvailableImpl(AuthenticatorConfig config) {
   // entitlement that is configured by the embedder; that user authentication
   // with biometry, watch, or device passcode possible; and that the device has
   // a secure enclave.
-  if (!ExecutableHasKeychainAccessGroupEntitlement(
+  if (!crypto::ExecutableHasKeychainAccessGroupEntitlement(
           config.keychain_access_group)) {
     FIDO_LOG(ERROR)
         << "Touch ID authenticator unavailable because keychain-access-group "
