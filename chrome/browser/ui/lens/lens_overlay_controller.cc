@@ -16,6 +16,14 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/widget/widget.h"
+#include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/window_properties.h"
+
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#include "ui/wm/core/window_util.h"
+#endif
 
 LensOverlayController::LensOverlayController(tabs::TabModel* tab_model)
     : tab_model_(tab_model) {
@@ -66,38 +74,45 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
     return;
   }
 
-  // TODO(b/327270921): Add created overlay view to widget. Also remove instance
-  // variable as it will no longer be needed to prevent a dangling pointer.
-  overlay_host_view_ = CreateViewForOverlay();
+  ShowOverlayWidget();
 
   state_ = State::kOverlay;
 }
 
-void LensOverlayController::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (!selection.active_tab_changed()) {
-    return;
-  }
+void LensOverlayController::ShowOverlayWidget() {
+  CHECK(!overlay_widget_);
 
-  if (selection.new_contents == tab_model_->contents()) {
-    TabForegrounded();
-    return;
-  }
+  // TODO(b/327270921): Implement on Mac.
+#if !BUILDFLAG(IS_MAC)
+  overlay_widget_ = std::make_unique<views::Widget>();
+  overlay_widget_->Init(CreateWidgetInitParams());
+  overlay_widget_->SetContentsView(CreateViewForOverlay());
 
-  if (selection.old_contents == tab_model_->contents()) {
-    TabBackgrounded();
-  }
+  // Stack widget at top.
+  auto* overlay_window = overlay_widget_->GetNativeWindow();
+  auto* parent = overlay_window->parent();
+  CHECK(parent);
+  parent->StackChildAtTop(overlay_window);
+
+  overlay_widget_->Show();
+#endif
 }
 
-void LensOverlayController::TabForegrounded() {}
-
-void LensOverlayController::TabBackgrounded() {
-  // In the future we may want a hibernate state. In this case we would stop
-  // showing the UI but persist enough information to defrost the original UI
-  // state when the tab is foregrounded.
-  state_ = State::kOff;
+views::Widget::InitParams LensOverlayController::CreateWidgetInitParams() {
+  content::WebContents* active_web_contents = tab_model_->contents();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.name = "LensOverlayWidget";
+  params.child = true;
+#if !BUILDFLAG(IS_MAC)
+  const gfx::NativeWindow& native_window =
+      active_web_contents->GetTopLevelNativeWindow();
+  params.parent = native_window;
+  params.layer_type = ui::LAYER_NOT_DRAWN;
+#endif
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.bounds = active_web_contents->GetContainerBounds();
+  return params;
 }
 
 std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
@@ -121,10 +136,42 @@ std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
   GURL url(chrome::kChromeUILensUntrustedURL);
   web_view->LoadInitialURL(url);
 
-  overlay_web_view_ = host_view->AddChildView(std::move(web_view));
+  host_view->AddChildView(std::move(web_view));
   return host_view;
 }
 
-raw_ptr<views::WebView> LensOverlayController::GetOverlayWebViewForTesting() {
-  return overlay_web_view_;
+void LensOverlayController::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (!selection.active_tab_changed()) {
+    return;
+  }
+
+  if (selection.new_contents == tab_model_->contents()) {
+    TabForegrounded();
+    return;
+  }
+
+  if (selection.old_contents == tab_model_->contents()) {
+    TabBackgrounded();
+  }
+}
+
+void LensOverlayController::TabForegrounded() {}
+
+void LensOverlayController::TabBackgrounded() {
+  CloseUI();
+}
+
+void LensOverlayController::CloseUI() {
+  overlay_widget_.reset();
+  // In the future we may want a hibernate state. In this case we would stop
+  // showing the UI but persist enough information to defrost the original UI
+  // state when the tab is foregrounded.
+  state_ = State::kOff;
+}
+
+raw_ptr<views::Widget> LensOverlayController::GetOverlayWidgetForTesting() {
+  return overlay_widget_.get();
 }

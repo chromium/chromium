@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 class TabStripModel;
 
@@ -20,7 +21,6 @@ class TabModel;
 
 namespace views {
 class View;
-class WebView;
 }  // namespace views
 
 // Manages all state associated with the lens overlay.
@@ -34,6 +34,9 @@ class LensOverlayController : public TabStripModelObserver {
   // This is entry point for showing the overlay UI. This has no effect if state
   // is not kOff. This has no effect if the tab is not in the foreground.
   void ShowUI();
+
+  // Closes the overlay UI and sets state to kOff.
+  void CloseUI();
 
   // Internal state machine. States are mutually exclusive. Exposed for testing.
   enum class State {
@@ -52,8 +55,8 @@ class LensOverlayController : public TabStripModelObserver {
   };
   State state() { return state_; }
 
-  // Testing helper method for checking web view state.
-  raw_ptr<views::WebView> GetOverlayWebViewForTesting();
+  // Testing helper method for checking widget.
+  raw_ptr<views::Widget> GetOverlayWidgetForTesting();
 
  private:
   // Called once a screenshot has been captured. This should trigger transition
@@ -62,6 +65,15 @@ class LensOverlayController : public TabStripModelObserver {
   // |attempt_id| for each attempt so we can ignore all but the most recent
   // attempt.
   void DidCaptureScreenshot(int attempt_id, const SkBitmap& bitmap);
+
+  // Called when the UI needs to create the overlay widget.
+  void ShowOverlayWidget();
+
+  // Creates InitParams for the overlay widget based on the window bounds.
+  views::Widget::InitParams CreateWidgetInitParams();
+
+  // Called when the UI needs to create the view to show in the overlay.
+  std::unique_ptr<views::View> CreateViewForOverlay();
 
   // Overridden from TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -75,9 +87,6 @@ class LensOverlayController : public TabStripModelObserver {
   // Called when the associated tab enters the background.
   void TabBackgrounded();
 
-  // Called when the UI needs to create the view to show in the overlay.
-  std::unique_ptr<views::View> CreateViewForOverlay();
-
   // Owns this class.
   raw_ptr<tabs::TabModel> tab_model_;
 
@@ -88,11 +97,8 @@ class LensOverlayController : public TabStripModelObserver {
   // Tracks the internal state machine.
   State state_ = State::kOff;
 
-  // Pointer to the overlay host view.
-  std::unique_ptr<views::View> overlay_host_view_ = nullptr;
-
-  // A raw ptr containing the web view within the overlay.
-  raw_ptr<views::WebView> overlay_web_view_ = nullptr;
+  // Pointer to the overlay widget.
+  views::UniqueWidgetPtr overlay_widget_;
 
   // Must be the last member.
   base::WeakPtrFactory<LensOverlayController> weak_factory_{this};
