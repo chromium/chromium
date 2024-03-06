@@ -856,6 +856,35 @@ The enrollment token is stored in:
 The device management token is stored in:
 `/opt/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}/CloudManagement`
 
+### Enterprise DM token
+DM server sends back a DM token to the client device after the device
+enrollment. The client persists the DM token for the authorization purpose
+in the subsequent communication with the DM server.
+
+DM token is stored at:
+##### Windows
+- The `dmtoken` REG_SZ value at path:
+  `HKLM\Software\WOW6432Node\{COMPANY_SHORTNAME}\Enrollment\`
+- The `dmtoken` REG_SZ value at path:
+  `HKLM64\Software\{COMPANY_SHORTNAME}\{BROWSER_NAME}\Enrollment\`. This is
+  for backward compatibility.
+
+#### macOS
+- File `/Library/Application Support/{COMPANY_SHORTNAME}/CloudManagement`.
+
+#### Linux
+- File `/opt/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}/CloudManagement`.
+
+DM server can send back a response to delete the DM token or invalidate the DM
+token during policy fetch. If a DM token is deleted, the device could be
+re-enrolled into cloud management at the next `--wake` run provided there is a
+valid enrollment token. If a DM token is invalidated, a special DM token value
+`INVALID_DM_TOKEN` is persisted at the DM token location. The device won't
+re-enroll until the invalidated token is deleted externally.
+
+Note the device must have a valid DM token for the downloaded CBCM policies to
+be effective.
+
 ### Enterprise Policies
 Enterprise policies can prevent the installation of applications:
 *   A per-application setting may specify whether an application is installable.
