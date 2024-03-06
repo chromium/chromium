@@ -104,6 +104,7 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
   dataHolder.securityStatus = l10n_util::GetNSString(
       IDS_IOS_PAGE_INFO_SECURITY_CONNECTION_STATUS_NOT_SECURE);
   dataHolder.secure = NO;
+  dataHolder.isPageLoading = webState->IsLoading();
 
   // Summary and details.
   if (!status.certificate) {

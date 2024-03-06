@@ -126,6 +126,16 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
     return;
   }
 
+  // Update the security information if it was fetched while the page was being
+  // loaded. If page info is opened while the page is being loaded, its
+  // certificates might not have been loaded yet and so the page is shown as
+  // insecure. The next time the user opens page info, we should update the
+  // security information when the page is fully loaded so it's up to date.
+  if (self.pageInfoSecurityDescription.isPageLoading) {
+    _pageInfoSecurityDescription =
+        [self.pageInfoPresentationHandler updatedSiteSecurityDescription];
+  }
+
   [self loadModel];
 }
 

@@ -42,6 +42,7 @@
   // Coordinator for the security screen.
   PageInfoSecurityCoordinator* _securityCoordinator;
   PageInfoAboutThisSiteMediator* _aboutThisSiteMediator;
+  PageInfoSiteSecurityDescription* _siteSecurityDescription;
 }
 
 @synthesize presentationProvider = _presentationProvider;
@@ -52,11 +53,11 @@
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
 
-  PageInfoSiteSecurityDescription* siteSecurityDescription =
+  _siteSecurityDescription =
       [PageInfoSiteSecurityMediator configurationForWebState:webState];
 
   self.viewController = [[PageInfoViewController alloc]
-      initWithSiteSecurityDescription:siteSecurityDescription];
+      initWithSiteSecurityDescription:_siteSecurityDescription];
 
   self.viewController.pageInfoPresentationHandler = self;
 
@@ -120,7 +121,8 @@
 
   _securityCoordinator = [[PageInfoSecurityCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
-                               browser:self.browser];
+                               browser:self.browser
+               siteSecurityDescription:_siteSecurityDescription];
   _securityCoordinator.pageInfoPresentationHandler = self;
   [_securityCoordinator start];
 }
@@ -151,6 +153,12 @@
   id<PageInfoCommands> pageInfoCommandsHandler =
       HandlerForProtocol(self.dispatcher, PageInfoCommands);
   [pageInfoCommandsHandler hidePageInfo];
+}
+
+- (PageInfoSiteSecurityDescription*)updatedSiteSecurityDescription {
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  return [PageInfoSiteSecurityMediator configurationForWebState:webState];
 }
 
 @end

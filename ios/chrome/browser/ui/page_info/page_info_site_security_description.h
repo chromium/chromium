@@ -18,6 +18,7 @@
 @property(nonatomic, strong) UIColor* iconBackgroundColor;
 @property(nonatomic, assign) BOOL isEmpty;
 @property(nonatomic, assign) BOOL secure;
+@property(nonatomic, assign) BOOL isPageLoading;
 
 @end
 
