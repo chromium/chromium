@@ -299,10 +299,6 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
     DCHECK(containing_block_);
   }
 
-  // Returns true if this evaluator was invoked for `anchor()` or
-  // `anchor-size()` functions.
-  bool HasAnchorFunctions() const { return has_anchor_functions_; }
-
   // Returns true if any anchor reference in the axis is in the same scroll
   // container as the default anchor, in which case we need scroll adjustment in
   // the axis after layout.
@@ -374,7 +370,6 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
   mutable std::optional<const PaintLayer*>
       default_anchor_scroll_container_layer_;
 
-  mutable bool has_anchor_functions_ = false;
   mutable bool needs_scroll_adjustment_in_x_ = false;
   mutable bool needs_scroll_adjustment_in_y_ = false;
 };

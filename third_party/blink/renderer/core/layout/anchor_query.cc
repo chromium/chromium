@@ -480,8 +480,6 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     const AnchorSpecifierValue& anchor_specifier,
     CSSAnchorValue anchor_value,
     float percentage) const {
-  has_anchor_functions_ = true;
-
   if (!AllowAnchor()) {
     return std::nullopt;
   }
@@ -513,8 +511,6 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
 std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
     const AnchorSpecifierValue& anchor_specifier,
     CSSAnchorSizeValue anchor_size_value) const {
-  has_anchor_functions_ = true;
-
   if (!AllowAnchorSize()) {
     return std::nullopt;
   }

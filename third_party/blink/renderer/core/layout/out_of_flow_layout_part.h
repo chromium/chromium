@@ -156,7 +156,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     const OofContainingBlock<LogicalOffset> containing_block;
     const OofContainingBlock<LogicalOffset> fixedpos_containing_block;
     const OofInlineContainer<LogicalOffset> fixedpos_inline_container;
-    bool inline_container = false;
     bool requires_content_before_breaking = false;
 
     NodeInfo(BlockNode node,
@@ -167,7 +166,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
              const OofContainingBlock<LogicalOffset>& containing_block,
              const OofContainingBlock<LogicalOffset>& fixedpos_containing_block,
              const OofInlineContainer<LogicalOffset>& fixedpos_inline_container,
-             bool inline_container,
              bool requires_content_before_breaking)
         : node(node),
           static_position(static_position),
@@ -176,7 +174,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
           containing_block(containing_block),
           fixedpos_containing_block(fixedpos_containing_block),
           fixedpos_inline_container(fixedpos_inline_container),
-          inline_container(inline_container),
           requires_content_before_breaking(requires_content_before_breaking) {}
 
     void Trace(Visitor* visitor) const;
@@ -194,11 +191,9 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     BoxStrut insets_for_get_computed_style;
     // Offset to container's border box.
     LogicalOffset offset;
-    // If |has_cached_layout_result| is true, this will hold the cached layout
-    // result that should be returned. Otherwise, this will hold the initial
-    // layout result if we needed to know the size in order to calculate the
-    // offset. If an initial result is set, it will either be re-used or
-    // replaced in the final layout pass.
+    // Holds the initial layout result if we needed to know the size in order
+    // to calculate the offset. If an initial result is set, it will either be
+    // re-used or replaced in the final layout pass.
     Member<const LayoutResult> initial_layout_result;
 
     // The `block_estimate` and `container_content_size` is wrt. the
@@ -217,12 +212,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     Vector<NonOverflowingScrollRange> non_overflowing_ranges;
 
     bool inline_size_depends_on_min_max_sizes = false;
-
-    // If true, a cached layout result was found. See the comment for
-    // |initial_layout_result| for more details.
-    bool has_cached_layout_result = false;
-
-    bool disable_first_tier_cache = false;
 
     bool uses_fallback_style = false;
 
@@ -326,7 +315,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   // changing this to a more accurate name.
   OffsetInfo CalculateOffset(
       const NodeInfo& node_info,
-      bool is_first_run = true,
       const LogicalAnchorQueryMap* anchor_queries = nullptr);
   // Calculates offsets with the given ComputedStyle. Returns nullopt if
   // |try_fit_available_space| is true and the layout result does not fit the
@@ -337,7 +325,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       AnchorEvaluatorImpl*,
       const LogicalAnchorQueryMap* anchor_queries,
       bool try_fit_available_space,
-      bool is_first_run,
       NonOverflowingScrollRange* out_scroll_range);
 
   const LayoutResult* Layout(
@@ -427,7 +414,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   LayoutUnit fragmentainer_consumed_block_size_;
   bool is_absolute_container_ = false;
   bool is_fixed_container_ = false;
-  bool allow_first_tier_oof_cache_ = false;
   bool has_block_fragmentation_ = false;
   // A fixedpos containing block was found in an outer fragmentation context.
   bool outer_context_has_fixedpos_container_ = false;

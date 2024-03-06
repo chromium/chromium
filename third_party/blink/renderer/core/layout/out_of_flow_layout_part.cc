@@ -306,8 +306,7 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(const BlockNode& container_node,
       has_block_fragmentation_(
           InvolvedInBlockFragmentation(*container_builder)) {
   // TODO(almaher): Should we early return here in the case of block
-  // fragmentation? If not, what should |allow_first_tier_oof_cache_| be set to
-  // in this case?
+  // fragmentation?
   if (!container_builder->HasOutOfFlowPositionedCandidates() &&
       !container_builder->HasOutOfFlowFragmentainerDescendants() &&
       !container_builder->HasMulticolsWithPendingOOFs()) {
@@ -318,9 +317,6 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(const BlockNode& container_node,
   // items to be placed in grid areas, which is complex to maintain a cache for.
   const BoxStrut border_scrollbar =
       container_builder->Borders() + container_builder->Scrollbar();
-  allow_first_tier_oof_cache_ = border_scrollbar.IsEmpty() &&
-                                !container_node.IsGrid() &&
-                                !has_block_fragmentation_;
   default_containing_block_info_for_absolute_.writing_direction =
       GetConstraintSpace().GetWritingDirection();
   default_containing_block_info_for_fixed_.writing_direction =
@@ -374,9 +370,6 @@ void OutOfFlowLayoutPart::HandleFragmentation(
       (!container_builder_->IsBlockFragmentationContextRoot() ||
        has_block_fragmentation_))
     return;
-
-  // Don't use the cache if we are handling fragmentation.
-  allow_first_tier_oof_cache_ = false;
 
   if (container_builder_->Node().IsPaginatedRoot()) {
     // Column balancing only affects multicols.
@@ -976,8 +969,7 @@ void OutOfFlowLayoutPart::LayoutCandidates(
             needs_anchor_queries ? &*anchor_queries : nullptr;
         NodeInfo node_info = SetupNodeInfo(candidate, anchor_query_map);
         NodeToLayout node_to_layout = {
-            node_info, CalculateOffset(node_info, /* is_first_run */ false,
-                                       anchor_query_map)};
+            node_info, CalculateOffset(node_info, anchor_query_map)};
         const LayoutResult* result = LayoutOOFNode(node_to_layout);
         PhysicalBoxStrut physical_margins =
             node_to_layout.offset_info.node_dimensions.margins
@@ -1197,7 +1189,6 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
   // Layout the OOF positioned elements inside the inner multicol.
   OutOfFlowLayoutPart inner_part(multicol, limited_multicol_constraint_space,
                                  &limited_multicol_container_builder);
-  inner_part.allow_first_tier_oof_cache_ = false;
   inner_part.outer_container_builder_ =
       outer_container_builder_ ? outer_container_builder_ : container_builder_;
   inner_part.LayoutFragmentainerDescendants(
@@ -1410,8 +1401,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         NodeInfo node_info =
             SetupNodeInfo(descendant, &stitched_anchor_queries);
         NodeToLayout node_to_layout = {
-            node_info, CalculateOffset(node_info, /* is_first_run */ true,
-                                       &stitched_anchor_queries)};
+            node_info, CalculateOffset(node_info, &stitched_anchor_queries)};
         node_to_layout.containing_block_fragment =
             descendant.containing_block.Fragment();
         node_to_layout.offset_info.original_offset =
@@ -1697,7 +1687,6 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
                   /* is_fragmentainer_descendant */ containing_block_fragment,
                   containing_block, fixedpos_containing_block,
                   fixedpos_inline_container,
-                  oof_node.inline_container.container,
                   oof_node.requires_content_before_breaking);
 }
 
@@ -1707,10 +1696,6 @@ const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
     bool is_last_fragmentainer_so_far) {
   const NodeInfo& node_info = oof_node_to_layout.node_info;
   OffsetInfo& offset_info = oof_node_to_layout.offset_info;
-  if (offset_info.has_cached_layout_result) {
-    DCHECK(offset_info.initial_layout_result);
-    return offset_info.initial_layout_result;
-  }
 
   BoxStrut scrollbars_before = ComputeScrollbarsForNonAnonymous(node_info.node);
   const LayoutResult* layout_result =
@@ -1775,7 +1760,7 @@ const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
         // token, causing major confusion everywhere.
         //
         // [1] https://drafts.csswg.org/css-break/#varying-size-boxes
-        offset_info = CalculateOffset(node_info, /* is_first_run */ false);
+        offset_info = CalculateOffset(node_info);
       }
 
       layout_result = Layout(oof_node_to_layout, fragmentainer_constraint_space,
@@ -1792,7 +1777,6 @@ const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
 
 OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     const NodeInfo& node_info,
-    bool is_first_run,
     const LogicalAnchorQueryMap* anchor_queries) {
   gfx::Vector2dF anchor_offset;
   gfx::Vector2dF additional_bounds_offset;
@@ -1826,9 +1810,9 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     // Do @try placement decisions on the *base style* to avoid interference
     // from animations and transitions.
     const ComputedStyle& style = iter.ActivateBaseStyleForTryAttempt();
-    offset_info = TryCalculateOffset(node_info, style, anchor_evaluator,
-                                     anchor_queries, has_next_fallback_style,
-                                     is_first_run, &non_overflowing_range);
+    offset_info =
+        TryCalculateOffset(node_info, style, anchor_evaluator, anchor_queries,
+                           has_next_fallback_style, &non_overflowing_range);
 
     // Also check if it fits the containing block after applying scroll offset.
     if (offset_info && has_next_fallback_style) {
@@ -1851,8 +1835,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     NonOverflowingScrollRange non_overflowing_range_unused;
     offset_info = TryCalculateOffset(
         node_info, iter.ActivateStyleForChosenFallback(), anchor_evaluator,
-        anchor_queries, iter.HasNextStyle(), is_first_run,
-        &non_overflowing_range_unused);
+        anchor_queries, iter.HasNextStyle(), &non_overflowing_range_unused);
   }
 
   if (iter.UsesFallbackStyle()) {
@@ -1872,7 +1855,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     AnchorEvaluatorImpl* anchor_evaluator,
     const LogicalAnchorQueryMap* anchor_queries,
     bool try_fit_available_space,
-    bool is_first_run,
     NonOverflowingScrollRange* out_non_overflowing_range) {
   // TryCalculateOffset may be called multiple times if we have multiple @try
   // candidates. However, the AnchorEvaluatorImpl instance remains the same
@@ -1895,28 +1877,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       ToPhysicalSize(container_rect.size,
                      node_info.default_writing_direction.GetWritingMode())
           .ConvertToLogical(candidate_writing_direction.GetWritingMode());
-
-  // Determine if we need to actually run the full OOF-positioned sizing, and
-  // positioning algorithm.
-  //
-  // The first-tier cache compares the given available-size. However we can't
-  // reuse the result if the |ContainingBlockInfo::container_offset| may change.
-  // This can occur when:
-  //  - The default containing-block has borders and/or scrollbars.
-  //  - The candidate has an inline container (instead of the default
-  //    containing-block).
-  // Note: Only check for cache results if this is our first layout pass.
-  if (is_first_run && !try_fit_available_space && allow_first_tier_oof_cache_ &&
-      !node_info.inline_container) {
-    if (const LayoutResult* cached_result =
-            node_info.node.CachedLayoutResultForOutOfFlowPositioned(
-                container_content_size_in_candidate_writing_mode)) {
-      OffsetInfo offset_info;
-      offset_info.initial_layout_result = cached_result;
-      offset_info.has_cached_layout_result = true;
-      return offset_info;
-    }
-  }
 
   // Create a constraint space to resolve border/padding/insets.
   const ConstraintSpace space = ([&]() -> ConstraintSpace {
@@ -2105,8 +2065,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     }
   }
 
-  offset_info.disable_first_tier_cache |=
-      anchor_evaluator->HasAnchorFunctions();
   offset_info.block_estimate = node_dimensions.size.block_size;
   offset_info.container_content_size =
       container_content_size_in_candidate_writing_mode;
@@ -2187,8 +2145,7 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
   DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
 
   layout_result->GetMutableForOutOfFlow().SetOutOfFlowInsetsForGetComputedStyle(
-      offset_info.insets_for_get_computed_style,
-      allow_first_tier_oof_cache_ && !offset_info.disable_first_tier_cache);
+      offset_info.insets_for_get_computed_style);
 
   layout_result->GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
       offset_info.offset);

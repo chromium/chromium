@@ -172,12 +172,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   // positioned nodes are set.
   void CopyMutableOutOfFlowData(const LayoutResult& previous_result) const;
 
-  // Returns if we can use the first-tier OOF-positioned cache.
-  bool CanUseOutOfFlowPositionedFirstTierCache() const {
-    DCHECK(physical_fragment_->IsOutOfFlowPositioned());
-    return bitfields_.can_use_out_of_flow_positioned_first_tier_cache;
-  }
-
   const Vector<NonOverflowingScrollRange>*
   PositionFallbackNonOverflowingRanges() const {
     return rare_data_ ? rare_data_->PositionFallbackNonOverflowingRanges()
@@ -488,18 +482,13 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
    protected:
     friend class OutOfFlowLayoutPart;
 
-    void SetOutOfFlowInsetsForGetComputedStyle(
-        const BoxStrut& insets,
-        bool can_use_out_of_flow_positioned_first_tier_cache) {
+    void SetOutOfFlowInsetsForGetComputedStyle(const BoxStrut& insets) {
       // OOF-positioned nodes *must* always have an initial BFC-offset.
       DCHECK(layout_result_->physical_fragment_->IsOutOfFlowPositioned());
       DCHECK_EQ(layout_result_->BfcLineOffset(), LayoutUnit());
       DCHECK_EQ(layout_result_->BfcBlockOffset().value_or(LayoutUnit()),
                 LayoutUnit());
 
-      layout_result_->bitfields_
-          .can_use_out_of_flow_positioned_first_tier_cache =
-          can_use_out_of_flow_positioned_first_tier_cache;
       layout_result_->bitfields_.has_oof_insets_for_get_computed_style = true;
       layout_result_->oof_insets_for_get_computed_style_ = insets;
     }
@@ -952,7 +941,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
               bool subtree_modified_margin_strut)
         : has_rare_data_exclusion_space(false),
           has_oof_insets_for_get_computed_style(false),
-          can_use_out_of_flow_positioned_first_tier_cache(false),
           is_bfc_block_offset_nullopt(false),
           has_forced_break(false),
           break_appeal(kBreakAppealPerfect),
@@ -974,7 +962,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
     unsigned has_rare_data_exclusion_space : 1;
     unsigned has_oof_insets_for_get_computed_style : 1;
-    unsigned can_use_out_of_flow_positioned_first_tier_cache : 1;
     unsigned is_bfc_block_offset_nullopt : 1;
 
     unsigned has_forced_break : 1;

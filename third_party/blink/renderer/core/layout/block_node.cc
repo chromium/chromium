@@ -708,55 +708,6 @@ void BlockNode::FinishRepeatableRoot() const {
   }
 }
 
-const LayoutResult* BlockNode::CachedLayoutResultForOutOfFlowPositioned(
-    LogicalSize container_content_size) const {
-  DCHECK(IsOutOfFlowPositioned());
-
-  if (box_->NeedsLayout())
-    return nullptr;
-
-  // If there are multiple fragments, we wouldn't know which one to use, since
-  // no break token is passed.
-  if (box_->PhysicalFragmentCount() > 1)
-    return nullptr;
-
-  const LayoutResult* cached_layout_result =
-      box_->GetSingleCachedLayoutResult();
-  if (!cached_layout_result)
-    return nullptr;
-
-  // The containing-block may have borders/scrollbars which might change
-  // between passes affecting the final position.
-  if (!cached_layout_result->CanUseOutOfFlowPositionedFirstTierCache())
-    return nullptr;
-
-  // TODO(layout-dev): There are potentially more cases where we can reuse this
-  // layout result.
-  // E.g. when we have a fixed-length top position constraint (top: 5px), we
-  // are in the correct writing mode (htb-ltr), and we have a fixed width.
-  const ConstraintSpace& space =
-      cached_layout_result->GetConstraintSpaceForCaching();
-  if (space.PercentageResolutionSize() != container_content_size)
-    return nullptr;
-
-  // We currently don't keep the static-position around to determine if it is
-  // the same as the previous layout pass. As such, only reuse the result when
-  // we know it doesn't depend on the static-position.
-  //
-  // TODO(layout-dev): We might be able to determine what the previous
-  // static-position was based on |LayoutResult::OutOfFlowPositionedOffset|.
-  // TODO(crbug.com/1477314): This unnecessarily defeats caching when inset-area
-  // is applied.
-  bool depends_on_static_position =
-      Style().HasAutoLeftAndRightIgnoringInsetArea() ||
-      Style().HasAutoTopAndBottomIgnoringInsetArea();
-
-  if (depends_on_static_position) {
-    return nullptr;
-  }
-  return cached_layout_result;
-}
-
 void BlockNode::PrepareForLayout() const {
   auto* block = DynamicTo<LayoutBlock>(box_.Get());
   if (block && block->IsScrollContainer()) {

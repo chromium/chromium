@@ -307,8 +307,7 @@ void LayoutResult::CopyMutableOutOfFlowData(const LayoutResult& other) const {
     return;
   }
   GetMutableForOutOfFlow().SetOutOfFlowInsetsForGetComputedStyle(
-      other.OutOfFlowInsetsForGetComputedStyle(),
-      other.CanUseOutOfFlowPositionedFirstTierCache());
+      other.OutOfFlowInsetsForGetComputedStyle());
   GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
       other.OutOfFlowPositionedOffset());
 }
