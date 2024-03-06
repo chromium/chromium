@@ -4244,6 +4244,8 @@ enum WebFeature {
   kSerialPortConnected = 4878,
   kDevicePostureMediaFeature = 4879,
   kDevicePosture = 4880,
+  kViewportSegmentsMediaFeature = 4881,
+  kViewportSegments = 4882,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

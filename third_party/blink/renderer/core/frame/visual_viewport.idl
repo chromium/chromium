@@ -44,7 +44,10 @@
 
     //  Segments API
     // https://github.com/webscreens/window-segments
-    [RuntimeEnabled=ViewportSegments] readonly attribute FrozenArray<DOMRect>? segments;
+    [
+      RuntimeEnabled=ViewportSegments,
+      MeasureAs=ViewportSegments
+    ] readonly attribute FrozenArray<DOMRect>? segments;
 
     attribute EventHandler onresize;
     attribute EventHandler onscroll;
