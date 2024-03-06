@@ -236,6 +236,13 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
                   bool is_back_buffer = false);
 
+  bool use_fence_synchronization() const {
+    // Fences are needed if we're sharing between devices and there's no keyed
+    // mutex for synchroniztaion.
+    return dxgi_shared_handle_state_ &&
+           !dxgi_shared_handle_state_->has_keyed_mutex();
+  }
+
   // Helper to retrieve internal EGLImage for WebGPU GLES compat backend.
   void* GetEGLImage() const;
 

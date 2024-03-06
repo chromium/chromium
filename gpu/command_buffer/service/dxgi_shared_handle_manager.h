@@ -76,24 +76,17 @@ class GPU_GLES2_EXPORT DXGISharedHandleState
 
   // Acquires keyed mutex if necessary for given device. Disallows concurrent
   // access on different devices due to the possibility of deadlock.
-  bool BeginAccessD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
+  bool AcquireKeyedMutex(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
   // Releases keyed mutex if all pending access for given device are ended.
-  void EndAccessD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
+  void ReleaseKeyedMutex(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
 #if BUILDFLAG(USE_DAWN)
   // Returns the Dawn ExternalImageDXGI associated with given device. It's the
   // caller's responsibility to initialize the external image if needed.
   std::unique_ptr<ExternalImageDXGI>& GetDawnExternalImage(WGPUDevice device);
 
-  // Returns true if there's no concurrent keyed mutex access on another device
-  // allowing Dawn to acquire the keyed mutex if needed.
-  bool BeginAccessDawn(WGPUDevice device);
-
-  // Updates keyed mutex acquired state after Dawn has released it. Erases the
-  // Dawn state entry from the map if the external image is already destroyed
-  // after all pending Dawn access is done.
-  void EndAccessDawn(WGPUDevice device);
+  void EraseDawnExternalImage(WGPUDevice device);
 #endif  // BUILDFLAG(USE_DAWN)
 
  private:
@@ -127,17 +120,8 @@ class GPU_GLES2_EXPORT DXGISharedHandleState
   // Note that it's ok to use raw WGPUDevice pointers here since the external
   // image acts like a weak pointer to the device, and we can detect if the
   // entry is valid by checking ExternalImageDXGI::IsValid().
-  struct DawnExternalImageState {
-    DawnExternalImageState();
-    ~DawnExternalImageState();
-    DawnExternalImageState(DawnExternalImageState&&);
-    DawnExternalImageState& operator=(DawnExternalImageState&&);
-
-    std::unique_ptr<ExternalImageDXGI> external_image;
-    int access_count = 0;
-  };
   using DawnExternalImageCache =
-      base::flat_map<WGPUDevice, DawnExternalImageState>;
+      base::flat_map<WGPUDevice, std::unique_ptr<ExternalImageDXGI>>;
   DawnExternalImageCache dawn_external_image_cache_;
 #endif  // BUILDFLAG(USE_DAWN)
 

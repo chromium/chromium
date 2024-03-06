@@ -172,6 +172,8 @@ std::unique_ptr<ExternalImageDXGI> CreateDawnExternalImageDXGI(
     external_image_desc.cTextureDescriptor =
         reinterpret_cast<WGPUTextureDescriptor*>(&wgpu_texture_desc);
     external_image_desc.sharedHandle = absl::get<HANDLE>(handle_or_texture);
+    external_image_desc.useKeyedMutex =
+        d3d11_texture_desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
 
     external_image =
         ExternalImageDXGI::Create(device.Get(), &external_image_desc);

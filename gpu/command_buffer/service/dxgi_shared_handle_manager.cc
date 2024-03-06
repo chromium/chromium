@@ -77,16 +77,7 @@ DXGISharedHandleState::DXGISharedHandleState(
 }
 
 DXGISharedHandleState::~DXGISharedHandleState() {
-  for (auto& [_, d3d11_state] : d3d11_texture_state_map_) {
-    if (d3d11_state.keyed_mutex_acquired_count > 0) {
-      CHECK(d3d11_state.dxgi_keyed_mutex);
-      const HRESULT hr =
-          d3d11_state.dxgi_keyed_mutex->ReleaseSync(kDXGIKeyedMutexAcquireKey);
-      if (FAILED(hr)) {
-        LOG(ERROR) << "Unable to release the keyed mutex " << std::hex << hr;
-      }
-    }
-  }
+  CHECK(!keyed_mutex_acquired_);
 }
 
 void DXGISharedHandleState::AddRef() const {
@@ -129,7 +120,7 @@ DXGISharedHandleState::GetOrCreateD3D11Texture(
   return it->second.d3d11_texture;
 }
 
-bool DXGISharedHandleState::BeginAccessD3D11(
+bool DXGISharedHandleState::AcquireKeyedMutex(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
   if (!has_keyed_mutex_) {
     return true;
@@ -140,15 +131,13 @@ bool DXGISharedHandleState::BeginAccessD3D11(
 
   // Keyed mutex is acquired on |d3d11_device|. Simply increment acquired count.
   if (d3d11_state.keyed_mutex_acquired_count > 0) {
+    CHECK(keyed_mutex_acquired_);
     d3d11_state.keyed_mutex_acquired_count++;
     return true;
   }
 
-  // Keyed mutex is acquired on another device which is not permitted.
-  if (keyed_mutex_acquired_) {
-    LOG(ERROR) << "Concurrent keyed mutex access not supported";
-    return false;
-  }
+  // Keyed mutex is acquired on another device which is not allowed.
+  CHECK(!keyed_mutex_acquired_) << "Concurrent keyed mutex access not allowed";
 
   const HRESULT hr = d3d11_state.dxgi_keyed_mutex->AcquireSync(
       kDXGIKeyedMutexAcquireKey, INFINITE);
@@ -163,7 +152,7 @@ bool DXGISharedHandleState::BeginAccessD3D11(
   return true;
 }
 
-void DXGISharedHandleState::EndAccessD3D11(
+void DXGISharedHandleState::ReleaseKeyedMutex(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
   if (!has_keyed_mutex_) {
     return;
@@ -179,68 +168,22 @@ void DXGISharedHandleState::EndAccessD3D11(
   if (d3d11_state.keyed_mutex_acquired_count == 0) {
     const HRESULT hr =
         d3d11_state.dxgi_keyed_mutex->ReleaseSync(kDXGIKeyedMutexAcquireKey);
-    if (SUCCEEDED(hr)) {
-      keyed_mutex_acquired_ = false;
-    } else {
+    if (FAILED(hr)) {
       LOG(ERROR) << "Unable to release the keyed mutex " << std::hex << hr;
     }
-  }
-}
-
-#if BUILDFLAG(USE_DAWN)
-DXGISharedHandleState::DawnExternalImageState::DawnExternalImageState() =
-    default;
-DXGISharedHandleState::DawnExternalImageState::~DawnExternalImageState() =
-    default;
-DXGISharedHandleState::DawnExternalImageState::DawnExternalImageState(
-    DawnExternalImageState&&) = default;
-DXGISharedHandleState::DawnExternalImageState&
-DXGISharedHandleState::DawnExternalImageState::operator=(
-    DawnExternalImageState&&) = default;
-
-bool DXGISharedHandleState::BeginAccessDawn(WGPUDevice device) {
-  auto& dawn_state = dawn_external_image_cache_.at(device);
-  CHECK_GE(dawn_state.access_count, 0);
-  // If a keyed mutex is present it's already acquired on |device| so just
-  // increment the access count.
-  if (dawn_state.access_count > 0) {
-    dawn_state.access_count++;
-    return true;
-  }
-  // Keyed mutex is acquired on another device which is not permitted.
-  if (keyed_mutex_acquired_) {
-    LOG(ERROR) << "Concurrent keyed mutex access not supported";
-    return false;
-  }
-  dawn_state.access_count++;
-  // The keyed mutex is actually acquired internally in Dawn, but we do extra
-  // tracking here for preventing concurrent access.
-  keyed_mutex_acquired_ = has_keyed_mutex_;
-  return true;
-}
-
-void DXGISharedHandleState::EndAccessDawn(WGPUDevice device) {
-  auto& dawn_state = dawn_external_image_cache_.at(device);
-  CHECK_GT(dawn_state.access_count, 0);
-  CHECK_EQ(has_keyed_mutex_, keyed_mutex_acquired_);
-
-  dawn_state.access_count--;
-
-  if (dawn_state.access_count == 0) {
-    if (!dawn_state.external_image) {
-      // Clear entry from the map if the backing has already reset the external
-      // image e.g. due to device destruction or loss.
-      dawn_external_image_cache_.erase(device);
-    }
-    // The keyed mutex is actually released internally in Dawn, but we do extra
-    // tracking here for preventing concurrent access.
     keyed_mutex_acquired_ = false;
   }
 }
 
+#if BUILDFLAG(USE_DAWN)
 std::unique_ptr<ExternalImageDXGI>& DXGISharedHandleState::GetDawnExternalImage(
     WGPUDevice device) {
-  return dawn_external_image_cache_[device].external_image;
+  return dawn_external_image_cache_[device];
+}
+
+void DXGISharedHandleState::EraseDawnExternalImage(WGPUDevice device) {
+  DCHECK(!dawn_external_image_cache_.at(device)->IsValid());
+  dawn_external_image_cache_.erase(device);
 }
 #endif  // BUILDFLAG(USE_DAWN)
 
