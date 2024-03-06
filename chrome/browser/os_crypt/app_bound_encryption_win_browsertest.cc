@@ -161,7 +161,8 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MANUAL_Uninstall) {}
 
 using AppBoundEncryptionWinTestNoService = InProcessBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestNoService, NoService) {
+// TODO(https://crbug.com/328398409): Flakily fails
+IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestNoService, DISABLED_NoService) {
   const std::string plaintext("plaintext");
   std::string ciphertext;
   DWORD last_error;
