@@ -108,6 +108,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                     TabStateFlatBufferV1.getRootAsTabStateFlatBufferV1(bytes);
 
             TabState state = new TabState();
+            state.isIncognito = mIsEncrypted;
             state.parentId = tabStateFlatBuffer.parentId();
             state.rootId = tabStateFlatBuffer.rootId();
             state.openerAppId =

@@ -393,6 +393,23 @@ public class TabStateFlatBufferTest {
                 });
     }
 
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLATBUFFER)
+    public void testFlatBufferFormatIncognito() throws ExecutionException {
+        TabState state = getTestTabState(/* isIncognito= */ true);
+        TabStateFileManager.saveStateInternal(
+                TabStateFileManager.getTabStateFile(
+                        temporaryFolder.getRoot(),
+                        /* tabId= */ 4,
+                        /* encrypted= */ true,
+                        /* isFlatBuffer= */ true),
+                state,
+                /* isEncrypted= */ true);
+        TabState restored = TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 4);
+        Assert.assertTrue(restored.isIncognito);
+    }
+
     private static TabState getTestTabState(boolean isIncognito) throws ExecutionException {
         TabState state = new TabState();
         state.parentId = 4;
