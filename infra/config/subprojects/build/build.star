@@ -38,6 +38,24 @@ luci.bucket(
     ],
 )
 
+# Define the shadow bucket of `build`.
+# See also http://go/luci-how-to-led#configure-a-shadow-bucket
+luci.bucket(
+    name = "build.shadow",
+    shadows = "build",
+    bindings = [
+        # for led permissions.
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = [
+                "mdb/chrome-troopers",
+                "mdb/foundry-x-team",
+            ],
+        ),
+    ],
+    dynamic = True,
+)
+
 luci.gitiles_poller(
     name = "chrome-build-gitiles-trigger",
     bucket = "build",
