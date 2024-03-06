@@ -18,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.AtomicFile;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StreamUtil;
@@ -1520,7 +1519,6 @@ public class TabPersistentStore {
     private class TabLoader {
         public final TabRestoreDetails mTabToRestore;
         private LoadTabTask mLoadTabTask;
-        private CallbackController mCallbackController = new CallbackController();
 
         /**
          * @param tabToRestore details of {@link Tab} which will be read from storage
@@ -1539,7 +1537,6 @@ public class TabPersistentStore {
             if (mLoadTabTask != null) {
                 mLoadTabTask.cancel(mayInterruptIfRunning);
             }
-            mCallbackController.destroy();
         }
     }
 
