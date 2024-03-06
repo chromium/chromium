@@ -2102,9 +2102,11 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   }
 
   offset_info.needs_scroll_adjustment_in_x =
-      anchor_evaluator->NeedsScrollAdjustmentInX();
+      anchor_evaluator->NeedsScrollAdjustmentInX() ||
+      node_info.container_info.needs_scroll_adjustment_in_x;
   offset_info.needs_scroll_adjustment_in_y =
-      anchor_evaluator->NeedsScrollAdjustmentInY();
+      anchor_evaluator->NeedsScrollAdjustmentInY() ||
+      node_info.container_info.needs_scroll_adjustment_in_y;
 
   return offset_info;
 }
@@ -2141,12 +2143,8 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
       offset_info.offset);
 
   layout_result->GetMutableForOutOfFlow().SetNeedsScrollAdjustment(
-      offset_info.needs_scroll_adjustment_in_x ||
-          oof_node_to_layout.node_info.container_info
-              .needs_scroll_adjustment_in_x,
-      offset_info.needs_scroll_adjustment_in_y ||
-          oof_node_to_layout.node_info.container_info
-              .needs_scroll_adjustment_in_y);
+      offset_info.needs_scroll_adjustment_in_x,
+      offset_info.needs_scroll_adjustment_in_y);
 
   if (offset_info.uses_fallback_style) {
     layout_result->GetMutableForOutOfFlow().SetPositionFallbackResult(
