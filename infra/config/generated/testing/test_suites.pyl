@@ -5804,12 +5804,6 @@
       'chromium_wpt_tests_old_headless_isolated_scripts',
     ],
 
-    'chromeos_device_gtests': [
-      'chromeos_browser_all_tast_tests',
-      'chromeos_browser_integration_tests',
-      'chromeos_device_only_gtests',
-    ],
-
     'chromeos_device_no_gtests': [
       'chromeos_browser_all_tast_tests',
       'chromeos_browser_integration_tests',

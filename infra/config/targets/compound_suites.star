@@ -168,15 +168,6 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "chromeos_device_gtests",
-    basic_suites = [
-        "chromeos_browser_all_tast_tests",
-        "chromeos_browser_integration_tests",
-        "chromeos_device_only_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "chromeos_device_no_gtests",
     basic_suites = [
         "chromeos_browser_all_tast_tests",

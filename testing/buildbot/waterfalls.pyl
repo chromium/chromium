@@ -67,22 +67,6 @@
         },
         'os_type': 'chromeos'
       },
-      'chromeos-eve-arc-r-chrome': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromeos_device_gtests',
-        },
-        'swarming': {
-          'dimensions': {
-            'os': 'ChromeOS',
-            'device_type': 'eve-arc-r',
-            'pool': 'chrome.tests',
-          },
-        },
-        'os_type': 'chromeos'
-      },
       'chromeos-jacuzzi-chrome-skylab': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -96,17 +80,6 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        # TODO(crbug.com/1342987): All DUTs are dead.
-        # 'test_suites': {
-        #   'gtest_tests': 'chromeos_device_gtests',
-        # },
-        'swarming': {
-          'dimensions': {
-            'os': 'ChromeOS',
-            'device_type': 'octopus',
-            'pool': 'chrome.tests',
-          },
-        },
         'os_type': 'chromeos'
       },
       'chromeos-octopus-chrome-skylab': {
