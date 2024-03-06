@@ -637,7 +637,7 @@ AshNotificationView::AshNotificationView(
   header_row()->ConfigureLabelsStyle(
       gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL, kHeaderViewLabelSize,
                     gfx::Font::Weight::NORMAL),
-      gfx::Insets(), true);
+      /*text_view_padding=*/gfx::Insets(), /*auto_color_readability=*/false);
 
   // This view should not be focusable since it does not act as a button.
   header_row()->SetFocusBehavior(views::View::FocusBehavior::NEVER);
