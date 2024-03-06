@@ -425,6 +425,7 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
     WizardController::default_controller()
         ->quick_start_controller()
         ->PrepareForUpdate();
+    did_prepare_quick_start_for_update_ = true;
     view_->SetUpdateState(ConsumerUpdateScreenView::UIState::kUpdateInProgress);
     wait_reboot_timer_.Start(FROM_HERE, wait_before_reboot_time_,
                              version_updater_.get(),
@@ -449,6 +450,14 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
       update_available = true;
       break;
     case update_engine::Operation::DOWNLOADING:
+      if (context()->quick_start_setup_ongoing &&
+          !did_prepare_quick_start_for_update_) {
+        WizardController::default_controller()
+            ->quick_start_controller()
+            ->PrepareForUpdate();
+        did_prepare_quick_start_for_update_ = true;
+      }
+      [[fallthrough]];
     case update_engine::Operation::VERIFYING:
     case update_engine::Operation::FINALIZING:
       view_->SetUpdateState(
@@ -462,18 +471,6 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
     case update_engine::Operation::UPDATED_NEED_REBOOT: {
       g_browser_process->local_state()->SetBoolean(
           prefs::kOobeConsumerUpdateCompleted, true);
-
-      if (context()->quick_start_setup_ongoing) {
-        // Wait to prepare Quick Start for an update until the reboot is ready,
-        // because the user may be able to cancel the update during download
-        // process. Allow more time to exchange message with source device
-        // before reboot.
-        WizardController::default_controller()
-            ->quick_start_controller()
-            ->PrepareForUpdate();
-        did_prepare_quick_start_for_update_ = true;
-        wait_before_reboot_time_ += base::Seconds(2);
-      }
 
       base::TimeDelta update_time = base::TimeTicks::Now() - screen_shown_time_;
       RecordUpdateTime(update_time, is_mandatory_update_.value_or(true));
