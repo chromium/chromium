@@ -61,12 +61,6 @@ GPU_EXPORT uint32_t GetPlatformSpecificTextureTarget();
 GPU_EXPORT void SetMacOSSpecificTextureTarget(uint32_t texture_target);
 #endif  // BUILDFLAG(IS_MAC)
 
-// Returns the texture target to be used for the given |usage| and |format|
-// based on |capabilities|.
-GPU_EXPORT uint32_t GetBufferTextureTarget(gfx::BufferUsage usage,
-                                           gfx::BufferFormat format,
-                                           const Capabilities& capabilities);
-
 // Returns whether a native GMB with the given format and plane needs to be
 // bound to the platform-specfic texture target or GL_TEXTURE_2D.
 GPU_EXPORT bool NativeBufferNeedsPlatformSpecificTextureTarget(

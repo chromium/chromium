@@ -205,14 +205,6 @@ GPU_EXPORT void SetMacOSSpecificTextureTarget(uint32_t texture_target) {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-GPU_EXPORT uint32_t GetBufferTextureTarget(gfx::BufferUsage usage,
-                                           gfx::BufferFormat format,
-                                           const Capabilities& capabilities) {
-  bool found = base::Contains(capabilities.texture_target_exception_list,
-                              gfx::BufferUsageAndFormat(usage, format));
-  return found ? gpu::GetPlatformSpecificTextureTarget() : GL_TEXTURE_2D;
-}
-
 GPU_EXPORT bool NativeBufferNeedsPlatformSpecificTextureTarget(
     gfx::BufferFormat format,
     gfx::BufferPlane plane) {
