@@ -453,6 +453,9 @@ export class OperationScheduler {
   }
 
   async reconfigure(): Promise<boolean> {
+    // If |startReconfigure| is invoked before the first update of camera info,
+    // it will hit the assertion in |startReconfigure| and cause CCA hang.
+    await this.firstInfoUpdate.wait();
     if (this.ongoingOperationType !== null) {
       const event = new CancelableEvent<boolean>();
       this.pendingReconfigureWaiters.push(event);
