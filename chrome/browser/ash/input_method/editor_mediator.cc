@@ -29,7 +29,8 @@ namespace ash::input_method {
 EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
     : profile_(profile),
       panel_manager_(this),
-      editor_switch_(std::make_unique<EditorSwitch>(profile, country_code)),
+      editor_switch_(
+          std::make_unique<EditorSwitch>(this, profile, country_code)),
       metrics_recorder_(
           std::make_unique<EditorMetricsRecorder>(GetEditorOpportunityMode())),
       consent_store_(
@@ -170,6 +171,10 @@ void EditorMediator::CloseUI() {
 
 size_t EditorMediator::GetSelectedTextLength() {
   return surrounding_text_.selection_range.length();
+}
+
+void EditorMediator::OnEditorModeChanged(const EditorMode& mode) {
+  panel_manager_.NotifyEditorModeChanged(mode);
 }
 
 void EditorMediator::OnPromoCardDeclined() {

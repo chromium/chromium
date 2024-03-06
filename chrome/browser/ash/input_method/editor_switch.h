@@ -19,9 +19,16 @@ namespace ash::input_method {
 // should be popped up given a particular input context.
 class EditorSwitch {
  public:
+  class Delegate {
+   public:
+    virtual void OnEditorModeChanged(const EditorMode& mode) = 0;
+  };
+
   // country_code in the lowercase ISO 3166-1 alpha-2 format to determine
   // the country where the device is situated.
-  EditorSwitch(Profile* profile, std::string_view country_code);
+  EditorSwitch(Delegate* delegate,
+               Profile* profile,
+               std::string_view country_code);
   EditorSwitch(const EditorSwitch&) = delete;
   EditorSwitch& operator=(const EditorSwitch&) = delete;
   ~EditorSwitch();
@@ -49,11 +56,14 @@ class EditorSwitch {
   std::vector<EditorBlockedReason> GetBlockedReasons() const;
 
  private:
-  raw_ptr<Profile> profile_;
-
   // Determines if the feature can be triggered from an input context. If it is
   // not allowed for use, then returns false.
   bool CanBeTriggered() const;
+
+  void MaybeNotifyEditorModeChanged(const EditorMode& prev_mode);
+
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<Profile> profile_;
 
   std::string country_code_;
   std::string active_engine_id_;

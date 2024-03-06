@@ -37,6 +37,12 @@ const char kDeniedTestCountry[] = "br";
 
 const char kAllowedTestUrl[] = "https://allowed.testurl.com/allowed/path";
 
+class FakeEditorSwitchDelegate : public EditorSwitch::Delegate {
+ public:
+  // EditorSwitch::Delegate overrides
+  void OnEditorModeChanged(const EditorMode& mode) override {}
+};
+
 struct EditorSwitchAvailabilityTestCase {
   std::string test_name;
 
@@ -153,7 +159,9 @@ TEST_P(EditorSwitchAvailabilityTest, TestEditorAvailability) {
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
       test_case.is_managed);
-  EditorSwitch editor_switch(/*profile=*/&profile_,
+  FakeEditorSwitchDelegate delegate;
+  EditorSwitch editor_switch(/*delegate=*/&delegate,
+                             /*profile=*/&profile_,
                              /*country_code=*/test_case.country_code);
 
   EXPECT_EQ(editor_switch.IsAllowedForUse(), test_case.expected_availability);
@@ -405,7 +413,9 @@ TEST_P(EditorSwitchTriggerTest, TestEditorMode) {
       /*disabled_features=*/{});
   std::unique_ptr<TestingProfile> profile =
       CreateTestingProfile(test_case.email);
-  EditorSwitch editor_switch(/*profile=*/profile.get(),
+  FakeEditorSwitchDelegate delegate;
+  EditorSwitch editor_switch(/*delegate=*/&delegate,
+                             /*profile=*/profile.get(),
                              /*country_code=*/kAllowedTestCountry);
 
   auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();

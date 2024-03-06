@@ -180,8 +180,11 @@ std::vector<std::string> GetAllowedInputMethodEngines() {
 
 }  // namespace
 
-EditorSwitch::EditorSwitch(Profile* profile, std::string_view country_code)
-    : profile_(profile),
+EditorSwitch::EditorSwitch(Delegate* delegate,
+                           Profile* profile,
+                           std::string_view country_code)
+    : delegate_(delegate),
+      profile_(profile),
       country_code_(country_code),
       ime_allowlist_(GetAllowedInputMethodEngines()) {}
 
@@ -313,26 +316,41 @@ EditorMode EditorSwitch::GetEditorMode() const {
 void EditorSwitch::OnInputContextUpdated(
     const TextInputMethod::InputContext& input_context,
     const TextFieldContextualInfo& text_field_contextual_info) {
+  EditorMode prev_mode = GetEditorMode();
   input_type_ = input_context.type;
   app_type_ = text_field_contextual_info.app_type;
   url_ = text_field_contextual_info.tab_url;
   app_id_ = text_field_contextual_info.app_key;
+  MaybeNotifyEditorModeChanged(prev_mode);
 }
 
 void EditorSwitch::OnActivateIme(std::string_view engine_id) {
+  EditorMode prev_mode = GetEditorMode();
   active_engine_id_ = engine_id;
+  MaybeNotifyEditorModeChanged(prev_mode);
 }
 
 void EditorSwitch::OnTabletModeUpdated(bool is_enabled) {
+  EditorMode prev_mode = GetEditorMode();
   tablet_mode_enabled_ = is_enabled;
+  MaybeNotifyEditorModeChanged(prev_mode);
 }
 
 void EditorSwitch::OnTextSelectionLengthChanged(size_t text_length) {
+  EditorMode prev_mode = GetEditorMode();
   text_length_ = text_length;
+  MaybeNotifyEditorModeChanged(prev_mode);
 }
 
 void EditorSwitch::SetProfile(Profile* profile) {
   profile_ = profile;
+}
+
+void EditorSwitch::MaybeNotifyEditorModeChanged(const EditorMode& prev_mode) {
+  EditorMode new_mode = GetEditorMode();
+  if (prev_mode != new_mode) {
+    delegate_->OnEditorModeChanged(new_mode);
+  }
 }
 
 }  // namespace ash::input_method
