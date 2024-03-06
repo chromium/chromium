@@ -84,7 +84,7 @@ void InfobarModalCompletionNotifier::ModalCompletionInstaller::
 
   request->GetCallbackManager()->AddCompletionCallback(base::BindOnce(
       &InfobarModalCompletionNotifier::ModalCompletionInstaller::ModalCompleted,
-      weak_factory_.GetWeakPtr(), infobar));
+      weak_factory_.GetWeakPtr(), base::UnsafeDanglingUntriaged(infobar)));
 
   notifier_->ModalCompletionInstalled(infobar);
 }
