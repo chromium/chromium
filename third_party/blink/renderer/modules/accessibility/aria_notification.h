@@ -12,7 +12,7 @@
 namespace blink {
 
 class AriaNotification {
-  USING_FAST_MALLOC(AriaNotification);
+  DISALLOW_NEW();
 
  public:
   using AriaNotificationInterrupt = ax::mojom::blink::AriaNotificationInterrupt;
@@ -33,6 +33,29 @@ class AriaNotification {
   AriaNotificationPriority priority_;
 };
 
+class AriaNotifications {
+  DISALLOW_NEW();
+
+ public:
+  using ConstIterator = Vector<AriaNotification>::const_iterator;
+
+  AriaNotifications() = default;
+  AriaNotifications(AriaNotifications&&) = default;
+  AriaNotifications(const AriaNotifications&) = delete;
+  AriaNotifications& operator=(AriaNotifications&&) = default;
+  AriaNotifications& operator=(const AriaNotifications&) = delete;
+
+  ConstIterator begin() const { return notifications_.begin(); }
+  ConstIterator end() const { return notifications_.end(); }
+
+  void Add(const String& announcement, const AriaNotificationOptions* options);
+
+ private:
+  Vector<AriaNotification> notifications_;
+};
+
 }  // namespace blink
+
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::AriaNotification)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_ARIA_NOTIFICATION_H_

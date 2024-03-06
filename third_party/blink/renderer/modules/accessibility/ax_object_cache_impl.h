@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/editing/commands/selection_for_undo_step.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/blink_ax_tree_source.h"
 #include "third_party/blink/renderer/modules/accessibility/inspector_accessibility_agent.h"
@@ -285,8 +286,10 @@ class MODULES_EXPORT AXObjectCacheImpl
                               const String&,
                               const AriaNotificationOptions*) override;
 
-  std::unique_ptr<AriaNotification> RetrieveAriaNotification(
-      const AXObject*) override;
+  // Returns the ARIA notifications associated to a given `AXObject` and
+  // releases them from `aria_notifications_`. If there are no notifications
+  // stored for the given object, returns an empty `AriaNotifications`.
+  AriaNotifications RetrieveAriaNotifications(const AXObject*) override;
 
   void SetCanvasObjectBounds(HTMLCanvasElement*,
                              Element*,
@@ -1138,7 +1141,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   HeapHashMap<AXID, Member<ComputedAccessibleNode>> computed_node_mapping_;
 
   // A set of ARIA notifications that have yet to be added to `ax_tree_data`.
-  HashMap<AXID, std::unique_ptr<AriaNotification>> aria_notifications_;
+  HashMap<AXID, AriaNotifications> aria_notifications_;
 
   // The source of the event that is currently being handled.
   ax::mojom::blink::EventFrom active_event_from_ =

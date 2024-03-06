@@ -43,4 +43,9 @@ AriaNotification::AriaNotification(const String& announcement,
       interrupt_(AsEnum(options->interrupt())),
       priority_(AsEnum(options->priority())) {}
 
+void AriaNotifications::Add(const String& announcement,
+                            const AriaNotificationOptions* options) {
+  notifications_.emplace_back(announcement, options);
+}
+
 }  // namespace blink

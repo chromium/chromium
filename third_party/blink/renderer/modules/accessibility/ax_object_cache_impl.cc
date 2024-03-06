@@ -3942,17 +3942,31 @@ void AXObjectCacheImpl::HandleAriaNotification(
     const Node* node,
     const String& announcement,
     const AriaNotificationOptions* options) {
-  if (auto* obj = Get(node)) {
-    aria_notifications_.Set(
-        obj->AXObjectID(),
-        std::make_unique<AriaNotification>(announcement, options));
-    DeferTreeUpdate(TreeUpdateReason::kMarkAXObjectDirty, obj);
+  auto* obj = Get(node);
+
+  if (!obj) {
+    return;
   }
+
+  // We use `insert` regardless of whether there is an entry for this node in
+  // `aria_notifications_` since, if there is one, it won't be replaced.
+  // The return value of `insert` is a pair of an iterator to the entry, called
+  // `stored_value`, and a boolean; `stored_value` contains a pair with the key
+  // of the entry and a `value` reference to its mapped `AriaNotifications`.
+  auto& node_notifications =
+      aria_notifications_.insert(obj->AXObjectID(), AriaNotifications())
+          .stored_value->value;
+
+  node_notifications.Add(announcement, options);
+  DeferTreeUpdate(TreeUpdateReason::kMarkAXObjectDirty, obj);
 }
 
-std::unique_ptr<AriaNotification> AXObjectCacheImpl::RetrieveAriaNotification(
+AriaNotifications AXObjectCacheImpl::RetrieveAriaNotifications(
     const AXObject* obj) {
   DCHECK(obj);
+
+  // Conveniently, `Take` returns an empty `AriaNotifications` if there's no
+  // entry in `aria_notifications_` associated to the given object.
   return aria_notifications_.Take(obj->AXObjectID());
 }
 

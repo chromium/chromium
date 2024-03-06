@@ -1431,8 +1431,9 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
 
   SerializeOtherScreenReaderAttributes(node_data);
 
-  if (auto notification = AXObjectCache().RetrieveAriaNotification(this)) {
-    SerializeAriaNotificationAttributes(*notification, node_data);
+  for (const auto& notification :
+       AXObjectCache().RetrieveAriaNotifications(this)) {
+    SerializeAriaNotificationAttributes(notification, node_data);
   }
 
   // Return early. The following attributes are unnecessary for ignored nodes.
