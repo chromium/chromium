@@ -388,13 +388,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
     }
 
-    private static Object getField(Class<?> clazz, Object instance, String name)
-            throws ReflectiveOperationException {
-        Field field = clazz.getDeclaredField(name);
-        field.setAccessible(true);
-        return field.get(instance);
-    }
-
     /**
      * ClassLoader that translates NoClassDefFoundError into ClassNotFoundException.
      *
@@ -452,14 +445,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                                 "Skipping abstract class %s: not a test", loadedClass.getName()));
                 return false;
             }
-            if (junit.framework.Test.class.isAssignableFrom(loadedClass)) {
-                // ensure that if a TestCase, it has at least one test method otherwise
-                // TestSuite will throw error
-                if (junit.framework.TestCase.class.isAssignableFrom(loadedClass)) {
-                    return hasJUnit3TestMethod(loadedClass);
-                }
-                return true;
-            }
             if (loadedClass.isAnnotationPresent(RunWith.class)) {
                 return true;
             }
@@ -480,27 +465,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             Log.w(TAG, String.format("%s in isTestClass for %s", e, loadedClass.getName()));
             return false;
         }
-    }
-
-    private static boolean hasJUnit3TestMethod(Class<?> loadedClass) {
-        for (Method testMethod : loadedClass.getMethods()) {
-            if (isPublicTestMethod(testMethod)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // copied from junit.framework.TestSuite
-    private static boolean isPublicTestMethod(Method m) {
-        return isTestMethod(m) && Modifier.isPublic(m.getModifiers());
-    }
-
-    // copied from junit.framework.TestSuite
-    private static boolean isTestMethod(Method m) {
-        return m.getParameterTypes().length == 0
-                && m.getName().startsWith("test")
-                && m.getReturnType().equals(Void.TYPE);
     }
 
     @Override
