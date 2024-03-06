@@ -5068,6 +5068,9 @@ void AXObjectCacheImpl::ResetSerializer() {
   if (ax_tree_serializer_) {
     ax_tree_serializer_->Reset();
   }
+  if (plugin_serializer_.get()) {
+    plugin_serializer_->Reset();
+  }
 
   // Clear anything about to be serialized, because everything will be
   // reserialized anyway.
@@ -5340,6 +5343,11 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
 
   EnsureSerializer();
 
+  if (plugin_tree_source_ && IsDirty()) {
+    // If the document is dirty, ensure the plugin serializer is reset.
+    CHECK(plugin_serializer_.get());
+    plugin_serializer_->Reset();
+  }
   ui::AXNodeData::AXNodeDataSize node_data_size;
   for (auto& current_dirty_object : dirty_objects_) {
     AXObject* obj = current_dirty_object->obj;
@@ -6039,8 +6047,14 @@ void AXObjectCacheImpl::AddPluginTreeToUpdate(ui::AXTreeUpdate* update) {
   // into Blink accessibility.
 
   // If this update clears a subtree, we have to ensure we re-serialize the
-  // entire plugin tree.
-  bool reset_plugin_serializer = update->node_id_to_clear > 0;
+  // entire plugin tree. This is a overly broad way to invalidate the plugin
+  // serializer, but we have few signals to do so. A node in the embedded
+  // object's ancestry may have requested a subtree be cleared and we need to
+  // catch all of those cases for the plugin serializer to function correctly.
+  CHECK(plugin_serializer_.get());
+  if (update->node_id_to_clear > 0) {
+    plugin_serializer_->Reset();
+  }
 
   // Search for the Blink accessibility node onto which we want to stitch the
   // plugin tree.
@@ -6049,12 +6063,6 @@ void AXObjectCacheImpl::AddPluginTreeToUpdate(ui::AXTreeUpdate* update) {
       // The plugin tree contains its own tree source, serializer pair. It isn't
       // using Blink's source, serializer pair because its backing template tree
       // source type is a pure AXNodeData.
-      CHECK(plugin_tree_source_);
-      CHECK(plugin_serializer_.get());
-      if (reset_plugin_serializer) {
-        plugin_serializer_->Reset();
-      }
-
       const ui::AXNode* root = plugin_tree_source_->GetRoot();
       if (!root) {
         // The tree may not yet be ready.
