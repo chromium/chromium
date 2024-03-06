@@ -60,7 +60,9 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
       (override));
   MOCK_METHOD(std::unique_ptr<Session>,
               StartSession,
-              (optimization_guide::proto::ModelExecutionFeature feature));
+              (optimization_guide::proto::ModelExecutionFeature feature,
+               const std::optional<optimization_guide::SessionConfigParams>&
+                   config_params));
   MOCK_METHOD(
       void,
       ExecuteModel,

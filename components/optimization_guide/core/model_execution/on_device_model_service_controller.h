@@ -71,7 +71,8 @@ class OnDeviceModelServiceController
       ExecuteRemoteFn execute_remote_fn,
       OptimizationGuideLogger* logger,
       base::WeakPtr<ModelQualityLogsUploaderService>
-          model_quality_uploader_service);
+          model_quality_uploader_service,
+      const std::optional<SessionConfigParams>& config_params);
 
   // Launches the on-device model-service.
   virtual void LaunchService() = 0;

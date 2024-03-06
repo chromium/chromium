@@ -80,7 +80,9 @@ class MockModelExecutor
  public:
   MOCK_METHOD(std::unique_ptr<Session>,
               StartSession,
-              (optimization_guide::proto::ModelExecutionFeature feature));
+              (optimization_guide::proto::ModelExecutionFeature feature,
+               const std::optional<optimization_guide::SessionConfigParams>&
+                   config_params));
   MOCK_METHOD(void,
               ExecuteModel,
               (optimization_guide::proto::ModelExecutionFeature feature,
@@ -179,7 +181,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
                                                                             0);
               std::move(callback).Run(std::move(expected_inner_text));
             })));
-    ON_CALL(model_executor_, StartSession(_)).WillByDefault([&] {
+    ON_CALL(model_executor_, StartSession(_, _)).WillByDefault([&] {
       return std::make_unique<MockSessionWrapper>(session());
     });
     ON_CALL(session(), ExecuteModel(_, _))

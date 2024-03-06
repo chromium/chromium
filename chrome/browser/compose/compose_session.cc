@@ -211,7 +211,8 @@ ComposeSession::ComposeSession(
   if (executor_) {
     session_ = executor_->StartSession(
         optimization_guide::proto::ModelExecutionFeature::
-            MODEL_EXECUTION_FEATURE_COMPOSE);
+            MODEL_EXECUTION_FEATURE_COMPOSE,
+        /*config_params=*/std::nullopt);
   }
 }
 

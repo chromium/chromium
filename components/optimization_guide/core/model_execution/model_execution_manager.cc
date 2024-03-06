@@ -238,14 +238,16 @@ void ModelExecutionManager::ExecuteModel(
 }
 
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
-ModelExecutionManager::StartSession(proto::ModelExecutionFeature feature) {
+ModelExecutionManager::StartSession(
+    proto::ModelExecutionFeature feature,
+    const std::optional<SessionConfigParams>& config_params) {
   ExecuteRemoteFn execute_fn =
       base::BindRepeating(&ModelExecutionManager::ExecuteModelWithStreaming,
                           base::Unretained(this));
   if (on_device_model_service_controller_) {
     auto session = on_device_model_service_controller_->CreateSession(
         feature, execute_fn, optimization_guide_logger_.get(),
-        model_quality_uploader_service_);
+        model_quality_uploader_service_, config_params);
     if (session) {
       RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/false);
       return session;
@@ -256,7 +258,8 @@ ModelExecutionManager::StartSession(proto::ModelExecutionFeature feature) {
   return std::make_unique<SessionImpl>(
       base::DoNothing(), feature, std::nullopt, nullptr, nullptr,
       /*safety_config=*/std::nullopt, std::move(execute_fn),
-      optimization_guide_logger_.get(), model_quality_uploader_service_);
+      optimization_guide_logger_.get(), model_quality_uploader_service_,
+      config_params);
 }
 
 void ModelExecutionManager::OnModelExecuteResponse(

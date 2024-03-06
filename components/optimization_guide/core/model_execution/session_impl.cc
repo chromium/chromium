@@ -131,14 +131,23 @@ SessionImpl::SessionImpl(
     ExecuteRemoteFn execute_remote_fn,
     OptimizationGuideLogger* optimization_guide_logger,
     base::WeakPtr<ModelQualityLogsUploaderService>
-        model_quality_uploader_service)
+        model_quality_uploader_service,
+    const std::optional<SessionConfigParams>& config_params)
     : controller_(controller),
       feature_(feature),
       on_device_model_versions_(on_device_model_versions),
       safety_config_(safety_config),
       execute_remote_fn_(std::move(execute_remote_fn)),
       optimization_guide_logger_(optimization_guide_logger),
-      model_quality_uploader_service_(model_quality_uploader_service) {
+      model_quality_uploader_service_(model_quality_uploader_service),
+      sampling_params_(
+          config_params.value_or(SessionConfigParams())
+              .sampling_params.value_or(SamplingParams{
+                  .top_k = static_cast<uint32_t>(
+                      features::GetOnDeviceModelDefaultTopK()),
+                  .temperature = static_cast<float>(
+                      features::GetOnDeviceModelDefaultTemperature()),
+              })) {
   if (controller_ && controller_->ShouldStartNewSession()) {
     on_device_state_.emplace(std::move(start_session_fn), this);
     on_device_state_->config_interpreter = config_interpreter;
@@ -340,9 +349,8 @@ void SessionImpl::ExecuteModel(
   options->max_tokens = features::GetOnDeviceModelMaxTokensForExecute();
   options->ignore_context = input->should_ignore_input_context;
   options->max_output_tokens = features::GetOnDeviceModelMaxTokensForOutput();
-  // TODO(crbug.com/328296049): Pass this through the session.
-  options->top_k = features::GetOnDeviceModelDefaultTopK();
-  options->temperature = features::GetOnDeviceModelDefaultTemperature();
+  options->top_k = sampling_params_.top_k;
+  options->temperature = sampling_params_.temperature;
   if (safety_config_) {
     options->safety_interval =
         features::GetOnDeviceModelTextSafetyTokenInterval();

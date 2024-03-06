@@ -242,7 +242,7 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
     ON_CALL(*mock_optimization_guide_keyed_service_,
             ShouldFeatureBeCurrentlyEnabledForUser)
         .WillByDefault(Return(true));
-    ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_))
+    ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
         .WillByDefault(
             [&] { return std::make_unique<MockSessionWrapper>(session()); });
     ON_CALL(session(), ExecuteModel(_, _))

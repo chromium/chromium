@@ -67,7 +67,8 @@ class ModelExecutionManager : public OptimizationTargetModelObserver {
 
   // Starts a new session for `feature`.
   std::unique_ptr<OptimizationGuideModelExecutor::Session> StartSession(
-      proto::ModelExecutionFeature feature);
+      proto::ModelExecutionFeature feature,
+      const std::optional<SessionConfigParams>& config_params);
 
   // OptimizationTargetModelObserver:
   void OnModelUpdated(proto::OptimizationTarget target,

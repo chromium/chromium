@@ -572,11 +572,13 @@ void OptimizationGuideKeyedService::CanApplyOptimizationOnDemand(
 
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
 OptimizationGuideKeyedService::StartSession(
-    optimization_guide::proto::ModelExecutionFeature feature) {
+    optimization_guide::proto::ModelExecutionFeature feature,
+    const std::optional<optimization_guide::SessionConfigParams>&
+        config_params) {
   if (!model_execution_manager_) {
     return nullptr;
   }
-  return model_execution_manager_->StartSession(feature);
+  return model_execution_manager_->StartSession(feature, config_params);
 }
 
 void OptimizationGuideKeyedService::ExecuteModel(

@@ -68,7 +68,8 @@ void ModelManagerImpl::CreateGenericSession(
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
       session = service->StartSession(
           optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TEST);
+              MODEL_EXECUTION_FEATURE_TEST,
+          /*config_params=*/std::nullopt);
   // TODO(leimy): after this check is done by optimization guide and we can
   // return that from `CanStartModelExecutionSession()`, we should replace this
   // block by a CHECK, and stop returning any boolean value from this method.

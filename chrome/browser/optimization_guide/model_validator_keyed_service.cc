@@ -161,7 +161,8 @@ void ModelValidatorKeyedService::PerformOnDeviceModelExecutionValidation(
     return;
   }
   on_device_validation_session_ = opt_guide_service->StartSession(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE);
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE,
+      /*config_params=*/std::nullopt);
   on_device_validation_session_->ExecuteModel(
       *request, base::RepeatingCallback(base::BindRepeating(
                     &ModelValidatorKeyedService::OnDeviceModelExecuteResponse,

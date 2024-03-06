@@ -103,7 +103,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       ExecuteRemoteFn execute_remote_fn,
       OptimizationGuideLogger* optimization_guide_logger,
       base::WeakPtr<ModelQualityLogsUploaderService>
-          model_quality_uploader_service);
+          model_quality_uploader_service,
+      const std::optional<SessionConfigParams>& config_params);
   ~SessionImpl() override;
 
   // optimization_guide::OptimizationGuideModelExecutor::Session:
@@ -260,6 +261,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // destruction.
   base::WeakPtr<ModelQualityLogsUploaderService>
       model_quality_uploader_service_;
+
+  // Params used to control output sampling for the on device model.
+  const SamplingParams sampling_params_;
 };
 
 }  // namespace optimization_guide

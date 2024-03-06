@@ -147,7 +147,8 @@ OnDeviceModelServiceController::CreateSession(
     ExecuteRemoteFn execute_remote_fn,
     OptimizationGuideLogger* optimization_guide_logger,
     base::WeakPtr<ModelQualityLogsUploaderService>
-        model_quality_uploader_service) {
+        model_quality_uploader_service,
+    const std::optional<SessionConfigParams>& config_params) {
   if (on_device_component_state_manager_) {
     on_device_component_state_manager_->OnDeviceEligibleFeatureUsed();
   }
@@ -228,7 +229,7 @@ OnDeviceModelServiceController::CreateSession(
       feature, model_versions_, config_interpreter_.get(),
       weak_ptr_factory_.GetWeakPtr(), safety_config,
       std::move(execute_remote_fn), optimization_guide_logger,
-      model_quality_uploader_service);
+      model_quality_uploader_service, config_params);
 }
 
 void OnDeviceModelServiceController::GetEstimatedPerformanceClass(
