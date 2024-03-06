@@ -35,6 +35,7 @@
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
@@ -467,7 +468,9 @@ NewTabPageHandler::NewTabPageHandler(
         customize_chrome_feature_promo_helper,
     const base::Time& ntp_navigation_start_time,
     const std::vector<std::pair<const std::string, int>>* module_id_names)
-    : ntp_background_service_(
+    : SettingsEnabledObserver(optimization_guide::proto::ModelExecutionFeature::
+                                  MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
       ntp_custom_background_service_(ntp_custom_background_service),
       logo_service_(logo_service),
@@ -499,6 +502,14 @@ NewTabPageHandler::NewTabPageHandler(
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
   promo_service_observation_.Observe(promo_service_.get());
+  if (customize_chrome::IsWallpaperSearchEnabledForProfile(profile_)) {
+    optimization_guide_keyed_service_ =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
+    if (optimization_guide_keyed_service_) {
+      optimization_guide_keyed_service_
+          ->AddModelExecutionSettingsEnabledObserver(this);
+    }
+  }
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpBackgroundImageErrorDetection)) {
     ntp_custom_background_service_->VerifyCustomBackgroundImageURL();
@@ -538,6 +549,11 @@ NewTabPageHandler::~NewTabPageHandler() {
   ntp_background_service_->RemoveObserver(this);
   if (select_file_dialog_) {
     select_file_dialog_->ListenerDestroyed();
+  }
+  if (optimization_guide_keyed_service_) {
+    optimization_guide_keyed_service_
+        ->RemoveModelExecutionSettingsEnabledObserver(this);
+    optimization_guide_keyed_service_ = nullptr;
   }
 }
 
@@ -1050,6 +1066,11 @@ void NewTabPageHandler::OnPromoDataUpdated() {
 void NewTabPageHandler::OnPromoServiceShuttingDown() {
   promo_service_observation_.Reset();
   promo_service_ = nullptr;
+}
+
+void NewTabPageHandler::OnChangeInFeatureCurrentlyEnabledState(
+    bool is_now_enabled) {
+  page_->SetWallpaperSearchButtonVisibility(is_now_enabled);
 }
 
 void NewTabPageHandler::OnAppRendered(double time) {
