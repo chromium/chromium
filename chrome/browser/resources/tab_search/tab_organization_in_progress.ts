@@ -27,11 +27,6 @@ export class TabOrganizationInProgressElement extends PolymerElement {
     return getTemplate();
   }
 
-  announceHeader() {
-    this.$.header.textContent = '';
-    this.$.header.textContent = this.getTitle_();
-  }
-
   private getTitle_(): string {
     return loadTimeData.getString('inProgressTitle');
   }

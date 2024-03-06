@@ -37,11 +37,6 @@ export class TabOrganizationFailureElement extends PolymerElement {
     return getTemplate();
   }
 
-  announceHeader() {
-    this.$.header.textContent = '';
-    this.$.header.textContent = this.getTitle_();
-  }
-
   private getTitle_(): string {
     switch (this.error) {
       case TabOrganizationError.kGrouping:

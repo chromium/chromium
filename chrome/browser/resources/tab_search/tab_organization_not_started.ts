@@ -67,11 +67,6 @@ export class TabOrganizationNotStartedElement extends
     this.addWebUiListener('sync-info-changed', this.setSync_.bind(this));
   }
 
-  announceHeader() {
-    this.$.header.textContent = '';
-    this.$.header.textContent = this.getTitle_();
-  }
-
   private setAccount_(account: AccountInfo) {
     this.account_ = account;
   }

@@ -128,6 +128,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"rejectSuggestion", IDS_TAB_ORGANIZATION_REJECT_SUGGESTION},
       {"rejectFinalSuggestion", IDS_TAB_ORGANIZATION_REJECT_FINAL_SUGGESTION},
       {"successTitle", IDS_TAB_ORGANIZATION_SUCCESS_TITLE},
+      {"successTitleSingle", IDS_TAB_ORGANIZATION_SUCCESS_TITLE_SINGLE},
+      {"successTitleMulti", IDS_TAB_ORGANIZATION_SUCCESS_TITLE_MULTI},
       {"tabOrganizationCloseTabAriaLabel",
        IDS_TAB_ORGANIZATION_CLOSE_TAB_ARIA_LABEL},
       {"tabOrganizationCloseTabTooltip",

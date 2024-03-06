@@ -70,11 +70,6 @@ export class TabOrganizationResultsElement extends PolymerElement {
     return getTemplate();
   }
 
-  announceHeader() {
-    this.$.header.textContent = '';
-    this.$.header.textContent = this.getTitle_();
-  }
-
   focusInput() {
     const group = this.shadowRoot!.querySelector('tab-organization-group');
     if (!group) {
@@ -84,6 +79,13 @@ export class TabOrganizationResultsElement extends PolymerElement {
   }
 
   private getTitle_(): string {
+    if (this.multiTabOrganization) {
+      if (this.hasMultipleOrganizations_()) {
+        return loadTimeData.getStringF(
+            'successTitleMulti', this.getOrganizations_().length);
+      }
+      return loadTimeData.getString('successTitleSingle');
+    }
     return loadTimeData.getString('successTitle');
   }
 

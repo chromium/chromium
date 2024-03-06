@@ -13,7 +13,7 @@ import './tab_organization_results.js';
 import './tab_organization_shared_style.css.js';
 
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -183,35 +183,17 @@ export class TabOrganizationPageElement extends PolymerElement {
     if (!changedState) {
       return;
     }
-    switch (state) {
-      case TabOrganizationState.kInitializing:
-        break;
-      case TabOrganizationState.kNotStarted:
-        this.$.notStarted.announceHeader();
-        break;
-      case TabOrganizationState.kInProgress:
-        this.$.inProgress.announceHeader();
-        break;
-      case TabOrganizationState.kSuccess:
-        this.$.results.announceHeader();
-        // Wait until the new state is visible after the transition to focus on
-        // the new UI.
-        this.$.results.addEventListener('animationend', () => {
-          this.$.results.focusInput();
-        }, {once: true});
-        break;
-      case TabOrganizationState.kFailure:
-        this.$.failure.announceHeader();
-        break;
-      default:
-        assertNotReached('Invalid tab organization state');
-    }
-
-    // Ensure the loading state appears for a sufficient amount of time, so as
-    // to not appear jumpy if the request completes quickly.
     if (state === TabOrganizationState.kInProgress) {
+      // Ensure the loading state appears for a sufficient amount of time, so as
+      // to not appear jumpy if the request completes quickly.
       this.futureState_ = TabOrganizationState.kInProgress;
       setTimeout(() => this.applyFutureState_(), MIN_LOADING_ANIMATION_MS);
+    } else if (state === TabOrganizationState.kSuccess) {
+      // Wait until the new state is visible after the transition to focus on
+      // the new UI.
+      this.$.results.addEventListener('animationend', () => {
+        this.$.results.focusInput();
+      }, {once: true});
     }
   }
 
