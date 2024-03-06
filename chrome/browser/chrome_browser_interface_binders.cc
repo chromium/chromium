@@ -72,6 +72,7 @@
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals_ui.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/lens/lens_features.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
@@ -183,6 +184,7 @@
 #include "chrome/browser/ui/webui/hats/hats_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"
+#include "chrome/browser/ui/webui/lens/lens_untrusted_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
@@ -1857,6 +1859,10 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
       .Add<compose::mojom::ComposeSessionUntrustedPageHandlerFactory>();
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 #if !BUILDFLAG(IS_ANDROID)
+  if (lens::features::IsLensOverlayEnabled()) {
+    registry.ForWebUI<lens::LensUntrustedUI>()
+        .Add<lens::mojom::LensPageHandlerFactory>();
+  }
   if (companion::IsCompanionFeatureEnabled()) {
     registry.ForWebUI<CompanionSidePanelUntrustedUI>()
         .Add<side_panel::mojom::CompanionPageHandlerFactory>();

@@ -1,0 +1,21 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module lens.mojom;
+
+// Factory method for creating a new WebUI page handler.
+interface LensPageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreateLensPageHandler(
+      pending_receiver<LensPageHandler> handler,
+      pending_remote<LensPage> page);
+};
+
+// Browser-side handler for requests from WebUI page. (TypeScript -> C++)
+interface LensPageHandler {
+};
+
+// WebUI page handler for request from Browser side. (C++ -> TypeScript)
+interface LensPage {
+};

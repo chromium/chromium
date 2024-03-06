@@ -6,14 +6,18 @@
 #define CHROME_BROWSER_UI_WEBUI_LENS_LENS_UNTRUSTED_UI_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/lens/core/mojom/lens.mojom.h"
+#include "chrome/browser/ui/webui/lens/lens_page_handler.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
 namespace lens {
+class LensPageHandler;
 
 // WebUI controller for the chrome-untrusted://lens page.
-class LensUntrustedUI : public ui::UntrustedWebUIController {
+class LensUntrustedUI : public ui::UntrustedWebUIController,
+                        public lens::mojom::LensPageHandlerFactory {
  public:
   explicit LensUntrustedUI(content::WebUI* web_ui);
 
@@ -21,8 +25,24 @@ class LensUntrustedUI : public ui::UntrustedWebUIController {
   LensUntrustedUI& operator=(const LensUntrustedUI&) = delete;
   ~LensUntrustedUI() override;
 
+  // Instantiates the implementor of the mojom::PageHandlerFactory mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<lens::mojom::LensPageHandlerFactory> receiver);
+
  private:
+  // lens::mojom::LensPageHandlerFactory:
+  void CreateLensPageHandler(
+      mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
+      mojo::PendingRemote<lens::mojom::LensPage> page) override;
+
+  std::unique_ptr<lens::LensPageHandler> lens_page_handler_;
+  mojo::Receiver<lens::mojom::LensPageHandlerFactory>
+      lens_page_factory_receiver_{this};
+
   base::WeakPtrFactory<LensUntrustedUI> weak_factory_{this};
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 }  // namespace lens

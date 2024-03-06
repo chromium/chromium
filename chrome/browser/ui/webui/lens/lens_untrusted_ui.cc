@@ -6,6 +6,7 @@
 
 #include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/lens/lens_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/lens_untrusted_resources.h"
@@ -37,6 +38,21 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->OverrideCrossOriginEmbedderPolicy("require-corp");
 }
 
+void LensUntrustedUI::BindInterface(
+    mojo::PendingReceiver<lens::mojom::LensPageHandlerFactory> receiver) {
+  lens_page_factory_receiver_.reset();
+  lens_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void LensUntrustedUI::CreateLensPageHandler(
+    mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
+    mojo::PendingRemote<lens::mojom::LensPage> page) {
+  lens_page_handler_ = std::make_unique<lens::LensPageHandler>(
+      std::move(receiver), std::move(page));
+}
+
 LensUntrustedUI::~LensUntrustedUI() = default;
+
+WEB_UI_CONTROLLER_TYPE_IMPL(LensUntrustedUI)
 
 }  // namespace lens
