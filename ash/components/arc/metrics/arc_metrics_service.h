@@ -162,6 +162,7 @@ class ArcMetricsService : public KeyedService,
   void ReportArcKeyMintError(mojom::ArcKeyMintError error) override;
   void ReportDragResizeLatency(
       const std::vector<base::TimeDelta>& durations) override;
+  void ReportAppErrorDialogType(mojom::AppErrorDialogType type) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.

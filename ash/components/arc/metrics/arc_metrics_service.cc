@@ -841,6 +841,12 @@ void ArcMetricsService::ReportDragResizeLatency(
   }
 }
 
+void ArcMetricsService::ReportAppErrorDialogType(
+    mojom::AppErrorDialogType type) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramEnumeration("Arc.WM.AppErrorDialog.Type", type);
+}
+
 void ArcMetricsService::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,
