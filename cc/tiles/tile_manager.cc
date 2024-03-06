@@ -22,7 +22,6 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1063,16 +1062,24 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
   did_oom_on_last_assign_ = !had_enough_memory_to_schedule_tiles_needed_now;
   // Since this is recorded once per frame, subsample these metrics.
   if (metrics_sub_sampler_.ShouldSample(0.01)) {
-    std::string process_type =
-        running_on_renderer_process_ ? "Renderer" : "Browser";
-    UMA_HISTOGRAM_BOOLEAN(
-        base::StrCat({"Compositing.TileManager.EnoughMemory.", process_type}),
-        had_enough_memory_to_schedule_tiles_needed_now);
+    if (running_on_renderer_process_) {
+      UMA_HISTOGRAM_BOOLEAN("Compositing.TileManager.EnoughMemory.Renderer",
+                            had_enough_memory_to_schedule_tiles_needed_now);
+    } else {
+      UMA_HISTOGRAM_BOOLEAN("Compositing.TileManager.EnoughMemory.Browser",
+                            had_enough_memory_to_schedule_tiles_needed_now);
+    }
     if (did_oom_on_last_assign_) {
-      UMA_HISTOGRAM_MEMORY_MEDIUM_MB(
-          base::StrCat({"Compositing.TileManager.LimitWhenNotEnoughMemory.",
-                        process_type}),
-          hard_memory_limit.memory_bytes() / (1024 * 1024));
+      auto memory_limit = hard_memory_limit.memory_bytes() / (1024 * 1024);
+      if (running_on_renderer_process_) {
+        UMA_HISTOGRAM_MEMORY_MEDIUM_MB(
+            "Compositing.TileManager.LimitWhenNotEnoughMemory.Renderer",
+            memory_limit);
+      } else {
+        UMA_HISTOGRAM_MEMORY_MEDIUM_MB(
+            "Compositing.TileManager.LimitWhenNotEnoughMemory.Browser",
+            memory_limit);
+      }
     }
   }
 
