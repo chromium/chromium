@@ -203,30 +203,6 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
 }
 
 TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
-       SavingNonAccountAddress) {
-  AutofillProfile profile = test::GetFullProfile();
-  AutofillProfile* original_profile = nullptr;
-  controller()->OfferSave(profile, original_profile, {}, base::DoNothing());
-
-  EXPECT_EQ(controller()->GetWindowTitle(),
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE));
-  EXPECT_NE(controller()->GetHeaderImages(), std::nullopt);
-  EXPECT_TRUE(controller()->GetBodyText().empty());
-  EXPECT_EQ(controller()->GetAddressSummary(),
-            GetEnvelopeStyleAddress(profile, app_locale(), true, true));
-  EXPECT_EQ(controller()->GetProfileEmail(),
-            profile.GetInfo(EMAIL_ADDRESS, app_locale()));
-  EXPECT_EQ(controller()->GetProfilePhone(),
-            profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale()));
-  EXPECT_EQ(controller()->GetOkButtonLabel(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
-  EXPECT_EQ(controller()->GetCancelCallbackValue(),
-            AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
-  EXPECT_TRUE(controller()->GetFooterMessage().empty());
-}
-
-TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
        UpdatingNonAccountAddress) {
   AutofillProfile profile = test::GetFullProfile();
   AutofillProfile original_profile = test::GetFullProfile();
@@ -235,48 +211,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
   EXPECT_EQ(
       controller()->GetWindowTitle(),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE));
-  EXPECT_EQ(controller()->GetHeaderImages(), std::nullopt);
-  EXPECT_TRUE(controller()->GetBodyText().empty());
-  EXPECT_TRUE(controller()->GetAddressSummary().empty());
-  EXPECT_TRUE(controller()->GetProfileEmail().empty());
-  EXPECT_TRUE(controller()->GetProfilePhone().empty());
-  EXPECT_EQ(controller()->GetOkButtonLabel(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
-  EXPECT_EQ(controller()->GetCancelCallbackValue(),
-            AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
   EXPECT_TRUE(controller()->GetFooterMessage().empty());
-}
-
-TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest, SavingAccountAddress) {
-  AutofillProfile profile = test::GetFullProfile();
-  profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  AutofillProfile* original_profile = nullptr;
-  controller()->OfferSave(profile, original_profile, {}, base::DoNothing());
-  std::u16string email =
-      base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
-                            web_contents()->GetBrowserContext())
-                            ->email);
-
-  EXPECT_EQ(controller()->GetWindowTitle(),
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE));
-  EXPECT_NE(controller()->GetHeaderImages(), std::nullopt);
-  EXPECT_TRUE(controller()->GetBodyText().empty());
-  EXPECT_EQ(controller()->GetAddressSummary(),
-            GetEnvelopeStyleAddress(profile, app_locale(), true, true));
-  EXPECT_EQ(controller()->GetProfileEmail(),
-            profile.GetInfo(EMAIL_ADDRESS, app_locale()));
-  EXPECT_EQ(controller()->GetProfilePhone(),
-            profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale()));
-  EXPECT_EQ(controller()->GetOkButtonLabel(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
-  EXPECT_EQ(controller()->GetCancelCallbackValue(),
-            AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
-  EXPECT_EQ(
-      controller()->GetFooterMessage(),
-      l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE, email));
 }
 
 TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
@@ -294,49 +229,10 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
   EXPECT_EQ(
       controller()->GetWindowTitle(),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE));
-  EXPECT_EQ(controller()->GetHeaderImages(), std::nullopt);
-  EXPECT_TRUE(controller()->GetBodyText().empty());
-  EXPECT_TRUE(controller()->GetAddressSummary().empty());
-  EXPECT_TRUE(controller()->GetProfileEmail().empty());
-  EXPECT_TRUE(controller()->GetProfilePhone().empty());
-  EXPECT_EQ(controller()->GetOkButtonLabel(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
-  EXPECT_EQ(controller()->GetCancelCallbackValue(),
-            AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
   EXPECT_EQ(
       controller()->GetFooterMessage(),
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE, email));
-}
-
-TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
-       MigrateIntoAccountAddress) {
-  AutofillProfile profile = test::GetFullProfile();
-  AutofillProfile* original_profile = nullptr;
-  controller()->OfferSave(profile, original_profile,
-                          {.is_migration_to_account = true}, base::DoNothing());
-  std::u16string email =
-      base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
-                            web_contents()->GetBrowserContext())
-                            ->email);
-
-  EXPECT_EQ(controller()->GetWindowTitle(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE));
-  EXPECT_NE(controller()->GetHeaderImages(), std::nullopt);
-  EXPECT_EQ(controller()->GetBodyText(),
-            l10n_util::GetStringFUTF16(
-                IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE, email));
-  EXPECT_FALSE(controller()->GetAddressSummary().empty());
-  EXPECT_TRUE(controller()->GetProfileEmail().empty());
-  EXPECT_TRUE(controller()->GetProfilePhone().empty());
-  EXPECT_EQ(controller()->GetOkButtonLabel(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_MIGRATE_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
-  EXPECT_EQ(controller()->GetCancelCallbackValue(),
-            AutofillClient::SaveAddressProfileOfferUserDecision::kNever);
-  EXPECT_TRUE(controller()->GetFooterMessage().empty());
 }
 
 }  // namespace autofill

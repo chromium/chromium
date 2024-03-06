@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/autofill_bubble_handler_impl.h"
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
@@ -183,12 +185,12 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowOfferNotificationBubble(
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
     content::WebContents* web_contents,
-    SaveUpdateAddressProfileBubbleController* controller,
+    std::unique_ptr<SaveAddressBubbleController> controller,
     bool is_user_gesture) {
   views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
       PageActionIconType::kSaveAutofillAddress);
-  SaveAddressProfileView* bubble =
-      new SaveAddressProfileView(anchor_view, web_contents, controller);
+  SaveAddressProfileView* bubble = new SaveAddressProfileView(
+      std::move(controller), anchor_view, web_contents);
   DCHECK(bubble);
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(

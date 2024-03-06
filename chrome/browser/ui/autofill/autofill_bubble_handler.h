@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_HANDLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_HANDLER_H_
 
+#include <memory>
+
 namespace content {
 class WebContents;
 }
@@ -14,6 +16,7 @@ class AutofillBubbleBase;
 class LocalCardMigrationBubbleController;
 class OfferNotificationBubbleController;
 class SaveUpdateAddressProfileBubbleController;
+class SaveAddressBubbleController;
 class SaveCardBubbleController;
 class IbanBubbleController;
 class VirtualCardManualFallbackBubbleController;
@@ -57,9 +60,13 @@ class AutofillBubbleHandler {
       OfferNotificationBubbleController* controller,
       bool is_user_gesture) = 0;
 
+  // Opens a save address bubble. The bubble's lifecycle is controlled by its
+  // widget, and the controller must handle the widget closing to invalidate
+  // the returned pointer, see `SaveAddressBubbleController::OnBubbleClosed()`.
+  // The bubble view takes ownership of the `controller`.
   virtual AutofillBubbleBase* ShowSaveAddressProfileBubble(
       content::WebContents* web_contents,
-      SaveUpdateAddressProfileBubbleController* controller,
+      std::unique_ptr<SaveAddressBubbleController> controller,
       bool is_user_gesture) = 0;
 
   virtual AutofillBubbleBase* ShowUpdateAddressProfileBubble(

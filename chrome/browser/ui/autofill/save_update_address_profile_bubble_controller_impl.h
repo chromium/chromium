@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/ui/autofill/address_bubble_controller_delegate.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_icon_controller.h"
@@ -18,13 +19,22 @@ namespace autofill {
 
 class AutofillBubbleBase;
 
-// The controller functionality for SaveAddressProfileView.
+// The controller of the address page action icon, see the implementation of
+// the `SaveUpdateAddressProfileIconController` interface. Different types of
+// address bubbles can be bound to the icon (e.g. save or update address). This
+// controller acts as the delegate for them (hence implementing
+// `AddressBubbleControllerDelegate`) to support higher level flows like saving
+// an address with editing.
+// Only single instance of this controller exists for a `WebContents`, to use
+// it for different flows it must be reconfigured, see the arguments of
+// the `OfferSave()` method.
 class SaveUpdateAddressProfileBubbleControllerImpl
     : public AutofillBubbleControllerBase,
       public SaveUpdateAddressProfileBubbleController,
       public SaveUpdateAddressProfileIconController,
       public content::WebContentsUserData<
-          SaveUpdateAddressProfileBubbleControllerImpl> {
+          SaveUpdateAddressProfileBubbleControllerImpl>,
+      public AddressBubbleControllerDelegate {
  public:
   SaveUpdateAddressProfileBubbleControllerImpl(
       const SaveUpdateAddressProfileBubbleControllerImpl&) = delete;
@@ -45,14 +55,6 @@ class SaveUpdateAddressProfileBubbleControllerImpl
 
   // SaveUpdateAddressProfileBubbleController:
   std::u16string GetWindowTitle() const override;
-  std::optional<HeaderImages> GetHeaderImages() const override;
-  std::u16string GetBodyText() const override;
-  std::u16string GetAddressSummary() const override;
-  std::u16string GetProfileEmail() const override;
-  std::u16string GetProfilePhone() const override;
-  std::u16string GetOkButtonLabel() const override;
-  AutofillClient::SaveAddressProfileOfferUserDecision GetCancelCallbackValue()
-      const override;
   std::u16string GetFooterMessage() const override;
   const AutofillProfile& GetProfileToSave() const override;
   const AutofillProfile* GetOriginalProfile() const override;
@@ -69,6 +71,8 @@ class SaveUpdateAddressProfileBubbleControllerImpl
   std::u16string GetPageActionIconTootip() const override;
   AutofillBubbleBase* GetBubbleView() const override;
 
+  base::WeakPtr<AddressBubbleControllerDelegate> GetWeakPtr();
+
  protected:
   // AutofillBubbleControllerBase:
   void WebContentsDestroyed() override;
@@ -80,8 +84,6 @@ class SaveUpdateAddressProfileBubbleControllerImpl
       content::WebContents* web_contents);
   friend class content::WebContentsUserData<
       SaveUpdateAddressProfileBubbleControllerImpl>;
-
-  base::WeakPtr<SaveUpdateAddressProfileBubbleController> GetWeakPtr();
 
   std::u16string GetEditorFooterMessage() const;
 
@@ -108,7 +110,7 @@ class SaveUpdateAddressProfileBubbleControllerImpl
 
   std::string app_locale_;
 
-  base::WeakPtrFactory<SaveUpdateAddressProfileBubbleController>
+  base::WeakPtrFactory<SaveUpdateAddressProfileBubbleControllerImpl>
       weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

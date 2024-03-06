@@ -48,7 +48,7 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
       bool is_user_gesture) override;
   AutofillBubbleBase* ShowSaveAddressProfileBubble(
       content::WebContents* contents,
-      SaveUpdateAddressProfileBubbleController* controller,
+      std::unique_ptr<SaveAddressBubbleController> controller,
       bool is_user_gesture) override;
   AutofillBubbleBase* ShowUpdateAddressProfileBubble(
       content::WebContents* contents,

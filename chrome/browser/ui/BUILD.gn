@@ -4830,6 +4830,7 @@ static_library("ui") {
 
   if (toolkit_views) {
     sources += [
+      "autofill/address_bubble_controller_delegate.h",
       "autofill/address_editor_controller.cc",
       "autofill/address_editor_controller.h",
       "autofill/autofill_bubble_base.h",
@@ -4879,6 +4880,8 @@ static_library("ui") {
       "autofill/payments/virtual_card_manual_fallback_bubble_controller.h",
       "autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.cc",
       "autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h",
+      "autofill/save_address_bubble_controller.cc",
+      "autofill/save_address_bubble_controller.h",
       "autofill/save_update_address_profile_bubble_controller.h",
       "autofill/save_update_address_profile_bubble_controller_impl.cc",
       "autofill/save_update_address_profile_bubble_controller_impl.h",

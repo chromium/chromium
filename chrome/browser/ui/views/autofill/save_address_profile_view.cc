@@ -153,26 +153,22 @@ std::unique_ptr<views::EditableCombobox> CreateNicknameEditableCombobox() {
 }  // namespace
 
 SaveAddressProfileView::SaveAddressProfileView(
+    std::unique_ptr<SaveAddressBubbleController> controller,
     views::View* anchor_view,
-    content::WebContents* web_contents,
-    SaveUpdateAddressProfileBubbleController* controller)
+    content::WebContents* web_contents)
     : AddressBubbleBaseView(anchor_view, web_contents),
-      controller_(controller) {
-  // Since this is a save prompt, original profile must not be set. Otherwise,
-  // it would have been an update prompt.
-  DCHECK(!controller_->GetOriginalProfile());
-
+      controller_(std::move(controller)) {
   // TODO(crbug.com/1167060): Accept action should consider the selected
   // nickname when saving the address.
   SetAcceptCallback(base::BindOnce(
-      &SaveUpdateAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_),
+      &SaveAddressBubbleController::OnUserDecision,
+      base::Unretained(controller_.get()),
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
       std::nullopt));
-  SetCancelCallback(
-      base::BindOnce(&SaveUpdateAddressProfileBubbleController::OnUserDecision,
-                     base::Unretained(controller_),
-                     controller_->GetCancelCallbackValue(), std::nullopt));
+  SetCancelCallback(base::BindOnce(&SaveAddressBubbleController::OnUserDecision,
+                                   base::Unretained(controller_.get()),
+                                   controller_->GetCancelCallbackValue(),
+                                   std::nullopt));
 
   SetProperty(views::kElementIdentifierKey, kTopViewId);
   SetTitle(controller_->GetWindowTitle());
@@ -186,7 +182,7 @@ SaveAddressProfileView::SaveAddressProfileView(
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
 
-  std::u16string description = controller->GetBodyText();
+  std::u16string description = controller_->GetBodyText();
   if (!description.empty()) {
     AddChildView(
         views::Builder<views::Label>()
@@ -227,10 +223,9 @@ SaveAddressProfileView::SaveAddressProfileView(
                   DISTANCE_CONTROL_LIST_VERTICAL))
           .Build());
 
-  edit_button_ =
-      details_section->AddChildView(CreateEditButton(base::BindRepeating(
-          &SaveUpdateAddressProfileBubbleController::OnEditButtonClicked,
-          base::Unretained(controller_))));
+  edit_button_ = details_section->AddChildView(CreateEditButton(
+      base::BindRepeating(&SaveAddressBubbleController::OnEditButtonClicked,
+                          base::Unretained(controller_.get()))));
   edit_button_->SetProperty(views::kElementIdentifierKey, kEditButtonViewId);
 
   std::u16string address = controller_->GetAddressSummary();
@@ -324,7 +319,7 @@ void SaveAddressProfileView::Hide() {
 }
 
 void SaveAddressProfileView::AddedToWidget() {
-  std::optional<SaveUpdateAddressProfileBubbleController::HeaderImages> images =
+  std::optional<SaveAddressBubbleController::HeaderImages> images =
       controller_->GetHeaderImages();
   if (images) {
     GetBubbleFrameView()->SetHeaderView(

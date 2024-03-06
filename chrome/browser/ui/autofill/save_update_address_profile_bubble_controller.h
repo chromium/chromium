@@ -8,8 +8,6 @@
 #include <optional>
 
 #include "components/autofill/core/browser/autofill_client.h"
-#include "ui/base/models/image_model.h"
-#include "ui/gfx/geometry/point.h"
 
 namespace autofill {
 
@@ -17,22 +15,9 @@ namespace autofill {
 // bubble.
 class SaveUpdateAddressProfileBubbleController {
  public:
-  struct HeaderImages {
-    ui::ImageModel light;
-    ui::ImageModel dark;
-  };
-
   virtual ~SaveUpdateAddressProfileBubbleController() = default;
 
   virtual std::u16string GetWindowTitle() const = 0;
-  virtual std::optional<HeaderImages> GetHeaderImages() const = 0;
-  virtual std::u16string GetBodyText() const = 0;
-  virtual std::u16string GetAddressSummary() const = 0;
-  virtual std::u16string GetProfileEmail() const = 0;
-  virtual std::u16string GetProfilePhone() const = 0;
-  virtual std::u16string GetOkButtonLabel() const = 0;
-  virtual AutofillClient::SaveAddressProfileOfferUserDecision
-  GetCancelCallbackValue() const = 0;
   virtual std::u16string GetFooterMessage() const = 0;
   virtual const AutofillProfile& GetProfileToSave() const = 0;
   virtual const AutofillProfile* GetOriginalProfile() const = 0;

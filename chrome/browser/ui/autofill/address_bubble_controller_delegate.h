@@ -1,0 +1,28 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_AUTOFILL_ADDRESS_BUBBLE_CONTROLLER_DELEGATE_H_
+#define CHROME_BROWSER_UI_AUTOFILL_ADDRESS_BUBBLE_CONTROLLER_DELEGATE_H_
+
+#include "base/types/optional_ref.h"
+#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+
+namespace autofill {
+
+// This delegate defines the way the address bubbles (for example, see
+// `SaveAddressBubbleController`) communicate to
+// `SaveUpdateAddressProfileBubbleControllerImpl`.
+class AddressBubbleControllerDelegate {
+ public:
+  virtual void OnUserDecision(
+      AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      base::optional_ref<const AutofillProfile> profile) = 0;
+  virtual void OnEditButtonClicked() = 0;
+  virtual void OnBubbleClosed() = 0;
+};
+
+}  // namespace autofill
+
+#endif  // CHROME_BROWSER_UI_AUTOFILL_ADDRESS_BUBBLE_CONTROLLER_DELEGATE_H_
