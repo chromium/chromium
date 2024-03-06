@@ -29,7 +29,8 @@ void WriteRtpDumpFileHeaderBigEndian(base::TimeTicks start,
   size_t buffer_start_pos = output->size();
   output->resize(output->size() + kRtpDumpFileHeaderSize);
 
-  base::BigEndianWriter writer(base::span(*output).subspan(buffer_start_pos));
+  base::BigEndianWriter writer(
+      base::span<uint8_t>(*output).subspan(buffer_start_pos));
 
   base::TimeDelta delta = start - base::TimeTicks();
   uint32_t start_sec = delta.InSeconds();
