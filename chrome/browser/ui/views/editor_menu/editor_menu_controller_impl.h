@@ -52,6 +52,7 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
   void SetBrowserContext(content::BrowserContext* context);
   void LogEditorMode(const EditorMode& editor_mode);
   void GetEditorMode(base::OnceCallback<void(const EditorMode)> callback);
+  void DismissCard();
 
   views::Widget* editor_menu_widget_for_testing() {
     return editor_menu_widget_.get();
@@ -68,12 +69,28 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
   // once the context menu is shown to the user and one of the editor cards is
   // shown to the user. The session ends when the card is dismissed from the
   // user's view.
-  struct EditorCardSession {
-    explicit EditorCardSession(std::unique_ptr<EditorManager> editor_manager);
-    ~EditorCardSession();
+  class EditorCardSession : public EditorManager::Observer {
+   public:
+    class Delegate {
+     public:
+      virtual void DismissCard() = 0;
+    };
+
+    explicit EditorCardSession(EditorMenuControllerImpl* controller,
+                               std::unique_ptr<EditorManager> editor_manager);
+    ~EditorCardSession() override;
+
+    // EditorManager::Observer overrides
+    void OnEditorModeChanged(const EditorMode& mode) override;
+
+    EditorManager& manager();
+
+   private:
+    // Not owned by this class
+    raw_ptr<EditorMenuControllerImpl> controller_;
 
     // Provides access to the core editor backend.
-    std::unique_ptr<EditorManager> manager;
+    std::unique_ptr<EditorManager> manager_;
   };
 
   void OnGetEditorModeResult(

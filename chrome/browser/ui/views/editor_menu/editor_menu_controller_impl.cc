@@ -49,7 +49,7 @@ void EditorMenuControllerImpl::OnTextAvailable(
     return;
   }
 
-  card_session_->manager->GetEditorPanelContext(
+  card_session_->manager().GetEditorPanelContext(
       base::BindOnce(&EditorMenuControllerImpl::OnGetEditorPanelContextResult,
                      weak_factory_.GetWeakPtr(), anchor_bounds));
 }
@@ -100,7 +100,7 @@ void EditorMenuControllerImpl::OnChipButtonPressed(
   }
 
   DisableEditorMenu();
-  card_session_->manager->StartEditingFlowWithPreset(
+  card_session_->manager().StartEditingFlowWithPreset(
       std::string(text_query_id));
 }
 
@@ -111,7 +111,8 @@ void EditorMenuControllerImpl::OnTextfieldArrowButtonPressed(
   }
 
   DisableEditorMenu();
-  card_session_->manager->StartEditingFlowWithFreeform(base::UTF16ToUTF8(text));
+  card_session_->manager().StartEditingFlowWithFreeform(
+      base::UTF16ToUTF8(text));
 }
 
 void EditorMenuControllerImpl::OnPromoCardWidgetClosed(
@@ -122,13 +123,13 @@ void EditorMenuControllerImpl::OnPromoCardWidgetClosed(
 
   switch (closed_reason) {
     case views::Widget::ClosedReason::kAcceptButtonClicked:
-      card_session_->manager->StartEditingFlow();
+      card_session_->manager().StartEditingFlow();
       break;
     case views::Widget::ClosedReason::kCloseButtonClicked:
-      card_session_->manager->OnPromoCardDeclined();
+      card_session_->manager().OnPromoCardDeclined();
       break;
     default:
-      card_session_->manager->OnPromoCardDismissed();
+      card_session_->manager().OnPromoCardDismissed();
       break;
   }
 
@@ -140,7 +141,7 @@ void EditorMenuControllerImpl::OnEditorMenuVisibilityChanged(bool visible) {
     return;
   }
 
-  card_session_->manager->OnEditorMenuVisibilityChanged(visible);
+  card_session_->manager().OnEditorMenuVisibilityChanged(visible);
 
   if (!visible) {
     OnEditorCardHidden();
@@ -150,14 +151,20 @@ void EditorMenuControllerImpl::OnEditorMenuVisibilityChanged(bool visible) {
 void EditorMenuControllerImpl::SetBrowserContext(
     content::BrowserContext* context) {
   card_session_ =
-      std::make_unique<EditorCardSession>(CreateEditorManager(context));
+      std::make_unique<EditorCardSession>(this, CreateEditorManager(context));
+}
+
+void EditorMenuControllerImpl::DismissCard() {
+  if (editor_menu_widget_) {
+    editor_menu_widget_.reset();
+  }
 }
 
 void EditorMenuControllerImpl::LogEditorMode(const EditorMode& editor_mode) {
   if (!card_session_) {
     return;
   }
-  card_session_->manager->LogEditorMode(editor_mode);
+  card_session_->manager().LogEditorMode(editor_mode);
 }
 
 void EditorMenuControllerImpl::GetEditorMode(
@@ -165,7 +172,7 @@ void EditorMenuControllerImpl::GetEditorMode(
   if (!card_session_) {
     return;
   }
-  card_session_->manager->GetEditorPanelContext(
+  card_session_->manager().GetEditorPanelContext(
       base::BindOnce(&EditorMenuControllerImpl::OnGetEditorModeResult,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -206,7 +213,7 @@ void EditorMenuControllerImpl::OnGetEditorPanelContextResult(
       break;
   }
   if (card_session_ != nullptr && context.mode != EditorMode::kBlocked) {
-    card_session_->manager->LogEditorMode(context.mode);
+    card_session_->manager().LogEditorMode(context.mode);
   }
 }
 
@@ -230,9 +237,25 @@ base::WeakPtr<EditorMenuControllerImpl> EditorMenuControllerImpl::GetWeakPtr() {
 }
 
 EditorMenuControllerImpl::EditorCardSession::EditorCardSession(
+    EditorMenuControllerImpl* controller,
     std::unique_ptr<EditorManager> editor_manager)
-    : manager(std::move(editor_manager)) {}
+    : controller_(controller), manager_(std::move(editor_manager)) {
+  manager_->AddObserver(this);
+}
 
-EditorMenuControllerImpl::EditorCardSession::~EditorCardSession() = default;
+EditorMenuControllerImpl::EditorCardSession::~EditorCardSession() {
+  manager_->RemoveObserver(this);
+}
+
+void EditorMenuControllerImpl::EditorCardSession::OnEditorModeChanged(
+    const EditorMode& mode) {
+  if (mode == EditorMode::kBlocked) {
+    controller_->DismissCard();
+  }
+}
+
+EditorManager& EditorMenuControllerImpl::EditorCardSession::manager() {
+  return *manager_;
+}
 
 }  // namespace chromeos::editor_menu
