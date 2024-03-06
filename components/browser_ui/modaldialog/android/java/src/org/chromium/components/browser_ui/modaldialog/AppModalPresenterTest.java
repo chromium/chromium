@@ -18,7 +18,7 @@ import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtil
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkPendingSize;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.createDialog;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.createDialogWithDialogStyle;
-import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.showDialog;
+import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.showDialogInRoot;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -121,8 +121,8 @@ public class AppModalPresenterTest {
         checkCurrentPresenter(sManager, null);
 
         // Add three dialogs available for showing. The app modal dialog should be shown first.
-        showDialog(sManager, dialog1, ModalDialogType.APP);
-        showDialog(sManager, dialog2, ModalDialogType.APP);
+        showDialogInRoot(sManager, dialog1, ModalDialogType.APP);
+        showDialogInRoot(sManager, dialog2, ModalDialogType.APP);
         checkPendingSize(sManager, ModalDialogType.APP, 1);
         onView(withText("1")).check(matches(isDisplayed()));
         checkCurrentPresenter(sManager, ModalDialogType.APP);
@@ -149,7 +149,7 @@ public class AppModalPresenterTest {
         PropertyModel dialog = createDialog(sActivity, sManager, "title", mTestObserver);
         mExpectedDismissalCause = DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE;
 
-        showDialog(sManager, dialog, ModalDialogType.APP);
+        showDialogInRoot(sManager, dialog, ModalDialogType.APP);
 
         // Dismiss the tab modal dialog and verify dismissal cause.
         int callCount = mTestObserver.onDialogDismissedCallback.getCallCount();
@@ -180,7 +180,7 @@ public class AppModalPresenterTest {
                             onBackPressedCallback);
                 });
 
-        showDialog(sManager, dialog, ModalDialogType.APP);
+        showDialogInRoot(sManager, dialog, ModalDialogType.APP);
 
         Espresso.pressBack();
         callbackHelper.waitForCallback(0);
@@ -197,7 +197,7 @@ public class AppModalPresenterTest {
                         "title",
                         mTestObserver,
                         ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED);
-        showDialog(sManager, dialog, ModalDialogType.APP);
+        showDialogInRoot(sManager, dialog, ModalDialogType.APP);
         onView(withText(R.string.cancel)).check(matches(hasCurrentTextColor(Color.WHITE)));
         onView(withText(R.string.ok)).check(matches(not(hasCurrentTextColor(Color.WHITE))));
     }
@@ -213,7 +213,7 @@ public class AppModalPresenterTest {
                         "title",
                         mTestObserver,
                         ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
-        showDialog(sManager, dialog, ModalDialogType.APP);
+        showDialogInRoot(sManager, dialog, ModalDialogType.APP);
         onView(withText(R.string.cancel)).check(matches(not(hasCurrentTextColor(Color.WHITE))));
         onView(withText(R.string.ok)).check(matches(hasCurrentTextColor(Color.WHITE)));
     }
@@ -230,7 +230,7 @@ public class AppModalPresenterTest {
                         "title",
                         mTestObserver,
                         ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG);
-        showDialog(sManager, dialog, ModalDialogType.APP);
+        showDialogInRoot(sManager, dialog, ModalDialogType.APP);
         Window window = ((AppModalPresenter) sManager.getCurrentPresenterForTest()).getWindow();
 
         assertEquals(

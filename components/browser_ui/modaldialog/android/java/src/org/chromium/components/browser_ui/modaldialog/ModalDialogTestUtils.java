@@ -174,6 +174,21 @@ public class ModalDialogTestUtils {
         }
     }
 
+    /**
+     * Shows a dialog that's in the root view in the specified {@link ModalDialogManager} on the UI
+     * thread.
+     *
+     * @param manager The {@link ModalDialogManager} used to show the dialog.
+     * @param model The {@link PropertyModel} for the dialog to show.
+     * @param dialogType The {@link ModalDialogType} of the dialog to show.
+     */
+    public static void showDialogInRoot(
+            ModalDialogManager manager, PropertyModel model, @ModalDialogType int dialogType) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> manager.showDialog(model, dialogType));
+        ViewUtils.waitForDialogViewCheckingState(
+                withId(R.id.modal_dialog_view), ViewUtils.VIEW_VISIBLE);
+    }
+
     /** Checks whether the number of pending dialogs of a specified type is as expected. */
     public static void checkPendingSize(
             ModalDialogManager manager, @ModalDialogType int dialogType, int expected) {
