@@ -48,6 +48,9 @@ struct BlinkGCPluginOptions {
   // type.
   bool enable_optional_of_traceable_check = true;
 
+  // Enables checks for base::raw_ptr of GCed and traceable types.
+  bool enable_raw_ptr_of_gced_or_traceable_check = false;
+
   std::set<std::string> ignored_classes;
   std::set<std::string> checked_namespaces;
   std::vector<std::string> checked_directories;

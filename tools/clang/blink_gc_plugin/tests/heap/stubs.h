@@ -26,6 +26,9 @@ class WeakPtrFactory {
   WeakPtr<T> GetWeakPtr() { return WeakPtr<T>(); }
 };
 
+template <typename T, typename Traits = void>
+class raw_ptr {};
+
 }  // namespace base
 namespace WTF {
 

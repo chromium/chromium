@@ -16,6 +16,8 @@ class WithOpt : public GarbageCollected<WithOpt> {
   absl::optional<Traceable>
       optional_field3_;  // Optional fields are disallowed.
   std::optional<Traceable> optional_field4_;
+  base::raw_ptr<Base> raw_ptr_field_;
+  base::raw_ptr<Traceable> raw_ptr_field2_;
 };
 
 void DisallowedUseOfOptional() {
@@ -52,6 +54,23 @@ void DisallowedUseOfOptional() {
     new std::optional<Traceable>;  // New expression with traceable optionals
                                    // are not allowed.
   }
+
+  {
+    base::raw_ptr<Base> raw_ptr_base;  // Must be okay.
+    (void)raw_ptr_base;
+
+    base::raw_ptr<Derived> raw_ptr_derived;  // Must also be okay.
+    (void)raw_ptr_derived;
+
+    base::raw_ptr<Traceable> raw_ptr_traceable;  // Must also be okay.
+    (void)raw_ptr_traceable;
+
+    new base::raw_ptr<Base>;  // New expression with gced raw_ptrs are not
+                              // allowed.
+
+    new base::raw_ptr<Traceable>;  // New expression with traceable raw_ptrs
+                                   // are not allowed.
+  }
 }
 
 class OnStack {
@@ -63,6 +82,8 @@ class OnStack {
     (void)optional_field2_;
     (void)optional_field3_;
     (void)optional_field4_;
+    (void)raw_ptr_field_;
+    (void)raw_ptr_field2_;
   }
 
  private:
@@ -71,6 +92,8 @@ class OnStack {
   std::optional<Base> optional_field2_;
   absl::optional<Traceable> optional_field3_;
   std::optional<Traceable> optional_field4_;
+  base::raw_ptr<Base> raw_ptr_field_;
+  base::raw_ptr<Traceable> raw_ptr_field2_;
 };
 
 }  // namespace blink
