@@ -28,6 +28,8 @@ struct ASH_EXPORT PickerImageMedia {
   std::optional<gfx::Size> dimensions;
   std::u16string content_description;
 
+  explicit PickerImageMedia(base::span<const uint8_t> png);
+
   explicit PickerImageMedia(GURL url,
                             std::optional<gfx::Size> dimensions = std::nullopt,
                             std::u16string content_description = u"");

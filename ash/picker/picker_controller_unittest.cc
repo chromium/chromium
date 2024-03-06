@@ -163,7 +163,25 @@ TEST_F(PickerControllerTest, InsertTextResultInsertsIntoInputFieldAfterFocus) {
   EXPECT_EQ(input_field.text(), u"abc");
 }
 
-TEST_F(PickerControllerTest, InsertImageResultInsertsIntoInputFieldAfterFocus) {
+TEST_F(PickerControllerTest, InsertPngResultInsertsIntoInputFieldAfterFocus) {
+  PickerController controller;
+  TestPickerClient client(&controller);
+  controller.ToggleWidget();
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+
+  controller.InsertResultOnNextFocus(PickerSearchResult::Png({1, 2, 3}));
+  controller.widget_for_testing()->CloseNow();
+  ui::FakeTextInputClient input_field(
+      input_method,
+      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  EXPECT_EQ(input_field.last_inserted_image_url(),
+            GURL("data:image/png;base64,AQID"));
+}
+
+TEST_F(PickerControllerTest, InsertGifResultInsertsIntoInputFieldAfterFocus) {
   PickerController controller;
   TestPickerClient client(&controller);
   controller.ToggleWidget();

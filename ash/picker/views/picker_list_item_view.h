@@ -49,6 +49,7 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
     return primary_container_;
   }
   std::u16string GetPrimaryTextForTesting() const;
+  ui::ImageModel GetPrimaryImageForTesting() const;
 
  private:
   // Contains the item's leading icon if it has been set.

@@ -13,6 +13,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/image/image.h"
+#include "ui/views/controls/image_view.h"
 
 namespace ash {
 namespace {
@@ -41,13 +43,32 @@ void PickerClipboardProvider::OnFetchHistory(
     OnFetchResultCallback callback,
     std::vector<ClipboardHistoryItem> items) {
   for (const auto& item : items) {
+    if ((clock_->Now() - item.time_copied()) > kRecencyThreshold) {
+      continue;
+    }
     if (item.display_format() ==
-            crosapi::mojom::ClipboardHistoryDisplayFormat::kText &&
-        (clock_->Now() - item.time_copied()) < kRecencyThreshold) {
+        crosapi::mojom::ClipboardHistoryDisplayFormat::kText) {
       auto result = PickerSearchResult::Text(item.display_text());
       auto item_view = std::make_unique<PickerListItemView>(
           base::BindRepeating(select_result_callback_, result));
       item_view->SetPrimaryText(item.display_text());
+      item_view->SetSecondaryText(
+          l10n_util::GetStringUTF16(IDS_PICKER_FROM_CLIPBOARD_TEXT));
+      item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+          kClipboardIcon, cros_tokens::kCrosSysOnSurface));
+      callback.Run(std::move(item_view));
+    } else if (item.display_format() ==
+               crosapi::mojom::ClipboardHistoryDisplayFormat::kPng) {
+      const std::optional<std::vector<uint8_t>>& png_opt =
+          item.data().maybe_png();
+      if (!png_opt.has_value() || !item.display_image().has_value()) {
+        continue;
+      }
+      auto result = PickerSearchResult::Png(*png_opt);
+      auto item_view = std::make_unique<PickerListItemView>(
+          base::BindRepeating(select_result_callback_, result));
+      item_view->SetPrimaryImage(
+          std::make_unique<views::ImageView>(*item.display_image()));
       item_view->SetSecondaryText(
           l10n_util::GetStringUTF16(IDS_PICKER_FROM_CLIPBOARD_TEXT));
       item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(

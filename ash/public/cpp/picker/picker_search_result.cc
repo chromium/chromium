@@ -26,6 +26,20 @@ bool PickerSearchResult::SymbolData::operator==(
 bool PickerSearchResult::EmoticonData::operator==(
     const PickerSearchResult::EmoticonData&) const = default;
 
+PickerSearchResult::PngData::PngData(const std::vector<uint8_t>& png)
+    : png(png) {}
+
+PickerSearchResult::PngData::PngData(const PickerSearchResult::PngData&) =
+    default;
+
+PickerSearchResult::PngData& PickerSearchResult::PngData::operator=(
+    const PickerSearchResult::PngData&) = default;
+
+PickerSearchResult::PngData::~PngData() = default;
+
+bool PickerSearchResult::PngData::operator==(
+    const PickerSearchResult::PngData&) const = default;
+
 PickerSearchResult::GifData::GifData(const GURL& preview_url,
                                      const GURL& preview_image_url,
                                      const gfx::Size& preview_dimensions,
@@ -85,6 +99,10 @@ PickerSearchResult PickerSearchResult::Symbol(std::u16string_view symbol) {
 
 PickerSearchResult PickerSearchResult::Emoticon(std::u16string_view emoticon) {
   return PickerSearchResult(EmoticonData{.emoticon = std::u16string(emoticon)});
+}
+
+PickerSearchResult PickerSearchResult::Png(const std::vector<uint8_t>& png) {
+  return PickerSearchResult(PngData(png));
 }
 
 PickerSearchResult PickerSearchResult::Gif(const GURL& preview_url,

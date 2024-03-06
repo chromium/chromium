@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <variant>
+#include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/picker/picker_category.h"
@@ -44,6 +45,17 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     std::u16string emoticon;
 
     bool operator==(const EmoticonData&) const;
+  };
+
+  struct PngData {
+    std::vector<uint8_t> png;
+
+    PngData(const std::vector<uint8_t>& png);
+    PngData(const PngData&);
+    PngData& operator=(const PngData&);
+    ~PngData();
+
+    bool operator==(const PngData&) const;
   };
 
   struct GifData {
@@ -104,6 +116,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                             EmojiData,
                             SymbolData,
                             EmoticonData,
+                            PngData,
                             GifData,
                             BrowsingHistoryData,
                             FileData,
@@ -122,6 +135,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   static PickerSearchResult Emoji(std::u16string_view emoji);
   static PickerSearchResult Symbol(std::u16string_view symbol);
   static PickerSearchResult Emoticon(std::u16string_view emoticon);
+  static PickerSearchResult Png(const std::vector<uint8_t>& png);
   static PickerSearchResult Gif(const GURL& preview_url,
                                 const GURL& preview_image_url,
                                 const gfx::Size& preview_dimensions,

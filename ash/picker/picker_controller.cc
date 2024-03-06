@@ -129,6 +129,9 @@ std::optional<PickerRichMedia> ResultToInsertMediaData(
           [](const PickerSearchResult::EmoticonData& data) -> ReturnType {
             return PickerTextMedia(data.emoticon);
           },
+          [](const PickerSearchResult::PngData& data) -> ReturnType {
+            return PickerImageMedia(data.png);
+          },
           [](const PickerSearchResult::GifData& data) -> ReturnType {
             return PickerImageMedia(data.full_url, data.full_dimensions,
                                     data.content_description);

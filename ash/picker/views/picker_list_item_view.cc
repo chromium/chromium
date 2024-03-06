@@ -35,6 +35,7 @@ namespace {
 constexpr auto kPickerListItemBorderInsets = gfx::Insets::TLBR(8, 16, 8, 8);
 
 constexpr gfx::Size kLeadingIconSizeDip(20, 20);
+constexpr int kImageDisplayHeight = 72;
 constexpr auto kLeadingIconRightPadding = gfx::Insets::TLBR(0, 0, 0, 16);
 
 }  // namespace
@@ -85,6 +86,12 @@ void PickerListItemView::SetPrimaryImage(
   primary_container_->RemoveAllChildViews();
   auto* image_view = primary_container_->AddChildView(std::move(primary_image));
   image_view->SetCanProcessEventsWithinSubtree(false);
+  const gfx::Size original_size = image_view->GetImageModel().Size();
+  if (original_size.height() > 0) {
+    image_view->SetImageSize(gfx::ScaleToRoundedSize(
+        original_size,
+        static_cast<float>(kImageDisplayHeight) / original_size.height()));
+  }
   // TODO: b/316936418 - Get accessible name for image contents.
   SetAccessibleName(u"image contents");
 }
@@ -117,6 +124,17 @@ std::u16string PickerListItemView::GetPrimaryTextForTesting() const {
     return label->GetText();
   }
   return u"";
+}
+
+ui::ImageModel PickerListItemView::GetPrimaryImageForTesting() const {
+  if (primary_container_->children().empty()) {
+    return ui::ImageModel();
+  }
+  if (const auto* image = views::AsViewClass<views::ImageView>(
+          primary_container_->children().front().get())) {
+    return image->GetImageModel();
+  }
+  return ui::ImageModel();
 }
 
 BEGIN_METADATA(PickerListItemView)
