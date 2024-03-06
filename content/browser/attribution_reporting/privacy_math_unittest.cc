@@ -8,10 +8,10 @@
 
 #include <cmath>
 #include <limits>
+#include <map>
 #include <set>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
@@ -381,7 +381,7 @@ void RunRandomFakeReportsTest(const attribution_reporting::TriggerSpecs& specs,
                               const MaxEventLevelReports max_reports,
                               const int num_samples,
                               const double tolerance) {
-  base::flat_map<std::vector<FakeEventLevelReport>, int> output_counts;
+  std::map<std::vector<FakeEventLevelReport>, int> output_counts;
   const absl::uint128 num_states = GetNumStates(specs, max_reports);
   internal::StateMap map;
   for (int i = 0; i < num_samples; i++) {
