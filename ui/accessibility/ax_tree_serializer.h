@@ -833,13 +833,13 @@ bool AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::
 
   // Serialize this node. This fills in all of the fields in
   // AXNodeData except child_ids, which we handle below.
-  size_t serialized_node_index = out_update->nodes.size();
-  out_update->nodes.push_back(AXNodeData());
+  const size_t serialized_node_index = out_update->nodes.size();
+  out_update->nodes.emplace_back();
   {
     // Take the address of an element in a vector only within a limited
     // scope because otherwise the pointer can become invalid if the
     // vector is resized.
-    AXNodeData* serialized_node = &out_update->nodes[serialized_node_index];
+    AXNodeData* serialized_node = &out_update->nodes.back();
 
     tree_->SerializeNode(node, serialized_node);
     if (serialized_node->id == client_root_->id) {

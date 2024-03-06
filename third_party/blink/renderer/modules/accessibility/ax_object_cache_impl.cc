@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 
+#include <iterator>
 #include <numeric>
 
 #include "base/auto_reset.h"
@@ -5340,7 +5341,7 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
   EnsureSerializer();
 
   ui::AXNodeData::AXNodeDataSize node_data_size;
-  for (const auto& current_dirty_object : dirty_objects_) {
+  for (auto& current_dirty_object : dirty_objects_) {
     AXObject* obj = current_dirty_object->obj;
 
     // Dirty objects can be added using MarkWebAXObjectDirty(obj) from other
@@ -5369,10 +5370,11 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     if (already_serialized_ids.Contains(obj->AXObjectID()))
       continue;  // No need to serialize, was already present.
 
-    ui::AXTreeUpdate update;
+    updates.emplace_back();
+    ui::AXTreeUpdate& update = updates.back();
     update.event_from = current_dirty_object->event_from;
     update.event_from_action = current_dirty_object->event_from_action;
-    update.event_intents = current_dirty_object->event_intents;
+    update.event_intents = std::move(current_dirty_object->event_intents);
 
     bool success = ax_tree_serializer_->SerializeChanges(obj, &update);
 
@@ -5404,12 +5406,12 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     // message so the plugin can merge its own tree data changes.
     AddPluginTreeToUpdate(&update);
 
-    updates.push_back(update);
     if (RuntimeEnabledFeatures::
             AccessibilitySerializationSizeMetricsEnabled()) {
       update.AccumulateSize(node_data_size);
     }
   }
+  dirty_objects_.clear();
 
   UMA_HISTOGRAM_COUNTS_10000(
       "Accessibility.Performance.AXObjectCacheImpl.RedundantSerializations",
@@ -5467,7 +5469,6 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
             << ObjectFromAXID(event.id);
   }
 
-  dirty_objects_.clear();
   pending_events_.clear();
 
 #if DCHECK_IS_ON()
@@ -5476,7 +5477,7 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
   // Provide the expected node count in the last update, so that
   // AXTree::Unserialize() can check for tree consistency on the browser side.
   if (!updates.back().tree_checks) {
-    updates.back().tree_checks = std::make_optional<ui::AXTreeChecks>();
+    updates.back().tree_checks.emplace();
   }
   updates.back().tree_checks->node_count =
       GetIncludedNodeCount() + GetPluginIncludedNodeCount();
@@ -6066,12 +6067,9 @@ void AXObjectCacheImpl::AddPluginTreeToUpdate(ui::AXTreeUpdate* update) {
       ui::AXTreeUpdate plugin_update;
       plugin_serializer_->SerializeChanges(root, &plugin_update);
 
-      size_t old_count = update->nodes.size();
-      size_t new_count = plugin_update.nodes.size();
-      update->nodes.resize(old_count + new_count);
-      for (size_t i = 0; i < new_count; ++i) {
-        update->nodes[old_count + i] = plugin_update.nodes[i];
-      }
+      update->nodes.reserve(update->nodes.size() + plugin_update.nodes.size());
+      base::ranges::move(plugin_update.nodes,
+                         std::back_inserter(update->nodes));
 
       if (plugin_tree_source_->GetTreeData(&update->tree_data)) {
         update->has_tree_data = true;
