@@ -10,8 +10,8 @@ import {ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
 import type {DirectoryItem} from '../../foreground/js/ui/directory_tree.js';
 import type {TreeItem} from '../../foreground/js/ui/tree.js';
 import {driveRootEntryListKey, myFilesEntryListKey, recentRootKey, trashRootKey} from '../../state/ducks/volumes.js';
-import {type CurrentDirectory, EntryType, type FileData} from '../../state/state.js';
-import {getEntry, getStore} from '../../state/store.js';
+import {type CurrentDirectory, EntryType, type FileData, type State, type Volume} from '../../state/state.js';
+import {getEntry, getStore, getVolume} from '../../state/store.js';
 import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
 import {createDOMError} from './dom_utils.js';
@@ -76,6 +76,22 @@ export function isMyFilesEntry(entry: Entry|FilesAppEntry|
   }
   if (isVolumeEntry(entry) && entry.volumeType === VolumeType.DOWNLOADS) {
     return true;
+  }
+
+  return false;
+}
+
+export function isMyFilesFileData(
+    state: State, fileData: FileData|null): boolean {
+  if (!fileData) {
+    return false;
+  }
+  if (fileData.key === myFilesEntryListKey) {
+    return true;
+  }
+  if (fileData.type === EntryType.VOLUME_ROOT) {
+    const volume = getVolume(state, fileData);
+    return volume?.volumeType === VolumeType.DOWNLOADS;
   }
 
   return false;
@@ -325,6 +341,9 @@ export function isTrashEntry(entry: Entry|FilesAppEntry): entry is TrashEntry {
   return isTrashRootType(getRootType(entry));
 }
 
+export function isTrashFileData(fileData: FileData): boolean {
+  return fileData.fullPath === '/' && fileData.type === EntryType.TRASH;
+}
 
 /**
  * Compares two entries.
@@ -874,7 +893,7 @@ export function isInteractiveVolume(volumeInfo: VolumeInfo) {
 export const isOneDriveId = (providerId: string|null|undefined) =>
     providerId === ODFS_EXTENSION_ID;
 
-export function isOneDrive(volumeInfo: VolumeInfo) {
+export function isOneDrive(volumeInfo: VolumeInfo|Volume) {
   return isOneDriveId(volumeInfo?.providerId);
 }
 
@@ -964,9 +983,10 @@ export async function*
 }
 
 /**
- * Check if the given entry is scannable or not, e.g. can we call `readEntries`
- * on it. If the return value is true, its type is guaranteed to be a Directory
- * like entry.
+ * Check if the given entry is scannable or not, e.g. can we call
+ * `readEntries()` on it.
+ * If the return value is true, its type is guaranteed to be a Directory like
+ * entry.
  */
 export function isEntryScannable(entry: Entry|FilesAppEntry|null):
     entry is DirectoryEntry|FilesAppDirEntry {
@@ -986,5 +1006,32 @@ export function isEntryScannable(entry: Entry|FilesAppEntry|null):
   if (entryKeysWithoutChildren.has(entry.toURL())) {
     return false;
   }
+  return true;
+}
+
+/**
+ * Check if the given fileData is scannable or not, e.g. can we call
+ * `readEntries()` on it.
+ */
+export function isFileDataScannalble(fileData: FileData|null) {
+  if (!fileData) {
+    return false;
+  }
+  if (!fileData.isDirectory) {
+    return false;
+  }
+  if (fileData.disabled) {
+    return false;
+  }
+
+  const entryKeysWithoutChildren = new Set([
+    recentRootKey,
+    trashRootKey,
+  ]);
+
+  if (entryKeysWithoutChildren.has(fileData.key)) {
+    return false;
+  }
+
   return true;
 }

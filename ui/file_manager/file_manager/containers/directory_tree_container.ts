@@ -7,9 +7,9 @@ import {isRTL} from 'chrome://resources/ash/common/util.js';
 
 import type {VolumeManager} from '../background/js/volume_manager.js';
 import {maybeShowTooltip} from '../common/js/dom_utils.js';
-import {isDriveRootEntryList, isEntryInsideDrive, isEntryScannable, isGrandRootEntryInDrives, isMyFilesEntry, isOneDrive, isOneDriveId, isTrashEntry, isVolumeEntry, shouldSupportDriveSpecificIcons} from '../common/js/entry_utils.js';
+import {isEntryInsideDrive, isFileDataScannalble, isGrandRootEntryInDrives, isMyFilesFileData, isOneDrive, isOneDriveId, isTrashFileData, shouldSupportDriveSpecificIcons} from '../common/js/entry_utils.js';
 import type {EntryList} from '../common/js/files_app_entry_types.js';
-import {FakeEntryImpl, VolumeEntry} from '../common/js/files_app_entry_types.js';
+import {VolumeEntry} from '../common/js/files_app_entry_types.js';
 import {vmTypeToIconName} from '../common/js/icon_util.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/translations.js';
@@ -24,7 +24,7 @@ import {changeDirectory} from '../state/ducks/current_directory.js';
 import {refreshNavigationRoots} from '../state/ducks/navigation.js';
 import {clearSearch} from '../state/ducks/search.js';
 import {driveRootEntryListKey} from '../state/ducks/volumes.js';
-import {type AndroidApp, type CurrentDirectory, type FileData, type FileKey, type NavigationKey, type NavigationRoot, NavigationType, PropStatus, SearchLocation, type State} from '../state/state.js';
+import {type AndroidApp, type CurrentDirectory, EntryType, type FileData, type FileKey, type NavigationKey, type NavigationRoot, NavigationType, PropStatus, SearchLocation, type State} from '../state/state.js';
 import {getEntry, getFileData, getStore, getVolume, type Store} from '../state/store.js';
 import {type TreeSelectedChangedEvent, XfTree} from '../widgets/xf_tree.js';
 import {type TreeItemCollapsedEvent, type TreeItemExpandedEvent, XfTreeItem} from '../widgets/xf_tree_item.js';
@@ -265,8 +265,9 @@ export class DirectoryTreeContainer {
       // it here and restore it later if needed.
       const isFocused = document.activeElement === navigationRootItem;
       const isRenaming = navigationRootItem.renaming;
-      if (fileData && isVolumeEntry(fileData.entry)) {
-        const isOneDriveRoot = isOneDrive(fileData.entry.volumeInfo);
+      if (fileData && fileData.type === EntryType.VOLUME_ROOT) {
+        const volume = getVolume(state, fileData);
+        const isOneDriveRoot = volume && isOneDrive(volume);
         if (isOneDriveRoot) {
           navigationRootItem.toggleAttribute('one-drive', true);
         }
@@ -386,7 +387,7 @@ export class DirectoryTreeContainer {
     // inside, but we always render children for Drive even it's collapsed.
     // TODO(b/308504417): remove the special case for Drive.
     const shouldRenderChildren = !fileData.disabled &&
-        (fileData.expanded || isDriveRootEntryList(fileData.entry));
+        (fileData.expanded || fileData.key === driveRootEntryListKey);
     if (shouldRenderChildren) {
       const newChildren = fileData.children || [];
       // Remove non-exist navigation items.
@@ -513,9 +514,9 @@ export class DirectoryTreeContainer {
       navigationRoot?: NavigationRoot) {
     // Add full-path for all non-root items.
     if (!navigationRoot) {
-      element.setAttribute('full-path-for-testing', fileData.entry.fullPath);
+      element.setAttribute('full-path-for-testing', fileData.fullPath);
     }
-    if (!isVolumeEntry(fileData.entry)) {
+    if (fileData.type !== EntryType.VOLUME_ROOT) {
       return;
     }
     // Add volume-type for the root volume items.
@@ -600,8 +601,7 @@ export class DirectoryTreeContainer {
     // Set context menu for the item.
     this.setContextMenu_(element, fileData, navigationRoot);
     // Expand MyFiles by default.
-    const entry = fileData.entry;
-    if (isMyFilesEntry(entry)) {
+    if (isMyFilesFileData(this.store_.getState(), fileData)) {
       element.expanded = true;
       return;
     }
@@ -620,6 +620,7 @@ export class DirectoryTreeContainer {
       shouldCheckDirectoryChildren = !!(element.parentItem?.expanded);
     }
     if (shouldCheckDirectoryChildren) {
+      const entry = fileData.entry;
       this.store_.dispatch(readSubDirectoriesToCheckDirectoryChildren(entry));
     }
   }
@@ -740,7 +741,7 @@ export class DirectoryTreeContainer {
     }
 
     this.recordUmaForItemExpandedOrCollapsed_(fileData);
-    if (shouldDelayLoadingChildren(fileData.entry)) {
+    if (shouldDelayLoadingChildren(fileData, this.store_.getState())) {
       // For file systems where it is performance intensive
       // to update recursively when items expand, this proactively
       // collapses all children to avoid having to traverse large
@@ -816,10 +817,11 @@ export class DirectoryTreeContainer {
       if (!fileData) {
         continue;
       }
-      if (!isEntryScannable(fileData.entry)) {
+      if (!isFileDataScannalble(fileData)) {
         continue;
       }
-      if (shouldDelayLoadingChildren(fileData.entry) && !fileData.expanded) {
+      if (shouldDelayLoadingChildren(fileData, this.store_.getState()) &&
+          !fileData.expanded) {
         continue;
       }
       this.store_.dispatch(
@@ -911,72 +913,68 @@ export class DirectoryTreeContainer {
       return;
     }
 
-    if (fileData) {
-      const entry = fileData.entry;
-
-      if (isRoot) {
-        const navigationRootData = this.navigationRoots_.find(
-            navigationRoot => navigationRoot.key === fileData.entry.toURL());
-        // TODO(b/308504417): remove the special case for Drive.
-        if (navigationRootData?.type === NavigationType.DRIVE) {
-          if (fileData.children.length === 0) {
-            // Drive volume is not mounted, we can only change directory to the
-            // fake drive root.
-            this.store_.dispatch(changeDirectory({toKey: entry.toURL()}));
-          } else {
-            // If Drive fake root is selected and it has Drive volume inside, we
-            // expand it and go to the My Drive (1st child) directly.
-            element.expanded = true;
-            const myDriveKey = fileData.children[0]!;
-            const isMyDriveActive = this.isCurrentDirectoryActive_(myDriveKey);
-            // If My Drive is already active, dispatching the changeDirectory
-            // below with STARTED status won't trigger a SUCCESS status in
-            // DirectoryModel because toKey is the same with the current
-            // directory key in the store. As we rely on the SUCCESS status to
-            // decide which tree item to select, we need to dispatch a SUCCESS
-            // status changeDirectory action in this case.
-            this.store_.dispatch(changeDirectory({
-              toKey: myDriveKey,
-              status: isMyDriveActive ? PropStatus.SUCCESS : PropStatus.STARTED,
-            }));
-          }
-          return;
-        }
-
-        if (navigationRootData?.type === NavigationType.SHORTCUT) {
-          const onEntryResolved = (resolvedEntry: Entry) => {
-            recordUserAction('FolderShortcut.Navigate');
-            this.store_.dispatch(
-                changeDirectory({toKey: resolvedEntry.toURL()}));
-          };
-          // For shortcuts we already have an Entry, but it has to be resolved
-          // again in case, it points to a non-existing directory.
-          if (entry) {
-            (window as any)
-                .webkitResolveLocalFileSystemURL(
-                    entry.toURL(), onEntryResolved,
-                    () => {
-                        // Error, the entry can't be re-resolved. It may
-                        // happen
-                        // for shortcuts whose targets got removed after
-                        // resolving the Entry during initialization.
-                        // TODO: what to do here?
-                    });
-          }
-          return;
-        }
-      }
-
-      // For delayed loading navigation items, read children when it's
-      // selected.
-      if (shouldDelayLoadingChildren(fileData.entry) &&
-          fileData.children.length === 0) {
-        this.store_.dispatch(
-            readSubDirectoriesToCheckDirectoryChildren(fileData.entry));
-      }
-
-      this.store_.dispatch(changeDirectory({toKey: entry.toURL()}));
+    if (!fileData) {
+      return;
     }
+
+    const fileKey = fileData.key;
+
+    const navigationRootData = isRoot ?
+        this.navigationRoots_.find(
+            navigationRoot => navigationRoot.key === fileKey) :
+        undefined;
+    // TODO(b/308504417): Remove the special case for Drive.
+    if (navigationRootData?.type === NavigationType.DRIVE) {
+      if (fileData.children.length === 0) {
+        // Drive volume isn't not mounted, we can only change directory to the
+        // fake drive root.
+        this.store_.dispatch(changeDirectory({toKey: fileKey}));
+      } else {
+        // If Drive fake root is selected and it has Drive volume inside, we
+        // expand it and go to the My Drive (1st child) directly.
+        element.expanded = true;
+        const myDriveKey = fileData.children[0]!;
+        const isMyDriveActive = this.isCurrentDirectoryActive_(myDriveKey);
+        // If My Drive is already active, dispatching the changeDirectory below
+        // with STARTED status won't trigger a SUCCESS status in DirectoryModel
+        // because toKey is the same with the current directory key in the
+        // store. As we rely on the SUCCESS status to decide which tree item to
+        // select, we need to dispatch a SUCCESS status changeDirectory action
+        // in this case.
+        this.store_.dispatch(changeDirectory({
+          toKey: myDriveKey,
+          status: isMyDriveActive ? PropStatus.SUCCESS : PropStatus.STARTED,
+        }));
+      }
+      return;
+    }
+
+    if (navigationRootData?.type === NavigationType.SHORTCUT) {
+      const onEntryResolved = (resolvedEntry: Entry) => {
+        recordUserAction('FolderShortcut.Navigate');
+        this.store_.dispatch(changeDirectory({toKey: resolvedEntry.toURL()}));
+      };
+      // For shortcuts we already have an Entry, but it has to be resolved again
+      // in case, it points to a non-existing directory.
+      window.webkitResolveLocalFileSystemURL(
+          fileKey, onEntryResolved,
+          () => {
+              // Error, the entry can't be re-resolved. It may happen for
+              // shortcuts whose targets got removed after resolving the Entry
+              // during initialization.
+              // TODO: what to do here?
+          });
+      return;
+    }
+
+    // For delayed loading navigation items, read children when it's selected.
+    if (shouldDelayLoadingChildren(fileData, this.store_.getState()) &&
+        fileData.children.length === 0) {
+      this.store_.dispatch(
+          readSubDirectoriesToCheckDirectoryChildren(fileData.entry));
+    }
+
+    this.store_.dispatch(changeDirectory({toKey: fileKey}));
   }
 
   private maybeShowToolTip_(event: MouseEvent) {
@@ -1082,14 +1080,15 @@ export class DirectoryTreeContainer {
       element: XfTreeItem, fileData: FileData,
       navigationRoot?: NavigationRoot) {
     // Trash is FakeEntry, but we still want to return menus for sub items.
-    if (isTrashEntry(fileData.entry)) {
+    if (isTrashFileData(fileData)) {
       if (this.contextMenuForSubitems) {
         contextMenuHandler.setContextMenu(element, this.contextMenuForSubitems);
       }
       return;
     }
-    // Disable menus for disabled items and FakeEntry items.
-    if (element.disabled || fileData.entry instanceof FakeEntryImpl) {
+    // Disable menus for disabled items and RECENT items.
+    // NOTE: Drive shared with me and offline are marked as RECENT.
+    if (element.disabled || fileData.type === EntryType.RECENT) {
       if (this.contextMenuForDisabledItems) {
         contextMenuHandler.setContextMenu(
             element, this.contextMenuForDisabledItems);
@@ -1098,7 +1097,7 @@ export class DirectoryTreeContainer {
     }
     if (navigationRoot) {
       // For MyFiles, show normal file operations menu.
-      if (isMyFilesEntry(fileData.entry)) {
+      if (isMyFilesFileData(this.store_.getState(), fileData)) {
         if (this.contextMenuForSubitems) {
           contextMenuHandler.setContextMenu(
               element, this.contextMenuForSubitems);

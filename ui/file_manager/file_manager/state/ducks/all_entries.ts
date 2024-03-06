@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {EntryLocation} from '../../background/js/entry_location_impl.js';
+import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {getParentEntry} from '../../common/js/api.js';
 import {isDriveRootEntryList, isEntryInsideDrive, isEntryScannable, isEntrySupportUiChildren, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, readEntries, shouldSupportDriveSpecificIcons, sortEntries} from '../../common/js/entry_utils.js';
 import {getIcon} from '../../common/js/file_type.js';
@@ -226,20 +227,26 @@ function getEntryIcon(
 }
 
 /**
- * Given an entry, check if its loading children should be delayed.
+ * Given fileData, check if its loading children should be delayed.
  * We are doing this for SMB to avoid potentially hanging whilst scanning a
  * large SMB file share and causing performance issues.
  */
-export function shouldDelayLoadingChildren(entry: Entry|
-                                           FilesAppEntry): boolean {
-  const {volumeManager} = window.fileManager;
+export function shouldDelayLoadingChildren(
+    fileData: FileData, state: State): boolean {
   // When this function is triggered when mounting new volumes, volumeInfo is
   // not available in the VolumeManager yet, we need to get volumeInfo from the
   // entry itself.
-  const volumeInfo = isVolumeEntry(entry) ? entry.volumeInfo :
-                                            volumeManager.getVolumeInfo(entry);
-  return volumeInfo?.source === Source.NETWORK &&
-      volumeInfo.volumeType === VolumeType.SMB;
+  const volume: Volume|VolumeInfo|undefined =
+      fileData.type === EntryType.VOLUME_ROOT ?
+      // TODO: Confirm how to remove the usage of entry here.
+      (fileData.entry as VolumeEntry).volumeInfo :
+      state!.volumes[fileData.volumeId!];
+  return isVolumeSlowToScan(volume);
+}
+
+function isVolumeSlowToScan(volume?: Volume|VolumeInfo|null): boolean {
+  return volume?.source === Source.NETWORK &&
+      volume.volumeType === VolumeType.SMB;
 }
 
 /**
@@ -274,7 +281,7 @@ export function convertEntryToFileData(entry: Entry|FilesAppEntry): FileData {
       metadataModel.getCache([entry as FileEntry], prefetchPropertyNames)[0]! :
       {} as MetadataItem;
 
-  return {
+  const fileData: FileData = {
     key: entry.toURL(),
     fullPath: entry.fullPath,
     entry,
@@ -288,12 +295,16 @@ export function convertEntryToFileData(entry: Entry|FilesAppEntry): FileData {
     expanded: false,
     disabled: 'disabled' in entry ? entry.disabled as boolean : false,
     isRootEntry: !!locationInfo?.isRootEntry,
+    canExpand: false,
     // `isEjectable` is determined by its corresponding volume, will be updated
     // when volume is added.
     isEjectable: false,
-    canExpand: shouldDelayLoadingChildren(entry),
     children: [],
   };
+  // For slow volumes, we always mark the root and directories as canExpand, to
+  // avoid scanning to determine if it has sub-directories.
+  fileData.canExpand = isVolumeSlowToScan(volumeInfo);
+  return fileData;
 }
 
 /**
