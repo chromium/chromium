@@ -8,6 +8,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace cc {
+class PaintCanvas;
+}
+
 namespace gfx {
 class Canvas;
 }
@@ -35,6 +39,10 @@ class WatermarkView : public views::View {
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:
+  // Helper function to draw a single block of text with the data in
+  // `text_lines_` at the provided coordinates.
+  void DrawTextBlock(cc::PaintCanvas* canvas, int x, int y);
+
   std::vector<std::string> text_lines_;
   SkColor background_color_;
   int block_width_;
