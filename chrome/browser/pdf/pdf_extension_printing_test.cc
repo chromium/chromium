@@ -467,8 +467,16 @@ class PDFExtensionBasicPrintingTest : public PDFExtensionPrintingTest {
   }
 };
 
+// TODO(crbug.com/40283511): Test is flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ContextMenuPrintCommandExtensionMainFrame \
+  DISABLED_ContextMenuPrintCommandExtensionMainFrame
+#else
+#define MAYBE_ContextMenuPrintCommandExtensionMainFrame \
+  ContextMenuPrintCommandExtensionMainFrame
+#endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
-                       ContextMenuPrintCommandExtensionMainFrame) {
+                       MAYBE_ContextMenuPrintCommandExtensionMainFrame) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Acknowledge print job creation so that the mojo callback doesn't hang.
   EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
