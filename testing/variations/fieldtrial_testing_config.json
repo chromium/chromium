@@ -19001,6 +19001,27 @@
             ]
         }
     ],
+    "UseV1MetricsTerminationHoldback": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "UseV1MetricsTermination"
+                    ]
+                },
+                {
+                    "name": "V1MetricsHoldback",
+                    "enable_features": [
+                        "UseV1MetricsTermination"
+                    ]
+                }
+            ]
+        }
+    ],
     "UserBypassUI": [
         {
             "platforms": [

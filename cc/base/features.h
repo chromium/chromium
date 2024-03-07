@@ -169,6 +169,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAdjustFastMainThreadThreshold);
 // that haven't been imported into viz.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kClearCanvasResourcesInBackground);
 
+// Re-enables legacy cc/metrics V1 termination path, to validate if some shifts
+// in V3 metrics were from the interactions of these paths.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseV1MetricsTermination);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
