@@ -121,7 +121,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   Element* interestTargetElement();
 
   AtomicString invokeAction() const;
-  void setInvokeAction(const AtomicString& value);
 
   AtomicString interestAction() const;
 

@@ -359,15 +359,13 @@ bool HTMLDetailsElement::HandleInvokeInternal(HTMLElement& invoker,
     return false;
   }
 
-  if (!(EqualIgnoringASCIICase(action, keywords::kAuto) ||
-        EqualIgnoringASCIICase(action, keywords::kToggle) ||
+  if (!(action.empty() || EqualIgnoringASCIICase(action, keywords::kToggle) ||
         EqualIgnoringASCIICase(action, keywords::kClose) ||
         EqualIgnoringASCIICase(action, keywords::kOpen))) {
     return false;
   }
 
-  if (EqualIgnoringASCIICase(action, keywords::kAuto) ||
-      EqualIgnoringASCIICase(action, keywords::kToggle)) {
+  if (action.empty() || EqualIgnoringASCIICase(action, keywords::kToggle)) {
     ToggleOpen();
   } else if (EqualIgnoringASCIICase(action, keywords::kClose)) {
     if (is_open_) {

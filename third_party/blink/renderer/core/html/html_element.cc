@@ -2349,14 +2349,14 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
       IsPopoverReady(PopoverTriggerAction::kShow,
                      /*exception_state=*/nullptr,
                      /*include_event_handler_text=*/true, &document) &&
-      (EqualIgnoringASCIICase(action, keywords::kAuto) ||
+      (action.empty() ||
        EqualIgnoringASCIICase(action, keywords::kTogglePopover) ||
        EqualIgnoringASCIICase(action, keywords::kShowPopover));
   bool can_hide =
       IsPopoverReady(PopoverTriggerAction::kHide,
                      /*exception_state=*/nullptr,
                      /*include_event_handler_text=*/true, &document) &&
-      (EqualIgnoringASCIICase(action, keywords::kAuto) ||
+      (action.empty() ||
        EqualIgnoringASCIICase(action, keywords::kTogglePopover) ||
        EqualIgnoringASCIICase(action, keywords::kHidePopover));
   if (can_hide) {

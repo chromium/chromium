@@ -5,5 +5,5 @@
 [RuntimeEnabled=HTMLInvokeTargetAttribute]
 interface mixin InvokerElement {
   [CEReactions,Reflect=invoketarget] attribute Element? invokeTargetElement;
-  [CEReactions] attribute DOMString invokeAction;
+  [CEReactions,Reflect=invokeaction] attribute DOMString invokeAction;
 };

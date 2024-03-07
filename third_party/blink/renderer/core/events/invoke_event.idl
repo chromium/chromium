@@ -13,5 +13,5 @@
 
 dictionary InvokeEventInit : EventInit {
     Element? invoker = null;
-    DOMString action = "auto";
+    DOMString action = "";
 };

@@ -449,10 +449,7 @@ AtomicString HTMLFormControlElement::invokeAction() const {
       !attribute_value.empty()) {
     return attribute_value;
   }
-  return keywords::kAuto;
-}
-void HTMLFormControlElement::setInvokeAction(const AtomicString& value) {
-  setAttribute(html_names::kInvokeactionAttr, value);
+  return g_empty_atom;
 }
 
 AtomicString HTMLFormControlElement::interestAction() const {
