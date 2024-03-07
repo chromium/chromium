@@ -825,6 +825,7 @@ class BaselineLoader:
     def __init__(self, host: Host):
         self._host = host
         self._default_port = host.port_factory.get()
+        self._default_port.set_option_default('manifest_update', False)
         self._digests_to_contents = {}
         # Image diff statistics are commutative. By canonicalizing the
         # (expected, actual) argument order and caching the result, we can
