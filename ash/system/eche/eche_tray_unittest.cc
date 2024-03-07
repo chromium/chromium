@@ -11,12 +11,10 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
-#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/status_area_widget_test_helper.h"
-#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_utils.h"
@@ -129,8 +127,6 @@ class EcheTrayTest : public AshTestBase {
 
     display::test::DisplayManagerTestApi(display_manager())
         .SetFirstDisplayAsInternalDisplay();
-
-    toast_manager_ = Shell::Get()->toast_manager();
   }
 
   // Performs a tap on the eche tray button.
@@ -156,7 +152,6 @@ class EcheTrayTest : public AshTestBase {
 
   EcheTray* eche_tray() { return eche_tray_; }
   PhoneHubTray* phone_hub_tray() { return phone_hub_tray_; }
-  ToastManagerImpl* toast_manager() { return toast_manager_; }
 
   base::test::ScopedFeatureList feature_list_;
 
@@ -165,7 +160,6 @@ class EcheTrayTest : public AshTestBase {
   raw_ptr<EcheTray, DanglingUntriaged> eche_tray_ = nullptr;  // Not owned
   raw_ptr<PhoneHubTray, DanglingUntriaged> phone_hub_tray_ =
       nullptr;  // Not owned
-  raw_ptr<ToastManagerImpl, DanglingUntriaged> toast_manager_ = nullptr;
 
   // Calling the factory constructor is enough to set it up.
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
@@ -471,66 +465,6 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_W) {
 
   // Check to see if the bubble is closed and purged.
   EXPECT_TRUE(is_web_content_unloaded_);
-}
-
-TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_C) {
-  eche_tray()->LoadBubble(
-      GURL("http://google.com"), CreateTestImage(), u"app 1", u"your phone",
-      eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected,
-      eche_app::mojom::AppStreamLaunchEntryPoint::APPS_LIST);
-  eche_tray()->ShowBubble();
-
-  EXPECT_TRUE(
-      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
-  EXPECT_FALSE(toast_manager()->IsToastShown(
-      "eche_tray_toast_ids.copy_paste_not_implemented"));
-
-  // Now press the ctrl+w that closes the bubble.
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_C, ui::EF_CONTROL_DOWN);
-
-  // Check to see if a toast is shown
-  EXPECT_TRUE(toast_manager()->IsToastShown(
-      "eche_tray_toast_ids.copy_paste_not_implemented"));
-}
-
-TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_V) {
-  eche_tray()->LoadBubble(
-      GURL("http://google.com"), CreateTestImage(), u"app 1", u"your phone",
-      eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected,
-      eche_app::mojom::AppStreamLaunchEntryPoint::APPS_LIST);
-  eche_tray()->ShowBubble();
-
-  EXPECT_TRUE(
-      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
-  EXPECT_FALSE(toast_manager()->IsToastShown(
-      "eche_tray_toast_ids.copy_paste_not_implemented"));
-
-  // Now press the ctrl+w that closes the bubble.
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_V, ui::EF_CONTROL_DOWN);
-
-  // Check to see if a toast is shown
-  EXPECT_TRUE(toast_manager()->IsToastShown(
-      "eche_tray_toast_ids.copy_paste_not_implemented"));
-}
-
-TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_X) {
-  eche_tray()->LoadBubble(
-      GURL("http://google.com"), CreateTestImage(), u"app 1", u"your phone",
-      eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected,
-      eche_app::mojom::AppStreamLaunchEntryPoint::APPS_LIST);
-  eche_tray()->ShowBubble();
-
-  EXPECT_TRUE(
-      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
-  EXPECT_FALSE(toast_manager()->IsToastShown(
-      "eche_tray_toast_ids.copy_paste_not_implemented"));
-
-  // Now press the ctrl+w that closes the bubble.
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_X, ui::EF_CONTROL_DOWN);
-
-  // Check to see if a toast is shown
-  EXPECT_TRUE(toast_manager()->IsToastShown(
-      "eche_tray_toast_ids.copy_paste_not_implemented"));
 }
 
 TEST_F(EcheTrayTest, AcceleratorKeyHandled_BROWSER_BACK_KEY) {

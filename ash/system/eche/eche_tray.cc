@@ -120,9 +120,6 @@ constexpr base::TimeDelta kUnloadTimeoutDuration = base::Milliseconds(500);
 // Timeout for initializer connection attempts.
 constexpr base::TimeDelta kInitializerTimeout = base::Seconds(6);
 
-// The ID for the "Copy/paste not yet implemented" toast.
-constexpr char kEcheTrayCopyPasteNotImplementedToastId[] =
-    "eche_tray_toast_ids.copy_paste_not_implemented";
 // The ID for the "Tablet mode not supported" toast.
 constexpr char kEcheTrayTabletModeNotSupportedId[] =
     "eche_tray_toast_ids.tablet_mode_not_supported";
@@ -1016,19 +1013,6 @@ bool EcheTray::ProcessAcceleratorKeys(ui::KeyEvent* event) {
     return false;
 
   switch (key_code) {
-    case ui::VKEY_C:
-    case ui::VKEY_V:
-    case ui::VKEY_X:
-      if (!is_only_control_down)
-        return false;
-      ash::ToastManager::Get()->Show(ash::ToastData(
-          kEcheTrayCopyPasteNotImplementedToastId,
-          ash::ToastCatalogName::kEcheTrayCopyPasteNotImplemented,
-          l10n_util::GetStringUTF16(
-              IDS_ASH_ECHE_TOAST_COPY_PASTE_NOT_IMPLEMENTED),
-          ash::ToastData::kDefaultToastDuration,
-          /*visible_on_lock_screen=*/false));
-      return true;
     case ui::VKEY_W:
       if (!is_only_control_down)
         return false;
