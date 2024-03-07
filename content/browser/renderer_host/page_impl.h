@@ -51,6 +51,8 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   ~PageImpl() override;
 
+  using base::SupportsUserData::ClearAllUserData;
+
   // Page implementation.
   const std::optional<GURL>& GetManifestUrl() const override;
   void GetManifest(GetManifestCallback callback) override;

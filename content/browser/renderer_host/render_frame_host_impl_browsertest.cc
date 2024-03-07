@@ -56,6 +56,7 @@
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -6491,6 +6492,82 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(child_frame_wrapper.IsDestroyed());
   EXPECT_TRUE(document_service_was_destroyed);
   EXPECT_TRUE(document_user_data_was_destroyed);
+}
+
+class DestructorLifetimePageUserData
+    : public PageUserData<DestructorLifetimePageUserData> {
+ public:
+  explicit DestructorLifetimePageUserData(Page& page, bool& was_destroyed)
+      : PageUserData<DestructorLifetimePageUserData>(page),
+        page_(page.GetWeakPtr()),
+        was_destroyed_(was_destroyed) {}
+
+  ~DestructorLifetimePageUserData() override {
+    *was_destroyed_ = true;
+
+    // The destructor should run before WeakPtr<Page> is invalidated.
+    EXPECT_TRUE(page_);
+    if (!page_) {
+      return;
+    }
+    // Check Page is still accessible through RenderFrameHost::GetPage. Such
+    // access can happen in PageUserData implementations with a complicated
+    // destructor.
+    auto& render_frame_host = page_->GetMainDocument();
+    auto& page = render_frame_host.GetPage();
+    // Check returned Page reference is valid.
+    EXPECT_EQ(page_.get(), &page);
+    EXPECT_TRUE(page.IsPrimary());
+  }
+
+ private:
+  friend PageUserData;
+  PAGE_USER_DATA_KEY_DECL();
+
+  const base::WeakPtr<Page> page_;
+  const raw_ref<bool> was_destroyed_;
+};
+
+PAGE_USER_DATA_KEY_IMPL(DestructorLifetimePageUserData);
+
+// Tests that when DocumentAssociatedData is destroyed, destructors of
+// PageUserData run while Page and DocumentAssociatedData are still in a
+// reasonable state.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       PageUserDataDestructorLifetime) {
+  // The test assumes that the main frame RFH will be reused when navigating.
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(main_frame);
+
+  bool page_user_data_was_destroyed = false;
+
+  DestructorLifetimePageUserData::CreateForPage(main_frame->GetPage(),
+                                                page_user_data_was_destroyed);
+
+  RenderFrameHostWrapper main_frame_wrapper(main_frame);
+  ASSERT_FALSE(main_frame_wrapper.IsDestroyed());
+
+  // Perform a same-site navigation in the main frame.
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      main_frame, embedded_test_server()->GetURL("a.com", "/title2.html")));
+
+  // The navigation should reuse the same RenderFrameHost, except when
+  // RenderDocument is enabled.
+  if (ShouldCreateNewHostForAllFrames()) {
+    EXPECT_TRUE(main_frame_wrapper.WaitUntilRenderFrameDeleted());
+  } else {
+    EXPECT_EQ(web_contents()->GetPrimaryMainFrame(), main_frame_wrapper.get());
+  }
+
+  // The destructor of DestructorLifetimePageUserData also perform googletest
+  // assertions to validate invariants.
+  EXPECT_TRUE(page_user_data_was_destroyed);
 }
 
 class RenderFrameHostImplCredentiallessIframeBrowserTest

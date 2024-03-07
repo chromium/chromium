@@ -64,6 +64,15 @@ DocumentAssociatedData::~DocumentAssociatedData() {
   // DocumentAssociatedData are still valid while user data is being destroyed.
   ClearAllUserData();
 
+  // Explicitly clear all PageUserData here before destruction of |owned_page_|
+  // (A std::unique_ptr's stored pointer value is (intentionally) undefined
+  // during destruction (e.g. it could be nullptr)), so that |owned_page_| and
+  // the other fields of DocumentAssociatedData are still valid and accessible
+  // from RenderFrameHost interface while its page user data is being destroyed.
+  if (owned_page_) {
+    owned_page_->ClearAllUserData();
+  }
+
   // Last in case any DocumentService / DocumentUserData service destructors try
   // to look up RenderFrameHosts by DocumentToken.
   CHECK_EQ(1u, GetDocumentTokenMap().erase(token_));
