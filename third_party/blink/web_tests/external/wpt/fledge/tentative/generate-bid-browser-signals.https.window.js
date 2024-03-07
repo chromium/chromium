@@ -260,7 +260,7 @@ subsetTest(promise_test, async test => {
 
   // Run two auctions at once, without any navigations.
   // "bidCount" should be 0 for both auctions.
-  fencedFrameConfigs =
+  let fencedFrameConfigs =
       await Promise.all([runBasicFledgeTestExpectingWinner(test, uuid),
                          runBasicFledgeTestExpectingWinner(test, uuid)]);
 
@@ -280,6 +280,40 @@ subsetTest(promise_test, async test => {
         biddingLogicURL: createBidCountBiddingScriptURL(2) });
   await runBasicFledgeTestExpectingWinner(test, uuid);
 }, 'browserSignals.bidCount two auctions at once.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+
+  // Use a tracker URL for the ad. It won't be successfully loaded, due to missing
+  // the fenced frame header, but it should be fetched twice.
+  let trackedRenderURL =
+      createTrackerURL(window.location.origin, uuid, 'track_get', /*id=*/'ad');
+  await joinInterestGroup(
+      test, uuid,
+      { name: uuid,
+        biddingLogicURL: createBidCountBiddingScriptURL(0),
+        ads: [{ renderURL: trackedRenderURL }]
+      });
+
+  let fencedFrameConfig = await runBasicFledgeTestExpectingWinner(test, uuid);
+
+  // Start navigating two frames to the winning ad.
+  createAndNavigateFencedFrame(test, fencedFrameConfig);
+  createAndNavigateFencedFrame(test, fencedFrameConfig);
+
+  // Wait for both navigations to have requested ads (and thus to have updated
+  // bid counts).
+  await waitForObservedRequests(uuid, [createSellerReportURL(uuid),
+                                       trackedRenderURL,
+                                       trackedRenderURL]);
+
+  // Check that "bidCount" has increased by only 1.
+  await joinInterestGroup(
+      test, uuid,
+      { name: uuid,
+        biddingLogicURL: createBidCountBiddingScriptURL(1) });
+  await runBasicFledgeTestExpectingWinner(test, uuid);
+}, 'browserSignals.bidCount incremented once when winning ad used twice.');
 
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
@@ -684,7 +718,7 @@ subsetTest(promise_test, async test => {
 
   // Run two auctions at once, without any navigations.
   // "prevWinsMs" should be empty for both auctions.
-  fencedFrameConfigs =
+  let fencedFrameConfigs =
       await Promise.all([runBasicFledgeTestExpectingWinner(test, uuid),
                          runBasicFledgeTestExpectingWinner(test, uuid)]);
 
@@ -707,6 +741,41 @@ subsetTest(promise_test, async test => {
       });
   await runBasicFledgeTestExpectingWinner(test, uuid);
 }, 'browserSignals.prevWinsMs two auctions at once.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+
+  // Use a tracker URL for the ad. It won't be successfully loaded, due to missing
+  // the fenced frame header, but it should be fetched twice.
+  let trackedRenderURL =
+      createTrackerURL(window.location.origin, uuid, 'track_get', /*id=*/'ad');
+  await joinInterestGroup(
+      test, uuid,
+      { name: uuid,
+        biddingLogicURL: createPrevWinsMsBiddingScriptURL([]),
+        ads: [{ renderURL: trackedRenderURL }]
+      });
+
+  let fencedFrameConfig = await runBasicFledgeTestExpectingWinner(test, uuid);
+
+  // Start navigating two frames to the winning ad.
+  createAndNavigateFencedFrame(test, fencedFrameConfig);
+  createAndNavigateFencedFrame(test, fencedFrameConfig);
+
+  // Wait for both navigations to have requested ads (and thus to have updated
+  // "prevWinsMs").
+  await waitForObservedRequests(uuid, [createSellerReportURL(uuid),
+                                       trackedRenderURL,
+                                       trackedRenderURL]);
+
+  // Check that "prevWins" has only a single win.
+  await joinInterestGroup(
+      test, uuid,
+      { name: uuid,
+        biddingLogicURL: createPrevWinsMsBiddingScriptURL(
+          [[0, {renderURL: trackedRenderURL}]]) });
+  await runBasicFledgeTestExpectingWinner(test, uuid);
+}, 'browserSignals.prevWinsMs has only one win when winning ad used twice.');
 
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
