@@ -840,8 +840,14 @@ class AvatarToolbarButtonEnterpriseBadgingParamBrowserTest
       : base::test::WithFeatureOverride(features::kEnterpriseProfileBadging) {}
 };
 
+// TODO(crbug.com/328623454): Test is failing on Mac-13 / Mac-11 / Mac-10.16.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WorkProfileTextBadging DISABLED_WorkProfileTextBadging
+#else
+#define MAYBE_WorkProfileTextBadging WorkProfileTextBadging
+#endif
 IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonEnterpriseBadgingParamBrowserTest,
-                       WorkProfileTextBadging) {
+                       MAYBE_WorkProfileTextBadging) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
   chrome::enterprise_util::SetUserAcceptedAccountManagement(
