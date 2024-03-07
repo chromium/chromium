@@ -26,7 +26,7 @@ export interface BrowserService {
   getForeignSessions(): Promise<ForeignSession[]>;
   removeBookmark(url: string): void;
   removeVisits(removalList: RemoveVisitsRequest): Promise<void>;
-  setLastSelectedTab(lasSelectedTab: number): void;
+  setLastSelectedTab(lastSelectedTab: number): void;
   openForeignSessionAllTabs(sessionTag: string): void;
   openForeignSessionTab(sessionTag: string, tabId: number, e: MouseEvent): void;
   deleteForeignSession(sessionTag: string): void;

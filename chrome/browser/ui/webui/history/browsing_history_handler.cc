@@ -504,8 +504,10 @@ void BrowsingHistoryHandler::HandleSetLastSelectedTab(
     const base::Value::List& args) {
   const base::Value& last_tab = args[0];
   Profile* profile = GetProfile();
-  profile->GetPrefs()->SetInteger(history_clusters::prefs::kLastSelectedTab,
-                                  last_tab.GetInt());
+  if (last_tab.is_int()) {
+    profile->GetPrefs()->SetInteger(history_clusters::prefs::kLastSelectedTab,
+                                    last_tab.GetInt());
+  }
 }
 
 void BrowsingHistoryHandler::OnQueryComplete(
