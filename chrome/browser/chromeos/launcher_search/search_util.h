@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LAUNCHER_SEARCH_SEARCH_UTIL_H_
 #define CHROME_BROWSER_CHROMEOS_LAUNCHER_SEARCH_SEARCH_UTIL_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -34,7 +35,7 @@ ui::PageTransition PageTransitionToUiPageTransition(
 // either have its answer field populated or be a calculator result.
 mojom::SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
                                           AutocompleteController* controller,
-                                          base::StringPiece16 query,
+                                          std::u16string_view query,
                                           const AutocompleteInput& input);
 
 // Creates an Omnibox search result from the AutocompleteMatch. Match must not

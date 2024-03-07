@@ -4,9 +4,10 @@
 
 #include "chrome/browser/chromeos/mahi/mahi_tab_helper.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 
@@ -27,7 +28,7 @@ MahiTabHelper::MahiTabHelper(content::WebContents* web_contents)
 
 // A tab should be skipped if it is empty, blank or default page.
 bool MahiTabHelper::ShouldSkip() {
-  static constexpr auto kSkipUrls = base::MakeFixedFlatSet<base::StringPiece>({
+  static constexpr auto kSkipUrls = base::MakeFixedFlatSet<std::string_view>({
       // blank and default pages.
       "about:blank",
       "chrome://newtab/",

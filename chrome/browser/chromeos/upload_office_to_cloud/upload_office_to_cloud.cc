@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "chrome/browser/chromeos/enterprise/cloud_storage/policy_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -20,12 +22,12 @@ namespace chromeos {
 
 namespace {
 
-bool IsPrefValueSetToAllowed(base::StringPiece pref_value) {
+bool IsPrefValueSetToAllowed(std::string_view pref_value) {
   return pref_value == cloud_upload::kCloudUploadPolicyAllowed ||
          pref_value == cloud_upload::kCloudUploadPolicyAutomated;
 }
 
-bool IsPrefValueSetToAutomated(base::StringPiece pref_value) {
+bool IsPrefValueSetToAutomated(std::string_view pref_value) {
   return pref_value == cloud_upload::kCloudUploadPolicyAutomated;
 }
 

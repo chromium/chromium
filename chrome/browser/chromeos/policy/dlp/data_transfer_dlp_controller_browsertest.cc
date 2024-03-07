@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -283,7 +284,7 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
                                base::RunLoop& run_loop) {
     EXPECT_CALL(*reporting_queue_, AddRecord)
         .WillOnce([&run_loop, expected_event](
-                      base::StringPiece record, ::reporting::Priority priority,
+                      std::string_view record, ::reporting::Priority priority,
                       ::reporting::ReportQueue::EnqueueCallback callback) {
           DlpPolicyEvent event;
           ASSERT_TRUE(event.ParseFromString(std::string(record)));
@@ -557,7 +558,7 @@ class MAYBE_DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
                                base::RunLoop& run_loop) {
     EXPECT_CALL(*reporting_queue_, AddRecord)
         .WillOnce([&run_loop, expected_event](
-                      base::StringPiece record, ::reporting::Priority priority,
+                      std::string_view record, ::reporting::Priority priority,
                       ::reporting::ReportQueue::EnqueueCallback callback) {
           DlpPolicyEvent event;
           ASSERT_TRUE(event.ParseFromString(std::string(record)));

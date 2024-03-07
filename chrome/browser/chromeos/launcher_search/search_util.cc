@@ -4,8 +4,9 @@
 
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 
+#include <string_view>
+
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -217,7 +218,7 @@ ui::PageTransition PageTransitionToUiPageTransition(
 
 SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
                                    AutocompleteController* controller,
-                                   base::StringPiece16 query,
+                                   std::u16string_view query,
                                    const AutocompleteInput& input) {
   SearchResultPtr result = CreateBaseResult(match, controller, input);
 
