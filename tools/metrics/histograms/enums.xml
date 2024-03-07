@@ -18001,6 +18001,7 @@ from previous Chrome versions.
   <int value="-1250240035" label="NearbySharingOnePageOnboarding:enabled"/>
   <int value="-1250222445" label="WebMidi:enabled"/>
   <int value="-1249349654" label="UseAndroidStagingSmds:disabled"/>
+  <int value="-1249142697" label="NtpWallpaperSearchButtonAnimation:enabled"/>
   <int value="-1248478422" label="enable-zip-archiver-packer"/>
   <int value="-1248232229"
       label="UsernameFirstFlowWithIntermediateValuesPredictions:enabled"/>
@@ -18437,6 +18438,7 @@ from previous Chrome versions.
   <int value="-1041643783" label="SingleTouchSelect:enabled"/>
   <int value="-1041363400" label="QuickDeleteAndroidAnimation:enabled"/>
   <int value="-1041150041" label="ContextualSearchLiteralSearchTap:disabled"/>
+  <int value="-1040769407" label="NtpWallpaperSearchButtonAnimation:disabled"/>
   <int value="-1040641773" label="ArcOnDemand:enabled"/>
   <int value="-1040547868" label="MutationEvents:disabled"/>
   <int value="-1040000888" label="ContextMenuSearchWithGoogleLens:disabled"/>

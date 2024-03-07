@@ -5850,6 +5850,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "ntp-wallpaper-search-button-animation",
+    "owners": [ "pauladedeji@google.com", "tiborg@chromium.org" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "ntp-wide-modules",
     "owners": [ "//components/search/OWNERS" ],
     "expiry_milestone": 122

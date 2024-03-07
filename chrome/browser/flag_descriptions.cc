@@ -5062,6 +5062,12 @@ const char kNtpWallpaperSearchButtonDescription[] =
     "Enables entry point on New Tab Page for Customize Chrome Side Panel "
     "Wallpaper Search.";
 
+const char kNtpWallpaperSearchButtonAnimationName[] =
+    "NTP Wallpaper Search Button Animation";
+const char kNtpWallpaperSearchButtonAnimationDescription[] =
+    "Enables animation for New Tab Page's Wallpaper Search button. Requires "
+    "#ntp-wallpaper-search-button to be enabled too.";
+
 const char kNtpWideModulesName[] = "NTP Wide Modules";
 const char kNtpWideModulesDescription[] =
     "Shows wide NTP modules if NTP provides enough space.";
