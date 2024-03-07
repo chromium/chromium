@@ -67,7 +67,9 @@ import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class handles managing the positions and behavior of all tabs in a tab strip.  It is
@@ -2168,10 +2170,25 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
     }
 
+    private int getTabGroupCount() {
+        Set<Integer> groupRootIds = new HashSet<>();
+
+        for (int i = 0; i < mStripTabs.length; ++i) {
+            final StripLayoutTab stripTab = mStripTabs[i];
+            final Tab tab = getTabById(stripTab.getId());
+            if (mTabGroupModelFilter.isTabInTabGroup(tab)
+                    && !groupRootIds.contains(tab.getRootId())) {
+                groupRootIds.add(tab.getRootId());
+            }
+        }
+
+        return groupRootIds.size();
+    }
+
     private void copyTabsWithGroupTitles() {
         if (mStripTabs.length == 0) return;
 
-        int numGroups = mTabGroupModelFilter.getTabGroupCount();
+        int numGroups = getTabGroupCount();
         int groupTitleIndex = 0;
         StripLayoutGroupTitle[] groupTitles = new StripLayoutGroupTitle[numGroups];
 
